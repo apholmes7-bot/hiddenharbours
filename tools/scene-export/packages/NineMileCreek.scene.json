@@ -16778,7 +16778,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [96.333336, 84.623535],
       "facing": null,
@@ -16823,7 +16823,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [105, 84.623535],
       "facing": null,
@@ -16868,7 +16868,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [113.66667, 84.623535],
       "facing": null,
@@ -16913,7 +16913,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [122.333336, 84.623535],
       "facing": null,
@@ -16958,7 +16958,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [131, 84.623535],
       "facing": null,
@@ -17003,7 +17003,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [139.66667, 84.623535],
       "facing": null,
@@ -17048,7 +17048,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [148.33334, 84.623535],
       "facing": null,
@@ -17093,7 +17093,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [157, 84.623535],
       "facing": null,
@@ -17138,7 +17138,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [165.66667, 84.623535],
       "facing": null,
@@ -17183,7 +17183,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [89.5, 44.316566],
       "facing": null,
@@ -17228,7 +17228,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [89.5, 52.91657],
       "facing": null,
@@ -17273,7 +17273,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [89.5, 61.516567],
       "facing": null,
@@ -17318,7 +17318,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [89.5, 70.11658],
       "facing": null,
@@ -17363,7 +17363,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [89.5, 78.71657],
       "facing": null,
@@ -17408,7 +17408,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [98.6, 35.62354],
       "facing": null,
@@ -17453,7 +17453,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [107.8, 35.62354],
       "facing": null,
@@ -17498,7 +17498,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [117, 35.62354],
       "facing": null,
@@ -17543,7 +17543,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [126.2, 35.62354],
       "facing": null,
@@ -17588,7 +17588,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [135.4, 35.62354],
       "facing": null,
@@ -17633,7 +17633,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [144.6, 35.62354],
       "facing": null,
@@ -17678,7 +17678,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [153.8, 35.62354],
       "facing": null,
@@ -17723,7 +17723,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [163, 35.62354],
       "facing": null,
@@ -17768,7 +17768,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [172.2, 35.62354],
       "facing": null,
@@ -17813,7 +17813,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [181.4, 35.62354],
       "facing": null,
@@ -17855,10 +17855,12 @@
       "rigSource": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
       "call": {
         "fn": "render",
-        "args": ["dir", "opts"],
+        "args": ["trapStack", "$dir", "$opts"],
         "opts": {},
-        "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-fromRecipe": "Assets/_Project/Art/Sprites/Wharf/Decor/trapStack.recipe.json",
+        "x-dir": 4,
+        "x-cellIndex": 4,
+        "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [103.5, 92.75],
       "facing": null,
@@ -17898,10 +17900,12 @@
       "rigSource": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
       "call": {
         "fn": "render",
-        "args": ["dir", "opts"],
+        "args": ["buoyRack", "$dir", "$opts"],
         "opts": {},
-        "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-fromRecipe": "Assets/_Project/Art/Sprites/Wharf/Decor/buoyRack.recipe.json",
+        "x-dir": 4,
+        "x-cellIndex": 4,
+        "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [114.5, 92.75],
       "facing": null,
@@ -17941,10 +17945,12 @@
       "rigSource": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
       "call": {
         "fn": "render",
-        "args": ["dir", "opts"],
+        "args": ["netPile", "$dir", "$opts"],
         "opts": {},
-        "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-fromRecipe": "Assets/_Project/Art/Sprites/Wharf/Decor/netPile.recipe.json",
+        "x-dir": 4,
+        "x-cellIndex": 4,
+        "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [125.5, 92.75],
       "facing": null,
@@ -17984,10 +17990,12 @@
       "rigSource": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
       "call": {
         "fn": "render",
-        "args": ["dir", "opts"],
+        "args": ["trapStack", "$dir", "$opts"],
         "opts": {},
-        "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-fromRecipe": "Assets/_Project/Art/Sprites/Wharf/Decor/trapStack.recipe.json",
+        "x-dir": 4,
+        "x-cellIndex": 4,
+        "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [142, 92.75],
       "facing": null,
@@ -18027,10 +18035,12 @@
       "rigSource": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
       "call": {
         "fn": "render",
-        "args": ["dir", "opts"],
+        "args": ["ropeCoil", "$dir", "$opts"],
         "opts": {},
-        "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-fromRecipe": "Assets/_Project/Art/Sprites/Wharf/Decor/ropeCoil.recipe.json",
+        "x-dir": 4,
+        "x-cellIndex": 4,
+        "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [153, 92.75],
       "facing": null,
@@ -18070,10 +18080,12 @@
       "rigSource": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
       "call": {
         "fn": "render",
-        "args": ["dir", "opts"],
+        "args": ["toteStack", "$dir", "$opts"],
         "opts": {},
-        "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-fromRecipe": "Assets/_Project/Art/Sprites/Wharf/Decor/toteStack.recipe.json",
+        "x-dir": 4,
+        "x-cellIndex": 4,
+        "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [164, 92.75],
       "facing": null,
@@ -18113,10 +18125,12 @@
       "rigSource": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
       "call": {
         "fn": "render",
-        "args": ["dir", "opts"],
+        "args": ["woodStack", "$dir", "$opts"],
         "opts": {},
-        "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-fromRecipe": "Assets/_Project/Art/Sprites/Wharf/Decor/woodStack.recipe.json",
+        "x-dir": 4,
+        "x-cellIndex": 4,
+        "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [109, 95.5],
       "facing": null,
@@ -18156,10 +18170,12 @@
       "rigSource": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
       "call": {
         "fn": "render",
-        "args": ["dir", "opts"],
+        "args": ["netFrame", "$dir", "$opts"],
         "opts": {},
-        "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-fromRecipe": "Assets/_Project/Art/Sprites/Wharf/Decor/netFrame.recipe.json",
+        "x-dir": 4,
+        "x-cellIndex": 4,
+        "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [136.5, 95.5],
       "facing": null,
@@ -18199,10 +18215,12 @@
       "rigSource": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
       "call": {
         "fn": "render",
-        "args": ["dir", "opts"],
+        "args": ["trapStack", "$dir", "$opts"],
         "opts": {},
-        "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-fromRecipe": "Assets/_Project/Art/Sprites/Wharf/Decor/trapStack.recipe.json",
+        "x-dir": 4,
+        "x-cellIndex": 4,
+        "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [158.5, 95.5],
       "facing": null,
@@ -18242,10 +18260,12 @@
       "rigSource": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
       "call": {
         "fn": "render",
-        "args": ["dir", "opts"],
+        "args": ["tideStaff", "$dir", "$opts"],
         "opts": {},
-        "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-fromRecipe": "Assets/_Project/Art/Sprites/Wharf/Decor/tideStaff.recipe.json",
+        "x-dir": 4,
+        "x-cellIndex": 4,
+        "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [106.25, 88.2],
       "facing": null,
@@ -18285,10 +18305,12 @@
       "rigSource": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
       "call": {
         "fn": "render",
-        "args": ["dir", "opts"],
+        "args": ["ringStation", "$dir", "$opts"],
         "opts": {},
-        "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-fromRecipe": "Assets/_Project/Art/Sprites/Wharf/Decor/ringStation.recipe.json",
+        "x-dir": 4,
+        "x-cellIndex": 4,
+        "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [117.25, 88.2],
       "facing": null,
@@ -18328,10 +18350,12 @@
       "rigSource": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
       "call": {
         "fn": "render",
-        "args": ["dir", "opts"],
+        "args": ["ringStation", "$dir", "$opts"],
         "opts": {},
-        "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-fromRecipe": "Assets/_Project/Art/Sprites/Wharf/Decor/ringStation.recipe.json",
+        "x-dir": 4,
+        "x-cellIndex": 4,
+        "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [150.25, 88.2],
       "facing": null,
@@ -18371,10 +18395,12 @@
       "rigSource": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
       "call": {
         "fn": "render",
-        "args": ["dir", "opts"],
+        "args": ["harbourSign", "$dir", "$opts"],
         "opts": {},
-        "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-fromRecipe": "Assets/_Project/Art/Sprites/Wharf/Decor/harbourSign.recipe.json",
+        "x-dir": 6,
+        "x-cellIndex": 2,
+        "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [136, 98.6],
       "facing": null,
@@ -18414,10 +18440,12 @@
       "rigSource": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
       "call": {
         "fn": "render",
-        "args": ["dir", "opts"],
+        "args": ["noticeBoard", "$dir", "$opts"],
         "opts": {},
-        "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-fromRecipe": "Assets/_Project/Art/Sprites/Wharf/Decor/noticeBoard.recipe.json",
+        "x-dir": 6,
+        "x-cellIndex": 2,
+        "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [138.5, 98.6],
       "facing": null,
@@ -18457,10 +18485,12 @@
       "rigSource": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
       "call": {
         "fn": "render",
-        "args": ["dir", "opts"],
+        "args": ["bunting", "$dir", "$opts"],
         "opts": {},
-        "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-fromRecipe": "Assets/_Project/Art/Sprites/Wharf/Decor/bunting.recipe.json",
+        "x-dir": 6,
+        "x-cellIndex": 2,
+        "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [142.5, 98.4],
       "facing": null,
@@ -18500,10 +18530,12 @@
       "rigSource": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
       "call": {
         "fn": "render",
-        "args": ["dir", "opts"],
+        "args": ["flagpole", "$dir", "$opts"],
         "opts": {},
-        "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-fromRecipe": "Assets/_Project/Art/Sprites/Wharf/Decor/flagpole.recipe.json",
+        "x-dir": 4,
+        "x-cellIndex": 4,
+        "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [167, 95.5],
       "facing": null,
@@ -18543,10 +18575,12 @@
       "rigSource": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
       "call": {
         "fn": "render",
-        "args": ["dir", "opts"],
+        "args": ["davitHoist", "$dir", "$opts"],
         "opts": {},
-        "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-fromRecipe": "Assets/_Project/Art/Sprites/Wharf/Decor/davitHoist.recipe.json",
+        "x-dir": 2,
+        "x-cellIndex": 6,
+        "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [87, 84],
       "facing": null,
@@ -18586,10 +18620,12 @@
       "rigSource": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
       "call": {
         "fn": "render",
-        "args": ["dir", "opts"],
+        "args": ["sortingTrough", "$dir", "$opts"],
         "opts": {},
-        "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-fromRecipe": "Assets/_Project/Art/Sprites/Wharf/Decor/sortingTrough.recipe.json",
+        "x-dir": 2,
+        "x-cellIndex": 6,
+        "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [85, 74],
       "facing": null,
@@ -18629,10 +18665,12 @@
       "rigSource": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
       "call": {
         "fn": "render",
-        "args": ["dir", "opts"],
+        "args": ["guttingTable", "$dir", "$opts"],
         "opts": {},
-        "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-fromRecipe": "Assets/_Project/Art/Sprites/Wharf/Decor/guttingTable.recipe.json",
+        "x-dir": 2,
+        "x-cellIndex": 6,
+        "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [89, 76.5],
       "facing": null,
@@ -18672,10 +18710,12 @@
       "rigSource": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
       "call": {
         "fn": "render",
-        "args": ["dir", "opts"],
+        "args": ["weighScale", "$dir", "$opts"],
         "opts": {},
-        "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-fromRecipe": "Assets/_Project/Art/Sprites/Wharf/Decor/weighScale.recipe.json",
+        "x-dir": 2,
+        "x-cellIndex": 6,
+        "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [85, 79],
       "facing": null,
@@ -18715,10 +18755,12 @@
       "rigSource": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
       "call": {
         "fn": "render",
-        "args": ["dir", "opts"],
+        "args": ["iceChest", "$dir", "$opts"],
         "opts": {},
-        "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-fromRecipe": "Assets/_Project/Art/Sprites/Wharf/Decor/iceChest.recipe.json",
+        "x-dir": 2,
+        "x-cellIndex": 6,
+        "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [89, 81.5],
       "facing": null,
@@ -18758,10 +18800,12 @@
       "rigSource": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
       "call": {
         "fn": "render",
-        "args": ["dir", "opts"],
+        "args": ["dockCart", "$dir", "$opts"],
         "opts": {},
-        "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-fromRecipe": "Assets/_Project/Art/Sprites/Wharf/Decor/dockCart.recipe.json",
+        "x-dir": 2,
+        "x-cellIndex": 6,
+        "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [89, 71.5],
       "facing": null,
@@ -18801,10 +18845,12 @@
       "rigSource": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
       "call": {
         "fn": "render",
-        "args": ["dir", "opts"],
+        "args": ["oilskinLine", "$dir", "$opts"],
         "opts": {},
-        "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-fromRecipe": "Assets/_Project/Art/Sprites/Wharf/Decor/oilskinLine.recipe.json",
+        "x-dir": 4,
+        "x-cellIndex": 4,
+        "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [73, 132],
       "facing": null,
@@ -18844,10 +18890,12 @@
       "rigSource": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
       "call": {
         "fn": "render",
-        "args": ["dir", "opts"],
+        "args": ["codFlake", "$dir", "$opts"],
         "opts": {},
-        "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-fromRecipe": "Assets/_Project/Art/Sprites/Wharf/Decor/codFlake.recipe.json",
+        "x-dir": 4,
+        "x-cellIndex": 4,
+        "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [87, 132],
       "facing": null,
@@ -18887,10 +18935,12 @@
       "rigSource": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
       "call": {
         "fn": "render",
-        "args": ["dir", "opts"],
+        "args": ["woodStack", "$dir", "$opts"],
         "opts": {},
-        "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-fromRecipe": "Assets/_Project/Art/Sprites/Wharf/Decor/woodStack.recipe.json",
+        "x-dir": 4,
+        "x-cellIndex": 4,
+        "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [101, 132],
       "facing": null,
@@ -18930,10 +18980,12 @@
       "rigSource": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
       "call": {
         "fn": "render",
-        "args": ["dir", "opts"],
+        "args": ["herringSticks", "$dir", "$opts"],
         "opts": {},
-        "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-fromRecipe": "Assets/_Project/Art/Sprites/Wharf/Decor/herringSticks.recipe.json",
+        "x-dir": 4,
+        "x-cellIndex": 4,
+        "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [115, 132],
       "facing": null,
@@ -18973,10 +19025,12 @@
       "rigSource": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
       "call": {
         "fn": "render",
-        "args": ["dir", "opts"],
+        "args": ["baitBarrel", "$dir", "$opts"],
         "opts": {},
-        "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-fromRecipe": "Assets/_Project/Art/Sprites/Wharf/Decor/baitBarrel.recipe.json",
+        "x-dir": 4,
+        "x-cellIndex": 4,
+        "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [133, 128.5],
       "facing": null,
@@ -19016,10 +19070,12 @@
       "rigSource": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
       "call": {
         "fn": "render",
-        "args": ["dir", "opts"],
+        "args": ["trapStack", "$dir", "$opts"],
         "opts": {},
-        "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-fromRecipe": "Assets/_Project/Art/Sprites/Wharf/Decor/trapStack.recipe.json",
+        "x-dir": 4,
+        "x-cellIndex": 4,
+        "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [148, 126],
       "facing": null,
@@ -19059,10 +19115,12 @@
       "rigSource": "docs/art/rigs/iso-rig-pack/utility-iso/utilityIsoRig.js",
       "call": {
         "fn": "render",
-        "args": ["dir", "opts"],
+        "args": ["powerPole", "$dir", "$opts"],
         "opts": {},
-        "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-fromRecipe": "Assets/_Project/Art/Sprites/Utility/powerPole.recipe.json",
+        "x-dir": 2,
+        "x-cellIndex": 6,
+        "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-177.87184, 96.99836],
       "facing": null,
@@ -19102,10 +19160,12 @@
       "rigSource": "docs/art/rigs/iso-rig-pack/utility-iso/utilityIsoRig.js",
       "call": {
         "fn": "render",
-        "args": ["dir", "opts"],
+        "args": ["powerPole", "$dir", "$opts"],
         "opts": {},
-        "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-fromRecipe": "Assets/_Project/Art/Sprites/Utility/powerPole.recipe.json",
+        "x-dir": 2,
+        "x-cellIndex": 6,
+        "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-137.88498, 95.97305],
       "facing": null,
@@ -19145,10 +19205,12 @@
       "rigSource": "docs/art/rigs/iso-rig-pack/utility-iso/utilityIsoRig.js",
       "call": {
         "fn": "render",
-        "args": ["dir", "opts"],
+        "args": ["powerPole", "$dir", "$opts"],
         "opts": {},
-        "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-fromRecipe": "Assets/_Project/Art/Sprites/Utility/powerPole.recipe.json",
+        "x-dir": 2,
+        "x-cellIndex": 6,
+        "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-98.193306, 95.062996],
       "facing": null,
@@ -19188,10 +19250,12 @@
       "rigSource": "docs/art/rigs/iso-rig-pack/utility-iso/utilityIsoRig.js",
       "call": {
         "fn": "render",
-        "args": ["dir", "opts"],
+        "args": ["powerPole", "$dir", "$opts"],
         "opts": {},
-        "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-fromRecipe": "Assets/_Project/Art/Sprites/Utility/powerPole.recipe.json",
+        "x-dir": 2,
+        "x-cellIndex": 6,
+        "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-58.215508, 96.39559],
       "facing": null,
@@ -19231,10 +19295,12 @@
       "rigSource": "docs/art/rigs/iso-rig-pack/utility-iso/utilityIsoRig.js",
       "call": {
         "fn": "render",
-        "args": ["dir", "opts"],
+        "args": ["powerPole", "$dir", "$opts"],
         "opts": {},
-        "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-fromRecipe": "Assets/_Project/Art/Sprites/Utility/powerPole.recipe.json",
+        "x-dir": 2,
+        "x-cellIndex": 6,
+        "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-18.05896, 97],
       "facing": null,
@@ -19274,10 +19340,12 @@
       "rigSource": "docs/art/rigs/iso-rig-pack/utility-iso/utilityIsoRig.js",
       "call": {
         "fn": "render",
-        "args": ["dir", "opts"],
+        "args": ["powerPole", "$dir", "$opts"],
         "opts": {},
-        "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-fromRecipe": "Assets/_Project/Art/Sprites/Utility/powerPole.recipe.json",
+        "x-dir": 2,
+        "x-cellIndex": 6,
+        "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [20.261894, 98.98919],
       "facing": null,
@@ -19317,10 +19385,12 @@
       "rigSource": "docs/art/rigs/iso-rig-pack/utility-iso/utilityIsoRig.js",
       "call": {
         "fn": "render",
-        "args": ["dir", "opts"],
+        "args": ["powerPole", "$dir", "$opts"],
         "opts": {},
-        "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-fromRecipe": "Assets/_Project/Art/Sprites/Utility/powerPole.recipe.json",
+        "x-dir": 2,
+        "x-cellIndex": 6,
+        "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [58.79467, 109.9448],
       "facing": null,
@@ -19360,10 +19430,12 @@
       "rigSource": "docs/art/rigs/iso-rig-pack/utility-iso/utilityIsoRig.js",
       "call": {
         "fn": "render",
-        "args": ["dir", "opts"],
+        "args": ["powerPole", "$dir", "$opts"],
         "opts": {},
-        "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-fromRecipe": "Assets/_Project/Art/Sprites/Utility/powerPole.recipe.json",
+        "x-dir": 2,
+        "x-cellIndex": 6,
+        "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [97.385216, 120.4695],
       "facing": null,
@@ -19403,10 +19475,12 @@
       "rigSource": "docs/art/rigs/iso-rig-pack/utility-iso/utilityIsoRig.js",
       "call": {
         "fn": "render",
-        "args": ["dir", "opts"],
+        "args": ["powerPole", "$dir", "$opts"],
         "opts": {},
-        "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-fromRecipe": "Assets/_Project/Art/Sprites/Utility/powerPole.recipe.json",
+        "x-dir": 2,
+        "x-cellIndex": 6,
+        "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [137.48401, 126.678535],
       "facing": null,
@@ -19446,10 +19520,12 @@
       "rigSource": "docs/art/rigs/iso-rig-pack/utility-iso/utilityIsoRig.js",
       "call": {
         "fn": "render",
-        "args": ["dir", "opts"],
+        "args": ["yardLight", "$dir", "$opts"],
         "opts": {},
-        "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-fromRecipe": "Assets/_Project/Art/Sprites/Utility/yardLight.recipe.json",
+        "x-dir": 4,
+        "x-cellIndex": 4,
+        "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [140, 99],
       "facing": null,
@@ -19489,10 +19565,12 @@
       "rigSource": "docs/art/rigs/iso-rig-pack/utility-iso/utilityIsoRig.js",
       "call": {
         "fn": "render",
-        "args": ["dir", "opts"],
+        "args": ["fuelPump", "$dir", "$opts"],
         "opts": {},
-        "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-fromRecipe": "Assets/_Project/Art/Sprites/Utility/fuelPump.recipe.json",
+        "x-dir": 2,
+        "x-cellIndex": 6,
+        "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [84, 88],
       "facing": null,
@@ -19532,10 +19610,12 @@
       "rigSource": "docs/art/rigs/iso-rig-pack/utility-iso/utilityIsoRig.js",
       "call": {
         "fn": "render",
-        "args": ["dir", "opts"],
+        "args": ["oilTank", "$dir", "$opts"],
         "opts": {},
-        "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-fromRecipe": "Assets/_Project/Art/Sprites/Utility/oilTank.recipe.json",
+        "x-dir": 2,
+        "x-cellIndex": 6,
+        "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [84, 90.5],
       "facing": null,
@@ -19575,10 +19655,12 @@
       "rigSource": "docs/art/rigs/iso-rig-pack/utility-iso/utilityIsoRig.js",
       "call": {
         "fn": "render",
-        "args": ["dir", "opts"],
+        "args": ["standpipe", "$dir", "$opts"],
         "opts": {},
-        "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-fromRecipe": "Assets/_Project/Art/Sprites/Utility/standpipe.recipe.json",
+        "x-dir": 4,
+        "x-cellIndex": 4,
+        "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [131, 95.5],
       "facing": null,
@@ -19618,10 +19700,12 @@
       "rigSource": "docs/art/rigs/iso-rig-pack/utility-iso/utilityIsoRig.js",
       "call": {
         "fn": "render",
-        "args": ["dir", "opts"],
+        "args": ["pedestal", "$dir", "$opts"],
         "opts": {},
-        "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-fromRecipe": "Assets/_Project/Art/Sprites/Utility/pedestal.recipe.json",
+        "x-dir": 4,
+        "x-cellIndex": 4,
+        "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [109, 92.75],
       "facing": null,
@@ -19661,10 +19745,12 @@
       "rigSource": "docs/art/rigs/iso-rig-pack/utility-iso/utilityIsoRig.js",
       "call": {
         "fn": "render",
-        "args": ["dir", "opts"],
+        "args": ["pedestal", "$dir", "$opts"],
         "opts": {},
-        "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-fromRecipe": "Assets/_Project/Art/Sprites/Utility/pedestal.recipe.json",
+        "x-dir": 4,
+        "x-cellIndex": 4,
+        "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [147.5, 92.75],
       "facing": null,
@@ -19704,10 +19790,12 @@
       "rigSource": "docs/art/rigs/iso-rig-pack/utility-iso/utilityIsoRig.js",
       "call": {
         "fn": "render",
-        "args": ["dir", "opts"],
+        "args": ["yardHydrant", "$dir", "$opts"],
         "opts": {},
-        "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-fromRecipe": "Assets/_Project/Art/Sprites/Utility/yardHydrant.recipe.json",
+        "x-dir": 4,
+        "x-cellIndex": 4,
+        "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [92, 121],
       "facing": null,
@@ -19750,7 +19838,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [48.8607, -280.39392],
       "facing": null,
@@ -19791,7 +19879,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [44.456886, -275.2749],
       "facing": null,
@@ -19832,7 +19920,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [52.619804, -266.72446],
       "facing": null,
@@ -19873,7 +19961,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [48.120018, -261.95447],
       "facing": null,
@@ -19914,7 +20002,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [43.915398, -270.76932],
       "facing": null,
@@ -19955,7 +20043,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [47.79809, -256.65045],
       "facing": null,
@@ -19996,7 +20084,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [50.50431, -246.80963],
       "facing": null,
@@ -20037,7 +20125,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [61.273907, -235.25499],
       "facing": null,
@@ -20078,7 +20166,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [53.51176, -235.87344],
       "facing": null,
@@ -20119,7 +20207,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [65.18609, -221.02888],
       "facing": null,
@@ -20160,7 +20248,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [60.490555, -216.97069],
       "facing": null,
@@ -20201,7 +20289,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [58.334076, -218.33775],
       "facing": null,
@@ -20242,7 +20330,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [69.237785, -206.29543],
       "facing": null,
@@ -20283,7 +20371,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [60.467472, -210.57994],
       "facing": null,
@@ -20324,7 +20412,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [70.69475, -198.92455],
       "facing": null,
@@ -20365,7 +20453,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [72.158485, -189.77617],
       "facing": null,
@@ -20406,7 +20494,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [67.46107, -183.6676],
       "facing": null,
@@ -20447,7 +20535,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [66.605736, -178.14697],
       "facing": null,
@@ -20488,7 +20576,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [74.91738, -172.53307],
       "facing": null,
@@ -20529,7 +20617,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [68.3698, -167.12157],
       "facing": null,
@@ -20570,7 +20658,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [71.494865, -158.45636],
       "facing": null,
@@ -20611,7 +20699,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [68.68719, -165.13786],
       "facing": null,
@@ -20652,7 +20740,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [76.30255, -138.2515],
       "facing": null,
@@ -20693,7 +20781,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [72.2633, -146.62764],
       "facing": null,
@@ -20734,7 +20822,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [69.16766, -139.90349],
       "facing": null,
@@ -20775,7 +20863,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [73.86169, -126.04716],
       "facing": null,
@@ -20816,7 +20904,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [69.84463, -134.5343],
       "facing": null,
@@ -20857,7 +20945,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [67.84204, -133.27538],
       "facing": null,
@@ -20898,7 +20986,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [71.486, -114.168755],
       "facing": null,
@@ -20939,7 +21027,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [65.8331, -123.23063],
       "facing": null,
@@ -20980,7 +21068,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [70.74865, -110.48198],
       "facing": null,
@@ -21021,7 +21109,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [65.29713, -111.79682],
       "facing": null,
@@ -21062,7 +21150,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [62.68701, -107.500206],
       "facing": null,
@@ -21103,7 +21191,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [68.30589, -98.269066],
       "facing": null,
@@ -21144,7 +21232,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [60.384956, -89.70663],
       "facing": null,
@@ -21185,7 +21273,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [61.431606, -101.22688],
       "facing": null,
@@ -21226,7 +21314,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [57.62973, -79.526146],
       "facing": null,
@@ -21267,7 +21355,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [56.0922, -80.279335],
       "facing": null,
@@ -21308,7 +21396,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [50.391438, -12.284811],
       "facing": null,
@@ -21349,7 +21437,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [35.967293, -18.14381],
       "facing": null,
@@ -21390,7 +21478,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [51.26806, -9.035876],
       "facing": null,
@@ -21431,7 +21519,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [45.495197, -4.048839],
       "facing": null,
@@ -21472,7 +21560,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [43.74475, -3.067829],
       "facing": null,
@@ -21513,7 +21601,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [25.575262, 104.289276],
       "facing": null,
@@ -21554,7 +21642,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [29.124968, 102.31494],
       "facing": null,
@@ -21595,7 +21683,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [28.678131, 101.72509],
       "facing": null,
@@ -21636,7 +21724,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [39.16677, 104.289185],
       "facing": null,
@@ -21677,7 +21765,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [31.129238, 101.724655],
       "facing": null,
@@ -21718,7 +21806,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [16.409473, 104.288376],
       "facing": null,
@@ -21759,7 +21847,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [35.750595, 161.7107],
       "facing": null,
@@ -21800,7 +21888,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [22.690413, 101.72532],
       "facing": null,
@@ -21841,7 +21929,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [46.559917, 139.76938],
       "facing": null,
@@ -21882,7 +21970,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [19.550194, 159.7105],
       "facing": null,
@@ -21923,7 +22011,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [16.774746, 161.68591],
       "facing": null,
@@ -21964,7 +22052,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [43.562054, 160.04256],
       "facing": null,
@@ -22005,7 +22093,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [39.9945, 161.91089],
       "facing": null,
@@ -22046,7 +22134,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [35.596016, 162.28815],
       "facing": null,
@@ -22087,7 +22175,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [58.28962, 167.92168],
       "facing": null,
@@ -22128,7 +22216,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [51.46273, 177.46815],
       "facing": null,
@@ -22169,7 +22257,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [50.39674, 172.79051],
       "facing": null,
@@ -22210,7 +22298,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [55.817635, 186.60669],
       "facing": null,
@@ -22251,7 +22339,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [54.61007, 195.05963],
       "facing": null,
@@ -22292,7 +22380,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [47.204926, 195.13321],
       "facing": null,
@@ -22333,7 +22421,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [46.610504, 211.44757],
       "facing": null,
@@ -22374,7 +22462,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [46.190548, 202.23387],
       "facing": null,
@@ -22415,7 +22503,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [51.085396, 225.78842],
       "facing": null,
@@ -22456,7 +22544,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [44.21335, 219.89282],
       "facing": null,
@@ -22497,7 +22585,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [44.76799, 234.48827],
       "facing": null,
@@ -22538,7 +22626,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [42.542507, 240.77834],
       "facing": null,
@@ -22579,7 +22667,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [48.586735, 257.02173],
       "facing": null,
@@ -22620,7 +22708,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [49.3838, 263.6577],
       "facing": null,
@@ -22661,7 +22749,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [43.972637, 265.17435],
       "facing": null,
@@ -22702,7 +22790,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [42.23676, 265.24893],
       "facing": null,
@@ -22743,7 +22831,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [168, 112],
       "facing": null,
@@ -22934,7 +23022,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [89.36788, 109.38445],
       "facing": null,
@@ -22975,7 +23063,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [66.3862, 111.25431],
       "facing": null,
@@ -23053,7 +23141,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [81, 121],
       "facing": null,
@@ -23135,7 +23223,7 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
       },
       "pos": [108, 105.5],
       "facing": null,
@@ -23923,6 +24011,9 @@
           "spriteStem": "logCrib"
         }
       },
+      "optsFromRecipe": 44,
+      "recipeRefusals": [],
+      "x-recipeMeaning": "an entity whose sheet carries a <stem>.recipe.json (#629) ships the real option axes that drew its cell. The rest keep the empty-opts form and its note. A refusal here is a recipe that exists but must not be trusted — a schema this reader does not know, or a sheet hash that says the recipe was written for a different bake.",
       "x-familyVocabulary": "`family` is the editor's own wire vocabulary, transcribed at docs/tools/reference/family-names.json and matched EXACTLY: a rig whose name does not land on a listed one keeps the sprite stem, flags x-familyIsSpriteStem, and appears under unlistedFamilies with the candidate name — never aliased onto a near neighbour. wharfIsoRig normalises to `wharf` and the list holds both `wharfbuilding` and `wharfmodule`; guessing between them is the aliasing the ruling forbids. Those entries are the request list for the editor side.",
       "x-absentEntityFields": "facing, facingIndex and gameplaySidecar are named by the format and absent here. The first two are the editor's own view state; the third is a rig gameplay measurement. A baked sprite records none of them, and no rig is executed by this exporter.",
       "x-noCallRecord": "call/opts are absent by ruling: the editor writes them out of its own live state and no renderer reads one back. The cost is that this document can never seed a round-trip INTO the editor, which needs family+dir+opts."

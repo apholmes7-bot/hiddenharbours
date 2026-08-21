@@ -21,7 +21,7 @@ import hashlib
 import re
 import os
 
-from . import families, heightmap, roads, unityyaml as U
+from . import families, recipes, heightmap, roads, unityyaml as U
 from .repo import ASSETS_PPU
 
 SCHEMA = "hiddenharbours.scene/1"
@@ -315,6 +315,7 @@ def _entities(repo, scene, centre, origin_nw, cols, rows):
     family_counts = {}
     unresolved_sheets = {}
     unlisted_families = {}
+    recipe_refusals = []
     inactive = 0
     off_grid = 0
     decor_base = repo.decor_base()
@@ -440,6 +441,25 @@ def _entities(repo, scene, centre, origin_nw, cols, rows):
         # agreeing about, and a field is not". The COUNT is only ever read from a declaration:
         # §2 is explicit that the importer reads it and never assumes one, so an entity whose
         # sheet declares nothing carries no count rather than a plausible 8.
+        # Real opts, where the ledger records them (#629). A lookup, never a derivation.
+        recipe, recipe_problem = recipes.read(repo, sheet)
+        if recipe is not None:
+            index = recipes.cell_index(recipe, (entry or {}).get("rect"))
+            real_call, direction = recipes.call_for(recipe, index)
+            if real_call:
+                record["call"] = real_call | {
+                    "x-fromRecipe": recipe["x-recipePath"],
+                    "x-dir": direction,
+                    "x-cellIndex": index,
+                    "x-argsNote": "args are the recipe's own, verbatim. A leading literal names "
+                                  "the piece for kits that take one; `$dir` and `$opts` are the "
+                                  "ledger's placeholders for the direction and this dict.",
+                }
+                record["x-rigSha256"] = (recipe.get("rig") or {}).get("sha256") or \
+                    record.get("x-rigSha256")
+        elif recipe_problem:
+            recipe_refusals.append(recipe_problem)
+
         if sheet:
             count, evidence = repo.facings_for_sheet(sheet)
             if count is not None:
@@ -479,6 +499,13 @@ def _entities(repo, scene, centre, origin_nw, cols, rows):
                                "*.contract.json resolve exactly; the rest have no committed link "
                                "from sheet to rig, so nothing is pinned rather than guessed.",
         "unlistedFamilies": dict(sorted(unlisted_families.items())),
+        "optsFromRecipe": sum(1 for e in entities if (e.get("call") or {}).get("x-fromRecipe")),
+        "recipeRefusals": sorted(set(recipe_refusals)),
+        "x-recipeMeaning": "an entity whose sheet carries a <stem>.recipe.json (#629) ships the "
+                           "real option axes that drew its cell. The rest keep the empty-opts "
+                           "form and its note. A refusal here is a recipe that exists but must "
+                           "not be trusted — a schema this reader does not know, or a sheet hash "
+                           "that says the recipe was written for a different bake.",
         "x-familyVocabulary": "`family` is the editor's own wire vocabulary, transcribed at "
                               "docs/tools/reference/family-names.json and matched EXACTLY: a rig "
                               "whose name does not land on a listed one keeps the sprite stem, "
@@ -611,10 +638,13 @@ def _call(rig_global):
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": True,
-        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not "
-                      "recorded anywhere, and the rigs resolve an unknown key as a silent "
-                      "fallback rather than an error. Defaults draw something true; a guess "
-                      "draws something confidently wrong.",
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the "
+                      "option axes that drew this cell are not recorded FOR IT, and the rigs "
+                      "resolve an unknown key as a silent fallback rather than an error. "
+                      "Defaults draw something true; a guess draws something confidently wrong. "
+                      "The recipe ledger (#629) covers six kits and names its own gaps; an "
+                      "entity whose sheet is covered carries the recipe's own call and an "
+                      "x-fromRecipe instead of this note.",
     }
 
 

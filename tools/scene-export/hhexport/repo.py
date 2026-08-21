@@ -190,6 +190,10 @@ class Repo:
             out["textureSha256"] = self._content_sha(tex_rel)
         return out
 
+    def content_sha256(self, rel):
+        """The sha256 of a committed file's CONTENT, pointer-only checkout or not."""
+        return self._content_sha(rel) if self.exists(rel) else None
+
     def _content_sha(self, rel):
         """sha256 of a file's content — **from the LFS pointer's oid when that is what is on disk**.
 

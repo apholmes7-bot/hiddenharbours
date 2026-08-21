@@ -23,7 +23,7 @@ sys.path.insert(0, TOOL)
 
 REFERENCE = "docs/tools/reference/sample-scene.json"
 
-from hhexport import families, heightmap, package, roads, unityyaml as U  # noqa: E402
+from hhexport import families, heightmap, package, recipes, roads, unityyaml as U  # noqa: E402
 from hhexport.repo import Repo, sha256_lf  # noqa: E402
 from hhexport.scene import Scene  # noqa: E402
 
@@ -465,8 +465,13 @@ class EnrichmentTests(unittest.TestCase):
                 call = entity["call"]
                 self.assertIsNotNone(call, f"{name} {entity['id']} has a rig but nothing to call")
                 self.assertEqual(call["fn"], "render")
-                self.assertEqual(call["opts"], {}, "a guessed opt draws the wrong object")
-                self.assertTrue(call["x-synthesised"])
+                if call.get("x-fromRecipe"):
+                    # The ledger recorded this cell's own call (#629) — opts are a fact here,
+                    # so the synthesised marker and its note are gone rather than contradicted.
+                    self.assertNotIn("x-synthesised", call, f"{name} {entity['id']}")
+                else:
+                    self.assertEqual(call["opts"], {}, "a guessed opt draws the wrong object")
+                    self.assertTrue(call["x-synthesised"])
                 renderable += 1
             self.assertGreater(renderable, 0, f"{name} renders nothing at all")
 
@@ -890,6 +895,91 @@ class DeterminismTests(unittest.TestCase):
                     self.assertGreater(entity["x-facings"], 0, name)
                     self.assertTrue(entity.get("x-facingsSource"),
                                     "a count with no declaration behind it")
+
+    def test_opts_come_from_the_ledger_or_say_they_do_not(self):
+        """#629: a lookup, never a derivation. Either the recipe drew this call or the note stands."""
+        repo = Repo(REPO)
+        for name, scene, height in hh_scene_export.REGIONS:
+            doc = hh_scene_export.export_region(repo, name, scene, height)
+            for entity in doc["entities"]:
+                call = entity.get("call")
+                if not call:
+                    continue
+                if call.get("x-fromRecipe"):
+                    # A recipe-backed call must carry the ledger's own args and no empty-opts note.
+                    self.assertNotIn("x-optsNote", call, f"{name} {entity['id']}")
+                    self.assertTrue(call["args"], "the recipe's args were dropped")
+                    self.assertEqual(call["fn"], "render")
+                    self.assertIsNotNone(call.get("x-cellIndex"))
+                else:
+                    self.assertEqual(call["opts"], {}, "opts appeared without a recipe behind them")
+                    self.assertIn("x-optsNote", call)
+
+    def test_a_recipe_for_a_different_bake_is_refused(self):
+        """The sheet hash is the proof the recipe describes THIS bake. Refused, not warned."""
+        repo = Repo(REPO)
+        sheet = "Assets/_Project/Art/Sprites/Wharf/Decor/trapStack.png"
+        recipe, why = recipes.read(repo, sheet)
+        self.assertIsNotNone(recipe, why)
+        self.assertIsNone(why)
+
+        with tempfile.TemporaryDirectory() as tmp:
+            class Wrong:
+                root = repo.root
+                exists = staticmethod(repo.exists)
+                abs = staticmethod(repo.abs)
+                content_sha256 = staticmethod(lambda rel: "0" * 64)
+            broken, reason = recipes.read(Wrong(), sheet)
+            self.assertIsNone(broken)
+            self.assertIn("different bake", reason)
+
+    def test_an_unknown_recipe_key_is_refused_not_ignored(self):
+        """The ledger's C# reader is strict for a reason; a lax reader gives that away."""
+        with tempfile.TemporaryDirectory() as tmp:
+            sheet_dir = os.path.join(tmp, "Art")
+            os.makedirs(sheet_dir)
+            good = json.load(open(os.path.join(
+                REPO, "Assets/_Project/Art/Sprites/Wharf/Decor/trapStack.recipe.json"),
+                encoding="utf-8"))
+            good["somethingNew"] = 1
+            with open(os.path.join(sheet_dir, "s.recipe.json"), "w", encoding="utf-8") as fh:
+                json.dump(good, fh)
+
+            class Local:
+                root = tmp
+                exists = staticmethod(lambda rel: os.path.exists(os.path.join(tmp, rel)))
+                abs = staticmethod(lambda rel: os.path.join(tmp, rel))
+                content_sha256 = staticmethod(lambda rel: good["sheetSha256"])
+            recipe, reason = recipes.read(Local(), "Art/s.png")
+            self.assertIsNone(recipe)
+            self.assertIn("somethingNew", reason)
+
+    def test_the_cell_index_is_measured_from_the_top_row(self):
+        """Unity's rect origin is bottom-left; the bakers pack row 0 at the top."""
+        recipe = {"grid": {"columns": 1, "rows": 8, "order": "rowMajor",
+                           "axes": [{"name": "facing", "bind": "dir",
+                                     "values": [0, 7, 6, 5, 4, 3, 2, 1]}]},
+                  "pack": {"cellW": 10, "cellH": 10, "sheetH": 80},
+                  "call": {"fn": "render", "args": ["$dir", "$opts"], "opts": {}}}
+        # The bottom-most cell in Unity's coordinates is the LAST row from the top.
+        self.assertEqual(recipes.cell_index(recipe, [0, 0, 10, 10]), 7)
+        self.assertEqual(recipes.cell_index(recipe, [0, 70, 10, 10]), 0)
+        call, direction = recipes.call_for(recipe, 0)
+        self.assertEqual(direction, 0)
+        self.assertEqual(recipes.call_for(recipe, 3)[1], 5)
+
+    def test_the_odometer_runs_first_axis_fastest(self):
+        """Ledger §2.3. A slower-first reading would pick the wrong variant for every cell but 0."""
+        recipe = {"grid": {"columns": 2, "rows": 3, "order": "rowMajor",
+                           "axes": [{"name": "fill", "bind": "opt:fill", "values": ["a", "b"]},
+                                    {"name": "facing", "bind": "dir", "values": [0, 1, 2]}]},
+                  "pack": {"cellW": 10, "cellH": 10, "sheetH": 30},
+                  "call": {"fn": "render", "args": ["$dir", "$opts"], "opts": {"base": 1}}}
+        self.assertEqual(recipes.call_for(recipe, 0), ({"fn": "render", "args": ["$dir", "$opts"],
+                                                        "opts": {"base": 1, "fill": "a"}}, 0))
+        self.assertEqual(recipes.call_for(recipe, 1)[0]["opts"]["fill"], "b")
+        self.assertEqual(recipes.call_for(recipe, 2)[1], 1)   # second row -> next dir
+        self.assertEqual(recipes.call_for(recipe, 3)[0]["opts"]["fill"], "b")
 
     def test_the_output_is_valid_json(self):
         repo = Repo(REPO)

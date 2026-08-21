@@ -225,6 +225,43 @@ elsewhere, so none can be rasterised here without re-deriving somebody else's re
 named instead. A road layer that silently omits four paved areas reads as a region that has none.
 
 
+### 6.4 `call.opts` comes from the ledger, or says it does not
+
+The recipe ledger (#629) puts a `<stem>.recipe.json` beside 298 baked sheets, recording the rig,
+the call template, and the exact opts per variant axis. Reading it is **a lookup, not a
+derivation** — the ledger's own §6 word — so nothing here re-implements a baker.
+
+Three rules, each the same house style applied to a new file:
+
+- **The sheet hash is a refusal, not a warning.** A recipe describes one bake; if the sheet on
+  disk hashes differently, its axes describe cells that are not there, so no opts are taken from
+  it and the reason is reported in `entityNotes.recipeRefusals`. The PNG is a Git LFS object, but
+  a pointer's `oid sha256` **is** the content sha256, so the check holds in a pointer-only
+  checkout exactly as in a full one — the same proof §6.1 uses for the seabed.
+- **An unknown key is refused, not ignored.** The ledger's C# reader is strict because silently
+  dropping a key is how a consumer draws the wrong variant while believing it read the whole
+  file. A reader that is strict on one side of the fence and lax on the other gives that
+  guarantee away.
+- **The odometer is read, not guessed.** Axes run first-fastest (§2.3), so an axis's index is
+  `(i // stride) % len(values)`. The cell index comes from the sliced sprite's own rect: Unity's
+  rect origin is the texture's bottom-left while the bakers pack row 0 at the top, so the row is
+  flipped — measured on `camper_clipper_rest_d0…_d7`, which occupy top-rows 0…7 in that order,
+  not assumed.
+
+**What it is worth today, stated plainly.** 44 Nine Mile Creek entities are covered and 0 at
+St Peters. Every one is the `iso-prop` kit, whose recipes declare a single `dir` axis and an empty
+base `opts` — so their opts are still `{}`, but now as a **recorded fact** rather than an
+admission of ignorance, and the call finally carries the piece literal and the resolved direction
+(`render("trapStack", 4, {})`) where before it carried neither. The 171 recipes that hold real
+option content belong to kits — fuel storage, gas station, nav buoy, camper, yard — that landed
+*after* these scenes were banked, so none is reachable from the committed packages yet. This
+grows on the next re-bank without a line of tool change.
+
+Entities the ledger does not cover keep the empty-opts form, and its note now says *why* for that
+entity — no recipe beside that sheet — rather than the older blanket claim that the axes are
+recorded nowhere, which the ledger has made false for six kits.
+
+
 ## 7. Making the package renderable
 
 The editor draws **only** by calling rigs — it loads no images — so an entity with no rig gives
