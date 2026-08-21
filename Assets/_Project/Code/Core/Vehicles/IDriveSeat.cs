@@ -58,6 +58,37 @@ namespace HiddenHarbours.Core
         /// </summary>
         Vector2 DoorWorldPosition { get; }
 
+        /// <summary>
+        /// <b>Is her driver drawn?</b> An art fact, not a rule: a machine whose rig publishes a seat in
+        /// the OPEN — the Otter's cockpit is "an open tub with two benches, not a room" — has somewhere
+        /// a person is visibly sat, and a figure at her wheel is genuinely on screen. A hard-cab machine
+        /// publishes none, and her driver stays hidden exactly as every driver was before this existed.
+        ///
+        /// <para>Deliberately NOT "does she have a seat": the Dually has three, under a roof panel and
+        /// behind glass that is opaque at 32 px/m, and still answers false. False makes the two members
+        /// below meaningless and a caller must not read them.</para>
+        /// </summary>
+        bool ShowsDriver { get; }
+
+        /// <summary>
+        /// <b>The GROUND point of the driver's seat, in world metres</b> — where a figure sitting in her
+        /// stands on the map. Live, like <see cref="DoorWorldPosition"/> and for the same reason: she
+        /// moves, and a seat latched at the moment you got in would be a seat back in the yard.
+        ///
+        /// <para>Meaningless when <see cref="ShowsDriver"/> is false.</para>
+        /// </summary>
+        Vector2 DriverSeatWorldPosition { get; }
+
+        /// <summary>
+        /// <b>How high that seat's cushion sits above her own ground plane, in metres.</b> Kept apart
+        /// from the point above because it is a different KIND of quantity: the point is a place on the
+        /// map and swings as she turns, while a height never does. Folding the two into one Vector3
+        /// would invite precisely the mistake of rotating a height.
+        ///
+        /// <para>Meaningless when <see cref="ShowsDriver"/> is false.</para>
+        /// </summary>
+        float DriverSeatHeightMeters { get; }
+
         /// <summary>True while the underlying object is really alive — see the fake-null warning on the
         /// interface. Implementors return the Unity-null-aware answer for themselves; holders must never
         /// hand-roll it, because the honest test is not one an interface-typed <c>==</c> can express.</summary>

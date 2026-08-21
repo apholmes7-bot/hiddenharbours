@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Yard ISO rig — bake harness</title>
+<style>
+  html,body{margin:0;background:#0b1216;color:#aeb9bb;font:12px ui-monospace,SFMono-Regular,Menlo,monospace;}
+  canvas{image-rendering:pixelated;display:block;}
+  a{color:#7fd6c9;}
+  .wrap{padding:22px 20px 60px;display:flex;flex-direction:column;gap:18px;max-width:1300px;}
+  .hd{display:flex;flex-direction:column;gap:6px;border-bottom:1px solid #243137;padding-bottom:12px;}
+  .t{font-size:17px;color:#eef3f2;letter-spacing:0.04em;}
+  .s{font-size:10.5px;letter-spacing:0.14em;color:#6f7e83;}
+  .row{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-end;}
+  .fld{display:flex;flex-direction:column;gap:4px;}
+  .lb{font-size:9px;letter-spacing:0.12em;color:#6f7e83;}
+  select,input[type=number]{background:#0f191e;color:#c4cdcd;border:1px solid #243137;padding:5px 7px;font:11px ui-monospace,monospace;}
+  input[type=range]{width:150px;accent-color:#2ba39a;}
+  input[type=checkbox]{accent-color:#2ba39a;}
+  button{background:#122530;color:#7fd6c9;border:1px solid #2f6079;padding:8px 13px;font:10.5px ui-monospace,monospace;letter-spacing:0.1em;cursor:pointer;}
+  button:hover{background:#173241;}
+  .panel{border:1px solid #243137;background:#0e181d;padding:12px;overflow:auto;}
+  .note{font-size:9.5px;color:#5f6e73;line-height:1.65;max-width:900px;}
+  .ok{color:#8fd6a0;} .bad{color:#d2453c;} .warn{color:#e0b13a;}
+  code{color:#c9a86a;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hd">
+    <div class="t">Yard &amp; landscaping ISO rig — bake harness</div>
+    <div class="s">HIDDEN&nbsp;HARBOURS&nbsp;&middot;&nbsp;32&nbsp;PX&nbsp;=&nbsp;1&nbsp;M&nbsp;&middot;&nbsp;&frac34;&nbsp;CAMERA,&nbsp;45&deg;&nbsp;STEPS,&nbsp;ELEV&nbsp;40&deg;&nbsp;&middot;&nbsp;NO&nbsp;AA</div>
+  </div>
+
+  <div class="row">
+    <div class="fld"><div class="lb">PIECE</div><select id="piece"></select></div>
+    <div class="fld"><div class="lb">VARIANT</div><select id="variant"></select></div>
+    <div class="fld"><div class="lb">PHASE</div><select id="phase"></select></div>
+    <div class="fld"><div class="lb">KEPT <span id="keptV">0.62</span></div><input id="kept" type="range" min="0" max="1" step="0.01" value="0.62"></div>
+    <div class="fld"><div class="lb">LEN <span id="lenV">0.40</span></div><input id="len" type="range" min="0" max="1" step="0.05" value="0.4"></div>
+    <div class="fld"><div class="lb">SNOW <span id="snowV">phase</span></div><input id="snow" type="range" min="-0.05" max="1" step="0.05" value="-0.05"></div>
+    <div class="fld"><div class="lb">FLAGS</div><label><input id="planted" type="checkbox" checked> planted</label></div>
+    <div class="fld"><div class="lb">&nbsp;</div><label><input id="night" type="checkbox"> night</label></div>
+  </div>
+
+  <div class="panel"><canvas id="strip" width="1280" height="300"></canvas></div>
+  <div class="note" id="meta"></div>
+
+  <div class="row">
+    <button id="bSheet">&darr; 8-DIR SHEET (this piece)</button>
+    <button id="bContact">&darr; CONTACT SHEET (all pieces)</button>
+    <button id="bFamily">&darr; FAMILY SHEETS (10 PNGs)</button>
+    <button id="bSidecar">&darr; SIDECAR JSON (hash-stamped)</button>
+    <button id="bVerify">VERIFY HASH</button>
+  </div>
+  <div class="note" id="log">Loading rig&hellip;</div>
+
+  <div class="note">
+    Sheet layout is one row of the eight facings, cells of <code>W&times;H</code> at the rig's own pivot &mdash;
+    <code>Art/Sprites/Yard/&lt;piece&gt;.png</code>. The contact sheet crops each piece to content and is a
+    review aid, not an atlas. SIDECAR JSON regenerates
+    <code>gameplay/yardIsoRig.gameplay.json</code> from this rig's public API and stamps
+    <code>derivedFromRigSha256</code> from the bytes fetched at that moment &mdash; never typed in.
+  </div>
+</div>
+
+<script src="./yardIsoRig.js"></script>
+<script>
+(function(){
+  var RIG_URL = './yardIsoRig.js';
+  var Y = window.YardIso;
+  var el = function(id){ return document.getElementById(id); };
+  var logEl = el('log');
+  function say(html, cls){ logEl.innerHTML = cls ? '<span class="'+cls+'">'+html+'</span>' : html; }
+  if(!Y){ say('yardIsoRig.js did not load — keep it beside this file.', 'bad'); return; }
+
+  Y.list().forEach(function(k){ var o=document.createElement('option'); o.value=k;
+    o.textContent = Y.PROPS[k].label + '  (' + k + ')'; el('piece').appendChild(o); });
+  Y.PHASES.forEach(function(p){ var o=document.createElement('option'); o.value=p.key;
+    o.textContent = p.label + ' — ' + p.when; o.selected = (p.key === 'green');
+    el('phase').appendChild(o); });
+
+  function fillVariants(){
+    var k = el('piece').value, sel = el('variant');
+    sel.innerHTML = '';
+    Y.PROPS[k].variants.forEach(function(v,i){ var o=document.createElement('option');
+      o.value=i; o.textContent=v; sel.appendChild(o); });
+  }
+
+  function opts(){
+    var snow = parseFloat(el('snow').value), o = {
+      elev: 40, variant: parseInt(el('variant').value||'0',10),
+      len: parseFloat(el('len').value), kept: parseFloat(el('kept').value),
+      phase: el('phase').value, planted: el('planted').checked, night: el('night').checked
+    };
+    if(snow >= 0) o.snow = snow;
+    return o;
+  }
+  function cell(name, dir, o){
+    var rgba = Y.render(name, dir, o);
+    var c = document.createElement('canvas'); c.width = Y.W; c.height = Y.H;
+    c.getContext('2d').putImageData(new ImageData(rgba, Y.W, Y.H), 0, 0);
+    return c;
+  }
+  function bbox(canvas){
+    var d = canvas.getContext('2d').getImageData(0,0,canvas.width,canvas.height).data;
+    var x0=canvas.width, x1=-1, y0=canvas.height, y1=-1;
+    for(var y=0;y<canvas.height;y++) for(var x=0;x<canvas.width;x++){
+      if(d[(y*canvas.width+x)*4+3]>0){ if(x<x0)x0=x; if(x>x1)x1=x; if(y<y0)y0=y; if(y>y1)y1=y; } }
+    return (x1<x0) ? null : { x:x0, y:y0, w:x1-x0+1, h:y1-y0+1 };
+  }
+  function save(canvas, name){
+    var a=document.createElement('a'); a.download=name; a.href=canvas.toDataURL('image/png'); a.click();
+  }
+
+  function draw(){
+    var name = el('piece').value, o = opts(), cv = el('strip'), ctx = cv.getContext('2d');
+    el('keptV').textContent = o.kept.toFixed(2);
+    el('lenV').textContent = o.len.toFixed(2);
+    el('snowV').textContent = (o.snow==null ? 'phase' : o.snow.toFixed(2));
+    ctx.clearRect(0,0,cv.width,cv.height);
+    ctx.imageSmoothingEnabled = false;
+    var cw = cv.width/8;
+    for(var d=0; d<8; d++){
+      var c = cell(name, d, o), b = bbox(c);
+      if(b){
+        var s = Math.min(1.6, (cw-10)/b.w, (cv.height-26)/b.h);
+        ctx.drawImage(c, b.x, b.y, b.w, b.h,
+          Math.round(d*cw + cw/2 - b.w*s/2), Math.round(cv.height-20 - b.h*s),
+          Math.round(b.w*s), Math.round(b.h*s));
+      }
+      ctx.fillStyle='#6f7e83'; ctx.font='10px ui-monospace,monospace'; ctx.textAlign='center';
+      ctx.fillText(Y.order[d], d*cw+cw/2, cv.height-5);
+      ctx.strokeStyle='rgba(90,120,130,0.16)'; ctx.strokeRect(d*cw+0.5, 0.5, cw-1, cv.height-1);
+    }
+    var f = Y.footprint(name, o), h = Y.height(name, o), m = Y.mounts(name, o), P = Y.PROPS[name];
+    el('meta').innerHTML = '<b>' + P.label + '</b> &middot; ' + P.cat + ' &middot; footprint ' +
+      f.w.toFixed(2) + ' &times; ' + f.d.toFixed(2) + ' m &middot; height ' + h.toFixed(2) + ' m' +
+      (P.run ? (' &middot; runs, gain ' + (P.k!=null?P.k:0.2)) : '') +
+      ' &middot; ends ' + JSON.stringify(m.ends.map(function(p){ return p.map(function(v){ return Math.round(v*100)/100; }); })) +
+      ' &middot; cell ' + Y.W + '&times;' + Y.H + ' at pivot ' + Y.pivot.x + ',' + Y.pivot.y;
+  }
+
+  // ---- bakes ----------------------------------------------------------------
+  function sheet(name, o){
+    var c = document.createElement('canvas'); c.width = Y.W*8; c.height = Y.H;
+    var ctx = c.getContext('2d');
+    for(var d=0; d<8; d++) ctx.drawImage(cell(name, d, o), d*Y.W, 0);
+    return c;
+  }
+  el('bSheet').onclick = function(){
+    var name = el('piece').value;
+    save(sheet(name, opts()), 'Yard_' + name + '_8dir.png');
+    say('8-dir sheet: ' + (Y.W*8) + '&times;' + Y.H + ' px, pivot ' + Y.pivot.x + ',' + Y.pivot.y + ' per cell.', 'ok');
+  };
+
+  function contact(keys, o, cols, cellW, cellH, title){
+    cols = cols || 8;
+    var rows = Math.ceil(keys.length/cols);
+    var c = document.createElement('canvas'); c.width = cols*cellW; c.height = rows*cellH;
+    var ctx = c.getContext('2d');
+    ctx.fillStyle = '#0e181d'; ctx.fillRect(0,0,c.width,c.height);
+    ctx.imageSmoothingEnabled = false;
+    keys.forEach(function(k, i){
+      var cn = cell(k, 3, o), b = bbox(cn);
+      var col = i%cols, row = Math.floor(i/cols);
+      if(b){
+        var s = (b.w > cellW-8 || b.h > cellH-26) ? 0.5 : 1;
+        ctx.save(); ctx.beginPath(); ctx.rect(col*cellW, row*cellH, cellW, cellH); ctx.clip();
+        ctx.drawImage(cn, b.x, b.y, b.w, b.h,
+          Math.round(col*cellW + cellW/2 - b.w*s/2), Math.round(row*cellH + cellH - 22 - b.h*s),
+          Math.round(b.w*s), Math.round(b.h*s));
+        ctx.restore();
+      }
+      ctx.fillStyle='#7d8b8f'; ctx.font='9px ui-monospace,monospace'; ctx.textAlign='center';
+      ctx.fillText(Y.PROPS[k].label.slice(0,20), col*cellW+cellW/2, row*cellH+cellH-7);
+      ctx.strokeStyle='rgba(90,120,130,0.13)'; ctx.strokeRect(col*cellW+0.5, row*cellH+0.5, cellW-1, cellH-1);
+    });
+    return c;
+  }
+  el('bContact').onclick = function(){
+    var o = opts(); o.len = 0.25;
+    save(contact(Y.list(), o, 8, 147, 150), 'Yard_contact_' + o.phase + '_kept' + o.kept.toFixed(2) + '.png');
+    say('Contact sheet: ' + Y.list().length + ' pieces, SE facing, cropped to content.', 'ok');
+  };
+  el('bFamily').onclick = function(){
+    var o = opts(), cats = Y.CATS, i = 0;
+    (function next(){
+      if(i >= cats.length){ say('Family sheets written: ' + cats.length + ' PNGs.', 'ok'); return; }
+      var cat = cats[i++], keys = Y.list().filter(function(k){ return Y.PROPS[k].cat === cat; });
+      save(contact(keys, o, Math.min(5, keys.length), 190, 200), 'Yard_family_' + cat + '.png');
+      say('baking families&hellip; ' + i + '/' + cats.length, 'warn');
+      setTimeout(next, 400);
+    })();
+  };
+
+  // ---- sidecar (byte-identical to the file in gameplay/) ---------------------
+  function fetchRig(){ return fetch(RIG_URL, { cache:'no-store' }).then(function(r){
+    if(!r.ok) throw new Error(RIG_URL + ' HTTP ' + r.status); return r.text(); }); }
+  function sha256Hex(text){
+    return crypto.subtle.digest('SHA-256', new TextEncoder().encode(text)).then(function(d){
+      return Array.prototype.map.call(new Uint8Array(d), function(b){
+        return b.toString(16).padStart(2,'0'); }).join(''); });
+  }
+  var r3 = function(n){ return Math.round(n*1000)/1000; };
+  var BLOCK = {
+    fence:  { shape:'wall',   axis:'x', passable:false },
+    hedge:  { shape:'wall',   axis:'x', passable:false },
+    bed:    { shape:'plot',   axis:null, passable:true },
+    planter:{ shape:'volume', axis:null, passable:false },
+    fixture:{ shape:'volume', axis:null, passable:false },
+    sitting:{ shape:'volume', axis:null, passable:false },
+    play:   { shape:'volume', axis:null, passable:false },
+    ornament:{shape:'volume', axis:null, passable:false },
+    ground: { shape:'surface',axis:null, passable:true },
+    sign:   { shape:'post',   axis:null, passable:false }
+  };
+  var ROUND = ['hedgeBall','lilac','roseBush','hydrangea','stonePillar','birdbath','birdhouse','flagpole','buoyPost','rainBarrel','barrelPlanter','tirePlanter','firePit','hangingBasket','fernBed'];
+  var LENS = [0, 0.4, 1];
+
+  function buildSidecar(rigSha){
+    var pieces = {};
+    Y.list().forEach(function(k){
+      var P = Y.PROPS[k];
+      var at = LENS.map(function(len){ var f = Y.footprint(k,{len:len}), h = Y.height(k,{len:len});
+        return { len:len, w:r3(f.w), d:r3(f.d), h:r3(h) }; });
+      var M = Y.mounts(k, { len:0.4 });
+      var bl = Object.assign({}, BLOCK[P.cat]);
+      if(ROUND.indexOf(k) >= 0) bl.shape = (P.cat === 'ground' ? 'surface' : 'cylinder');
+      pieces[k] = {
+        label:P.label, family:P.cat, variants:P.variants.slice(),
+        runs:!!P.run, runGain: P.run ? (P.k!=null?P.k:0.2) : 0,
+        defaults: Object.assign({}, P.def),
+        readsPlanted: P.def.planted !== undefined,
+        size: at,
+        mounts: { ground:M.ground.map(function(p){ return p.map(r3); }),
+                  ends:M.ends.map(function(p){ return p.map(r3); }),
+                  wall:M.wall.map(function(p){ return p.map(r3); }) },
+        block: bl
+      };
+    });
+    var byFam = {};
+    Y.CATS.forEach(function(c){ byFam[c] = { label:Y.CAT_LABEL[c],
+      pieces: Y.list().filter(function(k){ return Y.PROPS[k].cat === c; }) }; });
+    return {
+      schema: 'hidden-harbours/prop-placement-geometry@1',
+      rig: 'Art/yardIsoRig.js',
+      exportSymbol: 'globalThis.YardIso',
+      derivedFromRigSha256: rigSha,
+      generated: { by: 'export/yard-rig-kit/harness.html', method:
+        'the rig source is evaluated unmodified and interrogated through its public API — footprint(), height(), mounts(), PROPS, CATS, PHASES. No geometry is transcribed by hand.' },
+      contract: {
+        unit: '32 px = 1 m',
+        camera: '3/4 from the south, 45deg steps, elev 40deg default (30-50 accepted), orthographic — shared with houseIsoRig / utilityIsoRig / wharfDecorRig / the fleet',
+        origin: 'ground-centre of the footprint, z = 0 = lawn plane. A piece drops on a lawn tile with no offset maths.',
+        axes: '+X along the run, +Y away from the house (wall-backed pieces put their back plane toward -Y), +Z up',
+        cell: Y.W + ' x ' + Y.H + ' px, pivot at ' + Y.pivot.x + ',' + Y.pivot.y + ' — one cell for every piece, so a swap at runtime is pivot-stable',
+        alpha: 'binary, no AA, 1 px keyline, ordered dither, upper-LEFT key',
+        facings: Y.order.slice(),
+        sheet: 'Art/Sprites/Yard/<piece>.png — 8 cells of ' + Y.W + ' x ' + Y.H + ' (' + (Y.W*8) + ' x ' + Y.H + ')'
+      },
+      axes: {
+        kept: { range:[0,1], default:0.62, note:'upkeep. Moves seven things at once: paint chalk and lost pickets, post lean, line sag, tools left out, weed skirt density (1-kept), mulch going to grass, and hedge clip roughness. Not a colour grade.' },
+        phase: { keys:Y.PHASE_KEYS.slice(), leafing:Y.LEAFING, snowByPhase:Y.SNOW_BY_PHASE,
+          note:'the shrubIsoRig calendar, verbatim. One clock for every plant in the world; snow defaults off the phase.' },
+        len: { range:[0,1], note:'run / panel length. Footprint grows by runGain per piece — see size[] samples.' },
+        variant: { note:'index into the piece variants[] list' },
+        paint: { keys:Object.keys(Y.BODY), note:'body-paint ramp; chalks toward bone as kept falls' },
+        planted: { note:'beds and planters carry plants. Pieces with readsPlanted:true respond.' },
+        snow: { range:[0,1], note:'override; defaults off phase. Caps rails, hedge tops, bench seats, woodpiles.' },
+        weather: { range:[0,1], default:0.4, note:'grime plus sun-silvered timber' },
+        night: { note:'cool shift plus lit glass / glow ramps' }
+      },
+      foliage: {
+        unit: 'clump',
+        note: 'hedges, shrub mounds, bed mounds and planter spill are built from lobed ellipsoid clumps (two low radius harmonics plus an under-weighted tooth term), laid as a shell: one jittered clump per cell of the top surface, then brick-bonded courses walked round the plan silhouette by arc length. Clump radius does not scale with the mass — a bigger hedge carries MORE clumps, never fatter ones (treeIsoRig MIN_R rule).',
+        keptResponse: 'clump size variance, position jitter and rim height variance all scale with (1-kept): a shears-kept hedge lands even courses of one clump size, a let-go one lands none of that.',
+        leafOff: 'dormant carries NO foliage mass (twig cage plus snow drift are the silhouette); bare/catkin keep a few clumps at reduced radius.',
+        ramps: { leaf:Object.keys(Y.FOL), note:'one ramp per calendar colouring; the lawn dries toward straw on the same clock' }
+      },
+      composition: {
+        plants: 'a planted bed asks globalThis.Flowers / globalThis.Shrubs for real sprites and blits them back-to-front over its own soil (same PPU, same 40deg elevation). Absent those rigs it falls back to native foliage mounds and still reads. opts.compose:false forces the native path.',
+        hedges: 'native. A clipped hedge is a MASS with a machined top, not a row of shrubs — the two are drawn by different rules.'
+      },
+      families: byFam,
+      reading: {
+        _confirm: 'EXACT, from the rig: label, family, variants, runs/runGain, defaults, size[] (footprint and height at len 0 / 0.4 / 1), mounts. OURS, by rule per family and open to correction: block.shape, block.axis, block.passable. No collision volume is authored in the rig; these are read off the footprint and height.',
+        wall: 'fence and hedge families are wall blockers along +X with thickness = size.d; chain them on mounts.ends.',
+        plot: 'bed pieces are walkable-but-planted plots: passable, and trampling is the consumer\'s call.',
+        surface: 'ground pieces are surface overlays (max height 0.2 m); they never block.',
+        cylinder: 'round-plan pieces use a cylinder of radius = size.w / 2.'
+      },
+      pieces: pieces
+    };
+  }
+
+  el('bSidecar').onclick = function(){
+    say('hashing rig&hellip;');
+    fetchRig().then(sha256Hex).then(function(sha){
+      var json = JSON.stringify(buildSidecar(sha), null, 1);
+      var a = document.createElement('a');
+      a.download = 'yardIsoRig.gameplay.json';
+      a.href = URL.createObjectURL(new Blob([json], { type:'application/json' }));
+      a.click();
+      return sha256Hex(json).then(function(js){
+        say('sidecar written &middot; rig ' + sha.slice(0,8) + '&hellip; &middot; sidecar ' + js.slice(0,8) +
+          '&hellip; &middot; ' + json.length + ' bytes. Put both hashes in SHA256SUMS.txt.', 'ok');
+      });
+    }).catch(function(e){ say('sidecar refused: ' + e.message + ' — an unstamped sidecar is the defect.', 'bad'); });
+  };
+
+  el('bVerify').onclick = function(){
+    say('fetching&hellip;');
+    Promise.all([ fetchRig().then(sha256Hex),
+      fetch('./gameplay/yardIsoRig.gameplay.json', { cache:'no-store' })
+        .then(function(r){ return r.ok ? r.json() : null; }).catch(function(){ return null; })
+    ]).then(function(v){
+      var actual = v[0], claimed = v[1] && v[1].derivedFromRigSha256;
+      if(!claimed){ say('rig ' + actual + ' — no sidecar found beside this harness to check it against.', 'warn'); return; }
+      say(claimed === actual
+        ? 'MATCH &middot; ' + actual + ' — the sidecar describes this rig.'
+        : 'STALE &middot; sidecar claims ' + claimed + ', rig hashes ' + actual + ' — regenerate.',
+        claimed === actual ? 'ok' : 'bad');
+    });
+  };
+
+  ['piece'].forEach(function(id){ el(id).addEventListener('change', function(){ fillVariants(); draw(); }); });
+  ['variant','phase','kept','len','snow','planted','night'].forEach(function(id){
+    el(id).addEventListener('input', draw); el(id).addEventListener('change', draw); });
+  fillVariants();
+  draw();
+  say(Y.list().length + ' pieces across ' + Y.CATS.length + ' families &middot; cell ' + Y.W + '&times;' + Y.H +
+    ' &middot; pivot ' + Y.pivot.x + ',' + Y.pivot.y + ' &middot; rig loaded.', 'ok');
+})();
+</script>
+</body>
+</html>

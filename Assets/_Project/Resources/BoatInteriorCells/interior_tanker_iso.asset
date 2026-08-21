@@ -1,0 +1,48 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e70b01790414c67990a70b04eb3a2bb, type: 3}
+  m_Name: interior_tanker_iso
+  m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.BoatInteriorCellsDef
+  InteriorDefId: interior.tanker_iso
+  Cells:
+  - {fileID: 1379215938, guid: f8342ca3505382940bb61a0bfb3f458a, type: 3}
+  - {fileID: 474414074, guid: f8342ca3505382940bb61a0bfb3f458a, type: 3}
+  - {fileID: 1906728970, guid: f8342ca3505382940bb61a0bfb3f458a, type: 3}
+  - {fileID: -1119244307, guid: f8342ca3505382940bb61a0bfb3f458a, type: 3}
+  - {fileID: -59310173, guid: 4ad1b78dad144434aa3dbd32a971a569, type: 3}
+  - {fileID: 1017353806, guid: 4ad1b78dad144434aa3dbd32a971a569, type: 3}
+  - {fileID: 1955920804, guid: 4ad1b78dad144434aa3dbd32a971a569, type: 3}
+  - {fileID: -1849331520, guid: 4ad1b78dad144434aa3dbd32a971a569, type: 3}
+  - {fileID: -1848149714, guid: 1bec4f59b4783b54ba8ebb14c99ff0f1, type: 3}
+  - {fileID: -1731001163, guid: 1bec4f59b4783b54ba8ebb14c99ff0f1, type: 3}
+  - {fileID: 1628601406, guid: 1bec4f59b4783b54ba8ebb14c99ff0f1, type: 3}
+  - {fileID: 540231667, guid: 1bec4f59b4783b54ba8ebb14c99ff0f1, type: 3}
+  - {fileID: -1273091246, guid: 90a2c7980df74de4e8c5d9ad2d11aebf, type: 3}
+  - {fileID: -534546481, guid: 90a2c7980df74de4e8c5d9ad2d11aebf, type: 3}
+  - {fileID: 1691860400, guid: 90a2c7980df74de4e8c5d9ad2d11aebf, type: 3}
+  - {fileID: 1715788993, guid: 90a2c7980df74de4e8c5d9ad2d11aebf, type: 3}
+  - {fileID: -429113937, guid: 807ecbb2cdcf8514fb47b08fbc589be6, type: 3}
+  - {fileID: 1912011554, guid: 807ecbb2cdcf8514fb47b08fbc589be6, type: 3}
+  - {fileID: -2113856201, guid: 807ecbb2cdcf8514fb47b08fbc589be6, type: 3}
+  - {fileID: -2076513751, guid: 807ecbb2cdcf8514fb47b08fbc589be6, type: 3}
+  - {fileID: 699039860, guid: 5b42fa834d5013348b394df510d3680f, type: 3}
+  - {fileID: 1380073055, guid: 5b42fa834d5013348b394df510d3680f, type: 3}
+  - {fileID: 1186554793, guid: 5b42fa834d5013348b394df510d3680f, type: 3}
+  - {fileID: -956552507, guid: 5b42fa834d5013348b394df510d3680f, type: 3}
+  Facings: 8
+  CellLevels:
+  - bridge
+  - house
+  - below
+  CellRowForLevel: ffffffffffffffff010000000000000002000000
+  CellsAreCounterClockwise: 1
+  ResidentMegabytes: 281.25

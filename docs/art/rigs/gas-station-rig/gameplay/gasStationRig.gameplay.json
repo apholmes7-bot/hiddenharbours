@@ -1,0 +1,5077 @@
+{
+ "rig": "Art/gasStationRig.js",
+ "exportSymbol": "globalThis.StationIso",
+ "derivedFromRigSha256": "3700747cd2ab7a0ebc40eb31ff88b9e23978266ed447317a5ef55a7ad23c7b5d",
+ "interiorDerivedFromRigSha256": "42542b72f66b36a4b9bf8037ce4a8330a17b1f2f6fcb783feec984611139930c",
+ "interiorRig": "Art/stationInteriorRig.js",
+ "gradeRig": "Art/fuelRig.js",
+ "contract": {
+  "unit": "32 px = 1 m",
+  "camera": "3/4, 45deg steps, elev 40deg (shared with the fleet, houses, characters, fuel kit)",
+  "origin": "ground-centre of each piece’s own footprint",
+  "axes": "+x, +y as authored per piece; +z up. Storefront front is +y.",
+  "headingIndependent": true,
+  "keyline": false,
+  "oneRule": "A station is a LIST OF GRADE POSITIONS. Valance stripes, boot cups, sign rows and apron fill caps are all generated from it — nothing is drawn twice.",
+  "grades": "imported by reference from FuelIso; stove oil is added here",
+  "hose": "never baked — StationIso.serve() returns a polyline plus honest metres",
+  "placement": "StationIso.plan(cfg) lays a forecourt out in metres; sortPieces() orders it far-to-near on the rasteriser’s own depth",
+  "visibleFacings": "computed: -nx*sin(45d) + ny*cos(45d) < 0",
+  "reachPoint": "TESTED, not requested: every point is checked against its own piece’s blockers and its claimed surface, marched clear if it fails, and published as null with a reason if nothing inside arm’s reach works. Cross-piece placement is still the caller’s problem."
+ },
+ "grades": {
+  "gas": {
+   "label": "GASOLINE",
+   "dens": 0.745,
+   "hex": "#b2402c",
+   "cents_per_L": 172.9
+  },
+  "diesel": {
+   "label": "DIESEL",
+   "dens": 0.84,
+   "hex": "#ad8a28",
+   "cents_per_L": 189.4
+  },
+  "mixed": {
+   "label": "MIXED 50:1",
+   "dens": 0.752,
+   "hex": "#286f8c",
+   "cents_per_L": 224.9
+  },
+  "oil": {
+   "label": "MOTOR OIL",
+   "dens": 0.885,
+   "hex": "#2d573a",
+   "cents_per_L": 612
+  },
+  "kero": {
+   "label": "STOVE OIL",
+   "dens": 0.8,
+   "hex": "#a8ab9d",
+   "cents_per_L": 154.9
+  }
+ },
+ "price": {
+  "gas": 172.9,
+  "diesel": 189.4,
+  "mixed": 224.9,
+  "oil": 612,
+  "kero": 154.9
+ },
+ "slotPitch": 3.3,
+ "pieces": [
+  {
+   "type": "dispenser",
+   "size": "sKerb",
+   "label": "KERB POST",
+   "cell": {
+    "W": 25,
+    "H": 52
+   },
+   "pivot": {
+    "x": 12,
+    "y": 43
+   },
+   "grades_in_service": [
+    "gas",
+    "diesel",
+    "mixed"
+   ],
+   "footprint": {
+    "w": 0.32,
+    "d": 0.32,
+    "h": 1.46
+   },
+   "machine": {
+    "family": "post",
+    "hoses": 1,
+    "sides": 1,
+    "reach_m": 3.2,
+    "lpm": 38,
+    "tare_kg": 110
+   },
+   "collider_bbox": [
+    [
+     -0.3,
+     -0.3,
+     0
+    ],
+    [
+     0.3,
+     0.3,
+     1.46
+    ]
+   ],
+   "HOSES": [
+    {
+     "id": "a0",
+     "side": "a",
+     "index": 0,
+     "grade": "gas",
+     "outlet": [
+      0.33,
+      0,
+      1.31
+     ],
+     "boot": [
+      0.23,
+      0,
+      0.83
+     ],
+     "reach_m": 3.2,
+     "lpm": 38,
+     "curve": "StationIso.serve(outlet, target) — polyline, slack grows as the pull shortens"
+    }
+   ],
+   "INTERACT": [
+    {
+     "id": "nozzle_a0",
+     "label": "HOSE A1 · GASOLINE",
+     "action": "fuel",
+     "grade": "gas",
+     "pos": [
+      0.33,
+      0,
+      1.31
+     ],
+     "reach_point": [
+      0.95,
+      -0.34,
+      0
+     ],
+     "visible_facings": [
+      "NE",
+      "E",
+      "SE"
+     ],
+     "level": "apron",
+     "reach": {
+      "tested": true,
+      "verdict": "ok",
+      "on": "apron",
+      "dist_m": 0.71,
+      "moved_m": 0,
+      "lift_m": 1.31,
+      "body_r_m": 0.22,
+      "arm_m": 1.2
+     }
+    }
+   ],
+   "BLOCKERS": [
+    {
+     "shape": "box",
+     "footprint": [
+      [
+       -0.16,
+       -0.16
+      ],
+      [
+       0.16,
+       -0.16
+      ],
+      [
+       0.16,
+       0.16
+      ],
+      [
+       -0.16,
+       0.16
+      ]
+     ],
+     "height_above_grade_m": 1.46,
+     "treatment": "wall",
+     "kind": "cabinet"
+    },
+    {
+     "shape": "box",
+     "footprint": [
+      [
+       -0.3,
+       -0.3
+      ],
+      [
+       0.3,
+       -0.3
+      ],
+      [
+       0.3,
+       0.3
+      ],
+      [
+       -0.3,
+       0.3
+      ]
+     ],
+     "height_above_grade_m": 0.1,
+     "treatment": "flat",
+     "kind": "plinth"
+    }
+   ],
+   "_excluded": {
+    "WALK": "a dispenser has no walkable surface",
+    "HOSE_PIXELS": "the hose is a runtime polyline, never baked"
+   },
+   "REACH_AUDIT": {
+    "body_r_m": 0.22,
+    "arm_grasp_m": 1.2,
+    "arm_read_m": 1.9,
+    "vertical_reach_m": 2.1,
+    "scope": "this piece only — a dispenser is not told the island under it",
+    "checked": 1,
+    "ok": 1,
+    "moved": 0,
+    "failed": 0
+   }
+  },
+  {
+   "type": "dispenser",
+   "size": "sVintage",
+   "label": "GLOBE-TOP",
+   "cell": {
+    "W": 30,
+    "H": 56
+   },
+   "pivot": {
+    "x": 15,
+    "y": 45
+   },
+   "grades_in_service": [
+    "gas",
+    "diesel",
+    "mixed"
+   ],
+   "footprint": {
+    "w": 0.46,
+    "d": 0.42,
+    "h": 1.66
+   },
+   "machine": {
+    "family": "globe",
+    "hoses": 1,
+    "sides": 1,
+    "reach_m": 3.6,
+    "lpm": 30,
+    "tare_kg": 190
+   },
+   "collider_bbox": [
+    [
+     -0.37,
+     -0.35,
+     0
+    ],
+    [
+     0.37,
+     0.35,
+     1.66
+    ]
+   ],
+   "HOSES": [
+    {
+     "id": "a0",
+     "side": "a",
+     "index": 0,
+     "grade": "gas",
+     "outlet": [
+      0.41,
+      0,
+      1.16
+     ],
+     "boot": [
+      0.3,
+      0,
+      0.8
+     ],
+     "reach_m": 3.6,
+     "lpm": 30,
+     "curve": "StationIso.serve(outlet, target) — polyline, slack grows as the pull shortens"
+    }
+   ],
+   "INTERACT": [
+    {
+     "id": "nozzle_a0",
+     "label": "HOSE A1 · GASOLINE",
+     "action": "fuel",
+     "grade": "gas",
+     "pos": [
+      0.41,
+      0,
+      1.16
+     ],
+     "reach_point": [
+      1.03,
+      -0.34,
+      0
+     ],
+     "visible_facings": [
+      "NE",
+      "E",
+      "SE"
+     ],
+     "level": "apron",
+     "reach": {
+      "tested": true,
+      "verdict": "ok",
+      "on": "apron",
+      "dist_m": 0.71,
+      "moved_m": 0,
+      "lift_m": 1.16,
+      "body_r_m": 0.22,
+      "arm_m": 1.2
+     }
+    }
+   ],
+   "BLOCKERS": [
+    {
+     "shape": "box",
+     "footprint": [
+      [
+       -0.23,
+       -0.21
+      ],
+      [
+       0.23,
+       -0.21
+      ],
+      [
+       0.23,
+       0.21
+      ],
+      [
+       -0.23,
+       0.21
+      ]
+     ],
+     "height_above_grade_m": 1.66,
+     "treatment": "wall",
+     "kind": "cabinet"
+    },
+    {
+     "shape": "box",
+     "footprint": [
+      [
+       -0.37,
+       -0.35
+      ],
+      [
+       0.37,
+       -0.35
+      ],
+      [
+       0.37,
+       0.35
+      ],
+      [
+       -0.37,
+       0.35
+      ]
+     ],
+     "height_above_grade_m": 0.1,
+     "treatment": "flat",
+     "kind": "plinth"
+    }
+   ],
+   "_excluded": {
+    "WALK": "a dispenser has no walkable surface",
+    "HOSE_PIXELS": "the hose is a runtime polyline, never baked"
+   },
+   "REACH_AUDIT": {
+    "body_r_m": 0.22,
+    "arm_grasp_m": 1.2,
+    "arm_read_m": 1.9,
+    "vertical_reach_m": 2.1,
+    "scope": "this piece only — a dispenser is not told the island under it",
+    "checked": 1,
+    "ok": 1,
+    "moved": 0,
+    "failed": 0
+   }
+  },
+  {
+   "type": "dispenser",
+   "size": "sDock",
+   "label": "DOCK PEDESTAL",
+   "cell": {
+    "W": 35,
+    "H": 59
+   },
+   "pivot": {
+    "x": 17,
+    "y": 47
+   },
+   "grades_in_service": [
+    "gas",
+    "diesel",
+    "mixed"
+   ],
+   "footprint": {
+    "w": 0.48,
+    "d": 0.36,
+    "h": 1.12
+   },
+   "machine": {
+    "family": "ped",
+    "hoses": 2,
+    "sides": 1,
+    "reach_m": 4.5,
+    "lpm": 45,
+    "tare_kg": 120
+   },
+   "collider_bbox": [
+    [
+     -0.38,
+     -0.32,
+     0
+    ],
+    [
+     0.38,
+     0.32,
+     1.12
+    ]
+   ],
+   "HOSES": [
+    {
+     "id": "a0",
+     "side": "a",
+     "index": 0,
+     "grade": "gas",
+     "outlet": [
+      0.44,
+      0,
+      1.43
+     ],
+     "boot": [
+      0.3,
+      0,
+      0.66
+     ],
+     "reach_m": 4.5,
+     "lpm": 45,
+     "curve": "StationIso.serve(outlet, target) — polyline, slack grows as the pull shortens"
+    }
+   ],
+   "INTERACT": [
+    {
+     "id": "nozzle_a0",
+     "label": "HOSE A1 · GASOLINE",
+     "action": "fuel",
+     "grade": "gas",
+     "pos": [
+      0.44,
+      0,
+      1.43
+     ],
+     "reach_point": [
+      1.06,
+      -0.34,
+      0
+     ],
+     "visible_facings": [
+      "NE",
+      "E",
+      "SE"
+     ],
+     "level": "apron",
+     "reach": {
+      "tested": true,
+      "verdict": "ok",
+      "on": "apron",
+      "dist_m": 0.71,
+      "moved_m": 0,
+      "lift_m": 1.43,
+      "body_r_m": 0.22,
+      "arm_m": 1.2
+     }
+    }
+   ],
+   "BLOCKERS": [
+    {
+     "shape": "box",
+     "footprint": [
+      [
+       -0.24,
+       -0.18
+      ],
+      [
+       0.24,
+       -0.18
+      ],
+      [
+       0.24,
+       0.18
+      ],
+      [
+       -0.24,
+       0.18
+      ]
+     ],
+     "height_above_grade_m": 1.12,
+     "treatment": "wall",
+     "kind": "cabinet"
+    },
+    {
+     "shape": "box",
+     "footprint": [
+      [
+       -0.38,
+       -0.32
+      ],
+      [
+       0.38,
+       -0.32
+      ],
+      [
+       0.38,
+       0.32
+      ],
+      [
+       -0.38,
+       0.32
+      ]
+     ],
+     "height_above_grade_m": 0.1,
+     "treatment": "flat",
+     "kind": "plinth"
+    }
+   ],
+   "_excluded": {
+    "WALK": "a dispenser has no walkable surface",
+    "HOSE_PIXELS": "the hose is a runtime polyline, never baked"
+   },
+   "REACH_AUDIT": {
+    "body_r_m": 0.22,
+    "arm_grasp_m": 1.2,
+    "arm_read_m": 1.9,
+    "vertical_reach_m": 2.1,
+    "scope": "this piece only — a dispenser is not told the island under it",
+    "checked": 1,
+    "ok": 1,
+    "moved": 0,
+    "failed": 0
+   }
+  },
+  {
+   "type": "dispenser",
+   "size": "sTwin",
+   "label": "TWIN SLAB",
+   "cell": {
+    "W": 41,
+    "H": 67
+   },
+   "pivot": {
+    "x": 20,
+    "y": 53
+   },
+   "grades_in_service": [
+    "gas",
+    "diesel",
+    "mixed"
+   ],
+   "footprint": {
+    "w": 0.64,
+    "d": 0.42,
+    "h": 1.74
+   },
+   "machine": {
+    "family": "slab",
+    "hoses": 2,
+    "sides": 2,
+    "reach_m": 4,
+    "lpm": 40,
+    "tare_kg": 180
+   },
+   "collider_bbox": [
+    [
+     -0.46,
+     -0.35,
+     0
+    ],
+    [
+     0.46,
+     0.35,
+     1.74
+    ]
+   ],
+   "HOSES": [
+    {
+     "id": "a0",
+     "side": "a",
+     "index": 0,
+     "grade": "gas",
+     "outlet": [
+      0.42,
+      0,
+      0.54
+     ],
+     "boot": [
+      0.38,
+      0,
+      0.51
+     ],
+     "reach_m": 4,
+     "lpm": 40,
+     "curve": "StationIso.serve(outlet, target) — polyline, slack grows as the pull shortens"
+    },
+    {
+     "id": "a1",
+     "side": "a",
+     "index": 1,
+     "grade": "diesel",
+     "outlet": [
+      0.42,
+      0,
+      1.15
+     ],
+     "boot": [
+      0.38,
+      0,
+      1.13
+     ],
+     "reach_m": 4,
+     "lpm": 40,
+     "curve": "StationIso.serve(outlet, target) — polyline, slack grows as the pull shortens"
+    },
+    {
+     "id": "b0",
+     "side": "b",
+     "index": 0,
+     "grade": "gas",
+     "outlet": [
+      -0.42,
+      0,
+      0.54
+     ],
+     "boot": [
+      -0.38,
+      0,
+      0.51
+     ],
+     "reach_m": 4,
+     "lpm": 40,
+     "curve": "StationIso.serve(outlet, target) — polyline, slack grows as the pull shortens"
+    },
+    {
+     "id": "b1",
+     "side": "b",
+     "index": 1,
+     "grade": "diesel",
+     "outlet": [
+      -0.42,
+      0,
+      1.15
+     ],
+     "boot": [
+      -0.38,
+      0,
+      1.13
+     ],
+     "reach_m": 4,
+     "lpm": 40,
+     "curve": "StationIso.serve(outlet, target) — polyline, slack grows as the pull shortens"
+    }
+   ],
+   "INTERACT": [
+    {
+     "id": "nozzle_a0",
+     "label": "HOSE A1 · GASOLINE",
+     "action": "fuel",
+     "grade": "gas",
+     "pos": [
+      0.42,
+      0,
+      0.54
+     ],
+     "reach_point": [
+      1.04,
+      -0.34,
+      0
+     ],
+     "visible_facings": [
+      "NE",
+      "E",
+      "SE"
+     ],
+     "level": "apron",
+     "reach": {
+      "tested": true,
+      "verdict": "ok",
+      "on": "apron",
+      "dist_m": 0.71,
+      "moved_m": 0,
+      "lift_m": 0.54,
+      "body_r_m": 0.22,
+      "arm_m": 1.2
+     }
+    },
+    {
+     "id": "nozzle_a1",
+     "label": "HOSE A2 · DIESEL",
+     "action": "fuel",
+     "grade": "diesel",
+     "pos": [
+      0.42,
+      0,
+      1.15
+     ],
+     "reach_point": [
+      1.04,
+      -0.34,
+      0
+     ],
+     "visible_facings": [
+      "NE",
+      "E",
+      "SE"
+     ],
+     "level": "apron",
+     "reach": {
+      "tested": true,
+      "verdict": "ok",
+      "on": "apron",
+      "dist_m": 0.71,
+      "moved_m": 0,
+      "lift_m": 1.15,
+      "body_r_m": 0.22,
+      "arm_m": 1.2
+     }
+    },
+    {
+     "id": "nozzle_b0",
+     "label": "HOSE B1 · GASOLINE",
+     "action": "fuel",
+     "grade": "gas",
+     "pos": [
+      -0.42,
+      0,
+      0.54
+     ],
+     "reach_point": [
+      -1.04,
+      -0.34,
+      0
+     ],
+     "visible_facings": [
+      "SW",
+      "W",
+      "NW"
+     ],
+     "level": "apron",
+     "reach": {
+      "tested": true,
+      "verdict": "ok",
+      "on": "apron",
+      "dist_m": 0.71,
+      "moved_m": 0,
+      "lift_m": 0.54,
+      "body_r_m": 0.22,
+      "arm_m": 1.2
+     }
+    },
+    {
+     "id": "nozzle_b1",
+     "label": "HOSE B2 · DIESEL",
+     "action": "fuel",
+     "grade": "diesel",
+     "pos": [
+      -0.42,
+      0,
+      1.15
+     ],
+     "reach_point": [
+      -1.04,
+      -0.34,
+      0
+     ],
+     "visible_facings": [
+      "SW",
+      "W",
+      "NW"
+     ],
+     "level": "apron",
+     "reach": {
+      "tested": true,
+      "verdict": "ok",
+      "on": "apron",
+      "dist_m": 0.71,
+      "moved_m": 0,
+      "lift_m": 1.15,
+      "body_r_m": 0.22,
+      "arm_m": 1.2
+     }
+    },
+    {
+     "id": "pay_a",
+     "label": "PAY AT PUMP",
+     "action": "pay",
+     "pos": [
+      0.17,
+      0.24,
+      0.77
+     ],
+     "reach_point": [
+      0.17,
+      0.96,
+      0
+     ],
+     "visible_facings": [
+      "SE",
+      "S",
+      "SW"
+     ],
+     "level": "apron",
+     "reach": {
+      "tested": true,
+      "verdict": "ok",
+      "on": "apron",
+      "dist_m": 0.72,
+      "moved_m": 0,
+      "lift_m": 0.77,
+      "body_r_m": 0.22,
+      "arm_m": 1.9
+     }
+    },
+    {
+     "id": "pay_b",
+     "label": "PAY AT PUMP",
+     "action": "pay",
+     "pos": [
+      0.17,
+      -0.24,
+      0.77
+     ],
+     "reach_point": [
+      0.17,
+      -0.96,
+      0
+     ],
+     "visible_facings": [
+      "N",
+      "NE",
+      "NW"
+     ],
+     "level": "apron",
+     "reach": {
+      "tested": true,
+      "verdict": "ok",
+      "on": "apron",
+      "dist_m": 0.72,
+      "moved_m": 0,
+      "lift_m": 0.77,
+      "body_r_m": 0.22,
+      "arm_m": 1.9
+     }
+    }
+   ],
+   "BLOCKERS": [
+    {
+     "shape": "box",
+     "footprint": [
+      [
+       -0.32,
+       -0.21
+      ],
+      [
+       0.32,
+       -0.21
+      ],
+      [
+       0.32,
+       0.21
+      ],
+      [
+       -0.32,
+       0.21
+      ]
+     ],
+     "height_above_grade_m": 1.74,
+     "treatment": "wall",
+     "kind": "cabinet"
+    },
+    {
+     "shape": "box",
+     "footprint": [
+      [
+       -0.46,
+       -0.35
+      ],
+      [
+       0.46,
+       -0.35
+      ],
+      [
+       0.46,
+       0.35
+      ],
+      [
+       -0.46,
+       0.35
+      ]
+     ],
+     "height_above_grade_m": 0.1,
+     "treatment": "flat",
+     "kind": "plinth"
+    }
+   ],
+   "_excluded": {
+    "WALK": "a dispenser has no walkable surface",
+    "HOSE_PIXELS": "the hose is a runtime polyline, never baked"
+   },
+   "REACH_AUDIT": {
+    "body_r_m": 0.22,
+    "arm_grasp_m": 1.2,
+    "arm_read_m": 1.9,
+    "vertical_reach_m": 2.1,
+    "scope": "this piece only — a dispenser is not told the island under it",
+    "checked": 6,
+    "ok": 6,
+    "moved": 0,
+    "failed": 0
+   }
+  },
+  {
+   "type": "dispenser",
+   "size": "sMpd",
+   "label": "MULTI-PRODUCT",
+   "cell": {
+    "W": 50,
+    "H": 78
+   },
+   "pivot": {
+    "x": 25,
+    "y": 61
+   },
+   "grades_in_service": [
+    "gas",
+    "diesel",
+    "mixed"
+   ],
+   "footprint": {
+    "w": 0.98,
+    "d": 0.48,
+    "h": 1.94
+   },
+   "machine": {
+    "family": "slab",
+    "hoses": 3,
+    "sides": 2,
+    "reach_m": 4.6,
+    "lpm": 40,
+    "tare_kg": 260
+   },
+   "collider_bbox": [
+    [
+     -0.63,
+     -0.38,
+     0
+    ],
+    [
+     0.63,
+     0.38,
+     1.94
+    ]
+   ],
+   "HOSES": [
+    {
+     "id": "a0",
+     "side": "a",
+     "index": 0,
+     "grade": "gas",
+     "outlet": [
+      0.59,
+      0,
+      0.54
+     ],
+     "boot": [
+      0.55,
+      0,
+      0.51
+     ],
+     "reach_m": 4.6,
+     "lpm": 40,
+     "curve": "StationIso.serve(outlet, target) — polyline, slack grows as the pull shortens"
+    },
+    {
+     "id": "a1",
+     "side": "a",
+     "index": 1,
+     "grade": "diesel",
+     "outlet": [
+      0.59,
+      0,
+      0.91
+     ],
+     "boot": [
+      0.55,
+      0,
+      0.88
+     ],
+     "reach_m": 4.6,
+     "lpm": 40,
+     "curve": "StationIso.serve(outlet, target) — polyline, slack grows as the pull shortens"
+    },
+    {
+     "id": "a2",
+     "side": "a",
+     "index": 2,
+     "grade": "mixed",
+     "outlet": [
+      0.59,
+      0,
+      1.28
+     ],
+     "boot": [
+      0.55,
+      0,
+      1.25
+     ],
+     "reach_m": 4.6,
+     "lpm": 40,
+     "curve": "StationIso.serve(outlet, target) — polyline, slack grows as the pull shortens"
+    },
+    {
+     "id": "b0",
+     "side": "b",
+     "index": 0,
+     "grade": "gas",
+     "outlet": [
+      -0.59,
+      0,
+      0.54
+     ],
+     "boot": [
+      -0.55,
+      0,
+      0.51
+     ],
+     "reach_m": 4.6,
+     "lpm": 40,
+     "curve": "StationIso.serve(outlet, target) — polyline, slack grows as the pull shortens"
+    },
+    {
+     "id": "b1",
+     "side": "b",
+     "index": 1,
+     "grade": "diesel",
+     "outlet": [
+      -0.59,
+      0,
+      0.91
+     ],
+     "boot": [
+      -0.55,
+      0,
+      0.88
+     ],
+     "reach_m": 4.6,
+     "lpm": 40,
+     "curve": "StationIso.serve(outlet, target) — polyline, slack grows as the pull shortens"
+    },
+    {
+     "id": "b2",
+     "side": "b",
+     "index": 2,
+     "grade": "mixed",
+     "outlet": [
+      -0.59,
+      0,
+      1.28
+     ],
+     "boot": [
+      -0.55,
+      0,
+      1.25
+     ],
+     "reach_m": 4.6,
+     "lpm": 40,
+     "curve": "StationIso.serve(outlet, target) — polyline, slack grows as the pull shortens"
+    }
+   ],
+   "INTERACT": [
+    {
+     "id": "nozzle_a0",
+     "label": "HOSE A1 · GASOLINE",
+     "action": "fuel",
+     "grade": "gas",
+     "pos": [
+      0.59,
+      0,
+      0.54
+     ],
+     "reach_point": [
+      1.21,
+      -0.34,
+      0
+     ],
+     "visible_facings": [
+      "NE",
+      "E",
+      "SE"
+     ],
+     "level": "apron",
+     "reach": {
+      "tested": true,
+      "verdict": "ok",
+      "on": "apron",
+      "dist_m": 0.71,
+      "moved_m": 0,
+      "lift_m": 0.54,
+      "body_r_m": 0.22,
+      "arm_m": 1.2
+     }
+    },
+    {
+     "id": "nozzle_a1",
+     "label": "HOSE A2 · DIESEL",
+     "action": "fuel",
+     "grade": "diesel",
+     "pos": [
+      0.59,
+      0,
+      0.91
+     ],
+     "reach_point": [
+      1.21,
+      -0.34,
+      0
+     ],
+     "visible_facings": [
+      "NE",
+      "E",
+      "SE"
+     ],
+     "level": "apron",
+     "reach": {
+      "tested": true,
+      "verdict": "ok",
+      "on": "apron",
+      "dist_m": 0.71,
+      "moved_m": 0,
+      "lift_m": 0.91,
+      "body_r_m": 0.22,
+      "arm_m": 1.2
+     }
+    },
+    {
+     "id": "nozzle_a2",
+     "label": "HOSE A3 · MIXED 50:1",
+     "action": "fuel",
+     "grade": "mixed",
+     "pos": [
+      0.59,
+      0,
+      1.28
+     ],
+     "reach_point": [
+      1.21,
+      -0.34,
+      0
+     ],
+     "visible_facings": [
+      "NE",
+      "E",
+      "SE"
+     ],
+     "level": "apron",
+     "reach": {
+      "tested": true,
+      "verdict": "ok",
+      "on": "apron",
+      "dist_m": 0.71,
+      "moved_m": 0,
+      "lift_m": 1.28,
+      "body_r_m": 0.22,
+      "arm_m": 1.2
+     }
+    },
+    {
+     "id": "nozzle_b0",
+     "label": "HOSE B1 · GASOLINE",
+     "action": "fuel",
+     "grade": "gas",
+     "pos": [
+      -0.59,
+      0,
+      0.54
+     ],
+     "reach_point": [
+      -1.21,
+      -0.34,
+      0
+     ],
+     "visible_facings": [
+      "SW",
+      "W",
+      "NW"
+     ],
+     "level": "apron",
+     "reach": {
+      "tested": true,
+      "verdict": "ok",
+      "on": "apron",
+      "dist_m": 0.71,
+      "moved_m": 0,
+      "lift_m": 0.54,
+      "body_r_m": 0.22,
+      "arm_m": 1.2
+     }
+    },
+    {
+     "id": "nozzle_b1",
+     "label": "HOSE B2 · DIESEL",
+     "action": "fuel",
+     "grade": "diesel",
+     "pos": [
+      -0.59,
+      0,
+      0.91
+     ],
+     "reach_point": [
+      -1.21,
+      -0.34,
+      0
+     ],
+     "visible_facings": [
+      "SW",
+      "W",
+      "NW"
+     ],
+     "level": "apron",
+     "reach": {
+      "tested": true,
+      "verdict": "ok",
+      "on": "apron",
+      "dist_m": 0.71,
+      "moved_m": 0,
+      "lift_m": 0.91,
+      "body_r_m": 0.22,
+      "arm_m": 1.2
+     }
+    },
+    {
+     "id": "nozzle_b2",
+     "label": "HOSE B3 · MIXED 50:1",
+     "action": "fuel",
+     "grade": "mixed",
+     "pos": [
+      -0.59,
+      0,
+      1.28
+     ],
+     "reach_point": [
+      -1.21,
+      -0.34,
+      0
+     ],
+     "visible_facings": [
+      "SW",
+      "W",
+      "NW"
+     ],
+     "level": "apron",
+     "reach": {
+      "tested": true,
+      "verdict": "ok",
+      "on": "apron",
+      "dist_m": 0.71,
+      "moved_m": 0,
+      "lift_m": 1.28,
+      "body_r_m": 0.22,
+      "arm_m": 1.2
+     }
+    },
+    {
+     "id": "pay_a",
+     "label": "PAY AT PUMP",
+     "action": "pay",
+     "pos": [
+      0.25,
+      0.27,
+      0.85
+     ],
+     "reach_point": [
+      0.25,
+      0.99,
+      0
+     ],
+     "visible_facings": [
+      "SE",
+      "S",
+      "SW"
+     ],
+     "level": "apron",
+     "reach": {
+      "tested": true,
+      "verdict": "ok",
+      "on": "apron",
+      "dist_m": 0.72,
+      "moved_m": 0,
+      "lift_m": 0.85,
+      "body_r_m": 0.22,
+      "arm_m": 1.9
+     }
+    },
+    {
+     "id": "pay_b",
+     "label": "PAY AT PUMP",
+     "action": "pay",
+     "pos": [
+      0.25,
+      -0.27,
+      0.85
+     ],
+     "reach_point": [
+      0.25,
+      -0.99,
+      0
+     ],
+     "visible_facings": [
+      "N",
+      "NE",
+      "NW"
+     ],
+     "level": "apron",
+     "reach": {
+      "tested": true,
+      "verdict": "ok",
+      "on": "apron",
+      "dist_m": 0.72,
+      "moved_m": 0,
+      "lift_m": 0.85,
+      "body_r_m": 0.22,
+      "arm_m": 1.9
+     }
+    }
+   ],
+   "BLOCKERS": [
+    {
+     "shape": "box",
+     "footprint": [
+      [
+       -0.49,
+       -0.24
+      ],
+      [
+       0.49,
+       -0.24
+      ],
+      [
+       0.49,
+       0.24
+      ],
+      [
+       -0.49,
+       0.24
+      ]
+     ],
+     "height_above_grade_m": 1.94,
+     "treatment": "wall",
+     "kind": "cabinet"
+    },
+    {
+     "shape": "box",
+     "footprint": [
+      [
+       -0.63,
+       -0.38
+      ],
+      [
+       0.63,
+       -0.38
+      ],
+      [
+       0.63,
+       0.38
+      ],
+      [
+       -0.63,
+       0.38
+      ]
+     ],
+     "height_above_grade_m": 0.1,
+     "treatment": "flat",
+     "kind": "plinth"
+    }
+   ],
+   "_excluded": {
+    "WALK": "a dispenser has no walkable surface",
+    "HOSE_PIXELS": "the hose is a runtime polyline, never baked"
+   },
+   "REACH_AUDIT": {
+    "body_r_m": 0.22,
+    "arm_grasp_m": 1.2,
+    "arm_read_m": 1.9,
+    "vertical_reach_m": 2.1,
+    "scope": "this piece only — a dispenser is not told the island under it",
+    "checked": 8,
+    "ok": 8,
+    "moved": 0,
+    "failed": 0
+   }
+  },
+  {
+   "type": "dispenser",
+   "size": "sTruck",
+   "label": "HIGH-FLOW",
+   "cell": {
+    "W": 56,
+    "H": 73
+   },
+   "pivot": {
+    "x": 28,
+    "y": 54
+   },
+   "grades_in_service": [
+    "gas",
+    "diesel",
+    "mixed"
+   ],
+   "footprint": {
+    "w": 1.08,
+    "d": 0.56,
+    "h": 1.6
+   },
+   "machine": {
+    "family": "brick",
+    "hoses": 2,
+    "sides": 2,
+    "reach_m": 6.2,
+    "lpm": 130,
+    "tare_kg": 340
+   },
+   "collider_bbox": [
+    [
+     -0.68,
+     -0.42,
+     0
+    ],
+    [
+     0.68,
+     0.42,
+     1.6
+    ]
+   ],
+   "HOSES": [
+    {
+     "id": "a0",
+     "side": "a",
+     "index": 0,
+     "grade": "gas",
+     "outlet": [
+      0.7,
+      -0.14,
+      0.76
+     ],
+     "boot": [
+      0.7,
+      -0.14,
+      0.76
+     ],
+     "reach_m": 6.2,
+     "lpm": 130,
+     "curve": "StationIso.serve(outlet, target) — polyline, slack grows as the pull shortens"
+    },
+    {
+     "id": "a1",
+     "side": "a",
+     "index": 1,
+     "grade": "diesel",
+     "outlet": [
+      0.7,
+      -0.14,
+      1.1
+     ],
+     "boot": [
+      0.7,
+      -0.14,
+      1.1
+     ],
+     "reach_m": 6.2,
+     "lpm": 130,
+     "curve": "StationIso.serve(outlet, target) — polyline, slack grows as the pull shortens"
+    },
+    {
+     "id": "b0",
+     "side": "b",
+     "index": 0,
+     "grade": "gas",
+     "outlet": [
+      -0.7,
+      -0.14,
+      0.76
+     ],
+     "boot": [
+      -0.7,
+      -0.14,
+      0.76
+     ],
+     "reach_m": 6.2,
+     "lpm": 130,
+     "curve": "StationIso.serve(outlet, target) — polyline, slack grows as the pull shortens"
+    },
+    {
+     "id": "b1",
+     "side": "b",
+     "index": 1,
+     "grade": "diesel",
+     "outlet": [
+      -0.7,
+      -0.14,
+      1.1
+     ],
+     "boot": [
+      -0.7,
+      -0.14,
+      1.1
+     ],
+     "reach_m": 6.2,
+     "lpm": 130,
+     "curve": "StationIso.serve(outlet, target) — polyline, slack grows as the pull shortens"
+    }
+   ],
+   "INTERACT": [
+    {
+     "id": "nozzle_a0",
+     "label": "HOSE A1 · GASOLINE",
+     "action": "fuel",
+     "grade": "gas",
+     "pos": [
+      0.7,
+      -0.14,
+      0.76
+     ],
+     "reach_point": [
+      1.32,
+      -0.48,
+      0
+     ],
+     "visible_facings": [
+      "NE",
+      "E",
+      "SE"
+     ],
+     "level": "apron",
+     "reach": {
+      "tested": true,
+      "verdict": "ok",
+      "on": "apron",
+      "dist_m": 0.71,
+      "moved_m": 0,
+      "lift_m": 0.76,
+      "body_r_m": 0.22,
+      "arm_m": 1.2
+     }
+    },
+    {
+     "id": "nozzle_a1",
+     "label": "HOSE A2 · DIESEL",
+     "action": "fuel",
+     "grade": "diesel",
+     "pos": [
+      0.7,
+      -0.14,
+      1.1
+     ],
+     "reach_point": [
+      1.32,
+      -0.48,
+      0
+     ],
+     "visible_facings": [
+      "NE",
+      "E",
+      "SE"
+     ],
+     "level": "apron",
+     "reach": {
+      "tested": true,
+      "verdict": "ok",
+      "on": "apron",
+      "dist_m": 0.71,
+      "moved_m": 0,
+      "lift_m": 1.1,
+      "body_r_m": 0.22,
+      "arm_m": 1.2
+     }
+    },
+    {
+     "id": "nozzle_b0",
+     "label": "HOSE B1 · GASOLINE",
+     "action": "fuel",
+     "grade": "gas",
+     "pos": [
+      -0.7,
+      -0.14,
+      0.76
+     ],
+     "reach_point": [
+      -1.32,
+      -0.48,
+      0
+     ],
+     "visible_facings": [
+      "SW",
+      "W",
+      "NW"
+     ],
+     "level": "apron",
+     "reach": {
+      "tested": true,
+      "verdict": "ok",
+      "on": "apron",
+      "dist_m": 0.71,
+      "moved_m": 0,
+      "lift_m": 0.76,
+      "body_r_m": 0.22,
+      "arm_m": 1.2
+     }
+    },
+    {
+     "id": "nozzle_b1",
+     "label": "HOSE B2 · DIESEL",
+     "action": "fuel",
+     "grade": "diesel",
+     "pos": [
+      -0.7,
+      -0.14,
+      1.1
+     ],
+     "reach_point": [
+      -1.32,
+      -0.48,
+      0
+     ],
+     "visible_facings": [
+      "SW",
+      "W",
+      "NW"
+     ],
+     "level": "apron",
+     "reach": {
+      "tested": true,
+      "verdict": "ok",
+      "on": "apron",
+      "dist_m": 0.71,
+      "moved_m": 0,
+      "lift_m": 1.1,
+      "body_r_m": 0.22,
+      "arm_m": 1.2
+     }
+    },
+    {
+     "id": "pay_a",
+     "label": "PAY AT PUMP",
+     "action": "pay",
+     "pos": [
+      0.28,
+      0.31,
+      0.7
+     ],
+     "reach_point": [
+      0.28,
+      1.03,
+      0
+     ],
+     "visible_facings": [
+      "SE",
+      "S",
+      "SW"
+     ],
+     "level": "apron",
+     "reach": {
+      "tested": true,
+      "verdict": "ok",
+      "on": "apron",
+      "dist_m": 0.72,
+      "moved_m": 0,
+      "lift_m": 0.7,
+      "body_r_m": 0.22,
+      "arm_m": 1.9
+     }
+    },
+    {
+     "id": "pay_b",
+     "label": "PAY AT PUMP",
+     "action": "pay",
+     "pos": [
+      0.28,
+      -0.31,
+      0.7
+     ],
+     "reach_point": [
+      0.28,
+      -1.03,
+      0
+     ],
+     "visible_facings": [
+      "N",
+      "NE",
+      "NW"
+     ],
+     "level": "apron",
+     "reach": {
+      "tested": true,
+      "verdict": "ok",
+      "on": "apron",
+      "dist_m": 0.72,
+      "moved_m": 0,
+      "lift_m": 0.7,
+      "body_r_m": 0.22,
+      "arm_m": 1.9
+     }
+    }
+   ],
+   "BLOCKERS": [
+    {
+     "shape": "box",
+     "footprint": [
+      [
+       -0.54,
+       -0.28
+      ],
+      [
+       0.54,
+       -0.28
+      ],
+      [
+       0.54,
+       0.28
+      ],
+      [
+       -0.54,
+       0.28
+      ]
+     ],
+     "height_above_grade_m": 1.6,
+     "treatment": "wall",
+     "kind": "cabinet"
+    },
+    {
+     "shape": "box",
+     "footprint": [
+      [
+       -0.68,
+       -0.42
+      ],
+      [
+       0.68,
+       -0.42
+      ],
+      [
+       0.68,
+       0.42
+      ],
+      [
+       -0.68,
+       0.42
+      ]
+     ],
+     "height_above_grade_m": 0.1,
+     "treatment": "flat",
+     "kind": "plinth"
+    }
+   ],
+   "_excluded": {
+    "WALK": "a dispenser has no walkable surface",
+    "HOSE_PIXELS": "the hose is a runtime polyline, never baked"
+   },
+   "REACH_AUDIT": {
+    "body_r_m": 0.22,
+    "arm_grasp_m": 1.2,
+    "arm_read_m": 1.9,
+    "vertical_reach_m": 2.1,
+    "scope": "this piece only — a dispenser is not told the island under it",
+    "checked": 6,
+    "ok": 6,
+    "moved": 0,
+    "failed": 0
+   }
+  },
+  {
+   "type": "dispenser",
+   "size": "sLock",
+   "label": "CARDLOCK",
+   "cell": {
+    "W": 32,
+    "H": 63
+   },
+   "pivot": {
+    "x": 16,
+    "y": 52
+   },
+   "grades_in_service": [
+    "gas",
+    "diesel",
+    "mixed"
+   ],
+   "footprint": {
+    "w": 0.42,
+    "d": 0.36,
+    "h": 1.7
+   },
+   "machine": {
+    "family": "lock",
+    "hoses": 1,
+    "sides": 1,
+    "reach_m": 5,
+    "lpm": 80,
+    "tare_kg": 150
+   },
+   "collider_bbox": [
+    [
+     -0.35,
+     -0.32,
+     0
+    ],
+    [
+     0.35,
+     0.32,
+     1.7
+    ]
+   ],
+   "HOSES": [
+    {
+     "id": "a0",
+     "side": "a",
+     "index": 0,
+     "grade": "gas",
+     "outlet": [
+      0.43,
+      0.12,
+      1.26
+     ],
+     "boot": [
+      0.28,
+      0,
+      0.78
+     ],
+     "reach_m": 5,
+     "lpm": 80,
+     "curve": "StationIso.serve(outlet, target) — polyline, slack grows as the pull shortens"
+    }
+   ],
+   "INTERACT": [
+    {
+     "id": "nozzle_a0",
+     "label": "HOSE A1 · GASOLINE",
+     "action": "fuel",
+     "grade": "gas",
+     "pos": [
+      0.43,
+      0.12,
+      1.26
+     ],
+     "reach_point": [
+      1.05,
+      -0.22,
+      0
+     ],
+     "visible_facings": [
+      "NE",
+      "E",
+      "SE"
+     ],
+     "level": "apron",
+     "reach": {
+      "tested": true,
+      "verdict": "ok",
+      "on": "apron",
+      "dist_m": 0.71,
+      "moved_m": 0,
+      "lift_m": 1.26,
+      "body_r_m": 0.22,
+      "arm_m": 1.2
+     }
+    },
+    {
+     "id": "pay_a",
+     "label": "PAY AT PUMP",
+     "action": "pay",
+     "pos": [
+      0,
+      0.21,
+      1.53
+     ],
+     "reach_point": [
+      0,
+      0.93,
+      0
+     ],
+     "visible_facings": [
+      "SE",
+      "S",
+      "SW"
+     ],
+     "level": "apron",
+     "reach": {
+      "tested": true,
+      "verdict": "ok",
+      "on": "apron",
+      "dist_m": 0.72,
+      "moved_m": 0,
+      "lift_m": 1.53,
+      "body_r_m": 0.22,
+      "arm_m": 1.9
+     }
+    }
+   ],
+   "BLOCKERS": [
+    {
+     "shape": "box",
+     "footprint": [
+      [
+       -0.21,
+       -0.18
+      ],
+      [
+       0.21,
+       -0.18
+      ],
+      [
+       0.21,
+       0.18
+      ],
+      [
+       -0.21,
+       0.18
+      ]
+     ],
+     "height_above_grade_m": 1.7,
+     "treatment": "wall",
+     "kind": "cabinet"
+    },
+    {
+     "shape": "box",
+     "footprint": [
+      [
+       -0.35,
+       -0.32
+      ],
+      [
+       0.35,
+       -0.32
+      ],
+      [
+       0.35,
+       0.32
+      ],
+      [
+       -0.35,
+       0.32
+      ]
+     ],
+     "height_above_grade_m": 0.1,
+     "treatment": "flat",
+     "kind": "plinth"
+    }
+   ],
+   "_excluded": {
+    "WALK": "a dispenser has no walkable surface",
+    "HOSE_PIXELS": "the hose is a runtime polyline, never baked"
+   },
+   "REACH_AUDIT": {
+    "body_r_m": 0.22,
+    "arm_grasp_m": 1.2,
+    "arm_read_m": 1.9,
+    "vertical_reach_m": 2.1,
+    "scope": "this piece only — a dispenser is not told the island under it",
+    "checked": 2,
+    "ok": 2,
+    "moved": 0,
+    "failed": 0
+   }
+  },
+  {
+   "type": "island",
+   "size": "s1",
+   "label": "1 SLOT",
+   "cell": {
+    "W": 184,
+    "H": 132
+   },
+   "pivot": {
+    "x": 92,
+    "y": 72
+   },
+   "grades_in_service": [
+    "gas",
+    "diesel",
+    "mixed"
+   ],
+   "footprint": {
+    "w": 4.45,
+    "d": 1.15,
+    "h": 0.165
+   },
+   "WALK": [
+    {
+     "id": "island_top",
+     "winding": "ccw_from_above",
+     "z": 0.165,
+     "surface": "concrete",
+     "polygon": [
+      [
+       -2.17,
+       -0.52
+      ],
+      [
+       2.17,
+       -0.52
+      ],
+      [
+       2.17,
+       0.52
+      ],
+      [
+       -2.17,
+       0.52
+      ]
+     ],
+     "step_up_m": 0.165,
+     "treatment": "step_over",
+     "note": "A kerb, not a floor: a body steps up onto it to reach a boot. Slot plates are flush."
+    }
+   ],
+   "SLOTS": [
+    {
+     "id": "slot1",
+     "pos": [
+      0,
+      0,
+      0.17
+     ],
+     "pitch_m": 3.3,
+     "note": "bolt-down plate — any dispenser variety mounts here at its own pivot"
+    }
+   ],
+   "BLOCKERS": [
+    {
+     "shape": "box",
+     "footprint": [
+      [
+       -2.22,
+       -0.57
+      ],
+      [
+       2.22,
+       -0.57
+      ],
+      [
+       2.22,
+       0.57
+      ],
+      [
+       -2.22,
+       0.57
+      ]
+     ],
+     "height_above_grade_m": 0.165,
+     "treatment": "step_over",
+     "kind": "kerb"
+    },
+    {
+     "shape": "circle",
+     "pos": [
+      -1.94,
+      0,
+      0.17
+     ],
+     "r": 0.11,
+     "height_above_grade_m": 1.15,
+     "treatment": "wall",
+     "kind": "bollard"
+    },
+    {
+     "shape": "circle",
+     "pos": [
+      1.94,
+      0,
+      0.17
+     ],
+     "r": 0.11,
+     "height_above_grade_m": 1.15,
+     "treatment": "wall",
+     "kind": "bollard"
+    }
+   ],
+   "INTERACT": []
+  },
+  {
+   "type": "island",
+   "size": "s2",
+   "label": "2 SLOTS",
+   "cell": {
+    "W": 289,
+    "H": 200
+   },
+   "pivot": {
+    "x": 144,
+    "y": 106
+   },
+   "grades_in_service": [
+    "gas",
+    "diesel",
+    "mixed"
+   ],
+   "footprint": {
+    "w": 7.75,
+    "d": 1.15,
+    "h": 0.165
+   },
+   "WALK": [
+    {
+     "id": "island_top",
+     "winding": "ccw_from_above",
+     "z": 0.165,
+     "surface": "concrete",
+     "polygon": [
+      [
+       -3.83,
+       -0.52
+      ],
+      [
+       3.83,
+       -0.52
+      ],
+      [
+       3.83,
+       0.52
+      ],
+      [
+       -3.83,
+       0.52
+      ]
+     ],
+     "step_up_m": 0.165,
+     "treatment": "step_over",
+     "note": "A kerb, not a floor: a body steps up onto it to reach a boot. Slot plates are flush."
+    }
+   ],
+   "SLOTS": [
+    {
+     "id": "slot1",
+     "pos": [
+      -1.65,
+      0,
+      0.17
+     ],
+     "pitch_m": 3.3,
+     "note": "bolt-down plate — any dispenser variety mounts here at its own pivot"
+    },
+    {
+     "id": "slot2",
+     "pos": [
+      1.65,
+      0,
+      0.17
+     ],
+     "pitch_m": 3.3,
+     "note": "bolt-down plate — any dispenser variety mounts here at its own pivot"
+    }
+   ],
+   "BLOCKERS": [
+    {
+     "shape": "box",
+     "footprint": [
+      [
+       -3.88,
+       -0.57
+      ],
+      [
+       3.88,
+       -0.57
+      ],
+      [
+       3.88,
+       0.57
+      ],
+      [
+       -3.88,
+       0.57
+      ]
+     ],
+     "height_above_grade_m": 0.165,
+     "treatment": "step_over",
+     "kind": "kerb"
+    },
+    {
+     "shape": "circle",
+     "pos": [
+      -3.59,
+      0,
+      0.17
+     ],
+     "r": 0.11,
+     "height_above_grade_m": 1.15,
+     "treatment": "wall",
+     "kind": "bollard"
+    },
+    {
+     "shape": "circle",
+     "pos": [
+      3.59,
+      0,
+      0.17
+     ],
+     "r": 0.11,
+     "height_above_grade_m": 1.15,
+     "treatment": "wall",
+     "kind": "bollard"
+    }
+   ],
+   "INTERACT": []
+  },
+  {
+   "type": "island",
+   "size": "s3",
+   "label": "3 SLOTS",
+   "cell": {
+    "W": 395,
+    "H": 268
+   },
+   "pivot": {
+    "x": 197,
+    "y": 140
+   },
+   "grades_in_service": [
+    "gas",
+    "diesel",
+    "mixed"
+   ],
+   "footprint": {
+    "w": 11.05,
+    "d": 1.15,
+    "h": 0.165
+   },
+   "WALK": [
+    {
+     "id": "island_top",
+     "winding": "ccw_from_above",
+     "z": 0.165,
+     "surface": "concrete",
+     "polygon": [
+      [
+       -5.47,
+       -0.52
+      ],
+      [
+       5.47,
+       -0.52
+      ],
+      [
+       5.47,
+       0.52
+      ],
+      [
+       -5.47,
+       0.52
+      ]
+     ],
+     "step_up_m": 0.165,
+     "treatment": "step_over",
+     "note": "A kerb, not a floor: a body steps up onto it to reach a boot. Slot plates are flush."
+    }
+   ],
+   "SLOTS": [
+    {
+     "id": "slot1",
+     "pos": [
+      -3.3,
+      0,
+      0.17
+     ],
+     "pitch_m": 3.3,
+     "note": "bolt-down plate — any dispenser variety mounts here at its own pivot"
+    },
+    {
+     "id": "slot2",
+     "pos": [
+      0,
+      0,
+      0.17
+     ],
+     "pitch_m": 3.3,
+     "note": "bolt-down plate — any dispenser variety mounts here at its own pivot"
+    },
+    {
+     "id": "slot3",
+     "pos": [
+      3.3,
+      0,
+      0.17
+     ],
+     "pitch_m": 3.3,
+     "note": "bolt-down plate — any dispenser variety mounts here at its own pivot"
+    }
+   ],
+   "BLOCKERS": [
+    {
+     "shape": "box",
+     "footprint": [
+      [
+       -5.52,
+       -0.57
+      ],
+      [
+       5.52,
+       -0.57
+      ],
+      [
+       5.52,
+       0.57
+      ],
+      [
+       -5.52,
+       0.57
+      ]
+     ],
+     "height_above_grade_m": 0.165,
+     "treatment": "step_over",
+     "kind": "kerb"
+    },
+    {
+     "shape": "circle",
+     "pos": [
+      -5.24,
+      0,
+      0.17
+     ],
+     "r": 0.11,
+     "height_above_grade_m": 1.15,
+     "treatment": "wall",
+     "kind": "bollard"
+    },
+    {
+     "shape": "circle",
+     "pos": [
+      5.24,
+      0,
+      0.17
+     ],
+     "r": 0.11,
+     "height_above_grade_m": 1.15,
+     "treatment": "wall",
+     "kind": "bollard"
+    }
+   ],
+   "INTERACT": []
+  },
+  {
+   "type": "island",
+   "size": "s4",
+   "label": "4 SLOTS",
+   "cell": {
+    "W": 500,
+    "H": 336
+   },
+   "pivot": {
+    "x": 250,
+    "y": 174
+   },
+   "grades_in_service": [
+    "gas",
+    "diesel",
+    "mixed"
+   ],
+   "footprint": {
+    "w": 14.35,
+    "d": 1.15,
+    "h": 0.165
+   },
+   "WALK": [
+    {
+     "id": "island_top",
+     "winding": "ccw_from_above",
+     "z": 0.165,
+     "surface": "concrete",
+     "polygon": [
+      [
+       -7.13,
+       -0.52
+      ],
+      [
+       7.13,
+       -0.52
+      ],
+      [
+       7.13,
+       0.52
+      ],
+      [
+       -7.13,
+       0.52
+      ]
+     ],
+     "step_up_m": 0.165,
+     "treatment": "step_over",
+     "note": "A kerb, not a floor: a body steps up onto it to reach a boot. Slot plates are flush."
+    }
+   ],
+   "SLOTS": [
+    {
+     "id": "slot1",
+     "pos": [
+      -4.95,
+      0,
+      0.17
+     ],
+     "pitch_m": 3.3,
+     "note": "bolt-down plate — any dispenser variety mounts here at its own pivot"
+    },
+    {
+     "id": "slot2",
+     "pos": [
+      -1.65,
+      0,
+      0.17
+     ],
+     "pitch_m": 3.3,
+     "note": "bolt-down plate — any dispenser variety mounts here at its own pivot"
+    },
+    {
+     "id": "slot3",
+     "pos": [
+      1.65,
+      0,
+      0.17
+     ],
+     "pitch_m": 3.3,
+     "note": "bolt-down plate — any dispenser variety mounts here at its own pivot"
+    },
+    {
+     "id": "slot4",
+     "pos": [
+      4.95,
+      0,
+      0.17
+     ],
+     "pitch_m": 3.3,
+     "note": "bolt-down plate — any dispenser variety mounts here at its own pivot"
+    }
+   ],
+   "BLOCKERS": [
+    {
+     "shape": "box",
+     "footprint": [
+      [
+       -7.17,
+       -0.57
+      ],
+      [
+       7.17,
+       -0.57
+      ],
+      [
+       7.17,
+       0.57
+      ],
+      [
+       -7.17,
+       0.57
+      ]
+     ],
+     "height_above_grade_m": 0.165,
+     "treatment": "step_over",
+     "kind": "kerb"
+    },
+    {
+     "shape": "circle",
+     "pos": [
+      -6.89,
+      0,
+      0.17
+     ],
+     "r": 0.11,
+     "height_above_grade_m": 1.15,
+     "treatment": "wall",
+     "kind": "bollard"
+    },
+    {
+     "shape": "circle",
+     "pos": [
+      6.89,
+      0,
+      0.17
+     ],
+     "r": 0.11,
+     "height_above_grade_m": 1.15,
+     "treatment": "wall",
+     "kind": "bollard"
+    }
+   ],
+   "INTERACT": []
+  },
+  {
+   "type": "canopy",
+   "size": "sB2",
+   "label": "2 BAYS",
+   "cell": {
+    "W": 339,
+    "H": 318
+   },
+   "pivot": {
+    "x": 169,
+    "y": 241
+   },
+   "grades_in_service": [
+    "gas",
+    "diesel",
+    "mixed"
+   ],
+   "footprint": {
+    "w": 8.9,
+    "d": 5.8,
+    "h": 5.34
+   },
+   "CLEAR": {
+    "height_m": 4.55,
+    "deck_z": 4.72,
+    "style": "fascia",
+    "bays": 2,
+    "span": 1,
+    "covers": [
+     [
+      -4.45,
+      -2.9
+     ],
+     [
+      4.45,
+      -2.9
+     ],
+     [
+      4.45,
+      2.9
+     ],
+     [
+      -4.45,
+      2.9
+     ]
+    ],
+    "note": "Clear height is to the underside. A 4.55 m soffit passes anything in the vehicle rig; the fascia is the lowest edge and it is outboard of the kerb."
+   },
+   "POSTS": [
+    {
+     "pos": [
+      -3.3,
+      0,
+      0
+     ],
+     "size": [
+      0.27,
+      0.27
+     ],
+     "footing": [
+      0.68,
+      0.68
+     ],
+     "note": "lands on the island kerb"
+    },
+    {
+     "pos": [
+      3.3,
+      0,
+      0
+     ],
+     "size": [
+      0.27,
+      0.27
+     ],
+     "footing": [
+      0.68,
+      0.68
+     ],
+     "note": "lands on the island kerb"
+    }
+   ],
+   "BLOCKERS": [
+    {
+     "shape": "box",
+     "kind": "post",
+     "footprint": [
+      [
+       -3.43,
+       -0.14
+      ],
+      [
+       -3.17,
+       -0.14
+      ],
+      [
+       -3.17,
+       0.14
+      ],
+      [
+       -3.43,
+       0.14
+      ]
+     ],
+     "height_above_grade_m": 4.55,
+     "treatment": "wall"
+    },
+    {
+     "shape": "box",
+     "kind": "post",
+     "footprint": [
+      [
+       3.17,
+       -0.14
+      ],
+      [
+       3.43,
+       -0.14
+      ],
+      [
+       3.43,
+       0.14
+      ],
+      [
+       3.17,
+       0.14
+      ]
+     ],
+     "height_above_grade_m": 4.55,
+     "treatment": "wall"
+    }
+   ],
+   "LAMPS": [
+    {
+     "pos": [
+      -1.65,
+      0,
+      4.53
+     ],
+     "kind": "soffit_panel"
+    },
+    {
+     "pos": [
+      1.65,
+      0,
+      4.53
+     ],
+     "kind": "soffit_panel"
+    }
+   ],
+   "_excluded": {
+    "WALKABLE_ROOF": "no roof access is modelled — no ladder, no hatch, no parapet to stand behind",
+    "WALK": "nothing on a canopy is walkable"
+   }
+  },
+  {
+   "type": "canopy",
+   "size": "sB3",
+   "label": "3 BAYS",
+   "cell": {
+    "W": 414,
+    "H": 376
+   },
+   "pivot": {
+    "x": 207,
+    "y": 265
+   },
+   "grades_in_service": [
+    "gas",
+    "diesel",
+    "mixed"
+   ],
+   "footprint": {
+    "w": 12.2,
+    "d": 5.8,
+    "h": 5.34
+   },
+   "CLEAR": {
+    "height_m": 4.55,
+    "deck_z": 4.72,
+    "style": "fascia",
+    "bays": 3,
+    "span": 1,
+    "covers": [
+     [
+      -6.1,
+      -2.9
+     ],
+     [
+      6.1,
+      -2.9
+     ],
+     [
+      6.1,
+      2.9
+     ],
+     [
+      -6.1,
+      2.9
+     ]
+    ],
+    "note": "Clear height is to the underside. A 4.55 m soffit passes anything in the vehicle rig; the fascia is the lowest edge and it is outboard of the kerb."
+   },
+   "POSTS": [
+    {
+     "pos": [
+      -4.95,
+      0,
+      0
+     ],
+     "size": [
+      0.27,
+      0.27
+     ],
+     "footing": [
+      0.68,
+      0.68
+     ],
+     "note": "lands on the island kerb"
+    },
+    {
+     "pos": [
+      4.95,
+      0,
+      0
+     ],
+     "size": [
+      0.27,
+      0.27
+     ],
+     "footing": [
+      0.68,
+      0.68
+     ],
+     "note": "lands on the island kerb"
+    }
+   ],
+   "BLOCKERS": [
+    {
+     "shape": "box",
+     "kind": "post",
+     "footprint": [
+      [
+       -5.08,
+       -0.14
+      ],
+      [
+       -4.82,
+       -0.14
+      ],
+      [
+       -4.82,
+       0.14
+      ],
+      [
+       -5.08,
+       0.14
+      ]
+     ],
+     "height_above_grade_m": 4.55,
+     "treatment": "wall"
+    },
+    {
+     "shape": "box",
+     "kind": "post",
+     "footprint": [
+      [
+       4.82,
+       -0.14
+      ],
+      [
+       5.08,
+       -0.14
+      ],
+      [
+       5.08,
+       0.14
+      ],
+      [
+       4.82,
+       0.14
+      ]
+     ],
+     "height_above_grade_m": 4.55,
+     "treatment": "wall"
+    }
+   ],
+   "LAMPS": [
+    {
+     "pos": [
+      -3.3,
+      0,
+      4.53
+     ],
+     "kind": "soffit_panel"
+    },
+    {
+     "pos": [
+      0,
+      0,
+      4.53
+     ],
+     "kind": "soffit_panel"
+    },
+    {
+     "pos": [
+      3.3,
+      0,
+      4.53
+     ],
+     "kind": "soffit_panel"
+    }
+   ],
+   "_excluded": {
+    "WALKABLE_ROOF": "no roof access is modelled — no ladder, no hatch, no parapet to stand behind",
+    "WALK": "nothing on a canopy is walkable"
+   }
+  },
+  {
+   "type": "canopy",
+   "size": "sB4",
+   "label": "4 BAYS",
+   "cell": {
+    "W": 505,
+    "H": 439
+   },
+   "pivot": {
+    "x": 252,
+    "y": 293
+   },
+   "grades_in_service": [
+    "gas",
+    "diesel",
+    "mixed"
+   ],
+   "footprint": {
+    "w": 15.5,
+    "d": 5.8,
+    "h": 5.34
+   },
+   "CLEAR": {
+    "height_m": 4.55,
+    "deck_z": 4.72,
+    "style": "fascia",
+    "bays": 4,
+    "span": 1,
+    "covers": [
+     [
+      -7.75,
+      -2.9
+     ],
+     [
+      7.75,
+      -2.9
+     ],
+     [
+      7.75,
+      2.9
+     ],
+     [
+      -7.75,
+      2.9
+     ]
+    ],
+    "note": "Clear height is to the underside. A 4.55 m soffit passes anything in the vehicle rig; the fascia is the lowest edge and it is outboard of the kerb."
+   },
+   "POSTS": [
+    {
+     "pos": [
+      -6.6,
+      0,
+      0
+     ],
+     "size": [
+      0.27,
+      0.27
+     ],
+     "footing": [
+      0.68,
+      0.68
+     ],
+     "note": "lands on the island kerb"
+    },
+    {
+     "pos": [
+      6.6,
+      0,
+      0
+     ],
+     "size": [
+      0.27,
+      0.27
+     ],
+     "footing": [
+      0.68,
+      0.68
+     ],
+     "note": "lands on the island kerb"
+    }
+   ],
+   "BLOCKERS": [
+    {
+     "shape": "box",
+     "kind": "post",
+     "footprint": [
+      [
+       -6.73,
+       -0.14
+      ],
+      [
+       -6.46,
+       -0.14
+      ],
+      [
+       -6.46,
+       0.14
+      ],
+      [
+       -6.73,
+       0.14
+      ]
+     ],
+     "height_above_grade_m": 4.55,
+     "treatment": "wall"
+    },
+    {
+     "shape": "box",
+     "kind": "post",
+     "footprint": [
+      [
+       6.46,
+       -0.14
+      ],
+      [
+       6.73,
+       -0.14
+      ],
+      [
+       6.73,
+       0.14
+      ],
+      [
+       6.46,
+       0.14
+      ]
+     ],
+     "height_above_grade_m": 4.55,
+     "treatment": "wall"
+    }
+   ],
+   "LAMPS": [
+    {
+     "pos": [
+      -4.95,
+      0,
+      4.53
+     ],
+     "kind": "soffit_panel"
+    },
+    {
+     "pos": [
+      -1.65,
+      0,
+      4.53
+     ],
+     "kind": "soffit_panel"
+    },
+    {
+     "pos": [
+      1.65,
+      0,
+      4.53
+     ],
+     "kind": "soffit_panel"
+    },
+    {
+     "pos": [
+      4.95,
+      0,
+      4.53
+     ],
+     "kind": "soffit_panel"
+    }
+   ],
+   "_excluded": {
+    "WALKABLE_ROOF": "no roof access is modelled — no ladder, no hatch, no parapet to stand behind",
+    "WALK": "nothing on a canopy is walkable"
+   }
+  },
+  {
+   "type": "sign",
+   "size": "sPylon",
+   "label": "PYLON",
+   "cell": {
+    "W": 73,
+    "H": 196
+   },
+   "pivot": {
+    "x": 36,
+    "y": 185
+   },
+   "grades_in_service": [
+    "gas",
+    "diesel",
+    "mixed"
+   ],
+   "footprint": {
+    "w": 2.1,
+    "d": 0.3,
+    "h": 6.55
+   },
+   "ROWS": [
+    {
+     "row": 1,
+     "grade": "gas",
+     "label": "GASOLINE",
+     "cents_per_L": 172.9,
+     "note": "the row order IS the grade list order"
+    },
+    {
+     "row": 2,
+     "grade": "diesel",
+     "label": "DIESEL",
+     "cents_per_L": 189.4,
+     "note": "the row order IS the grade list order"
+    },
+    {
+     "row": 3,
+     "grade": "mixed",
+     "label": "MIXED 50:1",
+     "cents_per_L": 224.9,
+     "note": "the row order IS the grade list order"
+    }
+   ],
+   "INTERACT": [
+    {
+     "id": "prices",
+     "label": "PRICE SIGN",
+     "action": "read",
+     "pos": [
+      0,
+      0,
+      6.15
+     ],
+     "reach_point": [
+      0,
+      1.4,
+      0
+     ],
+     "visible_facings": [
+      "SE",
+      "S",
+      "SW",
+      "N",
+      "NE",
+      "NW"
+     ],
+     "note": "the panel is double-sided; both faces carry the same rows",
+     "level": "apron",
+     "reach": {
+      "tested": true,
+      "verdict": "ok",
+      "on": "apron",
+      "dist_m": 1.4,
+      "moved_m": 0,
+      "lift_m": 6.15,
+      "body_r_m": 0.22,
+      "arm_m": 1.9,
+      "note": "read at distance — line of sight, not arm’s length, so no vertical test"
+     }
+    }
+   ],
+   "BLOCKERS": [
+    {
+     "shape": "box",
+     "kind": "pole",
+     "footprint": [
+      [
+       -0.14,
+       -0.12
+      ],
+      [
+       0.14,
+       -0.12
+      ],
+      [
+       0.14,
+       0.12
+      ],
+      [
+       -0.14,
+       0.12
+      ]
+     ],
+     "height_above_grade_m": 4.1,
+     "treatment": "wall"
+    },
+    {
+     "shape": "circle",
+     "kind": "base",
+     "pos": [
+      0,
+      0,
+      0
+     ],
+     "r": 0.42,
+     "height_above_grade_m": 0.16,
+     "treatment": "step_over"
+    }
+   ],
+   "REACH_AUDIT": {
+    "body_r_m": 0.22,
+    "arm_grasp_m": 1.2,
+    "arm_read_m": 1.9,
+    "vertical_reach_m": 2.1,
+    "scope": "this piece only — a dispenser is not told the island under it",
+    "checked": 1,
+    "ok": 1,
+    "moved": 0,
+    "failed": 0
+   }
+  },
+  {
+   "type": "sign",
+   "size": "sTotem",
+   "label": "TOTEM",
+   "cell": {
+    "W": 55,
+    "H": 90
+   },
+   "pivot": {
+    "x": 27,
+    "y": 78
+   },
+   "grades_in_service": [
+    "gas",
+    "diesel",
+    "mixed"
+   ],
+   "footprint": {
+    "w": 1.55,
+    "d": 0.3,
+    "h": 2.45
+   },
+   "ROWS": [
+    {
+     "row": 1,
+     "grade": "gas",
+     "label": "GASOLINE",
+     "cents_per_L": 172.9,
+     "note": "the row order IS the grade list order"
+    },
+    {
+     "row": 2,
+     "grade": "diesel",
+     "label": "DIESEL",
+     "cents_per_L": 189.4,
+     "note": "the row order IS the grade list order"
+    },
+    {
+     "row": 3,
+     "grade": "mixed",
+     "label": "MIXED 50:1",
+     "cents_per_L": 224.9,
+     "note": "the row order IS the grade list order"
+    }
+   ],
+   "INTERACT": [
+    {
+     "id": "prices",
+     "label": "PRICE SIGN",
+     "action": "read",
+     "pos": [
+      0,
+      0,
+      2.05
+     ],
+     "reach_point": [
+      0,
+      1.4,
+      0
+     ],
+     "visible_facings": [
+      "SE",
+      "S",
+      "SW",
+      "N",
+      "NE",
+      "NW"
+     ],
+     "note": "the panel is double-sided; both faces carry the same rows",
+     "level": "apron",
+     "reach": {
+      "tested": true,
+      "verdict": "ok",
+      "on": "apron",
+      "dist_m": 1.4,
+      "moved_m": 0,
+      "lift_m": 2.05,
+      "body_r_m": 0.22,
+      "arm_m": 1.9,
+      "note": "read at distance — line of sight, not arm’s length, so no vertical test"
+     }
+    }
+   ],
+   "BLOCKERS": [
+    {
+     "shape": "box",
+     "kind": "pole",
+     "footprint": [
+      [
+       -0.14,
+       -0.12
+      ],
+      [
+       0.14,
+       -0.12
+      ],
+      [
+       0.14,
+       0.12
+      ],
+      [
+       -0.14,
+       0.12
+      ]
+     ],
+     "height_above_grade_m": 0.85,
+     "treatment": "wall"
+    },
+    {
+     "shape": "circle",
+     "kind": "base",
+     "pos": [
+      0,
+      0,
+      0
+     ],
+     "r": 0.42,
+     "height_above_grade_m": 0.16,
+     "treatment": "step_over"
+    }
+   ],
+   "REACH_AUDIT": {
+    "body_r_m": 0.22,
+    "arm_grasp_m": 1.2,
+    "arm_read_m": 1.9,
+    "vertical_reach_m": 2.1,
+    "scope": "this piece only — a dispenser is not told the island under it",
+    "checked": 1,
+    "ok": 1,
+    "moved": 0,
+    "failed": 0
+   }
+  },
+  {
+   "type": "sign",
+   "size": "sAframe",
+   "label": "A-FRAME",
+   "cell": {
+    "W": 50,
+    "H": 52
+   },
+   "pivot": {
+    "x": 25,
+    "y": 38
+   },
+   "grades_in_service": [
+    "gas",
+    "diesel",
+    "mixed"
+   ],
+   "footprint": {
+    "w": 0.86,
+    "d": 0.62,
+    "h": 0.98
+   },
+   "ROWS": [
+    {
+     "row": 1,
+     "grade": "gas",
+     "label": "GASOLINE",
+     "cents_per_L": 172.9,
+     "note": "the row order IS the grade list order"
+    },
+    {
+     "row": 2,
+     "grade": "diesel",
+     "label": "DIESEL",
+     "cents_per_L": 189.4,
+     "note": "the row order IS the grade list order"
+    },
+    {
+     "row": 3,
+     "grade": "mixed",
+     "label": "MIXED 50:1",
+     "cents_per_L": 224.9,
+     "note": "the row order IS the grade list order"
+    }
+   ],
+   "INTERACT": [
+    {
+     "id": "prices",
+     "label": "PRICE SIGN",
+     "action": "read",
+     "pos": [
+      0,
+      0,
+      0.58
+     ],
+     "reach_point": [
+      0,
+      1.4,
+      0
+     ],
+     "visible_facings": [
+      "SE",
+      "S",
+      "SW",
+      "N",
+      "NE",
+      "NW"
+     ],
+     "note": "the panel is double-sided; both faces carry the same rows",
+     "level": "apron",
+     "reach": {
+      "tested": true,
+      "verdict": "ok",
+      "on": "apron",
+      "dist_m": 1.4,
+      "moved_m": 0,
+      "lift_m": 0.58,
+      "body_r_m": 0.22,
+      "arm_m": 1.9,
+      "note": "read at distance — line of sight, not arm’s length, so no vertical test"
+     }
+    }
+   ],
+   "BLOCKERS": [
+    {
+     "shape": "box",
+     "kind": "a_frame",
+     "footprint": [
+      [
+       -0.43,
+       -0.32
+      ],
+      [
+       0.43,
+       -0.32
+      ],
+      [
+       0.43,
+       0.32
+      ],
+      [
+       -0.43,
+       0.32
+      ]
+     ],
+     "height_above_grade_m": 0.98,
+     "treatment": "waist_block",
+     "note": "the only sign here a player could knock over"
+    }
+   ],
+   "REACH_AUDIT": {
+    "body_r_m": 0.22,
+    "arm_grasp_m": 1.2,
+    "arm_read_m": 1.9,
+    "vertical_reach_m": 2.1,
+    "scope": "this piece only — a dispenser is not told the island under it",
+    "checked": 1,
+    "ok": 1,
+    "moved": 0,
+    "failed": 0
+   }
+  },
+  {
+   "type": "store",
+   "size": "sKiosk",
+   "label": "PAY BOOTH",
+   "cell": {
+    "W": 252,
+    "H": 216
+   },
+   "pivot": {
+    "x": 126,
+    "y": 134
+   },
+   "grades_in_service": [
+    "gas",
+    "diesel",
+    "mixed"
+   ],
+   "footprint": {
+    "w": 4.2,
+    "d": 3.4,
+    "h": 3.05
+   },
+   "collider_bbox": [
+    [
+     -2.1,
+     -1.7,
+     0
+    ],
+    [
+     2.1,
+     1.7,
+     3.05
+    ]
+   ],
+   "SHELL": {
+    "wall_m": 0.16,
+    "floor_z": 0.18,
+    "clear_m": 2.55,
+    "ceiling_z": 2.73,
+    "roof_z": 2.83,
+    "inner": [
+     3.88,
+     3.08
+    ],
+    "front": "+y",
+    "published_as": "StationIso.shell(size)"
+   },
+   "THRESHOLD": {
+    "kind": "slide_bipart",
+    "clear_w_m": 0.94,
+    "clear_h_m": 2.1,
+    "threshold": [
+     1.18,
+     1.7,
+     0.18
+    ],
+    "leaf_w_m": 0.47,
+    "travel_m": 0.53,
+    "clear_at_open_fraction": 0.85,
+    "sill_step_m": 0.18,
+    "treatment": "step_over",
+    "keep_clear": null,
+    "note": "Bipart slider: no swept arc, so there is no keep_clear volume — the collider is the leaf itself, which travels inside the wall line. Doors default SHUT (owner ruling, 2026-08-19)."
+   },
+   "SERVICE_DOOR": {
+    "kind": "swing_single_out",
+    "clear_w_m": 0.84,
+    "clear_h_m": 2.1,
+    "hinge": "-x",
+    "threshold": [
+     -1.24,
+     -1.7,
+     0.18
+    ],
+    "sill_step_m": 0.18,
+    "treatment": "step_over",
+    "keep_clear": {
+     "shape": "box",
+     "footprint": [
+      [
+       -1.66,
+       -2.64
+      ],
+      [
+       -0.72,
+       -2.64
+      ],
+      [
+       -0.72,
+       -1.7
+      ],
+      [
+       -1.66,
+       -1.7
+      ]
+     ],
+     "note": "a single leaf swinging OUT does sweep — unlike the entry, this one owns a keep_clear"
+    },
+    "note": "Back of house. Staff only; it is not a second way in for a customer."
+   },
+   "WALK": [
+    {
+     "id": "walkway",
+     "winding": "ccw_from_above",
+     "z": 0.116,
+     "surface": "concrete",
+     "polygon": [
+      [
+       -2.68,
+       1.8
+      ],
+      [
+       2.68,
+       1.8
+      ],
+      [
+       2.68,
+       2.75
+      ],
+      [
+       -2.68,
+       2.75
+      ]
+     ],
+     "treatment": "step_over",
+     "note": "the walk outside the glass; the painted edge is its outer limit"
+    },
+    {
+     "id": "service_stoop",
+     "winding": "ccw_from_above",
+     "z": 0.124,
+     "surface": "concrete",
+     "polygon": [
+      [
+       -2,
+       -2.42
+      ],
+      [
+       -0.48,
+       -2.42
+      ],
+      [
+       -0.48,
+       -1.7
+      ],
+      [
+       -2,
+       -1.7
+      ]
+     ],
+     "treatment": "step_over",
+     "note": "the pad outside the service door"
+    }
+   ],
+   "ROOF": {
+    "z": 2.83,
+    "parapet_z": 3.05,
+    "plant": 1,
+    "walkable": false,
+    "access": null,
+    "note": "Plant sits on curbs on the deck. Not walkable and not reachable — a booth gets no ladder."
+   },
+   "ATTACH": [
+    {
+     "id": "sign_band",
+     "pos": [
+      0,
+      1.79,
+      2.54
+     ],
+     "kind": "illuminated band",
+     "grade_colour": "gas"
+    }
+   ],
+   "INTERACT": [
+    {
+     "id": "service_door",
+     "label": "SERVICE DOOR",
+     "action": "staff_door",
+     "pos": [
+      -1.24,
+      -1.76,
+      1.22
+     ],
+     "reach_point": [
+      -1.96,
+      -2.25,
+      0.12
+     ],
+     "visible_facings": [
+      "N",
+      "NE",
+      "NW"
+     ],
+     "level": "service_stoop",
+     "note": "hinge side, clear of the leaf’s own keep_clear — a body does not stand in the swing of the door it is opening",
+     "reach": {
+      "tested": true,
+      "verdict": "ok",
+      "on": "service_stoop",
+      "dist_m": 0.87,
+      "moved_m": 0,
+      "lift_m": 1.1,
+      "body_r_m": 0.22,
+      "arm_m": 1.2
+     }
+    },
+    {
+     "id": "till",
+     "label": "TILL",
+     "action": "buy",
+     "pos": [
+      0.2,
+      0.92,
+      1.12
+     ],
+     "reach_point": [
+      0.2,
+      0.12,
+      0.18
+     ],
+     "visible_facings": [
+      "N",
+      "NE",
+      "E",
+      "W",
+      "NW"
+     ],
+     "level": "sales_floor",
+     "reach": {
+      "tested": true,
+      "verdict": "ok",
+      "on": "sales_floor",
+      "dist_m": 0.8,
+      "moved_m": 0,
+      "lift_m": 0.94,
+      "body_r_m": 0.22,
+      "arm_m": 1.2
+     }
+    },
+    {
+     "id": "shelf",
+     "label": "BACK SHELF",
+     "action": "storage",
+     "pos": [
+      0,
+      -1.32,
+      1.48
+     ],
+     "reach_point": [
+      0,
+      -0.52,
+      0.18
+     ],
+     "visible_facings": [
+      "E",
+      "SE",
+      "S",
+      "SW",
+      "W"
+     ],
+     "level": "sales_floor",
+     "reach": {
+      "tested": true,
+      "verdict": "ok",
+      "on": "sales_floor",
+      "dist_m": 0.8,
+      "moved_m": 0,
+      "lift_m": 1.3,
+      "body_r_m": 0.22,
+      "arm_m": 1.2
+     }
+    },
+    {
+     "id": "window",
+     "label": "PAY WINDOW",
+     "action": "pay",
+     "pos": [
+      -0.12,
+      1.54,
+      1.28
+     ],
+     "reach_point": [
+      -0.12,
+      0.38,
+      0.18
+     ],
+     "visible_facings": [
+      "N",
+      "NE",
+      "E",
+      "W",
+      "NW"
+     ],
+     "level": "sales_floor",
+     "reach": {
+      "tested": true,
+      "verdict": "moved",
+      "on": "sales_floor",
+      "dist_m": 1.16,
+      "moved_m": 0.36,
+      "lift_m": 1.1,
+      "body_r_m": 0.22,
+      "arm_m": 1.9
+     }
+    }
+   ],
+   "BLOCKERS": [
+    {
+     "shape": "box",
+     "kind": "building",
+     "footprint": [
+      [
+       -2.1,
+       -1.7
+      ],
+      [
+       2.1,
+       -1.7
+      ],
+      [
+       2.1,
+       1.7
+      ],
+      [
+       -2.1,
+       1.7
+      ]
+     ],
+     "height_above_grade_m": 3.05,
+     "treatment": "wall"
+    }
+   ],
+   "SOLE": [
+    {
+     "id": "sales_floor",
+     "winding": "ccw_from_above",
+     "z": 0.18,
+     "polygon": [
+      [
+       -1.94,
+       -1.54
+      ],
+      [
+       1.94,
+       -1.54
+      ],
+      [
+       1.94,
+       1.54
+      ],
+      [
+       -1.94,
+       1.54
+      ]
+     ],
+     "surface": "tile",
+     "clear_height_m": 2.55,
+     "note": "Inside face of the walls, generated from StationIso.shell(). One floor, one owner — the exterior file does not repeat it.",
+     "_notes": [
+      {
+       "id": "counter",
+       "footprint": [
+        [
+         -1.84,
+         0.63
+        ],
+        [
+         1.84,
+         0.63
+        ],
+        [
+         1.84,
+         1.21
+        ],
+        [
+         -1.84,
+         1.21
+        ]
+       ],
+       "height_above_sole_m": 0.94,
+       "treatment": "waist_block",
+       "note": "pay counter across the front"
+      },
+      {
+       "id": "back_shelf",
+       "footprint": [
+        [
+         -1.64,
+         -1.54
+        ],
+        [
+         1.64,
+         -1.54
+        ],
+        [
+         1.64,
+         -1.2
+        ],
+        [
+         -1.64,
+         -1.2
+        ]
+       ],
+       "height_above_sole_m": 1.46,
+       "treatment": "wall",
+       "note": "wall shelf, above head height at the sill"
+      }
+     ]
+    }
+   ],
+   "interior": {
+    "rig": "Art/stationInteriorRig.js",
+    "exposes": "globalThis.StationInterior",
+    "cell": "identical to this piece — StationInterior paints into StationIso.cell(\"store\", size)",
+    "sectionCut": "per facing; a wall whose outside is camera-facing is not drawn",
+    "rock": "none — a building ashore does not move"
+   },
+   "_excluded": {
+    "WALKABLE_ROOF": "a pay booth gets no ladder, so its deck stays unreachable",
+    "GLAZING_SEE_THROUGH": "the shell’s glass is opaque by design; the interior is its own sprite in the same cell",
+    "ROOF_HATCH": "none — the ladder crests the parapet, which is the cheaper and more common detail"
+   },
+   "REACH_AUDIT": {
+    "body_r_m": 0.22,
+    "arm_grasp_m": 1.2,
+    "arm_read_m": 1.9,
+    "vertical_reach_m": 2.1,
+    "scope": "this piece only — a dispenser is not told the island under it",
+    "checked": 4,
+    "ok": 3,
+    "moved": 1,
+    "failed": 0
+   }
+  },
+  {
+   "type": "store",
+   "size": "sStore",
+   "label": "C-STORE",
+   "cell": {
+    "W": 560,
+    "H": 435
+   },
+   "pivot": {
+    "x": 280,
+    "y": 254
+   },
+   "grades_in_service": [
+    "gas",
+    "diesel",
+    "mixed"
+   ],
+   "footprint": {
+    "w": 11.6,
+    "d": 8.2,
+    "h": 4.35
+   },
+   "collider_bbox": [
+    [
+     -5.8,
+     -4.1,
+     0
+    ],
+    [
+     5.8,
+     4.44,
+     5.07
+    ]
+   ],
+   "SHELL": {
+    "wall_m": 0.2,
+    "floor_z": 0.18,
+    "clear_m": 3.05,
+    "ceiling_z": 3.23,
+    "roof_z": 3.91,
+    "inner": [
+     11.2,
+     7.8
+    ],
+    "front": "+y",
+    "published_as": "StationIso.shell(size)"
+   },
+   "THRESHOLD": {
+    "kind": "slide_bipart",
+    "clear_w_m": 2.4,
+    "clear_h_m": 2.37,
+    "threshold": [
+     0.3,
+     4.1,
+     0.18
+    ],
+    "leaf_w_m": 1.2,
+    "travel_m": 1.26,
+    "clear_at_open_fraction": 0.33,
+    "sill_step_m": 0.18,
+    "treatment": "step_over",
+    "keep_clear": null,
+    "note": "Bipart slider: no swept arc, so there is no keep_clear volume — the collider is the leaf itself, which travels inside the wall line. Doors default SHUT (owner ruling, 2026-08-19)."
+   },
+   "SERVICE_DOOR": {
+    "kind": "swing_single_out",
+    "clear_w_m": 1.02,
+    "clear_h_m": 2.1,
+    "hinge": "-x",
+    "threshold": [
+     -4.5,
+     -4.1,
+     0.18
+    ],
+    "sill_step_m": 0.18,
+    "treatment": "step_over",
+    "keep_clear": {
+     "shape": "box",
+     "footprint": [
+      [
+       -5.01,
+       -5.22
+      ],
+      [
+       -3.89,
+       -5.22
+      ],
+      [
+       -3.89,
+       -4.1
+      ],
+      [
+       -5.01,
+       -4.1
+      ]
+     ],
+     "note": "a single leaf swinging OUT does sweep — unlike the entry, this one owns a keep_clear"
+    },
+    "note": "Back of house. Staff only; it is not a second way in for a customer."
+   },
+   "WALK": [
+    {
+     "id": "walkway",
+     "winding": "ccw_from_above",
+     "z": 0.116,
+     "surface": "concrete",
+     "polygon": [
+      [
+       -6.38,
+       4.2
+      ],
+      [
+       6.38,
+       4.2
+      ],
+      [
+       6.38,
+       5.85
+      ],
+      [
+       -6.38,
+       5.85
+      ]
+     ],
+     "treatment": "step_over",
+     "note": "the walk outside the glass; the painted edge is its outer limit"
+    },
+    {
+     "id": "service_stoop",
+     "winding": "ccw_from_above",
+     "z": 0.124,
+     "surface": "concrete",
+     "polygon": [
+      [
+       -5.35,
+       -5.02
+      ],
+      [
+       -2.85,
+       -5.02
+      ],
+      [
+       -2.85,
+       -4.1
+      ],
+      [
+       -5.35,
+       -4.1
+      ]
+     ],
+     "treatment": "step_over",
+     "note": "the pad outside the service door; it runs on to the ladder foot at its +x end"
+    },
+    {
+     "id": "roof_deck",
+     "winding": "ccw_from_above",
+     "z": 3.91,
+     "surface": "membrane",
+     "polygon": [
+      [
+       -5.64,
+       -3.94
+      ],
+      [
+       5.64,
+       -3.94
+      ],
+      [
+       5.64,
+       3.94
+      ],
+      [
+       -5.64,
+       3.94
+      ]
+     ],
+     "treatment": "flat",
+     "reached_by": "roof_ladder",
+     "fall_edge": "parapet, 0.44 m — a kerb, not a guard",
+     "note": "Inside face of the parapet. Plant and its curbs are published as roof-level blockers, not as holes in this polygon."
+    }
+   ],
+   "ROOF": {
+    "z": 3.91,
+    "parapet_z": 4.35,
+    "plant": 2,
+    "walkable": true,
+    "access": {
+     "kind": "fixed_ladder_caged",
+     "foot": [
+      -3.19,
+      -4.36,
+      0.12
+     ],
+     "head": [
+      -3.19,
+      -4.36,
+      4.99
+     ],
+     "cage_from_m": 2.3,
+     "standoff_m": 0.26,
+     "note": "stringers run past the coping and turn inboard as grab rails — the crest is the step-off"
+    },
+    "note": "Plant sits on curbs on the deck; the deck is walkable and the ladder is how a body gets there."
+   },
+   "ATTACH": [
+    {
+     "id": "sign_band",
+     "pos": [
+      0,
+      4.19,
+      3.44
+     ],
+     "kind": "illuminated band",
+     "grade_colour": "gas"
+    },
+    {
+     "id": "ice",
+     "pos": [
+      6.74,
+      -0.41,
+      1.08
+     ],
+     "kind": "ice merchandiser"
+    },
+    {
+     "id": "propane",
+     "pos": [
+      6.74,
+      -2.71,
+      0.98
+     ],
+     "kind": "propane exchange cage"
+    }
+   ],
+   "INTERACT": [
+    {
+     "id": "ice_box",
+     "label": "ICE",
+     "action": "buy_ice",
+     "pos": [
+      6.68,
+      -0.41,
+      1.08
+     ],
+     "reach_point": [
+      7.35,
+      -0.41,
+      0
+     ],
+     "visible_facings": [
+      "NE",
+      "E",
+      "SE"
+     ],
+     "level": "apron",
+     "reach": {
+      "tested": true,
+      "verdict": "ok",
+      "on": "apron",
+      "dist_m": 0.67,
+      "moved_m": 0,
+      "lift_m": 1.08,
+      "body_r_m": 0.22,
+      "arm_m": 1.2
+     }
+    },
+    {
+     "id": "propane_cage",
+     "label": "PROPANE EXCHANGE",
+     "action": "buy_propane",
+     "pos": [
+      6.68,
+      -2.71,
+      0.98
+     ],
+     "reach_point": [
+      7.35,
+      -2.71,
+      0
+     ],
+     "visible_facings": [
+      "NE",
+      "E",
+      "SE"
+     ],
+     "level": "apron",
+     "reach": {
+      "tested": true,
+      "verdict": "ok",
+      "on": "apron",
+      "dist_m": 0.67,
+      "moved_m": 0,
+      "lift_m": 0.98,
+      "body_r_m": 0.22,
+      "arm_m": 1.2
+     }
+    },
+    {
+     "id": "service_door",
+     "label": "SERVICE DOOR",
+     "action": "staff_door",
+     "pos": [
+      -4.5,
+      -4.16,
+      1.22
+     ],
+     "reach_point": [
+      -5.31,
+      -4.65,
+      0.12
+     ],
+     "visible_facings": [
+      "N",
+      "NE",
+      "NW"
+     ],
+     "level": "service_stoop",
+     "note": "hinge side, clear of the leaf’s own keep_clear — a body does not stand in the swing of the door it is opening",
+     "reach": {
+      "tested": true,
+      "verdict": "ok",
+      "on": "service_stoop",
+      "dist_m": 0.95,
+      "moved_m": 0,
+      "lift_m": 1.1,
+      "body_r_m": 0.22,
+      "arm_m": 1.2
+     }
+    },
+    {
+     "id": "roof_ladder",
+     "label": "ROOF LADDER",
+     "action": "climb",
+     "pos": [
+      -3.19,
+      -4.36,
+      1.2
+     ],
+     "reach_point": [
+      -3.19,
+      -4.94,
+      0.12
+     ],
+     "lands_at": [
+      -3.19,
+      -3.64,
+      3.91
+     ],
+     "visible_facings": [
+      "N",
+      "NE",
+      "NW"
+     ],
+     "level": "service_stoop",
+     "note": "climb is a two-surface move: stoop at the foot, roof_deck at the head",
+     "reach": {
+      "tested": true,
+      "verdict": "ok",
+      "on": "service_stoop",
+      "dist_m": 0.58,
+      "moved_m": 0,
+      "lift_m": 1.08,
+      "body_r_m": 0.22,
+      "arm_m": 1.2
+     }
+    },
+    {
+     "id": "till",
+     "label": "SERVICE COUNTER",
+     "action": "buy",
+     "pos": [
+      -4.43,
+      0.58,
+      1.16
+     ],
+     "reach_point": [
+      -3.63,
+      0.58,
+      0.18
+     ],
+     "visible_facings": [
+      "N",
+      "NE",
+      "E",
+      "SE",
+      "S"
+     ],
+     "level": "sales_floor",
+     "reach": {
+      "tested": true,
+      "verdict": "ok",
+      "on": "sales_floor",
+      "dist_m": 0.8,
+      "moved_m": 0,
+      "lift_m": 0.98,
+      "body_r_m": 0.22,
+      "arm_m": 1.2
+     }
+    },
+    {
+     "id": "cooler",
+     "label": "COOLER WALL",
+     "action": "drinks",
+     "pos": [
+      -2.05,
+      -2.76,
+      1.28
+     ],
+     "reach_point": [
+      -2.05,
+      -2.54,
+      0.18
+     ],
+     "visible_facings": [
+      "E",
+      "SE",
+      "S",
+      "SW",
+      "W"
+     ],
+     "level": "sales_floor",
+     "reach": {
+      "tested": true,
+      "verdict": "relocated",
+      "on": "sales_floor",
+      "dist_m": 0.22,
+      "moved_m": 0.58,
+      "lift_m": 1.1,
+      "body_r_m": 0.22,
+      "arm_m": 1.2,
+      "reason": "neither side of the requested line cleared; the spot was taken to the nearest open axis"
+     }
+    },
+    {
+     "id": "coffee",
+     "label": "COFFEE / FOUNTAIN",
+     "action": "coffee",
+     "pos": [
+      3.72,
+      -2.74,
+      1.12
+     ],
+     "reach_point": [
+      3.72,
+      -1.94,
+      0.18
+     ],
+     "visible_facings": [
+      "E",
+      "SE",
+      "S",
+      "SW",
+      "W"
+     ],
+     "level": "sales_floor",
+     "reach": {
+      "tested": true,
+      "verdict": "ok",
+      "on": "sales_floor",
+      "dist_m": 0.8,
+      "moved_m": 0,
+      "lift_m": 0.94,
+      "body_r_m": 0.22,
+      "arm_m": 1.2
+     }
+    },
+    {
+     "id": "snacks",
+     "label": "GONDOLA RUN",
+     "action": "browse",
+     "pos": [
+      0.45,
+      -0.65,
+      1.13
+     ],
+     "reach_point": [
+      0.45,
+      -0.43,
+      0.18
+     ],
+     "visible_facings": [
+      "N",
+      "NE",
+      "E",
+      "SE",
+      "S",
+      "SW",
+      "W",
+      "NW"
+     ],
+     "level": "sales_floor",
+     "reach": {
+      "tested": true,
+      "verdict": "relocated",
+      "on": "sales_floor",
+      "dist_m": 0.22,
+      "moved_m": 0.58,
+      "lift_m": 0.95,
+      "body_r_m": 0.22,
+      "arm_m": 1.2,
+      "reason": "neither side of the requested line cleared; the spot was taken to the nearest open axis"
+     }
+    },
+    {
+     "id": "hotcase",
+     "label": "HOT CASE",
+     "action": "food",
+     "pos": [
+      -4.43,
+      2,
+      1.52
+     ],
+     "reach_point": [
+      -3.63,
+      2,
+      0.18
+     ],
+     "visible_facings": [
+      "N",
+      "NE",
+      "E",
+      "SE",
+      "S"
+     ],
+     "level": "sales_floor",
+     "reach": {
+      "tested": true,
+      "verdict": "ok",
+      "on": "sales_floor",
+      "dist_m": 0.8,
+      "moved_m": 0,
+      "lift_m": 1.34,
+      "body_r_m": 0.22,
+      "arm_m": 1.2
+     }
+    },
+    {
+     "id": "atm",
+     "label": "ATM",
+     "action": "cash",
+     "pos": [
+      5.05,
+      2.3,
+      1.23
+     ],
+     "reach_point": [
+      4.25,
+      2.3,
+      0.18
+     ],
+     "visible_facings": [
+      "N",
+      "S",
+      "SW",
+      "W",
+      "NW"
+     ],
+     "level": "sales_floor",
+     "reach": {
+      "tested": true,
+      "verdict": "ok",
+      "on": "sales_floor",
+      "dist_m": 0.8,
+      "moved_m": 0,
+      "lift_m": 1.05,
+      "body_r_m": 0.22,
+      "arm_m": 1.2
+     }
+    }
+   ],
+   "BLOCKERS": [
+    {
+     "shape": "box",
+     "kind": "building",
+     "footprint": [
+      [
+       -5.8,
+       -4.1
+      ],
+      [
+       5.8,
+       -4.1
+      ],
+      [
+       5.8,
+       4.1
+      ],
+      [
+       -5.8,
+       4.1
+      ]
+     ],
+     "height_above_grade_m": 4.35,
+     "treatment": "wall"
+    },
+    {
+     "shape": "box",
+     "kind": "ice",
+     "footprint": [
+      [
+       5.82,
+       -1.03
+      ],
+      [
+       6.66,
+       -1.03
+      ],
+      [
+       6.66,
+       0.21
+      ],
+      [
+       5.82,
+       0.21
+      ]
+     ],
+     "height_above_grade_m": 1.62,
+     "treatment": "wall"
+    },
+    {
+     "shape": "box",
+     "kind": "propane_cage",
+     "footprint": [
+      [
+       5.86,
+       -3.15
+      ],
+      [
+       6.66,
+       -3.15
+      ],
+      [
+       6.66,
+       -2.27
+      ],
+      [
+       5.86,
+       -2.27
+      ]
+     ],
+     "height_above_grade_m": 1.84,
+     "treatment": "wall"
+    },
+    {
+     "shape": "box",
+     "kind": "ladder_cage",
+     "footprint": [
+      [
+       -3.53,
+       -4.72
+      ],
+      [
+       -2.85,
+       -4.72
+      ],
+      [
+       -2.85,
+       -4.1
+      ],
+      [
+       -3.53,
+       -4.1
+      ]
+     ],
+     "height_above_grade_m": 4.35,
+     "treatment": "wall"
+    },
+    {
+     "shape": "box",
+     "kind": "plant",
+     "level": "roof",
+     "footprint": [
+      [
+       -3.35,
+       -2
+      ],
+      [
+       -1.75,
+       -2
+      ],
+      [
+       -1.75,
+       -0.78
+      ],
+      [
+       -3.35,
+       -0.78
+      ]
+     ],
+     "height_above_grade_m": 0.49,
+     "treatment": "waist_block",
+     "note": "heights on the roof are above the DECK, not the ground"
+    },
+    {
+     "shape": "box",
+     "kind": "plant",
+     "level": "roof",
+     "footprint": [
+      [
+       1.06,
+       -2.26
+      ],
+      [
+       2.42,
+       -2.26
+      ],
+      [
+       2.42,
+       -1.18
+      ],
+      [
+       1.06,
+       -1.18
+      ]
+     ],
+     "height_above_grade_m": 0.45,
+     "treatment": "waist_block"
+    },
+    {
+     "shape": "circle",
+     "kind": "flue",
+     "level": "roof",
+     "pos": [
+      3.83,
+      1.23,
+      0
+     ],
+     "r": 0.12,
+     "height_above_grade_m": 0.6,
+     "treatment": "waist_block"
+    }
+   ],
+   "SOLE": [
+    {
+     "id": "sales_floor",
+     "winding": "ccw_from_above",
+     "z": 0.18,
+     "polygon": [
+      [
+       -5.6,
+       -3.9
+      ],
+      [
+       5.6,
+       -3.9
+      ],
+      [
+       5.6,
+       3.9
+      ],
+      [
+       -5.6,
+       3.9
+      ]
+     ],
+     "surface": "tile",
+     "clear_height_m": 3.05,
+     "note": "Inside face of the walls, generated from StationIso.shell(). One floor, one owner — the exterior file does not repeat it.",
+     "_notes": [
+      {
+       "id": "cooler_wall",
+       "footprint": [
+        [
+         -5.4,
+         -3.89
+        ],
+        [
+         1.3,
+         -3.89
+        ],
+        [
+         1.3,
+         -3.11
+        ],
+        [
+         -5.4,
+         -3.11
+        ]
+       ],
+       "height_above_sole_m": 2.06,
+       "treatment": "wall",
+       "note": "reach-in coolers, 7 doors"
+      },
+      {
+       "id": "coffee_run",
+       "footprint": [
+        [
+         2.1,
+         -3.89
+        ],
+        [
+         5.35,
+         -3.89
+        ],
+        [
+         5.35,
+         -3.19
+        ],
+        [
+         2.1,
+         -3.19
+        ]
+       ],
+       "height_above_sole_m": 1.38,
+       "treatment": "wall",
+       "note": "counter with brewers and fountain tower"
+      },
+      {
+       "id": "service_counter",
+       "footprint": [
+        [
+         -5.34,
+         -1.3
+        ],
+        [
+         -4.62,
+         -1.3
+        ],
+        [
+         -4.62,
+         2.45
+        ],
+        [
+         -5.34,
+         2.45
+        ]
+       ],
+       "height_above_sole_m": 0.98,
+       "treatment": "waist_block",
+       "note": "staff side is the -x aisle"
+      },
+      {
+       "id": "gantry",
+       "footprint": [
+        [
+         -5.59,
+         -0.2
+        ],
+        [
+         -5.29,
+         -0.2
+        ],
+        [
+         -5.29,
+         2.45
+        ],
+        [
+         -5.59,
+         2.45
+        ]
+       ],
+       "height_above_sole_m": 2.1,
+       "treatment": "wall",
+       "note": "the only wall-height fixture in the room"
+      },
+      {
+       "id": "gondola_1",
+       "footprint": [
+        [
+         -2.4,
+         -1.81
+        ],
+        [
+         3.3,
+         -1.81
+        ],
+        [
+         3.3,
+         -0.89
+        ],
+        [
+         -2.4,
+         -0.89
+        ]
+       ],
+       "height_above_sole_m": 1.04,
+       "treatment": "waist_block",
+       "note": "double-sided island run"
+      },
+      {
+       "id": "gondola_2",
+       "footprint": [
+        [
+         -2.4,
+         -0.01
+        ],
+        [
+         3.3,
+         -0.01
+        ],
+        [
+         3.3,
+         0.91
+        ],
+        [
+         -2.4,
+         0.91
+        ]
+       ],
+       "height_above_sole_m": 1.04,
+       "treatment": "waist_block",
+       "note": "double-sided island run"
+      },
+      {
+       "id": "atm",
+       "footprint": [
+        [
+         4.98,
+         1.96
+        ],
+        [
+         5.58,
+         1.96
+        ],
+        [
+         5.58,
+         2.64
+        ],
+        [
+         4.98,
+         2.64
+        ]
+       ],
+       "height_above_sole_m": 1.56,
+       "treatment": "wall",
+       "note": "against the +x wall"
+      }
+     ]
+    }
+   ],
+   "interior": {
+    "rig": "Art/stationInteriorRig.js",
+    "exposes": "globalThis.StationInterior",
+    "cell": "identical to this piece — StationInterior paints into StationIso.cell(\"store\", size)",
+    "sectionCut": "per facing; a wall whose outside is camera-facing is not drawn",
+    "rock": "none — a building ashore does not move"
+   },
+   "_excluded": {
+    "GLAZING_SEE_THROUGH": "the shell’s glass is opaque by design; the interior is its own sprite in the same cell",
+    "ROOF_HATCH": "none — the ladder crests the parapet, which is the cheaper and more common detail"
+   },
+   "REACH_AUDIT": {
+    "body_r_m": 0.22,
+    "arm_grasp_m": 1.2,
+    "arm_read_m": 1.9,
+    "vertical_reach_m": 2.1,
+    "scope": "this piece only — a dispenser is not told the island under it",
+    "checked": 10,
+    "ok": 8,
+    "moved": 2,
+    "failed": 0
+   }
+  },
+  {
+   "type": "fillport",
+   "size": "sCluster",
+   "label": "FILL CLUSTER",
+   "cell": {
+    "W": 83,
+    "H": 56
+   },
+   "pivot": {
+    "x": 41,
+    "y": 29
+   },
+   "grades_in_service": [
+    "gas",
+    "diesel",
+    "mixed"
+   ],
+   "footprint": {
+    "w": 1.72,
+    "d": 1.72,
+    "h": 0.1
+   },
+   "WALK": [
+    {
+     "id": "fill_pad",
+     "winding": "ccw_from_above",
+     "z": 0.09,
+     "surface": "concrete",
+     "polygon": [
+      [
+       -0.86,
+       -0.86
+      ],
+      [
+       0.86,
+       -0.86
+      ],
+      [
+       0.86,
+       0.86
+      ],
+      [
+       -0.86,
+       0.86
+      ]
+     ],
+     "treatment": "flat",
+     "note": "flush with the apron — drive over it"
+    }
+   ],
+   "INTERACT": [
+    {
+     "id": "fill_gas",
+     "label": "TANK FILL · GASOLINE",
+     "action": "tanker_fill",
+     "grade": "gas",
+     "pos": [
+      -0.4,
+      -0.4,
+      0.09
+     ],
+     "reach_point": [
+      -0.4,
+      0.7,
+      0
+     ],
+     "visible_facings": [
+      "N",
+      "NE",
+      "E",
+      "SE",
+      "S",
+      "SW",
+      "W",
+      "NW"
+     ],
+     "level": "apron",
+     "reach": {
+      "tested": true,
+      "verdict": "ok",
+      "on": "apron",
+      "dist_m": 1.1,
+      "moved_m": 0,
+      "lift_m": 0.09,
+      "body_r_m": 0.22,
+      "arm_m": 1.2
+     }
+    },
+    {
+     "id": "fill_diesel",
+     "label": "TANK FILL · DIESEL",
+     "action": "tanker_fill",
+     "grade": "diesel",
+     "pos": [
+      0.4,
+      -0.4,
+      0.09
+     ],
+     "reach_point": [
+      0.4,
+      0.7,
+      0
+     ],
+     "visible_facings": [
+      "N",
+      "NE",
+      "E",
+      "SE",
+      "S",
+      "SW",
+      "W",
+      "NW"
+     ],
+     "level": "apron",
+     "reach": {
+      "tested": true,
+      "verdict": "ok",
+      "on": "apron",
+      "dist_m": 1.1,
+      "moved_m": 0,
+      "lift_m": 0.09,
+      "body_r_m": 0.22,
+      "arm_m": 1.2
+     }
+    },
+    {
+     "id": "fill_mixed",
+     "label": "TANK FILL · MIXED 50:1",
+     "action": "tanker_fill",
+     "grade": "mixed",
+     "pos": [
+      -0.4,
+      0.4,
+      0.09
+     ],
+     "reach_point": [
+      -0.4,
+      1.5,
+      0
+     ],
+     "visible_facings": [
+      "N",
+      "NE",
+      "E",
+      "SE",
+      "S",
+      "SW",
+      "W",
+      "NW"
+     ],
+     "level": "apron",
+     "reach": {
+      "tested": true,
+      "verdict": "ok",
+      "on": "apron",
+      "dist_m": 1.1,
+      "moved_m": 0,
+      "lift_m": 0.09,
+      "body_r_m": 0.22,
+      "arm_m": 1.2
+     }
+    }
+   ],
+   "CAPS": [
+    {
+     "id": "cap_gas",
+     "grade": "gas",
+     "pos": [
+      -0.4,
+      -0.4,
+      0.09
+     ],
+     "r": 0.2
+    },
+    {
+     "id": "cap_diesel",
+     "grade": "diesel",
+     "pos": [
+      0.4,
+      -0.4,
+      0.09
+     ],
+     "r": 0.2
+    },
+    {
+     "id": "cap_mixed",
+     "grade": "mixed",
+     "pos": [
+      -0.4,
+      0.4,
+      0.09
+     ],
+     "r": 0.2
+    }
+   ],
+   "_excluded": {
+    "BLOCKERS": "nothing here stands proud enough to block — the caps are flush by design"
+   },
+   "REACH_AUDIT": {
+    "body_r_m": 0.22,
+    "arm_grasp_m": 1.2,
+    "arm_read_m": 1.9,
+    "vertical_reach_m": 2.1,
+    "scope": "this piece only — a dispenser is not told the island under it",
+    "checked": 3,
+    "ok": 3,
+    "moved": 0,
+    "failed": 0
+   }
+  },
+  {
+   "type": "fillport",
+   "size": "sVent",
+   "label": "VENT RISERS",
+   "cell": {
+    "W": 49,
+    "H": 105
+   },
+   "pivot": {
+    "x": 24,
+    "y": 88
+   },
+   "grades_in_service": [
+    "gas",
+    "diesel",
+    "mixed"
+   ],
+   "footprint": {
+    "w": 1.4,
+    "d": 0.52,
+    "h": 3.2
+   },
+   "VENTS": [
+    {
+     "id": "vent_gas",
+     "grade": "gas",
+     "pos": [
+      -0.28,
+      0,
+      3.18
+     ],
+     "height_m": 3.1,
+     "note": "one riser per tank; the tag at the top carries the grade colour"
+    },
+    {
+     "id": "vent_diesel",
+     "grade": "diesel",
+     "pos": [
+      0,
+      0,
+      3.18
+     ],
+     "height_m": 3.1,
+     "note": "one riser per tank; the tag at the top carries the grade colour"
+    },
+    {
+     "id": "vent_mixed",
+     "grade": "mixed",
+     "pos": [
+      0.28,
+      0,
+      3.18
+     ],
+     "height_m": 3.1,
+     "note": "one riser per tank; the tag at the top carries the grade colour"
+    }
+   ],
+   "BLOCKERS": [
+    {
+     "shape": "box",
+     "kind": "risers",
+     "footprint": [
+      [
+       -0.7,
+       -0.26
+      ],
+      [
+       0.7,
+       -0.26
+      ],
+      [
+       0.7,
+       0.26
+      ],
+      [
+       -0.7,
+       0.26
+      ]
+     ],
+     "height_above_grade_m": 3.1,
+     "treatment": "wall"
+    }
+   ],
+   "_excluded": {
+    "INTERACT": "a vent is not interactable — the fill cluster is"
+   }
+  }
+ ],
+ "reach_audit": {
+  "body_r_m": 0.22,
+  "arm_grasp_m": 1.2,
+  "arm_read_m": 1.9,
+  "vertical_reach_m": 2.1,
+  "checked": 45,
+  "ok": 42,
+  "moved": 3,
+  "failed": 0,
+  "note": "Every interactable in the kit was run through StationIso.auditReach at bake time. `moved` means the first-pass request sat inside a blocker and was marched clear; `failed` means it is published as null with a reason."
+ }
+}

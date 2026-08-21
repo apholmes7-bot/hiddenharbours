@@ -96,7 +96,8 @@ namespace HiddenHarbours.App.Editor
             go.SetActive(false);                                  // configure BEFORE OnEnable subscribes
 
             var opening = go.AddComponent<ArrivalOpening>();
-            opening.Configure(skipper, Route(), Berth(), BerthHeadingDegrees(), StepAshore());
+            opening.Configure(skipper, Route(), Berth(), BerthHeadingDegrees(), StepAshore(),
+                              StPetersBuilder.ApproachBedElevation);
             go.SetActive(true);
 
             Vector2[] route = Route();

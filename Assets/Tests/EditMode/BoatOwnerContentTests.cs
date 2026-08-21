@@ -41,6 +41,15 @@ namespace HiddenHarbours.Tests.EditMode
 
         private static List<BoatOwnerDef> Owners() => NineMileCreekMooredFleet.LoadOwners();
 
+        /// <summary>How many berths the table <paramref name="moorage"/> names actually holds. Read off
+        /// the region rather than restated, so growing either table grows this check with it.</summary>
+        private static int BerthsAt(BoatMoorage moorage) => moorage == BoatMoorage.Float
+            ? NineMileCreekWharf.FloatBerthCount
+            : NineMileCreekMainland.BerthCount;
+
+        private static string Where(BoatMoorage moorage) =>
+            moorage == BoatMoorage.Float ? "the floating dock" : "the quay wall";
+
         [Test]
         public void TheCreekShipsARegister()
         {
@@ -63,9 +72,11 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.That(o.ShedFootprintMetres, Is.GreaterThan(0f),
                     $"{o.Id}: a shed that reserves no ground is not a building");
                 Assert.That(o.LotIndex, Is.GreaterThanOrEqualTo(0), $"{o.Id}: negative lot");
-                Assert.That(o.BerthIndex, Is.InRange(0, NineMileCreekMainland.BerthCount - 1),
-                    $"{o.Id}: berth {o.BerthIndex} is not one of this wharf's " +
-                    $"{NineMileCreekMainland.BerthCount}");
+                int berths = BerthsAt(o.Moorage);
+                Assert.That(o.BerthIndex, Is.InRange(0, berths - 1),
+                    $"{o.Id}: berth {o.BerthIndex} is not one of the {berths} at {Where(o.Moorage)}. " +
+                    "⚠ The wall's table and the float's are different LENGTHS, so moving an owner " +
+                    "between them is a Moorage edit AND a BerthIndex edit.");
                 Assert.IsTrue(o.IsPresentable(), $"{o.Id}: cannot be presented");
             }
         }
@@ -121,17 +132,24 @@ namespace HiddenHarbours.Tests.EditMode
                 "the owner's ~16-boat vision and it is an ART ask (more schemes), not a data one.");
         }
 
+        /// <summary>
+        /// ⚠ <b>A BERTH IS A PLACE, AND A PLACE IS (MOORING, INDEX).</b> Keyed on the bare index this
+        /// would call wall berth 4 and float berth 4 the same berth and refuse a boat that is thirty
+        /// metres away from her supposed neighbour — and, worse, would have passed silently while the
+        /// register only used one table.
+        /// </summary>
         [Test]
         public void NoTwoOwnersShareABerthOrALot()
         {
-            var berths = new Dictionary<int, string>();
+            var berths = new Dictionary<(BoatMoorage, int), string>();
             var lots = new Dictionary<int, string>();
 
             foreach (var o in Owners())
             {
-                Assert.IsFalse(berths.TryGetValue(o.BerthIndex, out string b),
-                    $"'{o.Id}' and '{b}' are both moored in berth {o.BerthIndex}");
-                berths[o.BerthIndex] = o.Id;
+                var place = (o.Moorage, o.BerthIndex);
+                Assert.IsFalse(berths.TryGetValue(place, out string b),
+                    $"'{o.Id}' and '{b}' are both moored in berth {o.BerthIndex} at {Where(o.Moorage)}");
+                berths[place] = o.Id;
 
                 Assert.IsFalse(lots.TryGetValue(o.LotIndex, out string l),
                     $"'{o.Id}' and '{l}' both claim shed lot {o.LotIndex}");
@@ -139,14 +157,83 @@ namespace HiddenHarbours.Tests.EditMode
             }
         }
 
+        /// <summary>The exclusion is a WALL berth: the dock zone is a distance test against the wall's
+        /// own berth line, so float berth 0 is not the player's berth and never was.</summary>
         [Test]
         public void NobodyIsMooredInThePlayersBerth()
         {
             int player = NineMileCreekMooredFleet.PlayerBerthIndex();
-            foreach (var o in Owners())
+            foreach (var o in Owners().Where(o => o.Moorage == BoatMoorage.QuayWall))
                 Assert.AreNotEqual(player, o.BerthIndex,
-                    $"'{o.Id}' is authored into berth {player}, which is where the player's own boat " +
-                    "docks (derived from the region's dock zone). She would arrive on top of him.");
+                    $"'{o.Id}' is authored into wall berth {player}, which is where the player's own " +
+                    "boat docks (derived from the region's dock zone). She would arrive on top of him.");
+        }
+
+        // =============================================================================================
+        //  THE TWO MOORINGS (S3) — the photograph is small craft on the float, working boats on the wall
+        // =============================================================================================
+
+        /// <summary>
+        /// ⭐ <b>THE DEFAULT IS THE WALL, IN BOTH READINGS OF "UNSET".</b> The seven owners on this
+        /// register predate <c>Moorage</c>, and the ones that still do not mention it in their YAML must
+        /// read as wall-moored — Unity leaves an unmentioned field at whatever the C# constructor gave
+        /// it, so the field initializer AND <c>default(BoatMoorage)</c> both have to be
+        /// <see cref="BoatMoorage.QuayWall"/>. Get this wrong and a register edit nobody made moves the
+        /// whole working fleet onto a 2.4 m pontoon.
+        /// </summary>
+        [Test]
+        public void AnOwnerWhoSaysNothingAboutHerMooringLiesAtTheWall()
+        {
+            var fresh = ScriptableObject.CreateInstance<BoatOwnerDef>();
+            try
+            {
+                Assert.AreEqual(BoatMoorage.QuayWall, fresh.Moorage,
+                    "a newly constructed BoatOwnerDef must default to the quay wall — that is the value " +
+                    "every owner asset written before this field existed will read back as");
+                Assert.AreEqual(BoatMoorage.QuayWall, default(BoatMoorage),
+                    "default(BoatMoorage) must also be the wall: renumbering the enum would silently " +
+                    "re-moor anything deserialised without a field initializer");
+                Assert.IsFalse(fresh.LiesAtTheFloat);
+            }
+            finally { Object.DestroyImmediate(fresh); }
+        }
+
+        /// <summary>The photograph, as an assertion about the register: both moorings are used. A wharf
+        /// with an empty float is the picture this slice exists to replace.</summary>
+        [Test]
+        public void BothMooringsAreActuallyUsed()
+        {
+            var owners = Owners();
+            Assert.That(owners.Count(o => o.Moorage == BoatMoorage.Float), Is.GreaterThan(0),
+                "nobody is authored at the float, so the finger in the middle of the bullpen lies empty");
+            Assert.That(owners.Count(o => o.Moorage == BoatMoorage.QuayWall), Is.GreaterThan(0),
+                "nobody is authored at the wall, so the tall quay faces stand over open water");
+        }
+
+        /// <summary>
+        /// ⭐ <b>THE FLEET SORTS ITSELF, and nobody typed the list.</b> Whether a boat belongs at the
+        /// float is a measurement — her half-beam against the standoff a boat lies off the finger — and
+        /// this asserts the register agrees with it. A working hull authored onto the float fails HERE,
+        /// by name, before the builder refuses her on the same number.
+        ///
+        /// <para>⚠ A sprite-only boat has no hull mesh and therefore no measured beam (Bernard's skiff is
+        /// the standing example). She is exempt and the exemption is NAMED, the same way
+        /// <c>NineMileCreekChannelTests</c> names her when it pins the widest-beam constant.</para>
+        /// </summary>
+        [Test]
+        public void EveryBoatAtTheFloatIsSmallEnoughToLieAlongsideIt()
+        {
+            float widest = NineMileCreekWharf.WidestHalfBeamAFloatBerthCarries;
+
+            foreach (var o in Owners().Where(o => o.Moorage == BoatMoorage.Float))
+            {
+                float half = NineMileCreekMooredFleet.HalfBeamOf(o);
+                if (half <= 0f) continue;    // sprite-only: no beam to measure — see the note above
+                Assert.That(half, Is.LessThanOrEqualTo(widest),
+                    $"'{o.Id}' keeps '{o.Boat.Id}', {half * 2f:0.00} m in the beam, and is authored at " +
+                    $"the float. A boat lies {widest:0.00} m off the finger's edge, so she would be " +
+                    "drawn lying ON the dock. The float is for small craft; her place is the wall.");
+            }
         }
 
         // =============================================================================================
@@ -170,6 +257,40 @@ namespace HiddenHarbours.Tests.EditMode
                     $"'{o.Id}' keeps '{o.Boat.Id}', which draws {o.Boat.DraughtMeters:0.0} m. This basin " +
                     $"has at most {deepest:0.0} m over the bed at spring high, so she could never lie " +
                     "here — and she would be drawn floating in a berth she cannot reach.");
+        }
+
+        /// <summary>
+        /// <b>⚠ THE OTHER HALF OF THE GATE, AND THE ONE THAT BOUNDS THE LOBSTER SPREAD.</b> The basin
+        /// bed above says whether a hull can LIE here; this says whether she can LEAVE. Nine Mile
+        /// Creek's channel is cut for <see cref="NineMileCreekMainland.DeepestResidentDraughtMetres"/>
+        /// — today the 1.40 m of Marie Gallant's Cape Islander, the deepest thing this creek was ever
+        /// dredged for — and every station on the way out carries exactly that plus her keel clearance
+        /// at spring low.
+        ///
+        /// <para><b>So a deeper boat is not a repaint, it is a dredging.</b> Berthing one moves the
+        /// constant, which moves the thalweg, which re-bakes the committed seabed the region ships and
+        /// re-opens the berth-deepening ruling that is still owed. That is a drop of its own and a
+        /// call the owner makes — never a side effect of handing somebody a different boat.</para>
+        ///
+        /// <para>This is the bound that decided the 2026-08-20 lobster spread: eighteen lobster
+        /// variants are committed, but the six OFFSHORE hulls draw 1.45 m and were refused on exactly
+        /// this line. <see cref="NineMileCreekChannelTests"/> re-measures the constant off the register
+        /// from the CHANNEL's end and would fail if it moved; this asserts the same fact from the
+        /// FLEET's end, so the reason a variant is refused sits where the next person choosing one
+        /// will look rather than only in a merged PR body.</para>
+        /// </summary>
+        [Test]
+        public void NobodysBoatOutdrawsTheChannelTheCreekIsDredgedFor()
+        {
+            float dredgedFor = NineMileCreekMainland.DeepestResidentDraughtMetres;
+
+            foreach (var o in Owners().Where(o => o.Boat != null))
+                Assert.That(o.Boat.DraughtMeters, Is.LessThanOrEqualTo(dredgedFor),
+                    $"'{o.Id}' keeps '{o.Boat.Id}', which draws {o.Boat.DraughtMeters:0.00} m, against " +
+                    $"the {dredgedFor:0.00} m Nine Mile Creek's channel is cut for. She would lie at " +
+                    "her berth and be shut in by the lane out of it. Deepening the cut for one boat " +
+                    "re-bakes the region's seabed and moves the thalweg — a ruling and a drop of its " +
+                    "own, not a side effect of a register edit.");
         }
 
         // =============================================================================================

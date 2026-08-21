@@ -1,0 +1,120 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c066b3141c12834eb15805632bcf579, type: 3}
+  m_Name: dispenser_sLock
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.StationPieceDef
+  Id: station.dispenser_slock
+  DisplayName: Cardlock
+  PieceType: dispenser
+  SizeKey: sLock
+  Label: CARDLOCK
+  IsInterior: 0
+  Facings: 8
+  Fold180: 0
+  Frames:
+  - {fileID: -1631113381, guid: 08b911adebb267346a472b7efa8a0012, type: 3}
+  - {fileID: 1153423238, guid: 08b911adebb267346a472b7efa8a0012, type: 3}
+  - {fileID: 1017903553, guid: 08b911adebb267346a472b7efa8a0012, type: 3}
+  - {fileID: 755218373, guid: 08b911adebb267346a472b7efa8a0012, type: 3}
+  - {fileID: 808011969, guid: 08b911adebb267346a472b7efa8a0012, type: 3}
+  - {fileID: 1573464003, guid: 08b911adebb267346a472b7efa8a0012, type: 3}
+  - {fileID: 1607706703, guid: 08b911adebb267346a472b7efa8a0012, type: 3}
+  - {fileID: 105614004, guid: 08b911adebb267346a472b7efa8a0012, type: 3}
+  BakedGrades:
+  - gas
+  - diesel
+  - mixed
+  WidthMeters: 0.7
+  DepthMeters: 0.64
+  HeightMeters: 1.7
+  MaxHoses: 1
+  MaxSides: 1
+  HoseReachMeters: 5
+  LitresPerMinute: 80
+  Slots: 0
+  LengthMeters: 0.7
+  SlotPitchMeters: 3.3
+  Bays: 0
+  ClearHeightMeters: 0
+  Blockers:
+  - Kind: cabinet
+    Level: 
+    Footprint:
+    - {x: -0.21, y: -0.18}
+    - {x: 0.21, y: -0.18}
+    - {x: 0.21, y: 0.18}
+    - {x: -0.21, y: 0.18}
+    Center: {x: 0, y: 0}
+    Radius: 0
+    HeightAboveGradeMeters: 1.7
+    Treatment: wall
+  - Kind: plinth
+    Level: 
+    Footprint:
+    - {x: -0.35, y: -0.32}
+    - {x: 0.35, y: -0.32}
+    - {x: 0.35, y: 0.32}
+    - {x: -0.35, y: 0.32}
+    Center: {x: 0, y: 0}
+    Radius: 0
+    HeightAboveGradeMeters: 0.1
+    Treatment: flat
+  Walkables: []
+  Interactables:
+  - Id: nozzle_a0
+    Label: "HOSE A1 \xB7 GASOLINE"
+    Action: fuel
+    Position: {x: 0.43, y: 0.12, z: 1.26}
+    ReachPoint: {x: 1.05, y: -0.22, z: 0}
+    HasReachPoint: 1
+    ReachVerdict: ok
+    Level: apron
+    VisibleFacings:
+    - NE
+    - E
+    - SE
+  - Id: pay_a
+    Label: PAY AT PUMP
+    Action: pay
+    Position: {x: 0, y: 0.21, z: 1.53}
+    ReachPoint: {x: 0, y: 0.93, z: 0}
+    HasReachPoint: 1
+    ReachVerdict: ok
+    Level: apron
+    VisibleFacings:
+    - SE
+    - S
+    - SW
+  Entry:
+    Kind: 
+    ClearWidthMeters: 0
+    ClearHeightMeters: 0
+    Threshold: {x: 0, y: 0, z: 0}
+    LeafWidthMeters: 0
+    TravelMeters: 0
+    ClearAtOpenFraction: 0
+    SillStepMeters: 0
+    Treatment: 
+    HasKeepClear: 0
+    KeepClear: []
+  ServiceDoor:
+    Kind: 
+    ClearWidthMeters: 0
+    ClearHeightMeters: 0
+    Threshold: {x: 0, y: 0, z: 0}
+    LeafWidthMeters: 0
+    TravelMeters: 0
+    ClearAtOpenFraction: 0
+    SillStepMeters: 0
+    Treatment: 
+    HasKeepClear: 0
+    KeepClear: []

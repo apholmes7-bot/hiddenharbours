@@ -1,0 +1,150 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c066b3141c12834eb15805632bcf579, type: 3}
+  m_Name: interior_sKiosk
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.StationPieceDef
+  Id: station.interior_skiosk
+  DisplayName: Pay Booth Sales Floor Sales Floor
+  PieceType: interior
+  SizeKey: sKiosk
+  Label: "PAY BOOTH \u2014 SALES FLOOR"
+  IsInterior: 1
+  Facings: 8
+  Fold180: 0
+  Frames:
+  - {fileID: 1763221632, guid: 7e955bb7c8ae3e84b9b5649a97e2e371, type: 3}
+  - {fileID: -1675005755, guid: 7e955bb7c8ae3e84b9b5649a97e2e371, type: 3}
+  - {fileID: 267598951, guid: 7e955bb7c8ae3e84b9b5649a97e2e371, type: 3}
+  - {fileID: 1756718451, guid: 7e955bb7c8ae3e84b9b5649a97e2e371, type: 3}
+  - {fileID: -66264619, guid: 7e955bb7c8ae3e84b9b5649a97e2e371, type: 3}
+  - {fileID: -131366636, guid: 7e955bb7c8ae3e84b9b5649a97e2e371, type: 3}
+  - {fileID: 280115456, guid: 7e955bb7c8ae3e84b9b5649a97e2e371, type: 3}
+  - {fileID: -1109693474, guid: 7e955bb7c8ae3e84b9b5649a97e2e371, type: 3}
+  BakedGrades:
+  - gas
+  - diesel
+  - mixed
+  WidthMeters: 4.2
+  DepthMeters: 3.4
+  HeightMeters: 3.05
+  MaxHoses: 0
+  MaxSides: 0
+  HoseReachMeters: 0
+  LitresPerMinute: 0
+  Slots: 0
+  LengthMeters: 4.2
+  SlotPitchMeters: 3.3
+  Bays: 0
+  ClearHeightMeters: 0
+  Blockers:
+  - Kind: counter
+    Level: sales_floor
+    Footprint:
+    - {x: -1.84, y: 0.63}
+    - {x: 1.84, y: 0.63}
+    - {x: 1.84, y: 1.21}
+    - {x: -1.84, y: 1.21}
+    Center: {x: 0, y: 0}
+    Radius: 0
+    HeightAboveGradeMeters: 0.94
+    Treatment: waist_block
+  - Kind: back_shelf
+    Level: sales_floor
+    Footprint:
+    - {x: -1.64, y: -1.54}
+    - {x: 1.64, y: -1.54}
+    - {x: 1.64, y: -1.2}
+    - {x: -1.64, y: -1.2}
+    Center: {x: 0, y: 0}
+    Radius: 0
+    HeightAboveGradeMeters: 1.46
+    Treatment: wall
+  Walkables:
+  - Id: sales_floor
+    HeightMeters: 0.18
+    Outline:
+    - {x: -1.94, y: -1.54}
+    - {x: 1.94, y: -1.54}
+    - {x: 1.94, y: 1.54}
+    - {x: -1.94, y: 1.54}
+    Treatment: flat
+  Interactables:
+  - Id: till
+    Label: TILL
+    Action: buy
+    Position: {x: 0.2, y: 0.92, z: 1.12}
+    ReachPoint: {x: 0.2, y: 0.12, z: 0.18}
+    HasReachPoint: 1
+    ReachVerdict: ok
+    Level: sales_floor
+    VisibleFacings:
+    - N
+    - NE
+    - E
+    - W
+    - NW
+  - Id: shelf
+    Label: BACK SHELF
+    Action: storage
+    Position: {x: 0, y: -1.32, z: 1.48}
+    ReachPoint: {x: 0, y: -0.52, z: 0.18}
+    HasReachPoint: 1
+    ReachVerdict: ok
+    Level: sales_floor
+    VisibleFacings:
+    - E
+    - SE
+    - S
+    - SW
+    - W
+  - Id: window
+    Label: PAY WINDOW
+    Action: pay
+    Position: {x: -0.12, y: 1.54, z: 1.28}
+    ReachPoint: {x: -0.12, y: 0.38, z: 0.18}
+    HasReachPoint: 1
+    ReachVerdict: moved
+    Level: sales_floor
+    VisibleFacings:
+    - N
+    - NE
+    - E
+    - W
+    - NW
+  Entry:
+    Kind: slide_bipart
+    ClearWidthMeters: 0.94
+    ClearHeightMeters: 2.1
+    Threshold: {x: 1.18, y: 1.7, z: 0.18}
+    LeafWidthMeters: 0.47
+    TravelMeters: 0.53
+    ClearAtOpenFraction: 0.85
+    SillStepMeters: 0.18
+    Treatment: step_over
+    HasKeepClear: 0
+    KeepClear: []
+  ServiceDoor:
+    Kind: swing_single_out
+    ClearWidthMeters: 0.84
+    ClearHeightMeters: 2.1
+    Threshold: {x: -1.24, y: -1.7, z: 0.18}
+    LeafWidthMeters: 0
+    TravelMeters: 0
+    ClearAtOpenFraction: 0
+    SillStepMeters: 0.18
+    Treatment: step_over
+    HasKeepClear: 1
+    KeepClear:
+    - {x: -1.66, y: -2.64}
+    - {x: -0.72, y: -2.64}
+    - {x: -0.72, y: -1.7}
+    - {x: -1.66, y: -1.7}

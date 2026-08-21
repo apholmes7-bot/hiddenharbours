@@ -1,0 +1,209 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e72940bfdac646969b26b2e0ba3cb020, type: 3}
+  m_Name: LobsterOffshoreOpenFundyIso
+  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.BoatInteriorDef
+  Id: interior.lobster_offshore_open_fundy_iso
+  FitsHulls:
+  - lobsterBoatVariantsIsoRig.offshore_open_fundy
+  SourceSidecar: docs/art/rigs/boat-interiors-kit/lobsterBoatVariants/lobsterBoatVariantsIsoRig.offshore_open_fundy.interior.json
+  SourceInteriorRig: docs/art/rigs/boat-interiors-kit/boatInteriorRig.js
+  SourceHullRig: docs/art/rigs/boat-interiors-kit/hull-rigs/lobsterBoatVariantsIsoRig.js
+  InteriorRigSha256: 34bb781303b9de9a47c7029a685bf83d357adefe2ffb95ff54451233ea7c46a7
+  HullRigSha256: f5fa042997c21414bd9adcf558b0a2adde541849dce3f4b1ce399156940b0682
+  PixelsPerMetre: 32
+  CellPixels: {x: 480, y: 420}
+  PivotPixels: {x: 240, y: 232}
+  FootprintOutline:
+  - {x: -1.342, y: 1.898}
+  - {x: -1.342, y: 2.175}
+  - {x: -1.342, y: 2.453}
+  - {x: -1.342, y: 2.73}
+  - {x: -1.342, y: 3.008}
+  - {x: -1.342, y: 3.285}
+  - {x: -1.342, y: 3.562}
+  - {x: -1.342, y: 3.84}
+  - {x: -1.308, y: 4.117}
+  - {x: -1.255, y: 4.395}
+  - {x: -1.201, y: 4.672}
+  - {x: 1.201, y: 4.672}
+  - {x: 1.255, y: 4.395}
+  - {x: 1.308, y: 4.117}
+  - {x: 1.342, y: 3.84}
+  - {x: 1.342, y: 3.562}
+  - {x: 1.342, y: 3.285}
+  - {x: 1.342, y: 3.008}
+  - {x: 1.342, y: 2.73}
+  - {x: 1.342, y: 2.453}
+  - {x: 1.342, y: 2.175}
+  - {x: 1.342, y: 1.898}
+  Levels:
+  - Id: house_sole
+    SoleZMeters: 0.55
+    Outline:
+    - {x: -1.272, y: 1.968}
+    - {x: -1.272, y: 2.237}
+    - {x: -1.272, y: 2.506}
+    - {x: -1.272, y: 2.775}
+    - {x: -1.272, y: 3.044}
+    - {x: -1.272, y: 3.313}
+    - {x: -1.272, y: 3.581}
+    - {x: -1.272, y: 3.85}
+    - {x: -1.238, y: 4.119}
+    - {x: -1.186, y: 4.388}
+    - {x: -1.134, y: 4.657}
+    - {x: 1.134, y: 4.657}
+    - {x: 1.186, y: 4.388}
+    - {x: 1.238, y: 4.119}
+    - {x: 1.272, y: 3.85}
+    - {x: 1.272, y: 3.581}
+    - {x: 1.272, y: 3.313}
+    - {x: 1.272, y: 3.044}
+    - {x: 1.272, y: 2.775}
+    - {x: 1.272, y: 2.506}
+    - {x: 1.272, y: 2.237}
+    - {x: 1.272, y: 1.968}
+    Obstructions:
+    - Id: helm_console
+      Footprint:
+      - {x: -0.52, y: 3.62}
+      - {x: 0.52, y: 3.62}
+      - {x: 0.52, y: 3.98}
+      - {x: -0.52, y: 3.98}
+      HeightAboveSoleMeters: 1.06
+      Treatment: wall
+    - Id: helm_seat
+      Footprint:
+      - {x: -0.24, y: 2.72}
+      - {x: 0.24, y: 2.72}
+      - {x: 0.24, y: 3.2}
+      - {x: -0.24, y: 3.2}
+      HeightAboveSoleMeters: 1.02
+      Treatment: wall
+    - Id: stove_counter
+      Footprint:
+      - {x: -1.24, y: 2.34}
+      - {x: -0.68, y: 2.34}
+      - {x: -0.68, y: 3.05}
+      - {x: -1.24, y: 3.05}
+      HeightAboveSoleMeters: 0.9
+      Treatment: waist_block
+    - Id: locker
+      Footprint:
+      - {x: 0.72, y: 2.18}
+      - {x: 1.26, y: 2.18}
+      - {x: 1.26, y: 2.81}
+      - {x: 0.72, y: 2.81}
+      HeightAboveSoleMeters: 1.65
+      Treatment: wall
+    - Id: bench
+      Footprint:
+      - {x: 0.79, y: 3.12}
+      - {x: 1.26, y: 3.12}
+      - {x: 1.26, y: 3.94}
+      - {x: 0.79, y: 3.94}
+      HeightAboveSoleMeters: 0.44
+      Treatment: step_over
+  - Id: cuddy_sole
+    SoleZMeters: 0.088
+    Outline:
+    - {x: -0.519, y: 4.672}
+    - {x: -0.47, y: 4.859}
+    - {x: -0.421, y: 5.045}
+    - {x: -0.372, y: 5.232}
+    - {x: -0.323, y: 5.419}
+    - {x: -0.279, y: 5.606}
+    - {x: -0.235, y: 5.793}
+    - {x: -0.192, y: 5.979}
+    - {x: -0.149, y: 6.166}
+    - {x: 0.149, y: 6.166}
+    - {x: 0.192, y: 5.979}
+    - {x: 0.235, y: 5.793}
+    - {x: 0.279, y: 5.606}
+    - {x: 0.323, y: 5.419}
+    - {x: 0.372, y: 5.232}
+    - {x: 0.421, y: 5.045}
+    - {x: 0.47, y: 4.859}
+    - {x: 0.519, y: 4.672}
+    Obstructions:
+    - Id: v_berth
+      Footprint:
+      - {x: -0.9, y: 4.892}
+      - {x: 0.9, y: 4.892}
+      - {x: 0.4, y: 6.046}
+      - {x: -0.4, y: 6.046}
+      HeightAboveSoleMeters: 0.42
+      Treatment: waist_block
+  Door:
+    Id: entry
+    Side: aft
+    ClearWidthMeters: 0.692
+    ClearHeightMeters: 2.125
+    ThresholdPoint: {x: -0.028, y: 1.898, z: 0.55}
+    Mechanism: 0
+    KeepClear:
+    - {x: -0.374, y: 1.898}
+    - {x: 0.983, y: 1.898}
+    - {x: 0.983, y: 1.748}
+    - {x: -0.374, y: 1.748}
+    CueFrames: 8
+    CueMillisecondsPerFrame: 70
+    CueReversedOnExit: 1
+  AdditionalDoors: []
+  Anchors:
+  - Id: helm
+    Action: enter_helm
+    ReachPoint: {x: 0, y: 2.18, z: 0.55}
+    VisibleFacings:
+    - N
+    - NE
+    - E
+    - W
+    - NW
+  - Id: stove
+    Action: cook
+    ReachPoint: {x: -0.262, y: 2.698, z: 0.55}
+    VisibleFacings:
+    - N
+    - S
+    - SW
+    - W
+    - NW
+  - Id: locker
+    Action: storage
+    ReachPoint: {x: 0.302, y: 2.494, z: 0.55}
+    VisibleFacings:
+    - N
+    - NE
+    - E
+    - SE
+    - S
+  - Id: bunk
+    Action: sleep
+    ReachPoint: {x: 0, y: 4.392, z: 0.088}
+    VisibleFacings:
+    - N
+    - NE
+    - E
+    - SE
+    - S
+    - SW
+    - W
+    - NW
+  Routes:
+  - Id: cuddy_companionway
+    FromLevel: house_sole
+    ToLevel: cuddy_sole
+    Mechanism: InteriorStair
+    Exterior: 0
+    TotalRiseMeters: 0.462
+  RidesHullRock: 1

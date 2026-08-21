@@ -1,0 +1,546 @@
+fileFormatVersion: 2
+guid: 2e48bb7109fe1ef4b982ebfcf4ece685
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -7148737843277506334
+    second: LobsterOffshoreHardtopFundyIsoInterior_0
+  - first:
+      213: 7738448151402091325
+    second: LobsterOffshoreHardtopFundyIsoInterior_1
+  - first:
+      213: -764285888104937846
+    second: LobsterOffshoreHardtopFundyIsoInterior_2
+  - first:
+      213: 6227273738254627402
+    second: LobsterOffshoreHardtopFundyIsoInterior_3
+  - first:
+      213: 3726526873980189720
+    second: LobsterOffshoreHardtopFundyIsoInterior_4
+  - first:
+      213: 7102462415349960394
+    second: LobsterOffshoreHardtopFundyIsoInterior_5
+  - first:
+      213: -4389465826445905618
+    second: LobsterOffshoreHardtopFundyIsoInterior_6
+  - first:
+      213: -2147148594501185798
+    second: LobsterOffshoreHardtopFundyIsoInterior_7
+  - first:
+      213: 3879002442024612212
+    second: LobsterOffshoreHardtopFundyIsoInterior_8
+  - first:
+      213: -6819204735161314922
+    second: LobsterOffshoreHardtopFundyIsoInterior_9
+  - first:
+      213: 9195869817520418980
+    second: LobsterOffshoreHardtopFundyIsoInterior_10
+  - first:
+      213: 176975146470367817
+    second: LobsterOffshoreHardtopFundyIsoInterior_11
+  - first:
+      213: 4855166506922132885
+    second: LobsterOffshoreHardtopFundyIsoInterior_12
+  - first:
+      213: 2605970720524849236
+    second: LobsterOffshoreHardtopFundyIsoInterior_13
+  - first:
+      213: 3301901071866869551
+    second: LobsterOffshoreHardtopFundyIsoInterior_14
+  - first:
+      213: 2729301782082449419
+    second: LobsterOffshoreHardtopFundyIsoInterior_15
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: lobsterOffshoreHardtopFundyIso_house_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 420
+        width: 480
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44761905}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4e5882a3e74e3fd4c8fe527e1e819527
+      internalID: 1801538935
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lobsterOffshoreHardtopFundyIso_house_d1
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 420
+        width: 480
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44761905}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e4845412dc74972418f052d18634f075
+      internalID: 150867342
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lobsterOffshoreHardtopFundyIso_house_d2
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 420
+        width: 480
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44761905}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 136b3e66f5be1aa40bcb176b5db7c4e3
+      internalID: -1223986985
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lobsterOffshoreHardtopFundyIso_house_d3
+      rect:
+        serializedVersion: 2
+        x: 1440
+        y: 420
+        width: 480
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44761905}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1df1292d6bdfb0c40a599930e615470f
+      internalID: 47862445
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lobsterOffshoreHardtopFundyIso_house_d4
+      rect:
+        serializedVersion: 2
+        x: 1920
+        y: 420
+        width: 480
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44761905}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 72efbedf8a37443419a326fba375e730
+      internalID: 20189268
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lobsterOffshoreHardtopFundyIso_house_d5
+      rect:
+        serializedVersion: 2
+        x: 2400
+        y: 420
+        width: 480
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44761905}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6ec5c57335da11d4e8add144d350787e
+      internalID: 1317865814
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lobsterOffshoreHardtopFundyIso_house_d6
+      rect:
+        serializedVersion: 2
+        x: 2880
+        y: 420
+        width: 480
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44761905}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 712f269783b7d0243b2e4eebec199b70
+      internalID: -447290950
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lobsterOffshoreHardtopFundyIso_house_d7
+      rect:
+        serializedVersion: 2
+        x: 3360
+        y: 420
+        width: 480
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44761905}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d4c5198954cd42a41a610d37b0cd1a40
+      internalID: 77626482
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lobsterOffshoreHardtopFundyIso_cuddy_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 480
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44761905}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8d7e19253a28b7349b726b996b67b418
+      internalID: 195458776
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lobsterOffshoreHardtopFundyIso_cuddy_d1
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 0
+        width: 480
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44761905}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 54760e7d34f28b249bcc1b06e16ee434
+      internalID: 924347673
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lobsterOffshoreHardtopFundyIso_cuddy_d2
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 0
+        width: 480
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44761905}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 25df3740007ead043aba7e1f9e2bf0b7
+      internalID: 119187940
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lobsterOffshoreHardtopFundyIso_cuddy_d3
+      rect:
+        serializedVersion: 2
+        x: 1440
+        y: 0
+        width: 480
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44761905}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f01d78262ff67054d98a77b4f8e8be12
+      internalID: 1325412079
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lobsterOffshoreHardtopFundyIso_cuddy_d4
+      rect:
+        serializedVersion: 2
+        x: 1920
+        y: 0
+        width: 480
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44761905}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f6dee01cfad046943a85d43e53c14e42
+      internalID: -1059954426
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lobsterOffshoreHardtopFundyIso_cuddy_d5
+      rect:
+        serializedVersion: 2
+        x: 2400
+        y: 0
+        width: 480
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44761905}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0c26f9914ac82de4791bcf99f34fb72e
+      internalID: -1794393576
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lobsterOffshoreHardtopFundyIso_cuddy_d6
+      rect:
+        serializedVersion: 2
+        x: 2880
+        y: 0
+        width: 480
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44761905}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 18f57521d8595db48af775f1b9913d17
+      internalID: 280198291
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lobsterOffshoreHardtopFundyIso_cuddy_d7
+      rect:
+        serializedVersion: 2
+        x: 3360
+        y: 0
+        width: 480
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44761905}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f883ef9b49255f143a76f100a2fb2eaf
+      internalID: 1883005570
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: a5991ae5ed5bc82499b4379bd03299d1
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      lobsterOffshoreHardtopFundyIso_cuddy_d0: 195458776
+      lobsterOffshoreHardtopFundyIso_cuddy_d1: 924347673
+      lobsterOffshoreHardtopFundyIso_cuddy_d2: 119187940
+      lobsterOffshoreHardtopFundyIso_cuddy_d3: 1325412079
+      lobsterOffshoreHardtopFundyIso_cuddy_d4: -1059954426
+      lobsterOffshoreHardtopFundyIso_cuddy_d5: -1794393576
+      lobsterOffshoreHardtopFundyIso_cuddy_d6: 280198291
+      lobsterOffshoreHardtopFundyIso_cuddy_d7: 1883005570
+      lobsterOffshoreHardtopFundyIso_house_d0: 1801538935
+      lobsterOffshoreHardtopFundyIso_house_d1: 150867342
+      lobsterOffshoreHardtopFundyIso_house_d2: -1223986985
+      lobsterOffshoreHardtopFundyIso_house_d3: 47862445
+      lobsterOffshoreHardtopFundyIso_house_d4: 20189268
+      lobsterOffshoreHardtopFundyIso_house_d5: 1317865814
+      lobsterOffshoreHardtopFundyIso_house_d6: -447290950
+      lobsterOffshoreHardtopFundyIso_house_d7: 77626482
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

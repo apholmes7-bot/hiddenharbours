@@ -44,6 +44,10 @@ namespace HiddenHarbours.Tools.RigBaking
     public sealed class IsoPropBakeResult
     {
         public string RigKey, PieceKey, AssetPath, EngineName;
+
+        /// <summary>Where the sheet's <c>&lt;stem&gt;.recipe.json</c> went — the rig call that
+        /// produced it (see <see cref="RigRecipe"/>).</summary>
+        public string RecipePath;
         public int NativeWidth, NativeHeight;
         public int CropX, CropY, CellWidth, CellHeight, PivotX, PivotY;
         public int Columns, Rows, SheetWidth, SheetHeight, Facings, PngBytes;
@@ -222,8 +226,45 @@ namespace HiddenHarbours.Tools.RigBaking
             };
 
             WritePng(pixels, pw, ph, result);
+
+            // ---- the recipe: what drew this sheet, beside it ----------------------------------------
+            // The call template carries this baker's whole reason for existing: seven families that
+            // agree on the buffer, the pivot and the cell rule and DISAGREE on the call — key+dir,
+            // dir only, key only. Recording the template means nothing downstream has to keep a
+            // second table of which family answers to which shape.
+            var shape = ShapeOf(req.RigKey);
+            var call = new RigRecipe.CallBlock();
+            if (shape.TakesKey) call.Args.Add(req.PieceKey);
+            if (shape.TakesDir) call.Args.Add("$dir");
+            call.Args.Add("$opts");                       // these families bake at rig defaults: {}
+
+            var grid = new RigRecipe.GridBlock { Columns = cols, Rows = rows };
+            if (shape.TakesDir)
+                grid.Axes.Add(RigRecipe.Axis.Facings(contract.Facings, entry.DeclaredConvention));
+
+            result.RecipePath = RigRecipe.Write(result.AssetPath, new RigRecipe
+            {
+                Kit = RecipeKit,
+                Baker = nameof(IsoPropSheetBaker),
+                Rig = RigRecipe.RigBlockFor(req.RigKey),
+                Call = call,
+                Grid = grid,
+                Pack = new RigRecipe.PackBlock
+                {
+                    NativeW = geo.Width, NativeH = geo.Height, NativePivotX = px, NativePivotY = py,
+                    CropX = px + left, CropY = py + top,
+                    CellW = cw, CellH = ch, PivotX = pivotX, PivotY = pivotY,
+                    SheetW = pw, SheetH = ph,
+                },
+            });
+
             return result;
         }
+
+        /// <summary>The kit id a recipe files itself under. One id for all seven families: they are
+        /// one baker, one buffer shape and one cell rule, and the ledger groups by how a sheet was
+        /// made rather than by which sprite folder it landed in.</summary>
+        public const string RecipeKit = "iso-prop";
 
         /// <summary>
         /// THE CELL RULE for the two fixed-sheet families: the pivot-INCLUSIVE union of the ink bbox

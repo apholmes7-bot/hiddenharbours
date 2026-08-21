@@ -674,7 +674,7 @@ namespace HiddenHarbours.App.Editor
             // so a builder that skinned the hulls here would bake the sprite fallback into the committed
             // scene and the fleet would never be mesh. The berth the player docks in is derived and left
             // clear.
-            NineMileCreekMooredFleet.Place();
+            NineMileCreekMooredFleet.Place(terrain);
 
             // ⭐ THE REVIEW ANCHORAGE — the owner's "every boat model must be VISIBLE in game" ruling
             // (2026-08-14). Twenty-three fleet-pack hulls lying at anchor in the −6 m water east of the
@@ -994,6 +994,36 @@ namespace HiddenHarbours.App.Editor
             // reference wins while it is alive); sail in from St Peters and they open for the fisher who
             // actually arrived. Driven end to end by InteriorTravelPlayTests.
             NineMileCreekShops.Place(terrain, devPlayer);
+
+            // --- WHERE THE ISLAND BUYS FUEL (the owner's 2026-08-20 ask) --------------------------------
+            // ⭐ TWO SITES, ONE KIT, TWO PRICES: a couple of dock pedestals on the wharf's service wall
+            // (higher, because they save you the walk) and the full forecourt at Wharf Road's junction
+            // with Route 91 (cheaper, because it does not). Both FuelStationDefs shipped priced in #610;
+            // the pieces and prefabs in #613. Sites, the layout the rig itself produced, and the
+            // WHOLE-SCENE reach pass live in NineMileCreekStation.
+            //
+            // ⚠ PLACED AFTER the wharf economy above, and that order IS load-bearing: a pump charges
+            // through the PersistentWalletProxy this scene stands, and NineMileCreekStation FINDS that
+            // proxy rather than making a second one. Run it earlier and every press refuses.
+            NineMileCreekStation.Place(terrain);
+
+            // --- THE DOORYARDS (the lawn ruling's third derivation) ------------------------------------
+            // #604 authored one yard POLYGON per property here too, faced at NearestPointOnAnyRoad — the
+            // same call the crushed-shell town walks come through — and made the field/wood gates read
+            // it. This is the third thing that polygon says: the FENCE LINE, standing on exactly the
+            // runs the blocking wall behind it is built from.
+            //
+            // ⚠ IT RUNS BEFORE THE FIELD PLANTER AND THAT ORDER IS NOT LOAD-BEARING: the planter asks
+            // NineMileCreekYards for the polygons, which are a pure function of authored constants and
+            // of the road plan, not of what got built. It sits beside the shops because a yard is read
+            // against the property it belongs to.
+            //
+            // ⚠ NO YARD ON THE WHARF SPIT, and that is a measurement rather than an omission — made
+            // ground where nothing grows and the truck drives through it. What the quay wants is a
+            // PropertyBoundary along its edge, which is the wharf/shipyard/cliff migration, not a lawn.
+            var dooryards = YardDressing.Place(NineMileCreekYards.Yards, parent: null,
+                                               regionLabel: "Nine Mile Creek");
+            Debug.Log($"[NineMileCreekBuilder] the dooryards: {dooryards}");
 
             // --- THE HINTERLAND: fields, hedgerows, scattered trees, marsh -----------------------------
             // ⭐ FIELDS, NOT FOREST — the mainland doc's first photograph, as a build step. The land

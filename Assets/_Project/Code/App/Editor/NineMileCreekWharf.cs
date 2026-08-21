@@ -322,6 +322,141 @@ namespace HiddenHarbours.App.Editor
             return list;
         }
 
+        // -------------------------------------------------------------------------------------
+        //  …AND THE BOATS THAT LIE ALONGSIDE HER — the photograph's small craft
+        // -------------------------------------------------------------------------------------
+        // ⭐ THE PHOTOGRAPH IS TWO MOORINGS, NOT ONE. Small craft lie on the float fingers in the middle
+        // of the bullpen; working boats lie against the tall quay walls. The wall's berth line has been
+        // authored since A-1 (14 at 5.5 m, NineMileCreekMainland.BerthPos); this is the OTHER table, and
+        // it is DERIVED from the float rather than typed beside it, so re-siting or re-cutting the float
+        // takes its boats with it instead of leaving them lying in open water where a dock used to be.
+
+        /// <summary>How many boats the float run berths: <b>one per cleat</b>, from
+        /// <see cref="FloatCleatPositions"/>. Not a second count that could disagree with the fittings —
+        /// a berth here IS the place a rope goes round, which is #451's guarantee carried onto the one
+        /// deck that moves.</summary>
+        public static int FloatBerthCount => FloatCleatPositions().Count;
+
+        /// <summary>
+        /// How far off a mooring face a moored hull's centre-line lies — <b>2 m</b>, and READ OFF THE
+        /// WALL rather than picked again here: the region authored its berth line at
+        /// <see cref="NineMileCreekMainland.FirstBerthPos"/>, two metres in front of
+        /// <see cref="MooringEdgeY"/>. One convention for "alongside", so the float's boats stand off
+        /// their dock exactly as far as the fleet stands off the quay, and moving the berth line moves
+        /// both.
+        /// </summary>
+        public static float MooredStandoffMetres => MooringEdgeY - NineMileCreekMainland.FirstBerthPos.y;
+
+        /// <summary>How far off the float's CENTRE-LINE a boat alongside her lies: half the dock's own
+        /// width, plus the standoff. Derived from <see cref="FloatFootprint"/>, so a re-baked float of a
+        /// different width pushes her boats out with her.</summary>
+        public static float FloatBerthOffsetMetres =>
+            FloatFootprint().height * 0.5f + MooredStandoffMetres;
+
+        /// <summary>
+        /// The two places a boat can lie at float berth <paramref name="index"/> — one off each side of
+        /// the finger. Pure, so the layout can be asserted without a terrain or a scene.
+        ///
+        /// <para>A float has water on both sides and a real one is worked from both; which side a given
+        /// berth actually uses is not a taste question here but a depth one, and
+        /// <see cref="FloatBerthPos(int, ITidalTerrain)"/> measures it.</para>
+        /// </summary>
+        public static (Vector2 North, Vector2 South) FloatBerthSides(int index)
+        {
+            var cleats = FloatCleatPositions();
+            if (cleats.Count == 0) return (Vector2.zero, Vector2.zero);
+            Vector2 cleat = cleats[Mathf.Clamp(index, 0, cleats.Count - 1)];
+            float off = FloatBerthOffsetMetres;
+            return (new Vector2(cleat.x, cleat.y + off), new Vector2(cleat.x, cleat.y - off));
+        }
+
+        /// <summary>
+        /// ⭐ <b>WHICH SIDE OF THE FINGER SHE LIES ON, MEASURED</b> — the side of float berth
+        /// <paramref name="index"/> with more water under it.
+        ///
+        /// <para><b>It cannot be a constant, and the meander is why.</b> S1's lane does not run down the
+        /// float's own latitude — it wanders across it (y = 70 at the head, 67 at the southern swing,
+        /// 71 at the northern one), so the deeper side of the dock CHANGES ALONG HER LENGTH. Picking one
+        /// side for the whole run would berth some boats on the lane and some on its bank, and the ones
+        /// on the bank would be the ones that took the ground. Measured per berth off the same terrain
+        /// the float's own bed is measured off, this puts every boat on the water there actually is —
+        /// and puts them on BOTH sides of the finger, which is what the photograph shows.</para>
+        ///
+        /// <para>Ties go SOUTH, arbitrarily and harmlessly: with equal water either side the choice is
+        /// free, and a deterministic tie-break is what stops a rebuild from reshuffling the fleet.</para>
+        /// </summary>
+        public static Vector2 FloatBerthPos(int index, ITidalTerrain terrain)
+        {
+            (Vector2 north, Vector2 south) = FloatBerthSides(index);
+            if (terrain == null) return south;                  // no terrain, no claim: the authored side
+            return terrain.ElevationAt(north) < terrain.ElevationAt(south) ? north : south;
+        }
+
+        /// <summary>The water over the bed at float berth <paramref name="index"/> at <b>spring low</b> —
+        /// the worst hour of the month, which is the only hour worth gating a mooring on. Measured on the
+        /// side the boat actually lies (<see cref="FloatBerthPos(int, ITidalTerrain)"/>).</summary>
+        public static float FloatBerthDepthAtSpringLow(int index, ITidalTerrain terrain)
+        {
+            if (terrain == null) return float.PositiveInfinity;   // no terrain, no claim about grounding
+            return NineMileCreekMainland.SpringLowWater
+                   - terrain.ElevationAt(FloatBerthPos(index, terrain));
+        }
+
+        /// <summary>
+        /// The deepest-draughted boat float berth <paramref name="index"/> can carry: the spring-low
+        /// depth there, less the region's own keel clearance
+        /// (<see cref="NineMileCreekMainland.ChannelKeelClearanceMetres"/> — the same 0.20 m the channel
+        /// was cut to give the Cape Islander, so a berth and the lane that reaches it are gated by one
+        /// number rather than two).
+        ///
+        /// <para>⚠ <b>DO NOT QUOTE THE DOCK'S OWN GUARANTEE HERE — it is a different measurement, and
+        /// it does not bound this one in either direction.</b> <see cref="FloatBedElevationFrom"/> returns
+        /// the SHALLOWEST ground anywhere under the float, because a raft is rigid and rests on the
+        /// highest thing beneath it; that is a worst-point-over-a-rectangle. A berth is a single point
+        /// beside her, on whichever side measured deeper. Measured on today's terrain the berths come
+        /// out DEEPER than the dock's controlling number, not shallower — the dock is gated by one
+        /// corner of her footprint while the berths are each free to take the better side. On another
+        /// cut it could go the other way. Either way the number that gates a hull is measured where the
+        /// HULL is, and quoting the dock's is simply a different question.</para>
+        /// </summary>
+        public static float DeepestDraughtAFloatBerthCarries(int index, ITidalTerrain terrain)
+            => FloatBerthDepthAtSpringLow(index, terrain)
+               - NineMileCreekMainland.ChannelKeelClearanceMetres;
+
+        /// <summary>
+        /// ⭐ <b>THE WIDEST HULL THE FLOAT CAN TAKE ALONGSIDE — her HALF-BEAM, against the standoff.</b>
+        ///
+        /// <para>The second gate on a float berth, and the one that is about SIZE rather than water. A
+        /// boat lies with her centre-line <see cref="MooredStandoffMetres"/> off the dock's edge, so a
+        /// hull whose half-beam exceeds that is not lying alongside the float at all — she is lying ON
+        /// it, drawn overlapping the planking she is tied to, with her skipper standing in mid-air over
+        /// the deck. Nothing about the water says so: at the meander's deepest reach the lane genuinely
+        /// carries a working hull, and the depth gate alone would let her lie there.</para>
+        ///
+        /// <para>So this is what "the float is for SMALL CRAFT" actually means, measured rather than
+        /// declared: the region's own standoff against the hull mesh's own watertight half-beam. Today
+        /// that admits the punt (0.90 m) and the console skiff (1.25 m) and refuses the lobster boat
+        /// (2.50 m) and the Cape Islander (2.40 m) — which is the fleet sorting itself into the
+        /// photograph's two moorings without anybody typing a list of who goes where.</para>
+        /// </summary>
+        public static float WidestHalfBeamAFloatBerthCarries => MooredStandoffMetres;
+
+        /// <summary>
+        /// The compass heading a boat lying at the float points her bow.
+        ///
+        /// <para><b>DERIVED the same way the wall's is</b> — parallel to what she is tied to, pointing the
+        /// way she leaves. The float runs east–west, and the end that is NOT the brow's landing
+        /// (<see cref="GangwayFloatEnd"/>) is the seaward one, so that is the way her bow lies. Re-hinge
+        /// the gangway on the other end and the fleet turns round with it.</para>
+        /// </summary>
+        public static float FloatMooredHeadingDegrees()
+        {
+            Rect box = FloatFootprint();
+            float toEast = Mathf.Abs(box.xMax - GangwayFloatEnd.x);
+            float toWest = Mathf.Abs(GangwayFloatEnd.x - box.xMin);
+            return toEast > toWest ? 90f : 270f;
+        }
+
         // =====================================================================================
         //  THE ROCK ARMOUR — the photograph's rubble line where made ground meets open water
         // =====================================================================================
@@ -473,6 +608,11 @@ namespace HiddenHarbours.App.Editor
             int floatCleats = PlaceFloat(root, floatBed, apronElevation);
             int armour = PlaceBreakwater(root);
             int shoreArmour = PlaceShoreArmour(root);
+            // …and THE WALLS, so the fisher stops walking off the quay (the owner's 2026-08-19 walk).
+            // LAST, because the plan asks the terrain which edges are a fall and one of the answers is
+            // "the seam where these two decks meet is not one" — a question only askable once both decks
+            // exist. What is gated and what deliberately is not: see NineMileCreekWalls.
+            float wallMetres = NineMileCreekWalls.Place(root, terrain);
 
             float lowDeck = HiddenHarbours.World.FloatingPlatform.DeckElevation(
                 NineMileCreekMainland.SpringLowWater, floatBed,
@@ -502,7 +642,9 @@ namespace HiddenHarbours.App.Editor
                 $"{armour} block(s) of '{BreakwaterArmour}' " +
                 $"breakwater along y={BreakwaterY:0.#}, and {shoreArmour} block(s) of shore armour on the " +
                 "two faces of made ground the photograph shows exposed (the wharf head and the spit's " +
-                "east edge). THE DRAWN QUAY IS PHASE B's, from the ISO wharf " +
+                $"east edge). AND IT IS WALLED: {wallMetres:0.#} m of blocking edge on the faces that are " +
+                "a fall, through the one wall system (World.PropertyBoundary), gated at the brow alone. " +
+                "THE DRAWN QUAY IS PHASE B's, from the ISO wharf " +
                 "pack — the old tile kit does not scale to an 84 m wall and is ruled for migration.");
             return cleats;
         }

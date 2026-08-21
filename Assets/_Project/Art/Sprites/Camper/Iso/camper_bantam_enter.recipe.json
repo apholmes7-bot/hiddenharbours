@@ -1,0 +1,87 @@
+{
+  "schema": "hiddenharbours.rig-recipe/1",
+  "sheet": "camper_bantam_enter.png",
+  "kit": "camper",
+  "baker": "CamperSheetBaker",
+  "rig": {
+    "key": "camper",
+    "global": "CamperIso",
+    "source": "docs/art/rigs/camper-iso-kit/camperIsoRig.js",
+    "sha256": "b7a48e2fe0a9755deaf4f1c658a18a089b8254a0223a7c60d5cd53b53e8e7549",
+    "convention": "CounterClockwise",
+    "prerequisites": []
+  },
+  "call": {
+    "fn": "render",
+    "args": [
+      "$dir",
+      "$opts"
+    ],
+    "opts": {
+      "variant": "bantam",
+      "paint": null,
+      "weather": 0.32,
+      "swing": 0,
+      "awning": false,
+      "winAwn": false,
+      "vents": true,
+      "rack": false,
+      "propane": true,
+      "jacks": true,
+      "chocks": true,
+      "hookups": true,
+      "step": true,
+      "night": false,
+      "outline": false
+    }
+  },
+  "grid": {
+    "columns": 6,
+    "rows": 8,
+    "order": "rowMajor",
+    "axes": [
+      {
+        "name": "swing",
+        "bind": "opt:swing",
+        "values": [
+          0,
+          0.2,
+          0.4,
+          0.6,
+          0.8,
+          1
+        ]
+      },
+      {
+        "name": "facing",
+        "bind": "dir",
+        "values": [
+          0,
+          7,
+          6,
+          5,
+          4,
+          3,
+          2,
+          1
+        ]
+      }
+    ]
+  },
+  "pack": {
+    "rule": "pivotUnionCrop",
+    "nativeW": 384,
+    "nativeH": 320,
+    "nativePivotX": 192,
+    "nativePivotY": 214,
+    "cropX": 82,
+    "cropY": 117,
+    "cellW": 220,
+    "cellH": 159,
+    "pivotX": 110,
+    "pivotY": 97,
+    "sheetW": 1320,
+    "sheetH": 1272
+  },
+  "sheetSha256": "05df4e8673bf181bbd4ed1c6a7f0659b9dc0c9903cf4e87c290b6eab8b498393"
+}

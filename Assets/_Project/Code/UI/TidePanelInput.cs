@@ -13,18 +13,19 @@ namespace HiddenHarbours.UI
     /// in the boat), which needs only to call <see cref="TidePanel.Open"/>: that entry point is public
     /// and argument-free precisely so world-content can wire one without this class changing.</para>
     ///
-    /// <para><b>The binding.</b> <c>N</c>, for the nautical almanac — audited free of every other binding
-    /// in the project (WASD/arrows helm, Space brace/haul, E interact, Q mooring, P buy, B sell, L lamp,
-    /// C/1/2/Enter/LeftShift from InputSystem_Actions, F next-hull, G grant, H haul, T trap-drop,
-    /// Y auto-yaw, Esc close). Serialized so the owner can rebind it without touching code — the same
-    /// courtesy <c>BoatSpotlight</c> extends for its lamp key. New Input System only: legacy
-    /// <c>UnityEngine.Input</c> compiles in this project and then throws at runtime.</para>
+    /// <para><b>The binding.</b> <c>Tab</c> — the table, tabbed out. It held <c>N</c> from VS-06
+    /// until 2026-08-20, when the owner gave N to the notebook (<c>NotebookPresenter.OpenKey</c>) and
+    /// ruled the tide table onto Tab; Tab was audited free of every binding in the project including
+    /// the <c>.inputactions</c> asset (the sweep surface the C-key trap taught). Serialized so the
+    /// owner can rebind it without touching code — the same courtesy <c>BoatSpotlight</c> extends for
+    /// its lamp key. New Input System only: legacy <c>UnityEngine.Input</c> compiles in this project
+    /// and then throws at runtime.</para>
     /// </summary>
     public sealed class TidePanelInput : MonoBehaviour
     {
-        [Tooltip("The key that opens and closes the tide table. N for the nautical almanac — audited " +
-                 "free of every other binding in the project. Rebindable here without touching code.")]
-        [SerializeField] private Key _toggleKey = Key.N;
+        [Tooltip("The key that opens and closes the tide table. Tab since 2026-08-20 (N belongs to " +
+                 "the notebook). Rebindable here without touching code.")]
+        [SerializeField] private Key _toggleKey = Key.Tab;
 
         [Tooltip("Let the key work at all. Off = the page can still be opened from code or a world " +
                  "interaction (TidePanel.Open), just not by this keypress.")]

@@ -284,7 +284,34 @@ namespace HiddenHarbours.Boats
                  "oars are decor). Never decided in code — that is rule 2.")]
         public PilotStanceChoice PilotStance = PilotStanceChoice.Auto;
 
+        [Header("Interior (ADR 0038 — the cabin, if she has been measured)")]
+        [Tooltip("This hull's imported BoatInteriorDef, or none. Wired here for the same reason " +
+                 "HullMesh is: the hull poses her and Art draws her, so the LINK belongs on the asset " +
+                 "both already share rather than in a lookup somebody has to keep in step.\n\n" +
+                 "Absence is DATA. Most of the fleet has never been measured, and a hull with no " +
+                 "interior simply has no inside to enter — never an error. A hull the intake ledger " +
+                 "REFUSED must also carry none: that IS an error, and it is caught upstream at the " +
+                 "builder rather than here.")]
+        public HiddenHarbours.Core.BoatInteriorDef Interior = null;
+
+        // ⚠ THE PIXELS ARE DELIBERATELY NOT ON THIS ASSET. A hard Sprite[] here would drag every page
+        // of a hull's cabin into memory the moment SHE loads — 12.3 MB per lobster-class hull, 281 for
+        // the tanker, 340 for the packet — whether or not anyone ever goes below, and today nobody can.
+        // They live in a BoatInteriorCellsDef under Resources, keyed off the def id above, loaded at the
+        // door's cue start. Unity cannot pull an asset nothing references, so resident-while-shut is
+        // structurally zero rather than merely small.
+
         // ---- the all-or-nothing gates (pure; EditMode-testable without a scene) --------------------
+
+        /// <summary>
+        /// <b>True when this hull has an inside at all</b> — a def with at least one usable level.
+        ///
+        /// <para>Says nothing about the PIXELS, deliberately: they are not referenced from here (see the
+        /// Interior header), so asking this must not be what pulls them in. Whether a hull's cells are
+        /// whole is <see cref="BoatInteriorCellsDef.IsUsableFor"/>'s question, asked once, at the moment
+        /// somebody opens the door.</para>
+        /// </summary>
+        public bool HasInterior() => Interior != null && Interior.HasInterior();
 
         /// <summary>
         /// <b>The stance a character piloting this hull shows</b> — the def's own answer to "wheel or

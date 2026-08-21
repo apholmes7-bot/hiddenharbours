@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: visual.coastal_packet_iso
   Variant: 1
   HullMesh: {fileID: 11400000, guid: 65a5a974002d5cb4aa33be9c017e8860, type: 2}
+  DesignWaterlineMeters: 0
   Deck: {fileID: 11400000, guid: 7e204703e2de167dbc925c82d5658202, type: 2}
   Facings: []
   ZeroHeadingDegrees: 0
@@ -35,7 +36,10 @@ MonoBehaviour:
   MotorVariant: 0
   MotorFit: 0
   MotorMesh: {fileID: 0}
+  MotorMeshFitmentOffsetMeters: {x: 0, y: 0, z: 0}
   MotorRockRollDegrees: 3.4
   MotorRockPitchDegrees: 1.9
   MotorRockHeavePixels: 1.3
   MotorMountLocalMeters: {x: 0, y: -3.53, z: 0.72}
+  PilotStance: 0
+  Interior: {fileID: 11400000, guid: 8c24bba5b55ffa24fb5c00d1abe45a3b, type: 2}

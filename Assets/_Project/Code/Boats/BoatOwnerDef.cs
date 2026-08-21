@@ -24,6 +24,29 @@ namespace HiddenHarbours.Boats
     }
 
     /// <summary>
+    /// <b>WHERE A REGISTERED BOAT LIES</b> — which of the harbour's two mooring tables her
+    /// <see cref="BoatOwnerDef.BerthIndex"/> is an index into. The owner's wharf photograph is the
+    /// ruling: <i>small craft on the float fingers in the middle of the bullpen, working boats against
+    /// the tall quay walls</i>, and that is two different places rather than one place with a taste in it.
+    ///
+    /// <para><b>⚠ <see cref="QuayWall"/> IS ZERO, AND THAT IS THE CONTRACT RATHER THAN AN ORDERING.</b>
+    /// The seven owners committed before this field existed do not mention it in their YAML, and Unity
+    /// leaves an unmentioned field at the value the C# constructor gave it. Both readings of "unset" —
+    /// the field initializer on <see cref="BoatOwnerDef.Moorage"/> and <c>default(BoatMoorage)</c> — must
+    /// therefore land on the wall, or a register edit nobody made would move the whole fleet onto a
+    /// 2.4 m pontoon. Never renumber this.</para>
+    /// </summary>
+    public enum BoatMoorage
+    {
+        /// <summary>Alongside the quay's mooring face, in the region's wall-berth table. The working
+        /// fleet: hulls big enough to lie against a tall face and step off onto concrete.</summary>
+        QuayWall = 0,
+        /// <summary>Alongside the FLOATING dock, in the region's float-berth table. The small craft —
+        /// and the one place in this harbour where the deck you step onto rises with the tide.</summary>
+        Float = 1,
+    }
+
+    /// <summary>
     /// <b>ONE BOAT'S OWNER — the network behind a moored hull.</b> The owner's ruling (2026-08-10):
     /// <i>"Each moored BOAT has its own owner NETWORK, and owners differ in success — a more successful
     /// owner has a LARGER building."</i> This is that, as data: a name off the PEI register, how well they
@@ -98,9 +121,20 @@ namespace HiddenHarbours.Boats
         [Min(0)] public int LotIndex = 0;
 
         [Header("Where she lies")]
-        [Tooltip("Which berth along the mooring edge is theirs (0-based, into the region's berth table). " +
-                 "⚠ Never the berth the player docks in — the region's tests derive which one that is " +
-                 "and refuse it.")]
+        [Tooltip("WHICH MOORING she lies at, and so which table BerthIndex indexes: the quay wall (the " +
+                 "working fleet, against a tall face) or the floating dock (the small craft, on a deck " +
+                 "that rides the tide).\n\n" +
+                 "The wall is the default in both senses that matter — the field initializer here AND " +
+                 "default(BoatMoorage) — so an owner asset that predates this field keeps exactly the " +
+                 "berth she has always had, with no edit. See BoatMoorage.")]
+        public BoatMoorage Moorage = BoatMoorage.QuayWall;
+
+        [Tooltip("Which berth is theirs (0-based), in whichever table Moorage names — the wall's berth " +
+                 "line or the float's. ⚠ Never the berth the player docks in: the region's tests derive " +
+                 "which one that is and refuse it.\n\n" +
+                 "⚠ The two tables are different LENGTHS (this wharf berths 14 along the wall and 8 at " +
+                 "the float), so moving an owner between them is two edits, not one — and the region's " +
+                 "content tests range-check against the table she actually claims.")]
         [Min(0)] public int BerthIndex = 1;
 
         [Header("Who is aboard (no routine — a figure on a deck, ruled 2026-08-10)")]
@@ -120,6 +154,11 @@ namespace HiddenHarbours.Boats
         /// <summary>True when this owner can actually be presented: they keep a boat, and that boat has
         /// something to draw. The gate the region's fleet placer skips on, loudly.</summary>
         public bool IsPresentable() => Boat != null && Boat.Visual != null;
+
+        /// <summary>True when she lies at the FLOAT rather than against the wall — the one question every
+        /// consumer of <see cref="BerthIndex"/> has to ask before it reads the number, because the index
+        /// means nothing without the table it indexes.</summary>
+        public bool LiesAtTheFloat => Moorage == BoatMoorage.Float;
 
         /// <summary>How many people this owner puts on her deck — never more than the hull has crew
         /// slots for, because a boat with more aboard than she berths is one somebody mis-authored.</summary>

@@ -114,18 +114,30 @@ namespace HiddenHarbours.Tests.EditMode
         /// drop every painted boat at the wharf was a lobster boat off one mesh, so "the register
         /// wears its colours" was true of four berths and silently false of three.
         ///
-        /// <para><b>Three hulls now, and the one that is still missing is not an art gap.</b> The
-        /// console skiff's nine schemes ARE baked and proven, but no owner at Nine Mile Creek keeps a
-        /// boat drawn from <c>hullmesh.console_iso</c>: Celeste Bernard's <c>boat.fishing_skiff</c>
-        /// resolves to <c>visual.fishing_boat</c>, a legacy SPRITE-only visual (eight hand-drawn
-        /// top-down facings, no hull mesh), and paint exists only on the mesh path.
-        /// <c>boat.console_skiff</c> is a separate def that nobody on this wharf owns. Which boat
-        /// Celeste Bernard keeps is a world-content call, not an art one — see the PR body.</para>
+        /// <para><b>SIX hulls now, and four of them are lobster boats that used to be one.</b> Until
+        /// the spread, Arsenault, Campbell, Doiron and MacDonald all kept the same
+        /// <c>boat.lobster_boat</c>: four berths of one mesh in four colours, which reads down the
+        /// north wall as a repeating texture rather than as four working boats. They now keep four
+        /// different variants off the fleet rig pack — see
+        /// <see cref="TheLobsterOwnersEachKeepADifferentLobsterBoat"/>, which owns that claim; this
+        /// test only records what the painted SET became.</para>
+        ///
+        /// <para><b>The one hull that is still missing is not an art gap.</b> The console skiff's
+        /// nine schemes ARE baked and proven, but no owner at Nine Mile Creek keeps a boat drawn from
+        /// <c>hullmesh.console_iso</c>: Celeste Bernard's <c>boat.fishing_skiff</c> resolves to
+        /// <c>visual.fishing_boat</c>, a legacy SPRITE-only visual (eight hand-drawn top-down facings,
+        /// no hull mesh), and paint exists only on the mesh path. <c>boat.console_skiff</c> is a
+        /// separate def that nobody on this wharf owns. Which boat Celeste Bernard keeps is a
+        /// world-content call, not an art one — see the PR body.</para>
         ///
         /// <para><b>⚠️ It pins the SET, not a floor, for the reason its sibling below spells out.</b>
         /// A <c>GreaterOrEqual(2)</c> would have gone on passing when the Cape Islander gained her
         /// axis and Marie Gallant put paint on — i.e. it would have survived the very change it
         /// exists to notice. The set moves the moment a hull gains or loses a painted keeper.</para>
+        ///
+        /// <para>⚠️ Ordered ORDINALLY rather than by the current culture: the pin is a literal array,
+        /// and with six ids sharing long prefixes the sort is load-bearing enough that it should not
+        /// depend on which machine ran the suite.</para>
         /// </summary>
         [Test]
         public void ThePaintedRegisterSpansMoreThanOneHull()
@@ -134,16 +146,89 @@ namespace HiddenHarbours.Tests.EditMode
                 .Where(o => o.HullPaint != null && o.IsPresentable() && o.Boat.Visual.HullMesh != null)
                 .Select(o => o.Boat.Visual.HullMesh.Id)
                 .Distinct()
-                .OrderBy(s => s)
+                .OrderBy(s => s, System.StringComparer.Ordinal)
                 .ToArray();
 
             CollectionAssert.AreEqual(
-                new[] { "hullmesh.cape_islander_iso", "hullmesh.lobster_boat_iso", "hullmesh.punt_iso" },
+                new[]
+                {
+                    "hullmesh.cape_islander_iso",
+                    "hullmesh.lobster_inshore_hardtop_newfoundland_iso",
+                    "hullmesh.lobster_inshore_open_northumberland_iso",
+                    "hullmesh.lobster_standard_hardtop_northumberland_iso",
+                    "hullmesh.lobster_standard_open_fundy_iso",
+                    "hullmesh.punt_iso",
+                },
                 hulls,
                 "The set of hull meshes wearing paint at Nine Mile Creek has moved — found " +
-                $"[{string.Join(", ", hulls)}]. The lobster boat, the punt and the Cape Islander all " +
-                "have owners and all have paint axes; if one has stopped being drawn painted, a bake " +
-                "or an assignment was lost. If a fourth hull just gained a painted keeper, add it here.");
+                $"[{string.Join(", ", hulls)}]. Four lobster variants, the punt and the Cape Islander " +
+                "all have owners and all have paint axes; if one has stopped being drawn painted, a " +
+                "bake or an assignment was lost. If an owner was moved onto another variant that is " +
+                "a one-line edit here — but check she still has a table baked for the hull she moved to.");
+        }
+
+        /// <summary>
+        /// <b>Four owners, four different lobster boats.</b> Four of the seven names on this register
+        /// kept the same <c>boat.lobster_boat</c> until the spread, so the money shot down the north
+        /// wall was one hull drawn four times. The fleet rig pack ships eighteen lobster variants;
+        /// this asserts the register actually spends them.
+        ///
+        /// <para><b>The set is DERIVED, never listed.</b> "A lobster owner" is anyone whose hull mesh
+        /// id sits in the <c>hullmesh.lobster_</c> family, so the day an eighth fisher joins the wharf
+        /// with a lobster boat she is covered here with no edit. What IS pinned is the COUNT — a bare
+        /// distinctness check would go on passing if three of the four collapsed back onto one hull
+        /// and the others left the register, which is the exact shape of the bug this test exists to
+        /// catch.</para>
+        ///
+        /// <para>Each hull must also have a paint table of its OWN. Schemes are baked per hull id
+        /// (<see cref="HullPaintSchemeDef.HullMeshId"/>) and matched to materials BY INDEX, so an
+        /// owner moved onto a variant whose family was never baked is not drawn in the wrong colours
+        /// — <c>IsUsableFor</c> refuses the scheme and she falls back to the def's own ramps, i.e.
+        /// she silently stops being painted at all. That failure is invisible in a screenshot of one
+        /// boat and obvious in a row of four, which is why it is asserted here.</para>
+        /// </summary>
+        [Test]
+        public void TheLobsterOwnersEachKeepADifferentLobsterBoat()
+        {
+            const string Family = "hullmesh.lobster_";
+
+            var lobster = Owners()
+                .Where(o => o.IsPresentable() && o.Boat.Visual.HullMesh != null)
+                .Where(o => o.Boat.Visual.HullMesh.Id.StartsWith(Family, System.StringComparison.Ordinal))
+                .ToArray();
+
+            Assert.AreEqual(4, lobster.Length,
+                $"Nine Mile Creek's register holds FOUR lobster owners; found {lobster.Length}: " +
+                $"[{string.Join(", ", lobster.Select(o => o.Id))}]. A fisher joining or leaving this " +
+                "wharf is a register change worth stating in the PR — the count is pinned so that a " +
+                "collapse back onto one hull cannot hide behind a shrinking set.");
+
+            var byHull = lobster
+                .GroupBy(o => o.Boat.Visual.HullMesh.Id)
+                .OrderBy(g => g.Key, System.StringComparer.Ordinal)
+                .ToArray();
+
+            foreach (var g in byHull)
+                Assert.AreEqual(1, g.Count(),
+                    $"{string.Join(" and ", g.Select(o => o.DisplayName))} all keep '{g.Key}'. Boats " +
+                    "off one mesh is what this wall looked like before the spread: same sheer, same " +
+                    "house, same length, four times in a row, and paint cannot rescue it because the " +
+                    "silhouette is the thing that repeats. Eighteen lobster variants are committed — " +
+                    "give her one of her own.");
+
+            Assert.AreEqual(4, byHull.Length,
+                $"Expected four DISTINCT lobster hulls, found {byHull.Length}: " +
+                $"[{string.Join(", ", byHull.Select(g => g.Key))}].");
+
+            foreach (var g in byHull)
+            {
+                HullMeshDef hull = g.First().Boat.Visual.HullMesh;
+                Assert.IsNotEmpty(SchemesFor(hull),
+                    $"'{hull.Id}' has no baked paint scheme, so {g.First().DisplayName} cannot be " +
+                    "painted at all: a table baked against another hull is refused by IsUsableFor and " +
+                    "she falls back to her def's own ramps. Bake her family (Hidden Harbours ▸ Dev ▸ " +
+                    "3D Hulls ▸ Bake hull PAINT SCHEMES…) or move her onto a variant that has one.");
+            }
         }
 
         /// <summary>A scheme is a table of ramps matched to a hull's materials BY INDEX, so one baked

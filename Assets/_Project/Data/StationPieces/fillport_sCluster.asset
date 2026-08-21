@@ -1,0 +1,133 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c066b3141c12834eb15805632bcf579, type: 3}
+  m_Name: fillport_sCluster
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.StationPieceDef
+  Id: station.fillport_scluster
+  DisplayName: Fill Cluster
+  PieceType: fillport
+  SizeKey: sCluster
+  Label: FILL CLUSTER
+  IsInterior: 0
+  Facings: 8
+  Fold180: 0
+  Frames:
+  - {fileID: 1956710218, guid: 8e90f12cc0a96c245b9ab1baae2a1340, type: 3}
+  - {fileID: 1997766293, guid: 8e90f12cc0a96c245b9ab1baae2a1340, type: 3}
+  - {fileID: -2105990344, guid: 8e90f12cc0a96c245b9ab1baae2a1340, type: 3}
+  - {fileID: 58414419, guid: 8e90f12cc0a96c245b9ab1baae2a1340, type: 3}
+  - {fileID: 1342472336, guid: 8e90f12cc0a96c245b9ab1baae2a1340, type: 3}
+  - {fileID: 324988328, guid: 8e90f12cc0a96c245b9ab1baae2a1340, type: 3}
+  - {fileID: 1263184493, guid: 8e90f12cc0a96c245b9ab1baae2a1340, type: 3}
+  - {fileID: -211373750, guid: 8e90f12cc0a96c245b9ab1baae2a1340, type: 3}
+  BakedGrades:
+  - gas
+  - diesel
+  - mixed
+  WidthMeters: 0
+  DepthMeters: 0
+  HeightMeters: 0
+  MaxHoses: 0
+  MaxSides: 0
+  HoseReachMeters: 0
+  LitresPerMinute: 0
+  Slots: 0
+  LengthMeters: 0
+  SlotPitchMeters: 3.3
+  Bays: 0
+  ClearHeightMeters: 0
+  Blockers: []
+  Walkables:
+  - Id: fill_pad
+    HeightMeters: 0.09
+    Outline:
+    - {x: -0.86, y: -0.86}
+    - {x: 0.86, y: -0.86}
+    - {x: 0.86, y: 0.86}
+    - {x: -0.86, y: 0.86}
+    Treatment: flat
+  Interactables:
+  - Id: fill_gas
+    Label: "TANK FILL \xB7 GASOLINE"
+    Action: tanker_fill
+    Position: {x: -0.4, y: -0.4, z: 0.09}
+    ReachPoint: {x: -0.4, y: 0.7, z: 0}
+    HasReachPoint: 1
+    ReachVerdict: ok
+    Level: apron
+    VisibleFacings:
+    - N
+    - NE
+    - E
+    - SE
+    - S
+    - SW
+    - W
+    - NW
+  - Id: fill_diesel
+    Label: "TANK FILL \xB7 DIESEL"
+    Action: tanker_fill
+    Position: {x: 0.4, y: -0.4, z: 0.09}
+    ReachPoint: {x: 0.4, y: 0.7, z: 0}
+    HasReachPoint: 1
+    ReachVerdict: ok
+    Level: apron
+    VisibleFacings:
+    - N
+    - NE
+    - E
+    - SE
+    - S
+    - SW
+    - W
+    - NW
+  - Id: fill_mixed
+    Label: "TANK FILL \xB7 MIXED 50:1"
+    Action: tanker_fill
+    Position: {x: -0.4, y: 0.4, z: 0.09}
+    ReachPoint: {x: -0.4, y: 1.5, z: 0}
+    HasReachPoint: 1
+    ReachVerdict: ok
+    Level: apron
+    VisibleFacings:
+    - N
+    - NE
+    - E
+    - SE
+    - S
+    - SW
+    - W
+    - NW
+  Entry:
+    Kind: 
+    ClearWidthMeters: 0
+    ClearHeightMeters: 0
+    Threshold: {x: 0, y: 0, z: 0}
+    LeafWidthMeters: 0
+    TravelMeters: 0
+    ClearAtOpenFraction: 0
+    SillStepMeters: 0
+    Treatment: 
+    HasKeepClear: 0
+    KeepClear: []
+  ServiceDoor:
+    Kind: 
+    ClearWidthMeters: 0
+    ClearHeightMeters: 0
+    Threshold: {x: 0, y: 0, z: 0}
+    LeafWidthMeters: 0
+    TravelMeters: 0
+    ClearAtOpenFraction: 0
+    SillStepMeters: 0
+    Treatment: 
+    HasKeepClear: 0
+    KeepClear: []

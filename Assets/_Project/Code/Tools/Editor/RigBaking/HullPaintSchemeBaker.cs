@@ -41,10 +41,12 @@ namespace HiddenHarbours.Tools.RigBaking
         public const string SchemeFolder = "Assets/_Project/Data/Boats/PaintSchemes";
 
         /// <summary>
-        /// A hull whose rig carries a paint axis. FOUR of them now, across TWO different paint APIs
-        /// — which is the design working: the second, third and fourth hulls cost a line each and no
-        /// new baker. (Three of the four share one line verbatim; the lobster's differs only because
-        /// her kit predates the small craft's and keeps its resolver private.)
+        /// A hull whose rig carries a paint axis. TWENTY-FIVE of them now, across TWO different paint
+        /// APIs — which is the design working harder than it was asked to: the second, third and
+        /// fourth hulls cost a line each, and the twenty-one that arrived with the fleet rig pack
+        /// cost two <see cref="Painted(LobsterVariant)"/> helpers and no new baker at all.
+        /// (Four of the five one-hull rows share one line verbatim; the lobster's differs only
+        /// because her kit predates the small craft's and keeps its resolver private.)
         /// <see cref="AssetPrefix"/> keeps two hulls' tables from colliding on disk, and
         /// <see cref="IdPrefix"/> keeps their ids apart (ids are append-only and stable, CLAUDE.md §5).
         /// </summary>
@@ -90,7 +92,16 @@ namespace HiddenHarbours.Tools.RigBaking
             }
         }
 
-        public static readonly PaintedHull[] Fleet =
+        /// <summary>
+        /// <b>The hulls whose rig file makes exactly one boat.</b> Kept as a list of its own for the
+        /// reason <see cref="HullMeshFleet.OneHullPerRig"/> is: these are the CONTROL SET, the rows
+        /// that were baked before the generators arrived, and their committed tables are what a
+        /// regression in the generated rows would be measured against.
+        ///
+        /// <para>⚠️ Declared BEFORE <see cref="Fleet"/> on purpose — static field initialisers run in
+        /// textual order, and <see cref="Fleet"/> reads this one.</para>
+        /// </summary>
+        public static readonly PaintedHull[] OneHullPerRig =
         {
             // 12 schemes over the first mesh hull in the game. The ids are hull-qualified because the
             // TABLE is hull-specific (arity and material order must match the hull's own), even
@@ -151,7 +162,140 @@ namespace HiddenHarbours.Tools.RigBaking
                             schemeListExpr: "schemeIds.map(function(id){var s={G}.SCHEMES[id];" +
                                             "return [id,s.name||'',s.note||''];})",
                             defaultSchemeExpr: "defaultScheme"),
+
+            // The sport skiff Mk2 — the fleet rig pack's one-hull rig, and the FOURTH line of the
+            // small-craft API verbatim. She is not the sport skiff v1 repainted: v1 carries no paint
+            // axis at all (measured, not assumed — see the no-axis list in this lane's PR), and the
+            // committed hullmesh.sport_skiff_iso is a different hull that keeps her own look.
+            //
+            // 'sport_skiff_mk2', not 'skiff': the same reason the console skiff is not 'skiff'. The
+            // fleet holds four skiff-shaped rigs and this table is hers alone (13 materials in her
+            // own order), so a narrower prefix could not be fixed later — ids are append-only.
+            new PaintedHull("sportSkiffMk2", "hullmesh.sport_skiff_mk2_iso", "SportSkiffMk2Iso",
+                            "paint.sport_skiff_mk2_",
+                            matsExpr: "palette({scheme:{0}}).mats",
+                            schemeListExpr: "schemeIds.map(function(id){var s={G}.SCHEMES[id];" +
+                                            "return [id,s.name||'',s.note||''];})",
+                            defaultSchemeExpr: "defaultScheme"),
         };
+
+        /// <summary>
+        /// <b>Every hull whose rig carries a paint axis</b> — the five above, then the two GENERATOR
+        /// families whose hulls share one palette between them.
+        ///
+        /// <para>Built rather than written out for the reason <see cref="HullMeshFleet.Hulls"/> is:
+        /// the lobster generator alone is EIGHTEEN rows differing only in three axis words, and
+        /// eighteen hand-typed rows is exactly the number where one mismatch between a mesh id and an
+        /// id prefix survives review. Every name comes off <see cref="LobsterVariant"/> and
+        /// <see cref="SportFisherHull"/>, which already derive the mesh and deck ids the same way.</para>
+        ///
+        /// <para><b>⚠️ The generators' hulls do not get their own COLOURS, and that is the finding
+        /// this table encodes.</b> Measured in the repo's own V8 (2026-08-19): the lobster
+        /// generator's twelve tables are identical to the hero lobster's — same twelve ids, same
+        /// eleven materials, same key order <c>hull,boot,cream,deck,grip,glas,blue,steel,iron,blk,
+        /// dark</c>, every ramp and every offset. So these 216 assets are 12 tables against 18 hull
+        /// ids, and the duplication is structural: <see cref="HullPaintSchemeDef.HullMeshId"/> names
+        /// ONE hull, deliberately, because the arity gate cannot tell two 11-material tables apart.
+        /// Widening that field to a family is a Core contract change and is not made here.</para>
+        /// </summary>
+        public static readonly PaintedHull[] Fleet = BuildFleet();
+
+        static PaintedHull[] BuildFleet()
+        {
+            var fleet = new List<PaintedHull>(OneHullPerRig);
+            foreach (LobsterVariant v in LobsterVariantFleet.All) fleet.Add(Painted(v));
+            foreach (SportFisherHull h in SportFisherFleet.All) fleet.Add(Painted(h));
+            return fleet.ToArray();
+        }
+
+        /// <summary>
+        /// One cell of the lobster generator, painted from the same kit her hero carries.
+        ///
+        /// <para>⚠️ <c>defaultSchemeExpr</c> is <c>resolve({}).paint</c>, not the hero's
+        /// <c>defaultPaint</c>, because THIS RIG EXPORTS NO SUCH FIELD — and reaching for a literal
+        /// <c>'gelcoat'</c> here would be exactly the transcription this pipeline refuses. Her
+        /// default lives in her own <c>resolve()</c> (<c>PAINT_BY[v.paint] ? v.paint : 'gelcoat'</c>),
+        /// so calling it with an empty descriptor asks the rig what her default is instead of telling
+        /// it. That matters because the default is the A/B control: the mesh is baked from
+        /// <c>matsFor('gelcoat').MATS</c>, and <c>DefaultSchemeIsTheHullsOwnTable</c> only proves
+        /// "unset scheme = today's boat" while the two agree. Verified for all eighteen before the
+        /// bake ran.</para>
+        /// </summary>
+        static PaintedHull Painted(LobsterVariant v) =>
+            new PaintedHull(v.Key, v.MeshId, v.AssetName, v.PaintIdPrefix,
+                            matsExpr: "matsFor({0}).MATS",
+                            schemeListExpr: "PAINTS.map(function(p){return [p.id,p.label||'',p.note||''];})",
+                            defaultSchemeExpr: "resolve({}).paint",
+                            shimSymbols: new[] { "matsFor" });
+
+        /// <summary>One hull of the sport fisher registry. She keeps the hero lobster's API and her
+        /// own <c>defaultPaint</c>, so this is the hero's row with the names swapped — her four
+        /// schemes are her own (12 materials, a teak and a stripe the lobster has not got).</summary>
+        static PaintedHull Painted(SportFisherHull h) =>
+            new PaintedHull(h.Key, h.MeshId, h.AssetName, h.PaintIdPrefix,
+                            matsExpr: "matsFor({0}).MATS",
+                            schemeListExpr: "PAINTS.map(function(p){return [p.id,p.label||'',p.note||''];})",
+                            defaultSchemeExpr: "defaultPaint",
+                            shimSymbols: new[] { "matsFor" });
+
+        /// <summary>
+        /// <b>Hull rigs this baker deliberately does NOT paint, each with the reason</b> — the paint
+        /// side of <see cref="HullMeshFleet.NotHulls"/>, and it exists for exactly that reason: a rig
+        /// that GAINS a paint axis must not be able to arrive unnoticed. The mesh side has had this
+        /// guard since the fleet pack; the paint side did not, which is how twenty-one hulls sat
+        /// unpainted through three merged art drops with nothing going red.
+        ///
+        /// <para><b>Every one of these is an upstream ART ASK, not an omission here.</b> The recipe
+        /// for adding an axis to a rig that never had one is the Cape Islander's (#508): author it
+        /// the small craft's way (<c>SCHEMES</c> / <c>schemeIds</c> / <c>defaultScheme</c> /
+        /// <c>palette</c>), keep the pre-paint key order verbatim, and carry the pass-1 ramps as
+        /// literals on the DEFAULT scheme so the A/B stays byte-identical.</para>
+        ///
+        /// <para>MEASURED 2026-08-19 in the repo's own V8 — run, not grepped: each of these rigs was
+        /// executed and probed for BOTH paint APIs. None exposes <c>PAINTS</c>/<c>matsFor</c> or
+        /// <c>SCHEMES</c>/<c>palette</c>, and none declares either privately.
+        /// <c>UnpaintedRigsReallyHaveNoAxis</c> keeps that true.</para>
+        /// </summary>
+        public static readonly IReadOnlyDictionary<string, string> UnpaintedRigs =
+            new Dictionary<string, string>(StringComparer.Ordinal)
+            {
+                ["doryIsoRig.js"] =
+                    "The dory (T0) — no paint axis. She is the boat he starts in and her bare lapstrake " +
+                    "planking is her identity, so an axis for her is a real art question rather than a " +
+                    "mechanical one: what does a repainted dory even look like before he can afford paint?",
+
+                ["sportSkiffIsoRig.js"] =
+                    "Sport skiff v1 — no paint axis. ⚠️ Her Mk2 HAS one and is baked; this is not a stale " +
+                    "entry for a retired rig. The two are different hulls by the owner's ruling " +
+                    "(2026-08-13): the committed hullmesh.sport_skiff_iso keeps her id, her mesh and " +
+                    "her two outboard visuals, so painting the Mk2 does not reach her.",
+
+                ["sideDraggerIsoRig.js"] =
+                    "Side dragger (T4) — no paint axis. The first offshore hull, and the first of the " +
+                    "upper fleet: none of the five rigs the ADR was written for carries one.",
+
+                ["sternTrawlerIsoRig.js"] =
+                    "Stern trawler (T5) — no paint axis.",
+
+                ["sternTrawlerMk2IsoRig.js"] =
+                    "Stern trawler Mk2 (T5) — no paint axis. A separate rig file, so a separate entry: " +
+                    "an axis landing on one of the two would not reach the other.",
+
+                ["coastalPacketIsoRig.js"] =
+                    "Coastal packet (T6) — no paint axis. The first merchant hull, and the tier where a " +
+                    "livery starts to mean a COMPANY rather than a keeper — worth an art conversation " +
+                    "before an axis, not after.",
+
+                ["tankerIsoRig.js"] =
+                    "Tanker (T7) — no paint axis.",
+
+                ["zodiacIsoRig.js"] =
+                    "Both zodiac builds — no paint axis. ⚠️ If she gains one, it needs the SAME used-materials " +
+                    "reconstruction RigMeshSymbols already applies to her mesh: she declares EIGHTEEN " +
+                    "materials against the facet shader's sixteen, and only fourteen are referenced by " +
+                    "any face. A plain table off her MATS would be refused by IsUsableFor on arity, " +
+                    "and no hull-side change could fix it.",
+            };
 
         [MenuItem("Hidden Harbours/Dev/3D Hulls/Bake hull PAINT SCHEMES…", priority = 41)]
         public static void BakeAll()

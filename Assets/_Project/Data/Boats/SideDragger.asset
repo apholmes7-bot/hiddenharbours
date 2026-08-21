@@ -38,3 +38,6 @@ MonoBehaviour:
   CameraWorldHeightMeters: 40
   DeckContainer: {fileID: 0}
   DeckContainerOffset: {x: 0.35, y: -0.9}
+  FuelCapacityLitres: 320
+  FuelGrade: diesel
+  FullThrottleLitresPerHour: 275

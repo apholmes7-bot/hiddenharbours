@@ -427,3 +427,27 @@
 - DLC / seasonal-event fish (the 8-species flex reserve in the fish allocation).
 - Deeper piracy/insurance economy beyond the light version.
 - Any design "open question" feature that earns its way in after launch.
+
+## Logged from the yard & landscaping lane (2026-08-20, unscheduled)
+
+Raised rather than built, per rule 8. The yard data model (`YardPlan`, one polygon per property)
+leaves room for all three; none of them is asked for yet.
+
+- **Mowing / yard work as gameplay.** A yard's lawn STATE — kept, shaggy, gone to hay — with the
+  player able to cut it. The splat design already allows a channel per yard, and the yard kit's
+  `kept` axis (0..1, and not a paint fade: it moves paint, posts, tools, weed skirts, bed mulch,
+  hedge clip and clump jitter together) is exactly the dial such a feature would drive. Would pair
+  with property ownership; P4 (earn it, then automate it) if hiring somebody to cut it is the
+  end state.
+- **Gates that open and close.** The boundary already cuts a real gap at each gate, in the fence
+  art and the collider together, so an opening gate is an animation and a collider toggle rather
+  than new geometry. Wants a reason first — a yard the player is meant to be kept out of.
+- **Hedges as an alternative boundary.** `YardFence.Hedge` exists as a value and the kit ships
+  clipped runs, corners, balls and a cedar screen. What is missing is a ruling on whether a hedge
+  blocks the player exactly as a fence does (it can, through the same `PropertyBoundary`) or reads
+  as soft cover you can push through.
+  ⚠ **Updated by S2 (2026-08-20): the style now BUILDS, and the default it builds is "blocks".**
+  `hedgeRun`/`hedgeCorner` are baked and `YardDressing` places them behind a `PropertyBoundary`
+  exactly like a fence. Nothing is decided yet because **no yard in either table is `Hedge`** — the
+  tables use `None`, `PostRail`, `Picket`, `SplitRail` and `Wire`. The ruling is owed the moment the
+  owner sets one, and the art is already there for him to try it with one word.

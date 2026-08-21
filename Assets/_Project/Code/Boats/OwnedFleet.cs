@@ -30,6 +30,10 @@ namespace HiddenHarbours.Boats
         [Header("Active boat (what gets swapped on a grant)")]
         [SerializeField] private BoatController _boat;
         [SerializeField] private ShipHold _hold;
+
+        // Her tank (§9.3). Not serialized: BoatController spawns it at runtime, so there is
+        // nothing for a scene or a builder to point at — resolved on first hull change instead.
+        private BoatFuelTank _tank;
         [SerializeField] private SpriteRenderer _spriteRenderer;
 
         // The camera framing belongs to PILOTING, not OWNERSHIP: a purchase grants the hull, but the
@@ -147,6 +151,18 @@ namespace HiddenHarbours.Boats
 
             if (_boat != null) _boat.SetHull(hull);                                  // feel + mass
             if (_hold != null) _hold.SetHull(hull);                                  // capacity 6→14
+
+            // THE TANK follows the hull too (fuel-and-refuelling.md §9.3). SwitchToHull banks what the
+            // OLD hull had under HER id, then reads the new hull's saved row — so the fuel is per BOAT,
+            // not per player: trade up with half a tank in the dory and the dory still has half a tank
+            // when you come back to her. A hull with no saved row reads brim-full, which is also how
+            // GameConfig.Fuel.NewBoatArrivesFull is honoured, so a PURCHASE needs no separate hook here.
+            //
+            // Found at Awake rather than serialized: the tank is runtime-spawned by BoatController (the
+            // BoatAnchor pattern), so no already-built scene has one to wire, and requiring a builder
+            // re-run to make fuel persist would be the exact prefab churn that spawn pattern avoids.
+            if (_tank == null && _boat != null) _tank = _boat.GetComponent<BoatFuelTank>();
+            if (_tank != null) _tank.SwitchToHull(hull);
 
             // THE VISIBLE SWAP — through the data-driven skin seam, never by poking a renderer. This used
             // to read `_spriteRenderer.sprite = hull.Sprite`, which was a REAL BUG for as long as the

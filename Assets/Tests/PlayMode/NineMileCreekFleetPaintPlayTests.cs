@@ -146,11 +146,21 @@ namespace HiddenHarbours.Tests.PlayMode
         /// shared a hull — guaranteed only while every painted boat in the register was a lobster
         /// boat, which stopped being true when the punt gained an owner.
         ///
-        /// <para>It is NOT red today, and only by luck of the alphabet: the two lowest painted ids
-        /// (<c>arsenault_leo</c>, <c>campbell_hughie</c>) are both lobster boats. It DID go red
+        /// <para>It was NOT red when written, and only by luck of the alphabet: the two lowest painted
+        /// ids (<c>arsenault_leo</c>, <c>campbell_hughie</c>) were both lobster boats. It DID go red
         /// mid-branch, when a second small-craft owner was briefly in the register, which is how the
         /// latent assumption surfaced. Selecting the pair states the premise instead of relying on
         /// it, and the cross-hull case this can no longer cover gets its own test below.</para>
+        ///
+        /// <para><b>⚠ AND SINCE THE 2026-08-20 LOBSTER SPREAD THE PREMISE IS GONE AT THIS WHARF, SO
+        /// THIS TEST NOW IGNORES ITSELF — BY DESIGN, AND WORTH KNOWING BEFORE YOU "FIX" IT.</b> The four
+        /// owners who all kept <c>boat.lobster_boat</c> now keep four different variants, so no two
+        /// painted owners in this register share a hull mesh at all and the selection above finds no
+        /// pair. That is the selection doing its job: the property is real and still worth asserting
+        /// the day a wharf holds two boats off one mesh again, and an <c>Ignore</c> that names its
+        /// missing premise is honest where a green that asserted nothing would not be. Every register
+        /// this fixture can reach today is covered by
+        /// <see cref="OwnersOnDifferentHullsEachGetTheirOwnTable"/> below.</para>
         /// </summary>
         [UnityTest]
         public IEnumerator TwoOwnersWakeInTwoDifferentPaints()
