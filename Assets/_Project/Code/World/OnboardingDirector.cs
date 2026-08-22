@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.UI;
 using HiddenHarbours.Core;
 
 namespace HiddenHarbours.World
@@ -26,6 +25,13 @@ namespace HiddenHarbours.World
     /// nudges the player to sail home. On a later run the flag is already set, so the hint never shows
     /// again — the opening doesn't nag returning players. Deliberately minimal: no quests, no routines
     /// (that's M2), just one self-dismissing nudge.
+    ///
+    /// <para><b>⭐ It stopped DRAWING on 2026-08-22 (the owner's diegetic ruling).</b> The step logic
+    /// below is untouched — it is still the one thing that knows which beat the player is on, and the
+    /// lines are still <see cref="WorldStrings"/>'s. What went is the bottom-centre banner of white
+    /// outlined text this file used to build for itself: the nudge is now drawn by
+    /// <see cref="QuestPanelPresenter"/> as a leaf off her notebook, pinned lower-right. One source,
+    /// one voice, and the director is left holding nothing but the decision.</para>
     /// </summary>
     public sealed class OnboardingDirector : MonoBehaviour
     {
@@ -39,7 +45,10 @@ namespace HiddenHarbours.World
         private const string DoryBoatId = "boat.dory";
 
         private OnboardingFlags _flags;
-        private Text _hint;
+
+        // The note the nudge is written on. Made here rather than found, so the opening works in any
+        // scene that has a director — the same reasoning that had this file build its own canvas before.
+        private QuestPanelPresenter _panel;
 
         private bool _clamsDug;
         private bool _licenced;
@@ -51,7 +60,8 @@ namespace HiddenHarbours.World
         private void Awake()
         {
             _flags = new OnboardingFlags(new SaveFlagStore());   // VS-08: persisted via the save file, not PlayerPrefs
-            BuildHint();
+            _panel = GetComponent<QuestPanelPresenter>();
+            if (_panel == null) _panel = gameObject.AddComponent<QuestPanelPresenter>();
         }
 
         private void OnEnable()  => Subscribe();
@@ -82,7 +92,7 @@ namespace HiddenHarbours.World
 
         private void Update()
         {
-            if (_hint == null) return;
+            if (_panel == null) return;
 
             // Once the loop's done (dory repaired), nudge "sail her home" briefly, then go quiet for good.
             if (_flags.Onboarded)
@@ -135,49 +145,13 @@ namespace HiddenHarbours.World
             _doneTimer = _doneSeconds;
         }
 
-        // ---- hint label ---------------------------------------------------------------------
+        // ---- the nudge ----------------------------------------------------------------------
 
-        private void SetHint(string text)
-        {
-            bool show = !string.IsNullOrEmpty(text);
-            if (_hint.enabled != show) _hint.enabled = show;
-            if (show && _hint.text != text) _hint.text = text;
-        }
-
-        private void BuildHint()
-        {
-            var canvasGo = new GameObject("Onboarding_Canvas", typeof(Canvas), typeof(CanvasScaler));
-            canvasGo.transform.SetParent(transform, false);
-            var canvas = canvasGo.GetComponent<Canvas>();
-            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            canvas.sortingOrder = 94;
-            var scaler = canvasGo.GetComponent<CanvasScaler>();
-            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            scaler.referenceResolution = new Vector2(1280f, 720f);
-            scaler.matchWidthOrHeight = 0.5f;
-
-            var go = new GameObject("Hint", typeof(RectTransform), typeof(Text), typeof(Outline));
-            go.transform.SetParent(canvasGo.transform, false);
-            var rt = go.GetComponent<RectTransform>();
-            rt.anchorMin = new Vector2(0.5f, 0f);
-            rt.anchorMax = new Vector2(0.5f, 0f);
-            rt.pivot = new Vector2(0.5f, 0f);
-            rt.anchoredPosition = new Vector2(0f, 70f); // a low banner, clear of the board/dock hint
-            rt.sizeDelta = new Vector2(900f, 44f);
-
-            _hint = go.GetComponent<Text>();
-            _hint.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            _hint.fontSize = 26;
-            _hint.alignment = TextAnchor.LowerCenter;
-            _hint.color = new Color(1f, 0.96f, 0.85f); // warm parchment
-            _hint.horizontalOverflow = HorizontalWrapMode.Overflow;
-            _hint.verticalOverflow = VerticalWrapMode.Overflow;
-            _hint.raycastTarget = false;
-
-            var outline = go.GetComponent<Outline>();
-            outline.effectColor = new Color(0f, 0f, 0f, 0.85f);
-            outline.effectDistance = new Vector2(2f, -2f);
-            _hint.enabled = false;
-        }
+        /// <summary>
+        /// Hand this beat's line to the note; null or empty takes the note down. Called every frame and
+        /// deliberately unguarded here — <see cref="QuestPanelPresenter.Show"/> change-detects, so an
+        /// unchanged nudge costs one string compare and draws nothing (rule 7).
+        /// </summary>
+        private void SetHint(string text) => _panel.Show(text);
     }
 }

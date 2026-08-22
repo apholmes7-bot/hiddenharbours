@@ -1,6 +1,7 @@
 using System;
 using System.Globalization;
 using UnityEngine;
+using HiddenHarbours.Core;
 
 namespace HiddenHarbours.UI
 {
@@ -52,15 +53,10 @@ namespace HiddenHarbours.UI
         }
 
         /// <summary>Money like "₲1,240".</summary>
-        public static string Money(int balance)
-            => HudStrings.MoneyPrefix + balance.ToString("N0", Inv);
+        public static string Money(int balance) => MoneyFormat.Balance(balance);
 
         /// <summary>A payout flash like "+₲48" (positive) or "₲0" guard.</summary>
-        public static string PayoutFlash(int amount)
-        {
-            if (amount <= 0) return HudStrings.MoneyPrefix + "0";
-            return "+" + HudStrings.MoneyPrefix + amount.ToString("N0", Inv);
-        }
+        public static string PayoutFlash(int amount) => MoneyFormat.Payout(amount);
 
         /// <summary>A landed-fish celebration card like "Atlantic Cod — 3.4 kg — ₲48!". Weight to one
         /// decimal; value is the fish's base worth (the market sale is a separate payout flash).</summary>

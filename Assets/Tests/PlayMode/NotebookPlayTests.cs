@@ -84,6 +84,11 @@ namespace HiddenHarbours.Tests.PlayMode
             PauseMenu.CloseIfOpen();
             ShellPause.Reset();
 
+            // The purse follows money all the time, not only while the book is up — so a wallet or a
+            // sale left behind here would letter the next test's head with the last one's balance.
+            GameServices.Wallet = null;
+            EventBus.Publish(new MoneyChanged(newBalance: 0, delta: -1));
+
             InteractionGate.Reset();
             MoveActionClaim.Reset();
             CancelKeyClaim.Reset();
@@ -249,6 +254,95 @@ namespace HiddenHarbours.Tests.PlayMode
                           "⭐ the book is set in the kit's own hand, resolved at runtime with nothing " +
                           "wired — if this is red, check that the baked face is still inside a folder " +
                           "named 'Resources' (HarbourType.ResourceKey)");
+        }
+
+        // =============================================================================
+        //  the purse — where the money went on 2026-08-22
+        // =============================================================================
+        //  The owner's diegetic ruling took the balance off the HUD band: a balance is something she
+        //  KEEPS, so it is looked up in the book she keeps it in. These prove the head actually letters
+        //  it, and that the payout the band used to flash survives in its new home.
+
+        [UnityTest]
+        public IEnumerator The_purse_letters_the_wallet_balance()
+        {
+            var wallet = new FakePurse();
+            wallet.Add(1240);
+            GameServices.Wallet = wallet;
+
+            _book.Open();
+            yield return null;
+
+            Assert.AreEqual("₲1,240", _book.PurseLine(),
+                            "⭐ the money is in the book now — the head reads what she is carrying");
+        }
+
+        [UnityTest]
+        public IEnumerator The_purse_follows_a_balance_with_no_wallet_to_ask()
+        {
+            // The greybox and the dev cores run without an IWallet; a MoneyChanged still carries the
+            // authoritative number, and the book must take it rather than letter a confident zero.
+            GameServices.Wallet = null;
+
+            _book.Open();
+            yield return null;
+
+            EventBus.Publish(new MoneyChanged(newBalance: 96, delta: 96));
+            yield return null;
+
+            Assert.AreEqual("₲96", _book.PurseLine());
+        }
+
+        [UnityTest]
+        public IEnumerator A_sale_annotates_the_purse_and_a_spend_clears_it()
+        {
+            var wallet = new FakePurse();
+            wallet.Add(1240);
+            GameServices.Wallet = wallet;
+
+            _book.Open();
+            yield return null;
+            Assert.AreEqual("₲1,240", _book.PurseLine(), "precondition: just the balance");
+
+            // The payout the HUD band used to flash, in its new home: beside the balance it moved.
+            EventBus.Publish(new CatchSold(totalPaid: 48, count: 3));
+            yield return null;
+
+            StringAssert.Contains("+₲48", _book.PurseLine(),
+                                  "the sale is READ in the book rather than flashed over the game");
+
+            // ...and it must not outlive the money. "+₲48" beside a balance she has since spent is a
+            // claim about a balance that no longer contains it.
+            EventBus.Publish(new MoneyChanged(newBalance: 1000, delta: -288));
+            yield return null;
+
+            Assert.AreEqual("₲1,000", _book.PurseLine(), "spending clears the last sale's annotation");
+        }
+
+        [UnityTest]
+        public IEnumerator A_sale_made_while_the_book_was_shut_is_there_when_it_opens()
+        {
+            // The ordinary case, and the reason the purse follows money even while the book is away:
+            // she sells on the wharf and checks her book afterwards.
+            GameServices.Wallet = null;
+
+            EventBus.Publish(new MoneyChanged(newBalance: 288, delta: 288));
+            EventBus.Publish(new CatchSold(totalPaid: 288, count: 12));
+            yield return null;
+            Assert.IsFalse(_book.IsOpen, "precondition: it all happened with the book shut");
+
+            _book.Open();
+            yield return null;
+
+            StringAssert.Contains("₲288", _book.PurseLine());
+            StringAssert.Contains("+₲288", _book.PurseLine());
+        }
+
+        private sealed class FakePurse : IWallet
+        {
+            public int Money { get; private set; }
+            public void Add(int amount) => Money += amount;
+            public bool TrySpend(int amount) { if (amount > Money) return false; Money -= amount; return true; }
         }
     }
 }

@@ -162,17 +162,44 @@ The player must **always** be able to read the sea at a glance. The HUD is compa
 the **top band** (out of thumb zones), and is **glanceable in under a second** — this is the most
 important UI in the game (P1).
 
+> ### ⭐ SUPERSEDED IN PART — the diegetic ruling, 2026-08-22 (owner, from play)
+>
+> The section below is the original HUD brief and still describes the *form* each read takes. What
+> changed is **who is allowed to see it, and where**:
+>
+> 1. **Tide** is not shown unless it comes from an **instrument the player has**.
+> 2. **Money** lives in the **notebook** only (`N`) — its head letters the balance, and a sale is
+>    annotated there instead of flashed over the game.
+> 3. **Sea state** and the **wind readout** are not visible in normal play.
+> 4. All of them stay reachable for debugging: *Hidden Harbours ▸ Dev ▸ HUD*.
+> 5. The **current quest** left its bottom-centre banner and is drawn **lower-right**, as a leaf off
+>    the notebook in the notebook's own stock, ink and hand.
+>
+> What is still always-on is the **watch** (she is wearing it) and the **boat's own instruments** —
+> the helm compass, the chartplotter, the apparent-wind read. Those are untouched, and deliberately:
+> an instrument is exactly where the ruling says a number may come from.
+>
+> **Why.** Information in this game is earned. A band that hands the player the tide, the sea and
+> their balance for free deletes the reason to read the water, buy the gauge, or keep the book.
+>
+> Implemented by `HudVisibilityPolicy` (the rule), `HudController` (obeys it), `NotebookPresenter`
+> (the purse) and `QuestPanelPresenter` (the corner note). The rule is pinned in
+> `HudVisibilityPolicyTests`.
+
 ### 4.1 What must always be visible
+
+*(As originally briefed. Read the four rows marked ⛔ against the ruling above — they describe the
+form the read takes **when it is shown**, which is now an instrument-and-dev-menu question.)*
 
 | Element | What it shows | Form |
 |---|---|---|
 | **Clock** | Current 24h time + day/season | Small digital + a day-arc; tap to expand calendar |
-| **Tide** | **State (rising/falling), height, and time-to-next-turn** | A dedicated **tide gauge** (see §4.2) — the most legible widget |
-| **Wind** | **Direction (relative to you) + strength** | A **wind arrow / windsock** (see §4.2) |
-| **Sea state** | Calm → gale (1–5ish) | Icon + colour, often fused with wind/weather cluster |
+| **Tide** ⛔ | **State (rising/falling), height, and time-to-next-turn** | A dedicated **tide gauge** (see §4.2) — the most legible widget. **Shown only with a tide clock** (2026-08-22) |
+| **Wind** ⛔ | **Direction (relative to you) + strength** | A **wind arrow / windsock** (see §4.2). **Off the band** (2026-08-22); the helm's apparent-wind read stays |
+| **Sea state** ⛔ | Calm → gale (1–5ish) | Icon + colour, often fused with wind/weather cluster. **Off the band** (2026-08-22) |
 | **Weather** | Now + a short forecast hint | Weather icon; tap for forecast (barometer) |
 | **Compass / heading** | Cardinal heading + N reference | A **compass ribbon or rose** (see §4.2) |
-| **Money** | Cash on hand | Small, top corner |
+| **Money** ⛔ | Cash on hand | **In the notebook's head** (2026-08-22), not the band |
 | **Context/skills** | Current vessel, hold fullness when fishing/hauling | Contextual, fades when irrelevant |
 
 Everything else (full ledgers, charts, business) lives in **menus**, one tap away — the HUD only

@@ -14,6 +14,13 @@ namespace HiddenHarbours.Tests.PlayMode
     /// reflects the live money/payout labels, and asserts they respond to <see cref="MoneyChanged"/>
     /// and <see cref="CatchSold"/> events published on the <see cref="EventBus"/>. This is the
     /// closest automated check to "verify in Play" for the event-driven readouts.
+    ///
+    /// <para><b>⭐ Amended 2026-08-22 for the diegetic ruling.</b> The band's four conditions readouts
+    /// are no longer DRAWN in a new game — <see cref="HudVisibilityPolicy"/> decides, and it says no.
+    /// The event plumbing below is unchanged and still worth asserting (the strings are what the dev
+    /// override and any future instrument will show), so those tests stayed as they were and the
+    /// VISIBILITY got tests of its own. The one that had to move is the payout flash: it exists on the
+    /// band only under the override now, so its test says so.</para>
     /// </summary>
     public class HudControllerSmokeTests
     {
@@ -59,6 +66,8 @@ namespace HiddenHarbours.Tests.PlayMode
             EventBus.Clear<CatchSold>();
             EventBus.Clear<FishCaught>();
             GameServices.Reset();
+            // A leaked dev override would quietly re-enable the band for every test after it.
+            HudVisibilityPolicy.Reset();
         }
 
         [TearDown]
@@ -68,6 +77,7 @@ namespace HiddenHarbours.Tests.PlayMode
             EventBus.Clear<CatchSold>();
             EventBus.Clear<FishCaught>();
             GameServices.Reset();
+            HudVisibilityPolicy.Reset();
             if (_hudGo != null) Object.Destroy(_hudGo);
         }
 
@@ -122,12 +132,18 @@ namespace HiddenHarbours.Tests.PlayMode
                 "the money readout should reflect the MoneyChanged balance");
         }
 
+        /// <summary>
+        /// The band's payout flash, under the dev override — which is the only way it is on screen at
+        /// all since the 2026-08-22 ruling. In normal play a sale is read on the notebook's purse line;
+        /// what this still proves is that the CatchSold wiring and the formatting are intact.
+        /// </summary>
         [UnityTest]
-        public IEnumerator CatchSold_FlashesThePayout()
+        public IEnumerator CatchSold_FlashesThePayout_UnderTheDevOverride()
         {
             GameServices.Clock = new FakeClock();
             GameServices.Environment = new FakeEnv();
             GameServices.Wallet = new FakeWallet();
+            HudVisibilityPolicy.DevShowAll = true;
 
             var hud = MakeHud();
             yield return null;
@@ -204,6 +220,131 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return null;
             yield return null;
             Assert.IsNotNull(hud, "HUD survives frames with no services wired (boot safety)");
+        }
+
+        // ---- the 2026-08-22 diegetic ruling, on screen ---------------------------------------
+        // The EditMode truth table proves the RULE; these prove the band actually obeys it — which is
+        // the half a policy object cannot check about itself.
+
+        [UnityTest]
+        public IEnumerator NewGame_ShowsNoTideSeaWindOrMoney()
+        {
+            GameServices.Clock = new FakeClock();
+            GameServices.Environment = new FakeEnv();
+            GameServices.Wallet = new FakeWallet();
+
+            var hud = MakeHud();
+            yield return null;
+
+            Assert.IsFalse(Label(hud, "_tideLabel").enabled, "the tide is not shown without an instrument");
+            Assert.IsFalse(Label(hud, "_windLabel").enabled, "the wind read is not visible in normal play");
+            Assert.IsFalse(Label(hud, "_seaLabel").enabled, "the sea state is not visible in normal play");
+            Assert.IsFalse(Label(hud, "_moneyLabel").enabled, "money lives in the notebook now");
+            Assert.IsFalse(Label(hud, "_payoutLabel").enabled, "the payout flash went with the money");
+        }
+
+        [UnityTest]
+        public IEnumerator ASale_DoesNotFlashOnTheBand()
+        {
+            GameServices.Clock = new FakeClock();
+            GameServices.Environment = new FakeEnv();
+            GameServices.Wallet = new FakeWallet();
+
+            var hud = MakeHud();
+            yield return null;
+
+            EventBus.Publish(new CatchSold(totalPaid: 48, count: 3));
+            yield return null;
+
+            Assert.IsFalse(Label(hud, "_payoutLabel").enabled,
+                "a sale is read on the notebook purse line now, not flashed over the game");
+        }
+
+        [UnityTest]
+        public IEnumerator DevOverride_BringsTheWholeBandBack()
+        {
+            GameServices.Clock = new FakeClock();
+            GameServices.Environment = new FakeEnv();
+            GameServices.Wallet = new FakeWallet();
+
+            var hud = MakeHud();
+            yield return null;
+            Assert.IsFalse(Label(hud, "_tideLabel").enabled, "precondition: the band starts quiet");
+
+            HudVisibilityPolicy.DevShowAll = true;
+            yield return null;
+
+            Assert.IsTrue(Label(hud, "_tideLabel").enabled, "the dev menu is the way back to the tide");
+            Assert.IsTrue(Label(hud, "_windLabel").enabled);
+            Assert.IsTrue(Label(hud, "_seaLabel").enabled);
+            Assert.IsTrue(Label(hud, "_moneyLabel").enabled);
+        }
+
+        [UnityTest]
+        public IEnumerator AnInstrument_ShowsItsOwnRead_AndOnlyThat()
+        {
+            GameServices.Clock = new FakeClock();
+            GameServices.Environment = new FakeEnv();
+            GameServices.Wallet = new FakeWallet();
+
+            var hud = MakeHud();
+            yield return null;
+
+            HudVisibilityPolicy.Owned = HudInstruments.TideClock;
+            yield return null;
+
+            Assert.IsTrue(Label(hud, "_tideLabel").enabled, "a tide clock earns the tide back");
+            Assert.IsFalse(Label(hud, "_windLabel").enabled, "and buys nothing else");
+            Assert.IsFalse(Label(hud, "_moneyLabel").enabled);
+        }
+
+        /// <summary>
+        /// A read that comes back must not come back STALE. While hidden its update is skipped, so the
+        /// cached string is whatever the world looked like when it went dark; showing it again has to
+        /// drop that cache and repaint from the live world, not change-detect against a ghost.
+        /// </summary>
+        [UnityTest]
+        public IEnumerator AReadThatComesBack_RepaintsFromTheLiveWorld()
+        {
+            var clock = new FakeClock();
+            GameServices.Clock = clock;
+            GameServices.Environment = new FakeEnv();
+            GameServices.Wallet = new FakeWallet();
+
+            var hud = MakeHud();
+            yield return null;
+
+            var sea = Label(hud, "_seaLabel");
+            Assert.AreNotEqual("Sea: Calm (1/7)", sea.text, "precondition: nothing painted it while hidden");
+
+            HudVisibilityPolicy.Owned = HudInstruments.SeaGauge;
+            yield return null;   // the visibility flips and fires the sample timer
+            yield return null;   // ...and the next sample paints
+
+            Assert.IsTrue(sea.enabled);
+            Assert.AreEqual("Sea: Calm (1/7)", sea.text,
+                "the freshly-shown read must carry the live sea state, not a stale cache");
+        }
+
+        /// <summary>
+        /// The onboarding banner is not the HUD's, and after 2026-08-22 it is nobody's: the current
+        /// quest is drawn by <c>QuestPanelPresenter</c> in the notebook's hand, lower-right. This pins
+        /// the negative half — no HUD label letters a quest line.
+        /// </summary>
+        [UnityTest]
+        public IEnumerator TheBand_DrawsNoQuestBanner()
+        {
+            GameServices.Clock = new FakeClock();
+            GameServices.Environment = new FakeEnv();
+
+            var hud = MakeHud();
+            yield return null;
+
+            foreach (Text text in _hudGo.GetComponentsInChildren<Text>(includeInactive: true))
+            {
+                Assert.IsFalse(!string.IsNullOrEmpty(text.text) && text.text.Contains("Aunt Ginny"),
+                    $"the HUD must not letter a quest line — found \"{text.text}\" on {text.name}");
+            }
         }
     }
 }

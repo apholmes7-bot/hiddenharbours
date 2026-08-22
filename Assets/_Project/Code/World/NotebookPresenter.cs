@@ -132,6 +132,16 @@ namespace HiddenHarbours.World
         private Func<IReadOnlyList<NotebookNote>> _notes;
         private IFlagStore _flags;
 
+        // ---- the purse (the 2026-08-22 diegetic ruling) ---------------------------------------------
+        // The money came OFF the HUD band and lives here. Tracked rather than read straight from the
+        // wallet at draw time because the wallet is OPTIONAL in the greybox and in EditMode, and a
+        // MoneyChanged is authoritative even where there is no IWallet to ask.
+
+        private Text _purseLabel;      // the lettered line; kept so a sale can repaint it without a redraw
+        private int _money;
+        private bool _moneyKnown;
+        private int _lastPayout;       // the gain annotated beside the balance, 0 for none
+
         private bool _gateWasBlocked;
         private bool _moveWasClaimed;
         private Vector2 _lastAxis;
@@ -315,11 +325,21 @@ namespace HiddenHarbours.World
 
         // ---- open / close ----------------------------------------------------------------------------
 
-        private void OnEnable() => EventBus.Subscribe<NotebookRequested>(OnRequested);
+        private void OnEnable()
+        {
+            EventBus.Subscribe<NotebookRequested>(OnRequested);
+            // The purse is only drawn while the book is open, but the balance has to be RIGHT the
+            // moment it opens — including after a sale made while it was shut, which is the ordinary
+            // case. So the money is followed all the time and only lettered when there is a page.
+            EventBus.Subscribe<MoneyChanged>(OnMoneyChanged);
+            EventBus.Subscribe<CatchSold>(OnCatchSold);
+        }
 
         private void OnDisable()
         {
             EventBus.Unsubscribe<NotebookRequested>(OnRequested);
+            EventBus.Unsubscribe<MoneyChanged>(OnMoneyChanged);
+            EventBus.Unsubscribe<CatchSold>(OnCatchSold);
             if (IsOpen) Close();
         }
 
@@ -365,6 +385,7 @@ namespace HiddenHarbours.World
 
             EnsureArt();
             EnsureContent();
+            ReadWallet();
 
             SpreadIndex = 0;
             RebuildModel();
@@ -640,6 +661,27 @@ namespace HiddenHarbours.World
 
             DrawTabs(inset + 2 * pageW + NotebookKit.Gutter, inset);
             DrawPageMarks(inset, inset, pageW, pageH);
+            DrawPurse(inset + pageW + NotebookKit.Gutter, inset, pageW);
+        }
+
+        /// <summary>
+        /// <b>The purse line</b> — what she is carrying, lettered into the RIGHT leaf's head (the 16 px
+        /// strip above the first rule, which the book has always printed blank).
+        ///
+        /// <para>This is where the money went on 2026-08-22. It used to be a number on the always-on
+        /// band, free and permanent; the ruling's point is that a balance is something you keep, so you
+        /// look it up in the book you keep it in. The head is the right home for it: it is the one part
+        /// of a leaf that is furniture rather than content, so the purse never competes with a step for
+        /// a ruled line, and it reads on EVERY tab — the balance is not a quest.</para>
+        ///
+        /// <para>Right-aligned to the fore-edge, where a running head belongs and where the eye is not
+        /// already busy with the margin rule.</para>
+        /// </summary>
+        private void DrawPurse(int x, int y, int pageW)
+        {
+            int w = pageW - NotebookKit.PadL - NotebookKit.PadR;
+            _purseLabel = AddText(_bookRect, PurseLine(), x + NotebookKit.PadL, y + 2, w,
+                                  InkStrong, TextAnchor.UpperRight);
         }
 
         private void DrawLeaf(NotebookLeaf leaf, int x, int y, int pageW, int pageH, int cols, int lines)
@@ -750,6 +792,81 @@ namespace HiddenHarbours.World
                          x + 2 * pageW + NotebookKit.Gutter - NotebookKit.PadR - 5, y + pageH - 8, 5, 7, InkFaint);
         }
 
+        // ---- the purse ----------------------------------------------------------------------------------
+
+        /// <summary>
+        /// Take the balance from the wallet, if there is one. Called on open so the book is right the
+        /// moment it is held up, whatever happened while it was shut.
+        ///
+        /// <para><see cref="IWallet"/> is OPTIONAL — the greybox and EditMode both run without one, and
+        /// <c>GameServices.Ready</c> deliberately does not require it. With no wallet the last
+        /// <see cref="MoneyChanged"/> stands; with neither, the purse says so rather than lettering a
+        /// confident zero she has not earned.</para>
+        /// </summary>
+        private void ReadWallet()
+        {
+            IWallet wallet = GameServices.Wallet;
+            if (wallet == null) return;
+
+            _money = wallet.Money;
+            _moneyKnown = true;
+        }
+
+        /// <summary>
+        /// The authoritative balance, from anywhere — it carries the number itself, so this works where
+        /// there is no wallet reference to ask.
+        ///
+        /// <para><b>Money going OUT clears the payout annotation.</b> "+₲48" beside a balance means
+        /// "this is what the last sale brought in"; leaving it up after she has spent the money would
+        /// make it a claim about a balance that no longer contains it.</para>
+        /// </summary>
+        private void OnMoneyChanged(MoneyChanged e)
+        {
+            _money = e.NewBalance;
+            _moneyKnown = true;
+            if (e.Delta < 0) _lastPayout = 0;
+            RepaintPurse();
+        }
+
+        /// <summary>
+        /// A sale. This is the payout flash the HUD band used to show, in its new home: the same number
+        /// from the same signal, annotating the balance it just moved.
+        ///
+        /// <para><b>It is a note, not a two-second flash, and that is the point.</b> On the band the
+        /// flash had to be brief because it was over the game; in the book it can simply be there when
+        /// she next looks — which is how a player actually checks what a load of cod was worth. It
+        /// stands until she spends.</para>
+        /// </summary>
+        private void OnCatchSold(CatchSold e)
+        {
+            _lastPayout = e.TotalPaid > 0 ? e.TotalPaid : 0;
+            RepaintPurse();
+        }
+
+        /// <summary>
+        /// What the head reads: the balance, and the last sale beside it when there was one. Public
+        /// because it is the money readout now — the thing a test asserts and a proof screenshots —
+        /// and reading it must not mean reflecting into the presenter.
+        /// </summary>
+        public string PurseLine()
+        {
+            string balance = _moneyKnown ? MoneyFormat.Balance(_money) : MoneyFormat.Currency + "--";
+            return _lastPayout > 0 ? balance + "   " + MoneyFormat.Payout(_lastPayout) : balance;
+        }
+
+        /// <summary>
+        /// Re-letter the purse in place. Only the one string is touched — a sale must not re-flow the
+        /// page under the player's eyes, and there is nothing else on the spread that money changes.
+        /// Silent when the book is shut: the line is drawn fresh on the next open.
+        /// </summary>
+        private void RepaintPurse()
+        {
+            if (!IsOpen || _purseLabel == null) return;
+
+            string line = PurseLine();
+            if (_purseLabel.text != line) _purseLabel.text = line;
+        }
+
         // ---- primitives ---------------------------------------------------------------------------------
 
         /// <summary>
@@ -779,9 +896,10 @@ namespace HiddenHarbours.World
             return rect;
         }
 
-        private void AddText(RectTransform parent, string content, int x, int y, int w, Color ink)
+        private Text AddText(RectTransform parent, string content, int x, int y, int w, Color ink,
+                             TextAnchor align = TextAnchor.UpperLeft)
         {
-            if (string.IsNullOrEmpty(content)) return;
+            if (string.IsNullOrEmpty(content)) return null;
 
             var go = new GameObject("Text", typeof(RectTransform), typeof(Text));
             var rect = go.GetComponent<RectTransform>();
@@ -796,7 +914,7 @@ namespace HiddenHarbours.World
             text.text = content;
             text.font = _face != null ? _face : FallbackFont();
             text.color = ink;
-            text.alignment = TextAnchor.UpperLeft;
+            text.alignment = align;
             text.horizontalOverflow = HorizontalWrapMode.Overflow;
             text.verticalOverflow = VerticalWrapMode.Overflow;
             text.raycastTarget = false;
@@ -807,6 +925,7 @@ namespace HiddenHarbours.World
             // instead. That is exactly what a pixel face wants; setting it here would be a no-op that
             // reads like a knob.
             text.fontSize = NotebookKit.GlyphHeight;
+            return text;
         }
 
         private static Font FallbackFont()
@@ -852,14 +971,16 @@ namespace HiddenHarbours.World
         }
 
         // ---- the palette, which is the bubble kit's ------------------------------------------------------
+        // Moved to NotebookInk so the corner quest note (QuestPanelPresenter) is drawn in the SAME hand
+        // rather than in a second copy of it. These aliases keep the drawing above reading as it did.
 
-        private static readonly Color CoverInk = new Color(0.055f, 0.180f, 0.180f, 1f);
-        private static readonly Color PaperInk = new Color(0.921f, 0.886f, 0.800f, 1f);
-        private static readonly Color RuleInk = new Color(0.451f, 0.478f, 0.478f, 0.55f);
-        private static readonly Color Ink = new Color(0.145f, 0.157f, 0.172f, 1f);
-        private static readonly Color InkStrong = new Color(0.086f, 0.094f, 0.105f, 1f);
-        private static readonly Color InkFaint = new Color(0.145f, 0.157f, 0.172f, 0.45f);
-        private static readonly Color GoldInk = new Color(0.839f, 0.667f, 0.325f, 1f);
-        private static readonly Color TabInk = new Color(0.788f, 0.741f, 0.639f, 1f);
+        private static readonly Color CoverInk = NotebookInk.Cover;
+        private static readonly Color PaperInk = NotebookInk.Paper;
+        private static readonly Color RuleInk = NotebookInk.Rule;
+        private static readonly Color Ink = NotebookInk.Ink;
+        private static readonly Color InkStrong = NotebookInk.InkStrong;
+        private static readonly Color InkFaint = NotebookInk.InkFaint;
+        private static readonly Color GoldInk = NotebookInk.Gold;
+        private static readonly Color TabInk = NotebookInk.Tab;
     }
 }

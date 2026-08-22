@@ -9,12 +9,19 @@ namespace HiddenHarbours.UI
     ///
     /// <para><b>Why the dash yields here and the band does not.</b> The owner's ask is that game UI
     /// stop obstructing the boat UI, and everything that CAN move or hide does (see
-    /// <see cref="HelmHudSuppression"/>). The five band reads — clock, tide, wind, sea, money — are the
-    /// exception: no instrument on any dash shows them, so hiding them at the helm would delete the
-    /// tide and the money rather than relocate them. Nothing may be drawn OVER the dash; instead the
-    /// dash (and an expanded instrument) simply size and sit themselves in the space below the band.
-    /// That is the same clamp <see cref="HelmOverlayLayout.DashCardRect"/> already applies to the
-    /// screen edge, told about one more edge.</para>
+    /// <see cref="HelmHudSuppression"/>). The five band reads — clock, tide, wind, sea, money — were the
+    /// exception: no instrument on any dash shows them, so hiding them at the helm would have deleted
+    /// the tide and the money rather than relocated them. Nothing may be drawn OVER the dash; instead
+    /// the dash (and an expanded instrument) simply size and sit themselves in the space below the
+    /// band. That is the same clamp <see cref="HelmOverlayLayout.DashCardRect"/> already applies to
+    /// the screen edge, told about one more edge.</para>
+    ///
+    /// <para><b>⚠ The 2026-08-22 diegetic ruling changed the premise, and NOT these numbers.</b> Four
+    /// of those five reads are now off in normal play (<see cref="HudVisibilityPolicy"/>), so most of
+    /// the time the band holds only the watch. The reserve stays the full band height anyway, and
+    /// deliberately: the watch alone is 190 of these 220 units, and the dev override brings every read
+    /// back into exactly the box measured below. A reserve that tracked what happened to be visible
+    /// would put the dash back under the band the moment someone turned the readouts on.</para>
     ///
     /// <para><b>It really did overlap.</b> At 1920×1080 the shipped focused dash (1.5× of 600×548,
     /// bottom-anchored at MarginY 16) reached screen y 781 while the band's bottom sat at 750 — the

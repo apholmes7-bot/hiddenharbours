@@ -7,10 +7,15 @@ using HiddenHarbours.Core;
 namespace HiddenHarbours.UI
 {
     /// <summary>
-    /// The always-on, glanceable top-band HUD (VS-17 + the wind/sea slice of VS-19). Surfaces the
-    /// five readouts the player must be able to read in under a second while acting: clock, tide,
-    /// wind, sea state, and money (with a payout flash on a sale). Pillar 1 (The Sea Has Moods) is
-    /// treated here as a UI problem.
+    /// The always-on top-band HUD (VS-17 + the wind/sea slice of VS-19). It was built around five
+    /// glanceable readouts — clock, tide, wind, sea state and money — on the premise that all five
+    /// were things the player must be able to read in under a second while acting.
+    ///
+    /// <para><b>Four of the five are no longer drawn</b> (the owner's 2026-08-22 diegetic ruling; see
+    /// the paragraph below). What is left always-on is the WATCH, which she is wearing. The other four
+    /// are built, wired and tested exactly as before, and shown only when
+    /// <see cref="HudVisibilityPolicy"/> allows it. Pillar 1 (The Sea Has Moods) is still treated here
+    /// as a UI problem — the answer just stopped being "put the number on the screen".</para>
     ///
     /// Self-contained &amp; code-driven: it builds its own ScreenSpaceOverlay Canvas and child
     /// labels in <see cref="Awake"/>, so it needs no prefab/art authoring and works headless. Reads
@@ -34,6 +39,18 @@ namespace HiddenHarbours.UI
     /// <para>It also carries the tide table's opener (<see cref="TidePanelInput"/>, VS-06) — the deeper
     /// read the glanceable tide line here can't give you. The band stays a band; the table is paper you
     /// take out.</para>
+    ///
+    /// <para><b>⭐ The band went QUIET on 2026-08-22 (the owner's diegetic ruling, made in play).</b>
+    /// Tide, wind, sea and money are built exactly as before and are no longer DRAWN: whether each may
+    /// show is <see cref="HudVisibilityPolicy"/>'s answer, from what the player owns plus a dev
+    /// override, and this controller does what it says. The money moved to the notebook and the current
+    /// quest to a corner note in the notebook's own hand; what is left on screen in a new game is the
+    /// watch, the catch card, and the boat's own instruments.</para>
+    ///
+    /// <para>The readouts are hidden by POLICY, not deleted, and they keep their labels, their caches
+    /// and their event wiring — so the dev override is a switch rather than a rebuild, and the strings
+    /// stay under test. A hidden read also does no WORK (rule 7): the tide's forward scan for the next
+    /// turn is the expensive one, and off the HUD there is nobody to read its answer.</para>
     /// </summary>
     [DefaultExecutionOrder(-50)]
     public sealed class HudController : MonoBehaviour
@@ -122,6 +139,11 @@ namespace HiddenHarbours.UI
         // Where the nav cluster currently is. Applied only on a CHANGE, so the labels' enabled flags
         // and anchors are touched on a transition (boarding, taking a helm) and never per frame.
         private NavClusterPlacement _navPlacement = NavClusterPlacement.Hidden;
+
+        // What HudVisibilityPolicy last said about the four band reads. Same discipline as the nav
+        // cluster's placement: applied on a CHANGE only, so the steady state costs four bool compares.
+        private bool _showTide, _showWind, _showSea, _showMoney;
+        private bool _visibilityApplied;
 
         // The nav cluster's two homes, captured at build time so a move can go back exactly.
         private RectTransform[] _navRects;
@@ -219,6 +241,10 @@ namespace HiddenHarbours.UI
 
         private void Update()
         {
+            // Before anything else, and before the Ready gate: a HUD that never gets its services must
+            // still obey the ruling rather than sit there showing "--" where the tide used to be.
+            ApplyReadoutVisibility();
+
             // Boot/null safety: services may be unset for the first frame(s) at boot.
             if (!GameServices.Ready)
             {
@@ -355,10 +381,17 @@ namespace HiddenHarbours.UI
             var env = GameServices.Environment;
             EnvironmentSample sample = env.Sample();
 
-            UpdateTide(env);
-            UpdateWind(sample.WindVector);
-            UpdateSea(sample.SeaState);
-            UpdateNavReads(sample.WindVector);   // VS-19: compass + set-&-drift + apparent wind (only at sea)
+            // A hidden read does no work, not merely no drawing (rule 7). The tide's is the one that
+            // matters: it scans a whole tidal period forward every sample to find the turn, and with the
+            // line off the band there is nobody to read the answer.
+            if (_showTide) UpdateTide(env);
+            if (_showWind) UpdateWind(sample.WindVector);
+            if (_showSea)  UpdateSea(sample.SeaState);
+
+            // NOT gated: the nav cluster is the BOAT's instruments (VS-19 — compass, set-&-drift,
+            // apparent wind), which is exactly the thing the ruling says a number may come from.
+            // Where it draws stays HelmHudSuppression's call alone.
+            UpdateNavReads(sample.WindVector);
         }
 
         private void UpdateTide(IEnvironmentService env)
@@ -529,6 +562,56 @@ namespace HiddenHarbours.UI
         private const float NavClearWidth01 = 0.34f;
         private const float NavClearMarginX = 16f;
 
+        /// <summary>
+        /// Put the four band reads where <see cref="HudVisibilityPolicy"/> says they belong — which, in
+        /// a new game, is off. Only a CHANGE does any work, so the steady state is four bool compares a
+        /// frame and no writes at all (rule 7).
+        ///
+        /// <para><b>Hidden, not destroyed.</b> The labels, their caches and their subscriptions all
+        /// survive, so the dev override switches the band back on in a frame instead of rebuilding it —
+        /// and the strings the readouts format stay exactly as testable as they were.</para>
+        ///
+        /// <para><b>Coming back needs the caches dropped.</b> While a read is hidden its update is
+        /// SKIPPED, so its cached string is however the world looked when it went dark. Change-detection
+        /// against that stale value would leave the freshly-shown label reading a tide from ten minutes
+        /// ago until the water happened to move — so the caches for the reads that just appeared are
+        /// cleared and the sample timer is fired, and the next tick repaints from the live world.</para>
+        /// </summary>
+        private void ApplyReadoutVisibility()
+        {
+            bool tide  = HudVisibilityPolicy.MayShow(HudReadout.Tide);
+            bool wind  = HudVisibilityPolicy.MayShow(HudReadout.Wind);
+            bool sea   = HudVisibilityPolicy.MayShow(HudReadout.Sea);
+            bool money = HudVisibilityPolicy.MayShow(HudReadout.Money);
+
+            if (_visibilityApplied && tide == _showTide && wind == _showWind
+                && sea == _showSea && money == _showMoney)
+                return;
+
+            bool tideAppeared = tide && !_showTide;
+            bool windAppeared = wind && !_showWind;
+            bool seaAppeared  = sea  && !_showSea;
+
+            _visibilityApplied = true;
+            _showTide = tide; _showWind = wind; _showSea = sea; _showMoney = money;
+
+            if (_tideLabel != null) _tideLabel.enabled = tide;
+            if (_windLabel != null) _windLabel.enabled = wind;
+            if (_seaLabel  != null) _seaLabel.enabled  = sea;
+
+            if (_moneyLabel != null) _moneyLabel.enabled = money;
+            // The coin is reinforcement for the balance, so it comes and goes with it — but it was only
+            // ever shown when a sprite actually resolved (MakeIcon), and that stays true.
+            if (_moneyIcon != null) _moneyIcon.enabled = money && _moneyIcon.sprite != null;
+            // A flash left mid-fade when the balance goes away would outlive the read it annotates.
+            if (!money && _payoutLabel != null) _payoutLabel.enabled = false;
+
+            if (tideAppeared) _tideCache = null;
+            if (windAppeared) _windCache = null;
+            if (seaAppeared)  _seaCache  = null;
+            if (tideAppeared || windAppeared || seaAppeared) _envSampleTimer = 0f;
+        }
+
         private void UpdateMoney()
         {
             // Money is primarily event-driven (OnMoneyChanged). This reconciles the boot balance and
@@ -582,6 +665,10 @@ namespace HiddenHarbours.UI
         private void FlashPayout(int amount)
         {
             if (_payoutLabel == null) return;
+            // The flash belongs to the money, so it goes where the money went: with the balance off the
+            // band, a sale flashes on the notebook's purse line instead (NotebookPresenter). Under the
+            // dev override the band's own flash comes back with the balance it annotates.
+            if (!_showMoney) return;
             _payoutLabel.text = HudFormat.PayoutFlash(amount);
             _payoutLabel.enabled = true;
             _payoutTimer = _payoutFlashSeconds;
@@ -841,6 +928,9 @@ namespace HiddenHarbours.UI
 
             // Start quiet until services are ready.
             ShowPlaceholder();
+
+            // ...and start OBEYING, so the band is never up for a frame before the first Update runs.
+            ApplyReadoutVisibility();
         }
 
         // Remember each nav label's built anchors, position and alignment, so SetNavPlacement can

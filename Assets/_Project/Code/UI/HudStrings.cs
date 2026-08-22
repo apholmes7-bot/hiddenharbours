@@ -17,7 +17,11 @@ namespace HiddenHarbours.UI
         public const string TideRisingArrow  = "▲"; // ▲ filled up-triangle
         public const string TideFallingArrow = "▼"; // ▼ filled down-triangle
         public const string TurnGlyph        = "⤴"; // ⤴ "turns in" marker
-        public const string Currency         = "₲"; // ₲ guarani sign — the game's coin
+        // ⚠ ONE spelling of the coin, and it is Core's. The notebook shows a balance too now (the
+        // 2026-08-22 diegetic ruling put the money there), and World cannot reference UI — so the glyph
+        // and the grouping live in MoneyFormat where both modules reach them. Still a const: it inlines,
+        // so nothing here got slower for being shared.
+        public const string Currency         = MoneyFormat.Currency;
 
         // Wind-strength barbs — LENGTH encodes strength (colourblind-safe), pairing the kt/Beaufort
         // numbers with a glanceable shape. Marine convention: a full barb ≈ 10 kt, a half ≈ 5 kt.
