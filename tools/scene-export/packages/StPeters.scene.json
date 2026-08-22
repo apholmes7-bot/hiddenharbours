@@ -1,7 +1,7 @@
 {
   "schema": "hiddenharbours.scene/1",
   "generatedBy": "tools/scene-export/hh_scene_export.py",
-  "generatedAt": "2026-08-21T17:17:54Z",
+  "generatedAt": "2026-08-22T18:20:12Z",
   "region": {
     "id": "region.st_peters",
     "sceneName": "StPeters",
@@ -7764,6 +7764,126 @@
       "x-spriteStem": "Oar",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortingOrder": 1
+    },
+    {
+      "id": "d6f84ca24ba2",
+      "family": "DoryIso",
+      "group": "Dory",
+      "rig": null,
+      "rigSource": null,
+      "call": null,
+      "pos": [215, 0],
+      "facing": null,
+      "facingIndex": null,
+      "flipX": false,
+      "sortBias": 0,
+      "cell": {
+        "w": 160,
+        "h": 156,
+        "pivot": [80, 87.999999],
+        "pxPerM": 32,
+        "unityPivot": [0.5, 0.435897]
+      },
+      "x-name": "FishingBoatVisual",
+      "x-path": "Dory/FishingBoatVisual",
+      "x-origin": "Dory",
+      "x-zone": null,
+      "x-zoneEvidence": null,
+      "x-resolutionExcluded": null,
+      "x-cellAt": [595, 260],
+      "x-inBounds": true,
+      "x-active": true,
+      "x-rigSha256": null,
+      "x-familyIsSpriteStem": true,
+      "x-sprite": {
+        "sheet": "Assets/_Project/Art/Boats/DoryIso.png",
+        "name": "DoryIso_0",
+        "internalId": -4090857515788694173
+      },
+      "x-familyCandidate": null,
+      "x-spriteStem": "DoryIso",
+      "x-pivotSource": "sprite-import.customPivot",
+      "x-sortingOrder": 1
+    },
+    {
+      "id": "fa19a3107ae7",
+      "family": "DoryOarPort",
+      "group": "FishingBoatVisual",
+      "rig": null,
+      "rigSource": null,
+      "call": null,
+      "pos": [215, 0],
+      "facing": null,
+      "facingIndex": null,
+      "flipX": false,
+      "sortBias": 0,
+      "cell": {
+        "w": 160,
+        "h": 156,
+        "pivot": [80, 87.999999],
+        "pxPerM": 32,
+        "unityPivot": [0.5, 0.435897]
+      },
+      "x-name": "OarPort",
+      "x-path": "Dory/FishingBoatVisual/OarPort",
+      "x-origin": "Dory",
+      "x-zone": null,
+      "x-zoneEvidence": null,
+      "x-resolutionExcluded": null,
+      "x-cellAt": [595, 260],
+      "x-inBounds": true,
+      "x-active": true,
+      "x-rigSha256": null,
+      "x-familyIsSpriteStem": true,
+      "x-sprite": {
+        "sheet": "Assets/_Project/Art/Boats/DoryOarPort.png",
+        "name": "DoryOarPort_8",
+        "internalId": -6573741549983828783
+      },
+      "x-familyCandidate": null,
+      "x-spriteStem": "DoryOarPort",
+      "x-pivotSource": "sprite-import.customPivot",
+      "x-sortingOrder": 2
+    },
+    {
+      "id": "4d982da6f97a",
+      "family": "DoryOarStar",
+      "group": "FishingBoatVisual",
+      "rig": null,
+      "rigSource": null,
+      "call": null,
+      "pos": [215, 0],
+      "facing": null,
+      "facingIndex": null,
+      "flipX": false,
+      "sortBias": 0,
+      "cell": {
+        "w": 160,
+        "h": 156,
+        "pivot": [80, 87.999999],
+        "pxPerM": 32,
+        "unityPivot": [0.5, 0.435897]
+      },
+      "x-name": "OarStar",
+      "x-path": "Dory/FishingBoatVisual/OarStar",
+      "x-origin": "Dory",
+      "x-zone": null,
+      "x-zoneEvidence": null,
+      "x-resolutionExcluded": null,
+      "x-cellAt": [595, 260],
+      "x-inBounds": true,
+      "x-active": true,
+      "x-rigSha256": null,
+      "x-familyIsSpriteStem": true,
+      "x-sprite": {
+        "sheet": "Assets/_Project/Art/Boats/DoryOarStar.png",
+        "name": "DoryOarStar_8",
+        "internalId": -8943789888850765649
+      },
+      "x-familyCandidate": null,
+      "x-spriteStem": "DoryOarStar",
+      "x-pivotSource": "sprite-import.customPivot",
+      "x-sortingOrder": 3
     },
     {
       "id": "aacefebcb21d",
@@ -24923,50 +25043,6 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "9bb6ce6db526",
-      "family": "shrub",
-      "group": "IslandShrubs",
-      "rig": "Shrubs",
-      "rigSource": "docs/art/rigs/shrubIsoRig.js",
-      "call": {
-        "fn": "render",
-        "args": ["dir", "opts"],
-        "opts": {},
-        "x-synthesised": true,
-        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
-      },
-      "pos": [159.2525, 19.908571],
-      "facing": null,
-      "facingIndex": null,
-      "flipX": false,
-      "sortBias": 0,
-      "cell": {
-        "w": 54,
-        "h": 72,
-        "pivot": [27, 57],
-        "pxPerM": 32,
-        "unityPivot": [0.5, 0.208333]
-      },
-      "x-name": "Raspberry_0",
-      "x-path": "IslandShrubs/Raspberry_0",
-      "x-origin": "IslandShrubs",
-      "x-zone": "b",
-      "x-zoneEvidence": "StPetersShrubs.Scatter — named in writeback 1.2",
-      "x-resolutionExcluded": null,
-      "x-cellAt": [539, 240],
-      "x-inBounds": true,
-      "x-active": true,
-      "x-rigSha256": "c5c2e041a94a830a4b4645d16517234a4b47b384efd2f56527500e3a875fa466",
-      "x-familyIsSpriteStem": false,
-      "x-sprite": {
-        "sheet": "Assets/_Project/Art/Foliage/Shrubs/Raspberry_full_atGreen.png",
-        "name": "Raspberry_full_atGreen_c0_f0",
-        "internalId": -1942941147
-      },
-      "x-pivotSource": "sprite-import.customPivot",
-      "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
-    },
-    {
       "id": "38b590c37d43",
       "family": "shrub",
       "group": "IslandShrubs",
@@ -27915,86 +27991,6 @@
       },
       "x-familyCandidate": null,
       "x-spriteStem": "LupinPurpleClump",
-      "x-pivotSource": "sprite-import.alignment",
-      "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
-    },
-    {
-      "id": "3d229b5ed54f",
-      "family": "LupinPurpleClump",
-      "group": "IslandFlowers",
-      "rig": null,
-      "rigSource": null,
-      "call": null,
-      "pos": [164.58846, 17.477158],
-      "facing": null,
-      "facingIndex": null,
-      "flipX": false,
-      "sortBias": 0,
-      "cell": {
-        "w": 48,
-        "h": 46,
-        "pivot": [24, 46],
-        "pxPerM": 32,
-        "unityPivot": [0.5, 0]
-      },
-      "x-name": "LupinPurple_Clump",
-      "x-path": "IslandFlowers/LupinPurple_Clump",
-      "x-origin": "IslandFlowers",
-      "x-zone": "b",
-      "x-zoneEvidence": "ScatterFlowers — named in writeback 1.2",
-      "x-resolutionExcluded": null,
-      "x-cellAt": [544, 242],
-      "x-inBounds": true,
-      "x-active": true,
-      "x-rigSha256": null,
-      "x-familyIsSpriteStem": true,
-      "x-sprite": {
-        "sheet": "Assets/_Project/Art/Foliage/Flowers/LupinPurpleClump.png",
-        "name": "LupinPurpleClump_0",
-        "internalId": 4584704487764675395
-      },
-      "x-familyCandidate": null,
-      "x-spriteStem": "LupinPurpleClump",
-      "x-pivotSource": "sprite-import.alignment",
-      "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
-    },
-    {
-      "id": "df2af42e5701",
-      "family": "QueenAnneClump",
-      "group": "IslandFlowers",
-      "rig": null,
-      "rigSource": null,
-      "call": null,
-      "pos": [167.0283, 24.908678],
-      "facing": null,
-      "facingIndex": null,
-      "flipX": false,
-      "sortBias": 0,
-      "cell": {
-        "w": 48,
-        "h": 46,
-        "pivot": [24, 46],
-        "pxPerM": 32,
-        "unityPivot": [0.5, 0]
-      },
-      "x-name": "QueenAnne_Clump",
-      "x-path": "IslandFlowers/QueenAnne_Clump",
-      "x-origin": "IslandFlowers",
-      "x-zone": "b",
-      "x-zoneEvidence": "ScatterFlowers — named in writeback 1.2",
-      "x-resolutionExcluded": null,
-      "x-cellAt": [547, 235],
-      "x-inBounds": true,
-      "x-active": true,
-      "x-rigSha256": null,
-      "x-familyIsSpriteStem": true,
-      "x-sprite": {
-        "sheet": "Assets/_Project/Art/Foliage/Flowers/QueenAnneClump.png",
-        "name": "QueenAnneClump_0",
-        "internalId": -1894357023529372669
-      },
-      "x-familyCandidate": null,
-      "x-spriteStem": "QueenAnneClump",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -58327,23 +58323,23 @@
       "x-scale": [1.2, 1]
     },
     {
-      "id": "b82e2677904b",
-      "family": "Square",
+      "id": "065ae7b8d505",
+      "family": "Village",
       "group": "GinnyPlot",
       "rig": null,
       "rigSource": null,
       "call": null,
-      "pos": [91, 34],
+      "pos": [93, 34],
       "facing": null,
-      "facingIndex": null,
+      "facingIndex": 5,
       "flipX": false,
       "sortBias": 0,
       "cell": {
-        "w": 16,
-        "h": 16,
-        "pivot": [8, 8],
+        "w": 252,
+        "h": 298,
+        "pivot": [126, 221.000001],
         "pxPerM": 32,
-        "unityPivot": [0.5, 0.5]
+        "unityPivot": [0.5, 0.258389]
       },
       "x-name": "woodshed",
       "x-path": "GinnyPlot/woodshed",
@@ -58351,40 +58347,41 @@
       "x-zone": null,
       "x-zoneEvidence": null,
       "x-resolutionExcluded": null,
-      "x-cellAt": [471, 226],
+      "x-cellAt": [473, 226],
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": null,
       "x-familyIsSpriteStem": true,
       "x-sprite": {
-        "sheet": "Assets/_Project/Art/Sprites/Square.png",
-        "name": "Square_0",
-        "internalId": 7482667652216324306
+        "sheet": "Assets/_Project/Art/Sprites/Buildings/Village/Village_ginnyWoodshed.png",
+        "name": "Village_ginnyWoodshed_d5",
+        "internalId": 1025882009
       },
       "x-familyCandidate": null,
-      "x-spriteStem": "Square",
-      "x-pivotSource": "sprite-import.alignment",
-      "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)",
-      "x-scale": [3, 2.4]
+      "x-spriteStem": "Village",
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Buildings/Village/Village_ginnyWoodshed.json",
+      "x-pivotSource": "sprite-import.customPivot",
+      "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "1065a3851d8a",
-      "family": "Square",
+      "id": "a3599f2227a6",
+      "family": "Village",
       "group": "GinnyPlot",
       "rig": null,
       "rigSource": null,
       "call": null,
-      "pos": [93, 23],
+      "pos": [95, 22],
       "facing": null,
-      "facingIndex": null,
+      "facingIndex": 7,
       "flipX": false,
       "sortBias": 0,
       "cell": {
-        "w": 16,
-        "h": 16,
-        "pivot": [8, 8],
+        "w": 328,
+        "h": 224,
+        "pivot": [164, 119],
         "pxPerM": 32,
-        "unityPivot": [0.5, 0.5]
+        "unityPivot": [0.5, 0.46875]
       },
       "x-name": "netStore",
       "x-path": "GinnyPlot/netStore",
@@ -58392,40 +58389,41 @@
       "x-zone": null,
       "x-zoneEvidence": null,
       "x-resolutionExcluded": null,
-      "x-cellAt": [473, 237],
+      "x-cellAt": [475, 238],
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": null,
       "x-familyIsSpriteStem": true,
       "x-sprite": {
-        "sheet": "Assets/_Project/Art/Sprites/Square.png",
-        "name": "Square_0",
-        "internalId": 7482667652216324306
+        "sheet": "Assets/_Project/Art/Sprites/Buildings/Village/Village_ginnyNetStore.png",
+        "name": "Village_ginnyNetStore_d7",
+        "internalId": 1242108620
       },
       "x-familyCandidate": null,
-      "x-spriteStem": "Square",
-      "x-pivotSource": "sprite-import.alignment",
-      "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)",
-      "x-scale": [3.4, 2.6]
+      "x-spriteStem": "Village",
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Buildings/Village/Village_ginnyNetStore.json",
+      "x-pivotSource": "sprite-import.customPivot",
+      "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "66d50121cfd7",
-      "family": "Square",
+      "id": "f6d70eff3f6d",
+      "family": "Village",
       "group": "GinnyPlot",
       "rig": null,
       "rigSource": null,
       "call": null,
-      "pos": [77, 35],
+      "pos": [74, 33],
       "facing": null,
-      "facingIndex": null,
+      "facingIndex": 3,
       "flipX": false,
       "sortBias": 0,
       "cell": {
-        "w": 16,
-        "h": 16,
-        "pivot": [8, 8],
+        "w": 388,
+        "h": 346,
+        "pivot": [194, 220.999999],
         "pxPerM": 32,
-        "unityPivot": [0.5, 0.5]
+        "unityPivot": [0.5, 0.361272]
       },
       "x-name": "leanTo",
       "x-path": "GinnyPlot/leanTo",
@@ -58433,21 +58431,22 @@
       "x-zone": null,
       "x-zoneEvidence": null,
       "x-resolutionExcluded": null,
-      "x-cellAt": [457, 225],
+      "x-cellAt": [454, 227],
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": null,
       "x-familyIsSpriteStem": true,
       "x-sprite": {
-        "sheet": "Assets/_Project/Art/Sprites/Square.png",
-        "name": "Square_0",
-        "internalId": 7482667652216324306
+        "sheet": "Assets/_Project/Art/Sprites/Buildings/Village/Village_ginnyLeanTo.png",
+        "name": "Village_ginnyLeanTo_d3",
+        "internalId": -373780829
       },
       "x-familyCandidate": null,
-      "x-spriteStem": "Square",
-      "x-pivotSource": "sprite-import.alignment",
-      "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)",
-      "x-scale": [2.6, 2.2]
+      "x-spriteStem": "Village",
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Buildings/Village/Village_ginnyLeanTo.json",
+      "x-pivotSource": "sprite-import.customPivot",
+      "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
       "id": "348c54ad60be",
@@ -58510,6 +58509,48 @@
       },
       "x-familyCandidate": null,
       "x-spriteStem": "camper",
+      "x-pivotSource": "sprite-import.customPivot",
+      "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
+    },
+    {
+      "id": "0554c6d4b4b3",
+      "family": "Village",
+      "group": null,
+      "rig": null,
+      "rigSource": null,
+      "call": null,
+      "pos": [170, 16],
+      "facing": null,
+      "facingIndex": 3,
+      "flipX": false,
+      "sortBias": 0,
+      "cell": {
+        "w": 840,
+        "h": 673,
+        "pivot": [420, 404.000002],
+        "pxPerM": 32,
+        "unityPivot": [0.5, 0.399703]
+      },
+      "x-name": "StPetersCannery",
+      "x-path": "StPetersCannery",
+      "x-origin": "StPetersCannery",
+      "x-zone": null,
+      "x-zoneEvidence": null,
+      "x-resolutionExcluded": null,
+      "x-cellAt": [550, 244],
+      "x-inBounds": true,
+      "x-active": true,
+      "x-rigSha256": null,
+      "x-familyIsSpriteStem": true,
+      "x-sprite": {
+        "sheet": "Assets/_Project/Art/Sprites/Buildings/Village/Village_stPetersCannery.png",
+        "name": "Village_stPetersCannery_d3",
+        "internalId": 1300891738
+      },
+      "x-familyCandidate": null,
+      "x-spriteStem": "Village",
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Buildings/Village/Village_stPetersCannery.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -67967,7 +68008,7 @@
     "sidecars": []
   },
   "stats": {
-    "entities": 1326,
+    "entities": 1327,
     "tiles": {
       "ground": 50208,
       "road": 0,
@@ -68063,17 +68104,17 @@
   },
   "x-cliffLinesNote": "Empty: cliff lines are an authoring artefact of the editor. The repo's cliffs are placed CliffWallSurface components and ship as entities.",
   "x-provenance": {
-    "generatedAt": "2026-08-21T17:17:54Z",
+    "generatedAt": "2026-08-22T18:20:12Z",
     "historyIsComplete": true,
     "sceneFile": "Assets/_Project/Scenes/StPeters.unity",
-    "sceneFileSha256": "93ca5fcb8ece510c26548ecd5cd0edfa1cb66e973ee933bb582b0bb6d32fb275",
-    "sceneLastBuiltCommit": "62a9074646f2c06ae4c12373d587759180ef7675",
-    "sceneLastBuiltDate": "2026-08-21",
-    "sceneLastBuiltSubject": "chore(scenes): bank the 2026-08-21 builds",
+    "sceneFileSha256": "92a44e601dcf7b2be6821448460d7bfbf2bc8f1731e8d0cc3474bc0b7cecc523",
+    "sceneLastBuiltCommit": "be74ac359dcd21e1cc88598c2d861107031091ad",
+    "sceneLastBuiltDate": "2026-08-22",
+    "sceneLastBuiltSubject": "chore(scenes): bank the 2026-08-22 St Peters build — cannery + Ginny's woodshed after #599",
     "sceneWorkingTreeDirty": false,
     "builderDrift": {
       "builderCommitsSinceScene": 0,
-      "measuredTo": "62a9074646f2c06ae4c12373d587759180ef7675",
+      "measuredTo": "be74ac359dcd21e1cc88598c2d861107031091ad",
       "measuredToDate": null,
       "exact": true,
       "builderCommits": []
@@ -68098,9 +68139,24 @@
       "inactiveInHierarchy": 39,
       "interiorsLinked": 43,
       "offGrid": 0,
-      "unresolvedRigPlacements": 473,
+      "unresolvedRigPlacements": 475,
       "unresolvedSheets": {
         "Assets/_Project/Art/Boats/DoryHull.png": {
+          "placements": 1,
+          "sidecar": null,
+          "candidates": []
+        },
+        "Assets/_Project/Art/Boats/DoryIso.png": {
+          "placements": 1,
+          "sidecar": null,
+          "candidates": []
+        },
+        "Assets/_Project/Art/Boats/DoryOarPort.png": {
+          "placements": 1,
+          "sidecar": null,
+          "candidates": []
+        },
+        "Assets/_Project/Art/Boats/DoryOarStar.png": {
           "placements": 1,
           "sidecar": null,
           "candidates": []
@@ -68161,7 +68217,7 @@
           "candidates": []
         },
         "Assets/_Project/Art/Foliage/Flowers/LupinPurpleClump.png": {
-          "placements": 5,
+          "placements": 4,
           "sidecar": null,
           "candidates": []
         },
@@ -68177,11 +68233,6 @@
         },
         "Assets/_Project/Art/Foliage/Flowers/OxeyeDaisySingle.png": {
           "placements": 2,
-          "sidecar": null,
-          "candidates": []
-        },
-        "Assets/_Project/Art/Foliage/Flowers/QueenAnneClump.png": {
-          "placements": 1,
           "sidecar": null,
           "candidates": []
         },
@@ -68214,6 +68265,21 @@
             "docs/art/rigs/shop-building-kit/shopBuildingRig.js"
           ]
         },
+        "Assets/_Project/Art/Sprites/Buildings/Village/Village_ginnyLeanTo.png": {
+          "placements": 1,
+          "sidecar": null,
+          "candidates": []
+        },
+        "Assets/_Project/Art/Sprites/Buildings/Village/Village_ginnyNetStore.png": {
+          "placements": 1,
+          "sidecar": null,
+          "candidates": []
+        },
+        "Assets/_Project/Art/Sprites/Buildings/Village/Village_ginnyWoodshed.png": {
+          "placements": 1,
+          "sidecar": null,
+          "candidates": []
+        },
         "Assets/_Project/Art/Sprites/Buildings/Village/Village_redSaltbox.png": {
           "placements": 1,
           "sidecar": null,
@@ -68225,6 +68291,11 @@
           "candidates": []
         },
         "Assets/_Project/Art/Sprites/Buildings/Village/Village_school.png": {
+          "placements": 1,
+          "sidecar": null,
+          "candidates": []
+        },
+        "Assets/_Project/Art/Sprites/Buildings/Village/Village_stPetersCannery.png": {
           "placements": 1,
           "sidecar": null,
           "candidates": []
@@ -68255,7 +68326,7 @@
           "candidates": []
         },
         "Assets/_Project/Art/Sprites/Square.png": {
-          "placements": 6,
+          "placements": 3,
           "sidecar": null,
           "candidates": []
         },
