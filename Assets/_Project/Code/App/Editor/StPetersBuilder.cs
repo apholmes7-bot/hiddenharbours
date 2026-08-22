@@ -802,9 +802,136 @@ namespace HiddenHarbours.App.Editor
         // island centre → mooring at 70 + 145 = 215. Disembark/arrival keep their ∓2 m offsets.
         public const float DockZoneRadius = 3.5f;                                  // ControlSwitcher's default _zoneRadius
         public static readonly Vector3 DoryMooredPos  = new Vector3(215f, 0f, 0f); // east of the island, past the beach toe — the slip's own bed
-        public static readonly Vector3 DockZonePos    = new Vector3(215f, 0f, 0f); // the slip head — dock here
-        public static readonly Vector3 DisembarkPos   = new Vector3(213f, 0f, 0f); // step ashore up the slip (the cove's 1.5 m pattern)
-        public static readonly Vector3 ArrivalPos     = new Vector3(217f, 0f, 0f); // sail home: park just off the slip, in range
+
+        // ================================================================================================
+        //  ⭐ SHE LIES ALONGSIDE (owner playtest, 2026-08-22)
+        // ================================================================================================
+        // The owner watched the opening and said what the geometry had been saying all along: the boat
+        // finishes with her BOW ON THE PLANKS. It was not a pilot bug. The berth was a point on the
+        // pier's own centre-line one metre off its head, so a 12.9 m hull lying on the channel's axis
+        // reached x = 208.6 — which is 5.4 m INSIDE the deck (x 183 → 214). Bow-on was AUTHORED; the
+        // pilot ran it faithfully.
+        //
+        // ⚠ WHAT MADE THIS MORE THAN MOVING A POINT. Alongside means her whole beam lies off the pier's
+        // FACE: 4.8 m of hull starting 0.4 m out from y = −3. The dredged approach's flat bottom is
+        // ±4 m about y = 0 and the pier is ±3 m — so there is exactly ONE metre of dredged water beside
+        // each face, and the ground past it BARES at spring low (measured −1.94 m at y = −7 against
+        // −2.20 m of water). Every alongside berth on this pier, on either face, was aground. The fix
+        // is therefore geometry as well as a coordinate — see the berth pocket below.
+        //
+        // ⭐ NOTHING BELOW IS TYPED. The face comes from the deck's own footprint, the offset from the
+        // hull's own half-beam, the station from the ladder fitting. Re-site the pier, re-measure the
+        // hull or move the ladder and the berth follows — which is exactly what the old literals could
+        // not do, and why they went stale without anything noticing.
+
+        /// <summary>
+        /// How far her side lies off the wharf face, in metres — the fendering gap. The pier hangs tyre
+        /// fenders on this edge, and this is one of them squashed: close enough to step across, far
+        /// enough that she is rubbing rope and rubber rather than timber.
+        /// </summary>
+        public const float AlongsideFenderGapMetres = 0.4f;
+
+        /// <summary>
+        /// Room either side of her inside the berth pocket's FLAT bottom, in metres. The channel's own
+        /// margin, for the channel's own reason: she is steered in, not threaded through, and a hull
+        /// whose beam ends exactly at the flat's edge touches on one side as soon as the tide falls.
+        /// </summary>
+        public const float BerthPocketMarginMetres = 1.0f;
+
+        /// <summary>
+        /// Her length, in metres. ⚠ A MIRROR of <c>CapeIslander.asset</c>'s <c>LengthMeters</c>, for the
+        /// same reason <see cref="ArrivalHullDraughtMetres"/> is one: a <c>const</c> cannot load an
+        /// asset and the berth arithmetic has to be a compile-time expression. StPetersEastBerthTests
+        /// holds the two equal, so moving the def and forgetting this one fails loudly.
+        /// </summary>
+        public const float ArrivalHullLengthMetres = 12.9f;
+
+        /// <summary>
+        /// Her half-beam, in metres. ⚠ A MIRROR of <c>CapeIslanderIsoHullMesh.asset</c>'s
+        /// <c>WatertightHalfBeamMeters</c> — the same sidecar the channel's width was sized against, so
+        /// the door she comes through and the berth she lies in are measured off one hull.
+        /// </summary>
+        public const float ArrivalHullHalfBeamMetres = 2.4f;
+
+        /// <summary>Where her keel lies: off the wharf's mooring face by her own half-beam plus the
+        /// fendering gap. This is the y a hull lying ALONGSIDE this pier sits on.</summary>
+        public static float AlongsideBerthY =>
+            StPetersWharf.MooringFaceY - AlongsideFenderGapMetres - ArrivalHullHalfBeamMetres;
+
+        /// <summary>Where along the face she lies: <b>abreast of the ladder</b> — the one fitting on
+        /// this pier whose whole job is getting a person between a boat and the planks.</summary>
+        public static float AlongsideBerthX => StPetersWharf.LadderPosition().x;
+
+        /// <summary>Her inboard gunwale — the rail you step from. Derived, so the step ashore is
+        /// measured off the HULL rather than off the pier's centre-line (which is what left the old
+        /// disembark sitting on a line she no longer lies on).</summary>
+        public static float AlongsideGunwaleY => AlongsideBerthY + ArrivalHullHalfBeamMetres;
+
+        /// <summary>The cove's step-ashore pattern, in metres — how far in from her rail you land.</summary>
+        public const float StepAshoreMetres = 1.5f;
+
+        /// <summary>How far seaward of the berth an arriving boat is parked. Well inside
+        /// <see cref="DockZoneRadius"/>, which the ControlSwitcher's pure-distance disembark test needs —
+        /// asserted by StPetersLayoutTests rather than trusted to this note.</summary>
+        public const float ArrivalStandoffMetres = 2f;
+
+        /// <summary>The berth — she lies ALONGSIDE the pier's mooring face, abreast of the ladder.</summary>
+        public static Vector3 DockZonePos  => new Vector3(AlongsideBerthX, AlongsideBerthY, 0f);
+
+        /// <summary>Step ashore: on the planks, abreast of where she lies, the cove's 1.5 m in from her
+        /// rail. Inside the deck footprint by construction — which is what makes it planks, not water.</summary>
+        public static Vector3 DisembarkPos => new Vector3(AlongsideBerthX,
+                                                          AlongsideGunwaleY + StepAshoreMetres, 0f);
+
+        /// <summary>Sail home: park just seaward of the berth, along the pier's own axis, in range.</summary>
+        public static Vector3 ArrivalPos   => new Vector3(
+            AlongsideBerthX - StPetersWharf.AxisInward().x * ArrivalStandoffMetres,
+            AlongsideBerthY, 0f);
+
+        // --- THE BERTH POCKET: the water she lies IN --------------------------------------------------
+        // ⚠ A SEPARATE CUT, and deliberately a SHORT one. Widening the dredged approach until its flat
+        // bottom reached past the pier's face would also have floated her — and would have widened the
+        // DOOR. The channel's narrowest section is what gates the fleet (StPetersEastBerthTests walks it
+        // and reports who gets in at which tide); taking the flat from ±4 m to the ±8.2 m an alongside
+        // hull needs would let the stern trawler and the coastal packet up to this wharf at spring low.
+        // That is a RULING, not a side effect of an arrival fix. A pocket is LOCAL: it holds her where
+        // she lies and leaves the pinch — which is out along the channel, not here — where it was.
+        //
+        // The centre-line IS her own footprint at the berth, bow to stern, so the flat can never come
+        // out shorter than the hull it was cut for.
+
+        /// <summary>Bow end of the pocket's centre-line — her own bow at the berth.</summary>
+        public static Vector2 BerthPocketFrom => new Vector2(
+            AlongsideBerthX - ArrivalHullLengthMetres * 0.5f, AlongsideBerthY);
+
+        /// <summary>Stern end of the pocket's centre-line — her own stern at the berth.</summary>
+        public static Vector2 BerthPocketTo => new Vector2(
+            AlongsideBerthX + ArrivalHullLengthMetres * 0.5f, AlongsideBerthY);
+
+        /// <summary>The pocket's FLAT bottom: her whole beam, plus the room she is steered in with.</summary>
+        public static float BerthPocketThalwegHalfWidth =>
+            ArrivalHullHalfBeamMetres + BerthPocketMarginMetres;
+
+        /// <summary>
+        /// Shoulder width beyond the flat, in metres — how long the cut takes to climb back to the
+        /// ground around it.
+        ///
+        /// <para>⚠ BOUNDED FROM ABOVE by something real rather than chosen for looks. The dredge test
+        /// pins a ring of probes that must NOT move — the pier root's dry ground, and the shoal a metre
+        /// off each deck lip — and the nearest of them (the south lip, at the deck's centre) lies
+        /// 6.79 m from this pocket's nearest end. The cut's outer toe has to stay inside that, or the
+        /// berth starts digging out the ground the pier stands on. StPetersAlongsideBerthTests asserts
+        /// the clearance instead of trusting this paragraph.</para>
+        /// </summary>
+        public const float BerthPocketShoulderMetres = 1.6f;
+
+        /// <summary>Half-width of the whole cut — the flat plus its shoulder.</summary>
+        public static float BerthPocketHalfWidth =>
+            BerthPocketThalwegHalfWidth + BerthPocketShoulderMetres;
+
+        /// <summary>The pocket is dredged to the SAME bed as the channel that feeds it — a berth
+        /// shallower than its own approach is a berth you can reach and cannot lie in.</summary>
+        public static float BerthPocketBedElevation => ApproachBedElevation;
 
         /// <summary>ADR 0028: the ground renders as the splat-shaded field and the painter skips the
         /// ground/fringe tile layers. Flip to false and rebuild for the tiled-coast A/B.</summary>
@@ -1965,6 +2092,11 @@ namespace HiddenHarbours.App.Editor
             SetV2(so, "_approachTo", ApproachTo);
             SetF(so, "_approachThalwegHalfWidth", ApproachThalwegHalfWidth);
             SetF(so, "_approachBedElevation", ApproachBedElevation);
+            SetV2(so, "_berthPocketFrom", BerthPocketFrom);
+            SetV2(so, "_berthPocketTo", BerthPocketTo);
+            SetF(so, "_berthPocketHalfWidth", BerthPocketHalfWidth);
+            SetF(so, "_berthPocketThalwegHalfWidth", BerthPocketThalwegHalfWidth);
+            SetF(so, "_berthPocketBedElevation", BerthPocketBedElevation);
             SetF(so, "_islandFalloff", IslandFalloff);
             SetF(so, "_islandElevation", IslandElevation);
             SetV2(so, "_sandbarFrom", SandbarFrom);

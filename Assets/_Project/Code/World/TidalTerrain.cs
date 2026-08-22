@@ -28,6 +28,10 @@ namespace HiddenHarbours.World
     /// berth pocket at the dock. Unlike every zone above it it NEVER bares: it is a dredge, authored
     /// deep enough to carry its region's arrival hull at the lowest spring water, so it NARROWS
     /// rather than dries as the tide falls.</description></item>
+    /// <item><description><b>Berth pocket</b> — a short flat-bottomed cut ALONGSIDE a wharf face, at the
+    /// approach's own depth, holding the hull that lies there. Separate from the approach because the
+    /// pier stands over the approach's centre-line, so its water is under the planks rather than where
+    /// a hull alongside actually floats.</description></item>
     /// </list>
     /// The zones are smoothly blended (the ridge and channel are raised-cosine bumps, not hard steps) so the
     /// shoreline and channel banks creep across the flats continuously as the tide moves — the continuous
@@ -113,6 +117,31 @@ namespace HiddenHarbours.World
                  "hull's draught + her under-keel clearance), so the channel carries her at EVERY state " +
                  "of tide — the owner's 2026-08-19 ruling that the east dock always has water.")]
         [SerializeField] private float _approachBedElevation = -4.0f;
+
+        [Header("Alongside berth pocket (the water the hull lies IN, beside the wharf face)")]
+        [Tooltip("Half-width (m) of the berth pocket. 0 = ABSENT, and the region is bit-for-bit the one " +
+                 "that predates it — every region without an alongside berth is untouched by this field. " +
+                 "A THIRD cut on the same only-ever-downward rule as the berth slip and the approach. " +
+                 "Why it exists: a channel dredged down the middle of a finger pier puts its water UNDER " +
+                 "the planks, where nothing floats. A hull lying ALONGSIDE lies off the pier's face, a " +
+                 "beam's width out — ground the channel's own flat bottom never reaches. This cut is that " +
+                 "berth, and nothing else: it is deliberately short, so the channel's narrowest section " +
+                 "(which is what gates the fleet) is somewhere else entirely and does not move.")]
+        [SerializeField] private float _berthPocketHalfWidth = 0f;
+        [Tooltip("One end of the pocket's centre-line (world XY) — authored ALONG the wharf face the hull " +
+                 "lies against, offset off it by (her half-beam + her fendering gap), so the centre-line " +
+                 "is literally where her keel goes.")]
+        [SerializeField] private Vector2 _berthPocketFrom = Vector2.zero;
+        [Tooltip("Other end of the pocket's centre-line (world XY) — the hull's other end. The pair is her " +
+                 "own footprint at the berth, never a length picked by eye.")]
+        [SerializeField] private Vector2 _berthPocketTo = Vector2.zero;
+        [Tooltip("Half-width (m) of the pocket's FLAT bottom — her half-beam plus the room she is steered " +
+                 "in with. The flat has to hold her WHOLE beam: a hull half over the shoulder is a hull " +
+                 "that touches on one side as the tide falls.")]
+        [SerializeField] private float _berthPocketThalwegHalfWidth = 0f;
+        [Tooltip("Pocket bed elevation (m above datum) — the SAME dredge as the approach that feeds it. " +
+                 "A berth shallower than its own channel is a berth you can reach and not lie in.")]
+        [SerializeField] private float _berthPocketBedElevation = -4.0f;
 
         [Header("Sandbar ridge (the tide-gated walking path to Nine Mile Creek)")]
         [Tooltip("One end of the sandbar's centre-line (world XY) — toward the island.")]
@@ -242,6 +271,15 @@ namespace HiddenHarbours.World
                       _berthHalfWidth, _berthThalwegHalfWidth, _berthBedElevation);
             e = Carve(e, worldPos, _approachFrom, _approachTo,
                       _approachHalfWidth, _approachThalwegHalfWidth, _approachBedElevation);
+            // ⭐ AND THE BERTH ITSELF. The approach above is the way IN; this is the water she lies in
+            // once she is there. They are separate because a finger pier stands ON the channel's
+            // centre-line, so the channel's flat bottom is under the PLANKS — and a hull moored
+            // alongside lies off the pier's face, a beam's width outboard of anything the channel
+            // dredged. Widening the channel until it reached her would have widened the DOOR, which
+            // is the region's draught gate and the owner's to move; a pocket is local, so the
+            // channel's narrowest section — the thing that actually gates the fleet — is untouched.
+            e = Carve(e, worldPos, _berthPocketFrom, _berthPocketTo,
+                      _berthPocketHalfWidth, _berthPocketThalwegHalfWidth, _berthPocketBedElevation);
 
             return e;
         }

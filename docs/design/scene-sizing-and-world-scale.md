@@ -288,6 +288,59 @@ hull *crossing the ring*; what changed is that the one door is dredged. The pier
 becomes possible at this wharf (the "it would sit on the mud" reason expired — it is now only a
 question of the bob-frame driver and the owner's taste).
 
+#### ⭐⭐ …and she lies ALONGSIDE it, which took a berth pocket (owner playtest, 2026-08-22)
+
+The owner watched the finished opening and reported that the boat *"finishes with its bow sitting on
+the planks."* That was authored, not a pilot bug: the berth was a point on the pier's own centre-line
+one metre off its head, so a 12.9 m hull lying on the channel's axis reached x = 208.6 — **5.4 m
+inside a deck that runs 183 → 214.** She was doing exactly what the region asked.
+
+**She now lies alongside the wharf's south face**, and every number is derived rather than typed
+(`StPetersBuilder.Alongside*`, `StPetersWharf.MooringFaceY` / `AxisInward` / `LadderPosition`):
+
+- **Which face:** the **south** one — because that is where the gear is. Every fitting the pier
+  carries (bollards, tyre fenders, ladder, cleat) is on the south edge, since that is the side the
+  camera sees and the side whose tall face the kit draws. You berth where the bollards are.
+- **How far off it:** her own half-beam (2.40 m) plus a **0.40 m fendering gap** — one of the pier's
+  own tyres squashed. Measured rail-to-face, not centre-to-face.
+- **Where along it:** **abreast of the ladder**, the one fitting whose whole job is getting a person
+  between a boat and the planks.
+- **Which way she lies:** along the **pier's** axis, not the channel's. The two agree today (the pier
+  was built down the channel's line) and a test holds them together — but a hull made fast to
+  something lies parallel to *that*, and reading the channel would lay her across her own berth the
+  day it was re-cut at an angle.
+- **The step ashore** is the cove's ratified 1.5 m, measured from her **gunwale**. The old 1.5 m was
+  measured from the berth's centre-line, which on a 2.4 m half-beam is a point inside the boat.
+
+**⚠ It needed a dredge as well as a coordinate, and that is the part worth remembering.** The
+approach's flat bottom is ±4 m about y = 0 and the pier is ±3 m — **one metre of dredged water beside
+each face**, against a hull that needs 4.8 m of beam there. Measured on the terrain as it stood, the
+ground under an alongside berth read **−1.94 m at y = −7 against −2.20 m of water at spring low**:
+she took the ground, on *either* face. Alongside was never reachable by moving a point.
+
+**What was built:** a third cut, `TidalTerrain`'s **berth pocket** — the same only-ever-downward
+`Carve` as the slip and the approach, dredged to the **same −4.00 m bed as the channel that feeds
+it**, with its centre-line **exactly her footprint at the berth** (bow to stern) and a flat bottom of
+her half-beam + 1 m of steering room.
+
+**Why a pocket and not a wider channel.** Widening the approach's flat from ±4 m to the ±8.2 m an
+alongside hull needs would also have floated her — and would have **widened the door**, which is this
+region's draught gate. That is a ruling, not a side effect of an arrival fix. A pocket is local: the
+channel's *narrowest* section, which is what actually gates the fleet, is somewhere else entirely.
+**Measured before and after, the ladder is unchanged** — dory/punt/skiff/lobster boat/cape islander in
+at every tide, side dragger everything but spring low, stern trawler at the two highs, coastal packet
+at spring high only, **tanker never**.
+
+**What did NOT change.** Every probe the dredge test pins is bit-identical: the pier root's +5.35 m
+dry ground and the deck height measured off it, the +1.09 m shoal a metre off each deck lip, the
+beach slip, the reef ring, the bar, the dory's mooring. The pocket's shoulder is bounded from above
+by the nearest of them — the deck's south lip, 6.79 m from the pocket's nearest end — and that
+clearance is asserted rather than trusted.
+
+**⚠ The paint was re-baked with it** (`StPetersSeabed_HeightTex.png`, 575 texels). ADR 0014 is
+*paint = sail*: a berth that exists only in the analytic terrain is a shoal in the water the player
+actually sees. Everything outside the pocket is byte-identical to the committed map.
+
 **Still open (owner):** whether the channel reads as a channel at low tide, whether 8 m of navigable
 water is the right room coming in, and whether a wet berth beside a dry landing reads or looks like
 a bug.
