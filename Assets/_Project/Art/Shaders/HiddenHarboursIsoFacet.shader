@@ -135,6 +135,14 @@ Shader "HiddenHarbours/IsoFacet"
             // is live — is byte-identical to before ADR 0033 (the A/B contract).
             float4 _HullShear;
 
+            // SPIKE ONLY (spike/interior-mesh, question B) — the level gate. Deliberately a
+            // GLOBAL uniform and NOT a Property: it defaults to 0 for every material that has
+            // never heard of it, no mesh on main carries a TEXCOORD1 (so levelTag arrives
+            // (0,0)), and the shipped picture is therefore byte-identical. Driven by
+            // Shader.SetGlobalFloat from the spike fixture only; does not ship. See
+            // docs/design/spikes/interior-mesh-verdict.md.
+            float  _HHLevelShown;
+
             struct Attributes
             {
                 float4 positionOS : POSITION;
@@ -145,6 +153,10 @@ Shader "HiddenHarbours/IsoFacet"
                 // both sides; 2/3 = interior on the front/back side only — see vertGuard, which
                 // decodes the rendered side).
                 float4 attrs      : TEXCOORD0;
+                // SPIKE ONLY — x = LEVEL id (0 = belongs to no level), y = 1 on the emitted
+                // INTERIOR faces and 0 on the hull's own. Absent on every shipped mesh, so it
+                // arrives as (0,0) and the gate below is inert.
+                float2 levelTag   : TEXCOORD1;
             };
 
             struct Varyings
@@ -155,6 +167,9 @@ Shader "HiddenHarbours/IsoFacet"
                 nointerpolation float fidx : TEXCOORD0;
                 nointerpolation float mat  : TEXCOORD1;
                 float3 wpos : TEXCOORD2;         // xy = dither frame  z = TRUE unbiased depth
+                // SPIKE ONLY — xy = the level tag, z = 1 when the camera is rendering this
+                // face's FRONT (decoded from the stored normal exactly as vertGuard does).
+                nointerpolation float3 lvl : TEXCOORD3;
             };
 
             struct FragOut
@@ -181,6 +196,7 @@ Shader "HiddenHarbours/IsoFacet"
 
                 o.fidx = sh * _Gain + _Bias + v.attrs.y;
                 o.mat  = v.attrs.x;
+                o.lvl  = float3(v.levelTag, dot(wn, UNITY_MATRIX_V[2].xyz) >= 0.0 ? 1.0 : 0.0);
                 // ⚠️ TWO DEPTHS, AND THE SPLIT IS THE DESIGN (ADR 0033).
                 //
                 // o.wpos.z stays the RIG's own depth (ry·cos − rz·sin, unsheared) because the two
@@ -207,8 +223,29 @@ Shader "HiddenHarbours/IsoFacet"
                 return o;
             }
 
+            // SPIKE ONLY — one tag, both halves of ADR 0038's swap (question B).
+            //   _HHLevelShown == 0 : the shipped picture. Interior faces (if any exist at
+            //                        all) are off; nothing else is touched.
+            //   _HHLevelShown == k : you are inside level k. The hull's own faces that
+            //                        belong to level k are culled (the house you are inside
+            //                        of), level k's room is drawn, every other level's room
+            //                        is off. Exactly one of the two, per pixel, by
+            //                        construction rather than by sorting.
+            // The BACK-facing test on interior geometry is the rig's hand-written "THE CUT"
+            // (near walls culled, far walls kept) falling out of the geometry for free, at
+            // every heading instead of at eight.
+            bool HHLevelDiscards(float3 lvl)
+            {
+                bool isInterior = lvl.y > 0.5;
+                if (_HHLevelShown < 0.5) return isInterior;
+                bool tagged = abs(lvl.x - _HHLevelShown) < 0.5;
+                if (isInterior) return !tagged || lvl.z < 0.5;
+                return tagged;
+            }
+
             FragOut frag (Varyings i)
             {
+                if (HHLevelDiscards(i.lvl)) discard;
                 // The hull-cell pixel this fragment lands on, derived from WORLD position: the
                 // rig's screen grid is just world metres times PPU with y down and the pivot as
                 // origin. Locked to the hull, immune to render-target conventions.
@@ -266,12 +303,15 @@ Shader "HiddenHarbours/IsoFacet"
             {
                 float4 positionCS : SV_POSITION;
                 nointerpolation float interior : TEXCOORD0;
+                nointerpolation float3 lvl : TEXCOORD1;   // SPIKE ONLY — see HHLevelDiscards
             };
 
             GuardVaryings vertGuard (Attributes v)
             {
                 GuardVaryings o;
-                o.positionCS = vert(v).positionCS;
+                Varyings f = vert(v);
+                o.positionCS = f.positionCS;
+                o.lvl = f.lvl;
 
                 // attrs.w is the PER-SIDE interior code (RigMeshInteriorClassifier.ClassifySides):
                 //   0 = exterior both sides   1 = interior both sides
@@ -295,6 +335,7 @@ Shader "HiddenHarbours/IsoFacet"
 
             float fragGuard (GuardVaryings i) : SV_Target
             {
+                if (HHLevelDiscards(i.lvl)) discard;
                 return i.interior;
             }
         ENDHLSL

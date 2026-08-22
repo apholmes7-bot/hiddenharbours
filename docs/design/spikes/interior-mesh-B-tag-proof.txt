@@ -1,0 +1,24 @@
+B — ONE TAG, BOTH HALVES OF THE SWAP (spike/interior-mesh)
+hull: LobsterBoatIso   level tagged: house_sole (id 1)
+combined mesh: 5100 verts / 1542 tris  (hull 4152/1384 + rooms 948/158)
+hull faces carrying THIS level's tag: 219 of 227 tagged in all   interior material id reused: 2   fore bias 14.54 m (the hull's own bounding-sphere diameter)
+
+pixel accounting at the dock pose, 90 deg:
+   exterior house of the level, drawn alone : 13540 px
+   the room, drawn alone                    : 8534 px
+   the tagged house faces, DRAWN AT THE GATE: 0 px   (must be 0 — this is the cull, asked exactly)
+   hull revealed behind it while inside     : 4972 px  (the deck and far rail the house used to hide; NOT a leak)
+   room pixels outside the house silhouette : 491 px  (containment, in pixels)
+   room pixels the SHIPPED frame covers     : 8043 px  (overlap of the two masks: 8043)
+
+   room pixels SURVIVING into the combined frame, WITH the fore bias : 8330 of 8534  (97.6%)
+   room pixels SURVIVING with db = 0, the SWAP ALONE               : 1729 of 8534  (20.3%)
+
+   ⇒ the swap turns the CABIN off; it does not turn off the hull's own near
+     topsides, which in a 3/4 view stand between the camera and a cabin sole.
+     The sprite path never met this because a sheet composites OVER the hull.
+     The mesh path already owns the same lever: UV0.z, the rig's per-face db.
+
+GATE-OFF IDENTITY: hull+rooms at gate 0 vs hull alone -> 0 differing pixels (must be 0: an un-gated interior would be visible today).
+
+EXACTLY-ONE-LAYER-ON: TRUE  — gate off: the house draws, the room does not (identity 0 px). Gate at this level: the room draws and the level's own hull faces draw 0 px. One float on TexCoord1.x, one compare in the fragment, no sorting rule added.
