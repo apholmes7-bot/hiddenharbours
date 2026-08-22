@@ -41,6 +41,14 @@ namespace HiddenHarbours.Boats
     /// and 3 were ruled as a set, and it is why <see cref="Apply"/> is re-asserted every tick rather than
     /// only on the transition: the invariant is maintained, not merely established.</para>
     ///
+    /// <para><b>3b · …AND THE OCCUPANT'S OWN OCCLUDER IDS CHANGE WITH IT.</b> The third consequence ADR
+    /// 0038 stated and left for the runtime: the set of geometry in FRONT of the player changed when she
+    /// walked in, so the hull must stop hiding her. Those ids are two per-renderer shader properties owned
+    /// by the Player lane's own rider, and this component deliberately does not write them — it publishes
+    /// <see cref="CabinEntered"/> / <see cref="CabinLeft"/> across the Core seam and lets their owner
+    /// answer (rule 4). See <see cref="PublishOccupancy"/> for why that publish happens on the three
+    /// transitions and never from the re-assert.</para>
+    ///
     /// <para><b>4 · REGION HOP — the interior shares the hull's lifetime (proposal 4).</b> The boat is
     /// persistent core and her cabin must be too, so this component's state <b>deliberately survives
     /// OnDisable</b>. Root-toggling IS how a region hop works, "disabled" happens constantly and does not
@@ -284,6 +292,11 @@ namespace HiddenHarbours.Boats
         /// it lives in, so a player standing at the threshold is already standing in the doorway of the
         /// picture that replaces it. That is what lets an interior be a layer swap rather than a place to
         /// travel to — the same trick, for the same reason, as <c>BuildingInterior.TryGoToLevel</c>.</para>
+        ///
+        /// <para><b>Publishes <see cref="CabinEntered"/> on the way in</b> — ADR 0038's third consequence,
+        /// which is that the set of geometry in FRONT of the occupant just changed. What that means for
+        /// the two per-renderer occluder ids on the player's rider is the Player lane's business and
+        /// deliberately not this component's; see <see cref="PublishOccupancy"/>.</para>
         /// </summary>
         public bool TryEnter(int level)
         {
@@ -293,6 +306,7 @@ namespace HiddenHarbours.Boats
             IsInside = true;
             Level = level;
             Apply();
+            PublishOccupancy();
             return true;
         }
 
@@ -310,6 +324,7 @@ namespace HiddenHarbours.Boats
             IsInside = false;
             Level = 0;
             Apply();
+            PublishOccupancy();
             return true;
         }
 
@@ -327,7 +342,35 @@ namespace HiddenHarbours.Boats
 
             Level = level;
             Apply();
+            PublishOccupancy();
             return true;
+        }
+
+        /// <summary>
+        /// <b>Say where the occupant is now</b>, once, on a real transition — ADR 0038's third
+        /// consequence, raised across the Core seam because the things that care live in Player and Boats
+        /// may not name them (rule 4).
+        ///
+        /// <para><b>⚠️ CALLED FROM THE THREE TRANSITIONS AND NOWHERE ELSE.</b> Not from
+        /// <see cref="Apply"/>, which runs every tick, and above all NOT from <see cref="OnEnable"/>,
+        /// which re-asserts the swap this component was already holding. Root-toggling IS how a region hop
+        /// works, so a publish there would announce that the player had walked in again at every boundary
+        /// she crossed while below — the same defect, in a second place, that ADR 0038 proposal 4 rules
+        /// out for the swap itself. The cabin's state survives the toggle by design and a listener's
+        /// answer must survive it the same way.</para>
+        ///
+        /// <para>The hull named is the boat ROOT's entity id: the question a listener asks is "did the
+        /// geometry in front of ME change", which is about this hull and not about her class — sister
+        /// ships share a def and do not share a doorway. ⚠ <c>GetEntityId</c>, not the deprecated
+        /// <c>GetInstanceID</c>, which 6000.5 marks obsolete-as-ERROR.</para>
+        /// </summary>
+        private void PublishOccupancy()
+        {
+            Transform root = _boatRoot != null ? _boatRoot : transform;
+            EntityId hullId = root != null ? root.gameObject.GetEntityId() : gameObject.GetEntityId();
+
+            if (IsInside) EventBus.Publish(new CabinEntered(hullId, Level));
+            else EventBus.Publish(new CabinLeft(hullId));
         }
 
         /// <summary>

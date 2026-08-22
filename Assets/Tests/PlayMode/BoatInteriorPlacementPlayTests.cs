@@ -9,21 +9,28 @@ using HiddenHarbours.Boats;
 namespace HiddenHarbours.Tests.PlayMode
 {
     /// <summary>
-    /// <b>A BOAT GROWS HER CABIN ON LOAD, AND HER DOOR STAYS SHUT</b> — the placement pass alive, which
-    /// is the only place it can be tested: the installer mounts from <c>BoatController.Awake</c> in play
+    /// <b>A BOAT GROWS HER CABIN ON LOAD, AND HER DOOR OPENS</b> — the placement pass alive, which is
+    /// the only place it can be tested: the installer mounts from <c>BoatController.Awake</c> in play
     /// mode only, and EditMode fires no <c>Awake</c> on a plain MonoBehaviour.
     ///
-    /// <para><b>The headline assertion is a NEGATIVE, and it is the ruled behaviour.</b> With the
-    /// exterior half of the swap unwired — which the S0 spike measured to be every hull in the fleet —
-    /// the cabin is built, the door is registered, and the door offers <i>nothing</i>. Opening onto a
-    /// half-wired swap would draw the interior and the exterior at once, posed differently, which is the
-    /// co-visibility ADR 0038 forbids.</para>
+    /// <para><b>⭐ THE HEADLINE ASSERTION FLIPPED, 2026-08-22, and the flip IS the ruling.</b> It used to
+    /// be a negative — every door registered and every door silent, because the exterior half of the swap
+    /// is unwired on every hull in the fleet and opening onto a half-wired swap draws the interior and
+    /// the exterior together, posed differently. The overdraw that causes was then rendered and MEASURED
+    /// (4.0–11.6 px inside her own house at the crest, at <c>InteriorRockScale</c> 0.45) and ACCEPTED as
+    /// an R1 optimisation. The gate now asks only whether a hull was measured, so these tests assert the
+    /// positive: <b>a cabin the kit measured can be walked into.</b></para>
     ///
-    /// <para>⚠️ <b>The round trip therefore runs against a TEST-WIRED STAND-IN exterior</b>, and says so
-    /// here rather than in a commit message: no shipped hull can complete the swap yet, so a round-trip
-    /// test that used one would be asserting against a cabin nobody can open. The stand-in exercises the
-    /// same code path the per-level face tags will feed — which is exactly what the argument was left in
-    /// the signature for.</para>
+    /// <para><b>What did NOT change, and is still asserted here.</b> The CAPABILITY
+    /// (<see cref="BoatInterior.SwapIsCompletable"/>) still answers false on a hull with no exterior
+    /// half, honestly. It is the thing R1 flips hull by hull, and a suite that let it drift would lose
+    /// the only signal that the face tags had landed.</para>
+    ///
+    /// <para>⚠️ <b>The layer-swap round trip therefore still runs against a TEST-WIRED STAND-IN
+    /// exterior</b>, and says so here rather than in a commit message: no shipped hull can complete the
+    /// swap yet, so a test asserting <c>ExactlyOneLayerOn</c> against one would be asserting a property
+    /// no hull in the game holds. The stand-in exercises the same code path the per-level face tags will
+    /// feed — which is exactly what the argument was left in the signature for.</para>
     /// </summary>
     public class BoatInteriorPlacementPlayTests
     {
@@ -56,7 +63,7 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         // =====================================================================================
-        //  THE RULED OUTCOME: built, registered, and silent
+        //  THE RULED OUTCOME: built, registered, and OFFERING
         // =====================================================================================
 
         [UnityTest]
@@ -86,26 +93,37 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         [UnityTest]
-        public IEnumerator TheDoorIsRegisteredButSilentWhileTheSwapCannotComplete()
+        public IEnumerator TheDoorOffersEvenThoughTheSwapCannotCompleteYet()
         {
-            // THE RULED OUTCOME, asserted rather than described. Every shipped hull is here today.
+            // THE RULED OUTCOME, asserted rather than described. Every shipped hull is here today: no
+            // exterior half, and enterable anyway.
             Rig rig = NewBoat(withInterior: true);
             yield return null;
 
+            // ⚠ Cells handed in, exterior still null. A rig has no cells asset on disk, and since the
+            // pixels went lazy an empty array MEANS "load your own" — which on a made-up def id is a
+            // loud (and correct) console error. The subject here is the GATE, not the loader; the
+            // Resources path is driven for real on a shipped hull in BoatCabinJourneyPlayTests.
+            ReConfigureCabin(rig, exterior: null);
+            yield return null;
+
             Assert.IsFalse(rig.Installer.Interior.SwapIsCompletable,
-                           "the exterior half is null on a mesh hull until the per-level tags land");
-            Assert.AreEqual(1, Interactables.Count, "the door IS registered — it simply declines");
-            Assert.IsFalse(rig.Installer.Door.IsAvailable);
+                           "the exterior half is null on a mesh hull until the per-level tags land — and " +
+                           "the CAPABILITY must keep saying so, because that is the signal R1 flips");
+            Assert.AreEqual(1, Interactables.Count, "the door IS registered");
+            Assert.IsTrue(rig.Installer.Door.IsAvailable, "…and, since 2026-08-22, it offers");
 
             InteractVerb.PublishCandidate(
                 new InteractActor(rig.Installer.Door.transform.position, Vector2.zero,
                                   InteractContext.OnDeck), 90f);
 
-            Assert.IsFalse(InteractOffer.Current.Has,
-                           "…so the popup never names a cabin the player cannot be shown");
+            Assert.IsTrue(InteractOffer.Current.Has,
+                          "…so the popup names her, through the seam that already existed");
+            Assert.AreEqual("Go below", InteractOffer.Current.Label);
 
-            Assert.IsFalse(rig.Installer.Door.TryUse());
-            Assert.IsFalse(rig.Installer.Interior.IsInside);
+            Assert.IsTrue(rig.Installer.Door.TryUse());
+            yield return WaitForCue(rig.Installer.Door);
+            Assert.IsTrue(rig.Installer.Interior.IsInside, "and the press lands her below");
         }
 
         // =====================================================================================
@@ -201,6 +219,13 @@ namespace HiddenHarbours.Tests.PlayMode
         /// <summary>Hand the exterior half in, the way a later pass will: re-Configure the cabin with
         /// everything it already had plus the renderer.</summary>
         private static void HandInExterior(Rig rig, SpriteRenderer exterior)
+            => ReConfigureCabin(rig, exterior);
+
+        /// <summary>Re-wire the cabin the installer built, keeping everything it already had and adding
+        /// throwaway cells (and optionally the exterior half). The cells are the documented EAGER path:
+        /// a rig has no <c>BoatInteriorCellsDef</c> on disk, so a door pressed without them would reach
+        /// Resources for a def id that exists nowhere.</summary>
+        private static void ReConfigureCabin(Rig rig, SpriteRenderer exterior)
         {
             BoatInterior cabin = rig.Installer.Interior;
             Transform room = rig.Boat.transform.Find(BoatInteriorInstaller.RoomChildName);

@@ -389,33 +389,63 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         // =====================================================================================
-        //  THE GATE (the S0 ruling, rider 1) — both directions
+        //  THE GATE — OPENED (outcome 1 of the S0 ruling, applied 2026-08-22) — both directions
+        //
+        //  ⭐ THESE EXPECTATIONS FLIPPED, AND THE FLIP IS THE POINT. They used to read "every door
+        //  declines"; the overdraw at InteriorRockScale 0.45 was rendered, measured (4.0–11.6 px inside
+        //  her own house at the crest) and ACCEPTED, so the exterior half of the swap became an
+        //  optimisation rather than a precondition. What did NOT change is the CAPABILITY: a mesh hull
+        //  still cannot complete the swap, and SwapIsCompletable / ExactlyOneLayerOn still say so.
         // =====================================================================================
 
         [Test]
-        public void ADoorOntoAnIncompletableSwapOffersNothing()
+        public void ADoorOntoAnIncompletableSwapSTILLOffers_BecauseTheGateAsksWhetherSheWasMEASURED()
         {
             Rig rig = NewRig(wireExterior: false);
 
+            // The capability is untouched by the ruling and still answers honestly. This is the half
+            // that must NOT drift: the day the per-level face tags land, this is what flips.
             Assert.IsFalse(rig.Interior.SwapIsCompletable,
-                           "with no exterior half there is nothing for the interior to replace");
-            Assert.IsFalse(rig.Door.IsAvailable,
-                           "…so the door is not a thing to act on, and the popup never names it");
-            Assert.IsFalse(rig.Door.TryUse(), "…and a press does nothing");
+                           "with no exterior half there is still nothing for the interior to replace");
+            Assert.IsFalse(rig.Interior.ExactlyOneLayerOn,
+                           "…and the state does not claim a property a half-wired cabin cannot hold");
+
+            // The policy is what changed.
+            Assert.IsTrue(rig.Door.IsAvailable,
+                          "a hull that was measured may be entered — the overdraw is an R1 optimisation");
+            Assert.AreEqual("Go below", rig.Door.VerbLabel);
+            Assert.IsTrue(rig.Door.TryUse(), "…and the press is accepted");
+        }
+
+        [Test]
+        public void AHullNobodyMeasuredOffersNothing()
+        {
+            // The other direction, and the one that stops the test above passing for the wrong reason:
+            // if the gate were simply "always true" this would fail. Absence of a room is DATA — most of
+            // the fleet has never been measured — so the door is silent rather than broken.
+            Rig rig = NewRig(wireExterior: true);
+            Assert.IsTrue(rig.Door.IsAvailable);
+
+            rig.Interior.Configure(null, rig.Exterior, rig.Room, null, rig.Room.transform,
+                                   rig.Root.transform, DummyCells(8), 8, true, 0f, 5f, 1.6f, 0.02f);
+
+            Assert.IsFalse(rig.Interior.HasInterior);
+            Assert.IsFalse(BoatInteriorEntryPolicy.MayOffer(rig.Interior));
+            Assert.IsFalse(rig.Door.IsAvailable, "…so the popup never names a cabin nobody measured");
+            Assert.IsFalse(rig.Door.TryUse());
             Assert.IsFalse(rig.Interior.IsInside);
         }
 
         [Test]
-        public void ADoorOntoACompletableSwapOffersNormally()
+        public void TheGateIsONEnamedPolicy_AndANullCabinOffersNothing()
         {
-            // The other direction, and the one that stops the test above passing for the wrong reason:
-            // if the gate were simply "always false" this would fail.
-            Rig rig = NewRig(wireExterior: true);
-
-            Assert.IsTrue(rig.Interior.SwapIsCompletable);
-            Assert.IsTrue(rig.Door.IsAvailable);
-            Assert.AreEqual("Go below", rig.Door.VerbLabel);
-            Assert.IsTrue(rig.Door.TryUse());
+            // The predicate itself, so the rule is pinned where it is written rather than only through
+            // a door. A door with no cabin is a hull nobody has wired, which offers nothing.
+            Assert.IsFalse(BoatInteriorEntryPolicy.MayOffer(null));
+            Assert.IsTrue(BoatInteriorEntryPolicy.MayOffer(NewRig(wireExterior: false).Interior),
+                          "measured, half-wired: OFFERS (outcome 1)");
+            Assert.IsTrue(BoatInteriorEntryPolicy.MayOffer(NewRig(wireExterior: true).Interior),
+                          "measured, fully wired: offers, as it always would have");
         }
 
         [Test]
@@ -434,18 +464,27 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void HandingInTheExteriorHalfLater_LightsThatCabinWithNoOtherChange()
+        public void HandingInTheExteriorHalfLater_ENDSTheOverdrawWithNoOtherChange()
         {
-            // The property that lets the per-level face tags land hull-by-hull: no second switch, no
-            // migration, and no window in which a half-built cabin is enterable.
+            // The property that lets the per-level face tags land hull-by-hull: no second switch and no
+            // migration. Since the gate opened, what handing the half in changes is not whether she can
+            // be entered — she already could — but whether the house STOPS BEING DRAWN behind the room.
             Rig rig = NewRig(wireExterior: false);
-            Assert.IsFalse(rig.Door.IsAvailable);
+            Assert.IsTrue(rig.Door.IsAvailable, "she was already enterable");
+            Assert.IsTrue(rig.Interior.TryEnter(0));
+            Assert.IsTrue(rig.Exterior.enabled,
+                          "…and until R1 the house is still drawn while she is inside: the accepted overdraw");
 
+            // The one edit R1 is: hand the half in. Configure re-applies the swap it is already holding,
+            // so the occupant stays exactly where she is and the house goes dark under her.
             rig.Interior.Configure(rig.Def, rig.Exterior, rig.Room, null, rig.Room.transform,
                                    rig.Root.transform, DummyCells(8), 8, true, 0f, 5f, 1.6f, 0.02f);
 
+            Assert.IsTrue(rig.Interior.IsInside, "re-wiring a cabin does not evict its occupant");
             Assert.IsTrue(rig.Interior.SwapIsCompletable);
-            Assert.IsTrue(rig.Door.IsAvailable, "the same door, now offering, with nothing else touched");
+            Assert.IsTrue(rig.Interior.ExactlyOneLayerOn);
+            Assert.IsFalse(rig.Exterior.enabled, "the same cabin, now swapping, with nothing else touched");
+            Assert.IsTrue(rig.Door.IsAvailable);
         }
 
         // =====================================================================================
