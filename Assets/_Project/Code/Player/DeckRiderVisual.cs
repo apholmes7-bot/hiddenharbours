@@ -243,6 +243,19 @@ namespace HiddenHarbours.Player
         /// underneath them while they stand there.</summary>
         private int _occupantSlot = -1;
 
+        /// <summary>
+        /// The boat ROOT whose cabin the fisher is currently inside, as an entity id, or <c>default</c>
+        /// for "on deck". Written ONLY by <see cref="CabinEntered"/> / <see cref="CabinLeft"/>.
+        ///
+        /// <para>⚠️ <b>Deliberately NOT cleared by <see cref="StandDown"/> or <c>OnDisable</c>.</b> The
+        /// cabin's own state survives a root toggle because root-toggling is how a region hop works
+        /// (ADR 0038 proposal 4); a rider that forgot she was below at the same moment would put the hull
+        /// back to hiding a fisher who is inside it, at every boundary crossed while below. It is a
+        /// paired-signal fact, and it is cleared by its pair — or by the boat it names ceasing to be the
+        /// one under her feet (see <see cref="BelowDecks"/>).</para>
+        /// </summary>
+        private EntityId _belowHullId;
+
         /// <summary>The shader property the occluding hull id is written to, and the shader that
         /// reads it. Named here rather than reached for through Art, which Player may not reference
         /// (rule 4) — a shader name is a string contract, and this is the one place it is spelled on
@@ -277,6 +290,20 @@ namespace HiddenHarbours.Player
         /// <summary>The compass heading of the hull PICTURE this rider is reading RIGHT NOW — the quantity
         /// a presenter cached across a hull swap silently pins to north. For tests / tooling.</summary>
         public float HullDrawnHeadingDegrees => DrawnHeadingDegrees();
+
+        /// <summary>
+        /// <b>Is the fisher below, in the cabin of the hull she is standing on?</b> — ADR 0038's third
+        /// consequence, as a state this component owns.
+        ///
+        /// <para>Both halves are required, and the second is the guard: the cabin that was entered must be
+        /// the boat this rider is bound to. More than one boat can carry a cabin, and a dev tool or a
+        /// scripted beat may put somebody below on one the player is nowhere near. It also self-heals — a
+        /// hull destroyed with the occupant inside publishes no <see cref="CabinLeft"/> (there is no
+        /// longer anything to publish it), and the live root compare simply stops matching.</para>
+        /// </summary>
+        public bool BelowDecks =>
+            _belowHullId != default && _boatRoot != null &&
+            _boatRoot.gameObject.GetEntityId() == _belowHullId;
 
         /// <summary>The displaced ride the hull under this fisher reports she is DRAWING right now
         /// (world metres) — the term their lift carries on top of the rock cycle. Read off the same
@@ -361,14 +388,40 @@ namespace HiddenHarbours.Player
 
         private void OnEnable()
         {
+            // ADR 0038's third consequence arrives here. The cabin never writes this rider's properties
+            // (Boats may not name Player, rule 4); it says what happened and this answers.
+            EventBus.Subscribe<CabinEntered>(OnCabinEntered);
+            EventBus.Subscribe<CabinLeft>(OnCabinLeft);
+
             StateContext();
             Apply();
         }
 
         /// <summary>Hand the picture back on teardown: the child goes dark and the body renderer resumes
         /// under the pre-rider rule. A rider torn down mid-voyage therefore degrades to exactly the
-        /// behaviour that shipped before it existed — never to nobody drawing at all.</summary>
-        private void OnDisable() => StandDown();
+        /// behaviour that shipped before it existed — never to nobody drawing at all.
+        ///
+        /// <para>⚠️ The subscriptions come and go with the enable, the house pattern for a bus listener —
+        /// but <see cref="_belowHullId"/> deliberately does NOT: see its own remarks. Being below is a
+        /// fact about the world, not about whether this renderer happened to be switched on.</para></summary>
+        private void OnDisable()
+        {
+            EventBus.Unsubscribe<CabinEntered>(OnCabinEntered);
+            EventBus.Unsubscribe<CabinLeft>(OnCabinLeft);
+            StandDown();
+        }
+
+        /// <summary>She went below on some hull. Held as an id, not acted on here: the answer is read
+        /// live in <see cref="ApplyOcclusion"/>, so a cabin entered on a boat this rider is not bound to
+        /// changes nothing and needs no filtering at the door.</summary>
+        private void OnCabinEntered(CabinEntered e) => _belowHullId = e.HullId;
+
+        /// <summary>…and came back out. Guarded on the hull that was entered, so a second boat's door
+        /// closing cannot put this fisher back on deck.</summary>
+        private void OnCabinLeft(CabinLeft e)
+        {
+            if (e.HullId == _belowHullId) _belowHullId = default;
+        }
 
         /// <summary>
         /// <b>STATE THE CONTEXT, in Update — before the presenter chooses a cell.</b>
@@ -492,6 +545,14 @@ namespace HiddenHarbours.Player
         /// (the compare is strict). Hull-frame all the way — <c>DeckLocalPosition</c> plus the height of
         /// the deck under them — so a rocking, turning, sailing boat needs no re-projection here at all.</para>
         ///
+        /// <para><b>…AND GOES QUIET WHILE SHE IS BELOW</b> (ADR 0038's third consequence). Stepping
+        /// through a cabin door changes which geometry is in front of the fisher: she is now INSIDE the
+        /// house that was hiding her, and the room is drawn over the hull in her place. So while
+        /// <see cref="BelowDecks"/> she is published as an occupant who is aboard but not to be hidden,
+        /// and both ids go to 0. The cabin does not reach in and write them — it publishes
+        /// <c>CabinEntered</c>/<c>CabinLeft</c> and this component owns the answer, because these two
+        /// properties belong to the player's renderer and Boats may not name Player (rule 4).</para>
+        ///
         /// <para>Cleared the moment the rider stands down, and 0 on any hull that cannot answer (a sprite
         /// hull, a greybox boat), where the shader is inert and the figure draws exactly as before.</para>
         /// </summary>
@@ -522,11 +583,27 @@ namespace HiddenHarbours.Player
                 _occupantSlot = slots.Claim(this);
                 if (_occupantSlot >= 0)
                 {
+                    // ⭐ BELOW DECKS, THE ANSWER INVERTS (ADR 0038's third consequence). The whole
+                    // mechanism above says "this much of the boat is in FRONT of the fisher, so hide her
+                    // behind it" — and the moment she steps through the cabin door that stops being true
+                    // of the house she is now inside. So she is published as an occupant who is aboard
+                    // but NOT to be hidden, which is the case the slot contract already names, and both
+                    // ids fall to 0: the shader's own early-out, and the same pair StandDown writes.
+                    //
+                    // The slot itself is KEPT, not released. She is still standing on that deck in the
+                    // hull's own frame, releasing and re-claiming across a doorway would churn the depth
+                    // ranking of everything else aboard, and holding it means coming back out restores
+                    // her exact id with no reclaim to lose.
+                    bool below = BelowDecks;
+
                     Vector2 stand = _deckWalk != null ? _deckWalk.DeckLocalPosition : Vector2.zero;
                     float height = _deckWalk != null ? _deckWalk.DeckHeightMeters : 0f;
-                    slots.Set(_occupantSlot, this, new Vector3(stand.x, stand.y, height), true);
-                    occluderId = slots.OccluderId(_occupantSlot);
-                    occluderTop = slots.OccluderIdTop;
+                    slots.Set(_occupantSlot, this, new Vector3(stand.x, stand.y, height), !below);
+                    if (!below)
+                    {
+                        occluderId = slots.OccluderId(_occupantSlot);
+                        occluderTop = slots.OccluderIdTop;
+                    }
                 }
                 _occupiedHull = hull;
             }
