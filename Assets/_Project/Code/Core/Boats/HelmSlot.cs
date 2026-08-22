@@ -105,6 +105,20 @@ namespace HiddenHarbours.Core
         {
             if (hull == null) return;
 
+            // One hull, one helm — AND one relay, one hull. Drop anything this relay already holds
+            // under a DIFFERENT hull before it takes this one. Balanced enable/disable can never
+            // produce that state (a relay unregisters the exact token it registered), but if it ever
+            // did, the stale entry would be a relay granted for a boat it no longer rides — the same
+            // class of wrong answer the whole seam exists to end, and cheap to make unreachable.
+            for (int i = _registered.Count - 1; i >= 0; i--)
+            {
+                Entry e = _registered[i];
+                if (ReferenceEquals(e.Hull, hull)) continue;
+                if ((control != null && ReferenceEquals(e.Control, control))
+                    || (instruments != null && ReferenceEquals(e.Instruments, instruments)))
+                    _registered.RemoveAt(i);
+            }
+
             for (int i = 0; i < _registered.Count; i++)
             {
                 if (!ReferenceEquals(_registered[i].Hull, hull)) continue;
