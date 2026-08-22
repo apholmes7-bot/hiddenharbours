@@ -40,6 +40,14 @@ namespace HiddenHarbours.Tests.PlayMode
     /// <para><b>No frame-count-as-time.</b> The cue is advanced by real seconds and waited on by a real
     /// deadline; headless frames are nowhere near wall-clock ones and a test that counted them would be
     /// asserting against the machine it happens to run on.</para>
+    ///
+    /// <para>⚠️⚠️ <b>THE JOURNEY RUNS WITH HER LYING OFF, NOT TIED UP — and that is a FINDING, not a
+    /// fixture convenience.</b> While a standable step-off is available, <c>ControlSwitcher</c> answers E
+    /// with "step ashore" before the interact registry is consulted at all, so at a wharf her cabin door
+    /// is neither offered nor pressable. That ordering is deliberate, ruled, and already flagged for
+    /// lead-architect in the switcher's own remarks; it is pinned here as shipped behaviour by
+    /// <see cref="AtAWharf_TheStepAshoreVerbTakesThePress_AndTheCabinDoorIsNeverOffered"/> rather than
+    /// quietly worked around.</para>
     /// </summary>
     public class BoatCabinJourneyPlayTests
     {
@@ -136,18 +144,17 @@ namespace HiddenHarbours.Tests.PlayMode
                                                "occluder assertions below about the real channel");
 
             // ---- to the threshold, and the popup names the way in ------------------------------
+            // The offer is the switcher's own, republished every frame — not a candidate this test
+            // pushed. What the player would SEE, in other words.
             yield return WalkToTheDoor(rig, door);
-            var atTheDoor = new InteractActor(rig.Player.transform.position, Vector2.zero,
-                                              InteractContext.OnDeck);
 
-            InteractVerb.PublishCandidate(atTheDoor, 90f);
             Assert.IsTrue(InteractOffer.Current.Has,
                           $"standing at her threshold ({Vector2.Distance(rig.Player.transform.position, door.transform.position):0.00} m " +
                           $"from a door with {door.ReachMeters:0.00} m of reach) must offer the way in");
             Assert.AreEqual("Go below", InteractOffer.Current.Label);
 
-            // ---- press ----------------------------------------------------------------------
-            Assert.IsTrue(InteractVerb.TryPerform(atTheDoor, 90f), "the press is spent on her door");
+            // ---- press, through the KEY's own entry point ------------------------------------
+            Assert.IsTrue(rig.Switcher.BeginInteract(), "E at her threshold is spent on her door");
 
             // The cue is DECLARED: 8 frames at 70 ms off the sidecar, and the swap lands at the END of
             // it. Asserted as a duration and never as pixels — the sheets bake doorOpen: 0 only, so
@@ -215,6 +222,55 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.AreEqual(tilt, rig.Skin.Presenter.VisualTiltDegrees, 1e-5f,
                             "…and the hull is posed identically at every scale: the clamp never " +
                             "reaches her pose, her handling or the save");
+        }
+
+        /// <summary>
+        /// ⚠️⚠️ <b>TIED UP AT A WHARF, THE CABIN DOOR CANNOT BE PRESSED — and this pins that as the
+        /// SHIPPED behaviour rather than leaving it to be discovered.</b>
+        ///
+        /// <para><b>What happens.</b> <see cref="ControlSwitcher.BeginInteract"/> answers E with its own
+        /// transitions <i>before</i> the interact registry is looked at: on deck, out of helm reach, with
+        /// a standable step-off available, E steps ashore. So wherever <c>CanStepAshore()</c> is true —
+        /// moored at a wharf, or lying over bared ground at low water — the press never reaches the
+        /// registry, and the popup names the dock rather than the cabin.</para>
+        ///
+        /// <para><b>Why this file does not fix it.</b> That ordering is deliberate, ruled, and already
+        /// flagged: <see cref="ControlSwitcher"/>'s own remarks state the cost in as many words ("standing
+        /// at a registered candidate … E boards rather than working the candidate"), give the reason
+        /// (consulting last makes the seam provably non-regressive for the three transitions the player
+        /// cannot afford to lose), and name the end state — boarding and stepping ashore registering as
+        /// candidates so the resolver arbitrates them by distance, priority and facing. Changing it is a
+        /// lead-architect call about what E does <i>everywhere</i>, not a thing a cabin PR gets to decide
+        /// on its way past.</para>
+        ///
+        /// <para>So this asserts today's truth, loudly, and the door's own state alongside it: she IS
+        /// registered, she WOULD offer, and the press simply goes elsewhere. If the ordering is ever
+        /// arbitrated, this test is the one that should fail.</para>
+        /// </summary>
+        [UnityTest]
+        public IEnumerator AtAWharf_TheStepAshoreVerbTakesThePress_AndTheCabinDoorIsNeverOffered()
+        {
+            Rig rig = NewLobsterRig(atAWharf: true);
+            if (rig.Boat == null) yield break;
+            yield return null;
+
+            yield return Board(rig);
+            yield return WalkToTheDoor(rig, rig.Installer.Door);
+
+            Assert.IsTrue(rig.Switcher.CanStepAshore(), "harness: she must actually be tied up for this");
+            Assert.IsTrue(rig.Installer.Door.IsAvailable,
+                          "the door itself is willing — the gate is open and she is in reach");
+
+            Assert.AreEqual(ControlStrings.Dock, InteractOffer.Current.Label,
+                            "…but the popup names the dock: the switcher's transit offer outranks the " +
+                            "fixture slot while a step-off is available");
+
+            rig.Switcher.BeginInteract();
+            yield return null;
+
+            Assert.IsFalse(rig.Installer.Interior.IsInside,
+                           "…and E stepped her ashore rather than below. KNOWN, ruled, and out of scope " +
+                           "for this PR — see this test's remarks before 'fixing' it.");
         }
 
         // =====================================================================================
@@ -379,9 +435,16 @@ namespace HiddenHarbours.Tests.PlayMode
 
             int house = Array.IndexOf(cells.CellLevels, "house");
             int below = Array.IndexOf(cells.CellLevels, "below");
-            Assert.Greater(house, 0, "harness: this test is only worth running while the sheet's `house` " +
-                                     "row is NOT row 0 — that is what makes a naive index wrong");
+            Assert.GreaterOrEqual(house, 0, "her sheets must bake a `house` row at all");
             Assert.AreNotEqual(house, below);
+
+            // ⭐ THE HARNESS GUARD THAT MAKES THIS TEST WORTH RUNNING: her def's index for the house sole
+            // must NOT equal the sheet's house row. If a re-bake ever made them agree, this file would go
+            // on passing while testing nothing — so say so out loud rather than discover it later.
+            int defIndexOfHouseSole = Array.FindIndex(def.Levels, l => l != null && l.Id == "house_sole");
+            Assert.AreNotEqual(house, defIndexOfHouseSole,
+                               "the tanker is in this suite BECAUSE her def index and her sheet row " +
+                               "differ; if they ever agree, pick a hull where they do not");
 
             // The journey, on the smallest rig that can make it: her real def, her real cells, her real
             // sill. (No mesh hull — the tanker's 281 MB of sheets is quite enough for one test, and what
@@ -413,7 +476,7 @@ namespace HiddenHarbours.Tests.PlayMode
             // An outdoor deck is a real answer of -1, and it is what stops a cabin door walking somebody
             // onto a working deck to be shown nothing.
             for (int i = 0; i < def.Levels.Length; i++)
-                if (def.Levels[i].Id.EndsWith("_deck", StringComparison.Ordinal))
+                if (def.Levels[i] != null && def.Levels[i].Id.EndsWith("_deck", StringComparison.Ordinal))
                     Assert.AreEqual(-1, rig.Cabin.CellRowFor(i),
                                     $"'{def.Levels[i].Id}' is weather deck: the sheets draw nothing for it");
 
@@ -460,7 +523,9 @@ namespace HiddenHarbours.Tests.PlayMode
         /// <para>Returns an empty rig (and <c>Assert.Ignore</c>s) in a player build, where the committed
         /// defs cannot be reached — the <c>MeshHullPlayTests</c> precedent.</para>
         /// </summary>
-        private Rig NewLobsterRig()
+        /// <param name="atAWharf">Give her a dock zone. Off by default, and the default matters — see the
+        /// note where it is read.</param>
+        private Rig NewLobsterRig(bool atAWharf = false)
         {
             var visual = LoadCommitted<BoatVisualDef>(LobsterVisualPath);
             if (visual == null) return default;
@@ -507,12 +572,17 @@ namespace HiddenHarbours.Tests.PlayMode
 
             walk.enabled = true; boat.enabled = false; input.enabled = false;   // on-foot start
 
-            // A dock on the boat, so "step ashore" is legal without authored tidal terrain under her.
-            var dock = Spawn("Dock");
+            // ⚠️ NO DOCK ZONE unless a test asks for one — she is lying off, not tied up. That is not
+            // tidiness: while "step ashore" is available the switcher answers E with it and the press
+            // never reaches the interact registry at all, so her cabin door could not be pressed. That
+            // is the switcher's own documented ladder (see TryInteractCandidate's remarks) and it is
+            // pinned, as the shipped behaviour it is, by AtAWharf_TheStepAshoreVerbTakesThePress below.
+            Transform dockZone = null;
+            if (atAWharf) dockZone = Spawn("Wharf").transform;
 
             var swGo = Spawn("Switcher");
             var sw = swGo.AddComponent<ControlSwitcher>();
-            sw.Configure(walk, boat, input, dock.transform, zoneRadius: 6f, disembarkPoint: null);
+            sw.Configure(walk, boat, input, dockZone, zoneRadius: 6f, disembarkPoint: null);
             // The helm is pulled in tight ON PURPOSE: this journey is about a door, and a generous helm
             // reach would have the interact key taking the wheel from wherever boarding lands her.
             sw.ConfigureHelm(new Vector2(0f, -1.3f), 0.05f);
