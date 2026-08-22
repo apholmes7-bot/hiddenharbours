@@ -1,0 +1,15 @@
+C — THE LOOK, THREE WAYS (spike/interior-mesh)
+hull LobsterBoatIso, level cuddy_sole, heading 90 deg, sheet facing index 6 of 8 (convention CCW, as committed)
+zoom: the lobster's own per-tier framing, BoatHullDef.CameraWorldHeightMeters = 23 m; the cell renders at her bake's 32 px/m, which is the on-screen scale at that tier (PixelPerfect zoom 1 at 1080p).
+InteriorRockScale 0.45 on ALL THREE ways.
+Moderate sea: seaState01 0.4286 -> storm blend 0.00766 -> amplitude x1.0092; def ROCK (2.8 deg roll, 1.6 deg pitch, 1.2 px heave) at crest gives roll 2.826 deg, pitch 0 deg, heave 1.211 px; the interior draw takes 0.45 of it.
+   [3] def level 'cuddy_sole' -> rig level 'cuddy'
+   [3] fit-out rendered by the rig itself: layers ['fitout','props','interact'], dir 6, roll 0 deg, heave 0 px
+   [3] def level 'cuddy_sole' -> rig level 'cuddy'
+   [3] fit-out rendered by the rig itself: layers ['fitout','props','interact'], dir 6, roll 1.272 deg, heave 0.545 px
+
+SUPPLEMENTARY 04: the same mesh shell with the cuddy's headroom HAND-SET to 0.95 m. Not measured, not derived — it is the number the rig does not publish, supplied so the owner judges the mechanism and not the gap. Compare against 02.
+
+PNGs: 01 sprite (today) | 02 mesh shell, no fit-out | 03 mesh + fit-out.
+Each strip is DOCK on the left, MODERATE CREST on the right.
+00-side-by-side is the contact sheet: columns 1/2/3, row 1 dock, row 2 crest.
