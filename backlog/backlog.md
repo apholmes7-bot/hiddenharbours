@@ -451,3 +451,41 @@ leaves room for all three; none of them is asked for yet.
   exactly like a fence. Nothing is decided yet because **no yard in either table is `Hedge`** — the
   tables use `None`, `PostRail`, `Picket`, `SplitRail` and `Wire`. The ruling is owed the moment the
   owner sets one, and the art is already there for him to try it with one word.
+
+## Logged from the 2026-08-22 St Peters load (unscheduled)
+
+- **`art-pipeline` · The reflective set is one over its budget on St Peters.** Loading the region
+  logs `[ReflectionRegistry] 65 reflectors live, over the 64 cap`
+  (`Assets/_Project/Code/Art/ReflectionRegistry.cs:57`, ADR 0027 #8).
+  **Nothing is broken and nothing is dropped** — the cap is a *budget alarm, not a truncation*, and
+  all 65 reflectors still draw correctly. Post-#599 the scene simply has one more reflective
+  building than the number was chosen for, and 64 was picked as "far above any plausible authored
+  set" back when a harbour was a boat, a wharf and a treeline.
+  **This is a call, not a bug fix**, which is why it is logged rather than done. Either:
+  1. **raise `MaxReflectors`** — but with a **measured** cost for the extra filtered-renderer pass
+     and RT traffic, not an assumed one, since the constant's own doc-comment is the thing claiming
+     the number does not matter; or
+  2. **make one building non-reflective** — drop the `ReflectionRegistry.RenderingLayer` bit on the
+     cannery, which is the newest arrival and the obvious candidate.
+
+  Not urgent — the alarm is doing exactly what it was written to do, which is refuse to be silent.
+
+## Polish (deep backlog)
+
+Small, real, and not worth a branch of their own — pick one up when you are already in the file.
+Nothing here blocks anything, and nothing here is a bug.
+
+- **`Route 19` → `Route 91` wording.** The Nine Mile Creek through-road is called **Route 91**
+  everywhere the fuel lane touches it (`FuelLadderTests`, `FuelStationContentValidationTests`,
+  `NineMileCreekStationTests` — "the Route 91 forecourt"), but the older mainland/roads builder and
+  the design docs still call it **Route 19**. One road, two names. Comments and strings only — no
+  behaviour, no ids, no data.
+  - Code/tests: `NineMileCreekMainland.cs:1031,1063`, `NineMileCreekRoads.cs:120,197`,
+    `NineMileCreekMainlandTerrainTests.cs:395`
+  - Docs (same sweep, or the rename just moves the inconsistency): `harbour-geography.md:57`,
+    `nine-mile-creek-mainland.md:31,56,65`, `world-map-plan.md:77`
+
+  ⚠ Four of these quote the phrase *"the overhead's Route 19"* as what the **owner** called it when
+  naming the road from the aerial. If Route 91 is the correction, that attribution is what is being
+  corrected — worth one line of confirmation before rewriting the quote, rather than silently
+  putting a different number in the owner's mouth.
