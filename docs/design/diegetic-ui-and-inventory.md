@@ -9,6 +9,16 @@
 > *presentation and structure* direction that serves them. When a concrete system is built, its data
 > model and any save-format change become their **own ADR** (see §9).
 >
+> **⭐ Amended 2026-08-22 — §3 is no longer unbuilt.** The owner ruled from play that the always-on
+> band hands out the tide, the wind, the sea state and the balance for free, and
+> [ADR 0039 — the quiet HUD](../adr/0039-quiet-hud.md) is the **first enforcement of §3's keystone
+> rule in code**: those three reads are now gated on an owned instrument, and money moved to the
+> notebook. Read "NOT yet built" above as applying to §4 (physical inventory), §5 (the storage
+> ladder) and §8 (merchants as conversation) — **not** to §3, which is live. Two things the ADR
+> records and this doc should not be read around: **no content grants an instrument yet**, so the
+> shipped state is nothing on the band; and **§3.3's watch proof is still owed** — the clock is
+> ungated because the watch is assumed worn, which is not the same thing §3.3 describes.
+>
 > Design module. Subordinate to [`../vision-and-pillars.md`](../vision-and-pillars.md) (CANON — wins
 > on conflict). This doc is the **front line of the diegetic promise**: it serves every pillar but
 > lives closest to **P1 (The Sea Has Moods)** — the sea stays mysterious until you earn the tools to
@@ -100,6 +110,16 @@ The player begins with the sea, the sky, and their own senses. They *feel* the w
 *see* the tide against the piling, but they cannot **read** any of it as a number or a gauge until
 they own the tool that reads it. Acquisition is the moment a new "true-UI" element earns its place
 on screen.
+
+> **⭐ This rule is now enforced in code — [ADR 0039](../adr/0039-quiet-hud.md) (owner ruling,
+> 2026-08-22).** `HudVisibilityPolicy` is the rule as a pure function; `HudController` obeys it and
+> no readout decides for itself. Tide, wind and sea state are gated on `HudInstruments`; money is
+> exempt from the ladder entirely because no gauge could earn a balance back — it lives in the
+> notebook. The helm's instruments and the worn watch are exempt because they *are* instruments,
+> which is the rule read forward rather than a carve-out. ⚠ **Nothing grants an instrument yet**, so
+> §3.2's ladder below is still entirely unauthored, and the seam that will grant one is not yet
+> reconciled with ADR 0030's per-hull ownership — see the ADR's consequences before authoring the
+> first rung.
 
 ### 3.2 The instrument ladder (illustrative — the data owns the real list)
 

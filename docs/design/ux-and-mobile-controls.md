@@ -164,6 +164,11 @@ important UI in the game (P1).
 
 > ### ⭐ SUPERSEDED IN PART — the diegetic ruling, 2026-08-22 (owner, from play)
 >
+> **Recorded as [ADR 0039 — the quiet HUD](../adr/0039-quiet-hud.md).** That ADR is the decision of
+> record, and carries the reasoning, the exemptions and the limits; this block is the pointer from
+> the spec it amends. Everything else in §4 — layout, thumb zones, redundant coding, accessibility —
+> stands unchanged and applies to every instrument readout when one is finally granted.
+>
 > The section below is the original HUD brief and still describes the *form* each read takes. What
 > changed is **who is allowed to see it, and where**:
 >
