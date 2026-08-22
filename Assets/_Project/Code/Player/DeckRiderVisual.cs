@@ -298,8 +298,8 @@ namespace HiddenHarbours.Player
         /// <para>Both halves are required, and the second is the guard: the cabin that was entered must be
         /// the boat this rider is bound to. More than one boat can carry a cabin, and a dev tool or a
         /// scripted beat may put somebody below on one the player is nowhere near. It also self-heals — a
-        /// hull destroyed with the occupant inside publishes no <see cref="CabinLeft"/> (there is no
-        /// longer anything to publish it), and the live root compare simply stops matching.</para>
+        /// hull destroyed with the occupant inside publishes no <see cref="CabinLeft"/> (there is nothing
+        /// left to publish it), and the live root compare simply stops matching.</para>
         /// </summary>
         public bool BelowDecks =>
             _belowHullId != default && _boatRoot != null &&
