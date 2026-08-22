@@ -143,6 +143,10 @@ namespace HiddenHarbours.Tests.PlayMode
             col.direction = CapsuleDirection2D.Vertical;
             col.size = new Vector2(1.7f, 4.0f);
             _spawned.Add(go);
+            // ⭐ THE PLAYER IS AT THIS BOAT'S HELM. The Core slot is arbitrated by OCCUPANCY now
+            // (HelmSlot) rather than granted to whichever relay enabled last, so the one boat in
+            // this fixture has to be DECLARED hers — which is what the fixture always meant.
+            GameServices.Helm.SetPilotedHull(boat);
             yield return null;                       // Awake + OnEnable have run
             go.GetComponent<HelmControlRelay>().DevIgnoreEquipmentGating = false;
             boat.SetHull(NewConsoleHull("boat.window_test"));
@@ -317,7 +321,7 @@ namespace HiddenHarbours.Tests.PlayMode
             BoatUiWindows.SetState(BoatUiWindowId.Helm, in st);
             yield return null;
 
-            GameServices.HelmControl = null;   // stepped ashore
+            GameServices.Helm.SetPilotedHull(null);   // stepped ashore
             yield return null;
             Assert.That(HelmOverlayHost.Instance.CardKind,
                         Is.EqualTo(HelmOverlayHost.HelmCardKind.None));

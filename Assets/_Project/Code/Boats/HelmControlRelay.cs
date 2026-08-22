@@ -18,10 +18,14 @@ namespace HiddenHarbours.Boats
     /// maths (<see cref="HelmThrottleStepMath"/>), so the lever the player sees is the throttle the
     /// hull feels, whoever moved it last.</para>
     ///
-    /// <para><b>Self-installing.</b> <see cref="BoatController.Awake"/> adds one at play time (the
-    /// MastheadTelltale precedent), so every already-built scene grows the seam with no builder
-    /// re-run. Registration rides the enable lifetime; <see cref="HasHelm"/> gates on the controller
-    /// actually driving, so the overlay naturally hides ashore/moored/rowing.</para>
+    /// <para><b>Self-installing — on EVERY hull, which is why it must not self-APPOINT.</b>
+    /// <see cref="BoatController.Awake"/> adds one at play time (the MastheadTelltale precedent), so
+    /// every already-built scene grows the seam with no builder re-run. That means a skipper's boat, an
+    /// ambient hull and a boat for sale all carry one too. So enabling REGISTERS this relay with
+    /// <see cref="HelmSlot"/> against the hull it rides — a request, not a claim — and the slot is
+    /// granted to whichever registration matches the hull the Player lane says the player is piloting.
+    /// <see cref="IsPlayerHelm"/> is that answer; <see cref="HasHelm"/> stayed the ENGINE question it
+    /// always was.</para>
     ///
     /// <para><b>Dev F-cycle (owner addition 2026-08-03).</b> <see cref="Style"/> is resolved from the
     /// LIVE <see cref="BoatController.Hull"/> every read, so the dev boat picker's F-swap shows each
@@ -107,26 +111,49 @@ namespace HiddenHarbours.Boats
         /// <summary>Wire explicitly (tests / rigs built without Awake order guarantees).</summary>
         public void Configure(BoatController boat) => _boat = boat;
 
-        // Register/clear the Core slot with this component's enable lifetime (scene-scoped service,
-        // the ActiveBoatProbe pattern). EditMode never fires OnEnable — registration is PlayMode-only
-        // by construction, which is exactly what the presentation seam wants.
+        // ---- the Core slot: this relay REQUESTS, HelmSlot decides ------------------------------
+        //
+        // ⚠ This used to be `GameServices.HelmControl = this`, and that one line was the seam's whole
+        // defect: BoatController installs a relay on EVERY hull, so the slot went to whichever one
+        // enabled LAST — a skipper's boat, an ambient hull, a purchased one — and the player's own
+        // relay never registered again (its OnDisable had not run; only the winner's had). Now it
+        // registers against the hull it rides and nothing more. Registering is not winning: the grant
+        // goes to the hull the Player lane declares the player is piloting, in either enable order.
+        //
+        // EditMode never fires OnEnable, so registration stays PlayMode-only by construction — which is
+        // exactly what a presentation seam wants, and why the arbitration rule itself lives in a POCO
+        // that EditMode CAN reach (HelmSlot).
+
+        // The token this relay registered under, HELD rather than re-resolved: if the controller were
+        // destroyed under us, re-resolving at OnDisable would name something else and leave the entry
+        // standing — a dead hull holding a registration open.
+        private object _registeredHull;
+
         private void OnEnable()
         {
-            GameServices.HelmControl = this;
-            GameServices.HelmInstruments = this;
+            // The hull's identity is her CONTROLLER — the same instance ControlSwitcher holds and
+            // declares, so the two sides name the same object without either naming the other's type.
+            // ⚠ Unity's == (not ??): a destroyed/absent controller is not a hull. A relay that cannot
+            // name one registers under ITSELF, an identity nothing can ever declare piloted — so it is
+            // considered, is never granted, and cannot take the helm off a boat that has one.
+            BoatController boat = Boat();
+            _registeredHull = boat != null ? (object)boat : this;
+            GameServices.Helm.Register(_registeredHull, this, this);
         }
 
         private void OnDisable()
         {
-            if (ReferenceEquals(GameServices.HelmControl, this))
-                GameServices.HelmControl = null;
-            if (ReferenceEquals(GameServices.HelmInstruments, this))
-                GameServices.HelmInstruments = null;
+            GameServices.Helm.Unregister(_registeredHull);
+            _registeredHull = null;
         }
 
         // ---- reads (pull — the overlay samples these per frame) --------------------------------
 
         /// <inheritdoc/>
+        /// <remarks>⚠ The ENGINE question, not the PLAYER one — true of any driven motor hull,
+        /// whoever is steering her. It is the right gate for the intents and instruments below (a
+        /// throttle step means nothing on a dory); presentation wants <see cref="IsPlayerHelm"/>.
+        /// </remarks>
         public bool HasHelm
         {
             get
@@ -136,6 +163,12 @@ namespace HiddenHarbours.Boats
                        && BoatController.UsesEngineHelm(boat.Hull.Propulsion);
             }
         }
+
+        /// <inheritdoc/>
+        /// <remarks>Answered against the arbiter rather than stored, so it cannot go stale behind a
+        /// hull swap, a region hop, or a relay that stood down and came back: the grant is recomputed
+        /// from occupancy and this simply reads it.</remarks>
+        public bool IsPlayerHelm => HasHelm && GameServices.Helm.Holds(this);
 
         /// <inheritdoc/>
         public HelmControlStyle Style

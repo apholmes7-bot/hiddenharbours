@@ -55,6 +55,11 @@ namespace HiddenHarbours.Tests.PlayMode
         private sealed class FakeHelm : IHelmControl
         {
             public bool HasHelm { get; set; }
+
+            /// <summary>This fixture's helm IS the player's — it is the only one in it. The seam
+            /// separates the two questions (HasHelm = an engine hull under way, IsPlayerHelm = her hand
+            /// on that wheel) and the HUD asks the second one; here they are the same answer.</summary>
+            public bool IsPlayerHelm => HasHelm;
             public HelmControlStyle Style { get; set; } = HelmControlStyle.None;
             public HelmFit Fit { get; set; } = HelmFit.None;
             public HelmLeverFinish LeverFinish => HelmLeverFinish.Graphite;
@@ -187,7 +192,10 @@ namespace HiddenHarbours.Tests.PlayMode
             };
             GameServices.ActiveBoat = boat;
             var helm = new FakeHelm();
-            GameServices.HelmControl = helm;
+            // Registered + declared, the way the real relay reaches the slot: the arbiter grants the
+            // helm by occupancy, so a fake cannot simply assign itself in any more (HelmSlot).
+            GameServices.Helm.Register(helm, helm, null);
+            GameServices.Helm.SetPilotedHull(helm);
 
             var hud = MakeHud();
             yield return NextNavTick();

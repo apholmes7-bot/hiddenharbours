@@ -60,9 +60,32 @@ namespace HiddenHarbours.Core
     /// </summary>
     public interface IHelmControl
     {
-        /// <summary>True while the player is at the helm of a MOTORISED hull (controller enabled +
-        /// Engine propulsion). False on foot, moored, or rowing — the overlay hides.</summary>
+        /// <summary>
+        /// <b>This hull has an ENGINE HELM being driven</b> — her controller is enabled and her
+        /// propulsion is motorised. False for a rowed hull, a hull nobody is driving, and a hull
+        /// ashore.
+        ///
+        /// <para><b>⚠ It does NOT mean the player is the one driving</b>, and reading it as if it did
+        /// is the defect the ownership seam was built to end: it is equally true of a skipper's boat
+        /// bringing the player in as a passenger (the owner's 2026-08-21 playtest, which drew that
+        /// boat's wheel and gauges to somebody who was not steering). It is the ENGINE question — the
+        /// gate the relay's own intents and instruments use, because a throttle step means nothing on
+        /// a dory. <b>Presentation asks <see cref="IsPlayerHelm"/> instead.</b></para>
+        /// </summary>
         bool HasHelm { get; }
+
+        /// <summary>
+        /// <b>The player is at THIS hull's helm, driving her</b> — <see cref="HasHelm"/> AND this relay
+        /// is the one <c>HelmSlot</c> has granted the helm to (the hull the Player lane declared the
+        /// player is piloting). This is the question every piece of helm PRESENTATION is actually
+        /// asking: draw the wheel, the lever, the gauges, suppress the HUD's nav cluster.
+        ///
+        /// <para>With the slot arbitrated by occupancy, a consumer reading it through
+        /// <see cref="GameServices.HelmControl"/> is already reading the player's own relay — so this
+        /// says the same thing twice on purpose. It is what makes the reader's INTENT legible at the
+        /// call site, and it stays correct for anything holding a relay reference directly.</para>
+        /// </summary>
+        bool IsPlayerHelm { get; }
 
         /// <summary>Which control the current hull shows (tiller vs lever; None while unmanned/oars).</summary>
         HelmControlStyle Style { get; }

@@ -479,8 +479,12 @@ namespace HiddenHarbours.UI
             // or dev-cycled compass moves the HUD with no list of hulls to keep in step. HelmControl
             // is optional in the same way ActiveBoat is (ashore, EditMode) — a null one is simply "no
             // dash", which leaves the cluster exactly where VS-19 put it.
+            // ⚠ IsPlayerHelm, not HasHelm: the cluster yields to a dash the PLAYER is looking at.
+            // HasHelm is true of any driven motor hull — a skipper's boat carrying her in as a
+            // passenger included — and suppressing her compass for somebody else's wheelhouse would
+            // take her only heading read away at the one moment she cannot steer.
             IHelmControl helm = GameServices.HelmControl;
-            bool atHelm = helm != null && helm.HasHelm;
+            bool atHelm = helm != null && helm.IsPlayerHelm;
             NavClusterPlacement placement = HelmHudSuppression.NavCluster(
                 aboard: true,
                 atHelm ? helm.Style : HelmControlStyle.None,

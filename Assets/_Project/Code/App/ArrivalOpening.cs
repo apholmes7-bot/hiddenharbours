@@ -343,15 +343,15 @@ namespace HiddenHarbours.App
             _boat = go.AddComponent<BoatController>();
             _boat.SetHull(_skipper.Boat);
 
-            // 🔴 THE PASSENGER IS NOT AT THE HELM — so this hull must never offer one. BoatController.Awake
-            // self-installs a HelmControlRelay on every boat, and its OnEnable takes the Core helm slot
-            // (last writer wins) with HasHelm true for any ENGINE hull whose controller is driving —
-            // which the skipper's is, all the way in. The owner's 2026-08-21 playtest saw exactly that:
-            // the helm card, wheel and gauges drawn for a boat somebody else was steering. Add the relay
-            // HERE, while the object is still inactive, and add it DISABLED: Awake then finds one and
-            // adds no second, and a disabled component never runs OnEnable, so the slot is never taken
-            // and never clobbered — whoever held it before this boat spawned still holds it after.
-            go.AddComponent<HelmControlRelay>().enabled = false;
+            // 🔴 THE PASSENGER IS NOT AT THE HELM — and this hull now offers her none BY CONSTRUCTION.
+            // She used to need a workaround here (a HelmControlRelay added disabled, pre-empting the one
+            // BoatController installs) because the Core helm slot was last-writer-wins: her relay's
+            // OnEnable simply took it, and the owner's 2026-08-21 playtest saw the result — the helm
+            // card, wheel and gauges drawn for a boat somebody else was steering. The slot is arbitrated
+            // by OCCUPANCY now (HelmSlot): her relay registers like every other hull's and is never
+            // granted, because nobody has declared the passenger to be piloting her. Pinned by
+            // ArrivalOpeningPlayTests.ThePassengerIsShownNoHelm_AndTheHelmSlotIsNotTaken, which asserts
+            // exactly that — an ENABLED relay aboard her, and an empty slot.
 
             // ⚠ The hull's own idea of the water under her. Left at the component default (a flat 3 m)
             // she reads AGROUND for the whole passage at spring low — 3 − 2.2 = 0.8 m against a 1.4 m
