@@ -118,9 +118,13 @@ covered and confirmed everything else:
   exactly the defect review §8.2 reported. So `sum(runs) == cols × rows` is a requirement *on
   us*, not a description of the sample; this exporter satisfies it and a test enforces it.
 
-Four entity fields the format names are absent here for stated reasons: `call` and `opts` (§0),
+Four entity fields the format names were absent here for stated reasons: `call` and `opts` (§0),
 `facing`/`facingIndex` (the editor's own view state), and `gameplaySidecar` (a rig gameplay
-measurement — no rig is executed by this exporter).
+measurement — no rig is executed by this exporter). **Three of the four have since landed** and
+the reasons above are kept as the record of why each waited: `facingIndex` with the write-back
+contract's §8.1 ask, `call`/`opts` with #629's ledger and the kit contracts (§6.4, §6.4.1), and
+`facing` on 2026-08-22 (§6.2.1). Only `gameplaySidecar` is still absent, and for the reason
+given: it is a measurement no baked sprite records.
 
 ## 6. Portability
 
@@ -181,6 +185,17 @@ judged it no richer, and emptied the coast.)
 Refusal is all-or-nothing. A `MANIFEST.json` naming sha256s of packages we declined to write
 would be a third state, worse than either honest one.
 
+⚠ **The third row had no test, and its absence cost three.** Two rows of that table were pinned;
+*"anything | can read the bytes | recomputed normally"* was not. The three carry-forward tests
+each banked a committed package and asked `_carry_forward_height` to carry it, without ever
+building the precondition that **this run could not read the bytes** — so they passed on a
+pointer-only checkout, and on a full-LFS one the same correct code returned early, exactly as
+this table says it must, and failed them. Neither run was evidence about the rule: one was a
+statement about the tester's `git lfs` state. The fixture builds the pointer-only state itself
+now (bytes unread, ground emptied, same `textureSha256` — the pointer's `oid` being that hash is
+the whole proof), so all three pin the contract on either machine, and the third row is asserted
+in its own test so the next reader cannot make them green by deleting the early return.
+
 
 ### 6.2 Orientation: the index is a fact, the bearing is not
 
@@ -194,12 +209,13 @@ reference bytes rather than from the ask:
   Putting the integer in `facing` would be a confidently wrong value in a field a reader expects
   to hold a string, so the index goes only where the index belongs, in the reference's own slot
   between `pos` and `flipX`.
-- **`facing` ships null on purpose.** Deriving a bearing from a step is the one piece of
-  arithmetic this repo has already got wrong: `BuildingFacing`'s remarks record that cell `i` is
-  baked at `dir = (facings − i) mod facings` — bearings *decrease* as the index rises — and the
-  inverted form put the schoolhouse door ~92° off the green it faces, with a green test, because
-  the test was the algebraic inverse of the implementation. The write-back contract's rule is
-  that nothing computes a facing from an angle. This export computes nothing.
+- **`facing` shipped null for two rounds, and is derived as of 2026-08-22.** The reason for the
+  delay stands as written: deriving a bearing from a step is the one piece of arithmetic this
+  repo has already got wrong, and the inverted form put the schoolhouse door ~92° off the green
+  it faces *with a green test*, because the test was the algebraic inverse of the implementation.
+  Shipping `null` was the right answer while the only thing on offer was another go at the same
+  sum. What closed it was not a better derivation but **four independent measurements that agree**
+  — and a test whose oracle is none of them. See §6.2.1.
 - **The count is read, never assumed.** §2 is emphatic, and `IsoPropSheetBaker` already fails a
   bake when a rig's measured `NativeDirs` disagrees with its contract's `Facings`. So `x-facings`
   appears only where a sidecar declares one, with `x-facingsSource` naming the file. The
@@ -210,7 +226,45 @@ reference bytes rather than from the ask:
 
 Nine character entities carry an index with no machine-readable count: §2 declares characters as
 8, but in prose (*"8 at 45°, the ADR-0006 recipe"*) rather than in a field this reader can follow.
-They are exported with the index and no count rather than a plausible one.
+They are exported with the index and no count rather than a plausible one — **and therefore with
+no `facing` either**, since a name derived from a count nobody declared is exactly the assumption
+the rule above forbids. They are the only entities that still ship `facing: null` with an index.
+
+### 6.2.1 The rule, the trap, and why the test does not touch either
+
+**The rule.** Cell `i` depicts a ground bearing of `(360 / facings) · i`, clockwise from north.
+`facing` is the compass name of that bearing and `x-facingBearingDeg` is the bearing itself, kept
+beside it so the claim is checkable and so a count that does not land on a named point still says
+which way the cell looks. A bearing between two names gets **no name** rather than the nearer one;
+rounding it on would be the aliasing §6.6 refuses everywhere else.
+
+Four sources say so, and they were checked against each other rather than stacked:
+
+| Source | What it says | Kind of evidence |
+|---|---|---|
+| `RigBaker.DirForCell` | bakes CCW rigs as `render((N−k) % N)` and CW rigs as `render(k)`, summarising itself as *"⇒ Anything baked here is genuinely clockwise"* | the invariant the code exists to create |
+| `Buildings.json` (+ every per-sheet village sidecar, and `Interiors.json`) | *"The correction is already applied to the sheet, so cell i genuinely depicts +45\*i"* | measured at bake time by `BuildingRigAzimuthProbe`, and committed |
+| **ADR 0034** | all eight rows at `45°·d` of ground azimuth, row 1 = NE at **exactly 45.00°** | measured off the shipped pixels, against a byte-identical re-render |
+| the reference package | `facingIndex 3 → "SE"`, `4 → "S"` | the editor's own worked pairs |
+
+**The trap, stated because it is the one a reader will reach for.** `dir = (facings − i) mod
+facings` is real — it is in `BuildingFacing`'s remarks and it is what the baker hands the rig —
+but it describes **the argument, not the sheet**. Applying it to the exported index and naming a
+compass point from the result gives `SW` where the reference says `SE`. Note where it *agrees*:
+index 4 is a fixed point of that map, so `S` survives it, and `S` is exactly what a spot-check
+reaches for. That is the same shape as the original defect — *"the store and the saltbox, whose
+targets are near due south, happened to land right"*.
+
+**The oracle is a fact about the world, not about the arithmetic.** `FacingTests` does not
+re-derive a bearing. The village builder turns every door toward the village green, so the test
+reads `VillageHearthPos` and `StartSpawnPos` out of `StPetersBuilder.cs`, takes their midpoint,
+un-squashes the difference by `sin 40°` (ADR 0034's whole subject) and asks whether each exported
+bearing is within a half-cell of it. Under this rule the four village buildings land at 4–20°.
+Under the inverted reading the red saltbox lands **176°** away — facing out of the village it
+stands in — and a companion test asserts that failure, because a check that cannot fail is not
+evidence for either reading. Two further witnesses come from outside `hhexport` as well: the
+reference package's `SE`, and `Interiors.json`'s `exteriorFacingOffset: 4`, which only stays a
+half-turn if the step direction is right.
 
 ### 6.3 A road layer names every surface it will not solve
 
@@ -262,6 +316,63 @@ entity — no recipe beside that sheet — rather than the older blanket claim t
 recorded nowhere, which the ledger has made false for six kits.
 
 
+### 6.4.1 The kit contracts are the second lookup — and the reason the number above moved
+
+The paragraph above ends *"this grows on the next re-bank without a line of tool change"*. It
+grew without one, and not the way that sentence expected: the re-bank landed the yard's opts as
+predicted, but the larger gap turned out to be a **discovery** bug rather than a coverage one.
+
+Every baker already commits a kit contract beside its sheets — `Buildings.json`,
+`Interiors.json`, `yardIso.contract.json`, `shops.contract.json`,
+`shopFixtures.contract.json` — and each carries the verbatim `optionsJs` of the bake, per entry.
+That is the same class of committed declaration §6.4 reads the ledger as, one level coarser: a
+recipe knows which **cell**, a contract knows the **bake**. Where both exist the recipe wins, and
+`ContractOptsTests` pins it on the one sheet that has both — the yard's postRail, whose recipe
+says `kept: 0.72` for this cell where the contract says `0.88` for the sheet.
+
+Every entity carrying contract opts says what they describe, in `call.x-optsScope`: *"the whole
+SHEET, not this cell"*. A per-sheet value read as a per-cell one is a wrong variant drawn with
+confidence, which is the failure mode §6.4 exists to prevent, so it is stated in band rather than
+left for a reader to infer from which key the provenance is under.
+
+**Two refusals carry over unchanged, and one is new.** Matching is on the **sheet an entry
+names**, never on a key resembling a sprite stem — `Buildings.json` holds nine entries keyed
+`school`, `generalStore`, `redSaltbox`, and a key match would hand one building another's siding
+on a near miss. `optionsJs` is JavaScript, so it is parsed by a deliberately small literal
+grammar and **refused whole** when that grammar does not consume all of it: the rigs resolve an
+unknown key as a *silent fallback* (§6.4), so a half-read opts dict draws a confidently wrong
+object with nothing to flag it. The new one is what to do with a refusal that is not a defect —
+`shops.contract.json` and the four `wharfBuilding` outbuildings declare
+`Object.assign({}, Shopfront.PRESETS['harbourStore'])`, a **call into the rig's own preset
+table**. It cannot be resolved without running the rig, so `opts` stays empty and the expression
+travels verbatim as `call.x-optsExpression` for a reader that can. Taking `harbourStore` as an
+opt would invent an option no rig reads.
+
+**The discovery bug, which is worth more than the count.** `sidecars_for_sheet` had four rules
+for which committed file speaks for a sheet, and the last — *a folder's lone sidecar that is not
+itself a per-sheet file* — counted the folder's **files** rather than its **index candidates**.
+That is true of `Trees/`, which publishes nothing else, and false of `Buildings/Village/`, where
+`Buildings.json` sits beside eight per-sheet sidecars. So the village kit's contract was
+invisible: its eight buildings resolved no rig at all (their per-sheet sidecars name
+`"rig": "house"`, a kit KEY that is not a path), carried no `call`, and stood in the package under
+the sprite-stem family `Village`, which the editor cannot draw — while the contract two lines
+away declared `rigScript`, `rigGlobal` and the exact `optionsJs` of every one.
+
+The rule now counts JSONs with no PNG of their own name; exactly one of those is the folder's
+index. The guard it must not cost is intact and tested: `Art/Boats/` holds four anchor files and
+no index, four is not one, and a dory still resolves to nothing there rather than to whichever
+hull sorts first. **Measured across both packages: eight sheets change, all of them in
+`Village/`.**
+
+**What the entry buys that the folder cannot.** `rig_for_sheet` stays honestly ambiguous over
+`Village/` — `Buildings.json` declares `houseIsoRig` and `wharfBuildingRig` side by side and the
+folder cannot choose between them, which is §6.6's rule and is not loosened here. But an *entry*
+names one rig for one sheet, which is a narrower declaration than the folder-wide scan, so the
+rig comes from there with `x-rigFrom` naming the entry. Seven buildings move from the stem
+`Village` onto `house` and four onto `wharfbuilding`, both listed wire names. **No entity id
+moves**: ids are minted from path and position and carry no vocabulary (§8.2), which is the
+ruling that makes a family correction free.
+
 ### 6.5 The landing zone travels in the package
 
 Ruled 2026-08-21: the write-back contract's landing zone (its §1.2 — whether an edit is a
@@ -284,6 +395,15 @@ of `new Site(...)`; `ClamHoles` is (b) because the builder's own note says the s
 stable hash of the grid cell. **A prefix the table does not carry exports no zone at all** — an
 unknown zone is not zone (a), and telling the owner he may move something he cannot is the failure
 this field exists to prevent.
+
+**One new entry for the request list, arriving with the contracts.** Reading `shops.contract.json`
+resolves the shop *levels* to `shopBuildingRig.js`, which normalises to `shopbuilding` — a name
+the wire list does not carry. Four placements (two per region, the shop interiors, sprite stem
+`ShopLevel`) therefore keep the stem, flag `x-familyIsSpriteStem`, and appear under
+`unlistedFamilies` with the candidate named, exactly as §6.6 requires. **A rig resolving is not a
+licence to name its family**: the two halves are reported separately because they are separate
+facts, and the alternative — an entity holding a rig the editor cannot name, with nothing asked
+for on its behalf — is the worse half of both states.
 
 ### 6.6 A ruling is not a loosened match rule
 
@@ -382,8 +502,17 @@ Five additions, and one question that had to be measured before it could be answ
 
 ### 8.1 `x-rigVersions` — one hash per family
 
-Top-level, `family -> {rigSource, sha256}`, for the families the scene actually uses. The editor
-hashes its own copy and badges a mismatch pink rather than refusing to draw. A family that
+Top-level and **flat**: `family -> {rigSource, sha256}`, for the families the scene actually
+uses, with the family names as the keys and nothing else in there. The editor hashes its own copy
+and badges a mismatch pink rather than refusing to draw.
+
+⚠ It shipped one level down, as `{x-shaRule, families}` — so an editor doing what this section
+says, one entry per family, read `x-shaRule` and `families` as two families and went looking
+for rigs by those names. Flattened 2026-08-22; the hash rule moved to the sibling
+`x-rigVersionsShaRule`, which is also where every `x-rigs` row already carried its own copy, so
+nothing was lost by moving it out of the iterable. **A note that has to be stepped over to read
+the data belongs beside the data, not inside it** — the same shape as §6.5's ruling that one key
+must not carry two facts. A family that
 resolved through **more than one rig** in a scene gets no single hash — it is reported under
 `x-ambiguous` with each rig named, because one number there would be a lie. Neither region hits
 that case today; the guard is for when one does.

@@ -227,6 +227,19 @@ class Repo:
         folder's lone sidecar that is not itself a per-sheet file. ``Art/Boats/`` holds four
         per-hull anchor files and no index, so a dory resolves to nothing there rather than to
         whichever hull sorts first — which is the failure this rule exists to prevent.
+
+        ⭐ The last clause counts the folder's **index candidates**, not its files. It used to
+        require the folder hold exactly one JSON altogether, which meant a kit index was found
+        only in a folder that published nothing else — true of ``Trees/``, false of
+        ``Buildings/Village/``, where ``Buildings.json`` sits beside eight per-sheet sidecars and
+        is named for the kit rather than for its folder. It was therefore invisible: the eight
+        village buildings resolved no rig (their per-sheet sidecars name ``"rig": "house"``, a
+        kit KEY that is not a path), so they carried no ``call`` and no opts, while the contract
+        beside them declared ``rigScript``, ``rigGlobal`` and the exact ``optionsJs`` of every
+        one. Per-sheet files are excluded by the same test as before — a JSON with a PNG of its
+        own name beside it — so the ``Art/Boats/`` guard is untouched: four anchor files, none
+        with a matching PNG, is still not *one* candidate and still resolves to nothing.
+        Measured across both packages: eight sheets change, all of them in ``Village/``.
         """
         stem = _stem(sheet_rel)
         folder = os.path.dirname(sheet_rel)
@@ -242,12 +255,12 @@ class Repo:
             folder_name = os.path.basename(folder)
             exact = [n for n in names if n[:-5] == stem]
             contracts = [n for n in names if n.endswith(".contract.json") and n not in exact]
-            index = [
-                n for n in names
-                if n not in exact and n not in contracts
-                and (n[:-5] == folder_name
-                     or (len(names) == 1 and not self.exists(f"{folder}/{n[:-5]}.png")))
-            ]
+            rest = [n for n in names if n not in exact and n not in contracts]
+            named_for_folder = [n for n in rest if n[:-5] == folder_name]
+            # A JSON with no PNG of its own name is not a per-sheet sidecar; if the folder holds
+            # exactly one such file it is that folder's index. Two or more stays ambiguous.
+            unpaired = [n for n in rest if not self.exists(f"{folder}/{n[:-5]}.png")]
+            index = named_for_folder or (unpaired if len(unpaired) == 1 else [])
             ordered += [f"{folder}/{n}" for n in exact + contracts + index]
             folder = os.path.dirname(folder)
         return ordered

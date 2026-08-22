@@ -17049,13 +17049,34 @@
     },
     {
       "id": "e2c81a294ec7",
-      "family": "Village",
+      "family": "house",
       "group": "CreekHouses",
-      "rig": null,
-      "rigSource": null,
-      "call": null,
+      "rig": "HouseIso",
+      "rigSource": "docs/art/rigs/houseIsoRig.js",
+      "call": {
+        "fn": "render",
+        "args": ["dir", "opts"],
+        "opts": {
+          "era": "modern",
+          "shape": "saltbox",
+          "siding": "clapboard",
+          "body": "red",
+          "roof": "asphaltGrey",
+          "size": 0.4,
+          "windows": "twoOverTwo",
+          "winDensity": 0.6,
+          "attic": "none",
+          "porch": "front",
+          "dormers": 0,
+          "chimneys": 1,
+          "bay": false,
+          "weather": 0.2
+        },
+        "x-fromContract": "Assets/_Project/Art/Sprites/Buildings/Village/Buildings.json#redSaltbox",
+        "x-optsScope": "the whole SHEET, not this cell. The contract records the options this kit was baked with; a per-cell variant axis is a recipe's job and no recipe covers this sheet."
+      },
       "pos": [-148, 196],
-      "facing": null,
+      "facing": "SE",
       "facingIndex": 3,
       "flipX": false,
       "sortBias": 0,
@@ -17075,29 +17096,50 @@
       "x-cellAt": [232, 84],
       "x-inBounds": true,
       "x-active": true,
-      "x-rigSha256": null,
-      "x-familyIsSpriteStem": true,
+      "x-rigSha256": "638ab5359d7790aa24fa67534b22503e46b18729fe62b69bba11ffe43e778ca9",
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Buildings/Village/Village_redSaltbox.png",
         "name": "Village_redSaltbox_d3",
         "internalId": -1773084775
       },
-      "x-familyCandidate": null,
-      "x-spriteStem": "Village",
+      "x-rigFrom": "Assets/_Project/Art/Sprites/Buildings/Village/Buildings.json#redSaltbox",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Buildings/Village/Village_redSaltbox.json",
+      "x-facingBearingDeg": 135.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
       "id": "0250fd9b1c0f",
-      "family": "Village",
+      "family": "house",
       "group": "CreekHouses",
-      "rig": null,
-      "rigSource": null,
-      "call": null,
+      "rig": "HouseIso",
+      "rigSource": "docs/art/rigs/houseIsoRig.js",
+      "call": {
+        "fn": "render",
+        "args": ["dir", "opts"],
+        "opts": {
+          "era": "plain",
+          "shape": "gable",
+          "siding": "clapboard",
+          "body": "sage",
+          "roof": "asphaltBrown",
+          "size": 0.25,
+          "windows": "twoOverTwo",
+          "winDensity": 0.5,
+          "attic": "gable",
+          "porch": "front",
+          "dormers": 0,
+          "chimneys": 1,
+          "bay": false,
+          "weather": 0.55
+        },
+        "x-fromContract": "Assets/_Project/Art/Sprites/Buildings/Village/Buildings.json#sageCottage",
+        "x-optsScope": "the whole SHEET, not this cell. The contract records the options this kit was baked with; a per-cell variant axis is a recipe's job and no recipe covers this sheet."
+      },
       "pos": [-208, 60],
-      "facing": null,
+      "facing": "E",
       "facingIndex": 2,
       "flipX": false,
       "sortBias": 0,
@@ -17117,17 +17159,17 @@
       "x-cellAt": [172, 220],
       "x-inBounds": true,
       "x-active": true,
-      "x-rigSha256": null,
-      "x-familyIsSpriteStem": true,
+      "x-rigSha256": "638ab5359d7790aa24fa67534b22503e46b18729fe62b69bba11ffe43e778ca9",
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Buildings/Village/Village_sageCottage.png",
         "name": "Village_sageCottage_d2",
         "internalId": 1604917277
       },
-      "x-familyCandidate": null,
-      "x-spriteStem": "Village",
+      "x-rigFrom": "Assets/_Project/Art/Sprites/Buildings/Village/Buildings.json#sageCottage",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Buildings/Village/Village_sageCottage.json",
+      "x-facingBearingDeg": 90.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -23904,10 +23946,12 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
+        "x-optsNote": "empty because the declaration beside this sheet is a CALL into the rig's own preset table, not a literal. It is carried verbatim in x-optsExpression for a reader that can run the rig. Resolving it here would mean re-implementing a baker, and half-resolving it — taking the preset name as an opt — would invent an option no rig reads, which the rigs would then absorb as a silent fallback rather than an error.",
+        "x-optsExpression": "Object.assign({},Shopfront.PRESETS['coopFishHouse'])",
+        "x-optsExpressionFrom": "Assets/_Project/Art/Sprites/Buildings/Shops/shops.contract.json#fishMarket"
       },
       "pos": [81, 121],
-      "facing": null,
+      "facing": "S",
       "facingIndex": 4,
       "flipX": false,
       "sortBias": 0,
@@ -23936,6 +23980,7 @@
       },
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Buildings/Shops/Shopfront_fishMarket.json",
+      "x-facingBearingDeg": 180.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -23943,11 +23988,21 @@
       "id": "3197b168e6b4",
       "family": "ShopLevel",
       "group": "fishMarket",
-      "rig": null,
-      "rigSource": null,
-      "call": null,
+      "rig": "ShopBuilding",
+      "rigSource": "docs/art/rigs/shop-building-kit/shopBuildingRig.js",
+      "call": {
+        "fn": "render",
+        "args": ["dir", "opts"],
+        "opts": {
+          "type": "fishMarket",
+          "level": "ground",
+          "size": 0.45
+        },
+        "x-fromContract": "Assets/_Project/Art/Sprites/Buildings/Shops/shops.contract.json#fishMarket",
+        "x-optsScope": "the whole SHEET, not this cell. The contract records the options this kit was baked with; a per-cell variant axis is a recipe's job and no recipe covers this sheet."
+      },
       "pos": [81, 121],
-      "facing": null,
+      "facing": "S",
       "facingIndex": 4,
       "flipX": false,
       "sortBias": 0,
@@ -23967,17 +24022,19 @@
       "x-cellAt": [461, 159],
       "x-inBounds": true,
       "x-active": true,
-      "x-rigSha256": null,
+      "x-rigSha256": "969a985ad163100a5a0965e1bd0e3fa85f6aa7f272994ccc60747a24568a3c1f",
       "x-familyIsSpriteStem": true,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Buildings/Shops/ShopLevel_fishMarket_ground.png",
         "name": "ShopLevel_fishMarket_ground_d4",
         "internalId": -1365525459
       },
-      "x-familyCandidate": null,
+      "x-familyCandidate": "shopbuilding",
       "x-spriteStem": "ShopLevel",
+      "x-rigFrom": "Assets/_Project/Art/Sprites/Buildings/Shops/shops.contract.json#fishMarket",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Buildings/Shops/shops.contract.json",
+      "x-facingBearingDeg": 180.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortingOrder": 1
     },
@@ -23992,10 +24049,12 @@
         "args": ["dir", "opts"],
         "opts": {},
         "x-synthesised": true,
-        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
+        "x-optsNote": "empty because the declaration beside this sheet is a CALL into the rig's own preset table, not a literal. It is carried verbatim in x-optsExpression for a reader that can run the rig. Resolving it here would mean re-implementing a baker, and half-resolving it — taking the preset name as an opt — would invent an option no rig reads, which the rigs would then absorb as a silent fallback rather than an error.",
+        "x-optsExpression": "Object.assign({},Shopfront.PRESETS['wharfDiner'])",
+        "x-optsExpressionFrom": "Assets/_Project/Art/Sprites/Buildings/Shops/shops.contract.json#restaurant"
       },
       "pos": [108, 105.5],
-      "facing": null,
+      "facing": "N",
       "facingIndex": 0,
       "flipX": false,
       "sortBias": 0,
@@ -24024,6 +24083,7 @@
       },
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Buildings/Shops/Shopfront_restaurant.json",
+      "x-facingBearingDeg": 0.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -24031,11 +24091,21 @@
       "id": "4bc57176bd27",
       "family": "ShopLevel",
       "group": "restaurant",
-      "rig": null,
-      "rigSource": null,
-      "call": null,
+      "rig": "ShopBuilding",
+      "rigSource": "docs/art/rigs/shop-building-kit/shopBuildingRig.js",
+      "call": {
+        "fn": "render",
+        "args": ["dir", "opts"],
+        "opts": {
+          "type": "restaurant",
+          "level": "ground",
+          "size": 0.5
+        },
+        "x-fromContract": "Assets/_Project/Art/Sprites/Buildings/Shops/shops.contract.json#restaurant",
+        "x-optsScope": "the whole SHEET, not this cell. The contract records the options this kit was baked with; a per-cell variant axis is a recipe's job and no recipe covers this sheet."
+      },
       "pos": [108, 105.5],
-      "facing": null,
+      "facing": "N",
       "facingIndex": 0,
       "flipX": false,
       "sortBias": 0,
@@ -24055,17 +24125,19 @@
       "x-cellAt": [488, 174],
       "x-inBounds": true,
       "x-active": true,
-      "x-rigSha256": null,
+      "x-rigSha256": "969a985ad163100a5a0965e1bd0e3fa85f6aa7f272994ccc60747a24568a3c1f",
       "x-familyIsSpriteStem": true,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Buildings/Shops/ShopLevel_restaurant_ground.png",
         "name": "ShopLevel_restaurant_ground_d0",
         "internalId": 1807791426
       },
-      "x-familyCandidate": null,
+      "x-familyCandidate": "shopbuilding",
       "x-spriteStem": "ShopLevel",
+      "x-rigFrom": "Assets/_Project/Art/Sprites/Buildings/Shops/shops.contract.json#restaurant",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Buildings/Shops/shops.contract.json",
+      "x-facingBearingDeg": 0.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortingOrder": 1
     },
@@ -24097,7 +24169,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-161.66577, 60.566624],
-      "facing": null,
+      "facing": "W",
       "facingIndex": 6,
       "flipX": false,
       "sortBias": 0,
@@ -24128,6 +24200,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 270.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -24159,7 +24232,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-161.90457, 57.89218],
-      "facing": null,
+      "facing": "W",
       "facingIndex": 6,
       "flipX": false,
       "sortBias": 0,
@@ -24190,6 +24263,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 270.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -24221,7 +24295,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-162.14336, 55.21774],
-      "facing": null,
+      "facing": "W",
       "facingIndex": 6,
       "flipX": false,
       "sortBias": 0,
@@ -24252,6 +24326,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 270.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -24283,7 +24358,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-161.05328, 53.772526],
-      "facing": null,
+      "facing": "S",
       "facingIndex": 4,
       "flipX": false,
       "sortBias": 0,
@@ -24314,6 +24389,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 180.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -24345,7 +24421,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-158.63434, 53.55655],
-      "facing": null,
+      "facing": "S",
       "facingIndex": 4,
       "flipX": false,
       "sortBias": 0,
@@ -24376,6 +24452,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 180.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -24407,7 +24484,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-156.21538, 53.34057],
-      "facing": null,
+      "facing": "S",
       "facingIndex": 4,
       "flipX": false,
       "sortBias": 0,
@@ -24438,6 +24515,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 180.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -24469,7 +24547,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-153.79643, 53.12459],
-      "facing": null,
+      "facing": "S",
       "facingIndex": 4,
       "flipX": false,
       "sortBias": 0,
@@ -24500,6 +24578,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 180.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -24531,7 +24610,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-151.37749, 52.908615],
-      "facing": null,
+      "facing": "S",
       "facingIndex": 4,
       "flipX": false,
       "sortBias": 0,
@@ -24562,6 +24641,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 180.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -24593,7 +24673,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-148.95853, 52.692635],
-      "facing": null,
+      "facing": "S",
       "facingIndex": 4,
       "flipX": false,
       "sortBias": 0,
@@ -24624,6 +24704,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 180.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -24655,7 +24736,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-146.53958, 52.476658],
-      "facing": null,
+      "facing": "S",
       "facingIndex": 4,
       "flipX": false,
       "sortBias": 0,
@@ -24686,6 +24767,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 180.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -24717,7 +24799,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-145.21576, 53.64929],
-      "facing": null,
+      "facing": "E",
       "facingIndex": 2,
       "flipX": false,
       "sortBias": 0,
@@ -24748,6 +24830,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 90.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -24779,7 +24862,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-144.98708, 56.210526],
-      "facing": null,
+      "facing": "E",
       "facingIndex": 2,
       "flipX": false,
       "sortBias": 0,
@@ -24810,6 +24893,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 90.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -24841,7 +24925,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-144.75839, 58.771767],
-      "facing": null,
+      "facing": "E",
       "facingIndex": 2,
       "flipX": false,
       "sortBias": 0,
@@ -24872,6 +24956,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 90.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -24903,7 +24988,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-144.52971, 61.333004],
-      "facing": null,
+      "facing": "E",
       "facingIndex": 2,
       "flipX": false,
       "sortBias": 0,
@@ -24934,6 +25019,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 90.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -24965,7 +25051,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-144.30103, 63.89424],
-      "facing": null,
+      "facing": "E",
       "facingIndex": 2,
       "flipX": false,
       "sortBias": 0,
@@ -24996,6 +25082,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 90.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -25027,7 +25114,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-144.07234, 66.45548],
-      "facing": null,
+      "facing": "E",
       "facingIndex": 2,
       "flipX": false,
       "sortBias": 0,
@@ -25058,6 +25145,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 90.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -25089,7 +25177,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-143.84366, 69.01672],
-      "facing": null,
+      "facing": "E",
       "facingIndex": 2,
       "flipX": false,
       "sortBias": 0,
@@ -25120,6 +25208,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 90.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -25151,7 +25240,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-144.93878, 70.40533],
-      "facing": null,
+      "facing": "N",
       "facingIndex": 0,
       "flipX": false,
       "sortBias": 0,
@@ -25182,6 +25271,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 0.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -25213,7 +25303,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-147.35773, 70.62131],
-      "facing": null,
+      "facing": "N",
       "facingIndex": 0,
       "flipX": false,
       "sortBias": 0,
@@ -25244,6 +25334,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 0.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -25275,7 +25366,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-149.77669, 70.83729],
-      "facing": null,
+      "facing": "N",
       "facingIndex": 0,
       "flipX": false,
       "sortBias": 0,
@@ -25306,6 +25397,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 0.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -25337,7 +25429,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-152.19563, 71.05327],
-      "facing": null,
+      "facing": "N",
       "facingIndex": 0,
       "flipX": false,
       "sortBias": 0,
@@ -25368,6 +25460,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 0.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -25399,7 +25492,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-154.61458, 71.26925],
-      "facing": null,
+      "facing": "N",
       "facingIndex": 0,
       "flipX": false,
       "sortBias": 0,
@@ -25430,6 +25523,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 0.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -25461,7 +25555,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-157.03354, 71.48523],
-      "facing": null,
+      "facing": "N",
       "facingIndex": 0,
       "flipX": false,
       "sortBias": 0,
@@ -25492,6 +25586,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 0.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -25523,7 +25618,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-159.45248, 71.70121],
-      "facing": null,
+      "facing": "N",
       "facingIndex": 0,
       "flipX": false,
       "sortBias": 0,
@@ -25554,6 +25649,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 0.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -25585,7 +25681,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-160.78136, 70.47198],
-      "facing": null,
+      "facing": "W",
       "facingIndex": 6,
       "flipX": false,
       "sortBias": 0,
@@ -25616,6 +25712,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 270.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -25647,7 +25744,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-161.02014, 67.79753],
-      "facing": null,
+      "facing": "W",
       "facingIndex": 6,
       "flipX": false,
       "sortBias": 0,
@@ -25678,6 +25775,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 270.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -25709,7 +25807,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-161.25894, 65.123085],
-      "facing": null,
+      "facing": "W",
       "facingIndex": 6,
       "flipX": false,
       "sortBias": 0,
@@ -25740,6 +25838,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 270.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -25771,7 +25870,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-161.22632, 192.58992],
-      "facing": null,
+      "facing": "W",
       "facingIndex": 6,
       "flipX": false,
       "sortBias": 0,
@@ -25802,6 +25901,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 270.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -25833,7 +25933,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-161.00108, 190.33746],
-      "facing": null,
+      "facing": "W",
       "facingIndex": 6,
       "flipX": false,
       "sortBias": 0,
@@ -25864,6 +25964,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 270.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -25895,7 +25996,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-160.77583, 188.08502],
-      "facing": null,
+      "facing": "W",
       "facingIndex": 6,
       "flipX": false,
       "sortBias": 0,
@@ -25926,6 +26027,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 270.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -25957,7 +26059,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-160.5506, 185.83257],
-      "facing": null,
+      "facing": "W",
       "facingIndex": 6,
       "flipX": false,
       "sortBias": 0,
@@ -25988,6 +26090,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 270.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -26019,7 +26122,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-159.2771, 184.82243],
-      "facing": null,
+      "facing": "S",
       "facingIndex": 4,
       "flipX": false,
       "sortBias": 0,
@@ -26050,6 +26153,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 180.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -26081,7 +26185,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-156.95534, 185.0546],
-      "facing": null,
+      "facing": "S",
       "facingIndex": 4,
       "flipX": false,
       "sortBias": 0,
@@ -26112,6 +26216,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 180.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -26143,7 +26248,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-154.63359, 185.28677],
-      "facing": null,
+      "facing": "S",
       "facingIndex": 4,
       "flipX": false,
       "sortBias": 0,
@@ -26174,6 +26279,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 180.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -26205,7 +26311,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-152.31183, 185.51894],
-      "facing": null,
+      "facing": "S",
       "facingIndex": 4,
       "flipX": false,
       "sortBias": 0,
@@ -26236,6 +26342,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 180.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -26267,7 +26374,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-149.99008, 185.75111],
-      "facing": null,
+      "facing": "S",
       "facingIndex": 4,
       "flipX": false,
       "sortBias": 0,
@@ -26298,6 +26405,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 180.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -26329,7 +26437,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-147.66833, 185.98329],
-      "facing": null,
+      "facing": "S",
       "facingIndex": 4,
       "flipX": false,
       "sortBias": 0,
@@ -26360,6 +26468,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 180.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -26391,7 +26500,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-145.34657, 186.21545],
-      "facing": null,
+      "facing": "S",
       "facingIndex": 4,
       "flipX": false,
       "sortBias": 0,
@@ -26422,6 +26531,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 180.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -26453,7 +26563,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-143.02483, 186.44763],
-      "facing": null,
+      "facing": "S",
       "facingIndex": 4,
       "flipX": false,
       "sortBias": 0,
@@ -26484,6 +26594,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 180.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -26515,7 +26626,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-140.70306, 186.6798],
-      "facing": null,
+      "facing": "S",
       "facingIndex": 4,
       "flipX": false,
       "sortBias": 0,
@@ -26546,6 +26657,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 180.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -26577,7 +26689,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-139.65276, 187.90147],
-      "facing": null,
+      "facing": "E",
       "facingIndex": 2,
       "flipX": false,
       "sortBias": 0,
@@ -26608,6 +26720,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 90.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -26639,7 +26752,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-139.87387, 190.11267],
-      "facing": null,
+      "facing": "E",
       "facingIndex": 2,
       "flipX": false,
       "sortBias": 0,
@@ -26670,6 +26783,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 90.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -26701,7 +26815,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-140.09499, 192.32387],
-      "facing": null,
+      "facing": "E",
       "facingIndex": 2,
       "flipX": false,
       "sortBias": 0,
@@ -26732,6 +26846,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 90.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -26763,7 +26878,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-140.3161, 194.53506],
-      "facing": null,
+      "facing": "E",
       "facingIndex": 2,
       "flipX": false,
       "sortBias": 0,
@@ -26794,6 +26909,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 90.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -26825,7 +26941,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-140.53722, 196.74626],
-      "facing": null,
+      "facing": "E",
       "facingIndex": 2,
       "flipX": false,
       "sortBias": 0,
@@ -26856,6 +26972,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 90.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -26887,7 +27004,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-140.75833, 198.95746],
-      "facing": null,
+      "facing": "E",
       "facingIndex": 2,
       "flipX": false,
       "sortBias": 0,
@@ -26918,6 +27035,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 90.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -26949,7 +27067,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-140.97945, 201.16866],
-      "facing": null,
+      "facing": "E",
       "facingIndex": 2,
       "flipX": false,
       "sortBias": 0,
@@ -26980,6 +27098,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 90.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -27011,7 +27130,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-141.20056, 203.37985],
-      "facing": null,
+      "facing": "E",
       "facingIndex": 2,
       "flipX": false,
       "sortBias": 0,
@@ -27042,6 +27161,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 90.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -27073,7 +27193,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-141.42168, 205.59105],
-      "facing": null,
+      "facing": "E",
       "facingIndex": 2,
       "flipX": false,
       "sortBias": 0,
@@ -27104,6 +27224,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 90.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -27135,7 +27256,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-142.69312, 206.58055],
-      "facing": null,
+      "facing": "N",
       "facingIndex": 0,
       "flipX": false,
       "sortBias": 0,
@@ -27166,6 +27287,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 0.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -27197,7 +27319,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-145.01488, 206.34839],
-      "facing": null,
+      "facing": "N",
       "facingIndex": 0,
       "flipX": false,
       "sortBias": 0,
@@ -27228,6 +27350,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 0.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -27259,7 +27382,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-147.33662, 206.11621],
-      "facing": null,
+      "facing": "N",
       "facingIndex": 0,
       "flipX": false,
       "sortBias": 0,
@@ -27290,6 +27413,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 0.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -27321,7 +27445,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-149.65839, 205.88405],
-      "facing": null,
+      "facing": "N",
       "facingIndex": 0,
       "flipX": false,
       "sortBias": 0,
@@ -27352,6 +27476,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 0.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -27383,7 +27508,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-151.98013, 205.65187],
-      "facing": null,
+      "facing": "N",
       "facingIndex": 0,
       "flipX": false,
       "sortBias": 0,
@@ -27414,6 +27539,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 0.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -27445,7 +27571,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-154.30188, 205.4197],
-      "facing": null,
+      "facing": "N",
       "facingIndex": 0,
       "flipX": false,
       "sortBias": 0,
@@ -27476,6 +27602,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 0.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -27507,7 +27634,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-156.62364, 205.18753],
-      "facing": null,
+      "facing": "N",
       "facingIndex": 0,
       "flipX": false,
       "sortBias": 0,
@@ -27538,6 +27665,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 0.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -27569,7 +27697,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-158.94539, 204.95535],
-      "facing": null,
+      "facing": "N",
       "facingIndex": 0,
       "flipX": false,
       "sortBias": 0,
@@ -27600,6 +27728,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 0.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -27631,7 +27760,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-161.26715, 204.72319],
-      "facing": null,
+      "facing": "N",
       "facingIndex": 0,
       "flipX": false,
       "sortBias": 0,
@@ -27662,6 +27791,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 0.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -27693,7 +27823,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-162.3154, 203.48088],
-      "facing": null,
+      "facing": "W",
       "facingIndex": 6,
       "flipX": false,
       "sortBias": 0,
@@ -27724,6 +27854,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 270.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -27755,7 +27886,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-162.09016, 201.22842],
-      "facing": null,
+      "facing": "W",
       "facingIndex": 6,
       "flipX": false,
       "sortBias": 0,
@@ -27786,6 +27917,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 270.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -27817,7 +27949,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-161.86491, 198.97598],
-      "facing": null,
+      "facing": "W",
       "facingIndex": 6,
       "flipX": false,
       "sortBias": 0,
@@ -27848,6 +27980,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 270.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -27879,7 +28012,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-161.63968, 196.72353],
-      "facing": null,
+      "facing": "W",
       "facingIndex": 6,
       "flipX": false,
       "sortBias": 0,
@@ -27910,6 +28043,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 270.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -27941,7 +28075,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-161.33894, 193.71614],
-      "facing": null,
+      "facing": "W",
       "facingIndex": 6,
       "flipX": false,
       "sortBias": 0,
@@ -27972,6 +28106,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 270.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -28003,7 +28138,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-160.43797, 184.70634],
-      "facing": null,
+      "facing": "SW",
       "facingIndex": 5,
       "flipX": false,
       "sortBias": 0,
@@ -28034,6 +28169,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 225.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -28065,7 +28201,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-139.54219, 186.79588],
-      "facing": null,
+      "facing": "SE",
       "facingIndex": 3,
       "flipX": false,
       "sortBias": 0,
@@ -28096,6 +28232,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 135.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -28127,7 +28264,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-141.53224, 206.69664],
-      "facing": null,
+      "facing": "NE",
       "facingIndex": 1,
       "flipX": false,
       "sortBias": 0,
@@ -28158,6 +28295,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 45.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -28189,7 +28327,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-162.42802, 204.6071],
-      "facing": null,
+      "facing": "NW",
       "facingIndex": 7,
       "flipX": false,
       "sortBias": 0,
@@ -28220,6 +28358,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 315.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -28251,7 +28390,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-161.52705, 195.5973],
-      "facing": null,
+      "facing": "W",
       "facingIndex": 6,
       "flipX": false,
       "sortBias": 0,
@@ -28282,6 +28421,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 270.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -28313,7 +28453,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-161.433, 194.65671],
-      "facing": null,
+      "facing": "W",
       "facingIndex": 6,
       "flipX": false,
       "sortBias": 0,
@@ -28344,6 +28484,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 270.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -28375,7 +28516,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-192.77368, 199.41008],
-      "facing": null,
+      "facing": "E",
       "facingIndex": 2,
       "flipX": false,
       "sortBias": 0,
@@ -28406,6 +28547,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 90.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -28437,7 +28579,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-192.99892, 201.66254],
-      "facing": null,
+      "facing": "E",
       "facingIndex": 2,
       "flipX": false,
       "sortBias": 0,
@@ -28468,6 +28610,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 90.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -28499,7 +28642,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-193.22417, 203.91498],
-      "facing": null,
+      "facing": "E",
       "facingIndex": 2,
       "flipX": false,
       "sortBias": 0,
@@ -28530,6 +28673,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 90.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -28561,7 +28705,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-193.4494, 206.16743],
-      "facing": null,
+      "facing": "E",
       "facingIndex": 2,
       "flipX": false,
       "sortBias": 0,
@@ -28592,6 +28736,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 90.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -28623,7 +28768,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-195.05458, 207.14441],
-      "facing": null,
+      "facing": "N",
       "facingIndex": 0,
       "flipX": false,
       "sortBias": 0,
@@ -28654,6 +28799,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 0.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -28685,7 +28831,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-198.03969, 206.8459],
-      "facing": null,
+      "facing": "N",
       "facingIndex": 0,
       "flipX": false,
       "sortBias": 0,
@@ -28716,6 +28862,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 0.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -28747,7 +28894,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-201.02481, 206.5474],
-      "facing": null,
+      "facing": "N",
       "facingIndex": 0,
       "flipX": false,
       "sortBias": 0,
@@ -28778,6 +28925,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 0.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -28809,7 +28957,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-204.00992, 206.24889],
-      "facing": null,
+      "facing": "N",
       "facingIndex": 0,
       "flipX": false,
       "sortBias": 0,
@@ -28840,6 +28988,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 0.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -28871,7 +29020,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-206.99503, 205.95038],
-      "facing": null,
+      "facing": "N",
       "facingIndex": 0,
       "flipX": false,
       "sortBias": 0,
@@ -28902,6 +29051,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 0.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -28933,7 +29083,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-209.98015, 205.65187],
-      "facing": null,
+      "facing": "N",
       "facingIndex": 0,
       "flipX": false,
       "sortBias": 0,
@@ -28964,6 +29114,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 0.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -28995,7 +29146,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-212.96526, 205.35336],
-      "facing": null,
+      "facing": "N",
       "facingIndex": 0,
       "flipX": false,
       "sortBias": 0,
@@ -29026,6 +29177,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 0.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -29057,7 +29209,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-214.31566, 203.78264],
-      "facing": null,
+      "facing": "W",
       "facingIndex": 6,
       "flipX": false,
       "sortBias": 0,
@@ -29088,6 +29240,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 270.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -29119,7 +29272,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-214.03137, 200.93967],
-      "facing": null,
+      "facing": "W",
       "facingIndex": 6,
       "flipX": false,
       "sortBias": 0,
@@ -29150,6 +29303,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 270.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -29181,7 +29335,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-213.74707, 198.09671],
-      "facing": null,
+      "facing": "W",
       "facingIndex": 6,
       "flipX": false,
       "sortBias": 0,
@@ -29212,6 +29366,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 270.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -29243,7 +29398,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-213.46278, 195.25374],
-      "facing": null,
+      "facing": "W",
       "facingIndex": 6,
       "flipX": false,
       "sortBias": 0,
@@ -29274,6 +29429,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 270.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -29305,7 +29461,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-213.1785, 192.41077],
-      "facing": null,
+      "facing": "W",
       "facingIndex": 6,
       "flipX": false,
       "sortBias": 0,
@@ -29336,6 +29492,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 270.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -29367,7 +29524,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-212.8942, 189.56781],
-      "facing": null,
+      "facing": "W",
       "facingIndex": 6,
       "flipX": false,
       "sortBias": 0,
@@ -29398,6 +29555,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 270.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -29429,7 +29587,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-212.60991, 186.72484],
-      "facing": null,
+      "facing": "W",
       "facingIndex": 6,
       "flipX": false,
       "sortBias": 0,
@@ -29460,6 +29618,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 270.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -29491,7 +29650,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-210.9752, 185.4526],
-      "facing": null,
+      "facing": "S",
       "facingIndex": 4,
       "flipX": false,
       "sortBias": 0,
@@ -29522,6 +29681,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 180.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -29553,7 +29713,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-207.9901, 185.75111],
-      "facing": null,
+      "facing": "S",
       "facingIndex": 4,
       "flipX": false,
       "sortBias": 0,
@@ -29584,6 +29744,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 180.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -29615,7 +29776,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-205.00497, 186.04962],
-      "facing": null,
+      "facing": "S",
       "facingIndex": 4,
       "flipX": false,
       "sortBias": 0,
@@ -29646,6 +29807,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 180.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -29677,7 +29839,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-202.01987, 186.34813],
-      "facing": null,
+      "facing": "S",
       "facingIndex": 4,
       "flipX": false,
       "sortBias": 0,
@@ -29708,6 +29870,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 180.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -29739,7 +29902,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-199.03476, 186.64664],
-      "facing": null,
+      "facing": "S",
       "facingIndex": 4,
       "flipX": false,
       "sortBias": 0,
@@ -29770,6 +29933,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 180.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -29801,7 +29965,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-196.04964, 186.94514],
-      "facing": null,
+      "facing": "S",
       "facingIndex": 4,
       "flipX": false,
       "sortBias": 0,
@@ -29832,6 +29996,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 180.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -29863,7 +30028,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-193.06453, 187.24365],
-      "facing": null,
+      "facing": "S",
       "facingIndex": 4,
       "flipX": false,
       "sortBias": 0,
@@ -29894,6 +30059,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 180.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -29925,7 +30091,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-191.6846, 188.51912],
-      "facing": null,
+      "facing": "E",
       "facingIndex": 2,
       "flipX": false,
       "sortBias": 0,
@@ -29956,6 +30122,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 90.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -29987,7 +30154,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-191.90984, 190.77158],
-      "facing": null,
+      "facing": "E",
       "facingIndex": 2,
       "flipX": false,
       "sortBias": 0,
@@ -30018,6 +30185,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 90.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -30049,7 +30217,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-192.13509, 193.02402],
-      "facing": null,
+      "facing": "E",
       "facingIndex": 2,
       "flipX": false,
       "sortBias": 0,
@@ -30080,6 +30248,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 90.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -30111,7 +30280,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-192.36032, 195.27647],
-      "facing": null,
+      "facing": "E",
       "facingIndex": 2,
       "flipX": false,
       "sortBias": 0,
@@ -30142,6 +30311,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 90.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -30173,7 +30343,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-194.36452, 60.915993],
-      "facing": null,
+      "facing": "E",
       "facingIndex": 2,
       "flipX": false,
       "sortBias": 0,
@@ -30204,6 +30374,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 90.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -30235,7 +30406,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-194.16441, 63.157074],
-      "facing": null,
+      "facing": "E",
       "facingIndex": 2,
       "flipX": false,
       "sortBias": 0,
@@ -30266,6 +30437,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 90.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -30297,7 +30469,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-193.96432, 65.39816],
-      "facing": null,
+      "facing": "E",
       "facingIndex": 2,
       "flipX": false,
       "sortBias": 0,
@@ -30328,6 +30500,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 90.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -30359,7 +30532,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-193.76422, 67.639244],
-      "facing": null,
+      "facing": "E",
       "facingIndex": 2,
       "flipX": false,
       "sortBias": 0,
@@ -30390,6 +30563,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 90.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -30421,7 +30595,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-194.97147, 68.87651],
-      "facing": null,
+      "facing": "N",
       "facingIndex": 0,
       "flipX": false,
       "sortBias": 0,
@@ -30452,6 +30626,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 0.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -30483,7 +30658,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-197.58606, 69.10996],
-      "facing": null,
+      "facing": "N",
       "facingIndex": 0,
       "flipX": false,
       "sortBias": 0,
@@ -30514,6 +30689,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 0.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -30545,7 +30721,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-200.20067, 69.34341],
-      "facing": null,
+      "facing": "N",
       "facingIndex": 0,
       "flipX": false,
       "sortBias": 0,
@@ -30576,6 +30752,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 0.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -30607,7 +30784,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-202.81526, 69.57686],
-      "facing": null,
+      "facing": "N",
       "facingIndex": 0,
       "flipX": false,
       "sortBias": 0,
@@ -30638,6 +30815,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 0.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -30669,7 +30847,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-205.42986, 69.8103],
-      "facing": null,
+      "facing": "N",
       "facingIndex": 0,
       "flipX": false,
       "sortBias": 0,
@@ -30700,6 +30878,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 0.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -30731,7 +30910,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-208.04445, 70.043755],
-      "facing": null,
+      "facing": "N",
       "facingIndex": 0,
       "flipX": false,
       "sortBias": 0,
@@ -30762,6 +30941,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 0.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -30793,7 +30973,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-210.65906, 70.2772],
-      "facing": null,
+      "facing": "N",
       "facingIndex": 0,
       "flipX": false,
       "sortBias": 0,
@@ -30824,6 +31004,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 0.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -30855,7 +31036,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-213.27365, 70.51065],
-      "facing": null,
+      "facing": "N",
       "facingIndex": 0,
       "flipX": false,
       "sortBias": 0,
@@ -30886,6 +31067,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 0.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -30917,7 +31099,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-214.708, 69.20446],
-      "facing": null,
+      "facing": "W",
       "facingIndex": 6,
       "flipX": false,
       "sortBias": 0,
@@ -30948,6 +31130,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 270.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -30979,7 +31162,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-214.96208, 66.35864],
-      "facing": null,
+      "facing": "W",
       "facingIndex": 6,
       "flipX": false,
       "sortBias": 0,
@@ -31010,6 +31193,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 270.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -31041,7 +31225,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-215.21619, 63.512817],
-      "facing": null,
+      "facing": "W",
       "facingIndex": 6,
       "flipX": false,
       "sortBias": 0,
@@ -31072,6 +31256,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 270.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -31103,7 +31288,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-215.47028, 60.666996],
-      "facing": null,
+      "facing": "W",
       "facingIndex": 6,
       "flipX": false,
       "sortBias": 0,
@@ -31134,6 +31319,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 270.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -31165,7 +31351,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-215.72437, 57.821175],
-      "facing": null,
+      "facing": "W",
       "facingIndex": 6,
       "flipX": false,
       "sortBias": 0,
@@ -31196,6 +31382,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 270.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -31227,7 +31414,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-215.97847, 54.975353],
-      "facing": null,
+      "facing": "W",
       "facingIndex": 6,
       "flipX": false,
       "sortBias": 0,
@@ -31258,6 +31445,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 270.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -31289,7 +31477,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-216.23256, 52.12953],
-      "facing": null,
+      "facing": "W",
       "facingIndex": 6,
       "flipX": false,
       "sortBias": 0,
@@ -31320,6 +31508,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 270.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -31351,7 +31540,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-215.0523, 50.589897],
-      "facing": null,
+      "facing": "S",
       "facingIndex": 4,
       "flipX": false,
       "sortBias": 0,
@@ -31382,6 +31571,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 180.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -31413,7 +31603,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-212.43771, 50.356445],
-      "facing": null,
+      "facing": "S",
       "facingIndex": 4,
       "flipX": false,
       "sortBias": 0,
@@ -31444,6 +31634,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 180.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -31475,7 +31666,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-209.8231, 50.123],
-      "facing": null,
+      "facing": "S",
       "facingIndex": 4,
       "flipX": false,
       "sortBias": 0,
@@ -31506,6 +31697,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 180.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -31537,7 +31729,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-207.20851, 49.88955],
-      "facing": null,
+      "facing": "S",
       "facingIndex": 4,
       "flipX": false,
       "sortBias": 0,
@@ -31568,6 +31760,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 180.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -31599,7 +31792,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-204.59392, 49.656105],
-      "facing": null,
+      "facing": "S",
       "facingIndex": 4,
       "flipX": false,
       "sortBias": 0,
@@ -31630,6 +31823,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 180.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -31661,7 +31855,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-201.97932, 49.422653],
-      "facing": null,
+      "facing": "S",
       "facingIndex": 4,
       "flipX": false,
       "sortBias": 0,
@@ -31692,6 +31886,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 180.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -31723,7 +31918,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-199.36472, 49.18921],
-      "facing": null,
+      "facing": "S",
       "facingIndex": 4,
       "flipX": false,
       "sortBias": 0,
@@ -31754,6 +31949,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 180.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -31785,7 +31981,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-196.75012, 48.955757],
-      "facing": null,
+      "facing": "S",
       "facingIndex": 4,
       "flipX": false,
       "sortBias": 0,
@@ -31816,6 +32012,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 180.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -31847,7 +32044,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-195.34166, 49.972027],
-      "facing": null,
+      "facing": "E",
       "facingIndex": 2,
       "flipX": false,
       "sortBias": 0,
@@ -31878,6 +32075,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 90.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -31909,7 +32107,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-195.13934, 52.238014],
-      "facing": null,
+      "facing": "E",
       "facingIndex": 2,
       "flipX": false,
       "sortBias": 0,
@@ -31940,6 +32138,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 90.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -31971,7 +32170,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-194.93701, 54.503998],
-      "facing": null,
+      "facing": "E",
       "facingIndex": 2,
       "flipX": false,
       "sortBias": 0,
@@ -32002,6 +32201,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 90.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -32033,7 +32233,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-194.7347, 56.769985],
-      "facing": null,
+      "facing": "E",
       "facingIndex": 2,
       "flipX": false,
       "sortBias": 0,
@@ -32064,6 +32264,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 90.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -32095,7 +32296,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-109.92883, 76.553566],
-      "facing": null,
+      "facing": "N",
       "facingIndex": 0,
       "flipX": false,
       "sortBias": 0,
@@ -32126,6 +32327,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 0.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -32157,7 +32359,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-112.42801, 76.61765],
-      "facing": null,
+      "facing": "N",
       "facingIndex": 0,
       "flipX": false,
       "sortBias": 0,
@@ -32188,6 +32390,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 0.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -32219,7 +32422,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-114.92719, 76.68174],
-      "facing": null,
+      "facing": "N",
       "facingIndex": 0,
       "flipX": false,
       "sortBias": 0,
@@ -32250,6 +32453,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 0.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -32281,7 +32485,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-117.42637, 76.74583],
-      "facing": null,
+      "facing": "N",
       "facingIndex": 0,
       "flipX": false,
       "sortBias": 0,
@@ -32312,6 +32516,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 0.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -32343,7 +32548,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-118.71258, 75.34977],
-      "facing": null,
+      "facing": "W",
       "facingIndex": 6,
       "flipX": false,
       "sortBias": 0,
@@ -32374,6 +32579,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 270.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -32405,7 +32611,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-118.78582, 72.49357],
-      "facing": null,
+      "facing": "W",
       "facingIndex": 6,
       "flipX": false,
       "sortBias": 0,
@@ -32436,6 +32642,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 270.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -32467,7 +32674,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-118.85906, 69.63736],
-      "facing": null,
+      "facing": "W",
       "facingIndex": 6,
       "flipX": false,
       "sortBias": 0,
@@ -32498,6 +32705,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 270.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -32529,7 +32737,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-118.932304, 66.78116],
-      "facing": null,
+      "facing": "W",
       "facingIndex": 6,
       "flipX": false,
       "sortBias": 0,
@@ -32560,6 +32768,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 270.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -32591,7 +32800,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-119.00555, 63.924957],
-      "facing": null,
+      "facing": "W",
       "facingIndex": 6,
       "flipX": false,
       "sortBias": 0,
@@ -32622,6 +32831,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 270.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -32653,7 +32863,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-119.07879, 61.068752],
-      "facing": null,
+      "facing": "W",
       "facingIndex": 6,
       "flipX": false,
       "sortBias": 0,
@@ -32684,6 +32894,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 270.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -32715,7 +32926,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-119.15203, 58.212547],
-      "facing": null,
+      "facing": "W",
       "facingIndex": 6,
       "flipX": false,
       "sortBias": 0,
@@ -32746,6 +32957,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 270.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -32777,7 +32989,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-117.8141, 56.7492],
-      "facing": null,
+      "facing": "S",
       "facingIndex": 4,
       "flipX": false,
       "sortBias": 0,
@@ -32808,6 +33020,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 180.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -32839,7 +33052,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-115.06501, 56.678703],
-      "facing": null,
+      "facing": "S",
       "facingIndex": 4,
       "flipX": false,
       "sortBias": 0,
@@ -32870,6 +33083,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 180.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -32901,7 +33115,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-112.31591, 56.608208],
-      "facing": null,
+      "facing": "S",
       "facingIndex": 4,
       "flipX": false,
       "sortBias": 0,
@@ -32932,6 +33146,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 180.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -32963,7 +33178,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-109.56682, 56.537712],
-      "facing": null,
+      "facing": "S",
       "facingIndex": 4,
       "flipX": false,
       "sortBias": 0,
@@ -32994,6 +33209,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 180.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -33025,7 +33241,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-106.81772, 56.467216],
-      "facing": null,
+      "facing": "S",
       "facingIndex": 4,
       "flipX": false,
       "sortBias": 0,
@@ -33056,6 +33272,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 180.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -33087,7 +33304,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-104.06863, 56.39672],
-      "facing": null,
+      "facing": "S",
       "facingIndex": 4,
       "flipX": false,
       "sortBias": 0,
@@ -33118,6 +33335,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 180.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -33149,7 +33367,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-101.319534, 56.326225],
-      "facing": null,
+      "facing": "S",
       "facingIndex": 4,
       "flipX": false,
       "sortBias": 0,
@@ -33180,6 +33398,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 180.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -33211,7 +33430,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-98.570435, 56.25573],
-      "facing": null,
+      "facing": "S",
       "facingIndex": 4,
       "flipX": false,
       "sortBias": 0,
@@ -33242,6 +33461,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 180.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -33273,7 +33493,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-97.15926, 57.648582],
-      "facing": null,
+      "facing": "E",
       "facingIndex": 2,
       "flipX": false,
       "sortBias": 0,
@@ -33304,6 +33524,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 90.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -33335,7 +33556,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-97.08602, 60.504787],
-      "facing": null,
+      "facing": "E",
       "facingIndex": 2,
       "flipX": false,
       "sortBias": 0,
@@ -33366,6 +33587,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 90.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -33397,7 +33619,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-97.01278, 63.36099],
-      "facing": null,
+      "facing": "E",
       "facingIndex": 2,
       "flipX": false,
       "sortBias": 0,
@@ -33428,6 +33650,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 90.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -33459,7 +33682,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-96.93954, 66.21719],
-      "facing": null,
+      "facing": "E",
       "facingIndex": 2,
       "flipX": false,
       "sortBias": 0,
@@ -33490,6 +33713,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 90.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -33521,7 +33745,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-96.866295, 69.073395],
-      "facing": null,
+      "facing": "E",
       "facingIndex": 2,
       "flipX": false,
       "sortBias": 0,
@@ -33552,6 +33776,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 90.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -33583,7 +33808,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-96.79305, 71.929596],
-      "facing": null,
+      "facing": "E",
       "facingIndex": 2,
       "flipX": false,
       "sortBias": 0,
@@ -33614,6 +33839,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 90.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -33645,7 +33871,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-96.71981, 74.785805],
-      "facing": null,
+      "facing": "E",
       "facingIndex": 2,
       "flipX": false,
       "sortBias": 0,
@@ -33676,6 +33902,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 90.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -33707,7 +33934,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-97.945274, 76.24627],
-      "facing": null,
+      "facing": "N",
       "facingIndex": 0,
       "flipX": false,
       "sortBias": 0,
@@ -33738,6 +33965,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 0.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -33769,7 +33997,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-100.469444, 76.311],
-      "facing": null,
+      "facing": "N",
       "facingIndex": 0,
       "flipX": false,
       "sortBias": 0,
@@ -33800,6 +34028,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 0.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -33831,7 +34060,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-102.993614, 76.375725],
-      "facing": null,
+      "facing": "N",
       "facingIndex": 0,
       "flipX": false,
       "sortBias": 0,
@@ -33862,6 +34091,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 0.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -33893,7 +34123,7 @@
         "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
       },
       "pos": [-105.517784, 76.44045],
-      "facing": null,
+      "facing": "N",
       "facingIndex": 0,
       "flipX": false,
       "sortBias": 0,
@@ -33924,6 +34154,7 @@
       "x-spriteStem": "Yard",
       "x-facings": 8,
       "x-facingsSource": "Assets/_Project/Art/Sprites/Yard/yardIso.contract.json",
+      "x-facingBearingDeg": 0.0,
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -137239,7 +137470,7 @@
       "cliff": 0
     },
     "x-paths": 0,
-    "x-rigsPinned": 10,
+    "x-rigsPinned": 12,
     "x-tilesNote": "painted cell counts per layer. The reference package uses stamp counts here, which double-count overlaps; a true cell count is the more useful number and the review asked for one or the other, said."
   },
   "x-rigs": [
@@ -137249,6 +137480,13 @@
       "sha256": "c35dbefe2c75cb800dba3821e63fe9c5518786931f149910b3c6430544b2bc9f",
       "shaRule": "sha256 of the rig's bytes with CR stripped (tr -d '\\r' | sha256sum)",
       "x-declaredBy": "Assets/_Project/Art/Characters/Iso/deckboss/DeckBossAnchors.json"
+    },
+    {
+      "rig": "houseIsoRig",
+      "rigSource": "docs/art/rigs/houseIsoRig.js",
+      "sha256": "638ab5359d7790aa24fa67534b22503e46b18729fe62b69bba11ffe43e778ca9",
+      "shaRule": "sha256 of the rig's bytes with CR stripped (tr -d '\r' | sha256sum)",
+      "x-declaredBy": "Assets/_Project/Art/Sprites/Buildings/Village/Buildings.json#redSaltbox"
     },
     {
       "rig": "shoreFindsRig",
@@ -137286,6 +137524,13 @@
       "x-declaredBy": "Assets/_Project/Art/Sprites/Shipyard/Iso/shipyardIsoRig.contract.json"
     },
     {
+      "rig": "shopBuildingRig",
+      "rigSource": "docs/art/rigs/shop-building-kit/shopBuildingRig.js",
+      "sha256": "969a985ad163100a5a0965e1bd0e3fa85f6aa7f272994ccc60747a24568a3c1f",
+      "shaRule": "sha256 of the rig's bytes with CR stripped (tr -d '\r' | sha256sum)",
+      "x-declaredBy": "Assets/_Project/Art/Sprites/Buildings/Shops/shops.contract.json#fishMarket"
+    },
+    {
       "rig": "shopfrontRig",
       "rigSource": "docs/art/rigs/shop-building-kit/shopfrontRig.js",
       "sha256": "0158f630904ad073571abe3ab4baa7b2fc17cc4495ba9f2cb260ef50b8fa3a02",
@@ -137315,50 +137560,56 @@
     }
   ],
   "x-rigVersions": {
-    "x-shaRule": "sha256 of the rig's bytes with CR stripped (tr -d '\\r' | sha256sum) — the repo's own convention, the same one docs/art/rigs sidecars publish.",
-    "families": {
-      "character": {
-        "rigSource": "docs/art/rigs/characterIsoRig6.js",
-        "sha256": "c35dbefe2c75cb800dba3821e63fe9c5518786931f149910b3c6430544b2bc9f"
-      },
-      "shipyard": {
-        "rigSource": "docs/art/rigs/shipyard-iso-kit/shipyardIsoRig.js",
-        "sha256": "7f857dc3fdfb44beb7ecb1dcc27a3ad98619a9f9a5caa3bd36989a3b3959a7d1"
-      },
-      "shopfront": {
-        "rigSource": "docs/art/rigs/shop-building-kit/shopfrontRig.js",
-        "sha256": "0158f630904ad073571abe3ab4baa7b2fc17cc4495ba9f2cb260ef50b8fa3a02"
-      },
-      "shorefinds": {
-        "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
-        "sha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477"
-      },
-      "shoreplant": {
-        "rigSource": "docs/art/rigs/shorePlantRig.js",
-        "sha256": "9958f3854567564ddd0d4a64d577e2dbd063086eabdc0ed5f4f2ce7d8da710ba"
-      },
-      "shrub": {
-        "rigSource": "docs/art/rigs/shrubIsoRig.js",
-        "sha256": "c5c2e041a94a830a4b4645d16517234a4b47b384efd2f56527500e3a875fa466"
-      },
-      "tree": {
-        "rigSource": "docs/art/rigs/treeIsoRig2.js",
-        "sha256": "735f5e146b9f418d4e38e2348338b14474076e682c28573f6b87b24679b9253b"
-      },
-      "utility": {
-        "rigSource": "docs/art/rigs/iso-rig-pack/utility-iso/utilityIsoRig.js",
-        "sha256": "dbfe677117c16725095b87d282486803da042714f80f53cc85986283a29d629c"
-      },
-      "wharfdecor": {
-        "rigSource": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
-        "sha256": "dba6ced6644e879e42cf2a3d6340ae76f90acf2cee0a0962cf4bbb0719a1b05a"
-      },
-      "wharfmodule": {
-        "rigSource": "docs/art/rigs/iso-rig-pack/wharf-kit-iso/wharfIsoRig.js",
-        "sha256": "a6c80940941fa790951de3867c6194e8b40a56b9d95f974a028881efbacd3a6b"
-      }
+    "ShopLevel": {
+      "rigSource": "docs/art/rigs/shop-building-kit/shopBuildingRig.js",
+      "sha256": "969a985ad163100a5a0965e1bd0e3fa85f6aa7f272994ccc60747a24568a3c1f"
+    },
+    "character": {
+      "rigSource": "docs/art/rigs/characterIsoRig6.js",
+      "sha256": "c35dbefe2c75cb800dba3821e63fe9c5518786931f149910b3c6430544b2bc9f"
+    },
+    "house": {
+      "rigSource": "docs/art/rigs/houseIsoRig.js",
+      "sha256": "638ab5359d7790aa24fa67534b22503e46b18729fe62b69bba11ffe43e778ca9"
+    },
+    "shipyard": {
+      "rigSource": "docs/art/rigs/shipyard-iso-kit/shipyardIsoRig.js",
+      "sha256": "7f857dc3fdfb44beb7ecb1dcc27a3ad98619a9f9a5caa3bd36989a3b3959a7d1"
+    },
+    "shopfront": {
+      "rigSource": "docs/art/rigs/shop-building-kit/shopfrontRig.js",
+      "sha256": "0158f630904ad073571abe3ab4baa7b2fc17cc4495ba9f2cb260ef50b8fa3a02"
+    },
+    "shorefinds": {
+      "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
+      "sha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477"
+    },
+    "shoreplant": {
+      "rigSource": "docs/art/rigs/shorePlantRig.js",
+      "sha256": "9958f3854567564ddd0d4a64d577e2dbd063086eabdc0ed5f4f2ce7d8da710ba"
+    },
+    "shrub": {
+      "rigSource": "docs/art/rigs/shrubIsoRig.js",
+      "sha256": "c5c2e041a94a830a4b4645d16517234a4b47b384efd2f56527500e3a875fa466"
+    },
+    "tree": {
+      "rigSource": "docs/art/rigs/treeIsoRig2.js",
+      "sha256": "735f5e146b9f418d4e38e2348338b14474076e682c28573f6b87b24679b9253b"
+    },
+    "utility": {
+      "rigSource": "docs/art/rigs/iso-rig-pack/utility-iso/utilityIsoRig.js",
+      "sha256": "dbfe677117c16725095b87d282486803da042714f80f53cc85986283a29d629c"
+    },
+    "wharfdecor": {
+      "rigSource": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
+      "sha256": "dba6ced6644e879e42cf2a3d6340ae76f90acf2cee0a0962cf4bbb0719a1b05a"
+    },
+    "wharfmodule": {
+      "rigSource": "docs/art/rigs/iso-rig-pack/wharf-kit-iso/wharfIsoRig.js",
+      "sha256": "a6c80940941fa790951de3867c6194e8b40a56b9d95f974a028881efbacd3a6b"
     }
   },
+  "x-rigVersionsShaRule": "sha256 of the rig's bytes with CR stripped (tr -d '\r' | sha256sum) — the repo's own convention, the same one docs/art/rigs sidecars publish. A SIBLING of the table rather than a key inside it: the table's keys are family names and nothing else, so iterating it cannot pick up a note.",
   "x-cliffLinesNote": "Empty: cliff lines are an authoring artefact of the editor. The repo's cliffs are placed CliffWallSurface components and ship as entities.",
   "x-provenance": {
     "generatedAt": "2026-08-21T17:17:54Z",
@@ -137396,7 +137647,7 @@
       "inactiveInHierarchy": 1,
       "interiorsLinked": 0,
       "offGrid": 3,
-      "unresolvedRigPlacements": 285,
+      "unresolvedRigPlacements": 281,
       "unresolvedSheets": {
         "Assets/_Project/Art/Boats/DoryIso.png": {
           "placements": 1,
@@ -137425,32 +137676,6 @@
         },
         "Assets/_Project/Art/Sprites/Buildings/ShipwrightShed.png": {
           "placements": 2,
-          "sidecar": null,
-          "candidates": []
-        },
-        "Assets/_Project/Art/Sprites/Buildings/Shops/ShopLevel_fishMarket_ground.png": {
-          "placements": 1,
-          "sidecar": "Assets/_Project/Art/Sprites/Buildings/Shops/shops.contract.json",
-          "candidates": [
-            "docs/art/rigs/shop-building-kit/shopfrontRig.js",
-            "docs/art/rigs/shop-building-kit/shopBuildingRig.js"
-          ]
-        },
-        "Assets/_Project/Art/Sprites/Buildings/Shops/ShopLevel_restaurant_ground.png": {
-          "placements": 1,
-          "sidecar": "Assets/_Project/Art/Sprites/Buildings/Shops/shops.contract.json",
-          "candidates": [
-            "docs/art/rigs/shop-building-kit/shopfrontRig.js",
-            "docs/art/rigs/shop-building-kit/shopBuildingRig.js"
-          ]
-        },
-        "Assets/_Project/Art/Sprites/Buildings/Village/Village_redSaltbox.png": {
-          "placements": 1,
-          "sidecar": null,
-          "candidates": []
-        },
-        "Assets/_Project/Art/Sprites/Buildings/Village/Village_sageCottage.png": {
-          "placements": 1,
           "sidecar": null,
           "candidates": []
         },
@@ -137503,13 +137728,25 @@
       "resolutionExcluded": 25,
       "x-resolutionExcludedMeaning": "entities a ruling keeps out of the rig-resolution map — not a missing sidecar. The wharf fittings are derived by rule and the editor's own module auto-places them, so a resolved fitting would double-draw.",
       "x-unresolvedMeaning": "no sidecar beside these sheets names a rig this exporter will trust — an ambiguous one names several. The kits that ship a *.contract.json resolve exactly; the rest have no committed link from sheet to rig, so nothing is pinned rather than guessed.",
-      "unlistedFamilies": {},
+      "unlistedFamilies": {
+        "shopbuilding": {
+          "placements": 2,
+          "rigSource": "docs/art/rigs/shop-building-kit/shopBuildingRig.js",
+          "spriteStem": "ShopLevel"
+        }
+      },
       "optsFromRecipe": 203,
+      "optsFromContract": 4,
       "recipeRefusals": [],
+      "contractRefusals": [
+        "Assets/_Project/Art/Sprites/Buildings/Shops/shops.contract.json entry 'fishMarket' declares optionsJs that is not a literal this reader can resolve (not an object literal). It is carried verbatim as x-optsExpression rather than guessed at: the rigs resolve an unknown key as a silent fallback, so a half-read opts dict draws a confidently wrong object with nothing to flag it.",
+        "Assets/_Project/Art/Sprites/Buildings/Shops/shops.contract.json entry 'restaurant' declares optionsJs that is not a literal this reader can resolve (not an object literal). It is carried verbatim as x-optsExpression rather than guessed at: the rigs resolve an unknown key as a silent fallback, so a half-read opts dict draws a confidently wrong object with nothing to flag it."
+      ],
+      "x-contractMeaning": "where no recipe covers a sheet, the kit's own committed contract still declares the optionsJs that bake was run with, and that is read as a second lookup — matched on the SHEET the entry names, never on a key resembling a sprite stem. Those opts describe the whole sheet rather than the cell, and every entity carrying them says so in call.x-optsScope. A contract whose optionsJs is a call into the rig's own preset table cannot be resolved without running the rig: it is carried verbatim as call.x-optsExpression and listed here, never half-evaluated.",
       "x-recipeMeaning": "an entity whose sheet carries a <stem>.recipe.json (#629) ships the real option axes that drew its cell. The rest keep the empty-opts form and its note. A refusal here is a recipe that exists but must not be trusted — a schema this reader does not know, or a sheet hash that says the recipe was written for a different bake.",
       "x-familyVocabulary": "`family` is the editor's own wire vocabulary, transcribed at docs/tools/reference/family-names.json and matched EXACTLY: a rig whose name does not land on a listed one keeps the sprite stem, flags x-familyIsSpriteStem, and appears under unlistedFamilies with the candidate name — never aliased onto a near neighbour. wharfIsoRig normalises to `wharf` and the list holds both `wharfbuilding` and `wharfmodule`; guessing between them is the aliasing the ruling forbids. Those entries are the request list for the editor side.",
-      "x-absentEntityFields": "facing, facingIndex and gameplaySidecar are named by the format and absent here. The first two are the editor's own view state; the third is a rig gameplay measurement. A baked sprite records none of them, and no rig is executed by this exporter.",
-      "x-noCallRecord": "call/opts are absent by ruling: the editor writes them out of its own live state and no renderer reads one back. The cost is that this document can never seed a round-trip INTO the editor, which needs family+dir+opts."
+      "x-absentEntityFields": "gameplaySidecar is named by the format and absent here: it is a rig gameplay measurement and no rig is executed by this exporter. facing and facingIndex were listed here too, on the ruling that both were the editor's own view state; both are exported now. The index is read from the sub-sprite's own _d<n>, and the bearing is derived from it and the sheet's DECLARED facing count — never from an angle, and never where no count is declared.",
+      "x-callRecord": "call/opts were absent by ruling — the editor wrote them out of its own live state and no renderer read one back — and the stated cost was that this document could never seed a round-trip INTO the editor, which needs family+dir+opts. It carries all three now, for every entity a committed declaration covers: the rig catalog names the function, the #629 recipe ledger names a cell's own opts, and a kit contract names the bake's. What is NOT here is a guess. An entity no declaration covers keeps the empty-opts form and its note, because the rigs resolve an unknown key as a silent fallback rather than an error."
     }
   }
 }
