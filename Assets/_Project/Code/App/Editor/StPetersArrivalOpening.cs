@@ -61,18 +61,26 @@ namespace HiddenHarbours.App.Editor
             return route.ToArray();
         }
 
-        /// <summary>Where she ends up lying — the region's dock zone, off the pier head.</summary>
+        /// <summary>Where she ends up lying — the region's dock zone, which is the berth ALONGSIDE the
+        /// pier's mooring face.</summary>
         public static Vector2 Berth() =>
             new Vector2(StPetersBuilder.DockZonePos.x, StPetersBuilder.DockZonePos.y);
 
         /// <summary>
-        /// The compass heading her bow lies on when she is tied up: <b>down the channel's own axis,
-        /// pointing in</b>. A boat lies along the water she came up, not across it, and the channel's
-        /// axis is the one thing that already knows which way that is — so a re-cut channel turns her
-        /// with it instead of leaving her athwart the fairway.
+        /// The compass heading her bow lies on when she is tied up: <b>along the PIER'S own axis,
+        /// pointing in</b>.
+        ///
+        /// <para>⚠ This used to read off the CHANNEL's axis, with the reasoning that a boat lies along
+        /// the water she came up. That is true of a mooring in a fairway and false of a boat tied to
+        /// something: a hull alongside lies parallel to the FACE, because that is what her fenders and
+        /// her lines are against. The two axes happen to agree here — the pier was built down the
+        /// channel's line — and <c>StPetersAlongsideBerthTests</c> asserts that they still do, so this
+        /// is a change of SOURCE rather than of number. Read off the pier, it stays right if the
+        /// channel is ever re-cut at an angle to it; read off the channel, it would quietly lay her
+        /// across her own berth.</para>
         /// </summary>
         public static float BerthHeadingDegrees() =>
-            ArrivalPilot.CompassOf(StPetersBuilder.ApproachTo - StPetersBuilder.ApproachFrom);
+            ArrivalPilot.CompassOf(StPetersWharf.AxisInward());
 
         /// <summary>Where the player is put down — the ratified disembark point, ON the planks.</summary>
         public static Vector2 StepAshore() =>

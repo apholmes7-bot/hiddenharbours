@@ -192,6 +192,43 @@ namespace HiddenHarbours.App.Editor
         // hanger at the deck EDGE it hangs from — which is why the table below carries both kinds and the
         // placer does not try to be clever about either.
 
+        /// <summary>
+        /// The pier's long axis as a unit vector pointing <b>INWARD</b> — from the head toward the root.
+        /// The deck's cells run along X from <see cref="RootCellX"/> to <see cref="HeadCellX"/> by
+        /// construction, so this reads the axis off the same two constants the planks are placed from.
+        ///
+        /// <para>⭐ It exists so that "which way does a boat lie here" has ONE answer. A hull moored
+        /// alongside lies PARALLEL TO THE FACE she is tied to — not down the channel she came up, which
+        /// is a different line the moment either of them moves. Re-site the pier and the arrival turns
+        /// with it.</para>
+        /// </summary>
+        public static Vector2 AxisInward() => new Vector2(RootCellX - HeadCellX, 0f).normalized;
+
+        /// <summary>
+        /// The deck edge a hull ties up against: the <b>SOUTH</b> lip.
+        ///
+        /// <para>Not a taste — it is where the gear is. Every fitting this pier carries (see
+        /// <see cref="Fittings"/>) is on the south edge, because that is the side the camera sees and
+        /// the side whose tall face the kit actually draws. You berth where the bollards, the fenders
+        /// and the ladder are.</para>
+        /// </summary>
+        public static float MooringFaceY => DeckFootprint().yMin;
+
+        /// <summary>
+        /// Where the ladder hangs, read out of <see cref="Fittings"/> rather than re-derived — the one
+        /// fitting on this pier whose whole job is getting a person between a boat and the planks, and
+        /// therefore the point a hull lying alongside is berthed abreast of.
+        /// </summary>
+        public static Vector2 LadderPosition()
+        {
+            foreach (var f in Fittings())
+                if (f.Name == "ladder") return f.Position;
+            // Unreachable while Fittings() places one; loud rather than silently berthing at the origin.
+            Debug.LogError("[StPetersWharf] the pier carries no ladder fitting — the alongside berth is " +
+                           "derived from it, so it has nothing to be abreast of.");
+            return new Vector2(HeadCellX + 0.5f, MinCellY);
+        }
+
         /// <summary>One placed fitting: which kit slice, and where on the deck it goes.</summary>
         public struct Fitting
         {

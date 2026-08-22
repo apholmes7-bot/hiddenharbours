@@ -387,17 +387,23 @@ namespace HiddenHarbours.Tests.EditMode
         // 4. where she ends up, and where the player is put down
         // =============================================================================================
 
-        /// <summary>Everything about the berth is DERIVED from the region — her heading off the channel's
-        /// own axis, her berth off the dock zone, the landing off the ratified disembark point. A second
-        /// copy of any of them is a thing that comes apart from the wharf it describes.</summary>
+        /// <summary>Everything about the berth is DERIVED from the region — her heading off the WHARF
+        /// FACE she is tied to, her berth off the dock zone, the landing off the ratified disembark
+        /// point. A second copy of any of them is a thing that comes apart from the wharf it describes.
+        ///
+        /// <para>⚠ RE-DERIVED for the 2026-08-22 alongside berth, not merely re-pointed. She used to lie
+        /// bow-on at the pier's head and her heading came off the CHANNEL's axis; she now lies ALONGSIDE
+        /// the mooring face, so the face is what her heading is read from, and the step ashore is
+        /// measured from her GUNWALE rather than from her centre-line — which, on a hull with a 2.4 m
+        /// half-beam, was a point inside the boat. <c>StPetersAlongsideBerthTests</c> owns the berth's
+        /// own geometry; this holds the ARRIVAL's copy of it to the region.</para></summary>
         [Test]
-        public void SheLiesAlongTheChannel_AndPutsThePlayerDownOnThePlanks()
+        public void SheLiesAlongsideTheWharf_AndPutsThePlayerDownOnThePlanks()
         {
-            // Bow pointing IN, down the channel's own line.
-            float expected = ArrivalPilot.CompassOf(
-                StPetersBuilder.ApproachTo - StPetersBuilder.ApproachFrom);
+            // Bow pointing IN, along the face she is made fast to.
+            float expected = ArrivalPilot.CompassOf(StPetersWharf.AxisInward());
             Assert.AreEqual(expected, StPetersArrivalOpening.BerthHeadingDegrees(), 1e-3f,
-                "she must lie along the water she came up, not across the fairway");
+                "she must lie along the wharf face she is tied to, not across it");
 
             // She ends where the region says a boat docks…
             Assert.AreEqual(0f, Vector2.Distance(
@@ -413,10 +419,15 @@ namespace HiddenHarbours.Tests.EditMode
                 $"the player is put down at ({ashore.x:F1}, {ashore.y:F1}), which is off the deck " +
                 $"{deck} — the first step of a new game must land on planks");
 
-            // And the berth is within reach of that landing, or stepping ashore is a swim.
-            Assert.LessOrEqual(Vector2.Distance(StPetersArrivalOpening.Berth(), ashore),
-                               StPetersBuilder.DockZoneRadius,
-                "the boat lies further from the landing than the dock zone's own radius");
+            // And the landing is within reach of her RAIL, or stepping ashore is a swim.
+            //
+            // ⚠ Measured from the gunwale, not from Berth(). Berth() is her CENTRE-LINE: alongside, that
+            // is a half-beam inside the hull, so a centre-to-landing measure charges the player for
+            // walking across the boat she is standing on. The rail is the thing a person steps over.
+            float fromRail = Mathf.Abs(ashore.y - StPetersBuilder.AlongsideGunwaleY);
+            Assert.LessOrEqual(fromRail, StPetersBuilder.StepAshoreMetres + 1e-4f,
+                $"the landing is {fromRail:F2} m from her rail, past the region's " +
+                $"{StPetersBuilder.StepAshoreMetres:F2} m step-ashore pattern");
         }
 
         // =============================================================================================
