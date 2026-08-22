@@ -23,6 +23,7 @@ P4 Earn It Then Automate It · P5 Cozy but with Teeth). If it serves none, don't
 - **Data model:** `docs/architecture/data-model.md`
 - **Decisions (ADRs):** `docs/adr/` — engine choice, procedural-vs-handcrafted, data-driven, scenes, PC-first target
 - **What to build & in what order:** `docs/roadmap.md`, `backlog/` ← **start here for work**
+- **Editor-as-a-tool (Unity MCP):** `docs/tooling/unity-mcp.md` — owner's checkout + coordinator only; lanes without an editor keep the no-Unity paths
 
 ## 3. The ten rules (non-negotiable)
 1. **Read the canon and your role charter before coding.** Your role: `agents/` (see §6).
