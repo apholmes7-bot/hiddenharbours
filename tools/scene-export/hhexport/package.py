@@ -21,7 +21,7 @@ import hashlib
 import re
 import os
 
-from . import families, recipes, heightmap, roads, unityyaml as U
+from . import contracts, facing as facing_mod, families, recipes, heightmap, roads, unityyaml as U
 from .repo import ASSETS_PPU
 
 SCHEMA = "hiddenharbours.scene/1"
@@ -111,6 +111,11 @@ def build_document(repo, region, scene, provenance):
         },
         "x-rigs": rigs,
         "x-rigVersions": rig_versions,
+        "x-rigVersionsShaRule": "sha256 of the rig's bytes with CR stripped "
+                                "(tr -d '\r' | sha256sum) — the repo's own convention, the "
+                                "same one docs/art/rigs sidecars publish. A SIBLING of the table "
+                                "rather than a key inside it: the table's keys are family names "
+                                "and nothing else, so iterating it cannot pick up a note.",
         "x-cliffLinesNote": "Empty: cliff lines are an authoring artefact of the editor. The "
                             "repo's cliffs are placed CliffWallSurface components and ship as "
                             "entities.",
@@ -316,6 +321,7 @@ def _entities(repo, scene, centre, origin_nw, cols, rows):
     unresolved_sheets = {}
     unlisted_families = {}
     recipe_refusals = []
+    contract_refusals = []
     inactive = 0
     off_grid = 0
     decor_base = repo.decor_base()
@@ -380,6 +386,10 @@ def _entities(repo, scene, centre, origin_nw, cols, rows):
                 "shaRule": "sha256 of the rig's bytes with CR stripped (tr -d '\\r' | sha256sum)",
                 "x-declaredBy": evidence,
             }
+        # Hoisted above the record: `facing` is derived from the index AND the declared count,
+        # so the declaration has to be in hand before the record is built, not stapled on after.
+        declared_facings, facings_evidence = repo.facings_for_sheet(sheet) if sheet else (None, None)
+        facing_index = _facing_index(entry["name"] if entry else None)
         hierarchy = scene.hierarchy_path(game_object_id)
         parts = hierarchy.split("/")
         zone, zone_evidence = repo.zone_for_path(hierarchy)
@@ -406,15 +416,18 @@ def _entities(repo, scene, centre, origin_nw, cols, rows):
             # `facing` would be a confidently wrong value in a field a reader expects to be a
             # string, so the index goes only where the index belongs.
             #
-            # `facing` stays null deliberately. Turning a step into a bearing is the one piece of
-            # arithmetic this repo has already got wrong: BuildingFacing's remarks record that
-            # cell `i` is baked at `dir = (facings - i) mod facings` — bearings DECREASE as the
-            # index rises — and the inverted version put the schoolhouse door ~92 degrees off the
-            # green, with a passing test, because the test was the algebraic inverse of the
-            # implementation. The write-back contract's answer is that nothing derives a facing
-            # from an angle; the index is the fact, and a bearing is read back from baked anchors.
-            "facing": None,
-            "facingIndex": _facing_index(entry["name"] if entry else None),
+            # `facing` shipped null until 2026-08-22, on the ruling that turning a step into a
+            # bearing is the one piece of arithmetic this repo had already got wrong. It is
+            # derived now, and `facing_mod`'s docstring carries the four measurements that agree
+            # on the rule — including the two the naive reading fails. The short version: the
+            # `dir = (facings - i) mod facings` in BuildingFacing's remarks is what the baker
+            # hands the RIG, and it exists precisely so the SHEET comes out clockwise either way
+            # ("⇒ Anything baked here is genuinely clockwise" — RigBaker.DirForCell). Cell i
+            # therefore depicts +(360/facings)*i clockwise from north, which is what the village
+            # contract measured at bake time and what ADR 0034 measured off the shipped pixels.
+            # Emitted only where the sheet DECLARES a count — §6.2's rule is unchanged.
+            "facing": facing_mod.name_for(facing_index, declared_facings),
+            "facingIndex": facing_index,
             "flipX": U.as_int(renderer.data.get("m_FlipX"), 0) != 0,
             "sortBias": _sort_bias(y_sort, decor_base),
             "cell": _cell(entry),
@@ -472,11 +485,97 @@ def _entities(repo, scene, centre, origin_nw, cols, rows):
         elif recipe_problem:
             recipe_refusals.append(recipe_problem)
 
-        if sheet:
-            count, evidence = repo.facings_for_sheet(sheet)
-            if count is not None:
-                record["x-facings"] = count
-                record["x-facingsSource"] = evidence
+        # The kit contract, where the ledger did not reach. A recipe knows which CELL and wins on
+        # sight; a contract knows the BAKE, which is still the difference between an editor that
+        # can redraw the school and one that draws a default house on its footprint.
+        if not (record.get("call") or {}).get("x-fromRecipe"):
+            declared, contract_problem = contracts.opts_for_sheet(repo, sheet)
+            if contract_problem:
+                contract_refusals.append(contract_problem)
+            if declared:
+                # An entry names ONE rig for ONE sheet. That is a stronger link than the
+                # folder-wide scan behind `rigSource`, which stays honestly ambiguous here:
+                # Buildings.json declares houseIsoRig AND wharfBuildingRig side by side, so the
+                # folder cannot choose between them and the ENTRY does not have to.
+                entry_rig = declared.get("rigScript")
+                if entry_rig and not rig_source and repo.exists(entry_rig):
+                    entry_global = repo.rig_global(entry_rig)
+                    record["rig"] = entry_global or _stem_of(entry_rig)
+                    record["rigSource"] = entry_rig
+                    record["x-rigSha256"] = repo.rig_sha(entry_rig)
+                    record["x-rigFrom"] = f"{declared['source']}#{declared.get('key')}"
+                    if entry_rig not in rigs:
+                        rigs[entry_rig] = {
+                            "rig": _stem_of(entry_rig),
+                            "rigSource": entry_rig,
+                            "sha256": repo.rig_sha(entry_rig),
+                            "shaRule": "sha256 of the rig's bytes with CR stripped "
+                                       "(tr -d '\r' | sha256sum)",
+                            "x-declaredBy": f"{declared['source']}#{declared.get('key')}",
+                        }
+                    entry_family, entry_candidate = families.resolve(entry_rig, wire_families)
+                    if entry_family:
+                        # The family moves off the sprite stem onto the editor's own vocabulary,
+                        # which is the whole point of resolving: `Village` is not renderable
+                        # there and `house` is. Ids do not move — they are minted from path and
+                        # position, never from the family (see _stable_id).
+                        record["family"] = entry_family
+                        record["x-familyIsSpriteStem"] = False
+                        record.pop("x-familyCandidate", None)
+                        record.pop("x-spriteStem", None)
+                    else:
+                        # Resolved a rig, but its name is not on the wire list — the same
+                        # position the folder scan reports from, so it reaches the same REQUEST
+                        # LIST. Leaving it out would be the worse half of both states: an entity
+                        # holding a rig the editor cannot name, and no entry asked for.
+                        record["x-familyCandidate"] = entry_candidate
+                        note = unlisted_families.setdefault(
+                            entry_candidate or "(unnamed)",
+                            {"placements": 0, "rigSource": entry_rig, "spriteStem": stem})
+                        note["placements"] += 1
+                    unresolved_sheets.pop(sheet, None)
+                    # A rig resolved here earns the same honest empty-opts call any other
+                    # resolved rig gets. Without this the four wharfBuilding outbuildings came
+                    # out holding a rig the editor could draw and nothing telling it to.
+                    if not record.get("call"):
+                        record["call"] = _call(entry_global)
+                if declared.get("opts") is not None:
+                    # The exporter's OWN call shape, as `_call` mints it — same fn, same arg
+                    # convention — with real opts in place of the empty pair and its note. The
+                    # ledger's `$dir`/`$opts` placeholders are not borrowed here: those are the
+                    # recipe's own args, carried verbatim, and a third spelling of the same idea
+                    # is a thing two readers get to disagree about.
+                    record["call"] = {
+                        "fn": "render",
+                        "args": ["dir", "opts"],
+                        "opts": declared["opts"],
+                        "x-fromContract": f"{declared['source']}#{declared.get('key')}",
+                        "x-optsScope": "the whole SHEET, not this cell. The contract records the "
+                                       "options this kit was baked with; a per-cell variant axis "
+                                       "is a recipe's job and no recipe covers this sheet.",
+                    }
+                elif declared.get("expression") and record.get("call"):
+                    record["call"]["x-optsExpression"] = declared["expression"]
+                    record["call"]["x-optsExpressionFrom"] =                         f"{declared['source']}#{declared.get('key')}"
+                    # `_call`'s note says the axes are "not recorded FOR IT", which this entity
+                    # has just disproved — they are recorded, in a form nothing here may run.
+                    record["call"]["x-optsNote"] = (
+                        "empty because the declaration beside this sheet is a CALL into the "
+                        "rig's own preset table, not a literal. It is carried verbatim in "
+                        "x-optsExpression for a reader that can run the rig. Resolving it here "
+                        "would mean re-implementing a baker, and half-resolving it — taking the "
+                        "preset name as an opt — would invent an option no rig reads, which the "
+                        "rigs would then absorb as a silent fallback rather than an error.")
+
+        if declared_facings is not None:
+            record["x-facings"] = declared_facings
+            record["x-facingsSource"] = facings_evidence
+            bearing = facing_mod.bearing_degrees(facing_index, declared_facings)
+            if bearing is not None:
+                # The number the compass name rounds off, kept beside it so the claim is
+                # checkable and so a count that does not land on a named point still says which
+                # way the cell looks rather than only that it has no name.
+                record["x-facingBearingDeg"] = bearing
         if entry:
             record["x-pivotSource"] = entry["pivotSource"]
         else:
@@ -517,7 +616,19 @@ def _entities(repo, scene, centre, origin_nw, cols, rows):
                                "from sheet to rig, so nothing is pinned rather than guessed.",
         "unlistedFamilies": dict(sorted(unlisted_families.items())),
         "optsFromRecipe": sum(1 for e in entities if (e.get("call") or {}).get("x-fromRecipe")),
+        "optsFromContract": sum(1 for e in entities
+                                if (e.get("call") or {}).get("x-fromContract")),
         "recipeRefusals": sorted(set(recipe_refusals)),
+        "contractRefusals": sorted(set(contract_refusals)),
+        "x-contractMeaning": "where no recipe covers a sheet, the kit's own committed contract "
+                             "still declares the optionsJs that bake was run with, and that is "
+                             "read as a second lookup — matched on the SHEET the entry names, "
+                             "never on a key resembling a sprite stem. Those opts describe the "
+                             "whole sheet rather than the cell, and every entity carrying them "
+                             "says so in call.x-optsScope. A contract whose optionsJs is a call "
+                             "into the rig's own preset table cannot be resolved without running "
+                             "the rig: it is carried verbatim as call.x-optsExpression and "
+                             "listed here, never half-evaluated.",
         "x-recipeMeaning": "an entity whose sheet carries a <stem>.recipe.json (#629) ships the "
                            "real option axes that drew its cell. The rest keep the empty-opts "
                            "form and its note. A refusal here is a recipe that exists but must "
@@ -532,14 +643,23 @@ def _entities(repo, scene, centre, origin_nw, cols, rows):
                               "`wharfbuilding` and `wharfmodule`; guessing between them is the "
                               "aliasing the ruling forbids. Those entries are the request list "
                               "for the editor side.",
-        "x-absentEntityFields": "facing, facingIndex and gameplaySidecar are named by the format "
-                                "and absent here. The first two are the editor's own view "
-                                "state; the third is a rig gameplay measurement. A baked sprite "
-                                "records none of them, and no rig is executed by this exporter.",
-        "x-noCallRecord": "call/opts are absent by ruling: the editor writes them out of its own "
-                          "live state and no renderer reads one back. The cost is that this "
-                          "document can never seed a round-trip INTO the editor, which needs "
-                          "family+dir+opts.",
+        "x-absentEntityFields": "gameplaySidecar is named by the format and absent here: it is a "
+                                "rig gameplay measurement and no rig is executed by this "
+                                "exporter. facing and facingIndex were listed here too, on the "
+                                "ruling that both were the editor's own view state; both are "
+                                "exported now. The index is read from the sub-sprite's own "
+                                "_d<n>, and the bearing is derived from it and the sheet's "
+                                "DECLARED facing count — never from an angle, and never where "
+                                "no count is declared.",
+        "x-callRecord": "call/opts were absent by ruling — the editor wrote them out of its own "
+                        "live state and no renderer read one back — and the stated cost was that "
+                        "this document could never seed a round-trip INTO the editor, which "
+                        "needs family+dir+opts. It carries all three now, for every entity a "
+                        "committed declaration covers: the rig catalog names the function, the "
+                        "#629 recipe ledger names a cell's own opts, and a kit contract names "
+                        "the bake's. What is NOT here is a guess. An entity no declaration "
+                        "covers keeps the empty-opts form and its note, because the rigs resolve "
+                        "an unknown key as a silent fallback rather than an error.",
     }
     ordered_rigs = [rigs[key] for key in sorted(rigs)]
     return entities, ordered_rigs, notes, _rig_versions(entities, rigs)
@@ -575,11 +695,19 @@ def _link_interiors(entities):
 
 
 def _rig_versions(entities, rigs):
-    """``family -> sha256(rig source bytes)``, for the families this scene actually uses.
+    """``family -> {rigSource, sha256}``, for the families this scene actually uses.
 
     The editor hashes its own copy of each rig and badges a mismatch pink rather than refusing to
     draw. One entry per family is what it asks for; a family that resolved through more than one
     rig would make that table a lie, so such a family is reported with its rigs named instead.
+
+    FLAT: the family names ARE the keys. It used to wrap them one level down under
+    ``{x-shaRule, families}``, and the editor — reading the table the way the ask was written,
+    one entry per family — took ``x-shaRule`` and ``families`` for two families and went looking
+    for rigs called that. The hash rule was never load-bearing here: every ``x-rigs`` row already
+    carries its own ``shaRule``, so moving it out of the iterable loses nothing, and it is
+    restated once at document level as ``x-rigVersionsShaRule``. A note that has to be stepped
+    over to read the data belongs beside the data, not inside it.
     """
     seen = {}
     for entity in entities:
@@ -605,11 +733,7 @@ def _rig_versions(entities, rigs):
                 "x-note": "this family resolved through more than one rig in this scene, so no "
                           "single hash describes it. Badge per entity from x-rigSha256 instead.",
             }
-    return {
-        "x-shaRule": "sha256 of the rig's bytes with CR stripped (tr -d '\\r' | sha256sum) \u2014 "
-                     "the repo's own convention, the same one docs/art/rigs sidecars publish.",
-        "families": versions,
-    }
+    return versions
 
 
 def _stable_id(hierarchy, x, y):
@@ -715,6 +839,11 @@ def _facing_index(sprite_name):
         return None
     match = _FACING_SUFFIX.search(sprite_name)
     return int(match.group(1)) if match else None
+
+
+def _stem_of(path):
+    """``docs/art/rigs/houseIsoRig.js`` -> ``houseIsoRig``."""
+    return os.path.splitext(os.path.basename(path))[0] if path else None
 
 
 def _family(sprite_name):

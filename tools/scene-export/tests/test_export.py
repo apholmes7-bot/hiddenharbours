@@ -8,9 +8,11 @@ the cell-box fallback — plus the determinism claim the PR makes.
 """
 
 import datetime
+import copy
 import json
 import math
 import os
+import re
 import tempfile
 import subprocess
 import sys
@@ -23,7 +25,8 @@ sys.path.insert(0, TOOL)
 
 REFERENCE = "docs/tools/reference/sample-scene.json"
 
-from hhexport import families, heightmap, package, recipes, roads, unityyaml as U  # noqa: E402
+from hhexport import contracts, families, heightmap, package, recipes, roads  # noqa: E402
+from hhexport import facing as facing_mod, unityyaml as U  # noqa: E402
 from hhexport.repo import Repo, sha256_lf  # noqa: E402
 from hhexport.scene import Scene  # noqa: E402
 
@@ -411,18 +414,36 @@ class EnrichmentTests(unittest.TestCase):
                 self.assertIn("x-unavailable", ground, name)
 
     def test_families_come_from_the_editors_wire_list_or_say_they_do_not(self):
+        """The rule is about PROVENANCE, not about which names happen to be on the list.
+
+        `x-familyIsSpriteStem` means "no rig resolved onto a listed name here, so this is the
+        sprite stem standing in" — a statement about where the value came from. This used to
+        also assert that such a stem is never itself a listed name, which held only by accident:
+        the editor published `camper` as its 45th entry, a St Peters sprite stem is `camper`, and
+        a true claim about provenance started failing on a coincidence of spelling. The count is
+        gone with it — a growing wire list is the lane working, and a test that has to be edited
+        every time the editor publishes an entry is a test nobody trusts.
+        """
         wire, layers = families.load(self.repo)
-        # 43 at first relay + interior/interiorprop, published by the editor 2026-08-20 evening.
-        self.assertEqual(len(wire), 45, "the transcribed wire list has drifted")
+        self.assertGreaterEqual(len(wire), 45, "the transcribed wire list has shrunk")
         self.assertEqual(sorted(layers), ["cliff", "ground", "road", "texture", "wharfdeck"])
+        stems = resolved = 0
         for name, document in self.documents.items():
             for entity in document["entities"]:
                 if entity["x-familyIsSpriteStem"]:
-                    self.assertNotIn(entity["family"], wire,
-                                     f"{name} {entity['id']} is on the list but flagged as not")
+                    # It must SAY it is a stem and carry what it would have matched on.
                     self.assertIn("x-familyCandidate", entity, f"{name} {entity['id']}")
+                    self.assertIn("x-spriteStem", entity, f"{name} {entity['id']}")
+                    self.assertEqual(entity["family"], entity["x-spriteStem"],
+                                     f"{name} {entity['id']} flags a stem it did not use")
+                    stems += 1
                 else:
                     self.assertIn(entity["family"], wire, f"{name} {entity['id']}")
+                    self.assertNotIn("x-familyCandidate", entity,
+                                     f"{name} {entity['id']} resolved but still asks to be listed")
+                    resolved += 1
+        self.assertGreater(stems, 0, "no entity exercises the fallback")
+        self.assertGreater(resolved, 0, "no entity exercises resolution")
 
     def test_a_near_miss_is_never_aliased_onto_a_neighbour(self):
         """`wharfIsoRig` normalises to `wharf`, which the wire list does not carry.
@@ -447,37 +468,91 @@ class EnrichmentTests(unittest.TestCase):
 
     def test_the_interior_gap_closed_when_the_editor_published_the_entries(self):
         """This used to assert the opposite: `interior`/`interiorprop` had no family and stayed
-        declared. The editor published both on 2026-08-20, so the request list is now empty for
-        St Peters and those 30 placements resolve. Kept as the record of a gap that closed the
-        way the no-aliasing rule intended — by a ruling, not by us bending a name."""
+        declared. The editor published both on 2026-08-20, so the request list is empty for
+        St Peters and every interior placement resolves. Kept as the record of a gap that closed
+        the way the no-aliasing rule intended — by a ruling, not by us bending a name.
+
+        The count is gone. It pinned 30, the scene now holds 43, and the difference is #599
+        furnishing more rooms — content doing exactly what content is supposed to do. A count
+        here could only ever fail for the right reason by accident; what the gap closing MEANS is
+        that none of them is a stem any more, and that is what is asserted.
+        """
         peters = self.documents["StPeters"]
         unlisted = peters["x-provenance"]["entityNotes"]["unlistedFamilies"]
-        self.assertEqual(unlisted, {}, "St Peters has an unlisted family again")
+        # Scoped to this gap. It used to assert the whole request list was empty, which coupled
+        # a test about INTERIORS to every other kit in the repo: reading the shop contract
+        # surfaced `shopbuilding` — a real, correctly-reported ask — and an unrelated test went
+        # red for it. A closed gap is a claim about the names that closed, not about the list.
+        self.assertFalse([f for f in unlisted if f.startswith("interior")],
+                         f"St Peters has an unlisted interior family again: {unlisted}")
         resolved = [e for e in peters["entities"] if e["family"] in ("interior", "interiorprop")]
-        self.assertEqual(len(resolved), 30)
+        self.assertTrue(resolved, "no interior placement resolves — the gap reopened")
         for entity in resolved:
             self.assertFalse(entity["x-familyIsSpriteStem"], entity["id"])
+        # And nothing is left carrying an interior sprite stem instead of the published family.
+        for entity in peters["entities"]:
+            if entity["x-familyIsSpriteStem"]:
+                self.assertFalse((entity["x-familyCandidate"] or "").startswith("interior"),
+                                 f"{entity['id']} still stands on an interior stem")
 
     def test_a_resolved_rig_gives_the_editor_something_to_call(self):
+        """A call needs a source behind it — and a resolved rig is no longer the only one.
+
+        This used to read `rigSource is None` as `call is None`. That was true when the catalog
+        was the only thing that could name a draw, and #629's ledger made it false: the yard
+        recipes name the rig, the piece and the exact opts for a sheet whose folder holds several
+        rigs and therefore resolves to none, so `Yards/ParishHall/postRail` legitimately carries
+        a full call with `rigSource: null`. The kit contracts are now a third source in the same
+        position. So the rule asserted here is the one that was always meant: **every call names
+        what backs it, and an entity with nothing behind it has no call.**
+        """
         for name, document in self.documents.items():
             renderable = 0
             for entity in document["entities"]:
-                if entity["rigSource"] is None:
-                    self.assertIsNone(entity["call"], f"{name} {entity['id']}")
-                    continue
-                self.assertIsNotNone(entity["rig"], f"{name} {entity['id']}")
                 call = entity["call"]
-                self.assertIsNotNone(call, f"{name} {entity['id']} has a rig but nothing to call")
+                backing = [key for key in ("x-fromRecipe", "x-fromContract") if call and key in call]
+                if entity["rigSource"] is None and not backing:
+                    self.assertIsNone(call, f"{name} {entity['id']} calls with nothing behind it")
+                    continue
+                self.assertIsNotNone(call, f"{name} {entity['id']} has a source but nothing to call")
                 self.assertEqual(call["fn"], "render")
-                if call.get("x-fromRecipe"):
-                    # The ledger recorded this cell's own call (#629) — opts are a fact here,
-                    # so the synthesised marker and its note are gone rather than contradicted.
+                self.assertLessEqual(len(backing), 1,
+                                     f"{name} {entity['id']} claims two opts provenances")
+                if entity["rigSource"] is not None:
+                    self.assertIsNotNone(entity["rig"], f"{name} {entity['id']}")
+                if backing:
+                    # A recorded provenance is a fact about the opts, so the synthesised marker
+                    # and its "nothing records this" note are gone rather than contradicted.
                     self.assertNotIn("x-synthesised", call, f"{name} {entity['id']}")
+                    self.assertNotIn("x-optsNote", call, f"{name} {entity['id']}")
                 else:
                     self.assertEqual(call["opts"], {}, "a guessed opt draws the wrong object")
                     self.assertTrue(call["x-synthesised"])
                 renderable += 1
             self.assertGreater(renderable, 0, f"{name} renders nothing at all")
+
+
+def _as_pointer_only(doc):
+    """Make a freshly-exported document look like what a checkout with no LFS bytes produces.
+
+    ⚠ WITHOUT THIS, THE THREE CARRY-FORWARD TESTS BELOW TEST THE MACHINE, NOT THE CONTRACT.
+    They each bank a committed package and then ask `_carry_forward_height` to carry it, which
+    the contract (§6.1) only ever does when THIS run could not read the height bytes — its third
+    table row is "can read the bytes -> recomputed normally", and the code returns early on
+    exactly that. So on a pointer-only checkout the tests passed, on a full-LFS checkout the same
+    correct code failed them, and neither run was evidence about the rule. The precondition is
+    part of the fixture and is built here: bytes unread, ground emptied, and the SAME
+    `textureSha256`, because a pointer's `oid sha256` IS the sha256 of the object it stands for
+    (§6.1) — which is the entire proof the carry rests on.
+    """
+    doc = copy.deepcopy(doc)
+    for block in (doc["x-provenance"]["heightMap"], doc["terrain"].get("x-heightMap") or {}):
+        block["textureBytesRead"] = False
+    ground = doc["terrain"]["layers"]["ground"]
+    ground["rle"] = [[0, doc["terrain"]["cols"] * doc["terrain"]["rows"]]]
+    ground["x-unavailable"] = "the height texture is an LFS pointer in this checkout"
+    doc["terrain"].pop("x-heightField", None)
+    return doc
 
 
 def _greyscale_png(width, height, rows):
@@ -505,8 +580,22 @@ class EditorAskTests(unittest.TestCase):
                     for name, scene, height in hh_scene_export.REGIONS}
 
     def test_rig_versions_are_one_hash_per_family_and_agree_with_x_rigs(self):
+        """The table is FLAT: iterating it yields family names and nothing else.
+
+        It used to nest the families under `{x-shaRule, families}`, and the editor — told "one
+        entry per family" — read the two wrapper keys as families and went looking for rigs
+        called `x-shaRule`. The rule now sits beside the table as `x-rigVersionsShaRule`, which
+        is also where every `x-rigs` row already carried its own copy of it.
+        """
         for name, doc in self.docs.items():
-            table = doc["x-rigVersions"]["families"]
+            table = doc["x-rigVersions"]
+            self.assertTrue(doc["x-rigVersionsShaRule"], f"{name} dropped the hash rule")
+            for key, entry in table.items():
+                self.assertFalse(key.startswith("x-"),
+                                 f"{name} put the note {key!r} where a family name goes")
+                self.assertIsInstance(entry, dict, f"{name}/{key}")
+                self.assertEqual(sorted(k for k in entry if not k.startswith("x-")),
+                                 ["rigSource", "sha256"], f"{name}/{key}")
             self.assertTrue(table, f"{name} names no rig versions")
             by_source = {r["rigSource"]: r["sha256"] for r in doc["x-rigs"]}
             for family, entry in table.items():
@@ -774,7 +863,7 @@ class DeterminismTests(unittest.TestCase):
             with open(os.path.join(tmp, filename), "w", encoding="utf-8", newline="\n") as fh:
                 json.dump(rich, fh)
 
-            fresh = hh_scene_export.export_region(repo, name, scene, height)
+            fresh = _as_pointer_only(hh_scene_export.export_region(repo, name, scene, height))
             carried, refusal = hh_scene_export._carry_forward_height(
                 os.path.join(tmp, filename), fresh)
             self.assertTrue(carried, "a verified contour was not carried forward")
@@ -803,7 +892,7 @@ class DeterminismTests(unittest.TestCase):
             with open(os.path.join(tmp, filename), "w", encoding="utf-8", newline="\n") as fh:
                 json.dump(carried_pkg, fh)
 
-            fresh = hh_scene_export.export_region(repo, name, scene, height)
+            fresh = _as_pointer_only(hh_scene_export.export_region(repo, name, scene, height))
             carried, _ = hh_scene_export._carry_forward_height(
                 os.path.join(tmp, filename), fresh)
             self.assertTrue(carried, "an already-carried package was not accepted as a source")
@@ -826,12 +915,51 @@ class DeterminismTests(unittest.TestCase):
             with open(os.path.join(tmp, filename), "w", encoding="utf-8", newline="\n") as fh:
                 json.dump(stale, fh)
 
-            fresh = hh_scene_export.export_region(repo, name, scene, height)
+            fresh = _as_pointer_only(hh_scene_export.export_region(repo, name, scene, height))
             carried, refusal = hh_scene_export._carry_forward_height(
                 os.path.join(tmp, filename), fresh)
             self.assertFalse(carried)
             self.assertIsNotNone(refusal, "a changed texture was silently carried forward")
             self.assertIn("CHANGED", refusal)
+
+    def test_a_run_that_can_read_the_bytes_recomputes_and_never_carries(self):
+        """§6.1's THIRD row — "anything | can read the bytes | recomputed normally" — pinned.
+
+        It had no test, and its absence was not free: the other three carry-forward tests were
+        written without building the pointer-only precondition, so on a checkout holding the LFS
+        objects they asked this exporter to carry a contour it had just read for itself. The code
+        was right and refused; the tests failed for it. Stating the row as its own assertion is
+        what stops the next reader "fixing" the early return to make those three go green.
+
+        Skipped, loudly, where the bytes are absent: a checkout that cannot read them has nothing
+        to say about the row that begins "can read the bytes".
+        """
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Repo(REPO)
+            name, scene, height = hh_scene_export.REGIONS[0]
+            fresh = hh_scene_export.export_region(repo, name, scene, height)
+            if not fresh["x-provenance"]["heightMap"]["textureBytesRead"]:
+                self.skipTest("pointer-only checkout: the LFS bytes this row is about are absent")
+            filename = f"{fresh['region']['sceneName']}.scene.json"
+
+            # A committed package that would be carried if this run were blind: same texture,
+            # richer ground. The ONLY thing standing between it and a carry is that we can read.
+            banked = json.loads(package.dumps(fresh))
+            banked["x-provenance"]["heightMap"]["heightCarriedForward"] = True
+            banked["terrain"]["layers"]["ground"]["rle"] = [
+                [1, 7], [0, banked["terrain"]["cols"] * banked["terrain"]["rows"] - 7]]
+            with open(os.path.join(tmp, filename), "w", encoding="utf-8",
+                      newline="\n") as fh:
+                json.dump(banked, fh)
+
+            carried, refusal = hh_scene_export._carry_forward_height(
+                os.path.join(tmp, filename), fresh)
+            self.assertFalse(carried, "a run that read the bytes carried a package's contour")
+            self.assertIsNone(refusal, "reading the bytes is not a refusal, it is the good case")
+            painted = sum(r[1] for r in fresh["terrain"]["layers"]["ground"]["rle"] if r[0])
+            self.assertNotEqual(painted, 7, "the banked contour overwrote a freshly-read one")
+            self.assertTrue(fresh["x-provenance"]["heightMap"]["textureBytesRead"])
+            self.assertNotIn("heightCarriedForward", fresh["x-provenance"]["heightMap"])
 
     def test_every_entity_states_its_origin(self):
         """Their top request: the tool was inferring zones from `x-path` and misclassifying any
@@ -872,9 +1000,12 @@ class DeterminismTests(unittest.TestCase):
         """Write-back contract §2: the count is the sheet's, and the sheet says how many.
 
         Also pins the two type rulings the reference package settled: `facing` is a compass
-        NAME and `facingIndex` is the baked step, so the integer never lands in `facing`; and
-        `facing` stays null because turning a step into a bearing is the sign error that put the
-        schoolhouse door 92 degrees off the green.
+        NAME and `facingIndex` is the baked step, so the integer never lands in `facing`.
+
+        `facing` is derived as of 2026-08-22 and no longer ships null; whether the DERIVATION is
+        right is not asked here, because a test in the same file as the arithmetic is how the
+        92-degree schoolhouse bug stayed green. `FacingTests` asks that question against the
+        village green instead.
         """
         repo = Repo(REPO)
         for name, scene, height in hh_scene_export.REGIONS:
@@ -882,7 +1013,8 @@ class DeterminismTests(unittest.TestCase):
             indexed = 0
             for entity in doc["entities"]:
                 sprite = (entity.get("x-sprite") or {}).get("name") or ""
-                self.assertIsNone(entity["facing"], "a bearing was derived from an index")
+                self.assertIsInstance(entity["facing"], (str, type(None)),
+                                      "an index landed in a field that holds a compass name")
                 index = entity["facingIndex"]
                 if index is None:
                     # Absence is meaningful: legacy single sprites end `_0`, with no `_d` at all.
@@ -899,9 +1031,22 @@ class DeterminismTests(unittest.TestCase):
                     self.assertGreater(entity["x-facings"], 0, name)
                     self.assertTrue(entity.get("x-facingsSource"),
                                     "a count with no declaration behind it")
+                else:
+                    # §6.2's standing ruling, unchanged by the derivation: the nine character
+                    # entities carry an index with no machine-readable count, and a name derived
+                    # from a count nobody declared would be the assumption §2 forbids.
+                    self.assertIsNone(entity["facing"],
+                                      f"{name} named a facing off an undeclared count")
 
-    def test_opts_come_from_the_ledger_or_say_they_do_not(self):
-        """#629: a lookup, never a derivation. Either the recipe drew this call or the note stands."""
+    def test_opts_come_from_a_committed_declaration_or_say_they_do_not(self):
+        """A lookup, never a derivation — now from either of the two things that record one.
+
+        #629's per-cell recipe ledger was the first. The kit contracts are the second: they are
+        what the bakers write beside a sheet, they carry `optionsJs` verbatim, and they are the
+        reason the school can be redrawn with its own siding instead of a default house. The
+        invariant is unchanged and is the whole point of both — **an opt in this file is one
+        somebody committed, and an entity with no declaration behind it still says so.**
+        """
         repo = Repo(REPO)
         for name, scene, height in hh_scene_export.REGIONS:
             doc = hh_scene_export.export_region(repo, name, scene, height)
@@ -915,9 +1060,20 @@ class DeterminismTests(unittest.TestCase):
                     self.assertTrue(call["args"], "the recipe's args were dropped")
                     self.assertEqual(call["fn"], "render")
                     self.assertIsNotNone(call.get("x-cellIndex"))
+                elif call.get("x-fromContract"):
+                    # Sheet-level, and it has to say so or a reader takes it for the cell's own.
+                    self.assertNotIn("x-optsNote", call, f"{name} {entity['id']}")
+                    self.assertTrue(call["opts"], "a contract-backed call with nothing in it")
+                    self.assertIn("SHEET", call["x-optsScope"], f"{name} {entity['id']}")
+                    self.assertIn("#", call["x-fromContract"], "the entry is not named")
                 else:
-                    self.assertEqual(call["opts"], {}, "opts appeared without a recipe behind them")
+                    self.assertEqual(call["opts"], {},
+                                     "opts appeared with no declaration behind them")
                     self.assertIn("x-optsNote", call)
+                    # The one thing this exporter may say about opts it cannot resolve: the
+                    # verbatim expression, never a half-evaluation of it.
+                    if "x-optsExpression" in call:
+                        self.assertIn("x-optsExpressionFrom", call, f"{name} {entity['id']}")
 
     def test_a_recipe_for_a_different_bake_is_refused(self):
         """The sheet hash is the proof the recipe describes THIS bake. Refused, not warned."""
@@ -1048,3 +1204,374 @@ class DeterminismTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class FacingTests(unittest.TestCase):
+    """Whether the DERIVED compass name is the right one — asked from outside the arithmetic.
+
+    ⚠️⚠️ THE POINT OF THIS CLASS IS THAT IT DOES NOT RE-DERIVE THE ANSWER. The defect this
+    field spent two rounds shipping `null` to avoid was not a hard sum; it was a sign, and its
+    test was green throughout because the test was the algebraic inverse of the implementation
+    (`StPetersVillage.FacingToward` vs `StPetersVillageTests.DoorErrorDegrees`, recorded in
+    BuildingFacing's remarks and in contract §6.2). So the oracle here is a FACT ABOUT THE
+    WORLD that `hhexport.facing` has never heard of: **the village builder turns every door
+    toward the village green**, and the green is the midpoint of the hearth and the start spawn,
+    both of which are read out of the builder's own source below rather than copied here.
+
+    A facing is quantised to 45 degrees, so "correct" means within a half-cell of the true
+    bearing. Under the rule this exporter uses, the four village buildings land at 4-20 degrees.
+    Under the inverted reading they land at up to 176 — the red saltbox facing away from the
+    village it stands in — which is what `test_the_inverted_reading_is_caught_by_that_check`
+    exists to demonstrate, because a test that cannot fail is not evidence.
+    """
+
+    BUILDER = "Assets/_Project/Code/App/Editor/StPetersBuilder.cs"
+    # sin 40 degrees: the shared bake camera's elevation, so one metre of NORTHWARD ground
+    # travel draws 0.643 world units up the screen (ADR 0034 / SpriteLightMath.GroundDepthScale).
+    # Un-squashing before taking any angle is the second of BuildingFacing's two named traps.
+    GROUND_DEPTH_SCALE = math.sin(math.radians(40.0))
+
+    @classmethod
+    def setUpClass(cls):
+        repo = Repo(REPO)
+        name, scene, height = hh_scene_export.REGIONS[1]
+        assert name == "StPeters", name
+        cls.doc = hh_scene_export.export_region(repo, name, scene, height)
+        cls.green = cls._village_green()
+
+    @classmethod
+    def _village_green(cls):
+        """The builder's own green, parsed from its own source — never restated here.
+
+        ``VillageGreen => (VillageHearthPos + StartSpawnPos) * 0.5``. Reading the two constants
+        keeps this oracle tracking the builder: move a site and this test moves with it, which is
+        the opposite of a hard-coded expectation that has to be re-blessed after every edit.
+        """
+        with open(os.path.join(REPO, cls.BUILDER), encoding="utf-8", errors="replace") as handle:
+            source = handle.read()
+        points = {}
+        for field in ("VillageHearthPos", "StartSpawnPos"):
+            match = re.search(
+                field + r"\s*=\s*new Vector3\(\s*(-?[\d.]+)f?\s*,\s*(-?[\d.]+)f?\s*,", source)
+            assert match, f"{field} is no longer declared as a Vector3 literal in {cls.BUILDER}"
+            points[field] = (float(match.group(1)), float(match.group(2)))
+        hearth, spawn = points["VillageHearthPos"], points["StartSpawnPos"]
+        return ((hearth[0] + spawn[0]) / 2.0, (hearth[1] + spawn[1]) / 2.0)
+
+    def _bearing_to_green(self, position):
+        """Compass degrees from a world position to the green, on the GROUND plane."""
+        dx = self.green[0] - position[0]
+        dy = (self.green[1] - position[1]) / self.GROUND_DEPTH_SCALE
+        return (90.0 - math.degrees(math.atan2(dy, dx))) % 360.0
+
+    @staticmethod
+    def _error(a, b):
+        return abs((a - b + 180.0) % 360.0 - 180.0)
+
+    def _village_buildings(self):
+        out = []
+        for entity in self.doc["entities"]:
+            path = entity.get("x-path") or ""
+            if (path.startswith("IslandVillage/") and path.count("/") == 1
+                    and entity.get("facingIndex") is not None and entity.get("x-facings")):
+                out.append(entity)
+        return out
+
+    def test_the_villages_doors_point_at_the_village_green(self):
+        """The oracle. Every village door is turned toward the green by the builder, so the
+        exported bearing has to agree with the bearing to the green within a half-cell."""
+        buildings = self._village_buildings()
+        self.assertGreaterEqual(len(buildings), 4, "the village lost its buildings")
+        for entity in buildings:
+            half_cell = 180.0 / entity["x-facings"]
+            wanted = self._bearing_to_green(entity["pos"])
+            got = entity["x-facingBearingDeg"]
+            self.assertIsNotNone(got, entity["x-path"])
+            self.assertLessEqual(
+                self._error(wanted, got), half_cell,
+                f"{entity['x-path']} faces {entity['facing']} ({got} deg) but the green is at "
+                f"{wanted:.1f} deg — more than the {half_cell} deg a facing can be quantised by")
+
+    def test_the_inverted_reading_is_caught_by_that_check(self):
+        """The check above must be able to FAIL, or it is decoration.
+
+        `dir = (facings - i) mod facings` is real — it is what `RigBaker.DirForCell` hands a
+        counter-clockwise rig — but it describes the argument, not the sheet, and applying it to
+        the exported index is the mistake this whole field was held back for. Note where it
+        agrees: index 4 is a fixed point of that map, so the SCHOOL alone cannot tell the two
+        readings apart. The saltbox can, and does, by 176 degrees.
+        """
+        worst = 0.0
+        for entity in self._village_buildings():
+            facings = entity["x-facings"]
+            inverted = ((facings - entity["facingIndex"]) % facings) * (360.0 / facings)
+            worst = max(worst, self._error(self._bearing_to_green(entity["pos"]), inverted))
+        self.assertGreater(worst, 90.0,
+                           "the inverted reading passes the green check, so that check is not "
+                           "evidence for either reading")
+
+    def test_the_derivation_agrees_with_the_reference_packages_worked_pairs(self):
+        """The editor's own sample carries two: `facingIndex 3 -> "SE"` and `4 -> "S"`.
+
+        SE is the one that counts. S survives the inverted reading too.
+        """
+        with open(os.path.join(REPO, REFERENCE), encoding="utf-8") as handle:
+            reference = json.load(handle)
+        pairs = [(e["facingIndex"], e["facing"]) for e in reference["entities"]
+                 if e.get("facing") and e.get("facingIndex") is not None]
+        self.assertTrue(pairs, "the reference sample no longer carries a worked facing pair")
+        for index, name in pairs:
+            self.assertEqual(facing_mod.name_for(index, 8), name, f"index {index}")
+
+    def test_a_bearing_between_two_names_is_not_rounded_onto_either(self):
+        """Naming the nearest point is the aliasing this exporter refuses everywhere else."""
+        self.assertEqual(facing_mod.name_for(1, 4), "E")            # 4 facings: cardinals
+        self.assertEqual(facing_mod.name_for(2, 16), "NE")          # 16: the even cells land
+        self.assertEqual(facing_mod.name_for(4, 16), "E")
+        self.assertIsNone(facing_mod.name_for(1, 16), "22.5 deg was named as though it were NE")
+        self.assertEqual(facing_mod.bearing_degrees(1, 16), 22.5, "the bearing itself is still a fact")
+        self.assertIsNone(facing_mod.name_for(1, 5))
+        self.assertIsNone(facing_mod.name_for(None, 8))
+        self.assertIsNone(facing_mod.name_for(3, None))
+
+    def test_the_index_still_wraps_the_way_the_baker_packs_it(self):
+        for index in range(8):
+            self.assertEqual(facing_mod.name_for(index, 8), facing_mod.name_for(index + 8, 8))
+
+    def test_every_named_facing_carries_the_bearing_it_was_named_from(self):
+        """The number the name rounds off, kept beside it so the claim stays checkable."""
+        named = 0
+        for entity in self.doc["entities"]:
+            if not entity.get("facing"):
+                continue
+            named += 1
+            bearing = entity["x-facingBearingDeg"]
+            self.assertEqual(facing_mod.name_for(entity["facingIndex"], entity["x-facings"]),
+                             entity["facing"], entity["x-path"])
+            self.assertAlmostEqual(
+                bearing, (360.0 / entity["x-facings"]) * entity["facingIndex"] % 360.0, places=4)
+        self.assertGreater(named, 0, "no facing was named at all")
+
+    def test_the_interior_sits_a_half_turn_from_its_building(self):
+        """A cross-check the kit states and this export never uses: `Interiors.json` declares
+        `exteriorFacingOffset: 4`, because `interiorIsoRig` puts its door on the OTHER gable.
+
+        If the bearing table were mirrored, the two would not stay a half-turn apart — so this
+        is a second, independent witness that the step direction is right, and it comes from the
+        art contract rather than from anything in `hhexport`.
+        """
+        by_path = {e.get("x-path"): e for e in self.doc["entities"]}
+        with open(os.path.join(REPO, "Assets/_Project/Art/Sprites/Interiors/Interiors.json"),
+                  encoding="utf-8") as handle:
+            offset = json.load(handle)["exteriorFacingOffset"]
+        pairs = 0
+        for path, interior in by_path.items():
+            if not path.endswith("/Interior") or interior.get("facingIndex") is None:
+                continue
+            building = by_path.get(path[: -len("/Interior")])
+            if not building or building.get("facingIndex") is None:
+                continue
+            # The offset is the INTERIOR rig measured against houseIsoRig — Interiors.json says
+            # so, and the reason it is 4 is that houseIsoRig puts its door on +y and
+            # interiorIsoRig on -y. The shop shells are a different exterior with a different
+            # answer: shops.contract.json declares its own `shellFacingOffset`, and it is 0.
+            # Applying the house number to a shopfront would be asserting the wrong contract.
+            if building.get("rigSource") != "docs/art/rigs/houseIsoRig.js":
+                continue
+            facings = interior["x-facings"]
+            self.assertEqual(interior["facingIndex"],
+                             (building["facingIndex"] + offset) % facings, path)
+            self.assertEqual(
+                self._error(interior["x-facingBearingDeg"], building["x-facingBearingDeg"]),
+                180.0, f"{path} is not a half-turn from its building")
+            pairs += 1
+        self.assertGreater(pairs, 0, "no building/interior pair to cross-check")
+
+
+class ContractOptsTests(unittest.TestCase):
+    """`call.opts` read from a kit's committed contract, where no per-cell recipe covers a sheet.
+
+    The rule is §6.4's, applied to a second file: a LOOKUP, matched on the sheet an entry names,
+    refused whole when it cannot be read rather than half-evaluated.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        cls.repo = Repo(REPO)
+        cls.docs = {name: hh_scene_export.export_region(cls.repo, name, scene, height)
+                    for name, scene, height in hh_scene_export.REGIONS}
+
+    def _by_path(self, region, path):
+        for entity in self.docs[region]["entities"]:
+            if entity.get("x-path") == path:
+                return entity
+        self.fail(f"{region} has no entity at {path}")
+
+    def test_one_entity_per_kit_carries_its_own_committed_opts(self):
+        """Every kit contract in the repo that a placed entity reaches, proven one at a time.
+
+        The yard is the ledger's (per-cell); the rest are the contracts' (per-sheet). Naming
+        them individually is deliberate: a single "some entity somewhere has opts" would go on
+        passing while four of the five kits silently stopped resolving.
+        """
+        cases = [
+            ("StPeters", "IslandVillage/school", "Buildings.json", "era", "colonial"),
+            ("StPeters", "IslandVillage/school/Interior", "Interiors.json", "floor", "wideBoard"),
+            ("StPeters", "IslandVillage/school/Furniture/Table (0,0.6)", "Interiors.json",
+             "wood", "oak"),
+        ]
+        for region, path, contract, key, value in cases:
+            entity = self._by_path(region, path)
+            call = entity["call"]
+            self.assertIsNotNone(call, path)
+            self.assertIn(contract, call["x-fromContract"], path)
+            self.assertEqual(call["opts"].get(key), value, f"{path} opts: {call['opts']}")
+            self.assertNotIn("x-synthesised", call, path)
+
+    def test_the_yard_keeps_its_per_cell_recipe_when_a_contract_also_covers_the_sheet(self):
+        """Both declarations exist for the yard. The recipe wins: it knows which CELL.
+
+        `yardIso.contract.json` says `kept: 0.88` for the whole bake and the postRail recipe says
+        `0.72` for this one, so the value is the tell — a contract that had overwritten a recipe
+        would show up here as the sheet-level number.
+        """
+        entity = self._by_path("NineMileCreek", "Yards/ParishHall/postRail_000")
+        call = entity["call"]
+        self.assertIn("x-fromRecipe", call)
+        self.assertNotIn("x-fromContract", call)
+        self.assertEqual(call["opts"]["kept"], 0.72,
+                         "the sheet-level contract overwrote the cell's own recipe")
+
+    def test_a_preset_expression_is_carried_verbatim_and_never_evaluated(self):
+        """`shops.contract.json` holds `Object.assign({},Shopfront.PRESETS['harbourStore'])`.
+
+        That is a call into the rig's own preset table. Half-reading it — taking `harbourStore`
+        as an opt, say — would invent an option no rig reads, and the rigs fail SOFT, so nothing
+        would flag it. It is reported for a reader that can run the rig, and opts stay empty.
+        """
+        shops = [e for e in self.docs["NineMileCreek"]["entities"]
+                 if (e.get("call") or {}).get("x-optsExpression")]
+        self.assertTrue(shops, "no shop carries the unresolved preset expression")
+        for entity in shops:
+            call = entity["call"]
+            self.assertEqual(call["opts"], {}, "a preset expression was half-evaluated")
+            self.assertIn("PRESETS", call["x-optsExpression"])
+            self.assertIn("shops.contract.json", call["x-optsExpressionFrom"])
+        notes = self.docs["NineMileCreek"]["x-provenance"]["entityNotes"]
+        self.assertTrue(notes["contractRefusals"], "the refusal was not reported")
+        self.assertTrue(any("not a literal" in why for why in notes["contractRefusals"]))
+
+    def test_the_literal_grammar_reads_what_the_repo_commits(self):
+        """Parsed against every `optionsJs` on disk, not against invented samples."""
+        seen = 0
+        for folder, _dirs, files in os.walk(os.path.join(REPO, "Assets")):
+            for filename in files:
+                if not filename.endswith(".json"):
+                    continue
+                try:
+                    with open(os.path.join(folder, filename), encoding="utf-8") as handle:
+                        data = json.load(handle)
+                except (ValueError, OSError, UnicodeDecodeError):
+                    continue
+                if not isinstance(data, dict):
+                    continue
+                for rows in data.values():
+                    for row in rows if isinstance(rows, list) else ():
+                        raw = isinstance(row, dict) and row.get("optionsJs")
+                        if not isinstance(raw, str) or not raw.startswith("{"):
+                            continue
+                        parsed = contracts.parse_object_literal(raw)
+                        self.assertIsInstance(parsed, dict, raw[:60])
+                        self.assertTrue(parsed, raw[:60])
+                        seen += 1
+        self.assertGreater(seen, 10, "the sweep found almost no literals — it stopped walking")
+
+    def test_the_grammar_refuses_what_it_cannot_fully_read(self):
+        """Every refusal is whole. A partial dict is the dangerous outcome, not the safe one."""
+        for bad in ("Object.assign({},Shopfront.PRESETS['x'])",
+                    "{a:1",
+                    "{a:someIdentifier}",
+                    "{a:1}{b:2}",
+                    "{a:1,}}",
+                    "{'unterminated:1}",
+                    "{a:1} // trailing",
+                    "[1,2]",
+                    ""):
+            with self.assertRaises(contracts.Refused, msg=f"accepted {bad!r}"):
+                contracts.parse_object_literal(bad)
+        # ...and reads the shapes the contracts actually use, including a trailing comma.
+        self.assertEqual(contracts.parse_object_literal(
+            "{a:'x',b:0.5,c:true,d:false,e:null,f:-2,g:[1,'y'],h:{i:1},'j':2,}"),
+            {"a": "x", "b": 0.5, "c": True, "d": False, "e": None, "f": -2,
+             "g": [1, "y"], "h": {"i": 1}, "j": 2})
+
+    def test_an_entry_speaks_only_for_the_sheet_it_names(self):
+        """Matched on the sheet, never on a key resembling a stem — §6.4's no-aliasing rule.
+
+        The village kit is the case with teeth: `Buildings.json` holds nine entries whose keys
+        are `school`, `generalStore`, `redSaltbox` and so on, and a key-based match would hand
+        one building another's siding on a near miss.
+        """
+        village = "Assets/_Project/Art/Sprites/Buildings/Village"
+        school, _ = contracts.opts_for_sheet(self.repo, f"{village}/Village_school.png")
+        saltbox, _ = contracts.opts_for_sheet(self.repo, f"{village}/Village_redSaltbox.png")
+        self.assertEqual(school["key"], "school")
+        self.assertEqual(saltbox["key"], "redSaltbox")
+        self.assertNotEqual(school["opts"]["body"], saltbox["opts"]["body"],
+                            "two buildings resolved to the same entry")
+        # A sheet no entry names gets nothing rather than the folder's first row.
+        missing, why = contracts.opts_for_sheet(self.repo, f"{village}/Village_notABuilding.png")
+        self.assertIsNone(missing)
+        self.assertIsNone(why)
+
+    def test_the_village_resolves_its_rig_from_the_entry_not_the_folder(self):
+        """The entry names ONE rig for ONE sheet; the folder cannot choose and does not have to.
+
+        `Buildings.json` declares houseIsoRig AND wharfBuildingRig side by side, so
+        `rig_for_sheet` stays honestly ambiguous over the folder — that guard is not loosened
+        here. The per-entry `rigScript` is a narrower declaration than the folder-wide scan, and
+        it is what moves these eight off a sprite stem onto the editor's own vocabulary.
+        """
+        _name, source, _evidence, candidates = self.repo.rig_for_sheet(
+            "Assets/_Project/Art/Sprites/Buildings/Village/Village_school.png")
+        self.assertIsNone(source, "the folder-wide scan picked a rig it cannot choose between")
+        self.assertGreater(len(candidates), 1, "the folder is no longer ambiguous — re-check this")
+
+        school = self._by_path("StPeters", "IslandVillage/school")
+        self.assertEqual(school["rigSource"], "docs/art/rigs/houseIsoRig.js")
+        self.assertEqual(school["family"], "house")
+        self.assertFalse(school["x-familyIsSpriteStem"])
+        self.assertIn("Buildings.json#school", school["x-rigFrom"])
+        wire, _layers = families.load(self.repo)
+        self.assertIn(school["family"], wire, "resolved onto a name the editor cannot draw")
+
+    def test_a_kit_index_is_found_beside_its_per_sheet_sidecars(self):
+        """The discovery gap that hid `Buildings.json`, and the guard it must not cost.
+
+        The index rule used to require the folder hold exactly ONE json, which `Village/` never
+        will — it publishes a sidecar per sheet. Counting PNG-less candidates instead finds the
+        kit index there and still finds nothing in `Art/Boats/`, which holds four anchor files
+        and no index; resolving a dory to whichever of them sorts first is the failure that
+        clause exists to prevent.
+        """
+        found = self.repo.sidecars_for_sheet(
+            "Assets/_Project/Art/Sprites/Buildings/Village/Village_school.png")
+        self.assertEqual([os.path.basename(p) for p in found],
+                         ["Village_school.json", "Buildings.json"])
+        self.assertEqual(self.repo.sidecars_for_sheet("Assets/_Project/Art/Boats/DoryIso.png"), [])
+        self.assertEqual(self.repo.rig_for_sheet("Assets/_Project/Art/Boats/DoryIso.png"),
+                         (None, None, None, []))
+
+    def test_contract_opts_say_they_are_the_sheets_and_not_the_cells(self):
+        """A per-sheet value read as a per-cell one is a wrong variant drawn with confidence."""
+        carried = 0
+        for name, doc in self.docs.items():
+            for entity in doc["entities"]:
+                call = entity.get("call") or {}
+                if not call.get("x-fromContract"):
+                    continue
+                carried += 1
+                self.assertIn("SHEET", call["x-optsScope"], f"{name} {entity['id']}")
+                self.assertNotIn("x-cellIndex", call, "a sheet-level opt claimed a cell")
+            self.assertTrue(doc["x-provenance"]["entityNotes"]["x-contractMeaning"])
+        self.assertGreater(carried, 0, "no entity reads a kit contract at all")
