@@ -47,6 +47,12 @@ namespace HiddenHarbours.Tests.PlayMode
         private sealed class SteadyHelm : IHelmControl
         {
             public bool HasHelm => true;
+
+            /// <summary>These tests DRAW this helm, and the panel only ever draws the one the player
+            /// is at — so the presentation answer is true here for the same reason the engine one is.
+            /// (The two are separate questions on the real relay: HasHelm is "an engine hull is being
+            /// driven", IsPlayerHelm is "by her".)</summary>
+            public bool IsPlayerHelm => true;
             public HelmControlStyle Style => HelmControlStyle.Lever;
             public HelmLeverFinish LeverFinish => HelmLeverFinish.Graphite;
             public HelmWheelRim WheelRim => HelmWheelRim.Rubber;
