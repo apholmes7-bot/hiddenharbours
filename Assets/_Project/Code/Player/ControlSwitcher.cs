@@ -1605,6 +1605,13 @@ namespace HiddenHarbours.Player
                 if (_boatController != null) _boatController.enabled = true;
                 if (_boatInput != null) _boatInput.enabled = true;
 
+                // Restate the helm too. Nothing clears it across a hop today (Mode does not change, and
+                // GameServices.Reset is a test-and-teardown call), so this is a re-statement of an
+                // identity already held — but this method's whole job is to say everything about the
+                // control mode again after the world moved underneath it, and a helm left out of that
+                // list is the one thing it would be silently wrong about.
+                PublishHelmOwnership();
+
                 BoatHullDef hull = _boatController != null ? _boatController.Hull : null;
                 float height = hull != null ? hull.CameraWorldHeightMeters : 14f;
             float hullLength = hull != null ? hull.LengthMeters : 0f;   // the camera floors the framing by it (§9.8)

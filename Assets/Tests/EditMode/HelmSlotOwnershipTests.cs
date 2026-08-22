@@ -217,8 +217,9 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void ReRegisteringOneRelay_MovesItToItsNewHull_RatherThanAddingASecondEntry()
         {
-            // The dev boat picker's F-swap re-skins the ONE persistent boat in place; a hull rebind
-            // must not leave the relay registered twice, nor against the boat it no longer rides.
+            // The register is unique BOTH ways: one hull one helm, and one relay one hull. This is the
+            // second half — a relay that turns up under a different boat leaves the first behind, so a
+            // stale entry can never grant it the helm of a hull it no longer rides.
             _slot.Register(_playersDory, _dorysRelay, _dorysRelay);
             _slot.Register(_skippersBoat, _dorysRelay, _dorysRelay);
 
@@ -227,6 +228,20 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsNull(_slot.Control, "it no longer rides that hull");
             _slot.SetPilotedHull(_skippersBoat);
             Assert.AreSame(_dorysRelay, _slot.Control, "it rides this one");
+        }
+
+        [Test]
+        public void ReRegisteringOneHull_ReplacesItsRelay_RatherThanAddingASecondEntry()
+        {
+            // And the first half: a hull has ONE helm, which is why she is the register's key. A relay
+            // that stood down and came back, or a replacement installed on the same boat, takes over
+            // her entry rather than sitting beside it.
+            _slot.Register(_playersDory, _dorysRelay, _dorysRelay);
+            _slot.Register(_playersDory, _skippersRelay, _skippersRelay);
+            _slot.SetPilotedHull(_playersDory);
+
+            Assert.AreEqual(1, _slot.RegisteredCount, "one hull, one entry");
+            Assert.AreSame(_skippersRelay, _slot.Control, "the latest registration is the live one");
         }
 
         [Test]
