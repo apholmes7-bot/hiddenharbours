@@ -267,6 +267,18 @@ namespace HiddenHarbours.Tests.EditMode
 
         /// <summary>An instruments seam with a position and NO plotter fitted — the state the honesty
         /// invariant is about.</summary>
+        /// <summary>Put a fake glass in the Core slot the way the real relay reaches it: REGISTER it
+        /// against a hull, then declare that hull piloted. The slot is arbitrated by occupancy
+        /// (<see cref="HelmSlot"/>) rather than assigned, so an instrument seam nobody is standing at
+        /// reads empty — which is the correct answer, and no longer something a test can bypass. The
+        /// fake stands in for its own hull; the arbiter only ever asks whether two tokens are the same
+        /// object.</summary>
+        private static void Pilot(IHelmInstruments glass)
+        {
+            GameServices.Helm.Register(glass, null, glass);
+            GameServices.Helm.SetPilotedHull(glass);
+        }
+
         private sealed class FakeInstruments : IHelmInstruments
         {
             public Vector2 Pos;
@@ -294,7 +306,7 @@ namespace HiddenHarbours.Tests.EditMode
             var save = new FakeSave { Current = FreshSave() };
             var inst = new FakeInstruments { Pos = new Vector2(0f, 0f) };
             GameServices.Save = save;
-            GameServices.HelmInstruments = inst;
+            Pilot(inst);
             GameServices.CurrentRegionId = StP;
             NavTrackRecorder.Reset();
 
@@ -319,7 +331,7 @@ namespace HiddenHarbours.Tests.EditMode
             GameServices.CurrentRegionId = StP;
             Assert.IsFalse(NavTrackRecorder.Tick(), "a region but no boat to read a position from");
 
-            GameServices.HelmInstruments = new FakeInstruments { HasPos = false };
+            Pilot(new FakeInstruments { HasPos = false });
             Assert.IsFalse(NavTrackRecorder.Tick(), "a boat that cannot say where it is records nothing");
         }
 
@@ -330,7 +342,7 @@ namespace HiddenHarbours.Tests.EditMode
             // the game's normal cadence, like every other piece of accrued state.
             var save = new CountingSave { Current = FreshSave() };
             GameServices.Save = save;
-            GameServices.HelmInstruments = new FakeInstruments { Pos = Vector2.zero };
+            Pilot(new FakeInstruments { Pos = Vector2.zero });
             GameServices.CurrentRegionId = StP;
             NavTrackRecorder.Reset();
 

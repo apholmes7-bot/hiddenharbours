@@ -33,16 +33,37 @@ namespace HiddenHarbours.Core
         public static IActiveBoatService ActiveBoat { get; set; }
 
         /// <summary>
+        /// <b>Who holds the helm, and how it is decided</b> — the arbiter behind
+        /// <see cref="HelmControl"/> and <see cref="HelmInstruments"/>. Relays REGISTER against the
+        /// hull they ride; the Player lane DECLARES the hull the player is piloting; this grants the
+        /// slot to the one registration where those meet. Enable order is not part of the question.
+        ///
+        /// <para>It is a get-only static rather than a settable slot because it is not a service
+        /// anybody registers — it is the rule itself, and it must exist before the first relay
+        /// enables. <see cref="Reset"/> empties it; nothing replaces it.</para>
+        /// FLAG lead-architect: new Core contract (the helm-ownership seam).
+        /// </summary>
+        public static HelmSlot Helm { get; } = new HelmSlot();
+
+        /// <summary>
         /// The active boat's piloting-control seam (ADR 0025 S1): which diegetic control the helm
         /// shows (tiller/lever), the live drive+steer to draw it with, and the input intents the
         /// overlay may send back (detent steps, drag-to-set). Same lifetime + discipline as
-        /// <see cref="ActiveBoat"/>: OPTIONAL, NOT part of <see cref="Ready"/>, self-registered by
-        /// the Boats-lane producer (<c>HelmControlRelay</c>) and null on foot / in EditMode —
-        /// consumers must null-check (ADR 0007). The drive it reports IS the controller's own
-        /// <c>_throttle</c> (one state, one owner — never a UI-side copy).
+        /// <see cref="ActiveBoat"/>: OPTIONAL, NOT part of <see cref="Ready"/>, produced by the
+        /// Boats-lane <c>HelmControlRelay</c> and null on foot / in EditMode — consumers must
+        /// null-check (ADR 0007). The drive it reports IS the controller's own <c>_throttle</c>
+        /// (one state, one owner — never a UI-side copy).
+        ///
+        /// <para><b>⚠ Read-only, and that is the fix.</b> This used to be a settable slot each relay
+        /// assigned itself into on enable, which made it LAST-WRITER-WINS: two hulls alive and the one
+        /// enabled last owned the helm regardless of where the player was standing (the owner's
+        /// 2026-08-21 playtest — the arrival passenger shown the skipper's wheel and gauges). It now
+        /// reports <see cref="HelmSlot.Control"/>: the relay of the hull the player is actually
+        /// piloting, or null. To put a relay here, REGISTER it with <see cref="Helm"/> and have the
+        /// Player lane declare its hull piloted — nothing may assign it.</para>
         /// FLAG lead-architect: new Core contract (the ADR 0025 S1 helm-control seam).
         /// </summary>
-        public static IHelmControl HelmControl { get; set; }
+        public static IHelmControl HelmControl => Helm.Control;
 
         /// <summary>
         /// The active boat's FUEL TANK, as a plain <see cref="IFuelVessel"/> — so the economy can fill a
@@ -71,9 +92,13 @@ namespace HiddenHarbours.Core
         /// lifetime + discipline: OPTIONAL, NOT part of <see cref="Ready"/>, self-registered by the
         /// Boats-lane producer (<c>HelmControlRelay</c>), null on foot / in EditMode. Consumers must
         /// null-check (ADR 0007).
+        ///
+        /// <para>⚠ Read-only for the same reason as <see cref="HelmControl"/>, and granted in the same
+        /// breath to the SAME relay — so the dash and the throttle can never end up describing two
+        /// different boats. See <see cref="HelmSlot"/>.</para>
         /// FLAG lead-architect: new Core contract (the ADR 0025 S2 helm-instrument seam).
         /// </summary>
-        public static IHelmInstruments HelmInstruments { get; set; }
+        public static IHelmInstruments HelmInstruments => Helm.Instruments;
 
         /// <summary>
         /// Where the fish are (ADR 0025 S3): the schools the fish finder DRAWS and the fishing path
@@ -673,8 +698,7 @@ namespace HiddenHarbours.Core
             Wallet = null;
             Licenses = null;
             ActiveBoat = null;
-            HelmControl = null;
-            HelmInstruments = null;
+            Helm.Reset();                // both faces at once — one arbiter, one grant
             FishSchools = null;          // → EmptyFishSchools.Instance; this property is never null
             RadarContacts = null;        // → EmptyRadarSea.Instance; likewise never null
             Save = null;

@@ -235,27 +235,44 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         /// <summary>
-        /// 🔴 <b>The passenger is shown no helm.</b> The owner's 2026-08-21 playtest: the helm card,
-        /// wheel and gauges drawn for a boat the skipper was steering. The relay on the arrival hull
-        /// must never take the Core helm slot: the slot is empty before she spawns and must be empty
-        /// after, and the relay BoatController installs on her must be disabled, not merely hidden.
+        /// 🔴 <b>The passenger is shown no helm</b> — and now BY CONSTRUCTION rather than by a
+        /// workaround. The owner's 2026-08-21 playtest saw the helm card, wheel and gauges drawn for a
+        /// boat the skipper was steering, because the Core helm slot went to whichever relay enabled
+        /// LAST and this hull's did. The opening used to pre-empt that by adding her relay DISABLED;
+        /// this test now asserts the opposite of that workaround — her relay is ordinary and ENABLED,
+        /// registered like every other hull's, and the slot is STILL empty, because nobody has declared
+        /// the passenger to be piloting her.
+        ///
+        /// <para>The stronger claim is the second half: a live registration that is not granted. That is
+        /// the seam working, rather than the one hull that bit us being kept away from it.</para>
         /// </summary>
         [UnityTest]
         public IEnumerator ThePassengerIsShownNoHelm_AndTheHelmSlotIsNotTaken()
         {
-            GameServices.HelmControl = null;
+            GameServices.Helm.Reset();
             var opening = Build(hasRestAnchor: false, alreadyArrived: false);
             Assert.IsTrue(opening.TryBegin(), "the arrival must start on a fresh save");
             yield return null;   // Awake/OnEnable on the spawned hull have run
             yield return null;
 
-            Assert.IsNull(GameServices.HelmControl,
-                "the arrival hull's relay took the Core helm slot — the passenger would be shown the " +
-                "skipper's helm, and whatever boat held the slot before loses it");
-
             var relay = opening.Boat.GetComponent<HelmControlRelay>();
-            Assert.IsNotNull(relay, "BoatController still self-installs a relay; the arrival must pre-empt it");
-            Assert.IsFalse(relay.enabled, "the arrival hull's relay must be DISABLED, never merely hidden");
+            Assert.IsNotNull(relay, "BoatController still self-installs a relay on every hull");
+            Assert.IsTrue(relay.enabled,
+                "no workaround left: her relay is an ordinary, enabled one. If a future change disables " +
+                "it again, this test stops proving what it is here to prove");
+            Assert.AreEqual(1, GameServices.Helm.RegisteredCount,
+                "and it really did register — this is a LIVE request that loses, not an absent one");
+
+            Assert.IsNull(GameServices.HelmControl,
+                "the passenger is not piloting her, so no relay holds the helm — the card, the wheel and " +
+                "the gauges all draw nothing");
+            Assert.IsNull(GameServices.HelmInstruments, "and neither does the glass");
+            Assert.IsFalse(relay.IsPlayerHelm,
+                "asked directly, her own relay says the same: an engine hull under way (HasHelm) that " +
+                "the player is not at the helm of");
+            Assert.IsTrue(relay.HasHelm,
+                "⚠ and HasHelm IS true — the two questions are genuinely different, which is why reading " +
+                "the engine one as the player one drew a passenger somebody else's wheel");
         }
 
         /// <summary>A current no pilot can take off: whatever she does, she makes 0.3 m/s along +x.

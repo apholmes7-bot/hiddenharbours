@@ -166,8 +166,11 @@ namespace HiddenHarbours.UI
 
         private void Update()
         {
+            // ⚠ IsPlayerHelm, not HasHelm — the card is drawn for the hand ON the wheel. HasHelm only
+            // says an engine hull is under way, which is equally true of a boat somebody else is
+            // steering (the owner's 2026-08-21 playtest: wheel and gauges drawn to a passenger).
             IHelmControl helm = GameServices.HelmControl;
-            HelmControlStyle style = helm != null && helm.HasHelm ? helm.Style : HelmControlStyle.None;
+            HelmControlStyle style = helm != null && helm.IsPlayerHelm ? helm.Style : HelmControlStyle.None;
             _dashLive = false;     // republished below only if a dash actually draws this frame
 
             if (style == HelmControlStyle.None)

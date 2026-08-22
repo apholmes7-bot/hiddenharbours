@@ -172,7 +172,23 @@ namespace HiddenHarbours.Player
         /// A const so tests assert the behaviour without transcribing the string (BoatAnchor's pattern).</summary>
         public const string NoticeTooDeepToStepOut = "Too deep to step out — take her in to the shallows";
 
-        public ControlMode Mode { get; private set; } = ControlMode.OnFoot;
+        private ControlMode _mode = ControlMode.OnFoot;
+
+        /// <summary>
+        /// Which station the player is at. <b>Every write also publishes who holds the helm</b> — the
+        /// one place it is declared, so no transition can forget to (there are seven of them, plus the
+        /// region-hop re-assert, and a helm left declared after stepping ashore is a wheel drawn for
+        /// nobody).
+        ///
+        /// <para>The backing field is explicit so the initialiser does not publish before
+        /// <see cref="Awake"/>: a switcher constructing itself has nothing to say about the helm yet,
+        /// and saying "nobody" at that moment could clear a declaration a live one had just made.</para>
+        /// </summary>
+        public ControlMode Mode
+        {
+            get => _mode;
+            private set { _mode = value; PublishHelmOwnership(); }
+        }
 
         // Was: a screen-space "E: Board" label this component built and parked over the world. Retired by
         // the owner's 2026-08-19 ruling — the answer now goes out as a Core offer (InteractOffer) on the
@@ -532,6 +548,22 @@ namespace HiddenHarbours.Player
             Mooring.ToggleRoot(Player.position, Player);   // root at the player's feet, or take back in hand
             return true;
         }
+
+        /// <summary>
+        /// <b>Declare which hull the player is piloting</b> — the Player-lane half of the helm-ownership
+        /// seam (<see cref="HelmSlot"/>). At the helm it is this switcher's boat; in every other mode it
+        /// is nobody, because on foot, on the deck and in a truck the player is not steering a hull.
+        ///
+        /// <para>This is what replaced last-writer-wins. Relays register themselves against their own
+        /// hull as they enable — the arrival skipper's, the ambient fleet's, a boat for sale — and the
+        /// slot goes to the one named here, in whatever order they woke up. Nothing named ⇒ no helm
+        /// drawn, which is the right picture for a passenger.</para>
+        ///
+        /// <para>⚠ Called from the <see cref="Mode"/> setter, so it must stay cheap and must not
+        /// re-enter the state machine. It is one identity write into Core.</para>
+        /// </summary>
+        private void PublishHelmOwnership()
+            => GameServices.Helm.SetPilotedHull(_mode == ControlMode.Aboard ? _boatController : null);
 
         // ---- transitions --------------------------------------------------------------------
 
@@ -1739,6 +1771,10 @@ namespace HiddenHarbours.Player
             _dockZone = dockZone;
             _zoneRadius = zoneRadius;
             _disembarkPoint = disembarkPoint;
+            // ⭐ LAST, and load-bearing beyond "start on foot": the Mode setter republishes who holds the
+            // helm, so re-wiring this switcher onto a different boat cannot leave the arbiter holding the
+            // old one. Nothing else re-points _boatController — an in-place hull swap (the dev picker's
+            // F-cycle, a purchase) keeps the same controller, which is the very identity registered.
             Mode = ControlMode.OnFoot;
         }
 
@@ -1814,6 +1850,23 @@ namespace HiddenHarbours.Player
             InteractVerb.ClearCandidate();
             ClearOffer();
             InteractActorProbe.Clear();
+        }
+
+        /// <summary>
+        /// Give the helm declaration back when this switcher is really gone — <b>OnDestroy, never
+        /// OnDisable</b>. A region hop root-toggles whole scenes, so "disabled" happens constantly and
+        /// does not mean "gone"; a Core registration relinquished there is wiped mid-crossing and the
+        /// player comes out the other side with no helm. That is the house law for
+        /// <see cref="GameServices"/> slots (<c>GameRoot.OnDestroy</c> is the reference), and this is
+        /// one — the declaration behind <see cref="GameServices.HelmControl"/>.
+        ///
+        /// <para>Guarded on still owning it: if something else has since declared a different hull,
+        /// clearing would take the helm off whoever is now at it.</para>
+        /// </summary>
+        private void OnDestroy()
+        {
+            if (ReferenceEquals(GameServices.Helm.PilotedHull, _boatController))
+                GameServices.Helm.SetPilotedHull(null);
         }
 
         /// <summary>
