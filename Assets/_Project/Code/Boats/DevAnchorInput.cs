@@ -39,7 +39,7 @@ namespace HiddenHarbours.Boats
         [SerializeField] private Key _anchorKey = Key.R;
 
         private BoatAnchor _anchor;
-        private HelmControlRelay _relay;
+        private BoatController _boat;
 
         // Anchoring is done FROM THE BOAT: at the helm or on her deck, never ashore. Republished on every
         // transition (and on region arrival), so this survives a scene hop.
@@ -61,25 +61,34 @@ namespace HiddenHarbours.Boats
             && IsThePlayersBoat;
 
         /// <summary>
-        /// Is this the hull the player is actually on? The relay claims the Core helm slot for its own
-        /// enable lifetime (the <see cref="ActiveBoatProbe"/> pattern), so slot ownership is the same
-        /// "the boat under you" test <see cref="DevInstrumentCycle"/> uses. A rig with no relay at all
-        /// (EditMode, a bare test harness) is treated as the player's boat — there is no other.
+        /// Is this the hull the player is actually on? Asked of the Core declaration
+        /// (<see cref="HelmSlot.IsPlayersBoat"/>) — the boat she is ABOARD, which is deliberately a
+        /// wider fact than the boat she is at the HELM of.
+        ///
+        /// <para><b>⚠ It must not be the helm question, and this key is where that goes wrong most
+        /// easily.</b> The starting dory is ROWED: she has no helm at all (<c>HasHelm</c> is the engine
+        /// question), so a helm-shaped test would kill the anchor on the very boat the game opens with.
+        /// And stepping back from the wheel onto the deck gives up the helm, not the boat — this key
+        /// lives on the deck by design ("anchoring is a boat job either way", above).</para>
+        ///
+        /// <para>This used to compare against the Core helm slot, which answered correctly only by
+        /// accident: every relay claimed that slot on enable, so "the slot is mine" meant no more than
+        /// "I was the last hull to wake up". Once the slot became honest about who is piloting, the
+        /// borrowed answer went dead on the player's own boat.</para>
         /// </summary>
         private bool IsThePlayersBoat
         {
             get
             {
-                if (_relay == null) _relay = GetComponent<HelmControlRelay>();
-                if (_relay == null) return true;
-                return ReferenceEquals(GameServices.HelmInstruments, _relay);
+                if (_boat == null) _boat = GetComponent<BoatController>();
+                return GameServices.Helm.IsPlayersBoat(_boat);
             }
         }
 
         private void Awake()
         {
             if (_anchor == null) _anchor = GetComponent<BoatAnchor>();
-            if (_relay == null) _relay = GetComponent<HelmControlRelay>();
+            if (_boat == null) _boat = GetComponent<BoatController>();
         }
 
         private void OnEnable()

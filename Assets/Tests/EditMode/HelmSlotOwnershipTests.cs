@@ -106,6 +106,60 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsFalse(_slot.Holds(_skippersRelay), "the other hull is registered, not granted");
         }
 
+        // ---- the boat you are ON is wider than the boat you STEER --------------------------------
+
+        [Test]
+        public void SteppingOntoTheDeck_GivesUpTheHelm_AndKeepsTheBoat()
+        {
+            // The distinction the dev anchor key turns on. Anchoring is a boat job either way, so a
+            // reader that asked the HELM question would go dead the moment she stepped back from the
+            // wheel — and dead for the whole game on the rowed dory, which has no helm at all.
+            _slot.Register(_playersDory, _dorysRelay, _dorysRelay);
+            _slot.SetPilotedHull(_playersDory);
+            _slot.SetPlayersBoat(_playersDory);
+            Assert.AreSame(_dorysRelay, _slot.Control, "precondition: she is at the wheel");
+
+            _slot.SetPilotedHull(null);          // stepped back onto the deck…
+
+            Assert.IsNull(_slot.Control, "…the helm is nobody's…");
+            Assert.IsTrue(_slot.IsPlayersBoat(_playersDory), "…and the boat is still hers");
+        }
+
+        [Test]
+        public void ARowedHull_IsNeverAHelm_AndIsStillHerBoat()
+        {
+            // No relay registered at all — the shape of a hull with nothing to steer. The helm side has
+            // nothing to say about her; the boat side does.
+            _slot.SetPlayersBoat(_playersDory);
+
+            Assert.IsNull(_slot.Control);
+            Assert.IsTrue(_slot.IsPlayersBoat(_playersDory));
+        }
+
+        [Test]
+        public void TheBoatSideHasNoFallbackEither()
+        {
+            Assert.IsFalse(_slot.IsPlayersBoat(_playersDory), "nothing declared is not 'the only boat'");
+            _slot.SetPlayersBoat(_playersDory);
+            Assert.IsFalse(_slot.IsPlayersBoat(_skippersBoat), "and somebody else's hull is never hers");
+            Assert.IsFalse(_slot.IsPlayersBoat(null), "nor is nothing");
+            _slot.SetPlayersBoat(null);
+            Assert.IsFalse(_slot.IsPlayersBoat(_playersDory), "stepping ashore gives her back");
+        }
+
+        [Test]
+        public void ADestroyedBoat_IsNobodysBoat()
+        {
+            var hull = ScriptableObject.CreateInstance<HelmSlotTestHull>();
+            _slot.SetPlayersBoat(hull);
+            Assert.IsTrue(_slot.IsPlayersBoat(hull), "precondition");
+
+            Object.DestroyImmediate(hull);
+
+            Assert.IsFalse(ReferenceEquals(hull, null), "precondition: a genuine fake-null");
+            Assert.IsFalse(_slot.IsPlayersBoat(hull), "a boat that no longer exists is nobody's");
+        }
+
         // ---- stepping back ----------------------------------------------------------------------
 
         [Test]
@@ -249,12 +303,15 @@ namespace HiddenHarbours.Tests.EditMode
         {
             _slot.Register(_playersDory, _dorysRelay, _dorysRelay);
             _slot.SetPilotedHull(_playersDory);
+            _slot.SetPlayersBoat(_playersDory);
 
             _slot.Reset();
 
             Assert.IsNull(_slot.Control);
             Assert.IsNull(_slot.Instruments);
             Assert.IsNull(_slot.PilotedHull);
+            Assert.IsNull(_slot.PlayersBoat);
+            Assert.IsFalse(_slot.IsPlayersBoat(_playersDory));
             Assert.AreEqual(0, _slot.RegisteredCount);
         }
 

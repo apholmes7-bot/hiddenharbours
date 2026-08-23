@@ -150,6 +150,17 @@ namespace HiddenHarbours.Tests.PlayMode
             var boat = go.AddComponent<BoatController>();   // auto-adds Rigidbody2D + capsule + mooring
             rb = go.GetComponent<Rigidbody2D>();
             boat.SetHull(hull);
+            // ⭐ THIS IS THE PLAYER'S BOAT. The dev anchor key works ONE hull's tackle, so it has to be
+            // told which; in the game ControlSwitcher declares it from its own control mode, and this
+            // fixture has no switcher. It used to be answered by accident — every relay claimed the Core
+            // helm slot on enable, so "the slot is mine" meant "I woke up last" — and that stopped being
+            // an answer when the slot started telling the truth about who is piloting.
+            //
+            // ⚠ The WIDER declaration, not the helm one: this hull is a ROWED dory (Hull() leaves
+            // Propulsion at its Oars default), so she has no helm to be at, and the key must still live
+            // on her — and on her deck, which is not the helm either.
+            GameServices.Helm.SetPlayersBoat(boat);
+
             var anchor = go.GetComponent<BoatAnchor>();
             Assert.IsNotNull(anchor, "BoatController must self-install the ground tackle in play mode");
             Assert.IsNotNull(go.GetComponent<DevAnchorInput>(), "…and the greybox key that works it");

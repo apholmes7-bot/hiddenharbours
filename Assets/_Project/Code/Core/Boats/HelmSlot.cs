@@ -63,6 +63,7 @@ namespace HiddenHarbours.Core
         private readonly List<Entry> _registered = new();
 
         private object _pilotedHull;
+        private object _playersBoat;
         private IHelmControl _control;
         private IHelmInstruments _instruments;
 
@@ -87,6 +88,25 @@ namespace HiddenHarbours.Core
         /// <summary>The hull the Player lane last declared the player to be piloting (null = nobody).
         /// Exposed so the declarer can check it still owns the declaration before clearing it.</summary>
         public object PilotedHull => _pilotedHull;
+
+        /// <summary>
+        /// <b>The boat the player is ON</b> — at the helm OR standing on her deck. Strictly WIDER than
+        /// <see cref="PilotedHull"/>, and deliberately a separate fact rather than a synonym:
+        ///
+        /// <list type="bullet">
+        ///   <item>A rowed dory is a boat you are aboard and never a boat you are at the HELM of
+        ///   (<c>HasHelm</c> is the engine question), and her ground tackle still has to answer to
+        ///   you.</item>
+        ///   <item>Stepping back from the wheel onto the deck gives up the helm and does not give up
+        ///   the boat. Anchoring is a boat job either way.</item>
+        /// </list>
+        ///
+        /// <para>This is what "is this MY boat?" readers want — the dev anchor key works one hull's
+        /// tackle and must not be eaten by a second hull in the scene. They used to ask it by comparing
+        /// against the helm slot, which answered it only by accident (every relay took that slot on
+        /// enable) and stopped answering it the moment the slot became honest.</para>
+        /// </summary>
+        public object PlayersBoat => _playersBoat;
 
         /// <summary>How many hulls are registered right now — every live one, not just the granted
         /// hull. Diagnostic: a test asserting "two hulls, one helm" reads it.</summary>
@@ -164,6 +184,26 @@ namespace HiddenHarbours.Core
             Regrant();
         }
 
+        /// <summary>
+        /// <b>The player is on THIS boat</b> — the wider declaration (<see cref="PlayersBoat"/>), for the
+        /// readers that mean "my gear" rather than "my wheel". False when nothing is declared, when the
+        /// boat asked about is null, and when either has been destroyed: no fallback here either, for the
+        /// same reason the helm has none — "there is only one boat" is a guess, and it is wrong the day
+        /// it stops being true.
+        /// </summary>
+        public bool IsPlayersBoat(object boat)
+        {
+            if (boat == null || _playersBoat == null) return false;
+            if (!ReferenceEquals(_playersBoat, boat)) return false;
+            return Alive(boat);
+        }
+
+        /// <summary>
+        /// <b>The player is aboard THIS boat</b> — at the helm or on her deck. Published by the Player
+        /// lane alongside <see cref="SetPilotedHull"/>; null when she is ashore or driving.
+        /// </summary>
+        public void SetPlayersBoat(object boat) => _playersBoat = boat;
+
         /// <summary>True when this relay is the granted one — the question "am I the player's helm?",
         /// asked by the relay itself (<c>IsPlayerHelm</c>) and by the dev instrument keys.</summary>
         public bool Holds(IHelmControl control)
@@ -178,6 +218,7 @@ namespace HiddenHarbours.Core
         {
             _registered.Clear();
             _pilotedHull = null;
+            _playersBoat = null;
             _control = null;
             _instruments = null;
         }
