@@ -130,6 +130,19 @@ namespace HiddenHarbours.Tools.RigBaking
         /// extent through <see cref="PropFootprintWidth"/>/<see cref="PropFootprintDepth"/> instead.</summary>
         public double FootprintWidthMetres, FootprintLengthMetres;
 
+        /// <summary>
+        /// ROOM: the rig's DECLARED floor-to-floor rise to the storey above, in metres
+        /// (<c>anchors().storeyZ</c> — this storey's ceiling plus the joists it carries). Zero for a
+        /// prop, and zero for any rig that does not declare one.
+        ///
+        /// <para>Read rather than assumed for the same reason <see cref="FootprintWidthMetres"/> is: a
+        /// second storey has to be drawn at the height the ART puts it, and a number guessed on this
+        /// side is a number that goes quietly wrong the next time a rig changes its ceiling. It is a
+        /// HEIGHT in metres, not a projected offset — whoever draws the storey projects it at the shared
+        /// camera themselves.</para>
+        /// </summary>
+        public double StoreyHeightMetres;
+
         /// <summary>PROP: <c>footprint(name,opts)</c> in metres — what a placer collides and spaces by.</summary>
         public double PropFootprintWidth, PropFootprintDepth;
 
@@ -421,6 +434,16 @@ namespace HiddenHarbours.Tools.RigBaking
 
             r.FootprintWidthMetres = host.EvaluateNumber($"{g}.anchors(0,{req.OptsJs}).Wd");
             r.FootprintLengthMetres = host.EvaluateNumber($"{g}.anchors(0,{req.OptsJs}).Ln");
+
+            // The storey above's height, if this rig declares one. Optional and quiet about it: a rig
+            // with no second storey in it has nothing to say here, and a missing anchor must not fail a
+            // bake that is otherwise complete. What must NOT happen is the number being invented on this
+            // side, which is why it is read and not defaulted to anything but zero.
+            string s = $"{g}.anchors(0,{req.OptsJs}).storeyZ";
+            r.StoreyHeightMetres =
+                host.EvaluateBool($"typeof ({s}) === 'number' && isFinite({s})")
+                    ? host.EvaluateNumber(s)
+                    : 0.0;
 
             int n = req.Facings;
             r.DoorX = new double[n]; r.DoorY = new double[n];

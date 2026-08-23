@@ -15,9 +15,15 @@ namespace HiddenHarbours.World
     /// already up. A single toggling fixture would have been fewer objects and one more thing that can
     /// be in the wrong state.</para>
     ///
-    /// <para><b>Nothing here moves the player.</b> Both stairs stand at the same point of the shared
-    /// footprint, so the occupant is already where the other storey's stair is — the swap alone puts
-    /// them at the top. See <see cref="BuildingInterior.TryGoToLevel"/> for why that is the whole trick.</para>
+    /// <para><b>Nothing here moves the player — but something does now (ADR 0036, amended
+    /// 2026-08-23).</b> Both stairs still stand at the same point of the shared FOOTPRINT, which is why
+    /// pressing at the top lands you on the way down. What changed is that the storey above is drawn at
+    /// its true height, so that one footprint point is a storey further up the screen: the occupant is
+    /// carried there by <see cref="BuildingInterior.TryGoToLevel"/>, over
+    /// <c>GameConfig.StairClimbSeconds</c>, as a <see cref="StairTraversal"/>. This fixture asks for the
+    /// storey and the interior does the walking — the stair's own root is switched off the instant the
+    /// level changes (that is what takes it out of the interact registry), so a climb driven from here
+    /// would stop dead on the frame it started.</para>
     ///
     /// <para><b>Interact, not walk-on.</b> A trigger volume on the stairwell would fire on any pass
     /// across it — including the one where you were walking to the window — and a storey that changes
@@ -115,8 +121,9 @@ namespace HiddenHarbours.World
             _arrivalText = arrivalText ?? "";
         }
 
-        /// <summary>Take the stair. Returns whether the storey actually changed. Public so tests drive
-        /// it without input.</summary>
+        /// <summary>Take the stair. Returns whether the storey actually changed — which it does on the
+        /// frame of the press, before the walk between the two floors has played (see the class remarks).
+        /// Public so tests drive it without input.</summary>
         public bool Climb()
         {
             if (_interior == null) return false;

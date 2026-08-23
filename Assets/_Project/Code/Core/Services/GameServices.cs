@@ -500,6 +500,21 @@ namespace HiddenHarbours.Core
                                                      : GameConfig.DefaultInteriorRockScale);
 
         /// <summary>
+        /// <b>How long the walk up (or down) one storey takes</b>, in seconds — ADR 0036's climb, on the
+        /// same contract as <see cref="InteriorRockScale"/>: the <c>Config != null</c> discipline (never
+        /// <c>?.</c>/<c>??</c> on a <c>UnityEngine.Object</c>), resolved per read so the owner can feel a
+        /// slider move in Play, and falling back to <see cref="GameConfig.DefaultStairClimbSeconds"/> so
+        /// an unwired region scene or test rig climbs at the shipped pace rather than at zero.
+        ///
+        /// <para>Floored at 0, and 0 is meaningful: it is the instant swap the storey mechanism had
+        /// before the climb existed. Negative is not — a hand-edited YAML must not be able to run the
+        /// climb backwards.</para>
+        /// </summary>
+        public static float StairClimbSeconds =>
+            UnityEngine.Mathf.Max(0f, Config != null ? Config.StairClimbSeconds
+                                                     : GameConfig.DefaultStairClimbSeconds);
+
+        /// <summary>
         /// The wind-fetch amplitude envelope at a world position — the model resolved against the LIVE
         /// services (<see cref="TidalTerrain"/>, <see cref="Environment"/>, <see cref="WaveFetch"/>).
         /// Returns 1 (the exact passthrough) when the model is off, when there is no sim, or when no

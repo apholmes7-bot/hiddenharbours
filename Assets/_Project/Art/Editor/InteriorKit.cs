@@ -440,6 +440,18 @@ namespace HiddenHarbours.Art.Editor
             public float footprintWidthMetres;
             public float footprintLengthMetres;
 
+            /// <summary>
+            /// ROOM: the rig's DECLARED floor-to-floor rise to the storey above, in METRES of height —
+            /// this storey's ceiling plus the joists it carries (<c>interiorIsoRig.anchors().storeyZ</c>).
+            /// Zero for a prop, and zero in any contract baked before the field existed.
+            ///
+            /// <para><b>What reads it:</b> the interiors placement, to draw a second storey at its true
+            /// height instead of exactly over the storey below (ADR 0036). It is a HEIGHT, so a consumer
+            /// projects it at the shared ¾ camera before using it as a world-Y offset —
+            /// <c>InteriorLevelLayout.UpperLevelY</c> is the one place that happens.</para>
+            /// </summary>
+            public float storeyHeightMetres;
+
             /// <summary>PROP: <c>footprint(name,opts)</c> in metres — what a placer collides by.</summary>
             public float propFootprintWidth;
             public float propFootprintDepth;

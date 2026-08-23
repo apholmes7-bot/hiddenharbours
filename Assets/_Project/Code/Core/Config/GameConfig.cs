@@ -30,6 +30,11 @@ namespace HiddenHarbours.Core
         /// with no GameConfig draw the same cabin the shipped asset does.</summary>
         public const float DefaultInteriorRockScale = 0.45f;
 
+        /// <summary>The ruled default for <see cref="StairClimbSeconds"/> (ADR 0036) — read by
+        /// <c>BuildingInterior</c> when no config is wired, so an EditMode rig, a bare region scene and
+        /// the shipped asset all climb a stair at the same pace.</summary>
+        public const float DefaultStairClimbSeconds = 0.5f;
+
         [Header("Clock")]
         [Tooltip("Real seconds per in-game day. 1800 = a 30-minute day (the owner's 2026-08-01 tide-pacing " +
                  "ruling; was 1200 = 20 min). Raising this slows EVERY real-time pace in the game — tide, " +
@@ -500,6 +505,17 @@ namespace HiddenHarbours.Core
                  "interior and the exterior are never co-visible: entering is a LAYER SWAP (ADR 0038 " +
                  "proposal 3), so the two poses are never on screen together to disagree.")]
         [Range(0f, 1f)] public float InteriorRockScale = DefaultInteriorRockScale;
+
+        [Header("Interior stairs (ADR 0036 — the climb between storeys)")]
+        [Tooltip("How long the player takes to walk up (or down) one storey, in seconds. The storey " +
+                 "above is drawn at its true height, so the two floors are a real distance apart and " +
+                 "the fisher walks that distance rather than blinking across it.\n\n" +
+                 "Feel, not physics: the climb covers no GROUND, so this is not a speed and no honest " +
+                 "stride can be derived from it. Short reads as a step up and long reads as a cutscene; " +
+                 "0.5 s is the ruled default. Set it to 0 for an instant swap — the pre-2026-08-23 " +
+                 "behaviour, and a legitimate accessibility answer for anyone who does not want the " +
+                 "camera moved for them.")]
+        [Min(0f)] public float StairClimbSeconds = DefaultStairClimbSeconds;
 
         // Convenience
         /// <summary>

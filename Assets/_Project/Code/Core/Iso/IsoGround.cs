@@ -54,6 +54,22 @@ namespace HiddenHarbours.Core
             Mathf.Sin(CameraElevationDegrees * Mathf.Deg2Rad);
 
         /// <summary>
+        /// How far up the screen one metre of HEIGHT draws (<c>cos 40° ≈ 0.766</c>) — the OTHER half of
+        /// the same camera, and the one anything standing above the ground plane needs. Mirrors
+        /// <c>SpriteLightMath.HeightScale</c>, which is the definition, and is pinned to it by
+        /// <c>IsoGroundTests</c> for the reason in the class remarks.
+        ///
+        /// <para><b>Height is not depth.</b> A metre NORTH and a metre UP both draw up the screen and
+        /// they draw DIFFERENT amounts — 0.643 against 0.766 — so a height run through
+        /// <see cref="GroundDepthScale"/> lands 19% short and a depth run through this one 19% long.
+        /// Neither is distinguishable by eye from "the art is a bit off", which is why the two are named
+        /// rather than shared. (<c>DriveSeatMath</c> and <c>CliffWallGeometry</c> use the Art-side twin
+        /// for exactly this; <c>InteriorLevelLayout</c> uses this one to put a storey above a storey.)</para>
+        /// </summary>
+        public static readonly float HeightScale =
+            Mathf.Cos(CameraElevationDegrees * Mathf.Deg2Rad);
+
+        /// <summary>
         /// A world-space delta re-expressed in GROUND metres — the depth axis stretched back out by
         /// <see cref="GroundDepthScale"/>, the across axis left alone because it was never squashed.
         ///

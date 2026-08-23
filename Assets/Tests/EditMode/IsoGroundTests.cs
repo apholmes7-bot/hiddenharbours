@@ -46,6 +46,22 @@ namespace HiddenHarbours.Tests.EditMode
                 "the shared bake camera's elevation must be ONE number, not two that agree today");
             Assert.AreEqual(SpriteLightMath.GroundDepthScale, IsoGround.GroundDepthScale, 1e-6f,
                 "Core's copy of the depth squash must track Art's definition");
+            Assert.AreEqual(SpriteLightMath.HeightScale, IsoGround.HeightScale, 1e-6f,
+                "and so must its copy of the HEIGHT scale, which is the other half of the same camera");
+        }
+
+        [Test]
+        public void HeightAndDepth_AreDifferentNumbers_AndNeitherStandsInForTheOther()
+        {
+            // 0.766 against 0.643. The two are close enough to look interchangeable in a diff and 19%
+            // apart on screen, which is the whole reason they are named separately: a storey height run
+            // through the depth squash lands a fifth of a storey low, and reads as "the art is a bit off"
+            // rather than as a bug. (InteriorLevelLayout.UpperLevelY is the consumer that would.)
+            Assert.Greater(IsoGround.HeightScale, IsoGround.GroundDepthScale,
+                "under a camera BELOW 45° a metre of height draws taller than a metre of depth");
+            Assert.AreEqual(1f, IsoGround.HeightScale * IsoGround.HeightScale +
+                                IsoGround.GroundDepthScale * IsoGround.GroundDepthScale, 1e-5f,
+                "and the two are one camera's sin/cos, not two independently tuned numbers");
         }
 
         // ---- the bearing ----------------------------------------------------------------------------

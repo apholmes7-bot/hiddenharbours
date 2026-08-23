@@ -247,7 +247,10 @@ Three properties of this rung, because it is deliberately not ownership:
   bed keeps the day and **wakes you at it** — nothing else.
 
 The mechanism — a storey is a second interior *layer* on one footprint, not a place you travel to —
-is [ADR 0036](../adr/0036-interior-levels-as-layers.md). **You now wake where you slept**: the save
+is [ADR 0036](../adr/0036-interior-levels-as-layers.md). Since its **2026-08-23 amendment** the layer
+is drawn at the rig's declared storey height rather than over the storey below, and the fisher
+**walks up** the half-second between them (`GameConfig.StairClimbSeconds`; set it to 0 for the
+instant swap). **You now wake where you slept**: the save
 carries a rest anchor — region, storey and position, all three, because a bare position names the
 wrong room in a house with an upstairs — which is
 [ADR 0037](../adr/0037-rest-anchor.md), schema v12 → v13. One limit worth knowing: the anchor is

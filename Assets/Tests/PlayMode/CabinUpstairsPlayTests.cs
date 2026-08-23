@@ -59,6 +59,12 @@ namespace HiddenHarbours.Tests.PlayMode
         const int Facings = 8;
         const float GroundDepthScale = 0.6427876f;   // sin 40° at the shared bake camera
 
+        /// <summary>How far apart sageCottage's two floors are, in metres of HEIGHT —
+        /// <c>interiorIsoRig</c>'s declared <c>storeyZ</c> (its ceiling plus 0.34 m of joists), which the
+        /// bake writes into the interiors contract. Restated here for the same reason the footprint is:
+        /// this assembly cannot see the editor-side kit that reads it.</summary>
+        const float StoreyHeightMetres = 3.1025f;
+
         // The upstairs, in the room's model frame. A landing up the right-hand side, a bedroom either
         // side of an east–west partition. The same SHAPE as the shipped plan; the shipped plan's own
         // coordinates are pinned in EditMode.
@@ -181,6 +187,16 @@ namespace HiddenHarbours.Tests.PlayMode
 
             InteriorFootprint footprint = _interior.Footprint;
 
+            // ⭐ The storey above stands a storey UP (ADR 0036 as amended), so everything on it is placed
+            //    from the same rectangle lifted by the rig's declared height — exactly as the builder
+            //    does it. Deriving both from one footprint is what stops the fixtures and the assertions
+            //    drifting onto different floors.
+            float upperY = InteriorLevelLayout.UpperLevelY(StoreyHeightMetres);
+            var upstairs = new InteriorFootprint(footprint.Centre + new Vector2(0f, upperY),
+                                                 FloorWidth, FloorLength, Facing, Facings,
+                                                 GroundDepthScale,
+                                                 footprint.DoorSign, footprint.DoorAcrossMetres);
+
             // The house's own walls — always on, both storeys, exactly as BuildWalls stands them.
             var wallsGo = ChildGo("Walls");
             foreach (Vector2[] quad in footprint.WallQuads(WallThickness, DoorwayWidth))
@@ -188,35 +204,42 @@ namespace HiddenHarbours.Tests.PlayMode
 
             // What exists only upstairs: the partitions, and the plug over the front door.
             foreach (Vector4 r in Partitions)
-                AddQuad(_upperWalls, footprint.Quad(r.x, r.y, r.z, r.w));
-            AddQuad(_upperWalls, footprint.DoorwayPlugQuad(WallThickness, DoorwayWidth));
+                AddQuad(_upperWalls, upstairs.Quad(r.x, r.y, r.z, r.w));
+            AddQuad(_upperWalls, upstairs.DoorwayPlugQuad(WallThickness, DoorwayWidth));
 
             // The stairwell, placed TWICE on one model point — the foot downstairs, the head upstairs.
+            // Same footprint COORDINATE, one storey apart: that is what makes the climb a straight rise
+            // and the way back a press where you land.
             var up = Fixture(_groundProps, "stair up", footprint, StairPoint)
                 .AddComponent<InteriorStair>();
             up.Configure(_interior, "fixture.play.stair_up", 0, 1, 1.2f, "up");
 
-            var down = Fixture(_upperProps, "stair down", footprint, StairPoint)
+            var down = Fixture(_upperProps, "stair down", upstairs, StairPoint)
                 .AddComponent<InteriorStair>();
             down.Configure(_interior, "fixture.play.stair_down", 1, 0, 1.2f, "down");
 
             // The interior comes along so each bed can report the STOREY it is on when the player turns
             // in — which is what makes the wake land in this room and not the one below it (ADR 0037).
-            Fixture(_upperProps, "player bed", footprint, PlayerBedPoint)
+            Fixture(_upperProps, "player bed", upstairs, PlayerBedPoint)
                 .AddComponent<InteriorBed>()
                 .Configure("fixture.play.bed_player", true, "", "your bed at Ginny's", 1.4f, _interior);
 
-            Fixture(_upperProps, "ginny bed", footprint, OwnerBedPoint)
+            Fixture(_upperProps, "ginny bed", upstairs, OwnerBedPoint)
                 .AddComponent<InteriorBed>()
                 .Configure("fixture.play.bed_owner", false, OwnerName, "", 1.4f, _interior);
 
-            Fixture(_upperProps, "wardrobe", footprint, WardrobePoint)
+            Fixture(_upperProps, "wardrobe", upstairs, WardrobePoint)
                 .AddComponent<InteriorWardrobe>()
                 .Configure("fixture.play.wardrobe", 1.2f);
 
-            _interior.ConfigureUpperLevel(_upper, _upperProps.transform, _upperWalls.transform);
+            _interior.ConfigureUpperLevel(_upper, _upperProps.transform, _upperWalls.transform, upperY);
             _cottage.SetActive(true);
         }
+
+        /// <summary>The storey above's footprint — the one every upstairs coordinate in this file is
+        /// measured from. Asked of the component rather than rebuilt, so a test can never measure against
+        /// a floor the house does not think it has.</summary>
+        InteriorFootprint Upstairs => _interior.FootprintFor(InteriorLevelLayout.UpperLevel);
 
         static GameObject Fixture(GameObject root, string name, in InteriorFootprint footprint,
                                   Vector2 modelMetres)
@@ -266,8 +289,9 @@ namespace HiddenHarbours.Tests.PlayMode
             return true;
         }
 
-        /// <summary>Walk in, cross to the foot of the stairs, and go up. Asserts its own preconditions
-        /// so a failure downstream is never a silent mis-setup.</summary>
+        /// <summary>Walk in, cross to the foot of the stairs, and go up — waiting out the climb, because
+        /// the fisher now walks between the storeys and everything upstairs is a storey above where they
+        /// pressed. Asserts its own preconditions so a failure downstream is never a silent mis-setup.</summary>
         IEnumerator GoUpstairs()
         {
             InteriorFootprint f = _interior.Footprint;
@@ -277,12 +301,21 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.IsTrue(Press(), "precondition: the stairwell is the candidate at the stair");
             yield return null;
             Assert.AreEqual(1, _interior.Level, "precondition: upstairs");
+            yield return WaitForTheClimb();
+        }
+
+        /// <summary>Let the walk between storeys play out. Frame-capped rather than open-ended: a climb
+        /// that never finishes is a bug worth a failed assertion, not a hung suite.</summary>
+        IEnumerator WaitForTheClimb()
+        {
+            for (int frame = 0; frame < 600 && _interior.IsClimbing; frame++) yield return null;
+            Assert.IsFalse(_interior.IsClimbing, "the climb between storeys finishes on its own");
         }
 
         // =============================================================================
 
         [UnityTest]
-        public IEnumerator WalkingIn_ThenUpTheStairs_SwapsTheStoreyWithNoLoadAndNoTeleport()
+        public IEnumerator WalkingIn_ThenUpTheStairs_SwapsTheStoreyWithNoLoad_AndWalksYouUpOneStorey()
         {
             InteriorFootprint f = _interior.Footprint;
 
@@ -296,24 +329,44 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.IsFalse(_upper.enabled);
 
             yield return WalkTo(f.ModelToWorld(StairPoint));
-            Vector3 before = _player.transform.position;
+            Vector3 foot = _player.transform.position;
 
             Assert.IsTrue(Press(), "the interact verb finds the stairwell");
             yield return null;
 
-            Assert.AreEqual(1, _interior.Level, "you are upstairs");
+            Assert.AreEqual(1, _interior.Level, "you are upstairs on the frame of the press");
             Assert.IsTrue(_upper.enabled);
             Assert.IsFalse(_ground.enabled, "and the ground floor is switched off, not sorted behind");
             Assert.IsTrue(_upperProps.activeSelf);
-            Assert.AreEqual(before, _player.transform.position,
-                            "NOTHING MOVED — the stairwell is the same point on both storeys, which is " +
-                            "the whole reason a second level can be a layer swap");
             Assert.IsTrue(_interior.IsInside, "and you are still inside the same building");
+
+            // ⭐ THE AMENDED BEHAVIOUR (ADR 0036, 2026-08-23). The storey above is DRAWN a storey up, so
+            //    the head of the stairs is a real distance from the foot of them — and the fisher walks
+            //    it. Before the amendment both floors were drawn at the same transform, this assertion
+            //    read "NOTHING MOVED", and going upstairs did not look like going anywhere.
+            Assert.IsTrue(_interior.IsClimbing, "the body is on the stairs, not already at the top");
+            Assert.Greater(_interior.UpperLevelY, 1f, "and the two floors are a real storey apart");
+
+            yield return WaitForTheClimb();
+
+            Vector3 head = _player.transform.position;
+            Assert.AreEqual(foot.x, head.x, 0.001f,
+                            "the stairwell is the same footprint COORDINATE on both storeys — which is " +
+                            "still why the way back is a press where you land, and not a search");
+            Assert.AreEqual(foot.y + _interior.UpperLevelY, head.y, 0.01f,
+                            "and you have climbed exactly one storey");
+            Assert.AreEqual(1, _interior.Level, "the walk changed no state; it only carried the body");
+            Assert.IsTrue(_interior.IsInside,
+                          "and the threshold test followed you up — the inside test knows which storey " +
+                          "it is asking about");
 
             Assert.IsTrue(Press(), "the head of the stairs is now the candidate");
             yield return null;
             Assert.AreEqual(0, _interior.Level);
             Assert.IsTrue(_ground.enabled);
+
+            yield return WaitForTheClimb();
+            Assert.AreEqual(foot.y, _player.transform.position.y, 0.01f, "and back down where you began");
         }
 
         [UnityTest]
@@ -333,9 +386,16 @@ namespace HiddenHarbours.Tests.PlayMode
 
             yield return GoUpstairs();
 
+            // The SAME line through the SAME doorway, one storey up — where the plug now stands, because
+            // the upper level's colliders were built from the lifted footprint along with everything else
+            // on that floor.
+            InteriorFootprint u = Upstairs;
+            Vector2 insideUp = u.ModelToWorld(new Vector2(0f, -FloorLength * 0.5f + 1.0f));
+            Vector2 outsideUp = u.ModelToWorld(new Vector2(0f, -FloorLength * 0.5f - 1.0f));
+
             Physics2D.SyncTransforms();
             yield return new WaitForFixedUpdate();
-            Assert.IsNotNull(Physics2D.Linecast(inside, outside).collider,
+            Assert.IsNotNull(Physics2D.Linecast(insideUp, outsideUp).collider,
                              "upstairs the SAME doorway is solid — there is nothing outside a " +
                              "first-floor door but air, and the plug is what says so");
         }
@@ -358,6 +418,11 @@ namespace HiddenHarbours.Tests.PlayMode
 
             yield return GoUpstairs();
 
+            // The same two points on the floor ABOVE — the partition stands with the storey it belongs to.
+            InteriorFootprint u = Upstairs;
+            south = u.ModelToWorld(PlayerBedPoint);
+            north = u.ModelToWorld(OwnerBedPoint);
+
             Physics2D.SyncTransforms();
             yield return new WaitForFixedUpdate();
             Assert.IsNotNull(Physics2D.Linecast(south, north).collider,
@@ -368,8 +433,8 @@ namespace HiddenHarbours.Tests.PlayMode
         [UnityTest]
         public IEnumerator SleepingInYourOwnBedSavesAndGinnysDoesNot()
         {
-            InteriorFootprint f = _interior.Footprint;
             yield return GoUpstairs();
+            InteriorFootprint f = Upstairs;   // the beds are on the floor you are now standing on
 
             // Ginny's bed first — a refusal must never write.
             yield return WalkTo(f.ModelToWorld(OwnerBedPoint));
@@ -404,6 +469,7 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return WalkTo(f.ModelToWorld(StairPoint));
             Assert.IsTrue(Press());
             yield return null;
+            yield return WaitForTheClimb();
 
             int beds = 0, stairs = 0;
             foreach (IInteractable c in Interactables.Active)
@@ -456,9 +522,9 @@ namespace HiddenHarbours.Tests.PlayMode
         public IEnumerator SleepingUpstairsThenLoading_WakesYouAtYourOwnBed_UpstairsNotUnderIt()
         {
             InteriorFootprint f = _interior.Footprint;
-            Vector2 bedside = f.ModelToWorld(PlayerBedPoint);
 
             yield return GoUpstairs();
+            Vector2 bedside = Upstairs.ModelToWorld(PlayerBedPoint);
             yield return WalkTo(bedside);
             Assert.IsTrue(Press(), "precondition: your own bed is the candidate");
             yield return null;
@@ -512,10 +578,10 @@ namespace HiddenHarbours.Tests.PlayMode
         public IEnumerator TheWokenStoreyIsAOneShot_AndTheFrontDoorStillOpensOnTheGroundFloor()
         {
             InteriorFootprint f = _interior.Footprint;
-            Vector2 bedside = f.ModelToWorld(PlayerBedPoint);
             Vector2 dooryard = f.ModelToWorld(new Vector2(0f, -FloorLength * 0.5f - 20f));
 
             yield return GoUpstairs();
+            Vector2 bedside = Upstairs.ModelToWorld(PlayerBedPoint);
             yield return WalkTo(bedside);
             Assert.IsTrue(Press());
             yield return null;
@@ -561,10 +627,9 @@ namespace HiddenHarbours.Tests.PlayMode
             EventBus.Clear<WardrobeRequested>();
             EventBus.Subscribe<WardrobeRequested>(asked.Add);
 
-            InteriorFootprint f = _interior.Footprint;
             yield return GoUpstairs();
 
-            yield return WalkTo(f.ModelToWorld(WardrobePoint));
+            yield return WalkTo(Upstairs.ModelToWorld(WardrobePoint));
             Assert.IsTrue(Press(), "the wardrobe is a candidate in the player's room");
             yield return null;
 
