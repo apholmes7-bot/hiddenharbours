@@ -19,6 +19,13 @@ namespace HiddenHarbours.UI
     /// at the rig's own half-degree, the compass at whole degrees — and ONE 600×510 card composite +
     /// texture upload only when some layer actually changed. Zero steady-state allocation.</para>
     ///
+    /// <para><b>The anchor switch</b> (ADR 0039's diegetic ground tackle) is the dash's one DISCRETE
+    /// control: the skiffs' third switch bat, the pilothouse's authored <c>ANCH</c> breaker. A press
+    /// inside its box is a whole flick — <see cref="IHelmControl.ToggleAnchor"/>, which is the same
+    /// <c>BoatAnchor.Toggle()</c> the anchor key presses — so the switch and the key can never put the
+    /// hook in two different places, and there is no drag session to hold. It draws from
+    /// <see cref="IHelmControl.AnchorState"/> and never from a UI-side copy of it.</para>
+    ///
     /// <para><b>The panel lights</b> are <see cref="HelmPanelLight"/>'s single clock-derived boolean,
     /// keyed like any other layer state: at dusk the chrome and the compass rebake ONCE and then cost
     /// nothing again until dawn. Never keyed on the continuous hour — that would repaint every
@@ -46,6 +53,8 @@ namespace HiddenHarbours.UI
         private CompassMount _shownCompass = (CompassMount)(-1);
         private int _shownBrowKey = int.MinValue;           // which brow mounts the chrome drew
         private bool _shownNight;                           // are the panel lights on in what is drawn
+        private bool _shownAnchorFitted;                    // is an ANCH switch drawn at all
+        private bool _shownAnchorDown;                      // …and is it shown thrown
 
         // The rig the surfaces are sized for, and the one interaction hit-tests against. The two
         // helm families use DIFFERENT canvases (600×510 skiff, 600×548 pilothouse) and different
@@ -64,6 +73,15 @@ namespace HiddenHarbours.UI
 
         /// <summary>True while this controller holds the steer session (test seam).</summary>
         public bool SteerSession => _steerSession;
+
+        /// <summary>Is the anchor switch currently DRAWN thrown (test seam)? Like
+        /// <see cref="NightShown"/>, this is what the CARD shows rather than what the tackle is doing —
+        /// which is precisely the thing a repaint-key regression gets silently wrong.</summary>
+        public bool AnchorShown => _shownAnchorDown;
+
+        /// <summary>Is an anchor switch drawn on this dash at all (test seam)? False on a hull whose
+        /// data says she carries no hook — no switch, nothing to press.</summary>
+        public bool AnchorSwitchShown => _shownAnchorFitted;
 
         /// <summary>Are the panel lights on in what is currently DRAWN (test seam)? Not "is it night"
         /// — that is <see cref="HelmPanelLight"/>; this is what the card actually shows, which is the
@@ -144,13 +162,22 @@ namespace HiddenHarbours.UI
             // compass, and the steady state either side of it costs nothing at all.
             bool night = HelmPanelLight.IsNight();
 
+            // THE GROUND TACKLE, keyed as two BOOLEANS (rule 7). Whether a hull carries a hook is data
+            // that only changes on a hull swap, and whether the hook is over the side changes on a
+            // press or a tide crossing — so the anchor costs one chrome rebake per event and nothing
+            // at all in between. Never keyed on the anchor's POSITION or its depth: those move every
+            // tick and would repaint the whole card every frame.
+            bool anchorFitted = helm.HasAnchor;
+            bool anchorDown = helm.AnchorState != AnchorState.Stowed;
+
             // The pilothouse brow's mounts follow the FIT (which slots are drawn, which are blanked,
             // and whether the sounder mount is the tall portrait box) — so the chrome tracks it too.
             int browKey = (((int)fit.Sounder * 3 + (int)fit.Compass) << 2)
                         | (fit.Radar ? 2 : 0) | (fit.Gps ? 1 : 0);
 
             bool chromeDirty = fit.Rig != _shownRig || running != _shownRunning || driveKey != _shownDriveKey
-                            || browKey != _shownBrowKey || night != _shownNight;
+                            || browKey != _shownBrowKey || night != _shownNight
+                            || anchorFitted != _shownAnchorFitted || anchorDown != _shownAnchorDown;
             bool leverDirty = chromeDirty || finish != _shownFinish;
             bool wheelDirty = fit.Rig != _shownRig || wheelKey != _shownWheelKey || rim != _shownRim;
             bool compassDirty = fit.Rig != _shownRig || headingKey != _shownHeadingKey
@@ -161,10 +188,22 @@ namespace HiddenHarbours.UI
             {
                 switch (fit.Rig)
                 {
-                    case ConsoleRigKind.Sport: SportDashRender.Render(_chrome, running, drive, rpm01, fuel01, night); break;
-                    case ConsoleRigKind.Novi: NoviDashRender.Render(_chrome, in fit, running, rpm01, fuel01, night); break;
-                    case ConsoleRigKind.Cape: CapeDashRender.Render(_chrome, in fit, running, rpm01, fuel01, night); break;
-                    default: ConsoleDashRender.Render(_chrome, running, drive, rpm01, fuel01, night); break;
+                    case ConsoleRigKind.Sport:
+                        SportDashRender.Render(_chrome, running, drive, rpm01, fuel01, night,
+                                               anchorFitted: anchorFitted, anchorDown: anchorDown);
+                        break;
+                    case ConsoleRigKind.Novi:
+                        NoviDashRender.Render(_chrome, in fit, running, rpm01, fuel01, night,
+                                              anchorDown: anchorDown);
+                        break;
+                    case ConsoleRigKind.Cape:
+                        CapeDashRender.Render(_chrome, in fit, running, rpm01, fuel01, night,
+                                              anchorDown: anchorDown);
+                        break;
+                    default:
+                        ConsoleDashRender.Render(_chrome, running, drive, rpm01, fuel01, night,
+                                                 anchorFitted: anchorFitted, anchorDown: anchorDown);
+                        break;
                 }
             }
             if (leverDirty) LeverRigRender.Render(_leverCell, drive, finish);
@@ -206,6 +245,8 @@ namespace HiddenHarbours.UI
             _shownCompass = fit.Compass;
             _shownBrowKey = browKey;
             _shownNight = night;
+            _shownAnchorFitted = anchorFitted;
+            _shownAnchorDown = anchorDown;
             return true;
         }
 
@@ -233,10 +274,27 @@ namespace HiddenHarbours.UI
 
         // ---- interaction (FOCUSED state; card-space rig px, y down) --------------------------------
 
-        /// <summary>A press landed on the focused dash: route it to the instrument under it —
-        /// wheel rim grab, lever grip drag, or the binnacle travel-guide jump (the S1 semantics).</summary>
+        /// <summary>A press landed on the focused dash: route it to the control under it — the anchor
+        /// switch's discrete flick, a wheel rim grab, a lever grip drag, or the binnacle travel-guide
+        /// jump (the S1 semantics).</summary>
         public void Press(IHelmControl helm, Vector2 cardPx, in HelmOverlaySettings cfg)
         {
+            // THE ANCHOR SWITCH, tested FIRST — the smallest, most explicitly bounded control on the
+            // card goes ahead of the two that are bounded by a RADIUS. Neither switch position is
+            // inside the wheel's grab circle at the shipped tuning (the golden test measures that), but
+            // that pad is an owner tunable: raising RimGrabPadPx must not quietly start eating presses
+            // aimed at a switch. A flick is discrete, so it takes the press whole and returns — no
+            // session opened, nothing for Track to follow.
+            //
+            // Gated on the hull carrying a hook as well as on the box, so a press on the pilothouse's
+            // dead ANCH breaker (authored on the rig, and drawn whether or not this boat has tackle)
+            // does nothing at all rather than silently reaching for an anchor that is not there.
+            if (helm.HasAnchor && HelmDashGeometry.IsOnAnchorSwitch(_rig, cardPx))
+            {
+                helm.ToggleAnchor();
+                return;
+            }
+
             HelmWheelSettings wheelCfg = GameServices.HelmWheel;
             if (HelmDashGeometry.IsOnWheel(_rig, cardPx, wheelCfg.RimGrabPadPx))
             {

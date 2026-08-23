@@ -85,9 +85,60 @@ namespace HiddenHarbours.Vehicles
             _visual.rotation = Quaternion.identity;
             _renderer.HeadingDirUnits = CurrentDirUnits;
 
+            PosePixelGrid();
             PoseFlotation();
             PoseWheels();
         }
+
+        /// <summary>
+        /// ⭐ <b>Put the machine's PICTURE back on the pixel grid</b> (owner playtest 2026-08-23 —
+        /// "the running fisher and the Otter go soft during movement").
+        ///
+        /// <para><b>Nothing else was ever going to do it.</b> The locked
+        /// <c>PixelPerfectCamera</c> runs <c>GridSnapping.PixelSnapping</c>, and that mode publishes
+        /// <c>PixelPerfectRendering.pixelSnapSpacing</c> — a grid <b>SpriteRenderers</b> snap to, and
+        /// only SpriteRenderers. A mesh vehicle draws through <c>IsoFacetHullRenderer</c>'s
+        /// MeshRenderer (ADR 0022 phase 3), so the engine's snap never reached her at all: she
+        /// rasterised at whatever sub-pixel offset her rigidbody happened to hold, and her facets'
+        /// edges resampled every frame. That is the soft read — a wobble in texel SIZE, not a
+        /// blur.</para>
+        ///
+        /// <para><b>It fixes her dither for free, and that is not a coincidence.</b> The facet
+        /// shader indexes its Bayer cell from <c>(worldXY − hullOrigin)·PPU</c>, and
+        /// <c>IsoFacetHullRenderer</c> takes that origin from THIS visual's own
+        /// <c>transform.position</c>. Hull-locked already, so the pattern never crawled across her
+        /// (ADR 0022's 13–16% crawl class was closed); but a hull-locked grid hung off a sub-pixel
+        /// origin still lands its cells between screen pixels. Snapping the origin lands the whole
+        /// lattice on whole pixels, so her shading quantises exactly where her silhouette does.</para>
+        ///
+        /// <para><b>The BODY is never touched</b> — this writes the visual child's world position and
+        /// nothing else, the same visual-only discipline <c>BoatController</c> states for rigidbody
+        /// interpolation. Physics, the odometer, the flotation read and every saved value keep the
+        /// honest float (rule 5). The grid itself is the camera's, relayed through Core because
+        /// Vehicles may not name App (rule 4); a frame where no camera has published one yet — a
+        /// bare EditMode fixture, the first frame of a scene — leaves her exactly where she was.</para>
+        ///
+        /// <para>Dirty-checked, so the OFF path is one write at the flip rather than one per frame,
+        /// and it restores <c>localPosition</c> zero: the picture the owner is A/B-ing against.</para>
+        /// </summary>
+        private void PosePixelGrid()
+        {
+            float grid = VehicleGridSnapMeters;
+            if (grid <= 0f)
+            {
+                if (_visual.localPosition != Vector3.zero) _visual.localPosition = Vector3.zero;
+                return;
+            }
+
+            Vector3 snapped = PixelGrid.Snap(transform.position, grid);
+            if (_visual.position != snapped) _visual.position = snapped;
+        }
+
+        /// <summary>The pixel grid to draw on, or <b>0 for "do not snap"</b> — the owner's A/B flag
+        /// off, or no camera having published a grid yet. One property so the gate is stated once and
+        /// the pose body above stays about posing.</summary>
+        private static float VehicleGridSnapMeters
+            => GameServices.PixelGridSnap ? GameServices.WorldUnitsPerRenderedPixel : 0f;
 
         /// <summary>
         /// ⭐ <b>Sink her onto her waterline, ride the sea she is in, and cut her at her own hull —

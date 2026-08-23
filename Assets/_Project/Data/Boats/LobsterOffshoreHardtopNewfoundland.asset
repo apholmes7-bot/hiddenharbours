@@ -31,6 +31,8 @@ MonoBehaviour:
   LateralDrag: 1445
   WindExposure: 0.4
   MaxSafeSeaState: 6
+  HasAnchor: 1
+  AnchorMassKg: 28
   RodeMeters: 36
   SeakeepingMassFactor: 3.9
   SeakeepingLiveliness: 0.36

@@ -136,10 +136,56 @@ namespace HiddenHarbours.App
             return h * Mathf.Max(2, -step) / p;              // integer downscale (clean ratio, shrunk)
         }
 
+        /// <summary>
+        /// A step's position in the ladder's own ORDER, widest to closest, as a contiguous integer.
+        ///
+        /// <para><b>Why an index exists at all.</b> Steps are not contiguous: 0 and -1 are not steps
+        /// (see the const doc), so the sequence runs … -4, -3, -2, <b>1</b>, 2, 3 … and plain
+        /// <c>step + 1</c> walks straight into the two-step hole at the 1:1 pivot. On foot that never
+        /// mattered because the walker's range lives entirely inside the upscale half. The aboard band
+        /// below is centred on a HULL's framing, and a big enough hull sits at or past the pivot — so
+        /// "one stop wider" there has to mean the next real stop, not an arithmetic neighbour that
+        /// does not exist.</para>
+        /// </summary>
+        public static int LadderIndex(int step) => step <= -2 ? step + 2 : step;
+
+        /// <summary>The step at a ladder index — the inverse of <see cref="LadderIndex"/>.</summary>
+        public static int StepAtIndex(int index) => index <= 0 ? index - 2 : index;
+
+        /// <summary>
+        /// Walk <paramref name="stops"/> whole stops along the ladder from <paramref name="step"/>,
+        /// <b>positive = closer</b>, saturating at the ladder's own ends rather than wrapping. Skips
+        /// the 0 / -1 hole by construction (it walks indices, not step numbers).
+        /// </summary>
+        public static int StepClosestBy(int step, int stops)
+            => StepAtIndex(Mathf.Clamp(LadderIndex(step) + stops,
+                                       LadderIndex(MinStep), LadderIndex(MaxStep)));
+
         /// <summary>True when a step is an integer UPSCALE — the only kind <c>PixelPerfectCamera</c>
         /// can express (its zoom clamps at &gt;= 1). A downscale step must bypass it and drive the
         /// orthographic size directly; see <c>CameraFollow.ApplyFramingHard</c>.</summary>
         public static bool StepIsPixelPerfectUpscale(int step) => step >= 1;
+
+        /// <summary>
+        /// <b>How much world ONE RENDERED SCREEN PIXEL covers at a ladder step</b> — the grid a
+        /// rendered position must land on to stay crisp (<c>Core.PixelGrid</c>).
+        ///
+        /// <para>It is just the step's own world height divided by the screen, which is the point:
+        /// the ladder is already the ONE place the framing is defined, so the pixel size falls out of
+        /// it rather than being re-derived beside it and drifting. That resolves to
+        /// <c>1/(step·ppu)</c> on an integer UPSCALE and <c>(−step)/ppu</c> on an integer DOWNSCALE.</para>
+        ///
+        /// <para><b>Why not just snap to the asset grid (1/ppu).</b> It is wrong at both ends of the
+        /// ladder. Magnified (step 3), a screen pixel is a THIRD of an asset pixel, so 1/ppu would
+        /// throw away two thirds of the camera's available smoothness for nothing — the texels were
+        /// already aligned. Shrunk (step −2), one screen pixel is TWO asset pixels, so 1/ppu does not
+        /// reach a screen pixel boundary at all and the snap would simply fail to bite.</para>
+        /// </summary>
+        public static float WorldUnitsPerRenderedPixel(int step, int ppu, int screenHeightPx)
+        {
+            int h = Mathf.Max(1, screenHeightPx);
+            return WorldHeightForStep(step, ppu, h) / h;
+        }
 
         /// <summary>The ladder step nearest a requested world height — now searching OUTWARD as well
         /// as in, so a def asking for 60 m is no longer silently served 33.75.</summary>
@@ -188,31 +234,76 @@ namespace HiddenHarbours.App
         //
         // ⚠️ THIS IS A SECOND HAND ON THE SAME LADDER, NOT A SECOND LADDER. The failure mode the
         // ruling could have produced is a free player zoom fighting the RULED framings above: the
-        // helm's per-hull step (§9.8's "whole vessel visible"), the deck step, the haul tighten. So
-        // the player's wheel owns exactly ONE framing — <see cref="CameraFraming.OnFoot"/> — and every
-        // stop it can reach is a step on the same integer ladder <see cref="WorldHeightForStep"/>
-        // defines. Boarding does not "hand back" anything it has to remember to release: the boat
-        // framing was never the player's to move, so a helm-take simply commits the hull's step as it
-        // always did. Disembarking restores the walker's last tier because that tier IS the on-foot
-        // framing — nothing saves or reinstates it.
+        // helm's per-hull step (§9.8's "whole vessel visible"), the deck step, the haul tighten. Every
+        // stop the wheel can reach anywhere is a step on the same integer ladder
+        // <see cref="WorldHeightForStep"/> defines, so there is no orthographic size in this feature
+        // that the ladder did not produce.
         //
-        // ⚠️ STEPS ASCEND AS YOU ZOOM IN (step 4 = 8.44 m, step 6 = 5.63 m). Nothing owner-facing is
-        // ever expressed in steps for that reason — the clamps are METRES on the GameConfig asset, the
-        // same units every other camera dial uses, and they quantise through StepForWorldHeight.
+        // ⚠️ TWO KINDS OF PLAYER STATE, AND THE DIFFERENCE IS THE WHOLE DESIGN.
+        //   • ON FOOT she owns a RUNG — an absolute stop she keeps for the whole voyage. Disembarking
+        //     restores it because that rung IS the on-foot framing; nothing saves or reinstates it.
+        //   • ABOARD AND ON DECK (owner ruling 2026-08-22) she owns an OFFSET from whatever the
+        //     context ruled, released the moment that ruling changes. That is what lets the band exist
+        //     without taking the framing away from the hull: arriving at a helm, a deck or a new boat
+        //     always hands her the ruled framing, and the wheel is a look around from there.
+        //
+        // ⚠️ STEPS ASCEND AS YOU ZOOM IN (step 4 = 8.44 m, step 6 = 5.63 m). No step INDEX is ever
+        // owner-facing for that reason — the walker's clamps are METRES on the GameConfig asset, the
+        // same units every other camera dial uses, and they quantise through StepForWorldHeight. The
+        // aboard band's two allowances are the one exception and they are not indices: they are COUNTS
+        // of stops either way, which cannot be metres because the framing they are measured from is
+        // different for every hull the player will ever own.
 
         /// <summary>
-        /// Whether the PLAYER's wheel owns <paramref name="framing"/>. Only the on-foot framing is the
-        /// player's; the helm, the deck, a live haul and a road vehicle are all RULED by their own
-        /// authority (hull data, deck work, the machine's def) and the wheel must never move them.
+        /// Whether the PLAYER's wheel may move <paramref name="framing"/> at all.
+        ///
+        /// <para><b>Three framings, since the owner ruling of 2026-08-22:</b> the walker's, the helm's
+        /// and the deck's. On foot the wheel picks the rung outright; aboard and on deck it may only
+        /// step within a band around the framing that context was given (see
+        /// <see cref="ClampBandOffset"/>), so the hull's "whole vessel visible" derivation and the
+        /// deck step are still what you are handed every time you arrive at them.</para>
+        ///
+        /// <para><b>A live haul and a road vehicle stay ruled outright.</b> The haul tighten exists for
+        /// the seconds a pot is coming up and releases itself; a wheel fighting it would be fighting
+        /// something that is already leaving. The vehicle framing is the machine's own def and the
+        /// ruling did not reach it — a truck at 11 m/s is the one view where a player zooming in is
+        /// taking away the room they need to read what is arriving.</para>
         /// </summary>
-        public static bool PlayerOwnsFraming(CameraFraming framing) => framing == CameraFraming.OnFoot;
+        public static bool PlayerOwnsFraming(CameraFraming framing)
+            => framing == CameraFraming.OnFoot
+            || framing == CameraFraming.Boat
+            || framing == CameraFraming.Deck;
 
         /// <summary>
-        /// Does a wheel notch do anything at all this frame? Three gates, all of which must pass:
-        /// the camera has committed a framing (before the first commit the builder-authored framing
-        /// rules and there is no tier to step from), the framing is one the player owns
-        /// (<see cref="PlayerOwnsFraming"/> — this is the boat-authority handoff, expressed as a
-        /// refusal rather than a handover), and no modal is holding the interaction gate.
+        /// What the player is actually LOOKING AT — the committed framing, or the walker's if control
+        /// has not declared itself yet.
+        ///
+        /// <para>🔴 <b>THE ON-FOOT DEAD PATH (owner playtest 2026-08-22), and it lived right here.</b>
+        /// The wheel used to require a committed framing, on the reasoning that "before the first
+        /// commit the builder-authored framing rules and there is no tier to step from". But the camera
+        /// only ever commits from <c>TickZoom</c>, <c>TickZoom</c> refuses to run until a
+        /// <c>ControlModeChanged</c> has arrived, and <b>nothing publishes one at boot</b>: the
+        /// switcher announces a mode on a TRANSITION (board, disembark, take a wheel) and on the
+        /// region-arrival re-assert, and the arrival opening — which does publish — is skipped for any
+        /// save that has already arrived. So a returning player who loaded their game and walked down
+        /// the wharf had a camera that had committed nothing, and a wheel that was switched off with no
+        /// error anywhere. Boarding once and stepping back ashore "fixed" it, which is exactly how it
+        /// survived a build.</para>
+        ///
+        /// <para>The repair is to answer the question the gate was really asking. Un-committed does not
+        /// mean "no framing is on screen"; it means the builder-authored one is, and the builders
+        /// author the walker's (<c>PersistentCoreBuilder</c> writes <c>OnFootWorldHeightMeters</c> into
+        /// the camera). She is a walker until the game says otherwise — you cannot be at a helm without
+        /// having taken one, and taking one publishes. So the un-committed camera is a walking camera,
+        /// and its wheel is the walker's.</para>
+        /// </summary>
+        public static CameraFraming FramingOnScreen(CameraFraming committed, bool hasCommitted)
+            => hasCommitted ? committed : CameraFraming.OnFoot;
+
+        /// <summary>
+        /// Does a wheel notch do anything at all this frame? The framing on screen must be one the
+        /// player may move (<see cref="PlayerOwnsFraming"/> of <see cref="FramingOnScreen"/>), and no
+        /// modal may be holding the interaction gate.
         ///
         /// <para><b>Why the modal gate.</b> A wheel turned over an open notebook or a dialogue must not
         /// do two things at once — and the moment any of those UIs grows a scrollable list, the same
@@ -220,7 +311,7 @@ namespace HiddenHarbours.App
         /// problem; the UI keeping the gate raised is the other half, and it already does.</para>
         /// </summary>
         public static bool WheelIsLive(CameraFraming committed, bool hasCommitted, bool modalBlocked)
-            => hasCommitted && !modalBlocked && PlayerOwnsFraming(committed);
+            => !modalBlocked && PlayerOwnsFraming(FramingOnScreen(committed, hasCommitted));
 
         /// <summary>
         /// Clamp a ladder step into the player's range. The bounds arrive as the steps the owner's
@@ -249,7 +340,88 @@ namespace HiddenHarbours.App
         /// closest tier simply stays there.
         /// </summary>
         public static int StepPlayerZoom(int currentStep, int notches, int closestStep, int farthestStep)
-            => ClampPlayerStep(currentStep + notches, closestStep, farthestStep);
+            => ClampPlayerStep(StepClosestBy(currentStep, notches), closestStep, farthestStep);
+
+        // ================= THE ABOARD BAND: the wheel at the helm (owner ruling 2026-08-22) =========
+        //
+        // The design doc left this open in as many words — *"Should the wheel work at the helm at all —
+        // a per-hull ± of one or two stops around the ruled framing, rather than being inert? Inert is
+        // what the ruling asked for and what is built; the alternative is one more clamp pair and the
+        // same policy."* The owner has now answered it: the wheel works aboard and on deck.
+        //
+        // ⚠️ AN OFFSET, NOT A RUNG. The walker owns a rung — an absolute stop on the ladder that she
+        // keeps across a whole voyage and gets back when she steps ashore. Aboard she owns an OFFSET
+        // from whatever the context ruled, and the offset is released the moment that ruling changes.
+        // The distinction is the whole reason a band can exist without taking the framing away from the
+        // hull: §9.8's "whole vessel visible" derivation, the deck step and the haul tighten each stay
+        // the thing you are HANDED, and the wheel is a look around from there. Store a rung instead and
+        // the first hull upgrade would frame the new boat at the old boat's zoom — the exact bug §9.8
+        // was written to kill.
+        //
+        // ⚠️ AND IT IS THE SAME LADDER AGAIN. Every stop the band can reach is StepClosestBy of the
+        // ruled framing's own step, so a banded view is as pixel-perfect as an unbanded one. There is
+        // no arbitrary orthographic size anywhere in this feature, at any framing, at any offset.
+
+        /// <summary>
+        /// Hold a band offset inside the allowance the owner's config gives (<b>positive = closer</b>).
+        /// Both allowances are counts of stops and are read as magnitudes, so a negative typed into
+        /// either simply means "no stops that way" rather than inverting the band. An allowance pair of
+        /// 0 / 0 pins the offset to zero, which is how an owner turns the aboard band off without
+        /// touching the walker's wheel.
+        /// </summary>
+        public static int ClampBandOffset(int offset, int stopsCloser, int stopsWider)
+            => Mathf.Clamp(offset, -Mathf.Abs(stopsWider), Mathf.Abs(stopsCloser));
+
+        /// <summary>
+        /// The ladder step a RULED framing is showing once the player's band offset is applied: the
+        /// framing's own nearest step, walked <paramref name="offset"/> stops (clamped to the
+        /// allowance, then held inside the ladder's ends by <see cref="StepClosestBy"/>).
+        /// </summary>
+        public static int BandStep(float ruledWorldHeightMeters, int offset,
+                                   int stopsCloser, int stopsWider, int ppu, int screenHeightPx)
+            => StepClosestBy(StepForWorldHeight(ruledWorldHeightMeters, ppu, screenHeightPx),
+                             ClampBandOffset(offset, stopsCloser, stopsWider));
+
+        /// <summary>
+        /// World height (m) a ruled framing shows at a band offset.
+        ///
+        /// <para>⚠️ <b>At offset zero it answers the RULED height, not that height's step</b> — the
+        /// same rule, for the same reason, as the walker's home rung in
+        /// <c>CameraFollow.PlayerZoomWorldHeightMeters</c>. <c>ApplyFramingHard</c> deliberately drives
+        /// the raw orthographic size from the REQUEST on the upscale half of the ladder, so answering
+        /// 16.875 where the hull has always asked for 17 would move the helm framing for every player
+        /// who never touches the wheel. An untouched wheel therefore leaves every ruled framing in the
+        /// game byte-for-byte where it was, and only a player who actually scrolls meets the ladder.</para>
+        /// </summary>
+        public static float BandWorldHeightMeters(float ruledWorldHeightMeters, int offset,
+                                                  int stopsCloser, int stopsWider,
+                                                  int ppu, int screenHeightPx)
+        {
+            int clamped = ClampBandOffset(offset, stopsCloser, stopsWider);
+            if (clamped == 0) return ruledWorldHeightMeters;
+            return WorldHeightForStep(
+                BandStep(ruledWorldHeightMeters, clamped, stopsCloser, stopsWider, ppu, screenHeightPx),
+                ppu, screenHeightPx);
+        }
+
+        /// <summary>
+        /// Step a band offset by whole wheel notches and report whether the view would actually MOVE.
+        /// Returns the new offset; <paramref name="moved"/> is false when the notch changed no step —
+        /// either the allowance saturated, or the ladder itself ran out under a very wide hull. The
+        /// caller refuses the nudge in that case, so a blocked notch never re-frames and the camera
+        /// never twitches at a clamp.
+        /// </summary>
+        public static int StepBandOffset(int currentOffset, int notches, float ruledWorldHeightMeters,
+                                         int stopsCloser, int stopsWider, int ppu, int screenHeightPx,
+                                         out bool moved)
+        {
+            int from = ClampBandOffset(currentOffset, stopsCloser, stopsWider);
+            int to = ClampBandOffset(from + notches, stopsCloser, stopsWider);
+            moved = to != from
+                    && BandStep(ruledWorldHeightMeters, to, stopsCloser, stopsWider, ppu, screenHeightPx)
+                       != BandStep(ruledWorldHeightMeters, from, stopsCloser, stopsWider, ppu, screenHeightPx);
+            return moved ? to : from;
+        }
 
         /// <summary>
         /// Whole notches out of a raw scroll reading, carrying the remainder in

@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
+// Aliased rather than a whole `using HiddenHarbours.Core;`: this file already owns short type names
+// (Build, Entry, Contract) that a wholesale import would put at risk of ambiguity for one enum.
+using PillowSide = HiddenHarbours.Core.PillowSide;
 
 namespace HiddenHarbours.Art.Editor
 {
@@ -145,11 +148,40 @@ namespace HiddenHarbours.Art.Editor
 
             public readonly string Why;
 
+            /// <summary>
+            /// ⭐ <b>WHICH END OF THIS PROP THE PILLOW IS ON</b>, in the prop's OWN model frame — the
+            /// frame the rig drew it in, before any placement turns it. <see cref="PillowSide.Undeclared"/>
+            /// for everything that is not a bed, which is every other row in
+            /// <see cref="InteriorKit.PropSet"/>.
+            ///
+            /// <para><b>Declared, because it cannot be measured.</b> The bake reports a bed as a
+            /// <see cref="Entry.propFootprintWidth"/> × <see cref="Entry.propFootprintDepth"/> rectangle,
+            /// and that rectangle is identical at both ends. What makes one end the head — a tall
+            /// headboard, a short footboard, a pillow — is pixels, at eight facings, on a quilt of the same
+            /// fabric. The rig states it for free (<c>interiorPropRig.js</c>: "pillow (head end, −Y
+            /// front)"), so it is carried here rather than recovered later, exactly as a building's door
+            /// gable is carried rather than found by looking at the wall.</para>
+            /// </summary>
+            public readonly PillowSide Pillow;
+
+            /// <summary>
+            /// How far the pillow's CENTRE sits in from the head end of the prop, in metres — the rig's own
+            /// number, not a measurement of the sprite. 0 for anything with no pillow.
+            ///
+            /// <para>An inset rather than an absolute offset, so it survives a re-bake at a different
+            /// size: the reach from the middle of the bed is
+            /// <c>depth/2 − inset</c> (<c>BedPillow.PillowReachMetres</c>), and the depth is the bake's
+            /// own. One number that means one thing, rather than two that have to agree.</para>
+            /// </summary>
+            public readonly float PillowInsetMetres;
+
             Build(string key, string label, string propName, string preset,
-                  IReadOnlyDictionary<string, object> dialled, string why)
+                  IReadOnlyDictionary<string, object> dialled, string why,
+                  PillowSide pillow = PillowSide.Undeclared, float pillowInsetMetres = 0f)
             {
                 Key = key; Label = label; PropName = propName; Preset = preset;
                 Dialled = dialled; Why = why;
+                Pillow = pillow; PillowInsetMetres = pillowInsetMetres;
             }
 
             public static Build RoomPreset(string key, string label, string preset, string why) =>
@@ -163,8 +195,24 @@ namespace HiddenHarbours.Art.Editor
                                      Dictionary<string, object> dialled, string why) =>
                 new Build(key, label, propName, null, dialled, why);
 
+            /// <summary>
+            /// A prop somebody can be laid down on. The one factory that takes a
+            /// <see cref="PillowSide"/> — so "a bed" is a shape in this table rather than a string
+            /// comparison against the key <c>"bed"</c> scattered across the consumers, and a second bed
+            /// build (a bunk, a cot, the camper's berth when its rig lands) is one more row here and
+            /// nothing else anywhere.
+            /// </summary>
+            public static Build Bed(string key, string label, string propName,
+                                    Dictionary<string, object> dialled, string why,
+                                    PillowSide pillow, float pillowInsetMetres) =>
+                new Build(key, label, propName, null, dialled, why, pillow, pillowInsetMetres);
+
             public bool IsPreset => Preset != null;
             public bool IsProp => PropName != null;
+
+            /// <summary>Is this prop something with a head end? The single test — nothing compares a key
+            /// against <c>"bed"</c>.</summary>
+            public bool IsBed => Pillow != PillowSide.Undeclared;
         }
 
         /// <summary>
@@ -298,6 +346,14 @@ namespace HiddenHarbours.Art.Editor
         };
 
         /// <summary>
+        /// How far the kit bed's pillow centre sits in from its head end, metres —
+        /// <c>interiorPropRig.js</c>'s own <c>pBed()</c>, whose pillow box runs from <c>−d/2 + 0.10</c> to
+        /// <c>−d/2 + 0.54</c>. Named here so the one place it is stated is beside the build that uses it,
+        /// and so a test can quote it rather than re-typing 0.32.
+        /// </summary>
+        public const float BedPillowInsetMetres = 0.32f;
+
+        /// <summary>
         /// The furniture the pilot stands in that room. A handful, honestly placed — enough to prove the
         /// prop pipeline (bake → slice → place → collide → Y-sort past), not a decorating pass.
         ///
@@ -306,10 +362,20 @@ namespace HiddenHarbours.Art.Editor
         /// </summary>
         public static readonly Build[] PropSet =
         {
-            Build.Prop("bed", "Bed", "bed", new Dictionary<string, object>
+            // ⭐ THE PILLOW IS DECLARED, and both numbers below are the RIG's, read out of
+            // interiorPropRig.js's own pBed() and not off the baked sprite:
+            //   const w=1.5, d=2.05 …
+            //   box(…, -d/2+0.1, -d/2+0.54, …, 'fabric2', 0.3);   // pillow (head end, -Y front)
+            //   box(…, -d/2,-d/2+0.08, 0,head, 'wood', 0.05);     // headboard (-Y front, tall)
+            // So the head end is −Y and the pillow's centre is (0.10 + 0.54)/2 = 0.32 m in from it.
+            // Everything downstream — the sleeping heading, the head position the content test checks —
+            // comes off these two facts and the bake's own depth. See PillowSide for why this is stated
+            // rather than found.
+            Build.Bed("bed", "Bed", "bed", new Dictionary<string, object>
             {
                 ["wood"] = "walnut", ["fabric"] = "sage", ["fabric2"] = "cream", ["weather"] = 0.2,
-            }, "the one prop that makes a room a bedroom"),
+            }, "the one prop that makes a room a bedroom",
+               PillowSide.MinusY, BedPillowInsetMetres),
 
             Build.Prop("table", "Table", "table", new Dictionary<string, object>
             {

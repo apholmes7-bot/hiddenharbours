@@ -141,7 +141,7 @@ namespace HiddenHarbours.Tests.PlayMode
             return h;
         }
 
-        /// <summary>Build a boat and hand back her tackle. The anchor and its dev key are runtime-spawned
+        /// <summary>Build a boat and hand back her tackle. The anchor and its key are runtime-spawned
         /// by <see cref="BoatController"/>, so this also proves the self-install: no builder re-run, no
         /// prefab edit, every already-built scene grows the hook on load.</summary>
         private BoatAnchor NewBoat(BoatHullDef hull, Vector3 pos, out Rigidbody2D rb)
@@ -150,7 +150,7 @@ namespace HiddenHarbours.Tests.PlayMode
             var boat = go.AddComponent<BoatController>();   // auto-adds Rigidbody2D + capsule + mooring
             rb = go.GetComponent<Rigidbody2D>();
             boat.SetHull(hull);
-            // ⭐ THIS IS THE PLAYER'S BOAT. The dev anchor key works ONE hull's tackle, so it has to be
+            // ⭐ THIS IS THE PLAYER'S BOAT. The anchor key works ONE hull's tackle, so it has to be
             // told which; in the game ControlSwitcher declares it from its own control mode, and this
             // fixture has no switcher. It used to be answered by accident — every relay claimed the Core
             // helm slot on enable, so "the slot is mine" meant "I woke up last" — and that stopped being
@@ -163,7 +163,7 @@ namespace HiddenHarbours.Tests.PlayMode
 
             var anchor = go.GetComponent<BoatAnchor>();
             Assert.IsNotNull(anchor, "BoatController must self-install the ground tackle in play mode");
-            Assert.IsNotNull(go.GetComponent<DevAnchorInput>(), "…and the greybox key that works it");
+            Assert.IsNotNull(go.GetComponent<AnchorInput>(), "…and the key that works it");
             return anchor;
         }
 
@@ -358,18 +358,19 @@ namespace HiddenHarbours.Tests.PlayMode
                 "…and it is emphatically not the berth she started from");
         }
 
-        // ========= 4. the dev key's gate (headless drops key events; the GATE is what a test can see) =====
+        // ========= 4. the key's gate (headless drops key events; the GATE is what a test can see) =====
 
         [UnityTest]
         public IEnumerator TheAnchorKey_LivesOnlyFromTheBoat_AndStandsDownUnderADialogue()
         {
             BoatAnchor anchor = NewBoat(Hull(rode: 6f, windExposure: 0f), Vector3.zero, out _);
-            var input = anchor.GetComponent<DevAnchorInput>();
+            var input = anchor.GetComponent<AnchorInput>();
             yield return null;
 
-            Assert.AreEqual(UnityEngine.InputSystem.Key.R, input.AnchorKey,
-                "R for RODE — the ledger's free letter (C is claimed by InputSystem_Actions' Crouch, " +
-                "which a code-only 'Key.' grep does not see)");
+            Assert.AreEqual(UnityEngine.InputSystem.Key.Q, input.AnchorKey,
+                "Q — the ground-tackle verb the game already has (ashore it works the mooring you are " +
+                "standing by), reused rather than a new letter off a spent A–Z ledger. NOT R: that is " +
+                "MooringController._workKey, which the old dev binding double-booked.");
 
             input.OnControlModeChanged(new ControlModeChanged(ControlMode.OnFoot));
             Assert.IsFalse(input.AnchorKeyLive, "you do not drop the hook while standing ashore");
@@ -391,11 +392,40 @@ namespace HiddenHarbours.Tests.PlayMode
             {
                 HelmKeyCapture.Begin();
                 Assert.IsFalse(input.AnchorKeyLive,
-                    "naming a waypoint 'ROCK LEDGE' must not drop the hook — R is a letter");
+                    "naming a waypoint 'QUARRY LEDGE' must not drop the hook — Q is a letter");
             }
             finally { HelmKeyCapture.Reset(); }
 
             Assert.IsTrue(input.AnchorKeyLive, "and it comes back when the field lets go");
+        }
+
+        [UnityTest]
+        public IEnumerator TheAnchorKey_IsDead_OnAHullThatCarriesNoTackle()
+        {
+            BoatHullDef hull = Hull(rode: 6f, windExposure: 0f);
+            hull.HasAnchor = false;                                // the deliberate exception (data)
+
+            BoatAnchor anchor = NewBoat(hull, Vector3.zero, out _);
+            var input = anchor.GetComponent<AnchorInput>();
+            yield return null;
+
+            input.OnControlModeChanged(new ControlModeChanged(ControlMode.Aboard));
+            Assert.IsFalse(input.AnchorKeyLive,
+                "no hook, no key — a boat with no ground tackle must not have a key that presses and " +
+                "reports a refusal every time");
+
+            // …and the sim refuses too, at the DATA gate, ahead of any question about the sea: she is
+            // floating in 4 m over a −4 m bottom on a 6 m rode, which is a spot she would otherwise hold in.
+            _clock.Fixed = 0.0;
+            _env.BaseLevel = 0f;
+            Assert.AreEqual(AnchorDrop.Aground, anchor.TryDrop(), "nothing to let go");
+            Assert.AreEqual(AnchorState.Stowed, anchor.State);
+            Assert.IsFalse(anchor.HasAnchor);
+
+            // The gate is DATA, so the owner enrolling her is a Def edit and nothing else.
+            hull.HasAnchor = true;
+            Assert.IsTrue(input.AnchorKeyLive, "…and one field later she has a hook and a key for it");
+            Assert.AreEqual(AnchorDrop.Set, anchor.TryDrop());
         }
     }
 }

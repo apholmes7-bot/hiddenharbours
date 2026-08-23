@@ -54,6 +54,12 @@ namespace HiddenHarbours.Tests.PlayMode
             /// driven", IsPlayerHelm is "by her".)</summary>
             public bool IsPlayerHelm => true;
             public HelmControlStyle Style => HelmControlStyle.Lever;
+
+            // Steady, like everything else on this helm: no hook, nothing to light, so a repaint these
+            // tests observe still can only have come from the panel lights.
+            public bool HasAnchor => false;
+            public AnchorState AnchorState => AnchorState.Stowed;
+            public void ToggleAnchor() { }
             public HelmLeverFinish LeverFinish => HelmLeverFinish.Graphite;
             public HelmWheelRim WheelRim => HelmWheelRim.Rubber;
             public HelmFit Fit { get; set; }

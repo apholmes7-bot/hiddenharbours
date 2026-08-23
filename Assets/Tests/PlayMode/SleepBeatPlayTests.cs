@@ -65,6 +65,74 @@ namespace HiddenHarbours.Tests.PlayMode
 
         static void Turn(Vector2 bed) => EventBus.Publish(new SleepBeatRequested(bed, 1, "the cabin"));
 
+        /// <summary>Turn in at a bed that says which end its pillow is on, in a room at
+        /// <paramref name="roomFacing"/>.</summary>
+        static void TurnOnADeclaredBed(Vector2 bed, PillowSide side, int roomFacing) =>
+            EventBus.Publish(new SleepBeatRequested(
+                bed, 1, "the cabin",
+                new PillowAnchor(side, BedPillow.YawDegreesFor(roomFacing, 8), 0.705f,
+                                 IsoGround.GroundDepthScale)));
+
+        [UnityTest]
+        public IEnumerator TheSLEEPINGSPRITEFacesTheWayTheBedSaysItsPillowIs()
+        {
+            // ⭐ THE DEFECT, end to end and against real baked art: the clip's facing ROW — the actual
+            // sprite the owner will look at — has to come from the bed's declaration. EditMode proves the
+            // bearing; only this proves that the bearing reaches the sheet.
+            TurnOnADeclaredBed(Mattress, PillowSide.MinusY, roomFacing: 0);
+            yield return null;
+
+            Assert.IsTrue(_sleep.IsSleeping);
+            CharacterVisualDef visual = _clips.ResolvedVisual();
+            Assert.AreEqual(visual.ClipFacingRowFor(CharacterClip.Sleep, 180f), _clips.FacingRow,
+                            "a -y pillow in an unturned room lies south");
+        }
+
+        [UnityTest]
+        public IEnumerator TurningTheROOMTurnsTheSleeperWithIt()
+        {
+            // The same bed and the same declaration in a building the builder faced differently. Before
+            // the declaration the pose played one fixed heading, so these two came out on the SAME row —
+            // which is a fisher asleep across her own bed, and reads as bad art rather than as a bug.
+            CharacterVisualDef visual = _clips.ResolvedVisual();
+
+            TurnOnADeclaredBed(Mattress, PillowSide.MinusY, roomFacing: 0);
+            yield return null;
+            int unturned = _clips.FacingRow;
+
+            // Let the beat finish before asking for another — the presenter runs one at a time.
+            float waited = 0f;
+            while (_sleep.IsSleeping && waited < 8f) { waited += Time.deltaTime; yield return null; }
+            Assert.IsFalse(_sleep.IsSleeping, "the first beat never ended");
+
+            TurnOnADeclaredBed(Mattress, PillowSide.MinusY, roomFacing: 2);
+            yield return null;
+            int turned = _clips.FacingRow;
+
+            Assert.AreEqual(visual.ClipFacingRowFor(CharacterClip.Sleep, 270f), turned,
+                            "a -y pillow in a room at facing 2 lies west");
+
+            // A quarter turn only has to land on a DIFFERENT cell if the clip has four or more of them.
+            // The shipped kit bakes eight; a later kit that ships a two-row sleep would make the pair
+            // legitimately equal, and this test must not then be a false alarm about the bearing.
+            if (visual.ClipFacingCount(CharacterClip.Sleep) >= 4)
+                Assert.AreNotEqual(unturned, turned,
+                                   "the sleeper must turn with the room she is lying in — south and west " +
+                                   "are a quarter turn apart, and drawing one cell for both is the bug");
+        }
+
+        [UnityTest]
+        public IEnumerator ABedThatDeclaresNothingStillRests_OnThePresentersOwnFallback()
+        {
+            // Degrades whole. Content validation is what stops an undeclared bed reaching a build; if one
+            // ever does, the player still gets their rest and their beat.
+            Turn(Mattress);
+            yield return null;
+
+            Assert.IsTrue(_sleep.IsSleeping, "an undeclared bed must still show a beat");
+            Assert.AreEqual(CharacterClip.Sleep, _clips.Clip);
+        }
+
         [UnityTest]
         public IEnumerator TurningIn_LaysTheFisherOnTheMattressAndPlaysTheSleepClip()
         {

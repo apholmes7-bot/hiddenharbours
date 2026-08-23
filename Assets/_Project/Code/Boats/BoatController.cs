@@ -142,15 +142,20 @@ namespace HiddenHarbours.Boats
             if (Application.isPlaying && GetComponent<DevInstrumentCycle>() == null)
                 gameObject.AddComponent<DevInstrumentCycle>();
 
-            // THE GROUND TACKLE: the anchor she lies to (sim) and the greybox key that works it. Same
+            // THE GROUND TACKLE: the anchor she lies to (sim) and the key that works it. Same
             // runtime-spawn reasoning as the three above — every already-built scene grows the hook on
             // load, with no builder re-run and no prefab churn. Play mode only for the same reason
             // (EditMode tests build BoatControllers freely and must stay presentation-free); an EditMode
             // rig that wants the tackle adds BoatAnchor itself.
+            //
+            // ⭐ Mounted on EVERY hull, rowed and consoled alike, including a hull whose data says she
+            // carries no anchor: AnchorInput's own gate reads BoatHullDef.HasAnchor and simply stays
+            // dead on her. Inert rather than absent — the BoatFuelTank convention — so the owner
+            // enrolling a hull later is a Def edit with nothing to re-wire.
             if (Application.isPlaying && GetComponent<BoatAnchor>() == null)
             {
                 gameObject.AddComponent<BoatAnchor>();
-                gameObject.AddComponent<DevAnchorInput>();
+                gameObject.AddComponent<AnchorInput>();
             }
 
             // THE TANK (fuel-and-refuelling.md §9.2): what she carries, and the filler cap a can is

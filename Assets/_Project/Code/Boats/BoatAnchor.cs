@@ -8,6 +8,11 @@ namespace HiddenHarbours.Boats
     /// wind and the tide work at you (P1 "the sea has moods" / P5 "cozy, but with teeth").
     ///
     /// <list type="bullet">
+    ///   <item><b>Every hull carries one — unless her data says otherwise.</b> The owner's ruling is an
+    ///   anchor on every hull, so <see cref="BoatHullDef.HasAnchor"/> is the first gate and the only one
+    ///   that is not about the sea: no tackle, nothing to let go, and the helm draws no switch. It is
+    ///   asked through <see cref="AnchorMath.CarriesAnchor"/> — the one resolver the switch and the key
+    ///   read too, so three controls can never disagree about whether there is a hook.</item>
     ///   <item><b>The drop gate is depth.</b> She anchors only where she is genuinely afloat AND the water
     ///   is no deeper than the rode she carries (<see cref="BoatHullDef.RodeMeters"/>, data — bigger hull,
     ///   longer rode, deeper anchorages, P2). Too deep and the anchor "finds no bottom": a refusal, no
@@ -63,6 +68,7 @@ namespace HiddenHarbours.Boats
         public const string NoticeReBite = "She's found the bottom again";
         public const string NoticeWeighed = "Anchor's aweigh";
         public const string NoticeNoHull = "No hull wired — nothing to anchor (dev)";
+        public const string NoticeNoTackle = "She carries no anchor";
 
         private Rigidbody2D _rb;
         private BoatController _boat;
@@ -80,8 +86,18 @@ namespace HiddenHarbours.Boats
         /// <summary>True only while she is actually being held (not dragging).</summary>
         public bool IsHolding => State == AnchorState.Set;
 
+        /// <summary><b>Does this hull carry ground tackle at all?</b> Her own
+        /// <see cref="BoatHullDef.HasAnchor"/> data, through the one resolver
+        /// (<see cref="AnchorMath.CarriesAnchor"/>) the switch and the key read too. False = there is no
+        /// hook: nothing drops, no switch is drawn, and the key does nothing on her.</summary>
+        public bool HasAnchor => AnchorMath.CarriesAnchor(Hull);
+
         /// <summary>The rode this hull carries (m) — her own data, else the shared dinghy-class default.</summary>
         public float RodeMeters => AnchorMath.RodeFor(Hull, GameServices.Anchor);
+
+        /// <summary>What her hook weighs (kg) — her own data, else the shared dinghy grapnel. What a
+        /// DRAGGING anchor checks her with (<see cref="AnchorMath.DragBrakeStrengthFor"/>).</summary>
+        public float AnchorMassKg => AnchorMath.AnchorMassFor(Hull, GameServices.Anchor);
 
         /// <summary>Live water depth over the ANCHOR (m), not over the boat: the vertical leg of the rode
         /// is measured where the hook lies, so a boat sailing round her swing circle does not wobble her
@@ -138,6 +154,16 @@ namespace HiddenHarbours.Boats
             if (hull == null)
             {
                 EventBus.Publish(new DevNotice(NoticeNoHull));
+                return AnchorDrop.Aground;
+            }
+
+            // The data gate, ahead of the depth gate: a hull the owner has said carries no ground
+            // tackle has nothing to let go, wherever she is floating. Reported as "aground" — the
+            // refusal answer that changes no state — because AnchorDrop describes what the SEABED
+            // said, and there is no fourth answer to invent for a boat that simply has no hook.
+            if (!AnchorMath.CarriesAnchor(hull))
+            {
+                EventBus.Publish(new DevNotice(NoticeNoTackle));
                 return AnchorDrop.Aground;
             }
 
@@ -216,7 +242,7 @@ namespace HiddenHarbours.Boats
             }
 
             if (State == AnchorState.Set) HoldOnTheSwing(rode, depth, in settings);
-            else Drag(in settings);
+            else Drag(AnchorMath.AnchorMassFor(hull, in settings), in settings);
 
             UpdateRodeVisual();
         }
@@ -256,11 +282,18 @@ namespace HiddenHarbours.Boats
 
         /// <summary>The hook is skipping along the bottom: no restraint at all, only a brake that settles
         /// her onto a slow creep. Wind and tide keep working her (the sim never stopped), so she goes
-        /// somewhere — slowly, and downwind/downtide, which is the whole cue.</summary>
-        private void Drag(in AnchorSettings settings)
+        /// somewhere — slowly, and downwind/downtide, which is the whole cue.
+        ///
+        /// <para>How hard it checks her is HER OWN IRON: the shared brake scaled by
+        /// <see cref="BoatHullDef.AnchorMassKg"/> against the reference hook it is quoted at
+        /// (<see cref="AnchorMath.DragBrakeStrengthFor"/>) — a dory's grapnel skips, a dragger's hook
+        /// gouges. A hull with no authored weight takes the reference and drags exactly as she always
+        /// did.</para></summary>
+        private void Drag(float anchorMassKg, in AnchorSettings settings)
         {
-            Vector2 brake = AnchorMath.DragBrakeForce(_rb.linearVelocity, settings.DragCreepMetersPerSec,
-                                                      settings.DragBrakeStrength);
+            Vector2 brake = AnchorMath.DragBrakeForce(
+                _rb.linearVelocity, settings.DragCreepMetersPerSec,
+                AnchorMath.DragBrakeStrengthFor(anchorMassKg, in settings));
             if (brake != Vector2.zero)
                 _rb.AddForce(brake * BoatController.ForceFeelScale, ForceMode2D.Force);
         }

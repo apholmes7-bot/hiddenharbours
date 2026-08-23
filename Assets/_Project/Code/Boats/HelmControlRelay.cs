@@ -43,6 +43,7 @@ namespace HiddenHarbours.Boats
     public sealed class HelmControlRelay : MonoBehaviour, IHelmControl, IHelmInstruments
     {
         private BoatController _boat;
+        private BoatAnchor _anchor;          // her ground tackle, resolved lazily (see Tackle())
 
         // Instrument-seam scratch (ADR 0025 S2). The owned-id list is reused, never re-allocated, so
         // resolving the fit costs nothing per frame (rule 7).
@@ -169,6 +170,67 @@ namespace HiddenHarbours.Boats
         /// hull swap, a region hop, or a relay that stood down and came back: the grant is recomputed
         /// from occupancy and this simply reads it.</remarks>
         public bool IsPlayerHelm => HasHelm && GameServices.Helm.Holds(this);
+
+        // ---- the ground tackle (the dash's anchor switch — ADR 0039's diegetic control) ---------
+        //
+        // ⚠ GATED ON IsPlayersBoat, NEVER ON HasHelm/IsPlayerHelm. Every other member on this relay
+        // gates on the ENGINE question because a throttle step means nothing on a dory — but a dory's
+        // ANCHOR means everything, and stepping back from the wheel onto the deck gives up the wheel,
+        // not the boat. The wider Core declaration is the one that says "this hull is hers"
+        // (HelmSlot.IsPlayersBoat, #642); the narrower one would kill the tackle on the very boat the
+        // game opens with, which is the single easiest way to get this seam wrong.
+
+        /// <summary>The tackle component riding this hull, resolved lazily and re-resolved while it is
+        /// missing. Runtime-spawned by <see cref="BoatController"/> on every hull, so it is normally
+        /// there — but a rig built without Awake-order guarantees may ask before it exists, and a bare
+        /// EditMode hull may never grow one. Null simply means "no hook to work".</summary>
+        private BoatAnchor Tackle()
+        {
+            if (_anchor == null) _anchor = GetComponent<BoatAnchor>();
+            return _anchor;
+        }
+
+        /// <summary>Is the hull this relay rides the boat the player is actually on? The WIDER Core
+        /// fact (aboard: at the helm or on her deck), asked of the arbiter rather than stored — the
+        /// same question <c>AnchorInput</c> asks for the key, so the switch and the key can never
+        /// disagree about whose tackle this is.</summary>
+        private bool IsPlayersBoat
+        {
+            get
+            {
+                BoatController boat = Boat();
+                return boat != null && GameServices.Helm.IsPlayersBoat(boat);
+            }
+        }
+
+        /// <inheritdoc/>
+        public bool HasAnchor
+        {
+            get
+            {
+                BoatController boat = Boat();
+                return boat != null && AnchorMath.CarriesAnchor(boat.Hull);
+            }
+        }
+
+        /// <inheritdoc/>
+        public AnchorState AnchorState
+        {
+            get
+            {
+                if (!HasAnchor) return AnchorState.Stowed;
+                BoatAnchor tackle = Tackle();
+                return tackle != null ? tackle.State : AnchorState.Stowed;
+            }
+        }
+
+        /// <inheritdoc/>
+        public void ToggleAnchor()
+        {
+            if (!HasAnchor || !IsPlayersBoat) return;
+            BoatAnchor tackle = Tackle();
+            if (tackle != null) tackle.Toggle();
+        }
 
         /// <inheritdoc/>
         public HelmControlStyle Style

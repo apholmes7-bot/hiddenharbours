@@ -952,18 +952,17 @@ zoom — closer to look at interiors, out when outside."* Built as **a second ha
 not a second zoom system** — the failure mode a free player zoom would have produced is a wheel
 fighting the ruled framings above it for the same orthographic size.
 
-- **The wheel owns the ON-FOOT framing and nothing else.** The helm keeps the hull's "whole vessel
-  visible" derivation, the deck keeps its step, a live haul keeps its tighten, a road vehicle keeps her
-  def's framing. Boarding therefore needs no hand-back: the boat framing was never the walker's to
-  move. **Disembarking restores her last tier for free** — that tier *is* the on-foot framing, so
-  stepping ashore commits `OnFoot` and lands on it with nothing saved or reinstated.
+- **On foot she owns a RUNG.** An absolute stop on the ladder, kept for the whole voyage.
+  **Disembarking restores her last tier for free** — that tier *is* the on-foot framing, so stepping
+  ashore commits `OnFoot` and lands on it with nothing saved or reinstated.
 - **Four discrete stops, all crisp.** The range is `11.25 m → 5.625 m` of world height: the ×3, ×4, ×5
   and ×6 PPU-32 steps at 1080p. One stop wider than standing on foot at the far end; at the near end
   the tightest framing the game already ships (the live-haul step) — so the interior close-up is a
   framing the game has already been played at, not a new number. Nothing between two stops exists,
   because a fractional camera scale shimmers on pixel art.
-- **Owner-tunable in metres, never in steps** (rule 6): `GameConfig.PlayerZoom` carries the two clamps,
-  the wheel enable, the scroll-per-tier and the step ease. Metres because ladder steps count *upward* as
+- **Owner-tunable in metres, never in step indices** (rule 6): `GameConfig.PlayerZoom` carries the two
+  walking clamps, the wheel enable, the scroll-per-tier, the step ease and the two aboard-band stop
+  allowances. Metres because ladder steps count *upward* as
   the view gets *closer*, which reads backwards to anybody tuning a camera; every other camera dial in
   the project is world height in metres and so is this one. A hand-typed height quantises to the nearest
   crisp stop, so the worst it can do is pick a neighbouring tier — never a blurry framing.
@@ -990,14 +989,66 @@ pixel screen its read budget is priced in, not something the presenter measures.
 is therefore belt-and-braces for these two — it earns its keep the day a kit UI grows a scrollable
 list and wants the wheel for itself.
 
-> ⚠️ **Two open questions for the owner, deliberately not decided here.**
+**Owner ruling (2026-08-22): the wheel works aboard and on deck too — and it was dead on foot.**
+Two things, from one playtest.
+
+**① The on-foot dead path was a real bug, and reading found it in the liveness gate.** `WheelIsLive`
+required a *committed* framing. The camera only commits from `TickZoom`; `TickZoom` refuses to run
+until a `ControlModeChanged` has arrived; and **nothing publishes one at boot**. `ControlSwitcher`
+speaks on a *transition* (board, disembark, take a wheel) and on the region-arrival re-assert, and
+`ArrivalOpening` — which does publish — is skipped for any save that has already arrived
+(`ShouldPlay = !hasRestAnchor && !alreadyArrived`). So a returning player loaded their game, walked
+down the wharf, and turned a wheel that was switched off with no error anywhere. Boarding once and
+stepping back ashore "fixed" it, which is exactly how it survived a build. The repair answers what
+the gate was really asking: **un-committed does not mean "no framing on screen", it means the
+builder-authored one is — and the builders author the walker's.** She is a walker until the game says
+otherwise, so an un-committed camera is a walking camera and its wheel is hers.
+
+> Three other suspects were ruled out by reading rather than by guessing, and each is now pinned by a
+> POCO test so it can never become the answer to the same report twice: the carry accumulator vs
+> Windows' ±120 per detent (one detent is one rung, and banks no remainder); the clamp collapsing
+> because the on-foot height sits *on* a bound (the walker's home rung is strictly inside the shipped
+> band, and a deliberately pinned range refuses the nudge rather than faking it); and `WheelEnabled`
+> read off the wrong config instance — the shape that actually bites being a `GameConfig` asset
+> serialized *before* `PlayerZoom` existed, which deserializes as `default(T)`: wheel off, range 0 m to
+> 0 m, all silent. `PlayerZoomSettings.Sanitized()` now heals a wholly-unwritten block, and only a
+> wholly-unwritten one — an owner who turns the wheel off keeps the rest of their tuning, so asking
+> whether the *whole* struct is blank is what separates "off on purpose" from "never authored".
+
+**② Aboard and on deck she owns an OFFSET, not a rung.** This answers open question 2 below with a
+band rather than a second range. The offset is in whole rungs from whatever the context ruled
+(`BoatHullDef.CameraWorldHeightMeters` at the helm, the deck step on deck), bounded by
+`GameConfig.PlayerZoom.AboardStopsCloser` / `AboardStopsWider`, and **released on every tier change** —
+a committed framing change, or a hull whose framing actually differs. That release is the whole reason
+a band can exist without taking the framing away from its authority: §9.8's "whole vessel visible"
+derivation and the deck step are still what she is *handed* each time she arrives, and the wheel is a
+look around from there. Store a rung instead and the first upgrade would frame the new boat at the old
+boat's zoom — §9.8's defect, wearing a different hat.
+
+- **A live haul and a road vehicle stay ruled outright.** The haul tighten exists for the seconds a
+  pot is coming up and releases itself; a wheel fighting it would be fighting something already
+  leaving. A truck at 11 m/s needs every metre of the view her def asks for.
+- **Counts of stops, not metres** — the one camera dial in the project that is not a world height, and
+  it cannot be one: the thing it is measured *from* is different for every hull the player will ever
+  own. A dory and a tanker share an allowance of "two stops"; they share no pair of metre clamps.
+- **The band walks the ladder by INDEX, not by step number.** Steps 0 and -1 are not steps, so the
+  sequence runs … -3, -2, **1**, 2 … A band centred on a big hull sits at or past that 1:1 pivot, and
+  plain `step + 1` would walk into the hole. `CameraZoomPolicy.StepClosestBy` walks indices instead,
+  so "one stop wider" always means the next real stop. Every reachable framing, at every offset, on
+  every hull, is still an integer pixel-perfect step — swept by
+  `NoFramingTheWheelCanReach_IsEverANonIntegerPPU`.
+- **`CameraZoomInput` did not change**, and did not need to. Every rule about which tiers exist, when
+  the wheel is live, and whether a notch moves a rung or an offset lives in the policy and the camera —
+  the split earning its keep.
+
+> ⚠️ **One open question for the owner, deliberately not decided here.**
 > 1. **Should an interior CLAMP the far end** — no zooming out through a roof? The camera cannot answer
 >    that today: `BuildingInterior.IsInside` is World-side and the camera (App) reaches it only through
 >    a Core signal that does not exist yet. Ruling it "yes" is a small Core contract (an occupancy
 >    signal) plus a second clamp pair, not a tweak to what shipped here.
-> 2. **Should the wheel work at the helm at all** — a per-hull ± of one or two stops around the ruled
->    framing, rather than being inert? Inert is what the ruling asked for and what is built; the
->    alternative is one more clamp pair and the same policy.
+>
+> *(Question 2 — "should the wheel work at the helm at all" — was answered on 2026-08-22: yes, as a
+> band. See above.)*
 
 ### 9.9 The ambient fisher fleet (decor tier — canon M2-33, P3 "Living Working Coast")
 
@@ -1096,12 +1147,32 @@ ask, 2026-08-06.) Built as **one rule the player can read off the water**, not a
   are **aground**, which the existing grounding sim already owns. Where a region paints **no seabed
   at all**, the depth is infinite and the tackle refuses — the mirror of the crossing gate's "a
   missing height map never falsely *blocks* a boat" (here: never falsely *claims to hold* one).
-- **The rode is DATA** (rule 2): `BoatHullDef.RodeMeters` — how much anchor line the hull carries, and
-  therefore the deepest water she can anchor in. It grows up the ladder (dory 6 m → punt 8 → console
-  skiff 12 → lobster boat 30 → dragger 60 → trawler 90 → packet 130 → tanker 180), so **deeper
-  anchorages are a thing you buy** (P2). `0` means "she authors none" and takes the shared
-  dinghy-class `GameConfig.Anchor.DefaultRodeMeters` — which is also what every hull asset written
-  before the field existed deserializes to, so an untouched hull carries a *short* rode, never none.
+- **The ground tackle is DATA** (rule 2) — three fields on `BoatHullDef`, and **every shipped hull
+  states all three** (the owner's ruling, 2026-08-23: *an anchor on every hull*; `AnchorContentValidationTests`
+  is the guard):
+  - `HasAnchor` — does she carry a hook at all. **True** by default, because the ruling is that she
+    does; `false` is the deliberate exception, and it is the one gate that is not about the sea (no
+    tackle → no dash switch, a dead anchor key, and `BoatAnchor` refuses the drop). ⚠️ A hull asset
+    whose YAML *omits* the key deserializes it as `false` — Unity never runs a C# field initializer on
+    a loaded asset — so the key is written explicitly on every hull and the content test checks the
+    **file**, not just the loaded object.
+  - `AnchorMassKg` — what the hook weighs (dory 4 kg → punt 6 → console skiff 8 → lobster boat 20 →
+    cape islander 22 → dragger 110 → trawler 320 → packet 900 → tanker 3200). Not decoration: a
+    dragging anchor checks the boat by friction along the seabed and friction goes with the weight
+    bearing on it, so this **scales the shared drag brake** — twice the iron, twice the check
+    (`AnchorMath.DragBrakeStrengthFor`). Because the brake is a *force* and what the hull feels is
+    force ÷ her own mass, a big boat still fetches away faster than a dory: the ladder comes out
+    right with no second curve to tune. `0` takes `GameConfig.Anchor.ReferenceAnchorMassKg`, which is
+    also the mass the shared brake strength is quoted at — so an un-authored hull drags exactly as
+    she did before hulls had anchor weights.
+  - `RodeMeters` — how much anchor line she carries, and therefore the deepest water she can anchor
+    in. It grows up the ladder (dory 6 m → punt 8 → console skiff 12 → lobster boat 30 → dragger 60 →
+    trawler 90 → packet 130 → tanker 180), so **deeper anchorages are a thing you buy** (P2). `0`
+    takes the shared dinghy-class `GameConfig.Anchor.DefaultRodeMeters`.
+
+  Each of the three is resolved in **exactly one place** (`AnchorMath.CarriesAnchor` / `AnchorMassFor`
+  / `RodeFor`), so the switch that draws, the key that presses and the sim that holds always read the
+  same tackle.
 - **Holding is a swing circle, not a freeze.** She lies within `√(rode² − depth²)` of the drop point —
   the plain geometry of a taut rode, where the vertical leg takes the depth and whatever is left is
   horizontal. **Spare rode is swing**: a short scope in deep water pins her almost over her anchor, the
@@ -1122,26 +1193,54 @@ ask, 2026-08-06.) Built as **one rule the player can read off the water**, not a
   the seabed. Come the ebb she **brings up again where she has fetched to**, not at the berth she
   lost: dragging costs you your spot, not your anchor.
 - **Owner-tunable, no magic numbers** (rule 6): the whole policy is `GameConfig.Anchor` — the
-  dinghy-class rode, the swing floor, the firm-limit trio, and the drag creep + brake. ⚠️ The **drag
+  reference hook, the dinghy-class rode, the swing floor, the firm-limit trio, and the drag creep +
+  brake. ⚠️ The **drag
   rate** is flagged `_confirm` — it is the number that decides how nasty losing your bottom feels.
-- **Input is a dev key for now** (`R`, for *rode* — audited free across code *and*
-  `InputSystem_Actions`, where `C` turns out to be taken by Crouch). It lives only from the boat (helm
-  or deck, never ashore), only on the hull you are on, and stands down under a dialogue or a text
-  field. The real control is a **diegetic windlass** on the helm console — `ui-ux`/`art-director`
-  later work, not this slice.
+- **Two controls, one verb** (owner ask, 2026-08-23) — and never two states, because both call the
+  same `BoatAnchor.Toggle()`:
+  - **At a helm: a switch on the dash** (`UI/HelmDashController`), which is the diegetic answer ADR
+    0039 asks for. On the **pilothouse** hulls it is the rigs' *already-authored* `ANCH` breaker
+    (`ColA[3]` of the bank, drawn dead since that dash shipped and now lit by the hook itself). On the
+    **skiffs** it is a third switch bat in the panel, midway between DECK and SPOT — derived from the
+    rig's own numbers rather than measured, and flagged to `art-director` to mirror back into
+    `consoleRig.js`/`sportRig.js`. It is drawn only on a hull that carries a hook: a switch the boat
+    cannot answer is the diegetic version of a readout you have not earned. The UI reaches the tackle
+    through Core (`IHelmControl.HasAnchor` / `AnchorState` / `ToggleAnchor`), never by naming a Boats
+    type (rule 4).
+  - **On a hull with no dash — the rowed dory, the motorised dory, the punt — one key: `Q`.** A
+    **reused verb**, not a new letter: the A–Z ledger is spent (ADR 0039 §6), and the game already has
+    a ground-tackle verb. `Q` ashore works the mooring you are standing by (`ControlSwitcher.ToggleMooring`);
+    `Q` aboard lets go or weighs the hook. The two readings can never both be live —
+    `CanToggleMooring()` requires `OnFoot`, the anchor key requires `Aboard`/`OnDeck` — so one letter
+    carries both with no modifier, no hold and no arbiter, and aboard it claims a press that did
+    nothing at all before.
+  - ⚠️ **This retires `R`, and unpicks a live double-booking.** The old dev key claimed `R` as
+    "audited free"; it was not. `MooringController._workKey` is `Key.R` — tighten, SHIFT-slacken, hold
+    to **cast off** — and that controller is live on a boat's deck, so a press of `R` on deck with a
+    line on both worked the rope and toggled the hook. `R` goes back to the mooring lane alone.
+  - The key lives only from the boat (helm or deck, never ashore), only on the hull you are on, only
+    on a hull that carries a hook, and stands down under a dialogue or a text field. Ownership is
+    `GameServices.Helm.IsPlayersBoat` — the **wider** fact, not `IsPlayerHelm`: a rowed dory has no
+    helm at all and her anchor still answers to the player.
 - **Visual v1 is minimal**: a greybox `LineRenderer` rode from the hull to the hook, dull galvanised
   while holding and red while dragging, on the `SortingBands.AboveDecor` rope tier the mooring line and
   the trap-haul line already share (ADR 0032). No bespoke animation — a windlass clip is routed to the
   art-director.
 - **Nothing is saved.** The drop point is live runtime state, like the mooring's tie point; reload and
   the hook is catted. *Persisting an anchored boat across a save is a follow-up, not this slice.*
-- Code: `Code/Boats/AnchorMath.cs` (the pure rules — gate, swing, drag brake, rode resolution),
-  `Code/Boats/BoatAnchor.cs` (state + the per-tick restraint, runtime-spawned by `BoatController` so
-  no builder re-run is needed), `Code/Boats/DevAnchorInput.cs` (the key),
-  `Code/Core/Boats/AnchorSettings.cs` (the owner's policy). Tests: `AnchorMathTests` (EditMode — the
-  whole decision half, plus the `GameConfig.asset` YAML-key guard) and `AnchorPlayTests` (PlayMode —
-  the gate on a live tide, the hold under a stiff wind against an un-anchored control, and the
-  rising-tide drag).
+- Code: `Code/Boats/AnchorMath.cs` (the pure rules — gate, swing, drag brake, and the three tackle
+  resolvers), `Code/Boats/BoatAnchor.cs` (state + the per-tick restraint, runtime-spawned by
+  `BoatController` so no builder re-run is needed), `Code/Boats/AnchorInput.cs` (the key),
+  `Code/Boats/HelmControlRelay.cs` (the Boats side of the Core tackle seam),
+  `Code/UI/HelmDashController.cs` + `Code/UI/Draw/HelmDashGeometry.cs` (the dash switch),
+  `Code/Core/Boats/AnchorSettings.cs` (the owner's policy, and the shared `AnchorState`). Tests:
+  `AnchorMathTests` and `AnchorContentValidationTests` (EditMode — the decision half, the tackle
+  ladder, and the `GameConfig.asset` / hull-asset YAML-key guards), `HelmAnchorSwitchTests` (EditMode
+  — where the switch sits in both helm families, what a press on it does, and its repaint key),
+  `AnchorPlayTests` (PlayMode — the gate on a live tide, the hold under a stiff wind against an
+  un-anchored control, the rising-tide drag, and the key's gate) and `AnchorEveryHullPlayTests`
+  (PlayMode — the rowed dory with **no helm granted at all**, the switch on both helm families, and
+  the switch and the key landing on the same hook).
 
 ---
 

@@ -29,12 +29,23 @@ namespace HiddenHarbours.App
     /// <see cref="TrapHaulStateChanged"/> signals — App never references Player/Boats/Fishing (rule 4).
     ///
     /// PLAYER ZOOM (owner ruling 2026-08-19, "the wheel is the player's eye"): the mouse wheel walks the
-    /// WALKING view up and down the same integer ladder — closer to read an interior, wider to see where
-    /// you are going outdoors. It is a second hand on one ladder, not a second zoom system: it owns the
-    /// on-foot framing and nothing else, so the helm's ruled per-hull framing, the deck step and the haul
-    /// tighten are all untouchable by it, and stepping ashore simply lands back on the rung the walker
-    /// left. The range and the wheel's feel are owner-tunable on <c>GameConfig.PlayerZoom</c> (rule 6);
-    /// the device is read by <see cref="CameraZoomInput"/>, so this class still knows nothing about input.
+    /// view up and down the same integer ladder — closer to read an interior, wider to see where you are
+    /// going. It is a second hand on one ladder, not a second zoom system.
+    ///
+    /// ON FOOT she owns the RUNG outright, between the owner's two metre clamps, and it survives the
+    /// whole voyage: stepping ashore simply lands back on the rung the walker left, because that rung IS
+    /// the on-foot framing.
+    ///
+    /// ABOARD AND ON DECK (owner ruling 2026-08-22) the wheel works too, but there she owns an OFFSET in
+    /// whole rungs from whatever the context ruled, bounded by the band on <c>GameConfig.PlayerZoom</c>
+    /// and RELEASED on every tier change — a mode commit, a new hull. That is what keeps the framing the
+    /// hull's: §9.8's "whole vessel visible" derivation and the deck step are still what she is handed
+    /// each time she arrives, and the wheel is a look around from there. A live haul and a road vehicle
+    /// stay ruled outright. Every stop, at every framing, is an integer pixel-perfect step.
+    ///
+    /// The range, the band and the wheel's feel are owner-tunable on <c>GameConfig.PlayerZoom</c>
+    /// (rule 6); the device is read by <see cref="CameraZoomInput"/>, so this class still knows nothing
+    /// about input.
     /// </summary>
     public class CameraFollow : MonoBehaviour
     {
@@ -210,6 +221,23 @@ namespace HiddenHarbours.App
         private Vector2 _lookahead;   // current (smoothed) look-ahead offset
         private bool _hasLast;
 
+        // THE FOLLOW FILTER'S OWN CONTINUOUS POSITION. The transform is a rounded COPY of this once
+        // the pixel snap is on (see ApplyPixelGrid); the smoothing must never read the rounded value
+        // back, or the rounding enters the filter and a slow pan stalls on a pixel until the error
+        // passes half a grid step and then jumps. Seeded from the transform on first use, and
+        // re-synced whenever the bounds clamp moves the camera, so with the snap OFF the follow is
+        // byte-for-byte the one that shipped.
+        private Vector3 _smoothPos;
+        private bool _hasSmoothPos;
+
+        // What this component LEFT on the transform at the end of the last LateUpdate. If the
+        // transform no longer reads that, somebody else moved the camera — a builder placing it, a
+        // region hop, a test parking it off-map — and the filter must adopt the new spot instead of
+        // gliding to it from where it privately thought it was. Before _smoothPos existed the filter
+        // state WAS the transform, so an external write re-seeded it for free; this is what keeps
+        // that behaviour exactly.
+        private Vector3 _lastAppliedPos;
+
         // framing-tween state (an upgrade zoom-out / a deck zoom step)
         private bool _tweening;
         private float _tweenElapsed;
@@ -235,6 +263,13 @@ namespace HiddenHarbours.App
         // and never read by the sim: this is presentation (rule 5), the same as the deck step above.
         private int _playerZoomStep;
         private bool _playerZoomStepKnown;
+
+        // THE ABOARD BAND (owner ruling 2026-08-22) — her offset in whole rungs from whatever the helm
+        // or the deck ruled. Transient by design and RESET on every tier change (a commit, a new hull),
+        // which is what keeps §9.8's per-hull derivation and the deck step authoritative: arriving
+        // anywhere hands her the ruled framing, and the wheel is a look around from there. Zero is the
+        // ruled framing exactly, byte-for-byte — see CameraZoomPolicy.BandWorldHeightMeters.
+        private int _playerBandOffset;
 
         private void Awake()
         {
@@ -271,11 +306,21 @@ namespace HiddenHarbours.App
         {
             // The owner's §9.8 ruling: the authored framing is FLOORED by what it takes to show the
             // whole vessel. A floor, not a replacement — small boats keep their intimate framing.
-            _boatWorldHeightMeters = CameraZoomPolicy.HelmWorldHeightMeters(
+            float ruled = CameraZoomPolicy.HelmWorldHeightMeters(
                 e.CameraWorldHeightMeters, e.HullLengthMeters,
                 _helmFitMarginFactor, _isoElevationDegrees, CurrentAspect());
+
+            // A DIFFERENT HULL IS A TIER CHANGE, so the player's band offset is released here as surely
+            // as it is on a mode commit. Keeping it would frame the new boat at the old boat's zoom —
+            // the exact defect §9.8 exists to kill, arriving through the back door. Guarded on the
+            // framing actually CHANGING because this signal is also re-published verbatim on every
+            // region arrival (ControlSwitcher.ReassertControlMode), and a hop across a passage is not
+            // a new boat: snapping her band on every landfall would be a twitch with no cause.
+            if (!Mathf.Approximately(ruled, _boatWorldHeightMeters)) _playerBandOffset = 0;
+            _boatWorldHeightMeters = ruled;
+
             if (_zoomPolicy.HasCommitted && _zoomPolicy.Committed == CameraFraming.Boat)
-                SetFraming(_boatWorldHeightMeters, _framingTweenSeconds);
+                SetFraming(WorldHeightFor(CameraFraming.Boat), _framingTweenSeconds);
         }
 
         // A vehicle taken over carries her own framing, exactly as a hull does. No length term and so no
@@ -422,11 +467,22 @@ namespace HiddenHarbours.App
             FollowTarget();
             TickZoom(Time.timeAsDouble);
             if (_tweening) TickFramingTween();
-            // ⚠️ The clamp runs LAST, after the zoom has settled for this frame. Its allowance is a
+            // ⚠️ The snap goes AFTER the zoom and BEFORE the clamp, and both halves matter. After,
+            // because the grid is a function of the framing this frame — snapping first would round
+            // to the PREVIOUS zoom's pixel. Before, because the clamp is the harder guarantee: the
+            // view may never leave the authored rectangle, and a snap running after it could round a
+            // hard-won edge position half a pixel back out over the map. Nothing is lost by yielding
+            // there: parked against an edge the camera is STATIONARY, and a fixed sub-pixel offset
+            // that never changes is invisible. The softness this exists to cure is the offset
+            // CHANGING frame to frame, which only happens while the view is free to move — which is
+            // exactly the case the snap does land on.
+            ApplyPixelGrid();
+            // ⚠️ The clamp runs after the zoom has settled for this frame. Its allowance is a
             // function of the half-extents, so clamping before TickZoom/TickFramingTween would size
             // the allowance to the PREVIOUS frame's zoom — visible as a one-frame overshoot past the
             // map edge on every zoom step, which is exactly where a bounds rig gets noticed.
             ApplyBounds();
+            _lastAppliedPos = transform.position;   // the teleport tripwire — see the field
         }
 
         /// <summary>
@@ -473,7 +529,74 @@ namespace HiddenHarbours.App
             Vector3 p = transform.position;
             Vector2 clamped = CameraBounds.Clamp(new Vector2(p.x, p.y), in bounds, halfWidth, halfHeight);
             if (clamped.x != p.x || clamped.y != p.y)
+            {
                 transform.position = new Vector3(clamped.x, clamped.y, p.z);   // depth is never touched
+                // The filter follows the wall too. Before _smoothPos existed the filter's state WAS
+                // the transform, so the clamp fed back into it for free; keeping that feedback is
+                // what makes the snap-off path byte-identical — without it the camera would keep
+                // integrating toward a goal outside the wall and lag by the accumulated error when
+                // the target finally turned back inward.
+                _smoothPos = transform.position;
+            }
+        }
+
+        /// <summary>
+        /// <b>How much world ONE RENDERED SCREEN PIXEL covers right now</b> — the grid
+        /// <see cref="PixelGrid"/> rounds onto, and what this camera publishes to
+        /// <see cref="GameServices.WorldUnitsPerRenderedPixel"/> for the mesh vehicles that cannot
+        /// reference App (rule 4).
+        ///
+        /// <para><b>Derived from the LADDER, not measured off the live viewport.</b> The tempting
+        /// version is <c>orthographicSize·2 / cam.pixelHeight</c> — the physical screen pixel. It is
+        /// rejected for one reason that outranks its directness: <b>the grid must stay compatible
+        /// with the ASSET lattice</b>, and only the ladder guarantees that. Every step resolves to
+        /// <c>1/(ppu·step)</c> or <c>(−step)/ppu</c>, both of which are whole-number relatives of the
+        /// 1/32 asset grid the sprites are snapped onto, so a texel boundary can never end up
+        /// straddling the camera's own lattice. A number measured off an arbitrary window height is
+        /// not a relative of anything, and snapping to it would trade one sub-pixel offset for
+        /// another while looking like a fix.</para>
+        ///
+        /// <para>It is also deterministic and screen-independent, which is what lets an EditMode
+        /// fixture and a headless test rig reason about the grid at all — the live viewport reports
+        /// whatever batchmode happened to allocate, and a snap that changed with the runner's window
+        /// would make every position assertion in the suite a coin toss.</para>
+        /// </summary>
+        public float WorldUnitsPerRenderedPixel
+        {
+            get
+            {
+                int ppu = CurrentPpu();
+                int step = CameraZoomPolicy.StepForWorldHeight(_worldHeightMeters, ppu, DesignScreenHeightPx);
+                return CameraZoomPolicy.WorldUnitsPerRenderedPixel(step, ppu, DesignScreenHeightPx);
+            }
+        }
+
+        /// <summary>
+        /// Publish this frame's pixel grid, and put the camera back on it.
+        ///
+        /// <para><b>The publish is unconditional; only the SNAP is gated.</b> The grid is just a true
+        /// statement about the framing being shown, and a mesh vehicle needs it to decide anything at
+        /// all — each consumer checks <see cref="GameServices.PixelGridSnap"/> for itself, so the
+        /// owner's A/B flag flips the camera and every vehicle together, from one dial.</para>
+        ///
+        /// <para><b>Why the camera needs snapping when the sprites already snap.</b> The locked
+        /// <c>PixelPerfectCamera</c> runs <c>GridSnapping.PixelSnapping</c>, which publishes
+        /// <c>PixelPerfectRendering.pixelSnapSpacing</c> — a SpriteRenderer-only grid. It puts the
+        /// sprites on a shared WORLD lattice and then leaves the camera to sample that lattice from
+        /// wherever the follow filter's exponential ease happened to land, which is a different
+        /// sub-pixel offset every frame. At an integer upscale that is exactly what makes an asset
+        /// texel two screen pixels wide on one frame and three on the next: the running fisher going
+        /// soft while she moves, with no blur filter anywhere in the pipeline.</para>
+        ///
+        /// <para>One float store and (when on) one rounded write per frame — no allocation (rule 7).</para>
+        /// </summary>
+        private void ApplyPixelGrid()
+        {
+            float grid = WorldUnitsPerRenderedPixel;
+            GameServices.WorldUnitsPerRenderedPixel = grid;
+
+            if (grid <= 0f || !GameServices.PixelGridSnap) return;
+            transform.position = PixelGrid.Snap(transform.position, grid);
         }
 
         /// <summary>
@@ -488,8 +611,15 @@ namespace HiddenHarbours.App
             if (!_modeKnown) return; // hold the builder-authored initial framing until control declares itself
             CameraFraming desired = CameraZoomPolicy.DesiredFraming(_mode, _haulLive, _haulTightensZoom,
                                                                     _carriedAboard);
-            if (_zoomPolicy.TryCommit(desired, nowSeconds, _zoomHoldSeconds))
-                SetFraming(WorldHeightFor(desired), TweenSecondsFor(desired));
+            if (!_zoomPolicy.TryCommit(desired, nowSeconds, _zoomHoldSeconds)) return;
+
+            // ⭐ A COMMITTED FRAMING CHANGE IS A TIER CHANGE, and a tier change releases the player's
+            // aboard band (owner ruling 2026-08-22). Ashore ⇄ helm ⇄ deck, and a haul starting or
+            // ending, all land here — each of them hands her a framing somebody else ruled, and she
+            // gets it as ruled. Her WALKING rung is untouched by this and survives the whole voyage;
+            // the two are different kinds of state for exactly this reason.
+            _playerBandOffset = 0;
+            SetFraming(WorldHeightFor(desired), TweenSecondsFor(desired));
         }
 
         /// <summary>The framing the camera has actually committed to right now, and whether it has
@@ -501,16 +631,17 @@ namespace HiddenHarbours.App
         public bool FramingKnown => _zoomPolicy.HasCommitted;
 
         /// <summary>The world height (m) a framing context maps to — the owner-tunable step table
-        /// (Boat = the last <see cref="ActiveBoatChanged"/> hull height). Public for tests/tools.</summary>
+        /// (Boat = the last <see cref="ActiveBoatChanged"/> hull height), with the player's own hand
+        /// on it: her rung on foot, her band offset at the helm and on deck. Public for tests/tools.</summary>
         public float WorldHeightFor(CameraFraming framing)
         {
             switch (framing)
             {
-                case CameraFraming.Boat: return _boatWorldHeightMeters;
-                case CameraFraming.Deck: return _deckWorldHeightMeters;
-                case CameraFraming.DeckHaul: return _haulWorldHeightMeters;
-                case CameraFraming.Vehicle: return _vehicleWorldHeightMeters;
-                default: return PlayerZoomWorldHeightMeters;   // the walker's rung — the wheel's ONLY framing
+                case CameraFraming.Boat: return BandedHeight(_boatWorldHeightMeters);
+                case CameraFraming.Deck: return BandedHeight(_deckWorldHeightMeters);
+                case CameraFraming.DeckHaul: return _haulWorldHeightMeters;   // ruled outright
+                case CameraFraming.Vehicle: return _vehicleWorldHeightMeters; // ruled outright
+                default: return PlayerZoomWorldHeightMeters;                  // the walker's own rung
             }
         }
 
@@ -522,25 +653,66 @@ namespace HiddenHarbours.App
         // ================= PLAYER ZOOM: the wheel is the player's eye (owner ruling 2026-08-19) =====
         //
         // The rules are all in CameraZoomPolicy (pure, EditMode-tested); this half only APPLIES them,
-        // exactly as the deck step above does. Three facts worth stating here because they are
+        // exactly as the deck step above does. Four facts worth stating here because they are
         // properties of the wiring rather than of the rules:
         //
         //  1. THE WHEEL DOES NOT GO THROUGH TickZoom. The policy commits on a CHANGE of framing, and a
-        //     wheel turn while already on foot changes nothing about which framing is wanted — only
-        //     which rung of it. So a nudge re-frames directly. It is gated on the committed framing
-        //     being one the player owns, which is what keeps it from ever touching a boat tier.
+        //     wheel turn changes nothing about WHICH framing is wanted — only which rung of it, or how
+        //     far off the ruled one she is looking. So a nudge re-frames directly.
         //  2. DISEMBARKING RESTORES THE WALKER'S TIER FOR FREE. Stepping ashore commits OnFoot, and
         //     TickZoom asks WorldHeightFor(OnFoot) — which is the remembered rung. Nothing saves,
         //     reinstates, or even notices the restore; there is simply no other on-foot height.
         //  3. THE CLAMPS ARE READ LIVE, not cached. The owner tunes them on the GameConfig asset while
         //     the game runs (rule 6), and a range edited to exclude the current rung must pull the view
-        //     back inside on the very next nudge rather than at the next scene load.
+        //     back inside on the very next nudge rather than at the next scene load. The aboard band's
+        //     two allowances are read the same way, through the same live property.
+        //  4. THE BAND IS RELEASED IN TWO PLACES, and both are tier changes rather than wheel events:
+        //     a committed framing change (TickZoom) and a hull whose framing actually differs
+        //     (OnActiveBoatChanged). Nothing else may clear it, and nothing else needs to.
 
         /// <summary>The owner's walking-zoom range and wheel feel, live from the config asset — with
         /// the shipped defaults when no asset is wired (EditMode, a bare test rig), the same
         /// null-tolerant read every other consumer of <see cref="GameServices.Config"/> makes.</summary>
         private static PlayerZoomSettings ZoomSettings
-            => GameServices.Config != null ? GameServices.Config.PlayerZoom : PlayerZoomSettings.Default;
+            => GameServices.Config != null
+                ? GameServices.Config.PlayerZoom.Sanitized()
+                : PlayerZoomSettings.Default;
+
+        /// <summary>How many crisp stops the wheel may take a RULED framing closer / wider — the
+        /// owner's aboard band, live from the config asset (rule 6). Magnitudes: a negative typed into
+        /// either simply means "no stops that way".</summary>
+        private static int BandStopsCloser => Mathf.Abs(ZoomSettings.AboardStopsCloser);
+
+        /// <inheritdoc cref="BandStopsCloser"/>
+        private static int BandStopsWider => Mathf.Abs(ZoomSettings.AboardStopsWider);
+
+        /// <summary>The player's band offset, held live inside the owner's allowance — so a config
+        /// edited to a narrower band pulls the view back in on the very next read, not at the next
+        /// scene load (the same live-clamp discipline <see cref="PlayerZoomStep"/> keeps).</summary>
+        public int PlayerBandOffset
+            => CameraZoomPolicy.ClampBandOffset(_playerBandOffset, BandStopsCloser, BandStopsWider);
+
+        /// <summary>A ruled framing with the player's band offset applied — the helm's and the deck's
+        /// heights as she is actually being shown them. At offset zero this is the ruled height
+        /// byte-for-byte; see <see cref="CameraZoomPolicy.BandWorldHeightMeters"/> for why that
+        /// matters more than it looks.</summary>
+        private float BandedHeight(float ruledWorldHeightMeters)
+            => CameraZoomPolicy.BandWorldHeightMeters(ruledWorldHeightMeters, _playerBandOffset,
+                                                     BandStopsCloser, BandStopsWider,
+                                                     CurrentPpu(), DesignScreenHeightPx);
+
+        /// <summary>The RULED height a banded framing is measured from — the hull's or the deck's own
+        /// number, before the player's offset. A framing with no band answers whatever
+        /// <see cref="WorldHeightFor"/> would, so the two can never disagree about it.</summary>
+        private float RuledHeightFor(CameraFraming framing)
+        {
+            switch (framing)
+            {
+                case CameraFraming.Boat: return _boatWorldHeightMeters;
+                case CameraFraming.Deck: return _deckWorldHeightMeters;
+                default: return WorldHeightFor(framing);
+            }
+        }
 
         /// <summary>The ladder step the walking view sits on. Seeded from the authored on-foot framing
         /// the first time it is asked for, so a camera nobody scrolls frames exactly as it always
@@ -596,9 +768,13 @@ namespace HiddenHarbours.App
 
         /// <summary>
         /// Whether a wheel notch would do anything RIGHT NOW: the wheel is enabled, a modal is not
-        /// holding the interaction gate, and the committed framing is one the player owns (on foot —
-        /// never the helm, the deck, a live haul or a vehicle). The reader checks this before touching
-        /// the device so a blocked wheel also banks no scroll.
+        /// holding the interaction gate, and the framing on screen is one the player may move (on foot,
+        /// at the helm or on deck — never a live haul or a road vehicle). The reader checks this before
+        /// touching the device so a blocked wheel also banks no scroll.
+        ///
+        /// <para>⚠️ <b>"On screen", not "committed".</b> An un-committed camera is a WALKING camera —
+        /// the on-foot dead path the owner hit on 2026-08-22, written up in full on
+        /// <see cref="CameraZoomPolicy.FramingOnScreen"/>.</para>
         /// </summary>
         public bool WheelIsLive
             => ZoomSettings.WheelEnabled
@@ -606,15 +782,29 @@ namespace HiddenHarbours.App
                                                InteractionGate.IsBlocked);
 
         /// <summary>
-        /// Step the walking view by whole wheel notches — <b>+1 = one tier CLOSER</b>. Returns true
-        /// when the tier actually moved (false at a clamp, or when <see cref="WheelIsLive"/> is not).
-        /// Public so the wheel reader, the tests and any future in-world control all drive the one
-        /// entry point.
+        /// Step the view by whole wheel notches — <b>+1 = one stop CLOSER</b>. What moves depends on
+        /// what she is looking at: on foot her RUNG, at the helm or on deck her OFFSET from the framing
+        /// that context ruled. Returns true when the view actually moved (false at a clamp, at the end
+        /// of the ladder, or when <see cref="WheelIsLive"/> is not). Public so the wheel reader, the
+        /// tests and any future in-world control all drive the one entry point.
         /// </summary>
         public bool NudgePlayerZoom(int notches)
         {
             if (notches == 0 || !WheelIsLive) return false;
 
+            // The framing she is LOOKING AT, which before the first commit is the walker's — the
+            // builders author the on-foot height into the camera and she cannot be at a helm she has
+            // not taken. See CameraZoomPolicy.FramingOnScreen for the playtest bug that lived here.
+            CameraFraming framing = CameraZoomPolicy.FramingOnScreen(_zoomPolicy.Committed,
+                                                                    _zoomPolicy.HasCommitted);
+            return framing == CameraFraming.OnFoot
+                ? NudgeWalkersRung(notches)
+                : NudgeAboardBand(framing, notches);
+        }
+
+        /// <summary>ON FOOT: she owns the rung outright, between the owner's two metre clamps.</summary>
+        private bool NudgeWalkersRung(int notches)
+        {
             int from = PlayerZoomStep;          // also seeds the rung on the first ever nudge
             int to = CameraZoomPolicy.StepPlayerZoom(from, notches, ClosestStep, FarthestStep);
             if (to == from) return false;       // saturated at a clamp — no re-frame, no tween
@@ -623,6 +813,24 @@ namespace HiddenHarbours.App
             // Through WorldHeightFor, not the ladder directly: scrolling back to the home rung must
             // land on the AUTHORED on-foot height, exactly where a player who never scrolled sits.
             SetFraming(WorldHeightFor(CameraFraming.OnFoot), Mathf.Max(0f, ZoomSettings.StepSeconds));
+            return true;
+        }
+
+        /// <summary>
+        /// ABOARD / ON DECK: she owns an OFFSET from the framing that context ruled, inside the band
+        /// the owner allows (owner ruling 2026-08-22). Refused — with no re-frame at all — when the
+        /// notch would change no step, whether because the allowance saturated or because the ladder
+        /// itself ran out under a very wide hull.
+        /// </summary>
+        private bool NudgeAboardBand(CameraFraming framing, int notches)
+        {
+            int to = CameraZoomPolicy.StepBandOffset(
+                _playerBandOffset, notches, RuledHeightFor(framing),
+                BandStopsCloser, BandStopsWider, CurrentPpu(), DesignScreenHeightPx, out bool moved);
+            if (!moved) return false;
+
+            _playerBandOffset = to;
+            SetFraming(WorldHeightFor(framing), Mathf.Max(0f, ZoomSettings.StepSeconds));
             return true;
         }
 
@@ -656,8 +864,17 @@ namespace HiddenHarbours.App
 
             Vector3 goal = tp + (Vector3)_lookahead;
             goal.z = transform.position.z; // keep the camera's depth
-            transform.position = Vector3.Lerp(transform.position, goal,
-                                              1f - Mathf.Exp(-Smooth * Time.deltaTime));
+
+            // Integrate on the filter's OWN position and publish a copy of it — see _smoothPos.
+            if (!_hasSmoothPos || transform.position != _lastAppliedPos)
+            {
+                _smoothPos = transform.position;    // first frame, or somebody teleported us
+                _hasSmoothPos = true;
+            }
+            _smoothPos.z = goal.z;
+            _smoothPos = Vector3.Lerp(_smoothPos, goal,
+                                      1f - Mathf.Exp(-Smooth * Time.deltaTime));
+            transform.position = _smoothPos;
         }
 
         private void TickFramingTween()

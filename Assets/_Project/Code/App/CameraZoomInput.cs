@@ -7,9 +7,11 @@ namespace HiddenHarbours.App
     /// The device half of the player's zoom (owner ruling 2026-08-19, <i>"mouse wheel modifies player
     /// zoom — closer to look at interiors, out when outside"</i>): it reads the wheel, turns it into
     /// whole tier notches, and hands them to <see cref="CameraFollow.NudgePlayerZoom"/>. Deliberately
-    /// tiny and opinion-free — every rule about WHICH tiers exist, when the wheel is live, and where the
-    /// range ends lives in <see cref="CameraZoomPolicy"/> and the camera, the same split
-    /// <c>TidePanelInput</c> keeps from <c>TidePanel</c>.
+    /// tiny and opinion-free — every rule about WHICH tiers exist, when the wheel is live, where the
+    /// range ends, and whether a notch moves the walker's rung or her offset from a ruled framing lives
+    /// in <see cref="CameraZoomPolicy"/> and the camera, the same split <c>TidePanelInput</c> keeps from
+    /// <c>TidePanel</c>. This class has not changed for the 2026-08-22 aboard-band ruling and did not
+    /// need to, which is the split earning its keep.
     ///
     /// <para><b>The binding audit.</b> The mouse wheel was unread anywhere in the project — no gameplay
     /// or UI component touched <c>Mouse.scroll</c>, and the only claim on it is the stock
@@ -31,15 +33,15 @@ namespace HiddenHarbours.App
     [DisallowMultipleComponent]
     public sealed class CameraZoomInput : MonoBehaviour
     {
-        [Tooltip("The camera whose walking framing the wheel moves. Left empty, it finds the " +
+        [Tooltip("The camera whose framing the wheel moves. Left empty, it finds the " +
                  "CameraFollow on this same object — which is how both builders wire it.")]
         [SerializeField] private CameraFollow _camera;
 
-        [Tooltip("Let the mouse wheel step the walking view. The owner's master switch is " +
+        [Tooltip("Let the mouse wheel step the view. The owner's master switch is " +
                  "GameConfig.PlayerZoom.WheelEnabled; this is the per-rig one.")]
         [SerializeField] private bool _wheelSteps = true;
 
-        [Tooltip("Let the pad's shoulder buttons step the walking view — LB out (wider), RB in " +
+        [Tooltip("Let the pad's shoulder buttons step the view — LB out (wider), RB in " +
                  "(closer), one tier per press. Off = mouse wheel only.")]
         [SerializeField] private bool _padShouldersStep = true;
 

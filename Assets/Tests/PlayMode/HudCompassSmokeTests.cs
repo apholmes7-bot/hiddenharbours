@@ -61,6 +61,12 @@ namespace HiddenHarbours.Tests.PlayMode
             /// on that wheel) and the HUD asks the second one; here they are the same answer.</summary>
             public bool IsPlayerHelm => HasHelm;
             public HelmControlStyle Style { get; set; } = HelmControlStyle.None;
+
+            // The ground tackle: not what these tests are about, so this helm carries no hook and
+            // nothing can be flicked on her. Present because the seam requires it.
+            public bool HasAnchor => false;
+            public AnchorState AnchorState => AnchorState.Stowed;
+            public void ToggleAnchor() { }
             public HelmFit Fit { get; set; } = HelmFit.None;
             public HelmLeverFinish LeverFinish => HelmLeverFinish.Graphite;
             public HelmWheelRim WheelRim => HelmWheelRim.Rubber;

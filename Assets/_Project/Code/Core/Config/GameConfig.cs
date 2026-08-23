@@ -368,6 +368,36 @@ namespace HiddenHarbours.Core
         public bool HullKeylineFlood = DefaultHullKeylineFlood;
 
         // -----------------------------------------------------------------------------------------
+        //  The pixel grid (owner playtest 2026-08-23 — "the running fisher and the Otter go soft")
+        // -----------------------------------------------------------------------------------------
+        // The locked Pixel Perfect Camera runs GridSnapping.PixelSnapping, and that mode snaps
+        // SPRITE RENDERERS to a world grid and nothing else — it never moves the camera, and it never
+        // reaches a MeshRenderer. So the camera sampled the snapped world from an arbitrary sub-pixel
+        // offset (an asset texel got 2 screen pixels one frame and 3 the next: the "soft while
+        // moving" read), and a mesh vehicle was not snapped by anything at all. This puts both
+        // RENDERED positions back on the grid; see Core.PixelGrid for the full derivation.
+        //
+        // ⚠️ A FLAT FIELD WITH A CODE-SIDE DEFAULT, for the same reason the silhouette block below
+        // is three flat scalars: a field missing from GameConfig.asset's YAML comes back as the C#
+        // type default, and for a bool that is FALSE — the feature silently off, reported as on.
+
+        /// <summary>Ship default — <b>ON</b>. Integer-pixel movement on the play grid is the bible's
+        /// own pixel discipline (§3.4, §9.2 "no sub-pixel shimmer"), not an option; OFF exists so the
+        /// owner can A/B the exact build that shipped before this flag against the one that snaps.</summary>
+        public const bool DefaultPixelGridSnap = true;
+
+        [Header("Pixel grid (the sub-pixel softness fix — bible §3.4 pixel discipline)")]
+        [Tooltip("Round the RENDERED position of the camera and of every mesh vehicle onto the " +
+                 "current framing's whole-pixel grid? ON is the shipped discipline: a running " +
+                 "fisher and a driven Otter keep even, stable texels instead of going soft while " +
+                 "they move. OFF restores the pre-fix look exactly — the camera lands wherever its " +
+                 "smoothing puts it and a mesh vehicle draws at a raw float position — so the two " +
+                 "can be A/B'd on one flag. This NEVER touches a simulated body: the physics " +
+                 "position stays the honest float, only the drawn transform is rounded (rule 5), so " +
+                 "determinism and every saved value are unaffected.")]
+        public bool PixelGridSnap = DefaultPixelGridSnap;
+
+        // -----------------------------------------------------------------------------------------
         //  The silhouette through foliage (owner ruling, 2026-08-16)
         // -----------------------------------------------------------------------------------------
         // "Slight occlusion — you always know where you are, you never lose your character." Dense
@@ -1917,10 +1947,13 @@ namespace HiddenHarbours.Core
     /// today's on-foot framing at the far end, and at the near end the closest framing the game already
     /// ships (the step a live trap haul uses).</para>
     ///
-    /// <para><b>The wheel moves the ON-FOOT view only.</b> The helm keeps the hull's ruled framing (the
-    /// "whole vessel visible" derivation), the deck keeps the deck step, a live haul keeps its tighten,
-    /// and a road vehicle keeps her def's framing. So these clamps are the walker's range and no other
-    /// framing's — and stepping aboard cannot be "stuck" at a zoom the wheel left behind.</para>
+    /// <para><b>These two clamps are the WALKER's range, and only hers.</b> Aboard and on deck the wheel
+    /// works too (owner ruling 2026-08-22) but it does not use these heights — it steps within a band
+    /// centred on the hull's own ruled framing, <see cref="AboardStopsCloser"/> stops in and
+    /// <see cref="AboardStopsWider"/> stops out. That band is re-centred every time the ruled framing
+    /// changes, so the hull's "whole vessel visible" derivation, the deck step and the haul tighten all
+    /// remain the thing you are given each time you arrive at them; the wheel is a look around from
+    /// there, never a new resting place. A live haul and a road vehicle stay ruled outright.</para>
     /// </summary>
     [System.Serializable]
     public struct PlayerZoomSettings
@@ -1948,10 +1981,32 @@ namespace HiddenHarbours.Core
                  "pixel-perfect stop — the ease only bridges the frames between two stops.")]
         [Min(0f)] public float StepSeconds;
 
+        // ---- the ABOARD band (owner ruling 2026-08-22) -------------------------------------------
+        //
+        // ⚠️ COUNTS OF STOPS, and this is the one place in the camera's tuning that is not metres.
+        // Every other dial is a world height because a ladder STEP INDEX reads backwards (it counts
+        // up as the view gets closer). These two are neither: they are "how many stops either way",
+        // and they cannot be metres because the thing they are measured from — the hull's own ruled
+        // framing — is different for every vessel the player will ever own. A dory and a tanker share
+        // an allowance of "two stops"; they share no pair of metre clamps at all.
+
+        [Tooltip("How many crisp stops the wheel may take the view CLOSER than the ruled framing " +
+                 "while aboard or on deck. 0 = the wheel cannot zoom in there at all. The band is " +
+                 "centred on the hull's own framing and is re-centred every time that framing " +
+                 "changes, so this is a look, never a new resting place.")]
+        [Min(0)] public int AboardStopsCloser;
+
+        [Tooltip("How many crisp stops the wheel may take the view WIDER than the ruled framing " +
+                 "while aboard or on deck. 0 = the wheel cannot zoom out there at all. Separate from " +
+                 "the closer allowance because the two answer different questions: in to read the " +
+                 "deck, out to see the water you are crossing.")]
+        [Min(0)] public int AboardStopsWider;
+
         /// <summary>
         /// The shipping range: 11.25 m out (one stop wider than standing on foot) to 5.625 m in (the
         /// live-haul step, the closest framing already in the game), 120 units of scroll to the tier,
-        /// and a short ease so a step reads as a move rather than a cut.
+        /// a short ease so a step reads as a move rather than a cut, and an aboard band of two stops
+        /// either way around whatever the helm or the deck ruled.
         ///
         /// <para>⚠️ The two heights are the ×3 and ×6 PPU-32 stops at 1080p written out as literals,
         /// because the ladder that derives them lives in the App camera and Core may not reach it.
@@ -1965,7 +2020,57 @@ namespace HiddenHarbours.Core
             FarthestWorldHeightMeters = 11.25f,  // 1080 / (3 x 32)
             WheelUnitsPerNotch = 120f,           // one mouse detent
             StepSeconds = 0.18f,
+            AboardStopsCloser = 2,               // two stops in from the hull's ruled framing…
+            AboardStopsWider = 2,                // …and two out (owner ruling 2026-08-22)
         };
+
+        /// <summary>
+        /// True when NOTHING on this struct has been authored — every field sitting on its C# zero.
+        ///
+        /// <para><b>⚠️ This is a real shape, not a hypothetical.</b> A <c>GameConfig</c> asset
+        /// serialized before <see cref="GameConfig.PlayerZoom"/> existed carries no YAML for it, and
+        /// Unity deserializes the missing block as <c>default</c> — which reads as a wheel that is
+        /// OFF with a range of 0 m to 0 m. Every one of those is a silent, plausible-looking answer:
+        /// nothing throws, nothing logs, and the wheel simply does nothing forever. The
+        /// <c>[Min]</c> attributes do not help, because they police the Inspector and not the
+        /// deserializer.</para>
+        ///
+        /// <para><b>Why WheelEnabled alone is not the test.</b> An owner who deliberately turns the
+        /// wheel off keeps the rest of their tuning; an unwritten struct has no tuning to keep. Asking
+        /// whether the WHOLE struct is blank is what separates "off on purpose" from "never
+        /// authored", so <see cref="Sanitized"/> can heal the second without ever overriding the
+        /// first.</para>
+        /// </summary>
+        public bool IsUnauthored =>
+            !WheelEnabled && ClosestWorldHeightMeters <= 0f && FarthestWorldHeightMeters <= 0f
+            && WheelUnitsPerNotch <= 0f && StepSeconds <= 0f
+            && AboardStopsCloser == 0 && AboardStopsWider == 0;
+
+        /// <summary>
+        /// These settings with any UNSET value replaced by the shipped default — the read every
+        /// consumer should make, so a config asset older than a field can never quietly pin the wheel.
+        ///
+        /// <para>Wholly blank (<see cref="IsUnauthored"/>) means the block was never written, and the
+        /// answer is the shipped defaults entire. Otherwise only the values that cannot mean anything
+        /// are healed: a clamp of 0 m is not a framing, and a notch size of 0 is not a wheel. Every
+        /// authored value — <see cref="WheelEnabled"/> set to false very much included — is left
+        /// exactly as the owner typed it, and the two stop allowances are left alone at zero because
+        /// zero is a legitimate answer there ("the wheel does not move the helm").</para>
+        /// </summary>
+        public PlayerZoomSettings Sanitized()
+        {
+            if (IsUnauthored) return Default;
+
+            PlayerZoomSettings d = Default;
+            PlayerZoomSettings s = this;
+            if (s.ClosestWorldHeightMeters <= 0f) s.ClosestWorldHeightMeters = d.ClosestWorldHeightMeters;
+            if (s.FarthestWorldHeightMeters <= 0f) s.FarthestWorldHeightMeters = d.FarthestWorldHeightMeters;
+            if (s.WheelUnitsPerNotch <= 0f) s.WheelUnitsPerNotch = d.WheelUnitsPerNotch;
+            if (s.StepSeconds < 0f) s.StepSeconds = d.StepSeconds;
+            if (s.AboardStopsCloser < 0) s.AboardStopsCloser = 0;
+            if (s.AboardStopsWider < 0) s.AboardStopsWider = 0;
+            return s;
+        }
     }
 
     /// <summary>

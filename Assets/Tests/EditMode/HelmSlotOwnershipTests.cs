@@ -342,6 +342,12 @@ namespace HiddenHarbours.Tests.EditMode
             public bool HasHelm => true;
             public bool IsPlayerHelm => true;
             public HelmControlStyle Style => HelmControlStyle.Tiller;
+
+            // The ground tackle: the arbiter never asks a relay about its hook, so these doubles
+            // carry none. Present because the seam requires it.
+            public bool HasAnchor => false;
+            public AnchorState AnchorState => AnchorState.Stowed;
+            public void ToggleAnchor() { }
             public HelmLeverFinish LeverFinish => HelmLeverFinish.Graphite;
             public HelmWheelRim WheelRim => HelmWheelRim.Rubber;
             public HelmFit Fit => HelmFit.None;
@@ -374,6 +380,12 @@ namespace HiddenHarbours.Tests.EditMode
             public bool HasHelm => true;
             public bool IsPlayerHelm => true;
             public HelmControlStyle Style => HelmControlStyle.Tiller;
+
+            // The ground tackle: the arbiter never asks a relay about its hook, so these doubles
+            // carry none. Present because the seam requires it.
+            public bool HasAnchor => false;
+            public AnchorState AnchorState => AnchorState.Stowed;
+            public void ToggleAnchor() { }
             public HelmLeverFinish LeverFinish => HelmLeverFinish.Graphite;
             public HelmWheelRim WheelRim => HelmWheelRim.Rubber;
             public HelmFit Fit => HelmFit.None;
