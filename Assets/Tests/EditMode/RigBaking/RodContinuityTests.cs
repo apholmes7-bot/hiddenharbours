@@ -43,11 +43,12 @@ namespace HiddenHarbours.Tests.RigBaking
             ("hold→stow-H", "hold",        "rest:stowH"),
         };
 
-        // Tolerances. Pivot, blank length and yaw are EXACT — nothing legitimate moves them. The
+        // Tolerances (Tol* so they cannot be mistaken for Side's same-named fields below).
+        // Pivot, blank length and yaw are EXACT — nothing legitimate moves them. The
         // rendered extent and the on-screen angle get one eased frame's worth, and are additionally
         // held to the entering state's own largest per-frame step, so a seam can never be wider than
         // the animation it joins.
-        const double PivotPx = 0.01, LenM = 1e-9, YawDeg = 0.01, InkPx = 2.0, AngleDeg = 1.5;
+        const double TolPivotPx = 0.01, TolLenM = 1e-9, TolYawDeg = 0.01, TolInkPx = 2.0, TolAngleDeg = 1.5;
 
         sealed class Side
         {
@@ -198,10 +199,10 @@ namespace HiddenHarbours.Tests.RigBaking
                         string at = $"{tier} {t.name} @{Facings[d]}";
 
                         double pivot = Math.Sqrt(Math.Pow(b.GripX - a.GripX, 2) + Math.Pow(b.GripY - a.GripY, 2));
-                        if (pivot > PivotPx) failures.Add($"{at}: the grip TELEPORTS {pivot:F3} px.");
-                        if (Math.Abs(b.LenM - a.LenM) > LenM)
+                        if (pivot > TolPivotPx) failures.Add($"{at}: the grip TELEPORTS {pivot:F3} px.");
+                        if (Math.Abs(b.LenM - a.LenM) > TolLenM)
                             failures.Add($"{at}: the blank changes length by {Math.Abs(b.LenM - a.LenM):F4} m.");
-                        if (Math.Abs(b.YawDeg - a.YawDeg) > YawDeg)
+                        if (Math.Abs(b.YawDeg - a.YawDeg) > TolYawDeg)
                             failures.Add($"{at}: the rod is re-pointed {Math.Abs(b.YawDeg - a.YawDeg):F2}° in yaw.");
                         if (a.Hand != b.Hand)
                             failures.Add($"{at}: the hand changes {a.Hand}→{b.Hand} AT the seam — a " +
@@ -211,11 +212,11 @@ namespace HiddenHarbours.Tests.RigBaking
                         if (!stepCache.TryGetValue(stepKey, out var step))
                             stepCache[stepKey] = step = LargestOwnStep(host, geo, rod, ch, t.to, d, tier);
                         double dInk = Math.Abs(b.InkDiag - a.InkDiag);
-                        if (dInk > Math.Max(InkPx, step.ink))
+                        if (dInk > Math.Max(TolInkPx, step.ink))
                             failures.Add($"{at}: the rod changes size by {dInk:F2} px, more than " +
                                          $"{t.to}'s own largest frame step ({step.ink:F2} px).");
                         double dAng = DeltaAngle(a.AngleDeg, b.AngleDeg);
-                        if (dAng > Math.Max(AngleDeg, step.angle))
+                        if (dAng > Math.Max(TolAngleDeg, step.angle))
                             failures.Add($"{at}: the rod swings {dAng:F2}°, more than {t.to}'s own " +
                                          $"largest frame step ({step.angle:F2}°).");
                     }
@@ -268,9 +269,9 @@ namespace HiddenHarbours.Tests.RigBaking
                         {
                             Side m = Measure(host, geo, rod, ch, state,
                                              FrameU(host, rod, ch, state, f), d, tier, withInk: false);
-                            Assert.AreEqual(geo.PivotX, m.GripX, PivotPx,
+                            Assert.AreEqual(geo.PivotX, m.GripX, TolPivotPx,
                                 $"{tier}/{state} dir{d} f{f}: the grip is not on the cell's pivot x");
-                            Assert.AreEqual(geo.PivotY, m.GripY, PivotPx,
+                            Assert.AreEqual(geo.PivotY, m.GripY, TolPivotPx,
                                 $"{tier}/{state} dir{d} f{f}: the grip is not on the cell's pivot y");
                         }
                 }
