@@ -200,9 +200,15 @@ namespace HiddenHarbours.Player
         // The label pair above, and the display name they were built from. Never read outside VerbLabel.
         private string _labelledWhat, _pickUpLabel, _setDownLabel;
 
-        /// <summary>True while this is the thing in the fisher's hands. Derived from the hands, never
-        /// stored — a second copy of "am I carried" is a copy that can disagree.</summary>
-        public bool IsCarried => _hands != null && ReferenceEquals(_hands.Carried, this);
+        /// <summary>True while this is in EITHER of the fisher's hands. Derived from the hands, never
+        /// stored — a second copy of "am I carried" is a copy that can disagree.
+        ///
+        /// <para>⚠️ Asked through <see cref="CarriedItem.IsHeld"/> rather than
+        /// <c>ReferenceEquals(_hands.Carried, this)</c>: that was right while there was one slot, and now
+        /// there are two it silently answers "no" for the off hand — so a rod carried alongside a pail
+        /// would report itself loose, drop to <see cref="InteractPriority.Portable"/>, and E would offer
+        /// to pick up the thing already in your hand.</para></summary>
+        public bool IsCarried => CarriedItem.IsHeld(_hands, this);
 
         /// <summary>The press: lift it if it is on the ground, set it down if it is in your hands.</summary>
         public void Interact(in InteractActor actor)
@@ -215,7 +221,7 @@ namespace HiddenHarbours.Player
             }
 
             bool wasCarried = IsCarried;
-            CarryRefusal refusal = wasCarried ? _hands.TryPlace() : _hands.TryPickUp(this);
+            CarryRefusal refusal = wasCarried ? _hands.TryPlace(this) : _hands.TryPickUp(this);
 
             if (refusal != CarryRefusal.None)
             {

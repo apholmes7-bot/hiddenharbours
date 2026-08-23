@@ -118,6 +118,53 @@ namespace HiddenHarbours.Art
 
         private static bool IsShellfish(string kind) => kind == "mussel" || kind == "clam";
 
+        /// <summary>
+        /// Which of the BUCKET rig's three catch groups a catch kind belongs to — <c>fish</c> (silver
+        /// herring), <c>shell</c> (blue mussels and the odd clam) or <c>crust</c> (banded keepers and rust
+        /// crab), the whole of <c>bucketRig.js</c>'s <c>CATCHES</c>.
+        ///
+        /// <para><b>Why a bucket needs a group where a tote needs a kind.</b> A tote draws the catch as
+        /// individual item sprites on measured slot points, so it can show a cod as a cod. A pail's fills
+        /// are BAKED states — one sprite per (tier × fill band × group × facing) — so its art has three
+        /// looks and the kinds map onto them. This is that map, and it is a fact about the bucket bake,
+        /// stated once, in the lane that owns the art.</para>
+        ///
+        /// <para>An unknown kind reads as <c>fish</c>, which is the group every finfish and the rig's own
+        /// default belong to — a pail that gained something should look like it gained something.</para>
+        /// </summary>
+        public static string BucketGroupFor(string kind)
+        {
+            if (IsShellfish(kind)) return "shell";
+            return kind == "lobster" || kind == "crab" ? "crust" : "fish";
+        }
+
+        /// <summary>
+        /// The group a whole container reads as: the group MOST of its catch belongs to, ties going to
+        /// whichever appears first (so a pail does not flicker between two looks as it fills). Null or
+        /// empty contents answer null — an empty pail has no group and draws its <c>empty</c> sprite.
+        /// </summary>
+        public static string BucketGroupOf(IReadOnlyList<string> kinds)
+        {
+            if (kinds == null || kinds.Count == 0) return null;
+
+            string best = null;
+            int bestCount = 0;
+            // Three groups, so three passes over a short list beats allocating a dictionary on every
+            // refresh (rule 7: the fill refreshes on every landed catch).
+            foreach (string group in BucketGroups)
+            {
+                int n = 0;
+                for (int i = 0; i < kinds.Count; i++)
+                    if (BucketGroupFor(kinds[i]) == group) n++;
+                if (n > bestCount) { bestCount = n; best = group; }
+            }
+            return best;
+        }
+
+        /// <summary>The bucket rig's three groups, in its own declared order — which is also the tie-break
+        /// order <see cref="BucketGroupOf"/> uses.</summary>
+        public static readonly string[] BucketGroups = { "fish", "shell", "crust" };
+
         /// <summary>The three interior bands a partial fill can read as (see <see cref="BandFor"/>).</summary>
         private static readonly CatchFillBand[] PartialBands =
             { CatchFillBand.Few, CatchFillBand.Half, CatchFillBand.Full };

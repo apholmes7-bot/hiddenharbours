@@ -82,8 +82,36 @@ namespace HiddenHarbours.Core
         [Tooltip("Scale the prop's own art is drawn at (the carried rope hank is a half-scale deck coil).")]
         public float ItemScale;
 
-        [Tooltip("One row per facing, indexed by the carrier's facing ROW — dir 0 is the North picture.")]
+        [Tooltip("One row per facing, indexed by the carrier's facing ROW — dir 0 is the North picture. " +
+                 "This is the hand the RIG resolved for that heading, which is what a thing carried ALONE " +
+                 "is posed from.")]
         public CarryAnchorRow[] Rows = Array.Empty<CarryAnchorRow>();
+
+        [Tooltip("The same eight facings measured with the prop FORCED into the LEFT hand. Needed the " +
+                 "moment two things are carried at once: the rig resolves one preferred hand per facing, " +
+                 "so the second thing is in the OTHER hand and needs that hand's own numbers. Empty when " +
+                 "the sidecar predates the per-hand bake — see CarryAnchorTableDef.TryRow(hand).")]
+        public CarryAnchorRow[] LeftRows = Array.Empty<CarryAnchorRow>();
+
+        [Tooltip("The same eight facings measured with the prop FORCED into the RIGHT hand. ⚠️ NEVER " +
+                 "derived from LeftRows: the grip's outboard component is signed by the carrying hand " +
+                 "and then PROJECTED through the camera basis, so mirroring one hand's projected offset " +
+                 "gives a plausible number that is wrong at every heading but N and S.")]
+        public CarryAnchorRow[] RightRows = Array.Empty<CarryAnchorRow>();
+
+        /// <summary>The measured rows for one hand, or null when this prop was baked before per-hand
+        /// rows existed. <see cref="CarryHandSide.None"/> / <see cref="CarryHandSide.Both"/> have no
+        /// per-hand table — a cradle is the wrists' midpoint and a back mount has no wrist.</summary>
+        public CarryAnchorRow[] RowsFor(CarryHandSide hand)
+        {
+            CarryAnchorRow[] rows = hand switch
+            {
+                CarryHandSide.Left => LeftRows,
+                CarryHandSide.Right => RightRows,
+                _ => null,
+            };
+            return rows != null && rows.Length > 0 ? rows : null;
+        }
     }
 
     /// <summary>
@@ -182,6 +210,35 @@ namespace HiddenHarbours.Core
 
         private void OnEnable() => _byKey = null;
 
+        /// <summary>
+        /// True when every hand-mounted prop carries BOTH hands' measured rows at every facing — i.e.
+        /// the sidecar this was imported from was baked with the per-hand block.
+        ///
+        /// <para>False is not a fault: it is what a table imported from a pre-per-hand sidecar says, and
+        /// the runtime then poses a displaced prop off the requested hand's measured wrist with no grip
+        /// (<see cref="TryRow(string,int,CarryHandSide,out CarryAnchorRow,out bool)"/>). This exists so a
+        /// test and the importer's own summary can SAY which of the two a shipped table is, rather than
+        /// leaving the difference to be discovered in play.</para>
+        /// </summary>
+        public bool HasPerHandRows
+        {
+            get
+            {
+                if (Props == null || Props.Length == 0) return false;
+                int handMounted = 0;
+                foreach (CarryPropAnchors p in Props)
+                {
+                    if (p?.Rows == null || p.Rows.Length == 0) continue;
+                    if (p.Rows[0].Mount != CarryMountKind.Hand) continue;   // the back sling has no hand
+                    handMounted++;
+                    CarryAnchorRow[] l = p.RowsFor(CarryHandSide.Left), r = p.RowsFor(CarryHandSide.Right);
+                    if (l == null || r == null) return false;
+                    if (l.Length < p.Rows.Length || r.Length < p.Rows.Length) return false;
+                }
+                return handMounted > 0;
+            }
+        }
+
         /// <summary>True when this table has at least one prop with at least one row — the null-safe
         /// "is there anything to read" check a consumer gates on before preferring it.</summary>
         public bool HasRows
@@ -210,6 +267,70 @@ namespace HiddenHarbours.Core
             if (facingRow < 0 || facingRow >= prop.Rows.Length) return false;
 
             row = prop.Rows[facingRow];
+            return true;
+        }
+
+        /// <summary>
+        /// <b>The row for one prop at one facing, IN A NAMED HAND</b> — the call a carrier makes once two
+        /// things are held at the same time and the rig's own preferred hand can only serve one of them.
+        ///
+        /// <para><paramref name="measured"/> reports whether the row came from the rig's own measurement
+        /// of THAT hand. True is the ordinary answer: the requested hand is the one the rig resolved for
+        /// this facing, or the sidecar carries the forced-hand rows. False means the sidecar predates the
+        /// per-hand bake, and what comes back is the resolved row with its <b>grip offset zeroed</b> and
+        /// its hand restated — so the prop hangs off the requested hand's MEASURED wrist with no nudge,
+        /// rather than off a nudge invented for the other arm.</para>
+        ///
+        /// <para><b>⚠️ Why the fallback drops the grip instead of mirroring it.</b> The rig builds the
+        /// grip as a body-local <c>{out, fwd, up}</c> whose <c>out</c> is signed by the carrying hand, and
+        /// then PROJECTS that triple through the camera basis into the two numbers the sidecar carries.
+        /// The projection mixes all three components, so the two hands' offsets are not each other's
+        /// mirror at any heading but N and S — and a 2-D offset cannot be decomposed back into the 3-D
+        /// triple it came from. There is no arithmetic that recovers the other hand: it is measured in
+        /// the harness, or it is left out. Dropping it costs at most the grip's own magnitude (1–2.5 px
+        /// at the shipped kit's 32 px/m); mirroring it would cost twice that, in the wrong direction,
+        /// at six of the eight facings.</para>
+        ///
+        /// <para><see cref="CarryHandSide.None"/> and <see cref="CarryHandSide.Both"/> ask for no
+        /// particular hand and get the resolved row unchanged (a back sling, a two-handed cradle).</para>
+        /// </summary>
+        public bool TryRow(string propKey, int facingRow, CarryHandSide hand, out CarryAnchorRow row,
+                           out bool measured)
+        {
+            row = default;
+            measured = false;
+            if (string.IsNullOrEmpty(propKey) || Props == null) return false;
+
+            _byKey ??= BuildLookup();
+            if (!_byKey.TryGetValue(propKey, out CarryPropAnchors prop) || prop.Rows == null) return false;
+            if (facingRow < 0 || facingRow >= prop.Rows.Length) return false;
+
+            if (hand != CarryHandSide.Left && hand != CarryHandSide.Right)
+            {
+                row = prop.Rows[facingRow];
+                measured = true;
+                return true;
+            }
+
+            CarryAnchorRow[] forced = prop.RowsFor(hand);
+            if (forced != null && facingRow < forced.Length)
+            {
+                row = forced[facingRow];
+                measured = true;
+                return true;
+            }
+
+            row = prop.Rows[facingRow];
+            if (row.Hand == hand) { measured = true; return true; }
+
+            // A hand-mounted row restated for the other wrist. Mount, turntable cell and draw order are
+            // facing facts and survive; the grip is the one hand fact here and it is dropped rather than
+            // guessed (see the remarks). A BACK mount has no hand at all, so it is handed back untouched.
+            if (row.Mount == CarryMountKind.Hand)
+            {
+                row.Hand = hand;
+                row.GripOffsetMeters = Vector2.zero;
+            }
             return true;
         }
 

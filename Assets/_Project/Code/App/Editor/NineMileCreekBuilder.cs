@@ -966,6 +966,21 @@ namespace HiddenHarbours.App.Editor
             // (never awakened — no service stomp, no duplicate player) when the real core travels in.
             Transform devPlayer = BuildDevBootstrap(config, cam, DisembarkPos);
 
+            // --- THE PAIL ON THE PLANKS (the two-hand ruling's dev test object) ---------------------------
+            // A carriable bucket that IS its own hold and draws its own fill: pick it up in one hand, keep
+            // the rod in the other, and a landed fish goes in with the same press. Same arrangement as St
+            // Peters' (DevBucketBuilder owns all of it — the hold, the verbs, the fill bridge, the eight
+            // baked facings); only the spot differs.
+            //
+            // ⚠️ At the SCENE root and deliberately NOT inside the dev core, even though it stands where
+            // the dev core drops you. The dev core is DESTROYED the moment a real core travels in
+            // (DevRegionBootstrap), and anything parked inside it goes with it — the exact defect that
+            // left Wendell and Hector mute for every player who arrived by sea. A pail is region content:
+            // it should be on the planks whether you pressed Play here or sailed in.
+            DevBucketBuilder.Place(null,
+                                   new Vector2(DisembarkPos.x + 1.0f, DisembarkPos.y - 0.5f),
+                                   "container.nine_mile_creek.bucket");
+
             // --- AND THE THING THAT MAKES THOSE TWO SPEAK (panel + proximity interact driver) -----------
             // ⚠️ AFTER the dev core and OUTSIDE it, and both halves of that matter. After, because the
             // stand-in it reviews with does not exist until the line above runs; outside, because the dev
@@ -1216,6 +1231,21 @@ namespace HiddenHarbours.App.Editor
             var isoSkin = playerGo.AddComponent<IsoCharacterSprite>();
             SetRef(isoSkin, "_visual", isoVisual);
             playerGo.AddComponent<ClamBucket>();   // the hand-held IHold the rod rig lands into
+
+            // ⭐ HANDS. Without these GameServices.Hands is null in this bootstrap and every carry verb
+            // in the region answers "No one here to pick that up" — which is what the pail on the planks
+            // (above) would have got. The hand-prop table is an ASSET, not a component, so it is handed
+            // in exactly as PersistentCoreBuilder hands it to the real player; without it a carried thing
+            // falls back to the single hip offset, which is a look, not a break.
+            var devHands = playerGo.AddComponent<CarryHands>();
+            var devCarryAnchors = AssetDatabase.LoadAssetAtPath<HiddenHarbours.Core.CarryAnchorTableDef>(
+                CarryAnchorTableBuilder.TablePath);
+            devHands.ConfigureCarryAnchors(devCarryAnchors);
+            if (devCarryAnchors == null || !devCarryAnchors.HasRows)
+                Debug.LogWarning($"[NineMileCreekBuilder] No carry-anchor table at " +
+                                 $"'{CarryAnchorTableBuilder.TablePath}' — in the dev bootstrap a carried " +
+                                 "pail, clam or rod hangs off the single fallback offset at every " +
+                                 "heading. Run Art ▸ Import (after a new drop) ▸ Build Carry Anchor Table.");
 
             var fishing = playerGo.AddComponent<FishingController>();
             playerGo.AddComponent<DevFishingInput>();

@@ -1525,6 +1525,16 @@ namespace HiddenHarbours.App.Editor
             MakeTool(toolsRoot.transform, DataTools + "/Rod.asset", ArtToolRod,
                      new Vector2(StartSpawnPos.x + 1.1f, StartSpawnPos.y - 0.6f), "tool.st_peters.rod");
 
+            // THE PAIL, beside them (the two-hand ruling). A carriable bucket that IS its own hold and
+            // draws its own fill: pick it up in one hand, keep the rod in the other, and a landed fish
+            // goes in with the same press. It stands a pace SOUTH of the two tools rather than in line
+            // with them, so the three are a group you walk into rather than a row you clip through.
+            // Everything about it — the hold, the verbs, the fill bridge, the eight baked facings — is
+            // DevBucketBuilder's; only the spot is ours.
+            DevBucketBuilder.Place(toolsRoot.transform,
+                                   new Vector2(StartSpawnPos.x, StartSpawnPos.y - 1.35f),
+                                   "container.st_peters.bucket");
+
             // --- THE TRAP-HAUL LOOP (gameplay-systems, Build 4 — the playable manual loop) ---------------
             // Set → soak → lay alongside → HAUL WITH THE SWELL → collect → sell. The trap runtime
             // (PlacedTrapService) owns determinism + save; the DevTrapInput drops a baited pot through the

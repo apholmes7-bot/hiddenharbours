@@ -351,16 +351,22 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void Hands_hold_exactly_one_thing()
+        public void Hands_hold_exactly_one_CAN()
         {
+            // ⚠️ The refusal changed WORDS when the second hand landed, and the new one is the true one.
+            // She has two hands now, so "your hands are full" is simply false with a can in one of them —
+            // what stops the second can is the sharing rule's own diagonal: one working tool at a time
+            // (HandSlots.MayShare). The FACT under test is unchanged and is the one that matters: a
+            // second can does not come aboard, and the refusal changes nothing.
             CarryHands hands = Hands();
             CarriableFuelContainer first = Container(Def(), new Vector2(0.3f, 0f));
             CarriableFuelContainer second = Container(Def(id: "fuelstore.gas_jerry_s10"), new Vector2(0.4f, 0f));
 
             Assert.AreEqual(CarryRefusal.None, hands.TryPickUp(first));
-            Assert.AreEqual(CarryRefusal.HandsFull, hands.TryPickUp(second), "one at a time");
+            Assert.AreEqual(CarryRefusal.OneOfThoseAlready, hands.TryPickUp(second), "one can at a time");
             Assert.AreSame(first, hands.Carried, "the refusal must not have swapped what she holds");
             Assert.IsFalse(second.IsCarried);
+            Assert.AreEqual(1, hands.Slots.UsedHands, "and the second hand stayed free");
         }
 
         [Test]
