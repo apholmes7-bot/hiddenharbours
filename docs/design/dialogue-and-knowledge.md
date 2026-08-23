@@ -83,13 +83,21 @@ instrument) from *readings* (clock, tide, wind) to *knowledge itself*:
   > **The portrait slot is gone with the panel** (§2's "no portrait dialogue boxes, ever"):
   > `DialogueLine.Portrait`, `Interactable._portrait` and the region builders' `Art/Portraits`
   > loads are all removed. The character on screen is the portrait.
-  > **Still greybox:** the bubble draws as tinted rects until the art lane's kit lands at
-  > `Assets/_Project/Art/UI/DialogueBubble`; `DialogueBubbleArtTests` is the tripwire that goes
-  > red the day it does and names the flip.
+  > **~~Still greybox~~ — the kit LANDED.** Corrected 2026-08-23: the bubble no longer draws as
+  > tinted rects. `Assets/_Project/Art/UI/DialogueBubble` carries the baked pieces (panel, six tail
+  > orientations, gold pill, four cursors, caret, markers), committed. `DialogueBubbleArtTests` has
+  > **flipped** — its own header says so — and now fails the day the art *leaves* rather than the day
+  > it arrives.
 - **NPCs stopping to talk** (facing the player, the routine held as an overlay): built alongside
   the bubble, 2026-08-17 — see `npcs-and-routines.md` §2.7.
 - **Devices (phones/computers) and ask-a-question knowledge graphs: M2/M3**, alongside the
   physical inventory and merchant-conversation work the keystone doc already places there.
+- **Shop talk as an option row — PROPOSED, not built.** The owner directed (2026-08-23) that buying
+  live inside the conversation, opening a notebook-styled catalog. Designed in
+  [`shop-catalog-and-dialogue-choices.md`](shop-catalog-and-dialogue-choices.md); it needs **one** new
+  `DialogueOption` field and leaves the flat/one-round rule intact (a catalog row is *deferred*-
+  terminal, never a tree). Its **R2** is the ruling on whether the conversation holds while the book
+  is open.
 
 ## 5. Open questions (owner's taste — capture, never guess)
 
