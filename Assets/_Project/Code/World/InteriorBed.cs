@@ -32,6 +32,13 @@ namespace HiddenHarbours.World
     /// <see cref="BuildingInterior.Level"/>, so nothing here has to agree with the builder about which
     /// floor it was placed on.</para>
     ///
+    /// <para><b>⭐ It also says WHICH WAY ROUND IT IS</b> — <see cref="Pillow"/>, the end the pillow is
+    /// on, DECLARED by whoever placed this bed and never worked out from the sprite. The sleeping pose
+    /// reads it and lays the fisher head-to-pillow; before it existed the pose played one hard-coded
+    /// heading, which is right for a bed at facing 0 and wrong for the same bed on a building the
+    /// builder happened to turn — and being wrong LOOKS like art, not like a bug. Nothing about the save
+    /// turns on it: see <see cref="SleepBeatRequested.Pillow"/>.</para>
+    ///
     /// <para><b>⚠ The deck-work guard, asserted rather than assumed.</b> A save must never land in the
     /// middle of a deck-work cycle (#193). Being indoors is supposed to make that structurally
     /// impossible, and <see cref="Contexts"/> is what makes it so — <see cref="InteractContext.OnFoot"/>
@@ -61,11 +68,25 @@ namespace HiddenHarbours.World
                  "this is a step-up distance rather than a precise one.")]
         [SerializeField, Min(0f)] private float _reachMeters = 1.4f;
 
-        [Tooltip("The building this bed stands in — read ONLY for which STOREY it is on, so a rest " +
-                 "upstairs is recorded as a rest upstairs (ADR 0037). OPTIONAL: a bed with no interior " +
-                 "reports the ground floor, which is right for every bed that is not in a house with a " +
-                 "second storey and is a safe answer for one that is.")]
+        [Tooltip("The building this bed stands in — read for which STOREY it is on, so a rest upstairs " +
+                 "is recorded as a rest upstairs (ADR 0037), and for the room's own FACING, which is the " +
+                 "frame the pillow side below is declared in. OPTIONAL: a bed with no interior reports " +
+                 "the ground floor and an unturned room, which is right for every bed that is not in a " +
+                 "house with a second storey and is a safe answer for one that is.")]
         [SerializeField] private BuildingInterior _interior;
+
+        [Tooltip("WHICH END THE PILLOW IS ON, in the ROOM's own model frame (+x across to the right, " +
+                 "+y toward the back/hearth wall) — the frame the placement's own coordinates are in. " +
+                 "DECLARED by the builder from the furnishing table, never read off the sprite. " +
+                 "Undeclared keeps whatever heading the sleeping pose already had, and fails content " +
+                 "validation for a bed.")]
+        [SerializeField] private PillowSide _pillowSide = PillowSide.Undeclared;
+
+        [Tooltip("How far the pillow's centre is from the middle of this bed, in ground metres. " +
+                 "DERIVED by the builder from the bake's own prop depth and the rig's pillow inset " +
+                 "(BedPillow.PillowReachMetres) — never a number typed in here, so a re-bake at another " +
+                 "size moves the pillow with the bed.")]
+        [SerializeField, Min(0f)] private float _pillowReachMetres;
 
         /// <summary>Whether this bed is the player's own — the one thing that decides save vs refusal.</summary>
         public bool IsPlayerBed => _isPlayerBed;
@@ -138,7 +159,9 @@ namespace HiddenHarbours.World
         /// <summary>Wire this bed from the builder. Public so the placement pass never reaches a
         /// serialized field, and so a test stands one up with no scene.</summary>
         public void Configure(string id, bool isPlayerBed, string ownerName, string placeName,
-                              float reachMeters, BuildingInterior interior = null)
+                              float reachMeters, BuildingInterior interior = null,
+                              PillowSide pillowSide = PillowSide.Undeclared,
+                              float pillowReachMetres = 0f)
         {
             _id = id;
             _isPlayerBed = isPlayerBed;
@@ -146,7 +169,41 @@ namespace HiddenHarbours.World
             _placeName = placeName ?? "";
             _reachMeters = Mathf.Max(0f, reachMeters);
             _interior = interior;
+            _pillowSide = pillowSide;
+            _pillowReachMetres = Mathf.Max(0f, pillowReachMetres);
         }
+
+        /// <summary>
+        /// Which end of this bed the pillow is on, and the frame that makes it a direction — everything a
+        /// sleeping pose needs to lie a person down head-first.
+        ///
+        /// <para><b>The frame is read LIVE off the room, exactly as <see cref="Level"/> is.</b> The yaw and
+        /// the ground squash both come from <see cref="BuildingInterior.Footprint"/>, which is the same
+        /// struct the builder placed this bed with — so the direction the pillow points and the direction
+        /// the room is drawn cannot drift apart, and a rebuild at a different facing needs no second
+        /// number updated anywhere. A bed with no interior answers for an unturned room at the shared bake
+        /// camera's own squash, which is what a free-standing bed in a test rig actually is.</para>
+        ///
+        /// <para>⚠ Unity fake-null: an explicit <c>== null</c> comparison, never <c>?.</c>, which would
+        /// sail straight past a destroyed interior and throw.</para>
+        /// </summary>
+        public PillowAnchor Pillow
+        {
+            get
+            {
+                if (_interior == null)
+                    return new PillowAnchor(_pillowSide, 0f, _pillowReachMetres, 0f);
+
+                InteriorFootprint room = _interior.Footprint;
+                return new PillowAnchor(_pillowSide, room.YawDegrees, _pillowReachMetres,
+                                        room.DepthScale);
+            }
+        }
+
+        /// <summary>Where the sleeper's head lands on this bed, world units — on the pillow for a declared
+        /// bed, and in the middle of the mattress for one that never said. The quantity the content test
+        /// asserts is on the pillow side.</summary>
+        public Vector2 HeadWorldPosition => Pillow.HeadWorld(WorldPosition);
 
         /// <summary>
         /// Which storey this bed is on, right now — 0 for a bed in a single-storey building, outdoors, or
@@ -181,9 +238,10 @@ namespace HiddenHarbours.World
 
             // The PRESENTATION half, additive: where the MATTRESS is, which the save signal deliberately
             // does not carry (it carries the wake spot, which is the player's feet — the opposite
-            // point). Published second so the day is already kept before any pose is shown: a beat that
-            // is interrupted, or a scene with no sleep art at all, still rests exactly as it did before.
-            EventBus.Publish(new SleepBeatRequested(WorldPosition, Level, _placeName));
+            // point), and WHICH WAY ROUND the mattress is, which nothing outside this bed can know.
+            // Published second so the day is already kept before any pose is shown: a beat that is
+            // interrupted, or a scene with no sleep art at all, still rests exactly as it did before.
+            EventBus.Publish(new SleepBeatRequested(WorldPosition, Level, _placeName, Pillow));
             return true;
         }
 
