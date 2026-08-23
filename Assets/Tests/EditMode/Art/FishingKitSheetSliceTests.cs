@@ -132,13 +132,34 @@ namespace HiddenHarbours.Tests.Art.EditMode
         ///
         /// <para>Here: the three tiers' <c>ground</c> sheets, baked as one-frame props before the rod
         /// rig made the rests animated hand-overs. <b>The PR that commits the re-bake must empty this
-        /// set</b> (and delete the orphaned <c>Rod_*_stored.png</c> + <c>.meta</c>, which no state
-        /// names any more).</para>
+        /// set</b> — as it must <see cref="RetiredUntilRebake"/> below, which covers the sheets that
+        /// lost their state entirely rather than merely changing shape.</para>
         /// </summary>
         private static readonly HashSet<string> StaleUntilRebake = new HashSet<string>(
             RodTiers.Select(t => $"Rod_{t}_ground"));
 
+        /// <summary>
+        /// Sheets the spec no longer names at all, still on disk until the re-bake deletes them.
+        /// <c>stored</c> became <c>stowV</c> when the rests stopped being one-frame props, so the
+        /// three <c>Rod_*_stored.png</c> are now orphans — no rod state asks for them. They are
+        /// tolerated ON DISK (deleting shipped art before its replacement is baked would leave the
+        /// repo poorer, not cleaner) but they are not in <see cref="Sheets"/> and nothing asserts
+        /// against them. <b>The PR that commits the re-bake deletes them and empties this set.</b>
+        /// </summary>
+        private static readonly HashSet<string> RetiredUntilRebake = new HashSet<string>(
+            RodTiers.Select(t => $"Rod_{t}_stored"));
+
         private static bool OnDisk(string stem) => File.Exists(Iso + stem + ".png");
+
+        /// <summary>
+        /// The ONE rule for which guarded stems the per-sheet assertions apply to: everything except
+        /// a sheet that is stale (present but superseded — only a re-bake fixes it) or specified but
+        /// not yet baked. Spelled once, because it used to be written out three times in three
+        /// slightly different ways, and a guard added to one of them reached that one test only.
+        /// </summary>
+        private static bool IsAsserted(string stem)
+            => !StaleUntilRebake.Contains(stem)
+            && (!AwaitingOwnerBake.Contains(stem) || OnDisk(stem));
 
         /// <summary>Sentinel yielded when EVERY stem is still awaiting the owner's bake: NUnit fails a
         /// [TestCaseSource] outright when its source is empty ("No arguments were provided"), so the
@@ -148,10 +169,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
 
         private static IEnumerable<string> AllSheets()
         {
-            string[] present = Sheets.Keys
-                .Where(s => !StaleUntilRebake.Contains(s))
-                .Where(s => !AwaitingOwnerBake.Contains(s) || OnDisk(s))
-                .OrderBy(s => s).ToArray();
+            string[] present = Sheets.Keys.Where(IsAsserted).OrderBy(s => s).ToArray();
             return present.Length > 0 ? present : new[] { NothingBakedYet };
         }
 
@@ -194,6 +212,11 @@ namespace HiddenHarbours.Tests.Art.EditMode
                             AwaitingOwnerBake.Count + StaleUntilRebake.Count,
                             "every rod REST is pending the owner's re-bake — when that lands, both " +
                             "guard sets empty and this assertion is what says the job is finished.");
+
+            // A retired stem is the opposite: it must NOT be in the kit, or it is not retired.
+            foreach (string stem in RetiredUntilRebake)
+                Assert.IsFalse(Sheets.ContainsKey(stem),
+                               $"'{stem}' is listed as retired but the spec still names it");
         }
 
         [Test]
@@ -343,7 +366,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             // Checked against the PNGs, so a re-bake that quietly changed a state's length is
             // caught rather than absorbed. (The same numbers are pinned against the LIVE RIGS in
             // FishingKitBakeTests, so rig and art cannot drift apart unnoticed either way.)
-            foreach (var kv in ExpectedFrames.Where(kv => !AwaitingOwnerBake.Contains(kv.Key) || OnDisk(kv.Key)))
+            foreach (var kv in ExpectedFrames.Where(kv => IsAsserted(kv.Key)))
             {
                 var tex = LoadSheet(kv.Key);
                 int cols = tex.width / KitOf(kv.Key).Cell.x;
@@ -369,7 +392,11 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 : new string[0];
             // NOTE: compare against the raw filtered stems, NOT AllSheets() — that helper yields the
             // @awaiting-owner-bake sentinel (a TestCaseSource can't be empty), which is not a file.
+            // This test is about what EXISTS, so it does not use IsAsserted: a STALE sheet is still
+            // on disk and must still be counted, and a RETIRED one is on disk without being in the
+            // spec at all. Both sets empty when the re-bake lands, and this reverts to "the spec".
             string[] expected = Sheets.Keys.Where(s => !AwaitingOwnerBake.Contains(s) || OnDisk(s))
+                                     .Concat(RetiredUntilRebake.Where(OnDisk))
                                      .OrderBy(s => s).ToArray();
             CollectionAssert.AreEquivalent(expected, onDisk,
                                            "Fishing kit sheets on disk differ from the guarded set");
