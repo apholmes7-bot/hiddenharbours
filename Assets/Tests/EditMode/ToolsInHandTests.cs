@@ -238,7 +238,10 @@ namespace HiddenHarbours.Tests.EditMode
             best.Interact(actor);
             Assert.IsTrue(dig.Consumed, "the press dug the hole out");
             Assert.AreEqual("fish.soft_shell_clam", hands.Carried.DefId, "…and the clam is in her hand");
-            Assert.AreSame(shovel, hands.Slung, "the shovel went under her arm to make room for it");
+            // ⭐ And the shovel is STILL in the other one. This asserted a sling until the second hand
+            // landed; now a free hand takes the clam and nothing already held moves (the continuity law).
+            Assert.IsNull(hands.Slung, "a hand was free, so nothing needed tucking away");
+            Assert.IsTrue(CarriedItem.IsHeld(hands, shovel), "the shovel never left her hand");
         }
 
         [Test]

@@ -665,7 +665,7 @@ namespace HiddenHarbours.Tools.RigBaking
             sb.Append($"    \"pass\": {Num(host.EvaluateNumber($"{H}.pass"))},\n");
             sb.Append($"    \"torsoHalfMetres\": {Num(host.EvaluateNumber($"{H}.TORSO_HALF"))},\n");
             sb.Append($"    \"restPose\": {{ \"anim\": \"{HandPropRestAnim}\", \"frame\": {HandPropRestFrame} }},\n");
-            sb.Append("    \"_note\": \"Per-facing anchors for a CARRIED object (CharacterHands6, rev 6.4). gripDx/gripDy is the prop's offset FROM THE WRIST in cell px and is frame-INDEPENDENT — add it to the per-frame 'anchors' grid to track a swinging hand. restX/restY is the absolute pin in cell px at the rest pose named above, for a consumer that hangs the object off the body instead. 'hand' is already swapped for the heading; 'itemDir' is the cell of the PROP's own turntable to draw (a turntable prop has no yaw, only eight cells); 'behind' means draw under the sprite. A prop whose 'rig' is null has no art baked yet and carries its spec in 'stub'.\",\n");
+            sb.Append("    \"_note\": \"Per-facing anchors for a CARRIED object (CharacterHands6, rev 6.4). gripDx/gripDy is the prop's offset FROM THE WRIST in cell px and is frame-INDEPENDENT — add it to the per-frame 'anchors' grid to track a swinging hand. restX/restY is the absolute pin in cell px at the rest pose named above, for a consumer that hangs the object off the body instead. 'hand' is already swapped for the heading; 'itemDir' is the cell of the PROP's own turntable to draw (a turntable prop has no yaw, only eight cells); 'behind' means draw under the sprite. A prop whose 'rig' is null has no art baked yet and carries its spec in 'stub'. 'byHand' carries the SAME row measured with the prop forced into each hand (L/R) — the second hand's numbers for when two things are carried at once. They are two measurements, never one mirrored: the grip is a body-local {out,fwd,up} whose 'out' is signed by the carrying hand and is then projected, so a projected 2-D offset cannot be decomposed back into the triple it came from. Back mounts and two-handed cradles have no 'byHand' — neither has a hand to force.\",\n");
             sb.Append("    \"props\": {\n");
 
             string[] props = host.EvaluateString($"{H}.PROP_ORDER.join(',')").Split(',');
@@ -698,7 +698,7 @@ namespace HiddenHarbours.Tools.RigBaking
                     string opts = $"{{anim:{JsString(HandPropRestAnim)},frame:{HandPropRestFrame}," +
                                   $"elev:{Num(geo.DefaultElevation)},build:{build}}}";
                     sb.Append("          ").Append(host.EvaluateString(
-                        $"(function(){{var p={H}.pin({js},{ds},{opts});return JSON.stringify({{" +
+                        $"(function(){{var f=function(p){{return p&&{{" +
                         "dir:p.dir,facing:p.facing,hand:p.hand,hands:p.hands,mode:p.mode," +
                         "gripDx:p.dx,gripDy:p.dy,restX:p.x,restY:p.y," +
                         "yaw:p.yaw,pitch:p.pitch,bend:p.bend,turn:p.turn,itemDir:p.itemDir," +
@@ -707,7 +707,29 @@ namespace HiddenHarbours.Tools.RigBaking
                         // a single `}`. Writing `}}` here (the symmetry your eye wants) emits two and
                         // the rig host dies with "SyntaxError: Unexpected token '}'" at bake time —
                         // invisible to the compiler, because the string is only assembled at runtime.
-                        "behind:p.behind,swapped:p.swapped},__hhRound3);})()"));
+                        "behind:p.behind,swapped:p.swapped};};" +
+                        // ⭐ THE PER-HAND BLOCK. The resolved row is unchanged — every consumer that
+                        // predates this reads exactly what it always did — and beside it go the SAME
+                        // eight facings measured with the prop forced into each hand. `pin` already
+                        // takes opts.hand and lands the prop on that hand's OWN measured wrist, so
+                        // these are two measurements, never one mirrored: the grip is a body-local
+                        // {out,fwd,up} whose `out` is signed by the carrying hand and is then PROJECTED,
+                        // and a projected 2-D offset cannot be decomposed back into the triple it came
+                        // from. Written for HAND mounts only: a back sling has no hand to force.
+                        // ⚠️ The key is `byHand`, NOT `hands`: `hands` is already taken, by the COUNT
+                        // (1 or 2) the fish row resolves from FishIso.hold(). Writing this block there
+                        // would silently turn every row's hand count into an object, and the importer
+                        // reads that count to decide a two-handed cradle.
+                        $"var p={H}.pin({js},{ds},{opts});" +
+                        // ⚠️ Neither a BACK mount nor a two-handed CRADLE gets a per-hand block, and
+                        // for the same reason: neither has a hand to force. A cradle's anchor is the
+                        // WRISTS' MIDPOINT, so forcing a hand would change the reported letter and not
+                        // one pixel of the geometry — a row that looked per-hand and was not.
+                        $"var o=f(p);if(p&&p.mode!=='back'&&p.mode!=='cradle'&&p.hands!==2)" +
+                        $"{{o.byHand={{" +
+                        $"L:f({H}.pin({js},{ds},Object.assign({{}},{opts},{{hand:'L'}})))," +
+                        $"R:f({H}.pin({js},{ds},Object.assign({{}},{opts},{{hand:'R'}})))}};}}" +
+                        "return JSON.stringify(o,__hhRound3);})()"));
                     sb.Append(d < dirs - 1 ? ",\n" : "\n");
                 }
 

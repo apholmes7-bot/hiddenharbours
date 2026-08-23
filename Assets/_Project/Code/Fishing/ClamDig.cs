@@ -281,15 +281,17 @@ namespace HiddenHarbours.Fishing
         /// did.</summary>
         private static bool CatchHandsAvailable() => GameServices.CatchHands != null;
 
-        /// <summary>Is she already holding a landed catch? Asked of the READ side (<see cref="ICarrier"/>)
-        /// so this file needs nothing from Player but the Core contracts — a clam in hand reports its
-        /// SPECIES id as its <c>DefId</c>, which is what makes this answerable from here.</summary>
+        /// <summary>Is she already holding a landed catch of THIS species — in either hand? Asked of the
+        /// READ side (<see cref="ICarrier"/>) so this file needs nothing from Player but the Core
+        /// contracts — a clam in hand reports its SPECIES id as its <c>DefId</c>, which is what makes this
+        /// answerable from here.</summary>
         private bool HandsAlreadyFull()
         {
-            ICarrier hands = GameServices.Hands;
-            ICarriable held = hands?.Carried;
-            return held != null && !string.IsNullOrEmpty(_clamSpecies != null ? _clamSpecies.Id : null)
-                   && string.Equals(held.DefId, _clamSpecies.Id, System.StringComparison.Ordinal);
+            string id = _clamSpecies != null ? _clamSpecies.Id : null;
+            // ⚠️ CarriedItem.InHand, not hands.Carried: she has TWO hands now, and the single-slot read
+            // answers only for the one she filled last — so a clam in the off hand would read as "hands
+            // empty" and the next press would dig a second one she has nowhere to put.
+            return CarriedItem.InHand(GameServices.Hands, id);
         }
 
         /// <summary>Offer the clam to her hands. False means the hands refused (or were not there), and

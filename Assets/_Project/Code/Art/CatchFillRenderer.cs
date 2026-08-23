@@ -35,7 +35,7 @@ namespace HiddenHarbours.Art
     /// gameplay freshness clock wires in later.</para>
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class CatchFillRenderer : MonoBehaviour
+    public sealed class CatchFillRenderer : MonoBehaviour, ICatchFillTarget
     {
         [SerializeField, Tooltip("The catch art table: kind → baked lay-variant sprites, speciesId → kind.")]
         private CatchItemLibrary _library;
@@ -81,6 +81,24 @@ namespace HiddenHarbours.Art
         /// <summary>The art table, exposed so the hold bridge maps species with the same data.</summary>
         public CatchItemLibrary Library => _library;
 
+        /// <summary>
+        /// Wire the art in one call (the region builders / tests) — the <c>Configure</c> seam used across
+        /// the lane, because a builder sets serialized fields it cannot otherwise reach and EditMode never
+        /// runs a builder. Null arguments leave the serialized value alone, so a caller may set one thing.
+        /// </summary>
+        public void Configure(CatchItemLibrary library, TextAsset anchorsJson = null,
+                              Sprite[] openingMaskByDir = null)
+        {
+            if (library != null) _library = library;
+            if (anchorsJson != null)
+            {
+                _anchorsJson = anchorsJson;
+                _anchorsParsed = false;      // ⚠️ the parse is memoized; a new sidecar must re-parse
+            }
+            if (openingMaskByDir != null) _openingMaskByDir = openingMaskByDir;
+            _dirty = true;
+        }
+
         // ---- inputs (all plain data; each marks dirty, work happens once in LateUpdate) --------
 
         /// <summary>Hand over the container's contents: visual kinds in landed order plus the
@@ -117,6 +135,34 @@ namespace HiddenHarbours.Art
         private void OnEnable() => _dirty = true;
 
         private void OnValidate() => _dirty = true;   // owner scrubs the inspector dials
+
+        /// <summary>
+        /// How many catch sprites are actually SHOWING right now — the one number that says "the fish
+        /// went in and you can see it", so a headless test can assert the picture rather than the state
+        /// behind it.
+        /// </summary>
+        public int VisibleItemCount
+        {
+            get
+            {
+                int n = 0;
+                for (int i = 0; i < _pool.Count; i++)
+                    if (_pool[i] != null && _pool[i].enabled) n++;
+                return n;
+            }
+        }
+
+        /// <summary>
+        /// Do the rebuild NOW instead of at the next <c>LateUpdate</c>. Public for the same reason
+        /// <c>CarryHands.ApplyCarriedPose</c> is: EditMode never runs a frame, so a test that has just
+        /// changed the contents has no other way to settle the picture. The runtime keeps using the
+        /// dirty-flag path — this is not a second update route, it is the same one, called early.
+        /// </summary>
+        public void RebuildNow()
+        {
+            _dirty = false;
+            Rebuild();
+        }
 
         private void LateUpdate()
         {

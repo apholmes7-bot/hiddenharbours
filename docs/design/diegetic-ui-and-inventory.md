@@ -190,6 +190,41 @@ The felt consequence: *what to bring* is a real decision. You don't carry the wh
 flats; you bring the shovel and the bucket, and if you want the rod too, something has to give or you
 need more capacity. Scarcity of carry is what makes the storage/transport ladder (§5) matter.
 
+#### 4.1.1 The hand slots, as shipped (owner ruling, 2026-08-23)
+
+"Two hands" is now literally two slots, and the rule is one line: **two DIFFERENT kinds of thing may
+share the pair; the same kind twice may not.** A hand holds one of three things — a *working tool*
+(the rod, the shovel, a fuel can), a *container* (the pail), or a *catch* (a fish, a handful of
+clams) — so what you get is:
+
+| | tool | container | catch |
+|---|---|---|---|
+| **tool** | ✗ one working tool at a time | ✓ pail in one hand, rod in the other | ✓ fish in one hand, rod in the other |
+| **container** | ✓ | ✗ one pail at a time | ✓ pail in one hand, fish in the other |
+| **catch** | ✓ | ✓ | ✗ one catch at a time — full is full (§4.2) |
+
+**The size rule.** A fish longer than `GameConfig.MaxOneHandFishLengthMeters` is *cradled across both
+arms*, so it needs both hands free — and it will not displace what you are already holding to get
+them. The default (0.62 m) is the fish rig's own 2.2 kg cradle point expressed as a length, so the
+hands and the picture agree by construction. Length is derived from the catch's WEIGHT, which means
+the rule bites *within* a species: a 2 kg cod hangs from a fist and a 12 kg one does not.
+
+**⭐ The continuity law.** *While a hand is free, nothing already held moves.* Taking something up
+fills a free slot — it never swaps hands, never re-poses the other hand, and a refusal changes
+nothing at all. Two visible consequences: the rod no longer auto-stows when a fish lands (the sling
+survives only for the case where **both** hands are genuinely committed, where the alternative is
+dropping the catch on the floor); and a thing sharing the pair keeps the hand it was given, while a
+thing carried *alone* still follows the rig's own per-facing preferred hand as she turns.
+
+The same law is why the carry anchors are **measured per hand**: the second thing hangs off the wrist
+the rig did *not* resolve for it, and that wrist's position is read off the sheet in the harness for
+all eight facings — never mirrored from the other arm. A mirrored anchor draws correctly at N and S
+and wrong at the six headings in between, which is the shape of wrong nobody notices in play.
+
+*Code:* `HandSlots` (Core — the whole rule, headless), `CarryHands` (the poses and the verbs),
+`CarryAnchorTableDef` (per-hand rows), `GameConfig.MaxOneHandFishLengthMeters` /
+`FishLengthPerKgCubeRootMeters` (the dials).
+
 ### 4.2 The container model
 
 Capacity is expressed through **containers**, and containers are the heart of the model.
@@ -312,12 +347,20 @@ prematurely.
   interaction fills and the stall empties. **But** `IHold` is a **flat item count** (`CapacityUnits`
   / `UsedUnits` / `TryAdd`), not a **size-based fullscreen grid**, and it does not nest or declare
   accepted types. The target model is a superset of what's here.
+  There is now a **second** pail that is a genuine world object — `CarriableBucket`
+  (`Assets/_Project/Code/Player/CarriableBucket.cs`): it is its own `IHold`, you pick it up, carry it
+  in one hand, fill it with the same press, and set it down where you stand. It is what §4.3
+  describes minus the persistence flag below, and it is the dev test object for the two-hand carry
+  (`DevBucketBuilder` stands one beside the tools at St Peters and on the Nine Mile Creek planks).
+  A pail in her hands stands the belt pail down: what is in your hands beats what is on your belt.
 - **Gear is a flat owned-id list, not "two hands, one tool."** `PlayerGear`
   (`Assets/_Project/Code/Player/PlayerGear.cs`) maps a flat list of owned gear ids
   (`SaveData.OwnedGear` — shovel / bucket / rod) to boolean *capabilities* (can dig, has bucket, can
-  rod-fish). There is **no notion of holding one tool at a time, grabbing, or putting back** — owning
-  the shovel simply enables digging anywhere. The §4.1 "two hands, one tool" model is not yet
-  represented.
+  rod-fish). Owning the shovel no longer *enables digging anywhere*, though: the tools are objects you
+  pick up (`CarriableTool`) and the gates ask what is **in your hands** (`CarriedItem.InHand`), so
+  §4.1's model is now represented for the carry itself — see §4.1.1 for the shipped hand-slot rule.
+  What `PlayerGear` still is, is the *ownership* half: a flat owned-id list that says a thing exists
+  in your world at all.
 - **Buy and sell are functional list menus.** `BuyScreen` (`Assets/_Project/Code/Economy/BuyScreen.cs`)
   and `SellScreen` (`Assets/_Project/Code/Economy/SellScreen.cs`) are code-driven overlays: a list of
   offers with name / price / description / Confirm, or a sell flow with a marginal-price read. They

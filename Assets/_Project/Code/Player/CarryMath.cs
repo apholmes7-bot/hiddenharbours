@@ -23,6 +23,13 @@ namespace HiddenHarbours.Player
         NothingCarried,
         /// <summary>Nowhere to stand it — the spot underfoot is not dry ground right now.</summary>
         NoGround,
+        /// <summary>A hand already holds one of these. One rod, one pail, one fish — the sharing rule's
+        /// "same kind twice" arm (<see cref="HandSlots.MayShare"/>).</summary>
+        OneOfThoseAlready,
+        /// <summary>It takes BOTH hands (a fish past
+        /// <see cref="GameConfig.MaxOneHandFishLengthMeters"/>) and at least one of them is not free.
+        /// Deliberately NOT "hands full": you can lift this, just not while holding something.</summary>
+        NeedsBothHands,
     }
 
     /// <summary>
@@ -130,6 +137,25 @@ namespace HiddenHarbours.Player
         }
 
         /// <summary>
+        /// One <see cref="HandSlotRefusal"/> as the carry verb's own refusal, so the two vocabularies meet
+        /// in exactly one place and every call site keeps printing <see cref="Message(CarryRefusal)"/>.
+        ///
+        /// <para><see cref="HandSlotRefusal.NothingToHold"/> maps to
+        /// <see cref="CarryRefusal.NotCarriable"/>: from the press's point of view, a null or destroyed
+        /// candidate and an unliftable one are the same answer — there is nothing here you can pick
+        /// up.</para>
+        /// </summary>
+        public static CarryRefusal From(HandSlotRefusal refusal) => refusal switch
+        {
+            HandSlotRefusal.None => CarryRefusal.None,
+            HandSlotRefusal.NothingToHold => CarryRefusal.NotCarriable,
+            HandSlotRefusal.HandsFull => CarryRefusal.HandsFull,
+            HandSlotRefusal.OneOfThoseAtATime => CarryRefusal.OneOfThoseAlready,
+            HandSlotRefusal.NeedsBothHands => CarryRefusal.NeedsBothHands,
+            _ => CarryRefusal.HandsFull,
+        };
+
+        /// <summary>
         /// May what is in your hands be set down here? <see cref="CarryRefusal.None"/> means yes.
         ///
         /// <para><paramref name="groundIsValid"/> is the caller's live read of the spot underfoot —
@@ -201,6 +227,8 @@ namespace HiddenHarbours.Player
             CarryRefusal.HandsFull => "Your hands are full.",
             CarryRefusal.NothingCarried => "You're not carrying anything.",
             CarryRefusal.NoGround => "Nowhere dry to set it down.",
+            CarryRefusal.OneOfThoseAlready => "You've got one of those already.",
+            CarryRefusal.NeedsBothHands => "That one needs both hands.",
             _ => null,
         };
     }

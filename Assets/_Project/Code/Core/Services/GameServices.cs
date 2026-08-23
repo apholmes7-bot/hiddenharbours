@@ -574,6 +574,23 @@ namespace HiddenHarbours.Core
         public static float LunarMonthDays =>
             Config != null ? Config.LunarMonthDays : GameConfig.DefaultLunarMonthDays;
 
+        /// <summary>
+        /// How long a fish may be and still ride ONE hand (metres) — the hand-slot size rule's threshold.
+        /// Same contract as <see cref="SecondsPerDay"/>, including the <c>Config != null</c> discipline
+        /// (never <c>?.</c>/<c>??</c> on a <see cref="Object"/>), and resolved per read so the owner can
+        /// drag the dial in play and feel where the cradle starts.
+        /// </summary>
+        public static float MaxOneHandFishLengthMeters =>
+            Config != null ? Config.MaxOneHandFishLengthMeters
+                           : GameConfig.DefaultMaxOneHandFishLengthMeters;
+
+        /// <summary>The weight → length law's coefficient (see <see cref="CatchSize"/>), same contract as
+        /// <see cref="MaxOneHandFishLengthMeters"/>. The two are read together and must stay in the same
+        /// units, which is why neither is a literal at a call site.</summary>
+        public static float FishLengthPerKgCubeRootMeters =>
+            Config != null ? Config.FishLengthPerKgCubeRootMeters
+                           : GameConfig.DefaultFishLengthPerKgCubeRootMeters;
+
         /// <summary>The tide table's owner tunables (VS-06) — how far the almanac page looks ahead and
         /// how finely it hunts each turn. Same contract as <see cref="WaveField"/>, including the
         /// <c>Config != null</c> discipline (never <c>?.</c>/<c>??</c> on a <c>UnityEngine.Object</c>).

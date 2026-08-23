@@ -35,6 +35,25 @@ namespace HiddenHarbours.Core
         /// the shipped asset all climb a stair at the same pace.</summary>
         public const float DefaultStairClimbSeconds = 0.5f;
 
+        /// <summary>
+        /// The default for <see cref="MaxOneHandFishLengthMeters"/> — read by
+        /// <c>GameServices.MaxOneHandFishLengthMeters</c> when no config is wired, so an EditMode rig and
+        /// a bare art scene split one-hand from two-hand exactly as the shipped asset does.
+        ///
+        /// <para><b>0.62 m is the ART RIG's own cradle point, converted.</b> <c>fishIsoRig.js</c> holds a
+        /// fish in one hand below 2.2 kg and cradles it across both at or above — and 2.2 kg is 0.62 m
+        /// through the same cube law <see cref="CatchSize"/> inverts. So the hands agree with the picture
+        /// by construction rather than by a number someone matched by eye, and the shipped roster splits
+        /// where the rig says it does: a 2 kg cod (0.60 m) hangs from a fist, a 12 kg one (1.09 m) does
+        /// not.</para>
+        /// </summary>
+        public const float DefaultMaxOneHandFishLengthMeters = 0.62f;
+
+        /// <summary>The default for <see cref="FishLengthPerKgCubeRootMeters"/> — the least-squares fit
+        /// across <c>fishIsoRig.js</c>'s four declared species (cod, haddock, pollock, mackerel), which
+        /// it reproduces to within 4 %. See <see cref="CatchSize"/> for why the law is a cube root.</summary>
+        public const float DefaultFishLengthPerKgCubeRootMeters = 0.477f;
+
         [Header("Clock")]
         [Tooltip("Real seconds per in-game day. 1800 = a 30-minute day (the owner's 2026-08-01 tide-pacing " +
                  "ruling; was 1200 = 20 min). Raising this slows EVERY real-time pace in the game — tide, " +
@@ -230,6 +249,22 @@ namespace HiddenHarbours.Core
                  "clam money. Must stay ≥ the clam licence fee (content validation enforces it). Granted " +
                  "once per game, flag-guarded — see FrontedFeeGrant.")]
         public int FrontedLicenceFee = 20;
+
+        [Header("Carrying (two hands — the size a fish must be under to ride one of them)")]
+        [Tooltip("How long a fish may be, nose to tail in metres, and still be carried in ONE hand by " +
+                 "the gill — leaving the other hand for the rod or the pail. Anything longer is cradled " +
+                 "across both arms, so it can only be picked up with both hands free. Default 0.62 is " +
+                 "the fish rig's own 2.2 kg cradle point expressed as a length, so the hands and the " +
+                 "picture agree by construction. Raise it and the big ones stop being a decision; drop " +
+                 "it and even a small cod occupies you completely.")]
+        [Min(0f)] public float MaxOneHandFishLengthMeters = DefaultMaxOneHandFishLengthMeters;
+
+        [Tooltip("Metres of fish per cube root of a kilogram — how a landed catch's WEIGHT (the number " +
+                 "the item actually carries) becomes the LENGTH the rule above compares against. The " +
+                 "fish rig builds mass from length × girth² and girth tracks length, so mass goes as the " +
+                 "cube of length; this is that law inverted, fitted to the rig's own four species. " +
+                 "⚠️ Not a feel dial — move it only if the fish rig's proportions move.")]
+        [Min(0f)] public float FishLengthPerKgCubeRootMeters = DefaultFishLengthPerKgCubeRootMeters;
 
         [Header("Helm throttle (the notched single-lever throttle)")]
         [Tooltip("Feel of the diegetic notched throttle on engine hulls: how many detents from neutral to " +

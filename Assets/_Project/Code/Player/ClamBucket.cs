@@ -150,24 +150,34 @@ namespace HiddenHarbours.Player
         /// pail is full (P5, a cozy refusal) — vanishing from the resolver would leave the press silent
         /// and the player holding a clam with no idea why nothing happens.</para>
         /// </summary>
-        public bool IsAvailable => HeldCatch() != null;
+        public bool IsAvailable => HeldCatch() != null && !CarryingAPail();
+
+        /// <summary>
+        /// Is she holding a container of her own? Then this belt pail stands down.
+        ///
+        /// <para><b>What is in your hands beats what is on your belt.</b> Without this the two would
+        /// compete on the same <see cref="InteractPriority.ToolTarget"/> rung and the belt pail would win
+        /// every time on distance — it is ON her, so its distance is zero — and a fish could never be put
+        /// into the pail she is visibly carrying. Asked as "a CONTAINER is in her hands" rather than
+        /// "a <c>CarriableBucket</c> is", so any future carried hold gets the same courtesy with no edit
+        /// here.</para>
+        /// </summary>
+        private static bool CarryingAPail()
+            => CarriedItem.Held(GameServices.Hands, HandLoad.Container) != null;
 
         /// <summary>Only offered with something in your hands to put in (see <see cref="IsAvailable"/>),
         /// so the words can assume it.</summary>
         public string VerbLabel => "Put it in the bucket";
 
-        /// <summary>The catch in the fisher's hands right now, or null. Written out rather than as
-        /// <c>GameServices.Hands?.Carried as CarriableCatch</c> so the fake-null question is answered
-        /// where a reader can see it: both <c>Hands</c> and <c>Carried</c> launder a destroyed object into
-        /// a REAL null on the way out, so a plain <c>is</c> pattern here is right — the <c>?.</c> that
-        /// would be wrong on a raw UnityEngine.Object is safe only because of that laundering, and saying
-        /// so beats leaving the next reader to work it out.</summary>
+        /// <summary>The catch in the fisher's hands right now, or null — in EITHER hand, which is the
+        /// whole point of the two-slot change: she can be holding the rod as well.
+        ///
+        /// <para>Asked through <see cref="CarriedItem.Held"/> rather than
+        /// <c>GameServices.Hands?.Carried as CarriableCatch</c>, which was right while there was one slot
+        /// and now reads only the hand she filled LAST. That helper also answers the fake-null question
+        /// for us: every read on the way out is laundered, so a destroyed catch is a REAL null here.</para></summary>
         private static CarriableCatch HeldCatch()
-        {
-            ICarrier hands = GameServices.Hands;
-            if (hands == null) return null;
-            return hands.Carried as CarriableCatch;
-        }
+            => CarriedItem.Held(GameServices.Hands, HandLoad.Catch) as CarriableCatch;
 
         /// <summary>The press: stack what is in her hands, or say why it did not go in.</summary>
         public void Interact(in InteractActor actor)
@@ -177,7 +187,8 @@ namespace HiddenHarbours.Player
                 EventBus.Publish(new DevNotice("No one here to fill it."));
                 return;
             }
-            if (hands.Carried is not CarriableCatch held)
+            CarriableCatch held = HeldCatch();
+            if (held == null)
             {
                 EventBus.Publish(new DevNotice("Nothing in your hands to put in."));
                 return;
