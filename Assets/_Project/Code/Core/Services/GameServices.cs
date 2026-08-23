@@ -644,6 +644,36 @@ namespace HiddenHarbours.Core
         public static bool HullKeylineFlood =>
             Config != null ? Config.HullKeylineFlood : GameConfig.DefaultHullKeylineFlood;
 
+        /// <summary>Is the RENDERED position of the camera and of every mesh vehicle rounded onto the
+        /// current framing's whole-pixel grid (owner playtest 2026-08-23)? Same contract as
+        /// <see cref="WaveField"/>, including the <c>Config != null</c> discipline (never
+        /// <c>?.</c>/<c>??</c> on a <c>UnityEngine.Object</c> — Unity's fake-null defeats both). Falls
+        /// back to <see cref="GameConfig.DefaultPixelGridSnap"/> — <b>ON</b> — so an unwired scene
+        /// ships the pixel discipline rather than the sub-pixel softness it exists to cure.
+        /// Presentation only: no sim system reads it, and nothing it gates touches a simulated body.
+        /// FLAG lead-architect: new Core contract (the pixel-grid seam).</summary>
+        public static bool PixelGridSnap =>
+            Config != null ? Config.PixelGridSnap : GameConfig.DefaultPixelGridSnap;
+
+        /// <summary>
+        /// <b>How much world one RENDERED screen pixel covers, right now</b> — the grid
+        /// <see cref="PixelGrid"/> rounds onto. Published by the follow-cam whenever it re-frames
+        /// (<c>CameraFollow.ApplyFramingHard</c>), because the grid is a property of the framing
+        /// currently shown and of nothing else: <c>1/(ppu·step)</c> on an integer upscale,
+        /// <c>(−step)/ppu</c> on an integer downscale — <c>CameraZoomPolicy</c>'s own ladder.
+        ///
+        /// <para>OPTIONAL and NOT part of <see cref="Ready"/>, exactly like
+        /// <see cref="CurrentRegionBounds"/>: <b>0 means no camera has reported</b>, under which every
+        /// snap is inert and positions stay the raw floats they were. An EditMode fixture, a bare art
+        /// scene and every test rig therefore render byte-for-byte as they did before this existed.</para>
+        ///
+        /// <para>⚠️ Deliberately NOT a second place to author a zoom. The ladder is
+        /// <c>CameraZoomPolicy</c>'s; this is the relay for consumers that cannot reference App
+        /// (Vehicles, Art — rule 4), nothing more.</para>
+        /// FLAG lead-architect: new Core contract (sibling of the region-bounds relay above).
+        /// </summary>
+        public static float WorldUnitsPerRenderedPixel { get; set; }
+
         /// <summary>Does the fisher read through foliage that draws in front of her (owner ruling,
         /// 2026-08-16)? Same contract as <see cref="WaveField"/>, including the <c>Config != null</c>
         /// discipline (never <c>?.</c>/<c>??</c> on a <c>UnityEngine.Object</c> — Unity's fake-null
@@ -709,6 +739,7 @@ namespace HiddenHarbours.Core
             CurrentRegionId = null;
             PendingArrivalKey = null;
             CurrentRegionBounds = default;
+            WorldUnitsPerRenderedPixel = 0f;   // 0 = no camera has reported; every snap inert
             Config = null;
             CatchFactory = null;
             AudioMix = null;

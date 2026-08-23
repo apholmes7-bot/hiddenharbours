@@ -363,6 +363,36 @@ namespace HiddenHarbours.Core
         public bool HullKeylineFlood = DefaultHullKeylineFlood;
 
         // -----------------------------------------------------------------------------------------
+        //  The pixel grid (owner playtest 2026-08-23 — "the running fisher and the Otter go soft")
+        // -----------------------------------------------------------------------------------------
+        // The locked Pixel Perfect Camera runs GridSnapping.PixelSnapping, and that mode snaps
+        // SPRITE RENDERERS to a world grid and nothing else — it never moves the camera, and it never
+        // reaches a MeshRenderer. So the camera sampled the snapped world from an arbitrary sub-pixel
+        // offset (an asset texel got 2 screen pixels one frame and 3 the next: the "soft while
+        // moving" read), and a mesh vehicle was not snapped by anything at all. This puts both
+        // RENDERED positions back on the grid; see Core.PixelGrid for the full derivation.
+        //
+        // ⚠️ A FLAT FIELD WITH A CODE-SIDE DEFAULT, for the same reason the silhouette block below
+        // is three flat scalars: a field missing from GameConfig.asset's YAML comes back as the C#
+        // type default, and for a bool that is FALSE — the feature silently off, reported as on.
+
+        /// <summary>Ship default — <b>ON</b>. Integer-pixel movement on the play grid is the bible's
+        /// own pixel discipline (§3.4, §9.2 "no sub-pixel shimmer"), not an option; OFF exists so the
+        /// owner can A/B the exact build that shipped before this flag against the one that snaps.</summary>
+        public const bool DefaultPixelGridSnap = true;
+
+        [Header("Pixel grid (the sub-pixel softness fix — bible §3.4 pixel discipline)")]
+        [Tooltip("Round the RENDERED position of the camera and of every mesh vehicle onto the " +
+                 "current framing's whole-pixel grid? ON is the shipped discipline: a running " +
+                 "fisher and a driven Otter keep even, stable texels instead of going soft while " +
+                 "they move. OFF restores the pre-fix look exactly — the camera lands wherever its " +
+                 "smoothing puts it and a mesh vehicle draws at a raw float position — so the two " +
+                 "can be A/B'd on one flag. This NEVER touches a simulated body: the physics " +
+                 "position stays the honest float, only the drawn transform is rounded (rule 5), so " +
+                 "determinism and every saved value are unaffected.")]
+        public bool PixelGridSnap = DefaultPixelGridSnap;
+
+        // -----------------------------------------------------------------------------------------
         //  The silhouette through foliage (owner ruling, 2026-08-16)
         // -----------------------------------------------------------------------------------------
         // "Slight occlusion — you always know where you are, you never lose your character." Dense

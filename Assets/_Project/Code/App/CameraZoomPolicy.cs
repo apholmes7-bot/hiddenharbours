@@ -141,6 +141,27 @@ namespace HiddenHarbours.App
         /// orthographic size directly; see <c>CameraFollow.ApplyFramingHard</c>.</summary>
         public static bool StepIsPixelPerfectUpscale(int step) => step >= 1;
 
+        /// <summary>
+        /// <b>How much world ONE RENDERED SCREEN PIXEL covers at a ladder step</b> — the grid a
+        /// rendered position must land on to stay crisp (<c>Core.PixelGrid</c>).
+        ///
+        /// <para>It is just the step's own world height divided by the screen, which is the point:
+        /// the ladder is already the ONE place the framing is defined, so the pixel size falls out of
+        /// it rather than being re-derived beside it and drifting. That resolves to
+        /// <c>1/(step·ppu)</c> on an integer UPSCALE and <c>(−step)/ppu</c> on an integer DOWNSCALE.</para>
+        ///
+        /// <para><b>Why not just snap to the asset grid (1/ppu).</b> It is wrong at both ends of the
+        /// ladder. Magnified (step 3), a screen pixel is a THIRD of an asset pixel, so 1/ppu would
+        /// throw away two thirds of the camera's available smoothness for nothing — the texels were
+        /// already aligned. Shrunk (step −2), one screen pixel is TWO asset pixels, so 1/ppu does not
+        /// reach a screen pixel boundary at all and the snap would simply fail to bite.</para>
+        /// </summary>
+        public static float WorldUnitsPerRenderedPixel(int step, int ppu, int screenHeightPx)
+        {
+            int h = Mathf.Max(1, screenHeightPx);
+            return WorldHeightForStep(step, ppu, h) / h;
+        }
+
         /// <summary>The ladder step nearest a requested world height — now searching OUTWARD as well
         /// as in, so a def asking for 60 m is no longer silently served 33.75.</summary>
         public static int StepForWorldHeight(float worldHeightMeters, int ppu, int screenHeightPx)
