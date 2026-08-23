@@ -205,6 +205,40 @@ namespace HiddenHarbours.Tests.RigBaking
         }
 
         [Test]
+        public void TheRoomDeclaresHowFarItIsToTheFloorAbove_AndTheCommittedContractCarriesThatNumber()
+        {
+            using IRigScriptHost host = Host("interior");
+
+            // The rig is the authority: storeyZ is this storey's ceiling plus the joists it carries.
+            double declared = host.EvaluateNumber($"{Interior}.anchors(0,{RoomOpts()}).storeyZ");
+            double roomH = host.EvaluateNumber($"{Interior}.anchors(0,{RoomOpts()}).roomH");
+
+            Assert.AreEqual(2.7625, roomH, 1e-6,
+                "sage cottage at size 0.25: min(2.55 + 0.25*0.85, wallH − 0.6)");
+            Assert.AreEqual(roomH + 0.34, declared, 1e-6,
+                "plus the shop kit's own 0.34 m of floor structure — one allowance for both families, " +
+                "not two that happen to agree");
+
+            // ...and the bake wrote it down. This is the seam the whole storey-height fix rests on: the
+            // engine reads a NUMBER FROM THE ART rather than one typed into a builder, exactly as it does
+            // the facing offset. A contract whose value has drifted from the rig means a re-bake is due,
+            // and the picture goes wrong silently in the meantime.
+            InteriorKit.Contract contract = InteriorKit.Load();
+            Assert.IsNotNull(contract, "the interiors contract is committed and parseable");
+
+            InteriorKit.Entry cottage = System.Array.Find(contract.rooms, r => r.key == "sageCottage");
+            Assert.IsNotNull(cottage, "the pilot room is in it");
+            Assert.AreEqual(declared, cottage.storeyHeightMetres, 1e-4,
+                "the committed contract's storeyHeightMetres must be the rig's own storeyZ — re-bake the " +
+                "interiors kit if this has drifted");
+
+            foreach (InteriorKit.Entry room in contract.rooms)
+                Assert.Greater(room.storeyHeightMetres, 2.0f,
+                    $"'{room.key}' declares no plausible storey height, so anything standing a second " +
+                    "level on it would draw that level over the ground floor (ADR 0036, amended)");
+        }
+
+        [Test]
         public void MeasureRegistration_RefusesWhenTheTwoBuildsAreDifferentSizes()
         {
             using IRigScriptHost host = Host("house", "interior");

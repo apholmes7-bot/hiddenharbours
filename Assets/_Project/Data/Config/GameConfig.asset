@@ -351,3 +351,4 @@ MonoBehaviour:
     AboardStopsCloser: 2
     AboardStopsWider: 2
   InteriorRockScale: 0.45
+  StairClimbSeconds: 0.5

@@ -230,6 +230,7 @@ namespace HiddenHarbours.Tools.RigBaking
                 sheetH = r.SheetHeight,
                 footprintWidthMetres = (float)r.FootprintWidthMetres,
                 footprintLengthMetres = (float)r.FootprintLengthMetres,
+                storeyHeightMetres = (float)r.StoreyHeightMetres,
                 propFootprintWidth = (float)r.PropFootprintWidth,
                 propFootprintDepth = (float)r.PropFootprintDepth,
                 convention = r.Convention.ToString(),

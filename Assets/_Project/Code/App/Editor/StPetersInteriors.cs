@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using HiddenHarbours.Art;                 // SpriteLightMath — the shared bake camera's numbers
 using HiddenHarbours.Art.Editor;          // InteriorCatalog, InteriorKit
-using HiddenHarbours.World;               // BuildingInterior, InteriorFootprint
+using HiddenHarbours.World;               // BuildingInterior, InteriorFootprint, InteriorLevelLayout
 // Aliased rather than a whole `using HiddenHarbours.Core;`: this file lives at the junction of three
 // modules whose short type names already collide readily, and it wants exactly two Core types.
 using PillowSide = HiddenHarbours.Core.PillowSide;
@@ -713,9 +713,16 @@ namespace HiddenHarbours.App.Editor
         ///
         /// <para><b>What an upper storey actually IS here.</b> A second room sprite, a second furniture
         /// root and a small set of extra colliders, all parented to the same building and all switched
-        /// as one by <see cref="BuildingInterior"/>. It shares the footprint, the facing and the walls
-        /// with the storey below — which is what "true to the footprint" means when the footprint has
-        /// two floors in it — so nothing here re-derives any of those.</para>
+        /// as one by <see cref="BuildingInterior"/>. It shares the footprint's SHAPE, its facing and the
+        /// house's walls with the storey below — which is what "true to the footprint" means when the
+        /// footprint has two floors in it — so nothing here re-derives any of those.</para>
+        ///
+        /// <para><b>It does not share the storey below's HEIGHT.</b> Everything up here is placed from
+        /// the same rectangle lifted by the rig's declared storey (see <c>upperY</c> below): the sheet,
+        /// the furniture, the partitions and the doorway plug all move together, because a bedroom whose
+        /// floor is upstairs and whose walls are downstairs is worse than either. That lift is the whole
+        /// of the 2026-08-23 amendment to ADR 0036 — before it, the two storeys were drawn at the same
+        /// transform and the upper one landed pixel-for-pixel over the lower.</para>
         ///
         /// <para><b>The three colliders that differ, and why only three.</b> The house's four walls are
         /// the same walls upstairs and are already standing, so the upper level adds only what is
@@ -766,38 +773,72 @@ namespace HiddenHarbours.App.Editor
                         "sheet — re-bake the kit.");
             }
 
+            // --- ⭐ HOW HIGH THE STOREY IS. Read from the bake's contract — the rig DECLARES a
+            //     floor-to-floor rise (interiorIsoRig.anchors().storeyZ) and the bake writes it as
+            //     storeyHeightMetres — then projected once at the shared camera. Never typed here: the
+            //     precedent is the facing offset three lines up the file, which is measured at bake time
+            //     for exactly the same reason. A contract with no declared height reports 0, and
+            //     ConfigureUpperLevel says so out loud rather than quietly drawing one storey on another.
+            //     Read off the storey BELOW, not the upper room: "how far above the ground floor the next
+            //     floor sits" is a fact about the storey you are standing in — its ceiling plus its
+            //     joists. An `upstairs` bake, when the art lane makes one, declares the rise to ITS
+            //     ceiling, which is a different storey and would land the bedroom in the roof.
+            float storeyHeight = room.Entry != null ? room.Entry.storeyHeightMetres : 0f;
+            float upperY = InteriorLevelLayout.UpperLevelY(storeyHeight);
+
+            // The storey's own footprint: the same rectangle, one storey up. EVERYTHING placed on the
+            // upper level is measured from this rather than from the ground floor's, so a prop, a
+            // partition and the occupant standing between them cannot end up on different floors.
+            var upperFootprint = new InteriorFootprint(
+                (Vector2)buildingGo.transform.position + new Vector2(0f, upperY),
+                room.Entry.footprintWidthMetres, room.Entry.footprintLengthMetres,
+                interiorFacing, room.Entry.facings, SpriteLightMath.GroundDepthScale,
+                footprint.DoorSign, footprint.DoorAcrossMetres);
+
             var upperRoomGo = new GameObject(UpperRoomChildName);
             upperRoomGo.transform.SetParent(buildingGo.transform, worldPositionStays: false);
-            upperRoomGo.transform.localPosition = Vector3.zero;
+            upperRoomGo.transform.localPosition = Vector3.zero;   // ConfigureUpperLevel lifts it
             SpriteRenderer upperRenderer =
                 InteriorCatalog.ConfigureRoom(upperRoomGo, upperRoom, upperSprite);
+
+            // The upper sheet JOINS THE Y-SORT BAND (ADR 0032), where the ground floor's stays under it
+            // at a fixed order. The ground room is buried inside the footprint and has nothing drawn over
+            // it; the upper room is lifted up-screen over ground that has grass, trees and a dooryard on
+            // it, every one of them a four-digit Y-sorted order. Ranked by its FAR edge so everything
+            // standing on that floor still outranks it — see InteriorLevelLayout.UpperRoomSortingOrder.
+            upperRenderer.sortingOrder = InteriorLevelLayout.UpperRoomSortingOrder(upperFootprint);
 
             // --- the upper furniture.
             var upperPropsGo = new GameObject(UpperPropsChildName);
             upperPropsGo.transform.SetParent(buildingGo.transform, worldPositionStays: false);
             upperPropsGo.transform.localPosition = Vector3.zero;
-            int placed = Furnish(upperPropsGo.transform, plan.Furnishings, room.Entry.key, footprint,
+            int placed = Furnish(upperPropsGo.transform, plan.Furnishings, room.Entry.key, upperFootprint,
                                  interiorFacing, room.Entry.facings, interior, idPrefix);
 
             // --- the colliders that exist only up here.
             var upperWallsGo = new GameObject(UpperWallsChildName);
             upperWallsGo.transform.SetParent(buildingGo.transform, worldPositionStays: false);
             upperWallsGo.transform.localPosition = Vector3.zero;
-            BuildUpperWalls(upperWallsGo.transform, footprint, plan);
+            BuildUpperWalls(upperWallsGo.transform, upperFootprint, plan);
 
-            // --- the foot of the stairs, added to the storey BELOW.
+            // --- the foot of the stairs, added to the storey BELOW. The GROUND footprint, because that
+            //     is the floor it stands on — and the same model coordinate as the head of them, which is
+            //     what makes the climb a straight rise and the way back a press where you land.
             placed += Furnish(groundProps, plan.GroundAdditions, room.Entry.key, footprint,
                               interiorFacing, room.Entry.facings, interior, idPrefix);
 
             // ⚠ AFTER both furniture roots exist and BEFORE anything else looks at the interior:
             //   ConfigureUpperLevel applies the swap immediately, which is what leaves the upstairs
             //   switched OFF in the editor instead of drawn straight over the ground floor.
-            interior.ConfigureUpperLevel(upperRenderer, upperPropsGo.transform, upperWallsGo.transform);
+            interior.ConfigureUpperLevel(upperRenderer, upperPropsGo.transform, upperWallsGo.transform,
+                                         upperY);
 
             Debug.Log(
                 $"[StPetersInteriors] upper level '{planKey}': {placed} piece(s) of furniture, " +
                 $"{plan.Partitions.Count} partition(s) plus the doorway plug, drawing " +
-                $"{(string.IsNullOrEmpty(plan.RoomKey) ? "the storey below's room sheet (greybox)" : "'" + plan.RoomKey + "'")}.");
+                $"{(string.IsNullOrEmpty(plan.RoomKey) ? "the storey below's room sheet (greybox)" : "'" + plan.RoomKey + "'")}" +
+                $", standing {storeyHeight:0.##} m up (the rig's declared storey) = {upperY:0.##} world " +
+                $"units up the screen, sheet at sorting order {upperRenderer.sortingOrder}.");
             return placed;
         }
 

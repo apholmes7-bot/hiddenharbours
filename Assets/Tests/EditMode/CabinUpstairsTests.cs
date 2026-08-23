@@ -30,6 +30,12 @@ namespace HiddenHarbours.Tests.EditMode
         const float CottageWidth = 6.6f;
         const float CottageLength = 8.05f;
 
+        /// <summary>And how far apart its two floors are: <c>interiorIsoRig</c> declares
+        /// <c>storeyZ = roomH + 0.34</c> of joists, which comes to 3.1025 m at this cottage's size and is
+        /// what the bake writes into the interiors contract as <c>storeyHeightMetres</c>. Restated here
+        /// rather than read from the contract, for the same reason the footprint is.</summary>
+        const float CottageStoreyHeightMetres = 3.1025f;
+
         /// <summary>A save service that behaves the way the real one does in the one respect the rest
         /// service contract cares about: LoadedExistingSave goes true once a write has landed. A fake
         /// that left it false would make every rest report a refusal.</summary>
@@ -132,7 +138,11 @@ namespace HiddenHarbours.Tests.EditMode
                                groundDepthScale: 0.6427876f,
                                wallThicknessMetres: StPetersInteriors.WallThicknessMetres,
                                doorwayWidthMetres: StPetersInteriors.DoorwayWidthMetres);
-            interior.ConfigureUpperLevel(upper, upperProps.transform, upperWalls.transform);
+            // Lifted the way the builder lifts one: the rig's declared storey height, projected at the
+            // shared camera (ADR 0036 as amended). A storey configured at 0 is the defect, and the
+            // component says so out loud — InteriorStairClimbTests drives that case deliberately.
+            interior.ConfigureUpperLevel(upper, upperProps.transform, upperWalls.transform,
+                                         InteriorLevelLayout.UpperLevelY(CottageStoreyHeightMetres));
             return interior;
         }
 
@@ -552,10 +562,13 @@ namespace HiddenHarbours.Tests.EditMode
             //
             // The wake lands BEFORE the interior has seen anyone inside — which is exactly the ordering
             // the real load has, and the reason the storey is remembered rather than set.
-            interior.WakeAt(new RestAnchor("region.st_peters", interior.transform.position, 1));
+            // The anchor is UPSTAIRS, which since ADR 0036's amendment is a real place one storey up —
+            // and it is where RestWakeRestorer has already stood the sleeper by the time this lands.
+            Vector2 upstairs = interior.FootprintFor(InteriorLevelLayout.UpperLevel).Centre;
+            interior.WakeAt(new RestAnchor("region.st_peters", upstairs, 1));
             Assert.AreEqual(0, interior.Level, "nothing has changed storey yet; nobody is in the house");
 
-            occupant.transform.position = interior.transform.position;
+            occupant.transform.position = upstairs;
             Tick(interior);
 
             Assert.IsTrue(interior.IsInside);
@@ -586,13 +599,20 @@ namespace HiddenHarbours.Tests.EditMode
         {
             BuildingInterior interior = StandTwoStorey(out _, out SpriteRenderer ground, out _,
                                                        out SpriteRenderer upper, out _, out _);
-            WalkInside(interior);
+            Transform occupant = WalkInside(interior);
             Assert.AreEqual(0, interior.Level, "precondition: indoors, on the ground floor");
 
-            interior.WakeAt(new RestAnchor("region.st_peters",                      // driven — see above
-                                           interior.transform.position, 1));
+            // The restorer has already MOVED them to the anchor — that is the ordering, and it is why
+            // the wake never walks anybody: they are standing upstairs before this house hears about it.
+            Vector2 upstairs = interior.FootprintFor(InteriorLevelLayout.UpperLevel).Centre;
+            occupant.position = upstairs;
+            interior.WakeAt(new RestAnchor("region.st_peters", upstairs, 1));       // driven — see above
 
             Assert.AreEqual(1, interior.Level, "the storey changes");
+            Assert.IsFalse(interior.IsClimbing,
+                           "and nobody is walked anywhere — a sleeper is PLACED, not sent up the stairs");
+            Assert.AreEqual((Vector3)upstairs, occupant.position,
+                            "so they wake exactly where they lay down");
             Assert.IsTrue(upper.enabled, "AND the storey above is actually drawn");
             Assert.IsFalse(ground.enabled, "and the one below it is switched off");
         }

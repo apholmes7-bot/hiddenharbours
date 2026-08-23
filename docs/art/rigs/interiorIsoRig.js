@@ -283,6 +283,13 @@
     b.wt = 0.16;
     b.fZ = 0;
     b.ceilZ = b.fZ + b.roomH;
+    // FLOOR-TO-FLOOR rise to the storey above: this storey's ceiling plus the joists and deck it
+    // carries. DECLARED here so nothing downstream has to guess a storey's height — the engine reads
+    // it off the bake (anchors().storeyZ -> the interiors contract) the same way it reads Wd/Ln. The
+    // 0.34 m of structure is the shop kit's own allowance (shopInteriorRig: storeyZ = fH+shopH+0.34),
+    // reused rather than re-invented so both building families stack their storeys identically.
+    b.joistZ = 0.34;
+    b.storeyZ = b.ceilZ + b.joistZ;
     return b;
   }
 
@@ -568,7 +575,10 @@
     return { floor:pj(0,0,b.fZ), door:pj(0,-hl,b.fZ),
       hearth: b.hearth?pj(0,hl-0.35,b.fZ+0.5):null,
       lamps:[pj(-hw*0.5,hl*0.4,b.ceilZ*0.7), pj(hw*0.5,-hl*0.2,b.ceilZ*0.7)],
-      occluders:occ, Wd:b.Wd, Ln:b.Ln };
+      // storeyZ: metres of HEIGHT from this floor to the one above (see resolve). Reported in metres,
+      // not px, because it is a fact about the building and not about this cell — whoever draws a
+      // second storey projects it themselves at the shared camera.
+      occluders:occ, Wd:b.Wd, Ln:b.Ln, roomH:b.roomH, storeyZ:b.storeyZ };
   }
   function project(dir, p, elev){ const v=projVert(p[0],p[1],p[2],camBasis({dir,elev})); return {x:v.sx,y:v.sy}; }
 
