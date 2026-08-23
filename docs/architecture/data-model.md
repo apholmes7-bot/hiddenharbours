@@ -99,9 +99,24 @@ plain serializable DTOs owned by `SaveService` (`architecture/tech-architecture.
 
 **Recomputed, never saved:** tide height, wind, weather, sea state, visibility (from
 `worldSeed + gameTime`), dormant NPC positions, authored geometry, **a boat's effective helm fit and
-its depth-sounder reading** (ADR 0030), and **fish schools** — where the fish are is a function of
-`(worldSeed, gameTime)` + place + weather like the tide is, so the finder's marks are never stored
-(ADR 0025 S3). This is the determinism dividend — small, robust saves.
+its depth-sounder reading** (ADR 0030), **which end of a bed the pillow is on** (see below), and
+**fish schools** — where the fish are is a function of `(worldSeed, gameTime)` + place + weather like
+the tide is, so the finder's marks are never stored (ADR 0025 S3). This is the determinism dividend —
+small, robust saves.
+
+> **A bed's PILLOW SIDE is content, not save state — and so the rest anchor did NOT grow a field.**
+> A bed declares which end its pillow is on (`PillowSide`, in the interior-prop def's furnishing row);
+> the builder resolves it against the room's own facing and hands the bed a `PillowAnchor`, and the
+> sleeping pose lays the fisher head-to-pillow from it. It is **declared, never inferred from pixels**
+> — the same rule as a house's door anchor, and for the same reason: the bake reports a bed as a
+> plain `width × depth` rectangle that is identical at both ends, so the head end only exists because
+> the rig says so (`interiorPropRig.js`: *"pillow (head end, −Y front)"*). None of it enters
+> `SaveData`: the whole declaration is re-derived from content every time a room is stood, and the v13
+> anchor stays exactly what ADR 0037 made it — a region, a storey and the player's own feet, none of
+> which moves because a pillow is at one end or the other. **A bed with no declaration fails content
+> validation**, because the failure is otherwise silent: the pose falls back to one fixed heading,
+> which is right in an unturned room and wrong at the other seven facings, and a sleeper lying the
+> wrong way round reads as bad art rather than as a bug.
 
 **Deliberately NOT in that list:** where the player chose to go to sleep (v13 above). Rule 5 keeps
 tide/wind/weather out of the save because they are *derivable* from `(worldSeed, gameTime)`; a bed is

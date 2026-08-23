@@ -5,6 +5,7 @@ using UnityEngine.TestTools;
 using HiddenHarbours.App.Editor;
 using HiddenHarbours.Art;
 using HiddenHarbours.Art.Editor;
+using HiddenHarbours.Core;
 using HiddenHarbours.World;
 
 namespace HiddenHarbours.Tests.EditMode
@@ -280,6 +281,234 @@ namespace HiddenHarbours.Tests.EditMode
                                       $"'{room.Key}' is baked but barely furnished — a room the player " +
                                       "can walk into should look lived in, not like a rehearsal space");
             }
+        }
+
+
+        // =============================================================================
+        //  THE PILLOW — content validation, over BOTH furnishing tables
+        // =============================================================================
+
+        /// <summary>
+        /// Every furnishing the island places, from BOTH tables — a building's own room
+        /// (<see cref="StPetersInteriors.FurnishingsFor"/>) and every declared storey above it
+        /// (<see cref="StPetersInteriors.UpperLevelFor"/>, whose plan furnishes the floor above AND adds
+        /// to the one below).
+        ///
+        /// <para><b>Walking one table is walking half the beds.</b> The two that matter most — yours and
+        /// your host's, upstairs at Ginny's — are only in the second, so a check that reads
+        /// <c>FurnishingsFor</c> alone passes an unvalidated player's bed. That is the exact shape of the
+        /// gap this whole file exists to close.</para>
+        /// </summary>
+        static IEnumerable<(string Where, StPetersInteriors.Furnishing F)> EveryFurnishing()
+        {
+            foreach (var room in InteriorKit.RoomSet)
+                foreach (var f in StPetersInteriors.FurnishingsFor(room.Key))
+                    yield return ($"room '{room.Key}'", f);
+
+            foreach (string planKey in StPetersInteriors.UpperLevelPlanKeys)
+            {
+                if (!StPetersInteriors.HasUpperLevel(planKey)) continue;
+                StPetersInteriors.UpperLevelPlan plan = StPetersInteriors.UpperLevelFor(planKey);
+
+                foreach (var f in plan.Furnishings)
+                    yield return ($"upstairs at '{planKey}'", f);
+
+                if (plan.GroundAdditions == null) continue;
+                foreach (var f in plan.GroundAdditions)
+                    yield return ($"the storey below '{planKey}'", f);
+            }
+        }
+
+        /// <summary>A bed row exactly as a builder table would carry one, for the failure cases below.</summary>
+        static StPetersInteriors.Furnishing Bed(int facingOffset, PillowSide pillow) =>
+            new StPetersInteriors.Furnishing("bed", new Vector2(-2.10f, -2.30f), facingOffset,
+                                             "a test bed", StPetersInteriors.InteriorFixture.PlayerBed,
+                                             pillow);
+
+        [Test]
+        public void EveryBedInBOTHTablesDeclaresWhichEndItsPillowIsOn()
+        {
+            // ⭐ THE RULE. A bed that never says draws perfectly and is slept on backwards, so the only
+            // thing that can catch it is a check that walks every bed the island places and asks.
+            int beds = 0;
+            foreach (var (where, f) in EveryFurnishing())
+            {
+                if (!f.IsBed) continue;
+                beds++;
+
+                Assert.IsFalse(StPetersInteriors.TryFindPillowFault(f, out string fault),
+                               $"{where}: {fault}");
+            }
+
+            Assert.GreaterOrEqual(beds, 4,
+                                  "the island places four beds — two upstairs at Ginny's and one in each " +
+                                  "of the two furnished cottages. Finding fewer means this walk stopped " +
+                                  "reading one of the two tables, which is how an unvalidated bed ships");
+        }
+
+        [Test]
+        public void ABedWithNoDeclarationFAILSContentValidation()
+        {
+            // The trip-wire, exercised. This is the state a new bed row starts in.
+            Assert.IsTrue(StPetersInteriors.TryFindPillowFault(Bed(0, PillowSide.Undeclared),
+                                                               out string fault));
+            StringAssert.Contains("PillowSide", fault,
+                                  "the complaint must say what to add, not merely that something is wrong");
+        }
+
+        [Test]
+        public void ABedTurnedAwayFromItsOwnDeclarationFAILSContentValidation()
+        {
+            // The authoring slip that survives a "did you declare it?" check: the bed was turned a quarter
+            // and the declaration stayed where it was. The pose would follow the declaration and the
+            // headboard would be at the other end — and it would look like art.
+            Assert.IsTrue(StPetersInteriors.TryFindPillowFault(Bed(2, PillowSide.MinusY),
+                                                               out string fault));
+            StringAssert.Contains("MinusX", fault, "and it must name where the art actually draws it");
+        }
+
+        [Test]
+        public void ABedStoodOnTheDIAGONALFAILSContentValidation()
+        {
+            // An odd facing offset is a 45° step. No cardinal side is the truth about that bed, so the
+            // honest answer is to refuse it rather than round it to the nearer wall.
+            Assert.IsTrue(StPetersInteriors.TryFindPillowFault(Bed(1, PillowSide.MinusY),
+                                                              out string fault));
+            StringAssert.Contains("EVEN", fault);
+        }
+
+        [Test]
+        public void ABedTurnedWITHItsDeclarationPasses()
+        {
+            // The other half of the rule: turning IS allowed, it just has to be said. A quarter-turn puts
+            // the kit bed's -y head end on the room's -x.
+            Assert.IsFalse(StPetersInteriors.TryFindPillowFault(Bed(2, PillowSide.MinusX), out string fault),
+                           fault);
+            Assert.IsFalse(StPetersInteriors.TryFindPillowFault(Bed(4, PillowSide.PlusY), out fault), fault);
+            Assert.IsFalse(StPetersInteriors.TryFindPillowFault(Bed(6, PillowSide.PlusX), out fault), fault);
+        }
+
+        [Test]
+        public void APropThatIsNotABedIsAskedNothingAboutPillows()
+        {
+            // A chair with no pillow side is a chair, not a fault — the check has to be about beds or the
+            // table becomes ceremony and people stop reading the failures.
+            foreach (var (where, f) in EveryFurnishing())
+            {
+                if (f.IsBed) continue;
+
+                Assert.AreEqual(PillowSide.Undeclared, f.Pillow,
+                                $"{where}: '{f.PropKey}' is not a bed and must not claim a pillow side");
+                Assert.IsFalse(StPetersInteriors.TryFindPillowFault(f, out _),
+                               $"{where}: '{f.PropKey}' is not a bed and must not be asked for one");
+            }
+        }
+
+        [Test]
+        public void TheDeclaredSideIsTheSideTheKitActuallyDrawsThePillowOn()
+        {
+            // Stated separately from the fault check so a regression reads as "the art and the table
+            // disagree" rather than as a generic validation failure.
+            foreach (var (where, f) in EveryFurnishing())
+            {
+                if (!f.IsBed) continue;
+
+                // A fixture bed built out of a prop the kit gives no head end to (a sea chest standing in
+                // for a bunk) has nothing to compare against — the same case TryFindPillowFault lets
+                // through, and the two must not disagree about it.
+                if (f.DrawnPillowSide == PillowSide.Undeclared) continue;
+
+                Assert.AreEqual(f.DrawnPillowSide, f.Pillow,
+                                $"{where}: the bed at {f.RoomMetres} is drawn with its head end on " +
+                                $"{f.DrawnPillowSide} but declares {f.Pillow}");
+            }
+        }
+
+        [Test]
+        public void ThePillowReachIsTheBAKESDepthMinusTheRIGSInset()
+        {
+            InteriorKit.Contract contract = InteriorKit.Load();
+            if (contract?.props == null || contract.props.Length == 0)
+                Assert.Ignore("no baked interior contract — nothing to read prop depths from");
+
+            InteriorKit.Entry bed = InteriorKit.FindProp(contract, "bed");
+            if (bed == null) Assert.Ignore("the contract carries no bed");
+
+            // Neither number is typed into the builder: the depth is the bake's and the inset is the rig's,
+            // so a re-bake at another size moves the pillow with the bed rather than leaving a tuned
+            // constant pointing at where it used to be.
+            Assert.AreEqual(bed.propFootprintDepth * 0.5f - InteriorKit.BedPillowInsetMetres,
+                            StPetersInteriors.PillowReachMetresFor("bed", bed.propFootprintDepth), 1e-5f);
+
+            Assert.Greater(StPetersInteriors.PillowReachMetresFor("bed", bed.propFootprintDepth), 0f,
+                           "a reach of zero would put the sleeper's head in the middle of the mattress, " +
+                           "which is the picture an UNDECLARED bed gets");
+            Assert.Less(StPetersInteriors.PillowReachMetresFor("bed", bed.propFootprintDepth),
+                        bed.propFootprintDepth * 0.5f,
+                        "and a reach past the half-depth would put the head off the end of the bed");
+        }
+
+        [Test]
+        public void APropWithNoPillowHasNoReach()
+        {
+            Assert.AreEqual(0f, StPetersInteriors.PillowReachMetresFor("chair", 0.42f), 1e-6f);
+            Assert.AreEqual(0f, StPetersInteriors.PillowReachMetresFor("no_such_prop", 2f), 1e-6f);
+        }
+
+        [Test]
+        public void EachDeclaredBedYieldsAHeadPositionOnItsOwnPillowSide_AtEveryFacing()
+        {
+            // ⭐ THE ACCEPTANCE CRITERION. Placed exactly as the builder places it — model point through
+            // the room's own footprint — and then read back in the room's frame, which is the frame the
+            // declaration is in. Doing the round trip is the point: it is the same arithmetic the runtime
+            // does, so a sign error anywhere in it fails here rather than in the owner's bedroom.
+            InteriorKit.Contract contract = InteriorKit.Load();
+            if (contract?.props == null || contract.props.Length == 0)
+                Assert.Ignore("no baked interior contract — nothing to read prop depths from");
+
+            int checkedBeds = 0;
+
+            foreach (var (where, f) in EveryFurnishing())
+            {
+                if (!f.IsBed) continue;
+
+                InteriorKit.Entry prop = InteriorKit.FindProp(contract, f.PropKey);
+                if (prop == null) continue;             // covered by EveryFurnishingNamesAProp…
+
+                float reach = StPetersInteriors.PillowReachMetresFor(f.PropKey, prop.propFootprintDepth);
+                Vector2 want = BedPillow.Direction(f.Pillow);
+                checkedBeds++;
+
+                for (int facing = 0; facing < InteriorKit.Facings; facing++)
+                {
+                    // The cottage's own footprint; every furnished room on the island is this shape or
+                    // bigger, and the assertion below is frame-relative so the size only has to be real.
+                    var footprint = new InteriorFootprint(new Vector2(11f, -4f), 6.6f, 8.05f,
+                                                          facing, InteriorKit.Facings,
+                                                          SpriteLightMath.GroundDepthScale);
+
+                    Vector2 bedWorld = footprint.ModelToWorld(f.RoomMetres);
+                    Vector2 headWorld = BedPillow.HeadWorld(bedWorld, f.Pillow, footprint.YawDegrees,
+                                                            reach, footprint.DepthScale);
+
+                    Vector2 headModel = footprint.WorldToModel(headWorld);
+                    Vector2 travelled = headModel - f.RoomMetres;
+
+                    Assert.AreEqual(want.x * reach, travelled.x, 2e-3f,
+                                    $"{where}, facing {facing}: the head must land {reach:0.###} m " +
+                                    $"toward {f.Pillow}, across the room");
+                    Assert.AreEqual(want.y * reach, travelled.y, 2e-3f,
+                                    $"{where}, facing {facing}: the head must land {reach:0.###} m " +
+                                    $"toward {f.Pillow}, along the room");
+
+                    // And it is ON the bed, not off the end of it — the failure a too-generous inset
+                    // would produce, which draws as a fisher with her head on the floorboards.
+                    Assert.LessOrEqual(travelled.magnitude, prop.propFootprintDepth * 0.5f + 1e-3f,
+                                       $"{where}, facing {facing}: the head is off the end of the bed");
+                }
+            }
+
+            Assert.GreaterOrEqual(checkedBeds, 4, "all four of the island's beds must have been checked");
         }
 
         /// <summary>Half the room's footprint in metres, from its own dialled <c>size</c>. Both rigs

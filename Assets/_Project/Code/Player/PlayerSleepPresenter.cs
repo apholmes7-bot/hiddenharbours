@@ -23,6 +23,15 @@ namespace HiddenHarbours.Player
     /// time either changed. The position is restored exactly, from a value captured here, and the WAKE
     /// spot the save recorded is untouched by any of it: that was read from the player before this ran.</para>
     ///
+    /// <para><b>⭐ WHICH WAY ROUND THE SLEEPER LIES IS THE BED'S TO SAY.</b> The heading comes from the
+    /// beat's own <see cref="PillowAnchor"/> — the end the bed declares its pillow is on, turned into a
+    /// ground bearing by the room's own facing — so the fisher is laid head-to-pillow on every bed at
+    /// every facing. It used to be one serialized number, which is correct for a bed in an UNTURNED room
+    /// and wrong for the same bed the moment the builder faced its building at anything else; the
+    /// resulting picture is a person asleep with their head on the footboard, and it reads as bad art
+    /// rather than as a bug. <see cref="_sleepHeadingDegrees"/> survives as the fallback for a bed that
+    /// declares nothing, which content validation does not allow to ship.</para>
+    ///
     /// <para><b>Degrades whole.</b> No clip player, no sleep art, or a beat already running →
     /// <see cref="CharacterClipPlayer.Play"/> answers false (or is never reached) and nothing happens at
     /// all: no move, no hold, no restore. The player keeps standing and the rest reads exactly as it did
@@ -46,9 +55,10 @@ namespace HiddenHarbours.Player
                  "player watches, not the clip's own length.")]
         [Min(0f)] [SerializeField] private float _beatSeconds = 1.6f;
 
-        [Tooltip("The heading the sleeper is drawn at. The rig bakes sleep at all eight facings; a bed " +
-                 "has one, and the clip is placed at the BED, so this is the bed's own axis rather than " +
-                 "whichever way the player happened to walk in.")]
+        [Tooltip("FALLBACK heading, used only by a bed that declares no pillow side. The real heading " +
+                 "is the bed's own (SleepBeatRequested.Pillow) — head-to-pillow, resolved against the " +
+                 "room's facing. 180 is what an undeclared bed used to get unconditionally: correct for " +
+                 "a bed in an unturned room, and wrong for every other facing.")]
         [Range(0f, 360f)] [SerializeField] private float _sleepHeadingDegrees = 180f;
 
         private bool _running;
@@ -81,14 +91,25 @@ namespace HiddenHarbours.Player
             if (_clipPlayer == null) return;
             if (!_clipPlayer.CanPlay(CharacterClip.Sleep)) return;   // no art → the rest stays as it was
 
-            StartCoroutine(Beat(e.BedPosition));
+            StartCoroutine(Beat(e.BedPosition, HeadingFor(e.Pillow)));
         }
 
-        private IEnumerator Beat(Vector2 bedPosition)
+        /// <summary>
+        /// The heading this beat plays at: the bed's own head-to-pillow bearing when it declared one, and
+        /// the serialized fallback when it did not.
+        ///
+        /// <para>Pure and public so the whole rule is assertable without a coroutine, a clip or a scene —
+        /// which matters, because the wrong answer here is a picture rather than an exception and nothing
+        /// downstream can notice it.</para>
+        /// </summary>
+        public float HeadingFor(in PillowAnchor pillow) =>
+            pillow.TryHeadingDegrees(out float heading) ? heading : _sleepHeadingDegrees;
+
+        private IEnumerator Beat(Vector2 bedPosition, float headingDegrees)
         {
             _restorePosition = transform.position;
 
-            if (!_clipPlayer.Play(CharacterClip.Sleep, _sleepHeadingDegrees, holdOnFinish: true))
+            if (!_clipPlayer.Play(CharacterClip.Sleep, headingDegrees, holdOnFinish: true))
                 yield break;                            // refused: change nothing, not even the position
 
             _running = true;

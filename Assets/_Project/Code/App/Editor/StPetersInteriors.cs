@@ -4,6 +4,10 @@ using UnityEngine;
 using HiddenHarbours.Art;                 // SpriteLightMath — the shared bake camera's numbers
 using HiddenHarbours.Art.Editor;          // InteriorCatalog, InteriorKit
 using HiddenHarbours.World;               // BuildingInterior, InteriorFootprint
+// Aliased rather than a whole `using HiddenHarbours.Core;`: this file lives at the junction of three
+// modules whose short type names already collide readily, and it wants exactly two Core types.
+using PillowSide = HiddenHarbours.Core.PillowSide;
+using BedPillow = HiddenHarbours.Core.BedPillow;
 
 namespace HiddenHarbours.App.Editor
 {
@@ -91,6 +95,27 @@ namespace HiddenHarbours.App.Editor
             /// which are scenery with a collider and nothing more.</summary>
             public readonly InteriorFixture Fixture;
 
+            /// <summary>
+            /// ⭐ <b>WHICH END OF THIS BED THE PILLOW IS ON</b>, in the ROOM's own model frame — the same
+            /// frame as <see cref="RoomMetres"/>, so it is read straight off the room picture the owner is
+            /// looking at: <c>MinusY</c> is the doorway end, <c>PlusY</c> the hearth end.
+            /// <see cref="PillowSide.Undeclared"/> for everything that is not a bed.
+            ///
+            /// <para><b>Every bed must say, and content validation is what enforces it.</b> Not saying is
+            /// how the sleeper came to lie the wrong way round: the pose fell back to one fixed heading,
+            /// which is right for a bed in an unturned room and wrong the moment the builder faces the
+            /// building any other way — and the result is a PICTURE, so nothing downstream can catch it.
+            /// See <see cref="PillowSide"/> for why a side is stated rather than found in the sprite.</para>
+            ///
+            /// <para><b>⚠ It must AGREE with the way the bed is drawn.</b> The prop's own declaration
+            /// (<see cref="InteriorKit.Build.Pillow"/>) turned by <see cref="FacingOffset"/> is where the
+            /// pillow really is; this is where the author says it should be. <see cref="DrawnPillowSide"/>
+            /// computes the first, the builder warns when the two differ, and a test refuses it — which is
+            /// what catches the real authoring slip: turning a bed and forgetting its head end came with
+            /// it.</para>
+            /// </summary>
+            public readonly PillowSide Pillow;
+
             public Furnishing(string propKey, Vector2 roomMetres, int facingOffset, string why)
                 : this(propKey, roomMetres, facingOffset, why, InteriorFixture.None)
             {
@@ -98,9 +123,55 @@ namespace HiddenHarbours.App.Editor
 
             public Furnishing(string propKey, Vector2 roomMetres, int facingOffset, string why,
                               InteriorFixture fixture)
+                : this(propKey, roomMetres, facingOffset, why, fixture, PillowSide.Undeclared)
+            {
+            }
+
+            public Furnishing(string propKey, Vector2 roomMetres, int facingOffset, string why,
+                              InteriorFixture fixture, PillowSide pillow)
             {
                 PropKey = propKey; RoomMetres = roomMetres; FacingOffset = facingOffset; Why = why;
-                Fixture = fixture;
+                Fixture = fixture; Pillow = pillow;
+            }
+
+            /// <summary>
+            /// Where the pillow ACTUALLY is, in the room's frame, according to the art: the prop def's own
+            /// declaration turned by this placement's <see cref="FacingOffset"/>.
+            ///
+            /// <para><see cref="PillowSide.Undeclared"/> when the prop is not a bed, when the kit has no
+            /// such prop, and — deliberately — when the offset is ODD. An odd offset is a 45° step, which
+            /// stands the bed on the diagonal of a rectangular room; there is no cardinal answer to round
+            /// it to, and rounding one would be exactly the quiet guess this whole declaration exists to
+            /// remove.</para>
+            /// </summary>
+            public PillowSide DrawnPillowSide
+            {
+                get
+                {
+                    InteriorKit.Build? prop = InteriorKit.FindProp(PropKey);
+                    if (prop == null || !prop.Value.IsBed) return PillowSide.Undeclared;
+
+                    int eighths = ((FacingOffset % InteriorKit.Facings) + InteriorKit.Facings)
+                                  % InteriorKit.Facings;
+                    if (eighths % 2 != 0) return PillowSide.Undeclared;
+
+                    return BedPillow.Turned(prop.Value.Pillow, eighths / 2);
+                }
+            }
+
+            /// <summary>Is this placement a bed at all? True when the KIT says the prop has a head end, or
+            /// when the placement makes it something you can turn in at — either way it is a thing a
+            /// person gets laid down on, and either way it owes a <see cref="Pillow"/>.</summary>
+            public bool IsBed
+            {
+                get
+                {
+                    if (Fixture == InteriorFixture.PlayerBed || Fixture == InteriorFixture.OwnerBed)
+                        return true;
+
+                    InteriorKit.Build? prop = InteriorKit.FindProp(PropKey);
+                    return prop != null && prop.Value.IsBed;
+                }
             }
         }
 
@@ -197,6 +268,19 @@ namespace HiddenHarbours.App.Editor
         public const string GinnyCottagePlanKey = "ginnyCottage";
 
         /// <summary>
+        /// <b>Every upper-storey plan the island declares.</b> One today; the point is that it is a LIST
+        /// rather than a constant nobody enumerates.
+        ///
+        /// <para>Furniture reaches the world down two separate paths — <see cref="FurnishingsFor"/> for a
+        /// building's own room, and <see cref="UpperLevelFor"/> for the storey above a site that asked for
+        /// one — and content validation has to walk BOTH or it silently checks half the beds. It used to
+        /// walk only the first, which is exactly how the two beds that matter most (yours and your host's,
+        /// upstairs at Ginny's) could have gone unvalidated. Adding a plan here is what puts its rooms
+        /// under every test in the suite.</para>
+        /// </summary>
+        public static readonly string[] UpperLevelPlanKeys = { GinnyCottagePlanKey };
+
+        /// <summary>
         /// <b>The storey above, per site.</b> Returns an empty plan for everything not listed, which is
         /// every building on the island but one.
         ///
@@ -257,8 +341,11 @@ namespace HiddenHarbours.App.Editor
                     new Furnishing("bed", new Vector2(-2.10f, -2.30f), 0,
                                    "THE PLAYER'S BED, in the front room: along the left wall, the far " +
                                    "corner from the landing door, which is where a bed goes in a room " +
-                                   "this size — and is the arrangement the ground floor already uses",
-                                   InteriorFixture.PlayerBed),
+                                   "this size — and is the arrangement the ground floor already uses. " +
+                                   "Head at the FRONT wall (−y), which is the kit bed's own head end at " +
+                                   "this offset — so the headboard is against the outside wall and the " +
+                                   "foot of the bed points at the landing door",
+                                   InteriorFixture.PlayerBed, PillowSide.MinusY),
 
                     new Furnishing("dresser", new Vector2(0.35f, -0.60f), 2,
                                    "the wardrobe, STANDING IN as a dresser (the kit has no wardrobe " +
@@ -271,8 +358,9 @@ namespace HiddenHarbours.App.Editor
                     new Furnishing("bed", new Vector2(-2.10f, 2.30f), 0,
                                    "GINNY'S BED, in the back room over the hearth — the warm end of the " +
                                    "house, which is the host's, and the same left-wall line as the " +
-                                   "player's so the two rooms read as one plan",
-                                   InteriorFixture.OwnerBed),
+                                   "player's so the two rooms read as one plan. Head to −y like the " +
+                                   "player's: the two beds are the same bed, laid the same way",
+                                   InteriorFixture.OwnerBed, PillowSide.MinusY),
                 },
 
                 // ---- the walls that exist only up here -----------------------------------------------
@@ -334,7 +422,9 @@ namespace HiddenHarbours.App.Editor
             {
                 new Furnishing("bed", new Vector2(-2.35f, 1.50f), 0,
                                "along the left wall in the back half — the far corner from the door, " +
-                               "which is where a bed goes in a one-room cottage"),
+                               "which is where a bed goes in a one-room cottage. Head to −y, the kit " +
+                               "bed's own head end at this offset",
+                               InteriorFixture.None, PillowSide.MinusY),
                 new Furnishing("seaChest", new Vector2(-2.30f, -0.40f), 0,
                                "at the foot of the bed; the shortest prop in the set, so it is the " +
                                "sorting edge case as well as the fisherman's detail"),
@@ -377,7 +467,9 @@ namespace HiddenHarbours.App.Editor
             "redSaltbox" => new[]
             {
                 new Furnishing("bed", new Vector2(-2.35f, 2.30f), 0,
-                               "back-left corner, the furthest point from the door"),
+                               "back-left corner, the furthest point from the door. Head to −y, the " +
+                               "kit bed's own head end at this offset",
+                               InteriorFixture.None, PillowSide.MinusY),
                 new Furnishing("seaChest", new Vector2(-2.35f, 0.75f), 0,
                                "at the foot of the bed"),
                 new Furnishing("table", new Vector2(1.20f, 0.40f), 0,
@@ -601,7 +693,9 @@ namespace HiddenHarbours.App.Editor
                                        prop.Entry.propFootprintDepth, f.FacingOffset),
                     world));
 
-                Fit(go, f, interior, fixtureIdPrefix);
+                Fit(go, f, interior, fixtureIdPrefix,
+                    PillowReachMetresFor(f.PropKey, prop.Entry.propFootprintDepth));
+                WarnIfThePillowFightsTheArt(roomKey, f);
 
                 placed++;
             }
@@ -745,7 +839,8 @@ namespace HiddenHarbours.App.Editor
         /// <see cref="IInteractable.Id"/> genuinely requires, and the one an author retyping strings
         /// into a table would eventually break.</para>
         /// </summary>
-        static void Fit(GameObject go, in Furnishing f, BuildingInterior interior, string idPrefix)
+        static void Fit(GameObject go, in Furnishing f, BuildingInterior interior, string idPrefix,
+                        float pillowReachMetres)
         {
             if (f.Fixture == InteriorFixture.None) return;
 
@@ -766,18 +861,22 @@ namespace HiddenHarbours.App.Editor
                     break;
 
                 case InteriorFixture.PlayerBed:
-                    // The interior comes along so the bed can report which STOREY it is on when the
-                    // player turns in (ADR 0037) — the player's bed is upstairs, and an anchor that did
-                    // not say so would wake them in the room below it.
+                    // The interior comes along for TWO facts now. Which STOREY the bed is on, so a rest
+                    // upstairs is recorded as one (ADR 0037) — the player's bed is upstairs, and an anchor
+                    // that did not say so would wake them in the room below it. And the room's own FACING,
+                    // which is the frame the pillow side is declared in: without it a head-to-pillow
+                    // heading is a direction with no north.
                     go.AddComponent<InteriorBed>().Configure(
                         idPrefix + ".bed_player", isPlayerBed: true, ownerName: "",
-                        placeName: PlayerBedPlaceName, reachMeters: BedReachMetres, interior: interior);
+                        placeName: PlayerBedPlaceName, reachMeters: BedReachMetres, interior: interior,
+                        pillowSide: f.Pillow, pillowReachMetres: pillowReachMetres);
                     break;
 
                 case InteriorFixture.OwnerBed:
                     go.AddComponent<InteriorBed>().Configure(
                         idPrefix + ".bed_owner", isPlayerBed: false, ownerName: BedOwnerName,
-                        placeName: "", reachMeters: BedReachMetres, interior: interior);
+                        placeName: "", reachMeters: BedReachMetres, interior: interior,
+                        pillowSide: f.Pillow, pillowReachMetres: pillowReachMetres);
                     break;
 
                 case InteriorFixture.Wardrobe:
@@ -798,6 +897,102 @@ namespace HiddenHarbours.App.Editor
 
         /// <summary>How close (m) you must stand to open the wardrobe.</summary>
         public const float WardrobeReachMetres = 1.2f;
+
+        // =====================================================================================
+        //  THE PILLOW — one definition, read by the builder and by content validation alike
+        // =====================================================================================
+
+        /// <summary>
+        /// How far a bed's pillow centre is from the middle of the bed, in ground metres — the reach a
+        /// sleeping head travels from the mattress's own point. 0 for anything that is not a bed, and for
+        /// a prop the kit does not carry.
+        ///
+        /// <para><b>Derived from two facts neither of which lives here</b> (rule 6): the BAKE's own
+        /// <c>propFootprintDepth</c> and the KIT's declared <c>PillowInsetMetres</c>, which is the rig's
+        /// number. So a re-bake at a different bed size moves the pillow with the bed, and there is no
+        /// tuned constant in this file pointing at where a pillow used to be.</para>
+        ///
+        /// <para>Public because the builder and the content test must agree about it to the last
+        /// millimetre — a test that recomputed this its own way would be testing its own arithmetic.</para>
+        /// </summary>
+        public static float PillowReachMetresFor(string propKey, float propDepthMetres)
+        {
+            InteriorKit.Build? prop = InteriorKit.FindProp(propKey);
+            if (prop == null || !prop.Value.IsBed) return 0f;
+
+            return BedPillow.PillowReachMetres(propDepthMetres, prop.Value.PillowInsetMetres);
+        }
+
+        /// <summary>
+        /// <b>CONTENT VALIDATION for a bed's pillow</b> — the one predicate that decides whether a
+        /// furnishing row is fit to ship. True (with prose in <paramref name="fault"/>) when the row is a
+        /// bed and its pillow is either missing or fighting the art; false for everything else, which is
+        /// every prop that is not a bed and every bed that was declared properly.
+        ///
+        /// <para><b>Two faults, both silent without this.</b> A bed with NO declaration falls back to a
+        /// single fixed heading, which is right for a bed in an unturned room and wrong at the other seven
+        /// facings — the defect this whole seam exists to end. A bed whose declaration disagrees with the
+        /// facing offset it is drawn at gets laid along the declaration with the headboard at the other
+        /// end. Neither throws, neither logs, and both draw perfectly; the only way either is caught is by
+        /// something asking this question.</para>
+        ///
+        /// <para><b>Pure, public and message-carrying</b> so the builder's console warning and the content
+        /// test are the SAME check rather than two that can drift — and so a failing test says which bed
+        /// and why, rather than which line number.</para>
+        /// </summary>
+        public static bool TryFindPillowFault(in Furnishing f, out string fault)
+        {
+            fault = null;
+            if (!f.IsBed) return false;
+
+            if (f.Pillow == PillowSide.Undeclared)
+            {
+                fault = $"the bed at {f.RoomMetres} declares no pillow side, so the sleeping pose falls " +
+                        "back to one fixed heading and the fisher lies the wrong way round at every " +
+                        "facing but one. Give the furnishing row a PillowSide.";
+                return true;
+            }
+
+            PillowSide drawn = f.DrawnPillowSide;
+
+            // An ODD facing offset stands the bed on the diagonal, where DrawnPillowSide has no cardinal
+            // answer to offer — so there is nothing to compare against and nothing to refuse. That is a
+            // separate complaint, made below, rather than a pillow that disagrees with itself.
+            if (drawn == PillowSide.Undeclared)
+            {
+                int eighths = ((f.FacingOffset % InteriorKit.Facings) + InteriorKit.Facings)
+                              % InteriorKit.Facings;
+                if (eighths % 2 == 0) return false;      // the kit simply has no pillow for this prop
+
+                fault = $"the bed at {f.RoomMetres} is turned {f.FacingOffset} facings, which is a 45deg " +
+                        "step: its head end is on a diagonal, and no cardinal PillowSide is the truth " +
+                        "about it. Turn a bed by an EVEN number of facings.";
+                return true;
+            }
+
+            if (drawn == f.Pillow) return false;
+
+            fault = $"the bed at {f.RoomMetres} declares its pillow on {f.Pillow}, but at facing offset " +
+                    $"{f.FacingOffset} the kit draws its head end on {drawn}. The sleeper is laid along " +
+                    "the declaration and the headboard ends up at the other end. Turn the bed, or fix " +
+                    "the declaration — they are the same bed.";
+            return true;
+        }
+
+        /// <summary>
+        /// Say the fault above out loud at build time, naming the room.
+        ///
+        /// <para><b>Why a warning here as well as a test.</b> The test is the gate, but the owner meets
+        /// this at the moment he clicks Build, looking at the room it is about; a line in the console
+        /// naming the room and both sides is the difference between "fix the table" and "why is she asleep
+        /// upside down". Nothing is corrected automatically: silently swinging a bed round to match a
+        /// declaration would move a collider the room was laid out against.</para>
+        /// </summary>
+        static void WarnIfThePillowFightsTheArt(string roomKey, in Furnishing f)
+        {
+            if (TryFindPillowFault(f, out string fault))
+                Debug.LogWarning($"[StPetersInteriors] '{roomKey}': {fault}");
+        }
 
         /// <summary>Whose bed the one you may NOT sleep in is. Authored here rather than in the
         /// component so the refusal names the host, and so the day a second lodging exists it is a plan

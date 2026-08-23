@@ -32,12 +32,45 @@ namespace HiddenHarbours.Core
         /// <summary>The bed's place name, for a notice or a debug line. May be empty.</summary>
         public readonly string Place;
 
+        /// <summary>
+        /// ⭐ <b>WHICH WAY ROUND THE BED IS</b> — the bed's own declaration of the end its pillow is on,
+        /// plus the frame that makes it a direction. <see cref="PillowAnchor.None"/> when the bed never
+        /// said, under which a presenter keeps whatever heading it already had.
+        ///
+        /// <para><b>Why this rides the beat rather than being worked out by whoever draws.</b> A pose is
+        /// the only consumer that can be WRONG about it, and the failure draws perfectly: a sleeper laid
+        /// out along a bed the other way up is a picture, not an exception, and the first person to notice
+        /// is the owner looking at their own bedroom. The bed knows the answer for nothing — content
+        /// declared it — so it is carried, exactly as the door anchor is carried rather than measured off
+        /// a wall.</para>
+        ///
+        /// <para><b>Still presentation only.</b> Nothing about the SAVE turns on this: the anchor written
+        /// by <see cref="RestSaveResponder"/> is a region, a storey and the player's own feet, and none of
+        /// the three moves because a pillow is at one end or the other. A pillow is CONTENT — recomputed
+        /// from the bed's declaration every time the room is stood — so it is not save state and there is
+        /// no schema step here (ADR 0037, CLAUDE.md rule 5).</para>
+        /// </summary>
+        public readonly PillowAnchor Pillow;
+
         public SleepBeatRequested(Vector2 bedPosition, int level, string place)
+            : this(bedPosition, level, place, PillowAnchor.None)
+        {
+        }
+
+        public SleepBeatRequested(Vector2 bedPosition, int level, string place, PillowAnchor pillow)
         {
             BedPosition = bedPosition;
             Level = level;
             Place = place ?? string.Empty;
+            Pillow = pillow;
         }
+
+        /// <summary>
+        /// Where the sleeper's HEAD lands, world units — on the pillow for a declared bed, and in the
+        /// middle of the mattress for one that never said. One definition, read by the pose and by the
+        /// content test alike, so "the head is on the pillow side" cannot mean two things.
+        /// </summary>
+        public Vector2 HeadPosition => Pillow.HeadWorld(BedPosition);
     }
 
     /// <summary>
