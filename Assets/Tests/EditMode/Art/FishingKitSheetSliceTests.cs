@@ -121,8 +121,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
         /// sheet FAILS the closed-set guard rather than quietly reading as "pending". Add a stem
         /// here ONLY when a future kit extension specs a sheet ahead of its bake.
         /// </summary>
-        private static readonly HashSet<string> AwaitingOwnerBake = new HashSet<string>(
-            RodTiers.SelectMany(t => new[] { "stowV", "stowH" }.Select(r => $"Rod_{t}_{r}")));
+        private static readonly HashSet<string> AwaitingOwnerBake = new HashSet<string>();
 
         /// <summary>
         /// Stems that ARE on disk but whose spec above has moved past them — the other half of the
@@ -135,8 +134,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
         /// set</b> — as it must <see cref="RetiredUntilRebake"/> below, which covers the sheets that
         /// lost their state entirely rather than merely changing shape.</para>
         /// </summary>
-        private static readonly HashSet<string> StaleUntilRebake = new HashSet<string>(
-            RodTiers.Select(t => $"Rod_{t}_ground"));
+        private static readonly HashSet<string> StaleUntilRebake = new HashSet<string>();
 
         /// <summary>
         /// Sheets the spec no longer names at all, still on disk until the re-bake deletes them.
@@ -146,8 +144,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
         /// repo poorer, not cleaner) but they are not in <see cref="Sheets"/> and nothing asserts
         /// against them. <b>The PR that commits the re-bake deletes them and empties this set.</b>
         /// </summary>
-        private static readonly HashSet<string> RetiredUntilRebake = new HashSet<string>(
-            RodTiers.Select(t => $"Rod_{t}_stored"));
+        private static readonly HashSet<string> RetiredUntilRebake = new HashSet<string>();
 
         private static bool OnDisk(string stem) => File.Exists(Iso + stem + ".png");
 
@@ -208,10 +205,11 @@ namespace HiddenHarbours.Tests.Art.EditMode
             // silently exempt nothing and hide the sheet it was meant to cover.
             foreach (string stem in AwaitingOwnerBake.Concat(StaleUntilRebake))
                 Assert.IsTrue(Sheets.ContainsKey(stem), $"guarded stem '{stem}' is not in the kit");
-            Assert.AreEqual(RodTiers.Length * RodRestStates.Length,
-                            AwaitingOwnerBake.Count + StaleUntilRebake.Count,
-                            "every rod REST is pending the owner's re-bake — when that lands, both " +
-                            "guard sets empty and this assertion is what says the job is finished.");
+            // The re-bake landed (2026-08-23, coordinator last-mile on the 4060): every guard set is
+            // EMPTY and must stay so — a stem re-added here is a sheet nobody re-baked.
+            Assert.AreEqual(0, AwaitingOwnerBake.Count + StaleUntilRebake.Count + RetiredUntilRebake.Count,
+                            "no rod sheet is pending a re-bake any more; if one is, re-bake it rather " +
+                            "than guarding it.");
 
             // A retired stem is the opposite: it must NOT be in the kit, or it is not retired.
             foreach (string stem in RetiredUntilRebake)

@@ -1,31 +1,151 @@
 fileFormatVersion: 2
-guid: 06348b81fb02bb441aae4451fe051995
+guid: 1e1999491753aad43b553bde9c8739bc
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -7575361726226723101
-    second: Rod_coast_ground_0
+      213: -6926768643772961592
+    second: Rod_deep_stowV_0
   - first:
-      213: 4413522990253970498
-    second: Rod_coast_ground_1
+      213: -1222662946530733469
+    second: Rod_deep_stowV_1
   - first:
-      213: 7913871971500677502
-    second: Rod_coast_ground_2
+      213: 2680889040609851063
+    second: Rod_deep_stowV_2
   - first:
-      213: 8889651401104596271
-    second: Rod_coast_ground_3
+      213: 4386557608526929831
+    second: Rod_deep_stowV_3
   - first:
-      213: 7311718447516153103
-    second: Rod_coast_ground_4
+      213: 4886639170198391711
+    second: Rod_deep_stowV_4
   - first:
-      213: 7138671657319571953
-    second: Rod_coast_ground_5
+      213: -4283544021647552929
+    second: Rod_deep_stowV_5
   - first:
-      213: 4731037653957860163
-    second: Rod_coast_ground_6
+      213: -200871054025212724
+    second: Rod_deep_stowV_6
   - first:
-      213: -9131708306409130784
-    second: Rod_coast_ground_7
+      213: -5975683280301692998
+    second: Rod_deep_stowV_7
+  - first:
+      213: 3752994757717889140
+    second: Rod_deep_stowV_8
+  - first:
+      213: -644492921737737659
+    second: Rod_deep_stowV_9
+  - first:
+      213: 8212009385619722193
+    second: Rod_deep_stowV_10
+  - first:
+      213: -4143889499942109735
+    second: Rod_deep_stowV_11
+  - first:
+      213: -2864987854993205549
+    second: Rod_deep_stowV_12
+  - first:
+      213: 3026619334005539484
+    second: Rod_deep_stowV_13
+  - first:
+      213: 5857281873736113423
+    second: Rod_deep_stowV_14
+  - first:
+      213: 3034559995793712151
+    second: Rod_deep_stowV_15
+  - first:
+      213: -8961917875090936142
+    second: Rod_deep_stowV_16
+  - first:
+      213: 7283705441380305988
+    second: Rod_deep_stowV_17
+  - first:
+      213: 5384649409661600417
+    second: Rod_deep_stowV_18
+  - first:
+      213: 285808844903206688
+    second: Rod_deep_stowV_19
+  - first:
+      213: -6182797652932984466
+    second: Rod_deep_stowV_20
+  - first:
+      213: -3706152117720222872
+    second: Rod_deep_stowV_21
+  - first:
+      213: 4768448041960705875
+    second: Rod_deep_stowV_22
+  - first:
+      213: -6582209873445940891
+    second: Rod_deep_stowV_23
+  - first:
+      213: -128694407353788154
+    second: Rod_deep_stowV_24
+  - first:
+      213: 2236538738877544499
+    second: Rod_deep_stowV_25
+  - first:
+      213: -4505645335533255683
+    second: Rod_deep_stowV_26
+  - first:
+      213: 4117081563209140202
+    second: Rod_deep_stowV_27
+  - first:
+      213: -3350527020019551447
+    second: Rod_deep_stowV_28
+  - first:
+      213: -2692900933276342294
+    second: Rod_deep_stowV_29
+  - first:
+      213: -5968415481297107734
+    second: Rod_deep_stowV_30
+  - first:
+      213: -4438958483992453544
+    second: Rod_deep_stowV_31
+  - first:
+      213: 3410372540643309751
+    second: Rod_deep_stowV_32
+  - first:
+      213: -5038637598512146487
+    second: Rod_deep_stowV_33
+  - first:
+      213: 6306729483540147617
+    second: Rod_deep_stowV_34
+  - first:
+      213: 7651573563958618613
+    second: Rod_deep_stowV_35
+  - first:
+      213: 3614314515049532379
+    second: Rod_deep_stowV_36
+  - first:
+      213: -8927228721773981831
+    second: Rod_deep_stowV_37
+  - first:
+      213: 6503928812607558409
+    second: Rod_deep_stowV_38
+  - first:
+      213: 9082440882347969534
+    second: Rod_deep_stowV_39
+  - first:
+      213: 5574799545389992492
+    second: Rod_deep_stowV_40
+  - first:
+      213: -8712013984539003277
+    second: Rod_deep_stowV_41
+  - first:
+      213: 730287499440050883
+    second: Rod_deep_stowV_42
+  - first:
+      213: -650843520140563145
+    second: Rod_deep_stowV_43
+  - first:
+      213: 6736805194171006048
+    second: Rod_deep_stowV_44
+  - first:
+      213: -2375742170955671513
+    second: Rod_deep_stowV_45
+  - first:
+      213: -3779004412800143189
+    second: Rod_deep_stowV_46
+  - first:
+      213: 5239203183425437046
+    second: Rod_deep_stowV_47
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -134,7 +254,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Rod_coast_ground_d0_f0
+      name: Rod_deep_stowV_d0_f0
       rect:
         serializedVersion: 2
         x: 0
@@ -149,168 +269,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 3c3771e0bb099284ba67dc5f105071c2
-      internalID: 777659482
+      spriteID: 2ef6f8be2b83b7d4fbae261013b979f4
+      internalID: -1605878758
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Rod_coast_ground_d1_f0
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 672
-        width: 112
-        height: 112
-      alignment: 9
-      pivot: {x: 0.5, y: 0.35714287}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: a8f048951dbad8b449486b535eaa8f06
-      internalID: -42473694
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Rod_coast_ground_d2_f0
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 560
-        width: 112
-        height: 112
-      alignment: 9
-      pivot: {x: 0.5, y: 0.35714287}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 207fcbdd563c2174cb898ba03c805fde
-      internalID: 816096064
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Rod_coast_ground_d3_f0
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 448
-        width: 112
-        height: 112
-      alignment: 9
-      pivot: {x: 0.5, y: 0.35714287}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 7cc38100bd1e4414db561f2b61eb20ae
-      internalID: -1501214897
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Rod_coast_ground_d4_f0
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 336
-        width: 112
-        height: 112
-      alignment: 9
-      pivot: {x: 0.5, y: 0.35714287}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: cd260909f2726b64586799e116577646
-      internalID: -1023126565
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Rod_coast_ground_d5_f0
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 224
-        width: 112
-        height: 112
-      alignment: 9
-      pivot: {x: 0.5, y: 0.35714287}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 0142f28379f72ca4d81f95f943794231
-      internalID: 1862532010
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Rod_coast_ground_d6_f0
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 112
-        width: 112
-        height: 112
-      alignment: 9
-      pivot: {x: 0.5, y: 0.35714287}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 657cccd439db0fe42ae796853cd137a2
-      internalID: -1024622196
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Rod_coast_ground_d7_f0
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 0
-        width: 112
-        height: 112
-      alignment: 9
-      pivot: {x: 0.5, y: 0.35714287}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: d6fec0002a42e2649b8e7145dc161d4c
-      internalID: -2117686189
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Rod_coast_ground_d0_f1
+      name: Rod_deep_stowV_d0_f1
       rect:
         serializedVersion: 2
         x: 112
@@ -325,14 +291,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 4e1c7684ff9f85843994fbd6d60e5caf
-      internalID: -254302943
+      spriteID: 5739d2395c94f1b4d914e2822805b864
+      internalID: -1535667353
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Rod_coast_ground_d0_f2
+      name: Rod_deep_stowV_d0_f2
       rect:
         serializedVersion: 2
         x: 224
@@ -347,14 +313,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 5a160536adfde574a85d29b83f1a82c7
-      internalID: 753751810
+      spriteID: 2ba90bbc964de03409b670dfe0622665
+      internalID: 1938419109
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Rod_coast_ground_d0_f3
+      name: Rod_deep_stowV_d0_f3
       rect:
         serializedVersion: 2
         x: 336
@@ -369,14 +335,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 4260e7fc11dd6e248ac99b74ac441b0e
-      internalID: -1847839649
+      spriteID: 45c635e10f7232742a8083f10767c4fe
+      internalID: 1738286526
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Rod_coast_ground_d0_f4
+      name: Rod_deep_stowV_d0_f4
       rect:
         serializedVersion: 2
         x: 448
@@ -391,14 +357,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: cb81764941be1934582e1d1f23ae5439
-      internalID: -1620235861
+      spriteID: 778e1a39c5ea15b47b8f316fe7e8eb3c
+      internalID: -1538262446
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Rod_coast_ground_d0_f5
+      name: Rod_deep_stowV_d0_f5
       rect:
         serializedVersion: 2
         x: 560
@@ -413,14 +379,36 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 67ca5cf67ae3de8409df9f51dec908cc
-      internalID: 935582460
+      spriteID: abc1069865e4d1d48a9b8e4e490f4581
+      internalID: 1521203416
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Rod_coast_ground_d1_f1
+      name: Rod_deep_stowV_d1_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 672
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 113c781cfef9bad4aaae8ee6ae03f9b4
+      internalID: 967088330
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_stowV_d1_f1
       rect:
         serializedVersion: 2
         x: 112
@@ -435,14 +423,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: faadcc5f7e4750442a17eacacd0fa192
-      internalID: -884150590
+      spriteID: 70e26f31d17d6af4d9e0830a17546bcc
+      internalID: -1704831354
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Rod_coast_ground_d1_f2
+      name: Rod_deep_stowV_d1_f2
       rect:
         serializedVersion: 2
         x: 224
@@ -457,14 +445,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b472206efe3c7ab4db63b84b9f4165a9
-      internalID: 1513036160
+      spriteID: 4a35303a841e91f41856966e7fcb2945
+      internalID: 1740393854
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Rod_coast_ground_d1_f3
+      name: Rod_deep_stowV_d1_f3
       rect:
         serializedVersion: 2
         x: 336
@@ -479,14 +467,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a07ddc0cf750d1b4d8d7ccf88dd0259e
-      internalID: 264084252
+      spriteID: a30209840d2fda541a052e3ca722b45b
+      internalID: 2110489253
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Rod_coast_ground_d1_f4
+      name: Rod_deep_stowV_d1_f4
       rect:
         serializedVersion: 2
         x: 448
@@ -501,14 +489,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 3d80ad2d1c2d7744e942b4077dd34b0c
-      internalID: -1522132809
+      spriteID: e66cd05869956fc4cb424f8a397a4294
+      internalID: 329154335
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Rod_coast_ground_d1_f5
+      name: Rod_deep_stowV_d1_f5
       rect:
         serializedVersion: 2
         x: 560
@@ -523,14 +511,36 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 578305e4db4df624095c369f689e2b5f
-      internalID: -726722086
+      spriteID: 86896f1a10a6d1e44955833673c5dd51
+      internalID: 1141698202
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Rod_coast_ground_d2_f1
+      name: Rod_deep_stowV_d2_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 560
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fc098d06fbfffee4484e08c2f3d3d181
+      internalID: -711755689
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_stowV_d2_f1
       rect:
         serializedVersion: 2
         x: 112
@@ -545,14 +555,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d782ffeaada2b3f4f8f837b4e08ab7f3
-      internalID: 1985108486
+      spriteID: c6b7b6c1f1242124a8a8c3a4494d110d
+      internalID: -152069187
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Rod_coast_ground_d2_f2
+      name: Rod_deep_stowV_d2_f2
       rect:
         serializedVersion: 2
         x: 224
@@ -567,14 +577,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 903a304265faa0648861833e3f22b98e
-      internalID: 1234428272
+      spriteID: f0f89cec504c005458d68d6afcca763f
+      internalID: -1672410944
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Rod_coast_ground_d2_f3
+      name: Rod_deep_stowV_d2_f3
       rect:
         serializedVersion: 2
         x: 336
@@ -589,14 +599,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 31186dcbb616d8e4e80d70d9862b8558
-      internalID: 25539090
+      spriteID: f21cc0f65df80e045ba2ce0f1a40513b
+      internalID: 242602158
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Rod_coast_ground_d2_f4
+      name: Rod_deep_stowV_d2_f4
       rect:
         serializedVersion: 2
         x: 448
@@ -611,14 +621,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 35de5e5be57fd36408bd853744880040
-      internalID: 620316181
+      spriteID: 3ec3259d7a215a64db34bc395631273e
+      internalID: 1623850780
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Rod_coast_ground_d2_f5
+      name: Rod_deep_stowV_d2_f5
       rect:
         serializedVersion: 2
         x: 560
@@ -633,14 +643,36 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 5575d13b93d77814eaa2ba191243e8b1
-      internalID: -1993656817
+      spriteID: 729b3c82ba1e1224f956a3200f041d90
+      internalID: -1092971853
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Rod_coast_ground_d3_f1
+      name: Rod_deep_stowV_d3_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 448
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8c324a03f94913b4bb34279df9fb0745
+      internalID: 2035645231
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_stowV_d3_f1
       rect:
         serializedVersion: 2
         x: 112
@@ -655,14 +687,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ddefbc4421f6af1468e6a34a54b6df95
-      internalID: 395360080
+      spriteID: 21ec82fa3a9b6f74c871ba877d1a12e4
+      internalID: 643437874
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Rod_coast_ground_d3_f2
+      name: Rod_deep_stowV_d3_f2
       rect:
         serializedVersion: 2
         x: 224
@@ -677,14 +709,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 659a7bac5535d0449be1de2e39416590
-      internalID: -1764751699
+      spriteID: 7174ca73ba2a9ea49ba3e0d611b0f9fd
+      internalID: -617220108
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Rod_coast_ground_d3_f3
+      name: Rod_deep_stowV_d3_f3
       rect:
         serializedVersion: 2
         x: 336
@@ -699,14 +731,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 5ebc30e7858bf95498f9bc8fd413af2a
-      internalID: -1368141967
+      spriteID: b43e15006b464714faa25e1ceb4b975a
+      internalID: 1382661564
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Rod_coast_ground_d3_f4
+      name: Rod_deep_stowV_d3_f4
       rect:
         serializedVersion: 2
         x: 448
@@ -721,14 +753,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ae8fd7487170f2f4d88bba607f29a110
-      internalID: 390194875
+      spriteID: 7737a2e0349a46145855eb2c5dc3502d
+      internalID: -238619236
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Rod_coast_ground_d3_f5
+      name: Rod_deep_stowV_d3_f5
       rect:
         serializedVersion: 2
         x: 560
@@ -743,14 +775,36 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 851f28cc84281f14982ef472057dd0e7
-      internalID: -1481667979
+      spriteID: fd8a91397362eae42933f0db6c88128c
+      internalID: 49185928
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Rod_coast_ground_d4_f1
+      name: Rod_deep_stowV_d4_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 336
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 936b98994b13b7948b01aab940db3045
+      internalID: 371220453
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_stowV_d4_f1
       rect:
         serializedVersion: 2
         x: 112
@@ -765,14 +819,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 65c6525c560fe2f4caf42bc48732333b
-      internalID: 1113329999
+      spriteID: b6f55b843b3b34f4883a3eae88969973
+      internalID: 233239644
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Rod_coast_ground_d4_f2
+      name: Rod_deep_stowV_d4_f2
       rect:
         serializedVersion: 2
         x: 224
@@ -787,14 +841,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 7e3926140d5edd843b682494b259a2fe
-      internalID: -1632421369
+      spriteID: aa54ef69aa6719646b20ac316b5518eb
+      internalID: -2071044624
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Rod_coast_ground_d4_f3
+      name: Rod_deep_stowV_d4_f3
       rect:
         serializedVersion: 2
         x: 336
@@ -809,14 +863,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 959f89ff2704df94da5931f0849128bf
-      internalID: -642078298
+      spriteID: a5c884170e0572a41867c0b7cad4c115
+      internalID: -1120464669
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Rod_coast_ground_d4_f4
+      name: Rod_deep_stowV_d4_f4
       rect:
         serializedVersion: 2
         x: 448
@@ -831,14 +885,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 91cd151f67f9e3e40a77402e1db5714d
-      internalID: 97358234
+      spriteID: c5eef22e28c9e594486e1938388c67c4
+      internalID: -1134714327
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Rod_coast_ground_d4_f5
+      name: Rod_deep_stowV_d4_f5
       rect:
         serializedVersion: 2
         x: 560
@@ -853,14 +907,36 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 269072699263d1848b5151a494bfe2d0
-      internalID: 1859478154
+      spriteID: 5ab0f12f11bb0cc4faef15b5466279c1
+      internalID: 1445049335
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Rod_coast_ground_d5_f1
+      name: Rod_deep_stowV_d5_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 224
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 983dc1708e6396e49acd469de84838d6
+      internalID: -62204386
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_stowV_d5_f1
       rect:
         serializedVersion: 2
         x: 112
@@ -875,14 +951,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b3db01b4b15343b49bfc5ceeeb769acd
-      internalID: 2032558327
+      spriteID: bea5e1135de612542bf2591f8529ae50
+      internalID: -328929640
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Rod_coast_ground_d5_f2
+      name: Rod_deep_stowV_d5_f2
       rect:
         serializedVersion: 2
         x: 224
@@ -897,14 +973,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1c70356664452d04a9f7ea2575c77974
-      internalID: -324851898
+      spriteID: bcaf9c903ecc1714db9df5b9a45f5aa5
+      internalID: -1618439097
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Rod_coast_ground_d5_f3
+      name: Rod_deep_stowV_d5_f3
       rect:
         serializedVersion: 2
         x: 336
@@ -919,14 +995,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: fae0a19d8eac3c34fae587d70758471c
-      internalID: -1654120240
+      spriteID: 62f0faa03c00bde4ca536e569106aa88
+      internalID: -737006664
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Rod_coast_ground_d5_f4
+      name: Rod_deep_stowV_d5_f4
       rect:
         serializedVersion: 2
         x: 448
@@ -941,14 +1017,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 35b7517424e8c4448a8315b546c8585d
-      internalID: -1912224159
+      spriteID: f3cf6cea43595a1468e9471fe65f5378
+      internalID: -184888105
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Rod_coast_ground_d5_f5
+      name: Rod_deep_stowV_d5_f5
       rect:
         serializedVersion: 2
         x: 560
@@ -963,14 +1039,36 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a354677b98328a64c8033feb2c01662f
-      internalID: 2018842325
+      spriteID: 5c383cf435794f547b1567c65e0191ad
+      internalID: -1622351588
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Rod_coast_ground_d6_f1
+      name: Rod_deep_stowV_d6_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 112
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e97647593093db9428049c6d95c0c2ff
+      internalID: -996048962
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_stowV_d6_f1
       rect:
         serializedVersion: 2
         x: 112
@@ -985,14 +1083,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b43cc3a33a987e04d9b0b80c885c9855
-      internalID: 443893733
+      spriteID: 06a5496fa903e0543a779e577c0398b4
+      internalID: -263082982
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Rod_coast_ground_d6_f2
+      name: Rod_deep_stowV_d6_f2
       rect:
         serializedVersion: 2
         x: 224
@@ -1007,14 +1105,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 477bfc66a963511429306dc560cc33b4
-      internalID: 54857314
+      spriteID: 4eb8483ea13f3a64e983b7edc48190b8
+      internalID: -367846460
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Rod_coast_ground_d6_f3
+      name: Rod_deep_stowV_d6_f3
       rect:
         serializedVersion: 2
         x: 336
@@ -1029,14 +1127,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a10fc51dd5ccc11418c9106d704156e9
-      internalID: -1453780003
+      spriteID: 7167cc84c3d4b3d409f0c938b348f7c0
+      internalID: 1235251908
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Rod_coast_ground_d6_f4
+      name: Rod_deep_stowV_d6_f4
       rect:
         serializedVersion: 2
         x: 448
@@ -1051,14 +1149,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b1d647f3c36883749a7f69dea2ded0fb
-      internalID: 1728809468
+      spriteID: 26f42adddff311846bd51c0294bfd96f
+      internalID: -1364353984
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Rod_coast_ground_d6_f5
+      name: Rod_deep_stowV_d6_f5
       rect:
         serializedVersion: 2
         x: 560
@@ -1073,14 +1171,36 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8c3390155e7136040b3c98527a050966
-      internalID: 1568306850
+      spriteID: bcf0ae3f97940aa449e38c097755c750
+      internalID: -1073032491
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Rod_coast_ground_d7_f1
+      name: Rod_deep_stowV_d7_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 50becd28eabe1894e83b2980feb6f771
+      internalID: 1625801126
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_stowV_d7_f1
       rect:
         serializedVersion: 2
         x: 112
@@ -1095,14 +1215,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d0e28197b629ed846bac2936bb265e7c
-      internalID: 1633710919
+      spriteID: 68244c85ea1177c48b860c755d3c0608
+      internalID: -1008894035
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Rod_coast_ground_d7_f2
+      name: Rod_deep_stowV_d7_f2
       rect:
         serializedVersion: 2
         x: 224
@@ -1117,14 +1237,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 24c27824d56d5de48aea54f5f1ce9966
-      internalID: -11919800
+      spriteID: 3aacdba0eb215d04dbc593736fb0bdfa
+      internalID: 157507534
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Rod_coast_ground_d7_f3
+      name: Rod_deep_stowV_d7_f3
       rect:
         serializedVersion: 2
         x: 336
@@ -1139,14 +1259,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b0155a54704068f4cb578959dc5f64a6
-      internalID: 1531515401
+      spriteID: 43705a0ed9d0e1848a46eaed6364fd36
+      internalID: 1832628703
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Rod_coast_ground_d7_f4
+      name: Rod_deep_stowV_d7_f4
       rect:
         serializedVersion: 2
         x: 448
@@ -1161,14 +1281,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6cedfb7d7fce3e04eb48ebd217ede2e9
-      internalID: 1526416686
+      spriteID: 8019fd56208808b48af8e891622feed8
+      internalID: -1384592028
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Rod_coast_ground_d7_f5
+      name: Rod_deep_stowV_d7_f5
       rect:
         serializedVersion: 2
         x: 560
@@ -1183,8 +1303,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b0e7d19d14b255f48b85408dae9bc31e
-      internalID: 1327267100
+      spriteID: 2a1d2a2ba13fe62419fe50b151112a43
+      internalID: -193667096
       vertices: []
       indices: 
       edges: []
@@ -1193,7 +1313,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 87c52b1bfb2939d4e9054d126535046e
+    spriteID: e862b4994317f6e468d248cbfe3e3627
     internalID: 0
     vertices: []
     indices: 
@@ -1203,54 +1323,54 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Rod_coast_ground_d0_f0: 777659482
-      Rod_coast_ground_d0_f1: -254302943
-      Rod_coast_ground_d0_f2: 753751810
-      Rod_coast_ground_d0_f3: -1847839649
-      Rod_coast_ground_d0_f4: -1620235861
-      Rod_coast_ground_d0_f5: 935582460
-      Rod_coast_ground_d1_f0: -42473694
-      Rod_coast_ground_d1_f1: -884150590
-      Rod_coast_ground_d1_f2: 1513036160
-      Rod_coast_ground_d1_f3: 264084252
-      Rod_coast_ground_d1_f4: -1522132809
-      Rod_coast_ground_d1_f5: -726722086
-      Rod_coast_ground_d2_f0: 816096064
-      Rod_coast_ground_d2_f1: 1985108486
-      Rod_coast_ground_d2_f2: 1234428272
-      Rod_coast_ground_d2_f3: 25539090
-      Rod_coast_ground_d2_f4: 620316181
-      Rod_coast_ground_d2_f5: -1993656817
-      Rod_coast_ground_d3_f0: -1501214897
-      Rod_coast_ground_d3_f1: 395360080
-      Rod_coast_ground_d3_f2: -1764751699
-      Rod_coast_ground_d3_f3: -1368141967
-      Rod_coast_ground_d3_f4: 390194875
-      Rod_coast_ground_d3_f5: -1481667979
-      Rod_coast_ground_d4_f0: -1023126565
-      Rod_coast_ground_d4_f1: 1113329999
-      Rod_coast_ground_d4_f2: -1632421369
-      Rod_coast_ground_d4_f3: -642078298
-      Rod_coast_ground_d4_f4: 97358234
-      Rod_coast_ground_d4_f5: 1859478154
-      Rod_coast_ground_d5_f0: 1862532010
-      Rod_coast_ground_d5_f1: 2032558327
-      Rod_coast_ground_d5_f2: -324851898
-      Rod_coast_ground_d5_f3: -1654120240
-      Rod_coast_ground_d5_f4: -1912224159
-      Rod_coast_ground_d5_f5: 2018842325
-      Rod_coast_ground_d6_f0: -1024622196
-      Rod_coast_ground_d6_f1: 443893733
-      Rod_coast_ground_d6_f2: 54857314
-      Rod_coast_ground_d6_f3: -1453780003
-      Rod_coast_ground_d6_f4: 1728809468
-      Rod_coast_ground_d6_f5: 1568306850
-      Rod_coast_ground_d7_f0: -2117686189
-      Rod_coast_ground_d7_f1: 1633710919
-      Rod_coast_ground_d7_f2: -11919800
-      Rod_coast_ground_d7_f3: 1531515401
-      Rod_coast_ground_d7_f4: 1526416686
-      Rod_coast_ground_d7_f5: 1327267100
+      Rod_deep_stowV_d0_f0: -1605878758
+      Rod_deep_stowV_d0_f1: -1535667353
+      Rod_deep_stowV_d0_f2: 1938419109
+      Rod_deep_stowV_d0_f3: 1738286526
+      Rod_deep_stowV_d0_f4: -1538262446
+      Rod_deep_stowV_d0_f5: 1521203416
+      Rod_deep_stowV_d1_f0: 967088330
+      Rod_deep_stowV_d1_f1: -1704831354
+      Rod_deep_stowV_d1_f2: 1740393854
+      Rod_deep_stowV_d1_f3: 2110489253
+      Rod_deep_stowV_d1_f4: 329154335
+      Rod_deep_stowV_d1_f5: 1141698202
+      Rod_deep_stowV_d2_f0: -711755689
+      Rod_deep_stowV_d2_f1: -152069187
+      Rod_deep_stowV_d2_f2: -1672410944
+      Rod_deep_stowV_d2_f3: 242602158
+      Rod_deep_stowV_d2_f4: 1623850780
+      Rod_deep_stowV_d2_f5: -1092971853
+      Rod_deep_stowV_d3_f0: 2035645231
+      Rod_deep_stowV_d3_f1: 643437874
+      Rod_deep_stowV_d3_f2: -617220108
+      Rod_deep_stowV_d3_f3: 1382661564
+      Rod_deep_stowV_d3_f4: -238619236
+      Rod_deep_stowV_d3_f5: 49185928
+      Rod_deep_stowV_d4_f0: 371220453
+      Rod_deep_stowV_d4_f1: 233239644
+      Rod_deep_stowV_d4_f2: -2071044624
+      Rod_deep_stowV_d4_f3: -1120464669
+      Rod_deep_stowV_d4_f4: -1134714327
+      Rod_deep_stowV_d4_f5: 1445049335
+      Rod_deep_stowV_d5_f0: -62204386
+      Rod_deep_stowV_d5_f1: -328929640
+      Rod_deep_stowV_d5_f2: -1618439097
+      Rod_deep_stowV_d5_f3: -737006664
+      Rod_deep_stowV_d5_f4: -184888105
+      Rod_deep_stowV_d5_f5: -1622351588
+      Rod_deep_stowV_d6_f0: -996048962
+      Rod_deep_stowV_d6_f1: -263082982
+      Rod_deep_stowV_d6_f2: -367846460
+      Rod_deep_stowV_d6_f3: 1235251908
+      Rod_deep_stowV_d6_f4: -1364353984
+      Rod_deep_stowV_d6_f5: -1073032491
+      Rod_deep_stowV_d7_f0: 1625801126
+      Rod_deep_stowV_d7_f1: -1008894035
+      Rod_deep_stowV_d7_f2: 157507534
+      Rod_deep_stowV_d7_f3: 1832628703
+      Rod_deep_stowV_d7_f4: -1384592028
+      Rod_deep_stowV_d7_f5: -193667096
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
