@@ -47,6 +47,7 @@ MonoBehaviour:
     FollowingSeaWeight: 0.7
     YawFromSlew: 0.9
   Anchor:
+    ReferenceAnchorMassKg: 6
     DefaultRodeMeters: 6
     MinSwingMeters: 0.75
     RodeGiveMeters: 0.15

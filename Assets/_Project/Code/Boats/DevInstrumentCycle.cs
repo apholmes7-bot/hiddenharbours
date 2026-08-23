@@ -86,7 +86,7 @@ namespace HiddenHarbours.Boats
             // ⚠ The relay's own answer, not a comparison against the Core slot. Same question, but asked
             // of the thing that knows: an instrument belongs to a HELM, so the helm predicate is the
             // right one here (unlike the anchor key, which works a boat's tackle and must stay alive on
-            // a rowed dory and on her deck — DevAnchorInput.IsThePlayersBoat).
+            // a rowed dory and on her deck — AnchorInput.IsThePlayersBoat).
             if (!_relay.IsPlayerHelm) return;
 
             var kb = Keyboard.current;

@@ -84,6 +84,34 @@ namespace HiddenHarbours.Boats
         public SeaState MaxSafeSeaState = SeaState.Lively;
 
         [Header("Ground tackle")]
+        [Tooltip("Does she carry an ANCHOR at all? Owner ruling: every hull on the ladder does — the " +
+                 "dory heaves a grapnel over the bow, the trawler drops a hook off a windlass — so " +
+                 "this is TRUE by default and false is the deliberate exception (a hull that genuinely " +
+                 "has no ground tackle). It is the one gate: false and the helm draws no anchor " +
+                 "switch, the anchor key does nothing on her, and BoatAnchor refuses the drop.\n\n" +
+                 "⚠ THE DEFAULT ABOVE IS A C# INITIALIZER, AND UNITY NEVER RUNS IT ON A LOADED ASSET. " +
+                 "A hull asset whose YAML omits this key deserializes it as FALSE — the C# default for " +
+                 "a bool — which would quietly take the anchor off a boat that has always had one. " +
+                 "That is the RodeMeters/HelmAheadNotches trap in its one dangerous direction, so " +
+                 "every shipped hull states the key explicitly and AnchorContentValidationTests is " +
+                 "the guard.")]
+        public bool HasAnchor = true;
+
+        [Tooltip("What her HOOK WEIGHS (kg) — the iron itself, not the rode. Small craft heave a few " +
+                 "kilos of grapnel by hand; a dragger swings a couple of hundred off a windlass, and " +
+                 "P2's ladder is legible in that column alone.\n\n" +
+                 "It is not decoration: a DRAGGING anchor checks the boat by friction along the " +
+                 "seabed, and friction goes with the weight bearing on it, so this scales the shared " +
+                 "drag brake — twice the iron, twice the check (AnchorMath.DragBrakeStrengthFor). " +
+                 "Because the brake is a force and what the hull feels is force ÷ her own mass, a big " +
+                 "boat still fetches away faster than a dory: the ladder comes out right with no " +
+                 "second curve to tune.\n\n" +
+                 "0 = this hull has not been given her own hook and takes the shared dinghy grapnel " +
+                 "(GameConfig.Anchor.ReferenceAnchorMassKg), which is also the mass the shared brake " +
+                 "strength is quoted at — so an untouched hull drags EXACTLY as she did before hulls " +
+                 "carried anchor weights. The RodeMeters convention, verbatim.")]
+        [Min(0f)] public float AnchorMassKg = 0f;
+
         [Tooltip("How much ANCHOR RODE this hull carries (m) — the length of her anchor line, and so " +
                  "the DEEPEST water she can anchor in: the hook only holds where the rode reaches the " +
                  "bottom (depth ≤ this). Bigger vessels carry longer rodes, so deeper anchorages open " +
