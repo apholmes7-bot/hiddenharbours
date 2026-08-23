@@ -19,6 +19,11 @@ pixel accounting at the dock pose, 90 deg:
      The sprite path never met this because a sheet composites OVER the hull.
      The mesh path already owns the same lever: UV0.z, the rig's per-face db.
 
-GATE-OFF IDENTITY: hull+rooms at gate 0 vs hull alone -> 0 differing pixels (must be 0: an un-gated interior would be visible today).
+THE VARIANT BOUNDARY (#pragma shader_feature_local HH_LEVEL_GATE, off by default):
+   shipped program vs the gated variant at 0, same hull : 0 differing px  (must be 0 — compiling the gate in changes no pixel)
+   shipped program vs hull+ROOMS through the gate at 0  : 0 differing px  (must be 0 — the gate hides the interior geometry)
+   With the keyword OFF the program has no TEXCOORD1 input, no extra varying
+   and no discard: it is the pre-spike program, not the same picture for a
+   per-fragment test on every hull every frame.
 
 EXACTLY-ONE-LAYER-ON: TRUE  — gate off: the house draws, the room does not (identity 0 px). Gate at this level: the room draws and the level's own hull faces draw 0 px. One float on TexCoord1.x, one compare in the fragment, no sorting rule added.
