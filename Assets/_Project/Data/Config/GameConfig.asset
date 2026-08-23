@@ -345,3 +345,4 @@ MonoBehaviour:
     WheelUnitsPerNotch: 120
     StepSeconds: 0.18
   InteriorRockScale: 0.45
+  StairClimbSeconds: 0.5

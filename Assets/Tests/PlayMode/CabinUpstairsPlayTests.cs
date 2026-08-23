@@ -304,12 +304,24 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return WaitForTheClimb();
         }
 
-        /// <summary>Let the walk between storeys play out. Frame-capped rather than open-ended: a climb
-        /// that never finishes is a bug worth a failed assertion, not a hung suite.</summary>
+        /// <summary>
+        /// Let the walk between storeys play out. Bounded rather than open-ended: a climb that never
+        /// finishes is a bug worth a failed assertion, not a hung suite.
+        ///
+        /// <para>⚠️ <b>Bounded by the CLOCK, never by a frame count.</b> A batchmode frame renders
+        /// nothing and can take a fraction of a millisecond, so several hundred of them need not add up
+        /// to the half second the climb is measured in — this waited 600 frames first time out and every
+        /// test that used it went red on a climb that was running perfectly well. The climb is advanced
+        /// by <c>Time.deltaTime</c>, so the only honest budget is the same clock, with slack for a slow
+        /// runner.</para>
+        /// </summary>
         IEnumerator WaitForTheClimb()
         {
-            for (int frame = 0; frame < 600 && _interior.IsClimbing; frame++) yield return null;
-            Assert.IsFalse(_interior.IsClimbing, "the climb between storeys finishes on its own");
+            float deadline = Time.time + GameServices.StairClimbSeconds * 4f + 1f;
+            while (_interior.IsClimbing && Time.time < deadline) yield return null;
+            Assert.IsFalse(_interior.IsClimbing,
+                           "the climb between storeys finishes on its own, well inside four times its " +
+                           "own duration");
         }
 
         // =============================================================================
