@@ -1,7 +1,7 @@
 {
   "schema": "hiddenharbours.scene/1",
   "generatedBy": "tools/scene-export/hh_scene_export.py",
-  "generatedAt": "2026-08-22T18:20:12Z",
+  "generatedAt": "2026-08-23T00:33:56Z",
   "region": {
     "id": "region.st_peters",
     "sceneName": "StPeters",
@@ -800,9 +800,9 @@
           ["g3", 5],
           ["g4", 246],
           ["g3", 10],
-          ["g2", 3],
+          ["g2", 1],
           ["g1", 1],
-          [0, 192],
+          [0, 194],
           ["g1", 7],
           ["g2", 119],
           ["g1", 9],
@@ -810,9 +810,9 @@
           ["g3", 6],
           ["g4", 247],
           ["g3", 7],
-          ["g2", 4],
-          ["g1", 2],
-          [0, 192],
+          ["g2", 2],
+          ["g1", 1],
+          [0, 195],
           ["g1", 7],
           ["g2", 118],
           ["g1", 10],
@@ -820,9 +820,9 @@
           ["g3", 5],
           ["g4", 246],
           ["g3", 2],
-          ["g2", 9],
-          ["g1", 5],
-          [0, 191],
+          ["g2", 8],
+          ["g1", 1],
+          [0, 196],
           ["g1", 7],
           ["g2", 116],
           ["g1", 11],
@@ -831,8 +831,8 @@
           ["g4", 246],
           ["g3", 1],
           ["g2", 7],
-          ["g1", 6],
-          [0, 193],
+          ["g1", 3],
+          [0, 196],
           ["g1", 9],
           ["g2", 112],
           ["g1", 15],
@@ -1412,7 +1412,7 @@
       "minElevation": -4.0,
       "maxElevation": 6.0,
       "texture": "Assets/_Project/Data/Terrain/StPetersSeabed_HeightTex.png",
-      "textureSha256": "b0f629f3d5fcc9775de9c5407dad80094fcf1edad2d2e7761fbfd59d9a94debf",
+      "textureSha256": "dd4780eeeb0b81a986e75c75e3b06acd3724405166295fa545f620e30717c71c",
       "textureBytesRead": true
     },
     "x-heightField": {
@@ -4633,8 +4633,8 @@
         6.0,
         1.02,
         -0.51,
-        -2.0,
-        -1.922,
+        -4.0,
+        -4.0,
         -1.882,
         -1.882,
         -2.235,
@@ -68590,7 +68590,7 @@
   "stats": {
     "entities": 1327,
     "tiles": {
-      "ground": 50208,
+      "ground": 50195,
       "road": 0,
       "cliff": 0
     },
@@ -68715,7 +68715,7 @@
   "x-rigVersionsShaRule": "sha256 of the rig's bytes with CR stripped (tr -d '\r' | sha256sum) — the repo's own convention, the same one docs/art/rigs sidecars publish. A SIBLING of the table rather than a key inside it: the table's keys are family names and nothing else, so iterating it cannot pick up a note.",
   "x-cliffLinesNote": "Empty: cliff lines are an authoring artefact of the editor. The repo's cliffs are placed CliffWallSurface components and ship as entities.",
   "x-provenance": {
-    "generatedAt": "2026-08-22T18:20:12Z",
+    "generatedAt": "2026-08-23T00:33:56Z",
     "historyIsComplete": true,
     "sceneFile": "Assets/_Project/Scenes/StPeters.unity",
     "sceneFileSha256": "92a44e601dcf7b2be6821448460d7bfbf2bc8f1731e8d0cc3474bc0b7cecc523",
@@ -68724,11 +68724,13 @@
     "sceneLastBuiltSubject": "chore(scenes): bank the 2026-08-22 St Peters build — cannery + Ginny's woodshed after #599",
     "sceneWorkingTreeDirty": false,
     "builderDrift": {
-      "builderCommitsSinceScene": 0,
-      "measuredTo": "be74ac359dcd21e1cc88598c2d861107031091ad",
-      "measuredToDate": null,
+      "builderCommitsSinceScene": 1,
+      "measuredTo": "5f355516de4872bc71a5c937a9680cb12c246313",
+      "measuredToDate": "2026-08-22T21:33:56-03:00",
       "exact": true,
-      "builderCommits": []
+      "builderCommits": [
+        "5f355516 feat(world): she comes alongside — the St Peters arrival lies off the wharf face, in water dredged to hold her"
+      ]
     },
     "heightMap": {
       "asset": "Assets/_Project/Data/Terrain/StPetersSeabed.asset",
@@ -68737,7 +68739,7 @@
       "minElevation": -4.0,
       "maxElevation": 6.0,
       "texture": "Assets/_Project/Data/Terrain/StPetersSeabed_HeightTex.png",
-      "textureSha256": "b0f629f3d5fcc9775de9c5407dad80094fcf1edad2d2e7761fbfd59d9a94debf",
+      "textureSha256": "dd4780eeeb0b81a986e75c75e3b06acd3724405166295fa545f620e30717c71c",
       "textureBytesRead": true
     },
     "readFrom": {
