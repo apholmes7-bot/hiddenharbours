@@ -342,8 +342,18 @@ New files in this folder (the kit's other nine were already here and arrived byt
   short/long via `CAST_W1`/`CAST_S1` sub-ranges (`castBack`/`castRelease`).
 - **rodIsoRig.js** → `RodIso` — 3 tiers (cane / coaster / deepwater), 112×112 bake, pivot = grip,
   pinned to handR. `tip()`/`tipLocal()` anchor the line; `project()` maps character-local 3D points to
-  screen px for line/bobber/splash FX. CAST distances × `castMul` per tier. Rest poses: ground ×8 dirs
-  + stored upright.
+  screen px for line/bobber/splash FX. CAST distances × `castMul` per tier.
+  **ONE ROD, EVERY STATE** (rod-continuity fix): held, cast, set down or stowed, the grip centre is
+  the cell pivot and the yaw is `HELD_YAW` — every state resolves through the one `poseOf()`, so no
+  transition can teleport, resize or re-point the rod. Rests are `REST_FRAMES`-frame **animated
+  hand-overs**, not props: `ground` (laid underfoot), `stowV` (upright, butt down — `stored` is the
+  shipped alias) and `stowH` (across the pegs), each starting at the `STANCE` the hand handed it over
+  from and releasing at `RELEASE_AT`, mid-animation. How high a rest holds the rod is `restLift()`
+  data, never a pixel offset. Held by `node tools/rig-recipes/rod-continuity.mjs` and, in-editor, by
+  `RodContinuityTests`.
+  ⚠️ **`shovelIsoRig.js` still has the pre-fix shape** (`rest:'ground'`/`'stored'` as single cells
+  with their own yaw and their own `zOff`) — the owner's law is all tools, and the shovel has not had
+  this pass yet.
 - **bobberRig.js** → `RodBobber` — the purpose-made float, 16×22, pivot (8,12) = the waterline.
   States: float 4f / nibble 4f / strike 4f / fly 2f. Underwater pixels bake with tint + alpha — never
   clip against water at runtime. Line attaches at the stem top.
@@ -400,7 +410,9 @@ all translation; the container bakes only roll/pitch.
 
 ### Engine handoff
 `gameplay/FisherRodMount.json` — frame-by-frame rod mount data (grip px per dir/frame, behind dirs,
-pose sub-ranges) for engine-side integration without running the JS rigs. See `gameplay/README.md`.
+per-state pose curves) for engine-side integration without running the JS rigs. **Generated, not
+authored**: `node tools/rig-recipes/fisher-rod-mount.mjs` (and `--check` to prove the committed file
+still describes the rigs it names). See `gameplay/README.md`.
 
 The kit's demo pages (Fishing Rods.dc.html · Rod Bobber.dc.html · Fish Iso.dc.html ·
 Catch Handling.dc.html) live in the art director's design workspace, **not** in this repo.

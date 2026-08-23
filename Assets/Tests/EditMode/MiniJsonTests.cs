@@ -83,9 +83,25 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsNotNull(grips, "grips table");
             Assert.IsNotNull(tiers, "tiers table");
             Assert.IsNotNull(MiniJson.Dict(tiers, "cane"), "the cane tier ships");
+            // The HELD states must be in the committed bake — a renamed state would break the rod
+            // overlay silently otherwise. The three REST states joined the importer's order with the
+            // rod-continuity fix and arrive with the owner's next fishing-kit bake; a rest that IS
+            // present must carry heldFrames, because the frame the hand lets go on is the whole
+            // difference between an animated hand-over and a cut.
             foreach (string state in RodKitImporter.RodStateOrder)
-                Assert.IsNotNull(MiniJson.Dict(grips, state), $"grips.{state} — the importer's order " +
-                    "must exist in the bake (a renamed state breaks the rod overlay silently otherwise)");
+            {
+                var node = MiniJson.Dict(grips, state);
+                bool isRest = state == "ground" || state == "stowV" || state == "stowH";
+                if (isRest)
+                {
+                    if (node != null)
+                        Assert.Greater(MiniJson.Int(node, "heldFrames"), 0,
+                            $"grips.{state}.heldFrames — a baked rest must say which frames are held");
+                    continue;
+                }
+                Assert.IsNotNull(node, $"grips.{state} — the importer's order must exist in the bake " +
+                    "(a renamed state breaks the rod overlay silently otherwise)");
+            }
         }
     }
 }

@@ -90,8 +90,26 @@ namespace HiddenHarbours.Tools.RigBaking
             "hold", "bite", "strike", "reel", "land", "castBack", "castRelease",
         };
 
-        /// <summary>The rod's two prop rests, exactly as <c>RodIso.REST</c> declares them.</summary>
-        public static readonly string[] RodRests = { "ground", "stored" };
+        /// <summary>
+        /// The rod's rests, READ from <c>RodIso.REST</c> at bake time rather than restated here. This
+        /// list used to be a copy (<c>{ "ground", "stored" }</c>), and a copy is how the kit came to
+        /// bake two states while the rig had grown a third. A rest is no longer a single cell either:
+        /// each one runs <c>RodIso.REST_FRAMES</c> frames whose frame 0 IS the hold stance the rod was
+        /// handed over from, so setting the rod down is something you watch rather than a cut.
+        /// </summary>
+        public static IReadOnlyList<string> RodRestsOf(IRigScriptHost host, string rodGlobal)
+            => ReadStringArray(host, $"{rodGlobal}.REST");
+
+        /// <summary>Frames one rest transition takes, from the rig.</summary>
+        public static int RestFramesOf(IRigScriptHost host, string rodGlobal)
+            => (int)host.EvaluateNumber($"{rodGlobal}.REST_FRAMES");
+
+        static bool IsRest(IReadOnlyList<string> rests, string state)
+        {
+            for (int i = 0; i < rests.Count; i++)
+                if (string.Equals(rests[i], state, StringComparison.Ordinal)) return true;
+            return false;
+        }
 
         // =====================================================================================
         // FISH — Fish_<species>_<state>.png, 8 direction rows × the state's frames
@@ -416,7 +434,15 @@ namespace HiddenHarbours.Tools.RigBaking
             var renderClock = new Stopwatch();
             Directory.CreateDirectory(Path.Combine(RigCatalog.RepoRoot, outputFolder));
 
-            int planned = tiers.Count * (anims.Count + (includeRests ? RodRests.Length : 0));
+            var rests = includeRests ? RodRestsOf(host, rod) : Array.Empty<string>();
+            int restFrames = includeRests ? RestFramesOf(host, rod) : 0;
+            if (includeRests && restFrames < 2)
+                throw new ArgumentException(
+                    $"RodIso.REST_FRAMES is {restFrames}. A rest of one cell cannot be entered from the " +
+                    "hand without a jump — the set-down has to be an animation whose first frame is the " +
+                    "hold stance. Fix the rig, not this baker.");
+
+            int planned = tiers.Count * (anims.Count + rests.Count);
             int done = 0;
             foreach (var tier in tiers)
             {
@@ -439,25 +465,22 @@ namespace HiddenHarbours.Tools.RigBaking
                         }, result));
                 }
 
-                if (includeRests)
+                foreach (var rest in rests)
                 {
-                    foreach (var rest in RodRests)
-                    {
-                        progress?.Invoke($"Rod_{tier}_{rest}", (float)done++ / planned);
-                        result.Sheets.Add(WriteSheet(outputFolder, $"Rod_{tier}_{rest}", Dirs,
-                            frames: 1, rodGeo, (d, f) =>
-                            {
-                                double rodDir = RigBaker.DirForCell(d, Dirs, rodProbe.Convention);
-                                return Render(host,
-                                    $"{rod}.render({Num(rodDir)},{{tier:{Js(tier)},rest:{Js(rest)}}})",
-                                    rodGeo, renderClock, result);
-                            }, result));
-                    }
+                    progress?.Invoke($"Rod_{tier}_{rest}", (float)done++ / planned);
+                    result.Sheets.Add(WriteSheet(outputFolder, $"Rod_{tier}_{rest}", Dirs,
+                        restFrames, rodGeo, (d, f) =>
+                        {
+                            double rodDir = RigBaker.DirForCell(d, Dirs, rodProbe.Convention);
+                            return Render(host,
+                                $"{rod}.render({Num(rodDir)},{{tier:{Js(tier)},rest:{Js(rest)},frame:{f}}})",
+                                rodGeo, renderClock, result);
+                        }, result));
                 }
             }
 
             result.AnchorJsonPath = WriteRodAnchors(host, rodEntry, charEntry, rodGeo, charGeo,
-                                                    tiers, anims, includeRests,
+                                                    tiers, anims, rests, restFrames,
                                                     rodProbe.Convention, charProbe.Convention,
                                                     outputFolder);
 
@@ -470,7 +493,7 @@ namespace HiddenHarbours.Tools.RigBaking
         static string WriteRodAnchors(IRigScriptHost host, in RigEntry rodEntry, in RigEntry charEntry,
                                       in RigGeometry rodGeo, in RigGeometry charGeo,
                                       IReadOnlyList<string> tiers, IReadOnlyList<string> anims,
-                                      bool includeRests,
+                                      IReadOnlyList<string> rests, int restFrames,
                                       AzimuthConvention rodConv, AzimuthConvention charConv,
                                       string outputFolder)
         {
@@ -488,50 +511,75 @@ namespace HiddenHarbours.Tools.RigBaking
             sb.Append($"  \"measuredRodConvention\": \"{rodConv}\",\n");
             sb.Append($"  \"measuredCharacterConvention\": \"{charConv}\",\n");
             sb.Append("  \"facingsAreCounterClockwise\": false,\n");
-            sb.Append("  \"_note\": \"Baked in-engine with each rig's measured convention applied, so row d depicts heading 360*d/dirs on every sheet. grips: the rod pivot (grip centre) lands on grip[dir][frame] in the CHARACTER'S 64x88 body cell — tier-independent, per tool anim; the fight-state half FisherRodMount.json does not carry. behindDirs rows draw the rod UNDER the body sprite. tip: absolute ROD-CELL px of the rod tip per tier x state x dir x frame (the line's start); tipLocal: the same tip as a character-local 3D point in metres (dir-independent) for RodIso.project()-style FX. Rest states have no grip — the rod is a prop, pivot per rest as the rig defines it.\",\n");
+            sb.Append("  \"_note\": \"Baked in-engine with each rig's measured convention applied, so row d depicts heading 360*d/dirs on every sheet. ONE ROD, EVERY STATE: cell + pivotTopLeft above are the grip centre in EVERY state, held or rest, and tiers.<tier>.lenM is the blank length in every state — the swap in RodPresenterMath.SameRod holds the wiring to both. grips: that pivot lands on grip[dir][frame] in the CHARACTER'S 64x88 body cell. behindDirs rows draw the rod UNDER the body sprite. tip: absolute ROD-CELL px of the rod tip per tier x state x dir x frame (the line's start); tipLocal: the same tip as a character-local 3D point in metres (dir-independent) for RodIso.project()-style FX. Rests are ANIMATED hand-overs, not props: frame 0 IS the hold stance the rod left the hand from, the rod stays in hand for heldFrames of them, and liftM is how high the settled rod holds its grip above the ground/rack it rests on — a placement datum, never a pixel offset. A rest's grip holds at the hold stance's own grip: the fisher has no reach-down animation yet, so the ROD is continuous but her arm is not (see the PR).\",\n");
 
-            // ---- grips: tier-independent, per anim × dir × frame -----------------------------
+            // ---- grips: tier-independent, per state × dir × frame ----------------------------
+            // A REST gets a grip too, and that is the point: a rest used to have none ("the rod is a
+            // prop"), which is precisely how the rod could leave the hand between one frame and the
+            // next with nothing to notice. Its grip is the HOLD STANCE's own grip, held for the whole
+            // hand-over — true at frame 0 by construction, and an honest still for the rest of it
+            // until the fisher has a reach-down animation of her own.
+            int restHeld = restFrames > 0 ? (int)host.EvaluateNumber($"{rod}.restHeldFrames()") : 0;
+
             sb.Append("  \"grips\": {\n");
-            for (int a = 0; a < anims.Count; a++)
+            var gripStates = new List<string>(anims);
+            gripStates.AddRange(rests);
+            for (int a = 0; a < gripStates.Count; a++)
             {
-                string anim = anims[a];
-                int frames = CharacterRigBaker.FramesOf(host, ch, anim);
-                sb.Append($"    \"{anim}\": {{ \"frames\": {frames}, \"px\": [\n");
+                string state = gripStates[a];
+                bool isRest = IsRest(rests, state);
+                int frames = isRest ? restFrames : CharacterRigBaker.FramesOf(host, ch, state);
+                sb.Append($"    \"{state}\": {{ \"frames\": {frames}");
+                if (isRest) sb.Append($", \"heldFrames\": {restHeld}");
+                sb.Append(", \"px\": [\n");
                 for (int d = 0; d < Dirs; d++)
                 {
                     double chDir = RigBaker.DirForCell(d, Dirs, charConv);
                     sb.Append("      [");
                     for (int f = 0; f < frames; f++)
                     {
+                        string toolJs = isRest
+                            ? $"{ch}.tool({Num(chDir)},{{anim:'hold',u:1}})"
+                            : $"{ch}.tool({Num(chDir)},{{anim:{Js(state)},frame:{f}}})";
                         sb.Append(host.EvaluateString(
-                            $"JSON.stringify((function(){{var t={ch}.tool({Num(chDir)},{{anim:{Js(anim)},frame:{f}}});" +
+                            $"JSON.stringify((function(){{var t={toolJs};" +
                             "return {x:Math.round(t.grip.x*10)/10,y:Math.round(t.grip.y*10)/10};})())"));
                         if (f < frames - 1) sb.Append(", ");
                     }
                     sb.Append(d < Dirs - 1 ? "],\n" : "]\n");
                 }
-                sb.Append(a < anims.Count - 1 ? "    ] },\n" : "    ] }\n");
+                sb.Append(a < gripStates.Count - 1 ? "    ] },\n" : "    ] }\n");
             }
             sb.Append("  },\n");
 
             // ---- tiers: castMul + tip/tipLocal per state -------------------------------------
             var states = new List<string>(anims);
-            if (includeRests) states.AddRange(RodRests);
+            states.AddRange(rests);
 
             sb.Append("  \"tiers\": {\n");
             for (int t = 0; t < tiers.Count; t++)
             {
                 string tier = tiers[t];
                 string castMul = host.EvaluateString($"String({rod}.TIERS[{Js(tier)}].castMul)");
-                sb.Append($"    \"{tier}\": {{ \"castMul\": {castMul}, \"states\": {{\n");
+                // lenM is THE rod's length. It is emitted once per tier, not once per state, because
+                // there is nothing per-state about it — which is the whole claim this file now makes.
+                string lenM = host.EvaluateString($"String({rod}.TIERS[{Js(tier)}].len)");
+                sb.Append($"    \"{tier}\": {{ \"castMul\": {castMul}, \"lenM\": {lenM}, \"states\": {{\n");
 
                 for (int s = 0; s < states.Count; s++)
                 {
                     string st = states[s];
-                    bool isRest = Array.IndexOf(RodRests, st) >= 0;
-                    int frames = isRest ? 1 : CharacterRigBaker.FramesOf(host, ch, st);
+                    bool isRest = IsRest(rests, st);
+                    int frames = isRest ? restFrames : CharacterRigBaker.FramesOf(host, ch, st);
 
-                    sb.Append($"      \"{st}\": {{ \"frames\": {frames}, \"tip\": [\n");
+                    sb.Append($"      \"{st}\": {{ \"frames\": {frames}");
+                    if (isRest)
+                    {
+                        string liftExpr = $"String(Math.round({rod}.restLift({Js(st)}," +
+                                          $"{{tier:{Js(tier)}}})*1000)/1000)";
+                        sb.Append($", \"liftM\": {host.EvaluateString(liftExpr)}");
+                    }
+                    sb.Append(", \"tip\": [\n");
                     for (int d = 0; d < Dirs; d++)
                     {
                         double rodDir = RigBaker.DirForCell(d, Dirs, rodConv);
@@ -540,7 +588,7 @@ namespace HiddenHarbours.Tools.RigBaking
                         for (int f = 0; f < frames; f++)
                         {
                             string optsJs = isRest
-                                ? $"{{tier:{Js(tier)},rest:{Js(st)}}}"
+                                ? $"{{tier:{Js(tier)},rest:{Js(st)},frame:{f}}}"
                                 : $"(function(){{var t={ch}.tool({Num(chDir)},{{anim:{Js(st)},frame:{f}}});" +
                                   $"return {{tier:{Js(tier)},pitch:t.pitch,yaw:t.yaw,bend:t.bend}};}})()";
                             sb.Append(host.EvaluateString(
@@ -554,7 +602,7 @@ namespace HiddenHarbours.Tools.RigBaking
                     for (int f = 0; f < frames; f++)
                     {
                         string optsJs = isRest
-                            ? $"{{tier:{Js(tier)},rest:{Js(st)}}}"
+                            ? $"{{tier:{Js(tier)},rest:{Js(st)},frame:{f}}}"
                             : $"(function(){{var t={ch}.tool(0,{{anim:{Js(st)},frame:{f}}});" +
                               $"return {{tier:{Js(tier)},pitch:t.pitch,yaw:t.yaw,bend:t.bend}};}})()";
                         sb.Append(host.EvaluateString(

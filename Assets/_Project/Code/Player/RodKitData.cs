@@ -15,9 +15,40 @@ namespace HiddenHarbours.Player
     [Serializable]
     public sealed class RodStateVisual
     {
-        [Tooltip("The rig state this entry is ('hold', 'bite', 'strike', 'reel', 'land', 'castBack', " +
-                 "'castRelease') — provenance only; consumers index by RodPresenterMath.RodSheetFor.")]
+        [Tooltip("The RIG STATE this entry is, spelled exactly as the rig spells it — one of " +
+                 "RodPresenterMath.RodStates. This is the key, not a label: RodSheetFor resolves " +
+                 "through it by name, so a sheet can never quietly stand in for a state it is not.")]
         public string State;
+
+        // ---- what the rod IS, from the rig, so a swap can prove it is swapping the same rod -------
+        // Every state's sheet is one cell of ONE rod. These four say which rod, and RodPresenterMath
+        // .SameRod holds every wired state to the first one's answer. They are baked, never typed:
+        // the anchors sidecar carries them because the rig does.
+
+        [Tooltip("The rod cell's pixel size — the rig's own cell, identical in every state.")]
+        public int CellW, CellH;
+
+        [Tooltip("The GRIP CENTRE in that cell, top-left px. The sprite pins this to the fisher's " +
+                 "hand, so it means the same thing in every state or the rod teleports between them.")]
+        public float PivotX, PivotY;
+
+        [Tooltip("Which rod this is ('cane' / 'coast' / 'deep'). A tier seam is a different rod and " +
+                 "must be re-wired whole, never state by state.")]
+        public string Tier;
+
+        [Tooltip("The blank's length in metres, from the rig's tier table. A rod does not get longer " +
+                 "because it was put down.")]
+        public float BlankLenM;
+
+        [Tooltip("For a REST state: how far above its resting surface (ground, rack) the settled rod " +
+                 "holds its grip, in metres. 0 for a held state. This is the ground datum that used " +
+                 "to live inside the render as a pivot offset — as data it places the rod; as pixels " +
+                 "it moved the rod.")]
+        public float RestLiftM;
+
+        [Tooltip("For a REST state: how many of the state's frames still have the rod IN HAND. The " +
+                 "release happens at that frame — mid-animation, watchable — and never at the seam.")]
+        public int HeldFramesPerDir;
 
         [Tooltip("The rod sheet for this state: 8 directions × FramesPerDir, d/f order.")]
         public Sprite[] Frames;

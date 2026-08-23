@@ -35,8 +35,19 @@ namespace HiddenHarbours.Tests.EditMode
             return f;
         }
 
+        /// <summary>
+        /// The seven HELD states are the shipped path and must wire from the committed bake, whole.
+        ///
+        /// <para>The three REST states (<c>ground</c> / <c>stowV</c> / <c>stowH</c>) joined
+        /// <see cref="RodPresenterMath.RodStates"/> with the rod-continuity fix, and their sheets come
+        /// from a bake that runs on the owner's machine (Hidden Harbours ▸ Art ▸ Bake Fishing Kit —
+        /// the PNGs are LFS). Until that bake lands they import as null, which is the importer's
+        /// null-safe greybox behaviour and NOT a pass: <see cref="RestStates_AreWholeOrAbsent"/> holds
+        /// them to all-or-nothing, so a half-baked rest cannot slip through, and this test tightens by
+        /// itself the moment the sheets are committed.</para>
+        /// </summary>
         [Test]
-        public void RodStates_AllSevenWire_WithAgreedFrameCounts_AndFiniteAnchors()
+        public void RodStates_EveryHeldStateWires_WithAgreedFrameCounts_AndFiniteAnchors()
         {
             RodStateVisual[] states = RodKitImporter.BuildRodStates("cane", out int[] behindDirs);
             Assert.IsNotNull(states, "the cane tier's sidecar + sheets are committed — they must import");
@@ -50,6 +61,7 @@ namespace HiddenHarbours.Tests.EditMode
             {
                 RodStateVisual v = states[s];
                 string name = RodKitImporter.RodStateOrder[s];
+                if (IsRest(name) && v == null) continue;   // see the doc above + RestStates_AreWholeOrAbsent
                 Assert.IsNotNull(v, $"rod state '{name}' must wire (sheet + grips + tips all committed)");
                 Assert.AreEqual(name, v.State);
                 Assert.Greater(v.FramesPerDir, 0, name);
@@ -66,6 +78,53 @@ namespace HiddenHarbours.Tests.EditMode
                     Assert.Less(v.TipOffsets[i].magnitude, 4f, $"{name} tip[{i}] left the rod cell");
                 }
             }
+        }
+
+        static bool IsRest(string state)
+            => state == "ground" || state == "stowV" || state == "stowH";
+
+        /// <summary>A rest either imports completely or is not there at all. The failure this forbids
+        /// is the quiet middle: a rest with a sheet but no grips (or the reverse) would draw a rod
+        /// pinned to nothing, and the importer's per-element degradation would never say so.</summary>
+        [Test]
+        public void RestStates_AreWholeOrAbsent()
+        {
+            RodStateVisual[] states = RodKitImporter.BuildRodStates("cane", out _);
+            Assert.IsNotNull(states);
+            for (int s = 0; s < states.Length; s++)
+            {
+                string name = RodKitImporter.RodStateOrder[s];
+                if (!IsRest(name) || states[s] == null) continue;
+                RodStateVisual v = states[s];
+                Assert.Greater(v.FramesPerDir, 1,
+                    $"{name}: a rest is an ANIMATED hand-over, so it cannot be a single cell — its " +
+                    "first frame is the hold stance the rod left the hand from.");
+                Assert.AreEqual(8 * v.FramesPerDir, v.Frames.Length, $"{name}: 8 clean direction rows");
+                Assert.AreEqual(v.Frames.Length, v.GripOffsets.Length, $"{name}: one grip per cell");
+                Assert.AreEqual(v.Frames.Length, v.TipOffsets.Length, $"{name}: one tip per cell");
+                Assert.That(v.HeldFramesPerDir, Is.InRange(1, v.FramesPerDir - 1),
+                    $"{name}: the hand must let go DURING the animation — not at frame 0 (a cut at the " +
+                    "seam) and not never (the rod is still in her hand when it is on the ground).");
+                Assert.Greater(v.RestLiftM, 0f, $"{name}: a rest holds the grip above what it rests on");
+            }
+        }
+
+        /// <summary>Every state that wires describes the SAME rod. This is the owner's law made
+        /// checkable: no size change, no pivot change, across any transition.</summary>
+        [Test]
+        public void EveryWiredState_IsTheSameRod()
+        {
+            RodStateVisual[] states = RodKitImporter.BuildRodStates("cane", out _);
+            Assert.IsNotNull(states);
+            RodStateVisual reference = null;
+            foreach (RodStateVisual v in states)
+            {
+                if (v == null) continue;
+                if (reference == null) { reference = v; continue; }
+                Assert.IsTrue(RodPresenterMath.SameRod(reference, v, out string why),
+                    $"rod state '{v.State}' is not the same rod as '{reference.State}': {why}");
+            }
+            Assert.IsNotNull(reference, "at least one state must wire");
         }
 
         [Test]

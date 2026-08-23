@@ -348,13 +348,23 @@ namespace HiddenHarbours.Tests.RigBaking
             var r = FishingKitBaker.BakeRod(new[] { "cane" }, new[] { "bite" },
                                             includeRests: true, outFolder);
 
-            Assert.AreEqual(3, r.Sheets.Count, "bite + ground + stored");
+            Assert.AreEqual(4, r.Sheets.Count, "bite + the three rests (ground, stowV, stowH)");
             var bite = r.Sheets.Single(s => s.Name == "Rod_cane_bite");
             Assert.AreEqual(6, bite.Frames, "bite is a 6-frame state (read from CharacterIso.ANIMS)");
             Assert.AreEqual(6 * 112, bite.Width);
             Assert.AreEqual(8 * 112, bite.Height);
-            var ground = r.Sheets.Single(s => s.Name == "Rod_cane_ground");
-            Assert.AreEqual(112, ground.Width);
+
+            // A rest is a hand-over the player watches, not a prop that appears: it bakes as a strip
+            // of RodIso.REST_FRAMES cells whose first frame is the hold stance the rod left the hand
+            // from. It baked as ONE cell before the rod-continuity fix, which is precisely why the
+            // rod could be in her hand one frame and lying on the ground the next.
+            foreach (string rest in new[] { "ground", "stowV", "stowH" })
+            {
+                var sheet = r.Sheets.Single(s => s.Name == $"Rod_cane_{rest}");
+                Assert.Greater(sheet.Frames, 1, $"{rest}: a rest of one cell is a cut, not a hand-over");
+                Assert.AreEqual(sheet.Frames * 112, sheet.Width);
+                Assert.AreEqual(8 * 112, sheet.Height);
+            }
 
             foreach (var sheet in r.Sheets)
                 AssertEveryRowHasArt(sheet.AssetPath, 112, 112, rows: 8, alphaFloor: 64,
@@ -369,7 +379,16 @@ namespace HiddenHarbours.Tests.RigBaking
             StringAssert.Contains("\"tip\"", anchors);
             StringAssert.Contains("\"tipLocal\"", anchors);
             StringAssert.Contains("\"ground\"", anchors);
+            StringAssert.Contains("\"stowV\"", anchors);
+            StringAssert.Contains("\"stowH\"", anchors);
             StringAssert.Contains("\"facingsAreCounterClockwise\": false", anchors);
+
+            // What the rod IS, carried once per tier so the presenter's swap can prove that every
+            // state it substitutes describes the same rod (RodPresenterMath.SameRod).
+            StringAssert.Contains("\"lenM\": 0.95", anchors);
+            // A rest now has a grip — it starts in her hand — and says which frames still hold it.
+            StringAssert.Contains("\"heldFrames\"", anchors);
+            StringAssert.Contains("\"liftM\"", anchors);
         }
 
         [Test]

@@ -31,7 +31,25 @@ node tools/rig-recipes/check-slices.mjs
 node tools/rig-recipes/bake-ledger.mjs --provenance
 ```
 
-All three exit non-zero on a refusal.
+```bash
+# ⭐ THE ROD IS ONE ROD. Renders every transition's frame-pair (hold→cast, cast→hold, hold→ground,
+#   hold→stow-V, hold→stow-H) at all 8 facings × 3 tiers and measures the rod's pivot, blank length,
+#   rendered extent, on-screen angle, yaw and which hand holds it. Fails if any seam drifts past
+#   tolerance — the owner's law for every tool: no teleport, no hand change without an animated
+#   hand-over, no size change, no orientation change across any transition.
+node tools/rig-recipes/rod-continuity.mjs
+node tools/rig-recipes/rod-continuity.mjs --tier deep      # one tier
+node tools/rig-recipes/rod-continuity.mjs --json           # the measurements, machine-readable
+
+# Regenerate the rod-mount handoff sidecar from the rigs (--check proves the committed file matches).
+node tools/rig-recipes/fisher-rod-mount.mjs
+node tools/rig-recipes/fisher-rod-mount.mjs --check
+```
+
+The in-editor twin of the continuity check is `RodContinuityTests`; both measure the same things off
+the same V8, and neither restates a number the rigs own.
+
+All of these exit non-zero on a refusal.
 
 **None of these scripts rebakes.** No PNG is written, opened for writing, or touched: the prop-mesh bake is
 not byte-deterministic, and a rebake would dirty sheets this lane never looked at.
