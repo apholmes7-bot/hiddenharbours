@@ -97,6 +97,8 @@ MonoBehaviour:
   MarketPriceLevelStPetersStore: 0.6
   MarketDailyRecovery: 0.5
   FrontedLicenceFee: 20
+  MaxOneHandFishLengthMeters: 0.62
+  FishLengthPerKgCubeRootMeters: 0.477
   HelmThrottle:
     AheadNotches: 4
     AsternNotches: 2

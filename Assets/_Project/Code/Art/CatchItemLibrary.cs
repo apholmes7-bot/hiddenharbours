@@ -88,6 +88,21 @@ namespace HiddenHarbours.Art
             return e.Variants[v];
         }
 
+        /// <summary>
+        /// Wire the whole table in one call (the importer that builds the committed asset, and tests) —
+        /// the <c>Configure</c> seam used across the lane. The arrays are private serialized fields
+        /// because they are the OWNER's to edit in an inspector, not an API; this is the one door in, and
+        /// it invalidates the lookup caches so a re-wired table is read fresh.
+        /// </summary>
+        public void Configure(KindEntry[] kinds, SpeciesEntry[] species, string fallbackKind = null)
+        {
+            if (kinds != null) _kinds = kinds;
+            if (species != null) _species = species;
+            if (!string.IsNullOrEmpty(fallbackKind)) _fallbackKind = fallbackKind;
+            _kindLookup = null;
+            _speciesLookup = null;
+        }
+
         /// <summary>The visual kind a hold species draws as (mapped, else the fallback).</summary>
         public string KindFor(string speciesId)
         {

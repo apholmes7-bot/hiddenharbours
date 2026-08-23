@@ -144,9 +144,21 @@ namespace HiddenHarbours.App.Editor
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
+            // ⭐ Say which of the two kinds of table this is, in the summary, rather than leaving the
+            // difference to be found in play. A pre-per-hand sidecar still imports a completely usable
+            // table — the wrist grid it carries is measured for BOTH hands at all eight facings, so a
+            // displaced prop still lands on a real wrist; what it loses is the 1–2.5 px grip nudge for
+            // the hand the rig did not resolve.
+            bool perHand = table.HasPerHandRows;
+
             summary = $"{(created ? "Created" : "Refreshed")} '{TablePath}' from rig pass {table.Pass:0.0} " +
                       $"at {ppu:0} px/m: {table.Props.Length} prop(s) × {table.FacingCount} facings, " +
-                      $"{table.Wrists.Length}/{GaitStates.Length} gait wrist grid(s)" +
+                      $"{table.Wrists.Length}/{GaitStates.Length} gait wrist grid(s), " +
+                      (perHand
+                          ? "BOTH hands measured per facing"
+                          : "one resolved hand per facing (this sidecar predates the per-hand bake — a " +
+                            "prop displaced into the other hand hangs off that hand's measured wrist " +
+                            "with no grip offset; re-bake the character kit to close the last 1–2.5 px)") +
                       (skipped > 0 ? $", {skipped} prop(s) SKIPPED (see the errors above)" : "") +
                       (gaitsMissing > 0 ? $", {gaitsMissing} gait(s) had no baked state (those fall back " +
                                           "to the rest pin)" : "") +
@@ -212,22 +224,7 @@ namespace HiddenHarbours.App.Editor
                         break;
                     }
 
-                    rows[i] = new CarryAnchorRow
-                    {
-                        Hand = HandSide(MiniJson.String(r, "hand"), MiniJson.Int(r, "hands", 1),
-                                        MiniJson.String(r, "mode")),
-                        Mount = string.Equals(MiniJson.String(r, "mode"), "back",
-                                              System.StringComparison.Ordinal)
-                                ? CarryMountKind.Back : CarryMountKind.Hand,
-                        // gripD is an OFFSET from the anchor — no pivot subtraction, y flipped.
-                        GripOffsetMeters = RodKitAnchorMath.OffsetPxToWorld(
-                            MiniJson.Float(r, "gripDx"), MiniJson.Float(r, "gripDy"), ppu),
-                        // rest is an ABSOLUTE cell point — measured from the pivot.
-                        RestOffsetMeters = RodKitAnchorMath.CellPxToPivotWorld(
-                            MiniJson.Float(r, "restX"), MiniJson.Float(r, "restY"), pivotX, pivotY, ppu),
-                        ItemFacing = MiniJson.Int(r, "itemDir"),
-                        Behind = MiniJson.Bool(r, "behind"),
-                    };
+                    rows[i] = ReadRow(r, pivotX, pivotY, ppu);
                 }
                 if (!ok) { skipped++; continue; }
 
@@ -237,9 +234,72 @@ namespace HiddenHarbours.App.Editor
                     Rig = MiniJson.String(node, "rig"),
                     ItemScale = MiniJson.Float(node, "itemScale", 1f),
                     Rows = rows,
+                    LeftRows = ReadForcedHand(kv.Key, rowsJson, "L", pivotX, pivotY, ppu, facings),
+                    RightRows = ReadForcedHand(kv.Key, rowsJson, "R", pivotX, pivotY, ppu, facings),
                 });
             }
             return built.ToArray();
+        }
+
+        /// <summary>
+        /// One facing row, converted. Shared by the resolved row and by both forced-hand rows, so the
+        /// three can never be read with three slightly different rules — which is exactly how the grip
+        /// and the rest pin got confused for each other the first time.
+        ///
+        /// <para>The two point fields are DIFFERENT QUANTITIES: <c>gripD</c> is an OFFSET from the anchor
+        /// (no pivot subtraction); <c>rest</c> is an ABSOLUTE cell point (measured from the pivot).
+        /// Confusing them is a silent ~1 m error that still looks like a plausible pose.</para>
+        /// </summary>
+        static CarryAnchorRow ReadRow(Dictionary<string, object> r, float pivotX, float pivotY, float ppu)
+            => new CarryAnchorRow
+            {
+                Hand = HandSide(MiniJson.String(r, "hand"), MiniJson.Int(r, "hands", 1),
+                                MiniJson.String(r, "mode")),
+                Mount = string.Equals(MiniJson.String(r, "mode"), "back", System.StringComparison.Ordinal)
+                        ? CarryMountKind.Back : CarryMountKind.Hand,
+                GripOffsetMeters = RodKitAnchorMath.OffsetPxToWorld(
+                    MiniJson.Float(r, "gripDx"), MiniJson.Float(r, "gripDy"), ppu),
+                RestOffsetMeters = RodKitAnchorMath.CellPxToPivotWorld(
+                    MiniJson.Float(r, "restX"), MiniJson.Float(r, "restY"), pivotX, pivotY, ppu),
+                ItemFacing = MiniJson.Int(r, "itemDir"),
+                Behind = MiniJson.Bool(r, "behind"),
+            };
+
+        /// <summary>
+        /// The eight rows the rig measured with this prop <b>forced into one named hand</b> — the
+        /// <c>byHand.L</c> / <c>byHand.R</c> block <c>CharacterRigBaker</c> writes beside each row.
+        /// (⚠️ <c>byHand</c>, not <c>hands</c> — that key is the row's two-handed COUNT.)
+        ///
+        /// <para><b>Why the bake has to supply these and this importer cannot compute them.</b> The rig
+        /// builds the grip as a body-local <c>{out, fwd, up}</c> whose <c>out</c> is signed by the
+        /// carrying hand, then projects the triple through the camera basis into the two numbers the
+        /// sidecar carries. The projection mixes all three components, so one hand's projected offset is
+        /// not the other's mirror at any heading but N and S — and a 2-D result cannot be decomposed back
+        /// into the 3-D triple. Measured in the harness, or absent: never converted.</para>
+        ///
+        /// <para>Absent is LEGAL and quiet-ish — a sidecar baked before the per-hand block simply has no
+        /// <c>byHand</c> key, and the runtime falls back to the requested hand's measured WRIST with no
+        /// grip. It is reported once in the build summary rather than per row, because on a pre-per-hand
+        /// sidecar it is true of every row and would drown the console.</para>
+        /// </summary>
+        static CarryAnchorRow[] ReadForcedHand(string propKey, List<object> rowsJson, string hand,
+                                               float pivotX, float pivotY, float ppu, int facings)
+        {
+            var rows = new CarryAnchorRow[facings];
+            for (int i = 0; i < facings; i++)
+            {
+                var forced = MiniJson.Dict(MiniJson.Dict(rowsJson[i], "byHand"), hand);
+                if (forced == null) return System.Array.Empty<CarryAnchorRow>();
+                if (!MiniJson.Has(forced, "behind"))
+                {
+                    Debug.LogError($"[CarryAnchorTableBuilder] Prop '{propKey}' row {i} hand '{hand}' " +
+                                   "has no 'behind' flag — the draw order would be guessed. The whole " +
+                                   "forced-hand block is DROPPED for this prop; re-bake the character kit.");
+                    return System.Array.Empty<CarryAnchorRow>();
+                }
+                rows[i] = ReadRow(forced, pivotX, pivotY, ppu);
+            }
+            return rows;
         }
 
         /// <summary>

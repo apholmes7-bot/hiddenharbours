@@ -289,13 +289,24 @@ namespace HiddenHarbours.Economy
         /// </summary>
         private IFuelVessel HeldVessel()
         {
-            ICarriable held = GameServices.Hands?.Carried;
-            if (ReferenceEquals(held, _heldCache)) return _vesselCache;
+            // ⚠️ BOTH hands. She can be holding the can in one and the rod in the other, and the
+            // single-slot read (hands.Carried) answers only for the hand she filled last — which would
+            // make the pump refuse a can that is plainly in her grip.
+            CarriedItem.Both(GameServices.Hands, out ICarriable a, out ICarriable b);
+            if (ReferenceEquals(a, _heldCache) && ReferenceEquals(b, _offHandCache)) return _vesselCache;
 
-            _heldCache = held;
-            Transform t = held?.Transform;
-            _vesselCache = t != null ? t.GetComponent<IFuelVessel>() : null;
+            _heldCache = a;
+            _offHandCache = b;
+            _vesselCache = VesselOn(a) ?? VesselOn(b);
             return _vesselCache;
+        }
+
+        /// <summary>The fuel vessel component on one carried thing, or null. Split out so the memo above
+        /// asks the same question of each hand.</summary>
+        private static IFuelVessel VesselOn(ICarriable held)
+        {
+            Transform t = held?.Transform;
+            return t != null ? t.GetComponent<IFuelVessel>() : null;
         }
 
         /// <summary>
@@ -332,6 +343,7 @@ namespace HiddenHarbours.Economy
 
         // The memo behind HeldVessel(). Never read anywhere else.
         private ICarriable _heldCache;
+        private ICarriable _offHandCache;   // the second hand, so the memo above keys on the PAIR
         private IFuelVessel _vesselCache;
 
         // What just happened, in words. Loc-seam literals (HudStrings convention). The money-limited case

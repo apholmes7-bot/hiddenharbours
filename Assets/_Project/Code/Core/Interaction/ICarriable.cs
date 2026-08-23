@@ -124,9 +124,64 @@ namespace HiddenHarbours.Core
         /// plain MonoBehaviour's <c>OnEnable</c> never fires there and nothing publishes itself.</summary>
         public static bool InHand(ICarrier hands, string defId)
         {
-            if (string.IsNullOrEmpty(defId) || hands == null) return false;
-            ICarriable held = hands.Carried;
-            return held != null && string.Equals(held.DefId, defId, System.StringComparison.Ordinal);
+            if (string.IsNullOrEmpty(defId)) return false;
+            Both(hands, out ICarriable a, out ICarriable b);
+            return Matches(a, defId) || Matches(b, defId);
+        }
+
+        private static bool Matches(ICarriable held, string defId)
+            => held != null && string.Equals(held.DefId, defId, System.StringComparison.Ordinal);
+
+        /// <summary>
+        /// <b>Everything in the carrier's hands, right hand first</b> — the one place the two-hand
+        /// downcast is written, so no lane has to know whether the carrier it was handed has one slot or
+        /// two. The order is fixed (right, then left) rather than "most recent", so a caller that
+        /// memoizes on the pair sees a stable answer while nothing has changed.
+        ///
+        /// <para><paramref name="second"/> is null for a one-slot carrier (a test double), for a single
+        /// thing held, and for a two-handed CRADLE — a cradled fish is ONE object across both hands and
+        /// must be reported once, or every caller here would count it twice. Both outputs are laundered,
+        /// so a plain <c>!= null</c> is right.</para>
+        ///
+        /// <para>No allocation and no enumerator: two out parameters, because every caller is on a
+        /// resolve or gate path that runs while the player merely stands near something (rule 7).</para>
+        /// </summary>
+        public static void Both(ICarrier hands, out ICarriable first, out ICarriable second)
+        {
+            first = second = null;
+            if (hands == null) return;
+
+            if (hands is IHandsCarrier two)
+            {
+                HandSlots slots = two.Slots;
+                if (slots == null) { first = hands.Carried; return; }
+
+                first = slots.Right ?? slots.Left;
+                if (!slots.SpansBoth && !ReferenceEquals(slots.Left, first)) second = slots.Left;
+                return;
+            }
+
+            first = hands.Carried;
+        }
+
+        /// <summary>True when <paramref name="thing"/> is in EITHER hand — what a carriable asks to know
+        /// whether it is the one being held. Replaces <c>ReferenceEquals(hands.Carried, this)</c>, which
+        /// was right while there was one slot and silently answers "no" for the off hand now there are
+        /// two.</summary>
+        public static bool IsHeld(ICarrier hands, ICarriable thing)
+        {
+            if (thing == null) return false;
+            Both(hands, out ICarriable a, out ICarriable b);
+            return ReferenceEquals(a, thing) || ReferenceEquals(b, thing);
+        }
+
+        /// <summary>The thing in her hands of this kind, or null — "is there a catch in her hands", asked
+        /// without caring which hand it is in. A one-slot carrier answers from its single slot.</summary>
+        public static ICarriable Held(ICarrier hands, HandLoad load)
+        {
+            if (hands is IHandsCarrier two && two.Slots != null) return two.Slots.FirstOf(load);
+            ICarriable one = hands?.Carried;
+            return one != null && HandSlots.LoadOf(one) == load ? one : null;
         }
     }
 }

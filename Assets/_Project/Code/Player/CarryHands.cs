@@ -8,14 +8,31 @@ namespace HiddenHarbours.Player
     /// <b>The fisher's hands</b> — the one place that knows what is being carried, and the component that
     /// draws it there.
     ///
-    /// <para><b>Why the state lives HERE and not on the thing carried.</b> "You may carry one object" is a
+    /// <para><b>Why the state lives HERE and not on the thing carried.</b> "Which hand is free" is a
     /// single-occupancy invariant, and an invariant enforced by each of N objects individually is not
     /// enforced at all — two containers both believing they were picked up is a state no test would catch
-    /// until the second one drew inside the first. The hands are the resource, so the hands own the slot,
+    /// until the second one drew inside the first. The hands are the resource, so the hands own the slots,
     /// and <see cref="CarriableFuelContainer"/> asks them. It is also why this is a component and not a
     /// field on <see cref="FuelLevelPresenter"/>: a presenter draws what it is handed and must never be the
     /// thing that remembers (the lesson of the six private ride smoothers — state parked in a presenter is
     /// state nothing else can read or test).</para>
+    ///
+    /// <para><b>⭐ TWO HANDS, and what that changed.</b> There used to be one slot, so a landed fish
+    /// DISPLACED the rod: the rod slung under her arm and the fish took the hand. The owner's ruling is
+    /// that she has two hands and should use them — a fish in one and the rod in the other, a pail in one
+    /// and the rod in the other. The rule itself is <see cref="HandSlots"/>, a plain object in Core with
+    /// no scene and no components, so the whole truth table is provable headless; this class is what
+    /// re-parents, poses and speaks for it.</para>
+    ///
+    /// <para><b>THE CONTINUITY LAW, as it lands here.</b> <i>While a hand is free, nothing already held
+    /// moves.</i> Taking something up fills a FREE slot — it never swaps hands, never slings, never
+    /// re-poses the other hand — and a refusal changes nothing at all. Two consequences worth stating,
+    /// because both would otherwise look like bugs: (1) the sling now fires ONLY when both hands are
+    /// genuinely committed, which is the one case where the alternative is dropping the catch on the
+    /// floor; (2) a thing held ALONE still follows the rig's own per-facing preferred hand as she turns
+    /// (the shipped look, where a small prop moves to the near hand on the away headings), while a thing
+    /// sharing the pair keeps the hand it was given — because with two things held, a per-facing swap
+    /// would slide one of them across the body and through the other.</para>
     ///
     /// <para><b>What is NOT here.</b> No key is read: the press arrives through <see cref="InteractVerb"/>
     /// (M2-39), which is the entire point of that seam — the dev key ledger is spent A–Z and a new feature
@@ -24,11 +41,10 @@ namespace HiddenHarbours.Player
     /// below.</para>
     ///
     /// <para><b>Persistence is deliberately absent.</b> A set-down container is SESSION-LOCAL — it exists
-    /// until the scene does. Nothing is placed in a shipped region yet, so there is nothing to reload, and
-    /// the world-placed wiring (the <c>PlacedTrap</c> / ADR 0020 precedent) belongs to the PR that actually
-    /// stands containers on a wharf. Parenting is restored on set-down so a container put back down lands
-    /// in the region it came from rather than leaking into the persistent core, which is the honest
-    /// half-measure until that PR exists.</para>
+    /// until the scene does. The world-placed wiring (the <c>PlacedTrap</c> / ADR 0020 precedent) belongs
+    /// to the PR that actually stands containers on a wharf. Parenting is restored on set-down so a
+    /// container put back down lands in the region it came from rather than leaking into the persistent
+    /// core, which is the honest half-measure until that PR exists.</para>
     ///
     /// <para><b>Rules.</b> Visual + state only; the sim is untouched (rule 5). Every offset and magnitude is
     /// a serialized tunable (rule 6). The per-frame path does no allocation and no <c>Find</c> — the
@@ -39,7 +55,7 @@ namespace HiddenHarbours.Player
     // sprite mirrors the order the player ACTUALLY drew at rather than last frame's. Same reason, and the
     // same number, as DeckRiderVisual.
     [DefaultExecutionOrder(100)]
-    public sealed class CarryHands : MonoBehaviour, ICarrier, ICatchHands
+    public sealed class CarryHands : MonoBehaviour, IHandsCarrier, ICatchHands
     {
         [Header("Wiring (auto-resolved off this object if empty)")]
         [Tooltip("The player's own renderer — the SORTING DATUM the carried sprite rides. Null = the " +
@@ -56,17 +72,19 @@ namespace HiddenHarbours.Player
 
         [Header("Where it hangs")]
         [Tooltip("The character rig's HAND-PROP table (imported from the baked sidecar): per prop, per " +
-                 "facing, which hand holds it, how far off that wrist it sits and whether it draws over " +
-                 "or under. Anything whose ICarryAnchored.HandPropKey names a row in here is posed from " +
-                 "it. Null, or a carried thing with no row, falls back to the single offset below.")]
+                 "facing, per hand, which wrist holds it, how far off that wrist it sits and whether it " +
+                 "draws over or under. Anything whose ICarryAnchored.HandPropKey names a row in here is " +
+                 "posed from it. Null, or a carried thing with no row, falls back to the single offset " +
+                 "below.")]
         [SerializeField] private CarryAnchorTableDef _carryAnchors;
 
         [Header("How it is held (greybox tunables, rule 6)")]
         [Tooltip("FALLBACK only — where a carried object with no hand-prop row sits relative to the " +
-                 "fisher's feet, in metres. ⚠️ ONE offset for every facing, which is why it is only a " +
-                 "fallback now: the fuel kit bakes no hand anchors and the rig bakes no spade row, so a " +
-                 "jerry can and a shovel still hang here. Everything the rig DOES bake a row for (the " +
-                 "rod, a fish, a handful of clams) is posed from the table above and ignores this.")]
+                 "fisher's feet, in metres, on her RIGHT side. ⚠️ ONE offset for every facing, which is " +
+                 "why it is only a fallback now: the fuel kit bakes no hand anchors and the rig bakes no " +
+                 "spade or pail row, so a jerry can, a shovel and the dev bucket still hang here. " +
+                 "Everything the rig DOES bake a row for (the rod, a fish, a handful of clams) is posed " +
+                 "from the table above and ignores this.")]
         [SerializeField] private Vector2 _hipOffsetMeters = new Vector2(0.28f, 0.34f);
 
         [Tooltip("How many sorting orders the carried sprite draws ahead of the body when the fisher " +
@@ -75,29 +93,50 @@ namespace HiddenHarbours.Player
                  "which flickers.")]
         [SerializeField, Min(0)] private int _aheadOrders = 1;
 
-        private Transform _placedParent;      // where the carried thing hung before it was lifted
-        private ICarriable _carried;
+        private readonly HandSlots _slots = new HandSlots();
+
+        // Where each hand's occupant hung before it was lifted, indexed by hand (0 = left, 1 = right).
+        // Two fields rather than a dictionary because there are exactly two hands and the set-down path
+        // must not allocate to answer "where did this come from".
+        private readonly Transform[] _placedParents = new Transform[2];
+
+        private ICarriable _lastTaken;
         private bool _resolved;
 
         /// <summary>
-        /// What is in the fisher's hands right now, or null. The single source of truth for "am I carrying
-        /// something" — <see cref="CarriableFuelContainer"/> reads it, nothing writes it but
-        /// <see cref="TryPickUp"/> and <see cref="TryPlace"/>.
+        /// <b>The two hands</b> — which hand holds what, and the whole sharing rule. Public so the interact
+        /// candidates and the tests can ask; nothing outside this class may mutate it, which is why the
+        /// verbs below are the only writers.
+        /// </summary>
+        public HandSlots Slots => _slots;
+
+        /// <summary>
+        /// The thing she took up MOST RECENTLY, or null — the single-slot read
+        /// <see cref="ICarrier.Carried"/> has always been, generalised in the only way that keeps its old
+        /// meaning: with one slot, the last thing put there IS the thing in her hands.
         ///
-        /// <para><b>⚠ The getter launders Unity's fake-null and the cast is load-bearing.</b> The backing
-        /// field is INTERFACE-typed, and an interface reference does not carry
-        /// <see cref="UnityEngine.Object"/>'s <c>==</c> overload — so a carried object destroyed out from
-        /// under the hands (a region unloaded, a test tearing down) would read here as a live
-        /// <see cref="ICarriable"/> and hand every consumer a corpse whose <c>!= null</c> passes. Casting
-        /// back to <c>Object</c> re-enters the Unity-aware comparison. Same reason, same shape, as
-        /// <see cref="GameServices.Hands"/>'s own getter.</para>
+        /// <para><b>⚠️ Do not ask this "is X in her hands".</b> With two slots it answers only for the
+        /// hand she filled last, so the off hand reads as empty. Every such question goes through
+        /// <see cref="CarriedItem.IsHeld"/> / <see cref="CarriedItem.InHand"/> /
+        /// <see cref="CarriedItem.Held"/>, which consult both and handle a one-slot carrier too.</para>
+        ///
+        /// <para>The getter launders Unity's fake-null: an interface reference does not carry
+        /// <see cref="Object"/>'s <c>==</c> overload, so a carried object destroyed out from under the
+        /// hands would read here as a live <see cref="ICarriable"/> and hand every consumer a corpse whose
+        /// <c>!= null</c> passes.</para>
         /// </summary>
         public ICarriable Carried
-            => _carried is Object o && o == null ? null : _carried;
+        {
+            get
+            {
+                ICarriable last = _lastTaken is Object o && o == null ? null : _lastTaken;
+                if (last != null && _slots.SideOf(last) != CarryHandSide.None) return last;
+                return _slots.Right ?? _slots.Left;
+            }
+        }
 
-        /// <summary>True when something is held. Sugar over <see cref="Carried"/>, for readability at the
-        /// call sites that only care whether the hands are free.</summary>
-        public bool IsCarrying => Carried != null;
+        /// <summary>True when either hand holds something.</summary>
+        public bool IsCarrying => !_slots.IsEmpty;
 
         // ---- the Core relay ------------------------------------------------------------------------
 
@@ -127,18 +166,19 @@ namespace HiddenHarbours.Player
             if (ReferenceEquals(GameServices.CatchHands, this)) GameServices.CatchHands = null;
         }
 
-        // ---- the catch seam: a landed clam goes in your hand, and the tool tucks under your arm -------
+        // ---- the catch seam: a landed catch takes the free hand ---------------------------------------
 
         /// <summary>
-        /// What is SLUNG — the tool tucked away to free the hands for a landed catch, or null.
+        /// What is SLUNG — the tool tucked away to free a hand for a landed catch, or null.
         ///
-        /// <para><b>Why a second slot exists when the design says "one tool at a time".</b> It is not a
-        /// second carry slot and it cannot be used as one: nothing may put anything here deliberately.
-        /// It exists because the dig requires the shovel IN HAND and the dig's own product must also go in
-        /// hand, so without somewhere for the shovel to go the very first clam has nowhere to land and the
-        /// loop cannot close. That is the owner's stated default — "the rod auto-stows to slung on a
-        /// landed catch, fish in hand" — and the sling is strictly a consequence of the catch: it fills
-        /// only in <see cref="TryPutInHand"/> and empties the moment the hands are free.</para>
+        /// <para><b>It is not a third carry slot and it cannot be used as one:</b> nothing may put anything
+        /// here deliberately. It exists for the one case two hands still cannot cover — <b>both</b> hands
+        /// already committed when a catch lands, where the alternative is dropping the fish on the floor.
+        /// That is rarer than it used to be: with one slot the shovel slung on EVERY dug clam, and now it
+        /// only slings if the other hand is holding something too.</para>
+        ///
+        /// <para>The sling fills only in <see cref="TryPutInHand"/> and empties the moment a hand is
+        /// free.</para>
         /// </summary>
         public ICarriable Slung => _slung is Object o && o == null ? null : _slung;
 
@@ -147,34 +187,63 @@ namespace HiddenHarbours.Player
         /// <summary>
         /// Put a landed catch in her hands (<see cref="ICatchHands.TryPutInHand"/>).
         ///
-        /// <para>Refuses — returning false, so the caller lands it in its own hold instead — when the
-        /// hands already hold a CATCH. That is the ruling's over-encumbrance rule in its cheapest honest
-        /// form: full is full, and you deal with the clam you have before you dig another
-        /// (diegetic-ui-and-inventory.md §4.2, "no room = you cannot pick it up", no weight meter and no
-        /// slow-crawl).</para>
+        /// <para>Refuses — returning false, so the caller lands it in its own hold instead — when a hand
+        /// already holds a CATCH (the over-encumbrance rule in its cheapest honest form: full is full, and
+        /// you deal with the fish you have before you land another), and when the fish is too long for one
+        /// hand and she is not empty-handed enough to cradle it.</para>
         ///
-        /// <para>A TOOL in the hands is not a refusal — it is slung, and taken back the moment the catch
-        /// leaves. A tool already slung is, though: that would mean a catch is in hand, which the first
-        /// check has already covered, so it is belt-and-braces against a state nothing can currently
-        /// reach.</para>
+        /// <para><b>The size rule.</b> A fish past <see cref="GameConfig.MaxOneHandFishLengthMeters"/> is
+        /// cradled across both arms, so it needs BOTH hands free. It will not displace the rod to get
+        /// them — that would move something already held — so with anything at all in her hands a big fish
+        /// simply does not come aboard by hand and goes into the hold the caller offers instead. Which is
+        /// the honest picture: you do not one-hand a twelve-kilo cod while holding a rod.</para>
+        ///
+        /// <para><b>Nothing changes on a refusal.</b> Including the sling: if the tool is tucked away and
+        /// the catch STILL cannot be taken, the tool comes straight back out. A half-applied refusal is
+        /// the failure mode the continuity law exists to prevent.</para>
         /// </summary>
         public bool TryPutInHand(in CatchItem item)
         {
-            if (Carried is CarriableCatch) return false;      // one catch at a time — full is full
-            if (Slung != null) return false;                  // unreachable today; see the remarks
+            if (Slung != null) return false;                  // a sling outstanding means a hand is busy
 
-            ICarriable tool = Carried;
-            if (tool != null)
+            float lengthMeters = CatchSize.LengthMeters(item);
+            bool cradle = HandSlots.NeedsBothHands(lengthMeters, GameServices.MaxOneHandFishLengthMeters);
+
+            // Asked BEFORE anything is built: a catch is spawned, so a refusal discovered afterwards would
+            // mean creating a GameObject only to destroy it in the same frame.
+            HandSlotRefusal refusal = _slots.CanTake(HandLoad.Catch, cradle);
+
+            ICarriable tucked = null;
+            if (refusal == HandSlotRefusal.HandsFull)
             {
-                // Tuck it under the arm: it stays parented to the fisher and stays HERS, it simply stops
-                // being posed at the hip. Deliberately not TryPlace() — setting the shovel on the sand
-                // every time a clam comes up would be a different, worse game.
-                _slung = tool;
-                _carried = null;
-                if (tool.Transform != null) tool.Transform.gameObject.SetActive(false);
+                // Both hands committed. Tuck a TOOL under her arm — it stays parented to the fisher and
+                // stays HERS, it simply stops being posed at a wrist. Deliberately not TryPlace(): setting
+                // the shovel on the sand every time a clam comes up would be a different, worse game.
+                tucked = _slots.FirstOf(HandLoad.Tool);
+                if (tucked == null) return false;
+                Sling(tucked);
+                refusal = _slots.CanTake(HandLoad.Catch, cradle);
             }
 
-            _carried = CarriableCatch.Create(item, transform);
+            if (refusal != HandSlotRefusal.None)
+            {
+                if (tucked != null) TakeBackSlung();          // put it back exactly as it was
+                return false;
+            }
+
+            CarriableCatch catchObject = CarriableCatch.Create(item, transform);
+            CarryHandSide preferred = PreferredHand(catchObject);
+            if (_slots.TryTake(catchObject, cradle, preferred, out CarryHandSide side) != HandSlotRefusal.None)
+            {
+                // Unreachable: CanTake said yes on the same state a line ago. Belt-and-braces, because the
+                // alternative to a cheap guard is a catch object orphaned on the fisher forever.
+                DestroyCatch(catchObject);
+                if (tucked != null) TakeBackSlung();
+                return false;
+            }
+
+            RememberParent(side, null);
+            _lastTaken = catchObject;
             ApplyCarriedPose();
             EventBus.Publish(new CatchLanded(item));
             return true;
@@ -191,7 +260,7 @@ namespace HiddenHarbours.Player
         public bool TryGiveCatchTo(IHold hold)
         {
             if (hold == null) return false;
-            if (Carried is not CarriableCatch held || !held.HasItem) return false;
+            if (_slots.FirstOf(HandLoad.Catch) is not CarriableCatch held || !held.HasItem) return false;
             if (hold.UsedUnits >= hold.CapacityUnits) return false;
 
             CatchItem item = held.Item;
@@ -206,34 +275,38 @@ namespace HiddenHarbours.Player
             EventBus.Publish(new FishCaught(item));
 
             held.Take();
-            _carried = null;
-
-            // ⚠️ Destroy() THROWS in edit mode ("Destroy may not be called from edit mode"), and this path
-            // is reached by every EditMode test of the stack. Object.Destroy is also DEFERRED to end of
-            // frame in play mode, which would leave a taken-from catch parented to the fisher for the rest
-            // of the frame — harmless, but the immediate form is the honest one here since the object has
-            // already given up its item.
-            if (Application.isPlaying) Destroy(held.gameObject);
-            else DestroyImmediate(held.gameObject);
+            Forget(held);
+            DestroyCatch(held);
 
             TakeBackSlung();
             return true;
         }
 
         /// <summary>
-        /// Put the slung tool back in her hands, if the hands are free. Idempotent and silent when there
-        /// is nothing slung — this is called on every path that empties the hands, so "nothing to do" is
-        /// the ordinary case.
+        /// Put the slung tool back in her hands, if a hand is free. Idempotent and silent when there is
+        /// nothing slung — this is called on every path that empties a hand, so "nothing to do" is the
+        /// ordinary case.
         /// </summary>
         public void TakeBackSlung()
         {
             ICarriable slung = Slung;
-            if (slung == null || IsCarrying) return;
+            if (slung == null) return;
+            if (_slots.CanTake(HandSlots.LoadOf(slung), needsBothHands: false) != HandSlotRefusal.None) return;
 
             _slung = null;
             if (slung.Transform != null) slung.Transform.gameObject.SetActive(true);
-            _carried = slung;
-            ApplyCarriedPose();
+            if (_slots.TryTake(slung, false, PreferredHand(slung), out CarryHandSide side)
+                == HandSlotRefusal.None)
+            {
+                RememberParent(side, _slungParent);
+                _slungParent = null;
+                _lastTaken = slung;
+                ApplyCarriedPose();
+            }
+            else
+            {
+                Sling(slung);   // unreachable (CanTake agreed a line ago); never leave it in limbo
+            }
         }
 
         /// <summary>The heading the BODY is drawn at right now (compass degrees, 0 = N, CW) — the one
@@ -253,13 +326,16 @@ namespace HiddenHarbours.Player
         }
 
         /// <summary>
-        /// Lift a container into the hands. Returns <see cref="CarryRefusal.None"/> on success; any other
+        /// Lift a container into a hand. Returns <see cref="CarryRefusal.None"/> on success; any other
         /// value means nothing changed and the caller should say so.
         ///
         /// <para>The GameObject is re-parented, never rebuilt — which is exactly why the fill survives a
         /// carry with no code to carry it: the <see cref="FuelLevelPresenter"/> that holds the level is the
         /// same component on the same object throughout. Its previous parent is remembered so
-        /// <see cref="TryPlace"/> can put it back in the region it came from.</para>
+        /// <see cref="TryPlace(ICarriable)"/> can put it back in the region it came from.</para>
+        ///
+        /// <para>Which hand: the one the RIG prefers for this prop at the heading she is drawn at, when it
+        /// is free; the other hand otherwise. Nothing already held is moved to make room.</para>
         /// </summary>
         public CarryRefusal TryPickUp(ICarriable container)
         {
@@ -268,11 +344,21 @@ namespace HiddenHarbours.Player
             // destroyed one has no transform to re-parent.
             if (container == null || container.Transform == null) return CarryRefusal.NotCarriable;
 
-            CarryRefusal refusal = CarryMath.CanPickUp(container.IsCarriable, IsCarrying);
-            if (refusal != CarryRefusal.None) return refusal;
+            // ⚠️ The SLOT verdict is asked first, and the order is the one CarryMath.CanPickUp has always
+            // kept: standing over a bulk tank with your hands full, "Your hands are full." is the useful
+            // sentence — it names the thing you can do something about. Telling you the ten-thousand-litre
+            // tank is too heavy is true, unhelpful, and you knew.
+            HandSlotRefusal verdict = _slots.CanTake(HandSlots.LoadOf(container), needsBothHands: false);
+            if (verdict != HandSlotRefusal.None) return CarryMath.From(verdict);
+            if (!container.IsCarriable) return CarryRefusal.NotCarriable;
 
-            _placedParent = container.Transform.parent;
-            _carried = container;
+            HandSlotRefusal refusal =
+                _slots.TryTake(container, needsBothHands: false, PreferredHand(container),
+                               out CarryHandSide side);
+            if (refusal != HandSlotRefusal.None) return CarryMath.From(refusal);
+
+            RememberParent(side, container.Transform.parent);
+            _lastTaken = container;
             container.OnLifted(this);
 
             container.Transform.SetParent(transform, worldPositionStays: false);
@@ -280,23 +366,30 @@ namespace HiddenHarbours.Player
             return CarryRefusal.None;
         }
 
+        /// <summary>Set down the thing she took up most recently. The no-argument form every press path
+        /// used while there was one slot; a candidate that knows WHICH object it is should call
+        /// <see cref="TryPlace(ICarriable)"/> so the off hand can be emptied too.</summary>
+        public CarryRefusal TryPlace() => TryPlace(Carried);
+
         /// <summary>
-        /// Set what is in the hands down at the fisher's feet. Returns <see cref="CarryRefusal.None"/> on
-        /// success.
+        /// Set one carried thing down at the fisher's feet. Returns <see cref="CarryRefusal.None"/> on
+        /// success; the other hand is untouched either way.
         ///
         /// <para>Valid ground is <see cref="TidalWalkability.IsWalkableNow"/> at the fisher's own position —
         /// the same read the walker gates on, so "somewhere I can stand" and "somewhere I can put this
         /// down" can never disagree. It fails open in a region with no tide gate, which is the right way
         /// round: a can that cannot be put down because a service is not installed is a soft-lock.</para>
         /// </summary>
-        public CarryRefusal TryPlace()
+        public CarryRefusal TryPlace(ICarriable thing)
         {
             Vector2 feet = transform.position;
-            CarryRefusal refusal = CarryMath.CanPlace(IsCarrying, TidalWalkability.IsWalkableNow(feet));
+            CarryHandSide side = _slots.SideOf(thing);
+            CarryRefusal refusal = CarryMath.CanPlace(side != CarryHandSide.None,
+                                                      TidalWalkability.IsWalkableNow(feet));
             if (refusal != CarryRefusal.None) return refusal;
 
-            ICarriable container = Carried;
-            _carried = null;
+            Transform remembered = ParentFor(side);
+            Forget(thing);
 
             // Back to the region it came from when that parent is still alive AND still on screen; the
             // scene root otherwise (the region was unloaded or toggled out under it, which is not a
@@ -309,14 +402,14 @@ namespace HiddenHarbours.Player
             // sleeping root: the object survives, inactive — invisible, unregistered from the interact
             // registry, and unrecoverable without going back and re-activating a scene. Dropping to the
             // scene root instead leaves it where the fisher actually stood, which is what she just did.
-            Transform parent = _placedParent != null && _placedParent.gameObject.activeInHierarchy
-                               ? _placedParent
+            Transform parent = remembered != null && remembered.gameObject.activeInHierarchy
+                               ? remembered
                                : null;
-            container.Transform.SetParent(parent, worldPositionStays: false);
-            container.Transform.position = feet;
-            _placedParent = null;
+            thing.Transform.SetParent(parent, worldPositionStays: false);
+            thing.Transform.position = feet;
 
-            container.OnPlaced();
+            thing.OnPlaced();
+            TakeBackSlung();
             return CarryRefusal.None;
         }
 
@@ -326,49 +419,95 @@ namespace HiddenHarbours.Player
         }
 
         /// <summary>
-        /// State the carried object's pose from the body, every frame: where it hangs, which baked facing
+        /// State every carried object's pose from the body, every frame: where it hangs, which baked facing
         /// it shows, and which order it draws at. <b>Stated, never accumulated</b> — the deck rider's rule,
         /// for the deck rider's reason. Public so a test can settle the pose without waiting a frame.
         ///
-        /// <para><b>Two paths, and the table wins whenever it can answer.</b> A carried thing that names a
-        /// hand-prop row is pinned to the LIVE wrist for the cell the body is drawing this frame, shows the
-        /// cell of its own turntable the rig chose, and draws over or under per the rig's own measurement.
-        /// Everything else — a jerry can, a shovel, anything held by a carrier with no iso skin — keeps
-        /// the single offset and the heading-derived order that shipped before the table existed. The
-        /// fallback is not a degraded mode; it is what those objects have always looked like.</para>
+        /// <para><b>The hand a thing is posed from depends on how many she is holding, and that is
+        /// deliberate.</b> Alone, a prop is posed from the rig's own RESOLVED row for the facing she is
+        /// drawn at — so a fish still moves to the near hand on the away headings, which is the shipped
+        /// look and is measured art rather than a rule. Sharing the pair, each prop is posed from the row
+        /// for the hand it was actually GIVEN: two things both following a per-facing preference would
+        /// meet in the same hand at the headings where they agree.</para>
+        /// </summary>
+        public void ApplyCarriedPose()
+        {
+            _slots.ForgetDestroyed();
+            if (_slots.IsEmpty) return;
+            Resolve();
+
+            if (_slots.SpansBoth)
+            {
+                // A cradle is one object across both wrists, and the row that describes it is the rig's
+                // own (whose Hand is Both, or — on the shipped table, which bakes no cradle row — one
+                // hand). Asking for a named hand here would be asking the table a question about a pose
+                // it does not describe.
+                Pose(_slots.Right, CarryHandSide.None);
+                return;
+            }
+
+            bool sharing = _slots.UsedHands >= 2;
+            ICarriable right = _slots.Right, left = _slots.Left;
+            if (right != null) Pose(right, sharing ? CarryHandSide.Right : CarryHandSide.None);
+            if (left != null) Pose(left, sharing ? CarryHandSide.Left : CarryHandSide.None);
+        }
+
+        /// <summary>
+        /// One carried thing, posed. <paramref name="hand"/> is <see cref="CarryHandSide.None"/> for "no
+        /// particular hand — use the rig's resolved row", which is what a thing carried alone gets.
         ///
         /// <para><b>⚠️ The two paths must not be merged into one "compute an offset then apply it".</b>
         /// They disagree about the DRAW ORDER at north, and the table is the one that is right: deriving
         /// the order from the heading puts a small held item behind the body at N, where the wrist is
         /// 0.215 m out and the torso only ~0.115 m half-wide, so the item is really clear of the
-        /// silhouette. That is the bug that made a held clam vanish, and it is fixed here by taking the
-        /// rig's answer rather than by tuning the epsilon in <see cref="CarryMath.AheadOrdersFor"/>.</para>
+        /// silhouette. That is the bug that made a held clam vanish, and it is fixed by taking the rig's
+        /// answer rather than by tuning the epsilon in <see cref="CarryMath.AheadOrdersFor"/>.</para>
         /// </summary>
-        public void ApplyCarriedPose()
+        private void Pose(ICarriable carried, CarryHandSide hand)
         {
-            ICarriable carried = Carried;      // read ONCE — the getter does the fake-null laundering
-            if (carried == null) return;
-            Resolve();
+            if (carried == null || carried.Transform == null) return;
 
-            if (TryAnchorRow(carried, out CarryAnchorRow row, out int facingRow))
+            if (TryAnchorRow(carried, hand, out CarryAnchorRow row, out int facingRow))
             {
                 carried.Transform.localPosition =
                     _carryAnchors.PinMeters(row, _character.Gait, facingRow, _character.Frame);
                 carried.ShowFacing(row.ItemFacing);
-                RideBodyBand(carried, row.Behind ? -_aheadOrders : _aheadOrders);
+                RideBodyBand(carried, row.Behind ? -OrdersFor(hand) : OrdersFor(hand));
                 return;
             }
 
-            carried.Transform.localPosition = _hipOffsetMeters;
+            carried.Transform.localPosition = FallbackOffset(hand);
 
             float heading = DrawnHeadingDegrees;
             carried.ShowFacing(CarryMath.BakedFacingIndex(heading, carried.BakedFacings));
-            RideBodyBand(carried, CarryMath.AheadOrdersFor(heading, _aheadOrders));
+            RideBodyBand(carried, CarryMath.AheadOrdersFor(heading, OrdersFor(hand)));
         }
 
         /// <summary>
-        /// The hand-prop row for what is held right now, and the facing row it applies at. False means
-        /// "pose it the old way", and every false here is an ordinary state rather than a fault.
+        /// The fallback pose for a thing with no hand-prop row. The serialized offset is her RIGHT side;
+        /// the left slot takes its mirror.
+        ///
+        /// <para><b>Mirroring is legal HERE and nowhere else in this feature.</b> This number is a greybox
+        /// constant someone typed, not a measurement — so reflecting it costs nothing true. A measured
+        /// anchor is the opposite case and must never be mirrored: see
+        /// <see cref="CarryAnchorTableDef.TryRow(string,int,CarryHandSide,out CarryAnchorRow,out bool)"/>
+        /// for why one hand's projected grip is not the other's reflection.</para>
+        /// </summary>
+        private Vector2 FallbackOffset(CarryHandSide hand)
+            => hand == CarryHandSide.Left
+                ? new Vector2(-_hipOffsetMeters.x, _hipOffsetMeters.y)
+                : _hipOffsetMeters;
+
+        /// <summary>How far out of the body's sorting band this hand's item draws. The left hand takes one
+        /// extra step so two things held at once cannot land on the SAME order, where they would sort by
+        /// draw order — a flicker with no owner. Identical to the old behaviour whenever one thing is
+        /// held (<see cref="CarryHandSide.None"/>).</summary>
+        private int OrdersFor(CarryHandSide hand)
+            => hand == CarryHandSide.Left ? _aheadOrders + 1 : _aheadOrders;
+
+        /// <summary>
+        /// The hand-prop row for one carried thing, and the facing row it applies at. False means "pose it
+        /// the old way", and every false here is an ordinary state rather than a fault.
         ///
         /// <para><b>Why the iso skin is required and not merely preferred.</b> The rows are indexed by the
         /// CHARACTER kit's facing rows and describe the wrists in that kit's pictures. A fisher drawn by
@@ -393,20 +532,47 @@ namespace HiddenHarbours.Player
         /// at some headings — the worst shape of wrong. Nothing ships at four today; the check costs an
         /// int compare and closes it before it can happen.</para>
         /// </summary>
-        private bool TryAnchorRow(ICarriable carried, out CarryAnchorRow row, out int facingRow)
+        private bool TryAnchorRow(ICarriable carried, CarryHandSide hand, out CarryAnchorRow row,
+                                  out int facingRow)
         {
             row = default;
             facingRow = 0;
 
-            if (_carryAnchors == null || _character == null) return false;
-            if (!_character.HasArt || _character.IsSuspended) return false;
+            if (!AnchorsUsable()) return false;
             if (carried is not ICarryAnchored anchored) return false;
 
-            CharacterVisualDef visual = _character.Visual;
-            if (visual == null || visual.FacingCount != _carryAnchors.FacingCount) return false;
-
             facingRow = _character.FacingRow;
-            return _carryAnchors.TryRow(anchored.HandPropKey, facingRow, out row);
+            return _carryAnchors.TryRow(anchored.HandPropKey, facingRow, hand, out row, out _);
+        }
+
+        /// <summary>Is the hand-prop table readable for the body as it is drawn RIGHT NOW? Shared by the
+        /// pose path and by <see cref="PreferredHand"/> so the two can never disagree about whether the
+        /// rig has an answer.</summary>
+        private bool AnchorsUsable()
+        {
+            Resolve();
+            if (_carryAnchors == null || _character == null) return false;
+            if (!_character.HasArt || _character.IsSuspended) return false;
+
+            CharacterVisualDef visual = _character.Visual;
+            return visual != null && visual.FacingCount == _carryAnchors.FacingCount;
+        }
+
+        /// <summary>
+        /// Which hand the RIG prefers for this thing at the heading she is drawn at — the input
+        /// <see cref="HandSlots.TryTake"/> honours when that hand is free.
+        ///
+        /// <para><see cref="CarryHandSide.Right"/> when the rig has nothing to say (no table, no iso skin,
+        /// no row for this prop): it is the rig's own default for every one-handed prop but the rope, and
+        /// a preference is only ever a preference — an occupied right hand sends the thing left
+        /// anyway.</para>
+        /// </summary>
+        private CarryHandSide PreferredHand(ICarriable thing)
+        {
+            if (thing is not ICarryAnchored anchored || !AnchorsUsable()) return CarryHandSide.Right;
+            return _carryAnchors.TryRow(anchored.HandPropKey, _character.FacingRow, out CarryAnchorRow row)
+                   ? row.Hand
+                   : CarryHandSide.Right;
         }
 
         /// <summary>Put the carried sprite in the body's own live sorting band, this many orders ahead of
@@ -426,6 +592,62 @@ namespace HiddenHarbours.Player
 
         /// <summary>The hand-prop table currently wired, or null. For tests / tooling.</summary>
         public CarryAnchorTableDef CarryAnchors => _carryAnchors;
+
+        // ---- bookkeeping ------------------------------------------------------------------------------
+
+        /// <summary>
+        /// Tuck a tool under her arm: it stays parented to the fisher and stays HERS, it simply stops
+        /// being posed at a wrist and stops occupying a hand.
+        ///
+        /// <para>⚠️ Its remembered PARENT travels with it. The hand it vacates is about to be filled by
+        /// the catch, whose own <see cref="RememberParent"/> would overwrite the slot — and then the
+        /// shovel, once taken back and set down, would land at the scene root instead of in the region it
+        /// came from. Invisible until someone carries a tool across a region hop and puts it down.</para>
+        /// </summary>
+        private void Sling(ICarriable tool)
+        {
+            _slungParent = ParentFor(_slots.SideOf(tool));
+            _slots.Release(tool);
+            _slung = tool;
+            if (tool.Transform != null) tool.Transform.gameObject.SetActive(false);
+        }
+
+        // Where the slung tool hung before it was ever lifted — see Sling.
+        private Transform _slungParent;
+
+        /// <summary>Give up a hand and the parent it was remembering, and keep <see cref="Carried"/>
+        /// pointing at something that is still held.</summary>
+        private void Forget(ICarriable thing)
+        {
+            CarryHandSide side = _slots.SideOf(thing);
+            if (side != CarryHandSide.Right) _placedParents[0] = null;
+            if (side != CarryHandSide.Left) _placedParents[1] = null;
+            _slots.Release(thing);
+            if (ReferenceEquals(_lastTaken, thing)) _lastTaken = null;
+        }
+
+        private void RememberParent(CarryHandSide side, Transform parent)
+        {
+            if (side != CarryHandSide.Right) _placedParents[0] = parent;
+            if (side != CarryHandSide.Left) _placedParents[1] = parent;
+        }
+
+        private Transform ParentFor(CarryHandSide side)
+            => side == CarryHandSide.Left ? _placedParents[0] : _placedParents[1];
+
+        /// <summary>
+        /// ⚠️ <c>Destroy()</c> THROWS in edit mode ("Destroy may not be called from edit mode"), and the
+        /// give-to-a-hold path is reached by every EditMode test of the stack. <c>Object.Destroy</c> is
+        /// also DEFERRED to end of frame in play mode, which would leave a taken-from catch parented to
+        /// the fisher for the rest of the frame — harmless, but the immediate form is the honest one here
+        /// since the object has already given up its item.
+        /// </summary>
+        private static void DestroyCatch(CarriableCatch catchObject)
+        {
+            if (catchObject == null) return;
+            if (Application.isPlaying) Destroy(catchObject.gameObject);
+            else DestroyImmediate(catchObject.gameObject);
+        }
 
         private void Resolve()
         {

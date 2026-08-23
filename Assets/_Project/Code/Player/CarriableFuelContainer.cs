@@ -90,7 +90,10 @@ namespace HiddenHarbours.Player
         /// <see cref="UnityEngine.Object"/> with <c>==</c> is exactly the mixed-operand case whose
         /// resolution is worth nobody's time to reason about. Identity is what is meant, so identity is
         /// what is asked.</summary>
-        public bool IsCarried => _hands != null && ReferenceEquals(_hands.Carried, this);
+        // ⚠️ CarriedItem.IsHeld, not ReferenceEquals(_hands.Carried, this): with two hand slots the
+        // single-slot read answers only for the hand she filled LAST, so a can in the off hand would
+        // report itself loose and E would offer to pick up what is already held.
+        public bool IsCarried => CarriedItem.IsHeld(_hands, this);
 
         private FuelLevelPresenter Presenter
         {
@@ -181,7 +184,7 @@ namespace HiddenHarbours.Player
             }
 
             bool wasCarried = IsCarried;
-            CarryRefusal refusal = wasCarried ? _hands.TryPlace() : _hands.TryPickUp(this);
+            CarryRefusal refusal = wasCarried ? _hands.TryPlace(this) : _hands.TryPickUp(this);
 
             if (refusal != CarryRefusal.None)
             {

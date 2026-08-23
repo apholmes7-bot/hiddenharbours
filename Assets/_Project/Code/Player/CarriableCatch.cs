@@ -34,7 +34,7 @@ namespace HiddenHarbours.Player
     /// candidate that offers that. Hands are freed by stacking, not by dropping.</para>
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class CarriableCatch : MonoBehaviour, ICarriable, ICarryAnchored
+    public sealed class CarriableCatch : MonoBehaviour, ICarriable, ICarryAnchored, IHandLoad
     {
         [SerializeField] private SpriteRenderer _renderer;
 
@@ -88,6 +88,20 @@ namespace HiddenHarbours.Player
         /// <summary>The KIND — the species id (<c>fish.soft_shell_clam</c>), so a gate can ask "is a clam
         /// in your hands" with exactly the machinery that asks it of a shovel.</summary>
         public string DefId => _item.SpeciesId;
+
+        /// <summary>
+        /// A CATCH, for the hand-slot rule (<see cref="HandSlots"/>) — the one classification Core cannot
+        /// work out for itself, because this class lives in the Player lane where Core cannot see it.
+        ///
+        /// <para>It is what makes "one catch at a time" and "a fish in one hand, the rod in the other"
+        /// two different rules rather than one confused one: without it a landed clam would be classified
+        /// a <see cref="HandLoad.Tool"/> and would refuse to share a pair of hands with the shovel that
+        /// dug it.</para>
+        /// </summary>
+        // Fully qualified deliberately: the property and the enum share a name, so the bare
+        // form leans on C#'s "Color Color" resolution — legal, and one rename away from being
+        // a confusing error message instead.
+        public HandLoad HandLoad => HiddenHarbours.Core.HandLoad.Catch;
 
         /// <summary>A landed catch is always liftable — it is already in your hands by the time this
         /// exists.</summary>

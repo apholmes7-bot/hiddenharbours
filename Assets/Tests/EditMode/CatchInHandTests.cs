@@ -213,24 +213,63 @@ namespace HiddenHarbours.Tests.EditMode
         // ---- 2. THE SLING ----------------------------------------------------------------------------
 
         [Test]
-        public void The_shovel_slings_for_the_clam_and_comes_back_when_the_pail_takes_it()
+        public void The_shovel_STAYS_IN_HAND_for_the_clam_now_that_she_has_two()
         {
-            // ⚠️ WITHOUT THIS THE LOOP CANNOT CLOSE. Digging needs the shovel IN HAND and produces a thing
-            // that also goes in hand. One slot and no sling means the first clam has nowhere to land.
+            // ⭐ THE CONTINUITY LAW, and the visible change the second slot bought. This used to sling:
+            // one slot meant the clam could only land by displacing the shovel. Two slots mean the clam
+            // takes the free hand and NOTHING already held moves — which is the owner's ruling in its
+            // smallest form ("a fish in one hand and the rod in the other"), and it is what removes a
+            // tuck-and-untuck animation beat from every single dug clam.
+            var pail = Pail();
+            ClamDig dig = Hole(pail);
+            CarryHands hands = ToolInHand.Holding(ToolDef.ShovelId, _spawned);
+            ICarriable shovel = hands.Carried;
+            CarryHandSide shovelHand = hands.Slots.SideOf(shovel);
+
+            Assert.IsTrue(dig.TryDig());
+
+            Assert.IsNull(hands.Slung, "a hand was free, so nothing needed tucking away");
+            Assert.AreEqual(shovelHand, hands.Slots.SideOf(shovel), "the shovel did not even change hands");
+            Assert.IsInstanceOf<CarriableCatch>(hands.Slots.FirstOf(HandLoad.Catch),
+                                                "and the clam has the other one");
+            Assert.AreEqual(2, hands.Slots.UsedHands);
+
+            Assert.IsTrue(hands.TryGiveCatchTo(pail));
+
+            Assert.AreEqual(1, hands.Slots.UsedHands, "the clam is stowed and the hand is free again");
+            Assert.AreEqual(shovelHand, hands.Slots.SideOf(shovel), "the shovel never moved at all");
+        }
+
+        [Test]
+        public void The_sling_still_catches_the_case_two_hands_cannot_the_pail_AND_the_shovel()
+        {
+            // The sling did not go away — it narrowed to the one case where the alternative really is
+            // dropping the catch on the floor: BOTH hands committed. Carry the pail as well as the
+            // shovel and there is no free hand, so the tool tucks away exactly as it always did, and
+            // comes straight back when the pail takes the clam.
             var pail = Pail();
             ClamDig dig = Hole(pail);
             CarryHands hands = ToolInHand.Holding(ToolDef.ShovelId, _spawned);
             ICarriable shovel = hands.Carried;
 
+            var pailGo = new GameObject("CarriedPail");
+            _spawned.Add(pailGo);
+            var carried = pailGo.AddComponent<CarriableBucket>();
+            carried.Configure(20, pailGo.AddComponent<SpriteRenderer>(), "container.test.carried");
+            Assert.AreEqual(CarryRefusal.None, hands.TryPickUp(carried), "a pail shares with a shovel");
+            Assert.AreEqual(2, hands.Slots.UsedHands, "both hands are now committed");
+
             Assert.IsTrue(dig.TryDig());
 
             Assert.AreSame(shovel, hands.Slung, "the shovel went under her arm, not onto the sand");
-            Assert.IsInstanceOf<CarriableCatch>(hands.Carried, "the clam has the hand");
+            Assert.IsInstanceOf<CarriableCatch>(hands.Slots.FirstOf(HandLoad.Catch), "the clam has a hand");
 
             Assert.IsTrue(hands.TryGiveCatchTo(pail));
 
             Assert.IsNull(hands.Slung, "the sling is empty again");
-            Assert.AreSame(shovel, hands.Carried, "and the shovel is back in her hand, ready to dig");
+            Assert.AreNotEqual(CarryHandSide.None, hands.Slots.SideOf(shovel),
+                               "and the shovel is back in a hand, ready to dig");
+            Assert.AreEqual(2, hands.Slots.UsedHands, "the pail and the shovel, as she started");
         }
 
         [Test]
