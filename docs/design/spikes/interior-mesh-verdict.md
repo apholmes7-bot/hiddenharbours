@@ -3,6 +3,11 @@
 **Verdict: HYBRID.** The room's **shell** should become geometry. The **fit-out** should stay pixels.
 One upstream datum blocks the shell, and it is one number per level.
 
+> **The fleet has 59 interior levels across 24 hulls, not 53.** The handoff and ADR 0038's
+> surrounding numbers both say 53; the committed `BoatInteriorDef`s carry **59** — `house_sole` ×24,
+> `cuddy_sole` ×19, `below_sole` ×5, `bridge_sole` ×5, `main_deck` ×5, `poop_deck` ×1. Every one of
+> them is mesh-backed. Correct this wherever 53 appears.
+
 - **Branch:** `spike/interior-mesh` · **Date:** 2026-08-22 · **Author:** coordinator
 - **Asked by:** the S-spike handoff of 2026-08-22 (questions A–D)
 - **Reads:** [ADR 0022](../../adr/0022-3d-boat-hulls.md) · [ADR 0038](../../adr/0038-boat-interiors.md) ·
@@ -16,7 +21,9 @@ One upstream datum blocks the shell, and it is one number per level.
   `BoatInteriorMeshSpikeRenderTests`), run on the local RTX 4060, `skipped=0`, 3/3 green.
 
 **Nothing in this spike changes a shipped bake, and nothing touches `docs/art/rigs/**`.** The
-upstream ask in §D is written as a proposal, not as an edit.
+upstream ask in §D is written as a proposal, not as an edit. The one shipped file it does touch —
+the facet shader — carries the gate behind `#pragma shader_feature_local HH_LEVEL_GATE`, **off by
+default**, so the program every hull compiles is literally the pre-spike one.
 
 ---
 
@@ -25,13 +32,10 @@ upstream ask in §D is written as a proposal, not as an edit.
 | | answer | the number that says so |
 |---|---|---|
 | **A. Extrudable?** | **Yes, and cheaply.** | +7.5% to +12.6% triangles, +24–31 KB per hull. **Zero** per-level section-containment violations on all three hulls. |
-| **B. One tag, both halves?** | **Yes — proven, on a mesh hull, for the first time.** | Gate off: **0** differing pixels vs today. Gate on: the level's own hull faces draw **0 px**, the room draws 8,534 px. |
+| **B. One tag, both halves?** | **Yes — proven, on a mesh hull, for the first time.** | Keyword off (the shipped program) vs the gated variant at 0: **0** differing px. Gate on: the level's own hull faces draw **0 px**, the room draws 8,534 px. |
 | **B. 59 subsets derivable?** | **Yes from geometry — but NOT from LAYOUT alone.** | **0.79%** of faces ambiguous fleet-wide (308 of 38,778, 24 hulls, two hulls at 0.00%) — *once a per-level ceiling exists*. It does not. |
 | **C. The look** | Owner's call. Five PNGs committed. | — |
 | **D. Hybrid cost** | Shell geometry, fit-out pixels. | Shell needs **3–6** palette ramps; the hull leaves **4–6** free of 16. The fit-out declares **21**. |
-
-The handoff says 53 level subsets. The committed defs carry **59** (`below_sole` ×5, `bridge_sole` ×5,
-`cuddy_sole` ×19, `house_sole` ×24, `main_deck` ×5, `poop_deck` ×1), all 24 hulls mesh-backed.
 
 ---
 
@@ -133,8 +137,27 @@ GATE ON    the level's own hull faces, drawn alone ->  0 px            (the cull
 EXACTLY-ONE-LAYER-ON: TRUE
 ```
 
-The gate is a **global uniform defaulting to 0** and no mesh on `main` carries a TEXCOORD1, so the
-shipped picture is byte-identical — which the 0-differing-pixels line is the proof of, not the claim.
+### The gate costs nothing, and "byte-identical picture" is not the same claim
+
+The first version of this branch put the discard in the shipped facet fragment and argued from the
+picture. That is a real per-fragment cost on every hull every frame (rule 7), and it is not what
+"spike only" means once the file is on `main`. **The whole gate — the TEXCOORD1 vertex input, the
+extra varying, the uniform and both discards — now lives inside
+`#ifdef HH_LEVEL_GATE`, behind `#pragma shader_feature_local`, off by default.** With the keyword off
+the compiled program has no extra input, no extra varying and no test; `shader_feature_local` also
+means a player build in which no material enables it does not carry the variant at all. The spike
+fixture enables it on the renderer's own instance material (`new Material(...)`,
+`HideAndDontSave`, created per `Configure` — no asset is touched).
+
+Measured across the variant boundary, because that is the only way the claim can be proven:
+
+```
+shipped program  vs  the gated variant at 0, same hull  ->  0 differing px
+shipped program  vs  hull + ROOMS through the gate at 0 ->  0 differing px
+```
+
+The first says compiling the gate in changes no pixel. The second says the gate hides the interior
+geometry rather than the geometry happening to be invisible.
 
 Two properties fall out for free and are worth naming:
 

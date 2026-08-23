@@ -48,6 +48,13 @@ namespace HiddenHarbours.Tests.RigBaking
         const string Lobster = "LobsterBoatIso";
         const int ProbeLayer = 31;
 
+        /// <summary>The shader keyword the spike's gate lives behind. OFF by default and enabled
+        /// only on the renderer's OWN instance material (<c>new Material(...)</c> with
+        /// <c>HideAndDontSave</c>, created per Configure and destroyed with the component), so no
+        /// asset is touched — the <c>sharedMaterial.SetFloat</c> trap does not apply here, and this
+        /// comment exists so nobody has to re-derive that.</summary>
+        const string LevelGateKeyword = "HH_LEVEL_GATE";
+
         /// <summary>ADR 0038's accepted default for the comfort clamp. The interior draw takes this
         /// much of the hull's rock; all three ways in question C ride the same value, because the
         /// thing being judged is the REPRESENTATION and not the clamp.</summary>
@@ -145,7 +152,7 @@ namespace HiddenHarbours.Tests.RigBaking
                 Mesh roomFlat = build.RoomFlatOf[levelIndex];
                 Assert.IsNotNull(houseMesh, "no hull faces carry this level's tag");
 
-                byte[] shipped = RenderTagged(hm, build.Mesh, 0f, Pose.Dock());
+                byte[] shipped = RenderTagged(hm, build.HullOnly, 0f, Pose.Dock(), false);
                 byte[] inside = RenderTagged(hm, build.Mesh, levelIndex, Pose.Dock());
                 byte[] houseOnly = RenderTagged(hm, houseMesh, 0f, Pose.Dock());
                 byte[] houseAtGate = RenderTagged(hm, houseMesh, levelIndex, Pose.Dock());
@@ -199,11 +206,28 @@ namespace HiddenHarbours.Tests.RigBaking
                     SavePng("B-03-swap-alone-no-fore-bias.png", insideFlat, hm);
                 }
 
-                byte[] hullAlone = RenderTagged(hm, build.HullOnly, 0f, Pose.Dock());
-                int diff = DifferingPixels(shipped, hullAlone);
+                // ---- THE VARIANT BOUNDARY, which is the claim the coordinator asked to be made
+                // honest. The gate lives behind #pragma shader_feature_local HH_LEVEL_GATE, so with
+                // the keyword off the compiled program is literally the pre-spike one — no
+                // TEXCOORD1 input, no varying, no discard, nothing per fragment. Two renders prove
+                // it costs nothing AND hides nothing:
+                //   1. the same hull through the SHIPPED variant and through the gated variant at 0
+                //   2. the hull WITH the rooms attached, gated at 0, against the shipped variant
+                byte[] shippedProgram = RenderTagged(hm, build.HullOnly, 0f, Pose.Dock(), false);
+                byte[] gatedAtZero = RenderTagged(hm, build.HullOnly, 0f, Pose.Dock(), true);
+                byte[] roomsGatedOff = RenderTagged(hm, build.Mesh, 0f, Pose.Dock(), true);
+                int diffVariant = DifferingPixels(shippedProgram, gatedAtZero);
+                int diffRooms = DifferingPixels(shippedProgram, roomsGatedOff);
                 sb.AppendLine();
-                sb.AppendLine("GATE-OFF IDENTITY: hull+rooms at gate 0 vs hull alone -> " + diff +
-                              " differing pixels (must be 0: an un-gated interior would be visible today).");
+                sb.AppendLine("THE VARIANT BOUNDARY (#pragma shader_feature_local HH_LEVEL_GATE, off by default):");
+                sb.AppendLine("   shipped program vs the gated variant at 0, same hull : " + diffVariant +
+                              " differing px  (must be 0 — compiling the gate in changes no pixel)");
+                sb.AppendLine("   shipped program vs hull+ROOMS through the gate at 0  : " + diffRooms +
+                              " differing px  (must be 0 — the gate hides the interior geometry)");
+                sb.AppendLine("   With the keyword OFF the program has no TEXCOORD1 input, no extra varying");
+                sb.AppendLine("   and no discard: it is the pre-spike program, not the same picture for a");
+                sb.AppendLine("   per-fragment test on every hull every frame.");
+                int diff = diffVariant + diffRooms;
                 sb.AppendLine();
                 sb.AppendLine("EXACTLY-ONE-LAYER-ON: " + (houseLeak == 0 && room > 0 ? "TRUE" : "FALSE") +
                               "  — gate off: the house draws, the room does not (identity 0 px). " +
@@ -217,7 +241,8 @@ namespace HiddenHarbours.Tests.RigBaking
 
                 Assert.AreEqual(0, houseLeak, "the level's own hull faces still draw while the gate shows the room");
                 Assert.Greater(room, 0, "the room drew nothing — the tag or the extrusion is wrong");
-                Assert.AreEqual(0, diff, "the interior geometry is visible with the gate off");
+                Assert.AreEqual(0, diffVariant, "compiling the gate in changed the hull's own picture");
+                Assert.AreEqual(0, diffRooms, "the interior geometry is visible with the gate at 0");
             }
             finally
             {
@@ -302,7 +327,7 @@ namespace HiddenHarbours.Tests.RigBaking
 
                     // (1) today's sprite: the hull as she is drawn now, with the committed interior
                     //     cell composited over her at the shared pivot, both riding the same pose.
-                    byte[] hull = RenderTagged(hm, build.HullOnly, 0f, pose);
+                    byte[] hull = RenderTagged(hm, build.HullOnly, 0f, pose, false);   // today, exactly
                     byte[] sheet = cells != null
                         ? RenderInteriorSprite(hm, cells, def, levelId, facingIndex, pose)
                         : null;
@@ -643,6 +668,20 @@ namespace HiddenHarbours.Tests.RigBaking
 
         static byte[] RenderTagged(HullMeshDef def, Mesh mesh, float levelShown, Pose pose)
         {
+            // A render that shows a level obviously needs the gate compiled in; one that does not
+            // runs the SHIPPED program, which is the point of the keyword.
+            return RenderTagged(def, mesh, levelShown, pose, levelShown > 0.5f);
+        }
+
+        /// <summary>
+        /// <paramref name="gateCompiledIn"/> selects the shader VARIANT, not the gate's value:
+        /// false is the program main ships (no TEXCOORD1 input, no varying, no discard), true is
+        /// the spike's. Both are exercised, because "the shipped picture is unchanged" is a claim
+        /// about the variant boundary and can only be proven by rendering across it.
+        /// </summary>
+        static byte[] RenderTagged(HullMeshDef def, Mesh mesh, float levelShown, Pose pose,
+                                   bool gateCompiledIn)
+        {
             var go = new GameObject("SpikeHull") { layer = ProbeLayer };
             try
             {
@@ -650,6 +689,7 @@ namespace HiddenHarbours.Tests.RigBaking
                 IsoFacetHullSetup setup = IsoFacetHullPresentationService.ToSetup(def);
                 setup.Mesh = mesh;
                 r.Configure(setup);
+                SetLevelGate(go, gateCompiledIn);
                 r.HeadingDirUnits = HullMeshMath.HeadingToDirUnits(PanelHeadingDegrees, 0f,
                                                                    def.AzimuthCounterClockwise);
                 Pose p = pose.Scaled(InteriorRockScale);
@@ -868,6 +908,25 @@ namespace HiddenHarbours.Tests.RigBaking
                 }
             }
             return bytes;
+        }
+
+        /// <summary>Enable or disable the gate keyword on the facet material this renderer just
+        /// created for itself. Asserts it found one: a silently-missed material would render the
+        /// SHIPPED variant and quietly turn every gate measurement into a no-op.</summary>
+        static void SetLevelGate(GameObject go, bool on)
+        {
+            int touched = 0;
+            foreach (MeshRenderer mr in go.GetComponentsInChildren<MeshRenderer>(true))
+            {
+                Material m = mr.sharedMaterial;
+                if (m == null || m.shader == null) continue;
+                if (!m.shader.name.EndsWith("IsoFacet", StringComparison.Ordinal)) continue;
+                Assert.AreNotEqual(HideFlags.None, m.hideFlags & HideFlags.DontSave,
+                    "the facet material is not an instance — refusing to write a keyword onto an asset");
+                if (on) m.EnableKeyword(LevelGateKeyword); else m.DisableKeyword(LevelGateKeyword);
+                touched++;
+            }
+            Assert.Greater(touched, 0, "found no IsoFacet material to set " + LevelGateKeyword + " on");
         }
 
         static void SetLayerRecursive(Transform t, int layer)
