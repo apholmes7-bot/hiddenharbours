@@ -297,6 +297,12 @@ timid one:
 > build it"*) that version should not be built. The browse-remotely/buy-in-person split is what turns
 > the same feature into a P2 feature. §10 R5 is the ruling.
 
+> **The in-person half is now designed (2026-08-23, PROPOSAL).** The owner directed a
+> notebook-styled catalog opened from conversation —
+> [`shop-catalog-and-dialogue-choices.md`](shop-catalog-and-dialogue-choices.md). It is the
+> **buy-in-person** side of exactly this seam and reads the same offer Defs, so when the app is built
+> it is a second reader over that listing data, not a fork. R5 stays open and unchanged.
+
 **A consistency bonus, offered as an option:** you see listings only for ports you have **been to** —
 the same discovered-by-presence rule M2-27 applies to the chart. One rule, two systems, and your phone
 grows with your reach.

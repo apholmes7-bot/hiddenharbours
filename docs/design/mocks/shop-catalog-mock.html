@@ -1,0 +1,650 @@
+<title>Shop Talk &amp; the Wares Book</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=Bitter:wght@500;600;700&family=Silkscreen:wght@400;700&display=swap">
+
+<style>
+/* ─────────────────────────────────────────────────────────────────────────
+   Palette is NOT invented: every value below is lifted from the shipped
+   Code/World/NotebookInk.cs and the baked DialogueBubble kit, so the plates
+   on this page are the colours the game actually draws.
+   Deliberately single-world (the book's own board + stock); every colour is
+   painted explicitly so the page holds on any host ground.
+   ───────────────────────────────────────────────────────────────────────── */
+:root{
+  --cover:#0E2E2E;         /* NotebookInk.Cover   — the board */
+  --cover-lift:#14403E;    /* board, one step up  — cards */
+  --cover-edge:#0A2323;    /* board, one step down — wells */
+  --paper:#EBE2CC;         /* NotebookInk.Paper   — stock */
+  --paper-shade:#DED4BB;   /* gutter / stock in shadow */
+  --tabstock:#C9BDA3;      /* NotebookInk.Tab */
+  --rule:rgba(115,122,122,.55);   /* NotebookInk.Rule */
+  --ink:#252830;           /* NotebookInk.Ink */
+  --ink-strong:#16181B;    /* NotebookInk.InkStrong */
+  --ink-faint:rgba(37,40,48,.45); /* NotebookInk.InkFaint */
+  --gold:#D6AA53;          /* NotebookInk.Gold — the one accent */
+  --gold-dim:rgba(214,170,83,.30);
+
+  /* the board's own text, for the mock's chrome */
+  --on-cover:#DCE7E2;
+  --on-cover-mute:#8FA9A4;
+  --on-cover-faint:#5F7D79;
+
+  /* the little harbour behind the bubble */
+  --sea:#3A5F66;
+  --sea-deep:#2A474E;
+  --dock:#5B4A36;
+  --dock-dark:#42361F;
+
+  --maxw:1080px;
+  --pitch:26px;            /* NotebookKit.Pitch = 10px, drawn here at ~2.6× */
+}
+
+*{box-sizing:border-box;}
+html{-webkit-text-size-adjust:100%;}
+body{
+  margin:0;
+  background:var(--cover);
+  color:var(--on-cover);
+  font-family:"Archivo",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-size:16px;
+  line-height:1.6;
+  /* a faint board weave, so the ground reads as bound board and not as a flat fill */
+  background-image:
+    repeating-linear-gradient(90deg, rgba(255,255,255,.014) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(0deg,  rgba(0,0,0,.05) 0 1px, transparent 1px 4px);
+}
+
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px 96px;}
+
+/* ── masthead ─────────────────────────────────────────────────────────── */
+.mast{padding:64px 0 40px;border-bottom:1px solid rgba(220,231,226,.14);}
+.eyebrow{
+  font-family:"Silkscreen",monospace;font-size:11px;letter-spacing:.14em;
+  color:var(--gold);text-transform:uppercase;margin:0 0 20px;
+}
+h1{
+  font-family:"Bitter",Georgia,serif;font-weight:700;
+  font-size:clamp(34px,5.4vw,54px);line-height:1.06;letter-spacing:-.015em;
+  margin:0 0 18px;color:#F2F7F4;text-wrap:balance;
+}
+.thesis{
+  font-size:clamp(17px,2.1vw,20px);line-height:1.55;max-width:62ch;
+  color:var(--on-cover);margin:0 0 28px;
+}
+.thesis b{color:var(--gold);font-weight:600;}
+.metarow{
+  display:flex;flex-wrap:wrap;gap:10px 28px;
+  font-size:13px;color:var(--on-cover-mute);
+}
+.metarow span b{
+  display:block;font-family:"Silkscreen",monospace;font-size:9.5px;
+  letter-spacing:.13em;color:var(--on-cover-faint);text-transform:uppercase;
+  margin-bottom:3px;font-weight:400;
+}
+
+/* ── section furniture ────────────────────────────────────────────────── */
+section{padding-top:72px;}
+.sechead{display:flex;align-items:baseline;gap:14px;margin:0 0 6px;flex-wrap:wrap;}
+.secnum{
+  font-family:"Silkscreen",monospace;font-size:11px;color:var(--gold);
+  letter-spacing:.1em;flex:none;
+}
+h2{
+  font-family:"Bitter",Georgia,serif;font-weight:600;font-size:clamp(24px,3.2vw,31px);
+  line-height:1.15;margin:0;color:#F2F7F4;letter-spacing:-.01em;text-wrap:balance;
+}
+.lede{max-width:66ch;color:var(--on-cover-mute);margin:10px 0 30px;font-size:15.5px;}
+.lede b,.lede strong{color:var(--on-cover);font-weight:600;}
+
+/* ── the plate: a mock pasted onto the board ──────────────────────────── */
+.plate{
+  background:var(--cover-edge);
+  border:1px solid rgba(220,231,226,.10);
+  padding:26px;
+  overflow-x:auto;
+}
+.plate-inner{min-width:660px;}
+.caption{
+  font-family:"Silkscreen",monospace;font-size:10px;letter-spacing:.1em;
+  color:var(--on-cover-faint);text-transform:uppercase;margin:16px 0 0;
+}
+
+/* ═══ PLATE 1 — the conversation ══════════════════════════════════════ */
+.scene{
+  position:relative;height:400px;
+  background:linear-gradient(180deg,var(--sea-deep) 0%,var(--sea) 46%,var(--dock) 46%,var(--dock-dark) 100%);
+  overflow:hidden;
+}
+/* wharf planking, drawn on the pitch so it reads as a built deck */
+.scene::after{
+  content:"";position:absolute;left:0;right:0;top:46%;bottom:0;
+  background:repeating-linear-gradient(180deg,rgba(0,0,0,.16) 0 2px,transparent 2px 18px);
+}
+/* a low swell on the water */
+.scene::before{
+  content:"";position:absolute;left:0;right:0;top:34%;height:12%;
+  background:repeating-linear-gradient(180deg,rgba(255,255,255,.05) 0 2px,transparent 2px 8px);
+}
+.figure{position:absolute;left:118px;bottom:96px;z-index:2;}
+.figure svg{display:block;image-rendering:pixelated;}
+.figure .shadow{
+  position:absolute;left:-6px;bottom:-7px;width:76px;height:11px;
+  background:rgba(0,0,0,.30);border-radius:50%;
+}
+
+/* the bubble — panel + tail, the shipped kit's shape */
+.bubble{
+  position:absolute;left:196px;top:34px;width:352px;z-index:3;
+  background:var(--paper);color:var(--ink);
+  border:3px solid var(--ink-strong);
+  box-shadow:0 6px 0 rgba(0,0,0,.28);
+  padding:16px 18px 12px;
+}
+.bubble .tail{
+  position:absolute;left:-3px;bottom:-19px;width:0;height:0;
+  border-left:22px solid var(--ink-strong);
+  border-bottom:19px solid transparent;
+}
+.bubble .tail::after{
+  content:"";position:absolute;left:-19px;top:-4px;width:0;height:0;
+  border-left:15px solid var(--paper);border-bottom:13px solid transparent;
+}
+.speaker{
+  font-family:"Silkscreen",monospace;font-size:10px;letter-spacing:.09em;
+  color:var(--ink-faint);text-transform:uppercase;margin-bottom:9px;
+}
+.said{
+  font-family:"Silkscreen",monospace;font-size:14px;line-height:1.65;
+  color:var(--ink);margin:0 0 14px;
+}
+.caret{color:var(--gold);}
+.optrule{height:1px;background:var(--rule);margin:0 0 10px;}
+.opt{
+  position:relative;
+  display:flex;align-items:center;gap:9px;
+  font-family:"Silkscreen",monospace;font-size:13px;line-height:1.5;
+  padding:4px 8px;color:var(--ink);
+}
+.opt .arrow{color:var(--gold);width:11px;flex:none;}
+.opt.sel{background:var(--gold-dim);}
+.opt.sel .lbl{color:var(--ink-strong);font-weight:700;}
+.opt .hint{
+  margin-left:auto;font-size:9px;letter-spacing:.06em;
+  color:var(--ink-faint);text-transform:uppercase;
+}
+
+/* ═══ PLATE 2 — the wares book ════════════════════════════════════════ */
+.bookstage{
+  position:relative;
+  background:linear-gradient(180deg,var(--sea-deep),var(--dock-dark));
+  padding:30px 30px 22px;
+}
+.book{display:flex;filter:drop-shadow(0 10px 0 rgba(0,0,0,.28));}
+.boards{
+  flex:1;background:var(--cover);
+  border:3px solid var(--ink-strong);padding:7px;
+}
+.bookhead{
+  display:flex;align-items:baseline;justify-content:space-between;gap:16px;
+  background:var(--paper-shade);border-bottom:1px solid var(--rule);
+  padding:9px 14px;
+}
+.seller{
+  font-family:"Silkscreen",monospace;font-size:12px;color:var(--ink-strong);
+  letter-spacing:.03em;
+}
+.seller small{display:block;font-size:9px;color:var(--ink-faint);letter-spacing:.08em;margin-top:3px;}
+.balance{
+  font-family:"Silkscreen",monospace;font-size:14px;color:var(--ink-strong);
+  font-variant-numeric:tabular-nums;white-space:nowrap;
+}
+.balance em{font-style:normal;color:var(--ink-faint);font-size:9px;display:block;text-align:right;letter-spacing:.08em;margin-top:3px;}
+
+.spread{display:flex;background:var(--paper);}
+.leaf{
+  flex:1;padding:14px 0 16px;position:relative;
+  /* the ruled stock — every line on NotebookKit's fixed pitch */
+  background-image:repeating-linear-gradient(180deg,transparent 0 calc(var(--pitch) - 1px),var(--rule) calc(var(--pitch) - 1px) var(--pitch));
+  background-position:0 14px;
+}
+.leaf.right{border-left:1px solid var(--rule);box-shadow:inset 14px 0 22px -16px rgba(37,40,48,.42);}
+
+/* one listing = one ruled line */
+.row{
+  display:flex;align-items:center;gap:8px;height:var(--pitch);
+  padding:0 14px 0 8px;
+  font-family:"Silkscreen",monospace;font-size:12.5px;color:var(--ink);
+}
+.row .arrow{width:12px;flex:none;color:transparent;}
+.row.sel{background:var(--gold-dim);}
+.row.sel .arrow{color:var(--gold);}
+.row.sel .name{color:var(--ink-strong);font-weight:700;}
+.row .name{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.row .price{
+  font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--ink);
+}
+.row.owned .name,.row.owned .price{color:var(--ink-faint);}
+.row.owned .price{text-decoration:line-through;text-decoration-thickness:1px;}
+.row.dear .price{color:var(--ink-faint);}
+.stamp{
+  font-family:"Silkscreen",monospace;font-size:8.5px;letter-spacing:.1em;
+  color:var(--gold);border:1px solid var(--gold);padding:1px 4px;
+  transform:rotate(-4deg);flex:none;
+}
+
+/* the right leaf — the entry, written up */
+.entry{padding:0 16px;}
+.entry .etitle{
+  height:var(--pitch);display:flex;align-items:center;
+  font-family:"Silkscreen",monospace;font-size:14px;color:var(--ink-strong);
+  letter-spacing:.04em;
+}
+.entry p{
+  margin:0;font-family:"Silkscreen",monospace;font-size:11.5px;
+  line-height:var(--pitch);color:var(--ink);
+}
+.entry p.note{color:var(--ink-faint);}
+.buyline{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  height:var(--pitch);margin-top:var(--pitch);
+  border-top:1px solid var(--rule);
+}
+.buyline .bprice{
+  font-family:"Silkscreen",monospace;font-size:15px;color:var(--ink-strong);
+  font-variant-numeric:tabular-nums;
+}
+.buyaction{
+  display:flex;align-items:center;gap:7px;background:var(--gold);
+  color:var(--ink-strong);font-family:"Silkscreen",monospace;font-size:12px;
+  padding:4px 12px;letter-spacing:.03em;
+}
+
+/* fore-edge stubs */
+.foreedge{display:flex;flex-direction:column;gap:3px;padding-top:44px;margin-left:-1px;}
+.stub{
+  font-family:"Silkscreen",monospace;font-size:10px;letter-spacing:.08em;
+  background:var(--tabstock);color:var(--ink-faint);
+  border:2px solid var(--ink-strong);border-left:none;
+  padding:6px 9px 6px 7px;
+}
+.stub.on{background:var(--gold);color:var(--ink-strong);}
+
+/* ── keyed callouts ───────────────────────────────────────────────────── */
+.keys{
+  margin-top:26px;display:grid;gap:2px 26px;
+  grid-template-columns:repeat(auto-fit,minmax(272px,1fr));
+}
+.key{display:flex;gap:11px;padding:9px 0;border-top:1px solid rgba(220,231,226,.10);}
+.key dt{
+  font-family:"Silkscreen",monospace;font-size:10px;color:var(--gold);
+  flex:none;width:17px;padding-top:3px;
+}
+.key dd{margin:0;font-size:14px;line-height:1.5;color:var(--on-cover-mute);}
+.key dd b{color:var(--on-cover);font-weight:600;}
+.bookstage{position:relative;}
+.bookhead,.foreedge,.buyline,.row{position:relative;}
+.pin{
+  position:absolute;z-index:6;width:19px;height:19px;
+  background:var(--gold);color:var(--cover);
+  font-family:"Silkscreen",monospace;font-size:10px;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 0 rgba(0,0,0,.35);
+}
+
+/* ── cards / tables ───────────────────────────────────────────────────── */
+.cards{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(268px,1fr));}
+.card{
+  background:var(--cover-lift);border:1px solid rgba(220,231,226,.12);
+  padding:18px 19px;
+}
+.card h3{
+  font-family:"Bitter",Georgia,serif;font-size:17px;font-weight:600;
+  margin:0 0 9px;color:#F2F7F4;line-height:1.25;
+}
+.card p{margin:0;font-size:14.5px;line-height:1.55;color:var(--on-cover-mute);}
+.card p + p{margin-top:9px;}
+.card b{color:var(--on-cover);font-weight:600;}
+.tag{
+  display:inline-block;font-family:"Silkscreen",monospace;font-size:9px;
+  letter-spacing:.1em;text-transform:uppercase;padding:3px 7px;margin-bottom:11px;
+}
+.tag.built{background:rgba(214,170,83,.16);color:var(--gold);}
+.tag.new{background:rgba(220,231,226,.12);color:var(--on-cover);}
+.tag.gone{background:rgba(0,0,0,.3);color:var(--on-cover-faint);}
+
+.tblwrap{overflow-x:auto;}
+table{border-collapse:collapse;width:100%;min-width:560px;font-size:14.5px;}
+th,td{text-align:left;padding:12px 16px 12px 0;vertical-align:top;border-bottom:1px solid rgba(220,231,226,.10);}
+th{
+  font-family:"Silkscreen",monospace;font-size:9.5px;letter-spacing:.11em;
+  color:var(--gold);text-transform:uppercase;font-weight:400;
+  border-bottom-color:rgba(214,170,83,.4);
+}
+td{color:var(--on-cover-mute);line-height:1.5;}
+td b{color:var(--on-cover);font-weight:600;}
+td code,p code,.card code,li code{
+  font-family:"Silkscreen",monospace;font-size:11px;color:var(--gold);
+  background:rgba(0,0,0,.25);padding:1px 5px;
+}
+
+/* ── the section chips ────────────────────────────────────────────────── */
+.chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px;}
+.chip{
+  font-family:"Silkscreen",monospace;font-size:12px;letter-spacing:.07em;
+  background:var(--tabstock);color:var(--ink-strong);
+  border:2px solid var(--ink-strong);padding:7px 11px;
+}
+.chip s{color:var(--ink-faint);text-decoration:none;display:block;font-size:8.5px;letter-spacing:.09em;margin-top:3px;}
+
+/* ── the flow ─────────────────────────────────────────────────────────── */
+.flow{display:flex;flex-wrap:wrap;align-items:stretch;gap:0;}
+.step{
+  flex:1 1 190px;background:var(--cover-lift);
+  border:1px solid rgba(220,231,226,.12);padding:16px 17px;
+}
+.step + .step{border-left:none;}
+.step .sk{
+  font-family:"Silkscreen",monospace;font-size:9px;letter-spacing:.1em;
+  color:var(--gold);text-transform:uppercase;display:block;margin-bottom:8px;
+}
+.step p{margin:0;font-size:13.5px;line-height:1.5;color:var(--on-cover-mute);}
+.step b{color:var(--on-cover);font-weight:600;display:block;margin-bottom:5px;font-size:14.5px;}
+
+/* ── rulings ──────────────────────────────────────────────────────────── */
+.ruling{
+  background:var(--cover-lift);border-left:3px solid var(--gold);
+  padding:17px 20px;margin-bottom:14px;
+}
+.ruling .rid{
+  font-family:"Silkscreen",monospace;font-size:10px;color:var(--gold);
+  letter-spacing:.1em;margin-bottom:7px;
+}
+.ruling h3{font-family:"Bitter",Georgia,serif;font-size:17px;font-weight:600;margin:0 0 7px;color:#F2F7F4;line-height:1.3;}
+.ruling p{margin:0;font-size:14.5px;line-height:1.55;color:var(--on-cover-mute);}
+.ruling .rec{margin-top:9px;color:var(--on-cover);}
+.ruling .rec b{color:var(--gold);font-weight:600;}
+
+footer{
+  margin-top:88px;padding-top:26px;border-top:1px solid rgba(220,231,226,.14);
+  font-size:13.5px;color:var(--on-cover-faint);line-height:1.6;
+}
+footer b{color:var(--on-cover-mute);font-weight:600;}
+
+@media (max-width:640px){
+  .mast{padding:44px 0 30px;}
+  section{padding-top:54px;}
+  .plate{padding:16px;}
+  .wrap{padding:0 16px 64px;}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
+</style>
+
+<div class="wrap">
+
+<header class="mast">
+  <p class="eyebrow">Hidden Harbours · design mock · 23 Aug 2026</p>
+  <h1>Shop Talk &amp; the Wares Book</h1>
+  <p class="thesis">
+    A shop is not a screen you open. It is a <b>person you talk to</b>, who reaches under the counter
+    and turns their stock book around for you — same paper, same ink, same hand as her own notebook,
+    <b>but it is theirs and it is not on your key</b>.
+  </p>
+  <div class="metarow">
+    <span><b>Status</b>Proposal — mock only, nothing built</span>
+    <span><b>Design doc</b>docs/design/shop-catalog-and-dialogue-choices.md</span>
+    <span><b>Rules</b>ADR 0039 · no-portrait law · CLAUDE.md 2 · 4 · 7 · 8</span>
+    <span><b>Owner action</b>Six rulings, at the foot of this page</span>
+  </div>
+</header>
+
+<!-- ══════════════════ 1. the conversation ══════════════════ -->
+<section>
+  <div class="sechead"><span class="secnum">PLATE ONE</span><h2>The conversation, with a way in</h2></div>
+  <p class="lede">
+    The option picker <b>already ships</b> — built 17 Aug, move-axis latched, <code>See you later.</code>
+    appended so no conversation can be authored without a way out. One row is new: the one that opens
+    the book. Everything you see below is the shipped bubble kit's actual shape and the shipped palette.
+  </p>
+
+  <div class="plate">
+  <div class="plate-inner">
+    <div class="scene">
+
+      <!-- the character IS the portrait: no box, no face plate, just her, standing there -->
+      <div class="figure">
+        <div class="pin" style="left:-30px;top:6px;">A</div>
+        <div class="shadow"></div>
+        <svg width="64" height="104" viewBox="0 0 16 26" aria-label="The chandler, standing at her counter">
+          <rect x="5"  y="0"  width="6" height="1" fill="#3E2C1E"/>
+          <rect x="4"  y="1"  width="8" height="2" fill="#4A3524"/>
+          <rect x="5"  y="3"  width="6" height="3" fill="#C79A6E"/>
+          <rect x="6"  y="4"  width="1" height="1" fill="#252830"/>
+          <rect x="9"  y="4"  width="1" height="1" fill="#252830"/>
+          <rect x="5"  y="6"  width="6" height="1" fill="#8E5F3A"/>
+          <rect x="3"  y="7"  width="10" height="9" fill="#C9702F"/>
+          <rect x="3"  y="7"  width="10" height="1" fill="#E08B45"/>
+          <rect x="7"  y="8"  width="2" height="8" fill="#A65A22"/>
+          <rect x="2"  y="8"  width="1" height="7" fill="#A65A22"/>
+          <rect x="13" y="8"  width="1" height="7" fill="#A65A22"/>
+          <rect x="2"  y="15" width="2" height="2" fill="#C79A6E"/>
+          <rect x="12" y="15" width="2" height="2" fill="#C79A6E"/>
+          <rect x="4"  y="16" width="8" height="6" fill="#2F4A54"/>
+          <rect x="4"  y="22" width="3" height="3" fill="#1E2A2E"/>
+          <rect x="9"  y="22" width="3" height="3" fill="#1E2A2E"/>
+        </svg>
+      </div>
+
+
+      <div class="bubble">
+        <div class="tail"></div>
+        <div class="pin" style="right:-11px;top:-11px;">B</div>
+        <div class="speaker">Ada MacAulay</div>
+        <p class="said">Morning. Tide's dropping —<br>good day for it.</p>
+        <div class="optrule"></div>
+        <div class="opt sel"><span class="arrow">&#9656;</span><span class="lbl">What have you got?</span><span class="hint">opens the book</span><span class="pin" style="right:-11px;top:3px;">C</span></div>
+        <div class="opt"><span class="arrow">&nbsp;</span><span class="lbl">Any word on the cod?</span><span class="hint">plays a reply</span></div>
+        <div class="opt"><span class="arrow">&nbsp;</span><span class="lbl">See you later.</span><span class="hint">appended, always last</span><span class="pin" style="right:-11px;top:3px;">D</span></div>
+      </div>
+
+    </div>
+    <p class="caption">Bubble geometry, palette and tail from the baked kit at Art/UI/DialogueBubble — not redrawn for this mock</p>
+  </div>
+  </div>
+
+  <dl class="keys">
+    <div class="key"><dt>A</dt><dd><b>No portrait, ever.</b> The character on screen is the portrait — she turns to face you and animates through the line. The five portrait asks were cancelled and the slots deleted with the old panel.</dd></div>
+    <div class="key"><dt>B</dt><dd><b>The bubble anchors at her</b>, tail tracking, world visible behind. The text filling <i>is</i> the sound — no voice, no animalese.</dd></div>
+    <div class="key"><dt>C</dt><dd><b>The one new field.</b> A row may name a catalog view. It publishes <code>DialogueOptionPicked</code> exactly as today; Economy listens. World branches on nothing.</dd></div>
+    <div class="key"><dt>D</dt><dd><b>Still flat, still one round.</b> A catalog row is <i>deferred</i>-terminal, not a tree: the book opens, and on close her reply plays and the talk ends.</dd></div>
+  </dl>
+</section>
+
+<!-- ══════════════════ 2. the book ══════════════════ -->
+<section>
+  <div class="sechead"><span class="secnum">PLATE TWO</span><h2>Her book, on the counter</h2></div>
+  <p class="lede">
+    Drawn in the notebook's own kit: warm stock, three ink weights, one gold accent, five-character
+    stubs down the fore-edge, every line sitting on a <b>fixed ruled pitch</b>. It opens low — she and
+    her bubble stay on screen above it, because a book with nobody holding it is a menu.
+  </p>
+
+  <div class="plate">
+  <div class="plate-inner">
+    <div class="bookstage">
+      <div class="book">
+        <div class="boards">
+          <div class="bookhead">
+            <div class="pin" style="left:-12px;top:-10px;">E</div>
+            <div class="pin" style="right:-12px;top:-10px;">F</div>
+            <div class="seller">MACAULAY &amp; SON<small>CHANDLERY &middot; NINE MILE CREEK</small></div>
+            <div class="balance">&#8372; 1,240<em>YOURS</em></div>
+          </div>
+          <div class="spread">
+            <div class="leaf">
+              <div class="row sel"><span class="arrow">&#9656;</span><span class="name">Fishing Rod</span><span class="price">&#8372; 60</span></div>
+              <div class="row"><span class="arrow">&#9656;</span><span class="name">Hand-line</span><span class="price">&#8372; 12</span></div>
+              <div class="row"><span class="arrow">&#9656;</span><span class="name">Gaff</span><span class="price">&#8372; 25</span></div>
+              <div class="row owned"><span class="pin" style="left:-12px;top:3px;">G</span><span class="arrow">&#9656;</span><span class="name">Oilskins</span><span class="stamp">PAID</span><span class="price">&#8372; 90</span></div>
+              <div class="row dear"><span class="arrow">&#9656;</span><span class="name">Depth Sounder</span><span class="price">&#8372; 140</span></div>
+              <div class="row"><span class="arrow">&#9656;</span><span class="name">Bait bucket</span><span class="price">&#8372; 8</span></div>
+            </div>
+            <div class="leaf right">
+              <div class="entry">
+                <div class="etitle">FISHING ROD</div>
+                <p>A proper rod and reel &mdash;</p>
+                <p>the step up from a hand-line.</p>
+                <p class="note">Fits any hull.</p>
+                <div class="buyline">
+                  <span class="pin" style="right:-13px;top:3px;">I</span>
+                  <span class="bprice">&#8372; 60</span>
+                  <span class="buyaction">&#9656; Take it</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="foreedge">
+          <div class="pin" style="right:-11px;top:22px;">H</div>
+          <div class="stub on">GEAR</div>
+          <div class="stub">TOOLS</div>
+          <div class="stub">BAIT</div>
+        </div>
+      </div>
+    </div>
+    <p class="caption">Stock, ink, rule pitch, stubs and stamp from Code/World/NotebookInk.cs + NotebookKit.cs — the same kit QuestPanelPresenter already draws in</p>
+  </div>
+  </div>
+
+  <dl class="keys">
+    <div class="key"><dt>E</dt><dd><b>It is hers, not yours.</b> A named seller on a named counter. Your notebook stays your notebook; a shop's stock never enters it.</dd></div>
+    <div class="key"><dt>F</dt><dd><b>Money in the head, on every tab</b> — the rule ADR 0039 wrote for the notebook, in the same place, so the balance never has two spellings.</dd></div>
+    <div class="key"><dt>G</dt><dd><b>Owned is a stamp, not a grey.</b> Stamp, a rule through the price, and a status sentence — three codings, because colour alone is forbidden.</dd></div>
+    <div class="key"><dt>H</dt><dd><b>Stubs are this seller's stock</b>, not a fixed six. One counter carrying gear, tools and bait shows three; a yard shows BOATS alone.</dd></div>
+    <div class="key"><dt>I</dt><dd><b>The verb is hers.</b> <i>Take it</i> for gear, <i>Buy her</i> for a boat, <i>Put her right</i> for a repair — one switch on the quote kind, and most of the voice.</dd></div>
+  </dl>
+</section>
+
+<!-- ══════════════════ 3. row states ══════════════════ -->
+<section>
+  <div class="sechead"><span class="secnum">STATE</span><h2>Three states, each said three ways</h2></div>
+  <p class="lede">Accessibility is not a pass at the end — the third row is also where the game's kindness lives.</p>
+  <div class="tblwrap">
+  <table>
+    <tr><th>Row</th><th>Ink</th><th>Mark</th><th>Sentence</th></tr>
+    <tr><td><b>Affordable</b></td><td>Full ink; gold pill under the cursor</td><td>&mdash;</td><td>The buy line, in her words</td></tr>
+    <tr><td><b>Owned / held</b></td><td>Price ruled through</td><td><code>Notebook_Stamp_Done</code></td><td>&ldquo;Already yours.&rdquo;</td></tr>
+    <tr><td><b>Too dear</b></td><td>Price in faint ink</td><td>&mdash;</td><td><b>&ldquo;You're &#8372;540 short.&rdquo;</b> &mdash; the shortfall, never a refusal</td></tr>
+  </table>
+  </div>
+  <p class="lede" style="margin-top:22px;">
+    The dark overlay it replaces says <i>&ldquo;You can't afford this yet.&rdquo;</i> A book says <b>how much
+    short</b>, because that is a number you can plan against — and the panel already knows it.
+  </p>
+</section>
+
+<!-- ══════════════════ 4. the data ══════════════════ -->
+<section>
+  <div class="sechead"><span class="secnum">DATA</span><h2>How a thing gets onto the shelf</h2></div>
+  <p class="lede">
+    Today stock is a <b>scene fact</b>: the catalog reads whatever vendor components a designer stacked
+    on a stall, so adding a boat to a yard means editing a scene. The tag inverts it — <b>the listing
+    says where it is sold</b>, and no scene is touched.
+  </p>
+
+  <div class="flow">
+    <div class="step"><span class="sk">Step</span><b>One asset</b><p>An offer Def — the layer that already exists — gains a <code>Listed</code> tag, a section, and the sellers who stock it.</p></div>
+    <div class="step"><span class="sk">Step</span><b>Swept, never cached</b><p><code>Resources.LoadAll</code> under <code>Data/Resources/Catalog</code>, sorted and null-filtered, resolved on every open. The book's own pattern.</p></div>
+    <div class="step"><span class="sk">Step</span><b>Quoted as today</b><p><code>BuyLogic</code> is untouched: price, owned, affordable. No new purchase economics are written.</p></div>
+    <div class="step"><span class="sk">Step</span><b>Sold as today</b><p>Confirm routes through the vendors' existing <code>TryBuy()</code>. Money, save writes and Core events do not move.</p></div>
+  </div>
+
+  <div class="cards" style="margin-top:20px;">
+    <div class="card"><span class="tag built">already exists</span><h3>The offer Defs</h3><p><code>ShipwrightOffer</code>, <code>GearOffer</code>, <code>PotOffer</code>, <code>InstrumentOffer</code>, plus bait, supply and licence Defs. <b>These are the Defs the brief means</b> — they are already the for-sale layer, and the tag goes on them.</p></div>
+    <div class="card"><span class="tag new">new, three assets</span><h3>Lots, businesses, vehicles</h3><p>Priced offers pointing at the thing by id — never a price bolted onto <code>VehicleDef</code>, which lives in another module and must not learn what money is. <b>Businesses point at M2-41's building Def rather than restate it.</b></p></div>
+    <div class="card"><span class="tag gone">retires</span><h3>The dark overlay</h3><p><code>BuyScreen</code>, plus the self-installing <code>P</code>-key dev driver on every vendor in every scene. Both headers already call themselves placeholders for this. <b>The <code>P</code> key returns to the ledger.</b></p></div>
+  </div>
+
+  <p class="lede" style="margin-top:32px;margin-bottom:12px;"><b>Six sections</b>, append-only, lettered to the kit's five-character chip:</p>
+  <div class="chips">
+    <span class="chip">LOTS<s>land</s></span>
+    <span class="chip">TRADE<s>businesses</s></span>
+    <span class="chip">TOOLS<s>tools</s></span>
+    <span class="chip">RIGS<s>vehicles</s></span>
+    <span class="chip">BOATS<s>boats</s></span>
+    <span class="chip">GEAR<s>gear</s></span>
+  </div>
+</section>
+
+<!-- ══════════════════ 5. built vs new ══════════════════ -->
+<section>
+  <div class="sechead"><span class="secnum">LEDGER</span><h2>What is already built</h2></div>
+  <p class="lede">
+    The most decision-relevant fact on this page: <b>two-thirds of the brief is standing code.</b>
+    Reading it as three equal pieces of work would badly misprice it.
+  </p>
+  <div class="tblwrap">
+  <table>
+    <tr><th>The ask</th><th>Reality</th><th>What is actually new</th></tr>
+    <tr><td><b>Dialogue gains choices</b></td><td><b>Shipped 17 Aug.</b> Authored rows, pure latched picker, appended close row, Core signal, portraits already deleted.</td><td>One field: a row that names a catalog view.</td></tr>
+    <tr><td><b>Shop talk inside dialogue</b></td><td>The signal exists and <b>has never had a subscriber.</b></td><td>Economy subscribes; the conversation holds while the book is open.</td></tr>
+    <tr><td><b>A catalog panel</b></td><td>A dark 920&times;540 overlay exists and is exactly what the doctrine forbids.</td><td><b>The panel, and the tag.</b> This is the work.</td></tr>
+  </table>
+  </div>
+
+  <div class="cards" style="margin-top:26px;">
+    <div class="card">
+      <h3>Two safe pieces</h3>
+      <p><b>Phase A</b> — the book replaces the screen, over the existing scan. No data change, no migration. Playable, rulable, and it throws nothing away.</p>
+      <p><b>Phase B</b> — the tag replaces the scan. Stock becomes content; scenes stop carrying it.</p>
+    </div>
+    <div class="card">
+      <h3>What this does <i>not</i> build</h3>
+      <p>No new purchasable content, no property or business gameplay (that is M2-42), no dialogue tree, no phone app, and <b>no instrument grants</b> — ADR 0039's save-schema debt is not paid by listing one.</p>
+    </div>
+    <div class="card">
+      <h3>The sell screen is not in scope</h3>
+      <p>It shares the same dark palette and will want the same treatment, but a <b>sell is a different beat</b> — the market moves under you — and deserves its own pass, not a rename of this one. Flagged so it is not silently inherited.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ 6. rulings ══════════════════ -->
+<section>
+  <div class="sechead"><span class="secnum">OWNER</span><h2>Six rulings before anything is built</h2></div>
+  <p class="lede">Recommendations are given so a nod is enough. R3 is the one that changes the mock.</p>
+
+  <div class="ruling"><div class="rid">R1 &middot; the only question that changes code shape</div><h3>How does a seller id find the thing that sells?</h3>
+    <p>With stock as content, <code>seller.macaulay</code> must reach the component that owns the purchase. A field on the vendors; a registry; or vendors become stateless services.</p>
+    <p class="rec"><b>Recommend: a <code>SellerId</code> field on the existing vendors.</b> One field, the purchase flow does not move, and it can become a registry later without touching content.</p></div>
+
+  <div class="ruling"><div class="rid">R2</div><h3>Does the conversation hold while the book is open, or end?</h3>
+    <p>Holding costs one deferred-terminal row and buys the &ldquo;come back if you change your mind&rdquo; beat.</p>
+    <p class="rec"><b>Recommend: hold.</b> It is the Animal Crossing shape the brief is asking for. Ending is cheaper and loses it.</p></div>
+
+  <div class="ruling"><div class="rid">R3 &middot; the load-bearing one</div><h3>A second book — or a tab in hers?</h3>
+    <p>The whole design rests on this. A stock tab in her notebook is reachable on <code>N</code> from the middle of the ocean, which is a menu with a paper texture.</p>
+    <p class="rec"><b>Recommend: a second book.</b> Ruling the other way is legitimate, but it collapses most of Plate Two.</p></div>
+
+  <div class="ruling"><div class="rid">R4</div><h3>Is browsing itself earned?</h3>
+    <p>Every readout in this game is gated behind owning the instrument. Is a price list a readout? Recorded because the keystone rule deserves to be asked, not assumed past.</p>
+    <p class="rec"><b>Recommend: no.</b> A seller showing you their wares is the oldest un-gated information there is, and gating it would make the ladder illegible — the exact thing this panel is for.</p></div>
+
+  <div class="ruling"><div class="rid">R5</div><h3>Lots and businesses now, or held empty?</h3>
+    <p class="rec"><b>Recommend: define the sections now, author nothing.</b> Append-only ids are cheap to reserve and expensive to renumber; an empty section simply shows no stub.</p></div>
+
+  <div class="ruling"><div class="rid">R6 &middot; taste</div><h3>The seller's verbs.</h3>
+    <p><i>Buy her</i> / <i>Take it</i> / <i>Put her right</i> per kind, or one plain <i>Buy</i>? Cheap either way.</p>
+    <p class="rec"><b>Suggest the per-kind verbs.</b> One switch, and most of the voice.</p></div>
+</section>
+
+<footer>
+  <p><b>Mock only — nothing here is built or claimed.</b> The full design, the data model, the test plan
+  and the proposed backlog items are in <code>docs/design/shop-catalog-and-dialogue-choices.md</code>.
+  Construction waits on the owner's handoff (CLAUDE.md rule 8).</p>
+  <p style="margin-top:10px;">Pillars served: <b>P4</b> you can see the rung above you and what it costs
+  &middot; <b>P3</b> the seller stays a person in a place &middot; <b>P2</b> the ladder is legible in one
+  hand &middot; <b>P5</b> a price you cannot meet is a kind sentence, not a locked door.</p>
+</footer>
+
+</div>
