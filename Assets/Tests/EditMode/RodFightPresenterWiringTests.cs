@@ -153,7 +153,10 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsNotNull(presenter, "the rod-fight presenter rides the player");
 
             var so = new SerializedObject(presenter);
-            Assert.AreEqual(7, so.FindProperty("_rodStates").arraySize, "hold..castRelease, all seven");
+            Assert.AreEqual(RodPresenterMath.RodStateCount, so.FindProperty("_rodStates").arraySize,
+                            "every rig state the rod has — the seven the fisher poses in, then the " +
+                            "three rests. Read from RodPresenterMath rather than restated: the count " +
+                            "drifting from the rig's is what let the swap hand back the wrong sheet.");
             Assert.AreEqual(4, so.FindProperty("_bobberStates").arraySize, "float/nibble/strike/fly");
             Assert.AreEqual(3, so.FindProperty("_species").arraySize,
                 "cod + haddock + mackerel key to the roster (pollock waits for its species def)");

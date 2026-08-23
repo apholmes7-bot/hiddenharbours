@@ -159,6 +159,10 @@ namespace HiddenHarbours.Player
         private HiddenHarbours.Core.IsoCharacterSprite _isoSkin;
         private SpriteRenderer _playerSr;
 
+        /// <summary>Pose ordinal → index into <c>_rodStates</c>, resolved by rig state NAME once in
+        /// <c>Awake</c>/<c>Configure</c> (see <see cref="ResolveRodSwap"/>). −1 = unwired.</summary>
+        private readonly int[] _rodSwap = new int[RodPresenterMath.PoseCount];
+
         private SpriteRenderer _rodSr;
         private Vector2 _rodGrip;              // where the rod is held this frame — the load bends it about here
         private Quaternion _rodBaseRotation;   // the unloaded pose the lean is measured off
@@ -209,7 +213,52 @@ namespace HiddenHarbours.Player
             _rippleSr = MakeChild("SinkRipple", _rippleSortingOrder);
             _line = MakeLine();
             _lineBuffer = new Vector2[Mathf.Max(2, _lineSegments)];
+            ResolveRodSwap();
             HideAll();
+        }
+
+        /// <summary>
+        /// Resolve, ONCE, which wired entry each pose's rod comes from — by the entry's RIG STATE
+        /// NAME, not by where it happens to sit in the array. A wired array is data someone can
+        /// re-order (a prefab, a hand-fixed scene), and a swap that trusts position will then hand
+        /// the cast beat the hold rod, or the strike rod, and look almost right while doing it.
+        /// Resolving by name makes that a loud miss instead of a quiet substitution.
+        ///
+        /// <para>Also the one place the whole wired set is checked to be ONE rod
+        /// (<see cref="RodPresenterMath.SameRod"/>). The importer checks it too, at bake time; this
+        /// catches the prefab that was wired before the rig was fixed.</para>
+        /// </summary>
+        private void ResolveRodSwap()
+        {
+            for (int i = 0; i < _rodSwap.Length; i++) _rodSwap[i] = -1;
+            if (_rodStates == null) return;
+
+            for (int i = 0; i < _rodSwap.Length; i++)
+            {
+                string want = RodPresenterMath.RodStateFor((FishingPose)i);
+                for (int s = 0; s < _rodStates.Length; s++)
+                {
+                    if (_rodStates[s] == null) continue;
+                    if (string.Equals(_rodStates[s].State, want, System.StringComparison.Ordinal))
+                    { _rodSwap[i] = s; break; }
+                }
+                if (_rodSwap[i] < 0)
+                    Debug.LogWarning($"[RodFightPresenter] No wired rod state '{want}' for pose " +
+                                     $"{(FishingPose)i} — that beat draws the hold rod. Re-run the " +
+                                     "start builder after a fishing-kit bake.", this);
+            }
+
+            RodStateVisual reference = null;
+            for (int s = 0; s < _rodStates.Length; s++)
+            {
+                if (_rodStates[s] == null) continue;
+                if (reference == null) { reference = _rodStates[s]; continue; }
+                if (!RodPresenterMath.SameRod(reference, _rodStates[s], out string why))
+                    Debug.LogError($"[RodFightPresenter] Rod state '{_rodStates[s].State}' is not the " +
+                                   $"same rod as '{reference.State}': {why}. One rod serves every " +
+                                   "state — swapping to it would teleport or resize the rod in the " +
+                                   "fisher's hand. Re-bake the fishing kit and re-run the builder.", this);
+            }
         }
 
         private void OnEnable() => EventBus.Subscribe<FishingStateChanged>(OnFishingState);
@@ -373,7 +422,11 @@ namespace HiddenHarbours.Player
                                                                    : (_animator != null ? _animator.Row : Directions / 2));
             int frame = posed ? _animator.Frame : 0;
 
-            RodStateVisual state = _rodStates[RodPresenterMath.RodSheetFor(pose)];
+            int p = (int)pose;
+            int slot = p >= 0 && p < _rodSwap.Length ? _rodSwap[p] : -1;
+            RodStateVisual state = slot >= 0 && slot < _rodStates.Length
+                ? _rodStates[slot]
+                : _rodStates[RodPresenterMath.RodSheetFor(pose)];
             if (state == null || state.Frames == null || state.Frames.Length == 0)
             {
                 _rodSr.enabled = false;
@@ -837,6 +890,7 @@ namespace HiddenHarbours.Player
             _landFramesPerDir = landFramesPerDir;
             _splashFrames = splashFrames;
             _rippleSprite = rippleSprite;
+            ResolveRodSwap();
         }
     }
 }

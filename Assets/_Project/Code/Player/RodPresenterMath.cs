@@ -66,24 +66,92 @@ namespace HiddenHarbours.Player
             }
         }
 
-        /// <summary>Which rod sheet a fisher pose pairs with — index into the presenter's rod-state
-        /// array, which the builder fills in this exact order: hold(0), bite(1), strike(2), reel(3),
-        /// land(4), castBack(5), castRelease(6). <see cref="FishingPose.None"/> maps to HOLD: the line
-        /// can be out while the body walks (the hold pose yielded), and the rod stays in hand.</summary>
-        public const int RodStateCount = 7;
+        /// <summary>
+        /// <b>The rod's states, in the one order everything uses.</b> These are the RIG's own state
+        /// names (<c>RodIso</c>'s tool anims, then its <c>REST</c> states), and this array is the only
+        /// place the order is written down: <see cref="RodSheetFor"/> resolves through it by NAME, and
+        /// the importer fills the presenter's array from it. It used to be spelled out in four places
+        /// — the rig, the baker's <c>RodToolAnims</c>, the importer's state order, and a run of bare
+        /// ordinals in <c>RodSheetFor</c> — with nothing checking that the four agreed. That is the
+        /// shape of the bug this fixes: a swap keyed on a number rather than on the rod it is asking
+        /// for will happily hand you a different rod and say nothing.
+        ///
+        /// <para>The last three are the rig's rests — the rod set down and the two stows. They draw no
+        /// gameplay yet, but they are the SAME rod as the held states and they are wired here so that
+        /// <see cref="SameRod"/> covers them: the one-rod rule is only worth anything if the states
+        /// nobody is looking at are held to it too.</para>
+        /// </summary>
+        public static readonly string[] RodStates =
+        {
+            "hold", "bite", "strike", "reel", "land", "castBack", "castRelease",
+            "ground", "stowV", "stowH",
+        };
 
-        public static int RodSheetFor(FishingPose pose)
+        public static int RodStateCount => RodStates.Length;
+
+        /// <summary>How many <see cref="FishingPose"/> values there are — the width of a pose-indexed
+        /// lookup. Stated rather than reflected: this is read at component construction.</summary>
+        public const int PoseCount = (int)FishingPose.CastRelease + 1;
+
+        /// <summary>The index of a rig state name in <see cref="RodStates"/>, or −1. Ordinal.</summary>
+        public static int IndexOfState(string state)
+        {
+            if (string.IsNullOrEmpty(state)) return -1;
+            for (int i = 0; i < RodStates.Length; i++)
+                if (string.Equals(RodStates[i], state, StringComparison.Ordinal)) return i;
+            return -1;
+        }
+
+        /// <summary>Which RIG STATE a fisher pose is holding the rod in. <see cref="FishingPose.None"/>
+        /// maps to hold: the line can be out while the body walks (the hold pose yielded), and the rod
+        /// stays in hand.</summary>
+        public static string RodStateFor(FishingPose pose)
         {
             switch (pose)
             {
-                case FishingPose.Bite: return 1;
-                case FishingPose.Strike: return 2;
-                case FishingPose.Reel: return 3;
-                case FishingPose.Land: return 4;
-                case FishingPose.CastBack: return 5;
-                case FishingPose.CastRelease: return 6;
-                default: return 0;   // None / Hold → the hold sheet
+                case FishingPose.Bite: return "bite";
+                case FishingPose.Strike: return "strike";
+                case FishingPose.Reel: return "reel";
+                case FishingPose.Land: return "land";
+                case FishingPose.CastBack: return "castBack";
+                case FishingPose.CastRelease: return "castRelease";
+                default: return "hold";   // None / Hold → the hold sheet
             }
+        }
+
+        /// <summary>Which rod sheet a fisher pose pairs with — the index of <see cref="RodStateFor"/>'s
+        /// rig state. Falls back to hold (0) rather than throwing, so a state the rig stops declaring
+        /// leaves the rod in the fisher's hand instead of leaving her empty-handed.</summary>
+        public static int RodSheetFor(FishingPose pose)
+        {
+            int i = IndexOfState(RodStateFor(pose));
+            return i >= 0 ? i : 0;
+        }
+
+        /// <summary>
+        /// <b>Is this the same rod?</b> The owner's law for the whole fishing kit is that the rod never
+        /// teleports, resizes or re-points across a transition, and a presenter that swaps sheets is
+        /// exactly where that law gets broken — silently, because two sheets of a rod look like a rod
+        /// either way. So before one state's sheet stands in for another's, the two must agree about
+        /// what the rod IS: the same cell, the same pivot inside it, the same tier, the same blank
+        /// length. Anything else is a different rod wearing this one's name.
+        ///
+        /// <para>Blank length is compared in millimetres of slack — the anchors carry it as a rounded
+        /// decimal, and an exact float compare would fail on the rounding rather than on the rod.</para>
+        /// </summary>
+        public static bool SameRod(RodStateVisual a, RodStateVisual b, out string why)
+        {
+            why = null;
+            if (a == null || b == null) return true;   // an unwired state substitutes nothing
+            if (a.CellW != b.CellW || a.CellH != b.CellH)
+                why = $"cell {a.CellW}x{a.CellH} vs {b.CellW}x{b.CellH}";
+            else if (Mathf.Abs(a.PivotX - b.PivotX) > 0.01f || Mathf.Abs(a.PivotY - b.PivotY) > 0.01f)
+                why = $"pivot ({a.PivotX},{a.PivotY}) vs ({b.PivotX},{b.PivotY})";
+            else if (!string.Equals(a.Tier, b.Tier, StringComparison.Ordinal))
+                why = $"tier '{a.Tier}' vs '{b.Tier}'";
+            else if (Mathf.Abs(a.BlankLenM - b.BlankLenM) > 0.001f)
+                why = $"blank {a.BlankLenM} m vs {b.BlankLenM} m";
+            return why == null;
         }
 
         /// <summary>Compass heading (deg, 0 = North=+Y, CW toward +X — the IsoFacing convention) of a

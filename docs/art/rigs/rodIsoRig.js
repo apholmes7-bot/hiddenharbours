@@ -7,13 +7,20 @@
    The blank is plotted procedurally (unbroken 1-2px taper at any pitch — thin quads would gap);
    grip / reel seat / reel / crank are true 3D solids. Line + bobber + splash are RUNTIME FX,
    never baked — project() maps character-local 3D points to screen px for them.
-   render(dir,{tier,pitch,yaw,bend,elev,rest}) — pitch/yaw in RADIANS from CharacterIso.tool;
-   rest:'ground' (flat prop, 8 headings via dir, pivot = ground under the grip) | 'stored'
-   (upright, butt on the ground — racks / stowed slots);
+   render(dir,{tier,pitch,yaw,bend,elev,rest,frame|u,from}) — pitch/yaw in RADIANS from
+   CharacterIso.tool. ONE ROD, EVERY STATE: the grip centre is the cell pivot and the yaw is
+   HELD_YAW whether the rod is held, cast, set down or stowed, so no transition can teleport it,
+   resize it or spin it. The rests are ANIMATED, not snapshots — rest:'ground' (laid underfoot) |
+   'stowV' (upright, butt down; 'stored' is the shipped alias) | 'stowH' (across the pegs) each
+   run REST_FRAMES frames whose u=0 IS the hold stance the hand handed over from, and the hand
+   lets go at RELEASE_AT, mid-animation, never at the seam. How high a rest holds the rod is
+   restLift() DATA, not a pixel offset (it used to be a zOff that slid the grip off the pivot).
    bend 0..1 flexes the top 60% of the blank. tip(dir,opts) -> rod-cell px of the tip (line FX
-   anchor); tipLocal(opts) -> the 3D local tip point. CAST = short/long distances (m), x castMul.
-   Exposes globalThis.RodIso = { W,H,pivot,order,TIERS,CAST,behind,defaultElev,KEY,LINE,BOBBER,
-   render,tip,tipLocal,project }. */
+   anchor); tipLocal(opts) -> the 3D local tip point; poseOf(state,u,opts) -> the one pose
+   resolver every state goes through. CAST = short/long distances (m), x castMul.
+   Exposes globalThis.RodIso = { W,H,pivot,order,TIERS,CAST,REST,RESTS,REST_ALIAS,REST_FRAMES,
+   RELEASE_AT,HELD_YAW,STANCE,behind,defaultElev,KEY,LINE,BOBBER,render,tip,tipLocal,project,
+   poseOf,gripLocal,restLift,restHeldFrames }. */
 (function (root) {
   const S = 32, DEG = Math.PI / 180, DEFAULT_ELEV = 40;
   const W = 112, H = 112, cx = 56, cy = 72;
@@ -213,17 +220,96 @@
     return rgba;
   }
 
+  // =========================================================================================
+  // ONE ROD DEFINITION, EVERY STATE.
+  // A state may change where the rod POINTS and how much it FLEXES. Nothing a state does may
+  // change what the rod IS. Three things are therefore fixed for held and rest alike:
+  //   · the grip centre is the cell pivot, in every state (no per-state zOff — see below);
+  //   · the blank length is the tier's `len`, in every state;
+  //   · the yaw is HELD_YAW in every state this rig resolves for itself — the held default and all
+  //     three rests. An explicit opts.yaw still wins, which is how characterIsoRig6.hands' carry
+  //     props (rodTrail, rodSling) trail and sling THIS rod at their own attitudes; those are a
+  //     different mount and are not part of the hold-cast-rest transition set.
+  // Two of those used to be false. `rest:'ground'` and `rest:'stored'` each re-pointed the rod
+  // (yaw 0 against the held 16deg) and each slid the grip off the pivot with a zOff, so the rod
+  // TELEPORTED 2.3 px / 3.9 px and swung 9-151deg the instant it left the hand. The ground datum
+  // that zOff was standing in for is real, so it did not go away — it moved OUT of the render and
+  // into `lift` DATA below, where a consumer can place with it and no pixel depends on it.
+  const HELD_YAW = 16*DEG;
+
+  // The hold stance a rest transition leaves from — CharacterIso.tool(dir,{anim:'hold',u:1}),
+  // stated ONCE here so the rod rig does not have to import the character rig to know where the
+  // hand hands it over. `rod-continuity.mjs` pins the two together and fails if they drift.
+  const STANCE = { pitch:56*DEG, yaw:HELD_YAW, bend:0.05 };
+
+  // The SETTLED end of each rest, and how far the grip sits above the surface it rests on.
+  // `stowH` is deliberately `ground`'s pose at rack height: a rod laid horizontally IS a rod laid
+  // horizontally, and the only honest difference between the floor and the pegs is how high up it
+  // is. That is what one-definition means — the states differ in `lift`, not in rod.
+  const REST_FRAMES = 6;         // a set-down is ANIMATED; a rest was a single cell, which is a cut
+  const RELEASE_AT  = 0.72;      // u the hand lets go at — after the rod has arrived, never before
+  const RESTS = {
+    ground: { pitch:0,      bend:0,    lift:(t)=>t.reel?0.095:t.gripRad },  // on its reel, underfoot
+    stowV:  { pitch:86*DEG, bend:0.03, lift:()=>0.16 },                     // upright, butt down
+    stowH:  { pitch:0,      bend:0.02, lift:()=>0.62 },                     // across the pegs
+  };
+  const REST_ALIAS = { stored:'stowV' };            // append-only: the shipped name keeps working
+  const REST_ORDER = ['ground','stowV','stowH'];
+  const restKey = (r)=>REST_ALIAS[r]||r;
+
+  const smooth=(x)=>x*x*(3-2*x), mix=(a,b,x)=>a+(b-a)*x;
+
+  /** The ONE pose resolver. `state` is 'held' or a rest name; `u` is 0..1 through that state.
+   *  A rest's u=0 IS the stance it was handed over from, so the seam is a normal animation step
+   *  and not a jump. Returns radians + the flex + the resting `lift` (m) + which hand holds it. */
+  function poseOf(state, u, opts){
+    opts=opts||{};
+    const key=restKey(state);
+    if(!RESTS[key]){                                  // held: the character rig drives the pose
+      return { pitch:opts.pitch!=null?opts.pitch:STANCE.pitch,
+               yaw:opts.yaw!=null?opts.yaw:HELD_YAW,
+               bend:opts.bend||0, lift:0, hand:'R' };
+    }
+    const t=TIERS[opts.tier]||TIERS.coast, R=RESTS[key];
+    const from=Object.assign({}, STANCE, opts.from||{});
+    const x=smooth(Math.max(0,Math.min(1,u==null?1:u)));
+    return { pitch:mix(from.pitch,R.pitch,x), yaw:HELD_YAW, bend:mix(from.bend,R.bend,x),
+             lift:R.lift(t)*x, hand:(u!=null&&u<RELEASE_AT)?'R':'none' };
+  }
+  /** The grip-centre point in rod-local metres. It is the origin, in every state, forever — this
+   *  is the whole of the one-pivot rule and it is a function so callers cannot forget it. */
+  function gripLocal(){ return [0,0,0]; }
+
+  /** How far (m) a settled rest holds the grip above the surface it rests on — the ground datum
+   *  the old per-rest zOff was carrying inside the render. A consumer places the sprite's pivot
+   *  this far above the floor / rack; the PIXELS no longer know about it, which is precisely why
+   *  the rod stopped jumping when it left the hand. 0 for a held rod. */
+  function restLift(rest, opts){
+    const R=RESTS[restKey(rest)];
+    return R ? R.lift(TIERS[(opts||{}).tier]||TIERS.coast) : 0;
+  }
+
+  /** frame -> u for a rest. The last frame is the SETTLED rest, so the span is REST_FRAMES-1 —
+   *  which is also why nobody outside should be deriving this: restHeldFrames() below is the one
+   *  answer to "how many frames is it still in her hand", and it is easy to get off by one. */
+  const restUOfFrame = (f)=>Math.max(0,Math.min(1, f/(REST_FRAMES-1)));
+  function restU(opts){
+    if(opts.u!=null) return opts.u;
+    if(opts.frame!=null) return restUOfFrame(opts.frame);
+    return 1;                                        // no frame asked for = the settled rest
+  }
+  /** How many of a rest's frames still have the rod IN THE HAND — counted off the same u mapping
+   *  the render uses, so the sidecars and the pixels cannot disagree about when she lets go. */
+  function restHeldFrames(){
+    let n=0;
+    for(let f=0; f<REST_FRAMES; f++) if(restUOfFrame(f) < RELEASE_AT) n++;
+    return n;
+  }
   function resolveR(dir, opts){
     opts=opts||{};
     const t=TIERS[opts.tier]||TIERS.coast, o=Object.assign({},opts,{dir});
-    if(opts.rest==='ground')   // flat prop — rests on reel + grip; pivot = ground under the grip
-      return { o, t, pitch:0, yaw:0, bend:0, zOff:t.reel?0.095:t.gripRad };
-    if(opts.rest==='stored')   // upright, butt on the ground, near-vertical lean
-      return { o, t, pitch:86*DEG, yaw:0, bend:0.03, zOff:0.16 };
-    return { o, t,
-             pitch:opts.pitch!=null?opts.pitch:56*DEG,
-             yaw:opts.yaw!=null?opts.yaw:16*DEG,
-             bend:opts.bend||0, zOff:0 };
+    const p=poseOf(opts.rest||'held', opts.rest?restU(opts):null, opts);
+    return { o, t, pitch:p.pitch, yaw:p.yaw, bend:p.bend, zOff:0 };
   }
   function render(dir, opts){
     const {o,t,pitch,yaw,bend,zOff}=resolveR(dir,opts);
@@ -246,8 +332,9 @@
     return { dx:xr*S, dy:-(yr*B.se+p[2]*B.ce)*S };
   }
 
-  root.RodIso = { W, H, pivot:{x:cx,y:cy}, order:ORDER, TIERS, CAST, REST:['ground','stored'],
+  root.RodIso = { W, H, pivot:{x:cx,y:cy}, order:ORDER, TIERS, CAST,
+    REST:REST_ORDER, RESTS, REST_ALIAS, REST_FRAMES, RELEASE_AT, HELD_YAW, STANCE,
     behind:[7,0,1],   // rod layers under the sprite for the away facings (NW / N / NE)
     defaultElev:DEFAULT_ELEV, KEY, LINE, BOBBER,
-    render, tip, tipLocal, project };
+    render, tip, tipLocal, project, poseOf, gripLocal, restLift, restHeldFrames };
 })(typeof globalThis!=='undefined'?globalThis:window);

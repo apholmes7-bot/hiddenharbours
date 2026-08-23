@@ -31,9 +31,11 @@ namespace HiddenHarbours.App.Editor
         public const string FishAnchorsPath = FishingIsoFolder + "/FishIsoAnchors.json";
         public const string FisherAnchorsPath = CharacterIsoFolder + "/FisherFightAnchors.json";
 
-        /// <summary>The rod-state order the presenter indexes by (<c>RodPresenterMath.RodSheetFor</c>).</summary>
-        public static readonly string[] RodStateOrder =
-            { "hold", "bite", "strike", "reel", "land", "castBack", "castRelease" };
+        /// <summary>The rod-state order the presenter indexes by. It IS
+        /// <see cref="RodPresenterMath.RodStates"/> — this used to be a second copy of the same list,
+        /// and a wiring order that can disagree with the order the consumer reads it in is a rod swap
+        /// waiting to hand back the wrong sheet.</summary>
+        public static string[] RodStateOrder => RodPresenterMath.RodStates;
 
         /// <summary>The bobber-state order the presenter indexes by (float, nibble, strike, fly).</summary>
         public static readonly string[] BobberStateOrder = { "float", "nibble", "strike", "fly" };
@@ -66,13 +68,25 @@ namespace HiddenHarbours.App.Editor
                 .Select(d => (int)System.Math.Round(d)).Where(d => d >= 0 && d < Directions).ToArray();
 
             var grips = MiniJson.Dict(rod, "grips");
-            var tierStates = MiniJson.Dict(MiniJson.Dict(MiniJson.Dict(rod, "tiers"), tier), "states");
+            var tierNode = MiniJson.Dict(MiniJson.Dict(rod, "tiers"), tier);
+            var tierStates = MiniJson.Dict(tierNode, "states");
             if (grips == null || tierStates == null)
             {
                 Debug.LogWarning($"[RodKitImporter] '{RodAnchorsPath}' has no grips/tiers.{tier}.states " +
                                  "— the rod overlay stays inert. Re-bake the fishing kit.");
                 return null;
             }
+
+            // What the rod IS — read ONCE, stamped on every state, so RodPresenterMath.SameRod can
+            // hold the whole wired set to one answer. Cell/pivot/length are properties of the rod,
+            // not of the pose it happens to be in, and the anchors sidecar says so in one place.
+            var cell = MiniJson.Dict(rod, "cell");
+            int cellW = MiniJson.Int(cell, "w"), cellH = MiniJson.Int(cell, "h");
+            float blankLenM = MiniJson.Float(tierNode, "lenM");
+            if (blankLenM <= 0f)
+                Debug.LogWarning($"[RodKitImporter] '{RodAnchorsPath}' carries no tiers.{tier}.lenM — " +
+                                 "the rod's blank length is unknown, so the same-rod check across " +
+                                 "states cannot use it. Re-bake the fishing kit.");
 
             var result = new RodStateVisual[RodStateOrder.Length];
             for (int s = 0; s < RodStateOrder.Length; s++)
@@ -115,11 +129,38 @@ namespace HiddenHarbours.App.Editor
                 result[s] = new RodStateVisual
                 {
                     State = state,
+                    CellW = cellW,
+                    CellH = cellH,
+                    PivotX = rodPx,
+                    PivotY = rodPy,
+                    Tier = tier,
+                    BlankLenM = blankLenM,
+                    RestLiftM = MiniJson.Float(tip, "liftM", 0f),
+                    HeldFramesPerDir = MiniJson.Int(grip, "heldFrames", framesPerDir),
                     Frames = frames,
                     FramesPerDir = framesPerDir,
                     GripOffsets = gripOffsets,
                     TipOffsets = tipOffsets,
                 };
+            }
+
+            // The swap's own precondition, checked here where the wiring is still in one hand: every
+            // state must describe the SAME rod. A state that does not is dropped rather than wired,
+            // because a rod that changes size or pivot when the pose changes is the exact defect this
+            // kit was rebuilt to end, and it is invisible until someone watches it happen.
+            RodStateVisual reference = null;
+            for (int s = 0; s < result.Length; s++)
+            {
+                if (result[s] == null) continue;
+                if (reference == null) { reference = result[s]; continue; }
+                if (!RodPresenterMath.SameRod(reference, result[s], out string why))
+                {
+                    Debug.LogError($"[RodKitImporter] Rod state '{result[s].State}' ({tier}) is not the " +
+                                   $"same rod as '{reference.State}': {why}. One rod serves every " +
+                                   "state — dropping this one rather than letting it swap in. Re-bake " +
+                                   "the fishing kit from the current rig.");
+                    result[s] = null;
+                }
             }
             return result;
         }

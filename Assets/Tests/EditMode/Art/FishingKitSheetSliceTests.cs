@@ -58,12 +58,21 @@ namespace HiddenHarbours.Tests.Art.EditMode
         private static readonly string[] RodTiers = { "cane", "coast", "deep" };
 
         /// <summary>The seven tool anims (frame counts from the character rig's ANIMS table, the
-        /// same numbers CharacterRigBakeTests pins) plus the two one-frame prop rests.</summary>
+        /// same numbers CharacterRigBakeTests pins) plus the three rests.
+        ///
+        /// <para>The rests used to be two ONE-FRAME props, <c>ground</c> and <c>stored</c>. A rest of
+        /// one cell cannot be entered from the fisher's hand without the rod jumping — which is what
+        /// it did — so each rest is now a <c>RodIso.REST_FRAMES</c>-frame hand-over whose first frame
+        /// is the hold stance, and <c>stored</c> is spelled <c>stowV</c> beside its new horizontal
+        /// twin <c>stowH</c>. See <c>RodContinuityTests</c> for the law all three are held to.</para></summary>
         private static readonly (string state, int frames)[] RodStates =
         {
             ("hold", 6), ("bite", 6), ("strike", 6), ("reel", 12), ("land", 12),
-            ("castBack", 6), ("castRelease", 8), ("ground", 1), ("stored", 1),
+            ("castBack", 6), ("castRelease", 8), ("ground", 6), ("stowV", 6), ("stowH", 6),
         };
+
+        /// <summary>The rest stems, which the guards below hold pending the owner's re-bake.</summary>
+        private static readonly string[] RodRestStates = { "ground", "stowV", "stowH" };
 
         private readonly struct Kit
         {
@@ -112,7 +121,22 @@ namespace HiddenHarbours.Tests.Art.EditMode
         /// sheet FAILS the closed-set guard rather than quietly reading as "pending". Add a stem
         /// here ONLY when a future kit extension specs a sheet ahead of its bake.
         /// </summary>
-        private static readonly HashSet<string> AwaitingOwnerBake = new HashSet<string>();
+        private static readonly HashSet<string> AwaitingOwnerBake = new HashSet<string>(
+            RodTiers.SelectMany(t => new[] { "stowV", "stowH" }.Select(r => $"Rod_{t}_{r}")));
+
+        /// <summary>
+        /// Stems that ARE on disk but whose spec above has moved past them — the other half of the
+        /// owner-bake guard, and a distinction worth keeping: an ABSENT sheet tightens by itself the
+        /// moment it lands, whereas a STALE one is present, loads, slices, and is simply the wrong
+        /// art. Only re-baking clears it, so it is excluded outright rather than tested.
+        ///
+        /// <para>Here: the three tiers' <c>ground</c> sheets, baked as one-frame props before the rod
+        /// rig made the rests animated hand-overs. <b>The PR that commits the re-bake must empty this
+        /// set</b> (and delete the orphaned <c>Rod_*_stored.png</c> + <c>.meta</c>, which no state
+        /// names any more).</para>
+        /// </summary>
+        private static readonly HashSet<string> StaleUntilRebake = new HashSet<string>(
+            RodTiers.Select(t => $"Rod_{t}_ground"));
 
         private static bool OnDisk(string stem) => File.Exists(Iso + stem + ".png");
 
@@ -124,8 +148,10 @@ namespace HiddenHarbours.Tests.Art.EditMode
 
         private static IEnumerable<string> AllSheets()
         {
-            string[] present = Sheets.Keys.Where(s => !AwaitingOwnerBake.Contains(s) || OnDisk(s))
-                                     .OrderBy(s => s).ToArray();
+            string[] present = Sheets.Keys
+                .Where(s => !StaleUntilRebake.Contains(s))
+                .Where(s => !AwaitingOwnerBake.Contains(s) || OnDisk(s))
+                .OrderBy(s => s).ToArray();
             return present.Length > 0 ? present : new[] { NothingBakedYet };
         }
 
@@ -156,9 +182,18 @@ namespace HiddenHarbours.Tests.Art.EditMode
         public void TheGuardedSet_IsTheFullKit()
         {
             // The set arithmetic itself, so a future edit that drops a species or tier by accident
-            // is loud: 4 species × 8 states + 4 bobber states + 3 tiers × 9 states.
-            Assert.AreEqual(4 * 8 + 4 + 3 * 9, Sheets.Count);
+            // is loud: 4 species × 8 states + 4 bobber states + 3 tiers × 10 states.
+            Assert.AreEqual(4 * 8 + 4 + 3 * 10, Sheets.Count);
             Assert.AreEqual(Sheets.Count, ExpectedFrames.Count);
+
+            // Every guarded stem must be a stem the spec actually names — a guard on a typo would
+            // silently exempt nothing and hide the sheet it was meant to cover.
+            foreach (string stem in AwaitingOwnerBake.Concat(StaleUntilRebake))
+                Assert.IsTrue(Sheets.ContainsKey(stem), $"guarded stem '{stem}' is not in the kit");
+            Assert.AreEqual(RodTiers.Length * RodRestStates.Length,
+                            AwaitingOwnerBake.Count + StaleUntilRebake.Count,
+                            "every rod REST is pending the owner's re-bake — when that lands, both " +
+                            "guard sets empty and this assertion is what says the job is finished.");
         }
 
         [Test]
