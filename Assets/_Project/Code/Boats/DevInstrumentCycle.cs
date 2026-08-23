@@ -83,7 +83,11 @@ namespace HiddenHarbours.Boats
             // Only at the helm, and only on the boat the player is actually piloting — the picker's own
             // gate. A second boat in the scene (a rotation rig, a test harness) never eats the keypress.
             if (_boat == null || !_boat.isActiveAndEnabled) return;
-            if (!ReferenceEquals(GameServices.HelmInstruments, _relay)) return;
+            // ⚠ The relay's own answer, not a comparison against the Core slot. Same question, but asked
+            // of the thing that knows: an instrument belongs to a HELM, so the helm predicate is the
+            // right one here (unlike the anchor key, which works a boat's tackle and must stay alive on
+            // a rowed dory and on her deck — DevAnchorInput.IsThePlayersBoat).
+            if (!_relay.IsPlayerHelm) return;
 
             var kb = Keyboard.current;
             if (kb == null) return;

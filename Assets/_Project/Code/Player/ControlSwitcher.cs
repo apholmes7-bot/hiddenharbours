@@ -187,7 +187,7 @@ namespace HiddenHarbours.Player
         public ControlMode Mode
         {
             get => _mode;
-            private set { _mode = value; PublishHelmOwnership(); }
+            private set { _mode = value; PublishBoatOwnership(); }
         }
 
         // Was: a screen-space "E: Board" label this component built and parked over the world. Retired by
@@ -562,8 +562,16 @@ namespace HiddenHarbours.Player
         /// <para>⚠ Called from the <see cref="Mode"/> setter, so it must stay cheap and must not
         /// re-enter the state machine. It is one identity write into Core.</para>
         /// </summary>
-        private void PublishHelmOwnership()
-            => GameServices.Helm.SetPilotedHull(_mode == ControlMode.Aboard ? _boatController : null);
+        private void PublishBoatOwnership()
+        {
+            // The HELM: only while she is actually steering.
+            GameServices.Helm.SetPilotedHull(_mode == ControlMode.Aboard ? _boatController : null);
+            // The BOAT: at the helm or on her deck. Wider on purpose — a rowed dory has no helm at all
+            // and her anchor still answers to the player, and stepping back from the wheel gives up the
+            // wheel, not the boat.
+            GameServices.Helm.SetPlayersBoat(
+                _mode == ControlMode.Aboard || _mode == ControlMode.OnDeck ? _boatController : null);
+        }
 
         // ---- transitions --------------------------------------------------------------------
 
@@ -1610,7 +1618,7 @@ namespace HiddenHarbours.Player
                 // identity already held — but this method's whole job is to say everything about the
                 // control mode again after the world moved underneath it, and a helm left out of that
                 // list is the one thing it would be silently wrong about.
-                PublishHelmOwnership();
+                PublishBoatOwnership();
 
                 BoatHullDef hull = _boatController != null ? _boatController.Hull : null;
                 float height = hull != null ? hull.CameraWorldHeightMeters : 14f;
@@ -1874,6 +1882,8 @@ namespace HiddenHarbours.Player
         {
             if (ReferenceEquals(GameServices.Helm.PilotedHull, _boatController))
                 GameServices.Helm.SetPilotedHull(null);
+            if (ReferenceEquals(GameServices.Helm.PlayersBoat, _boatController))
+                GameServices.Helm.SetPlayersBoat(null);
         }
 
         /// <summary>
