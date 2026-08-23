@@ -506,10 +506,29 @@ by the HUD (UX doc).
 | Wrap Mode | Clamp (Repeat for tiling water) | — |
 | Max Size | per-asset, ≥ sprite | Don't downscale hero sprites |
 | Pivot | consistent (feet for chars, hull center/stern for boats) | Stable placement |
-| **Pixel Perfect Camera** (URP) | **On**, base res set, snap on | No sub-pixel shimmer (§3.7) |
+| **Pixel Perfect Camera** (URP) | **On**, base res set, snap on | No sub-pixel shimmer (§3.7) — *but see the note below: its snap is sprite-only* |
 
 Also: set the project **Sprite Atlas** to pack per-environment/character atlases (Point filter, no
 compression) to cut draw calls without sacrificing crispness.
+
+> **⚠️ The Pixel Perfect Camera's snap does NOT cover everything** (owner playtest 2026-08-23, "the
+> running fisher and the Otter go soft during movement"). `GridSnapping.PixelSnapping` publishes
+> `PixelPerfectRendering.pixelSnapSpacing`, and **SpriteRenderers alone** snap to it. It does not move
+> the camera, and it does not reach a MeshRenderer. So two rendered positions stay off the grid unless
+> something else puts them there:
+>
+> 1. **The camera.** Sprites land on a shared world lattice; the follow-cam then samples that lattice
+>    from wherever its exponential ease happened to stop, a different sub-pixel offset every frame. At
+>    an integer upscale that makes one asset texel two screen pixels wide on one frame and three on the
+>    next — read as "soft while moving", though there is no blur anywhere in the pipeline.
+> 2. **Every mesh hull and vehicle** (ADR 0022 phase 3 — `IsoFacetHullRenderer` draws through a
+>    MeshRenderer, so the engine's sprite snap never reaches it).
+>
+> Both are rounded by `Core.PixelGrid`, onto the grid `CameraZoomPolicy` derives for the framing being
+> shown (`1/(ppu·step)` magnified, `(−step)/ppu` shrunk — always a whole-number relative of the 1/32
+> asset lattice, which is the property that makes the snap bite). The owner's dial is
+> **`GameConfig.PixelGridSnap`** (ships ON; OFF restores the pre-fix look for an A/B). It is
+> presentation only — the simulated body keeps its honest float, so determinism is untouched (rule 5).
 
 ### 9.3 Repo hygiene — adding assets without bloat (Git LFS)
 

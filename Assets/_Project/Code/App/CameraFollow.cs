@@ -221,6 +221,23 @@ namespace HiddenHarbours.App
         private Vector2 _lookahead;   // current (smoothed) look-ahead offset
         private bool _hasLast;
 
+        // THE FOLLOW FILTER'S OWN CONTINUOUS POSITION. The transform is a rounded COPY of this once
+        // the pixel snap is on (see ApplyPixelGrid); the smoothing must never read the rounded value
+        // back, or the rounding enters the filter and a slow pan stalls on a pixel until the error
+        // passes half a grid step and then jumps. Seeded from the transform on first use, and
+        // re-synced whenever the bounds clamp moves the camera, so with the snap OFF the follow is
+        // byte-for-byte the one that shipped.
+        private Vector3 _smoothPos;
+        private bool _hasSmoothPos;
+
+        // What this component LEFT on the transform at the end of the last LateUpdate. If the
+        // transform no longer reads that, somebody else moved the camera — a builder placing it, a
+        // region hop, a test parking it off-map — and the filter must adopt the new spot instead of
+        // gliding to it from where it privately thought it was. Before _smoothPos existed the filter
+        // state WAS the transform, so an external write re-seeded it for free; this is what keeps
+        // that behaviour exactly.
+        private Vector3 _lastAppliedPos;
+
         // framing-tween state (an upgrade zoom-out / a deck zoom step)
         private bool _tweening;
         private float _tweenElapsed;
@@ -450,11 +467,22 @@ namespace HiddenHarbours.App
             FollowTarget();
             TickZoom(Time.timeAsDouble);
             if (_tweening) TickFramingTween();
-            // ⚠️ The clamp runs LAST, after the zoom has settled for this frame. Its allowance is a
+            // ⚠️ The snap goes AFTER the zoom and BEFORE the clamp, and both halves matter. After,
+            // because the grid is a function of the framing this frame — snapping first would round
+            // to the PREVIOUS zoom's pixel. Before, because the clamp is the harder guarantee: the
+            // view may never leave the authored rectangle, and a snap running after it could round a
+            // hard-won edge position half a pixel back out over the map. Nothing is lost by yielding
+            // there: parked against an edge the camera is STATIONARY, and a fixed sub-pixel offset
+            // that never changes is invisible. The softness this exists to cure is the offset
+            // CHANGING frame to frame, which only happens while the view is free to move — which is
+            // exactly the case the snap does land on.
+            ApplyPixelGrid();
+            // ⚠️ The clamp runs after the zoom has settled for this frame. Its allowance is a
             // function of the half-extents, so clamping before TickZoom/TickFramingTween would size
             // the allowance to the PREVIOUS frame's zoom — visible as a one-frame overshoot past the
             // map edge on every zoom step, which is exactly where a bounds rig gets noticed.
             ApplyBounds();
+            _lastAppliedPos = transform.position;   // the teleport tripwire — see the field
         }
 
         /// <summary>
@@ -501,7 +529,74 @@ namespace HiddenHarbours.App
             Vector3 p = transform.position;
             Vector2 clamped = CameraBounds.Clamp(new Vector2(p.x, p.y), in bounds, halfWidth, halfHeight);
             if (clamped.x != p.x || clamped.y != p.y)
+            {
                 transform.position = new Vector3(clamped.x, clamped.y, p.z);   // depth is never touched
+                // The filter follows the wall too. Before _smoothPos existed the filter's state WAS
+                // the transform, so the clamp fed back into it for free; keeping that feedback is
+                // what makes the snap-off path byte-identical — without it the camera would keep
+                // integrating toward a goal outside the wall and lag by the accumulated error when
+                // the target finally turned back inward.
+                _smoothPos = transform.position;
+            }
+        }
+
+        /// <summary>
+        /// <b>How much world ONE RENDERED SCREEN PIXEL covers right now</b> — the grid
+        /// <see cref="PixelGrid"/> rounds onto, and what this camera publishes to
+        /// <see cref="GameServices.WorldUnitsPerRenderedPixel"/> for the mesh vehicles that cannot
+        /// reference App (rule 4).
+        ///
+        /// <para><b>Derived from the LADDER, not measured off the live viewport.</b> The tempting
+        /// version is <c>orthographicSize·2 / cam.pixelHeight</c> — the physical screen pixel. It is
+        /// rejected for one reason that outranks its directness: <b>the grid must stay compatible
+        /// with the ASSET lattice</b>, and only the ladder guarantees that. Every step resolves to
+        /// <c>1/(ppu·step)</c> or <c>(−step)/ppu</c>, both of which are whole-number relatives of the
+        /// 1/32 asset grid the sprites are snapped onto, so a texel boundary can never end up
+        /// straddling the camera's own lattice. A number measured off an arbitrary window height is
+        /// not a relative of anything, and snapping to it would trade one sub-pixel offset for
+        /// another while looking like a fix.</para>
+        ///
+        /// <para>It is also deterministic and screen-independent, which is what lets an EditMode
+        /// fixture and a headless test rig reason about the grid at all — the live viewport reports
+        /// whatever batchmode happened to allocate, and a snap that changed with the runner's window
+        /// would make every position assertion in the suite a coin toss.</para>
+        /// </summary>
+        public float WorldUnitsPerRenderedPixel
+        {
+            get
+            {
+                int ppu = CurrentPpu();
+                int step = CameraZoomPolicy.StepForWorldHeight(_worldHeightMeters, ppu, DesignScreenHeightPx);
+                return CameraZoomPolicy.WorldUnitsPerRenderedPixel(step, ppu, DesignScreenHeightPx);
+            }
+        }
+
+        /// <summary>
+        /// Publish this frame's pixel grid, and put the camera back on it.
+        ///
+        /// <para><b>The publish is unconditional; only the SNAP is gated.</b> The grid is just a true
+        /// statement about the framing being shown, and a mesh vehicle needs it to decide anything at
+        /// all — each consumer checks <see cref="GameServices.PixelGridSnap"/> for itself, so the
+        /// owner's A/B flag flips the camera and every vehicle together, from one dial.</para>
+        ///
+        /// <para><b>Why the camera needs snapping when the sprites already snap.</b> The locked
+        /// <c>PixelPerfectCamera</c> runs <c>GridSnapping.PixelSnapping</c>, which publishes
+        /// <c>PixelPerfectRendering.pixelSnapSpacing</c> — a SpriteRenderer-only grid. It puts the
+        /// sprites on a shared WORLD lattice and then leaves the camera to sample that lattice from
+        /// wherever the follow filter's exponential ease happened to land, which is a different
+        /// sub-pixel offset every frame. At an integer upscale that is exactly what makes an asset
+        /// texel two screen pixels wide on one frame and three on the next: the running fisher going
+        /// soft while she moves, with no blur filter anywhere in the pipeline.</para>
+        ///
+        /// <para>One float store and (when on) one rounded write per frame — no allocation (rule 7).</para>
+        /// </summary>
+        private void ApplyPixelGrid()
+        {
+            float grid = WorldUnitsPerRenderedPixel;
+            GameServices.WorldUnitsPerRenderedPixel = grid;
+
+            if (grid <= 0f || !GameServices.PixelGridSnap) return;
+            transform.position = PixelGrid.Snap(transform.position, grid);
         }
 
         /// <summary>
@@ -769,8 +864,17 @@ namespace HiddenHarbours.App
 
             Vector3 goal = tp + (Vector3)_lookahead;
             goal.z = transform.position.z; // keep the camera's depth
-            transform.position = Vector3.Lerp(transform.position, goal,
-                                              1f - Mathf.Exp(-Smooth * Time.deltaTime));
+
+            // Integrate on the filter's OWN position and publish a copy of it — see _smoothPos.
+            if (!_hasSmoothPos || transform.position != _lastAppliedPos)
+            {
+                _smoothPos = transform.position;    // first frame, or somebody teleported us
+                _hasSmoothPos = true;
+            }
+            _smoothPos.z = goal.z;
+            _smoothPos = Vector3.Lerp(_smoothPos, goal,
+                                      1f - Mathf.Exp(-Smooth * Time.deltaTime));
+            transform.position = _smoothPos;
         }
 
         private void TickFramingTween()
