@@ -952,18 +952,17 @@ zoom — closer to look at interiors, out when outside."* Built as **a second ha
 not a second zoom system** — the failure mode a free player zoom would have produced is a wheel
 fighting the ruled framings above it for the same orthographic size.
 
-- **The wheel owns the ON-FOOT framing and nothing else.** The helm keeps the hull's "whole vessel
-  visible" derivation, the deck keeps its step, a live haul keeps its tighten, a road vehicle keeps her
-  def's framing. Boarding therefore needs no hand-back: the boat framing was never the walker's to
-  move. **Disembarking restores her last tier for free** — that tier *is* the on-foot framing, so
-  stepping ashore commits `OnFoot` and lands on it with nothing saved or reinstated.
+- **On foot she owns a RUNG.** An absolute stop on the ladder, kept for the whole voyage.
+  **Disembarking restores her last tier for free** — that tier *is* the on-foot framing, so stepping
+  ashore commits `OnFoot` and lands on it with nothing saved or reinstated.
 - **Four discrete stops, all crisp.** The range is `11.25 m → 5.625 m` of world height: the ×3, ×4, ×5
   and ×6 PPU-32 steps at 1080p. One stop wider than standing on foot at the far end; at the near end
   the tightest framing the game already ships (the live-haul step) — so the interior close-up is a
   framing the game has already been played at, not a new number. Nothing between two stops exists,
   because a fractional camera scale shimmers on pixel art.
-- **Owner-tunable in metres, never in steps** (rule 6): `GameConfig.PlayerZoom` carries the two clamps,
-  the wheel enable, the scroll-per-tier and the step ease. Metres because ladder steps count *upward* as
+- **Owner-tunable in metres, never in step indices** (rule 6): `GameConfig.PlayerZoom` carries the two
+  walking clamps, the wheel enable, the scroll-per-tier, the step ease and the two aboard-band stop
+  allowances. Metres because ladder steps count *upward* as
   the view gets *closer*, which reads backwards to anybody tuning a camera; every other camera dial in
   the project is world height in metres and so is this one. A hand-typed height quantises to the nearest
   crisp stop, so the worst it can do is pick a neighbouring tier — never a blurry framing.
@@ -990,14 +989,66 @@ pixel screen its read budget is priced in, not something the presenter measures.
 is therefore belt-and-braces for these two — it earns its keep the day a kit UI grows a scrollable
 list and wants the wheel for itself.
 
-> ⚠️ **Two open questions for the owner, deliberately not decided here.**
+**Owner ruling (2026-08-22): the wheel works aboard and on deck too — and it was dead on foot.**
+Two things, from one playtest.
+
+**① The on-foot dead path was a real bug, and reading found it in the liveness gate.** `WheelIsLive`
+required a *committed* framing. The camera only commits from `TickZoom`; `TickZoom` refuses to run
+until a `ControlModeChanged` has arrived; and **nothing publishes one at boot**. `ControlSwitcher`
+speaks on a *transition* (board, disembark, take a wheel) and on the region-arrival re-assert, and
+`ArrivalOpening` — which does publish — is skipped for any save that has already arrived
+(`ShouldPlay = !hasRestAnchor && !alreadyArrived`). So a returning player loaded their game, walked
+down the wharf, and turned a wheel that was switched off with no error anywhere. Boarding once and
+stepping back ashore "fixed" it, which is exactly how it survived a build. The repair answers what
+the gate was really asking: **un-committed does not mean "no framing on screen", it means the
+builder-authored one is — and the builders author the walker's.** She is a walker until the game says
+otherwise, so an un-committed camera is a walking camera and its wheel is hers.
+
+> Three other suspects were ruled out by reading rather than by guessing, and each is now pinned by a
+> POCO test so it can never become the answer to the same report twice: the carry accumulator vs
+> Windows' ±120 per detent (one detent is one rung, and banks no remainder); the clamp collapsing
+> because the on-foot height sits *on* a bound (the walker's home rung is strictly inside the shipped
+> band, and a deliberately pinned range refuses the nudge rather than faking it); and `WheelEnabled`
+> read off the wrong config instance — the shape that actually bites being a `GameConfig` asset
+> serialized *before* `PlayerZoom` existed, which deserializes as `default(T)`: wheel off, range 0 m to
+> 0 m, all silent. `PlayerZoomSettings.Sanitized()` now heals a wholly-unwritten block, and only a
+> wholly-unwritten one — an owner who turns the wheel off keeps the rest of their tuning, so asking
+> whether the *whole* struct is blank is what separates "off on purpose" from "never authored".
+
+**② Aboard and on deck she owns an OFFSET, not a rung.** This answers open question 2 below with a
+band rather than a second range. The offset is in whole rungs from whatever the context ruled
+(`BoatHullDef.CameraWorldHeightMeters` at the helm, the deck step on deck), bounded by
+`GameConfig.PlayerZoom.AboardStopsCloser` / `AboardStopsWider`, and **released on every tier change** —
+a committed framing change, or a hull whose framing actually differs. That release is the whole reason
+a band can exist without taking the framing away from its authority: §9.8's "whole vessel visible"
+derivation and the deck step are still what she is *handed* each time she arrives, and the wheel is a
+look around from there. Store a rung instead and the first upgrade would frame the new boat at the old
+boat's zoom — §9.8's defect, wearing a different hat.
+
+- **A live haul and a road vehicle stay ruled outright.** The haul tighten exists for the seconds a
+  pot is coming up and releases itself; a wheel fighting it would be fighting something already
+  leaving. A truck at 11 m/s needs every metre of the view her def asks for.
+- **Counts of stops, not metres** — the one camera dial in the project that is not a world height, and
+  it cannot be one: the thing it is measured *from* is different for every hull the player will ever
+  own. A dory and a tanker share an allowance of "two stops"; they share no pair of metre clamps.
+- **The band walks the ladder by INDEX, not by step number.** Steps 0 and -1 are not steps, so the
+  sequence runs … -3, -2, **1**, 2 … A band centred on a big hull sits at or past that 1:1 pivot, and
+  plain `step + 1` would walk into the hole. `CameraZoomPolicy.StepClosestBy` walks indices instead,
+  so "one stop wider" always means the next real stop. Every reachable framing, at every offset, on
+  every hull, is still an integer pixel-perfect step — swept by
+  `NoFramingTheWheelCanReach_IsEverANonIntegerPPU`.
+- **`CameraZoomInput` did not change**, and did not need to. Every rule about which tiers exist, when
+  the wheel is live, and whether a notch moves a rung or an offset lives in the policy and the camera —
+  the split earning its keep.
+
+> ⚠️ **One open question for the owner, deliberately not decided here.**
 > 1. **Should an interior CLAMP the far end** — no zooming out through a roof? The camera cannot answer
 >    that today: `BuildingInterior.IsInside` is World-side and the camera (App) reaches it only through
 >    a Core signal that does not exist yet. Ruling it "yes" is a small Core contract (an occupancy
 >    signal) plus a second clamp pair, not a tweak to what shipped here.
-> 2. **Should the wheel work at the helm at all** — a per-hull ± of one or two stops around the ruled
->    framing, rather than being inert? Inert is what the ruling asked for and what is built; the
->    alternative is one more clamp pair and the same policy.
+>
+> *(Question 2 — "should the wheel work at the helm at all" — was answered on 2026-08-22: yes, as a
+> band. See above.)*
 
 ### 9.9 The ambient fisher fleet (decor tier — canon M2-33, P3 "Living Working Coast")
 

@@ -24,6 +24,10 @@ namespace HiddenHarbours.Tests.PlayMode
     /// asks <see cref="CameraFollow.WheelIsLive"/> the questions that matter before it touches a
     /// device.</para>
     ///
+    /// <para><b>One wheel test per mode</b>, since the owner ruling of 2026-08-22 gave the wheel three
+    /// of them: the walker's rung, the helm's band and the deck's. Each asserts where the LIVE camera
+    /// lands and that it stays there over several frames of the rig doing everything it does.</para>
+    ///
     /// <para><b>No frame-count-as-time assertions.</b> A headless <c>yield return null</c> is nowhere
     /// near a real frame, so nothing here claims the ease finishes in N frames — the step ease is set to
     /// zero and what is asserted is where the camera LANDS.</para>
@@ -162,7 +166,10 @@ namespace HiddenHarbours.Tests.PlayMode
 
             Assert.AreEqual(Ortho(17f), _cam.orthographicSize, 1e-4f,
                 "the helm frames the HULL's data-driven height — the wheel's rung is not carried aboard");
-            Assert.IsFalse(_follow.WheelIsLive, "and the wheel is dead while she is at the helm");
+            Assert.AreEqual(0, _follow.PlayerBandOffset,
+                "…because arriving at a helm releases the band, so she is handed the ruled framing");
+            Assert.IsTrue(_follow.WheelIsLive,
+                "and the wheel is hers again from there, inside the hull's band (ruling 2026-08-22)");
         }
 
         [UnityTest]
@@ -185,6 +192,106 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.AreEqual(6, _follow.PlayerZoomStep);
             Assert.AreEqual(Ortho(StepHeight(6)), _cam.orthographicSize, 1e-4f,
                 "ashore she gets the rung she left, not the standing default");
+        }
+
+        // ===== one wheel test per mode, in a live rig ==============================================
+        //
+        // ⭐ THE LAST MILE THE POCO SUITE CANNOT WALK. PlayerZoomTierTests proves the arithmetic; only
+        // a camera running its own LateUpdate every frame can prove the framing SURVIVES the policy
+        // tick, the tween and the bounds clamp at each of the three modes the wheel now lives in.
+
+        [UnityTest]
+        public IEnumerator OnFoot_OneNotchLandsOnTheNextRung_AndTheRigHoldsIt()
+        {
+            StandOnFoot();
+            yield return null;
+
+            Assert.IsTrue(_follow.WheelIsLive);
+            Assert.IsTrue(_follow.NudgePlayerZoom(+1));
+
+            for (int frame = 0; frame < 5; frame++)
+            {
+                yield return null;
+                Assert.AreEqual(5, _follow.PlayerZoomStep, $"frame {frame}: the walker's rung drifted");
+                Assert.AreEqual(Ortho(StepHeight(5)), _cam.orthographicSize, 1e-4f, $"frame {frame}");
+            }
+        }
+
+        [UnityTest]
+        public IEnumerator AtTheHelm_OneNotchLandsOnTheNextStopInTheHullsBand_AndTheRigHoldsIt()
+        {
+            StandOnFoot();
+            yield return null;
+
+            // 17 m quantises to the x2 stop, so one notch in is the x3 stop — a stop on the same
+            // ladder, reached from the hull's framing rather than from the walker's rung.
+            _follow.OnActiveBoatChanged(new ActiveBoatChanged("boat.punt", 17f));
+            _follow.OnControlModeChanged(new ControlModeChanged(ControlMode.Aboard));
+            _follow.TickZoom(200.0);
+            yield return null;
+
+            Assert.IsTrue(_follow.WheelIsLive, "the helm takes the wheel now");
+            Assert.IsTrue(_follow.NudgePlayerZoom(+1));
+
+            for (int frame = 0; frame < 5; frame++)
+            {
+                yield return null;
+                Assert.AreEqual(1, _follow.PlayerBandOffset, $"frame {frame}: the band offset drifted");
+                Assert.AreEqual(Ortho(StepHeight(3)), _cam.orthographicSize, 1e-4f,
+                    $"frame {frame}: the live camera left the x3 pixel-perfect stop");
+            }
+
+            // …and it is a LOOK, not a new resting place: stepping off releases it.
+            _follow.OnControlModeChanged(new ControlModeChanged(ControlMode.OnFoot));
+            _follow.TickZoom(300.0);
+            yield return null;
+            Assert.AreEqual(0, _follow.PlayerBandOffset);
+        }
+
+        [UnityTest]
+        public IEnumerator OnDeck_OneNotchLandsOnTheNextStopInTheDecksBand_AndTheRigHoldsIt()
+        {
+            StandOnFoot();
+            yield return null;
+
+            _follow.OnControlModeChanged(new ControlModeChanged(ControlMode.OnDeck));
+            _follow.TickZoom(200.0);
+            yield return null;
+
+            Assert.AreEqual(Ortho(CameraFollow.DeckWorldHeightMeters), _cam.orthographicSize, 1e-4f,
+                "the deck hands her the deck step first");
+            Assert.IsTrue(_follow.WheelIsLive);
+            Assert.IsTrue(_follow.NudgePlayerZoom(-1), "one stop wider, to see past the rail");
+
+            for (int frame = 0; frame < 5; frame++)
+            {
+                yield return null;
+                Assert.AreEqual(-1, _follow.PlayerBandOffset, $"frame {frame}: the band offset drifted");
+                Assert.AreEqual(Ortho(StepHeight(4)), _cam.orthographicSize, 1e-4f,
+                    $"frame {frame}: the live camera left the x4 pixel-perfect stop");
+            }
+        }
+
+        [UnityTest]
+        public IEnumerator ALiveHaul_TakesTheViewBackAndKeepsIt_WhateverTheWheelWasDoing()
+        {
+            StandOnFoot();
+            yield return null;
+
+            _follow.OnControlModeChanged(new ControlModeChanged(ControlMode.OnDeck));
+            _follow.TickZoom(200.0);
+            _follow.NudgePlayerZoom(-1);
+            yield return null;
+
+            _follow.OnTrapHaulStateChanged(new TrapHaulStateChanged(
+                new TrapHaulState(TrapHaulPhase.Hauling, 0.5f, 0.1f, false)));
+            _follow.TickZoom(300.0);
+            yield return null;
+
+            Assert.AreEqual(0, _follow.PlayerBandOffset, "a haul starting is a tier change");
+            Assert.IsFalse(_follow.WheelIsLive, "…and the rope is the star while it lives");
+            Assert.IsFalse(_follow.NudgePlayerZoom(+1));
+            Assert.AreEqual(Ortho(CameraFollow.HaulWorldHeightMeters), _cam.orthographicSize, 1e-4f);
         }
 
         // ===== the reader ==========================================================================
