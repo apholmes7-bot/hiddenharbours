@@ -276,6 +276,7 @@ namespace HiddenHarbours.Tests.EditMode
 
             string[] keys =
             {
+                nameof(AnchorSettings.ReferenceAnchorMassKg),
                 nameof(AnchorSettings.DefaultRodeMeters), nameof(AnchorSettings.MinSwingMeters),
                 nameof(AnchorSettings.RodeGiveMeters), nameof(AnchorSettings.LimitStiffness),
                 nameof(AnchorSettings.LimitDamping), nameof(AnchorSettings.DragCreepMetersPerSec),
@@ -295,12 +296,24 @@ namespace HiddenHarbours.Tests.EditMode
                 $"DefaultRodeMeters is not a number in the asset: '{rode.Groups[1].Value}'");
             Assert.Greater(shippedRode, 0f,
                 "a zero shipped rode makes anchoring impossible on every hull that authors none");
+
+            var hook = Regex.Match(block.Groups[1].Value,
+                                   @"^\s*ReferenceAnchorMassKg:\s*(\S+)\s*$", RegexOptions.Multiline);
+            Assert.IsTrue(float.TryParse(hook.Groups[1].Value,
+                                         System.Globalization.NumberStyles.Float,
+                                         System.Globalization.CultureInfo.InvariantCulture,
+                                         out float shippedHook),
+                $"ReferenceAnchorMassKg is not a number in the asset: '{hook.Groups[1].Value}'");
+            Assert.Greater(shippedHook, 0f,
+                "a zero reference hook takes the per-hull nuance out of the drag brake for the whole " +
+                "fleet — every anchor would check identically, which is the field not working");
         }
 
         [Test]
         public void TheShippedDefaults_AreAWorkingAnchor()
         {
             var d = AnchorSettings.Default;
+            Assert.Greater(d.ReferenceAnchorMassKg, 0f, "the reference hook is small, never absent");
             Assert.Greater(d.DefaultRodeMeters, 0f, "a dinghy-class rode is short, never absent");
             Assert.GreaterOrEqual(d.MinSwingMeters, 0f);
             Assert.Greater(d.LimitStiffness, 0f, "a rode with no stiffness would not check her at all");
@@ -321,6 +334,99 @@ namespace HiddenHarbours.Tests.EditMode
                     "an unwired rig must still anchor on a dinghy-class rode, not on a zero one");
             }
             finally { GameServices.Config = previous; }
+        }
+
+        // ============ Part 7b: the HOOK — does she carry one, what does it weigh, what does it check ====
+
+        [Test]
+        public void CarriesAnchor_IsTheHullsOwnData_AndANullHullCarriesNothing()
+        {
+            Assert.IsFalse(AnchorMath.CarriesAnchor(null), "there is no hook on a hull that is not there");
+
+            BoatHullDef hull = Hull(6f);
+            Assert.IsTrue(hull.HasAnchor,
+                "a hull built in code carries a hook by default — the owner's ruling is an anchor on " +
+                "every hull, so 'inert until authored' would be the wrong way round here");
+            Assert.IsTrue(AnchorMath.CarriesAnchor(hull));
+
+            hull.HasAnchor = false;
+            Assert.IsFalse(AnchorMath.CarriesAnchor(hull), "…and false is the deliberate exception");
+        }
+
+        [Test]
+        public void AnchorMassFor_FallsBackToTheSharedGrapnel_ExactlyAsTheRodeDoes()
+        {
+            var settings = AnchorSettings.Default;
+
+            Assert.AreEqual(30f, AnchorMath.AnchorMassFor(HullWithHook(30f), in settings), 1e-4f,
+                "her own authored hook wins");
+
+            // 0 is what a hull asset written before AnchorMassKg existed deserializes to. It must mean
+            // "the shared dinghy grapnel", never "no iron at all" — the RodeMeters convention.
+            Assert.AreEqual(settings.ReferenceAnchorMassKg,
+                            AnchorMath.AnchorMassFor(HullWithHook(0f), in settings), 1e-4f);
+            Assert.AreEqual(0f, AnchorMath.AnchorMassFor(null, in settings), 1e-4f);
+        }
+
+        [Test]
+        public void DragBrake_ScalesWithTheIronSheDrags_AndLeavesAnUnauthoredHullExactlyWhereSheWas()
+        {
+            var settings = AnchorSettings.Default;
+            float reference = settings.ReferenceAnchorMassKg;
+
+            // The whole point of quoting the shared strength AT the reference hook: a hull that has
+            // never been given her own drags byte-identically to the way she did before hulls had
+            // anchor weights at all.
+            Assert.AreEqual(settings.DragBrakeStrength,
+                            AnchorMath.DragBrakeStrengthFor(reference, in settings), 1e-3f,
+                "the reference hook must reproduce the shipped brake exactly, or this field is a " +
+                "silent re-tune of the whole fleet rather than a new axis on it");
+
+            // Twice the iron, twice the check — linear, because friction goes with the weight on it.
+            Assert.AreEqual(2f * settings.DragBrakeStrength,
+                            AnchorMath.DragBrakeStrengthFor(2f * reference, in settings), 1e-3f);
+            Assert.Less(AnchorMath.DragBrakeStrengthFor(0.5f * reference, in settings),
+                        settings.DragBrakeStrength, "a lighter grapnel skips more freely");
+
+            // A config that omits the key (the YAML trap) costs the nuance, never the brake.
+            var trapped = settings;
+            trapped.ReferenceAnchorMassKg = 0f;
+            Assert.AreEqual(settings.DragBrakeStrength,
+                            AnchorMath.DragBrakeStrengthFor(90f, in trapped), 1e-3f,
+                "no reference, no scaling — a mis-authored config must not divide by nothing");
+
+            // …and it feeds the SAME brake maths, not a second copy of it.
+            float strength = AnchorMath.DragBrakeStrengthFor(2f * reference, in settings);
+            Vector2 brake = AnchorMath.DragBrakeForce(new Vector2(3f, 0f),
+                                                      settings.DragCreepMetersPerSec, strength);
+            Assert.Less(brake.x, 0f, "the brake still opposes her motion, whatever the hook weighs");
+            Assert.AreEqual(0f, brake.y, 1e-4f);
+        }
+
+        [Test]
+        public void EveryShippedHull_CarriesAHook_AndAHeavierOneUpTheLadder()
+        {
+            var dory = LoadHull("Dory");
+            var punt = LoadHull("Punt");
+            var lobster = LoadHull("LobsterBoat");
+            var trawler = LoadHull("SternTrawler");
+
+            foreach (var h in new[] { dory, punt, lobster, trawler })
+            {
+                Assert.IsTrue(h.HasAnchor, $"{h.Id} carries no anchor — the owner's ruling is every hull");
+                Assert.Greater(h.AnchorMassKg, 0f, $"{h.Id} states no hook weight");
+            }
+
+            Assert.Less(dory.AnchorMassKg, punt.AnchorMassKg, "the punt out-anchors the dory");
+            Assert.Less(punt.AnchorMassKg, lobster.AnchorMassKg, "the lobster boat out-anchors the punt");
+            Assert.Less(lobster.AnchorMassKg, trawler.AnchorMassKg, "the trawler swings the most iron");
+        }
+
+        private BoatHullDef HullWithHook(float massKg)
+        {
+            BoatHullDef hull = Hull(6f);
+            hull.AnchorMassKg = massKg;
+            return hull;
         }
 
         // ============ Part 8: the rode is authored per hull, and grows up the ladder (P2) ============

@@ -86,7 +86,8 @@ namespace HiddenHarbours.UI
         /// at all, so none is invented here. What sells her night face is the composited instruments,
         /// which take their own.</para></summary>
         public static void Render(DrawSurface s, bool running, float drive, float rpm01, float fuel01,
-                                  bool night = false, bool blink = false)
+                                  bool night = false, bool blink = false,
+                                  bool anchorFitted = false, bool anchorDown = false)
         {
             EnsureKey();
             bool lowFuel = fuel01 < 0.13f;
@@ -149,6 +150,18 @@ namespace HiddenHarbours.UI
                    HelmDashGeometry.SpotH, HelmDashGeometry.SpotCx, HelmDashGeometry.SpotLampY + PAD, false, SPOT_ON);
             RigDrawUtil.TextC(s, "DECK", HelmDashGeometry.DeckCx, HelmDashGeometry.DeckLampY + PAD + 7, 1, GTICKD);
             RigDrawUtil.TextC(s, "SPOT", HelmDashGeometry.SpotCx, HelmDashGeometry.SpotLampY + PAD + 7, 1, GTICKD);
+            // The GROUND TACKLE's bat, midway between the two working lights — the console dash's own
+            // addition, in this hull's chrome switchgear. Drawn ONLY where there is a hook to work: a
+            // switch the boat cannot answer is the diegetic version of a readout you have not earned,
+            // and the same rule refuses it (ADR 0039).
+            if (anchorFitted)
+            {
+                Toggle(s, HelmDashGeometry.AnchX, HelmDashGeometry.AnchY + PAD, HelmDashGeometry.AnchW,
+                       HelmDashGeometry.AnchH, HelmDashGeometry.AnchCx, HelmDashGeometry.AnchLampY + PAD,
+                       anchorDown, AMBER);
+                RigDrawUtil.TextC(s, "ANCH", HelmDashGeometry.AnchCx,
+                                  HelmDashGeometry.AnchLampY + PAD + 7, 1, anchorDown ? AMBER : GTICKD);
+            }
 
             // ---- binnacle casing: brushed stainless (sportRig.js:374-386) ----
             int bx = HelmDashGeometry.BinnX, by = HelmDashGeometry.BinnY + PAD;

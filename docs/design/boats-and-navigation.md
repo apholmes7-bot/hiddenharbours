@@ -1147,12 +1147,32 @@ ask, 2026-08-06.) Built as **one rule the player can read off the water**, not a
   are **aground**, which the existing grounding sim already owns. Where a region paints **no seabed
   at all**, the depth is infinite and the tackle refuses — the mirror of the crossing gate's "a
   missing height map never falsely *blocks* a boat" (here: never falsely *claims to hold* one).
-- **The rode is DATA** (rule 2): `BoatHullDef.RodeMeters` — how much anchor line the hull carries, and
-  therefore the deepest water she can anchor in. It grows up the ladder (dory 6 m → punt 8 → console
-  skiff 12 → lobster boat 30 → dragger 60 → trawler 90 → packet 130 → tanker 180), so **deeper
-  anchorages are a thing you buy** (P2). `0` means "she authors none" and takes the shared
-  dinghy-class `GameConfig.Anchor.DefaultRodeMeters` — which is also what every hull asset written
-  before the field existed deserializes to, so an untouched hull carries a *short* rode, never none.
+- **The ground tackle is DATA** (rule 2) — three fields on `BoatHullDef`, and **every shipped hull
+  states all three** (the owner's ruling, 2026-08-23: *an anchor on every hull*; `AnchorContentValidationTests`
+  is the guard):
+  - `HasAnchor` — does she carry a hook at all. **True** by default, because the ruling is that she
+    does; `false` is the deliberate exception, and it is the one gate that is not about the sea (no
+    tackle → no dash switch, a dead anchor key, and `BoatAnchor` refuses the drop). ⚠️ A hull asset
+    whose YAML *omits* the key deserializes it as `false` — Unity never runs a C# field initializer on
+    a loaded asset — so the key is written explicitly on every hull and the content test checks the
+    **file**, not just the loaded object.
+  - `AnchorMassKg` — what the hook weighs (dory 4 kg → punt 6 → console skiff 8 → lobster boat 20 →
+    cape islander 22 → dragger 110 → trawler 320 → packet 900 → tanker 3200). Not decoration: a
+    dragging anchor checks the boat by friction along the seabed and friction goes with the weight
+    bearing on it, so this **scales the shared drag brake** — twice the iron, twice the check
+    (`AnchorMath.DragBrakeStrengthFor`). Because the brake is a *force* and what the hull feels is
+    force ÷ her own mass, a big boat still fetches away faster than a dory: the ladder comes out
+    right with no second curve to tune. `0` takes `GameConfig.Anchor.ReferenceAnchorMassKg`, which is
+    also the mass the shared brake strength is quoted at — so an un-authored hull drags exactly as
+    she did before hulls had anchor weights.
+  - `RodeMeters` — how much anchor line she carries, and therefore the deepest water she can anchor
+    in. It grows up the ladder (dory 6 m → punt 8 → console skiff 12 → lobster boat 30 → dragger 60 →
+    trawler 90 → packet 130 → tanker 180), so **deeper anchorages are a thing you buy** (P2). `0`
+    takes the shared dinghy-class `GameConfig.Anchor.DefaultRodeMeters`.
+
+  Each of the three is resolved in **exactly one place** (`AnchorMath.CarriesAnchor` / `AnchorMassFor`
+  / `RodeFor`), so the switch that draws, the key that presses and the sim that holds always read the
+  same tackle.
 - **Holding is a swing circle, not a freeze.** She lies within `√(rode² − depth²)` of the drop point —
   the plain geometry of a taut rode, where the vertical leg takes the depth and whatever is left is
   horizontal. **Spare rode is swing**: a short scope in deep water pins her almost over her anchor, the
@@ -1173,26 +1193,54 @@ ask, 2026-08-06.) Built as **one rule the player can read off the water**, not a
   the seabed. Come the ebb she **brings up again where she has fetched to**, not at the berth she
   lost: dragging costs you your spot, not your anchor.
 - **Owner-tunable, no magic numbers** (rule 6): the whole policy is `GameConfig.Anchor` — the
-  dinghy-class rode, the swing floor, the firm-limit trio, and the drag creep + brake. ⚠️ The **drag
+  reference hook, the dinghy-class rode, the swing floor, the firm-limit trio, and the drag creep +
+  brake. ⚠️ The **drag
   rate** is flagged `_confirm` — it is the number that decides how nasty losing your bottom feels.
-- **Input is a dev key for now** (`R`, for *rode* — audited free across code *and*
-  `InputSystem_Actions`, where `C` turns out to be taken by Crouch). It lives only from the boat (helm
-  or deck, never ashore), only on the hull you are on, and stands down under a dialogue or a text
-  field. The real control is a **diegetic windlass** on the helm console — `ui-ux`/`art-director`
-  later work, not this slice.
+- **Two controls, one verb** (owner ask, 2026-08-23) — and never two states, because both call the
+  same `BoatAnchor.Toggle()`:
+  - **At a helm: a switch on the dash** (`UI/HelmDashController`), which is the diegetic answer ADR
+    0039 asks for. On the **pilothouse** hulls it is the rigs' *already-authored* `ANCH` breaker
+    (`ColA[3]` of the bank, drawn dead since that dash shipped and now lit by the hook itself). On the
+    **skiffs** it is a third switch bat in the panel, midway between DECK and SPOT — derived from the
+    rig's own numbers rather than measured, and flagged to `art-director` to mirror back into
+    `consoleRig.js`/`sportRig.js`. It is drawn only on a hull that carries a hook: a switch the boat
+    cannot answer is the diegetic version of a readout you have not earned. The UI reaches the tackle
+    through Core (`IHelmControl.HasAnchor` / `AnchorState` / `ToggleAnchor`), never by naming a Boats
+    type (rule 4).
+  - **On a hull with no dash — the rowed dory, the motorised dory, the punt — one key: `Q`.** A
+    **reused verb**, not a new letter: the A–Z ledger is spent (ADR 0039 §6), and the game already has
+    a ground-tackle verb. `Q` ashore works the mooring you are standing by (`ControlSwitcher.ToggleMooring`);
+    `Q` aboard lets go or weighs the hook. The two readings can never both be live —
+    `CanToggleMooring()` requires `OnFoot`, the anchor key requires `Aboard`/`OnDeck` — so one letter
+    carries both with no modifier, no hold and no arbiter, and aboard it claims a press that did
+    nothing at all before.
+  - ⚠️ **This retires `R`, and unpicks a live double-booking.** The old dev key claimed `R` as
+    "audited free"; it was not. `MooringController._workKey` is `Key.R` — tighten, SHIFT-slacken, hold
+    to **cast off** — and that controller is live on a boat's deck, so a press of `R` on deck with a
+    line on both worked the rope and toggled the hook. `R` goes back to the mooring lane alone.
+  - The key lives only from the boat (helm or deck, never ashore), only on the hull you are on, only
+    on a hull that carries a hook, and stands down under a dialogue or a text field. Ownership is
+    `GameServices.Helm.IsPlayersBoat` — the **wider** fact, not `IsPlayerHelm`: a rowed dory has no
+    helm at all and her anchor still answers to the player.
 - **Visual v1 is minimal**: a greybox `LineRenderer` rode from the hull to the hook, dull galvanised
   while holding and red while dragging, on the `SortingBands.AboveDecor` rope tier the mooring line and
   the trap-haul line already share (ADR 0032). No bespoke animation — a windlass clip is routed to the
   art-director.
 - **Nothing is saved.** The drop point is live runtime state, like the mooring's tie point; reload and
   the hook is catted. *Persisting an anchored boat across a save is a follow-up, not this slice.*
-- Code: `Code/Boats/AnchorMath.cs` (the pure rules — gate, swing, drag brake, rode resolution),
-  `Code/Boats/BoatAnchor.cs` (state + the per-tick restraint, runtime-spawned by `BoatController` so
-  no builder re-run is needed), `Code/Boats/DevAnchorInput.cs` (the key),
-  `Code/Core/Boats/AnchorSettings.cs` (the owner's policy). Tests: `AnchorMathTests` (EditMode — the
-  whole decision half, plus the `GameConfig.asset` YAML-key guard) and `AnchorPlayTests` (PlayMode —
-  the gate on a live tide, the hold under a stiff wind against an un-anchored control, and the
-  rising-tide drag).
+- Code: `Code/Boats/AnchorMath.cs` (the pure rules — gate, swing, drag brake, and the three tackle
+  resolvers), `Code/Boats/BoatAnchor.cs` (state + the per-tick restraint, runtime-spawned by
+  `BoatController` so no builder re-run is needed), `Code/Boats/AnchorInput.cs` (the key),
+  `Code/Boats/HelmControlRelay.cs` (the Boats side of the Core tackle seam),
+  `Code/UI/HelmDashController.cs` + `Code/UI/Draw/HelmDashGeometry.cs` (the dash switch),
+  `Code/Core/Boats/AnchorSettings.cs` (the owner's policy, and the shared `AnchorState`). Tests:
+  `AnchorMathTests` and `AnchorContentValidationTests` (EditMode — the decision half, the tackle
+  ladder, and the `GameConfig.asset` / hull-asset YAML-key guards), `HelmAnchorSwitchTests` (EditMode
+  — where the switch sits in both helm families, what a press on it does, and its repaint key),
+  `AnchorPlayTests` (PlayMode — the gate on a live tide, the hold under a stiff wind against an
+  un-anchored control, the rising-tide drag, and the key's gate) and `AnchorEveryHullPlayTests`
+  (PlayMode — the rowed dory with **no helm granted at all**, the switch on both helm families, and
+  the switch and the key landing on the same hook).
 
 ---
 

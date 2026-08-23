@@ -90,6 +90,40 @@ namespace HiddenHarbours.Core
         /// <summary>Which control the current hull shows (tiller vs lever; None while unmanned/oars).</summary>
         HelmControlStyle Style { get; }
 
+        // ---- the ground tackle (the dash's anchor switch) ---------------------------------------
+        //
+        // ⚠ This is the BOAT's tackle, not the helm's. The three members below are answered for the
+        // hull this relay rides whenever she is the player's boat — which is WIDER than "the player is
+        // at her helm", because a rowed dory has no helm at all and her hook still answers to the
+        // player. The dash switch happens to be a helm surface, so it reads them here; the key that
+        // works the same tackle from a rowed hull never touches this seam at all (it presses
+        // BoatAnchor directly, gated on GameServices.Helm.IsPlayersBoat). One tackle, two controls,
+        // and neither is the other's fallback.
+
+        /// <summary>
+        /// <b>This hull carries ground tackle</b> — her <c>BoatHullDef.HasAnchor</c>, straight through.
+        /// A DATA question, not a live one: it does not change while you are aboard, and it is what
+        /// decides whether an anchor switch is drawn on the dash at all. False = no hook, no switch,
+        /// and nothing to press.
+        /// </summary>
+        bool HasAnchor { get; }
+
+        /// <summary>
+        /// Where her hook stands right now — the live <c>BoatAnchor</c> state the switch shows.
+        /// <see cref="AnchorState.Stowed"/> on a hull with no tackle, on a hull nobody is aboard, and
+        /// before the sim has run. Read-only: the switch draws it, <see cref="ToggleAnchor"/> moves it.
+        /// </summary>
+        AnchorState AnchorState { get; }
+
+        /// <summary>
+        /// <b>Flick the anchor switch:</b> let go if she is catted, weigh if the hook is over the side
+        /// (holding or dragging alike). The single verb an anchor control needs — the same
+        /// <c>BoatAnchor.Toggle()</c> the key presses, so the switch and the key can never put the
+        /// tackle in two different places. A no-op when this hull carries no anchor or is not the
+        /// player's boat.
+        /// </summary>
+        void ToggleAnchor();
+
         /// <summary>The lever's housing finish for this hull's console (Lever style only).</summary>
         HelmLeverFinish LeverFinish { get; }
 

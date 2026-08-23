@@ -130,10 +130,13 @@ namespace HiddenHarbours.UI
         /// <paramref name="s"/> (must be <see cref="HelmDashGeometry.W"/>×<see cref="HelmDashGeometry.H"/>).
         /// <paramref name="night"/> paints the backlit face (the whole-panel palette drop, the amber
         /// wash, the gauge backlights and the lamp haloes); deck/spot are the rig's working lights and
-        /// stay off until a slice wires them.
+        /// stay off until a slice wires them. <paramref name="anchorFitted"/>/<paramref name="anchorDown"/>
+        /// are the ground tackle's own bat — drawn only on a hull that carries a hook, lit amber while
+        /// it is over the side.
         /// </summary>
         public static void Render(DrawSurface s, bool running, float drive, float rpm01, float fuel01,
-                                  bool night = false, bool blink = false)
+                                  bool night = false, bool blink = false,
+                                  bool anchorFitted = false, bool anchorDown = false)
         {
             EnsureKey();
             FacePaint f = Paint(night);
@@ -216,6 +219,17 @@ namespace HiddenHarbours.UI
                    false, SPOT_ON, night);
             RigDrawUtil.TextC(s, "DECK", HelmDashGeometry.DeckCx, HelmDashGeometry.DeckLampY + PAD + 7, 1, TICKDIM);
             RigDrawUtil.TextC(s, "SPOT", HelmDashGeometry.SpotCx, HelmDashGeometry.SpotLampY + PAD + 7, 1, TICKDIM);
+            // The GROUND TACKLE's own bat, midway between the two working lights — drawn ONLY on a
+            // hull that actually carries a hook. A switch the boat cannot answer is the diegetic
+            // version of a readout you have not earned, and the same rule refuses it (ADR 0039).
+            if (anchorFitted)
+            {
+                Toggle(s, HelmDashGeometry.AnchX, HelmDashGeometry.AnchY + PAD, HelmDashGeometry.AnchW,
+                       HelmDashGeometry.AnchH, HelmDashGeometry.AnchCx, HelmDashGeometry.AnchLampY + PAD,
+                       anchorDown, AMBER, night);
+                RigDrawUtil.TextC(s, "ANCH", HelmDashGeometry.AnchCx,
+                                  HelmDashGeometry.AnchLampY + PAD + 7, 1, anchorDown ? AMBER : TICKDIM);
+            }
 
             // ---- binnacle casing, right (consoleRig.js:422-439) ----
             int bx = HelmDashGeometry.BinnX, by = HelmDashGeometry.BinnY + PAD;

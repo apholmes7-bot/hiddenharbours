@@ -104,7 +104,7 @@ namespace HiddenHarbours.UI
         /// </summary>
         public static void Render(DrawSurface s, in HelmFit fit, bool running, float rpm01,
                                   float fuel01, bool night = false, bool blink = false,
-                                  bool deck = false, bool spot = false)
+                                  bool deck = false, bool spot = false, bool anchorDown = false)
         {
             EnsureKey();
             bool lowFuel = fuel01 < 0.13f;
@@ -143,7 +143,7 @@ namespace HiddenHarbours.UI
             }
 
             // ---- rocker switch bank, left (js:471) ----
-            BreakerBank(s, deck, spot);
+            BreakerBank(s, deck, spot, anchorDown);
 
             // ---- side-binnacle housing, right (js:474-487) ----
             Binnacle(s);
@@ -530,7 +530,7 @@ namespace HiddenHarbours.UI
         private static readonly string[] ColA = { "DECK", "BILGE", "NAV", "ANCH", "PUMP", "HORN" };
         private static readonly string[] ColB = { "SPOT", "WIPE", "CABIN", "INST", "ACC", "VHF" };
 
-        private static void BreakerBank(DrawSurface s, bool deck, bool spot)
+        private static void BreakerBank(DrawSurface s, bool deck, bool spot, bool anchorDown)
         {
             int bx = HelmDashGeometry.PilotBankX, by = HelmDashGeometry.PilotBankY + PAD;
             int bw = HelmDashGeometry.PilotBankW, bh = HelmDashGeometry.PilotBankH;
@@ -545,7 +545,10 @@ namespace HiddenHarbours.UI
             for (int i = 0; i < HelmDashGeometry.PilotRockRows; i++)
             {
                 int y = HelmDashGeometry.PilotRockRow0 + i * HelmDashGeometry.PilotRockDy + PAD;
-                Rocker(s, HelmDashGeometry.PilotRockColA, y, i == 0 && deck, ColA[i]);
+                // Row 0 col A/B are the working lights; ColA[3] is the authored ANCH breaker — the
+                // windlass switch, drawn dead since this dash shipped and now lit by the hook itself.
+                bool onA = i == 0 ? deck : (i == HelmDashGeometry.PilotAnchorRow && anchorDown);
+                Rocker(s, HelmDashGeometry.PilotRockColA, y, onA, ColA[i]);
                 Rocker(s, HelmDashGeometry.PilotRockColB, y, i == 0 && spot, ColB[i]);
             }
         }

@@ -22,6 +22,14 @@ namespace HiddenHarbours.UI
     /// <para>The golden tests pin that each source really does match its sibling, and that the two
     /// FAMILIES are genuinely distinct (the S4 negative control).</para>
     ///
+    /// <para><b>One exception to "verbatim", named out loud:</b> the skiffs' <b>ANCH</b> bat
+    /// (<see cref="AnchX"/>…) is DERIVED from the rig's own switch-panel numbers rather than transcribed
+    /// from it, because the rig authors two switches and the ground tackle needs a third. It is flagged
+    /// for the art director to mirror back into <c>consoleRig.js</c>/<c>sportRig.js</c>, and until then
+    /// the golden test pins the derivation rather than a measurement — see the block where it is
+    /// declared. The pilothouse needs no such exception: its <c>ANCH</c> breaker is already authored
+    /// (<see cref="PilotAnchorRow"/>).</para>
+    ///
     /// <para>The composed-dash mounts (where the lever, the grabbable wheel, the compass and the brow
     /// instruments land on the card) live here as pure functions so the layout maths is
     /// EditMode-testable without a canvas — the handoff's "composition contract, not a flattened
@@ -44,6 +52,28 @@ namespace HiddenHarbours.UI
         public const int StartCx = 97, StartCy = 328, StartR = 18, StartOffDeg = -20, StartRunDeg = 32;
         public const int DeckX = 58, DeckY = 362, DeckW = 22, DeckH = 42, DeckCx = 69, DeckLampY = 416;
         public const int SpotX = 116, SpotY = 362, SpotW = 22, SpotH = 42, SpotCx = 127, SpotLampY = 416;
+        // ---- the ANCHOR bat: the switch panel's third position ------------------------------------
+        //
+        // ⚠ NOT transcribed — DERIVED, and the one place this file is ahead of its rig source. The
+        // skiff rigs author two switches (SW.deck at cx 69, SW.spot at cx 127) in a panel 134 wide, and
+        // the ground tackle needs a third. Every number below is a FUNCTION of the rig's own constants
+        // rather than a new measurement: the same bat (DeckW × DeckH), on the same row (DeckY), with
+        // its tell-tale on the same line (DeckLampY), MIDWAY BETWEEN the two bats it joins — so the
+        // three land at 69 / 98 / 127 with a 7 px gap either side of the new one, which is what makes
+        // the row read as a bank rather than as two switches and an afterthought. (That midpoint is
+        // also within a pixel of the panel's own centreline and of the ignition key above it, at
+        // SwX + SwW/2 = 97 — the derivations agree, which is the sign the position is the real one.)
+        // The bat starts at y 362, clear of the key's circle, whose bow reaches UP from cy 328.
+        //
+        // FLAG art-director: mirror this third switch into consoleRig.js / sportRig.js (SW.anchor) so
+        // the rig and the game stop disagreeing. Until then the golden test pins the DERIVATION, not a
+        // transcription, so the day the rig authors it the two can be checked against each other.
+        public const int AnchCx = (DeckCx + SpotCx) / 2;      // 98 — midway between DECK and SPOT
+        public const int AnchW = DeckW, AnchH = DeckH;        // 22 × 42 — the same bat as DECK/SPOT
+        public const int AnchX = AnchCx - AnchW / 2;          // 87
+        public const int AnchY = DeckY;                       // 362 — the same row
+        public const int AnchLampY = DeckLampY;               // 416 — the same tell-tale line
+
         public const int BinnX = 430, BinnY = 284, BinnW = 154, BinnH = 156, BinnR = 16;
         public const int DrivePx = 505, DrivePivotY = 416, DriveHitR = 46;
         public const int SpotcanX = 330, SpotcanY = 22, SpotcanW = 46, SpotcanH = 16;
@@ -78,6 +108,12 @@ namespace HiddenHarbours.UI
 
         /// <summary>Which brow slot each instrument owns (noviRig.js:130 <c>DEFAULT_LAYOUT</c>).</summary>
         public const int PilotSounderSlot = 0, PilotRadarSlot = 1, PilotGpsSlot = 2;
+
+        /// <summary>The breaker bank's <b>ANCH</b> rocker — port column, fourth row. Unlike the skiffs'
+        /// third bat this is <i>already authored</i>: the pilothouse rigs lay out twelve labelled
+        /// breakers and <c>ANCH</c> is <c>ColA[3]</c> in both (noviRig.js == capeRig.js). It has been
+        /// drawn and dead since the dash shipped; the windlass switch is simply that rocker, wired.</summary>
+        public const int PilotAnchorRow = 3, PilotAnchorCol = 0;
 
         // The pilothouse compass mounts BOTH ways (noviRig.js:134): a dome binnacle on the crown that
         // DISPLACES the centre brow mount, or a flush Ritchie sunk into the dash face so the brow
@@ -320,6 +356,53 @@ namespace HiddenHarbours.UI
             bool p = IsPilothouse(rig);
             return LeverRigGeometry.SigFromOffset(cardPx.x - (p ? PilotDrivePx : DrivePx),
                                                   cardPx.y - ((p ? PilotDrivePivotY : DrivePivotY) + Toppad(rig)));
+        }
+
+        // ---- the anchor switch (the diegetic ground-tackle control, ADR 0039) --------------------
+
+        /// <summary>One rocker's box in the pilothouse breaker bank, in card space
+        /// (noviRig.js:471 / capeRig.js:471 — <c>ROCK.colA/colB</c> at <c>ROCK.row0 + i·ROCK.dy</c>).
+        /// <paramref name="col"/> 0 = the port column, 1 = starboard.</summary>
+        public static void PilotRockerBox(int row, int col, out int x, out int y, out int w, out int h)
+        {
+            if (row < 0) row = 0;
+            if (row >= PilotRockRows) row = PilotRockRows - 1;
+            x = col <= 0 ? PilotRockColA : PilotRockColB;
+            y = PilotRockRow0 + row * PilotRockDy + PilotTOPPAD;
+            w = PilotRockW;
+            h = PilotRockH;
+        }
+
+        /// <summary>
+        /// Where this helm's <b>anchor switch</b> sits on the card — the skiffs' third bat, or the
+        /// pilothouse's authored <c>ANCH</c> breaker. False (and a zero box) for a hull with no console
+        /// at all: a rowed dory has no dash to put a switch on, and her ground tackle answers to the
+        /// anchor key instead. The caller must draw nothing rather than pick a default box.
+        /// </summary>
+        public static bool TryAnchorSwitchBox(ConsoleRigKind rig, out int x, out int y, out int w, out int h)
+        {
+            x = y = w = h = 0;
+            if (rig == ConsoleRigKind.None) return false;
+            if (IsPilothouse(rig))
+            {
+                PilotRockerBox(PilotAnchorRow, PilotAnchorCol, out x, out y, out w, out h);
+                return true;
+            }
+            x = AnchX;
+            y = AnchY + TOPPAD;
+            w = AnchW;
+            h = AnchH;
+            return true;
+        }
+
+        /// <summary>A press on the anchor switch — plain point-in-box, which is exactly the contract the
+        /// rigs' own hit table states for a switch ("point-in-box <c>SW.deck</c>/<c>SW.spot</c>",
+        /// console-helm/README.md). No grab pad: a switch is aimed at, not grabbed, and padding it would
+        /// start eating presses meant for the ignition key above it.</summary>
+        public static bool IsOnAnchorSwitch(ConsoleRigKind rig, UnityEngine.Vector2 cardPx)
+        {
+            if (!TryAnchorSwitchBox(rig, out int x, out int y, out int w, out int h)) return false;
+            return cardPx.x >= x && cardPx.x <= x + w && cardPx.y >= y && cardPx.y <= y + h;
         }
 
         private static double Clamp01(double v) => v < 0.0 ? 0.0 : (v > 1.0 ? 1.0 : v);

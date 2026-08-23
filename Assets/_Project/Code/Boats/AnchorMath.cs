@@ -16,18 +16,6 @@ namespace HiddenHarbours.Boats
         Aground,
     }
 
-    /// <summary>Where the ground tackle stands right now.</summary>
-    public enum AnchorState
-    {
-        /// <summary>Catted/stowed. The anchor does nothing and the hull handles exactly as it always has.</summary>
-        Stowed,
-        /// <summary>Down and holding: she lies to her swing circle around the drop point.</summary>
-        Set,
-        /// <summary>Down but no longer biting — the water rose past the rode and the hook lost the bottom.
-        /// She is not held; she creeps off downwind/downtide while the tackle skips along the seabed.</summary>
-        Dragging,
-    }
-
     /// <summary>
     /// The <b>ground tackle's</b> pure rules — when the hook holds, how far she swings on it, and what a
     /// dragging anchor does (P1 "the sea has moods" / P5 "cozy, but with teeth"). Static, engine-light and
@@ -43,7 +31,10 @@ namespace HiddenHarbours.Boats
     ///
     /// <para><b>No magic numbers.</b> Every constant this maths needs is passed in from
     /// <see cref="AnchorSettings"/> (the owner's <c>GameConfig.Anchor</c>) or from the hull's own
-    /// <see cref="BoatHullDef.RodeMeters"/> data.</para>
+    /// ground-tackle data — <see cref="BoatHullDef.HasAnchor"/>, <see cref="BoatHullDef.AnchorMassKg"/>
+    /// and <see cref="BoatHullDef.RodeMeters"/>. Each of the three is resolved in exactly ONE place here
+    /// (<see cref="CarriesAnchor"/>, <see cref="AnchorMassFor"/>, <see cref="RodeFor"/>), so the switch
+    /// that draws, the key that presses and the sim that holds always read the same tackle.</para>
     /// </summary>
     public static class AnchorMath
     {
@@ -57,6 +48,61 @@ namespace HiddenHarbours.Boats
         {
             if (hull == null) return 0f;
             return hull.RodeMeters > 0f ? hull.RodeMeters : Mathf.Max(0f, settings.DefaultRodeMeters);
+        }
+
+        /// <summary>
+        /// <b>Does this hull carry ground tackle at all?</b> One place asks it, so the switch that draws,
+        /// the key that presses and the sim that holds can never disagree about whether there is a hook.
+        /// A null hull carries nothing.
+        ///
+        /// <para>⚠ A hull asset written before <see cref="BoatHullDef.HasAnchor"/> existed deserializes
+        /// it as <b>false</b> — the C# default for a bool, not the field's <c>= true</c> initializer,
+        /// which Unity's deserializer never runs (the GameConfig YAML trap, #420, in its hull-asset
+        /// form). That is why every shipped hull states the key explicitly and
+        /// <c>AnchorContentValidationTests</c> is the guard: an omission would silently take the anchor
+        /// off a boat that has always had one.</para>
+        /// </summary>
+        public static bool CarriesAnchor(BoatHullDef hull) => hull != null && hull.HasAnchor;
+
+        /// <summary>
+        /// The hook this hull actually swings (kg): her own authored <see cref="BoatHullDef.AnchorMassKg"/>,
+        /// or the shared dinghy grapnel when she has none (0 — including every hull asset written before
+        /// that field existed). The <see cref="RodeFor"/> convention, verbatim, and for the same reason:
+        /// ONE place resolves the fallback so nothing downstream can disagree about how much iron is over
+        /// the side. A null hull carries nothing.
+        /// </summary>
+        public static float AnchorMassFor(BoatHullDef hull, in AnchorSettings settings)
+        {
+            if (hull == null) return 0f;
+            return hull.AnchorMassKg > 0f
+                ? hull.AnchorMassKg
+                : Mathf.Max(0f, settings.ReferenceAnchorMassKg);
+        }
+
+        /// <summary>
+        /// <b>How hard THIS hull's dragging tackle checks her</b> (design-unit force per m/s of excess
+        /// speed) — the shared <see cref="AnchorSettings.DragBrakeStrength"/> scaled by how much iron she
+        /// actually drags, against the reference hook that strength is quoted at.
+        ///
+        /// <para><b>Linear in the hook's mass, deliberately.</b> A dragging anchor checks a boat by
+        /// friction along the seabed, and friction goes with the weight bearing on it: twice the iron,
+        /// twice the check. No curve is invented, and none is needed — the honest reading falls straight
+        /// out. It is also self-correcting up the ladder, because the brake is a FORCE and what the
+        /// player feels is force ÷ hull mass: a trawler's 250 kg hook checks her far harder than a
+        /// dory's grapnel checks the dory, and she still fetches away faster, which is exactly what
+        /// dragging a big boat is like.</para>
+        ///
+        /// <para>A reference mass of zero (a <c>GameConfig.asset</c> that omits the key — the YAML trap)
+        /// hands back the shared strength unscaled rather than dividing by nothing, so a mis-authored
+        /// config costs the per-hull nuance and never the brake itself. Pure + static.</para>
+        /// </summary>
+        public static float DragBrakeStrengthFor(float anchorMassKg, in AnchorSettings settings)
+        {
+            float strength = Mathf.Max(0f, settings.DragBrakeStrength);
+            float reference = settings.ReferenceAnchorMassKg;
+            if (!(reference > 0f)) return strength;                 // NaN-safe: no reference, no scaling
+            float mass = Mathf.Max(0f, anchorMassKg);
+            return strength * (mass / reference);
         }
 
         /// <summary>
