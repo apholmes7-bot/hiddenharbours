@@ -1,0 +1,79 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14a935958e134852a58414e314bad9b9, type: 3}
+  m_Name: CatchItemLibrary
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.CatchItemLibrary
+  _kinds:
+  - Kind: cod
+    Variants:
+    - {fileID: -2137819845, guid: 0ae85c3b18a93644ba4e29e415f60def, type: 3}
+    - {fileID: -1049159188, guid: 0ae85c3b18a93644ba4e29e415f60def, type: 3}
+    - {fileID: -565581331, guid: 0ae85c3b18a93644ba4e29e415f60def, type: 3}
+    - {fileID: 486546222, guid: 0ae85c3b18a93644ba4e29e415f60def, type: 3}
+  - Kind: haddock
+    Variants:
+    - {fileID: 215540679, guid: db63267d07e4b594db982c61291d4fc5, type: 3}
+    - {fileID: 1440810816, guid: db63267d07e4b594db982c61291d4fc5, type: 3}
+    - {fileID: 1606534715, guid: db63267d07e4b594db982c61291d4fc5, type: 3}
+    - {fileID: 215686596, guid: db63267d07e4b594db982c61291d4fc5, type: 3}
+  - Kind: pollock
+    Variants:
+    - {fileID: -2106970796, guid: 09413df64d4029845b4049ca288fb002, type: 3}
+    - {fileID: -333442118, guid: 09413df64d4029845b4049ca288fb002, type: 3}
+    - {fileID: -349179803, guid: 09413df64d4029845b4049ca288fb002, type: 3}
+    - {fileID: -116784543, guid: 09413df64d4029845b4049ca288fb002, type: 3}
+  - Kind: mackerel
+    Variants:
+    - {fileID: 287460093, guid: 469f3f01633bb264e9bc846edcb195ab, type: 3}
+    - {fileID: 1858914599, guid: 469f3f01633bb264e9bc846edcb195ab, type: 3}
+    - {fileID: 401371074, guid: 469f3f01633bb264e9bc846edcb195ab, type: 3}
+    - {fileID: 71871731, guid: 469f3f01633bb264e9bc846edcb195ab, type: 3}
+  - Kind: lobster
+    Variants:
+    - {fileID: -1453840411, guid: 27c5438ff23946f439757874ce118558, type: 3}
+    - {fileID: -1204314696, guid: 27c5438ff23946f439757874ce118558, type: 3}
+    - {fileID: 1604977764, guid: 27c5438ff23946f439757874ce118558, type: 3}
+    - {fileID: -664665415, guid: 27c5438ff23946f439757874ce118558, type: 3}
+  - Kind: crab
+    Variants:
+    - {fileID: 146807786, guid: f2dbfc3c51f5fa441836ad0cd8591f6b, type: 3}
+    - {fileID: -172782610, guid: f2dbfc3c51f5fa441836ad0cd8591f6b, type: 3}
+    - {fileID: -104143874, guid: f2dbfc3c51f5fa441836ad0cd8591f6b, type: 3}
+    - {fileID: 978046851, guid: f2dbfc3c51f5fa441836ad0cd8591f6b, type: 3}
+  - Kind: mussel
+    Variants:
+    - {fileID: -759157380, guid: 82468510faba74243abbf363b73d8f49, type: 3}
+    - {fileID: -1943947027, guid: 82468510faba74243abbf363b73d8f49, type: 3}
+    - {fileID: 1049801341, guid: 82468510faba74243abbf363b73d8f49, type: 3}
+    - {fileID: 851723508, guid: 82468510faba74243abbf363b73d8f49, type: 3}
+  - Kind: clam
+    Variants:
+    - {fileID: 2014215504, guid: d66deb88f5ab38f4cab5116f07bd4ad4, type: 3}
+    - {fileID: 1944867251, guid: d66deb88f5ab38f4cab5116f07bd4ad4, type: 3}
+    - {fileID: -1325828014, guid: d66deb88f5ab38f4cab5116f07bd4ad4, type: 3}
+    - {fileID: -719118405, guid: d66deb88f5ab38f4cab5116f07bd4ad4, type: 3}
+  _species:
+  - SpeciesId: fish.atlantic_cod
+    Kind: cod
+  - SpeciesId: fish.haddock
+    Kind: haddock
+  - SpeciesId: fish.lobster
+    Kind: lobster
+  - SpeciesId: fish.mackerel
+    Kind: mackerel
+  - SpeciesId: fish.pollock
+    Kind: pollock
+  - SpeciesId: fish.rock_crab
+    Kind: crab
+  - SpeciesId: fish.soft_shell_clam
+    Kind: clam
+  _fallbackKind: cod
