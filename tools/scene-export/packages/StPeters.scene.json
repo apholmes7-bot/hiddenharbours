@@ -1,7 +1,7 @@
 {
   "schema": "hiddenharbours.scene/1",
   "generatedBy": "tools/scene-export/hh_scene_export.py",
-  "generatedAt": "2026-08-23T00:33:56Z",
+  "generatedAt": "2026-08-24T02:15:46Z",
   "region": {
     "id": "region.st_peters",
     "sceneName": "StPeters",
@@ -48035,6 +48035,50 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
+      "id": "2b1401957a56",
+      "family": "fishtote",
+      "group": "Tools",
+      "rig": "FishTote",
+      "rigSource": "docs/art/rigs/fishToteRig.js",
+      "call": {
+        "fn": "render",
+        "args": ["dir", "opts"],
+        "opts": {},
+        "x-synthesised": true,
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
+      },
+      "pos": [5, -1.35],
+      "facing": null,
+      "facingIndex": 0,
+      "flipX": false,
+      "sortBias": 0,
+      "cell": {
+        "w": 48,
+        "h": 52,
+        "pivot": [24, 42],
+        "pxPerM": 32,
+        "unityPivot": [0.5, 0.192308]
+      },
+      "x-name": "Bucket",
+      "x-path": "Tools/Bucket",
+      "x-origin": "Tools",
+      "x-zone": null,
+      "x-zoneEvidence": null,
+      "x-resolutionExcluded": null,
+      "x-cellAt": [385, 261],
+      "x-inBounds": true,
+      "x-active": true,
+      "x-rigSha256": "14e57fb3b4ef10269ce13e9f3c18be1b525572cba4a4953a5caadbf34d03ef8d",
+      "x-familyIsSpriteStem": false,
+      "x-sprite": {
+        "sheet": "Assets/_Project/Art/Fishing/Storage/Bucket_pail_empty.png",
+        "name": "Bucket_pail_empty_d0_f0",
+        "internalId": -136991785
+      },
+      "x-pivotSource": "sprite-import.customPivot",
+      "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
+    },
+    {
       "id": "ab3da95dbeb9",
       "family": "WharfAtlas",
       "group": "Deck",
@@ -55984,7 +56028,7 @@
       "x-cellAt": [368, 227],
       "x-inBounds": true,
       "x-active": true,
-      "x-rigSha256": "4ffa148be04869149fd6f5356999377d60987f375764d0c7c8eeb332b1595b32",
+      "x-rigSha256": "ed432ea7a86ed41fba78e5e773ea3dddd9c9dfd8b8ced470f5474744e37ffac7",
       "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Interiors/Rooms/Interior_school.png",
@@ -56468,7 +56512,7 @@
       "x-cellAt": [401, 234],
       "x-inBounds": true,
       "x-active": true,
-      "x-rigSha256": "4ffa148be04869149fd6f5356999377d60987f375764d0c7c8eeb332b1595b32",
+      "x-rigSha256": "ed432ea7a86ed41fba78e5e773ea3dddd9c9dfd8b8ced470f5474744e37ffac7",
       "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Interiors/Rooms/Interior_whiteFarmhouse.png",
@@ -56951,7 +56995,7 @@
       "x-cellAt": [405, 252],
       "x-inBounds": true,
       "x-active": true,
-      "x-rigSha256": "4ffa148be04869149fd6f5356999377d60987f375764d0c7c8eeb332b1595b32",
+      "x-rigSha256": "ed432ea7a86ed41fba78e5e773ea3dddd9c9dfd8b8ced470f5474744e37ffac7",
       "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Interiors/Rooms/Interior_redSaltbox.png",
@@ -57385,7 +57429,7 @@
       "x-cellAt": [390, 280],
       "x-inBounds": true,
       "x-active": true,
-      "x-rigSha256": "4ffa148be04869149fd6f5356999377d60987f375764d0c7c8eeb332b1595b32",
+      "x-rigSha256": "ed432ea7a86ed41fba78e5e773ea3dddd9c9dfd8b8ced470f5474744e37ffac7",
       "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Interiors/Rooms/Interior_sageCottage.png",
@@ -58025,7 +58069,7 @@
       "x-cellAt": [464, 232],
       "x-inBounds": true,
       "x-active": true,
-      "x-rigSha256": "4ffa148be04869149fd6f5356999377d60987f375764d0c7c8eeb332b1595b32",
+      "x-rigSha256": "ed432ea7a86ed41fba78e5e773ea3dddd9c9dfd8b8ced470f5474744e37ffac7",
       "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Interiors/Rooms/Interior_sageCottage.png",
@@ -58401,7 +58445,7 @@
       "x-interiorOf": "a1923a30a023"
     },
     {
-      "id": "2dc7253d0af1",
+      "id": "d481c35dfc0d",
       "family": "interior",
       "group": "sageCottage",
       "rig": "InteriorIso",
@@ -58426,7 +58470,7 @@
         "x-fromContract": "Assets/_Project/Art/Sprites/Interiors/Interiors.json#sageCottage",
         "x-optsScope": "the whole SHEET, not this cell. The contract records the options this kit was baked with; a per-cell variant axis is a recipe's job and no recipe covers this sheet."
       },
-      "pos": [84, 28],
+      "pos": [84, 30.376653],
       "facing": "E",
       "facingIndex": 2,
       "flipX": false,
@@ -58444,10 +58488,10 @@
       "x-zone": null,
       "x-zoneEvidence": null,
       "x-resolutionExcluded": null,
-      "x-cellAt": [464, 232],
+      "x-cellAt": [464, 229],
       "x-inBounds": true,
       "x-active": true,
-      "x-rigSha256": "4ffa148be04869149fd6f5356999377d60987f375764d0c7c8eeb332b1595b32",
+      "x-rigSha256": "ed432ea7a86ed41fba78e5e773ea3dddd9c9dfd8b8ced470f5474744e37ffac7",
       "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Interiors/Rooms/Interior_sageCottage.png",
@@ -58458,11 +58502,11 @@
       "x-facingsSource": "Assets/_Project/Art/Sprites/Interiors/Interiors.json",
       "x-facingBearingDeg": 90.0,
       "x-pivotSource": "sprite-import.customPivot",
-      "x-sortingOrder": 1,
+      "x-sortingOrder": 1072,
       "x-interiorOf": "a1923a30a023"
     },
     {
-      "id": "b7bd9917e6fb",
+      "id": "0a364a5ca62d",
       "family": "interiorprop",
       "group": "FurnitureUpper",
       "rig": "PropIso",
@@ -58477,7 +58521,7 @@
         "x-fromContract": "Assets/_Project/Art/Sprites/Interiors/Interiors.json#seaChest",
         "x-optsScope": "the whole SHEET, not this cell. The contract records the options this kit was baked with; a per-cell variant axis is a recipe's job and no recipe covers this sheet."
       },
-      "pos": [83.099998, 26.39303],
+      "pos": [83.099998, 28.769684],
       "facing": "E",
       "facingIndex": 2,
       "flipX": false,
@@ -58495,7 +58539,7 @@
       "x-zone": null,
       "x-zoneEvidence": null,
       "x-resolutionExcluded": null,
-      "x-cellAt": [463, 233],
+      "x-cellAt": [463, 231],
       "x-inBounds": true,
       "x-active": false,
       "x-rigSha256": "e13a3690f9d1b2afacb5ffb05f011a5edaf7a76c770e4e55780ed6db6e1b7738",
@@ -58513,7 +58557,7 @@
       "x-interiorOf": "a1923a30a023"
     },
     {
-      "id": "860ae610ce54",
+      "id": "1a0e437d2eb7",
       "family": "interiorprop",
       "group": "FurnitureUpper",
       "rig": "PropIso",
@@ -58530,7 +58574,7 @@
         "x-fromContract": "Assets/_Project/Art/Sprites/Interiors/Interiors.json#bed",
         "x-optsScope": "the whole SHEET, not this cell. The contract records the options this kit was baked with; a per-cell variant axis is a recipe's job and no recipe covers this sheet."
       },
-      "pos": [81.699997, 29.349854],
+      "pos": [81.699997, 31.726507],
       "facing": "E",
       "facingIndex": 2,
       "flipX": false,
@@ -58548,7 +58592,7 @@
       "x-zone": null,
       "x-zoneEvidence": null,
       "x-resolutionExcluded": null,
-      "x-cellAt": [461, 230],
+      "x-cellAt": [461, 228],
       "x-inBounds": true,
       "x-active": false,
       "x-rigSha256": "e13a3690f9d1b2afacb5ffb05f011a5edaf7a76c770e4e55780ed6db6e1b7738",
@@ -58566,7 +58610,7 @@
       "x-interiorOf": "a1923a30a023"
     },
     {
-      "id": "f47fbac4b45c",
+      "id": "8f6243fede6c",
       "family": "interiorprop",
       "group": "FurnitureUpper",
       "rig": "PropIso",
@@ -58582,7 +58626,7 @@
         "x-fromContract": "Assets/_Project/Art/Sprites/Interiors/Interiors.json#dresser",
         "x-optsScope": "the whole SHEET, not this cell. The contract records the options this kit was baked with; a per-cell variant axis is a recipe's job and no recipe covers this sheet."
       },
-      "pos": [83.400002, 27.775024],
+      "pos": [83.400002, 30.151678],
       "facing": "S",
       "facingIndex": 4,
       "flipX": false,
@@ -58600,7 +58644,7 @@
       "x-zone": null,
       "x-zoneEvidence": null,
       "x-resolutionExcluded": null,
-      "x-cellAt": [463, 232],
+      "x-cellAt": [463, 229],
       "x-inBounds": true,
       "x-active": false,
       "x-rigSha256": "e13a3690f9d1b2afacb5ffb05f011a5edaf7a76c770e4e55780ed6db6e1b7738",
@@ -58618,7 +58662,7 @@
       "x-interiorOf": "a1923a30a023"
     },
     {
-      "id": "b6aee87e0053",
+      "id": "5755716ab0b6",
       "family": "interiorprop",
       "group": "FurnitureUpper",
       "rig": "PropIso",
@@ -58635,7 +58679,7 @@
         "x-fromContract": "Assets/_Project/Art/Sprites/Interiors/Interiors.json#bed",
         "x-optsScope": "the whole SHEET, not this cell. The contract records the options this kit was baked with; a per-cell variant axis is a recipe's job and no recipe covers this sheet."
       },
-      "pos": [86.300003, 29.349854],
+      "pos": [86.300003, 31.726507],
       "facing": "E",
       "facingIndex": 2,
       "flipX": false,
@@ -58653,7 +58697,7 @@
       "x-zone": null,
       "x-zoneEvidence": null,
       "x-resolutionExcluded": null,
-      "x-cellAt": [466, 230],
+      "x-cellAt": [466, 228],
       "x-inBounds": true,
       "x-active": false,
       "x-rigSha256": "e13a3690f9d1b2afacb5ffb05f011a5edaf7a76c770e4e55780ed6db6e1b7738",
@@ -68588,14 +68632,14 @@
     "sidecars": []
   },
   "stats": {
-    "entities": 1327,
+    "entities": 1328,
     "tiles": {
       "ground": 50195,
       "road": 0,
       "cliff": 0
     },
     "x-paths": 11,
-    "x-rigsPinned": 10,
+    "x-rigsPinned": 11,
     "x-tilesNote": "painted cell counts per layer. The reference package uses stamp counts here, which double-count overlaps; a true cell count is the more useful number and the review asked for one or the other, said."
   },
   "x-rigs": [
@@ -68607,6 +68651,13 @@
       "x-declaredBy": "Assets/_Project/Art/Characters/Iso/ginny/GinnyAnchors.json"
     },
     {
+      "rig": "fishToteRig",
+      "rigSource": "docs/art/rigs/fishToteRig.js",
+      "sha256": "14e57fb3b4ef10269ce13e9f3c18be1b525572cba4a4953a5caadbf34d03ef8d",
+      "shaRule": "sha256 of the rig's bytes with CR stripped (tr -d '\\r' | sha256sum)",
+      "x-declaredBy": "Assets/_Project/Art/Fishing/Storage/CatchStorageAnchors.json"
+    },
+    {
       "rig": "houseIsoRig",
       "rigSource": "docs/art/rigs/houseIsoRig.js",
       "sha256": "638ab5359d7790aa24fa67534b22503e46b18729fe62b69bba11ffe43e778ca9",
@@ -68616,7 +68667,7 @@
     {
       "rig": "interiorIsoRig",
       "rigSource": "docs/art/rigs/interiorIsoRig.js",
-      "sha256": "4ffa148be04869149fd6f5356999377d60987f375764d0c7c8eeb332b1595b32",
+      "sha256": "ed432ea7a86ed41fba78e5e773ea3dddd9c9dfd8b8ced470f5474744e37ffac7",
       "shaRule": "sha256 of the rig's bytes with CR stripped (tr -d '\\r' | sha256sum)",
       "x-declaredBy": "Assets/_Project/Art/Sprites/Interiors/Interiors.json#interior"
     },
@@ -68679,13 +68730,17 @@
       "rigSource": "docs/art/rigs/characterIsoRig6.js",
       "sha256": "c35dbefe2c75cb800dba3821e63fe9c5518786931f149910b3c6430544b2bc9f"
     },
+    "fishtote": {
+      "rigSource": "docs/art/rigs/fishToteRig.js",
+      "sha256": "14e57fb3b4ef10269ce13e9f3c18be1b525572cba4a4953a5caadbf34d03ef8d"
+    },
     "house": {
       "rigSource": "docs/art/rigs/houseIsoRig.js",
       "sha256": "638ab5359d7790aa24fa67534b22503e46b18729fe62b69bba11ffe43e778ca9"
     },
     "interior": {
       "rigSource": "docs/art/rigs/interiorIsoRig.js",
-      "sha256": "4ffa148be04869149fd6f5356999377d60987f375764d0c7c8eeb332b1595b32"
+      "sha256": "ed432ea7a86ed41fba78e5e773ea3dddd9c9dfd8b8ced470f5474744e37ffac7"
     },
     "interiorprop": {
       "rigSource": "docs/art/rigs/interiorPropRig.js",
@@ -68715,22 +68770,20 @@
   "x-rigVersionsShaRule": "sha256 of the rig's bytes with CR stripped (tr -d '\r' | sha256sum) — the repo's own convention, the same one docs/art/rigs sidecars publish. A SIBLING of the table rather than a key inside it: the table's keys are family names and nothing else, so iterating it cannot pick up a note.",
   "x-cliffLinesNote": "Empty: cliff lines are an authoring artefact of the editor. The repo's cliffs are placed CliffWallSurface components and ship as entities.",
   "x-provenance": {
-    "generatedAt": "2026-08-23T00:33:56Z",
+    "generatedAt": "2026-08-24T02:15:46Z",
     "historyIsComplete": true,
     "sceneFile": "Assets/_Project/Scenes/StPeters.unity",
-    "sceneFileSha256": "92a44e601dcf7b2be6821448460d7bfbf2bc8f1731e8d0cc3474bc0b7cecc523",
-    "sceneLastBuiltCommit": "be74ac359dcd21e1cc88598c2d861107031091ad",
-    "sceneLastBuiltDate": "2026-08-22",
-    "sceneLastBuiltSubject": "chore(scenes): bank the 2026-08-22 St Peters build — cannery + Ginny's woodshed after #599",
+    "sceneFileSha256": "b26f6d1204e13644f01b2cc0345a34670f1c490acc41db5f26ac56d77bb316ac",
+    "sceneLastBuiltCommit": "ad39352d8c339f88ecf807b8a32ad4b85be443df",
+    "sceneLastBuiltDate": "2026-08-23",
+    "sceneLastBuiltSubject": "chore(scenes): bank the 2026-08-23 builds — stairs at height, berth alongside, pails on the planks",
     "sceneWorkingTreeDirty": false,
     "builderDrift": {
-      "builderCommitsSinceScene": 1,
-      "measuredTo": "5f355516de4872bc71a5c937a9680cb12c246313",
-      "measuredToDate": "2026-08-22T21:33:56-03:00",
+      "builderCommitsSinceScene": 0,
+      "measuredTo": "ad39352d8c339f88ecf807b8a32ad4b85be443df",
+      "measuredToDate": null,
       "exact": true,
-      "builderCommits": [
-        "5f355516 feat(world): she comes alongside — the St Peters arrival lies off the wharf face, in water dredged to hold her"
-      ]
+      "builderCommits": []
     },
     "heightMap": {
       "asset": "Assets/_Project/Data/Terrain/StPetersSeabed.asset",
