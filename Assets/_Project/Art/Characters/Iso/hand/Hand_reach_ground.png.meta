@@ -1,0 +1,1378 @@
+fileFormatVersion: 2
+guid: fdcd4db20d781fd4e9806beb531dba6d
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -5566897724871362329
+    second: Hand_reach_ground_0
+  - first:
+      213: -2508429982290474962
+    second: Hand_reach_ground_1
+  - first:
+      213: -1980609108275718624
+    second: Hand_reach_ground_2
+  - first:
+      213: -4094386098477515302
+    second: Hand_reach_ground_3
+  - first:
+      213: -819894475229028941
+    second: Hand_reach_ground_4
+  - first:
+      213: -8091190926001719506
+    second: Hand_reach_ground_5
+  - first:
+      213: 6518591081811025715
+    second: Hand_reach_ground_6
+  - first:
+      213: 6501062312836073607
+    second: Hand_reach_ground_7
+  - first:
+      213: -8172960835081517649
+    second: Hand_reach_ground_8
+  - first:
+      213: -271539715581858711
+    second: Hand_reach_ground_9
+  - first:
+      213: -6983798939199749743
+    second: Hand_reach_ground_10
+  - first:
+      213: -1314840656688146149
+    second: Hand_reach_ground_11
+  - first:
+      213: 7767963415261514530
+    second: Hand_reach_ground_12
+  - first:
+      213: -6596795184973346057
+    second: Hand_reach_ground_13
+  - first:
+      213: -8121993465936392945
+    second: Hand_reach_ground_14
+  - first:
+      213: 8158322679629132886
+    second: Hand_reach_ground_15
+  - first:
+      213: 9088832508812611450
+    second: Hand_reach_ground_16
+  - first:
+      213: 2384547903869416434
+    second: Hand_reach_ground_17
+  - first:
+      213: -8428790588459957725
+    second: Hand_reach_ground_18
+  - first:
+      213: 5250378609553833532
+    second: Hand_reach_ground_19
+  - first:
+      213: -1539049693094305728
+    second: Hand_reach_ground_20
+  - first:
+      213: 6340524101185626804
+    second: Hand_reach_ground_21
+  - first:
+      213: -6723091581983977239
+    second: Hand_reach_ground_22
+  - first:
+      213: -5981666502184864632
+    second: Hand_reach_ground_23
+  - first:
+      213: -4446555923018090777
+    second: Hand_reach_ground_24
+  - first:
+      213: -5576198948983549870
+    second: Hand_reach_ground_25
+  - first:
+      213: -9034017392325956006
+    second: Hand_reach_ground_26
+  - first:
+      213: 3975391882098238470
+    second: Hand_reach_ground_27
+  - first:
+      213: 5997261359094021648
+    second: Hand_reach_ground_28
+  - first:
+      213: -5182723765350163658
+    second: Hand_reach_ground_29
+  - first:
+      213: -9171512597081182692
+    second: Hand_reach_ground_30
+  - first:
+      213: 7784635915771329545
+    second: Hand_reach_ground_31
+  - first:
+      213: -4961773288993343994
+    second: Hand_reach_ground_32
+  - first:
+      213: -83517392886590805
+    second: Hand_reach_ground_33
+  - first:
+      213: 4600273759618105826
+    second: Hand_reach_ground_34
+  - first:
+      213: 4220126453735709660
+    second: Hand_reach_ground_35
+  - first:
+      213: 4491333166576987926
+    second: Hand_reach_ground_36
+  - first:
+      213: 8967346947100054589
+    second: Hand_reach_ground_37
+  - first:
+      213: -4536774992127395611
+    second: Hand_reach_ground_38
+  - first:
+      213: 5219114559596131818
+    second: Hand_reach_ground_39
+  - first:
+      213: -9151192717186397199
+    second: Hand_reach_ground_40
+  - first:
+      213: -5508843736352140478
+    second: Hand_reach_ground_41
+  - first:
+      213: 8929345806949764516
+    second: Hand_reach_ground_42
+  - first:
+      213: -918983945535054260
+    second: Hand_reach_ground_43
+  - first:
+      213: 8463063573903856553
+    second: Hand_reach_ground_44
+  - first:
+      213: -8580402361600433594
+    second: Hand_reach_ground_45
+  - first:
+      213: 2099764863914176838
+    second: Hand_reach_ground_46
+  - first:
+      213: -4648874267614846395
+    second: Hand_reach_ground_47
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 7
+  spritePivot: {x: 0.5, y: 0}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Hand_reach_ground_d0_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 644
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f085c9bf84c3abd408e55577a4b4e45f
+      internalID: 1837764745
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Hand_reach_ground_d0_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 644
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 20075aa5b0aa94b458a30a7bdc2eca0f
+      internalID: -1115845323
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Hand_reach_ground_d0_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 644
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1d91ade525865694c9b18f6f23bbfb34
+      internalID: 1784432417
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Hand_reach_ground_d0_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 644
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7b711476353a4c442a3966a4af979652
+      internalID: -1496235352
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Hand_reach_ground_d0_f4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 644
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3925162e707d74f4d96aa13434022671
+      internalID: -1112044534
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Hand_reach_ground_d0_f5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 644
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fe6046057c78bc2458d0e315de92ff9b
+      internalID: -2033125840
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Hand_reach_ground_d1_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 552
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 09a111986aa8bc047b9df75fe98547bf
+      internalID: 1420574763
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Hand_reach_ground_d1_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 552
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5659dec2ba031be459eb7fd1d8ca1cbb
+      internalID: -1595978458
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Hand_reach_ground_d1_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 552
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: df7b5d1c370d3aa4ebf5f1bfca36bc01
+      internalID: -1873912000
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Hand_reach_ground_d1_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 552
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 992a3314225182d4b85bf1b7bb3bd8f3
+      internalID: 689014219
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Hand_reach_ground_d1_f4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 552
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c583e78d483a5eb478ef137aafeec232
+      internalID: 1362183225
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Hand_reach_ground_d1_f5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 552
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2fbacf633a99a65439a0d18ad6691c7b
+      internalID: -1314076829
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Hand_reach_ground_d2_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 460
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6ae087350f9f0504686d1eaac9127b72
+      internalID: -449675748
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Hand_reach_ground_d2_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 460
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8f992b90c37cc4c4b9f219b09478ebe2
+      internalID: -1199240374
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Hand_reach_ground_d2_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 460
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 73f6b35356eafe64e9ebeea00087bb68
+      internalID: 377285928
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Hand_reach_ground_d2_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 460
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3d1e276061ade074a9f8acfb091c1d7a
+      internalID: 395634779
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Hand_reach_ground_d2_f4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 460
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1306870610b56a543ae95066a8b155f5
+      internalID: -497995863
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Hand_reach_ground_d2_f5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 460
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f0f0ecab8e1fc484c87adbd028759179
+      internalID: -2134845371
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Hand_reach_ground_d3_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 368
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0179abed69325f24db8c989c3fb7e804
+      internalID: 1301969124
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Hand_reach_ground_d3_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 368
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 90d7091dbc39bb441981d9f40400a9d5
+      internalID: 702599307
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Hand_reach_ground_d3_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 368
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: be862ca1d81b6104cb5d2c759bcac86d
+      internalID: -775693897
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Hand_reach_ground_d3_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 368
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0f1a0daccaeb6ca49908fdc2f21ee577
+      internalID: 1684473950
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Hand_reach_ground_d3_f4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 368
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 416a93ce1ad802d498d68becc66f6c3a
+      internalID: 359136548
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Hand_reach_ground_d3_f5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 368
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 49665bf8b48323545bc03e412152f93a
+      internalID: -1387085012
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Hand_reach_ground_d4_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 276
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 510f5ef4ebac8c74682abe74eab0ec05
+      internalID: -45416689
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Hand_reach_ground_d4_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 276
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 699b7d7bf7ed1fd4b82c6b59902da286
+      internalID: -1188878041
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Hand_reach_ground_d4_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 276
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 601efad327e18ec46b1fa4a2b7490b4a
+      internalID: -339841015
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Hand_reach_ground_d4_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 276
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d3056ed6a986a1d4e95d35f5676ff1fe
+      internalID: 1491879187
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Hand_reach_ground_d4_f4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 276
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3972a818f2466d845b4ce125c5ffd20b
+      internalID: -527510475
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Hand_reach_ground_d4_f5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 276
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 361758de1a585a94184070719f8c5ce1
+      internalID: 1629443546
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Hand_reach_ground_d5_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 184
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e6d9bce0be1b6584db1e2bd186d232f2
+      internalID: -1511722884
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Hand_reach_ground_d5_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 184
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2cee2f2701aa2ec42b6a306fde66724f
+      internalID: -1939404323
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Hand_reach_ground_d5_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 184
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 700ec06114713744e95d66dab7dc8e5e
+      internalID: -368799065
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Hand_reach_ground_d5_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 184
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5d6ce381d66ec2649a84b9ccb399c65d
+      internalID: -1753753638
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Hand_reach_ground_d5_f4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 184
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cc835184f3412474aa79bcb1b5108c47
+      internalID: -1201538414
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Hand_reach_ground_d5_f5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 184
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3e810dc6111caac47958b792483654d4
+      internalID: -891261455
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Hand_reach_ground_d6_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 92
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 09683d2e690ff7c418f72ea64adfdb54
+      internalID: 64006503
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Hand_reach_ground_d6_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 92
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ef91c95c14299bb49978d0dd2a19eb4c
+      internalID: 2144222552
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Hand_reach_ground_d6_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 92
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 55416e91b0ba9f04688b8e6beade2091
+      internalID: -505197014
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Hand_reach_ground_d6_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 92
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bea45841589a59548a84c4fb620008ce
+      internalID: 931208164
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Hand_reach_ground_d6_f4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 92
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b047cee82bc12d84bba7be6363ea81ea
+      internalID: -678406900
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Hand_reach_ground_d6_f5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 92
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4422860e476afce46bbe635742f09044
+      internalID: -1474841830
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Hand_reach_ground_d7_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0c092a45f29af3044b7a6888d19e70a8
+      internalID: -884937290
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Hand_reach_ground_d7_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 0
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b33c8700a8ba5ea4eacfcf8f762a931d
+      internalID: -1810895564
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Hand_reach_ground_d7_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8f651b537c1405645ac7b3b48679a296
+      internalID: 515151894
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Hand_reach_ground_d7_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 0
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 294e9af8770a94943a07d1e055cc3d00
+      internalID: 2050191815
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Hand_reach_ground_d7_f4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 0
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0ef8b5983ffd72943a6d55bb776b6eb2
+      internalID: 1780450867
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Hand_reach_ground_d7_f5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 0
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 51ce4005db2ffed4b844a13f074c4c86
+      internalID: 640378299
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 041ba2c2c41747b448321b54537882cc
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Hand_reach_ground_d0_f0: 1837764745
+      Hand_reach_ground_d0_f1: -1115845323
+      Hand_reach_ground_d0_f2: 1784432417
+      Hand_reach_ground_d0_f3: -1496235352
+      Hand_reach_ground_d0_f4: -1112044534
+      Hand_reach_ground_d0_f5: -2033125840
+      Hand_reach_ground_d1_f0: 1420574763
+      Hand_reach_ground_d1_f1: -1595978458
+      Hand_reach_ground_d1_f2: -1873912000
+      Hand_reach_ground_d1_f3: 689014219
+      Hand_reach_ground_d1_f4: 1362183225
+      Hand_reach_ground_d1_f5: -1314076829
+      Hand_reach_ground_d2_f0: -449675748
+      Hand_reach_ground_d2_f1: -1199240374
+      Hand_reach_ground_d2_f2: 377285928
+      Hand_reach_ground_d2_f3: 395634779
+      Hand_reach_ground_d2_f4: -497995863
+      Hand_reach_ground_d2_f5: -2134845371
+      Hand_reach_ground_d3_f0: 1301969124
+      Hand_reach_ground_d3_f1: 702599307
+      Hand_reach_ground_d3_f2: -775693897
+      Hand_reach_ground_d3_f3: 1684473950
+      Hand_reach_ground_d3_f4: 359136548
+      Hand_reach_ground_d3_f5: -1387085012
+      Hand_reach_ground_d4_f0: -45416689
+      Hand_reach_ground_d4_f1: -1188878041
+      Hand_reach_ground_d4_f2: -339841015
+      Hand_reach_ground_d4_f3: 1491879187
+      Hand_reach_ground_d4_f4: -527510475
+      Hand_reach_ground_d4_f5: 1629443546
+      Hand_reach_ground_d5_f0: -1511722884
+      Hand_reach_ground_d5_f1: -1939404323
+      Hand_reach_ground_d5_f2: -368799065
+      Hand_reach_ground_d5_f3: -1753753638
+      Hand_reach_ground_d5_f4: -1201538414
+      Hand_reach_ground_d5_f5: -891261455
+      Hand_reach_ground_d6_f0: 64006503
+      Hand_reach_ground_d6_f1: 2144222552
+      Hand_reach_ground_d6_f2: -505197014
+      Hand_reach_ground_d6_f3: 931208164
+      Hand_reach_ground_d6_f4: -678406900
+      Hand_reach_ground_d6_f5: -1474841830
+      Hand_reach_ground_d7_f0: -884937290
+      Hand_reach_ground_d7_f1: -1810895564
+      Hand_reach_ground_d7_f2: 515151894
+      Hand_reach_ground_d7_f3: 2050191815
+      Hand_reach_ground_d7_f4: 1780450867
+      Hand_reach_ground_d7_f5: 640378299
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

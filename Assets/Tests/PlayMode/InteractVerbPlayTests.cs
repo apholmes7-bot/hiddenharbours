@@ -23,8 +23,9 @@ namespace HiddenHarbours.Tests.PlayMode
     ///   helm and steps ashore exactly as it did before the seam existed. This is the claim that made it
     ///   safe to land the verb inside the player controller at all, so it is asserted, not assumed.</item>
     ///   <item><b>The precedence.</b> Boarding and the helm still win where both would apply — the
-    ///   deliberate, flagged-for-review ordering choice — and the verb takes only the presses that used to
-    ///   do nothing.</item>
+    ///   deliberate, part-ruled ordering choice — while STEPPING ASHORE yields to a resolving fixture
+    ///   (lead-architect, 2026-08-25), so on a docked deck the verb now takes the press the step off used
+    ///   to. Both halves are pinned below, the popup's offer included.</item>
     ///   <item><b>Scene-scoped registration</b>, through <see cref="WetBucketPoint"/>, which is the real
     ///   thing this PR migrated: a component that used to read <c>F</c> in its own <c>Update</c> and now
     ///   registers a candidate instead.</item>
@@ -56,8 +57,8 @@ namespace HiddenHarbours.Tests.PlayMode
         // sitting on the boat would make E mean "step ashore" from anywhere on the deck and a deck
         // candidate could never be reached. No terrain or environment is wired either, which makes
         // BoatCrossing.DepthAt read +∞ — open water, the other half of CanStepAshore() answered false. So
-        // on this rig, on deck and away from the helm, E is a press with nothing to do: exactly the case
-        // the verb is allowed to take.
+        // on this rig, on deck and away from the helm, E is a press with nothing to do — the oldest case
+        // the verb is allowed to take. A test that wants her TIED UP asks for it: see TieHerUpAtAWharf.
         private static readonly Vector3 DockPos = new Vector3(500f, 0f, 0f);
         private const float DockZoneRadius = 3.5f;
 
@@ -84,6 +85,7 @@ namespace HiddenHarbours.Tests.PlayMode
         private Rigidbody2D _playerBody;
         private ControlSwitcher _switcher;
         private BoatController _boat;
+        private Transform _dockZone;
         private Keyboard _testKeyboard;
 
         [SetUp]
@@ -133,6 +135,7 @@ namespace HiddenHarbours.Tests.PlayMode
             // is the one every pre-move caller of TryInteract still gets.
             var dockZone = Spawn("DockZone");
             dockZone.transform.position = DockPos;
+            _dockZone = dockZone.transform;
             var disembark = Spawn("Disembark");
             disembark.transform.position = DockPos;
             _switcher = Spawn("Switcher").AddComponent<ControlSwitcher>();
@@ -195,6 +198,16 @@ namespace HiddenHarbours.Tests.PlayMode
             };
             Interactables.Register(c);
             return c;
+        }
+
+        /// <summary>Bring the wharf to her — the berth is parked 500 m off by default (see
+        /// <see cref="DockPos"/>) precisely so <c>CanStepAshore()</c> is false and a deck press has
+        /// nothing to do. Moving it onto her is how a test asks for the OPPOSITE case: tied up, where
+        /// stepping ashore is available from the whole deck.</summary>
+        private void TieHerUpAtAWharf()
+        {
+            _dockZone.position = _boat.transform.position;
+            Assert.IsTrue(_switcher.CanStepAshore(), "harness: she must actually be alongside for this");
         }
 
         /// <summary>The real migrated fixture, live in the scene, so its own OnEnable is what registers
@@ -377,6 +390,65 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.IsTrue(_switcher.BeginInteract());
             Assert.AreEqual(ControlMode.Aboard, _switcher.Mode, "the helm is a station and it keeps the press");
             Assert.AreEqual(0, atHelm.Calls);
+        }
+
+        [UnityTest]
+        public IEnumerator AtAWharf_ADeckCandidateTakesThePress_AndSteppingAshoreYieldsToIt()
+        {
+            // ⭐ THE RULING (lead-architect, 2026-08-25). On deck, away from the helm, the registry is
+            // consulted BEFORE the step ashore. Before it, CanStepAshore() was true from the whole deck of
+            // a boat that was tied up, so E stepped her off and no OnDeck fixture — a cabin door, a pail,
+            // a hauler — could ever be reached while she was alongside. The decision rule is EditMode's
+            // (ControlSwitcherTests owns the ladder); what this adds is the same press through a LIVE
+            // component loop, which is where a seam actually fails.
+            _switcher.ConfigureHelm(new Vector2(0f, -50f), 0.9f);   // the helm is nowhere near
+            var pail = Candidate("test.deck_pail", BoatPos, reach: 2f, where: InteractContext.OnDeck);
+            yield return null;
+
+            StandAt(BoatPos + new Vector3(1f, 0f, 0f));
+            Assert.IsTrue(_switcher.BeginInteract(), "she boards");
+            Assert.AreEqual(ControlMode.OnDeck, _switcher.Mode);
+
+            TieHerUpAtAWharf();
+            StandAt(BoatPos);
+            yield return null;
+
+            Assert.IsTrue(_switcher.BeginInteract(), "the press is spent");
+            Assert.AreEqual(1, pail.Calls, "…on the pail at her feet");
+            Assert.AreEqual(ControlMode.OnDeck, _switcher.Mode, "and she never left the deck");
+        }
+
+        [UnityTest]
+        public IEnumerator AtAWharf_TheStepAshoreOFFER_StandsDownForTheFixture_AndComesBackWhenItLeavesReach()
+        {
+            // THE OFFER MUST MATCH THE PRESS. The popup is the switcher's own Transit slot against the
+            // verb's Fixture slot, and Transit outranks Fixture — so the offer half of the ruling is not a
+            // rank change (nothing about InteractOfferSource moved) but a STAND-DOWN: the transit simply
+            // does not state an offer it will not perform, and the fixture wins by being the only one left.
+            _switcher.ConfigureHelm(new Vector2(0f, -50f), 0.9f);
+            StandAt(BoatPos + new Vector3(1f, 0f, 0f));
+            Assert.IsTrue(_switcher.BeginInteract(), "she boards");
+            Assert.AreEqual(ControlMode.OnDeck, _switcher.Mode);
+
+            TieHerUpAtAWharf();
+            var pail = Candidate("test.deck_pail", BoatPos, reach: 2f, where: InteractContext.OnDeck);
+            pail.VerbLabel = "Pick up the pail";
+            StandAt(BoatPos);
+            yield return null;
+
+            Assert.AreEqual(InteractOfferSource.Fixture, InteractOffer.Current.Source,
+                            "tied up with a fixture in reach, the popup names what the press WILL do");
+            Assert.AreEqual("Pick up the pail", InteractOffer.Current.Label);
+
+            // Step off the pail (it drifts out of reach): nothing would take the press now, so the wharf
+            // is offered again — the same frame, because both halves are recomputed in the one Update.
+            pail.WorldPosition = BoatPos + new Vector3(30f, 0f, 0f);
+            yield return null;
+
+            Assert.AreEqual(InteractOfferSource.Transit, InteractOffer.Current.Source,
+                            "with nothing resolving, the step ashore is the press again");
+            Assert.AreEqual(ControlStrings.Dock, InteractOffer.Current.Label,
+                            "…and she is alongside, so it is the wharf and not a beach");
         }
 
         // =====================================================================================

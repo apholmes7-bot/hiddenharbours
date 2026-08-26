@@ -1,0 +1,1378 @@
+fileFormatVersion: 2
+guid: cfad5496c0e6366478c73143dfdad11a
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -8402019499122539920
+    second: Girl_reach_ground_0
+  - first:
+      213: -4713267663788438910
+    second: Girl_reach_ground_1
+  - first:
+      213: 5956393093739268001
+    second: Girl_reach_ground_2
+  - first:
+      213: -7749451851442221438
+    second: Girl_reach_ground_3
+  - first:
+      213: 55940529332384497
+    second: Girl_reach_ground_4
+  - first:
+      213: 1735564981323162395
+    second: Girl_reach_ground_5
+  - first:
+      213: 1931108633832662982
+    second: Girl_reach_ground_6
+  - first:
+      213: 6115021817148476729
+    second: Girl_reach_ground_7
+  - first:
+      213: 5721418334950860926
+    second: Girl_reach_ground_8
+  - first:
+      213: -5648990764417595084
+    second: Girl_reach_ground_9
+  - first:
+      213: -5791690210535783885
+    second: Girl_reach_ground_10
+  - first:
+      213: 8740156528590452839
+    second: Girl_reach_ground_11
+  - first:
+      213: -7268011878096094904
+    second: Girl_reach_ground_12
+  - first:
+      213: 5894749079665833765
+    second: Girl_reach_ground_13
+  - first:
+      213: 4758430824474441510
+    second: Girl_reach_ground_14
+  - first:
+      213: 3388810170105196642
+    second: Girl_reach_ground_15
+  - first:
+      213: 2115127628024624754
+    second: Girl_reach_ground_16
+  - first:
+      213: 413320394687096706
+    second: Girl_reach_ground_17
+  - first:
+      213: -2229019447505310536
+    second: Girl_reach_ground_18
+  - first:
+      213: -847677326368984222
+    second: Girl_reach_ground_19
+  - first:
+      213: 4066111736532838843
+    second: Girl_reach_ground_20
+  - first:
+      213: 2452252184914494770
+    second: Girl_reach_ground_21
+  - first:
+      213: 4645877711312763083
+    second: Girl_reach_ground_22
+  - first:
+      213: 501867191885540017
+    second: Girl_reach_ground_23
+  - first:
+      213: 814601319692444364
+    second: Girl_reach_ground_24
+  - first:
+      213: -4428232525883199599
+    second: Girl_reach_ground_25
+  - first:
+      213: -3255658843314289109
+    second: Girl_reach_ground_26
+  - first:
+      213: 4989634041632668713
+    second: Girl_reach_ground_27
+  - first:
+      213: -3732168920367785705
+    second: Girl_reach_ground_28
+  - first:
+      213: 6368450390201811266
+    second: Girl_reach_ground_29
+  - first:
+      213: -265809575253655589
+    second: Girl_reach_ground_30
+  - first:
+      213: -2584203694882603269
+    second: Girl_reach_ground_31
+  - first:
+      213: -2686317232508659464
+    second: Girl_reach_ground_32
+  - first:
+      213: 1146689666241250056
+    second: Girl_reach_ground_33
+  - first:
+      213: -1327990798275809949
+    second: Girl_reach_ground_34
+  - first:
+      213: 3035659083304691973
+    second: Girl_reach_ground_35
+  - first:
+      213: 1336697499208094635
+    second: Girl_reach_ground_36
+  - first:
+      213: -6578737730105145323
+    second: Girl_reach_ground_37
+  - first:
+      213: -2687282835537956046
+    second: Girl_reach_ground_38
+  - first:
+      213: 4836703212495374623
+    second: Girl_reach_ground_39
+  - first:
+      213: -5118267830114703384
+    second: Girl_reach_ground_40
+  - first:
+      213: 5604406130386386223
+    second: Girl_reach_ground_41
+  - first:
+      213: -1547344915465006383
+    second: Girl_reach_ground_42
+  - first:
+      213: 5039321688011859776
+    second: Girl_reach_ground_43
+  - first:
+      213: 6732330427554618352
+    second: Girl_reach_ground_44
+  - first:
+      213: 797807353528677227
+    second: Girl_reach_ground_45
+  - first:
+      213: 4110152489103574518
+    second: Girl_reach_ground_46
+  - first:
+      213: -9000614285748592261
+    second: Girl_reach_ground_47
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 7
+  spritePivot: {x: 0.5, y: 0}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Girl_reach_ground_d0_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 644
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1c6ebda6c22c06c469944cc7270395f5
+      internalID: -1387683507
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Girl_reach_ground_d0_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 644
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 187dd9826f6b1ad42881e84199de24cb
+      internalID: 1257408128
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Girl_reach_ground_d0_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 644
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fce6f08e54f6fa44d866177fa6eeb01a
+      internalID: -1454255923
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Girl_reach_ground_d0_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 644
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a4bbb8f84e743fb46b11faba7e00dcb6
+      internalID: 1448009119
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Girl_reach_ground_d0_f4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 644
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8ce60b8a450eb2d4784261b0a2f8b874
+      internalID: 998358501
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Girl_reach_ground_d0_f5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 644
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d17d7f693ad58d042b089a54c1b421eb
+      internalID: -11152964
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Girl_reach_ground_d1_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 552
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1e7354b1fcac1f9438cafb1eced16ff1
+      internalID: -1298192247
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Girl_reach_ground_d1_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 552
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9dd35cc051226ac48911c0e2e7c793ea
+      internalID: -661449386
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Girl_reach_ground_d1_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 552
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4c54a1230234fd842b8cf822105613fd
+      internalID: 568050943
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Girl_reach_ground_d1_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 552
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 17f389c9dcf316745a2fbd828af94452
+      internalID: 795321785
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Girl_reach_ground_d1_f4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 552
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 48704ffa3b40daf44b411aa2c2d640c6
+      internalID: -1095155697
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Girl_reach_ground_d1_f5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 552
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e6844d1148bb85041a3ca22dc45ff8b7
+      internalID: -1919484413
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Girl_reach_ground_d2_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 460
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 02a4c32cd67bf254c9ef5b8f9398dfae
+      internalID: -294080184
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Girl_reach_ground_d2_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 460
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6db0dd0f9aaee6341b1e5c77998b6a54
+      internalID: -1776667029
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Girl_reach_ground_d2_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 460
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5ee89eb0c6bc9074e8fed019a0f3e817
+      internalID: 954164017
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Girl_reach_ground_d2_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 460
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0e68daa399ae3b24a8e8e4a4459d31c5
+      internalID: 774968119
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Girl_reach_ground_d2_f4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 460
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2167e727ad5e54941bc26b47b495517b
+      internalID: 914703366
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Girl_reach_ground_d2_f5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 460
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 95ad33ec07313f0499538dfc42ef70d9
+      internalID: -154718484
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Girl_reach_ground_d3_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 368
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 782dba88c019ac34f86f6280d6b14679
+      internalID: 1663679097
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Girl_reach_ground_d3_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 368
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 57b29f380d8eabc4d94d0123ac70dbb3
+      internalID: -1944940358
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Girl_reach_ground_d3_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 368
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b383a6e087bd97a41b5cc778db5b7ce5
+      internalID: -2021328161
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Girl_reach_ground_d3_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 368
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cc27b185fa1c5304db8b6b2868235d40
+      internalID: -1715412508
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Girl_reach_ground_d3_f4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 368
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 624ca46e6c6fae64ca83201b04b7cc60
+      internalID: -660877548
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Girl_reach_ground_d3_f5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 368
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c706e946e51ece940b4896b2ed736f79
+      internalID: -1870647220
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Girl_reach_ground_d4_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 276
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2122bad247db79543bfe534e31a93e96
+      internalID: -1010935646
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Girl_reach_ground_d4_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 276
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a1acb71098a5bc541bb69288a0558534
+      internalID: -1844733348
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Girl_reach_ground_d4_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 276
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 35f6267e9a60b9f4cbbfd79f71debae1
+      internalID: 1940213989
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Girl_reach_ground_d4_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 276
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c1c95f77c359d3842aa9a6cd3af0fb70
+      internalID: -1179435095
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Girl_reach_ground_d4_f4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 276
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fb940f94d0b053e4d951f0c32e734d59
+      internalID: 2078893853
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Girl_reach_ground_d4_f5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 276
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2379192f9e25f0d4eb957e6a6c543b1f
+      internalID: 1176999843
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Girl_reach_ground_d5_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 184
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 446913196b47e31498a513b21c335377
+      internalID: 186005110
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Girl_reach_ground_d5_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 184
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 43460177770e27147bc228ed8b12ea82
+      internalID: -1867509704
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Girl_reach_ground_d5_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 184
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e7721a72c17e4d34dbcdc8b854b9057b
+      internalID: -1234929530
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Girl_reach_ground_d5_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 184
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 34bb4bfef242115478e795b35212fb57
+      internalID: 87950406
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Girl_reach_ground_d5_f4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 184
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b0d682c9e7b17494b9961cb2a7e72015
+      internalID: 424913940
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Girl_reach_ground_d5_f5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 184
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 869e509dce7d5cb42b171701ccd0f226
+      internalID: 1792408418
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Girl_reach_ground_d6_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 92
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a96b997beee32424c9ddea04c1c8aa90
+      internalID: -609403572
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Girl_reach_ground_d6_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 92
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f7f20772a1eb4c04a976b23e9332229d
+      internalID: -1250536134
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Girl_reach_ground_d6_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 92
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 644b6bdffb6b05447a988e8ab1069b82
+      internalID: -609477751
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Girl_reach_ground_d6_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 92
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1d786c01c574a2f49b12df693283099f
+      internalID: -777079609
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Girl_reach_ground_d6_f4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 92
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cec12eaa86b3b0b4eb8f91fd17191bc8
+      internalID: -1238252157
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Girl_reach_ground_d6_f5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 92
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8386844509b0ee246b0ff5b2a52355c8
+      internalID: 1267985628
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Girl_reach_ground_d7_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f5ecdecc7564a56438037971b4871671
+      internalID: 900692096
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Girl_reach_ground_d7_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 0
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3a5efd5cf6b12744083f83b10817dece
+      internalID: -990000920
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Girl_reach_ground_d7_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: aa3deeb50fbeb824990008c9bf9e543a
+      internalID: 308759660
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Girl_reach_ground_d7_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 0
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8826632272c5e4443a0e843164bc9423
+      internalID: -1987445146
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Girl_reach_ground_d7_f4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 0
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eb27349df104c2c43a6b7d0dabd657df
+      internalID: 310356276
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Girl_reach_ground_d7_f5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 0
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a8fa8afc5ec04c745826c06393368be4
+      internalID: -1142131553
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: d23c81b46f0289d4f891a7f0cc4f4d4a
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Girl_reach_ground_d0_f0: -1387683507
+      Girl_reach_ground_d0_f1: 1257408128
+      Girl_reach_ground_d0_f2: -1454255923
+      Girl_reach_ground_d0_f3: 1448009119
+      Girl_reach_ground_d0_f4: 998358501
+      Girl_reach_ground_d0_f5: -11152964
+      Girl_reach_ground_d1_f0: -1298192247
+      Girl_reach_ground_d1_f1: -661449386
+      Girl_reach_ground_d1_f2: 568050943
+      Girl_reach_ground_d1_f3: 795321785
+      Girl_reach_ground_d1_f4: -1095155697
+      Girl_reach_ground_d1_f5: -1919484413
+      Girl_reach_ground_d2_f0: -294080184
+      Girl_reach_ground_d2_f1: -1776667029
+      Girl_reach_ground_d2_f2: 954164017
+      Girl_reach_ground_d2_f3: 774968119
+      Girl_reach_ground_d2_f4: 914703366
+      Girl_reach_ground_d2_f5: -154718484
+      Girl_reach_ground_d3_f0: 1663679097
+      Girl_reach_ground_d3_f1: -1944940358
+      Girl_reach_ground_d3_f2: -2021328161
+      Girl_reach_ground_d3_f3: -1715412508
+      Girl_reach_ground_d3_f4: -660877548
+      Girl_reach_ground_d3_f5: -1870647220
+      Girl_reach_ground_d4_f0: -1010935646
+      Girl_reach_ground_d4_f1: -1844733348
+      Girl_reach_ground_d4_f2: 1940213989
+      Girl_reach_ground_d4_f3: -1179435095
+      Girl_reach_ground_d4_f4: 2078893853
+      Girl_reach_ground_d4_f5: 1176999843
+      Girl_reach_ground_d5_f0: 186005110
+      Girl_reach_ground_d5_f1: -1867509704
+      Girl_reach_ground_d5_f2: -1234929530
+      Girl_reach_ground_d5_f3: 87950406
+      Girl_reach_ground_d5_f4: 424913940
+      Girl_reach_ground_d5_f5: 1792408418
+      Girl_reach_ground_d6_f0: -609403572
+      Girl_reach_ground_d6_f1: -1250536134
+      Girl_reach_ground_d6_f2: -609477751
+      Girl_reach_ground_d6_f3: -777079609
+      Girl_reach_ground_d6_f4: -1238252157
+      Girl_reach_ground_d6_f5: 1267985628
+      Girl_reach_ground_d7_f0: 900692096
+      Girl_reach_ground_d7_f1: -990000920
+      Girl_reach_ground_d7_f2: 308759660
+      Girl_reach_ground_d7_f3: -1987445146
+      Girl_reach_ground_d7_f4: 310356276
+      Girl_reach_ground_d7_f5: -1142131553
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

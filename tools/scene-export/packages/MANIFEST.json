@@ -4,20 +4,20 @@
     {
       "region": "region.nine_mile_creek",
       "file": "NineMileCreek.scene.json",
-      "sha256": "b4c24bffe4250d54377f749876cc2934f90f0b7c499e24bf71a12f3134b18c2e",
-      "entities": 2756,
+      "sha256": "51e9fe30b32d5f87429abf60896e8fef66c9d1022b34117a967e55dd8cd8d559",
+      "entities": 2757,
       "paths": 0,
-      "rigsPinned": 12,
-      "sceneLastBuiltCommit": "62a9074646f2c06ae4c12373d587759180ef7675"
+      "rigsPinned": 13,
+      "sceneLastBuiltCommit": "ad39352d8c339f88ecf807b8a32ad4b85be443df"
     },
     {
       "region": "region.st_peters",
       "file": "StPeters.scene.json",
-      "sha256": "ff57b46a15235dda3c3a959341c6be29cf2dc5c1f4867ca54193f4b139c0d6d2",
-      "entities": 1327,
+      "sha256": "73f3ee80c2b1bf14b0541c9dd6d70a175d57c7a65f835db37d548c223f0d08f2",
+      "entities": 1328,
       "paths": 11,
-      "rigsPinned": 10,
-      "sceneLastBuiltCommit": "be74ac359dcd21e1cc88598c2d861107031091ad"
+      "rigsPinned": 11,
+      "sceneLastBuiltCommit": "ad39352d8c339f88ecf807b8a32ad4b85be443df"
     }
   ]
 }

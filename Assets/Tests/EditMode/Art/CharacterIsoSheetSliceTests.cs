@@ -8,7 +8,7 @@ using UnityEngine;
 namespace HiddenHarbours.Tests.Art.EditMode
 {
     /// <summary>
-    /// Guards the baked slice of the 8-direction ISO CHARACTER sheets — the player's twenty-nine states
+    /// Guards the baked slice of the 8-direction ISO CHARACTER sheets — the player's forty-four sheets
     /// at the folder root, and the nine cast presets one subfolder each. The slice lives in the
     /// <c>.meta</c>, not in code, so nothing at runtime would notice it rotting: a re-export that
     /// drifts the grid, a re-slice that loses the ground pivot, or an importer setting that downscales
@@ -128,10 +128,18 @@ namespace HiddenHarbours.Tests.Art.EditMode
             // are the mount sidecar's own anims block, cross-checked against it by
             // CharacterOffDeckMountsTests. ⚠️ These four are the 64 × 88 cell, not 64 × 92 — see CellOf.
             { "swim", 8 }, { "tread", 6 }, { "sleep", 6 }, { "drive", 6 },
+
+            // The pass-6.6 REACH family: ONE rig clip at three rest heights, so three sheets that
+            // share a count and a rate. ⚠️ These are the ORDINARY 64 × 92 cell, not the off-deck 88:
+            // a character setting a tool down still has their feet on the ground, and the drop's own
+            // sidecar measures the family inside the standard cell (bbox x −20..+19, y −41..+5 from
+            // the pivot). Held against the rig by tools/rig-recipes/reach-continuity.mjs, which
+            // re-renders all three from the rig source and byte-compares.
+            { "reach_ground", 6 }, { "reach_stowV", 6 }, { "reach_stowH", 6 },
         };
 
-        /// <summary>The player's thirty-seven: every state the rig declares, plus its carry stances and
-        /// the pass-6.2 and 6.3 clip families.</summary>
+        /// <summary>The player's forty: every state the rig declares, plus its carry stances and the
+        /// pass-6.2, 6.3 and 6.6 clip families.</summary>
         private static readonly string[] PlayerStates =
         {
             "idle", "walk", "run", "balance", "stagger",
@@ -144,24 +152,44 @@ namespace HiddenHarbours.Tests.Art.EditMode
             "hauler", "bench", "chop", "lift", "place", "toss",
             "idle_pot", "walk_pot",
             "swim", "tread", "sleep", "drive",
+            "reach_ground", "reach_stowV", "reach_stowH",
         };
 
         /// <summary>
-        /// What a cast standee gets: the gaits, not the gear (see the bake menu for why) — plus the
-        /// whole OFF-DECK four, which the 6.5 drop baked for all ten presets at once. That asymmetry is
-        /// real and not an oversight: the deck families are the PLAYER's working animations, while
-        /// anyone can end up in the water, in a bed, or behind a wheel.
+        /// What EVERY cast standee gets: the gaits, not the gear (see the bake menu for why) — plus the
+        /// whole OFF-DECK four, which the 6.5 drop baked for all ten presets at once, and the whole
+        /// REACH three, which the 6.6 drop did the same with. That asymmetry is real and not an
+        /// oversight: the deck families are the PLAYER's working animations, while anyone can end up in
+        /// the water, in a bed, behind a wheel, or putting something down.
         /// </summary>
         private static readonly string[] CastStates =
-            { "idle", "walk", "swim", "tread", "sleep", "drive" };
-
-        /// <summary>The nine NPC presets: subfolder, then sheet stem. <c>fisher</c> is absent because
-        /// he is the player, baked at the root.</summary>
-        private static readonly (string folder, string stem)[] Cast =
         {
-            ("ginny", "Ginny"), ("skipper", "Skipper"), ("nan", "Nan"),
-            ("deckboss", "DeckBoss"), ("packer", "Packer"), ("cutter", "Cutter"),
-            ("hand", "Hand"), ("boy", "Boy"), ("girl", "Girl"),
+            "idle", "walk", "swim", "tread", "sleep", "drive",
+            "reach_ground", "reach_stowV", "reach_stowH",
+        };
+
+        /// <summary>
+        /// The nine NPC presets: subfolder, sheet stem, and any state this preset has that the rest of
+        /// the cast does not. <c>fisher</c> is absent because he is the player, baked at the root.
+        ///
+        /// <para><b>Why a per-preset tail at all.</b> Every drop before 6.6 baked the cast as a block,
+        /// so one shared list said everything. The 6.6 drop shipped a <c>run</c> for exactly two of
+        /// them — Ginny and Skipper, the two the harbour actually sends anywhere — and the honest way
+        /// to guard that is to say which two. Folding <c>run</c> into <see cref="CastStates"/> would
+        /// demand seven sheets nobody baked; leaving it out entirely would let the two that DO exist
+        /// go unsliced and unguarded, which is how art lands and nothing picks it up.</para>
+        /// </summary>
+        private static readonly (string folder, string stem, string[] also)[] Cast =
+        {
+            ("ginny", "Ginny", new[] { "run" }),
+            ("skipper", "Skipper", new[] { "run" }),
+            ("nan", "Nan", null),
+            ("deckboss", "DeckBoss", null),
+            ("packer", "Packer", null),
+            ("cutter", "Cutter", null),
+            ("hand", "Hand", null),
+            ("boy", "Boy", null),
+            ("girl", "Girl", null),
         };
 
         /// <summary>Project-relative path of every guarded sheet — the player's at the root, the
@@ -170,8 +198,12 @@ namespace HiddenHarbours.Tests.Art.EditMode
         {
             var paths = new List<string>();
             foreach (string s in PlayerStates) paths.Add($"{Iso}Fisher_{s}.png");
-            foreach (var (folder, stem) in Cast)
-            foreach (string s in CastStates) paths.Add($"{Iso}{folder}/{stem}_{s}.png");
+            foreach (var (folder, stem, also) in Cast)
+            {
+                foreach (string s in CastStates) paths.Add($"{Iso}{folder}/{stem}_{s}.png");
+                foreach (string s in also ?? System.Array.Empty<string>())
+                    paths.Add($"{Iso}{folder}/{stem}_{s}.png");
+            }
             paths.Sort(System.StringComparer.Ordinal);
             return paths.ToArray();
         }

@@ -73,6 +73,49 @@
    the figure's own reach and says so. DeckGear.station() is the other half of the contract — it
    says where to stand, which dir to face, what workZ to pass, and how much deck to reserve.
 
+   6.5 — append-only. THE OFF-DECK FAMILY: the first clips in the lineage that do not stand on
+   ground contact. swim + tread (coordinator ask #163 — the slow-swim mechanic has been faking it
+   with the submersion shader over walk frames), sleep (the save-at-bed beat) and drive (the truck
+   had no hands-on-wheel read; Fisher_bench stood in). Four ideas worth stating:
+     1. THE WATER CLIPS BAKE DRY. No water pixel is baked, same law as every hull. The rig reports
+        the waterline as CONTRACT METADATA — waterMount().waterZ / waterRow — and the engine's
+        submersion shader keeps doing the tinting exactly as it does today, just over honest frames.
+     2. THE WATERLINE IS BODY-RELATIVE, not a world metre. A swimming child floats at the surface
+        the same as an adult, so waterZ scales with the figure (unlike railZ / rung / workZ, which
+        belong to the deck). Pin waterRow to the sea surface and every build seats itself.
+     3. A PRONE BODY IS A WORLD TRANSLATION, not a new solver: big lean + low hips + a rigid yOff
+        recentring so the long axis stays inside the walk cell. Every yOff application is +0 when
+        no 6.5 clip is active, so the frozen twenty-four re-bake byte-identical.
+     4. seat/wheel ARE world metres (DRIVE_DEF, opts.seatZ/wheelZ/wheelY) on the workZ precedent —
+        a bench seat belongs to the truck. sleep and the water clips take no world opt at all.
+   Mount kinds: swim/tread -> 'water' (both hands committed — no carry, no hand prop; the slung rod
+   still rides, that is the point of a back mount), sleep -> 'bed', drive -> 'wheel'. New contracts:
+   waterMount(), sleepMount(), driveMount().
+
+   6.6 — append-only. THE REACH-DOWN FAMILY: `reach`, one clip parameterized by opts.lift (world
+   metres), the body half of the owner's TOOL CONTINUITY LAW. The tool side ships 6-frame animated
+   hand-overs; this is the body that goes down with them. Four ideas:
+     1. IT IS ONE CLIP, NOT THREE. The rest height is DATA (opts.lift / opts.rest), on the workZ
+        precedent: a world metre, not scaled by build, soft-clamped to the figure's own reach and
+        reported. ground / stowV / stowH are three values of one family, and a fourth rest costs
+        nothing. REACH_LIFT holds the values the shipped sheets were baked at — the tool rig's
+        restLift() is the oracle, so pass it in and the clip re-solves.
+     2. THE TOOL'S GRIP PATH IS THE ORACLE, and it can be handed in literally: opts.gripPath (an
+        array of REST_FRAMES points, body-local metres) or opts.gripOf(u). When either is present
+        the hand tracks THOSE points until the release and the authored path is not used, so the
+        body never argues with a baked hand-over. Without one, the authored path lands on the same
+        contract: hold pose -> rest, home by REACH_ARRIVE.
+     3. THE SEAM IS NOT THE RELEASE. The tool is HOME at u = REACH_ARRIVE (0.62) and the hand only
+        opens at RELEASE_AT (0.72) — the rod arrives, THEN the hand lets go. At REST_FRAMES = 6 the
+        hand grips frames 0-3 and is empty on 4-5, which is the tool kit's shipped math, not a
+        second opinion about it.
+     4. NOTHING IN THE POSE IS ROD-SHAPED. The clip knows a lift height, a grip point and which
+        hand — so the same family carries the shovel, the pail and the gaff. Reverse the frames for
+        a pick-up: the mirror of a 0.72 release is a 0.28 grip-close, which is the honest order for
+        a one-handed tool (a heavy two-handed load is `lift` / `place`, which already exist).
+   New contract: reachMount() — the grip in cell px AND in body metres, plus `slip`: how far the
+   hand ended from the point it was asked for. Mount kind 'rest'.
+
    Needs Art/headIsoRig3.js (six hats solved in rows above the eye) and Art/eyeIsoRig.js.
    Exposes globalThis.CharacterIso6 (and CharacterIso5 / CharacterIso if those are free). */
 (function (root) {
@@ -260,11 +303,22 @@
                      metres — the surface the hands work at); DeckGear.station() supplies it. */
                   hauler:{frames:8, ms:115}, bench:{frames:10, ms:130}, chop:{frames:8, ms:105},
                   lift:{frames:8, ms:105, oneShot:true}, place:{frames:8, ms:110, oneShot:true},
-                  toss:{frames:8, ms:95, oneShot:true} };
+                  toss:{frames:8, ms:95, oneShot:true},
+                  /* 6.5 — append-only. The off-deck family. swim matches walk's 8-frame lane so
+                     the sheet is byte-compatible with the import slicer; tread matches idle's 6. */
+                  swim:{frames:8, ms:130}, tread:{frames:6, ms:170},
+                  sleep:{frames:6, ms:640}, drive:{frames:6, ms:170},
+                  /* 6.6 — append-only. REST_FRAMES long, to the frame, because the tool kit's
+                     set-down is. `settle` is the frame->u mapping the tool kit bakes with:
+                     u = f/(frames-1), so the LAST frame is the settled rest at u = 1 rather than
+                     one step short of it. It is set on this clip and nowhere else. */
+                  reach:{frames:6, ms:100, oneShot:true, settle:true} };
   const GROUPS = { base:['idle','walk','run'], balance:['balance','stagger'],
                    fishing:['hold','cast','castBack','castRelease','bite','strike','reel','land'],
                    boarding:['board','boardDown','ladderDown'], work:['dig','haul'],
-                   deck:['hauler','lift','place','bench','chop','toss'] };
+                   deck:['hauler','lift','place','bench','chop','toss'],
+                   water:['swim','tread'], rest:['sleep'], cab:['drive'],
+                   handover:['reach'] };
   const CAST_W1 = 0.34, CAST_S1 = 0.50;
 
   /* ---------------- THE MOUNT CONTRACT (pass 6) ----------------
@@ -289,7 +343,21 @@
          'load'  -> handL + handR + mid + hold + release     pin a trap/tote/tray to `mid`
          'knife' -> tool(dir,opts), the rod/spade shape      pin a knife rig to grip */
     hauler:'warp', bench:'bench', chop:'knife',
-    lift:'load', place:'load', toss:'load' };
+    lift:'load', place:'load', toss:'load',
+    /* 6.5. Three more kinds, one call each:
+         'water' -> waterMount(dir,opts): waterZ/waterRow (the surface, body-relative), hand +
+                    foot pins, kick/surge envelopes. Both hands are committed to the stroke or the
+                    scull — no carry stance and no hand prop rides a water clip (rodSling still does).
+         'bed'   -> sleepMount(dir,opts): head/hip/feet pins + the body's long axis, so a bed prop
+                    aligns the sprite instead of eyeballing it.
+         'wheel' -> driveMount(dir,opts): wheel-rim grips, wheel centre, steer angle, pedal pins —
+                    the wheel art belongs to the vehicle rig and pins to these. */
+    swim:'water', tread:'water', sleep:'bed', drive:'wheel',
+    /* 6.6. 'rest' is a tool mount that does NOT own the tool: the set-down bake owns the prop's
+       pose, and reachMount(dir,opts) says where the hand is on it each frame (plus `slip`, how far
+       the hand ended from the grip it was asked for). tool() still answers for a consumer that
+       pins by grip alone, and its pitch/yaw are ADVISORY on this clip. */
+    reach:'rest' };
   /* The four carry stances. anims = the animations each one may ride (a tool anim always wins:
      pose() ignores carry when a tool curve is active). */
   const CARRIES = {
@@ -808,6 +876,206 @@
       twist: -8*swing, list: 0, F:{ R:0.145, L:-0.150 } };
   }
 
+  /* ==================== OFF THE DECK (6.5) ====================
+     The first clips with no ground contact. All four are authored the same way the boarding
+     family is — a curve returns everything pose() needs — plus two mechanisms the frozen
+     twenty-four never needed, both exactly +0 when inactive:
+       hipZ OVERRIDE  the curve owns the hip height absolutely (a floating body has no hipBase).
+       yOff           a rigid world-Y recentring. A prone body is ~1.2 m long; centred on the
+                      hips it overruns the cell's 9 rows below the pivot at the toward-viewer
+                      facings. Sliding the WHOLE pose (torso, pelvis, limbs, head) keeps the long
+                      axis inside the walk cell without touching the cell or the pivot.
+
+     THE WATER CLIPS BAKE DRY (no water pixel is baked — the fleet law) and the waterline is
+     BODY-RELATIVE: waterZ scales with hS because a swimming child floats at the surface the same
+     as an adult. Report of record is waterMount(): pin its waterRow to the sea surface and let
+     the submersion shader tint below it, exactly as it has been doing over walk frames since #163.
+
+     SWIM is a head-up breaststroke, and symmetric on purpose: at 32 px/m an alternating crawl
+     puts one arm through the head rows at N/S every half-cycle and reads as flail; a symmetric
+     pull mirrors cleanly across all 8 facings and is the honest stroke for a clothed fisherman
+     making slow way. Cycle: glide -> outsweep -> pull (surge peaks, head rises) -> tuck -> reach,
+     frog kick timed into the reach, heels breaking near the surface.
+
+     TREAD is the water idle: legs bent under, alternating slow eggbeater, arms sculling at the
+     surface, shoulders just awash, one slow bob. The body bobs — the waterline never moves.
+
+     SLEEP lies on the back, knees eased, one hand on the chest riding the breath. The head rig
+     bakes the skull upright, which on a lying body IS the pillow prop-up — sleepMount() hands the
+     bed prop the body axis so the pillow lands under the head and a blanket can cover the rest.
+
+     DRIVE is seated at a wheel. seatZ / wheelZ / wheelY are WORLD metres (DRIVE_DEF: bench 0.40,
+     rim centre 0.655 at 0.315 forward) on the workZ precedent — the seat belongs to the truck, so
+     a child passenger sits at the same bench height and the reach guards keep the limbs honest.
+     Hands hold ten-and-two and rock with small steering corrections; the wheel art is the
+     vehicle's, pinned to driveMount(). */
+  const WATER = { swim:1, tread:1 };
+  const SWIM_WATER = 0.440, TREAD_WATER = 0.985;   // waterline, in units of hS
+  function waterCurve(anim, u, hS){
+    const K=(tr)=>kf(tr,wrapU(u));
+    if(anim==='tread'){
+      const bob=Math.sin(2*Math.PI*u);
+      const wz=TREAD_WATER*hS;
+      const ph=(o)=>2*Math.PI*(u+o);
+      const foot=(o)=>({ y:0.045*Math.cos(ph(o))*hS, z:(0.150+0.055*(0.5+0.5*Math.sin(ph(o))))*hS });
+      const hand=(sgn,o)=>({ x:sgn*(0.295+0.018*Math.sin(ph(o)))*hS,
+                             y:(0.095+0.035*Math.cos(ph(o)))*hS,
+                             z:wz + (-0.042+0.020*Math.sin(ph(o+0.25)))*hS });
+      return { kind:'tread', waterZ:wz, hipZ:(0.500+0.016*bob)*hS, yOff:0,
+        lean:5+1.5*bob, list:1.2*Math.sin(2*Math.PI*(u+0.3)), twist:2*bob, headF:0.55,
+        splay:0.055, bob:0.5+0.5*bob, surge:0, kick:0.30+0.30*Math.abs(Math.sin(2*Math.PI*u)),
+        speed:0, phase:'tread',
+        F:{ L:foot(0), R:foot(0.5) }, A:{ L:hand(-1,0.5), R:hand(1,0) } };
+    }
+    const surge=K([[0,0.15],[0.30,0.18],[0.44,1],[0.60,0.62],[0.78,0.25],[1,0.15]]);
+    const kick =K([[0,0],[0.50,0],[0.60,0.35],[0.74,1],[0.88,0.20],[1,0]]);
+    const wz=SWIM_WATER*hS;
+    /* 52°, not prone: a screen-row submersion clip is only exact at E/W on a flat swimmer — at
+       N/S a trailing foot 0.5 m behind projects ABOVE the row and a forward head projects below
+       it (tan 40° costs 0.84 m of apparent height per metre of depth). Steepening the body and
+       tucking the frog kick UNDER it keeps every wet pixel below waterRow and the face above it
+       at all 8 facings, within ~1 px at the kick's own pins — which is what the foam is for. */
+    const AX=K([[0,0.075],[0.16,0.090],[0.30,0.235],[0.44,0.265],[0.58,0.105],[0.72,0.060],[1,0.075]]);
+    const AY=K([[0,0.620],[0.16,0.590],[0.34,0.415],[0.46,0.185],[0.60,0.190],[0.74,0.430],[0.88,0.575],[1,0.620]]);
+    const AZ=K([[0,-0.045],[0.20,-0.070],[0.34,-0.100],[0.46,-0.115],[0.60,-0.055],[0.76,-0.030],[1,-0.045]]);
+    const FY=K([[0,-0.315],[0.50,-0.300],[0.62,-0.215],[0.72,-0.245],[0.84,-0.315],[1,-0.315]]);
+    const FZ=K([[0,0.150],[0.50,0.145],[0.62,0.118],[0.74,0.130],[0.86,0.150],[1,0.150]]);
+    const SP=K([[0,0.020],[0.54,0.030],[0.66,0.095],[0.80,0.030],[1,0.020]]);
+    const hand=(sgn)=>({ x:sgn*AX*hS, y:AY*hS, z:wz+AZ*hS });
+    return { kind:'swim', waterZ:wz, hipZ:(0.300+0.024*surge)*hS, yOff:-0.045*hS,
+      lean:52-6*surge, list:0, twist:0, headF:0.800-0.040*surge,
+      splay:SP, surge, kick, speed:0.18+0.42*surge,
+      phase: u<0.16?'glide':u<0.30?'out':u<0.52?'pull':u<0.70?'tuck':'reach',
+      F:{ L:{y:FY*hS, z:FZ*hS}, R:{y:FY*hS, z:FZ*hS} }, A:{ L:hand(-1), R:hand(1) } };
+  }
+  function sleepCurve(u, hS){
+    const br=0.5+0.5*Math.sin(2*Math.PI*u);
+    /* the body lies ON A 0.30 m MATTRESS (BED_Z), not on the floor — both the honest read and
+       what keeps a 1.2 m lying figure inside the walk cell's 9 rows below the pivot. The pivot
+       stays the bed's floor contact; sleepMount reports bedZ so the prop seats the sprite. */
+    return { kind:'sleep', bedZ:BED_Z*1, hipZ:(BED_Z+0.140+0.005*br)*hS, yOff:-0.145*hS,
+      lean:82, list:4, twist:3, headF:0.90, pillow:0.055*hS, breath:br,
+      F:{ L:{y:-0.360*hS, z:(BED_Z+0.150)*hS}, R:{y:-0.320*hS, z:(BED_Z+0.135)*hS} },
+      A:{ L:{x:-0.245*hS, y:0.060*hS, z:(BED_Z+0.150)*hS},
+          R:{x:0.055*hS, y:0.330*hS, z:(BED_Z+0.290+0.012*br)*hS} } };
+  }
+  const DRIVE_DEF = { seatZ:0.40, wheelZ:0.655, wheelY:0.315 };
+  const BED_Z = 0.30;
+  function driveOf(o){
+    const s=(o&&o.seatZ!=null)?+o.seatZ:DRIVE_DEF.seatZ;
+    const wz=(o&&o.wheelZ!=null)?+o.wheelZ:DRIVE_DEF.wheelZ;
+    const wy=(o&&o.wheelY!=null)?+o.wheelY:DRIVE_DEF.wheelY;
+    return { seat:isFinite(s)?Math.max(0.22,Math.min(0.62,s)):DRIVE_DEF.seatZ,
+             wz:isFinite(wz)?wz:DRIVE_DEF.wheelZ, wy:isFinite(wy)?wy:DRIVE_DEF.wheelY,
+             requested:isFinite(s)?s:DRIVE_DEF.seatZ };
+  }
+  function driveCurve(u, o, hS){
+    const D=driveOf(o), steer=0.55*Math.sin(2*Math.PI*u), j=Math.sin(4*Math.PI*u);
+    const handZ=D.wz+0.105, handY=D.wy-0.040;
+    return { kind:'drive', seatZ:D.seat, requestedSeat:D.requested, clamped:Math.abs(D.seat-D.requested)>1e-6,
+      wheelZ:D.wz, wheelY:D.wy, steer, judder:j,
+      hipZ:D.seat+0.045+0.004*j, yOff:0, lean:4, list:0.4*j, twist:3.5*steer, headF:0.55,
+      F:{ L:{y:0.255, z:0.098}, R:{y:0.285, z:0.098+0.008*Math.max(0,Math.sin(2*Math.PI*u))} },
+      A:{ L:{x:-0.128+0.010*steer, y:handY, z:handZ+0.020*steer},
+          R:{x: 0.128+0.010*steer, y:handY, z:handZ-0.020*steer} } };
+  }
+
+  /* ==================== THE REACH-DOWN FAMILY (6.6) ====================
+     One clip, one parameter. `lift` is the height of the surface the tool is being set on, in WORLD
+     metres on the workZ precedent (a rack belongs to the wheelhouse, not to the person standing at
+     it, so it is not scaled by build), soft-clamped to the figure's own reach and reported.
+
+     THE SYNC CONTRACT, restated as code: REST_FRAMES frames; u = f/(REST_FRAMES-1) at bake time;
+     the tool is home at REACH_ARRIVE and the hand opens at RELEASE_AT. The gap between those two
+     numbers is the whole point — release ON arrival and the tool teleports out of a hand that is
+     still closed on it.
+
+     REACH_LIFT is not a truth, it is the three values the shipped sheets were baked at. The tool
+     rig's restLift() is the oracle: pass its metre in as opts.lift and the clip re-solves; pass its
+     per-frame grip path in as opts.gripPath and the hand stops guessing altogether. */
+  const REACH = { reach:1 };
+  const REST_FRAMES  = 6;      // the tool kit's set-down length, to the frame
+  const RELEASE_AT   = 0.72;   // the hand opens here: grip on frames 0-3, empty on 4-5
+  const REACH_ARRIVE = 0.62;   // the tool is HOME here. Never release at the seam
+  const REACH_LIFT   = { ground:0.00, stowV:0.95, stowH:1.05 };
+  const GRIP_RISE    = 0.095;  // grip centre above the rest surface (RodIso's own ground zOff)
+  const REACH_DIP    = 0.335, REACH_FOLD = 54;
+  function reachOf(o){
+    const named = (o && o.rest!=null && REACH_LIFT[o.rest]!=null) ? REACH_LIFT[o.rest] : null;
+    const v = (o && o.lift!=null) ? +o.lift : named;
+    return isFinite(v) ? v : REACH_LIFT.ground;
+  }
+  function gripRiseOf(o){ const g=(o&&o.gripRise!=null)?+o.gripRise:GRIP_RISE; return isFinite(g)?g:GRIP_RISE; }
+  /* The oracle hook. opts.gripOf(u) or opts.gripPath[] — body-local METRES, either [x,y,z] or
+     {x,y,z}, sampled linearly. x comes back DE-SCALED by wS because the arm branch in pose() puts
+     the wS back on (that branch is shared with the work clips and stays one line). */
+  function gripAt(o, u, wS){
+    let p = null;
+    if(o && typeof o.gripOf === 'function') p = o.gripOf(u);
+    else if(o && o.gripPath && o.gripPath.length > 1){
+      const A=o.gripPath, n=A.length-1, t=Math.max(0,Math.min(1,u))*n;
+      const i=Math.min(n-1,Math.floor(t)), k=t-i, g=(q,j)=> Array.isArray(q) ? q[j] : q[['x','y','z'][j]];
+      p = [ g(A[i],0)+(g(A[i+1],0)-g(A[i],0))*k,
+            g(A[i],1)+(g(A[i+1],1)-g(A[i],1))*k,
+            g(A[i],2)+(g(A[i+1],2)-g(A[i],2))*k ];
+    }
+    if(!p) return null;
+    const q = Array.isArray(p) ? p : [p.x, p.y, p.z];
+    if(!isFinite(q[0])||!isFinite(q[1])||!isFinite(q[2])) return null;
+    return { x:q[0]/(wS||1), y:q[1], wz:q[2] };
+  }
+  function reachCurve(u, o, hipBase, hS, wS){
+    const req = reachOf(o), rise = gripRiseOf(o);
+    const hi = hipBase + 0.64*hS;                 // the same reach envelope the work clips use
+    const lift = Math.min(hi, Math.max(0, req));
+    const restZ = lift + rise;                    // where the GRIP sits once the tool is down
+    const hand = (o && o.hand==='L') ? 'L' : 'R', sg = hand==='R' ? 1 : -1;
+    const at=(tr,t)=>kf(tr, Math.max(0,Math.min(1,t)));
+    /* d  — the descent: 0 standing, 1 tool home, and it is 1 from REACH_ARRIVE on.
+       back — the straighten, dead flat until RELEASE_AT so nothing moves before the hand opens. */
+    const d    = at([[0,0],[0.14,0.10],[0.36,0.56],[REACH_ARRIVE,1],[1,1]], u);
+    const back = at([[0,0],[RELEASE_AT,0],[0.87,0.60],[1,1]], u);
+    const bend = d*(1-back), peel = 4*back*(1-back);
+    /* how much of this is a crouch and how much is a lean: below 0.45 m of the figure's own scale
+       the hips have to go down, above it the arm does the work. */
+    const crouch = Math.max(0, Math.min(1, 1 - lift/(0.45*hS)));
+    const high   = Math.max(0, Math.min(1, (restZ - 0.34*hS)/(0.62*hS)));
+    const HX=0.166, HY=0.150, HZ=0.60;            // the hold pose this clip cuts out of
+    const src = gripAt(o, u, wS);
+    const G = (src && u <= RELEASE_AT) ? src
+            : { x: sg*(HX + (0.132-HX)*d), y: HY + (0.265 + 0.115*high - HY)*d, wz: HZ*hS + (restZ - HZ*hS)*d };
+    /* after the release the hand peels UP off the tool and settles empty at the standing rest — it
+       does not slide back through the thing it just put down. */
+    const T = { x: G.x + (sg*0.168 - G.x)*back, y: G.y + (0.018-G.y)*back,
+                wz: G.wz + (0.63*hS - G.wz)*back + 0.055*peel*hS };
+    /* the free hand goes to its OWN side's thigh — x is signed and absolute here, exactly as it is
+       in the work curves, because the arm branch does not mirror it. */
+    const Fh = { x: -sg*(0.185 - 0.030*crouch*bend), y: 0.015 + 0.135*crouch*bend,
+                 wz: (0.63 - 0.235*crouch*bend)*hS };
+    const stance = -0.055 - 0.030*crouch*bend;
+    return { kind:'reach', lift, requested:req, clampedLift: Math.abs(lift-req) > 1e-6,
+      rise, restZ, hand, oracle: !!src, frames:REST_FRAMES, release:RELEASE_AT, arrive:REACH_ARRIVE,
+      gripped: u < RELEASE_AT, crouch, high, d, back, bend,
+      phase: u < REACH_ARRIVE ? 'reach' : u < RELEASE_AT ? 'seat' : back < 0.85 ? 'release' : 'rise',
+      want: { x:G.x, y:G.y, wz:G.wz },
+      R: hand==='R' ? T : Fh, L: hand==='R' ? Fh : T,
+      dip:  0,
+      /* THE CROUCH IS AN ABSOLUTE HIP HEIGHT, not a dip. `dip` lowers the leg's hip joint and the
+         lean pivot but leaves the torso hung off hipBase — fine for a 2 px walk bob, a stretched
+         torso at a quarter of a metre. This is 6.5's per-curve hipZ mechanism, which carries the
+         whole upper body down with the hips, which is what a squat does. */
+      hipZ: hipBase - (REACH_DIP*crouch*bend + 0.020*(1-crouch)*bend)*hS,
+      /* every body term rides `bend`, so frame 0 IS the hold pose and the last frame IS the idle
+         pose - both seams close inside a quarter of a pixel, which is what lets an engine cut
+         hold -> reach -> idle without a blend. */
+      lean: bend*(5 + REACH_FOLD*crouch + 10*(1-crouch) - 6*high),
+      twist: 7*bend*sg, list: 2.5*bend*sg,
+      /* ADVISORY only. The set-down bake owns the prop's pose; this is the wrist, published so a
+         consumer that pins through tool() gets something honest rather than a stale hold angle. */
+      pitch: 56*(1 - d*(1 - 0.85*high)), yaw: 12*sg, bend2: 0,
+      F: { R: hand==='R' ? stance : 0.085, L: hand==='R' ? 0.085 : stance } };
+  }
+
   function workCurve(anim, u, o, hipBase, hS){
     const req = workOf(anim, o);
     const lo = hipBase - 0.30*hS, hi = hipBase + 0.64*hS;
@@ -842,7 +1110,18 @@
     const hl  = (anim==='haul') ? haulCurve(u) : null;
     const lad = LADDER[anim] ? ladderCurve(u, rungOf(arguments[5]), ladWOf(arguments[5]), hipBase, ankleZ) : null;
     const wk  = WORKC[anim] ? workCurve(anim, u, arguments[5], hipBase, hS) : null;
-    const hipZ0  = lad ? lad.hipZ : hipBase + (brd ? brd.rise : 0);
+    /* 6.5: the off-deck family. Each curve owns the hip height absolutely; yOff is a rigid world-Y
+       recentring applied to EVERY placement below, and is exactly 0 for every earlier clip. */
+    const wat = WATER[anim] ? waterCurve(anim, u, hS) : null;
+    const slp = anim==='sleep' ? sleepCurve(u, hS) : null;
+    const drv = anim==='drive' ? driveCurve(u, arguments[5], hS) : null;
+    /* 6.6: the reach-down family. Same shape as a work clip — absolute world targets for the hand,
+       a dip and a fold for the body — plus the tool kit's grip path when it is handed in. */
+    const rch = REACH[anim] ? reachCurve(u, arguments[5], hipBase, hS, wS) : null;
+    const yOff = (wat&&wat.yOff)||(slp&&slp.yOff)||0;
+    const hipZ0  = lad ? lad.hipZ : wat ? wat.hipZ : slp ? slp.hipZ : drv ? drv.hipZ
+                 : rch ? rch.hipZ
+                 : hipBase + (brd ? brd.rise : 0);
     const TS     = hS*PR.torsoK;
     const torsoC = hipZ0 + 0.280*TS;
     const collarZ= torsoC + 0.182*TS;
@@ -856,11 +1135,12 @@
     stride*=PR.legK; lift*=PR.legK;
     const TOOLS = { hold:1, cast:1, dig:1, bite:1, strike:1, reel:1, land:1, castBack:1, castRelease:1 };
     const tc = TOOLS[anim] ? toolCurve(anim,u,power) : null;
-    const carry = (!tc && !wk && (arguments.length>4)) ? arguments[4] : null;
+    const carry = (!tc && !wk && !wat && !slp && !drv && !rch && (arguments.length>4)) ? arguments[4] : null;
     const rock = arguments[5] || null;
     const bal = anim==='balance', stag = anim==='stagger';
     const tw=Math.sin(2*Math.PI*u);
-    const idle = anim==='idle', calm = idle || anim==='hold' || bal || anim==='bite';
+    const idle = anim==='idle', calm = idle || anim==='hold' || bal || anim==='bite'
+               || anim==='tread' || anim==='sleep' || anim==='drive';
     if(tc) lean = tc.lean*DEG;
     if(carry==='tray') lean = -5*DEG;
     if(carry==='buckets') lean = lean*0.5;
@@ -871,6 +1151,10 @@
     if(hl)  lean = hl.lean*DEG;
     if(lad) lean = lad.lean*DEG;
     if(wk)  lean = wk.lean*DEG;
+    if(wat) lean = wat.lean*DEG;
+    if(slp) lean = slp.lean*DEG;
+    if(drv) lean = drv.lean*DEG;
+    if(rch) lean = rch.lean*DEG;
     const senv = stag ? Math.exp(-2.4*u) : 0;
     if(stag) lean += (6*DEG)*senv*Math.sin(2*Math.PI*1.2*u);
     let list = 0;
@@ -879,13 +1163,19 @@
     if(brd)  list = brd.list*DEG;
     if(lad)  list = lad.list*DEG;
     if(wk)   list = (wk.list||0)*DEG;
+    if(wat)  list = (wat.list||0)*DEG;
+    if(slp)  list = (slp.list||0)*DEG;
+    if(drv)  list = (drv.list||0)*DEG;
+    if(rch)  list = (rch.list||0)*DEG;
     if(rock && rock.counter){ const c=counterLean(rock.roll||0, rock.pitch||0, rock.counter);
       list += c.list*DEG; lean += c.lean*DEG; }
     const breathe = calm ? 0.018*Math.sin(2*Math.PI*u)*hS : 0;
-    const swayX = tc ? (calm?0.012*tw:0) : ((brd||lad) ? 0 : (idle ? 0.012*tw : 0.010*tw));
+    const swayX = tc ? (calm?0.012*tw:0) : ((brd||lad||wat||slp||drv||rch) ? 0 : (idle ? 0.012*tw : 0.010*tw));
     let dip;
     if(tc) dip = tc.dip*hS;
     else if(brd||lad) dip = 0;
+    else if(wat||slp||drv) dip = 0;   // 6.5: bob is authored in the curve's own hipZ
+    else if(rch) dip = 0;             // 6.6: so is the crouch — see reachCurve's hipZ
     else if(hl)  dip = hl.dip*hS;
     else if(wk)  dip = wk.dip*hS;
     else if(idle) dip = 0;
@@ -893,7 +1183,7 @@
     else if(stag) dip = 0.060*hS*senv*(u<0.5?1:0.6);
     else dip = bob*hS*(0.5+0.5*Math.cos(4*Math.PI*u));
     const hipZ = hipZ0 - dip;
-    const twS = brd||hl||lad||wk;
+    const twS = brd||hl||lad||wk||wat||slp||drv||rch;
     const yawS = tc ? tc.twist*DEG : twS ? twS.twist*DEG : yaw*tw,
           yawH = tc ? tc.twist*0.45*DEG : twS ? twS.twist*0.40*DEG : -0.6*yaw*tw;
 
@@ -913,8 +1203,8 @@
     for(const [side, ph] of [['L',0],['R',0.5]]){
       const sgn = side==='L' ? -1 : 1;
       const p2=(u+ph)%1;
-      const braceX = (carry==='helm'||carry==='oars'||carry==='pot'||bal||stag||hl||wk) ? 1.55 : 1;
-      const hip0 = rotZ(yawH)([sgn*0.082*wS*PR.hipK*braceX, 0, 0]); hip0[0]+=swayX*0.5; hip0[2]=hipZ;
+      const braceX = (carry==='helm'||carry==='oars'||carry==='pot'||bal||stag||hl||wk||rch) ? 1.55 : 1;
+      const hip0 = rotZ(yawH)([sgn*0.082*wS*PR.hipK*braceX, 0, 0]); hip0[0]+=swayX*0.5; hip0[1]+=yOff; hip0[2]=hipZ;
       let yF, zF;
       if(tc){ yF = sgn<0 ? (tc.dig?0.105:0.075) : (tc.dig?-0.085:-0.055); zF = ankleZ; }
       else if(brd){ const LG=(side==='R'?brd.lead:brd.trail); yF = LG.y; zF = ankleZ + LG.z; }
@@ -924,18 +1214,31 @@
       /* a work stance is BRACED, not walking: the stagger is authored per clip because a heave, a
          bench job and a two-hand lift do not stand the same way. */
       else if(wk){ yF = (side==='R') ? wk.F.R : wk.F.L; zF = ankleZ; }
+      /* 6.5: absolute targets, already in curve space; yOff recentres them with the body */
+      else if(wat){ const LG=(side==='R'?wat.F.R:wat.F.L); yF = LG.y + yOff; zF = LG.z; }
+      else if(slp){ const LG=(side==='R'?slp.F.R:slp.F.L); yF = LG.y + yOff; zF = LG.z; }
+      else if(drv){ const LG=(side==='R'?drv.F.R:drv.F.L); yF = LG.y + yOff; zF = LG.z; }
+      /* 6.6: a set-down is a braced squat — the feet stay planted and staggered, and the hips do
+         the descending. Same shape as a work stance, wider (braceX) because it goes lower. */
+      else if(rch){ yF = (side==='R') ? rch.F.R : rch.F.L; zF = ankleZ; }
       else if(idle){ yF = sgn*0.012; zF = ankleZ; }
       else if(bal||stag){ yF = sgn*0.02 + (stag?0.05*senv*Math.sin(2*Math.PI*1.3*u):0); zF = ankleZ; }
       else { yF = stride*Math.cos(2*Math.PI*p2); zF = ankleZ + lift*Math.max(0,-Math.sin(2*Math.PI*p2)); }
       /* Same guard as the arms, for the same reason: a boarding foot is the only target that can
          out-reach its own leg (at a tall rail, or at the top of the drive). Tuned so the default
          rails never need it — it is the floor under the extremes, not the mechanism. */
-      if(brd||lad){ const mx=(thigh+shin)*0.995, dy2=yF-hip0[1], dz2=zF-hip0[2], dd=Math.hypot(dy2,dz2);
+      if(brd||lad||wat||slp||drv||rch){ const mx=(thigh+shin)*0.995, dy2=yF-hip0[1], dz2=zF-hip0[2], dd=Math.hypot(dy2,dz2);
         if(dd>mx){ const k=mx/dd; yF=hip0[1]+dy2*k; zF=hip0[2]+dz2*k; } }
-      const [ky,kz]=ik2(hip0[1],hip0[2], yF, zF, thigh, shin, +1);
+      /* lying on the back the knee bends UP off the mattress, not down through it */
+      const [ky,kz]=ik2(hip0[1],hip0[2], yF, zF, thigh, shin, slp ? -1 : +1);
       /* a ladder knee goes OUT, not forward — the 2D solver can only bend in the sagittal plane, so
          the splay is added here. It is what stops a bent leg reading as a sit. */
-      const kx = lad ? hip0[0]*0.97 + sgn*0.038 : hip0[0]*0.97;
+      const kx = lad ? hip0[0]*0.97 + sgn*0.038
+               : wat ? hip0[0]*0.97 + sgn*wat.splay*hS
+               : drv ? hip0[0]*0.97 + sgn*0.020
+               : slp ? hip0[0]*0.97 + sgn*0.012
+               : rch ? hip0[0]*0.97 + sgn*0.030*rch.crouch*rch.bend
+               : hip0[0]*0.97;
       P.legs[side]={ hip:hip0, knee:[kx,ky,kz], ankle:[hip0[0]*0.92, yF, zF] };
     }
     P.arms = {};
@@ -945,6 +1248,7 @@
       const p2=(u+ph)%1;
       let sh = P.leanP(rotZ(yawS)([sgn*sw, 0, shZ])); sh[0]+=swayX*0.5;
       if(listR) sh = listR(sh);
+      sh[1]+=yOff;
       let ty, tz, tx=sh[0]+sgn*0.012;
       const hz=(f)=>ankleZ + (f-0.060)*hS/1 + breathe*0.5;   // pass-4 hand heights, in body units
       if(tc){ ty = side==='R' ? tc.wrY : tc.wlY; tz = (side==='R' ? tc.wrZ : tc.wlZ)*hS + breathe*0.5; }
@@ -974,31 +1278,56 @@
          own width and dz is an offset off the shoulder, so the grip slides instead of hopping. */
       else if(lad){ const HH = side==='R' ? lad.H.R : lad.H.L;
         tx = HH.x; ty = HH.y; tz = shZ0 + HH.dz + breathe*0.5; }
+      /* 6.5: absolute three-axis targets straight off the curve (x is the figure's, like wk) */
+      else if(wat){ const A2 = side==='R' ? wat.A.R : wat.A.L;
+        tx = A2.x; ty = A2.y + yOff; tz = A2.z + breathe*0.5; }
+      else if(slp){ const A2 = side==='R' ? slp.A.R : slp.A.L;
+        tx = A2.x; ty = A2.y + yOff; tz = A2.z + breathe*0.4; }
+      else if(drv){ const A2 = side==='R' ? drv.A.R : drv.A.L;
+        tx = A2.x; ty = A2.y + yOff; tz = A2.z; }
+      /* 6.6: the tool hand is an absolute world target like a work clip's — and when the tool rig
+         handed its grip path in, THAT is the target, to the millimetre, until the release. */
+      else if(rch){ const HH = side==='R' ? rch.R : rch.L;
+        tx = HH.x*wS; ty = HH.y; tz = HH.wz + breathe*0.5; }
       else if(bal||stag){ const out=0.05+Math.abs(list)*0.9; tx = sh[0]+sgn*out; ty = 0.03 - list*sgn*0.35; tz = (0.585 - (stag?0.03*senv:0))*hS + breathe*0.5; }
       else if(idle){ ty = 0.015 + 0.008*Math.sin(2*Math.PI*u+(sgn>0?0.6:0)); tz = 0.63*hS+breathe*0.5; }
       else { ty = sh[1] + arm*Math.cos(2*Math.PI*p2); tz = handF*hS; }
       /* Only the new clips move a hand far enough to out-reach the arm (the frozen fourteen were
          all authored inside it). ik2 clamps the ELBOW but the wrist is placed raw, so without this
          the hand detaches from the forearm the moment the shoulders climb past the rail. */
-      if(brd||hl||lad||wk){ const mx=(upA+foA)*0.985, dy2=ty-sh[1], dz2=tz-sh[2], dd=Math.hypot(dy2,dz2);
+      /* 6.6 is deliberately NOT in this guard. The tool clips are not either, and for the same
+         reason: a hand that is holding something has to be WHERE the thing is. Pulling the wrist
+         back inside the arm's reach would put the grip 2 px off the tool at the bottom of a ground
+         set-down, which is precisely the drift the continuity law exists to stop. reachMount()
+         reports `stretch` instead, so a bake can see when a reach is running long. */
+      if(brd||hl||lad||wk||wat||slp||drv){ const mx=(upA+foA)*0.985, dy2=ty-sh[1], dz2=tz-sh[2], dd=Math.hypot(dy2,dz2);
         if(dd>mx){ const k=mx/dd; ty=sh[1]+dy2*k; tz=sh[2]+dz2*k; } }
       const [ey,ez]=ik2(sh[1],sh[2], ty, tz, upA, foA, -1);
       P.arms[side]={ sh, elbow:[sh[0]+sgn*0.01,ey,ez], wrist:[tx,ty,tz] };
     }
     P.neckB = (listR||ID)(P.leanP([swayX*0.5, 0, collarZ-0.014]));
+    P.neckB = [P.neckB[0], P.neckB[1]+yOff, P.neckB[2]];
+    /* 6.5: the head follows MOST of a prone body's pitch (hF near 1) or it detaches from the
+       collar; keeping it a few degrees shy of the spine is what holds the face out of the water
+       (swim) and props the crown for the pillow (sleep). 0.55 is the frozen default. */
+    const hF = wat ? wat.headF : slp ? slp.headF : 0.55;
     const headLean = stoopR
-      ? chain(pitchX(stoopR*1.30, spineZ), pitchX(lean*0.55, hipZ))
-      : pitchX(lean*0.55, hipZ);
+      ? chain(pitchX(stoopR*1.30, spineZ), pitchX(lean*hF, hipZ))
+      : pitchX(lean*hF, hipZ);
     P.headC = (headListR||ID)(headLean([swayX*0.5, 0.005, headZ + breathe]));
-    P.eyesClosed = calm && u>0.60 && u<0.78;
+    P.headC = [P.headC[0], P.headC[1]+yOff - (slp?0.020:0), P.headC[2] + (slp?slp.pillow:0)];
+    P.eyesClosed = slp ? true : (calm && u>0.60 && u<0.78);
     P.look = root.HeadIso
       ? root.HeadIso.look({ anim, u, t:(rock&&rock.t), expr:(b.expr||(rock&&rock.expr)), talk:(rock&&rock.talk) })
       : { gaze:[0,0], lid:(P.eyesClosed?1:0), brow:0, mouth:'neutral' };
     /* chop mounts its knife on the SAME call the rod and the spade use, so P.tool is filled from
        the work curve when that curve carries a blade angle. tool() needs no new branch. */
+    if(slp && P.look) P.look = Object.assign({}, P.look, { lid:1, gaze:[0,0] });
     P.tool = tc ? { pitch:tc.pitch*DEG, yaw:tc.yaw*DEG, bend:tc.bend }
-           : (wk && wk.pitch!=null) ? { pitch:wk.pitch*DEG, yaw:wk.yaw*DEG, bend:wk.bend||0 } : null;
+           : (wk && wk.pitch!=null) ? { pitch:wk.pitch*DEG, yaw:wk.yaw*DEG, bend:wk.bend||0 }
+           : rch ? { pitch:rch.pitch*DEG, yaw:rch.yaw*DEG, bend:0, advisory:true } : null;
     P.board = brd; P.haul = hl; P.ladder = lad; P.work = wk; P.rise = brd ? brd.rise : 0;
+    P.water = wat; P.sleepP = slp; P.drive = drv; P.yOff = yOff; P.reach = rch;
     return P;
   }
 
@@ -1022,7 +1351,7 @@
     const PR=P.PR, wS=PR.wS, hS=P.hS, TS=P.TS, F=[];
     const add=(fs)=>{ for(const f of fs) F.push(f); };
     const listX = P.listR || ID;
-    const torsoXf = chain(TX(P.swayX*0.5,0,0), listX, P.leanP, rotZ(P.yawS*0.6));
+    const torsoXf = chain(TX(P.swayX*0.5, P.yOff||0, 0), listX, P.leanP, rotZ(P.yawS*0.6));
     const G = GARMENTS[b.garment] || GARMENTS.overalls;
     const TP = torsoProf(PR);
     // dz in torso-local units -> world z, and the radii at that ring
@@ -1058,10 +1387,12 @@
          and what a planted foot wants. A boarding foot tucks high enough that its knee sits BELOW
          its own ankle, and a fixed-height cut then extrapolates backwards down the shin into a
          shaft several metres long. On the boarding clips the shaft is measured as a DISTANCE along
-         the shin instead — identical for a vertical shin, correct for an inverted one. */
+         the shin instead — identical for a vertical shin, correct for an inverted one. 6.6 joins
+         them: the deepest frame of a ground set-down folds the leg past the point where the knee
+         drops below its own ankle, which is the same degenerate cut. */
       if(G.bootZ>0.02){
         let top;
-        if(P.board){
+        if(P.board || P.water || P.sleepP || P.reach){
           const vx=knee[0]-a[0], vy=knee[1]-a[1], vz=knee[2]-a[2];
           const vl=Math.hypot(vx,vy,vz)||1, tt=Math.min(1,(G.bootZ*hS)/vl);
           top=[a[0]+vx*tt, a[1]+vy*tt, a[2]+vz*tt];
@@ -1080,16 +1411,20 @@
     /* INSEAM. The legs part by about 1 px at the shin; with nothing behind them the gap shows
        background and the pair reads as one mass with a seam scratched on it. A dark panel set BACK
        (negative db) fills the gap so the two legs are separated by a dark line instead. */
-    if(!G.skirtHem){
+    if(!G.skirtHem && !P.water && !P.sleepP && !P.drive){
       const iz0=P.ankleZ+P.rise+0.11*hS, iz1=P.hipZ-0.010*hS;
       if(iz1 > iz0 + 0.01)
         add(box([P.swayX*0.5, 0.004, (iz0+iz1)/2], [0.044*wS, 0.050*wS, (iz1-iz0)/2], 'overD', -0.62, -0.09));
     }
 
     // ---------- PELVIS ----------
+    /* 6.5: on a prone body the pelvis pitches with the spine; upright it is the frozen lathe */
+    const pelvXf = (P.water||P.sleepP)
+      ? chain(TX(0, P.yOff||0, 0), pitchX(P.lean||0, P.hipZ), rotZ(P.yawH))
+      : rotZ(P.yawH);
     add(lathe([P.swayX*0.5, 0, P.hipZ+0.020*hS],
       [[-0.052*hS, 0.112*wS*PR.hipK, 0.080*wS],[-0.008*hS, 0.130*wS*PR.hipK, 0.090*wS],[0.048*hS, 0.128*wS*PR.hipK, 0.088*wS]],
-      G.skirtHem?'over':'over', -0.12, 0, rotZ(P.yawH), 8));
+      G.skirtHem?'over':'over', -0.12, 0, pelvXf, 8));
 
     // ---------- TORSO ZONES ----------
     /* THE PASS-5 FIX, in three lines: the outer garment wraps the torso only UP TO wrapTop; the
@@ -1160,7 +1495,14 @@
 
     // ---------- APRON ----------
     if(G.apron){
-      const aTop=zOf(0.086), aBot=P.ankleZ+P.rise+0.40*hS;
+      /* 6.5: an apron on a prone or seated body drapes ALONG the torso, not to a floor height.
+         6.6: and cloth on a CROUCHING body hangs from the hips it is tied to — standing, this is
+         the frozen height to the millimetre; folded, the hem comes down with the waist instead of
+         stretching back up to a floor number the body has left behind. */
+      const aStand=P.ankleZ+P.rise+0.40*hS;
+      const aTop=zOf(0.086), aBot=(P.water||P.sleepP) ? P.torsoC-0.310*P.TS
+                             : P.drive ? P.hipZ+0.020
+                             : P.reach ? Math.min(aStand, P.hipZ-0.020*hS) : aStand;
       const rx=0.150*wS, ry=0.100*wS;
       const rows=[]; const n=5;
       for(let i=0;i<=n;i++) rows.push([aBot+(aTop-aBot)*i/n - P.torsoC, rx*(1+0.06*(1-i/n)), ry]);
@@ -1176,7 +1518,10 @@
 
     // ---------- SKIRT ----------
     if(G.skirtHem){
-      const sTop=-0.100, sBotZ=P.ankleZ+P.rise+0.30*hS;
+      const sStand=P.ankleZ+P.rise+0.30*hS;
+      const sTop=-0.100, sBotZ=(P.water||P.sleepP) ? P.torsoC-0.360*P.TS
+                          : P.drive ? P.hipZ-0.030
+                          : P.reach ? Math.min(sStand, P.hipZ-0.040*hS) : sStand;
       const rows=[]; const n=5;
       for(let i=0;i<=n;i++){
         const t=i/n, z=sBotZ+(zOf(sTop)-sBotZ)*t;
@@ -1383,7 +1728,11 @@
     const b = resolveBuild(opts);
     const anim = opts.anim||'idle';
     const A = ANIMS[anim]||ANIMS.idle;
-    const u = opts.u!=null ? opts.u : (((opts.frame||0)%A.frames+A.frames)%A.frames)/A.frames;
+    /* 6.6: a `settle` clip spans its frames INCLUSIVELY (u = f/(frames-1)), because the tool kit's
+       set-down does and the two have to land on the same u every frame. Every other clip keeps the
+       cyclic f/frames it has always had. */
+    const den = A.settle ? Math.max(1, A.frames-1) : A.frames;
+    const u = opts.u!=null ? opts.u : (((opts.frame||0)%A.frames+A.frames)%A.frames)/den;
     const power = opts.power==='long' ? 'long' : 'short';
     const carry = (['buckets','tray','helm','oars','pot'].indexOf(opts.carry)>=0) ? opts.carry : null;
     return { o:Object.assign({},opts,{dir}), b, anim, u, power, carry };
@@ -1409,6 +1758,18 @@
       if(HI&&HI.setScale) HI.setScale(PX);
       if(EI&&EI.setScale) EI.setScale(PX);
     }
+  }
+  /* 6.6: BAKE WITH A MARGIN, and know how much you needed. A ground set-down puts a hand, a knee
+     and a boot outside the walk cell that every standing clip fits inside; a baker has to be able
+     to SEE that before it picks a cell for a sheet. renderPad grows the cell by (dx,dy) on every
+     side and moves the pivot with it, so the geometry is identical and only the framing changes.
+     Same report shape as renderAt: the numbers come back with the pixels. +0 on every other clip,
+     because nothing else calls it. */
+  function renderPad(dx, dy, dir, opts){
+    const keep=[S,W,H,cx,cy], px=Math.round(dx||0), py=Math.round(dy||0);
+    W = keep[1] + 2*px; H = keep[2] + 2*py; cx = keep[3] + px; cy = keep[4] + py;
+    try { return { rgba:render(dir,opts), W, H, cx, cy, px:S, pad:{x:px, y:py} }; }
+    finally { S=keep[0]; W=keep[1]; H=keep[2]; cx=keep[3]; cy=keep[4]; }
   }
   function anchors(dir, opts){
     const {o,b,anim,u,power,carry}=resolveOpts(dir,opts);
@@ -1550,6 +1911,95 @@
     }
     return R;
   }
+  /* Water contract (6.5). The clip bakes DRY; this is where the water goes. `waterZ` is metres
+     above the pivot (BODY-relative — it scales with the build, unlike railZ/rung/workZ, because a
+     child floats at the surface the same as an adult) and `waterRow` is that plane as a cell pixel
+     row at the figure's own y: pin it to the sea surface and let the submersion shader tint below,
+     exactly as it has been doing over walk frames. `kick` / `surge` drive foam and wake FX at the
+     foot and hand pins; `speed` is nominal forward m/s for the engine's slow-swim tuning. */
+  function waterMount(dir, opts){
+    const {o,b,anim,u,power}=resolveOpts(dir,opts);
+    if(!WATER[anim]) return null;
+    const P=pose(anim,u,b,power,null,o), B=camBasis(o), K=P.water;
+    const pt=(p)=>{ const v=projVert(p[0],p[1],p[2],B); return {x:v.sx, y:v.sy}; };
+    const headTop = P.headC[2] + 0.190*P.PR.headK;
+    return { anim, waterZ:K.waterZ, waterRow: Math.round(cy - K.waterZ*B.ce*S),
+             phase:K.phase, surge:K.surge, kick:K.kick, bob:K.bob!=null?K.bob:null,
+             speed:K.speed, headClear:+(headTop-K.waterZ).toFixed(3),
+             handL:pt(P.arms.L.wrist), handR:pt(P.arms.R.wrist),
+             footL:pt(P.legs.L.ankle), footR:pt(P.legs.R.ankle),
+             hip:pt([P.swayX*0.5+0, P.yOff, P.hipZ]),
+             head:pt([P.headC[0],P.headC[1],P.headC[2]+0.17*P.PR.headK]) };
+  }
+  /* Bed contract (6.5). The clip plays in place lying about the pivot; `axis` is the unit cell-px
+     direction hip -> head, so a bed prop aligns pillow and blanket to the body instead of
+     eyeballing it. The head rig bakes the skull upright — on a lying body that IS the pillow
+     prop-up, so put the pillow under `head` and it reads. */
+  function sleepMount(dir, opts){
+    const {o,b,u,power}=resolveOpts(dir,Object.assign({},(typeof opts==='number')?{elev:opts}:(opts||{}),{anim:'sleep'}));
+    const P=pose('sleep',u,b,power,null,o), B=camBasis(o), K=P.sleepP;
+    const pt=(p)=>{ const v=projVert(p[0],p[1],p[2],B); return {x:v.sx, y:v.sy}; };
+    const hip=pt([0, P.yOff, P.hipZ]), head=pt([P.headC[0],P.headC[1],P.headC[2]]);
+    const dx=head.x-hip.x, dy=head.y-hip.y, m=Math.hypot(dx,dy)||1;
+    return { breath:K.breath, lid:1, bedZ:K.bedZ,
+             head, hip, axis:{x:dx/m, y:dy/m},
+             footL:pt(P.legs.L.ankle), footR:pt(P.legs.R.ankle),
+             handChest:pt(P.arms.R.wrist), handSide:pt(P.arms.L.wrist) };
+  }
+  /* Wheel contract (6.5). The wheel art belongs to the vehicle rig — draw its rim through the two
+     grips, centred on `wheelMid`, rocked by `steer` (radians, +CW from the driver's seat). seatZ /
+     wheelZ / wheelY echo what was used after the clamp, same shape as workMount's workZ report.
+     `behind` is the near/away test for the wheel layer, same as a carried tray. */
+  function driveMount(dir, opts){
+    const {o,b,u,power}=resolveOpts(dir,Object.assign({},(typeof opts==='number')?{elev:opts}:(opts||{}),{anim:'drive'}));
+    const P=pose('drive',u,b,power,null,o), B=camBasis(o), K=P.drive;
+    const pt=(p)=>{ const v=projVert(p[0],p[1],p[2],B); return {x:v.sx, y:v.sy}; };
+    return { seatZ:K.seatZ, requested:K.requestedSeat, clamped:K.clamped,
+             wheelZ:K.wheelZ, wheelY:K.wheelY, steer:K.steer*12*DEG, judder:K.judder,
+             wheelMid:pt([0, K.wheelY, K.wheelZ]),
+             handL:pt(P.arms.L.wrist), handR:pt(P.arms.R.wrist),
+             footL:pt(P.legs.L.ankle), footR:pt(P.legs.R.ankle),
+             hip:pt([P.swayX*0.5, 0, P.hipZ]),
+             head:pt([P.headC[0],P.headC[1],P.headC[2]+0.17*P.PR.headK]),
+             behind: B.ct > 0.05 };
+  }
+  /* Rest contract (6.6). The report of record for a set-down or a pick-up.
+     `grip` is where the hand is, in cell px — pin nothing to it: the tool's own bake already knows
+     where the tool is, and this is how you CHECK the two agree. `want` is the point the clip was
+     asked for and `slip` is how far the hand ended from it in metres (`slipPx` in cell px): zero
+     means the hand is on the grip, non-zero means the figure could not make that reach and the
+     guard pulled the wrist in — a child at a 1.05 m rack, for instance. Watch it in a bake and you
+     never ship a hand-over that drifts.
+     `gripped` is the law's own flag: true on frames 0-3, false on 4-5. */
+  function reachMount(dir, opts){
+    const {o,b,anim,u,power}=resolveOpts(dir,opts);
+    if(!REACH[anim]) return null;
+    const P=pose(anim,u,b,power,null,o), B=camBasis(o), K=P.reach, wS=P.wS;
+    const pt=(p)=>{ const v=projVert(p[0],p[1],p[2],B); return {x:v.sx, y:v.sy}; };
+    const A=ANIMS[anim], hand=K.hand;
+    const wrist = hand==='R' ? P.arms.R.wrist : P.arms.L.wrist;
+    const sh    = hand==='R' ? P.arms.R.sh    : P.arms.L.sh;
+    const armMax = (0.230+0.210)*P.hS*P.PR.legK;
+    const stretch = Math.max(0, Math.hypot(wrist[1]-sh[1], wrist[2]-sh[2]) - armMax);
+    const want  = [K.want.x*wS, K.want.y, K.want.wz];
+    const slip  = Math.hypot(wrist[0]-want[0], wrist[1]-want[1], wrist[2]-want[2]);
+    return { anim, layer:ANIM_MOUNT[anim], u, frame: Math.round(u*(A.frames-1)),
+             frames:REST_FRAMES, ms:A.ms, release:RELEASE_AT, arrive:REACH_ARRIVE,
+             lift:K.lift, requested:K.requested, clamped:K.clampedLift, gripRise:K.rise,
+             restZ:K.restZ, rest:(o.rest && REACH_LIFT[o.rest]!=null) ? o.rest : null,
+             hand, oracle:K.oracle, gripped:K.gripped, phase:K.phase,
+             crouch:+K.crouch.toFixed(3), fold:+K.lean.toFixed(2),
+             grip:pt(wrist), gripLocal:[wrist[0],wrist[1],wrist[2]], want,
+             slip:+slip.toFixed(4), slipPx:+(slip*S*B.ce).toFixed(2),
+             stretch:+stretch.toFixed(4), stretchPx:+(stretch*S*B.ce).toFixed(2),
+             handL:pt(P.arms.L.wrist), handR:pt(P.arms.R.wrist),
+             footL:pt(P.legs.L.ankle), footR:pt(P.legs.R.ankle),
+             hip:pt([P.swayX*0.5,0,P.hipZ]),
+             head:pt([P.headC[0],P.headC[1],P.headC[2]+0.17*P.PR.headK]),
+             /* the tool is out in front of the figure at every frame of this clip, so it takes the
+                same near/away test a carried tray does */
+             behind: B.ct > 0.05 };
+  }
   function projectLocal(dir, p, elev){
     const v=projVert(p[0],p[1],p[2],camBasis({dir, elev}));
     return { x:v.sx, y:v.sy };
@@ -1562,7 +2012,7 @@
   }
 
   const API = { get W(){return W;}, get H(){return H;}, PX, DIRS:8,
-    get pivot(){ return {x:cx,y:cy}; }, setScale, renderAt, defaultElev:DEFAULT_ELEV,
+    get pivot(){ return {x:cx,y:cy}; }, setScale, renderAt, renderPad, defaultElev:DEFAULT_ELEV,
     order:['N','NE','E','SE','S','SW','W','NW'],
     ANIMS, BUILDS, CAST, SKINS, HAIRS, OUTFITS, EYES, SHIRT, SHIRTS, HATCOLS, APRONS, BOOT,
     HAIRSTYLES, BEARDS, FACES, SEXES, SEX, AGES, AGE_ORDER, GARMENTS, GARMENT_ORDER, KEY,
@@ -1572,9 +2022,13 @@
     boardMount, haulGrip, boardCurve, haulCurve,
     WORKC, WORK_DEF, TOSS_REL, workOf, workCurve, workMount,
     haulerCurve, benchCurve, chopCurve, liftCurve, placeCurve, tossCurve,
+    WATER, SWIM_WATER, TREAD_WATER, DRIVE_DEF, BED_Z, driveOf,
+    waterCurve, sleepCurve, driveCurve, waterMount, sleepMount, driveMount,
+    REACH, REST_FRAMES, RELEASE_AT, REACH_ARRIVE, REACH_LIFT, GRIP_RISE,
+    reachOf, gripRiseOf, reachCurve, reachMount,
     GROUPS, CAST_W1, CAST_S1, DEFAULT_BUILD,
     render, anchors, tool, carry, counter:counterLean, projectLocal, metrics, propsOf,
-    facesOf, pose, makeMats, lathe, arcLathe, limb, torsoProf, GAIN, BIAS, LN, BAYER, pass:6, revision:'6.3',
+    facesOf, pose, makeMats, lathe, arcLathe, limb, torsoProf, GAIN, BIAS, LN, BAYER, pass:6, revision:'6.6',
     get head(){ return root.HeadIso || null; } };
   root.CharacterIso6 = API;
   if(!root.CharacterIso5) root.CharacterIso5 = API;   // drop-in when pass 5 is not loaded

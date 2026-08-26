@@ -1,0 +1,1378 @@
+fileFormatVersion: 2
+guid: 5c30bed28f6d6604498b9d1b5cee70b6
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 8155462468164547009
+    second: Nan_reach_stowH_0
+  - first:
+      213: 3594592650656463270
+    second: Nan_reach_stowH_1
+  - first:
+      213: 4959382099427098445
+    second: Nan_reach_stowH_2
+  - first:
+      213: 3868559300218132153
+    second: Nan_reach_stowH_3
+  - first:
+      213: 2210067240261440297
+    second: Nan_reach_stowH_4
+  - first:
+      213: -6154106150250080047
+    second: Nan_reach_stowH_5
+  - first:
+      213: -7130936514711033481
+    second: Nan_reach_stowH_6
+  - first:
+      213: 3004335346435365795
+    second: Nan_reach_stowH_7
+  - first:
+      213: 4057026092500618382
+    second: Nan_reach_stowH_8
+  - first:
+      213: -252482027617655383
+    second: Nan_reach_stowH_9
+  - first:
+      213: -1627652688715904710
+    second: Nan_reach_stowH_10
+  - first:
+      213: 8284372682484178994
+    second: Nan_reach_stowH_11
+  - first:
+      213: -8054740201028942938
+    second: Nan_reach_stowH_12
+  - first:
+      213: -5599604156144567254
+    second: Nan_reach_stowH_13
+  - first:
+      213: -4558495270671554797
+    second: Nan_reach_stowH_14
+  - first:
+      213: -7520308350599213009
+    second: Nan_reach_stowH_15
+  - first:
+      213: -3700198580112357609
+    second: Nan_reach_stowH_16
+  - first:
+      213: -5220994738622098645
+    second: Nan_reach_stowH_17
+  - first:
+      213: 1866639914402417934
+    second: Nan_reach_stowH_18
+  - first:
+      213: 3086789024931445863
+    second: Nan_reach_stowH_19
+  - first:
+      213: -8229226645119469791
+    second: Nan_reach_stowH_20
+  - first:
+      213: 2598823907542683037
+    second: Nan_reach_stowH_21
+  - first:
+      213: 5061158758129741212
+    second: Nan_reach_stowH_22
+  - first:
+      213: -5789261259519958307
+    second: Nan_reach_stowH_23
+  - first:
+      213: -4452725317255957893
+    second: Nan_reach_stowH_24
+  - first:
+      213: 8715421626985307759
+    second: Nan_reach_stowH_25
+  - first:
+      213: 1158597615817936569
+    second: Nan_reach_stowH_26
+  - first:
+      213: 9028974267270142136
+    second: Nan_reach_stowH_27
+  - first:
+      213: 14318323675727426
+    second: Nan_reach_stowH_28
+  - first:
+      213: -6676812772906027094
+    second: Nan_reach_stowH_29
+  - first:
+      213: 794523174229105640
+    second: Nan_reach_stowH_30
+  - first:
+      213: 596836728600003330
+    second: Nan_reach_stowH_31
+  - first:
+      213: 445272104826803094
+    second: Nan_reach_stowH_32
+  - first:
+      213: -8642810813387223007
+    second: Nan_reach_stowH_33
+  - first:
+      213: 4823839620394976777
+    second: Nan_reach_stowH_34
+  - first:
+      213: -74152983080731822
+    second: Nan_reach_stowH_35
+  - first:
+      213: 302039708315625537
+    second: Nan_reach_stowH_36
+  - first:
+      213: 9172922766815059041
+    second: Nan_reach_stowH_37
+  - first:
+      213: 8357168285896065322
+    second: Nan_reach_stowH_38
+  - first:
+      213: 5595845514533978269
+    second: Nan_reach_stowH_39
+  - first:
+      213: -7189574774632570504
+    second: Nan_reach_stowH_40
+  - first:
+      213: 5553632248055399668
+    second: Nan_reach_stowH_41
+  - first:
+      213: 1681022697982658511
+    second: Nan_reach_stowH_42
+  - first:
+      213: 2978877250692098332
+    second: Nan_reach_stowH_43
+  - first:
+      213: 2951457323928418942
+    second: Nan_reach_stowH_44
+  - first:
+      213: 1398350816613958139
+    second: Nan_reach_stowH_45
+  - first:
+      213: -3074026331331813272
+    second: Nan_reach_stowH_46
+  - first:
+      213: 6521213785177865799
+    second: Nan_reach_stowH_47
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 7
+  spritePivot: {x: 0.5, y: 0}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Nan_reach_stowH_d0_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 644
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e9d235777b1e2814d8758d2bdc4a370c
+      internalID: 80894717
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Nan_reach_stowH_d0_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 644
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 35edc10cb8bc78e4397293a4c8a7ac1d
+      internalID: 1293867295
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Nan_reach_stowH_d0_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 644
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 793fae63d836d0940ab651df36101357
+      internalID: -567194091
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Nan_reach_stowH_d0_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 644
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1c7ac1cc68bdddd44ae56daea94fb14b
+      internalID: -1352041867
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Nan_reach_stowH_d0_f4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 644
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5ec376e9589cb2e43b0a5b329603fd96
+      internalID: -478285230
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Nan_reach_stowH_d0_f5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 644
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 088e177cb20bdc34e9659f0c0f9a89a3
+      internalID: 190062221
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Nan_reach_stowH_d1_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 552
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3f4bae9a289311f42ba944ac05c28093
+      internalID: -1892592681
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Nan_reach_stowH_d1_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 552
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dbd5b0d80253bb14ea39b15b91ac36b4
+      internalID: 1764504790
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Nan_reach_stowH_d1_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 552
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ebf4e83b9515a644ca7af4ad3618ef16
+      internalID: -1130722128
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Nan_reach_stowH_d1_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 552
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 348cb86d15591f74e8578ddd8412696d
+      internalID: 1714353336
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Nan_reach_stowH_d1_f4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 552
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 32bb7bfbb8501c4419c2d56496cb8a1e
+      internalID: 40960384
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Nan_reach_stowH_d1_f5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 552
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1e57d117bfdeeea4b90e18e515d14cfa
+      internalID: -118713072
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Nan_reach_stowH_d2_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 460
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 28f1eb2b2fad8554b99cef276d8a794e
+      internalID: 975085025
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Nan_reach_stowH_d2_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 460
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 18ab95826111a3d4287a2279be3ed86a
+      internalID: 560750802
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Nan_reach_stowH_d2_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 460
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6aa2df5533d054d4cb90b2ed5fd52aa5
+      internalID: -968676172
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Nan_reach_stowH_d2_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 460
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5a2ca37db08500a48a43e756f1be95b7
+      internalID: -335826211
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Nan_reach_stowH_d2_f4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 460
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 444d2549863467d42b2c79101de8d729
+      internalID: 11301271
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Nan_reach_stowH_d2_f5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 460
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 280b20dbd6bc4b34d913056557af3965
+      internalID: -958399765
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Nan_reach_stowH_d3_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 368
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ebd8eaaaa2471bc4cb661e78ea9e7340
+      internalID: -172394610
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Nan_reach_stowH_d3_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 368
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ca422ade463a1914b86fa610d12ecc83
+      internalID: 1638411594
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Nan_reach_stowH_d3_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 368
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 31f38ffc32b643247ae0c578d56e07a5
+      internalID: -860175014
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Nan_reach_stowH_d3_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 368
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1642deb4ec50e0b488faaab259ef6a2e
+      internalID: 214275094
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Nan_reach_stowH_d3_f4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 368
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8a107e0268e8bed4d96bd75f00ee8555
+      internalID: 471115439
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Nan_reach_stowH_d3_f5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 368
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9917124a2b41f894a980e1f1ab6369bc
+      internalID: 25698151
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Nan_reach_stowH_d4_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 276
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 120b195f5ef4f1e4a9d035cc5ab66799
+      internalID: -1282331473
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Nan_reach_stowH_d4_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 276
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3407a08c21b6a2342809baaad01b2027
+      internalID: 98380890
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Nan_reach_stowH_d4_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 276
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 84facb9b4dd37554597b04783980328d
+      internalID: 1026432022
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Nan_reach_stowH_d4_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 276
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d8c6a78f7bf6460418acdc4057ffbe29
+      internalID: 1951068334
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Nan_reach_stowH_d4_f4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 276
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b3c05c9cf8cec1745adc2affaf9b3734
+      internalID: -1532865301
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Nan_reach_stowH_d4_f5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 276
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2724fef1953b8b6469d39edfa44f4263
+      internalID: 85488423
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Nan_reach_stowH_d5_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 184
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4a0cca62e89835d4b91b1cd4b292334b
+      internalID: 1465923934
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Nan_reach_stowH_d5_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 184
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8bada2c1068af3e4695d1270cabf7ab4
+      internalID: -1828554918
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Nan_reach_stowH_d5_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 184
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a5e0595a1316bc3408f2c5cefd435c7e
+      internalID: -383438396
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Nan_reach_stowH_d5_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 184
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 79cac0019a524de4cbcb398f7da0d6d6
+      internalID: 731782201
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Nan_reach_stowH_d5_f4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 184
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bcc876b2cadbeb943acd2e0fd6f78f91
+      internalID: -1663662919
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Nan_reach_stowH_d5_f5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 184
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 097984f871b2d124f9c1a20ba0c3f2f5
+      internalID: 580262846
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Nan_reach_stowH_d6_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 92
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cda838d3f10738b4ebb8f8809f19abae
+      internalID: -762494228
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Nan_reach_stowH_d6_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 92
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1bf540dc5b494ac4d9f336cdb8020567
+      internalID: 256529466
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Nan_reach_stowH_d6_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 92
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 793b1a79e8ffaeb45b6d13625d1441e8
+      internalID: 1548376209
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Nan_reach_stowH_d6_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 92
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c946c1926242676459d9a63554851c71
+      internalID: -914893778
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Nan_reach_stowH_d6_f4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 92
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b409e9d09ebdc7a44b4ac735e97fede3
+      internalID: 877311372
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Nan_reach_stowH_d6_f5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 92
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9d3c43b7da3099244821282bfa79521a
+      internalID: -773316941
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Nan_reach_stowH_d7_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 313a75b2f3fa2bb4d8e13bb826ca5f60
+      internalID: 1518597379
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Nan_reach_stowH_d7_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 0
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 62789f9f4a77a074390c0d192bfe206f
+      internalID: -554412497
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Nan_reach_stowH_d7_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d9980eb338ac6c5448e830757863e5f1
+      internalID: 1434541113
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Nan_reach_stowH_d7_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 0
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 77cc7cfe53ff13b429f90c99dc168e3b
+      internalID: 683783017
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Nan_reach_stowH_d7_f4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 0
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ad70b05917ba6a444919950238cccc4f
+      internalID: -1650370572
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Nan_reach_stowH_d7_f5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 0
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 51f7cbc30a7bafa419bbdc87e9579225
+      internalID: -1649340702
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: ddb7f41ae5c814c489b46e990c3bf7df
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Nan_reach_stowH_d0_f0: 80894717
+      Nan_reach_stowH_d0_f1: 1293867295
+      Nan_reach_stowH_d0_f2: -567194091
+      Nan_reach_stowH_d0_f3: -1352041867
+      Nan_reach_stowH_d0_f4: -478285230
+      Nan_reach_stowH_d0_f5: 190062221
+      Nan_reach_stowH_d1_f0: -1892592681
+      Nan_reach_stowH_d1_f1: 1764504790
+      Nan_reach_stowH_d1_f2: -1130722128
+      Nan_reach_stowH_d1_f3: 1714353336
+      Nan_reach_stowH_d1_f4: 40960384
+      Nan_reach_stowH_d1_f5: -118713072
+      Nan_reach_stowH_d2_f0: 975085025
+      Nan_reach_stowH_d2_f1: 560750802
+      Nan_reach_stowH_d2_f2: -968676172
+      Nan_reach_stowH_d2_f3: -335826211
+      Nan_reach_stowH_d2_f4: 11301271
+      Nan_reach_stowH_d2_f5: -958399765
+      Nan_reach_stowH_d3_f0: -172394610
+      Nan_reach_stowH_d3_f1: 1638411594
+      Nan_reach_stowH_d3_f2: -860175014
+      Nan_reach_stowH_d3_f3: 214275094
+      Nan_reach_stowH_d3_f4: 471115439
+      Nan_reach_stowH_d3_f5: 25698151
+      Nan_reach_stowH_d4_f0: -1282331473
+      Nan_reach_stowH_d4_f1: 98380890
+      Nan_reach_stowH_d4_f2: 1026432022
+      Nan_reach_stowH_d4_f3: 1951068334
+      Nan_reach_stowH_d4_f4: -1532865301
+      Nan_reach_stowH_d4_f5: 85488423
+      Nan_reach_stowH_d5_f0: 1465923934
+      Nan_reach_stowH_d5_f1: -1828554918
+      Nan_reach_stowH_d5_f2: -383438396
+      Nan_reach_stowH_d5_f3: 731782201
+      Nan_reach_stowH_d5_f4: -1663662919
+      Nan_reach_stowH_d5_f5: 580262846
+      Nan_reach_stowH_d6_f0: -762494228
+      Nan_reach_stowH_d6_f1: 256529466
+      Nan_reach_stowH_d6_f2: 1548376209
+      Nan_reach_stowH_d6_f3: -914893778
+      Nan_reach_stowH_d6_f4: 877311372
+      Nan_reach_stowH_d6_f5: -773316941
+      Nan_reach_stowH_d7_f0: 1518597379
+      Nan_reach_stowH_d7_f1: -554412497
+      Nan_reach_stowH_d7_f2: 1434541113
+      Nan_reach_stowH_d7_f3: 683783017
+      Nan_reach_stowH_d7_f4: -1650370572
+      Nan_reach_stowH_d7_f5: -1649340702
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

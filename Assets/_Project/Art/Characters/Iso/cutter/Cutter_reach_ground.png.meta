@@ -1,0 +1,1378 @@
+fileFormatVersion: 2
+guid: 4a6c763d0aa68ca41b973eb4918bdb38
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 7408644465279817218
+    second: Cutter_reach_ground_0
+  - first:
+      213: -4760745733691936820
+    second: Cutter_reach_ground_1
+  - first:
+      213: -5378407325267102652
+    second: Cutter_reach_ground_2
+  - first:
+      213: 5310223918599456292
+    second: Cutter_reach_ground_3
+  - first:
+      213: 4107633398253912618
+    second: Cutter_reach_ground_4
+  - first:
+      213: 195800767634115937
+    second: Cutter_reach_ground_5
+  - first:
+      213: -5351286112646109606
+    second: Cutter_reach_ground_6
+  - first:
+      213: 3662705673426221998
+    second: Cutter_reach_ground_7
+  - first:
+      213: 7272760882047026881
+    second: Cutter_reach_ground_8
+  - first:
+      213: -6566271886900520632
+    second: Cutter_reach_ground_9
+  - first:
+      213: -5646865312796549856
+    second: Cutter_reach_ground_10
+  - first:
+      213: -4441956824417412520
+    second: Cutter_reach_ground_11
+  - first:
+      213: -922864533260057238
+    second: Cutter_reach_ground_12
+  - first:
+      213: 3649631759766117869
+    second: Cutter_reach_ground_13
+  - first:
+      213: -2258265100451061470
+    second: Cutter_reach_ground_14
+  - first:
+      213: 757736919962291848
+    second: Cutter_reach_ground_15
+  - first:
+      213: -5371689190377202759
+    second: Cutter_reach_ground_16
+  - first:
+      213: -8718325310319298677
+    second: Cutter_reach_ground_17
+  - first:
+      213: -3020493812822976092
+    second: Cutter_reach_ground_18
+  - first:
+      213: 3888439831485651124
+    second: Cutter_reach_ground_19
+  - first:
+      213: 2557445351405792758
+    second: Cutter_reach_ground_20
+  - first:
+      213: 8672608948394432970
+    second: Cutter_reach_ground_21
+  - first:
+      213: 8138535382252593808
+    second: Cutter_reach_ground_22
+  - first:
+      213: -6585607313277811919
+    second: Cutter_reach_ground_23
+  - first:
+      213: 8507450047747788781
+    second: Cutter_reach_ground_24
+  - first:
+      213: 4521795073183255225
+    second: Cutter_reach_ground_25
+  - first:
+      213: -2894504262006527074
+    second: Cutter_reach_ground_26
+  - first:
+      213: -5786075727306594762
+    second: Cutter_reach_ground_27
+  - first:
+      213: -4655641457186994879
+    second: Cutter_reach_ground_28
+  - first:
+      213: 9114104954246942570
+    second: Cutter_reach_ground_29
+  - first:
+      213: -1858763901520617622
+    second: Cutter_reach_ground_30
+  - first:
+      213: 5956520574990042479
+    second: Cutter_reach_ground_31
+  - first:
+      213: -6262294251617353472
+    second: Cutter_reach_ground_32
+  - first:
+      213: -2425293856377368718
+    second: Cutter_reach_ground_33
+  - first:
+      213: -608170908132225768
+    second: Cutter_reach_ground_34
+  - first:
+      213: 6763423245229313599
+    second: Cutter_reach_ground_35
+  - first:
+      213: 3490983321468148106
+    second: Cutter_reach_ground_36
+  - first:
+      213: 8668111410756976885
+    second: Cutter_reach_ground_37
+  - first:
+      213: 7703662514417238442
+    second: Cutter_reach_ground_38
+  - first:
+      213: -1588602888017589479
+    second: Cutter_reach_ground_39
+  - first:
+      213: -375272398356804917
+    second: Cutter_reach_ground_40
+  - first:
+      213: -7122453916861856137
+    second: Cutter_reach_ground_41
+  - first:
+      213: 3941978873570808684
+    second: Cutter_reach_ground_42
+  - first:
+      213: -5990414831718604442
+    second: Cutter_reach_ground_43
+  - first:
+      213: 7741976444009807802
+    second: Cutter_reach_ground_44
+  - first:
+      213: -5870207422370527783
+    second: Cutter_reach_ground_45
+  - first:
+      213: -4934804596384230782
+    second: Cutter_reach_ground_46
+  - first:
+      213: 6673909071509338807
+    second: Cutter_reach_ground_47
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 7
+  spritePivot: {x: 0.5, y: 0}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Cutter_reach_ground_d0_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 644
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cad5aa5521c426948954e9c74c4cbda0
+      internalID: -1257517774
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cutter_reach_ground_d0_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 644
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d2825708183097e44a843f3535fd4654
+      internalID: 872219855
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cutter_reach_ground_d0_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 644
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: af938b71927c2464ea867ce51a2c849a
+      internalID: -1927891428
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cutter_reach_ground_d0_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 644
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9ebf399a1abfbfc4c811397550762f42
+      internalID: 392716493
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cutter_reach_ground_d0_f4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 644
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2169e955b4489e349b10909d15501f35
+      internalID: 856298325
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cutter_reach_ground_d0_f5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 644
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: be0f947c9e11c78478dbf4aa7601b420
+      internalID: -1142627758
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cutter_reach_ground_d1_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 552
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 99f52e54d2ad79241b0f15efd1ad1691
+      internalID: -502500552
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cutter_reach_ground_d1_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 552
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 78f4f7e49d023404fb29acffee46d5ff
+      internalID: -1317959537
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cutter_reach_ground_d1_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 552
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 85283f559f7200747af7b09a9de18c74
+      internalID: -252929157
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cutter_reach_ground_d1_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 552
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 209531ce28ab2e14fbc2168f56e97693
+      internalID: -270200386
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cutter_reach_ground_d1_f4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 552
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 64d1fc3e315f2c34b8afcba7d5f44d76
+      internalID: 627708695
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cutter_reach_ground_d1_f5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 552
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0cfc80ac8714e1c4fabc1291bd860058
+      internalID: -367763248
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cutter_reach_ground_d2_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 460
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d72c34444a021c846b304e9d870b2493
+      internalID: 353936219
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cutter_reach_ground_d2_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 460
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 36a69b3858bc5874f8de26f22992f0cc
+      internalID: 1906754691
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cutter_reach_ground_d2_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 460
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a5aa686e487062541ae1570458e1dc3b
+      internalID: 772646070
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cutter_reach_ground_d2_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 460
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fea2ddb4c3fb21a45a97803107f29b7b
+      internalID: 1142706382
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cutter_reach_ground_d2_f4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 460
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f4e82c66b84957a4f854eba63e381e39
+      internalID: -1941912360
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cutter_reach_ground_d2_f5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 460
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4b9ecceed59a3664f92036be62fdbf0f
+      internalID: -1544838956
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cutter_reach_ground_d3_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 368
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 58463dfd49af41540a99351324b3bdac
+      internalID: -1606586369
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cutter_reach_ground_d3_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 368
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c34ef8401b6facf46934d8d44a33de1a
+      internalID: -1104742553
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cutter_reach_ground_d3_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 368
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6d86a4a12c73c284eb99452a6c6aa5a3
+      internalID: 1307923820
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cutter_reach_ground_d3_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 368
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c459ae476fedf804fbe5708db99f4883
+      internalID: 1530976226
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cutter_reach_ground_d3_f4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 368
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1924c6b93b5391a40a762c737d2112cc
+      internalID: -1782298775
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cutter_reach_ground_d3_f5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 368
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4022b6f9e3388bb4d8ff044b83e790b6
+      internalID: -288001413
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cutter_reach_ground_d4_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 276
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 96390d3d702581b4fb1fbe35919248d7
+      internalID: 2107533448
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cutter_reach_ground_d4_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 276
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 367792a811ae5e545a1ffda4d53b19ee
+      internalID: -1704063710
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cutter_reach_ground_d4_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 276
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dd0e82d42d6823d43a446e0ba962ed2f
+      internalID: 1809790022
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cutter_reach_ground_d4_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 276
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: af4b1b6e902d4164db746ff1231691a1
+      internalID: 1164105320
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cutter_reach_ground_d4_f4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 276
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2aab0f5a900263d4eaec99d6ea741181
+      internalID: -336176309
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cutter_reach_ground_d4_f5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 276
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c5c9912ff61dba445be2204ea7d978e6
+      internalID: -149945904
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cutter_reach_ground_d5_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 184
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cf1cbd2ce678eff49b2b073890decef3
+      internalID: 52664622
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cutter_reach_ground_d5_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 184
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6b4694393dde97d4e8e41ce86fa3b413
+      internalID: 1319303213
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cutter_reach_ground_d5_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 184
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d432e9877ed7b7d4da32e410ec432521
+      internalID: -828644207
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cutter_reach_ground_d5_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 184
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7d379d4dd593c4a40a05733529e26ac0
+      internalID: -1393282028
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cutter_reach_ground_d5_f4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 184
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b6b5690be3b1361418148934744290bb
+      internalID: -370381909
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cutter_reach_ground_d5_f5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 184
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 22fbf4dc88d61f94e81eaac3c00848d4
+      internalID: 349363256
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cutter_reach_ground_d6_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 92
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6f89b9867bdd01147891b18d89bb8897
+      internalID: -1322303470
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cutter_reach_ground_d6_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 92
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3a379c97262dfa249860c070e348c5ab
+      internalID: 503621494
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cutter_reach_ground_d6_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 92
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 83336f975b2f9cd49809c079cbeabc20
+      internalID: 1414343740
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cutter_reach_ground_d6_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 92
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 428b3ea2eb431e34e85aecfa2546b3b6
+      internalID: -1993810002
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cutter_reach_ground_d6_f4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 92
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a4b8318456afe3841ae0b4a8aa9d20aa
+      internalID: -446572744
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cutter_reach_ground_d6_f5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 92
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 08934596f7bbe334c88bfdce49de855d
+      internalID: -1762918425
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cutter_reach_ground_d7_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5ddce73612dd009448d3fbc6da4c3f6b
+      internalID: 1256256009
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cutter_reach_ground_d7_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 0
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3f114b4426c3de6479e4643e635cf9ac
+      internalID: 2097104088
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cutter_reach_ground_d7_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4b19663253f8a564b85787cf43a58856
+      internalID: -1650500118
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cutter_reach_ground_d7_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 0
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 07702764ded9f384eaf69fd4f7102fa2
+      internalID: 1926881620
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cutter_reach_ground_d7_f4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 0
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dac1308a172b16a4fa5d2b397b869139
+      internalID: -181647044
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cutter_reach_ground_d7_f5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 0
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 83e808a4d48b7424cb81bd75dbcf2c71
+      internalID: 1419182068
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 123ec02ad0c69c64fabac52cfc47ce69
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Cutter_reach_ground_d0_f0: -1257517774
+      Cutter_reach_ground_d0_f1: 872219855
+      Cutter_reach_ground_d0_f2: -1927891428
+      Cutter_reach_ground_d0_f3: 392716493
+      Cutter_reach_ground_d0_f4: 856298325
+      Cutter_reach_ground_d0_f5: -1142627758
+      Cutter_reach_ground_d1_f0: -502500552
+      Cutter_reach_ground_d1_f1: -1317959537
+      Cutter_reach_ground_d1_f2: -252929157
+      Cutter_reach_ground_d1_f3: -270200386
+      Cutter_reach_ground_d1_f4: 627708695
+      Cutter_reach_ground_d1_f5: -367763248
+      Cutter_reach_ground_d2_f0: 353936219
+      Cutter_reach_ground_d2_f1: 1906754691
+      Cutter_reach_ground_d2_f2: 772646070
+      Cutter_reach_ground_d2_f3: 1142706382
+      Cutter_reach_ground_d2_f4: -1941912360
+      Cutter_reach_ground_d2_f5: -1544838956
+      Cutter_reach_ground_d3_f0: -1606586369
+      Cutter_reach_ground_d3_f1: -1104742553
+      Cutter_reach_ground_d3_f2: 1307923820
+      Cutter_reach_ground_d3_f3: 1530976226
+      Cutter_reach_ground_d3_f4: -1782298775
+      Cutter_reach_ground_d3_f5: -288001413
+      Cutter_reach_ground_d4_f0: 2107533448
+      Cutter_reach_ground_d4_f1: -1704063710
+      Cutter_reach_ground_d4_f2: 1809790022
+      Cutter_reach_ground_d4_f3: 1164105320
+      Cutter_reach_ground_d4_f4: -336176309
+      Cutter_reach_ground_d4_f5: -149945904
+      Cutter_reach_ground_d5_f0: 52664622
+      Cutter_reach_ground_d5_f1: 1319303213
+      Cutter_reach_ground_d5_f2: -828644207
+      Cutter_reach_ground_d5_f3: -1393282028
+      Cutter_reach_ground_d5_f4: -370381909
+      Cutter_reach_ground_d5_f5: 349363256
+      Cutter_reach_ground_d6_f0: -1322303470
+      Cutter_reach_ground_d6_f1: 503621494
+      Cutter_reach_ground_d6_f2: 1414343740
+      Cutter_reach_ground_d6_f3: -1993810002
+      Cutter_reach_ground_d6_f4: -446572744
+      Cutter_reach_ground_d6_f5: -1762918425
+      Cutter_reach_ground_d7_f0: 1256256009
+      Cutter_reach_ground_d7_f1: 2097104088
+      Cutter_reach_ground_d7_f2: -1650500118
+      Cutter_reach_ground_d7_f3: 1926881620
+      Cutter_reach_ground_d7_f4: -181647044
+      Cutter_reach_ground_d7_f5: 1419182068
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

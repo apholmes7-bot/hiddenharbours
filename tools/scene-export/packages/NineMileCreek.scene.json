@@ -1,7 +1,7 @@
 {
   "schema": "hiddenharbours.scene/1",
   "generatedBy": "tools/scene-export/hh_scene_export.py",
-  "generatedAt": "2026-08-21T17:17:54Z",
+  "generatedAt": "2026-08-24T02:15:46Z",
   "region": {
     "id": "region.nine_mile_creek",
     "sceneName": "NineMileCreek",
@@ -23934,6 +23934,50 @@
       "x-spriteStem": "FisherSheet",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortingOrder": 10
+    },
+    {
+      "id": "5d7fe05571cb",
+      "family": "fishtote",
+      "group": null,
+      "rig": "FishTote",
+      "rigSource": "docs/art/rigs/fishToteRig.js",
+      "call": {
+        "fn": "render",
+        "args": ["dir", "opts"],
+        "opts": {},
+        "x-synthesised": true,
+        "x-optsNote": "empty on purpose: no <stem>.recipe.json sits beside this sheet, so the option axes that drew this cell are not recorded FOR IT, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong. The recipe ledger (#629) covers six kits and names its own gaps; an entity whose sheet is covered carries the recipe's own call and an x-fromRecipe instead of this note."
+      },
+      "pos": [99, 87.5],
+      "facing": null,
+      "facingIndex": 0,
+      "flipX": false,
+      "sortBias": 0,
+      "cell": {
+        "w": 48,
+        "h": 52,
+        "pivot": [24, 42],
+        "pxPerM": 32,
+        "unityPivot": [0.5, 0.192308]
+      },
+      "x-name": "Bucket",
+      "x-path": "Bucket",
+      "x-origin": "Bucket",
+      "x-zone": null,
+      "x-zoneEvidence": null,
+      "x-resolutionExcluded": null,
+      "x-cellAt": [479, 192],
+      "x-inBounds": true,
+      "x-active": true,
+      "x-rigSha256": "14e57fb3b4ef10269ce13e9f3c18be1b525572cba4a4953a5caadbf34d03ef8d",
+      "x-familyIsSpriteStem": false,
+      "x-sprite": {
+        "sheet": "Assets/_Project/Art/Fishing/Storage/Bucket_pail_empty.png",
+        "name": "Bucket_pail_empty_d0_f0",
+        "internalId": -136991785
+      },
+      "x-pivotSource": "sprite-import.customPivot",
+      "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
       "id": "554a7958e6d8",
@@ -137463,14 +137507,14 @@
     "sidecars": []
   },
   "stats": {
-    "entities": 2756,
+    "entities": 2757,
     "tiles": {
       "ground": 276061,
       "road": 5587,
       "cliff": 0
     },
     "x-paths": 0,
-    "x-rigsPinned": 12,
+    "x-rigsPinned": 13,
     "x-tilesNote": "painted cell counts per layer. The reference package uses stamp counts here, which double-count overlaps; a true cell count is the more useful number and the review asked for one or the other, said."
   },
   "x-rigs": [
@@ -137480,6 +137524,13 @@
       "sha256": "c35dbefe2c75cb800dba3821e63fe9c5518786931f149910b3c6430544b2bc9f",
       "shaRule": "sha256 of the rig's bytes with CR stripped (tr -d '\\r' | sha256sum)",
       "x-declaredBy": "Assets/_Project/Art/Characters/Iso/deckboss/DeckBossAnchors.json"
+    },
+    {
+      "rig": "fishToteRig",
+      "rigSource": "docs/art/rigs/fishToteRig.js",
+      "sha256": "14e57fb3b4ef10269ce13e9f3c18be1b525572cba4a4953a5caadbf34d03ef8d",
+      "shaRule": "sha256 of the rig's bytes with CR stripped (tr -d '\\r' | sha256sum)",
+      "x-declaredBy": "Assets/_Project/Art/Fishing/Storage/CatchStorageAnchors.json"
     },
     {
       "rig": "houseIsoRig",
@@ -137568,6 +137619,10 @@
       "rigSource": "docs/art/rigs/characterIsoRig6.js",
       "sha256": "c35dbefe2c75cb800dba3821e63fe9c5518786931f149910b3c6430544b2bc9f"
     },
+    "fishtote": {
+      "rigSource": "docs/art/rigs/fishToteRig.js",
+      "sha256": "14e57fb3b4ef10269ce13e9f3c18be1b525572cba4a4953a5caadbf34d03ef8d"
+    },
     "house": {
       "rigSource": "docs/art/rigs/houseIsoRig.js",
       "sha256": "638ab5359d7790aa24fa67534b22503e46b18729fe62b69bba11ffe43e778ca9"
@@ -137612,17 +137667,17 @@
   "x-rigVersionsShaRule": "sha256 of the rig's bytes with CR stripped (tr -d '\r' | sha256sum) — the repo's own convention, the same one docs/art/rigs sidecars publish. A SIBLING of the table rather than a key inside it: the table's keys are family names and nothing else, so iterating it cannot pick up a note.",
   "x-cliffLinesNote": "Empty: cliff lines are an authoring artefact of the editor. The repo's cliffs are placed CliffWallSurface components and ship as entities.",
   "x-provenance": {
-    "generatedAt": "2026-08-21T17:17:54Z",
+    "generatedAt": "2026-08-24T02:15:46Z",
     "historyIsComplete": true,
     "sceneFile": "Assets/_Project/Scenes/NineMileCreek.unity",
-    "sceneFileSha256": "41f2b4292bf4bc09cc81e9e3a03aec5354784ee10479720619d0d6912c9db9e6",
-    "sceneLastBuiltCommit": "62a9074646f2c06ae4c12373d587759180ef7675",
-    "sceneLastBuiltDate": "2026-08-21",
-    "sceneLastBuiltSubject": "chore(scenes): bank the 2026-08-21 builds",
+    "sceneFileSha256": "e35f2addbc55008c17604e8a8af50916729d9fae65e558dddf20ba6e35a72d23",
+    "sceneLastBuiltCommit": "ad39352d8c339f88ecf807b8a32ad4b85be443df",
+    "sceneLastBuiltDate": "2026-08-23",
+    "sceneLastBuiltSubject": "chore(scenes): bank the 2026-08-23 builds — stairs at height, berth alongside, pails on the planks",
     "sceneWorkingTreeDirty": false,
     "builderDrift": {
       "builderCommitsSinceScene": 0,
-      "measuredTo": "62a9074646f2c06ae4c12373d587759180ef7675",
+      "measuredTo": "ad39352d8c339f88ecf807b8a32ad4b85be443df",
       "measuredToDate": null,
       "exact": true,
       "builderCommits": []

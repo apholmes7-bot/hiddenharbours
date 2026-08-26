@@ -1,0 +1,2200 @@
+{
+  "drop": "reach-rig-kit",
+  "for": "Hidden Harbours - character rig, the REACH-DOWN family + two missing runs",
+  "from": "Claude Design (character rig source)",
+  "date": "2026-08-25",
+  "rig": {
+    "file": "Art/characterIsoRig6.js",
+    "exposes": "globalThis.CharacterIso6",
+    "pass": 6,
+    "revision": "6.6",
+    "load_order": [
+      "Art/eyeIsoRig.js",
+      "Art/headIsoRig3.js",
+      "Art/characterIsoRig6.js",
+      "Art/characterIsoRig6.hands.js"
+    ],
+    "canonical": true,
+    "frozen_clips_rebake_byte_identical": true,
+    "note": "full current source, not a bundled copy. Every clip that existed at 6.5 re-bakes byte-identical (verified cell-by-cell against the 6.5 kit copy across all 29 clips x 8 facings)."
+  },
+  "cell": {
+    "w": 64,
+    "h": 92,
+    "pivot": {
+      "x": 32,
+      "y": 82
+    },
+    "ground_inset": 10,
+    "px_per_m": 32,
+    "elev_deg": 40,
+    "facing_order": [
+      "N",
+      "NE",
+      "E",
+      "SE",
+      "S",
+      "SW",
+      "W",
+      "NW"
+    ],
+    "note": "the reach family fits the STANDARD cell - measured bbox over 10 presets x 3 rests x 8 facings x 6 frames is x -20..+19, y -41..+5 from the pivot. No new cell, no new inset."
+  },
+  "clips": {
+    "reach": {
+      "frames": 6,
+      "ms_per_frame": 100,
+      "one_shot": true,
+      "mount": "rest",
+      "contract": "reachMount(dir, opts)",
+      "frame_to_u": "u = f/(frames-1) - the last frame is the settled rest at u=1 (ANIMS.reach.settle)",
+      "release_at": 0.72,
+      "arrive_at": 0.62,
+      "gripped_frames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "empty_frames": [
+        4,
+        5
+      ],
+      "opts": {
+        "lift": "world metres, the rest surface height (not scaled by build)",
+        "rest": "'ground' | 'stowV' | 'stowH' - sugar for REACH_LIFT",
+        "gripRise": "metres, the grip centre above the rest surface (default 0.095)",
+        "gripPath": "[REST_FRAMES] points in body-local metres - the tool rig's own grip path; the hand tracks it exactly until the release",
+        "gripOf": "function(u) -> [x,y,z], same contract as gripPath",
+        "hand": "'R' (default) | 'L'"
+      },
+      "pickup": "play the frames in reverse: a 0.72 release mirrors to a 0.28 grip-close, so the hand arrives empty, closes, then lifts"
+    },
+    "run": {
+      "frames": 6,
+      "ms_per_frame": 80,
+      "stride_m": 0.24,
+      "lean_deg": 11,
+      "mount": "free"
+    }
+  },
+  "reach_lift_m": {
+    "ground": 0,
+    "stowV": 0.95,
+    "stowH": 1.05
+  },
+  "reach_lift_source": "PLACEHOLDER VALUES. The tool rig's restLift() is the oracle - ground is 0.00 and correct; stowV 0.95 / stowH 1.05 are our reading of 'rack height, roughly standing reach' and were used for the shipped sheets. Pass restLift() in as opts.lift and the clip re-solves; re-bake only if it differs by more than about 0.06 m (2 px at 32 px/m).",
+  "grip_rise_m": 0.095,
+  "sync_verification": {
+    "hand_on_grip_px": 0,
+    "method": "reachMount().slip - the distance between the point the clip was asked to put the hand on and where pose() actually put it, measured over 10 presets x 3 rests x 8 facings x 6 frames",
+    "max_arm_stretch_px": 2.89,
+    "max_arm_stretch_case": "girl/stowV/d0/f3 - a child at a rack above her reach, reported as clamped:true",
+    "adult_max_arm_stretch_px": 1.16,
+    "frozen_hold_clip_arm_stretch_px": 1.5,
+    "seams": {
+      "hold last frame -> reach frame 0": "0.008 m (0.2 px)",
+      "reach last frame -> idle frame 0": "0.003 m (0.07 px)"
+    }
+  },
+  "presets": [
+    {
+      "key": "fisher",
+      "stem": "Fisher",
+      "height_m": 1.507,
+      "hip_m": 0.587,
+      "rests": {
+        "ground": {
+          "lift_m": 0,
+          "requested_m": 0,
+          "grip_z_m": 0.095,
+          "lift_clamped_to_reach": false,
+          "crouch": 1,
+          "hip_at_deepest_m": 0.247,
+          "max_arm_stretch_px": 1.16
+        },
+        "stowV": {
+          "lift_m": 0.95,
+          "requested_m": 0.95,
+          "grip_z_m": 1.045,
+          "lift_clamped_to_reach": false,
+          "crouch": 0,
+          "hip_at_deepest_m": 0.566,
+          "max_arm_stretch_px": 1.07
+        },
+        "stowH": {
+          "lift_m": 1.05,
+          "requested_m": 1.05,
+          "grip_z_m": 1.145,
+          "lift_clamped_to_reach": false,
+          "crouch": 0,
+          "hip_at_deepest_m": 0.566,
+          "max_arm_stretch_px": 1.07
+        }
+      }
+    },
+    {
+      "key": "ginny",
+      "stem": "Ginny",
+      "height_m": 1.436,
+      "hip_m": 0.549,
+      "rests": {
+        "ground": {
+          "lift_m": 0,
+          "requested_m": 0,
+          "grip_z_m": 0.095,
+          "lift_clamped_to_reach": false,
+          "crouch": 1,
+          "hip_at_deepest_m": 0.232,
+          "max_arm_stretch_px": 1.11
+        },
+        "stowV": {
+          "lift_m": 0.95,
+          "requested_m": 0.95,
+          "grip_z_m": 1.045,
+          "lift_clamped_to_reach": false,
+          "crouch": 0,
+          "hip_at_deepest_m": 0.53,
+          "max_arm_stretch_px": 1.08
+        },
+        "stowH": {
+          "lift_m": 1.05,
+          "requested_m": 1.05,
+          "grip_z_m": 1.145,
+          "lift_clamped_to_reach": false,
+          "crouch": 0,
+          "hip_at_deepest_m": 0.53,
+          "max_arm_stretch_px": 1.08
+        }
+      }
+    },
+    {
+      "key": "skipper",
+      "stem": "Skipper",
+      "height_m": 1.419,
+      "hip_m": 0.545,
+      "rests": {
+        "ground": {
+          "lift_m": 0,
+          "requested_m": 0,
+          "grip_z_m": 0.095,
+          "lift_clamped_to_reach": false,
+          "crouch": 1,
+          "hip_at_deepest_m": 0.221,
+          "max_arm_stretch_px": 0.42
+        },
+        "stowV": {
+          "lift_m": 0.95,
+          "requested_m": 0.95,
+          "grip_z_m": 1.045,
+          "lift_clamped_to_reach": false,
+          "crouch": 0,
+          "hip_at_deepest_m": 0.526,
+          "max_arm_stretch_px": 0.42
+        },
+        "stowH": {
+          "lift_m": 1.05,
+          "requested_m": 1.05,
+          "grip_z_m": 1.145,
+          "lift_clamped_to_reach": false,
+          "crouch": 0,
+          "hip_at_deepest_m": 0.526,
+          "max_arm_stretch_px": 0.42
+        }
+      }
+    },
+    {
+      "key": "nan",
+      "stem": "Nan",
+      "height_m": 1.353,
+      "hip_m": 0.51,
+      "rests": {
+        "ground": {
+          "lift_m": 0,
+          "requested_m": 0,
+          "grip_z_m": 0.095,
+          "lift_clamped_to_reach": false,
+          "crouch": 1,
+          "hip_at_deepest_m": 0.207,
+          "max_arm_stretch_px": 0.45
+        },
+        "stowV": {
+          "lift_m": 0.95,
+          "requested_m": 0.95,
+          "grip_z_m": 1.045,
+          "lift_clamped_to_reach": false,
+          "crouch": 0,
+          "hip_at_deepest_m": 0.492,
+          "max_arm_stretch_px": 0.45
+        },
+        "stowH": {
+          "lift_m": 1.05,
+          "requested_m": 1.05,
+          "grip_z_m": 1.145,
+          "lift_clamped_to_reach": false,
+          "crouch": 0,
+          "hip_at_deepest_m": 0.492,
+          "max_arm_stretch_px": 0.45
+        }
+      }
+    },
+    {
+      "key": "deckboss",
+      "stem": "DeckBoss",
+      "height_m": 1.507,
+      "hip_m": 0.587,
+      "rests": {
+        "ground": {
+          "lift_m": 0,
+          "requested_m": 0,
+          "grip_z_m": 0.095,
+          "lift_clamped_to_reach": false,
+          "crouch": 1,
+          "hip_at_deepest_m": 0.247,
+          "max_arm_stretch_px": 1.16
+        },
+        "stowV": {
+          "lift_m": 0.95,
+          "requested_m": 0.95,
+          "grip_z_m": 1.045,
+          "lift_clamped_to_reach": false,
+          "crouch": 0,
+          "hip_at_deepest_m": 0.566,
+          "max_arm_stretch_px": 1.07
+        },
+        "stowH": {
+          "lift_m": 1.05,
+          "requested_m": 1.05,
+          "grip_z_m": 1.145,
+          "lift_clamped_to_reach": false,
+          "crouch": 0,
+          "hip_at_deepest_m": 0.566,
+          "max_arm_stretch_px": 1.07
+        }
+      }
+    },
+    {
+      "key": "packer",
+      "stem": "Packer",
+      "height_m": 1.436,
+      "hip_m": 0.549,
+      "rests": {
+        "ground": {
+          "lift_m": 0,
+          "requested_m": 0,
+          "grip_z_m": 0.095,
+          "lift_clamped_to_reach": false,
+          "crouch": 1,
+          "hip_at_deepest_m": 0.232,
+          "max_arm_stretch_px": 1.11
+        },
+        "stowV": {
+          "lift_m": 0.95,
+          "requested_m": 0.95,
+          "grip_z_m": 1.045,
+          "lift_clamped_to_reach": false,
+          "crouch": 0,
+          "hip_at_deepest_m": 0.53,
+          "max_arm_stretch_px": 1.08
+        },
+        "stowH": {
+          "lift_m": 1.05,
+          "requested_m": 1.05,
+          "grip_z_m": 1.145,
+          "lift_clamped_to_reach": false,
+          "crouch": 0,
+          "hip_at_deepest_m": 0.53,
+          "max_arm_stretch_px": 1.08
+        }
+      }
+    },
+    {
+      "key": "cutter",
+      "stem": "Cutter",
+      "height_m": 1.275,
+      "hip_m": 0.48,
+      "rests": {
+        "ground": {
+          "lift_m": 0,
+          "requested_m": 0,
+          "grip_z_m": 0.095,
+          "lift_clamped_to_reach": false,
+          "crouch": 1,
+          "hip_at_deepest_m": 0.203,
+          "max_arm_stretch_px": 0.82
+        },
+        "stowV": {
+          "lift_m": 0.95,
+          "requested_m": 0.95,
+          "grip_z_m": 1.045,
+          "lift_clamped_to_reach": false,
+          "crouch": 0,
+          "hip_at_deepest_m": 0.464,
+          "max_arm_stretch_px": 0.82
+        },
+        "stowH": {
+          "lift_m": 1.015,
+          "requested_m": 1.05,
+          "grip_z_m": 1.11,
+          "lift_clamped_to_reach": true,
+          "crouch": 0,
+          "hip_at_deepest_m": 0.464,
+          "max_arm_stretch_px": 0.82
+        }
+      }
+    },
+    {
+      "key": "hand",
+      "stem": "Hand",
+      "height_m": 1.336,
+      "hip_m": 0.513,
+      "rests": {
+        "ground": {
+          "lift_m": 0,
+          "requested_m": 0,
+          "grip_z_m": 0.095,
+          "lift_clamped_to_reach": false,
+          "crouch": 1,
+          "hip_at_deepest_m": 0.216,
+          "max_arm_stretch_px": 0.79
+        },
+        "stowV": {
+          "lift_m": 0.95,
+          "requested_m": 0.95,
+          "grip_z_m": 1.045,
+          "lift_clamped_to_reach": false,
+          "crouch": 0,
+          "hip_at_deepest_m": 0.495,
+          "max_arm_stretch_px": 0.79
+        },
+        "stowH": {
+          "lift_m": 1.05,
+          "requested_m": 1.05,
+          "grip_z_m": 1.145,
+          "lift_clamped_to_reach": false,
+          "crouch": 0,
+          "hip_at_deepest_m": 0.495,
+          "max_arm_stretch_px": 0.79
+        }
+      }
+    },
+    {
+      "key": "boy",
+      "stem": "Boy",
+      "height_m": 1.087,
+      "hip_m": 0.369,
+      "rests": {
+        "ground": {
+          "lift_m": 0,
+          "requested_m": 0,
+          "grip_z_m": 0.095,
+          "lift_clamped_to_reach": false,
+          "crouch": 1,
+          "hip_at_deepest_m": 0.125,
+          "max_arm_stretch_px": 1.31
+        },
+        "stowV": {
+          "lift_m": 0.839,
+          "requested_m": 0.95,
+          "grip_z_m": 0.934,
+          "lift_clamped_to_reach": true,
+          "crouch": 0,
+          "hip_at_deepest_m": 0.355,
+          "max_arm_stretch_px": 2.47
+        },
+        "stowH": {
+          "lift_m": 0.839,
+          "requested_m": 1.05,
+          "grip_z_m": 0.934,
+          "lift_clamped_to_reach": true,
+          "crouch": 0,
+          "hip_at_deepest_m": 0.355,
+          "max_arm_stretch_px": 2.47
+        }
+      }
+    },
+    {
+      "key": "girl",
+      "stem": "Girl",
+      "height_m": 1.04,
+      "hip_m": 0.346,
+      "rests": {
+        "ground": {
+          "lift_m": 0,
+          "requested_m": 0,
+          "grip_z_m": 0.095,
+          "lift_clamped_to_reach": false,
+          "crouch": 1,
+          "hip_at_deepest_m": 0.117,
+          "max_arm_stretch_px": 1.34
+        },
+        "stowV": {
+          "lift_m": 0.786,
+          "requested_m": 0.95,
+          "grip_z_m": 0.881,
+          "lift_clamped_to_reach": true,
+          "crouch": 0,
+          "hip_at_deepest_m": 0.332,
+          "max_arm_stretch_px": 2.89
+        },
+        "stowH": {
+          "lift_m": 0.786,
+          "requested_m": 1.05,
+          "grip_z_m": 0.881,
+          "lift_clamped_to_reach": true,
+          "crouch": 0,
+          "hip_at_deepest_m": 0.332,
+          "max_arm_stretch_px": 2.89
+        }
+      }
+    }
+  ],
+  "sheets": [
+    {
+      "file": "Ginny_run.png",
+      "stem": "Ginny",
+      "preset": "ginny",
+      "clip": "run",
+      "frames": 6,
+      "ms_per_frame": 80,
+      "cols": 6,
+      "rows": 8,
+      "facing_order": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "cell": {
+        "w": 64,
+        "h": 92
+      },
+      "pivot": {
+        "x": 32,
+        "y": 82
+      },
+      "ground_inset": 10,
+      "unique_colours": 61,
+      "palette_strays": 0,
+      "note": "true pass-6.6 render, replaces the degraded 6.5-drop copy"
+    },
+    {
+      "file": "Skipper_run.png",
+      "stem": "Skipper",
+      "preset": "skipper",
+      "clip": "run",
+      "frames": 6,
+      "ms_per_frame": 80,
+      "cols": 6,
+      "rows": 8,
+      "facing_order": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "cell": {
+        "w": 64,
+        "h": 92
+      },
+      "pivot": {
+        "x": 32,
+        "y": 82
+      },
+      "ground_inset": 10,
+      "unique_colours": 51,
+      "palette_strays": 0,
+      "note": "true pass-6.6 render, replaces the degraded 6.5-drop copy"
+    },
+    {
+      "file": "Fisher_reach_ground.png",
+      "stem": "Fisher",
+      "preset": "fisher",
+      "clip": "reach",
+      "rest": "ground",
+      "lift_m": 0,
+      "grip_rise_m": 0.095,
+      "frames": 6,
+      "ms_per_frame": 100,
+      "cols": 6,
+      "rows": 8,
+      "facing_order": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "cell": {
+        "w": 64,
+        "h": 92
+      },
+      "pivot": {
+        "x": 32,
+        "y": 82
+      },
+      "ground_inset": 10,
+      "frame_u": [
+        0,
+        0.2,
+        0.4,
+        0.6,
+        0.8,
+        1
+      ],
+      "gripped_frames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "empty_frames": [
+        4,
+        5
+      ],
+      "unique_colours": 64,
+      "palette_strays": 0,
+      "stray_colours": []
+    },
+    {
+      "file": "Fisher_reach_stowV.png",
+      "stem": "Fisher",
+      "preset": "fisher",
+      "clip": "reach",
+      "rest": "stowV",
+      "lift_m": 0.95,
+      "grip_rise_m": 0.095,
+      "frames": 6,
+      "ms_per_frame": 100,
+      "cols": 6,
+      "rows": 8,
+      "facing_order": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "cell": {
+        "w": 64,
+        "h": 92
+      },
+      "pivot": {
+        "x": 32,
+        "y": 82
+      },
+      "ground_inset": 10,
+      "frame_u": [
+        0,
+        0.2,
+        0.4,
+        0.6,
+        0.8,
+        1
+      ],
+      "gripped_frames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "empty_frames": [
+        4,
+        5
+      ],
+      "unique_colours": 65,
+      "palette_strays": 0,
+      "stray_colours": []
+    },
+    {
+      "file": "Fisher_reach_stowH.png",
+      "stem": "Fisher",
+      "preset": "fisher",
+      "clip": "reach",
+      "rest": "stowH",
+      "lift_m": 1.05,
+      "grip_rise_m": 0.095,
+      "frames": 6,
+      "ms_per_frame": 100,
+      "cols": 6,
+      "rows": 8,
+      "facing_order": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "cell": {
+        "w": 64,
+        "h": 92
+      },
+      "pivot": {
+        "x": 32,
+        "y": 82
+      },
+      "ground_inset": 10,
+      "frame_u": [
+        0,
+        0.2,
+        0.4,
+        0.6,
+        0.8,
+        1
+      ],
+      "gripped_frames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "empty_frames": [
+        4,
+        5
+      ],
+      "unique_colours": 66,
+      "palette_strays": 1,
+      "stray_colours": [
+        "#7d6024x1"
+      ]
+    },
+    {
+      "file": "Ginny_reach_ground.png",
+      "stem": "Ginny",
+      "preset": "ginny",
+      "clip": "reach",
+      "rest": "ground",
+      "lift_m": 0,
+      "grip_rise_m": 0.095,
+      "frames": 6,
+      "ms_per_frame": 100,
+      "cols": 6,
+      "rows": 8,
+      "facing_order": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "cell": {
+        "w": 64,
+        "h": 92
+      },
+      "pivot": {
+        "x": 32,
+        "y": 82
+      },
+      "ground_inset": 10,
+      "frame_u": [
+        0,
+        0.2,
+        0.4,
+        0.6,
+        0.8,
+        1
+      ],
+      "gripped_frames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "empty_frames": [
+        4,
+        5
+      ],
+      "unique_colours": 61,
+      "palette_strays": 0,
+      "stray_colours": []
+    },
+    {
+      "file": "Ginny_reach_stowV.png",
+      "stem": "Ginny",
+      "preset": "ginny",
+      "clip": "reach",
+      "rest": "stowV",
+      "lift_m": 0.95,
+      "grip_rise_m": 0.095,
+      "frames": 6,
+      "ms_per_frame": 100,
+      "cols": 6,
+      "rows": 8,
+      "facing_order": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "cell": {
+        "w": 64,
+        "h": 92
+      },
+      "pivot": {
+        "x": 32,
+        "y": 82
+      },
+      "ground_inset": 10,
+      "frame_u": [
+        0,
+        0.2,
+        0.4,
+        0.6,
+        0.8,
+        1
+      ],
+      "gripped_frames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "empty_frames": [
+        4,
+        5
+      ],
+      "unique_colours": 62,
+      "palette_strays": 0,
+      "stray_colours": []
+    },
+    {
+      "file": "Ginny_reach_stowH.png",
+      "stem": "Ginny",
+      "preset": "ginny",
+      "clip": "reach",
+      "rest": "stowH",
+      "lift_m": 1.05,
+      "grip_rise_m": 0.095,
+      "frames": 6,
+      "ms_per_frame": 100,
+      "cols": 6,
+      "rows": 8,
+      "facing_order": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "cell": {
+        "w": 64,
+        "h": 92
+      },
+      "pivot": {
+        "x": 32,
+        "y": 82
+      },
+      "ground_inset": 10,
+      "frame_u": [
+        0,
+        0.2,
+        0.4,
+        0.6,
+        0.8,
+        1
+      ],
+      "gripped_frames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "empty_frames": [
+        4,
+        5
+      ],
+      "unique_colours": 63,
+      "palette_strays": 0,
+      "stray_colours": []
+    },
+    {
+      "file": "Skipper_reach_ground.png",
+      "stem": "Skipper",
+      "preset": "skipper",
+      "clip": "reach",
+      "rest": "ground",
+      "lift_m": 0,
+      "grip_rise_m": 0.095,
+      "frames": 6,
+      "ms_per_frame": 100,
+      "cols": 6,
+      "rows": 8,
+      "facing_order": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "cell": {
+        "w": 64,
+        "h": 92
+      },
+      "pivot": {
+        "x": 32,
+        "y": 82
+      },
+      "ground_inset": 10,
+      "frame_u": [
+        0,
+        0.2,
+        0.4,
+        0.6,
+        0.8,
+        1
+      ],
+      "gripped_frames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "empty_frames": [
+        4,
+        5
+      ],
+      "unique_colours": 55,
+      "palette_strays": 1,
+      "stray_colours": [
+        "#10191cx1"
+      ]
+    },
+    {
+      "file": "Skipper_reach_stowV.png",
+      "stem": "Skipper",
+      "preset": "skipper",
+      "clip": "reach",
+      "rest": "stowV",
+      "lift_m": 0.95,
+      "grip_rise_m": 0.095,
+      "frames": 6,
+      "ms_per_frame": 100,
+      "cols": 6,
+      "rows": 8,
+      "facing_order": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "cell": {
+        "w": 64,
+        "h": 92
+      },
+      "pivot": {
+        "x": 32,
+        "y": 82
+      },
+      "ground_inset": 10,
+      "frame_u": [
+        0,
+        0.2,
+        0.4,
+        0.6,
+        0.8,
+        1
+      ],
+      "gripped_frames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "empty_frames": [
+        4,
+        5
+      ],
+      "unique_colours": 55,
+      "palette_strays": 0,
+      "stray_colours": []
+    },
+    {
+      "file": "Skipper_reach_stowH.png",
+      "stem": "Skipper",
+      "preset": "skipper",
+      "clip": "reach",
+      "rest": "stowH",
+      "lift_m": 1.05,
+      "grip_rise_m": 0.095,
+      "frames": 6,
+      "ms_per_frame": 100,
+      "cols": 6,
+      "rows": 8,
+      "facing_order": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "cell": {
+        "w": 64,
+        "h": 92
+      },
+      "pivot": {
+        "x": 32,
+        "y": 82
+      },
+      "ground_inset": 10,
+      "frame_u": [
+        0,
+        0.2,
+        0.4,
+        0.6,
+        0.8,
+        1
+      ],
+      "gripped_frames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "empty_frames": [
+        4,
+        5
+      ],
+      "unique_colours": 55,
+      "palette_strays": 0,
+      "stray_colours": []
+    },
+    {
+      "file": "Nan_reach_ground.png",
+      "stem": "Nan",
+      "preset": "nan",
+      "clip": "reach",
+      "rest": "ground",
+      "lift_m": 0,
+      "grip_rise_m": 0.095,
+      "frames": 6,
+      "ms_per_frame": 100,
+      "cols": 6,
+      "rows": 8,
+      "facing_order": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "cell": {
+        "w": 64,
+        "h": 92
+      },
+      "pivot": {
+        "x": 32,
+        "y": 82
+      },
+      "ground_inset": 10,
+      "frame_u": [
+        0,
+        0.2,
+        0.4,
+        0.6,
+        0.8,
+        1
+      ],
+      "gripped_frames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "empty_frames": [
+        4,
+        5
+      ],
+      "unique_colours": 68,
+      "palette_strays": 0,
+      "stray_colours": []
+    },
+    {
+      "file": "Nan_reach_stowV.png",
+      "stem": "Nan",
+      "preset": "nan",
+      "clip": "reach",
+      "rest": "stowV",
+      "lift_m": 0.95,
+      "grip_rise_m": 0.095,
+      "frames": 6,
+      "ms_per_frame": 100,
+      "cols": 6,
+      "rows": 8,
+      "facing_order": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "cell": {
+        "w": 64,
+        "h": 92
+      },
+      "pivot": {
+        "x": 32,
+        "y": 82
+      },
+      "ground_inset": 10,
+      "frame_u": [
+        0,
+        0.2,
+        0.4,
+        0.6,
+        0.8,
+        1
+      ],
+      "gripped_frames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "empty_frames": [
+        4,
+        5
+      ],
+      "unique_colours": 68,
+      "palette_strays": 0,
+      "stray_colours": []
+    },
+    {
+      "file": "Nan_reach_stowH.png",
+      "stem": "Nan",
+      "preset": "nan",
+      "clip": "reach",
+      "rest": "stowH",
+      "lift_m": 1.05,
+      "grip_rise_m": 0.095,
+      "frames": 6,
+      "ms_per_frame": 100,
+      "cols": 6,
+      "rows": 8,
+      "facing_order": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "cell": {
+        "w": 64,
+        "h": 92
+      },
+      "pivot": {
+        "x": 32,
+        "y": 82
+      },
+      "ground_inset": 10,
+      "frame_u": [
+        0,
+        0.2,
+        0.4,
+        0.6,
+        0.8,
+        1
+      ],
+      "gripped_frames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "empty_frames": [
+        4,
+        5
+      ],
+      "unique_colours": 68,
+      "palette_strays": 0,
+      "stray_colours": []
+    },
+    {
+      "file": "DeckBoss_reach_ground.png",
+      "stem": "DeckBoss",
+      "preset": "deckboss",
+      "clip": "reach",
+      "rest": "ground",
+      "lift_m": 0,
+      "grip_rise_m": 0.095,
+      "frames": 6,
+      "ms_per_frame": 100,
+      "cols": 6,
+      "rows": 8,
+      "facing_order": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "cell": {
+        "w": 64,
+        "h": 92
+      },
+      "pivot": {
+        "x": 32,
+        "y": 82
+      },
+      "ground_inset": 10,
+      "frame_u": [
+        0,
+        0.2,
+        0.4,
+        0.6,
+        0.8,
+        1
+      ],
+      "gripped_frames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "empty_frames": [
+        4,
+        5
+      ],
+      "unique_colours": 81,
+      "palette_strays": 0,
+      "stray_colours": []
+    },
+    {
+      "file": "DeckBoss_reach_stowV.png",
+      "stem": "DeckBoss",
+      "preset": "deckboss",
+      "clip": "reach",
+      "rest": "stowV",
+      "lift_m": 0.95,
+      "grip_rise_m": 0.095,
+      "frames": 6,
+      "ms_per_frame": 100,
+      "cols": 6,
+      "rows": 8,
+      "facing_order": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "cell": {
+        "w": 64,
+        "h": 92
+      },
+      "pivot": {
+        "x": 32,
+        "y": 82
+      },
+      "ground_inset": 10,
+      "frame_u": [
+        0,
+        0.2,
+        0.4,
+        0.6,
+        0.8,
+        1
+      ],
+      "gripped_frames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "empty_frames": [
+        4,
+        5
+      ],
+      "unique_colours": 79,
+      "palette_strays": 0,
+      "stray_colours": []
+    },
+    {
+      "file": "DeckBoss_reach_stowH.png",
+      "stem": "DeckBoss",
+      "preset": "deckboss",
+      "clip": "reach",
+      "rest": "stowH",
+      "lift_m": 1.05,
+      "grip_rise_m": 0.095,
+      "frames": 6,
+      "ms_per_frame": 100,
+      "cols": 6,
+      "rows": 8,
+      "facing_order": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "cell": {
+        "w": 64,
+        "h": 92
+      },
+      "pivot": {
+        "x": 32,
+        "y": 82
+      },
+      "ground_inset": 10,
+      "frame_u": [
+        0,
+        0.2,
+        0.4,
+        0.6,
+        0.8,
+        1
+      ],
+      "gripped_frames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "empty_frames": [
+        4,
+        5
+      ],
+      "unique_colours": 80,
+      "palette_strays": 0,
+      "stray_colours": []
+    },
+    {
+      "file": "Packer_reach_ground.png",
+      "stem": "Packer",
+      "preset": "packer",
+      "clip": "reach",
+      "rest": "ground",
+      "lift_m": 0,
+      "grip_rise_m": 0.095,
+      "frames": 6,
+      "ms_per_frame": 100,
+      "cols": 6,
+      "rows": 8,
+      "facing_order": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "cell": {
+        "w": 64,
+        "h": 92
+      },
+      "pivot": {
+        "x": 32,
+        "y": 82
+      },
+      "ground_inset": 10,
+      "frame_u": [
+        0,
+        0.2,
+        0.4,
+        0.6,
+        0.8,
+        1
+      ],
+      "gripped_frames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "empty_frames": [
+        4,
+        5
+      ],
+      "unique_colours": 90,
+      "palette_strays": 2,
+      "stray_colours": [
+        "#a68333x3",
+        "#31311fx2"
+      ]
+    },
+    {
+      "file": "Packer_reach_stowV.png",
+      "stem": "Packer",
+      "preset": "packer",
+      "clip": "reach",
+      "rest": "stowV",
+      "lift_m": 0.95,
+      "grip_rise_m": 0.095,
+      "frames": 6,
+      "ms_per_frame": 100,
+      "cols": 6,
+      "rows": 8,
+      "facing_order": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "cell": {
+        "w": 64,
+        "h": 92
+      },
+      "pivot": {
+        "x": 32,
+        "y": 82
+      },
+      "ground_inset": 10,
+      "frame_u": [
+        0,
+        0.2,
+        0.4,
+        0.6,
+        0.8,
+        1
+      ],
+      "gripped_frames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "empty_frames": [
+        4,
+        5
+      ],
+      "unique_colours": 84,
+      "palette_strays": 0,
+      "stray_colours": []
+    },
+    {
+      "file": "Packer_reach_stowH.png",
+      "stem": "Packer",
+      "preset": "packer",
+      "clip": "reach",
+      "rest": "stowH",
+      "lift_m": 1.05,
+      "grip_rise_m": 0.095,
+      "frames": 6,
+      "ms_per_frame": 100,
+      "cols": 6,
+      "rows": 8,
+      "facing_order": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "cell": {
+        "w": 64,
+        "h": 92
+      },
+      "pivot": {
+        "x": 32,
+        "y": 82
+      },
+      "ground_inset": 10,
+      "frame_u": [
+        0,
+        0.2,
+        0.4,
+        0.6,
+        0.8,
+        1
+      ],
+      "gripped_frames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "empty_frames": [
+        4,
+        5
+      ],
+      "unique_colours": 86,
+      "palette_strays": 1,
+      "stray_colours": [
+        "#a68333x1"
+      ]
+    },
+    {
+      "file": "Cutter_reach_ground.png",
+      "stem": "Cutter",
+      "preset": "cutter",
+      "clip": "reach",
+      "rest": "ground",
+      "lift_m": 0,
+      "grip_rise_m": 0.095,
+      "frames": 6,
+      "ms_per_frame": 100,
+      "cols": 6,
+      "rows": 8,
+      "facing_order": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "cell": {
+        "w": 64,
+        "h": 92
+      },
+      "pivot": {
+        "x": 32,
+        "y": 82
+      },
+      "ground_inset": 10,
+      "frame_u": [
+        0,
+        0.2,
+        0.4,
+        0.6,
+        0.8,
+        1
+      ],
+      "gripped_frames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "empty_frames": [
+        4,
+        5
+      ],
+      "unique_colours": 80,
+      "palette_strays": 0,
+      "stray_colours": []
+    },
+    {
+      "file": "Cutter_reach_stowV.png",
+      "stem": "Cutter",
+      "preset": "cutter",
+      "clip": "reach",
+      "rest": "stowV",
+      "lift_m": 0.95,
+      "grip_rise_m": 0.095,
+      "frames": 6,
+      "ms_per_frame": 100,
+      "cols": 6,
+      "rows": 8,
+      "facing_order": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "cell": {
+        "w": 64,
+        "h": 92
+      },
+      "pivot": {
+        "x": 32,
+        "y": 82
+      },
+      "ground_inset": 10,
+      "frame_u": [
+        0,
+        0.2,
+        0.4,
+        0.6,
+        0.8,
+        1
+      ],
+      "gripped_frames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "empty_frames": [
+        4,
+        5
+      ],
+      "unique_colours": 78,
+      "palette_strays": 1,
+      "stray_colours": [
+        "#241611x1"
+      ]
+    },
+    {
+      "file": "Cutter_reach_stowH.png",
+      "stem": "Cutter",
+      "preset": "cutter",
+      "clip": "reach",
+      "rest": "stowH",
+      "lift_m": 1.015,
+      "grip_rise_m": 0.095,
+      "frames": 6,
+      "ms_per_frame": 100,
+      "cols": 6,
+      "rows": 8,
+      "facing_order": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "cell": {
+        "w": 64,
+        "h": 92
+      },
+      "pivot": {
+        "x": 32,
+        "y": 82
+      },
+      "ground_inset": 10,
+      "frame_u": [
+        0,
+        0.2,
+        0.4,
+        0.6,
+        0.8,
+        1
+      ],
+      "gripped_frames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "empty_frames": [
+        4,
+        5
+      ],
+      "unique_colours": 78,
+      "palette_strays": 0,
+      "stray_colours": []
+    },
+    {
+      "file": "Hand_reach_ground.png",
+      "stem": "Hand",
+      "preset": "hand",
+      "clip": "reach",
+      "rest": "ground",
+      "lift_m": 0,
+      "grip_rise_m": 0.095,
+      "frames": 6,
+      "ms_per_frame": 100,
+      "cols": 6,
+      "rows": 8,
+      "facing_order": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "cell": {
+        "w": 64,
+        "h": 92
+      },
+      "pivot": {
+        "x": 32,
+        "y": 82
+      },
+      "ground_inset": 10,
+      "frame_u": [
+        0,
+        0.2,
+        0.4,
+        0.6,
+        0.8,
+        1
+      ],
+      "gripped_frames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "empty_frames": [
+        4,
+        5
+      ],
+      "unique_colours": 83,
+      "palette_strays": 0,
+      "stray_colours": []
+    },
+    {
+      "file": "Hand_reach_stowV.png",
+      "stem": "Hand",
+      "preset": "hand",
+      "clip": "reach",
+      "rest": "stowV",
+      "lift_m": 0.95,
+      "grip_rise_m": 0.095,
+      "frames": 6,
+      "ms_per_frame": 100,
+      "cols": 6,
+      "rows": 8,
+      "facing_order": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "cell": {
+        "w": 64,
+        "h": 92
+      },
+      "pivot": {
+        "x": 32,
+        "y": 82
+      },
+      "ground_inset": 10,
+      "frame_u": [
+        0,
+        0.2,
+        0.4,
+        0.6,
+        0.8,
+        1
+      ],
+      "gripped_frames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "empty_frames": [
+        4,
+        5
+      ],
+      "unique_colours": 82,
+      "palette_strays": 0,
+      "stray_colours": []
+    },
+    {
+      "file": "Hand_reach_stowH.png",
+      "stem": "Hand",
+      "preset": "hand",
+      "clip": "reach",
+      "rest": "stowH",
+      "lift_m": 1.05,
+      "grip_rise_m": 0.095,
+      "frames": 6,
+      "ms_per_frame": 100,
+      "cols": 6,
+      "rows": 8,
+      "facing_order": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "cell": {
+        "w": 64,
+        "h": 92
+      },
+      "pivot": {
+        "x": 32,
+        "y": 82
+      },
+      "ground_inset": 10,
+      "frame_u": [
+        0,
+        0.2,
+        0.4,
+        0.6,
+        0.8,
+        1
+      ],
+      "gripped_frames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "empty_frames": [
+        4,
+        5
+      ],
+      "unique_colours": 81,
+      "palette_strays": 0,
+      "stray_colours": []
+    },
+    {
+      "file": "Boy_reach_ground.png",
+      "stem": "Boy",
+      "preset": "boy",
+      "clip": "reach",
+      "rest": "ground",
+      "lift_m": 0,
+      "grip_rise_m": 0.095,
+      "frames": 6,
+      "ms_per_frame": 100,
+      "cols": 6,
+      "rows": 8,
+      "facing_order": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "cell": {
+        "w": 64,
+        "h": 92
+      },
+      "pivot": {
+        "x": 32,
+        "y": 82
+      },
+      "ground_inset": 10,
+      "frame_u": [
+        0,
+        0.2,
+        0.4,
+        0.6,
+        0.8,
+        1
+      ],
+      "gripped_frames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "empty_frames": [
+        4,
+        5
+      ],
+      "unique_colours": 56,
+      "palette_strays": 0,
+      "stray_colours": []
+    },
+    {
+      "file": "Boy_reach_stowV.png",
+      "stem": "Boy",
+      "preset": "boy",
+      "clip": "reach",
+      "rest": "stowV",
+      "lift_m": 0.839,
+      "grip_rise_m": 0.095,
+      "frames": 6,
+      "ms_per_frame": 100,
+      "cols": 6,
+      "rows": 8,
+      "facing_order": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "cell": {
+        "w": 64,
+        "h": 92
+      },
+      "pivot": {
+        "x": 32,
+        "y": 82
+      },
+      "ground_inset": 10,
+      "frame_u": [
+        0,
+        0.2,
+        0.4,
+        0.6,
+        0.8,
+        1
+      ],
+      "gripped_frames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "empty_frames": [
+        4,
+        5
+      ],
+      "unique_colours": 58,
+      "palette_strays": 0,
+      "stray_colours": []
+    },
+    {
+      "file": "Boy_reach_stowH.png",
+      "stem": "Boy",
+      "preset": "boy",
+      "clip": "reach",
+      "rest": "stowH",
+      "lift_m": 0.839,
+      "grip_rise_m": 0.095,
+      "frames": 6,
+      "ms_per_frame": 100,
+      "cols": 6,
+      "rows": 8,
+      "facing_order": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "cell": {
+        "w": 64,
+        "h": 92
+      },
+      "pivot": {
+        "x": 32,
+        "y": 82
+      },
+      "ground_inset": 10,
+      "frame_u": [
+        0,
+        0.2,
+        0.4,
+        0.6,
+        0.8,
+        1
+      ],
+      "gripped_frames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "empty_frames": [
+        4,
+        5
+      ],
+      "unique_colours": 58,
+      "palette_strays": 0,
+      "stray_colours": []
+    },
+    {
+      "file": "Girl_reach_ground.png",
+      "stem": "Girl",
+      "preset": "girl",
+      "clip": "reach",
+      "rest": "ground",
+      "lift_m": 0,
+      "grip_rise_m": 0.095,
+      "frames": 6,
+      "ms_per_frame": 100,
+      "cols": 6,
+      "rows": 8,
+      "facing_order": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "cell": {
+        "w": 64,
+        "h": 92
+      },
+      "pivot": {
+        "x": 32,
+        "y": 82
+      },
+      "ground_inset": 10,
+      "frame_u": [
+        0,
+        0.2,
+        0.4,
+        0.6,
+        0.8,
+        1
+      ],
+      "gripped_frames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "empty_frames": [
+        4,
+        5
+      ],
+      "unique_colours": 70,
+      "palette_strays": 0,
+      "stray_colours": []
+    },
+    {
+      "file": "Girl_reach_stowV.png",
+      "stem": "Girl",
+      "preset": "girl",
+      "clip": "reach",
+      "rest": "stowV",
+      "lift_m": 0.786,
+      "grip_rise_m": 0.095,
+      "frames": 6,
+      "ms_per_frame": 100,
+      "cols": 6,
+      "rows": 8,
+      "facing_order": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "cell": {
+        "w": 64,
+        "h": 92
+      },
+      "pivot": {
+        "x": 32,
+        "y": 82
+      },
+      "ground_inset": 10,
+      "frame_u": [
+        0,
+        0.2,
+        0.4,
+        0.6,
+        0.8,
+        1
+      ],
+      "gripped_frames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "empty_frames": [
+        4,
+        5
+      ],
+      "unique_colours": 71,
+      "palette_strays": 0,
+      "stray_colours": []
+    },
+    {
+      "file": "Girl_reach_stowH.png",
+      "stem": "Girl",
+      "preset": "girl",
+      "clip": "reach",
+      "rest": "stowH",
+      "lift_m": 0.786,
+      "grip_rise_m": 0.095,
+      "frames": 6,
+      "ms_per_frame": 100,
+      "cols": 6,
+      "rows": 8,
+      "facing_order": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "cell": {
+        "w": 64,
+        "h": 92
+      },
+      "pivot": {
+        "x": 32,
+        "y": 82
+      },
+      "ground_inset": 10,
+      "frame_u": [
+        0,
+        0.2,
+        0.4,
+        0.6,
+        0.8,
+        1
+      ],
+      "gripped_frames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "empty_frames": [
+        4,
+        5
+      ],
+      "unique_colours": 71,
+      "palette_strays": 0,
+      "stray_colours": []
+    }
+  ],
+  "palette": {
+    "rule": "every new sheet must sit inside the colour union of the committed sheets for its own preset",
+    "method": "opaque-pixel colour census per sheet, checked against the union of handoff/sheets/<Stem>_*.png",
+    "committed_union_sizes": {
+      "Fisher": 66,
+      "Ginny": 73,
+      "Skipper": 68,
+      "Nan": 68,
+      "Deckboss": 85,
+      "Packer": 92,
+      "Cutter": 83,
+      "Hand": 86,
+      "Boy": 58,
+      "Girl": 74
+    },
+    "new_sheet_colour_range": [
+      51,
+      90
+    ],
+    "strays_total_colours": 6,
+    "strays_total_pixels": 9,
+    "strays_of_32_sheets": 5,
+    "strays": [
+      {
+        "file": "Packer_reach_ground.png",
+        "colours": [
+          "#a68333x3",
+          "#31311fx2"
+        ],
+        "pixels": 5
+      },
+      {
+        "file": "Cutter_reach_stowV.png",
+        "colours": [
+          "#241611x1"
+        ],
+        "pixels": 1
+      },
+      {
+        "file": "Fisher_reach_stowH.png",
+        "colours": [
+          "#7d6024x1"
+        ],
+        "pixels": 1
+      },
+      {
+        "file": "Packer_reach_stowH.png",
+        "colours": [
+          "#a68333x1"
+        ],
+        "pixels": 1
+      },
+      {
+        "file": "Skipper_reach_ground.png",
+        "colours": [
+          "#10191cx1"
+        ],
+        "pixels": 1
+      }
+    ],
+    "stray_classification": {
+      "locked_ramp_steps": [
+        "#a68333 (BRASS[2])",
+        "#7d6024 (BRASS[1])",
+        "#241611 (LEATHER[0])"
+      ],
+      "keyline_mixes": [
+        "#31311f",
+        "#10191c"
+      ],
+      "note": "no new colour was invented. Four of the six are exact steps of the rig's locked hardware ramps that no committed sheet for that preset happened to expose (a buckle glint, a belt shadow at a new normal). The other two are 1 px KEYLINE mixes - the keyline is derived per adjacency, so any new pose can produce a mix no earlier sheet contains."
+    }
+  },
+  "baked_dry": true,
+  "flags": [
+    "stowV / stowH lift values are ours, not restLift()'s - see reach_lift_source",
+    "reach ms/frame is 100; if the tool kit's set-down runs at another rate, restamp ANIMS.reach.ms - one number, no re-author",
+    "DeckBoss sheets in this drop are spelled with the capital B you specified. The sheets committed in the 6.5 drop are Deckboss_* - if the importer finds sheets by stem, those four have been dropping silently",
+    "Skipper_run measures 51 unique colours and Packer_reach_ground 90 - just outside the 52-88 census band, which was measured on the previous drop's builds, not on these poses",
+    "6 colours / 9 pixels across 32 sheets sit outside the committed unions - see palette.strays"
+  ]
+}

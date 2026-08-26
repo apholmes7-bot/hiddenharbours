@@ -512,7 +512,7 @@ in this repo.
 
 ---
 
-## The character rig kit, pass 6 (imported 2026-08-02 · **rev 6.2 imported 2026-08-06**)
+## The character rig kit, pass 6 (imported 2026-08-02 · **rev 6.2 imported 2026-08-06** · **rev 6.6 imported 2026-08-26**)
 
 One procedural person: eight facings, **eighteen** animations, four carry stances, and the axes that
 make her somebody in particular. This drop replaces the pass-1 body (`characterIsoRig.js`) and splits
@@ -632,6 +632,52 @@ Three things about them that are easy to get wrong:
 arms pull and the hips stay in). The turn-around at the top of a ladder and the step off at the bottom
 onto a moving gunwale are not authored — an engine covers both with `board`/`boardDown` or a hard cut,
 and the turn-around is the one players will notice.
+
+### The reach family (rev 6.6, imported 2026-08-26)
+
+**One clip, `reach`, baked at three rest heights** — `ground` · `stowV` · `stowH`. Not three
+animations: the rig re-solves the same descent per height, which is why a floor set-down crouches and
+a rack one is all arm. `ANIM_MOUNT.reach` is a fourth mount kind, **`'rest'`**: a tool mount that does
+NOT own the tool. The set-down bake owns the prop's pose; `reachMount(dir,opts)` says where the HAND
+is on it each frame, and `tool()`'s pitch/yaw are advisory on this clip alone.
+
+| | | |
+|---|--:|---|
+| frames · ms | 6 · 100 | one-shot |
+| frame → `u` | **`u = f/(frames-1)`** | ⚠️ every other clip is cyclic `f/frames` — see below |
+| tool is HOME | `REACH_ARRIVE` **0.62** | |
+| hand OPENS | `RELEASE_AT` **0.72** | gripped on frames 0–3, empty on 4–5 |
+| grip rise | `GRIP_RISE` **0.095 m** | the grip centre above the rest surface |
+| rest surfaces | `REACH_LIFT` = 0 / 0.95 / 1.05 m | **world metres, not scaled by build** (the `workZ` precedent) |
+
+Four things about it that are easy to get wrong:
+
+- **`settle` is a frame→`u` mapping, and `reach` is the only clip that carries it.** `u = f/(frames-1)`
+  puts the LAST frame on `u = 1` — the settled rest — instead of one step short of it. A consumer that
+  reads it cyclically never draws the settled frame, so the character finishes reaching for something
+  they never put down. In engine that is `CharacterVisualDef.ClipSettles`.
+- **The seam is not the release.** The tool arrives at 0.62 and the hand opens at 0.72, so the release
+  is something you can watch. Releasing at the seam is exactly the defect the rod kit's continuity law
+  was written for — the old rests were single cells with their own yaw and pivot meaning, and the rod
+  jumped 2.3–3.9 px the instant it left the hand.
+- **A pick-up is these frames REVERSED.** A 0.72 release mirrors to a 0.28 grip-close: the hand
+  arrives empty, closes, and lifts. There is no `reachUp` and there should not be — a second family
+  would double the art and let the two drift.
+- **⚠️ `stowV` 0.95 m and `stowH` 1.05 m are DECLARED PLACEHOLDERS.** They are the art lane's reading
+  of "rack height, roughly standing reach", not a measurement of any furniture in the game, and
+  **`RodIso.restLift()` is not their oracle**: the rod rig's number is how far a settled rod holds its
+  GRIP above whatever it rests on (0.16 / 0.62 m), and the rod rig has no way to know how high a rack
+  is. Whoever builds the rack owns these two. Where the kits genuinely meet is the ground —
+  `restLift('ground')` for a reeled rod is 0.095 m, the same number as `GRIP_RISE` — and
+  `tools/rig-recipes/reach-continuity.mjs` asserts that one and reports the rest.
+
+Small builds cannot reach the high rack: the rig **clamps** the lift to what the figure can touch and
+reports `clamped:true` rather than stretching the arm. Both children clamp at both racks and one small
+adult at the high one; a consumer that places a tool at the requested height for a clamped build hangs
+it above an empty hand. The engine side is `CharacterReachDef`, imported from `Reach_sidecar.json`.
+
+The drop also completed **`Ginny_run` and `Skipper_run`** — the two cast presets the harbour actually
+sends anywhere. The rest of the cast still bake idle + walk only.
 
 ### Customization — colour is data, structure is geometry
 

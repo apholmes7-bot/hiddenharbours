@@ -50,6 +50,7 @@ namespace HiddenHarbours.Tests.EditMode
         public void SetUp()
         {
             GameServices.Reset();
+            ResetTheInteractSeam();
             _modeEvents.Clear(); _boatEvents.Clear();
             EventBus.Clear<ControlModeChanged>();
             EventBus.Clear<ActiveBoatChanged>();
@@ -64,10 +65,25 @@ namespace HiddenHarbours.Tests.EditMode
             EventBus.Unsubscribe<ActiveBoatChanged>(OnBoat);
             EventBus.Clear<ControlModeChanged>();
             EventBus.Clear<ActiveBoatChanged>();
+            ResetTheInteractSeam();
             GameServices.Reset();
             foreach (var o in _spawned)
                 if (o != null) Object.DestroyImmediate(o);
             _spawned.Clear();
+        }
+
+        /// <summary>Put every static the interact seam holds back to empty. Both ends, because these are
+        /// process-wide registers: a candidate left registered would follow this fixture into the next
+        /// suite, and a <c>InteractionGate</c> left raised by a boarding move that is still in flight at
+        /// the end of a case would silence the verb in the one after it.</summary>
+        private static void ResetTheInteractSeam()
+        {
+            Interactables.Clear();
+            InteractVerb.Reset();
+            InteractionGate.Reset();
+            InteractActionClaim.Reset();
+            InteractOffer.Reset();
+            InteractActorProbe.Reset();
         }
 
         private GameObject NewGo(string name, Vector3 pos)
@@ -279,6 +295,229 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(ControlMode.OnDeck, _modeEvents[2].Mode);
             Assert.AreEqual(ControlMode.OnFoot, _modeEvents[3].Mode);
             Assert.AreEqual(1, _boatEvents.Count, "the boat framing arrives exactly once — when the helm is taken");
+        }
+
+        // =====================================================================================
+        //  ON DECK, THE REGISTRY IS ASKED BEFORE THE STEP ASHORE (lead-architect, 2026-08-25)
+        //
+        //  The amended invariant: BOARDING AND THE HELM WIN OVER THE REGISTRY; STEP-ASHORE YIELDS TO A
+        //  RESOLVING FIXTURE. Before it, CanStepAshore() is true from the WHOLE deck of a boat that is
+        //  tied up or lying over bared ground, so BeginInteract answered every such press with the step
+        //  off and no OnDeck fixture on a docked boat — a cabin door, a pail, a hauler — could ever be
+        //  pressed. These pin the new rung and, just as hard, the three rungs that did NOT move.
+        // =====================================================================================
+
+        /// <summary>
+        /// A candidate as a plain object rather than a test MonoBehaviour: Unity mints a MonoScript per
+        /// .cs file by filename, so a second MonoBehaviour declared in this one has none and
+        /// <c>AddComponent</c> is unreliable for it (<c>InteractVerbPlayTests</c>' note). Nothing is lost
+        /// — the seam is an interface, so a plain object registers exactly as a component does.
+        ///
+        /// <para><see cref="IsAvailable"/> COUNTS its reads on purpose. <see cref="InteractResolver"/>
+        /// asks each in-context candidate for it exactly once per resolve, which makes this a resolve
+        /// counter — and that is how "one press, one resolve" is pinned below without reaching inside
+        /// the switcher.</para>
+        /// </summary>
+        private sealed class Fake : IInteractable
+        {
+            public string Id { get; set; } = "test.deck_fixture";
+            public Vector2 WorldPosition { get; set; }
+            public float ReachMeters { get; set; } = 2f;
+            public int Priority { get; set; } = InteractPriority.Fixture;
+            public InteractContext Contexts { get; set; } = InteractContext.OnDeck;
+            public bool RequiresFacing { get; set; }
+            public string VerbLabel { get; set; } = "Work the thing";
+
+            /// <summary>How many times the press has actually reached this candidate.</summary>
+            public int Calls;
+
+            /// <summary>How many times the resolver has considered it (see the class remarks).</summary>
+            public int Resolves;
+
+            public bool IsAvailable { get { Resolves++; return true; } }
+
+            public void Interact(in InteractActor actor) => Calls++;
+        }
+
+        /// <summary>Register a candidate at a world position. Relinquished wholesale in TearDown, which is
+        /// what keeps this fixture's doubles out of the next suite's registry.</summary>
+        private static Fake Candidate(Vector3 at, float reach = 2f,
+                                      InteractContext where = InteractContext.OnDeck)
+        {
+            var c = new Fake { WorldPosition = at, ReachMeters = reach, Contexts = where };
+            Interactables.Register(c);
+            return c;
+        }
+
+        /// <summary>Get her aboard the instant way and hand back where the fisher ends up standing —
+        /// away from the tiller, which is the only place on the deck where this ladder is decided.</summary>
+        private static Vector3 BoardAndStandAwayFromTheHelm(ControlSwitcher sw, GameObject playerGo)
+        {
+            Assert.IsTrue(sw.TryInteract(), "harness: she has to actually get aboard");
+            Assert.AreEqual(ControlMode.OnDeck, sw.Mode);
+            Assert.IsFalse(sw.WithinHelmReach(), "harness: the board spot is away from the tiller");
+            return playerGo.transform.position;
+        }
+
+        /// <summary>The instant path — this section is about which verb a press IS, never about how long
+        /// the fisher takes to climb. The MOVE route is pinned separately, below.</summary>
+        private static void NoBoardingMove(ControlSwitcher sw)
+            => sw.ConfigureBoardingMove(false, 3f, 0.8f, 0.55f, 0.35f);
+
+        [Test]
+        public void OnDeck_AtAWharf_ACandidateInReachTakesThePress_AndSheStaysAboard()
+        {
+            WireExposedLand();
+            var (sw, _, _, _, playerGo, _) = Build(new Vector3(0f, -11.5f, 0f), new Vector3(0f, -13.8f, 0f));
+            NoBoardingMove(sw);
+            Vector3 onDeck = BoardAndStandAwayFromTheHelm(sw, playerGo);
+            _modeEvents.Clear(); _boatEvents.Clear();
+
+            Fake fixture = Candidate(onDeck);
+            Assert.IsTrue(sw.CanStepAshore(), "harness: she is tied up, so the OLD ladder would step her off");
+
+            Assert.IsTrue(sw.BeginInteract(), "the press was spent");
+
+            Assert.AreEqual(1, fixture.Calls, "…on the fixture: on deck the registry is asked BEFORE the step off");
+            Assert.AreEqual(ControlMode.OnDeck, sw.Mode, "and she is still aboard");
+            Assert.AreEqual(0, _modeEvents.Count, "nothing transitioned — one press, one action");
+        }
+
+        [Test]
+        public void OnDeck_AtAWharf_WithNothingRegistered_SheStepsAshoreExactlyAsBefore()
+        {
+            // The non-regression, and the whole reason the insertion is safe: an empty registry resolves
+            // nothing, so the two branches below it run exactly as they always did.
+            WireExposedLand();
+            var (sw, walk, _, _, playerGo, _) = Build(new Vector3(0f, -11.5f, 0f), new Vector3(0f, -13.8f, 0f));
+            NoBoardingMove(sw);
+            BoardAndStandAwayFromTheHelm(sw, playerGo);
+            _modeEvents.Clear();
+
+            Assert.AreEqual(0, Interactables.Count, "nothing registered, as a region with no fixtures has");
+            Assert.IsTrue(sw.BeginInteract(), "E steps her ashore");
+
+            Assert.AreEqual(ControlMode.OnFoot, sw.Mode);
+            Assert.IsTrue(walk.enabled, "walking is re-enabled on foot");
+            Assert.IsNull(playerGo.transform.parent, "ashore she stands free of the boat");
+            Assert.AreEqual(1, _modeEvents.Count);
+            Assert.AreEqual(ControlMode.OnFoot, _modeEvents[0].Mode);
+        }
+
+        [Test]
+        public void OnDeck_AtTheHelm_TheHelmStillWins_OverACandidateStandingAtIt()
+        {
+            // The rung ABOVE the new one, pinned: taking the helm is unconditional and the registry never
+            // sees the press at the tiller.
+            WireExposedLand();
+            var (sw, _, boat, input, playerGo, _) = Build(new Vector3(0f, -11.5f, 0f), new Vector3(0f, -13.8f, 0f));
+            NoBoardingMove(sw);
+            sw.TryInteract();                                      // board → deck
+            playerGo.transform.position = sw.HelmWorldPosition;    // walk to the tiller
+            Assert.IsTrue(sw.WithinHelmReach());
+            Fake fixture = Candidate(sw.HelmWorldPosition);
+            _modeEvents.Clear(); _boatEvents.Clear();
+
+            Assert.IsTrue(sw.BeginInteract());
+
+            Assert.AreEqual(ControlMode.Aboard, sw.Mode, "the helm is a station and it keeps the press");
+            Assert.IsTrue(boat.enabled, "…she is being steered");
+            Assert.IsTrue(input.enabled);
+            Assert.AreEqual(0, fixture.Calls, "the candidate never got asked");
+            Assert.AreEqual(0, fixture.Resolves, "…and was not even resolved: the helm answers first");
+        }
+
+        [Test]
+        public void OnFoot_BoardingStillWins_OverACandidateAtHerFeet()
+        {
+            // The SHORE ladder is unchanged by this ruling, and that is a policy call worth a pin of its
+            // own: the end state (boarding registers as a candidate and the resolver arbitrates it) stays
+            // deferred, so this test should go red only when THAT is built.
+            WireExposedLand();
+            var (sw, _, _, _, playerGo, _) = Build(new Vector3(0f, -11.5f, 0f), new Vector3(0f, -13.8f, 0f));
+            NoBoardingMove(sw);
+            Fake fixture = Candidate(playerGo.transform.position, where: InteractContext.OnFoot);
+
+            Assert.IsTrue(sw.BeginInteract());
+
+            Assert.AreEqual(ControlMode.OnDeck, sw.Mode, "boarding took the press, exactly as it always has");
+            Assert.AreEqual(0, fixture.Calls, "…and the candidate did not also fire");
+        }
+
+        [Test]
+        public void WithTheVerbSwitchedOff_TheDockedDeckPressStepsAshore_ExactlyAsItDidBefore()
+        {
+            // The A/B and the escape hatch. The early consult goes through the same TryInteractCandidate
+            // the tail one does, so one flag still restores the whole pre-seam ladder.
+            WireExposedLand();
+            var (sw, _, _, _, playerGo, _) = Build(new Vector3(0f, -11.5f, 0f), new Vector3(0f, -13.8f, 0f));
+            NoBoardingMove(sw);
+            Vector3 onDeck = BoardAndStandAwayFromTheHelm(sw, playerGo);
+            sw.ConfigureInteractVerb(false, InteractResolver.DefaultFacingArcDegrees);
+            Fake fixture = Candidate(onDeck);
+
+            Assert.IsTrue(sw.BeginInteract());
+
+            Assert.AreEqual(ControlMode.OnFoot, sw.Mode, "she stepped ashore, as she did before the seam existed");
+            Assert.AreEqual(0, fixture.Calls);
+            Assert.AreEqual(0, fixture.Resolves, "with the verb off the registry is not consulted at all");
+        }
+
+        // ---- the MOVE route, which is the other way off a deck --------------------------------
+
+        [Test]
+        public void OnDeck_AtAWharf_ACandidateInReach_StopsTheDisembarkMOVE_NotJustTheInstantPath()
+        {
+            // The boarding MOVE is left ON here (the shipped default): the consult sits above BOTH ways
+            // off the deck, so the move must not set off either.
+            WireExposedLand();
+            var (sw, _, _, _, playerGo, _) = Build(new Vector3(0f, -11.5f, 0f), new Vector3(0f, -13.8f, 0f));
+            Vector3 onDeck = BoardAndStandAwayFromTheHelm(sw, playerGo);
+            Fake fixture = Candidate(onDeck);
+
+            Assert.IsTrue(sw.BeginInteract());
+
+            Assert.AreEqual(1, fixture.Calls, "the fixture took it");
+            Assert.IsFalse(sw.IsBoardingMove, "…so the walk to the rail never set off");
+            Assert.AreEqual(ControlMode.OnDeck, sw.Mode);
+            Assert.IsFalse(InteractionGate.IsBlocked, "and no move is holding the interact key");
+        }
+
+        [Test]
+        public void OnDeck_AtAWharf_WithNothingRegistered_TheDisembarkMoveStillSetsOff()
+        {
+            WireExposedLand();
+            var (sw, _, _, _, playerGo, _) = Build(new Vector3(0f, -11.5f, 0f), new Vector3(0f, -13.8f, 0f));
+            BoardAndStandAwayFromTheHelm(sw, playerGo);
+
+            Assert.IsTrue(sw.BeginInteract(), "E off the helm spot starts the step ashore");
+            Assert.IsTrue(sw.IsBoardingMove, "the fisher is walking to the rail");
+            Assert.AreEqual(ControlMode.OnDeck, sw.Mode, "…and has not landed yet");
+        }
+
+        // ---- one press, one resolve ------------------------------------------------------------
+
+        [Test]
+        public void ADeckPress_ResolvesTheRegistryExactlyOnce_EvenWhenItFindsNothing()
+        {
+            // Away from the helm over open water, the press has nothing to do at all — the ONE path that
+            // reaches both consult sites. The tail therefore stands down on deck, or every idle press on
+            // a deck would cost two scans of the registry instead of one (rule 7).
+            var (sw, _, _, _, playerGo, boatGo) = Build(new Vector3(0f, -11.5f, 0f), new Vector3(0f, -13.8f, 0f));
+            NoBoardingMove(sw);
+            BoardAndStandAwayFromTheHelm(sw, playerGo);
+
+            boatGo.transform.position = new Vector3(0f, -30f, 0f);   // drifted out: no dock, no land
+            Assert.IsFalse(sw.CanStepAshore(), "harness: nothing standable to step onto");
+            Assert.IsFalse(sw.WithinHelmReach(), "harness: still away from the tiller");
+            Fake outOfReach = Candidate(playerGo.transform.position + new Vector3(50f, 0f, 0f));
+
+            Assert.IsFalse(sw.BeginInteract(), "a press with nothing to do is still a press with nothing to do");
+
+            Assert.AreEqual(0, outOfReach.Calls);
+            Assert.AreEqual(1, outOfReach.Resolves,
+                            "asked ONCE — the deck's early consult, not that one and the tail as well");
+            Assert.AreEqual(ControlMode.OnDeck, sw.Mode);
         }
 
         // ---- the deck clamp maths (pure) ------------------------------------------------------

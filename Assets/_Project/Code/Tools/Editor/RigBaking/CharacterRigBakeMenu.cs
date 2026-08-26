@@ -86,6 +86,38 @@ namespace HiddenHarbours.Tools.RigBaking
             // reads it at play time — but anything driving these must have a station to read.
             new CharacterState("hauler"), new CharacterState("bench"), new CharacterState("chop"),
             new CharacterState("lift"), new CharacterState("place"), new CharacterState("toss"),
+            // The rev-6.6 REACH family — ONE rig clip at three rest HEIGHTS, so three sheets, the
+            // same way `cast` is two. The height is the rig's own REACH_LIFT entry, named rather
+            // than measured: `rest` is sugar for it, so a rack never becomes a number written down
+            // here. A build that cannot reach the high rack bakes the rig's CLAMPED height and says
+            // so in the sidecar — that is art, not a fault.
+            new CharacterState("reach", rest: "ground"),
+            new CharacterState("reach", rest: "stowV"),
+            new CharacterState("reach", rest: "stowH"),
+        };
+
+        /// <summary>
+        /// Anims the rig declares that this menu deliberately does NOT bake — and the reason has to be
+        /// a hard one, because the standing guard is that every declared anim is covered
+        /// (<c>CharacterRigBakeTests.ThePlayerRecipe_CoversEveryAnimTheRigDeclares</c>).
+        ///
+        /// <para><b>The reason for these four is the CELL, and it is structural.</b>
+        /// <see cref="CharacterRigBaker"/> emits ONE cell for every state — the rig's own
+        /// <c>W × H</c>, 64 × 92 — so a player bake writes 8 × 92 = 736 px tall. The off-deck four
+        /// ship at <b>64 × 88</b> (<c>CharacterSheetSlicer.OffDeckCell</c>): the same cell re-windowed
+        /// 2 rows top and 2 bottom, 704 px tall, which this baker has no way to produce. Listing them
+        /// here would not "ship the art" — it would overwrite four committed 704 px sheets with 736 px
+        /// ones on the next bake, and silently invalidate every 88-cell row number in
+        /// <c>OffDeck_mounts.json</c> at the same time.</para>
+        ///
+        /// <para>So they arrive as a DROP, already windowed, and are guarded by
+        /// <c>CharacterIsoSheetSliceTests</c> and <c>CharacterOffDeckMountsTests</c> instead. The day
+        /// this baker learns a per-state cell, that is the change that empties this list — and the
+        /// guard stays live for every other anim the rig grows.</para>
+        /// </summary>
+        public static readonly string[] PlayerAnimsBakedElsewhere =
+        {
+            "swim", "tread", "sleep", "drive",
         };
 
         /// <summary>
