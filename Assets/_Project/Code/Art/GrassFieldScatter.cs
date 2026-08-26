@@ -48,7 +48,11 @@ namespace HiddenHarbours.Art
         //
         //     bits 0..3   habitat id.  0 = NOTHING GROWS HERE. 1..15 index the field's habitat table.
         //     bit  4      broad — this site asked for the widest art its habitat carries.
-        //     bits 5..7   spare (kept zero, so a later flag costs no re-bake of the layout).
+        //     bits 5..6   edge tier (GrassTier) — how near the field's edge this site stands, and so
+        //                 which height classes it may wear. 0 = interior, which is what every field
+        //                 baked before 2026-08-26 stored in those bits, so an OLD field decodes as
+        //                 all-interior and draws exactly what it always drew.
+        //     bit  7      spare (kept zero, so a later flag costs no re-bake of the layout).
         //
         // Everything else a tuft needs — its jittered position, which variant it wears, its scale, whether
         // it is mirrored, its brightness jitter — is a HASH of (cell, slot, seed) and is therefore not
@@ -70,17 +74,34 @@ namespace HiddenHarbours.Art
         /// <summary>Slot-byte bit meaning "this site wants the broadest art its habitat has".</summary>
         public const byte BroadFlag = 0x10;
 
-        public static byte PackSlot(int habitatId, bool broad)
+        /// <summary>Mask of the slot byte's <see cref="GrassTier"/>, once shifted down by
+        /// <see cref="TierShift"/>. Two bits: three tiers and one spare value.</summary>
+        public const byte TierMask = 0x03;
+
+        /// <summary>Where the tier sits in the slot byte.</summary>
+        public const int TierShift = 5;
+
+        /// <summary>The tiers a field may name — <see cref="TierMask"/> + 1. A fourth would need the
+        /// spare bit 7 and a re-bake of every field.</summary>
+        public const int MaxTiers = TierMask + 1;
+
+        public static byte PackSlot(int habitatId, bool broad, GrassTier tier = GrassTier.Interior)
         {
             if (habitatId <= 0) return EmptySlot;                 // empty wins: an empty site has no flags
             byte b = (byte)(habitatId & HabitatMask);
             if (broad) b |= BroadFlag;
+            b |= (byte)((((int)tier) & TierMask) << TierShift);
             return b;
         }
 
         public static int HabitatOf(byte slot) => slot & HabitatMask;
         public static bool BroadOf(byte slot) => (slot & BroadFlag) != 0;
         public static bool IsEmpty(byte slot) => (slot & HabitatMask) == 0;
+
+        /// <summary>This site's edge tier. A field baked before the tier existed stored zeros in these
+        /// bits, which decodes to <see cref="GrassTier.Interior"/> — the full pool, exactly what such a
+        /// field has always drawn.</summary>
+        public static GrassTier TierOf(byte slot) => (GrassTier)((slot >> TierShift) & TierMask);
 
         // =====================================================================================
         // the salts
@@ -201,6 +222,36 @@ namespace HiddenHarbours.Art
                 return (h & 0xFFFFFF) / (float)0x1000000;
             }
         }
+    }
+
+    /// <summary>
+    /// <b>How near the edge of the field a site stands — and so how TALL it is allowed to be.</b>
+    ///
+    /// <para>A meadow that thins toward its boundary but stays knee-high to the last blade still ends in
+    /// a line; it is just a dotted one. So the density ramp (the region pass's own edge band) carries a
+    /// height step-down with it: the interior wears whatever its habitat has, the outer band steps off
+    /// the tall classes, and the last metre is short blades and verge clumps. That is what makes a field
+    /// lie DOWN into the flat ground it meets instead of stopping against it.</para>
+    ///
+    /// <para><b>⚠ The values are stored in the slot byte, so they are append-only like a Def id.</b>
+    /// Interior is 0 on purpose: every field baked before 2026-08-26 has zeros in those bits and
+    /// therefore decodes as all-interior, drawing exactly the meadow it always drew. There is room for
+    /// one more tier before bit 7 has to be spent.</para>
+    ///
+    /// <para>Which HEIGHT CLASSES a tier actually wears is not decided here — that is the grass
+    /// library's answer, resolved at bake by the region planter's art chooser. This names the GROUND,
+    /// the same split of concerns the habitat tag makes.</para>
+    /// </summary>
+    public enum GrassTier
+    {
+        /// <summary>Inside the band: the full habitat pool, exactly as it shipped.</summary>
+        Interior = 0,
+
+        /// <summary>The outer band: the mid classes, stepping down off the tall blades.</summary>
+        Band = 1,
+
+        /// <summary>The last metre: the short and verge classes.</summary>
+        Hem = 2,
     }
 
     /// <summary>

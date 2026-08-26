@@ -318,12 +318,124 @@ namespace HiddenHarbours.App.Editor
                 return widened;
             }
 
+            // =============================================================================
+            // ⭐⭐ THE EDGE TIERS (2026-08-26) — the step-down in HEIGHT
+            // =============================================================================
+            // The meadow's edge band ramps the DENSITY down as the field runs out; on its own that
+            // leaves a field which thins toward its boundary while staying knee-high to the last
+            // blade, which still ends in a line — just a dotted one. So the same distance also steps
+            // the art DOWN a height class: the interior wears whatever its habitat has, the outer band
+            // drops the tall blades, and the last metre is short blades and verge clumps. The field
+            // lies down into the flat splat it meets instead of stopping against it.
+            //
+            // ⭐ IT IS THE ALLY MACHINERY, UNCHANGED, WITH A NARROWER SEED. Widen already lends only
+            // art of a height class the pool ALREADY has — the rule that keeps the verge from
+            // borrowing tall timothy — so a seed pre-filtered to "short" borrows only short. Nothing
+            // here relaxes that; the tier just decides what the seed is.
+            //
+            // ⚠ AND EVERY NARROWING FALLS BACK RATHER THAN EMPTYING. Two filters over a library that
+            // does not bake every combination WILL find holes: measured on the committed manifest,
+            // meadow is the only island habitat with a `medium` bake at all, and sward/headland/verge
+            // are short-only (so their step-down is a no-op, which is correct — they are already the
+            // hem's own height). A pool that came back empty would plant nothing, and a bald hem is
+            // a worse artefact than a slightly tall one. Hem falls to band, band falls to interior.
+            //
+            // ⚠ WHAT WOULD BE WRONG IS LOWERING THE VARIETY FLOOR TO PAPER OVER A THIN POOL. Measured
+            // on the committed manifest every island habitat clears MinHabitatVariety at every tier
+            // once allies are counted, so this pass needs no new bakes. If a future retag breaks that,
+            // StPetersGrassVarietyTests says which pool and which tier — bake, don't lower the floor.
+
+            readonly Dictionary<string, List<GrassLibraryCatalog.Entry>> _byTier =
+                new Dictionary<string, List<GrassLibraryCatalog.Entry>>();
+            readonly Dictionary<string, List<GrassLibraryCatalog.Entry>> _broadByTier =
+                new Dictionary<string, List<GrassLibraryCatalog.Entry>>();
+
+            static string TierKey(string habitat, GrassTier tier) => habitat + " " + (int)tier;
+
+            /// <summary>
+            /// The height classes a tier is allowed to wear. <b>The band drops TALL rather than
+            /// insisting on MEDIUM</b>, which matters: only one island habitat has a medium bake, so a
+            /// medium-only band would be empty for the other five and fall straight back to the full
+            /// pool — leaving them a two-step from tall interior to short hem, which is the hard line
+            /// again with an extra metre on it. "Everything that is not tall" steps down for every
+            /// habitat with the art already on disk.
+            /// </summary>
+            public static string[] ClassesFor(GrassTier tier) => tier switch
+            {
+                GrassTier.Band => BandClasses,
+                GrassTier.Hem => HemClasses,
+                _ => null,                    // interior: no filter, the habitat's whole pool
+            };
+
+            static readonly string[] BandClasses =
+                { GrassLibraryCatalog.HeightMedium, GrassLibraryCatalog.HeightShort };
+
+            static readonly string[] HemClasses = { GrassLibraryCatalog.HeightShort };
+
+            static List<GrassLibraryCatalog.Entry> OfClasses(
+                List<GrassLibraryCatalog.Entry> entries, string[] classes) =>
+                classes == null || classes.Length == 0
+                    ? entries
+                    : entries.Where(e => classes.Any(
+                          c => string.Equals(c, e.HeightClass, System.StringComparison.OrdinalIgnoreCase)))
+                             .ToList();
+
+            /// <summary>Everything a habitat may wear at an edge tier — its baked art of that tier's
+            /// height classes, widened from its documented allies on the usual rule, and falling back
+            /// toward the interior when the library has nothing of that class for this ground.</summary>
+            public List<GrassLibraryCatalog.Entry> ForTier(string habitat, GrassTier tier)
+            {
+                if (tier == GrassTier.Interior) return For(habitat);
+
+                string key = TierKey(habitat, tier);
+                if (_byTier.TryGetValue(key, out var list)) return list;
+
+                var classes = ClassesFor(tier);
+                var seed = OfClasses(BakedFor(habitat), classes);
+                list = seed.Count == 0
+                    // Nothing baked at this height for this ground: step back UP a tier, never to bald.
+                    ? (tier == GrassTier.Hem ? ForTier(habitat, GrassTier.Band) : For(habitat))
+                    : Widen(habitat, seed, h => OfClasses(BakedFor(h), classes));
+
+                _byTier[key] = list;
+                return list;
+            }
+
+            /// <summary>The broad art of a habitat at an edge tier — at least two cells wide AND of the
+            /// tier's height classes.
+            ///
+            /// <para>⚠ Widened from the BAKED pool, never from <see cref="ForTier"/>, for the same
+            /// reason <see cref="BroadFor"/> is: taking the wide entries of an already-widened list
+            /// lets an ally in twice and quietly re-weights the roll toward whatever it lent.</para>
+            ///
+            /// <para>⭐ And the hem is where this pays: the two <c>ClumpWide</c> silhouettes and the
+            /// dune's saltmeadow pair are all SHORT and two cells across, so the last metre of the
+            /// field can still be broad — it covers ground without standing up.</para></summary>
+            public List<GrassLibraryCatalog.Entry> BroadForTier(string habitat, GrassTier tier)
+            {
+                if (tier == GrassTier.Interior) return BroadFor(habitat);
+
+                string key = TierKey(habitat, tier);
+                if (_broadByTier.TryGetValue(key, out var list)) return list;
+
+                var classes = ClassesFor(tier);
+                var seed = BroadOf(OfClasses(BakedFor(habitat), classes));
+                list = seed.Count == 0
+                    ? ForTier(habitat, tier)      // nothing wide at this height; sparser art beats bald
+                    : Widen(habitat, seed, h => BroadOf(OfClasses(BakedFor(h), classes)));
+
+                _broadByTier[key] = list;
+                return list;
+            }
+
             /// <summary>The entry a site grows, or null when the library has nothing at all. The site's
             /// own stable roll picks between the matching variants, so the same metre of ground always
             /// grows the same blade across rebuilds (rule 5).</summary>
             public GrassLibraryCatalog.Entry Choose(StPetersGrass.GrassTuftSite site)
             {
-                var choices = site.Broad ? BroadFor(site.Habitat) : For(site.Habitat);
+                var choices = site.Broad
+                    ? BroadForTier(site.Habitat, site.Tier)
+                    : ForTier(site.Habitat, site.Tier);
                 return choices.Count == 0 ? null : choices[site.Roll % choices.Count];
             }
         }
@@ -405,7 +517,8 @@ namespace HiddenHarbours.App.Editor
 
             Debug.Log(
                 $"[StPetersWoodsPlanter] Baked a grass FIELD of {baked.Tufts} tufts " +
-                $"({baked.HabitatSummary()}) into {field.PayloadCharacters:N0} characters of scene — " +
+                $"({baked.HabitatSummary()}) — edge tiers: {baked.TierSummary()} — " +
+                $"into {field.PayloadCharacters:N0} characters of scene — " +
                 $"a {baked.Layout.CellsX}x{baked.Layout.CellsY} grid at {baked.Layout.CellSize} m, " +
                 $"{baked.Layout.Slots} sites per cell, seed {baked.Layout.Seed}. The tufts are DERIVED at " +
                 "load and drawn in chunked meshes; none of them is saved. Re-running this pass rewrites " +
@@ -455,6 +568,19 @@ namespace HiddenHarbours.App.Editor
                     Name = habitat,
                     Pool = Indices(chooser.For(habitat)),
                     BroadPool = Indices(chooser.BroadFor(habitat)),
+
+                    // ⭐ The edge tiers, resolved HERE for the same reason the others are: the chooser
+                    // knows the library and the runtime must not. Note these are the ALREADY-fallen-
+                    // back lists — a habitat with no medium bake gets its interior art written into
+                    // its band pool rather than an empty array, so the decision "what does this ground
+                    // wear when the library has nothing of that height" is made once, at bake, by the
+                    // half that can see the manifest. GrassField's own tier fallback is the belt to
+                    // this brace: it is what makes a field baked BEFORE the tiers existed — all-zero
+                    // bits, empty arrays — still decode to the meadow it always drew.
+                    BandPool = Indices(chooser.ForTier(habitat, GrassTier.Band)),
+                    BandBroadPool = Indices(chooser.BroadForTier(habitat, GrassTier.Band)),
+                    HemPool = Indices(chooser.ForTier(habitat, GrassTier.Hem)),
+                    HemBroadPool = Indices(chooser.BroadForTier(habitat, GrassTier.Hem)),
                 };
             }
 

@@ -4,6 +4,11 @@ using UnityEngine;
 using HiddenHarbours.Art.Editor;   // VillageBuildingCatalog — a building clears its own footprint
 using HiddenHarbours.Core;
 
+// The edge band's tier lives in the runtime assembly, beside the slot byte that carries it and the
+// renderer that has to read it back — see GrassFieldScatter. Aliased so this file can talk about the
+// ground in the same words the field does.
+using GrassTier = HiddenHarbours.Art.GrassTier;
+
 namespace HiddenHarbours.App.Editor
 {
     /// <summary>
@@ -651,11 +656,389 @@ namespace HiddenHarbours.App.Editor
         /// before the two <c>ClumpWide</c> silhouettes (four, with the mirror) start to repeat.</summary>
         public const float BroadClumpShare = 0.60f;
 
+        /// <summary>Share of EDGE-BAND sites that take a broad clump, and of HEM sites. Both well above
+        /// the interior's <see cref="BroadClumpShare"/>, and the reason is the ground rather than the
+        /// budget: <b>grass at a cut or trodden edge spreads sideways instead of standing up.</b> The
+        /// library already says so — the only art baked for <see cref="HabitatVerge"/>, the trodden
+        /// ribbon beside a path, is the two wide low <c>ClumpWide</c> variants. A hem of low spreading
+        /// clumps is what the edge of a field actually looks like.
+        ///
+        /// <para>⭐ It also pays for itself: a wide clump hides twice the ground for one renderer, so
+        /// leaning on them is how the band stays a FIELD while carrying fewer tufts — the same trade
+        /// that let <see cref="GrassStep"/> stop at 0.85 m instead of 0.80.</para></summary>
+        public const float BandBroadClumpShare = 0.70f;
+
+        /// <inheritdoc cref="BandBroadClumpShare"/>
+        public const float HemBroadClumpShare = 0.85f;
+
         /// <summary>Whether this site wants the broadest art its habitat has. A ground decision: the
         /// planter answers WHICH art is broad, from whatever has been baked (the same split of
-        /// concerns the habitat tag makes).</summary>
+        /// concerns the habitat tag makes).
+        ///
+        /// <para><b>⚠ The interior arm is untouched, hash for hash</b> — the edge band is not allowed
+        /// to re-roll ground the owner already ratified. Only a site inside the band takes the wider
+        /// share, and it drops the field-strength gate with it: how strongly the swathe field runs
+        /// through a piece of ground says nothing about whether it is at an EDGE, and a hem that
+        /// spread only where the field happened to be strong would be a dotted hem.</para></summary>
+        public static bool BroadAt(Vector2 worldPos, float hash01, GrassTier tier)
+        {
+            if (tier == GrassTier.Interior)
+                return FieldStrength(worldPos) >= BroadClumpStrength && hash01 < BroadClumpShare;
+            return hash01 < (tier == GrassTier.Hem ? HemBroadClumpShare : BandBroadClumpShare);
+        }
+
+        /// <inheritdoc cref="BroadAt(Vector2, float, GrassTier)"/>
         public static bool BroadAt(Vector2 worldPos, float hash01) =>
-            FieldStrength(worldPos) >= BroadClumpStrength && hash01 < BroadClumpShare;
+            BroadAt(worldPos, hash01, GrassTier.Interior);
+
+        // =====================================================================================
+        // ⭐⭐ THE EDGE BAND (2026-08-26) — where the field STOPS
+        // =====================================================================================
+        // The owner walked the retuned meadow and said the COVERAGE was right; what read wrong was
+        // every place it ENDED. A field gated on a hard predicate ends in a hard line — a cell either
+        // clears ChanceOpen (0.97) or plants nothing — so a tall-tuft field meets the flat compacted-
+        // grass splat at a step from near-full cover to bare in one 0.85 m cell. All three of his
+        // playtest spots are that one defect wearing different clothes: Ginny's plot edge (a yard's
+        // mow line), the sparse field (a swathe-field contour), the tread verges (a walked path).
+        //
+        // So the gate stops being a step and becomes a RAMP. Every accept probability is multiplied by
+        // EdgeFalloff, which is exactly 1 in the interior and eases to 0 at the boundary across a band
+        // whose WIDTH itself meanders. Two things about that, and both are load-bearing:
+        //
+        //   ⚠ A FALLOFF OF CONSTANT WIDTH IS A STRIPE. Ramping over a fixed 3.2 m draws a perfectly
+        //     parallel border inside every boundary on the island — round each building, along each
+        //     fence, down both sides of each path. The eye reads a constant-width gradient as painted
+        //     trim, which is a different artificial edge, not the absence of one. BandWidthAt wanders
+        //     it on its own coherent noise so the field's outer envelope advances and retreats.
+        //
+        //   ⚠ THE INTERIOR IS UNTOUCHED, AND THAT IS THE POINT. EdgeFalloff returns exactly 1 beyond
+        //     the band, so every site more than BandWidthAt metres inside the meadow plants exactly
+        //     what it planted before — same hash, same roll, same blade, same place. The owner ratified
+        //     the interior density; this pass is not allowed to spend it, and
+        //     StPetersGrassEdgeBandTests pins that site for site rather than asking you to believe it.
+        //
+        // The step-down in HEIGHT rides the same distance (see GrassTier): a field that thins toward
+        // its edge but stays knee-high to the last blade still ends in a line, just a dotted one.
+
+        /// <summary>How deep the transition band runs (m) before the meander widens or narrows it.
+        /// <b>3.2 m — about four grid steps</b>, which is the floor for a ramp that reads as a gradient
+        /// rather than as two or three sparse rows. It sits mid-range of the 2.5–4 m the brief allowed
+        /// so <see cref="EdgeBandJitter"/> can swing either way without collapsing the band at one end
+        /// or doubling it at the other.</summary>
+        public const float EdgeBandMetres = 3.2f;
+
+        /// <summary>How far the band's width wanders, as a fraction of <see cref="EdgeBandMetres"/>.
+        /// ±35% takes it between about 2.1 m and 4.3 m — the ends of the ruled range. See the section
+        /// remarks for why a constant width is its own artefact.</summary>
+        public const float EdgeBandJitter = 0.35f;
+
+        /// <summary>Feature size (m) of the band-width meander. <b>Deliberately smaller than the swathe
+        /// mosaic's <see cref="SwatheScale"/></b>: the meander has to vary several times along one
+        /// building's clearing, or that building simply gets its own constant width and the stripe is
+        /// back one scale up.</summary>
+        public const float EdgeBandNoiseScale = 11f;
+
+        /// <summary>The widest the band can ever be — the bound the yard rows' bounding-box rejection
+        /// has to allow for, so a polygon just outside a site's box cannot be missed. DERIVED, so
+        /// re-tuning the jitter cannot silently invalidate that rejection (rule 6).</summary>
+        public const float EdgeBandCeilingMetres = EdgeBandMetres * (1f + EdgeBandJitter);
+
+        /// <summary>The share of the band nearest the boundary that plants the SHORT classes — the hem.
+        /// 0.30 of a 3.2 m band is a shade under a metre, the "last ~1 m" the brief asked for, and
+        /// holding it as a FRACTION means the hem meanders with the band instead of cutting a
+        /// constant-width line of its own inside a wandering one.</summary>
+        public const float HemFractionOfBand = 0.30f;
+
+        // -------------------------------------------------------------------------------------
+        // ⭐⭐ TWO FLOORS, BECAUSE THE TWO KINDS OF EDGE ARE NOT THE SAME EDGE
+        // -------------------------------------------------------------------------------------
+        // 🔴 THE FIRST CUT OF THIS RAMPED EVERY BOUNDARY TO ZERO, AND IT WAS WRONG TWICE OVER — both
+        // caught by measuring, neither by reading the code:
+        //
+        //   1. THE MEADOW STOPPED READING AS A FIELD. Whole-island coverage fell 82.6% → 76.9%, under
+        //      the 80% the owner ratified. A QUARTER of this island's plantable ground lies within a
+        //      band of some boundary — the swathe mosaic's contour is intricate, so its perimeter is
+        //      enormous — and thinning all of it to nothing spends coverage he had already ruled good.
+        //   2. IT DELETED THE VERGE. `HabitatVerge` exists ONLY in the 1.2 m ribbon either side of a
+        //      walked tread, which is exactly the ground a ramp-to-zero erases. The island went from a
+        //      hem of trodden clumps along both paths to SEVENTEEN tufts. A pass meant to soften an
+        //      edge had quietly removed a habitat.
+        //
+        // ⭐ THE FIX IS NOT A NARROWER BAND, IT IS THE RIGHT SHAPE — and the two failures agree about
+        // what that is. Stand at a real mow line: the wild grass is DENSE right up to it, because a
+        // mower cuts a line rather than tapering one. What changes across it is HEIGHT. Stand where a
+        // field simply peters out into thin ground and the density genuinely does fade.
+        //
+        // So a CUT / TRODDEN / BUILT edge (<see cref="ClearanceDistanceMetres"/> — mow lines, treads,
+        // buildings, the wharf) keeps a high floor and lets the height step-down carry the whole
+        // transition, while a FIELD CONTOUR (the swathe mosaic, the grass floor) fades much further.
+        // Ramping the first kind to zero does not soften it: it digs a bald moat around every fence
+        // and doorstep, which is its own artefact and a more obvious one than the line it replaced.
+
+        /// <summary>Density floor at a CUT edge — a mow line, a walked tread, a building's ground, the
+        /// wharf. <b>0.80: a fifth thinner at the line, and no more.</b> The transition here is carried
+        /// by the height step-down; see the section note above for the two measured failures that set
+        /// this number.</summary>
+        public const float ClearanceFalloffFloor = 0.80f;
+
+        /// <summary>Density floor at a FIELD CONTOUR — where the swathe mosaic dips below its own
+        /// threshold, or the ground falls under the grass band's floor. <b>0.45</b>, because this edge
+        /// really is the field running out. Still not zero: a fixed-width band ramped to nothing reads
+        /// as a moat drawn around the thin ground rather than as thin ground.</summary>
+        public const float FieldFalloffFloor = 0.45f;
+
+        /// <summary>Half-step (m) of the central difference the contour distances take their gradient
+        /// with. Half a grid step: local enough to describe the slope where the site actually stands,
+        /// wide enough that a value-noise field's own lattice texture does not dominate it.</summary>
+        public const float ContourProbeMetres = GrassStep * 0.5f;
+
+        /// <summary>The answer a contour distance gives when the field is FLAT — "no boundary anywhere
+        /// near", which on this island's plateau is the honest answer for the whole interior. A large
+        /// finite number rather than <c>float.MaxValue</c> so callers can keep doing arithmetic on
+        /// it.</summary>
+        public const float FarInsideMetres = 1e6f;
+
+        // The tier itself (<see cref="GrassTier"/>) lives in the RUNTIME assembly beside the slot byte
+        // that carries it — this class decides which tier a metre of ground is in, and GrassField draws
+        // it. An editor-only enum could not be read back by the thing that has to grow the meadow.
+
+        /// <summary>The transition band's width at a point — <see cref="EdgeBandMetres"/> wandering on
+        /// its own coherent noise. <b>Its own salt</b>, so the meander is independent of the swathe
+        /// mosaic: a band that narrowed wherever the field already thinned would double the very
+        /// correlation the meander exists to break.</summary>
+        public static float BandWidthAt(Vector2 worldPos)
+        {
+            float w = StPetersShoreMap.Wiggle(
+                worldPos * (StPetersShoreMap.BandWiggleScale / EdgeBandNoiseScale), salt: 223);
+            return EdgeBandMetres * (1f + EdgeBandJitter * Mathf.Clamp(w, -1f, 1f));
+        }
+
+        /// <summary>
+        /// Metres to the nearest HARD keepout edge — ground <see cref="IsPlantableMeadow"/> refuses for
+        /// a reason that has an authored shape. Signed: negative inside a keepout.
+        ///
+        /// <para><b>Exact, because every one of them is a disc, a segment or a polygon.</b> This walks
+        /// the same list the gate walks, in the same order, so a keepout that moves moves its band with
+        /// it — and a site missing from <see cref="BuildingKeepouts"/> is one the GATE does not know
+        /// about either, rather than a second list to fall out of sync (the 🔴 note on
+        /// <see cref="BuildingSites"/> is about exactly that failure).</para>
+        /// </summary>
+        public static float ClearanceDistanceMetres(Vector2 p)
+        {
+            float best = FarInsideMetres;
+
+            for (int i = 0; i < BuildingKeepouts.Length; i++)
+                best = Mathf.Min(best, Vector2.Distance(p, BuildingKeepouts[i].Position)
+                                       - BuildingKeepouts[i].RadiusMetres);
+
+            // The mow lines. Cheap where it has to be, the same way IsInsideAYard is: a site out on the
+            // meadow costs four compares per row and never walks a polygon's edges. ⚠ The box is grown
+            // by the band's CEILING first — rejecting on the bare box would blind a site standing one
+            // band-width OUTSIDE a fence, which is precisely the ground this function exists to find.
+            var yards = StPetersYards.Yards;
+            for (int i = 0; i < yards.Count; i++)
+            {
+                var polygon = yards[i].Polygon;
+                if (!polygon.IsValid) continue;
+                var box = polygon.Bounds;
+                if (p.x < box.xMin - EdgeBandCeilingMetres || p.x > box.xMax + EdgeBandCeilingMetres ||
+                    p.y < box.yMin - EdgeBandCeilingMetres || p.y > box.yMax + EdgeBandCeilingMetres)
+                    continue;
+                float d = polygon.DistanceToEdge(p);
+                best = Mathf.Min(best, polygon.Contains(p) ? -d : d);
+            }
+
+            best = Mathf.Min(best, Vector2.Distance(p, StPetersBuilder.DockZonePos)
+                                   - StPetersWoods.DockClearance);
+            best = Mathf.Min(best, StPetersShoreMap.DistanceToSegment(
+                                       p, StPetersBuilder.BerthFrom, StPetersBuilder.BerthTo)
+                                   - StPetersWoods.DockClearance);
+            best = Mathf.Min(best, DistanceToWalkedPath(p) - PathBareHalfWidthMetres);
+
+            return best;
+        }
+
+        /// <summary>
+        /// Metres from a smooth field's threshold contour, to first order:
+        /// <c>(value − threshold) / |∇value|</c>. Signed the way the gate is — positive where the field
+        /// passes.
+        ///
+        /// <para><b>Why a gradient rather than a search.</b> Both boundaries this is asked about are
+        /// ISO-CONTOURS of continuous fields (the swathe mosaic, the terrain's grass floor), not
+        /// authored shapes, so there is no geometry to measure a distance TO. Ring-probing outward for
+        /// the first failing sample would cost tens of predicate evaluations per site and quantise the
+        /// answer to the probe spacing; one central difference costs four samples and is exact for the
+        /// linear part, which over 3 m of a 24 m-scale field is very nearly all of it.</para>
+        ///
+        /// <para><b>⚠ A FLAT FIELD HAS NO NEARBY CONTOUR, and that is the common case.</b> This island
+        /// is a flat-topped plateau, so the elevation gradient inland is zero and the honest answer for
+        /// the whole interior is <see cref="FarInsideMetres"/> — not zero, which would band the entire
+        /// island, and not a division by zero.</para>
+        /// </summary>
+        public static float ContourDistance(float value, float threshold,
+                                            float east, float west, float north, float south,
+                                            float halfStep)
+        {
+            float v = value - threshold;
+            float gx = (east - west) / (2f * halfStep);
+            float gy = (north - south) / (2f * halfStep);
+            float g = Mathf.Sqrt(gx * gx + gy * gy);
+            if (g <= 1e-6f) return v >= 0f ? FarInsideMetres : -FarInsideMetres;
+            return Mathf.Clamp(v / g, -FarInsideMetres, FarInsideMetres);
+        }
+
+        /// <summary>Metres from the swathe field's own <see cref="SwatheThreshold"/> contour — the edge
+        /// of the worn ground the mosaic dips into, which is what the owner's sparse-field spot is made
+        /// of.</summary>
+        public static float SwatheDistanceMetres(Vector2 p)
+        {
+            float h = ContourProbeMetres;
+            return ContourDistance(
+                SwatheField(p), SwatheThreshold,
+                SwatheField(p + new Vector2(h, 0f)), SwatheField(p - new Vector2(h, 0f)),
+                SwatheField(p + new Vector2(0f, h)), SwatheField(p - new Vector2(0f, h)), h);
+        }
+
+        /// <summary>Metres from the grass band's own floor contour — the line where the painted ground
+        /// stops reading as grass and the beach takes over.</summary>
+        public static float GrassFloorDistanceMetres(ITidalTerrain terrain, Vector2 p)
+        {
+            if (terrain == null) return -FarInsideMetres;
+            float h = ContourProbeMetres;
+            return ContourDistance(
+                terrain.ElevationAt(p), StPetersShoreMap.GrassFloorElevation,
+                terrain.ElevationAt(p + new Vector2(h, 0f)), terrain.ElevationAt(p - new Vector2(h, 0f)),
+                terrain.ElevationAt(p + new Vector2(0f, h)), terrain.ElevationAt(p - new Vector2(0f, h)),
+                h);
+        }
+
+        /// <summary>Metres to the nearest FIELD CONTOUR — where the swathe mosaic dips below its
+        /// threshold, or the ground falls under the grass band's floor. The soft kind of edge: this is
+        /// the field genuinely running out, not something cutting it.</summary>
+        public static float FieldContourDistanceMetres(ITidalTerrain terrain, Vector2 p) =>
+            Mathf.Min(SwatheDistanceMetres(p), GrassFloorDistanceMetres(terrain, p));
+
+        /// <summary>How far this ground is from the nearest edge of the field, in metres — the smaller
+        /// of the cut edges and the field contours. Positive inside the meadow, negative outside it.
+        /// <b>The TIER reads this</b>, because how tall a blade should be depends on how near an edge
+        /// it is and not on which kind of edge it is; the DENSITY treats the two differently (see
+        /// <see cref="ClearanceFalloffFloor"/>).</summary>
+        public static float EdgeDistanceMetres(ITidalTerrain terrain, Vector2 p) =>
+            Mathf.Min(ClearanceDistanceMetres(p), FieldContourDistanceMetres(terrain, p));
+
+        /// <summary>
+        /// The multiplier on a cell's accept chance — <b>1 in the interior, easing to 0 at the
+        /// boundary</b> — and the tier the site's art steps down through on the way.
+        ///
+        /// <para>One call answers both because the DISTANCE is the expensive half and they read the
+        /// same one; asking twice would double the cost of the pass to recompute a number it already
+        /// had.</para>
+        ///
+        /// <para><b>Smoothstep, not a straight ramp.</b> Its derivative is zero at both ends: at the
+        /// inner end that makes the band join the interior invisibly (a linear ramp meets full density
+        /// at a crease), and at the outer end it leaves the last metre sparse rather than empty — which
+        /// is the ground the hem's short blades are there to hold.</para>
+        /// </summary>
+        public static float EdgeFalloff(ITidalTerrain terrain, Vector2 p, out GrassTier tier)
+        {
+            float w = Mathf.Max(0.01f, BandWidthAt(p));
+            float clearance = ClearanceDistanceMetres(p);
+            float contour = FieldContourDistanceMetres(terrain, p);
+
+            // The TIER is about how near ANY edge is — a blade a metre from a fence and a blade a
+            // metre from the field's thin ground are both hem-height. The DENSITY is about WHICH edge,
+            // which is the whole point of the two floors.
+            float d = Mathf.Min(clearance, contour);
+            tier = d >= w ? GrassTier.Interior
+                 : d <= w * HemFractionOfBand ? GrassTier.Hem
+                 : GrassTier.Band;
+
+            // Whichever edge thins this ground more wins — a site caught between a fence and a thin
+            // patch is as sparse as the thin patch, not the average of the two.
+            return Mathf.Min(Ramp(clearance, w, ClearanceFalloffFloor),
+                             Ramp(contour, w, FieldFalloffFloor));
+        }
+
+        /// <summary>One boundary's density ramp: 1 beyond the band, easing down to
+        /// <paramref name="floor"/> at the boundary itself.
+        ///
+        /// <para><b>Smoothstep, not a straight line.</b> Its derivative is zero at both ends, so the
+        /// band joins the interior invisibly — a linear ramp meets full density at a crease, which is
+        /// a fainter version of the very line this removes.</para>
+        ///
+        /// <para>Below the boundary the answer is 0, but nothing reaches that: a site out there failed
+        /// <see cref="IsPlantableMeadow"/> or <see cref="InSwathe"/> long before. It is here so the
+        /// function is total rather than because the meadow needs it.</para></summary>
+        public static float Ramp(float distance, float bandWidth, float floor)
+        {
+            if (distance >= bandWidth) return 1f;
+            if (distance <= 0f) return 0f;
+            return Mathf.Lerp(floor, 1f, Mathf.SmoothStep(0f, 1f, distance / bandWidth));
+        }
+
+        /// <inheritdoc cref="EdgeFalloff(ITidalTerrain, Vector2, out GrassTier)"/>
+        public static float EdgeFalloff(ITidalTerrain terrain, Vector2 p) =>
+            EdgeFalloff(terrain, p, out _);
+
+        /// <summary>Which band of the field's edge this ground is in — the same answer
+        /// <see cref="EdgeFalloff(ITidalTerrain, Vector2, out GrassTier)"/> gives, for callers that
+        /// want only the tier.</summary>
+        public static GrassTier TierAt(ITidalTerrain terrain, Vector2 p)
+        {
+            EdgeFalloff(terrain, p, out GrassTier tier);
+            return tier;
+        }
+
+        // =====================================================================================
+        // the stand edge — the other hard line, and the same fix
+        // =====================================================================================
+
+        /// <summary>
+        /// The per-cell chance this ground carries grass, with the WOODS EDGE softened.
+        ///
+        /// <para><b>⚠ 0.97 to 0.10 across one 0.85 m cell is a hard line too.</b>
+        /// <see cref="StPetersWoods.InStand"/> is a threshold on a noise field, so the duff under the
+        /// trees used to meet the open meadow at a step of nearly a factor of ten in density — the same
+        /// defect as the field's outer edge, drawn round every stand on the island. This blends the two
+        /// chances over how much of a small ring is under canopy, so a stand's floor thins into the
+        /// meadow the way the stand's own trees already thin into it (<c>InStand</c> tapers its
+        /// threshold toward the coast for exactly this reason).</para>
+        ///
+        /// <para><b>⚠ It is a RING, not a gradient.</b> The stand test folds a noise field and a
+        /// shelter taper into one comparison, so there is no single smooth value to differentiate —
+        /// sampling the PREDICATE around the site and counting is both simpler and exactly what "how
+        /// much of the ground around me is wood" means. The interior of a stand answers 1 and the open
+        /// meadow answers 0, so neither of them changes.</para>
+        /// </summary>
+        public static float ChanceAt(ITidalTerrain terrain, Vector2 p, float elevation) =>
+            Mathf.Lerp(ChanceOpen, ChanceWoods, StandFraction(terrain, p, elevation));
+
+        /// <summary>Radius (m) of the ring <see cref="StandFraction"/> counts canopy on. Half the edge
+        /// band, so the woods' hem is about as deep as the field's own and the two read as one
+        /// language.</summary>
+        public const float StandBlendRadiusMetres = EdgeBandMetres * 0.5f;
+
+        /// <summary>How many probes the ring carries. <b>Eight</b> — the ring has to resolve which SIDE
+        /// the wood is on, and four would quantise the blend to quarters, which is coarse enough to
+        /// read as steps in the very density it is smoothing.</summary>
+        public const int StandBlendProbes = 8;
+
+        /// <summary>How much of the ground within <see cref="StandBlendRadiusMetres"/> is under the
+        /// reverting mosaic, 0 (open meadow) to 1 (inside a stand). The centre counts as one probe, so
+        /// a site standing in a copse too small to fill the ring still reads as mostly wood.</summary>
+        public static float StandFraction(ITidalTerrain terrain, Vector2 p, float elevation)
+        {
+            if (terrain == null) return 0f;
+
+            int inside = StPetersWoods.InStand(p, elevation) ? 1 : 0;
+            for (int i = 0; i < StandBlendProbes; i++)
+            {
+                float a = (Mathf.PI * 2f * i) / StandBlendProbes;
+                Vector2 q = p + new Vector2(Mathf.Cos(a), Mathf.Sin(a)) * StandBlendRadiusMetres;
+                if (StPetersWoods.InStand(q, terrain.ElevationAt(q))) inside++;
+            }
+            return inside / (float)(StandBlendProbes + 1);
+        }
 
         // =====================================================================================
         // the scatter
@@ -716,6 +1099,12 @@ namespace HiddenHarbours.App.Editor
             /// a normal tuft.</summary>
             public bool Broad;
 
+            /// <summary>How near the field's EDGE this site stands, and so how tall it may be
+            /// (<see cref="GrassTier"/>). Like <see cref="Habitat"/> this is a statement about the
+            /// GROUND — the planter turns it into a height class and picks art, and a tier with no art
+            /// of its own falls back up the tiers rather than planting nothing.</summary>
+            public GrassTier Tier;
+
             /// <summary>Draw the sprite mirrored. Free variety — the tufts pivot bottom-CENTRE, the
             /// wind is world-space and the shader's bend reads sprite <c>uv.y</c>, so a mirrored tuft
             /// leans and bends exactly like an unmirrored one while doubling the silhouettes the eye
@@ -756,7 +1145,13 @@ namespace HiddenHarbours.App.Editor
                 if (!InSwathe(p)) continue;
 
                 float e = terrain.ElevationAt(p);
-                float chance = StPetersWoods.InStand(p, e) ? ChanceWoods : ChanceOpen;
+
+                // ⭐ THE EDGE BAND. The chance the ground would carry at full strength, RAMPED DOWN as
+                // the field runs out (EdgeFalloff is exactly 1 beyond the band, so the interior gate is
+                // bit-for-bit the one that shipped). Both edges are softened here — the field's outer
+                // envelope by the falloff, the woods' by ChanceAt's ring — because a step in density is
+                // a drawn line whichever side of it is denser.
+                float chance = ChanceAt(terrain, p, e) * EdgeFalloff(terrain, p);
                 if (StPetersShoreMap.Hash01(ix, iy, 173) > chance) continue;
 
                 int tufts = TuftsAt(p, StPetersShoreMap.Hash01(ix, iy, 179));
@@ -771,6 +1166,14 @@ namespace HiddenHarbours.App.Editor
                     if (!IsPlantableMeadow(terrain, q)) continue;
 
                     float h = HiddenHarbours.Art.GrassFieldScatter.ShapeRoll(layout, ix, iy, t);
+
+                    // ⚠ The TIER is read at the TUFT's point, not the cell's — the same call HabitatAt
+                    // makes and for the same reason. A slot offset can carry a blade the better part of
+                    // a metre, which on a band this narrow is the difference between the hem and the
+                    // band, and a tall blade standing one step outside its tier is exactly the hard
+                    // line this pass exists to remove.
+                    EdgeFalloff(terrain, q, out GrassTier tier);
+
                     sites.Add(new GrassTuftSite
                     {
                         Position = q,
@@ -778,8 +1181,9 @@ namespace HiddenHarbours.App.Editor
                         CellY = iy,
                         Slot = t,
                         Habitat = HabitatAt(terrain, q),
+                        Tier = tier,
                         Roll = HiddenHarbours.Art.GrassFieldScatter.VariantRoll(layout, ix, iy, t),
-                        Broad = BroadAt(q, StPetersShoreMap.Hash01(ix * 11 + t, iy, 199)),
+                        Broad = BroadAt(q, StPetersShoreMap.Hash01(ix * 11 + t, iy, 199), tier),
                         Mirror = HiddenHarbours.Art.GrassFieldScatter.Mirrored(layout, ix, iy, t),
                         Scale = Mathf.Lerp(ScaleMin, ScaleMax, h),
                         Tint = TintAt(q, h),
