@@ -586,7 +586,8 @@ namespace HiddenHarbours.App
         /// </summary>
         private void TickDocking()
         {
-            if (_pilotage == null || _helm == null) return;
+            // IsAlive, not a null-coalesce: a destroyed UnityEngine.Object is fake-null (see FixedUpdate).
+            if (_pilotage == null || _helm == null || !_helm.IsAlive) return;
 
             if (_pilotage.ReadyForLines(_helm.Position, _helm.HeadingDegrees, _helm.Velocity))
             {
