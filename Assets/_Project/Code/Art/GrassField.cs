@@ -123,6 +123,31 @@ namespace HiddenHarbours.Art
             [Tooltip("Indices into Variants: the broadest art this habitat carries (two cells or wider). " +
                      "A habitat with no wide bake keeps its normal pool — sparser art beats a bald patch.")]
             public int[] BroadPool = Array.Empty<int>();
+
+            // ⭐ THE EDGE TIERS (2026-08-26). The same two pools again, narrowed to the height classes a
+            // site near the field's edge is allowed to wear — mid in the band, short in the hem. They
+            // are resolved at bake through the very same chooser (allies, height classes and all) and
+            // stored as plain indices, because the library is an editor-side manifest and the runtime
+            // must never need it.
+            //
+            // ⚠ EMPTY IS LEGAL AND MEANS "FALL BACK", not "plant nothing". A habitat with no medium
+            // bake — which today is every habitat but meadow — leaves its band pools empty and
+            // PoolFor walks up the tiers. A bald hem is far worse than a slightly tall one, and it is
+            // the failure the owner would have to diagnose from a screenshot.
+
+            [Tooltip("Indices into Variants: what this habitat wears in the outer edge band (mid " +
+                     "classes). Empty = no mid bake for this ground; the interior pool is used.")]
+            public int[] BandPool = Array.Empty<int>();
+
+            [Tooltip("Indices into Variants: the broad art of the outer edge band. Empty = fall back.")]
+            public int[] BandBroadPool = Array.Empty<int>();
+
+            [Tooltip("Indices into Variants: what this habitat wears in the last metre (short classes). " +
+                     "Empty = no short bake for this ground; the band, then the interior, is used.")]
+            public int[] HemPool = Array.Empty<int>();
+
+            [Tooltip("Indices into Variants: the broad art of the hem. Empty = fall back.")]
+            public int[] HemBroadPool = Array.Empty<int>();
         }
 
         [Header("The palette (resolved from the grass library at bake)")]
@@ -388,7 +413,8 @@ namespace HiddenHarbours.Art
                     if (GrassFieldScatter.IsEmpty(site)) continue;
 
                     int habitatId = GrassFieldScatter.HabitatOf(site);
-                    int[] pool = PoolFor(habitatId, GrassFieldScatter.BroadOf(site));
+                    int[] pool = PoolFor(habitatId, GrassFieldScatter.BroadOf(site),
+                                         GrassFieldScatter.TierOf(site));
                     if (pool == null || pool.Length == 0) continue;
 
                     Vector2 p = GrassFieldScatter.SlotPosition(layout, ix, iy, s);
@@ -415,17 +441,44 @@ namespace HiddenHarbours.Art
         /// <inheritdoc cref="ScaleMin"/>
         public const float ScaleMax = 1.25f;
 
-        int[] PoolFor(int habitatId, bool broad)
+        /// <summary>
+        /// The art a site may wear: its habitat's pool, narrowed to its edge tier, narrowed again to the
+        /// broad clumps when it asked for one.
+        ///
+        /// <para><b>⚠ Every narrowing FALLS BACK rather than emptying.</b> Two independent filters over
+        /// a library that does not bake every combination will find holes — today no habitat but meadow
+        /// has a medium class at all, and several have no wide bake — and an empty pool draws nothing,
+        /// which is a bald patch the owner has to diagnose from a screenshot. So a missing broad pool
+        /// drops to that tier's normal art, and a missing tier walks UP toward the interior: hem → band
+        /// → interior. Sparser or slightly taller art beats bare ground, which is the same call
+        /// <c>BroadFor</c> has always made.</para>
+        /// </summary>
+        int[] PoolFor(int habitatId, bool broad, GrassTier tier)
         {
             int i = habitatId - 1;                       // id 0 is "nothing grows here"
             if (i < 0 || i >= _habitats.Length) return null;
             var h = _habitats[i];
             if (h == null) return null;
+
+            switch (tier)
+            {
+                case GrassTier.Hem:
+                    if (broad && Any(h.HemBroadPool)) return h.HemBroadPool;
+                    if (Any(h.HemPool)) return h.HemPool;
+                    goto case GrassTier.Band;
+                case GrassTier.Band:
+                    if (broad && Any(h.BandBroadPool)) return h.BandBroadPool;
+                    if (Any(h.BandPool)) return h.BandPool;
+                    break;
+            }
+
             // A habitat with no wide bake keeps its normal pool: sparser art beats a bald patch the owner
             // has to diagnose from a screenshot.
-            if (broad && h.BroadPool != null && h.BroadPool.Length > 0) return h.BroadPool;
+            if (broad && Any(h.BroadPool)) return h.BroadPool;
             return h.Pool;
         }
+
+        static bool Any(int[] pool) => pool != null && pool.Length > 0;
 
         /// <summary>
         /// The straw at a world point, bilinear across the coarse plane. Off the plane (or with no plane
