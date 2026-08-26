@@ -100,13 +100,18 @@ namespace HiddenHarbours.Tests.PlayMode
             _skipper = UnityEditor.AssetDatabase.LoadAssetAtPath<BoatOwnerDef>(
                 "Assets/_Project/Data/Boats/Skippers/StPetersArrivalSkipper.asset");
 
-            // ⭐ THE WHARF SHE TIES UP TO. One bollard on the planks, which is what the region's own wharf
-            // places for every mooring fitting it carries — without it there is nothing to make a line
-            // fast to, and "the lines take the last half-metre" cannot be asserted at all.
+            // ⭐ THE WHARF SHE TIES UP TO. One bollard, which is what the region's own wharf places for
+            // every mooring fitting it carries — without it there is nothing to make a line fast to, and
+            // "the lines take the last half-metre" cannot be asserted at all.
+            //
+            // ⚠ Set BACK from the landing on purpose. The honest scope is the SPAN at the berth pose, and
+            // BoatMooring clamps it into the config's [MinScope, MaxScope]: a bollard right at her rail
+            // gives a 0.86 m span, which clamps UP to the 2 m minimum and leaves the line permanently
+            // slack — a fixture in which the rope can never demonstrate holding anything.
             MooringCleats.Clear();
             var bollard = new GameObject("Bollard");
             bollard.transform.SetParent(_root.transform);
-            bollard.transform.position = new Vector3(Ashore.x, Ashore.y, 0f);
+            bollard.transform.position = new Vector3(Ashore.x + 2f, Ashore.y, 0f);
             bollard.AddComponent<ShoreCleat>().Configure("fixture.bollard", elevationMeters: 1.5f);
         }
 
@@ -271,6 +276,55 @@ namespace HiddenHarbours.Tests.PlayMode
                 "the arrival did not record itself — the next boot would land the player all over again");
             Assert.Greater(save.Saves, 0,
                 "…and it was not written to disk, so a crash on the walk up to Ginny replays the opening");
+        }
+
+        /// <summary>
+        /// 🔴 <b>SHE CAN ACTUALLY TURN — and for the whole life of this opening she could not.</b>
+        ///
+        /// <para>The arrival used to size her collider to the hull's real 4.77 × 12.9 m while every boat
+        /// the player sails carries <c>PersistentCoreBuilder</c>'s fixed 1.7 × 4.0 m capsule. Unity
+        /// derives a rigidbody's moment of inertia from its collider and inertia goes as the SQUARE of
+        /// the dimensions, so the arrival hull's was ten times the player's: 51.5 N·m of rudder against
+        /// <c>I ≈ 946</c> and <c>angularDamping 2.5</c> is <b>1.25 °/s</b> — a 177 m turning radius on a
+        /// 12.9 m boat. She could not round St Peters' 65° fairway corner, so she never did: she ran
+        /// straight through it, passed the berth 22 m off, and the SNAP put her on her berth. The green
+        /// test was measuring the teleport.</para>
+        ///
+        /// <para><b>So this asserts the property, not the mechanism.</b> Full helm, cruise, measure her.
+        /// A collider change, a mass change, a rudder retune or a damping change all move this number,
+        /// and any of them that makes her a barge again fails here rather than four minutes later in a
+        /// timeout that says only "stuck".</para>
+        /// </summary>
+        [UnityTest]
+        public IEnumerator SheTurnsLikeTheBoatThePlayerIsAboutToBeHanded()
+        {
+            var opening = Build(hasRestAnchor: false, alreadyArrived: false);
+            Assert.IsTrue(opening.TryBegin());
+            yield return new WaitForFixedUpdate();
+
+            // Take the pilot's hand off the helm and put it hard over ourselves, so this measures the
+            // HULL rather than whatever the approach happens to be asking for.
+            opening.enabled = false;
+            var boat = opening.Boat;
+            Assert.IsNotNull(boat, "precondition: there is a hull to measure");
+
+            float from = ArrivalPilot.HeadingOf(boat.transform);
+            float began = Time.realtimeSinceStartup;
+            while (Time.realtimeSinceStartup - began < 4f)
+            {
+                boat.SetControl(0f, 1f);                      // full helm, no throttle change
+                yield return new WaitForFixedUpdate();
+            }
+
+            float turned = Mathf.Abs(ArrivalPilot.Wrap180(ArrivalPilot.HeadingOf(boat.transform) - from));
+            float rate = turned / (Time.realtimeSinceStartup - began);
+
+            Assert.Greater(rate, 4f,
+                $"she turned {turned:F1}° in {Time.realtimeSinceStartup - began:F1} s — {rate:F2}°/s — at " +
+                "FULL helm. The shipping capsule gives about 12.5°/s and a 17.7 m turning radius; a " +
+                "hull-sized collider gives 1.25°/s and 177 m, and a boat that cannot turn cannot be " +
+                "piloted anywhere. Check the collider on the spawned hull against " +
+                "PersistentCoreBuilder's 1.7 x 4.0 m capsule.");
         }
 
         /// <summary>

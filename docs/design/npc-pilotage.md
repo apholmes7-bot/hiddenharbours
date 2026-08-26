@@ -375,6 +375,40 @@ build learned that this document did not know:
    abort budget without ever presenting a second time. **The gate is capturable only from ASTERN of
    it** — which is the seamanship as well as the fix, and it is one line.
 
+### 8.2 ⛔ What the deleted snap was actually hiding: she could not turn
+
+The come-alongside landed green in EditMode and then failed every real-fairway PlayMode test the same
+way — *"stuck in Approaching/Passage, 206 m from the berth, throttle 0.92, steer −1.00"*. She was
+sailing away from the harbour in a slow circle. The cause is not the pilotage layer, and it is worth
+writing down because it is the anti-goal's whole point arriving on schedule.
+
+**`ArrivalOpening` sized the arrival hull's collider to the hull's real dimensions** —
+`LengthMeters × 0.37` = **4.77 × 12.9 m** — while every boat the player sails carries
+`PersistentCoreBuilder`'s fixed **1.7 × 4.0 m** capsule (`BoatController.SetHull` re-derives her MASS
+from the displacement and never touches the collider). **Unity derives a rigidbody's moment of inertia
+from its collider, and inertia goes as the square of the dimensions.** At `MassKg/100 = 60 kg`, full
+helm gives `RudderAuthority(5150) × RudderFeelScale(0.01) = 51.5 N·m` against `angularDamping = 2.5`,
+so her steady turn rate is `T / (I · d)`:
+
+| collider | `I` | turn rate | turning radius at cruise |
+|---|---:|---:|---:|
+| hull-sized (4.77 × 12.9) | 946 | **1.25 °/s** | **177 m** |
+| the shipping capsule (1.7 × 4.0) | 94 | **12.5 °/s** | **17.7 m** |
+
+**A twelve-metre boat with a 177 m turning circle.** St Peters' fairway turns **65°** at its landfall
+mark and **67°** back at the channel mouth; rounding those needs about **11 m** of tangent, which the
+27 m leg between them affords easily at 17.7 m and never at 177 m.
+
+⭐ **So the arrival has never navigated the fairway.** She ran straight through both corners, passed
+the berth about 22 m off, took the way off where the closest-approach guard caught her, and the SNAP
+put her on her berth. The passing test was measuring the teleport. This is §0's claim in its strongest
+form: *everything before the snap is already right* was itself only true because the snap was there.
+
+The fix is one line — she carries the same capsule as the boat the player is about to be handed, which
+is this class's own founding law (*"it had better be how they move"*) kept in the one place it was not
+— and it is pinned by a PlayMode test that measures the property rather than the mechanism: full helm,
+cruise, and a floor on the degrees per second.
+
 ⚠ **And one number the S1 build could not change and the owner may want to.** The arrival's
 `_dockingSettleSeconds` — the "tie her up regardless" bound — is serialized at **12 s** in the
 committed St Peters scene, and it was measured against the OLD docking (point at the berth, ask for

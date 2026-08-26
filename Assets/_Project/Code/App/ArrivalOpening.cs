@@ -188,18 +188,55 @@ namespace HiddenHarbours.App
         internal const string StepAshoreId = "arrival.step_ashore";
 
         /// <summary>
-        /// Her beam as a fraction of her length — the ONE place the arrival guesses at a hull's width,
-        /// and it is written down here rather than in two.
+        /// Her beam as a fraction of her length — the ONE place the arrival guesses at a hull's width.
         ///
         /// <para>⚠ <b>Why a guess at all.</b> <c>BoatHullDef</c> carries <c>LengthMeters</c> and
         /// <c>DraughtMeters</c> and <b>no beam</b> (design/npc-pilotage.md §3's caveat says so and names
-        /// the clean fix: a real <c>BeamMetres</c> on the def). This ratio is what
-        /// <see cref="Spawn"/> has always built her collider from, so reading her mooring cleat off the
-        /// same number keeps the rope on the rail of the hull the physics actually has. For the cape
-        /// islander it lands on 2.39 m against the region's own measured 2.40 — which is the check that
-        /// says the ratio is a fair stand-in rather than a fudge.</para>
+        /// the clean fix: a real <c>BeamMetres</c> on the def). For the cape islander this lands on
+        /// 2.39 m against the region's own measured 2.40 — which is the check that says the ratio is a
+        /// fair stand-in rather than a fudge. It is where her mooring cleat sits on her rail.</para>
+        ///
+        /// <para>⛔ <b>It is NOT her collider any more.</b> See <see cref="GreyboxHullCapsule"/>.</para>
         /// </summary>
         private const float HullBeamFraction = 0.37f;
+
+        /// <summary>
+        /// 🔴 <b>THE HULL CAPSULE EVERY BOAT IN THIS GAME CARRIES — and the arrival used to be the one
+        /// exception, which is why she could not turn.</b>
+        ///
+        /// <para><c>PersistentCoreBuilder</c> gives the player's hull a fixed <b>1.7 × 4.0 m</b> capsule
+        /// and <c>BoatController.SetHull</c> never resizes it — it re-derives her MASS from the
+        /// displacement and nothing else. So a cape islander under the player's hand has a 1.7 × 4.0
+        /// collider. This class used to size the arrival's collider to the hull's REAL dimensions
+        /// (<c>LengthMeters × HullBeamFraction</c> = 4.77 × 12.9 m), which reads like the more honest
+        /// choice and is a trap: <b>Unity derives a rigidbody's moment of inertia from its collider</b>,
+        /// and inertia goes as the square of the dimensions.</para>
+        ///
+        /// <para><b>⚠ The measurement, because it is a factor of ten and nobody would believe it
+        /// otherwise.</b> At <c>MassKg/100 = 60 kg</c>, full helm gives
+        /// <c>RudderAuthority(5150) × RudderFeelScale(0.01) = 51.5 N·m</c> against
+        /// <c>angularDamping = 2.5</c>, so her steady turn rate is <c>T / (I · d)</c>:</para>
+        ///
+        /// <list type="bullet">
+        ///   <item>hull-sized capsule → <c>I ≈ 946</c> → <b>1.25 °/s</b> → a <b>177 m</b> turning radius
+        ///   at cruise. She is a barge; she cannot round anything.</item>
+        ///   <item>the shipping capsule → <c>I ≈ 94</c> → <b>12.5 °/s</b> → a <b>17.7 m</b> radius —
+        ///   which is how this hull turns for the player.</item>
+        /// </list>
+        ///
+        /// <para>⛔ <b>What that hid, and for how long.</b> St Peters' fairway turns 65° at its landfall
+        /// mark and 67° back at the channel mouth; rounding those needs about 11 m of tangent, which the
+        /// 27 m leg between them affords easily at 17.7 m and never at 177 m. So the arrival never
+        /// navigated the fairway at all — she ran straight through both corners, passed the berth about
+        /// 22 m off, took the way off, and was TELEPORTED onto her berth by the snap this slice deletes.
+        /// The green test measured the teleport. Deleting the snap is what made her tell the truth.</para>
+        ///
+        /// <para>So she carries the same capsule as the boat the player is about to be handed, which is
+        /// this class's own founding law — <i>"the opening is the first look anyone gets at how these
+        /// boats move; it had better be how they move"</i> — stated in the one place it was not being
+        /// kept.</para>
+        /// </summary>
+        private static readonly Vector2 GreyboxHullCapsule = new Vector2(1.7f, 4.0f);
 
         /// <summary>How high the arrival hull's deck rides over her own waterline, metres. A working
         /// boat's washboard — enough that a figure on it is clearly out of the water, which is the only
@@ -430,8 +467,7 @@ namespace HiddenHarbours.App
 
             var hull = go.AddComponent<CapsuleCollider2D>();
             hull.direction = CapsuleDirection2D.Vertical;
-            hull.size = new Vector2(Mathf.Max(1f, _skipper.Boat.LengthMeters * HullBeamFraction),
-                                    Mathf.Max(1f, _skipper.Boat.LengthMeters));
+            hull.size = GreyboxHullCapsule;
 
             _boat = go.AddComponent<BoatController>();
             _boat.SetHull(_skipper.Boat);
