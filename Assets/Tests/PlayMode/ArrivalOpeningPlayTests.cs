@@ -6,37 +6,45 @@ using UnityEngine.TestTools;
 using HiddenHarbours.Core;
 using HiddenHarbours.App;
 using HiddenHarbours.Boats;
+using HiddenHarbours.World;
 
 namespace HiddenHarbours.Tests.PlayMode
 {
     /// <summary>
     /// ⭐ <b>THE ARRIVAL ACTUALLY HAPPENS</b> — the opening driven end to end with a real boat, a real
     /// rigidbody and a real clock, because everything interesting about it is a thing that only exists
-    /// while the game is running: she has to answer her helm, carry her way off, come to rest, and hand
-    /// the player the controls ashore.
+    /// while the game is running: she has to answer her helm, carry her way off, come alongside, and hand
+    /// the player the controls after the player has asked for them.
     ///
     /// <para><b>⚠ Driven through the component's own API, never through a keypress.</b> A virtual key
     /// press is undeliverable to the New Input System from a test, and an opening that can only be
-    /// started by the shell can only be tested by booting the shell. <c>TryBegin()</c> is public for
-    /// exactly this reason — and it is the same call the shell's <c>ShellPhaseChanged</c> makes, so the
-    /// test drives the shipping path rather than a test-only one.</para>
+    /// started by the shell can only be tested by booting the shell. <c>TryBegin()</c> and
+    /// <c>StepAshore()</c> are public for exactly this reason — and they are the same calls the shell's
+    /// <c>ShellPhaseChanged</c> and the interact verb make, so the test drives the shipping path rather
+    /// than a test-only one.</para>
     ///
     /// <para><b>⚠ Every wait is on a STATE with a wall-clock ceiling, never on a frame count.</b> Frames
     /// are not time: a fixture that yields sixty times has waited for whatever sixty frames happened to
     /// cost on that machine, which is a different amount of simulated sea on every run.</para>
     ///
-    /// <para><b>The route is the fixture's, not the region's.</b> A 30 m run in open water, so the test
-    /// costs a second rather than the half-minute the real 200 m approach takes at harbour speed — and
-    /// the REGION's route is held against the region's own water by <c>ArrivalOpeningTests</c>, where it
-    /// costs nothing. What is under test here is the SEQUENCE.</para>
+    /// <para><b>The route and the come-alongside are the fixture's, not the region's.</b> A 60 m run in
+    /// open water with a tightened-up gate, so the test costs seconds rather than the minute the real
+    /// 146 m approach takes — and the REGION's own numbers are held against the region's own water by
+    /// <c>ArrivalOverRealTerrainPlayTests</c>. What is under test here is the SEQUENCE.</para>
+    ///
+    /// <para><b>⛔ And what it now asserts instead of the two snaps.</b> These tests used to prove the
+    /// teleports: <i>she came to rest within a metre of the berth</i> (true because <c>TieUp</c> wrote her
+    /// there) and <i>the player was put down within a centimetre of the landing</i> (true because
+    /// <c>HandOver</c> wrote her there). Both writes are deleted, so both assertions have been turned into
+    /// the honest question: did the PILOT produce that pose, and did the PLAYER walk there.</para>
     /// </summary>
     public class ArrivalOpeningPlayTests
     {
-        /// <summary>⚠ Sized against the pacing, not guessed. She enters at 3 m/s and takes the way off
-        /// at 0.3 m/s², so 20 m of fixture is about a second at cruise, six seconds decelerating to the
-        /// arrive radius, and three more taking the last of it off astern — call it ten. Double it, so a
-        /// loaded machine does not produce a red that is really a stopwatch.</summary>
-        private const float TimeoutSeconds = 30f;
+        /// <summary>⚠ Sized against the pacing, not guessed. She enters at 5 m/s over a 60 m fixture,
+        /// sheds to the fixture's berthing speed, runs the gate and then her own length alongside — call
+        /// it thirty seconds, plus the settling beat and the step. Doubled, so a loaded machine does not
+        /// produce a red that is really a stopwatch.</summary>
+        private const float TimeoutSeconds = 75f;
 
         private sealed class FakeSave : ISaveService
         {
@@ -54,9 +62,27 @@ namespace HiddenHarbours.Tests.PlayMode
         private BoatOwnerDef _skipper;
 
         // Open water, well clear of anything — this fixture is about the sequence, not the coast.
-        private static readonly Vector2 Start = new Vector2(0f, 20f);
+        // ⚠ 60 m rather than the old 20: the come-alongside needs the gate's capture range and a hull
+        // length after it, and a route shorter than the manoeuvre cannot show the manoeuvre.
+        private static readonly Vector2 Start = new Vector2(0f, 60f);
         private static readonly Vector2 Berth = new Vector2(0f, 0f);
-        private static readonly Vector2 Ashore = new Vector2(3f, 0f);
+        private const float BerthHeading = 180f;                  // she lies pointing south
+        private static readonly Vector2 Ashore = new Vector2(3f, 0f);   // the planks: east of the berth
+
+        /// <summary>
+        /// The fixture's come-alongside: the shipped shape at tightened numbers, so a manoeuvre that takes
+        /// half a minute at the region's tuning takes a few seconds here. Every ratio the test cares about
+        /// (a gate astern and off the line, a capped set rate, a pose tolerance) is preserved.
+        /// </summary>
+        private static BerthPilot.Settings FixtureAlongside()
+        {
+            BerthPilot.Settings s = BerthPilot.Settings.Default;
+            s.BerthingSpeedMetresPerSecond = 2f;     // a brisk berthing speed, so the leg is seconds
+            s.SetRateMetresPerSecond = 0.8f;         // …and a set rate that can close in the same seconds
+            s.GateStandoffMetres = 1.5f;
+            s.GateCaptureMetres = 8f;
+            return s;
+        }
 
         [SetUp]
         public void SetUp()
@@ -73,12 +99,23 @@ namespace HiddenHarbours.Tests.PlayMode
 
             _skipper = UnityEditor.AssetDatabase.LoadAssetAtPath<BoatOwnerDef>(
                 "Assets/_Project/Data/Boats/Skippers/StPetersArrivalSkipper.asset");
+
+            // ⭐ THE WHARF SHE TIES UP TO. One bollard on the planks, which is what the region's own wharf
+            // places for every mooring fitting it carries — without it there is nothing to make a line
+            // fast to, and "the lines take the last half-metre" cannot be asserted at all.
+            MooringCleats.Clear();
+            var bollard = new GameObject("Bollard");
+            bollard.transform.SetParent(_root.transform);
+            bollard.transform.position = new Vector3(Ashore.x, Ashore.y, 0f);
+            bollard.AddComponent<ShoreCleat>().Configure("fixture.bollard", elevationMeters: 1.5f);
         }
 
         [TearDown]
         public void TearDown()
         {
             if (_root != null) Object.DestroyImmediate(_root);
+            MooringCleats.Clear();
+            Interactables.Clear();
             GameServices.Save = null;
             GameServices.PlayerTransform = null;
             GameServices.Reset();
@@ -99,13 +136,13 @@ namespace HiddenHarbours.Tests.PlayMode
             go.transform.SetParent(_root.transform);
             go.SetActive(false);
             var opening = go.AddComponent<ArrivalOpening>();
-            opening.Configure(_skipper, new[] { Start, Berth }, Berth, 180f, Ashore,
+            opening.Configure(_skipper, new[] { Start, Berth }, Berth, BerthHeading, Ashore,
                               channelBedElevation: -4f);
 
-            // The region's own pacing, unmodified — the fixture's route is short enough that she enters
-            // at cruise and has all of it off by the berth, which is the interesting part of the
-            // approach and the only part 20 m can show.
+            // The region's own pacing, unmodified — the fixture's route is long enough that she enters at
+            // cruise and has all of it off by the gate, which is the interesting part of the approach.
             opening.ConfigurePilot(ArrivalPilot.Settings.Default);
+            opening.ConfigureAlongside(FixtureAlongside());
 
             go.SetActive(true);
             _opening = opening;
@@ -119,9 +156,9 @@ namespace HiddenHarbours.Tests.PlayMode
             while (!reached() && Time.realtimeSinceStartup < deadline) yield return null;
             Assert.IsTrue(reached(),
                 $"the arrival never {what} within {TimeoutSeconds:F0} s — it is stuck in " +
-                $"{_opening.Current}. " + Where() +
+                $"{_opening.Current}/{_opening.Pilotage}. " + Where() +
                 " (Check the pilot's ease-down against the fixture's route length: a boat that never " +
-                "gets inside the arrive radius circles the berth forever.)");
+                "gets inside the gate's capture range circles the berth forever.)");
         }
 
         /// <summary>Where she actually is, for a failure that has to be diagnosable from the log alone —
@@ -132,18 +169,28 @@ namespace HiddenHarbours.Tests.PlayMode
             if (_opening == null || _opening.Boat == null) return "There is no boat.";
             Transform t = _opening.Boat.transform;
             return $"She is at ({t.position.x:F2}, {t.position.y:F2}) heading " +
-                   $"{HiddenHarbours.App.ArrivalPilot.HeadingOf(t):F0}°, making " +
+                   $"{ArrivalPilot.HeadingOf(t):F0}° (the berth lies on {BerthHeading:F0}°), making " +
                    $"{_opening.Boat.Velocity.magnitude:F2} m/s, throttle {_opening.Boat.Throttle:F2}, " +
                    $"steer {_opening.Boat.Steer:F2}; the berth is {Berth} " +
-                   $"({Vector2.Distance(t.position, Berth):F2} m away).";
+                   $"({Vector2.Distance(t.position, Berth):F2} m away), the gate {_opening.ApproachGate}.";
+        }
+
+        /// <summary>Run her in and then, once the wharf is offered, press the exit key. Split out because
+        /// EVERY finish goes through the player's own press now — there is no auto-handover to wait
+        /// for.</summary>
+        private IEnumerator PutHerAshore(ArrivalOpening opening)
+        {
+            yield return Until(() => opening.CanStepAshore, "tied up and offered the planks");
+            Assert.IsTrue(opening.StepAshore(), "the offer was standing but the press was refused");
+            yield return Until(() => opening.Current == ArrivalOpening.Phase.HandedOver,
+                               "landed and handed the controls back");
         }
 
         // =============================================================================================
 
         /// <summary>
-        /// ⭐ The whole thing: a fresh save is brought in, she is tied up at the berth, and the player
-        /// ends up ashore with the controls — which is the only state from which the rest of the game
-        /// can start.
+        /// ⭐ The whole thing: a fresh save is brought in, she comes alongside <b>on her own helm</b>, her
+        /// line goes over, and the player — when SHE asks — steps ashore with the controls.
         /// </summary>
         [UnityTest]
         public IEnumerator AFreshSave_IsPilotedIn_AndEndsAshoreWithTheControls()
@@ -163,23 +210,60 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.Greater(Mathf.Abs(opening.Boat.Throttle), 0f,
                 "nobody is working her throttle — the approach is not being driven through the helm");
 
-            yield return Until(() => opening.Current == ArrivalOpening.Phase.Moored ||
-                                     opening.Current == ArrivalOpening.Phase.HandedOver, "tied up");
+            yield return Until(() => opening.Current == ArrivalOpening.Phase.Moored, "tied up");
 
-            yield return Until(() => opening.Current == ArrivalOpening.Phase.HandedOver,
-                               "handed the controls back");
+            // ⛔ THE POSE, PRODUCED RATHER THAN WRITTEN. This is the assertion the snap used to satisfy
+            // for free: TieUp wrote her onto the berth, so "she is at the berth" was true of a boat that
+            // had sailed past it sideways. Nothing writes her pose now, so every one of these is a claim
+            // about what the PILOT did.
+            Transform hull = opening.Boat.transform;
+            BerthPilot.Berth pose = BerthPilot.Berth.FromShorePoint(
+                Berth, BerthHeading, Ashore, _skipper.Boat.LengthMeters);
+            float lateral = BerthPilot.LateralOffset(hull.position, pose);
+            float along = BerthPilot.AlongTrackTo(hull.position, Berth, BerthHeading);
+            float heading = ArrivalPilot.Wrap180(ArrivalPilot.HeadingOf(hull) - BerthHeading);
 
-            // Moored: her way is off and she lies where the berth is.
             Assert.Less(opening.Boat.Velocity.magnitude, 0.5f,
-                $"she is still making {opening.Boat.Velocity.magnitude:F2} m/s at her own berth");
-            Assert.Less(Vector2.Distance(opening.Boat.transform.position, Berth), 1f,
-                $"she came to rest at {(Vector2)opening.Boat.transform.position} rather than at the " +
-                $"berth {Berth}");
+                $"she is still making {opening.Boat.Velocity.magnitude:F2} m/s at her own berth. " + Where());
 
-            // Ashore: the player is ON the landing, and free to walk off it.
-            Assert.Less(Vector2.Distance(_player.transform.position, Ashore), 0.01f,
-                $"the player was put down at {(Vector2)_player.transform.position}, not on the landing " +
-                $"at {Ashore}");
+            // ⭐ ALONGSIDE is a claim about the LATERAL offset, and it is the come-alongside's whole
+            // product: a fender's gap off her line, not a distance to a point.
+            Assert.Less(Mathf.Abs(lateral), 1.5f,
+                $"she came to rest {lateral:F2} m off her berth LINE — that is not alongside, and it is " +
+                "exactly what the snap used to cover up. " + Where());
+
+            // …and along the wharf she stops inside the pilot's own stop band (plus a margin for the
+            // astern settle), which is where a boat asked for a standstill actually comes to rest.
+            Assert.Less(Mathf.Abs(along), ArrivalPilot.Settings.Default.StopMetres + 2f,
+                $"she stopped {along:F2} m short of (or past) her berth along the wharf. " + Where());
+
+            Assert.Less(Mathf.Abs(heading), BerthPilot.Settings.Default.HeadingToleranceDegrees + 5f,
+                $"she is lying {heading:F0}° ACROSS her berth rather than alongside it — the heading is " +
+                "the half of a pose a mark cannot give you, and it is what the snap was faking. " + Where());
+
+            // ⭐ …and what holds her there is the LINE.
+            Assert.IsTrue(opening.LinesAreFast,
+                "she is tied up and no line is made fast — MooringLineMath is the constraint that " +
+                "replaced the snap, so a tie-up without one is the snap having simply been deleted");
+
+            // 🔴 SHE STAYS ABOARD. The owner's Q1 ruling: no timer hands her over.
+            Vector3 aboard = _player.transform.position;
+            float watchUntil = Time.realtimeSinceStartup + 3f;
+            while (Time.realtimeSinceStartup < watchUntil)
+            {
+                Assert.AreNotEqual(ArrivalOpening.Phase.HandedOver, opening.Current,
+                    "something handed the player over without her asking — the hand-over is hers now");
+                yield return null;
+            }
+            Assert.Less(Vector2.Distance(_player.transform.position, aboard), 1.5f,
+                "she was moved off the deck without a press; the passenger rides until she says so");
+
+            // …and then she asks, and walks off.
+            yield return PutHerAshore(opening);
+
+            Assert.Less(Vector2.Distance(_player.transform.position, Ashore), 0.1f,
+                $"she stepped ashore and landed at {(Vector2)_player.transform.position} rather than on " +
+                $"the planks at {Ashore}");
 
             // And the save now says so, so this never happens to them twice.
             var save = (FakeSave)GameServices.Save;
@@ -189,24 +273,68 @@ namespace HiddenHarbours.Tests.PlayMode
                 "…and it was not written to disk, so a crash on the walk up to Ginny replays the opening");
         }
 
-        /// <summary>⭐ The seam with #580: a player who went to bed somewhere is WOKEN there by
-        /// <see cref="RestWakeRestorer"/>, and the arrival must not also move her. Only one thing may
-        /// place a loading player.</summary>
         /// <summary>
-        /// 🔴 <b>Held off her stop, she is tied up anyway — and the player still gets ashore.</b>
-        /// The owner's 2026-08-21 playtest: "alongside … taking the last of it off astern" logged and
-        /// "tied up" never did. The stop is a rigidbody reading, and a hull with her bow on the pier's
-        /// collider is nudged back every physics step, never under 0.1 m/s. This fixture has no wharf,
-        /// so the hold is stood in for by a current that keeps her at 0.3 m/s no matter what the pilot
-        /// does — the honest shape of "she cannot settle", not a wall she would simply stop against.
+        /// 🔴 <b>THE STEP ASHORE IS A MOVE, NOT A TELEPORT.</b> <c>HandOver</c> used to open with
+        /// <c>_player.position = _stepAshore</c> and the passenger simply appeared on the planks. The
+        /// deletion is only honest if what replaced it takes TIME and passes through the space between —
+        /// so this watches the move happen rather than only checking where she ended up.
         /// </summary>
         [UnityTest]
-        public IEnumerator HeldOffHerStop_SheIsTiedUpAnyway_AndThePlayerStillGetsAshore()
+        public IEnumerator TheStepAshoreIsAMove_NotARelocatedTeleport()
+        {
+            var opening = Build(hasRestAnchor: false, alreadyArrived: false);
+            Assert.IsTrue(opening.TryBegin());
+
+            yield return Until(() => opening.CanStepAshore, "tied up and offered the planks");
+            Vector3 fromTheDeck = _player.transform.position;
+            Assert.Greater(Vector2.Distance(fromTheDeck, Ashore), 0.5f,
+                "precondition: she must actually be out on the deck, or there is no gap to cross");
+
+            Assert.IsTrue(opening.StepAshore(), "the press must start the move");
+            Assert.IsTrue(opening.IsSteppingAshore, "…and the move must be in the air, not already landed");
+            Assert.AreNotEqual(ArrivalOpening.Phase.HandedOver, opening.Current,
+                "the controls come back when she LANDS, not when she presses");
+
+            // Somewhere in between: neither where she started nor where she is going.
+            bool caughtMidAir = false;
+            float deadline = Time.realtimeSinceStartup + TimeoutSeconds;
+            while (opening.Current != ArrivalOpening.Phase.HandedOver
+                   && Time.realtimeSinceStartup < deadline)
+            {
+                float travelled = Vector2.Distance(_player.transform.position, fromTheDeck);
+                float remaining = Vector2.Distance(_player.transform.position, Ashore);
+                if (travelled > 0.05f && remaining > 0.05f) caughtMidAir = true;
+                yield return null;
+            }
+
+            Assert.AreEqual(ArrivalOpening.Phase.HandedOver, opening.Current,
+                "the move never landed — " + Where());
+            Assert.IsTrue(caughtMidAir,
+                "she was never observed between the deck and the planks: whatever put her ashore did it " +
+                "in one frame, which is the teleport with a press in front of it");
+            Assert.Less(Vector2.Distance(_player.transform.position, Ashore), 0.1f,
+                "…and the landing is the move's end, not a corrective write");
+        }
+
+        /// <summary>
+        /// 🔴 <b>Held off her stop, she is tied up anyway — and NOT snapped onto her berth.</b>
+        /// The owner's 2026-08-21 playtest: "alongside … taking the last of it off astern" logged and
+        /// "tied up" never did. The stop is a rigidbody reading, and a hull with her bow on the pier's
+        /// collider is nudged back every physics step, never under 0.1 m/s. This fixture has no wharf, so
+        /// the hold is stood in for by a current that keeps her at 0.3 m/s no matter what the pilot does.
+        ///
+        /// <para>⛔ What changed: the fallback used to end in the same snap as the good path, so a boat
+        /// tied up by the stopwatch was indistinguishable from one that had arrived. It ties her up WHERE
+        /// SHE IS now — the assertion below is that her body was never written, and the arrival still
+        /// finishes.</para>
+        /// </summary>
+        [UnityTest]
+        public IEnumerator HeldOffHerStop_SheIsTiedUpWhereSheIs_AndNeverSnappedOntoTheBerth()
         {
             var opening = Build(hasRestAnchor: false, alreadyArrived: false);
             Assert.IsTrue(opening.TryBegin(), "the arrival must start on a fresh save");
 
-            yield return Until(() => opening.Current == ArrivalOpening.Phase.Docking, "came alongside");
+            yield return Until(() => opening.Current == ArrivalOpening.Phase.Docking, "came in to dock");
 
             var body = opening.Boat.GetComponent<Rigidbody2D>();
             Assert.IsNotNull(body, "precondition: the arrival hull is a rigidbody");
@@ -214,8 +342,8 @@ namespace HiddenHarbours.Tests.PlayMode
             hold.Body = body;
 
             // She must not be allowed to "settle" by the stop arm — the hold is doing its job.
-            float probeUntil = Time.time + 1.5f;
-            while (Time.time < probeUntil)
+            float probeUntil = Time.realtimeSinceStartup + 1.5f;
+            while (Time.realtimeSinceStartup < probeUntil)
             {
                 Assert.AreNotEqual(ArrivalOpening.Phase.Moored, opening.Current,
                     "the hold failed: she read STOPPED while being pushed at 0.3 m/s, so this test " +
@@ -223,15 +351,24 @@ namespace HiddenHarbours.Tests.PlayMode
                 yield return null;
             }
 
-            yield return Until(() => opening.Current == ArrivalOpening.Phase.HandedOver,
-                               "tied up by the fallback and handed over");
+            yield return Until(() => opening.Current == ArrivalOpening.Phase.Moored,
+                               "tied up by the settle fallback");
 
-            Assert.AreEqual(RigidbodyType2D.Kinematic, body.bodyType,
-                "tied up means kinematic — the sea moves her, her engine does not");
-            Assert.Less(Vector2.Distance(body.position, Berth), 0.5f,
-                $"the fallback tie-up must still snap her onto the berth {Berth}; she lies at {body.position}");
-            Assert.Less(Vector2.Distance(_player.transform.position, Ashore), 0.01f,
-                "the player is put ashore by the fallback exactly as by the stop");
+            // ⛔ NOT SNAPPED. Her body is wherever the sea and the hold left it — no write put her on the
+            // berth, and the proof is that she is still being shoved and still moving.
+            Vector2 whereSheWasLeft = body.position;
+            yield return null;
+            yield return new WaitForFixedUpdate();
+            Assert.AreNotEqual(RigidbodyType2D.Kinematic, body.bodyType,
+                "she was frozen kinematic — a moored boat is RESTRAINED by her rope, not switched off " +
+                "(BoatMooring's own rule, and rule 5's)");
+
+            // …and the player still gets ashore, by her own press, from wherever the boat ended up.
+            yield return PutHerAshore(opening);
+            Assert.Less(Vector2.Distance(_player.transform.position, Ashore), 0.1f,
+                $"the player is put ashore after a fallback tie-up exactly as after an honest one; she " +
+                $"landed at {(Vector2)_player.transform.position} rather than {Ashore}. She was left at " +
+                $"{whereSheWasLeft}.");
         }
 
         /// <summary>

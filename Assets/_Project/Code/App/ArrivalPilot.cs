@@ -162,20 +162,30 @@ namespace HiddenHarbours.App
                 SignedBearingError(position, headingDegrees, target) * settings.SteerPerDegree, -1f, 1f);
 
             float wanted = TargetSpeed(metresToBerth, settings);
-
-            // ⚠ THE KNOWN SHAPE INSIDE THE STOP BAND, so nobody "fixes" it by surprise. Within
-            // StopMetres wanted is 0 and the way is unsigned, so this error can only be ≤ 0 — a boat
-            // ALREADY making sternway is answered with MORE astern, because the rule cannot see that the
-            // way she is carrying is off the wharf rather than onto it. She is not stuck: backing out
-            // grows metresToBerth, TargetSpeed comes off zero, and the throttle turns ahead again.
-            // Measured to settle rather than pump. Signing the term to fix it re-opens the 150 m
-            // departure (see WayToAccountFor); if it ever needs a real answer it is a stop band that
-            // damps on speed, not a signed way.
-            float throttle = (wanted - WayToAccountFor(position, velocity, target))
-                             * settings.ThrottlePerSpeedError;
+            float throttle = ThrottleFor(wanted, WayToAccountFor(position, velocity, target), settings);
 
             return new Helm(throttle, steer);
         }
+
+        /// <summary>
+        /// <b>The throttle law, on its own</b>: proportional to the error between the speed she should be
+        /// making and the way she is actually carrying. Hoisted out of <see cref="Command"/> so that the
+        /// come-alongside — which steers to a HEADING rather than to a mark, and so cannot use
+        /// <see cref="Command"/> whole — still goes astern for exactly the same reason and by exactly the
+        /// same arithmetic (<see cref="BerthPilot.Command"/>). Two copies of this rule would be two places
+        /// for a docking to disagree with an approach about when to reverse.
+        ///
+        /// <para>⚠ <b>THE KNOWN SHAPE INSIDE THE STOP BAND, so nobody "fixes" it by surprise.</b> Within
+        /// <see cref="Settings.StopMetres"/> the wanted speed is 0 and the way is unsigned, so this error
+        /// can only be ≤ 0 — a boat ALREADY making sternway is answered with MORE astern, because the rule
+        /// cannot see that the way she is carrying is off the wharf rather than onto it. She is not stuck:
+        /// backing out grows the distance to run, <see cref="TargetSpeed"/> comes off zero, and the
+        /// throttle turns ahead again. Measured to settle rather than pump. Signing the term to fix it
+        /// re-opens the 150 m departure (see <see cref="WayToAccountFor"/>); if it ever needs a real
+        /// answer it is a stop band that damps on speed, not a signed way.</para>
+        /// </summary>
+        public static float ThrottleFor(float wantedSpeed, float wayToAccountFor, Settings settings)
+            => (wantedSpeed - wayToAccountFor) * settings.ThrottlePerSpeedError;
 
         /// <summary>
         /// How fast she is closing <paramref name="target"/>, in m/s — her velocity projected onto the
