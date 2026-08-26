@@ -196,7 +196,7 @@ not bind a key.**
 | `InteractResolver` | `Core/Interaction` | The **pure** selection rule: filters (context → availability → reach → arc), then priority → distance → id ordinal |
 | `InteractVerb` | `Core/Interaction` | Dispatch on a press edge; publishes `InteractPerformed`, and `InteractCandidateChanged` **on change only** |
 | `InteractActionClaim` | `Core/Interaction` | Transitional: an older direct reader of the key (`WorldInteractor`) stands the verb down by proximity. Dies when NPCs become candidates |
-| driver | `ControlSwitcher` | Reads no new key: `BeginInteract()` consults the registry **after** board / helm / step-ashore |
+| driver | `ControlSwitcher` | Reads no new key: `BeginInteract()` consults the registry **after** board and helm — and, since 2026-08-25, **before** step-ashore |
 
 - **No new binding.** The verb generalises the key the game already calls Interact (E). Nothing E
   did before it changed; the verb takes only the presses that used to do nothing.
@@ -206,10 +206,15 @@ not bind a key.**
   screen-space was added.
 - **Migrated as proof:** `WetBucketPoint` (the seawater spot). Same 4 m reach, same on-foot gate,
   still omnidirectional — its `F` key and its private `Update()` are gone.
-- **Open ordering question, flagged for lead-architect:** the verb is consulted LAST, so boarding
-  keeps the press where both would apply. That is provably non-regressive but it is not obviously
-  right for a thing at your feet; the end state is boarding registering as a candidate too, and the
-  resolver arbitrating it by distance, priority and **facing**.
+- **Ordering, part-ruled (lead-architect, 2026-08-25):** the invariant is now **boarding and the
+  helm win over the registry; step-ashore yields to a resolving fixture.** Consulting the verb last
+  everywhere was provably non-regressive, but `CanStepAshore()` is true from the whole deck of a boat
+  that is tied up or lying over bared ground, so it made every on-deck fixture on a docked boat — a
+  cabin door included — permanently unpressable. On deck the registry is therefore asked before the
+  step off; on foot nothing changed. Still open, and still not obviously right for a thing at your
+  feet: whether **boarding** should keep the press where both would apply. The end state is unchanged
+  — boarding registering as a candidate too, and the resolver arbitrating it by distance, priority
+  and **facing**.
 - **Not built here:** the outline shader itself (art-pipeline), the fuel-container carry, shop
   counters, and the migration of boarding / NPCs / `MooringController`'s proximity read onto the seam.
 
@@ -219,7 +224,7 @@ not bind a key.**
 |---|---|
 | ~~**Now (rides ADR 0022)**~~ **LANDED** | Add `DECK`/`WASHBOARD`/`CLEATS` to the art-director export ask; extractor pass-through to Def data. Additive, small. — **done**: the eleven sidecars import to `BoatDeckDef` assets (`DeckSidecarImporter`) and the on-deck player is clamped to each hull's own polygons instead of the one-size rectangle. `CLEATS` and `WASHBOARD` ride along as data; no rope gameplay and no Space climb yet. |
 | ~~**The boarding MOVE**~~ **LANDED** (owner ask, 2026-08-06) | *"You push E and get teleported; the character should jump/climb/whatever to get onto the boat."* E now plays a MOVE: the fisher walks to the nearest point on that hull's own rail — her `DECK` outline, with `WASHBOARD` strips opened to the clamp on the hulls whose data carries them — vaults it, and lands where boarding always seated them. Stepping ashore is the same move mirrored. `ControlSwitcher` only; the state machine, the E-verb, the reach and the repair gate are all untouched — the move changes WHEN the same transition lands (at the far end of the arc, when the feet meet the deck), never WHETHER it may. **No new art**: the arc is built from the shipped walk frames, which the character's sprite driver selects from measured speed. A bespoke `board`/climb clip from the art-director is the open follow-up, and the owner's call. |
-| ~~**The interact VERB**~~ **LANDED** (M2-39 gameplay half) | The `IInteractable` seam, its registry, the pure resolver and the press dispatch — see §3 above. **No new key**: the verb generalises E and is consulted after board / helm / step-ashore, so with an empty registry the interact key behaves bit-for-bit as it did. `WetBucketPoint` migrated onto it as proof and gave up its `F`. The **outline shader** (the other half of M2-39) is art-pipeline's and rides `InteractCandidateChanged`; nothing draws a highlight yet. |
+| ~~**The interact VERB**~~ **LANDED** (M2-39 gameplay half) | The `IInteractable` seam, its registry, the pure resolver and the press dispatch — see §3 above. **No new key**: the verb generalises E and is consulted after board / helm / step-ashore (and, since the 2026-08-25 ordering ruling, before step-ashore on deck), so with an empty registry the interact key behaves bit-for-bit as it did. `WetBucketPoint` migrated onto it as proof and gave up its `F`. The **outline shader** (the other half of M2-39) is art-pipeline's and rides `InteractCandidateChanged`; nothing draws a highlight yet. |
 | **M2, in order** | M2-39 (the interact verb — the other two consume it) → M2-37 (boarding) → M2-38 (ropes). Alongside M2-33, which shares the leave-the-helm/moving-deck substrate. **M2-37's own `Space` deck↔washboard climb is still to build** — the boarding move above consumes the same polygons but is a different verb (E, boat↔shore) and does not promote you onto a washboard to stand there. — **M2-38 done** (2026-08-06): it did not in fact need M2-39 first, because the rope rides the CAST flick rather than the interact verb. **M2-39's seam is now in** (2026-08-12): the "grab a rope" beat can become an `IInteractable` candidate whenever `MooringController`'s proximity read is retired onto it — not done here, deliberately, because that read is load-bearing for the cast-flick arbitration. |
 | **Owner's call** | ~~M2-39 is a strong candidate to pull forward earlier~~ — pulled forward and landed (seam only). What is still the owner's to call: whether a thing **at your feet** should outrank **boarding** for the same press (today boarding wins), and what the outline actually looks like. |
 

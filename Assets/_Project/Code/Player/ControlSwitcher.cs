@@ -430,6 +430,16 @@ namespace HiddenHarbours.Player
         /// the helm (steps WITHIN the boat, not a boarding), a rig with no boat or no player, the move
         /// switched off — falls straight through to <see cref="TryInteract"/> and behaves as it always
         /// did. So there is one set of rules about when you may board, not two.</para>
+        ///
+        /// <para><b>THE ORDER, and the one rung where it differs by mode.</b> On foot: boarding, then
+        /// the registry. On deck: the helm, then <b>the registry</b>, then stepping ashore. That second
+        /// ladder is the amended invariant (lead-architect, 2026-08-25) — <i>boarding and the helm win
+        /// over the registry; step-ashore yields to a resolving fixture</i> — and it is what makes a
+        /// cabin door, or anything else bolted to a deck, pressable while she is tied up. On-foot
+        /// boarding is untouched by it. The registry is consulted exactly ONCE per press either way: the
+        /// deck's early consult stands the tail one down, and both go through
+        /// <see cref="TryInteractCandidate"/>, so the <c>_interactVerb</c> A/B still restores the
+        /// pre-seam behaviour exactly.</para>
         /// </summary>
         /// <returns>True if a move started or a transition happened.</returns>
         public bool BeginInteract()
@@ -439,13 +449,24 @@ namespace HiddenHarbours.Player
             if (Mode == ControlMode.OnFoot && WithinBoardReach() && BoardableNow()
                 && BeginBoardingMove(BoardingMoveKind.Boarding)) return true;
 
-            if (Mode == ControlMode.OnDeck && !WithinHelmReach() && CanStepAshore()
+            // ⭐ ON DECK, AWAY FROM THE HELM, THE REGISTRY IS ASKED BEFORE STEP-ASHORE (the ruling above).
+            // Read ONCE and used twice, because the tail must not resolve the same press a second time.
+            // It changes nothing where nothing is registered in reach: the consult resolves nothing and
+            // the two branches below run exactly as they always did.
+            bool onDeckAwayFromTheHelm = Mode == ControlMode.OnDeck && !WithinHelmReach();
+            if (onDeckAwayFromTheHelm && TryInteractCandidate()) return true;
+
+            // ⚠ The consult above covers BOTH routes off the deck: this move branch, and the fall-through
+            // to TryInteract below when the move is switched off. Both are gated on the same two
+            // predicates it is, so neither can be reached ahead of it.
+            if (onDeckAwayFromTheHelm && CanStepAshore()
                 && BeginBoardingMove(BoardingMoveKind.Disembarking)) return true;
 
             if (TryInteract()) return true;
 
-            // ...and only then, the registry (M2-39). See TryInteractCandidate for why LAST.
-            if (TryInteractCandidate()) return true;
+            // ...and only then, the registry (M2-39), for the modes the deck consult above did not
+            // already answer. See TryInteractCandidate for why it is LAST on foot and SECOND on deck.
+            if (!onDeckAwayFromTheHelm && TryInteractCandidate()) return true;
 
             // ⭐ THE PRESS FOUND NOTHING — and if the reason is a boat you have not repaired yet, say so
             // rather than answering with silence (P5 cozy). This is the line the screen-space hint used to
@@ -474,20 +495,30 @@ namespace HiddenHarbours.Player
         /// Hand the press to the nearest/highest-priority registered <see cref="IInteractable"/>, if there
         /// is one. This is where the M2-39 seam actually meets a key.
         ///
-        /// <para><b>Why the verb is consulted LAST, after every branch above.</b> The alternative — resolve
-        /// candidates first — is more expressive and it is what the seam should eventually become, but it
-        /// can silently take the press away from boarding, taking the helm, or stepping ashore, and those
-        /// are the three things the player cannot afford to lose. Consulting last makes the change
-        /// provably non-regressive: <b>every</b> transition the switcher would have made, it still makes,
-        /// on the same press, before the registry is even looked at. What the verb gets is the presses
-        /// that used to do nothing at all.</para>
+        /// <para><b>Why the verb is consulted LAST on foot — and SECOND on deck.</b> The alternative —
+        /// resolve candidates first, everywhere — is more expressive and it is what the seam should
+        /// eventually become, but it can silently take the press away from boarding and from taking the
+        /// helm, and those two the player cannot afford to lose. Consulting after them keeps the seam
+        /// provably non-regressive where it matters: <b>every</b> boarding and every helm the switcher
+        /// would have made, it still makes, on the same press, before the registry is even looked at.
+        /// What the verb gets on foot is the presses that used to do nothing at all.</para>
         ///
-        /// <para><b>The cost of that choice, stated plainly.</b> Standing at a registered candidate with a
-        /// boardable boat inside <see cref="_boardReach"/>, E boards rather than working the candidate —
-        /// step a metre off the boat and it is yours again. That is legible, but it is a policy call and
-        /// not obviously the right one for a thing lying at your feet; the correct end state is that
-        /// boarding registers as a candidate too and the resolver arbitrates it against the rest by
-        /// distance, priority and FACING, which is what a facing-aware verb is for. Flagged for
+        /// <para><b>Stepping ashore is the one that YIELDS</b> (lead-architect, 2026-08-25). On deck,
+        /// away from the helm, <see cref="BeginInteract"/> asks the registry before it steps the fisher
+        /// off. Consulting last there did not merely cost the odd press: <see cref="CanStepAshore"/> is
+        /// true from the whole deck of a boat that is tied up or lying over bared ground, so every OnDeck
+        /// fixture on a docked boat — her cabin door included — was permanently unpressable. The amended
+        /// invariant, in one line: <b>boarding and the helm win over the registry; step-ashore yields to
+        /// a resolving fixture.</b></para>
+        ///
+        /// <para><b>The cost of that choice, stated plainly.</b> On foot: standing at a registered
+        /// candidate with a boardable boat inside <see cref="_boardReach"/>, E boards rather than working
+        /// the candidate — step a metre off the boat and it is yours again. On deck: standing at a
+        /// registered candidate while she is alongside, E works the candidate rather than stepping ashore
+        /// — step a metre off the fixture and the wharf is yours again. Both are legible, and both are
+        /// policy calls rather than arbitration; the correct end state is still that boarding registers as
+        /// a candidate too and the resolver arbitrates it against the rest by distance, priority and
+        /// FACING, which is what a facing-aware verb is for. Deferred, and still flagged for
         /// lead-architect: <see cref="InteractPriority"/> already carries the ladder that ordering would
         /// need, and the switcher's own reach/priority would be its rung.</para>
         ///
@@ -1983,11 +2014,17 @@ namespace HiddenHarbours.Player
             // Player type (rule 4), so the actor this component already composes for the verb is relayed
             // through Core rather than reached for. One composition, one mode→context mapping, one facing.
             InteractActorProbe.Set(ActorNow());
-            UpdateOffer();
 
             // What the verb WOULD act on, republished only when it changes — the signal the diegetic
             // outline rides (M2-39; no screen-space prompt). Resolved after the press so the highlight
             // reflects the world the press left behind, not the one it found.
+            //
+            // ⚠ AND BEFORE UpdateOffer, WHICH READS THIS ANSWER. On deck the step-ashore offer stands
+            // down when a fixture would take the press (AFixtureWouldTakeThePress), so these two run in
+            // the order BeginInteract dispatches in — or the popup would be a frame behind the key, and
+            // would name the dock on the very frame E opens the cabin door. Re-resolving inside
+            // UpdateOffer would answer it too, and would be the second opinion about one press this
+            // whole seam exists to prevent. The order is the fix; nothing here resolves twice.
             //
             // NOTHING is offered from inside a cab. The press there means "get out" and is answered by the
             // switcher before the verb is consulted, so a candidate resolved here could never be acted on
@@ -1996,6 +2033,8 @@ namespace HiddenHarbours.Player
             if (_interactVerb && Mode != ControlMode.Driving)
                 InteractVerb.PublishCandidate(ActorNow(), _interactArcDegrees);
             else if (Mode == ControlMode.Driving) InteractVerb.ClearCandidate();
+
+            UpdateOffer();
         }
 
         // ---- the shell's hold on the world (M1 §7.8) ----------------------------------------
@@ -2040,6 +2079,31 @@ namespace HiddenHarbours.Player
         // ---- the transit offer (what the interaction popup draws) ----------------------------
 
         /// <summary>
+        /// <b>Would this press reach a registered fixture instead?</b> — the one question
+        /// <see cref="UpdateOffer"/>'s deck branch has to ask before it offers the step ashore, now that
+        /// <see cref="BeginInteract"/> asks the registry first there.
+        ///
+        /// <para><b>Read, never recomputed.</b> <see cref="InteractVerb.CurrentCandidateId"/> is the
+        /// answer <see cref="InteractVerb.PublishCandidate"/> has already published THIS frame, from the
+        /// same actor and the same arc the press uses — and it honours the very stand-downs
+        /// (<see cref="InteractionGate"/>, <see cref="InteractActionClaim"/>) that
+        /// <see cref="InteractVerb.TryPerform"/> does, which is what makes it exactly "would the press
+        /// reach a fixture" rather than a near-enough proxy for it. Resolving again here would be the
+        /// second, lagging opinion <see cref="InteractOffer"/>'s remarks forbid; the ORDER of the two
+        /// calls in <see cref="Update"/> is what keeps it honest, and <c>InteractVerbPlayTests
+        /// .AtAWharf_TheStepAshoreOFFER_StandsDownForTheFixture_AndComesBackWhenItLeavesReach</c> is the
+        /// assertion that says so.</para>
+        ///
+        /// <para><b>The <c>_interactVerb</c> read is load-bearing, not belt-and-braces.</b> With the verb
+        /// switched off the driver stops republishing the candidate at all, so the last id resolved
+        /// before the switch would otherwise stand for ever and silently suppress the dock offer. Reading
+        /// the same flag the press reads (<see cref="TryInteractCandidate"/>) is what makes the A/B
+        /// restore the old behaviour exactly, popup included.</para>
+        /// </summary>
+        private bool AFixtureWouldTakeThePress
+            => _interactVerb && !string.IsNullOrEmpty(InteractVerb.CurrentCandidateId);
+
+        /// <summary>
         /// State this component's answer on the Core offer channel — <b>what the interact press would do
         /// with the player's whole body right now</b>, and the replacement for the screen-space
         /// "E: Board" / "E: Dock" label the 2026-08-19 ruling retired.
@@ -2047,8 +2111,13 @@ namespace HiddenHarbours.Player
         /// <para><b>It decides nothing.</b> Every branch below is the same predicate
         /// <see cref="BeginInteract"/> and <see cref="TryInteract"/> already dispatch on, read in the same
         /// order — so the popup says what the press does, rather than holding a second opinion about it.
-        /// The one thing it adds is the <see cref="ControlMode.OnDeck"/> split between a wharf and a
-        /// beach, which <see cref="CanStepAshore"/> already distinguishes and the old hint already
+        /// That now includes the rung this component does NOT own: on deck the press goes to a resolving
+        /// fixture before it steps the fisher ashore, so the step-ashore offer stands down for one
+        /// (<see cref="AFixtureWouldTakeThePress"/>) and the verb's own line wins the popup by being the
+        /// only offer left standing. No rank moved to arrange that — <see cref="InteractOfferSource"/> is
+        /// still the dispatch order written down, and an offer nobody makes cannot outrank anything.
+        /// The one thing this method adds is the <see cref="ControlMode.OnDeck"/> split between a wharf
+        /// and a beach, which <see cref="CanStepAshore"/> already distinguishes and the old hint already
         /// said.</para>
         ///
         /// <para><b>Nothing is offered at the helm or from a cab.</b> Not because the press does nothing
@@ -2078,8 +2147,11 @@ namespace HiddenHarbours.Player
                     break;
 
                 case ControlMode.OnDeck:
+                    // Helm, then the registry, then the step off — BeginInteract's own deck ladder, read
+                    // in its own order. The middle rung is not offered from here: the verb states it
+                    // itself on the Fixture slot, so all this branch owes it is to STAND DOWN.
                     if (WithinHelmReach()) { id = ControlStrings.IdTakeHelm; label = ControlStrings.TakeHelm; }
-                    else if (CanStepAshore())
+                    else if (CanStepAshore() && !AFixtureWouldTakeThePress)
                     {
                         id = ControlStrings.IdStepAshore;
                         label = InDockZone() ? ControlStrings.Dock : ControlStrings.StepAshore;
