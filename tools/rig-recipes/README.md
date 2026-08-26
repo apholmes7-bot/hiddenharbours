@@ -58,6 +58,23 @@ node tools/rig-recipes/cutaway-intake.mjs --hull lobster   # one hull
 node tools/rig-recipes/cutaway-intake.mjs --json           # the measurements, machine-readable
 ```
 
+```bash
+# ⭐ THE REACH IS THE RIG'S. Re-renders every committed reach sheet (and the two runs the 6.6 drop
+#   completed) from the rig sources and byte-compares against the committed PNG — the character
+#   sheets' half of the #654 standard, which the recipe ledger does not cover. Also pins the two
+#   halves of the hand-over to each other: REST_FRAMES, RELEASE_AT, how many frames the tool is
+#   still in hand, and the grip rise are stated by BOTH the rod rig and the character rig and must
+#   agree. Fails if any sheet drifts a pixel or either rig moves a number.
+node tools/rig-recipes/reach-continuity.mjs
+node tools/rig-recipes/reach-continuity.mjs --all        # every iso character sheet, both cells
+node tools/rig-recipes/reach-continuity.mjs --json       # the measurements, machine-readable
+```
+
+> `restLift()` is REPORTED beside the reach clip's lifts and never asserted against them. The rod's
+> number is how far a settled rod holds its GRIP above whatever it rests on; the character's is that
+> surface's own HEIGHT. They meet at the ground, where the surface is the floor and both rigs say
+> 0.095 m — that one IS asserted.
+
 The in-editor twin of the continuity check is `RodContinuityTests`; both measure the same things off
 the same V8, and neither restates a number the rigs own.
 
@@ -86,6 +103,9 @@ mismatch throws rather than being compared. `check-slices.mjs` needs none of thi
 | `check-slices.mjs` | recipe vs the slicer's own rects in `<stem>.png.meta` — no rig, no LFS |
 | `cutaway-intake.mjs` | the batch-1 cutaway hulls: geometry contract, byte-discipline vs pass 2, and the lobster's paint × pass-3 merge proof |
 | `bake-ledger.mjs` | derive + verify + (with `--write`) commit the ledger, per kit |
+| `rod-continuity.mjs` | the rod is ONE rod: every hold ↔ cast ↔ rest seam, measured off the render |
+| `reach-continuity.mjs` | the reach sheets re-render byte for byte, and the two rigs agree about the hand-over |
+| `fisher-rod-mount.mjs` | regenerates (or `--check`s) the rod-mount handoff sidecar from the rigs |
 | `lib/recipe.mjs` | the recipe shape: canonical serialisation, axis expansion, reassembly |
 | `lib/csharp.mjs` | reads the FACTS out of the bakers' own C# — build tables, `const` tunables, `RigCatalog` — and cites them by `path:line` |
 | `lib/rigHost.mjs` | loads a rig and its prerequisite closure; `dirForCell`; the LF-normalised rig hash |

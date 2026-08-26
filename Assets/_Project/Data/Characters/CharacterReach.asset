@@ -1,0 +1,155 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2add14e55fad80a498b5f2e47a276d44, type: 3}
+  m_Name: CharacterReach
+  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.CharacterReachDef
+  Id: reach.character_iso
+  Rig: 6.6
+  Frames: 6
+  MillisecondsPerFrame: 100
+  ReleaseAt: 0.72
+  ArriveAt: 0.62
+  GripRiseM: 0.095
+  GroundLiftM: 0
+  StowVLiftM: 0.95
+  StowHLiftM: 1.05
+  Rows:
+  - VisualId: visual.boy_iso
+    Ground:
+      LiftM: 0
+      RequestedM: 0
+      Clamped: 0
+    StowV:
+      LiftM: 0.839
+      RequestedM: 0.95
+      Clamped: 1
+    StowH:
+      LiftM: 0.839
+      RequestedM: 1.05
+      Clamped: 1
+  - VisualId: visual.cutter_iso
+    Ground:
+      LiftM: 0
+      RequestedM: 0
+      Clamped: 0
+    StowV:
+      LiftM: 0.95
+      RequestedM: 0.95
+      Clamped: 0
+    StowH:
+      LiftM: 1.015
+      RequestedM: 1.05
+      Clamped: 1
+  - VisualId: visual.deckboss_iso
+    Ground:
+      LiftM: 0
+      RequestedM: 0
+      Clamped: 0
+    StowV:
+      LiftM: 0.95
+      RequestedM: 0.95
+      Clamped: 0
+    StowH:
+      LiftM: 1.05
+      RequestedM: 1.05
+      Clamped: 0
+  - VisualId: visual.fisher_iso
+    Ground:
+      LiftM: 0
+      RequestedM: 0
+      Clamped: 0
+    StowV:
+      LiftM: 0.95
+      RequestedM: 0.95
+      Clamped: 0
+    StowH:
+      LiftM: 1.05
+      RequestedM: 1.05
+      Clamped: 0
+  - VisualId: visual.ginny_iso
+    Ground:
+      LiftM: 0
+      RequestedM: 0
+      Clamped: 0
+    StowV:
+      LiftM: 0.95
+      RequestedM: 0.95
+      Clamped: 0
+    StowH:
+      LiftM: 1.05
+      RequestedM: 1.05
+      Clamped: 0
+  - VisualId: visual.girl_iso
+    Ground:
+      LiftM: 0
+      RequestedM: 0
+      Clamped: 0
+    StowV:
+      LiftM: 0.786
+      RequestedM: 0.95
+      Clamped: 1
+    StowH:
+      LiftM: 0.786
+      RequestedM: 1.05
+      Clamped: 1
+  - VisualId: visual.hand_iso
+    Ground:
+      LiftM: 0
+      RequestedM: 0
+      Clamped: 0
+    StowV:
+      LiftM: 0.95
+      RequestedM: 0.95
+      Clamped: 0
+    StowH:
+      LiftM: 1.05
+      RequestedM: 1.05
+      Clamped: 0
+  - VisualId: visual.nan_iso
+    Ground:
+      LiftM: 0
+      RequestedM: 0
+      Clamped: 0
+    StowV:
+      LiftM: 0.95
+      RequestedM: 0.95
+      Clamped: 0
+    StowH:
+      LiftM: 1.05
+      RequestedM: 1.05
+      Clamped: 0
+  - VisualId: visual.packer_iso
+    Ground:
+      LiftM: 0
+      RequestedM: 0
+      Clamped: 0
+    StowV:
+      LiftM: 0.95
+      RequestedM: 0.95
+      Clamped: 0
+    StowH:
+      LiftM: 1.05
+      RequestedM: 1.05
+      Clamped: 0
+  - VisualId: visual.skipper_iso
+    Ground:
+      LiftM: 0
+      RequestedM: 0
+      Clamped: 0
+    StowV:
+      LiftM: 0.95
+      RequestedM: 0.95
+      Clamped: 0
+    StowH:
+      LiftM: 1.05
+      RequestedM: 1.05
+      Clamped: 0

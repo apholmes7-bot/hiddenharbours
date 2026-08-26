@@ -258,8 +258,70 @@ namespace HiddenHarbours.Tests.RigBaking
                 .Split(',');
 
             foreach (string anim in declared)
+            {
+                if (Array.Exists(CharacterRigBakeMenu.PlayerAnimsBakedElsewhere, a => a == anim))
+                    continue;
+
                 Assert.IsTrue(Array.Exists(CharacterRigBakeMenu.PlayerStates, s => s.Anim == anim),
-                    $"the rig declares '{anim}' but the player recipe never bakes it");
+                    $"the rig declares '{anim}' but the player recipe never bakes it. If it CANNOT " +
+                    "be baked here, say why in CharacterRigBakeMenu.PlayerAnimsBakedElsewhere rather " +
+                    "than leaving the gap silent.");
+            }
+        }
+
+        [Test]
+        public void TheAnimsBakedElsewhere_AreRealAnims_AndAreNotAlsoInTheRecipe()
+        {
+            // The exclusion list is the one thing that can turn the guard above into a no-op, so it
+            // gets its own guard. Two ways it rots: a name the rig no longer declares (the exclusion
+            // silently protects nothing, and would go on hiding a REAL gap if that name came back),
+            // and a name that is excluded AND listed (the recipe bakes it after all, so the stated
+            // reason is false). Neither is visible from the test above.
+            using var host = RigScriptHostFactory.Create();
+            var entry = RigCatalog.Get("character");
+            RigCatalog.Install(host, entry);
+
+            string[] declared = host
+                .EvaluateString($"Object.keys({entry.GlobalName}.ANIMS).join(',')")
+                .Split(',');
+
+            foreach (string anim in CharacterRigBakeMenu.PlayerAnimsBakedElsewhere)
+            {
+                Assert.Contains(anim, declared,
+                    $"'{anim}' is excluded from the player recipe but the rig no longer declares it — " +
+                    "drop the entry rather than leaving a dead exclusion in the way of a real gap.");
+                Assert.IsFalse(Array.Exists(CharacterRigBakeMenu.PlayerStates, s => s.Anim == anim),
+                    $"'{anim}' is BOTH excluded and baked — one of the two is wrong.");
+            }
+        }
+
+        [Test]
+        public void TheReachFamily_BakesOneSheetPerRestHeightTheRigDeclares()
+        {
+            // The reach clip is one anim and three sheets, and which three is the RIG's statement
+            // (REACH_LIFT), not this recipe's. A rest the rig grows and the recipe never learns about
+            // is a set-down height that silently never ships; a rest in the recipe the rig does not
+            // know would bake the default height under a name promising another one.
+            using var host = RigScriptHostFactory.Create();
+            var entry = RigCatalog.Get("character");
+            RigCatalog.Install(host, entry);
+
+            string[] rests = host
+                .EvaluateString($"Object.keys({entry.GlobalName}.REACH_LIFT).join(',')")
+                .Split(',');
+
+            var baked = Array.FindAll(CharacterRigBakeMenu.PlayerStates, s => s.Anim == "reach");
+            Assert.AreEqual(rests.Length, baked.Length,
+                            "one reach sheet per rest height the rig declares");
+
+            foreach (string rest in rests)
+            {
+                Assert.IsTrue(Array.Exists(baked, s => s.Rest == rest),
+                    $"the rig declares rest '{rest}' but the recipe bakes no sheet for it");
+                Assert.IsTrue(Array.Exists(baked, s => s.Key == $"reach_{rest}"),
+                    $"the reach sheet for '{rest}' must key as 'reach_{rest}' — that is the stem the " +
+                    "slicer and CharacterVisualLibraryBuilder both find it by");
+            }
         }
 
         // ---- the convention is measured, not believed ---------------------------------------------

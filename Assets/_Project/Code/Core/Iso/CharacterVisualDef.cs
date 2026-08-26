@@ -170,6 +170,46 @@ namespace HiddenHarbours.Core
         /// ⚠️ The facing row is the VEHICLE's, re-derived every frame — a driver faces where the
         /// machine points, and boarding input must never be cached as a heading.</summary>
         Drive = 14,
+
+        // ---- the REACH family, rig pass 6.6 (drop of 2026-08-25) ----------------------------------
+        // ONE clip in the rig — `reach` — baked at three REST HEIGHTS, so three ids here. They are one
+        // id per SHEET, exactly as cast_short and cast_long are: the rig re-solves the whole descent
+        // per height, and a character setting a rod on the floor is not the same pose as one laying it
+        // across a rack at chest height.
+        //
+        // ⚠️ ONE-SHOT, AND THE LAST FRAME IS THE PICTURE. Every other one-shot here (board, lift,
+        // place, toss) is a transition you pass THROUGH. These three you STOP on: frame 5 is the
+        // settled rest, and it is what the character holds until something else moves them. The rig
+        // bakes them that way — `reach` is the only clip with the `settle` frame→u mapping, u =
+        // f/(frames−1) rather than f/frames, so the last frame lands on u = 1 exactly instead of one
+        // step short of it. A player that treats these as ordinary one-shots and drops back to idle
+        // on the last frame throws away the only frame worth keeping.
+        //
+        // ⚠️ THE REST HEIGHT IS A WORLD METRE, the workZ precedent again — a rack belongs to the
+        // furniture, not to whoever is standing at it, so it never scales with the build. The heights
+        // the sheets were baked at, the release point, and the grip rise live in
+        // CharacterReachDef, imported from the drop's own sidecar. Reading the clip without reading
+        // that def gives you a character reaching for a rack whose height you are guessing.
+        //
+        // ⚠️ THERE IS NO PICK-UP CLIP AND THERE SHOULD NOT BE. A pick-up is these frames PLAYED IN
+        // REVERSE: the 0.72 release mirrors to a 0.28 grip-close, so the hand arrives empty, closes on
+        // the tool, and lifts. Baking a second family for it would double the art and let the two
+        // drift apart.
+
+        /// <summary>Setting a tool down on the GROUND, or taking one off it — the rig's <c>reach</c>
+        /// clip at rest height 0 (6 f, 100 ms, one-shot, settles). The deepest of the three: the figure
+        /// crouches, because at floor level the arm cannot do the work.</summary>
+        ReachGround = 15,
+
+        /// <summary>Setting a tool UPRIGHT in a rack, butt down — the rig's <c>reach</c> clip at the
+        /// stow-V rest height (6 f, 100 ms, one-shot, settles). No crouch: this one is all arm.</summary>
+        ReachStowV = 16,
+
+        /// <summary>Laying a tool ACROSS a rack, horizontally — the rig's <c>reach</c> clip at the
+        /// stow-H rest height (6 f, 100 ms, one-shot, settles). The highest of the three, and the one
+        /// the small builds cannot reach: the rig CLAMPS the height to what the figure can actually
+        /// touch and reports the clamp rather than stretching the arm.</summary>
+        ReachStowH = 17,
     }
 
     /// <summary>
@@ -422,6 +462,27 @@ namespace HiddenHarbours.Core
         public CharacterClipSheets DriveClip = new CharacterClipSheets
         { FrameCount = 6, FramesPerSecond = 1000f / 170f, Loops = true };
 
+        // ---- the REACH family (rig 6.6) ------------------------------------------------------------
+        // One clip at three rest heights, 6 frames at 100 ms each — the rig's own ANIMS.reach values,
+        // and the same 100 ms on all three because the descent is the same descent. None of them LOOP:
+        // they settle, and the settled frame is held (see the enum's remarks). The heights themselves
+        // are NOT here — they belong to the furniture and live in CharacterReachDef.
+
+        [Tooltip("SETTING A TOOL ON THE GROUND — the rig's 'reach' clip at rest height 0 (one-shot, " +
+                 "SETTLES: the last frame is the picture and is held). Play it in reverse for a pick-up.")]
+        public CharacterClipSheets ReachGroundClip = new CharacterClipSheets
+        { FrameCount = 6, FramesPerSecond = 1000f / 100f, Loops = false };
+
+        [Tooltip("STOWING A TOOL UPRIGHT IN A RACK — the rig's 'reach' clip at the stow-V height " +
+                 "(one-shot, SETTLES). Reverse it to take the tool back down.")]
+        public CharacterClipSheets ReachStowVClip = new CharacterClipSheets
+        { FrameCount = 6, FramesPerSecond = 1000f / 100f, Loops = false };
+
+        [Tooltip("LAYING A TOOL ACROSS A RACK — the rig's 'reach' clip at the stow-H height (one-shot, " +
+                 "SETTLES). The highest rest; small builds reach a CLAMPED height, which the rig reports.")]
+        public CharacterClipSheets ReachStowHClip = new CharacterClipSheets
+        { FrameCount = 6, FramesPerSecond = 1000f / 100f, Loops = false };
+
         // ---- the all-or-nothing gates + lookups (pure; EditMode-testable without a scene) ----------
 
         /// <summary>The sheet for a gait (never null — an unwired gait returns an empty array).</summary>
@@ -620,8 +681,25 @@ namespace HiddenHarbours.Core
             CharacterClip.Tread => TreadClip,
             CharacterClip.Sleep => SleepClip,
             CharacterClip.Drive => DriveClip,
+            CharacterClip.ReachGround => ReachGroundClip,
+            CharacterClip.ReachStowV => ReachStowVClip,
+            CharacterClip.ReachStowH => ReachStowHClip,
             _ => null,
         };
+
+        /// <summary>
+        /// True for the three <c>reach</c> clips — the ones a player must STOP on rather than play
+        /// through. They are not loops and they are not ordinary one-shots: the last frame is the
+        /// settled rest and is meant to be held (see <see cref="CharacterClip.ReachGround"/>).
+        ///
+        /// <para>Asked as a question rather than answered with a field because it is a property of the
+        /// RIG's clip, not of the art: the sheets carry no flag for it and a def that hand-set one
+        /// could disagree with the animation it is describing.</para>
+        /// </summary>
+        public static bool ClipSettles(CharacterClip clip) =>
+            clip == CharacterClip.ReachGround ||
+            clip == CharacterClip.ReachStowV ||
+            clip == CharacterClip.ReachStowH;
 
         /// <summary>Frames per direction on a clip's sheet (1 for an unknown clip — never 0, so no
         /// caller divides by it).</summary>

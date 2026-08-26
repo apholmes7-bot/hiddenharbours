@@ -33,16 +33,29 @@ namespace HiddenHarbours.Tools.RigBaking
         /// always wins and the rig ignores carry, so baking one would be a duplicate sheet.</summary>
         public readonly string Carry;
 
-        public CharacterState(string anim, string power = null, string carry = null)
+        /// <summary>
+        /// The rig's <c>rest</c> opt (<c>ground</c> / <c>stowV</c> / <c>stowH</c>), or null. A THIRD
+        /// way the sheet axis is not the anim axis: rev 6.6's <c>reach</c> is one clip that re-solves
+        /// the whole descent per rest HEIGHT, so a floor set-down crouches where a rack one is all
+        /// arm. Same shape as <see cref="Power"/> — one anim, one sheet per sub-range — and the rig
+        /// clamps a height a small build cannot reach rather than stretching the arm.
+        /// </summary>
+        public readonly string Rest;
+
+        public CharacterState(string anim, string power = null, string carry = null,
+                              string rest = null)
         {
             Anim = anim ?? throw new ArgumentNullException(nameof(anim));
             Power = string.IsNullOrEmpty(power) ? null : power;
             Carry = string.IsNullOrEmpty(carry) ? null : carry;
+            Rest = string.IsNullOrEmpty(rest) ? null : rest;
         }
 
-        /// <summary>Sheet suffix and sidecar key: <c>reel</c>, <c>cast_short</c>, <c>walk_buckets</c>.</summary>
+        /// <summary>Sheet suffix and sidecar key: <c>reel</c>, <c>cast_short</c>, <c>walk_buckets</c>,
+        /// <c>reach_stowV</c>.</summary>
         public string Key =>
-            Anim + (Power == null ? "" : "_" + Power) + (Carry == null ? "" : "_" + Carry);
+            Anim + (Power == null ? "" : "_" + Power) + (Carry == null ? "" : "_" + Carry)
+                 + (Rest == null ? "" : "_" + Rest);
 
         public override string ToString() => Key;
 
@@ -231,13 +244,14 @@ namespace HiddenHarbours.Tools.RigBaking
             if (withCarryStances) states = ExpandCarryStances(host, g, states, carryStanceExclusions);
 
             // Validate the WHOLE recipe against the rig before writing anything, so a mistyped
-            // state name (or build key, or an illegal carry) fails with zero files on disk rather
-            // than a half-baked set.
+            // state name (or build key, or an illegal carry, or an unknown rest height) fails with
+            // zero files on disk rather than a half-baked set.
             ValidateBuild(host, g, buildPreset);
             foreach (var state in states)
             {
                 FramesOf(host, g, state.Anim);
                 ValidateCarry(host, g, state);
+                ValidateRest(host, g, state);
             }
 
             int dirs = geo.NativeDirs;
@@ -437,6 +451,42 @@ namespace HiddenHarbours.Tools.RigBaking
                     "stance and is not one.");
         }
 
+        /// <summary>
+        /// Refuse a rest height the rig would silently ignore — the same defect as a bad carry, one
+        /// table over. <c>reachOf()</c> falls back to <c>REACH_LIFT.ground</c> for a name it does not
+        /// know, and the rig ignores <c>rest</c> entirely on an anim that is not a set-down, so both
+        /// mistakes bake the wrong picture under a name that promises a height.
+        /// </summary>
+        static void ValidateRest(IRigScriptHost host, string g, in CharacterState state)
+        {
+            string mount = MountOf(host, g, state.Anim);
+
+            if (state.Rest == null)
+            {
+                if (mount == "rest")
+                    throw new ArgumentException(
+                        $"'{state.Anim}' is a set-down, so its sheet IS a rest height — baking it " +
+                        "without one takes the rig's default and ships a sheet whose name says " +
+                        $"nothing about where the tool went. Name a rest: {KnownRests(host, g)}.");
+                return;
+            }
+
+            if (mount != "rest")
+                throw new ArgumentException(
+                    $"'{state.Anim}' drives the {mount} layer, so the rig IGNORES rest on it — a " +
+                    $"'{state.Key}' sheet would be a byte-identical copy of '{state.Anim}' under a " +
+                    "name that claims a set-down height.");
+
+            if (!host.EvaluateBool($"{g}.REACH_LIFT[{JsString(state.Rest)}] != null"))
+                throw new ArgumentException(
+                    $"Rig '{g}' has no rest height '{state.Rest}'. Known: {KnownRests(host, g)}. " +
+                    "The rig resolves an unknown rest to the GROUND height in silence, which would " +
+                    "bake a floor set-down under a rack's name — refusing instead.");
+        }
+
+        static string KnownRests(IRigScriptHost host, string g) =>
+            host.EvaluateString($"Object.keys({g}.REACH_LIFT).join(', ')");
+
         /// <summary>Refuse a build key the rig's BUILDS table does not carry — before any file lands.</summary>
         static void ValidateBuild(IRigScriptHost host, string g, string buildPreset)
         {
@@ -466,6 +516,10 @@ namespace HiddenHarbours.Tools.RigBaking
             sb.Append(",frame:").Append(frame.ToString(CultureInfo.InvariantCulture));
             if (state.Power != null) sb.Append(",power:").Append(JsString(state.Power));
             if (state.Carry != null) sb.Append(",carry:").Append(JsString(state.Carry));
+            // ⚠️ `rest` is sugar for the rig's REACH_LIFT table, so the HEIGHT stays the rig's number
+            // and never becomes one written down here. Passing a bare metre instead (opts.lift) would
+            // put the rack wherever this file said it was.
+            if (state.Rest != null) sb.Append(",rest:").Append(JsString(state.Rest));
             if (!string.IsNullOrEmpty(buildPreset))
                 sb.Append(",build:{preset:").Append(JsString(buildPreset)).Append('}');
             sb.Append('}');

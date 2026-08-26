@@ -138,6 +138,13 @@ namespace HiddenHarbours.App.Editor
         const int DriveFrames = 6;
         const float DriveFps = 1000f / 170f;       // 5.88
 
+        // The REACH family (rig 6.6). ONE clip at three rest heights, so one count and one rate for
+        // all three sheets — the descent is the same descent whatever it is descending to.
+        // CharacterReachTests holds these against the drop's own sidecar, the same way the off-deck
+        // four are held against theirs.
+        const int ReachFrames = 6;
+        const float ReachFps = 1000f / 100f;       // 10.00
+
         /// <summary>One character's worth of sheets on disk → one <see cref="CharacterVisualDef"/> asset.</summary>
         struct Kit
         {
@@ -186,10 +193,16 @@ namespace HiddenHarbours.App.Editor
         };
 
         /// <summary>
-        /// The player's kit plus one per cast preset. The cast bake idle + walk only (an M1 standee
-        /// idles; a routine that walks is M2), so their run count is <b>0</b> — which is not a gap to
-        /// paper over: <c>CharacterVisualDef.PlayableGait</c> ladders run → walk → idle, so a preset
-        /// with no run sheet simply never shows one.
+        /// The player's kit plus one per cast preset.
+        ///
+        /// <para><b>Every kit asks for a run sheet, and most of them do not have one.</b> That is the
+        /// all-or-nothing gate doing its job rather than a gap to paper over: <see cref="TakeExactly"/>
+        /// on an absent PNG comes back EMPTY, <c>CharacterVisualDef.PlayableGait</c> ladders
+        /// run → walk → idle, and a preset with no run art simply never shows one. The count used to
+        /// be a hard <b>0</b> for the whole cast, which meant the sheet was declined in CODE — so when
+        /// the 6.6 drop shipped <c>Ginny_run</c> and <c>Skipper_run</c> the art landed and nothing
+        /// picked it up. Asking for all three and letting the gate answer is what makes the next run
+        /// sheet wire itself with no edit here.</para>
         /// </summary>
         static IEnumerable<Kit> AllKits()
         {
@@ -202,7 +215,7 @@ namespace HiddenHarbours.App.Editor
                     Id = CastVisualId(preset),
                     Stem = stem,
                     Folder = preset,
-                    IdleFrames = 6, WalkFrames = 8, RunFrames = 0,
+                    IdleFrames = 6, WalkFrames = 8, RunFrames = 6,
                 };
         }
 
@@ -308,6 +321,20 @@ namespace HiddenHarbours.App.Editor
             def.SleepClip = TakeClip(folder, kit.Stem, "_sleep", SleepFrames, SleepFps, loops: true);
             def.DriveClip = TakeClip(folder, kit.Stem, "_drive", DriveFrames, DriveFps, loops: true);
 
+            // The rig-6.6 REACH family, found BY STEM like every clip above it: Fisher_reach_ground.png
+            // at the root, DeckBoss_reach_stowV.png one folder down. All ten presets bake all three, so
+            // unlike the deck families there is no player/cast asymmetry to encode here.
+            //
+            // These do not loop and they are not ordinary one-shots either — they SETTLE, and the last
+            // frame is the picture (CharacterVisualDef.ClipSettles). Nothing in the wiring changes for
+            // that: it is the PLAYER's business, and the def answers the question for it.
+            def.ReachGroundClip = TakeClip(folder, kit.Stem, "_reach_ground", ReachFrames, ReachFps,
+                                           loops: false);
+            def.ReachStowVClip = TakeClip(folder, kit.Stem, "_reach_stowV", ReachFrames, ReachFps,
+                                          loops: false);
+            def.ReachStowHClip = TakeClip(folder, kit.Stem, "_reach_stowH", ReachFrames, ReachFps,
+                                          loops: false);
+
             if (created) AssetDatabase.CreateAsset(def, path);
             else EditorUtility.SetDirty(def);
 
@@ -343,6 +370,9 @@ namespace HiddenHarbours.App.Editor
                       $"tread {ClipState(def, CharacterClip.Tread)}, " +
                       $"sleep {ClipState(def, CharacterClip.Sleep)}, " +
                       $"drive {ClipState(def, CharacterClip.Drive)}" +
+                      $"; reach ground {ClipState(def, CharacterClip.ReachGround)}, " +
+                      $"stowV {ClipState(def, CharacterClip.ReachStowV)}, " +
+                      $"stowH {ClipState(def, CharacterClip.ReachStowH)}" +
                       $"{(def.FacingsAreCounterClockwise ? ", rows UN-MIRRORED (art bakes CCW)" : ", rows as labelled (art bakes CW)")}.");
             return true;
         }
