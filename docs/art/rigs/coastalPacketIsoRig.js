@@ -17,9 +17,33 @@
    craneMounts(dir,opts) -> [pedestal top, jib head]; hatchMount(dir,opts) -> hold centre (laden /
    cargo overlays); tubMounts(dir,opts) -> walkway + foredeck anchors; navMounts(dir,opts) ->
    {port,star,stern,mast} for the night bake (sidelights ride the bridge-wing ends). Pass the
-   hull's rock(i) so overlays ride the wave. Exposes globalThis.CoastalPacketIso = { W,H,PX,DIRS,
-   pivot,order,ROCK,rock(i),render(dir,opts), helmSeat,HELM, craneMounts,CRANE, hatchMount,HOLD,
-   tubMounts,TUBS, navMounts, HULL,BOOT,LIME,WHITE,DECKF,MINT,GLAS,STEEL,IRON,ORNG,KEY }. */
+   hull's rock(i) so overlays ride the wave.
+
+   PASS 2 — THE DOOR, THE LADDER AND THE PUBLISHED LOFT (tranche 3 of the interiors program).
+   The house-front crew door (level 1, faces the hold deck) is a REAL opening closed by a HINGED
+   weather-tight steel leaf — opts.doorOpen 0..1 swings it 110° outward on its PORT hinge (0 =
+   closed, fleet default; the swept quarter-arc is the THRESHOLD keep_clear). doorMount(dir,opts)
+   -> threshold + leading-edge + clear state. A fixed boat-deck ladder climbs the front wall port
+   of the door (LADDER is PRESENT in the sidecar). The loft + HOUSE (three interior levels:
+   house/bridge/below — the L2 cabin deck is dressed, the stair trunk passes it whole) are
+   PUBLISHED so boatInteriorRig.js builds the rooms from these exact numbers. Side + aft doors
+   stay dressed closed — not routes this pass.
+   Exposes globalThis.CoastalPacketIso = { W,H,PX,DIRS,pivot,order,ROCK,rock(i),render(dir,opts),
+   helmSeat,HELM, craneMounts,CRANE, hatchMount,HOLD, tubMounts,TUBS, navMounts, doorMount,DOOR,
+   HOUSE,loft, HULL,BOOT,LIME,WHITE,DECKF,MINT,GLAS,STEEL,IRON,ORNG,KEY } — pass 3 adds
+   geometry,faces,doorFaces,LEVEL_IDS.
+
+   PASS 3 — CUTAWAY DATA (upstream ask 2026-08-26, the owner-ruled cutaway composite).
+   ASK B: every face DECLARES its level in `lv` — an authoring cursor set at each build section,
+   nothing derived; bake via geometry().ids (TexCoord1.x). Foremast, derrick, deck crane, stays and
+   roof gear are the DEDICATED `rigging` class so no cut can take a spar with a room; the dressed
+   L2 cabin deck's faces are tagged `house` (the block above the house ceiling — it is not a
+   walkable level). ASK A: geometry() publishes soleZ + ceilingZ (or an EXPLICIT open-above) per
+   walkable level — main_deck/house share one sole z (5.00), the tie the published ceilings break;
+   the bridge wings' underside over the side decks is declared as a partial cover, not a ceiling.
+   faces() hands the tagged static mesh to the extractor; doorFaces(opts) is the posed leaf
+   (lv:'house'); render(dir,{cullLevels:[...]}) is the reference cut. Outside the new fields the
+   mesh, ramps and pixels are byte-identical to pass 2 — adjudicated in qa/Boat Cutaway QA.dc.html. */
 (function (root) {
   const PX = 32, S = 32;
   const W = 2112, H = 1760, cx = 1056, cy = 976;   // cell + pivot (projection of boat origin)
@@ -121,6 +145,11 @@
   const leftPanel =(x,ya,yb,za,zb,mat,b)=>({v:[[x,ya,zb],[x,yb,zb],[x,yb,za],[x,ya,za]],mat,b:b||0,db:DBP});
 
   const F = [];
+  /* PASS 3 — every face DECLARES its level (ASK B). LV is an authoring cursor: each build section
+     states its level before emitting. The stamp rides F.push, so every emission path carries it. */
+  let LV='hull';
+  const lv=(id)=>{ LV=id; };
+  F.push=function(){ for(let i=0;i<arguments.length;i++) arguments[i].lv=LV; return Array.prototype.push.apply(this,arguments); };
   const face=(v,mat,b,db)=>F.push({v,mat:mat||'hull',b:b||0,db:db||0});
   const boxF=(c,h,mat,b,db)=>{ F.push.apply(F, box(c,h,mat,b,db)); };
   const tubeF=(A,B2,rad,mat,b)=>{ F.push.apply(F, tube(A,B2,rad,mat,b)); };
@@ -129,6 +158,7 @@
   function faceO(v, outward, mat, b, db){ const n=objNormal(v[0],v[1],v[2]);
     if(n[0]*outward[0]+n[1]*outward[1]+n[2]*outward[2] < 0) v=v.slice().reverse();
     return {v, mat, b:b||0, db:(db==null?DBP:db)}; }
+  function rrect(ua,ub,va,vb,c){ return [[ua+c,va],[ub-c,va],[ub,va+c],[ub,vb-c],[ub-c,vb],[ua+c,vb],[ua,vb-c],[ua,va+c]]; }
 
   // paint, frac 0(keel)->1(sheer): red-brown bottom, LIME boot line, royal blue to the rail
   const OB = [ [0,0.29,'boot',-0.2,0], [0.29,0.345,'lime',0.1,0.01], [0.345,1,'hull',0,0] ];
@@ -140,8 +170,13 @@
   const WGY0=-21.6, WGY1=-19.8, WGX=5.00;              // bridge wings (full beam, at the WH front)
   // cargo hold trunk
   const CY0=-15.5, CY1=18.5, CXW=3.55, COAMT=6.10;
+  // the crew door — hinged weather-tight steel in the house FRONT (faces the hold deck); hinge on
+  // the PORT edge, swings 110° outward. clearAt: walkable once the leaf has left the opening.
+  const DOOR = { kind:'hinge', face:'fwd', y:H1F, x0:-1.65, x1:-0.85, z0:DECK+0.05, z1:6.95,
+                 hinge:'port', swingDeg:110, clearAt:0.60, sillZ:DECK };
 
   (function build(){
+    lv('hull');                                   // hull shell + bulwark liner + bottom + rail caps + bulb
     // ---- hull shell ----
     for(const side of [-1,1]){
       for(let i=0;i<NSEG;i++){
@@ -168,6 +203,7 @@
     }
     // ---- lime bulbous bow at the stem ----
     tubeF([0,28.9,0.85],[0,31.35,0.85],0.80,'lime',-0.3);
+    lv('main_deck');                              // the weather deck and everything standing on it
     // ---- main deck (green steel), stern -> foc'sle break ----
     const SOLE_U = 0.825, U0 = 0.012;
     const dw=(u)=>{ const st=station(u); return (lerp(st.wb,st.ws,Math.pow(dfrac(st),flareExp(u)))-TH)*0.97; };
@@ -176,6 +212,7 @@
       const u0=U0+(SOLE_U-U0)*i/BSEG, u1=U0+(SOLE_U-U0)*(i+1)/BSEG;
       face([[-dw(u0),station(u0).y,DECK],[dw(u0),station(u0).y,DECK],[dw(u1),station(u1).y,DECK],[-dw(u1),station(u1).y,DECK]],'deck',-0.35);
     }
+    lv('hull');
     // ---- transom: paint bands + white cap ----
     (function(){
       const st0=station(0), sy=st0.y, xw=(f)=>lerp(st0.wb,st0.ws,f), zf=(f)=>st0.kz+f*st0.dep;
@@ -183,6 +220,7 @@
         F.push(faceO([[-xw(f0),sy,zf(f0)],[xw(f0),sy,zf(f0)],[xw(f1),sy,zf(f1)],[-xw(f1),sy,zf(f1)]],[0,-1,0],mat,(b||0)-0.8,0.005));
       face([[-(st0.ws-TH),sy,zf(1)],[st0.ws-TH,sy,zf(1)],[st0.ws-TH,sy+0.30,zf(1)-0.004],[-(st0.ws-TH),sy+0.30,zf(1)-0.004]],'white',-0.9,0.03);
     })();
+    lv('main_deck');                              // bollards, mooring winch, stern light box, hold + covers
     // quarter bollards on the poop
     for(const s of [-1,1]) boxF([s*3.0,-29.3,DECK+0.11],[0.07,0.09,0.11],'iron',0.1,-0.02);
     boxF([0,-29.35,DECK+0.10],[0.55,0.28,0.10],'iron',0.05,-0.02);   // mooring winch aft
@@ -198,6 +236,7 @@
         boxF([0,(ya+yb)/2,COAMT+0.13],[CXW-0.18,(yb-ya)/2,0.13],'mint',(i&1)?0.12:-0.12,-0.01);
       }
     })();
+    lv('hull');                                   // the sheer rails stand on the covering board — silhouette
     // ---- open white rails along the sheer, house -> foc'sle break (the reference's white lattice) ----
     (function(){
       const P=(s,u,h)=>{ const st=station(u); return [s*(st.ws-0.20), st.y+bowRake(u,1), st.kz+st.dep+h]; };
@@ -218,12 +257,19 @@
       }
     })();
 
-    // ---- HOUSE level 1 (accommodation) ----
-    F.push(faceO([[-H1X,H1F,H1T],[H1X,H1F,H1T],[H1X,H1F,DECK],[-H1X,H1F,DECK]],[0,1,0],'white',0.3,0));
+    lv('house');                                  // L1 + the dressed L2 block, boat deck, rails, ladder, scoop
+    // ---- HOUSE level 1 (accommodation) ---- front wall banded around the REAL crew door (pass 2)
+    F.push(faceO([[-H1X,H1F,H1T],[DOOR.x0,H1F,H1T],[DOOR.x0,H1F,DECK],[-H1X,H1F,DECK]],[0,1,0],'white',0.3,0));   // port of the doorway
+    F.push(faceO([[DOOR.x1,H1F,H1T],[H1X,H1F,H1T],[H1X,H1F,DECK],[DOOR.x1,H1F,DECK]],[0,1,0],'white',0.3,0));      // stbd of the doorway
+    F.push(faceO([[DOOR.x0,H1F,H1T],[DOOR.x1,H1F,H1T],[DOOR.x1,H1F,DOOR.z1],[DOOR.x0,H1F,DOOR.z1]],[0,1,0],'white',0.3,0));  // header
+    // through the opening: dim vestibule (sole strip + far bulkhead) so an open door has depth
+    face([[DOOR.x0,H1F,DECK+0.012],[DOOR.x1,H1F,DECK+0.012],[DOOR.x1,H1F-0.85,DECK+0.012],[DOOR.x0,H1F-0.85,DECK+0.012]],'dark',-1.6,-0.02);
+    F.push(frontPanel(H1F-0.88,DOOR.x0-0.05,DOOR.x1+0.05,DECK,DOOR.z1-0.02,'dark',-0.6));
+    for(const r of [[DOOR.x0-0.05,DOOR.x0],[DOOR.x1,DOOR.x1+0.05]])                            // jambs
+      F.push(faceO([[r[0],H1F+0.01,DOOR.z0],[r[1],H1F+0.01,DOOR.z0],[r[1],H1F+0.01,DOOR.z1],[r[0],H1F+0.01,DOOR.z1]],[0,1,0],'steel',-0.2,DBP));
     F.push(faceO([[-H1X,H1A,H1T],[H1X,H1A,H1T],[H1X,H1A,DECK],[-H1X,H1A,DECK]],[0,-1,0],'white',-0.6,0));
     F.push(faceO([[-H1X,H1A,H1T],[-H1X,H1F,H1T],[-H1X,H1F,DECK],[-H1X,H1A,DECK]],[-1,0,0],'white',-0.1,0));
     F.push(faceO([[H1X,H1A,H1T],[H1X,H1F,H1T],[H1X,H1F,DECK],[H1X,H1A,DECK]],[1,0,0],'white',-1.0,0));
-    F.push(frontPanel(H1F+0.03,-1.65,-0.85,DECK+0.05,6.95,'dark',-0.5));            // deck door at the house front
     for(const s of [-1,1]){                                                          // portholes ×4 + side door
       const P = s<0 ? leftPanel : rightPanel;
       for(const yy of [-27.0,-25.4,-23.8,-22.2]){
@@ -244,6 +290,11 @@
       for(const s of [-1,1]){ tubeF([s*xr,-28.5,rz],[s*xr,-26.4,rz],0.032,'white',s<0?0.15:-0.3);
         for(const yy of [-28.45,-27.4,-26.4]) tubeF([s*xr,yy,H1T+0.09],[s*xr,yy,rz],0.022,'white',-0.1); }
       for(const xx of [-2.7,-1.35,0,1.35,2.7]) tubeF([xx,-28.5,H1T+0.09],[xx,-28.5,rz],0.022,'white',-0.1);
+    })();
+    // external boat-deck ladder, front wall port of the crew door — the route up; LADDER is PRESENT
+    (function(){ const lx=-3.30, y=H1F+0.12;
+      for(const s of [-1,1]) tubeF([lx+s*0.22,y,DECK+0.10],[lx+s*0.22,y,H1T+0.25],0.032,'steel',0.15);
+      for(let z=DECK+0.38; z<H1T+0.06; z+=0.31) tubeF([lx-0.19,y-0.02,z],[lx+0.19,y-0.02,z],0.024,'steel',0.05);
     })();
     // liferaft canisters on the boat deck sides
     for(const s of [-1,1]){
@@ -282,6 +333,7 @@
     boxF([0,-27.5,H2T+0.75],[0.42,0.38,0.72],'blk',-0.2,-0.02);
     boxF([0,-27.75,H2T+1.62],[0.34,0.52,0.18],'blk',-0.4,-0.02);
 
+    lv('bridge');                                 // the wheelhouse + full-beam wings cut with their room
     // ---- WHEELHOUSE ----
     F.push(faceO([[-WHX,WHF,WHT],[WHX,WHF,WHT],[WHX,WHF,WHZ],[-WHX,WHF,WHZ]],[0,1,0],'white',0.4,0));
     F.push(faceO([[-WHX,WHA,WHT],[WHX,WHA,WHT],[WHX,WHA,WHZ],[-WHX,WHA,WHZ]],[0,-1,0],'white',-0.7,0));
@@ -313,6 +365,7 @@
       F.push(frontPanel(WGY1+0.03, s*4.7-0.26, s*4.7+0.26, 10.30, 10.85, 'orng', 0.3));
       tubeF([s*4.75,-20.1,WHZ-0.04],[s*H2X,-20.6,8.7],0.05,'white',-0.2);            // strut down to level 2
     }
+    lv('rigging');                                // mast, scanner, whips, stays — class-tagged
     // roof gear: radar mast + scanner, whips, horn, stays
     tubeF([0,-23.5,ROOFZ+0.04],[0,-23.5,15.80],0.09,'steel',0.1);
     boxF([0,-23.5,15.10],[0.50,0.13,0.08],'white',0.5);
@@ -320,6 +373,7 @@
     for(const s of [-1,1]) tubeF([s*2.1,-26.6,ROOFZ+0.04],[s*2.5,-27.2,16.4],0.028,'steel',s<0?0.25:-0.2);
     boxF([0.9,-20.4,ROOFZ+0.12],[0.10,0.22,0.08],'steel',0.2);
 
+    lv('rigging');                                // the crane jib rises over the hold — spar class
     // ---- deck crane at the house front (blue, ref photo 2) ----
     tubeF([1.2,-16.6,DECK],[1.2,-16.6,7.00],0.40,'white',-0.15);
     boxF([1.2,-16.6,7.25],[0.52,0.62,0.32],'hull',0.15,-0.02);
@@ -327,6 +381,7 @@
     tubeF([0.6,-12.6,8.50],[0.6,-12.6,6.55],0.02,'steel',-0.3);                       // hook wire to the hatch
     boxF([0.6,-12.6,6.45],[0.09,0.09,0.10],'iron',0.1,-0.02);
 
+    lv('rigging');                                // foremast, derrick, forestay, shrouds — RISE THROUGH the sky
     // ---- FOREMAST at the hold's forward end + derrick boom + stays ----
     (function(){
       const MY=19.3, MZ0=5.45, MZT=19.0;
@@ -339,6 +394,7 @@
       tubeF([0,MY,17.0],[0.9,10.4,6.72],0.018,'steel',-0.25);                         // topping lift
     })();
 
+    lv('hull');                                   // foc'sle is raised hull structure, not a declared level
     // ---- foc'sle: raised whaleback deck following the sheer, white break bulkhead ----
     const FSEG=6, FCAP=0.985;
     const fz=(u)=>{ const st=station(u); return st.kz+st.dep-0.12; };
@@ -459,9 +515,28 @@
     }
     return rgba;
   }
+  // ---- the hinged leaf — built per render so opts.doorOpen (0..1) can pose it ----
+  function doorFaces(opts){
+    const t=Math.max(0,Math.min(1,opts&&opts.doorOpen!=null?+opts.doorOpen:0));
+    const A=t*DOOR.swingDeg*DEG, c=Math.cos(A), sn=Math.sin(A);
+    const hx=DOOR.x0, yw=H1F+0.03, z0=DOOR.z0, z1=DOOR.z1, x1=DOOR.x1;
+    const P=(x,z,e)=>[ hx+(x-hx)*c - sn*(e||0), yw+(x-hx)*sn + c*(e||0), z ];
+    const nrm=[-sn, c, 0], out=[];
+    out.push(faceO([P(hx,z1),P(x1,z1),P(x1,z0),P(hx,z0)],nrm,'white',0.15,DBP+0.02));                       // the leaf
+    out.push(faceO([P(hx+0.07,z1-0.10,0.02),P(x1-0.07,z1-0.10,0.02),P(x1-0.07,z0+0.12,0.02),P(hx+0.07,z0+0.12,0.02)],nrm,'white',-0.8,DBP+0.03));  // dished panel
+    const pm=(hx+x1)/2;
+    out.push(faceO(rrect(pm-0.15,pm+0.15,6.05,6.45,0.10).map(([u,v])=>P(u,v,0.03)),nrm,'iron',-0.15,DBP+0.03));   // porthole trim
+    out.push(faceO(rrect(pm-0.11,pm+0.11,6.09,6.41,0.07).map(([u,v])=>P(u,v,0.045)),nrm,'glas',-0.2,DBP+0.04));   // porthole glass
+    out.push.apply(out,tube(P(x1-0.12,5.55,0.05),P(x1-0.12,5.96,0.05),0.024,'steel',0.3));                  // dog handle, leading edge
+    for(const hz of [z0+0.30,z1-0.30]) out.push.apply(out,tube(P(hx-0.02,hz,0.012),P(hx+0.05,hz,0.012),0.030,'iron',0.1));  // hinge straps
+    for(const f of out) f.lv='house';             // the leaf is house enclosure — it cuts with the room
+    return out;
+  }
   function render(dir, opts){
     opts = (typeof opts==='number') ? {elev:opts} : (opts||{});
-    return _toRGBA(_paint(F, Object.assign({}, opts, {dir}), true));
+    let fl = F.concat(doorFaces(opts));
+    if(opts.cullLevels && opts.cullLevels.length){ const cut=new Set(opts.cullLevels); fl=fl.filter(f=>!cut.has(f.lv)); }   // pass-3 reference cut; absent → byte-identical
+    return _toRGBA(_paint(fl, Object.assign({}, opts, {dir}), true));
   }
 
   // ---- deck anchors (cell coords; pass rock(i) so overlays ride the wave) ----
@@ -504,7 +579,75 @@
     };
   }
 
+  // door threshold anchor + open-state report for the enter cue
+  function doorMount(dir, opts){
+    opts = Object.assign({}, (typeof opts==='number'?{elev:opts}:opts||{}), {dir});
+    const t=Math.max(0,Math.min(1,opts.doorOpen!=null?+opts.doorOpen:0));
+    const B=camBasis(opts), p=projVert((DOOR.x0+DOOR.x1)/2, H1F, DECK, B);
+    const A=t*DOOR.swingDeg*DEG;
+    const le=projVert(DOOR.x0+(DOOR.x1-DOOR.x0)*Math.cos(A), H1F+(DOOR.x1-DOOR.x0)*Math.sin(A), DECK, B);
+    return { x:p.sx, y:p.sy, lead:{x:le.sx,y:le.sy}, open:t, clear:t>=DOOR.clearAt };
+  }
+  // hull half-width at (y, z) — the flare law included — and sheer height at y
+  function halfAtZ(y, z){ const u=Math.max(0,Math.min(1,(y+L/2)/L)), st=station(u);
+    const fr=Math.max(0,Math.min(1,(z-st.kz)/st.dep)); return lerp(st.wb,st.ws,Math.pow(fr,flareExp(u))); }
+  function sheerZy(y){ const st=station(Math.max(0,Math.min(1,(y+L/2)/L))); return st.kz+st.dep; }
+  /* THE SHIP'S HOUSE, published — three interior levels (the L2 cabin deck is dressed; the
+     stairwell trunk carries house→bridge whole). boatInteriorRig.js builds the rooms inside this
+     shell and MUST measure against these exact numbers. */
+  const HOUSE = {
+    kind:'ship', soleZ:DECK, door:DOOR,
+    decks:{
+      house:{ soleZ:DECK, ceilZ:H1T, hx:H1X, hxAt:(z)=>H1X, y0:H1A, y1:H1F,
+              portholes:{ ys:[-27.0,-25.4,-23.8,-22.2], z0:5.95, z1:6.55 },
+              aftPorts:{ xs:[-1.9,1.9], z0:5.95, z1:6.55 } },
+      bridge:{ soleZ:WHZ, ceilZ:WHT, hx:WHX, hxAt:(z)=>WHX, y0:WHA, front:{ yBot:WHF, yTop:WHF },
+               frontGlass:{ z0:10.90, z1:12.05, panes:[[-3.0,-1.95],[-1.75,-0.7],[-0.5,0.5],[0.7,1.75],[1.95,3.0]] },
+               sideGlass:{ z0:10.90, z1:11.99, runs:[[-24.2,-23.3],[-22.6,-21.7],[-21.0,-20.1]] },
+               aftGlass:{ z0:10.90, z1:11.89, panes:[[-2.5,-0.7],[0.7,2.5]] } },
+      below:{ soleZ:2.20, ceilZ:DECK-0.20, y0:-28.0, y1:-20.0 },
+    },
+    block:{ hx:H1X, y0:H1A, y1:H1F, topZ:H1T },
+    ladder:{ id:'boat_deck_ladder', face:'fwd', x:-3.30, y:H1F, z0:DECK, z1:H1T+0.03 },
+    deckObstructions:[
+      { id:'hold_coaming', footprint:[[-3.55,-15.5],[3.55,-15.5],[3.55,18.5],[-3.55,18.5]], height:1.10, treatment:'wall' },
+      { id:'crane_pedestal', footprint:[[0.80,-17.0],[1.60,-17.0],[1.60,-16.2],[0.80,-16.2]], height:2.00, treatment:'wall' },
+    ],
+    excluded:{ level_2:'the L2 cabin deck is dressed — one stairwell trunk carries house→bridge whole (game abstraction, flagged)' },
+    ramp:null,
+  };
+  /* PASS 3 — ASK A: geometry(). One record per WALKABLE level, ceilings DECLARED from the same
+     constants the mesh is built from. THE TIE: main_deck and house_sole share z 5.00 and nothing
+     derivable separates them — the published ceilings do. Open sky is explicit, never absent;
+     partial covers (the bridge wings over the side decks) are declared as covers, not ceilings. */
+  const LEVEL_IDS = { hull:0, main_deck:1, house:2, bridge:3, below:4, rigging:5 };
+  function geometry(){
+    const D=HOUSE.decks;
+    return {
+      schema:'hidden-harbours/hull-geometry@1', hull:'coastalPacketIsoRig', units:'m',
+      frame:'+x stbd, +y bow, +z up; origin amidships, keel bottom, centreline',
+      ids:Object.assign({}, LEVEL_IDS),
+      riggingClass:'rigging — foremast, derrick, crane, stays, roof gear: tagged by CLASS, never welded to a cullable room',
+      tieBreak:'main_deck and house share one sole z ('+DECK.toFixed(2)+') — the published ceilings break the tie: house '+D.house.ceilZ.toFixed(2)+', main_deck open',
+      dressed:{ level_2:'the L2 cabin deck is NOT a walkable level (the stair trunk carries house→bridge whole); its faces are tagged house — the block above the house ceiling' },
+      levels:[
+        { id:'house', deck:'house_sole', soleZ:D.house.soleZ, ceilingZ:D.house.ceilZ,
+          ceiling:{ kind:'hard', z:D.house.ceilZ, of:'boat-deck underside — the deckhead boatInteriorRig dresses (HOUSE.decks.house.ceilZ)' } },
+        { id:'bridge', deck:'bridge_sole', soleZ:D.bridge.soleZ, ceilingZ:D.bridge.ceilZ,
+          ceiling:{ kind:'hard', z:D.bridge.ceilZ, of:'wheelhouse deckhead (HOUSE.decks.bridge.ceilZ)' } },
+        { id:'below', deck:'below_sole', soleZ:D.below.soleZ, ceilingZ:D.below.ceilZ,
+          ceiling:{ kind:'hard', z:D.below.ceilZ, of:'main-deck underside (DECK-0.20)' } },
+        { id:'main_deck', deck:'main_deck', soleZ:DECK, ceilingZ:null,
+          ceiling:{ kind:'open', note:'the hold coaming and hatch covers are deck furniture, not a ceiling',
+                    partial:{ z:WHZ, y0:WGY0, y1:WGY1, of:'bridge-wing underside over the side-deck walkways only — elsewhere sky' } } },
+      ],
+    };
+  }
+  function faces(){ return F; }   // the static TAGGED mesh; the posed leaf is doorFaces(opts)
   root.CoastalPacketIso = { W, H, PX, DIRS:8, pivot:{x:cx,y:cy}, defaultElev:DEFAULT_ELEV,
     order:['N','NE','E','SE','S','SW','W','NW'], HULL, BOOT, LIME, WHITE, DECKF, MINT, GLAS, STEEL, IRON, ORNG, KEY,
-    render, ROCK, rock:rockMotion, helmSeat, HELM, craneMounts, CRANE, hatchMount, HOLD, tubMounts, TUBS, navMounts };
+    render, ROCK, rock:rockMotion, helmSeat, HELM, craneMounts, CRANE, hatchMount, HOLD, tubMounts, TUBS, navMounts,
+    doorMount, DOOR, HOUSE, geometry, faces, doorFaces, LEVEL_IDS,
+    loft:{ station, skin, bowRake, flareExp, halfAtZ, sheerZ:sheerZy, L, TH, DECK, SOLE_U:0.825, NSEG,
+           house:HOUSE, shade:{ GAIN, BIAS, LN, BAYER, KEY, EDGE:0.30 }, cell:{ W, H, cx, cy, S } } };
 })(typeof globalThis!=='undefined'?globalThis:window);
