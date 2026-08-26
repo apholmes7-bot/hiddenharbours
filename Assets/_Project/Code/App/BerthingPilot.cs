@@ -291,8 +291,15 @@ namespace HiddenHarbours.App
 
             // HOLD is the way OFF, not a pause: a boat that keeps running while she is out of pose runs
             // out of berth. Otherwise she carries the berthing speed through the station.
+            //
+            // ⚠ AND THE LINE-UP IS NOT RATE-LIMITED AT THE SET RATE. The set rate is the COME-ALONGSIDE's
+            // number (§2.1 puts it in the Alongside row and nowhere else); asking a boat to cross her own
+            // approach at a fender's 0.25 m/s is asking her to arrive off her line and hold there. See
+            // BerthPilot.WantedClosingRate for the measurement. She closes onto the gate's line at the
+            // berthing speed, and CrabDegrees's cap is what actually bounds her.
             float wanted = atStation && !posed ? 0f : _alongside.BerthingSpeedMetresPerSecond;
-            return BerthPilot.Command(here, heading, velocity, _berth, standoff, wanted,
+            return BerthPilot.Command(here, heading, velocity, _berth, standoff,
+                                      _alongside.BerthingSpeedMetresPerSecond, wanted,
                                       _alongside, _pilot);
         }
 
@@ -315,7 +322,9 @@ namespace HiddenHarbours.App
                 // would drop her two phases on one reading of one pose. She is given the way OFF for this
                 // step and the gate's own law picks her up on the next one, with a fresh pose to judge.
                 return BerthPilot.Command(here, heading, velocity, _berth,
-                                          _alongside.GateStandoffMetres, 0f, _alongside, _pilot);
+                                          _alongside.GateStandoffMetres,
+                                          _alongside.BerthingSpeedMetresPerSecond, 0f,
+                                          _alongside, _pilot);
             }
 
             // §2.1's Alongside HOLD: closing faster than the set rate. The aim has already come off — the
@@ -329,7 +338,8 @@ namespace HiddenHarbours.App
             float wanted = closingTooFast
                 ? 0f
                 : ArrivalPilot.TargetSpeed(Mathf.Max(0f, toBerth), _berthing);
-            return BerthPilot.Command(here, heading, velocity, _berth, 0f, wanted, _alongside, _pilot);
+            return BerthPilot.Command(here, heading, velocity, _berth, 0f,
+                                      _alongside.SetRateMetresPerSecond, wanted, _alongside, _pilot);
         }
 
         /// <summary>Has she run past the station, or wandered off its line, far enough that another turn

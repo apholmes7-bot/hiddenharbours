@@ -117,21 +117,22 @@ namespace HiddenHarbours.Tests.EditMode
         {
             BerthPilot.Settings s = Tuning;
 
-            Assert.AreEqual(s.SetRateMetresPerSecond, BerthPilot.WantedClosingRate(50f, s), 1e-4f,
+            float set = s.SetRateMetresPerSecond;
+            Assert.AreEqual(set, BerthPilot.WantedClosingRate(50f, set, s), 1e-4f,
                 "a long way out she closes at the set rate and no faster — that is what the cap IS");
-            Assert.AreEqual(0f, BerthPilot.WantedClosingRate(0f, s), 1e-4f,
+            Assert.AreEqual(0f, BerthPilot.WantedClosingRate(0f, set, s), 1e-4f,
                 "on her line she is asked to close at nothing");
-            Assert.AreEqual(-s.SetRateMetresPerSecond, BerthPilot.WantedClosingRate(-50f, s), 1e-4f,
+            Assert.AreEqual(-set, BerthPilot.WantedClosingRate(-50f, set, s), 1e-4f,
                 "and pressed inboard of her line she is asked to come OFF it, at the same rate");
 
             // Monotone through the ease, so nothing pumps.
             float previous = 0f;
             for (float error = 0f; error <= 4f; error += 0.05f)
             {
-                float wanted = BerthPilot.WantedClosingRate(error, s);
+                float wanted = BerthPilot.WantedClosingRate(error, set, s);
                 Assert.GreaterOrEqual(wanted + 1e-5f, previous,
                     $"the ask must never fall as the error grows; at {error:F2} m it gave {wanted:F3}");
-                Assert.LessOrEqual(wanted, s.SetRateMetresPerSecond + 1e-5f,
+                Assert.LessOrEqual(wanted, set + 1e-5f,
                     $"the set rate is a CAP; at {error:F2} m it asked for {wanted:F3} m/s");
                 previous = wanted;
             }
@@ -150,11 +151,52 @@ namespace HiddenHarbours.Tests.EditMode
             BerthPilot.Settings s = Tuning;
             float half = s.LateralEaseMetres * 0.5f;
 
-            Assert.AreEqual(s.SetRateMetresPerSecond * 0.5f, BerthPilot.WantedClosingRate(half, s), 1e-4f,
+            Assert.AreEqual(s.SetRateMetresPerSecond * 0.5f,
+                            BerthPilot.WantedClosingRate(half, s.SetRateMetresPerSecond, s), 1e-4f,
                 "halfway through the ease she is asked for half the set rate — a linear ease, not a step");
-            Assert.Greater(BerthPilot.WantedClosingRate(0.01f, s), 0f,
+            Assert.Greater(BerthPilot.WantedClosingRate(0.01f, s.SetRateMetresPerSecond, s), 0f,
                 "and it never reaches zero short of the line, which is what makes it an ASYMPTOTE the " +
                 "mooring line finishes rather than a curve that arrives");
+        }
+
+        /// <summary>
+        /// 🔴 <b>THE SET RATE IS THE COME-ALONGSIDE'S NUMBER, NOT THE LINE-UP'S</b> — §2.1 puts it in the
+        /// Alongside row and nowhere else, and rate-limiting the LINE-UP at a fender's 0.25 m/s is a boat
+        /// who cannot cross her own approach.
+        ///
+        /// <para><b>Measured on the real St Peters fairway.</b> The last leg bears −104° against a berth
+        /// on −90°, so she meets the gate's capture ring about a metre INBOARD of the berth line with
+        /// three metres still to come across and roughly five seconds of run left. At the set rate that
+        /// buys 1.3 m — she reaches the station 1.7 m off her line, fails the ±1 m pose, and holds there
+        /// until the settle fallback. Worse, the loop actively UNDOES the useful crab the leg's own
+        /// bearing already gave her. At the berthing speed the same five seconds buy the whole of it.</para>
+        /// </summary>
+        [Test]
+        public void TheLineUpIsNotRateLimitedAtTheSetRate_OrSheCannotCrossHerOwnApproach()
+        {
+            BerthPilot.Settings s = Tuning;
+
+            const float lateralToCross = 2.96f;      // measured: the gap at the gate's capture ring
+            const float secondsOfRun = 5.2f;         // …and the run left, at the berthing speed
+
+            float atTheSetRate = BerthPilot.WantedClosingRate(lateralToCross, s.SetRateMetresPerSecond, s)
+                                 * secondsOfRun;
+            Assert.Less(atTheSetRate, lateralToCross,
+                $"precondition for the whole point: the set rate buys {atTheSetRate:F2} m of the " +
+                $"{lateralToCross:F2} m she has to cross. If this ever stops being true the fix below is " +
+                "no longer load-bearing and the parameter can go.");
+
+            float atTheBerthingSpeed = BerthPilot.WantedClosingRate(
+                                           lateralToCross, s.BerthingSpeedMetresPerSecond, s)
+                                       * secondsOfRun;
+            Assert.Greater(atTheBerthingSpeed, lateralToCross,
+                $"the line-up must be able to cross its own approach; at the berthing speed it buys " +
+                $"{atTheBerthingSpeed:F2} m");
+
+            // …and the crab cap is still what actually bounds her, in both phases.
+            Assert.LessOrEqual(Mathf.Abs(BerthPilot.CrabDegrees(s.BerthingSpeedMetresPerSecond, 3.1f, s)),
+                               s.HeadingToleranceDegrees + 1e-3f,
+                "a faster lateral ask must not buy a bigger angle than the pose allows");
         }
 
         // =============================================================================================
@@ -249,7 +291,8 @@ namespace HiddenHarbours.Tests.EditMode
 
             ArrivalPilot.Helm helm = BerthPilot.Command(
                 berth.Position, BerthHeading, velocity, berth,
-                lateralTargetMetres: 0f, wantedSpeed: 0f, Tuning, ArrivalPilot.Settings.Default);
+                lateralTargetMetres: 0f, maxClosingRate: Tuning.SetRateMetresPerSecond,
+                wantedSpeed: 0f, Tuning, ArrivalPilot.Settings.Default);
 
             Assert.Less(helm.Throttle, -0.1f,
                 $"asked for a standstill while making 3 m/s she must reverse the propeller; she was given " +
@@ -275,7 +318,8 @@ namespace HiddenHarbours.Tests.EditMode
                 Vector2 here = berth.Position + berth.Seaward * 2f;
                 Vector2 way = BerthPilot.Forward(BerthHeading) * 1f;
 
-                ArrivalPilot.Helm helm = BerthPilot.Command(here, BerthHeading, way, berth, 0f, 1f,
+                ArrivalPilot.Helm helm = BerthPilot.Command(here, BerthHeading, way, berth, 0f,
+                                                            Tuning.SetRateMetresPerSecond, 1f,
                                                             Tuning, pilot);
 
                 float toward = BerthPilot.ShoreSide(berth);
@@ -360,7 +404,7 @@ namespace HiddenHarbours.Tests.EditMode
         public void AnUnauthoredSettingsStructFallsBackToTheDefault()
         {
             var unauthored = default(BerthPilot.Settings);
-            Assert.AreEqual(0f, unauthored.SetRateMetresPerSecond,
+            Assert.AreEqual(0f, unauthored.SetRateMetresPerSecond, 1e-6f,
                 "precondition: an omitted struct really does deserialise to zeros");
 
             BerthPilot.Settings resolved = unauthored.OrDefault();

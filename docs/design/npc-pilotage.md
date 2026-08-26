@@ -358,7 +358,18 @@ build learned that this document did not know:
    The cap is `min(maxCrab, headingTolerance)`: *a boat may not aim herself out of the pose she is
    trying to reach.*
 
-3. **⚠ An abort must actually go round.** §2.1 says Gate aborts to Approach; it does not say she must
+3. **⚠ The set rate is the COME-ALONGSIDE's number, not the line-up's** — §2.1 puts it in the
+   Alongside row and nowhere else, and §2.2 does not say what governs the Gate. Rate-limiting the
+   *line-up* at a fender's 0.25 m/s is a boat who cannot cross her own approach. Measured on the
+   real St Peters fairway: the last leg bears **−104°** against a berth on **−90°**, so she meets
+   the gate's capture ring about a metre INBOARD of the berth line with **2.96 m** still to come
+   across and roughly **5.2 s** of run left. At the set rate that buys 1.3 m — she reaches the
+   station 1.7 m off her line, fails the ±1 m pose, and holds there until the settle fallback.
+   Worse, the loop actively *undoes* the useful crab the leg's own bearing already gave her. The
+   gate therefore closes at the **berthing speed** and only the come-alongside closes at the set
+   rate, with the crab cap doing the real bounding either way.
+
+4. **⚠ An abort must actually go round.** §2.1 says Gate aborts to Approach; it does not say she must
    leave the gate first. Without that, "take another turn" is a phase flip: she falls back still inside
    the capture range, is re-captured on the next step, fails the same pose, and ping-pongs through the
    abort budget without ever presenting a second time. **The gate is capturable only from ASTERN of

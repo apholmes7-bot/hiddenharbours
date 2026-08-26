@@ -279,10 +279,21 @@ namespace HiddenHarbours.App
         /// <see cref="Settings.LateralEaseMetres"/> — see that field for why an ease that never quite
         /// arrives is the correct shape here and not a bug.
         /// </summary>
-        public static float WantedClosingRate(float lateralError, in Settings settings)
+        /// <param name="maxClosingRate">The cap for THIS phase, m/s. ⚠ It is a parameter and not
+        /// <see cref="Settings.SetRateMetresPerSecond"/> read directly, and the difference is load-bearing:
+        /// <b>the set rate is the COME-ALONGSIDE's number, not the line-up's</b> (§2.1 puts it in the
+        /// Alongside row and nowhere else). Rate-limiting the LINE-UP at a fender's 0.25 m/s is a boat who
+        /// cannot cross her own approach: measured on the real St Peters fairway, she reaches the gate
+        /// with three metres still to come across and about five seconds to do it in, arrives 1.7 m off
+        /// her line, fails the pose, and holds there for ever. Worse, the loop actively UNDOES the useful
+        /// crab the last leg's own bearing gave her. So the gate closes at the berthing speed and only the
+        /// come-alongside closes at the set rate — with <see cref="CrabDegrees"/>'s cap doing the real
+        /// bounding either way.</param>
+        public static float WantedClosingRate(float lateralError, float maxClosingRate,
+                                              in Settings settings)
         {
             float ease = Mathf.Max(1e-3f, settings.LateralEaseMetres);
-            return Mathf.Clamp(lateralError / ease, -1f, 1f) * settings.SetRateMetresPerSecond;
+            return Mathf.Clamp(lateralError / ease, -1f, 1f) * Mathf.Max(0f, maxClosingRate);
         }
 
         /// <summary>
@@ -334,14 +345,16 @@ namespace HiddenHarbours.App
         ///
         /// <param name="lateralTargetMetres">Which line she is closing: the gate's standoff during the
         /// line-up, zero once she is coming alongside.</param>
+        /// <param name="maxClosingRate">How fast she may close it — see
+        /// <see cref="WantedClosingRate"/> for why this is per-phase and not the set rate everywhere.</param>
         /// </summary>
         public static ArrivalPilot.Helm Command(Vector2 position, float headingDegrees, Vector2 velocity,
                                                 in Berth berth, float lateralTargetMetres,
-                                                float wantedSpeed, in Settings settings,
-                                                in ArrivalPilot.Settings pilot)
+                                                float maxClosingRate, float wantedSpeed,
+                                                in Settings settings, in ArrivalPilot.Settings pilot)
         {
             float lateralError = LateralOffset(position, berth) - lateralTargetMetres;
-            float wantedClosing = WantedClosingRate(lateralError, settings);
+            float wantedClosing = WantedClosingRate(lateralError, maxClosingRate, settings);
             float alongSpeed = Vector2.Dot(velocity, Forward(berth.HeadingDegrees));
 
             float aim = berth.HeadingDegrees
