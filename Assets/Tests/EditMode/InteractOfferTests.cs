@@ -153,8 +153,11 @@ namespace HiddenHarbours.Tests.EditMode
         public void TransitOutranksConversationOutranksFixture_WhateverTheDistances()
         {
             // These ranks are ControlSwitcher.BeginInteract's own dispatch order written down: boarding is
-            // answered before anything, and the registry is consulted last. The popup must not advertise a
-            // press the game will not perform.
+            // answered before anything, and the registry is consulted after it. The popup must not
+            // advertise a press the game will not perform — which is also why the ONE transit that no
+            // longer wins outright (stepping ashore, which yields to a resolving fixture since
+            // 2026-08-25) stands its own offer down there rather than being demoted here. The rank means
+            // what it says: an offer that IS made is the press.
             Set(InteractOfferSource.Fixture, "f", "Fixture", distSq: 0.01f);
             Set(InteractOfferSource.Conversation, "c", "Conversation", distSq: 100f);
             Assert.AreEqual("Conversation", InteractOffer.Current.Label);

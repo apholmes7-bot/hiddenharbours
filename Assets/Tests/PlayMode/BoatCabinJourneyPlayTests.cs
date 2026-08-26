@@ -41,13 +41,13 @@ namespace HiddenHarbours.Tests.PlayMode
     /// deadline; headless frames are nowhere near wall-clock ones and a test that counted them would be
     /// asserting against the machine it happens to run on.</para>
     ///
-    /// <para>⚠️⚠️ <b>THE JOURNEY RUNS WITH HER LYING OFF, NOT TIED UP — and that is a FINDING, not a
-    /// fixture convenience.</b> While a standable step-off is available, <c>ControlSwitcher</c> answers E
-    /// with "step ashore" before the interact registry is consulted at all, so at a wharf her cabin door
-    /// is neither offered nor pressable. That ordering is deliberate, ruled, and already flagged for
-    /// lead-architect in the switcher's own remarks; it is pinned here as shipped behaviour by
-    /// <see cref="AtAWharf_TheStepAshoreVerbTakesThePress_AndTheCabinDoorIsNeverOffered"/> rather than
-    /// quietly worked around.</para>
+    /// <para><b>THE JOURNEY RUNS WITH HER LYING OFF, NOT TIED UP</b> — and that is now fixture economy
+    /// rather than a finding. It used to be the latter: while a standable step-off was available,
+    /// <c>ControlSwitcher</c> answered E with "step ashore" before the interact registry was consulted at
+    /// all, so at a wharf her cabin door was neither offered nor pressable. The 2026-08-25 ruling put the
+    /// registry ahead of the step ashore on deck, and
+    /// <see cref="AtAWharf_TheCabinDoorTakesThePress_AndTheStepAshoreOfferStandsDown"/> — the test that
+    /// used to pin the defect — now walks her through that same door while she is tied up.</para>
     /// </summary>
     public class BoatCabinJourneyPlayTests
     {
@@ -225,30 +225,28 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         /// <summary>
-        /// ⚠️⚠️ <b>TIED UP AT A WHARF, THE CABIN DOOR CANNOT BE PRESSED — and this pins that as the
-        /// SHIPPED behaviour rather than leaving it to be discovered.</b>
+        /// ⭐ <b>TIED UP AT A WHARF, HER CABIN DOOR TAKES THE PRESS — the flipped pin.</b>
         ///
-        /// <para><b>What happens.</b> <see cref="ControlSwitcher.BeginInteract"/> answers E with its own
-        /// transitions <i>before</i> the interact registry is looked at: on deck, out of helm reach, with
-        /// a standable step-off available, E steps ashore. So wherever <c>CanStepAshore()</c> is true —
-        /// moored at a wharf, or lying over bared ground at low water — the press never reaches the
-        /// registry, and the popup names the dock rather than the cabin.</para>
+        /// <para><b>What this used to assert.</b> <see cref="ControlSwitcher.BeginInteract"/> answered E
+        /// with its own transitions <i>before</i> the interact registry was looked at: on deck, out of
+        /// helm reach, with a standable step-off available, E stepped ashore. So wherever
+        /// <c>CanStepAshore()</c> was true — moored at a wharf, or lying over bared ground at low water —
+        /// the press never reached the registry, the popup named the dock rather than the cabin, and this
+        /// test said so out loud, remarking that it was the one that should fail when the ordering was
+        /// ruled on.</para>
         ///
-        /// <para><b>Why this file does not fix it.</b> That ordering is deliberate, ruled, and already
-        /// flagged: <see cref="ControlSwitcher"/>'s own remarks state the cost in as many words ("standing
-        /// at a registered candidate … E boards rather than working the candidate"), give the reason
-        /// (consulting last makes the seam provably non-regressive for the three transitions the player
-        /// cannot afford to lose), and name the end state — boarding and stepping ashore registering as
-        /// candidates so the resolver arbitrates them by distance, priority and facing. Changing it is a
-        /// lead-architect call about what E does <i>everywhere</i>, not a thing a cabin PR gets to decide
-        /// on its way past.</para>
+        /// <para><b>It was.</b> Lead-architect, 2026-08-25: on deck, away from the helm, the registry is
+        /// consulted BEFORE stepping ashore. The amended invariant is that <i>boarding and the helm win
+        /// over the registry; step-ashore yields to a resolving fixture</i> — so a fixture on a docked
+        /// deck is reachable, and the transit offer stands itself down rather than advertising a press
+        /// the game will not perform. On-foot boarding is untouched, and the fuller end state (boarding
+        /// registering as a candidate too) stays deferred.</para>
         ///
-        /// <para>So this asserts today's truth, loudly, and the door's own state alongside it: she IS
-        /// registered, she WOULD offer, and the press simply goes elsewhere. If the ordering is ever
-        /// arbitrated, this test is the one that should fail.</para>
+        /// <para>So this now asserts the new truth on the same harness: she is tied up, her door is
+        /// willing, the popup names the way in, and E takes her below.</para>
         /// </summary>
         [UnityTest]
-        public IEnumerator AtAWharf_TheStepAshoreVerbTakesThePress_AndTheCabinDoorIsNeverOffered()
+        public IEnumerator AtAWharf_TheCabinDoorTakesThePress_AndTheStepAshoreOfferStandsDown()
         {
             Rig rig = NewLobsterRig(atAWharf: true);
             if (rig.Boat == null) yield break;
@@ -261,16 +259,18 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.IsTrue(rig.Installer.Door.IsAvailable,
                           "the door itself is willing — the gate is open and she is in reach");
 
-            Assert.AreEqual(ControlStrings.Dock, InteractOffer.Current.Label,
-                            "…but the popup names the dock: the switcher's transit offer outranks the " +
-                            "fixture slot while a step-off is available");
+            Assert.AreEqual("Go below", InteractOffer.Current.Label,
+                            "the popup names the way in, not the dock: with a fixture resolving, the " +
+                            "switcher makes no transit offer at all");
+            Assert.AreEqual(InteractOfferSource.Fixture, InteractOffer.Current.Source,
+                            "…and it is the VERB's slot that is standing, not a re-ranked transit");
 
-            rig.Switcher.BeginInteract();
-            yield return null;
+            Assert.IsTrue(rig.Switcher.BeginInteract(), "E at her threshold is spent on her door");
+            Assert.AreEqual(ControlMode.OnDeck, rig.Switcher.Mode, "…and it did not step her ashore");
+            yield return WaitForCue(rig.Installer.Door);
 
-            Assert.IsFalse(rig.Installer.Interior.IsInside,
-                           "…and E stepped her ashore rather than below. KNOWN, ruled, and out of scope " +
-                           "for this PR — see this test's remarks before 'fixing' it.");
+            Assert.IsTrue(rig.Installer.Interior.IsInside,
+                          "she went below — from a boat that is tied up, which is the whole ruling");
         }
 
         // =====================================================================================
@@ -572,11 +572,13 @@ namespace HiddenHarbours.Tests.PlayMode
 
             walk.enabled = true; boat.enabled = false; input.enabled = false;   // on-foot start
 
-            // ⚠️ NO DOCK ZONE unless a test asks for one — she is lying off, not tied up. That is not
-            // tidiness: while "step ashore" is available the switcher answers E with it and the press
-            // never reaches the interact registry at all, so her cabin door could not be pressed. That
-            // is the switcher's own documented ladder (see TryInteractCandidate's remarks) and it is
-            // pinned, as the shipped behaviour it is, by AtAWharf_TheStepAshoreVerbTakesThePress below.
+            // NO DOCK ZONE unless a test asks for one — she is lying off, not tied up. This used to be
+            // load-bearing: while "step ashore" was available the switcher answered E with it and the
+            // press never reached the interact registry, so her cabin door could not be pressed at all.
+            // The 2026-08-25 ruling put the registry ahead of the step ashore on deck (see
+            // TryInteractCandidate's remarks), so a wharf no longer shuts the door — it is now simply the
+            // narrower fixture, and AtAWharf_TheCabinDoorTakesThePress below is the one that asks for the
+            // wider one.
             Transform dockZone = null;
             if (atAWharf) dockZone = Spawn("Wharf").transform;
 

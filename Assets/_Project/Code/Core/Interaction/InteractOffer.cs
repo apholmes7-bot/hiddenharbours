@@ -7,10 +7,18 @@ namespace HiddenHarbours.Core
     /// which offer the player is shown when more than one is standing.
     ///
     /// <para><b>The ranks are not a new policy.</b> They are the precedence
-    /// <c>ControlSwitcher.BeginInteract</c> already dispatches in, written down: boarding and stepping
-    /// ashore are answered before anything else, the registry is consulted LAST, and a conversation
-    /// partner in range stands the registry down through <see cref="InteractActionClaim"/>. A popup that
-    /// ranked them differently would be advertising a press the game will not perform.</para>
+    /// <c>ControlSwitcher.BeginInteract</c> already dispatches in, written down: getting your whole body
+    /// somewhere else is answered before anything else, the registry is consulted after it, and a
+    /// conversation partner in range stands the registry down through
+    /// <see cref="InteractActionClaim"/>. A popup that ranked them differently would be advertising a
+    /// press the game will not perform.</para>
+    ///
+    /// <para><b>One transit does NOT outrank the registry, and it does not need a rank to say so.</b>
+    /// Since the 2026-08-25 ruling, stepping ashore yields to a resolving fixture — so on deck the
+    /// switcher simply makes no <see cref="Transit"/> offer while one would take the press, and
+    /// <see cref="Fixture"/> wins by being the only offer standing. That is deliberate: a feeder that
+    /// will not perform the press must not state the offer at all, which keeps this ladder a plain
+    /// ordering of what CAN happen rather than a table of exceptions about what will.</para>
     ///
     /// <para>Values are <b>append-only</b> and deliberately gapped, so a later source can land between two
     /// of these without renumbering anything.</para>
@@ -21,7 +29,10 @@ namespace HiddenHarbours.Core
         None = 0,
 
         /// <summary>A registered <see cref="IInteractable"/> — a bed, a wardrobe, a stair, a clam hole, a
-        /// pail at your feet. Lowest, because <c>ControlSwitcher</c> consults the registry last.</summary>
+        /// pail at your feet, a boat's cabin door. Lowest, because <c>ControlSwitcher</c> consults the
+        /// registry after the transitions that can still take the press off it — boarding, and taking the
+        /// helm. It nevertheless wins the popup on a docked deck: not by outranking the step ashore, but
+        /// because that offer stands itself down there (see <see cref="Transit"/>).</summary>
         Fixture = 10,
 
         /// <summary>Somebody to talk to, or something to read (<c>WorldInteractor</c>). Outranks a fixture
@@ -31,7 +42,10 @@ namespace HiddenHarbours.Core
 
         /// <summary>Getting your whole body somewhere else — climbing aboard, taking the helm, stepping
         /// ashore, getting out of the truck. Highest, because the switcher answers these before it
-        /// consults anything.</summary>
+        /// consults the registry — with ONE exception, which it keeps by silence rather than by rank:
+        /// stepping ashore yields to a resolving fixture (2026-08-25), so on a deck where one is standing
+        /// this slot is left empty. The rank therefore still means exactly what it says — when a transit
+        /// is on the table, it is what the press does.</summary>
         Transit = 30,
     }
 
