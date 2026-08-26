@@ -123,7 +123,10 @@ namespace HiddenHarbours.App.Editor
                                 "the schoolyard — trodden rather than planted, so it gets rail rather " +
                                 "than paint, and the deepest front on the green because the children " +
                                 "are in it",
-                                back, mown: MownStyle.Kept),
+                                // Striped by the owner's ruling (2026-08-26): the school is a proud
+                                // property. The trodden ground is the children's doing, not the mower's
+                                // undoing — somebody cuts it in stripes and the children wear them off.
+                                back, mown: MownStyle.Striped),
 
                     Yard.Facing(GeneralStoreYard, V2(StPetersBuilder.GeneralStorePos), r,
                                 new Vector2(13.0f, 14.0f), green, YardFence.None,
@@ -135,7 +138,9 @@ namespace HiddenHarbours.App.Editor
                                 new Vector2(13.0f, 15.0f), green, YardFence.Picket,
                                 "the white farmhouse keeps its paint and its pickets — the kept end of " +
                                 "the green, and the yard the others are read against",
-                                back, mown: MownStyle.Striped),
+                                // Kept, not Striped: the owner held his original three (school, store,
+                                // sage cottage) when offered the swap. Her pickets carry the pride here.
+                                back, mown: MownStyle.Kept),
 
                     Yard.Facing(RedSaltboxYard, V2(StPetersBuilder.RedSaltboxPos), r,
                                 new Vector2(13.5f, 15.5f), green, YardFence.PostRail,
