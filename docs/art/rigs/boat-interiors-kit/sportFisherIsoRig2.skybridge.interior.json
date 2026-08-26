@@ -7,7 +7,7 @@
   "interior_rig": "boatInteriorRig.js",
   "derivedFromRigSha256": "34bb781303b9de9a47c7029a685bf83d357adefe2ffb95ff54451233ea7c46a7",
   "hullRigSha256": {
-    "sportFisherIsoRig2.skybridge": "STAMP_AT_EXPORT_LF_SHA256_OF_sportFisherIsoRig2.js",
+    "sportFisherIsoRig2.skybridge": "ebc77bace833361b578f5315e175e10de61d1acf77b5037390217ceb09221bcb",
     "sportFisherIsoRig2": "ebc77bace833361b578f5315e175e10de61d1acf77b5037390217ceb09221bcb"
   },
   "frame": {
