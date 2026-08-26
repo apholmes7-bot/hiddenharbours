@@ -350,6 +350,43 @@ namespace HiddenHarbours.Tests.EditMode
                 "…nor is stopped four metres off it");
         }
 
+        /// <summary>
+        /// <b>§2.1's Alongside HOLD: closing faster than the set rate takes the way off.</b> The crab is a
+        /// function of the lateral ERROR, so it has already stopped asking for speed she has — but a hull
+        /// carrying sideways way does not stop because she was re-aimed. Something shoved her (a sea, a
+        /// wake, the player), and the answer is astern.
+        /// </summary>
+        [Test]
+        public void ClosingFasterThanTheSetRate_TakesTheWayOff()
+        {
+            BerthingPilot pilot = Make();
+            RunHerInToTheWharfLine(pilot);
+            StepAt(pilot, pilot.GatePosition, BerthHeading, Vector2.zero);
+            Assert.AreEqual(PilotagePhase.Alongside, pilot.Phase, "precondition");
+
+            BerthPilot.Settings s = BerthPilot.Settings.Default;
+            Vector2 here = Berth + pilot.Berth.Seaward * 0.8f
+                           - BerthPilot.Forward(BerthHeading) * 4f;   // still short of the berth
+            Vector2 shoved = BerthPilot.Forward(BerthHeading) * 1f
+                             - pilot.Berth.Seaward * (s.SetRateMetresPerSecond * 4f);
+
+            var helm = StepAt(pilot, here, BerthHeading, shoved);
+            Assert.Less(helm.Throttle, 0f,
+                $"she is being driven onto her own wharf at " +
+                $"{BerthPilot.ClosingRate(shoved, pilot.Berth):F2} m/s against a set rate of " +
+                $"{s.SetRateMetresPerSecond:F2}, and the helm read {helm.Throttle:F2}. A hold is the way " +
+                "OFF, not a re-aim.");
+
+            // …and the same pose, closing at the set rate, is NOT a hold — or the manoeuvre could never
+            // finish, because closing at the set rate is what it is FOR.
+            Vector2 proper = BerthPilot.Forward(BerthHeading) * 0.5f
+                             - pilot.Berth.Seaward * s.SetRateMetresPerSecond;
+            helm = StepAt(pilot, here, BerthHeading, proper);
+            Assert.Greater(helm.Throttle, 0f,
+                "closing at exactly the set rate must read as a come-alongside going to plan, not as a " +
+                "hold — a threshold AT the rate the loop aims for would chatter for the whole manoeuvre");
+        }
+
         /// <summary>Moored, the helm is dead and stays dead: a moored boat's helm is nobody's, and a
         /// stepped machine must not quietly start steering her again.</summary>
         [Test]

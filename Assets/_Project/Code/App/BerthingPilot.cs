@@ -318,7 +318,17 @@ namespace HiddenHarbours.App
                                           _alongside.GateStandoffMetres, 0f, _alongside, _pilot);
             }
 
-            float wanted = ArrivalPilot.TargetSpeed(Mathf.Max(0f, toBerth), _berthing);
+            // §2.1's Alongside HOLD: closing faster than the set rate. The aim has already come off — the
+            // crab is a function of the error and is asking for less — but a hull carrying lateral way
+            // does not stop because she has been re-aimed, so the way comes OFF too. That is what a hold
+            // IS here: astern, and let the sideways drift die against her own lateral drag.
+            bool closingTooFast = BerthPilot.ClosingRate(velocity, _berth)
+                                  > _alongside.SetRateMetresPerSecond
+                                    * Mathf.Max(1f, _alongside.OverSetRateHoldFactor);
+
+            float wanted = closingTooFast
+                ? 0f
+                : ArrivalPilot.TargetSpeed(Mathf.Max(0f, toBerth), _berthing);
             return BerthPilot.Command(here, heading, velocity, _berth, 0f, wanted, _alongside, _pilot);
         }
 

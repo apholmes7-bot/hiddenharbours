@@ -157,6 +157,14 @@ namespace HiddenHarbours.App
                      "quarter-knot sideways.")]
             [Min(0.05f)] public float MinTrackSpeedMetresPerSecond;
 
+            [Tooltip("HOLD (§2.1's Alongside row): how much faster than the set rate she may be closing " +
+                     "before the come-alongside takes the way off, as a MULTIPLE of the set rate. ⚠ Above " +
+                     "1 by necessity rather than taste — the crab aims for EXACTLY the set rate, so a " +
+                     "threshold at it would chatter on float noise for the whole manoeuvre. It fires when " +
+                     "something SHOVED her (a sea, a wake, the player), which is the only way a boat on " +
+                     "this loop closes faster than she was asked to.")]
+            [Min(1f)] public float OverSetRateHoldFactor;
+
             [Tooltip("ABORT: how far past the gate (or the berth) she may run, still out of pose " +
                      "tolerance, before the phase falls back and re-presents. Generous — a normal settle " +
                      "slides past and is walked back astern, and that is not a failed approach.")]
@@ -204,6 +212,7 @@ namespace HiddenHarbours.App
                 LateralEaseMetres = 1f,
                 MaxCrabDegrees = 12f,
                 MinTrackSpeedMetresPerSecond = 0.5f,
+                OverSetRateHoldFactor = 2f,
                 AbortOvershootMetres = 6f,
                 AbortLateralMetres = 3f,
                 MaxAborts = 2,

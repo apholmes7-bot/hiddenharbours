@@ -204,6 +204,33 @@ namespace HiddenHarbours.Tests.EditMode
                 $"the aim stays sane; it asked for {dead:F0}°");
         }
 
+        /// <summary>
+        /// ⚠ <b>THE INVARIANT THE BUILD FOUND: a boat may not aim herself out of the pose she is trying to
+        /// reach.</b> The crab is <c>atan(closing ÷ alongSpeed)</c>, so it GROWS as she slows — the
+        /// denominator shrinks — and the last few metres of a come-alongside are exactly where she is
+        /// slowest. Left uncapped she arrives lying across her own berth, out of pose, and holds there
+        /// for ever. So the effective cap is the SMALLER of the tuned one and the heading tolerance, and
+        /// the default is set a few degrees inside it.
+        /// </summary>
+        [Test]
+        public void TheCrabCanNeverExceedThePoseToleranceItMustSatisfy()
+        {
+            BerthPilot.Settings s = Tuning;
+            Assert.Less(s.MaxCrabDegrees, s.HeadingToleranceDegrees,
+                $"the shipped crab cap ({s.MaxCrabDegrees:F0}°) must sit INSIDE the pose tolerance " +
+                $"({s.HeadingToleranceDegrees:F0}°), or a boat holding her commanded aim is out of pose " +
+                "by construction");
+
+            // …and even a mis-tune cannot break it: the cap is enforced at the point of use.
+            BerthPilot.Settings reckless = s;
+            reckless.MaxCrabDegrees = 80f;
+            for (float speed = 0f; speed <= 4f; speed += 0.25f)
+                Assert.LessOrEqual(Mathf.Abs(BerthPilot.CrabDegrees(5f, speed, reckless)),
+                                   reckless.HeadingToleranceDegrees + 1e-3f,
+                    $"at {speed:F2} m/s an 80° crab cap let the aim out of the {reckless.HeadingToleranceDegrees:F0}° " +
+                    "pose tolerance");
+        }
+
         // =============================================================================================
         // 5. the helm — the two loops, and the astern
         // =============================================================================================
