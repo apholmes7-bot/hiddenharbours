@@ -52,6 +52,29 @@ namespace HiddenHarbours.App.Editor
     /// the yard is, and what it faces; <see cref="Facing"/> does the arithmetic. Move the road and the
     /// yard turns to follow it — which is exactly what a magic rotation number cannot do (rule 6).</para>
     /// </summary>
+    /// <summary>
+    /// <b>How well a household keeps its grass</b> — the owner's 2026-08-26 ruling, as data.
+    ///
+    /// <para>It is a LADDER POSITION on the Lawn terrain material, not a set of separate looks: the
+    /// splat encodes a channel's value as both blend weight and ladder position, so a lower style is
+    /// simultaneously a rougher cut AND more of the wild meadow showing through. That is why "kept
+    /// but rough" needs no second material — see <c>StPetersLawns</c>.</para>
+    /// </summary>
+    public enum MownStyle
+    {
+        /// <summary>Grass that gets cut when somebody remembers. Half weight, so the wild band shows
+        /// through it — a let-go property, not a bad lawn.</summary>
+        Rough = 0,
+
+        /// <summary>An ordinary kept dooryard. The island's default.</summary>
+        Kept = 1,
+
+        /// <summary>Kept, and mown in stripes — a household that takes some pride in it. The stripes
+        /// themselves are drawn in the shader from this yard's own long axis; this only says that it
+        /// HAS them.</summary>
+        Striped = 2,
+    }
+
     public readonly struct Yard
     {
         /// <summary>Stable key — how a test, a builder or a later ownership system names this yard.
@@ -84,9 +107,16 @@ namespace HiddenHarbours.App.Editor
         /// <c>WoodlandZone.Reason</c> is.</summary>
         public readonly string Reason;
 
+        /// <summary>How well this household keeps its grass. The lawn ruling says one authored fact
+        /// per property, so this rides on the yard ROW rather than in a second table keyed by name —
+        /// the ground, the fence and now the mowing all read the same object.</summary>
+        public readonly MownStyle Mown;
+
         public Yard(string name, Vector2 owner, float ownerRadiusMetres, GroundPolygon polygon,
-                    YardFence fence, Vector2[] gates, string reason)
+                    YardFence fence, Vector2[] gates, string reason,
+                    MownStyle mown = MownStyle.Kept)
         {
+            Mown = mown;
             Name = name;
             Owner = owner;
             OwnerRadiusMetres = ownerRadiusMetres;
@@ -133,7 +163,8 @@ namespace HiddenHarbours.App.Editor
         /// <paramref name="frontToward"/>.</param>
         public static Yard Facing(string name, Vector2 owner, float ownerRadiusMetres, Vector2 sizeMetres,
                                   Vector2 frontToward, YardFence fence, string reason,
-                                  float backSetMetres = -1f, Vector2[] gates = null)
+                                  float backSetMetres = -1f, Vector2[] gates = null,
+                                  MownStyle mown = MownStyle.Kept)
         {
             Vector2 forward = frontToward - owner;
             forward = forward.sqrMagnitude < 1e-6f ? Vector2.up : forward.normalized;
@@ -144,7 +175,7 @@ namespace HiddenHarbours.App.Editor
             var polygon = GroundPolygon.Rectangle(centre, sizeMetres, centre + forward);
             var gateList = gates ?? new[] { centre + forward * (sizeMetres.y * 0.5f) };
 
-            return new Yard(name, owner, ownerRadiusMetres, polygon, fence, gateList, reason);
+            return new Yard(name, owner, ownerRadiusMetres, polygon, fence, gateList, reason, mown);
         }
 
         public override string ToString() =>

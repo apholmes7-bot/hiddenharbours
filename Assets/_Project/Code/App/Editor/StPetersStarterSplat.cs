@@ -58,6 +58,11 @@ namespace HiddenHarbours.App.Editor
         public const int Eelgrass = 16;
         public const int Irishmoss = 17;
 
+        /// <summary>The mown dooryard lawn (kit v4). <c>SplatE.b</c>. Owned by
+        /// <see cref="StPetersLawns"/>, which is the only thing that paints it — a lawn is a
+        /// property boundary's answer, not the terrain classifier's.</summary>
+        public const int Lawn = 18;
+
         // =========================================================================================
         //  THE TIDE, AS THE SHORE SEES IT (kit v2 families — all derived, never authored)
         // =========================================================================================
@@ -839,6 +844,14 @@ namespace HiddenHarbours.App.Editor
                 TerrainSplatBrush.PaintField(layers, w, h,
                     fam.Material, fam.Intensity, coverage[f], exclusive: true);
             }
+
+            // 0.5) THE MOWN LAWNS — the ground inside each property's yard polygon.
+            //
+            //      ⭐ AFTER the shore bands so a lawn wins over the wild grass band it stands on, and
+            //      BEFORE the paths for the same reason the bands are: a track crossing the corner of
+            //      somebody's yard must still read as a track, and an exclusive stroke only ever
+            //      lerps its own channel from what is beneath it.
+            StPetersLawns.PaintInto(layers, w, h, worldMin, worldSize);
 
             // 1) The dirt paths — the green to the slip, the green to the bar head.
             TerrainSplatBrush.PaintPolyline(layers, w, h, worldMin, worldSize,

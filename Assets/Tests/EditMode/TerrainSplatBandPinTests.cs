@@ -79,6 +79,7 @@ namespace HiddenHarbours.Tests.EditMode
             "Grass", "Marram", "Sand", "Shingle", "Ripple", "Shelf", "Silt",
             "Dirt", "Marsh", "Sedge", "Foreshore", "Talus", "Ledge", "Rockweed",
             "Musselbed", "Oysterreef", "Eelgrass", "Irishmoss",
+            "Lawn",                                    // kit v4, 2026-08-26 — the mown dooryard
         };
 
         /// <summary>The order as SHIPPED before kit v3 — indices 0..13 can never move, because
@@ -164,7 +165,8 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void SplatMapCount_CoversEveryMaterialChannel()
         {
-            // Five RGBA maps = 20 channels for 18 materials. The moment a 21st material is wanted
+            // Five RGBA maps = 20 channels for 19 materials (E.a is the last free slot). The
+            // moment a 21st material is wanted
             // this fails, which is the point: a sixth map is a deliberate decision, not a surprise.
             // (It fired for real on kit v3 — 14 + 4 beds did not fit four maps, and this is where
             // that was found rather than in a silently-unpainted eelgrass meadow.)
