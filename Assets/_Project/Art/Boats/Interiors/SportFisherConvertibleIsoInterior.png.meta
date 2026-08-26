@@ -1,0 +1,546 @@
+fileFormatVersion: 2
+guid: 1f04ead8b70fd2a4fa02ed3f5d5d6eb8
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 8928186130558609923
+    second: SportFisherConvertibleIsoInterior_0
+  - first:
+      213: -4463111440112620255
+    second: SportFisherConvertibleIsoInterior_1
+  - first:
+      213: -6146410998717042110
+    second: SportFisherConvertibleIsoInterior_2
+  - first:
+      213: 6403699629598923148
+    second: SportFisherConvertibleIsoInterior_3
+  - first:
+      213: -6172440546098211466
+    second: SportFisherConvertibleIsoInterior_4
+  - first:
+      213: 4887522049201459405
+    second: SportFisherConvertibleIsoInterior_5
+  - first:
+      213: 5658739971436515588
+    second: SportFisherConvertibleIsoInterior_6
+  - first:
+      213: 3361445175128840962
+    second: SportFisherConvertibleIsoInterior_7
+  - first:
+      213: 3812198238673089446
+    second: SportFisherConvertibleIsoInterior_8
+  - first:
+      213: 4634757745900272994
+    second: SportFisherConvertibleIsoInterior_9
+  - first:
+      213: 3624195360429135482
+    second: SportFisherConvertibleIsoInterior_10
+  - first:
+      213: 4069536647206592121
+    second: SportFisherConvertibleIsoInterior_11
+  - first:
+      213: -8899354565156275993
+    second: SportFisherConvertibleIsoInterior_12
+  - first:
+      213: 5244320786931157544
+    second: SportFisherConvertibleIsoInterior_13
+  - first:
+      213: 7242690172079742305
+    second: SportFisherConvertibleIsoInterior_14
+  - first:
+      213: 4027572018391959013
+    second: SportFisherConvertibleIsoInterior_15
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: sportFisherConvertibleIso_house_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 2310
+        width: 820
+        height: 770
+      alignment: 9
+      pivot: {x: 0.5, y: 0.38311687}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8f165b4ff03520b4b8953f9a6eed4d45
+      internalID: -1252101178
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sportFisherConvertibleIso_house_d1
+      rect:
+        serializedVersion: 2
+        x: 820
+        y: 2310
+        width: 820
+        height: 770
+      alignment: 9
+      pivot: {x: 0.5, y: 0.38311687}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 65715634dd4ce6145a426c3156b53c2e
+      internalID: 1347322879
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sportFisherConvertibleIso_house_d2
+      rect:
+        serializedVersion: 2
+        x: 1640
+        y: 2310
+        width: 820
+        height: 770
+      alignment: 9
+      pivot: {x: 0.5, y: 0.38311687}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2f51d7490a32d564395a9fd54cedfef6
+      internalID: 161277433
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sportFisherConvertibleIso_house_d3
+      rect:
+        serializedVersion: 2
+        x: 2460
+        y: 2310
+        width: 820
+        height: 770
+      alignment: 9
+      pivot: {x: 0.5, y: 0.38311687}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7cf909e36d799ee4cadde8fa82e19258
+      internalID: -1617830487
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sportFisherConvertibleIso_house_d4
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1540
+        width: 820
+        height: 770
+      alignment: 9
+      pivot: {x: 0.5, y: 0.38311687}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d4b5f8c880fdb6f4b9ea5fb48dd930c5
+      internalID: 2136769446
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sportFisherConvertibleIso_house_d5
+      rect:
+        serializedVersion: 2
+        x: 820
+        y: 1540
+        width: 820
+        height: 770
+      alignment: 9
+      pivot: {x: 0.5, y: 0.38311687}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1935ba624b1a9be4da4030a4c9b0cf41
+      internalID: 1285670276
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sportFisherConvertibleIso_house_d6
+      rect:
+        serializedVersion: 2
+        x: 1640
+        y: 1540
+        width: 820
+        height: 770
+      alignment: 9
+      pivot: {x: 0.5, y: 0.38311687}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3e3fae8772e4bf542b0ede418ba3d449
+      internalID: -1790975150
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sportFisherConvertibleIso_house_d7
+      rect:
+        serializedVersion: 2
+        x: 2460
+        y: 1540
+        width: 820
+        height: 770
+      alignment: 9
+      pivot: {x: 0.5, y: 0.38311687}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9341ecdab62c2b645b072a11eb82d562
+      internalID: -1508713703
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sportFisherConvertibleIso_below_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 770
+        width: 820
+        height: 770
+      alignment: 9
+      pivot: {x: 0.5, y: 0.38311687}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fe51e3e7b640f01439d26cb24533fb05
+      internalID: -2014044501
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sportFisherConvertibleIso_below_d1
+      rect:
+        serializedVersion: 2
+        x: 820
+        y: 770
+        width: 820
+        height: 770
+      alignment: 9
+      pivot: {x: 0.5, y: 0.38311687}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b322c7981dba9a84eaed38c57a82124b
+      internalID: -884675649
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sportFisherConvertibleIso_below_d2
+      rect:
+        serializedVersion: 2
+        x: 1640
+        y: 770
+        width: 820
+        height: 770
+      alignment: 9
+      pivot: {x: 0.5, y: 0.38311687}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 781bd3fd4ac521a44bf5ef36ed926920
+      internalID: -1790083259
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sportFisherConvertibleIso_below_d3
+      rect:
+        serializedVersion: 2
+        x: 2460
+        y: 770
+        width: 820
+        height: 770
+      alignment: 9
+      pivot: {x: 0.5, y: 0.38311687}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ae93ba6d60e7a9e4495935bd8d7db9c4
+      internalID: -1127114536
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sportFisherConvertibleIso_below_d4
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 820
+        height: 770
+      alignment: 9
+      pivot: {x: 0.5, y: 0.38311687}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c0afb2156a30f0f4da985a2db73d90a8
+      internalID: 1459863336
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sportFisherConvertibleIso_below_d5
+      rect:
+        serializedVersion: 2
+        x: 820
+        y: 0
+        width: 820
+        height: 770
+      alignment: 9
+      pivot: {x: 0.5, y: 0.38311687}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b65046e6f39564148a32f6a88fddbd59
+      internalID: -76486368
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sportFisherConvertibleIso_below_d6
+      rect:
+        serializedVersion: 2
+        x: 1640
+        y: 0
+        width: 820
+        height: 770
+      alignment: 9
+      pivot: {x: 0.5, y: 0.38311687}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: defe6ae9550a4aa47a55ae28bca20581
+      internalID: 1779790660
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sportFisherConvertibleIso_below_d7
+      rect:
+        serializedVersion: 2
+        x: 2460
+        y: 0
+        width: 820
+        height: 770
+      alignment: 9
+      pivot: {x: 0.5, y: 0.38311687}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ed81ab227825c494b9a59f2e91f7bff6
+      internalID: 609804743
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 63af7398ae004994ab3ff5517443b70d
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      sportFisherConvertibleIso_below_d0: -2014044501
+      sportFisherConvertibleIso_below_d1: -884675649
+      sportFisherConvertibleIso_below_d2: -1790083259
+      sportFisherConvertibleIso_below_d3: -1127114536
+      sportFisherConvertibleIso_below_d4: 1459863336
+      sportFisherConvertibleIso_below_d5: -76486368
+      sportFisherConvertibleIso_below_d6: 1779790660
+      sportFisherConvertibleIso_below_d7: 609804743
+      sportFisherConvertibleIso_house_d0: -1252101178
+      sportFisherConvertibleIso_house_d1: 1347322879
+      sportFisherConvertibleIso_house_d2: 161277433
+      sportFisherConvertibleIso_house_d3: -1617830487
+      sportFisherConvertibleIso_house_d4: 2136769446
+      sportFisherConvertibleIso_house_d5: 1285670276
+      sportFisherConvertibleIso_house_d6: -1790975150
+      sportFisherConvertibleIso_house_d7: -1508713703
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

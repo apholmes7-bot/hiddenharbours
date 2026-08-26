@@ -70,6 +70,10 @@ namespace HiddenHarbours.Tools.RigBaking
                     return;
                 }
                 Debug.Log("[rig-mesh] CLI fleet bake OK.");
+                // Success must exit as loudly as failure: launched -quit-less (the -quit/RunTests
+                // race), nothing else ever ends the editor, and the search indexer's idle CPU burn
+                // reads as a bake still working — it cost a coordinator four phantom hours.
+                EditorApplication.Exit(0);
             }
             catch (Exception e)
             {

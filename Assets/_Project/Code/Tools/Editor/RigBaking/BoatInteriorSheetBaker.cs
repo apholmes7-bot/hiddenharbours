@@ -163,8 +163,13 @@ namespace HiddenHarbours.Tools.RigBaking
 
             Directory.CreateDirectory(Path.Combine(repo, BoatInteriorKit.OutputFolder));
 
-            foreach (var group in plans.GroupBy(p => p.Binding.ExteriorRigFileName)
-                                       .OrderBy(g => g.Key, StringComparer.Ordinal))
+            // Grouped by (rig file, pick) — one repo cross-check per HULL OBJECT, not per file. Two
+            // picks of one file are two hulls with two cells (the sport fishers), and a geometry
+            // read for the first pick replayed onto the second refuses the wrong boat.
+            foreach (var group in plans.GroupBy(p => (file: p.Binding.ExteriorRigFileName,
+                                                      pick: p.Binding.Pick))
+                                       .OrderBy(g => g.Key.file, StringComparer.Ordinal)
+                                       .ThenBy(g => g.Key.pick, StringComparer.Ordinal))
             {
                 RigGeometry? repoGeometry = ReadRepoExteriorGeometry(repo, group.First().Binding, log);
 
@@ -350,7 +355,7 @@ namespace HiddenHarbours.Tools.RigBaking
 
             // GATE 4 — registration, measured from pixels.
             BoatInteriorRegistrationProbe.Report probe = BoatInteriorRegistrationProbe.Measure(
-                host, plan.Binding.Key, plan.HullStem, plan.Binding.ExteriorGlobal,
+                host, plan.Binding.Key, plan.HullStem, plan.Binding.ExteriorHullJs,
                 plan.VariantSize, plan.VariantStyle, plan.VariantRegion,
                 plan.Levels,
                 plan.Read.CellPixels.x, plan.Read.CellPixels.y,
@@ -545,12 +550,14 @@ namespace HiddenHarbours.Tools.RigBaking
             {
                 var pin = DeckSidecarJson.AsObject(
                     DeckSidecarJson.Member(DeckSidecarJson.Parse(interiorJson), "hullRigSha256"));
-                if (pin == null || pin.Count != 1) return null;
-                foreach (var kv in pin)
-                {
-                    string p = Path.Combine(repo, BoatInteriorKit.KitFolder, "hull-rigs", kv.Key + ".js");
-                    return File.Exists(p) ? File.ReadAllBytes(p) : null;
-                }
+                // The unanimity rule (BoatInteriorHullResolver.TryUnanimousHullRigPin): the STEM
+                // composes the path — a raw variant key would reach hull-rigs/<stem>.<variant>.js,
+                // which does not exist, and the null here then reads downstream as an internally
+                // inconsistent kit. A refused pin returns null; the sidecar reader owns the message.
+                if (!BoatInteriorHullResolver.TryUnanimousHullRigPin(pin, out string stem, out _, out _))
+                    return null;
+                string p = Path.Combine(repo, BoatInteriorKit.KitFolder, "hull-rigs", stem + ".js");
+                return File.Exists(p) ? File.ReadAllBytes(p) : null;
             }
             catch (Exception) { /* the reader reports an unparseable sidecar properly */ }
             return null;
@@ -579,7 +586,7 @@ namespace HiddenHarbours.Tools.RigBaking
             {
                 using IRigScriptHost host = RigScriptHostFactory.Create();
                 host.Execute(File.ReadAllText(path));
-                string g = binding.ExteriorGlobal;
+                string g = binding.ExteriorHullJs;
                 if (!host.EvaluateBool($"!!(typeof {g} === 'object' && {g} && typeof {g}.W === 'number' && {g}.pivot)"))
                 {
                     log.AppendLine($"  note: the repository's {binding.ExteriorRigFileName} exposes no " +

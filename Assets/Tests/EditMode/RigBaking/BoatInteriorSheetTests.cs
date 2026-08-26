@@ -110,7 +110,6 @@ namespace HiddenHarbours.Tests.RigBaking
                 if (BoatInteriorRigHost.TryBind(table, stem, out var b, out _))
                     bindingByStem[stem] = b;
 
-            var geometryByRig = new Dictionary<string, RigGeometry>(StringComparer.Ordinal);
             var bearingByStem = new Dictionary<string, double>(StringComparer.Ordinal);
             foreach (string rigFile in bindingByStem.Values.Select(b => b.ExteriorRigFileName).Distinct()
                                                     .OrderBy(s => s, StringComparer.Ordinal))
@@ -118,25 +117,30 @@ namespace HiddenHarbours.Tests.RigBaking
                 string abs = Path.Combine(RepoRoot, RigFolder, rigFile);
                 if (!File.Exists(abs)) continue;
 
-                string global = bindingByStem.Values.First(b => b.ExteriorRigFileName == rigFile).ExteriorGlobal;
-
                 using var host = RigScriptHostFactory.Create();
                 host.Execute(File.ReadAllText(abs));
-                if (!host.EvaluateBool($"!!(typeof {global} === 'object' && {global} && " +
-                                       $"typeof {global}.W === 'number' && {global}.pivot)")) continue;
 
-                geometryByRig[rigFile] = new RigGeometry(
-                    (int)host.EvaluateNumber($"{global}.W"),
-                    (int)host.EvaluateNumber($"{global}.H"),
-                    host.EvaluateNumber($"{global}.pivot.x"),
-                    host.EvaluateNumber($"{global}.pivot.y"),
-                    0, 0, 0);
-
-                // The handedness oracle, taken PER HULL because a variant-aware rig draws a different
-                // boat per variant and the ±X pair moves with her. One host serves them all.
+                // Geometry AND the handedness oracle are taken PER HULL, addressed through the
+                // binding's own hull object (ExteriorHullJs): a multi-hull global (the sport
+                // fishers' SportFisherIso2) publishes W/H/pivot per hull, and a per-file read
+                // would replay the first hull's cell onto the second — the same wrong boat the
+                // baker's own (file, pick) grouping exists to refuse. One host still serves
+                // every hull the file makes.
                 foreach (var kv in bindingByStem)
                 {
                     if (kv.Value.ExteriorRigFileName != rigFile) continue;
+                    string global = kv.Value.ExteriorHullJs;
+                    if (!host.EvaluateBool($"!!(typeof ({global}) === 'object' && ({global}) && " +
+                                           $"typeof ({global}).W === 'number' && ({global}).pivot)"))
+                        continue;
+
+                    _exteriorGeometryByHullStem[kv.Key] = new RigGeometry(
+                        (int)host.EvaluateNumber($"({global}).W"),
+                        (int)host.EvaluateNumber($"({global}).H"),
+                        host.EvaluateNumber($"({global}).pivot.x"),
+                        host.EvaluateNumber($"({global}).pivot.y"),
+                        0, 0, 0);
+
                     var sheet = _contract?.sheets?.FirstOrDefault(x => x.hullStem == kv.Key);
                     string extOpts = sheet == null
                         ? "{}"
@@ -146,10 +150,6 @@ namespace HiddenHarbours.Tests.RigBaking
                         bearingByStem[kv.Key] = step;
                 }
             }
-
-            foreach (var kv in bindingByStem)
-                if (geometryByRig.TryGetValue(kv.Value.ExteriorRigFileName, out RigGeometry geo))
-                    _exteriorGeometryByHullStem[kv.Key] = geo;
 
             _bearingByHullStem = bearingByStem;
         }
@@ -238,11 +238,15 @@ namespace HiddenHarbours.Tests.RigBaking
                 "A cleared hull without art is a boat nobody can go below on; a sheet for an " +
                 "uncleared hull is art cut from a boat whose shape was never verified.");
 
-            Assert.AreEqual(24, shipped.Length,
-                $"the kit ships {shipped.Length} interior sheet sets where the intake cleared 24 hulls " +
-                "of the 27 in the drop. If the ledger has genuinely changed — the sport fishers' pin " +
-                "stamped, or the cape's rig merged — this number moves WITH a ledger change and an " +
-                "ADR note, never on its own.");
+            // 26 = 27 in the drop − the cape (S0 FORKED RIG, still refused pending her rig merge).
+            // Moved 24 → 26 WITH the ledger change it tracks: the cutaway kit's sport-fisher stamp
+            // (ebc77bac…) cleared both sport fishers, recorded in the ledger's dated _corrections
+            // entry and flipped on the coordinator-ruled unanimity rule (PR #660).
+            Assert.AreEqual(26, shipped.Length,
+                $"the kit ships {shipped.Length} interior sheet sets where the intake cleared 26 hulls " +
+                "of the 27 in the drop. If the ledger has genuinely changed — the cape's rig merged, " +
+                "or a hull regressed — this number moves WITH a ledger change and an ADR note, never " +
+                "on its own.");
         }
 
         [Test]

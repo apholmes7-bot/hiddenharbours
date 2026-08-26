@@ -1,0 +1,393 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e72940bfdac646969b26b2e0ba3cb020, type: 3}
+  m_Name: SportFisherSkybridgeIso
+  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.BoatInteriorDef
+  Id: interior.sport_fisher_skybridge_iso
+  FitsHulls:
+  - sportFisherIsoRig2.skybridge
+  SourceSidecar: docs/art/rigs/boat-interiors-kit/sportFisherIsoRig2.skybridge.interior.json
+  SourceInteriorRig: docs/art/rigs/boat-interiors-kit/boatInteriorRig.js
+  SourceHullRig: docs/art/rigs/boat-interiors-kit/hull-rigs/sportFisherIsoRig2.js
+  InteriorRigSha256: 34bb781303b9de9a47c7029a685bf83d357adefe2ffb95ff54451233ea7c46a7
+  HullRigSha256: ebc77bace833361b578f5315e175e10de61d1acf77b5037390217ceb09221bcb
+  PixelsPerMetre: 32
+  CellPixels: {x: 1200, y: 1170}
+  PivotPixels: {x: 600, y: 730}
+  FootprintOutline:
+  - {x: -3.02, y: -10.05}
+  - {x: 3.02, y: -10.05}
+  - {x: 3.02, y: 1.2}
+  - {x: -3.02, y: 1.2}
+  Levels:
+  - Id: house_sole
+    SoleZMeters: 2.83
+    Outline:
+    - {x: -2.95, y: -9.98}
+    - {x: 2.95, y: -9.98}
+    - {x: 2.95, y: 1.13}
+    - {x: -2.95, y: 1.13}
+    Obstructions:
+    - Id: stove_counter
+      Footprint:
+      - {x: -2.92, y: -9.55}
+      - {x: -2.3, y: -9.55}
+      - {x: -2.3, y: -8.35}
+      - {x: -2.92, y: -8.35}
+      HeightAboveSoleMeters: 0.92
+      Treatment: waist_block
+    - Id: locker
+      Footprint:
+      - {x: 2.22, y: -9.65}
+      - {x: 2.94, y: -9.65}
+      - {x: 2.94, y: -8.55}
+      - {x: 2.22, y: -8.55}
+      HeightAboveSoleMeters: 1.85
+      Treatment: wall
+    - Id: island_port
+      Footprint:
+      - {x: -1.4, y: -8.95}
+      - {x: -0.05, y: -8.95}
+      - {x: -0.05, y: -7.95}
+      - {x: -1.4, y: -7.95}
+      HeightAboveSoleMeters: 0.95
+      Treatment: waist_block
+    - Id: stool_stbd
+      Footprint:
+      - {x: 0.3, y: -8.85}
+      - {x: 0.62, y: -8.85}
+      - {x: 0.62, y: -8.53}
+      - {x: 0.3, y: -8.53}
+      HeightAboveSoleMeters: 0.7
+      Treatment: waist_block
+    - Id: stool_stbd
+      Footprint:
+      - {x: 0.3, y: -8.35}
+      - {x: 0.62, y: -8.35}
+      - {x: 0.62, y: -8.03}
+      - {x: 0.3, y: -8.03}
+      HeightAboveSoleMeters: 0.7
+      Treatment: waist_block
+    - Id: fridge_port
+      Footprint:
+      - {x: -2.92, y: -8.1}
+      - {x: -2.4, y: -8.1}
+      - {x: -2.4, y: -7.5}
+      - {x: -2.92, y: -7.5}
+      HeightAboveSoleMeters: 2
+      Treatment: wall
+    - Id: settee_stbd
+      Footprint:
+      - {x: 2.12, y: -6.95}
+      - {x: 2.94, y: -6.95}
+      - {x: 2.94, y: -3.55}
+      - {x: 2.12, y: -3.55}
+      HeightAboveSoleMeters: 0.88
+      Treatment: waist_block
+    - Id: settee_stbd
+      Footprint:
+      - {x: 0.6, y: -4.3}
+      - {x: 2.12, y: -4.3}
+      - {x: 2.12, y: -3.55}
+      - {x: 0.6, y: -3.55}
+      HeightAboveSoleMeters: 0.88
+      Treatment: waist_block
+    - Id: settee_port
+      Footprint:
+      - {x: -2.94, y: -3.3}
+      - {x: -2.2, y: -3.3}
+      - {x: -2.2, y: -0.55}
+      - {x: -2.94, y: -0.55}
+      HeightAboveSoleMeters: 0.88
+      Treatment: waist_block
+    - Id: table_stbd
+      Footprint:
+      - {x: 1.05, y: -6.15}
+      - {x: 2, y: -6.15}
+      - {x: 2, y: -4.7}
+      - {x: 1.05, y: -4.7}
+      HeightAboveSoleMeters: 0.42
+      Treatment: step_over
+    - Id: sidetable_port
+      Footprint:
+      - {x: -2.18, y: -0.92}
+      - {x: -1.78, y: -0.92}
+      - {x: -1.78, y: -0.52}
+      - {x: -2.18, y: -0.52}
+      HeightAboveSoleMeters: 0.52
+      Treatment: waist_block
+    - Id: companionway_up_flight
+      Footprint:
+      - {x: 0.55, y: -7.55}
+      - {x: 1.35, y: -7.55}
+      - {x: 1.35, y: -6.55}
+      - {x: 0.55, y: -6.55}
+      HeightAboveSoleMeters: 1.2
+      Treatment: stair_flight
+    - Id: companionway_down_opening
+      Footprint:
+      - {x: -1.3, y: 0.3}
+      - {x: -0.55, y: 0.3}
+      - {x: -0.55, y: 1.05}
+      - {x: -1.3, y: 1.05}
+      HeightAboveSoleMeters: 0
+      Treatment: stair_opening
+  - Id: sky_sole
+    SoleZMeters: 7.3
+    Outline:
+    - {x: -2.21, y: -9.43}
+    - {x: 2.21, y: -9.43}
+    - {x: 2.21, y: -0.56}
+    - {x: -2.21, y: -0.56}
+    Obstructions:
+    - Id: helm_console
+      Footprint:
+      - {x: -0.62, y: -1.2}
+      - {x: 0.62, y: -1.2}
+      - {x: 0.62, y: -0.7}
+      - {x: -0.62, y: -0.7}
+      HeightAboveSoleMeters: 1.06
+      Treatment: wall
+    - Id: helm_seat
+      Footprint:
+      - {x: -0.24, y: -2.21}
+      - {x: 0.24, y: -2.21}
+      - {x: 0.24, y: -1.73}
+      - {x: -0.24, y: -1.73}
+      HeightAboveSoleMeters: 1.02
+      Treatment: wall
+    - Id: settee_port
+      Footprint:
+      - {x: -2.18, y: -6.6}
+      - {x: -1.52, y: -6.6}
+      - {x: -1.52, y: -3.6}
+      - {x: -2.18, y: -3.6}
+      HeightAboveSoleMeters: 0.88
+      Treatment: waist_block
+    - Id: sidetable_port
+      Footprint:
+      - {x: -2.08, y: -3.35}
+      - {x: -1.7, y: -3.35}
+      - {x: -1.7, y: -2.97}
+      - {x: -2.08, y: -2.97}
+      HeightAboveSoleMeters: 0.52
+      Treatment: waist_block
+    - Id: companionway_up_opening
+      Footprint:
+      - {x: 0.55, y: -8.45}
+      - {x: 1.35, y: -8.45}
+      - {x: 1.35, y: -7.4}
+      - {x: 0.55, y: -7.4}
+      HeightAboveSoleMeters: 0
+      Treatment: stair_opening
+  - Id: below_sole
+    SoleZMeters: 0.6
+    Outline:
+    - {x: -2.6, y: 0.2}
+    - {x: -2.553, y: 1.025}
+    - {x: -2.438, y: 1.85}
+    - {x: -2.303, y: 2.675}
+    - {x: -2.148, y: 3.5}
+    - {x: -1.977, y: 4.325}
+    - {x: -1.783, y: 5.15}
+    - {x: -1.577, y: 5.975}
+    - {x: -1.36, y: 6.8}
+    - {x: 1.36, y: 6.8}
+    - {x: 1.577, y: 5.975}
+    - {x: 1.783, y: 5.15}
+    - {x: 1.977, y: 4.325}
+    - {x: 2.148, y: 3.5}
+    - {x: 2.303, y: 2.675}
+    - {x: 2.438, y: 1.85}
+    - {x: 2.553, y: 1.025}
+    - {x: 2.6, y: 0.2}
+    Obstructions:
+    - Id: bunk
+      Footprint:
+      - {x: -1.1, y: 4.6}
+      - {x: 1.1, y: 4.6}
+      - {x: 1.1, y: 6.4}
+      - {x: -1.1, y: 6.4}
+      HeightAboveSoleMeters: 0.55
+      Treatment: waist_block
+    - Id: bunk_port
+      Footprint:
+      - {x: -1.95, y: 1.2}
+      - {x: -0.75, y: 1.2}
+      - {x: -0.75, y: 3.3}
+      - {x: -1.95, y: 3.3}
+      HeightAboveSoleMeters: 0.55
+      Treatment: waist_block
+    - Id: bunk_stbd
+      Footprint:
+      - {x: 0.75, y: 1.2}
+      - {x: 1.95, y: 1.2}
+      - {x: 1.95, y: 3.3}
+      - {x: 0.75, y: 3.3}
+      HeightAboveSoleMeters: 0.55
+      Treatment: waist_block
+    - Id: wardrobe_port
+      Footprint:
+      - {x: -2, y: 3.55}
+      - {x: -1.55, y: 3.55}
+      - {x: -1.55, y: 4.3}
+      - {x: -2, y: 4.3}
+      HeightAboveSoleMeters: 1.65
+      Treatment: wall
+    - Id: wardrobe_stbd
+      Footprint:
+      - {x: 1.55, y: 3.55}
+      - {x: 2, y: 3.55}
+      - {x: 2, y: 4.3}
+      - {x: 1.55, y: 4.3}
+      HeightAboveSoleMeters: 1.65
+      Treatment: wall
+    - Id: sidetable_port
+      Footprint:
+      - {x: -1.62, y: 5.95}
+      - {x: -1.24, y: 5.95}
+      - {x: -1.24, y: 6.33}
+      - {x: -1.62, y: 6.33}
+      HeightAboveSoleMeters: 0.52
+      Treatment: waist_block
+    - Id: sidetable_stbd
+      Footprint:
+      - {x: 1.24, y: 5.95}
+      - {x: 1.62, y: 5.95}
+      - {x: 1.62, y: 6.33}
+      - {x: 1.24, y: 6.33}
+      HeightAboveSoleMeters: 0.52
+      Treatment: waist_block
+    - Id: head_master
+      Footprint:
+      - {x: 1.3, y: 4.75}
+      - {x: 2, y: 4.75}
+      - {x: 2, y: 5.75}
+      - {x: 1.3, y: 5.75}
+      HeightAboveSoleMeters: 2.05
+      Treatment: wall
+    - Id: head_guest
+      Footprint:
+      - {x: -2.4, y: 0.3}
+      - {x: -1.6, y: 0.3}
+      - {x: -1.6, y: 1.05}
+      - {x: -2.4, y: 1.05}
+      HeightAboveSoleMeters: 2.05
+      Treatment: wall
+  Door:
+    Id: entry
+    Side: aft
+    ClearWidthMeters: 1.4
+    ClearHeightMeters: 1.75
+    ThresholdPoint: {x: -0.6, y: -10.24, z: 2.83}
+    Mechanism: 0
+    KeepClear:
+    - {x: -1.3, y: -10.24}
+    - {x: 1.5, y: -10.24}
+    - {x: 1.5, y: -10.39}
+    - {x: -1.3, y: -10.39}
+    CueFrames: 8
+    CueMillisecondsPerFrame: 70
+    CueReversedOnExit: 1
+  AdditionalDoors:
+  - Id: sky_entry
+    Side: aft
+    ClearWidthMeters: 0.95
+    ClearHeightMeters: 1.65
+    ThresholdPoint: {x: 0.825, y: -9.36, z: 7.28}
+    Mechanism: 0
+    KeepClear:
+    - {x: 0.35, y: -9.36}
+    - {x: 2.231, y: -9.36}
+    - {x: 2.231, y: -9.51}
+    - {x: 0.35, y: -9.51}
+    CueFrames: 8
+    CueMillisecondsPerFrame: 70
+    CueReversedOnExit: 1
+  Anchors:
+  - Id: helm
+    Action: enter_helm
+    ReachPoint: {x: 0, y: -2.75, z: 7.3}
+    VisibleFacings:
+    - N
+    - NE
+    - E
+    - W
+    - NW
+  - Id: stove
+    Action: cook
+    ReachPoint: {x: -1.88, y: -8.95, z: 2.83}
+    VisibleFacings:
+    - N
+    - S
+    - SW
+    - W
+    - NW
+  - Id: locker
+    Action: storage
+    ReachPoint: {x: 1.8, y: -9.1, z: 2.83}
+    VisibleFacings:
+    - N
+    - NE
+    - E
+    - SE
+    - S
+  - Id: bunk
+    Action: sleep
+    ReachPoint: {x: 0, y: 4.1, z: 0.6}
+    VisibleFacings:
+    - N
+    - NE
+    - E
+    - SE
+    - S
+    - SW
+    - W
+    - NW
+  - Id: helm_bridge
+    Action: enter_helm
+    ReachPoint: {x: 0, y: -3.95, z: 9.74}
+    VisibleFacings:
+    - N
+    - NE
+    - E
+    - SE
+    - S
+    - SW
+    - W
+    - NW
+  Routes:
+  - Id: house_to_bridge
+    FromLevel: house_sole
+    ToLevel: sky_sole
+    Mechanism: InteriorStair
+    Exterior: 0
+    TotalRiseMeters: 4.47
+  - Id: house_to_below
+    FromLevel: house_sole
+    ToLevel: below_sole
+    Mechanism: InteriorStair
+    Exterior: 0
+    TotalRiseMeters: 2.23
+  - Id: aft_deck_ladder
+    FromLevel: 
+    ToLevel: 
+    Mechanism: vertical_ladder
+    Exterior: 1
+    TotalRiseMeters: 4.4500003
+  - Id: bridge_ladder
+    FromLevel: 
+    ToLevel: 
+    Mechanism: vertical_ladder
+    Exterior: 1
+    TotalRiseMeters: 2.23
+  RidesHullRock: 1

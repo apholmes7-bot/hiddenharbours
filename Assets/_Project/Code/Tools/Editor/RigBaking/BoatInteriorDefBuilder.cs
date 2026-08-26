@@ -310,13 +310,14 @@ namespace HiddenHarbours.Tools.RigBaking
             {
                 var pin = DeckSidecarJson.AsObject(
                     DeckSidecarJson.Member(DeckSidecarJson.Parse(interiorJson), "hullRigSha256"));
-                if (pin == null || pin.Count != 1) return null;
-                foreach (var kv in pin)
-                {
-                    repoRelative = $"{KitFolder}/hull-rigs/{kv.Key}.js";
-                    string p = Path.Combine(repo, KitFolder, "hull-rigs", kv.Key + ".js");
-                    return File.Exists(p) ? File.ReadAllBytes(p) : null;
-                }
+                // The unanimity rule (BoatInteriorHullResolver.TryUnanimousHullRigPin): the STEM
+                // composes the path — hull-rigs/ ships <stem>.js, never <stem>.<variant>.js. A
+                // refused pin returns null; the sidecar reader owns the refusal message.
+                if (!BoatInteriorHullResolver.TryUnanimousHullRigPin(pin, out string stem, out _, out _))
+                    return null;
+                repoRelative = $"{KitFolder}/hull-rigs/{stem}.js";
+                string p = Path.Combine(repo, KitFolder, "hull-rigs", stem + ".js");
+                return File.Exists(p) ? File.ReadAllBytes(p) : null;
             }
             catch (Exception) { /* the reader reports an unparseable sidecar properly */ }
             return null;

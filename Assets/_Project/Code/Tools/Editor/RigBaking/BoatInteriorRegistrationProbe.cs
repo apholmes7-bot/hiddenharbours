@@ -213,6 +213,15 @@ namespace HiddenHarbours.Tools.RigBaking
             r.InteriorPivotY = (int)host.EvaluateNumber($"{cell}.cy");
             r.InteriorScale = (int)host.EvaluateNumber($"{cell}.S");
 
+            if (!host.EvaluateBool($"typeof ({exteriorGlobal}).W === 'number'"))
+            {
+                r.Errors.Add(
+                    $"'{exteriorGlobal}' exposes no numeric W — it is not a hull object. A multi-hull " +
+                    "exterior publishes geometry PER HULL and the binding's pick must address the " +
+                    "sub-hull (byId). A refusal here beats the InvalidCastException this read as before.");
+                return r;
+            }
+
             r.KitExteriorW = (int)host.EvaluateNumber($"{exteriorGlobal}.W");
             r.KitExteriorH = (int)host.EvaluateNumber($"{exteriorGlobal}.H");
             r.KitExteriorPivotX = (int)host.EvaluateNumber($"{exteriorGlobal}.pivot.x");

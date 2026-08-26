@@ -125,6 +125,9 @@ namespace HiddenHarbours.Tools.RigBaking
                     return;
                 }
                 Debug.Log($"[DeckSidecarImporter] CLI import OK — {imported} sidecar(s).");
+                // Success must exit as loudly as failure — a -quit-less editor with no Exit(0)
+                // outlives its work forever, and the idle burn reads as an import still running.
+                EditorApplication.Exit(0);
             }
             catch (Exception e)
             {
