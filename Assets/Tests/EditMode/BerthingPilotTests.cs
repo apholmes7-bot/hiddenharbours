@@ -161,7 +161,9 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         /// <summary>Inside the wharf line, still doing the fairway's 5 m/s, she is asked to come down to
-        /// the harbour's 3 — i.e. the throttle comes off. This is the Q2 ruling arriving at a helm.</summary>
+        /// the harbour's 3 — i.e. the throttle comes off. ⚠ This is Q2's <b>recommendation</b> arriving at
+        /// a helm, not a ruling: the owner has not ruled on harbour speed, and calling it one in a comment
+        /// is how an open question quietly becomes a settled one.</summary>
         [Test]
         public void InsideTheWharfLine_TheFairwaySpeedIsTakenOff()
         {

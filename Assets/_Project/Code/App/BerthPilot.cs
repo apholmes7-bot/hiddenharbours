@@ -197,10 +197,15 @@ namespace HiddenHarbours.App
             /// <summary>
             /// What the come-alongside ships at, and where each number comes from.
             ///
-            /// <para><b>The two the owner ruled on.</b> <see cref="HarbourSpeedMetresPerSecond"/> is
-            /// design/npc-pilotage.md Q2's recommendation — 3 inside the wharf line, the fairway left at
-            /// the shipped 5 — which costs the St Peters passage about six seconds and buys a stop that
-            /// fits between berths. <see cref="SetRateMetresPerSecond"/> is §2.2's 0.25 m/s.</para>
+            /// <para><b>The two the design doc names, and NEITHER is an owner ruling.</b>
+            /// <see cref="HarbourSpeedMetresPerSecond"/> is design/npc-pilotage.md <b>Q2's
+            /// recommendation</b> — 3 inside the wharf line, the fairway left at the shipped 5 — which
+            /// costs the St Peters passage about six seconds and buys a stop that fits between berths.
+            /// ⚠ <b>Q2 is OPEN</b>: the owner has not ruled on harbour speed, so this ships at the doc's
+            /// number pending her verdict, which is exactly why it is a field and not a constant. The one
+            /// thing she DID rule (Q1, 2026-08-26) is that the player stays aboard until she presses the
+            /// exit key, and that has no number in it at all. <see cref="SetRateMetresPerSecond"/> is
+            /// §2.2's recommended 0.25 m/s, on the same footing.</para>
             ///
             /// <para><b>The rest are measured against this hull.</b> A 12.9 m cape islander at 1 m/s
             /// stops in <c>v²/2a + StopMetres = 1.25 + 2 = 3.25 m</c>, so the gate's one-hull-length
