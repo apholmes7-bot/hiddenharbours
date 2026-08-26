@@ -272,6 +272,19 @@ namespace HiddenHarbours.App.Editor
             return list;
         }
 
+        /// <summary>
+        /// The fittings on this pier that are <b>TIE-OFFS</b> — the kit decides which, not this file
+        /// (<see cref="WharfKitCatalog.IsMooringFitting"/>: a tyre is a fender and a ladder is a way
+        /// aboard, neither is something you make a line fast to).
+        ///
+        /// <para>Hoisted out of <see cref="PlaceMooringCleats"/> so the placement and anything that needs
+        /// to know WHERE a boat can tie up read the same list — Nine Mile Creek's
+        /// <c>MooringFittingCount</c> is hoisted for the same reason. It is what lets a test register the
+        /// pier's own cleats without rebuilding the wharf's art.</para>
+        /// </summary>
+        public static IEnumerable<Fitting> MooringFittings()
+            => Fittings().Where(f => WharfKitCatalog.IsMooringFitting(f.Name));
+
         // =====================================================================================
         //  PLACEMENT
         // =====================================================================================
@@ -379,10 +392,8 @@ namespace HiddenHarbours.App.Editor
             cleatRoot.transform.SetParent(root.transform, worldPositionStays: false);
 
             int n = 0;
-            foreach (var f in Fittings())
+            foreach (var f in MooringFittings())
             {
-                if (!WharfKitCatalog.IsMooringFitting(f.Name)) continue;
-
                 var go = new GameObject($"Cleat_{f.Name}_{n}");
                 go.transform.SetParent(cleatRoot.transform, worldPositionStays: false);
                 go.transform.position = new Vector3(f.Position.x, f.Position.y, 0f);
