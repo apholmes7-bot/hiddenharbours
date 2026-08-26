@@ -199,22 +199,59 @@ namespace HiddenHarbours.Tests.PlayMode
             return _opening;
         }
 
-        /// <summary>Her track, sampled once a second — the thing that tells you WHERE it went wrong
-        /// rather than only that it did. Printed on failure, because a timeout that says "stuck" cannot
-        /// distinguish a boat steering the wrong way from one that never got a throttle.</summary>
-        private string Track(List<Vector2> track)
+        /// <summary>One second of the passage: where she was, and which phase her skipper was in.</summary>
+        private readonly struct Fix
         {
-            var sb = new System.Text.StringBuilder("\n  her track, once a second:\n");
-            foreach (Vector2 p in track) sb.AppendLine($"    ({p.x,7:F1}, {p.y,7:F1})");
+            public readonly Vector2 At;
+            public readonly PilotagePhase Phase;
+            public Fix(Vector2 at, PilotagePhase phase) { At = at; Phase = phase; }
+        }
+
+        /// <summary>How many fixes the printed track is decimated to. ⚠ CI truncates a test message at
+        /// 800 characters, so a track printed one-per-line eats the whole budget and the DIAGNOSIS — the
+        /// pose, the phase, the abort count — is what gets cut. Compact and decimated, the whole passage
+        /// fits and still leaves room for the sentence that says what went wrong.</summary>
+        private const int TrackFixes = 26;
+
+        /// <summary>Her track — the thing that tells you WHERE it went wrong rather than only that it did,
+        /// with the PHASE she was in written in at every change. A timeout that says "stuck" cannot
+        /// distinguish a boat steering the wrong way from one that never got a throttle; a track that says
+        /// <c>A</c> forty metres seaward of the gate says which.</summary>
+        private string Track(List<Fix> track)
+        {
+            var sb = new System.Text.StringBuilder(
+                "\n  her track ~1 s apart (P=passage A=approach G=gate S=alongside M=moored):\n   ");
+            int step = Mathf.Max(1, Mathf.CeilToInt(track.Count / (float)TrackFixes));
+            PilotagePhase last = (PilotagePhase)(-1);
+            int onThisLine = 0;
+
+            for (int i = 0; i < track.Count; i++)
+            {
+                bool turned = track[i].Phase != last;
+                if (!turned && i % step != 0 && i != track.Count - 1) continue;
+
+                if (turned) { sb.Append($" {Letter(track[i].Phase)}"); last = track[i].Phase; }
+                sb.Append($" {track[i].At.x:F0},{track[i].At.y:F0}");
+                if (++onThisLine % 6 == 0) sb.Append("\n   ");
+            }
             return sb.ToString();
         }
+
+        private static char Letter(PilotagePhase phase) => phase switch
+        {
+            PilotagePhase.Passage => 'P',
+            PilotagePhase.Approach => 'A',
+            PilotagePhase.Gate => 'G',
+            PilotagePhase.Alongside => 'S',
+            _ => 'M',
+        };
 
         private IEnumerator RunToBerth(float tideLevel, string what)
         {
             ArrivalOpening opening = Begin(tideLevel);
             Vector2 berth = StPetersArrivalOpening.Berth();
 
-            var track = new List<Vector2>();
+            var track = new List<Fix>();
             float deadline = Time.realtimeSinceStartup + TimeoutSeconds;
             float nextSample = 0f;
 
@@ -225,7 +262,7 @@ namespace HiddenHarbours.Tests.PlayMode
             {
                 if (Time.realtimeSinceStartup >= nextSample && opening.Boat != null)
                 {
-                    track.Add(opening.Boat.transform.position);
+                    track.Add(new Fix(opening.Boat.transform.position, opening.Pilotage));
                     nextSample = Time.realtimeSinceStartup + 1f;
                 }
                 yield return null;
@@ -233,7 +270,7 @@ namespace HiddenHarbours.Tests.PlayMode
 
             Assert.AreEqual(ArrivalOpening.Phase.Moored, opening.Current,
                 $"at {what} the arrival never tied up — it is stuck in " +
-                $"{opening.Current}/{opening.Pilotage}. " +
+                $"{opening.Current}/{opening.Pilotage} after {opening.Aborts} abort(s). " +
                 (opening.Boat != null
                     ? $"She is at {(Vector2)opening.Boat.transform.position}, " +
                       $"{Vector2.Distance(opening.Boat.transform.position, berth):F0} m from the berth " +
@@ -241,6 +278,16 @@ namespace HiddenHarbours.Tests.PlayMode
                       $"{opening.Boat.Velocity.magnitude:F2} m/s, throttle {opening.Boat.Throttle:F2}, " +
                       $"steer {opening.Boat.Steer:F2}, aground={opening.Boat.IsAground}."
                     : "There is no boat.") + Track(track));
+
+            // ⚠ MEASURE AFTER THE LINES HAVE COME UP TAUT, not at the instant the phase flips. The lines
+            // ARE the last of the manoeuvre (§2.2) — MooringLineMath's tether hauls her the remaining
+            // gap in over the next couple of seconds — so a pose sampled on the frame the lines go over
+            // is a pose sampled before the thing being asserted has happened. CanStepAshore is that
+            // moment as a STATE rather than a stopwatch: moored, the settling beat done, the planks
+            // offered.
+            float settled = Time.realtimeSinceStartup + TimeoutSeconds;
+            while (!opening.CanStepAshore && opening.Current == ArrivalOpening.Phase.Moored
+                   && Time.realtimeSinceStartup < settled) yield return null;
 
             // ⛔ THE POSE, PRODUCED RATHER THAN WRITTEN. TieUp used to place her on the berth, so this
             // used to be an assertion about an assignment. It is an assertion about the PILOT now, and it
@@ -255,18 +302,32 @@ namespace HiddenHarbours.Tests.PlayMode
             float along = BerthPilot.AlongTrackTo(hull.position, berth, pose.HeadingDegrees);
             float heading = ArrivalPilot.Wrap180(ArrivalPilot.HeadingOf(hull) - pose.HeadingDegrees);
 
+            string lies = $" She lies {lateral:F2} m off her line, {along:F2} m along it, {heading:F0}° " +
+                          $"off her heading, in {opening.Pilotage} after {opening.Aborts} abort(s), " +
+                          $"lines fast={opening.LinesAreFast}, honest={opening.TiedUpHonestly}.";
+
+            // ⭐ THE CLAIM THE SLICE IS ACTUALLY MAKING. The pose assertions below state the TOLERANCE;
+            // this one states that the come-alongside CONVERGED — the lines went over because
+            // BerthingPilot.ReadyForLines said alongside, stopped and in the pose, not because the settle
+            // stopwatch ran out and tied her up wherever she was lying. With the snap gone those are the
+            // only two ways to be moored, and only one of them is an arrival.
+            Assert.IsTrue(opening.TiedUpHonestly,
+                $"at {what} she was tied up by the SETTLE FALLBACK, not by the come-alongside — the hull " +
+                "never got herself into her pose, which is the one thing this slice deleted the snap to " +
+                "prove she could." + lies + Track(track));
+
             Assert.Less(Mathf.Abs(lateral), 2f,
                 $"at {what} she came to rest {lateral:F2} m off her berth LINE — that is not alongside, " +
-                "and it is exactly what the snap covered up." + Track(track));
+                "and it is exactly what the snap covered up." + lies + Track(track));
             Assert.Less(Mathf.Abs(along), ArrivalPilot.Settings.Default.StopMetres + 3f,
                 $"at {what} she stopped {along:F2} m short of (or past) her berth along the wharf." +
-                Track(track));
+                lies + Track(track));
             Assert.Less(Mathf.Abs(heading), BerthPilot.Settings.Default.HeadingToleranceDegrees + 5f,
                 $"at {what} she lies {heading:F0}° ACROSS her berth rather than alongside it." +
-                Track(track));
+                lies + Track(track));
             Assert.IsTrue(opening.LinesAreFast,
                 $"at {what} she is tied up with no line made fast — MooringLineMath is the constraint " +
-                "that replaced the snap." + Track(track));
+                "that replaced the snap." + lies + Track(track));
 
             // …and only then, the player's own press.
             yield return PutHerAshore(opening);

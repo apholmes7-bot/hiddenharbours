@@ -436,5 +436,64 @@ namespace HiddenHarbours.Tests.EditMode
                 "at the gate the approach must still be asking for the berthing speed — a boat that " +
                 "stopped there would have to gather way again against a twenty-second time constant");
         }
+
+        // =============================================================================================
+        // 8. ⭐ the wheel-over — R·tan(Δ/2), the number a passage plan carries
+        // =============================================================================================
+
+        /// <summary>The wheel-over is the tangent distance of the turn: the arc of radius
+        /// <c>speed ÷ turn rate</c> that joins one leg to the next touches each of them
+        /// <c>R·tan(Δ/2)</c> short of their intersection. Held against the arithmetic rather than a
+        /// remembered number, so a change to the turn rate moves the claim with it.</summary>
+        [Test]
+        public void TheWheelOverIsTheTurnsOwnTangentDistance()
+        {
+            BerthPilot.Settings s = Tuning;
+            const float speed = 5f;
+            const float turn = 60f;
+
+            float radius = speed / (s.TurnRateDegreesPerSecond * Mathf.Deg2Rad);
+            Assert.AreEqual(radius * Mathf.Tan(30f * Mathf.Deg2Rad),
+                            BerthPilot.WheelOverMetres(speed, turn, s), 1e-3f);
+
+            // …and it does not care which way she is turning.
+            Assert.AreEqual(BerthPilot.WheelOverMetres(speed, turn, s),
+                            BerthPilot.WheelOverMetres(speed, -turn, s), 1e-4f,
+                "a corner to port needs exactly the room a corner to starboard does");
+        }
+
+        /// <summary>Straight on asks for nothing, a stopped boat asks for nothing, and a course reversal
+        /// is clamped rather than infinite — <c>tan(θ/2)</c> runs away at 180°, and a route that doubles
+        /// back is a mark to be gone round rather than a corner to be cut.</summary>
+        [Test]
+        public void TheWheelOverIsZeroWithNoTurnToMakeAndFiniteAtAReversal()
+        {
+            BerthPilot.Settings s = Tuning;
+
+            Assert.AreEqual(0f, BerthPilot.WheelOverMetres(5f, 0f, s), 1e-6f,
+                "a leg she is already lined up on needs no anticipation at all");
+            Assert.AreEqual(0f, BerthPilot.WheelOverMetres(0f, 90f, s), 1e-6f,
+                "a boat with no way on has no turning circle to anticipate");
+
+            float reversal = BerthPilot.WheelOverMetres(5f, 179.9f, s);
+            Assert.IsFalse(float.IsInfinity(reversal) || float.IsNaN(reversal),
+                "tan(θ/2) at a course reversal must not be allowed to reach the mark cursor");
+            Assert.AreEqual(BerthPilot.WheelOverMetres(5f, BerthPilot.MaxWheelOverTurnDegrees, s),
+                            reversal, 1e-3f, "…it is the clamp that keeps it finite");
+        }
+
+        /// <summary>⚠ <b>The corner that actually broke the arrival, in numbers.</b> St Peters' fairway
+        /// turns ~61° onto its last leg. At the fairway's cruise the hull needs about fourteen metres of
+        /// anticipation — three and a half times the arrive radius — so a mark cursor that waits for the
+        /// radius is asking a boat to turn inside a quarter of the room she needs.</summary>
+        [Test]
+        public void TheRealFairwaysLastCornerNeedsFarMoreRoomThanTheArriveRadius()
+        {
+            float needed = BerthPilot.WheelOverMetres(5f, 61f, Tuning);
+            Assert.Greater(needed, ArrivalPilot.Settings.Default.ArriveRadiusMetres * 3f,
+                $"the last corner asks for {needed:F1} m of anticipation against a " +
+                $"{ArrivalPilot.Settings.Default.ArriveRadiusMetres:F0} m arrive radius — that gap is " +
+                "the eleven metres the come-alongside was being handed to make up");
+        }
     }
 }

@@ -50,6 +50,13 @@ namespace HiddenHarbours.App
         /// that the turn onto the last leg does not.</summary>
         private const float CommittedHullLengths = 3f;
 
+        /// <summary>The most of the INCOMING leg a wheel-over may eat, as a fraction of its length. Half:
+        /// a turn begun before the mark she is turning FROM is two corners overlapping, and a passage plan
+        /// that does that has legs too short for the hull running them. It is also what bounds how far
+        /// inside a corner she may cut — half a leg back, at the widest turn, keeps her inside a marked
+        /// fairway's own half-width.</summary>
+        private const float MaxWheelOverLegFraction = 0.5f;
+
         /// <summary>How far the range must OPEN again before "this is as close as she gets" is called (m).
         /// A metre of hysteresis, so a boat holding station in a chop does not latch on measurement
         /// noise.</summary>
@@ -155,7 +162,7 @@ namespace HiddenHarbours.App
             float heading = helm.HeadingDegrees;
             Vector2 velocity = helm.Velocity;
 
-            AdvanceMarks(here);
+            AdvanceMarks(here, heading, velocity);
 
             // The capture is read BEFORE the command so the gate's own law drives the very step she is
             // captured on — otherwise one step of route-pursuit steering is issued for a boat that is
@@ -181,14 +188,82 @@ namespace HiddenHarbours.App
 
         /// <summary>Walk the mark cursor forward, and with it the Passage → Approach boundary: the last
         /// authored mark before the berth IS the wharf line (see the class note).</summary>
-        private void AdvanceMarks(Vector2 here)
+        private void AdvanceMarks(Vector2 here, float headingDegrees, Vector2 velocity)
         {
-            while (_leg < _route.Length - 1 &&
-                   Vector2.Distance(here, _route[_leg]) <= _pilot.ArriveRadiusMetres)
+            while (_leg < _route.Length - 1 && Reached(here, headingDegrees, velocity, _leg))
                 _leg++;
 
             if (Phase == PilotagePhase.Passage && _leg >= _route.Length - 1)
                 Phase = PilotagePhase.Approach;
+        }
+
+        /// <summary>
+        /// ⭐ <b>The wheel-over distance for the turn off <paramref name="leg"/> onto the next one</b> —
+        /// <see cref="BerthPilot.WheelOverMetres"/> asked about the course change she has LEFT to make.
+        ///
+        /// <para>Measured against her current heading rather than the incoming leg's bearing, which is
+        /// the dynamic form and the honest one: a boat already half way round the corner has half the
+        /// turn left and needs half the room. It also makes the rule self-limiting — once she is lined up
+        /// on the next leg the anticipation is zero and only the arrive radius is left.</para>
+        /// </summary>
+        private float WheelOverFor(int leg, float headingDegrees, Vector2 velocity)
+        {
+            if (leg + 1 >= _route.Length) return 0f;      // there is nothing after the gate to turn onto
+
+            Vector2 next = _route[leg + 1] - _route[leg];
+            if (next.sqrMagnitude < 1e-4f) return 0f;
+
+            float turn = ArrivalPilot.Wrap180(ArrivalPilot.CompassOf(next) - headingDegrees);
+            float wheelOver = BerthPilot.WheelOverMetres(velocity.magnitude, turn, _alongside);
+
+            // …and never further back than half the leg she is turning off (see the const's note).
+            if (leg > 0)
+                wheelOver = Mathf.Min(wheelOver,
+                                      (_route[leg] - _route[leg - 1]).magnitude * MaxWheelOverLegFraction);
+            return wheelOver;
+        }
+
+        /// <summary>
+        /// 🔴 <b>A mark is done with when she must WHEEL OVER for it, when she is inside it, or when she
+        /// is PAST it</b> — three arms, and the first two are what a route means to a hull rather than to
+        /// a point.
+        ///
+        /// <para>The wheel-over (<see cref="WheelOverFor"/>) is the planned one: a corner is turned by
+        /// putting the helm over BEFORE the mark, by <c>R·tan(Δ/2)</c>, so the arc comes out on the next
+        /// leg. Without it a pursuit controller turns AT the mark and leaves the corner most of a turning
+        /// diameter wide — which is what the real fairway measured.</para>
+        ///
+        /// <para>The passed-mark arm is the RECOVERY, for the corner the anticipation still did not
+        /// quite cover. The arrive radius alone assumes she can always be steered inside it; on a corner
+        /// she cannot, and a pursuit controller then turns her BACK toward a mark she has already left
+        /// astern, which is a circle — measured on the real fairway as exactly that: round and round the
+        /// channel mouth, never inside four metres of it, while the berth waited fifty metres
+        /// away.</para>
+        ///
+        /// <para>So the last arm is what a skipper does when the anticipation was not enough: <b>once the
+        /// buoy is abeam, you are on to the next one.</b> A mark astern of her nose is a mark she has
+        /// rounded, however wide.</para>
+        ///
+        /// <para>⚠ <b>Gated on being COMMITTED to it, and that guard is load-bearing.</b> Mid-turn she can
+        /// be pointing away from a mark that is still a hundred metres ahead — dead astern of her nose and
+        /// nowhere near passed. Requiring her to be within a few hull-lengths of it first means the arm
+        /// can only ever retire a mark she has actually been to.</para>
+        /// </summary>
+        private bool Reached(Vector2 here, float headingDegrees, Vector2 velocity, int leg)
+        {
+            Vector2 toMark = _route[leg] - here;
+
+            // ⭐ THE WHEEL-OVER: a mark with a corner at it is done with when she must START turning, not
+            // when she is on top of it. See WheelOverFor — this is what keeps a 12.9 m hull with a 24 m
+            // turning circle on a fairway whose corners are 60° apart.
+            float turnIn = Mathf.Max(_pilot.ArriveRadiusMetres,
+                                     WheelOverFor(leg, headingDegrees, velocity));
+            if (toMark.sqrMagnitude <= turnIn * turnIn) return true;
+
+            float committed = CommittedHullLengths * _berth.HullLengthMetres;
+            if (toMark.sqrMagnitude > committed * committed) return false;
+
+            return Vector2.Dot(toMark, BerthPilot.Forward(headingDegrees)) <= 0f;
         }
 
         /// <summary>

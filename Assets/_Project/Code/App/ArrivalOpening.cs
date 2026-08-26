@@ -267,6 +267,7 @@ namespace HiddenHarbours.App
         private BoatMooring _mooring;
         private SkipperCleat _boatCleat;
         private bool _linesFast;               // did WE make them fast?
+        private bool _tiedUpHonestly;          // did the HULL get herself there, or the stopwatch?
         private bool _scopeEased;
 
         // --- the step ashore --------------------------------------------------------------------------
@@ -293,9 +294,27 @@ namespace HiddenHarbours.App
         /// off its line. Zero before she is spawned.</summary>
         public Vector2 ApproachGate => _pilotage != null ? _pilotage.GatePosition : Vector2.zero;
 
+        /// <summary>How many times she has gone round and re-presented at the gate (§2.1's abort path).
+        /// A number a failing test prints: an arrival that never converged looks very different from one
+        /// that converged on the second attempt.</summary>
+        public int Aborts => _pilotage != null ? _pilotage.Aborts : 0;
+
         /// <summary>⭐ <b>Is the skipper's line made fast?</b> This is what holds her alongside — the
         /// replacement for the snap, and the thing a test asserts instead of a written pose.</summary>
         public bool LinesAreFast => _mooring != null && _mooring.IsMadeFast;
+
+        /// <summary>
+        /// ⭐ <b>Did the HULL get herself there?</b> True only when the lines went over because
+        /// <see cref="BerthingPilot.ReadyForLines"/> said yes — alongside, stopped, <i>and in the pose</i>
+        /// — and false when the settle fallback tied her up where she happened to be lying.
+        ///
+        /// <para>This exists because the two paths are no longer distinguishable by their outcome. The
+        /// snap used to end both of them, so "she is moored" meant nothing about how she got there; now
+        /// the lines go over where she is either way, and a fallback tie-up shows up only as a worse pose.
+        /// A test that asserts a pose is asserting the tolerance; a test that asserts THIS is asserting
+        /// that the come-alongside converged — which is §2.2's actual claim.</para>
+        /// </summary>
+        public bool TiedUpHonestly => _tiedUpHonestly;
 
         /// <summary>True while the step-ashore move is in the air. She is neither aboard nor ashore.</summary>
         public bool IsSteppingAshore => _stepping;
@@ -712,6 +731,7 @@ namespace HiddenHarbours.App
             MakeTheLinesFast();
             _pilotage.Moor(_helm);
 
+            _tiedUpHonestly = honest;
             _phase = Phase.Moored;
             _mooredTimer = 0f;
             Debug.Log($"[ArrivalOpening] tied up at ({_helm.Position.x:F1}, {_helm.Position.y:F1}) " +

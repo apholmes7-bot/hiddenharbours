@@ -179,6 +179,187 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         // =============================================================================================
+        // 2b. 🔴 rounding a mark vs ORBITING one — the wheel-over and the passed-mark rule
+        // =============================================================================================
+
+        /// <summary>
+        /// ⭐ <b>THE WHEEL-OVER — a corner is turned BEFORE the mark, not at it.</b> St Peters' fairway
+        /// turns about 65° at its landfall mark; a 12.9 m hull at fairway speed turns at a ~24 m radius,
+        /// so the helm has to go over some fifteen metres short of the buoy for the arc to come out on the
+        /// next leg. A mark she has reached the wheel-over point for is a mark she is done with.
+        /// </summary>
+        [Test]
+        public void SheWheelsOverBeforeTheMark_ByTheTurnSheHasLeftToMake()
+        {
+            BerthingPilot pilot = Make();
+            Vector2 leg = (Route[1] - Route[0]).normalized;
+            float onTheLeg = ArrivalPilot.CompassOf(leg);
+
+            StepAt(pilot, Route[0], onTheLeg, leg * 5f);
+            Assert.AreEqual(Route[1], pilot.CurrentMark, "she is on to the turn");
+
+            // The wheel-over this corner actually asks for, at this speed — the same arithmetic a paper
+            // passage plan carries beside the course change.
+            float turn = ArrivalPilot.Wrap180(
+                ArrivalPilot.CompassOf(Route[2] - Route[1]) - onTheLeg);
+            float wheelOver = BerthPilot.WheelOverMetres(5f, turn, BerthPilot.Settings.Default);
+            Assert.Greater(wheelOver, ArrivalPilot.Settings.Default.ArriveRadiusMetres,
+                $"this corner ({turn:F0}°) must need more room than the arrive radius or the fixture " +
+                $"proves nothing; it asked for {wheelOver:F1} m");
+
+            // A metre OUTSIDE it she is still running for the mark…
+            StepAt(pilot, Route[1] - leg * (wheelOver + 1f), onTheLeg, leg * 5f);
+            Assert.AreEqual(Route[1], pilot.CurrentMark,
+                "she wheeled over a metre early — the anticipation must be the corner's own number");
+
+            // …and a metre inside it the helm goes over and the next leg is hers.
+            StepAt(pilot, Route[1] - leg * (wheelOver - 1f), onTheLeg, leg * 5f);
+            Assert.AreEqual(Route[2], pilot.CurrentMark,
+                $"she ran to within {wheelOver - 1f:F1} m of a {turn:F0}° corner still steering for the " +
+                "mark — a hull that turns at a 24 m radius cannot round that, and the swing puts her tens " +
+                "of metres off the next leg");
+        }
+
+        /// <summary>⚠ …and the anticipation is a function of SPEED, because a turning circle is. The same
+        /// corner needs less room at harbour speed than at the fairway's cruise, which is why the rule
+        /// reads her velocity rather than a distance somebody typed.</summary>
+        [Test]
+        public void TheWheelOverShrinksAsSheSlows()
+        {
+            float turn = ArrivalPilot.Wrap180(ArrivalPilot.CompassOf(Route[2] - Route[1])
+                                              - ArrivalPilot.CompassOf(Route[1] - Route[0]));
+            float atCruise = BerthPilot.WheelOverMetres(5f, turn, BerthPilot.Settings.Default);
+            float atHarbour = BerthPilot.WheelOverMetres(3f, turn, BerthPilot.Settings.Default);
+
+            Assert.Greater(atCruise, atHarbour,
+                $"a boat doing 5 m/s needs more room to turn than one doing 3 ({atCruise:F1} m vs " +
+                $"{atHarbour:F1} m) — a fixed anticipation is a fixed lie at one of the two speeds");
+            Assert.AreEqual(atCruise * 3f / 5f, atHarbour, 0.01f,
+                "the turning radius is speed ÷ turn rate, so the wheel-over is linear in speed");
+        }
+
+        /// <summary>
+        /// 🔴 <b>And when the anticipation was not enough: once the buoy is abeam, you are on to the next
+        /// one.</b> The recovery arm, tested with the wheel-over deliberately out of the way (she is
+        /// already lined up on the next leg, so it asks for nothing) — otherwise this would pass on the
+        /// wrong arm and prove nothing about the orbit.
+        ///
+        /// <para>That orbit is what the real fairway measured before either arm existed: she swung wide,
+        /// pursuit turned her BACK toward a mark already astern, and she circled the channel mouth while
+        /// the berth waited fifty metres away.</para>
+        /// </summary>
+        [Test]
+        public void RoundingAMarkWide_SheGoesOnToTheNextOne_RatherThanOrbitingIt()
+        {
+            BerthingPilot pilot = Make();
+            Vector2 leg = (Route[1] - Route[0]).normalized;
+            StepAt(pilot, Route[0], ArrivalPilot.CompassOf(leg), leg * 5f);
+            Assert.AreEqual(Route[1], pilot.CurrentMark, "she is on to the turn");
+
+            // Eight metres past the turn — twice the arrive radius, so she never "reached" it — and
+            // already steady on the NEXT leg's heading, so the wheel-over asks for nothing. The only
+            // thing that can retire this mark is the fact that it is astern of her.
+            float onTheNextLeg = ArrivalPilot.CompassOf(Route[2] - Route[1]);
+            Vector2 wide = Route[1] + leg * 8f;
+            Assert.Greater(Vector2.Distance(wide, Route[1]),
+                           ArrivalPilot.Settings.Default.ArriveRadiusMetres,
+                "the fixture must place her OUTSIDE the radius or it proves nothing about the arm");
+
+            StepAt(pilot, wide, onTheNextLeg, leg * 5f);
+            Assert.AreEqual(Route[2], pilot.CurrentMark,
+                "she ran past the turn and is still steering for it — that is the orbit, and it is what " +
+                "kept the arrival off her berth on the real fairway");
+        }
+
+        /// <summary>
+        /// ⚠ …and the guard on that arm, which is load-bearing. Mid-turn her nose can point well away from
+        /// a mark that is still a hundred metres ahead. Without the "committed" range the passed-mark rule
+        /// would retire marks she has never been near, and a boat that swung once at the landfall would
+        /// arrive having skipped the whole fairway — down water the channel does not promise carries her.
+        /// </summary>
+        [Test]
+        public void AMarkStillWellAhead_IsNotRetiredJustBecauseHerNoseIsOff()
+        {
+            BerthingPilot pilot = Make();
+            Vector2 leg = (Route[1] - Route[0]).normalized;
+            StepAt(pilot, Route[0], ArrivalPilot.CompassOf(leg), leg * 5f);
+            Assert.AreEqual(Route[1], pilot.CurrentMark);
+
+            // Ninety metres short of the turn, pointing back the way she came: astern of her nose, yes —
+            // but nowhere near passed, and well outside any wheel-over this corner could ask for.
+            Vector2 wellShort = Route[1] - leg * 90f;
+            StepAt(pilot, wellShort, ArrivalPilot.CompassOf(-leg), leg * 5f);
+
+            Assert.AreEqual(Route[1], pilot.CurrentMark,
+                "a mark sixty metres ahead was retired because she happened to be pointing away from it — " +
+                "that is a fairway skipped, not a corner rounded");
+            Assert.AreEqual(PilotagePhase.Passage, pilot.Phase,
+                "…and she is certainly not approaching a berth she has not run the channel to");
+        }
+
+        /// <summary>
+        /// ⚠ …and the wheel-over may never reach back past the mark she is turning FROM. Half the
+        /// incoming leg is the bound: two corners that overlap are a passage plan whose legs are too short
+        /// for the hull running them, and it is also what stops a big turn at speed from cutting further
+        /// inside a corner than a marked fairway is wide.
+        /// </summary>
+        [Test]
+        public void TheWheelOverNeverReachesBackPastTheMarkSheIsTurningFrom()
+        {
+            BerthingPilot pilot = Make();
+            Vector2 first = (Route[1] - Route[0]).normalized;
+            StepAt(pilot, Route[0], ArrivalPilot.CompassOf(first), first * 5f);
+
+            // Put her on the SHORT leg (26.9 m), running fast enough that the corner ahead asks for more
+            // anticipation than half of it. Deliberately over the fairway's own cruise: the bound is the
+            // claim here, and a fixture that only just trips it stops testing it the day the turn rate
+            // is tuned.
+            const float fast = 8f;
+            Vector2 shortLeg = (Route[2] - Route[1]).normalized;
+            float onIt = ArrivalPilot.CompassOf(shortLeg);
+            float asked = BerthPilot.WheelOverMetres(
+                fast, ArrivalPilot.Wrap180(ArrivalPilot.CompassOf(pilot.GatePosition - Route[2]) - onIt),
+                BerthPilot.Settings.Default);
+            float half = (Route[2] - Route[1]).magnitude * 0.5f;
+            Assert.Greater(asked, half,
+                $"the fixture needs a corner that asks for more than half its leg ({asked:F1} m of " +
+                $"{half * 2f:F1} m) or the bound is never exercised");
+
+            StepAt(pilot, Route[1], onIt, shortLeg * fast);
+            Assert.AreEqual(Route[2], pilot.CurrentMark, "she is on the short leg");
+
+            // Just inside half the leg, the next mark must still be hers to run to.
+            StepAt(pilot, Route[1] + shortLeg * (half - 1f), onIt, shortLeg * fast);
+            Assert.AreEqual(Route[2], pilot.CurrentMark,
+                "the wheel-over reached back past the middle of the leg she is on — begin the turn there " +
+                "and she is rounding two marks at once");
+
+            // …and a metre the other side of the bound it fires.
+            StepAt(pilot, Route[1] + shortLeg * (half + 1f), onIt, shortLeg * fast);
+            Assert.AreEqual(pilot.GatePosition, pilot.CurrentMark,
+                "at half the leg the helm must go over — that is the most room this corner can be given");
+        }
+
+        /// <summary>The GATE is not a mark she may pass: it is the manoeuvre's start, and running through
+        /// it is what the gate phase is FOR. The cursor stops one short of the route's end by
+        /// construction, and this pins it — a machine that retired the gate would sail her out the far
+        /// side of the harbour with no phase left to hold her.</summary>
+        [Test]
+        public void TheGateIsNeverRetired_HoweverFarPastItSheGets()
+        {
+            BerthingPilot pilot = Make();
+            RunHerInToTheWharfLine(pilot);
+            Vector2 gate = pilot.GatePosition;
+
+            StepAt(pilot, gate + BerthPilot.Forward(BerthHeading) * 30f, BerthHeading,
+                   BerthPilot.Forward(BerthHeading) * 3f);
+
+            Assert.AreEqual(gate, pilot.CurrentMark,
+                "she ran thirty metres past the gate and the machine moved on — there is nothing after " +
+                "the gate to move on TO");
+        }
+
+        // =============================================================================================
         // 3. the gate — capture, hold, advance
         // =============================================================================================
 

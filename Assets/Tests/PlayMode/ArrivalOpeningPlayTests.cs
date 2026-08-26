@@ -217,6 +217,18 @@ namespace HiddenHarbours.Tests.PlayMode
 
             yield return Until(() => opening.Current == ArrivalOpening.Phase.Moored, "tied up");
 
+            // ⚠ …and then let the LINES finish. They are the last of the manoeuvre (§2.2), so the pose
+            // is measured once they have come up taut rather than on the frame they went over.
+            // CanStepAshore is that moment as a state: moored, settled, planks offered.
+            yield return Until(() => opening.CanStepAshore, "settled on her lines");
+
+            // ⭐ …and she got there UNDER HER OWN HELM. The settle fallback can also end in a tie-up, and
+            // with the snap gone the two are told apart only by this flag: honest means
+            // BerthingPilot.ReadyForLines said alongside, stopped and in the pose.
+            Assert.IsTrue(opening.TiedUpHonestly,
+                "she was tied up by the settle fallback rather than by the come-alongside — the hull " +
+                "never got herself into her pose. " + Where());
+
             // ⛔ THE POSE, PRODUCED RATHER THAN WRITTEN. This is the assertion the snap used to satisfy
             // for free: TieUp wrote her onto the berth, so "she is at the berth" was true of a boat that
             // had sailed past it sideways. Nothing writes her pose now, so every one of these is a claim

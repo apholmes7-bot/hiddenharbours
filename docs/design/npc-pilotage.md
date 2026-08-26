@@ -337,11 +337,11 @@ They are different regions and different slices, and conflating them is how S1 g
 **S1 is the whole owner ask #1 and it is buildable now** — it needs no new Core seam, no new data, and
 no traffic. Everything it touches is `App` and `Boats`.
 
-### 8.1 What S1 actually shipped, and the three things the build found
+### 8.1 What S1 actually shipped, and the five things the build found
 
 `PilotageHelm.cs` (the phase enum + `IPilotageHelm` + the helmed backend), `BerthPilot.cs` (the pure
 come-alongside maths), `BerthingPilot.cs` (the phase machine), and the deletions in `ArrivalOpening`.
-It needed **no new Core seam** and **no scene or builder change** — §8's claim held. Three things the
+It needed **no new Core seam** and **no scene or builder change** — §8's claim held. Five things the
 build learned that this document did not know:
 
 1. **⭐ The wharf line is the last authored route mark.** §2.1's Approach row wants a speed limit
@@ -369,7 +369,29 @@ build learned that this document did not know:
    gate therefore closes at the **berthing speed** and only the come-alongside closes at the set
    rate, with the crab cap doing the real bounding either way.
 
-4. **⚠ An abort must actually go round.** §2.1 says Gate aborts to Approach; it does not say she must
+4. **⭐ A route is a set of marks; a hull is not a point — the WHEEL-OVER.** Nothing in §2 says how a
+   pilot leaves one leg for the next, and "steer for the mark until you are inside the arrive radius"
+   is not it. A 12.9 m hull at the fairway's 5 m/s turns at a **24 m radius**; St Peters' fairway
+   turns **65°** at its landfall and **61°** onto its last leg. Turning *at* the mark therefore puts
+   her out of the corner about **11 m** off the next leg — and pursuit then hauls her back toward a
+   mark already astern, which is a circle. Measured on the real fairway with the corner uncut: she
+   came out of the last turn eleven metres seaward, reached the gate's capture ring **7 m** off her
+   berth line with twelve metres of berth to fix it in, spent both aborts, and was tied up by the
+   settle fallback 7.11 m off — at both spring low and spring high, identically.
+
+   The fix is the number every paper passage plan already carries beside its course changes:
+   **wheel over `R · tan(Δ/2)` short of the mark**, with `R = speed ÷ turn rate`. It scales with
+   speed, so a boat slowing into the harbour cuts less, exactly as a real one does; it is bounded at
+   half the incoming leg, because a turn begun before the mark you are turning *from* is two corners
+   overlapping. One declared tunable — `TurnRateDegreesPerSecond`, a statement about the hull rather
+   than a taste — and the anticipation falls out of the geometry. A passed-mark arm ("once the buoy
+   is abeam you are on to the next one") backs it up for the corner the anticipation still misses.
+
+   ⚠ **And this is the second defect §8.2's collider fault was hiding.** With a 177 m turning circle
+   she could not round the corners at all; fixing the collider let her round them, and only then was
+   it visible that she rounded them *wide*.
+
+5. **⚠ An abort must actually go round.** §2.1 says Gate aborts to Approach; it does not say she must
    leave the gate first. Without that, "take another turn" is a phase flip: she falls back still inside
    the capture range, is re-captured on the next step, fails the same pose, and ping-pongs through the
    abort budget without ever presenting a second time. **The gate is capturable only from ASTERN of

@@ -185,6 +185,15 @@ namespace HiddenHarbours.App
                      "that happens to be loaded.")]
             [Min(0.5f)] public float LineReachMetres;
 
+            [Tooltip("⭐ WHEEL-OVER: how fast she can turn at full helm, °/s — the one manoeuvring " +
+                     "characteristic the pilot needs and cannot measure. A route is a set of marks; a " +
+                     "hull is not a point, and the distance she needs to START a turn in is her turning " +
+                     "radius (speed ÷ this) times tan(half the course change). Declare it too high and " +
+                     "she wheels over late and swings wide; too low and she cuts the corner early. It is " +
+                     "a DECLARATION about the hull rather than a taste, so it belongs beside her length " +
+                     "and not in a feel slider.")]
+            [Min(0.5f)] public float TurnRateDegreesPerSecond;
+
             /// <summary>
             /// What the come-alongside ships at, and where each number comes from.
             ///
@@ -217,6 +226,7 @@ namespace HiddenHarbours.App
                 AbortLateralMetres = 3f,
                 MaxAborts = 2,
                 LineReachMetres = 12f,
+                TurnRateDegreesPerSecond = 12f,
             };
 
             /// <summary>
@@ -394,6 +404,42 @@ namespace HiddenHarbours.App
             float v = Mathf.Max(0f, settings.BerthingSpeedMetresPerSecond);
             float a = Mathf.Max(0.01f, pilot.ApproachDecelMetresPerSecondSquared);
             return v * v / (2f * a) + Mathf.Max(0f, pilot.StopMetres);
+        }
+
+        /// <summary>The widest course change a wheel-over is planned for, degrees. <c>tan(θ/2)</c> runs
+        /// away at 180°, and a route that doubles back on itself is not a corner to be cut but a mark to
+        /// be gone round. Clamping here keeps the distance finite without a special case.</summary>
+        public const float MaxWheelOverTurnDegrees = 150f;
+
+        /// <summary>
+        /// ⭐ <b>THE WHEEL-OVER.</b> How far BEFORE a mark she must put the helm over, so that the arc
+        /// she actually turns through comes out tangent to the next leg: <c>R · tan(Δ/2)</c>, with
+        /// <c>R = speed ÷ turn rate</c>. Textbook pilotage, and the number every paper passage plan
+        /// carries beside its course changes.
+        ///
+        /// <para>🔴 <b>Why a route without it cannot be steered.</b> A pursuit controller turns AT the
+        /// mark, so a hull whose turning circle is wider than the arrive radius leaves the corner
+        /// displaced by most of a diameter — and pursuit then hauls her back toward a mark she has
+        /// already passed. Measured on the real St Peters fairway: the last corner turns 61° at a 24 m
+        /// radius, which threw her eleven metres off the channel's line and left the come-alongside
+        /// trying to make up seven metres of lateral in a berth twelve metres long. She was doing exactly
+        /// what she was told; what she was told did not account for her being a boat.</para>
+        ///
+        /// <para><b>It scales with SPEED, which is the point.</b> That same 61° corner needs 14 m of
+        /// anticipation at the fairway's 5 m/s and 8 m at harbour speed — so a boat slowing into the
+        /// harbour cuts less, exactly as a real one does.</para>
+        /// </summary>
+        /// <param name="speedMetresPerSecond">Her speed over the ground, m/s.</param>
+        /// <param name="turnDegrees">The course change she has left to make onto the next leg.</param>
+        public static float WheelOverMetres(float speedMetresPerSecond, float turnDegrees,
+                                            in Settings settings)
+        {
+            float turn = Mathf.Min(Mathf.Abs(turnDegrees), MaxWheelOverTurnDegrees);
+            if (turn <= 0f) return 0f;
+
+            float rate = Mathf.Max(0.5f, settings.TurnRateDegreesPerSecond) * Mathf.Deg2Rad;
+            float radius = Mathf.Max(0f, speedMetresPerSecond) / rate;
+            return radius * Mathf.Tan(turn * 0.5f * Mathf.Deg2Rad);
         }
     }
 }
