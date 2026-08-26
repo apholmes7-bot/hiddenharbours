@@ -46,6 +46,18 @@ node tools/rig-recipes/fisher-rod-mount.mjs
 node tools/rig-recipes/fisher-rod-mount.mjs --check
 ```
 
+```bash
+# ⭐ THE CUTAWAY IMPORT, RE-PROVEN IN OUR TREE. For the batch-1 hulls (lobster, trawler, packet):
+#   geometry() publishes every walkable level with a ceiling or an EXPLICIT open · both shared-sole
+#   ties broken in data · every face carries lv · nothing moved off the kit-bundled pass 2 (face
+#   stream field by field, every published anchor and table, 0 differing pixels) · and the lobster,
+#   which is a three-way MERGE, still carries BOTH the 12-scheme paint kit and every pass-3 export.
+node tools/rig-recipes/cutaway-intake.mjs
+node tools/rig-recipes/cutaway-intake.mjs --facings 8      # the full turntable, not four
+node tools/rig-recipes/cutaway-intake.mjs --hull lobster   # one hull
+node tools/rig-recipes/cutaway-intake.mjs --json           # the measurements, machine-readable
+```
+
 The in-editor twin of the continuity check is `RodContinuityTests`; both measure the same things off
 the same V8, and neither restates a number the rigs own.
 
@@ -72,6 +84,7 @@ mismatch throws rather than being compared. `check-slices.mjs` needs none of thi
 |---|---|
 | `verify-ledger.mjs` | the proof: committed recipe → rigs → pixels → compare |
 | `check-slices.mjs` | recipe vs the slicer's own rects in `<stem>.png.meta` — no rig, no LFS |
+| `cutaway-intake.mjs` | the batch-1 cutaway hulls: geometry contract, byte-discipline vs pass 2, and the lobster's paint × pass-3 merge proof |
 | `bake-ledger.mjs` | derive + verify + (with `--write`) commit the ledger, per kit |
 | `lib/recipe.mjs` | the recipe shape: canonical serialisation, axis expansion, reassembly |
 | `lib/csharp.mjs` | reads the FACTS out of the bakers' own C# — build tables, `const` tunables, `RigCatalog` — and cites them by `path:line` |
