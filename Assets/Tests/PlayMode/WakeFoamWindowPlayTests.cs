@@ -62,7 +62,6 @@ namespace HiddenHarbours.Tests.PlayMode
             Vector2 lattice = FoamBuffer.WorldCellOrigin(Vector2.zero, extent);
             Vector2 contentMoved = Vector2.zero;
             Vector2 expected = Vector2.zero;
-            bool primed = false;
             float elapsed = 0f;
             int crossings = 0;
             float worstError = 0f;
@@ -84,10 +83,11 @@ namespace HiddenHarbours.Tests.PlayMode
                 if (driftCells != Vector2Int.zero) crossings++;
 
                 // The window's own move is compensated exactly by the content scroll, so the mark stays
-                // on its water; what remains is the DRIFT, and that is what must be smooth.
-                if (primed) contentMoved += new Vector2(driftCells.x, driftCells.y) * FoamBuffer.CellSize;
+                // on its water; what remains is the DRIFT, and that is what must be smooth. Every frame
+                // counts, including the first — the frame after a scene load can carry a large dt, and
+                // dropping its whole-cell step would offset the run permanently.
+                contentMoved += new Vector2(driftCells.x, driftCells.y) * FoamBuffer.CellSize;
                 lattice = newLattice;
-                primed = true;
 
                 expected += driftPerSecond * dt;
                 Vector2 drawn = contentMoved + (FoamBuffer.DrawOrigin(lattice, residual) - lattice);
@@ -144,7 +144,7 @@ namespace HiddenHarbours.Tests.PlayMode
             var residual = Vector2.zero;
             var mark = new Vector2(12.3456f, -7.891f);
 
-            Vector2Int? firstCell = null;
+            float? firstWorld = null;
             for (int frame = 0; frame < 40; frame++)
             {
                 yield return null;
@@ -162,15 +162,19 @@ namespace HiddenHarbours.Tests.PlayMode
                     $"frame {frame}: the drawn window put the mark in a different cell from the lattice " +
                     "window with no drift at all — the residual is leaking.");
 
-                firstCell ??= cell;
-                // The cell index MUST change as the lattice steps (the window is camera-centred), but
-                // the mark's WORLD position through that window must not.
-                float worldX = drawnOrigin.x + cell.x * FoamBuffer.CellSize;
-                Assert.LessOrEqual(Mathf.Abs(worldX - mark.x), FoamBuffer.CellSize + 1e-4f,
-                    $"frame {frame}: the mark drifted off its patch of water under a sub-cell pan — " +
-                    "that is the crawl the cell law exists to prevent.");
+                // The cell INDEX may step as the camera-centred window walks the lattice; what must not
+                // move is the patch of WATER that index resolves to. Comparing the index alone would be
+                // wrong (it is supposed to change); comparing the world position it addresses is the
+                // actual crawl claim — and it is not true by construction, because it is the pair
+                // (origin, index) that has to stay consistent.
+                float worldOfCell = drawnOrigin.x + cell.x * FoamBuffer.CellSize;
+                firstWorld ??= worldOfCell;
+                Assert.AreEqual(firstWorld.Value, worldOfCell, 1e-4f,
+                    $"frame {frame}: the world position the mark's buffer cell addresses moved under a " +
+                    "sub-cell pan. That is the crawl the cell law exists to prevent, and the drift fix " +
+                    "shares the published vector with it — so a fix to one CAN break the other.");
             }
-            Assert.IsNotNull(firstCell, "the loop never ran");
+            Assert.IsNotNull(firstWorld, "the loop never ran");
         }
     }
 }
