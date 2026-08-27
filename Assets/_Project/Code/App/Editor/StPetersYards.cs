@@ -123,24 +123,29 @@ namespace HiddenHarbours.App.Editor
                                 "the schoolyard — trodden rather than planted, so it gets rail rather " +
                                 "than paint, and the deepest front on the green because the children " +
                                 "are in it",
-                                back),
+                                // Striped by the owner's ruling (2026-08-26): the school is a proud
+                                // property. The trodden ground is the children's doing, not the mower's
+                                // undoing — somebody cuts it in stripes and the children wear them off.
+                                back, mown: MownStyle.Striped),
 
                     Yard.Facing(GeneralStoreYard, V2(StPetersBuilder.GeneralStorePos), r,
                                 new Vector2(13.0f, 14.0f), green, YardFence.None,
                                 "a shop forecourt, open to the lane on purpose: you walk up to a " +
                                 "counter, you do not open a gate to buy flour",
-                                back),
+                                back, mown: MownStyle.Striped),
 
                     Yard.Facing(WhiteFarmhouseYard, V2(StPetersBuilder.WhiteFarmhousePos), r,
                                 new Vector2(13.0f, 15.0f), green, YardFence.Picket,
                                 "the white farmhouse keeps its paint and its pickets — the kept end of " +
                                 "the green, and the yard the others are read against",
-                                back),
+                                // Kept, not Striped: the owner held his original three (school, store,
+                                // sage cottage) when offered the swap. Her pickets carry the pride here.
+                                back, mown: MownStyle.Kept),
 
                     Yard.Facing(RedSaltboxYard, V2(StPetersBuilder.RedSaltboxPos), r,
                                 new Vector2(13.5f, 15.5f), green, YardFence.PostRail,
                                 "post and rail: a working household with no time for painting pickets",
-                                back),
+                                back, mown: MownStyle.Kept),
 
                     Yard.Facing(SageCottageYard, V2(StPetersBuilder.SageCottagePos), r,
                                 new Vector2(18.0f, 20.0f), green, YardFence.Picket,
@@ -148,7 +153,7 @@ namespace HiddenHarbours.App.Editor
                                 "neighbour — so its yard is the one that can be generous without " +
                                 "crowding anybody, and it is the island's biggest lawn for that reason " +
                                 "alone",
-                                back),
+                                back, mown: MownStyle.Striped),
 
                     // ---- Aunt Ginny's, out on her own plot in the eastern woods --------------------
                     // ⚠ HER DOORYARD, NOT HER PLOT. StPetersGinnyPlot.ClearingRadius (20 m) is the land
@@ -161,7 +166,7 @@ namespace HiddenHarbours.App.Editor
                                 new Vector2(13.0f, 18.0f), StPetersGinnyPlot.Approach, YardFence.SplitRail,
                                 "split rail, half of it leaning: the fence is still there because nobody " +
                                 "took it away, not because anybody keeps it",
-                                back),
+                                back, mown: MownStyle.Rough),
 
                     // ---- the camper on the back lot ------------------------------------------------
                     Yard.Facing(CamperLotYard, StPetersCamperLot.LotPos, CamperFootprintRadiusMetres,
@@ -169,7 +174,8 @@ namespace HiddenHarbours.App.Editor
                                 "a second dwelling (ADR 0037) on the back of her land — mown ground " +
                                 "round the door and no fence, because you do not fence off a corner of " +
                                 "your own lot",
-                                CamperFootprintRadiusMetres + BackSetMarginMetres),
+                                CamperFootprintRadiusMetres + BackSetMarginMetres,
+                                mown: MownStyle.Kept),
                 };
 
                 _yards = rows.ToArray();

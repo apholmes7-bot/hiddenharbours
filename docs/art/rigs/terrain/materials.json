@@ -1,6 +1,6 @@
 {
   "kit": "Hidden Harbours terrain materials",
-  "version": 3,
+  "version": 4,
   "pxPerMetre": 32,
   "colorSpace": "sRGB",
   "alpha": "always 255",
@@ -50,6 +50,8 @@
     { "key": "eelgrass",   "name": "Eelgrass",   "size": 256, "metres": 8,  "projection": "plan", "chunkOffset": false, "pass": 5, "bed": true,
       "steps": ["sparse shoots on open sand", "a closed meadow", "deep, epiphyte crusted, cut blades drifted in"] },
     { "key": "irishmoss",  "name": "Irishmoss",  "size": 256, "metres": 8,  "projection": "plan", "chunkOffset": true,  "pass": 5, "bed": true,
-      "steps": ["scattered cushions on barnacled cobble", "a closed turf", "a deep drape, the cobble hidden"] }
+      "steps": ["scattered cushions on barnacled cobble", "a closed turf", "a deep drape, the cobble hidden"] },
+    { "key": "lawn",      "name": "Lawn",      "size": 256, "metres": 8,  "projection": "plan", "chunkOffset": true,  "pass": 6,
+      "steps": ["neglected — moss, bare scuffs, the first tussocks", "kept — clover and a little wear", "crisp — dense, fine, even, cut tips catching"] }
   ]
 }
