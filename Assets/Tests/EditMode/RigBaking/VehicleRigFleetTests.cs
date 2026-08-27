@@ -235,11 +235,62 @@ namespace HiddenHarbours.Tests.RigBaking
                 string expected = sidecar.Substring(open + 1, close - open - 1);
 
                 RigHashMatch match = DeckSidecarReader.MatchRigHash(rig, expected, out string actual);
+                bool refused = VehicleRigFleet.SidecarHashRefused.ContainsKey(v.Key);
 
-                Assert.That(match, Is.Not.EqualTo(RigHashMatch.None),
-                    $"'{v.Key}': the sidecar pins {expected} but {v.ScriptPath} hashes to {actual}, " +
-                    "and not through a line-ending difference. The vehicle was reshaped and its " +
-                    "sidecar was not re-derived.");
+                if (!refused)
+                {
+                    Assert.That(match, Is.Not.EqualTo(RigHashMatch.None),
+                        $"'{v.Key}': the sidecar pins {expected} but {v.ScriptPath} hashes to " +
+                        $"{actual}, and not through a line-ending difference. The vehicle was " +
+                        "reshaped and its sidecar was not re-derived — do NOT read its geometry, " +
+                        "and do NOT re-stamp the hash here: docs/art/rigs/** is the art director's " +
+                        "lane, and a hash corrected on our side comes back wrong on the next " +
+                        "regeneration. If the mismatch is real and known, record it in " +
+                        "VehicleRigFleet.SidecarHashRefused with the measurement, and send the " +
+                        "re-stamp upstream.");
+                }
+                else
+                {
+                    // ⭐ THE OTHER DIRECTION, and the half that keeps the ledger from rotting: a
+                    // refusal that has been FIXED upstream must be deleted, not left standing. A
+                    // stale entry here silently suppresses the law for a vehicle that no longer
+                    // needs it, which is how a real mismatch gets through the next time.
+                    Assert.That(match, Is.EqualTo(RigHashMatch.None),
+                        $"'{v.Key}' is listed in VehicleRigFleet.SidecarHashRefused, but its " +
+                        $"sidecar NOW PINS its rig ({expected} vs {actual}). The art side " +
+                        "re-stamped it — delete the entry, and with it whichever NotBaked reason " +
+                        "cited it. Do not leave a lifted blocker standing.");
+                }
+            }
+        }
+
+        /// <summary>
+        /// ⚠️⚠️ <b>A vehicle whose sidecar does not pin its rig may not be BAKED.</b> The teeth
+        /// on <see cref="VehicleRigFleet.SidecarHashRefused"/> — without this the ledger would be a
+        /// note, and a note does not stop anybody.
+        ///
+        /// <para>The pin is the sidecar's claim that its thresholds, cargo volumes, colliders and
+        /// seats were cut from THIS shape. When it fails, those numbers describe some other
+        /// revision, and a bake that read them would produce a vehicle whose picture and whose
+        /// physics disagree — which looks entirely fine until somebody walks through a wall.</para>
+        /// </summary>
+        [Test]
+        public void ARefusedSidecarHash_KeepsHerOutOfBaked()
+        {
+            foreach (var kvp in VehicleRigFleet.SidecarHashRefused)
+            {
+                Assert.That(VehicleRigFleet.Vehicles.Any(v => v.Key == kvp.Key), Is.True,
+                    $"SidecarHashRefused names '{kvp.Key}', which is not in Vehicles. Delete the " +
+                    "entry — a refusal for a vehicle nobody registered rots into folklore.");
+
+                Assert.That(kvp.Value, Is.Not.Empty,
+                    $"'{kvp.Key}' is refused with an empty reason. The reason IS the artefact: it " +
+                    "carries the measurement and the upstream ask.");
+
+                Assert.That(VehicleRigFleet.Baked, Does.Not.Contain(kvp.Key),
+                    $"'{kvp.Key}' is BAKED while its sidecar does not pin its rig. Either the hash " +
+                    "was fixed upstream (delete the refusal) or a bake read geometry it was told " +
+                    "not to trust.");
             }
         }
 
@@ -339,6 +390,123 @@ namespace HiddenHarbours.Tests.RigBaking
                 Assert.That(keys, Contains.Item(kvp.Key),
                     $"VehicleRigFleet.NotBaked excuses '{kvp.Key}', which is not in Vehicles. Delete " +
                     "the entry.");
+        }
+
+        // =============================================================================================
+        //  TOWED BODIES — the third kind, and the one that must never be driven
+        // =============================================================================================
+
+        /// <summary>
+        /// The road-fleet drop's shipped token reaches the ruled kind. <c>towed_bodies</c> is PLURAL
+        /// because the trailer sidecar really does describe four bodies (its <c>variant</c> is
+        /// <c>trailers-x4</c>); the enum stays singular because a kind describes one registered
+        /// body. Accepted as shipped rather than corrected — the same rule as the Otter's two
+        /// spellings, for the same reason: the sidecar's hash is pinned, and a hand-edit comes back
+        /// on the next regeneration.
+        /// </summary>
+        [Test]
+        public void TheTrailerSetsShippedToken_MapsToTheOneRuledTowedKind()
+        {
+            foreach (string shipped in new[] { "towed_bodies", "towed_body" })
+            {
+                Assert.That(HiddenHarbours.Core.VehicleKinds.TryFromToken(shipped, out var kind),
+                    Is.True, $"'{shipped}' no longer maps.");
+                Assert.That(kind, Is.EqualTo(HiddenHarbours.Core.VehicleKind.TowedBody),
+                    $"'{shipped}' maps to {kind}. A trailer read as a road vehicle is a trailer " +
+                    "handed to a driving controller.");
+            }
+
+            Assert.That(HiddenHarbours.Core.VehicleKinds.CanonicalToken(
+                            HiddenHarbours.Core.VehicleKind.TowedBody),
+                Is.EqualTo("towed_body"),
+                "the repo-side canonical name is singular, never the shipped plural alias.");
+        }
+
+        /// <summary>
+        /// ⭐⭐ <b>A TOWED BODY IS NEVER DRIVABLE, and the two machines always are.</b> Asserted in
+        /// both directions, because either half drifting is a real failure: a trailer that reads as
+        /// drivable gets a throttle and lock angles it has no geometry for, and a truck that reads
+        /// as towed cannot be got into.
+        ///
+        /// <para>Measured rather than inferred from the name: <c>trailerIsoRig.js</c> resolves no
+        /// <c>steer</c> axis at all (pinned in <c>TrailerIsoKitProbeTests</c>) and the kit's own
+        /// README says <i>"No steering — towed bodies"</i>.</para>
+        /// </summary>
+        [Test]
+        public void ATowedBodyIsNeverDrivable_AndTheTwoMachinesAlwaysAre()
+        {
+            Assert.That(HiddenHarbours.Core.VehicleKinds.IsDrivable(
+                            HiddenHarbours.Core.VehicleKind.TowedBody), Is.False,
+                "a towed body reads as drivable. It has no engine, no steering axle and no seat, " +
+                "and every driving path asks this question before it poses anything.");
+
+            foreach (var kind in new[] { HiddenHarbours.Core.VehicleKind.RoadVehicle,
+                                         HiddenHarbours.Core.VehicleKind.AmphibiousVehicle })
+                Assert.That(HiddenHarbours.Core.VehicleKinds.IsDrivable(kind), Is.True,
+                    $"{kind} reads as NOT drivable — it would be unplaceable behind a wheel.");
+
+            // Every value in the enum has an answer. A new kind that forgot one throws here rather
+            // than defaulting into a driving path.
+            foreach (HiddenHarbours.Core.VehicleKind kind in
+                     System.Enum.GetValues(typeof(HiddenHarbours.Core.VehicleKind)))
+            {
+                Assert.DoesNotThrow(() => HiddenHarbours.Core.VehicleKinds.IsDrivable(kind),
+                    $"VehicleKinds.IsDrivable has no answer for {kind}.");
+                Assert.DoesNotThrow(() => HiddenHarbours.Core.VehicleKinds.CanonicalToken(kind),
+                    $"VehicleKinds.CanonicalToken has no answer for {kind}.");
+            }
+        }
+
+        /// <summary>
+        /// ⭐⭐ <b>THE (file, pick) LAW.</b> Two registered bodies may share a rig file — the
+        /// trailer set's four do — but the PAIR must be unique, and a body inside a multi-body rig
+        /// must name its pick.
+        ///
+        /// <para><b>Why this is a test and not a convention.</b> <c>trailerIsoRig.js</c> resolves an
+        /// unknown body id to its DEFAULT (measured: <c>reefer53</c>) rather than throwing, so an
+        /// entry that forgot its pick would bake a perfectly good reefer53 in a flatbed's place and
+        /// nothing downstream would notice. The same shape has shipped the wrong boat in this repo
+        /// before, through <c>byId</c>'s fallback.</para>
+        /// </summary>
+        [Test]
+        public void EveryRegisteredBody_IsUniqueByFileAndPick()
+        {
+            var seenPair = new Dictionary<string, string>(System.StringComparer.Ordinal);
+            var seenKey = new HashSet<string>(System.StringComparer.Ordinal);
+
+            foreach (VehicleRigFleet.Vehicle v in VehicleRigFleet.Vehicles)
+            {
+                Assert.That(seenKey.Add(v.Key), Is.True,
+                    $"two registered vehicles share the key '{v.Key}'. Get(key) hands back the " +
+                    "first, and the second is unbakeable and unreachable.");
+
+                string pair = v.ScriptPath + "|" + (v.Pick ?? "<single>");
+                Assert.That(seenPair.ContainsKey(pair), Is.False,
+                    $"'{v.Key}' and '{(seenPair.TryGetValue(pair, out string other) ? other : "?")}' " +
+                    $"are the SAME (file, pick): {pair}. Anything cached by that pair replays one " +
+                    "body's answer onto the other.");
+                seenPair[pair] = v.Key;
+            }
+
+            foreach (var group in VehicleRigFleet.Vehicles.GroupBy(v => v.ScriptPath,
+                                                                   System.StringComparer.Ordinal))
+            {
+                if (group.Count() == 1) continue;
+
+                foreach (VehicleRigFleet.Vehicle v in group)
+                {
+                    Assert.That(v.Pick, Is.Not.Null.And.Not.Empty,
+                        $"'{v.Key}' shares rig {v.ScriptPath} with {group.Count() - 1} other " +
+                        "registered body/bodies but declares no Pick. A container rig resolves an " +
+                        "unknown body to its DEFAULT rather than throwing, so a missing pick does " +
+                        "not fail — it bakes the default body under this one's name.");
+
+                    Assert.That(v.Extraction?.FaceExpression ?? "", Does.Contain(v.Pick),
+                        $"'{v.Key}' declares Pick '{v.Pick}' but its face expression " +
+                        $"({v.Extraction?.FaceExpression ?? "<none>"}) does not name it. The pick " +
+                        "has to reach the rig, or the extraction quietly takes the default body.");
+                }
+            }
         }
     }
 }

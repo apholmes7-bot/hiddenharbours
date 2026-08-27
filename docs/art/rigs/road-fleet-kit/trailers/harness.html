@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Trailer Set — harness</title>
+<style>
+  body{margin:0;background:#0b1216;color:#c8d4d7;font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;padding:18px;}
+  h1{font-size:14px;letter-spacing:.16em;text-transform:uppercase;color:#c9a86a;margin:0 0 4px;}
+  p.note{color:#6f7e83;margin:0 0 16px;max-width:74ch;}
+  .row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:9px;}
+  .row > span.lbl{color:#6f7e83;letter-spacing:.12em;text-transform:uppercase;font-size:10.5px;width:78px;}
+  .grp{display:flex;gap:6px;flex-wrap:wrap;}
+  button{font:inherit;font-size:12px;padding:4px 9px;border-radius:3px;border:1px solid #2a3b43;background:#132025;color:#93a4a8;cursor:pointer;}
+  button.on{border-color:#c9a86a;background:#2a2317;color:#e6d2a4;}
+  button.act{border-color:#2f6079;background:#122530;color:#7fd6c9;}
+  input[type=range]{width:150px;accent-color:#7fd6c9;}
+  #stage{border:1px solid #243137;background:#0e181d;margin:12px 0;overflow:auto;}
+  canvas{display:block;image-rendering:pixelated;}
+  pre{border:1px solid #243137;background:#0e181d;padding:11px 13px;margin:0;white-space:pre-wrap;color:#8fa3a8;font-size:12px;}
+  b{color:#c8d4d7;font-weight:400;} i{color:#c9a86a;font-style:normal;}
+</style>
+</head>
+<body>
+<h1>Trailer Set — harness</h1>
+<p class="note">Standalone: no build, no deps, no project. Bakes all FOUR towed bodies off the same
+<b>trailerIsoRig.js</b> the engine ships, and asserts the bake against <b>trailers.contract.json</b> and
+<b>trailerIsoRig.trailers.gameplay.json</b> — including the HANDSHAKE group: width 2.44, kingpin set 0.90,
+nose swing 1.516 inside both tractors' published 1.52 m gap, coupling plane z 1.18. Served from a folder
+it also re-hashes the rig against the contract's <i>rigSha256</i>; off disk those groups report as skipped,
+not passed. Mind the cells: pups bake in the 384&times;320 road cell, the 53s in 640&times;480 @ 320,300.</p>
+
+<div class="row"><span class="lbl">body</span><span class="grp" id="bodies"></span></div>
+<div class="row"><span class="lbl">facing</span><span class="grp" id="dirs"></span></div>
+<div class="row"><span class="lbl">paint</span><span class="grp" id="paints"></span></div>
+<div class="row"><span class="lbl">preset</span><span class="grp" id="presets"></span></div>
+<div class="row"><span class="lbl">open</span><span class="grp" id="opens"></span></div>
+<div class="row"><span class="lbl">gear</span><input type="range" id="gear" min="0" max="1" step="0.02" value="1">
+  <span class="lbl" style="width:auto">doors</span><input type="range" id="doors" min="0" max="1" step="0.02" value="0">
+  <span class="lbl" style="width:auto">roll</span><input type="range" id="roll" min="0" max="1" step="0.02" value="0">
+  <span class="lbl" style="width:auto">sus</span><input type="range" id="sus" min="-1" max="1" step="0.05" value="0"></div>
+<div class="row"><span class="lbl">export</span>
+  <button class="act" id="strip">bake 8-dir strip &darr;</button>
+  <button class="act" id="cue">bake gear/doors cue &darr;</button>
+  <button class="act" id="check">run asserts</button>
+  <button id="anchors">anchors</button>
+  <button id="pivot" class="on">pivot</button>
+</div>
+
+<div id="stage"><canvas id="cv" width="640" height="480"></canvas></div>
+<pre id="log">loading rig…</pre>
+
+<script src="trailerIsoRig.js"></script>
+<script>
+(function(){
+  var V = window.TrailerIso;
+  var cv = document.getElementById('cv'), ctx = cv.getContext('2d'), out = document.getElementById('log');
+  if(!V){ out.textContent = 'trailerIsoRig.js did not load — check the <script src> tag.'; return; }
+  var FACE = V.order, PAINTS = Object.keys(V.BODY), BODIES = V.list();
+  var OPENS = [['headboard','headboard'],['mudflaps','mudflaps'],['night','night']];
+  var st = { body:'reefer53', dir:6, paint:'white', weather:0.45, gear:1, doors:0, roll:0, sus:0,
+             headboard:1, mudflaps:1, night:0, showAnchors:false, showPivot:true };
+  function opts(extra){
+    var o = { body:st.body, paint:st.paint, weather:st.weather, gear:st.gear, barnL:st.doors, barnR:st.doors,
+              roll:st.roll, sus:st.sus, headboard:!!st.headboard, mudflaps:!!st.mudflaps, night:!!st.night };
+    if(extra) for(var k in extra) o[k] = extra[k];
+    return o;
+  }
+  function cellNow(){ return V.cellFor(st.body); }
+  function bake(dir, o){
+    var c0 = V.cellFor((o||{}).body || st.body);
+    var c = document.createElement('canvas'); c.width = c0.W; c.height = c0.H;
+    c.getContext('2d').putImageData(new ImageData(V.render(dir, o || opts()), c0.W, c0.H), 0, 0);
+    return c;
+  }
+  function bboxOf(rgba, W, H){
+    var x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
+    for(var y=0;y<H;y++) for(var x=0;x<W;x++) if(rgba[(y*W+x)*4+3]){
+      if(x<x0)x0=x; if(x>x1)x1=x; if(y<y0)y0=y; if(y>y1)y1=y; }
+    return [x0,y0,x1,y1];
+  }
+  function chips(host, list, isOn, pick){
+    host.innerHTML = '';
+    list.forEach(function(it){
+      var b = document.createElement('button');
+      b.textContent = it[1]; b.className = isOn(it[0]) ? 'on' : '';
+      b.onclick = function(){ pick(it[0]); };
+      host.appendChild(b);
+    });
+  }
+  function ui(){
+    chips(document.getElementById('bodies'), BODIES.map(function(b){ return [b, V.BODIES[b].label]; }),
+      function(b){ return b===st.body; }, function(b){ st.body=b; draw(); });
+    chips(document.getElementById('dirs'), FACE.map(function(f,i){ return [i,f]; }),
+      function(i){ return i===st.dir; }, function(i){ st.dir=i; draw(); });
+    chips(document.getElementById('paints'), PAINTS.map(function(p){ return [p,p]; }),
+      function(p){ return p===st.paint; }, function(p){ st.paint=p; draw(); });
+    chips(document.getElementById('presets'), Object.keys(V.PRESETS).map(function(k){ return [k,k]; }),
+      function(){ return false; }, function(k){
+        st.gear=1; st.doors=0; st.night=0;
+        var p = V.PRESETS[k];
+        if(p.gear!=null) st.gear=p.gear; if(p.barnL!=null) st.doors=p.barnL;
+        if(p.paint) st.paint=p.paint; if(p.weather!=null) st.weather=p.weather;
+        draw(); });
+    chips(document.getElementById('opens'), OPENS,
+      function(k){ return !!st[k]; }, function(k){ st[k] = st[k] ? 0 : 1; draw(); });
+  }
+  document.getElementById('gear').oninput = function(e){ st.gear = +e.target.value; draw(); };
+  document.getElementById('doors').oninput = function(e){ st.doors = +e.target.value; draw(); };
+  document.getElementById('roll').oninput = function(e){ st.roll = +e.target.value; draw(); };
+  document.getElementById('sus').oninput = function(e){ st.sus = +e.target.value; draw(); };
+  document.getElementById('pivot').onclick = function(){ st.showPivot = !st.showPivot; this.className = st.showPivot?'on':''; draw(); };
+  document.getElementById('anchors').onclick = function(){ st.showAnchors = !st.showAnchors; this.className = st.showAnchors?'on':''; draw(); };
+
+  function akeys(body){ return body.indexOf('reefer')===0
+    ? ['kingpin','gladHands','gearCrank','rear','icc','wheelL','wheelR','unit','roof','doorL','doorR']
+    : ['kingpin','gladHands','gearCrank','rear','icc','wheelL','wheelR','deck','headboard']; }
+  function draw(){
+    ui();
+    var c0 = cellNow(), t0 = Date.now(), o = opts(), img = V.render(st.dir, o), ms = Date.now()-t0;
+    cv.width = c0.W; cv.height = c0.H;
+    ctx.clearRect(0,0,c0.W,c0.H); ctx.putImageData(new ImageData(img, c0.W, c0.H), 0, 0);
+    var b = bboxOf(img, c0.W, c0.H);
+    if(st.showPivot){
+      ctx.fillStyle = '#f05a50';
+      ctx.fillRect(c0.cx-5, c0.gy, 11, 1); ctx.fillRect(c0.cx, c0.gy-5, 1, 11);
+    }
+    var A = V.anchors(st.dir, o);
+    if(st.showAnchors){
+      ctx.fillStyle = '#7fd6c9';
+      akeys(st.body).forEach(function(k){ ctx.fillRect(Math.round(A[k].x)-1, Math.round(A[k].y)-1, 3, 3); });
+    }
+    ctx.fillStyle = '#e6d2a4';
+    ctx.fillRect(Math.round(A.kingpin.x)-2, Math.round(A.kingpin.y)-2, 5, 5);
+    var dm = V.dims(o);
+    out.innerHTML = '<b>' + dm.label + ' · ' + FACE[st.dir] + ' (' + (st.dir*45) + '°) · ' + st.paint
+      + ' · gear ' + (dm.gearDown?'DOWN (parked)':'up (coupled)') + '</b>\n'
+      + 'cell ' + c0.W + '×' + c0.H + ' · pivot ' + c0.cx + ',' + c0.gy + ' · painted [' + b.join(',') + '] '
+      + (b[2]-b[0]+1) + '×' + (b[3]-b[1]+1) + ' · baked in ' + ms + ' ms\n'
+      + dm.loa + ' m LOA · ' + dm.width + ' m wide · ' + dm.height + ' m high · kingpin y ' + dm.kingpinY
+      + ' · kingpin→axles ' + dm.kingpinToAxleCentre + ' m · tail sweep ' + dm.tailSwingR + ' m · ' + dm.wheels + ' wheels\n'
+      + 'crosshair = pivot · GOLD SQUARE = the KINGPIN [0, ' + dm.kingpinY + ', 1.18] — hinge it to a tractor\u2019s fifthWheel';
+  }
+
+  function saveStrip(cells, name){
+    var W = cells[0].width, H = cells[0].height;
+    var s = document.createElement('canvas'); s.width = W*cells.length; s.height = H;
+    var sx = s.getContext('2d');
+    cells.forEach(function(c,k){ sx.drawImage(c, k*W, 0); });
+    s.toBlob(function(bl){
+      var u = URL.createObjectURL(bl), a = document.createElement('a');
+      a.href = u; a.download = name; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      setTimeout(function(){ URL.revokeObjectURL(u); }, 2000);
+    });
+  }
+  document.getElementById('strip').onclick = function(){
+    var cells = []; for(var d=0;d<8;d++) cells.push(bake(d));
+    saveStrip(cells, st.body + '_' + st.paint + '_8dir.png');
+  };
+  document.getElementById('cue').onclick = function(){
+    var cueName = st.body.indexOf('reefer')===0 ? 'doors' : 'gear';
+    var cells = []; for(var i=0;i<8;i++) cells.push(bake(st.dir, opts(V.CUES[cueName](i/7))));
+    saveStrip(cells, st.body + '_' + st.paint + '_' + cueName + '_' + FACE[st.dir] + '.png');
+  };
+
+  /* ---------------- asserts ---------------- */
+  function json(path){ return fetch(path, {cache:'no-store'}).then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); }); }
+  function text(path){ return fetch(path, {cache:'no-store'}).then(function(r){ if(!r.ok) throw new Error(r.status); return r.text(); }); }
+  document.getElementById('check').onclick = function(){
+    var G = {}, order = [], fails = 0, skipped = [];
+    var near = function(a,b,e){ return Math.abs(a-b) < (e==null?0.001:e); };
+    function assert(g, ok, msg){
+      if(!G[g]){ G[g] = {n:0, bad:[]}; order.push(g); }
+      G[g].n++; if(!ok){ G[g].bad.push(msg); fails++; }
+    }
+    function report(head){
+      var lines = order.map(function(g){
+        var q = G[g], h = (q.bad.length ? ' FAIL ' : '  ok  ') + g + '  (' + (q.n-q.bad.length) + '/' + q.n + ')';
+        return q.bad.length ? h + '\n        ' + q.bad.join('\n        ') : h;
+      });
+      out.innerHTML = '<b>' + (fails ? fails + ' assert(s) FAILED' : 'all asserts pass') + '</b>  ·  ' + head
+        + (skipped.length ? '\n<i>skipped: ' + skipped.join('; ') + '</i>' : '') + '\n' + lines.join('\n');
+    }
+    function pixDiff(a, b){
+      var painted = 0, moved = 0;
+      for(var i=0;i<a.length;i+=4){
+        var pa = a[i+3] > 0, pb = b[i+3] > 0;
+        if(pa) painted++;
+        if(pa !== pb || (pa && (a[i]!==b[i] || a[i+1]!==b[i+1] || a[i+2]!==b[i+2]))) moved++;
+      }
+      return { painted:painted, moved:moved, pct:100*moved/painted };
+    }
+
+    var g = V.G;
+    assert('load', !!V.render && !!V.anchors && !!V.dims && !!V.cellFor, 'rig exports render/anchors/dims/cellFor');
+    assert('load', V.PX === 32 && V.DIRS === 8 && BODIES.length === 4, '32 px/m, 8 facings, FOUR bodies');
+
+    // the handshake — the numbers both tractors' margins depend on
+    assert('handshake', near(g.hw, 1.22), 'half-width ' + g.hw + ' breaks the 2.44 m handshake');
+    assert('handshake', near(g.kpSet, 0.90), 'kingpin set ' + g.kpSet + ' breaks the 0.90 m handshake');
+    assert('handshake', near(g.deckZ, 1.18), 'coupling plane ' + g.deckZ + ' is not the fifth-wheel plate top 1.18');
+    var swing = Math.sqrt(g.hw*g.hw + g.kpSet*g.kpSet);
+    assert('handshake', swing < 1.52, 'nose swing ' + swing.toFixed(4) + ' does NOT clear the tractors\u2019 1.52 m gap');
+    var unitSwing = Math.sqrt(g.rf.unit.hw*g.rf.unit.hw + Math.pow(g.kpSet + g.rf.unit.out, 2));
+    assert('handshake', unitSwing < swing, 'the reefer unit (' + unitSwing.toFixed(3) + ' m) swings outside the nose corners');
+
+    var perBody = {};
+    BODIES.forEach(function(body){
+      var cell = V.cellFor(body), W = cell.W, H = cell.H;
+      var rest = { body:body, paint:'white', weather:0.45 };
+      var gearUp = { body:body, paint:'white', weather:0.45, gear:0 };
+      var open = body.indexOf('reefer')===0 ? { body:body, paint:'white', weather:0.45, barnL:1, barnR:1 }
+                                            : { body:body, paint:'white', weather:0.45, headboard:false };
+      var restB = [], gearB = [], openB = [];
+      for(var d=0; d<8; d++){
+        var p = V.project(d, [0,0,0], null, 0, body);
+        assert('pivot', near(p.x, cell.cx, 0.51) && near(p.y, cell.gy, 0.51),
+          body + ' ' + FACE[d] + ': origin projects to ' + p.x.toFixed(1) + ',' + p.y.toFixed(1) + ' not ' + cell.cx + ',' + cell.gy);
+        var br = bboxOf(V.render(d, rest), W, H), bu = bboxOf(V.render(d, gearUp), W, H), bo = bboxOf(V.render(d, open), W, H);
+        restB.push(br); gearB.push(bu); openB.push(bo);
+        assert('bounds', br[0] >= 1 && br[1] >= 1 && br[2] <= W-2 && br[3] <= H-2,
+          body + ' ' + FACE[d] + ': at-rest paint [' + br.join(',') + '] has no 1 px margin in ' + W + '×' + H);
+        assert('bounds', bo[0] >= 1 && bo[1] >= 1 && bo[2] <= W-2 && bo[3] <= H-2,
+          body + ' ' + FACE[d] + ': open paint has no 1 px margin');
+      }
+      perBody[body] = { restB:restB, gearB:gearB, openB:openB };
+
+      var A = V.anchors(0, rest), hl = V.BODIES[body].bodyL/2;
+      assert('kingpin', near(A.kingpin.m[0], 0) && near(A.kingpin.m[1], hl-0.90, 0.001) && near(A.kingpin.m[2], 1.18),
+        body + ': anchors().kingpin is not [0, L/2-0.90, 1.18]');
+      assert('kingpin', near(V.BODIES[body].noseSwingR, swing, 0.001), body + ': published noseSwingR disagrees with the geometry');
+
+      var gd = pixDiff(V.render(6, Object.assign({}, rest, {gear:0})), V.render(6, Object.assign({}, rest, {gear:1})));
+      assert('gear', gd.moved > 40, body + ': gear down vs up moves only ' + gd.moved + ' px at W');
+      var dd = pixDiff(V.render(0, Object.assign({}, rest, {barnL:0, barnR:0})), V.render(0, Object.assign({}, rest, {barnL:1, barnR:1}))).moved;
+      if(body.indexOf('reefer')===0) assert('doors', dd > 3000, body + ': doors 0->255deg move only ' + dd + ' px at N');
+      else assert('doors', dd < 5, body + ': a FLATBED moved ' + dd + ' px on the barn params — they must clamp to 0');
+
+      var rd = pixDiff(V.render(6, Object.assign({}, rest, {gear:0, roll:0})), V.render(6, Object.assign({}, rest, {gear:0, roll:1})));
+      assert('roll', rd.pct < 0.1, body + ': roll loop seam ' + rd.pct.toFixed(2) + '% (' + rd.moved + ' px)');
+      assert('roll', pixDiff(V.render(6, Object.assign({}, rest, {gear:0, roll:0})), V.render(6, Object.assign({}, rest, {gear:0, roll:0.5}))).moved > 60,
+        body + ': half a revolution barely moves — the five hand-holes should make it visible');
+
+      var sd = pixDiff(V.render(2, rest), V.render(2, Object.assign({}, rest, {sus:1})));
+      assert('suspension', sd.moved > 300, body + ': sus 0 -> 1 moves only ' + sd.moved + ' px at E');
+      var restImg = V.render(2, rest), susImg = V.render(2, Object.assign({}, rest, {sus:1}));
+      assert('suspension', bboxOf(susImg, W, H)[3] === bboxOf(restImg, W, H)[3],
+        body + ': the wheels moved with the body under sus');
+
+      var yq = pixDiff(V.render(1, Object.assign({}, rest, {yaw:45})), V.render(2, rest));
+      assert('yaw', yq.moved === 0, body + ': yaw 45 at NE is not identical to E (' + yq.moved + ' px)');
+      assert('yaw', near(V.project(1, [0,0,0], null, 22.5, body).x, cell.cx, 0.51), body + ': the pivot moved under yaw');
+
+      var ok = true, bad = '';
+      akeys(body).forEach(function(k){ var q = V.anchors(3, rest)[k];
+        if(!(q.x >= 0 && q.x < W && q.y >= 0 && q.y < H)){ ok = false; bad = k; } });
+      assert('anchors', ok, body + ': anchor ' + bad + ' projects outside the cell at SE');
+    });
+
+    report('rig-only groups done — 4 bodies × 8 facings baked three ways');
+
+    Promise.all([
+      json('trailers.contract.json').catch(function(){ return null; }),
+      json('trailerIsoRig.trailers.gameplay.json').catch(function(){ return null; }),
+      text('trailerIsoRig.js').catch(function(){ return null; })
+    ]).then(function(res){
+      var C = res[0], S = res[1], SRC = res[2];
+      if(!C) skipped.push('contract.json not fetchable (file:// ?) — published-bbox checks');
+      if(!S) skipped.push('gameplay.json not fetchable — sidecar cross-checks');
+
+      if(C){
+        BODIES.forEach(function(body){
+          var pb = C.bodies[body].painted_bbox, m = perBody[body];
+          for(var d=0; d<8; d++){
+            var f = FACE[d];
+            assert('published', pb.at_rest[f].join(',') === m.restB[d].join(','),
+              body + ' ' + f + ': contract at_rest [' + pb.at_rest[f] + '] vs fresh [' + m.restB[d] + ']');
+            assert('published', pb.gear_up[f].join(',') === m.gearB[d].join(','),
+              body + ' ' + f + ': contract gear_up disagrees with a fresh bake');
+            assert('published', pb.open[f].join(',') === m.openB[d].join(','),
+              body + ' ' + f + ': contract open disagrees with a fresh bake');
+          }
+          var cc = C.bodies[body];
+          var cell = V.cellFor(body);
+          assert('published', cc.cell.W === cell.W && cc.cell.H === cell.H && cc.pivot.x === cell.cx && cc.pivot.y === cell.gy,
+            body + ': contract cell/pivot disagree with cellFor()');
+        });
+        assert('published', near(C.handshake.width_m, 2.44) && near(C.handshake.kingpin_set_m, 0.90) && near(C.handshake.coupled_deck_z, 1.18),
+          'contract handshake numbers drifted');
+      }
+
+      if(S){
+        assert('sidecar', S.derivedFromRigSha256 && S.derivedFromRigSha256.length === 64, 'derivedFromRigSha256 is missing or not a sha256');
+        assert('sidecar', near(S.KINGPIN.set_from_nose_m, g.kpSet) && near(S.KINGPIN.width_m, g.hw*2) && near(S.KINGPIN.coupled_deck_z, g.deckZ),
+          'KINGPIN block disagrees with G');
+        assert('sidecar', near(S.KINGPIN.nose_swing_r_m, swing, 0.001), 'KINGPIN.nose_swing_r_m vs geometry');
+        assert('sidecar', S.DOORS.deg[1] === g.rf.doorDeg, 'DOORS.deg vs G.rf.doorDeg');
+        BODIES.forEach(function(body){
+          var sb = S.bodies[body], B = V.BODIES[body];
+          assert('sidecar', near(sb.BODY.width_m, B.width) && near(sb.BODY.kingpin_y, B.kingpinY, 0.001),
+            body + ': sidecar BODY block disagrees with BODIES');
+          assert('sidecar', JSON.stringify(sb.BODY.axles_y) === JSON.stringify(B.axles), body + ': sidecar axles vs rig');
+        });
+        assert('sidecar', near(S.SUSPENSION.travel_m, V.travel.group), 'SUSPENSION travel vs V.travel');
+        ['WASHBOARD','CLEATS','steer_axle','tractor','load','walkable_roof'].forEach(function(k){
+          assert('sidecar', !!S._excluded[k], '_excluded.' + k + ' is missing — an absence must be recorded, not silent'); });
+        if(C) assert('sidecar', S.derivedFromRigSha256 === C.rigSha256, 'sidecar sha vs contract');
+      }
+
+      if(SRC && C && window.crypto && crypto.subtle){
+        return crypto.subtle.digest('SHA-256', new TextEncoder().encode(SRC)).then(function(d3){
+          var hex = Array.from(new Uint8Array(d3)).map(function(b){ return b.toString(16).padStart(2,'0'); }).join('');
+          assert('sha', hex === C.rigSha256, 'rig as served hashes ' + hex.slice(0,12) + '…, contract claims ' + String(C.rigSha256).slice(0,12) + '…');
+        });
+      }
+      if(!SRC || !window.crypto || !crypto.subtle) skipped.push('rig re-hash (needs the file over http + SubtleCrypto)');
+    }).then(function(){
+      report('4 bodies · ' + (fails ? 'see failures' : 'bake, contract, sidecar and the handshake agree'));
+    });
+  };
+
+  draw();
+})();
+</script>
+</body>
+</html>

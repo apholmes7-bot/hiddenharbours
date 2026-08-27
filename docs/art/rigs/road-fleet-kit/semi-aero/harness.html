@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Aero Sleeper Semi — harness</title>
+<style>
+  body{margin:0;background:#0b1216;color:#c8d4d7;font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;padding:18px;}
+  h1{font-size:14px;letter-spacing:.16em;text-transform:uppercase;color:#c9a86a;margin:0 0 4px;}
+  p.note{color:#6f7e83;margin:0 0 16px;max-width:74ch;}
+  .row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:9px;}
+  .row > span.lbl{color:#6f7e83;letter-spacing:.12em;text-transform:uppercase;font-size:10.5px;width:78px;}
+  .grp{display:flex;gap:6px;flex-wrap:wrap;}
+  button{font:inherit;font-size:12px;padding:4px 9px;border-radius:3px;border:1px solid #2a3b43;background:#132025;color:#93a4a8;cursor:pointer;}
+  button.on{border-color:#c9a86a;background:#2a2317;color:#e6d2a4;}
+  button.act{border-color:#2f6079;background:#122530;color:#7fd6c9;}
+  input[type=range]{width:150px;accent-color:#7fd6c9;}
+  #stage{border:1px solid #243137;background:#0e181d;margin:12px 0;overflow:auto;}
+  canvas{display:block;image-rendering:pixelated;}
+  pre{border:1px solid #243137;background:#0e181d;padding:11px 13px;margin:0;white-space:pre-wrap;color:#8fa3a8;font-size:12px;}
+  b{color:#c8d4d7;font-weight:400;} i{color:#c9a86a;font-style:normal;}
+</style>
+</head>
+<body>
+<h1>Aero Sleeper Semi — harness</h1>
+<p class="note">Standalone: no build, no deps, no project. Bakes any facing, paint, preset, part and pose off
+the same <b>aeroSemiIsoRig.js</b> the engine ships, and asserts the bake against <b>aeroSemi.contract.json</b>
+and the geometry in <b>aeroSemiIsoRig.aeroSemi.gameplay.json</b> — including the COUPLING group: the fifth
+wheel anchor, the plate top, and the 4 mm jackknife margin the pack's trailers rely on. Served from a
+folder it also re-hashes the rig against the contract's <i>rigSha256</i>; opened straight off disk the JSON
+fetches are blocked and those groups are skipped, not silently passed.</p>
+
+<div class="row"><span class="lbl">facing</span><span class="grp" id="dirs"></span></div>
+<div class="row"><span class="lbl">paint</span><span class="grp" id="paints"></span></div>
+<div class="row"><span class="lbl">preset</span><span class="grp" id="presets"></span></div>
+<div class="row"><span class="lbl">open</span><span class="grp" id="opens"></span></div>
+<div class="row"><span class="lbl">roll</span><input type="range" id="roll" min="0" max="1" step="0.02" value="0">
+  <span class="lbl" style="width:auto">steer</span><input type="range" id="steer" min="-1" max="1" step="0.05" value="0">
+  <span class="lbl" style="width:auto">weather</span><input type="range" id="weather" min="0" max="1" step="0.02" value="0.45"></div>
+<div class="row"><span class="lbl">export</span>
+  <button class="act" id="strip">bake 8-dir strip &darr;</button>
+  <button class="act" id="cue">bake hood cue &darr;</button>
+  <button class="act" id="check">run asserts</button>
+  <button id="anchors">anchors</button>
+  <button id="pivot" class="on">pivot</button>
+</div>
+
+<div id="stage"><canvas id="cv" width="384" height="320"></canvas></div>
+<pre id="log">loading rig…</pre>
+
+<script src="aeroSemiIsoRig.js"></script>
+<script>
+(function(){
+  var V = window.AeroSemiIso;
+  var cv = document.getElementById('cv'), ctx = cv.getContext('2d'), out = document.getElementById('log');
+  if(!V){ out.textContent = 'aeroSemiIsoRig.js did not load — check the <script src> tag.'; return; }
+  var FACE = V.order, PAINTS = Object.keys(V.BODY);
+  var OPENS = [['hood','hood'],['dL','door L'],['dR','door R'],['skirts','skirts'],['night','night']];
+  var st = { dir:6, paint:'white', weather:0.45, roll:0, steer:0, showAnchors:false, showPivot:true,
+             hood:0, dL:0, dR:0, skirts:1, night:0 };
+  function opts(extra){
+    var o = { paint:st.paint, weather:st.weather, roll:st.roll, steer:st.steer,
+              hood:st.hood, dL:st.dL, dR:st.dR, skirts:!!st.skirts, night:!!st.night };
+    if(extra) for(var k in extra) o[k] = extra[k];
+    return o;
+  }
+  function bake(dir, o){
+    var c = document.createElement('canvas'); c.width = V.W; c.height = V.H;
+    c.getContext('2d').putImageData(new ImageData(V.render(dir, o || opts()), V.W, V.H), 0, 0);
+    return c;
+  }
+  function bbox(rgba){
+    var x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
+    for(var y=0;y<V.H;y++) for(var x=0;x<V.W;x++) if(rgba[(y*V.W+x)*4+3]){
+      if(x<x0)x0=x; if(x>x1)x1=x; if(y<y0)y0=y; if(y>y1)y1=y; }
+    return [x0,y0,x1,y1];
+  }
+  function chips(host, list, isOn, pick){
+    host.innerHTML = '';
+    list.forEach(function(it){
+      var b = document.createElement('button');
+      b.textContent = it[1]; b.className = isOn(it[0]) ? 'on' : '';
+      b.onclick = function(){ pick(it[0]); };
+      host.appendChild(b);
+    });
+  }
+  function ui(){
+    chips(document.getElementById('dirs'), FACE.map(function(f,i){ return [i,f]; }),
+      function(i){ return i===st.dir; }, function(i){ st.dir=i; draw(); });
+    chips(document.getElementById('paints'), PAINTS.map(function(p){ return [p,p]; }),
+      function(p){ return p===st.paint; }, function(p){ st.paint=p; draw(); });
+    chips(document.getElementById('presets'), Object.keys(V.PRESETS).map(function(k){ return [k,k]; }),
+      function(){ return false; }, function(k){
+        st.hood=0; st.dL=0; st.dR=0; st.skirts=1; st.night=0;
+        var p = V.PRESETS[k]; for(var f in p) st[f] = (f==='night') ? (p[f]?1:0) : p[f];
+        draw(); });
+    chips(document.getElementById('opens'), OPENS,
+      function(k){ return !!st[k]; }, function(k){ st[k] = st[k] ? 0 : 1; draw(); });
+  }
+  ['roll','steer','weather'].forEach(function(k){
+    document.getElementById(k).oninput = function(e){ st[k] = +e.target.value; draw(); };
+  });
+  document.getElementById('pivot').onclick = function(){ st.showPivot = !st.showPivot; this.className = st.showPivot?'on':''; draw(); };
+  document.getElementById('anchors').onclick = function(){ st.showAnchors = !st.showAnchors; this.className = st.showAnchors?'on':''; draw(); };
+
+  var AKEYS = ['fifthWheel','deck','gladHands','hoodLatch','doorL','doorR','roof','wheelFL','wheelFR','wheelML','wheelMR','wheelRL','wheelRR','exhaust'];
+  function draw(){
+    ui();
+    var t0 = Date.now(), o = opts(), img = V.render(st.dir, o), ms = Date.now()-t0;
+    cv.width = V.W; cv.height = V.H;
+    ctx.clearRect(0,0,V.W,V.H); ctx.putImageData(new ImageData(img, V.W, V.H), 0, 0);
+    var b = bbox(img);
+    if(st.showPivot){
+      ctx.fillStyle = '#f05a50';
+      ctx.fillRect(V.pivot.x-5, V.pivot.y, 11, 1); ctx.fillRect(V.pivot.x, V.pivot.y-5, 1, 11);
+    }
+    if(st.showAnchors){
+      var A = V.anchors(st.dir, o);
+      ctx.fillStyle = '#7fd6c9';
+      AKEYS.forEach(function(k){ ctx.fillRect(Math.round(A[k].x)-1, Math.round(A[k].y)-1, 3, 3); });
+      ctx.fillStyle = '#e6d2a4';
+      var fw = A.fifthWheel; ctx.fillRect(Math.round(fw.x)-2, Math.round(fw.y)-2, 5, 5);
+    }
+    var dm = V.dims(o);
+    out.innerHTML = '<b>' + dm.label + ' · ' + FACE[st.dir] + ' (' + (st.dir*45) + '°) · ' + st.paint
+      + ' · ' + (dm.skirts?'skirts':'bare frame') + ' · bobtail</b>\n'
+      + 'cell ' + V.W + '×' + V.H + ' · pivot ' + V.pivot.x + ',' + V.pivot.y + ' · painted [' + b.join(',') + '] '
+      + (b[2]-b[0]+1) + '×' + (b[3]-b[1]+1) + ' · baked in ' + ms + ' ms\n'
+      + dm.loa + ' m over the pins · ' + dm.width + ' m over fenders · ' + dm.height + ' m high · wheelbase '
+      + dm.wheelbase + ' m · ' + dm.wheels + ' wheels · fifth wheel at y ' + dm.fwY + ', z ' + dm.fwZ + '\n'
+      + 'crosshair = pivot (model z=0, ground centre) · gold square = the COUPLING POINT';
+  }
+
+  function saveStrip(cells, name){
+    var s = document.createElement('canvas'); s.width = V.W*cells.length; s.height = V.H;
+    var sx = s.getContext('2d');
+    cells.forEach(function(c,k){ sx.drawImage(c, k*V.W, 0); });
+    s.toBlob(function(bl){
+      var u = URL.createObjectURL(bl), a = document.createElement('a');
+      a.href = u; a.download = name; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      setTimeout(function(){ URL.revokeObjectURL(u); }, 2000);
+    });
+  }
+  document.getElementById('strip').onclick = function(){
+    var cells = []; for(var d=0;d<8;d++) cells.push(bake(d));
+    saveStrip(cells, 'AeroSemi_' + st.paint + '_8dir.png');
+  };
+  document.getElementById('cue').onclick = function(){
+    var cells = []; for(var i=0;i<8;i++) cells.push(bake(st.dir, opts(V.CUES.hood(i/7))));
+    saveStrip(cells, 'AeroSemi_' + st.paint + '_hood_' + FACE[st.dir] + '.png');
+  };
+
+  /* ---------------- asserts ---------------- */
+  function json(path){
+    return fetch(path, {cache:'no-store'}).then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); });
+  }
+  function text(path){
+    return fetch(path, {cache:'no-store'}).then(function(r){ if(!r.ok) throw new Error(r.status); return r.text(); });
+  }
+  document.getElementById('check').onclick = function(){
+    var G = {}, order = [], fails = 0, skipped = [];
+    var near = function(a,b,e){ return Math.abs(a-b) < (e==null?0.001:e); };
+    function assert(g, ok, msg){
+      if(!G[g]){ G[g] = {n:0, bad:[]}; order.push(g); }
+      G[g].n++; if(!ok){ G[g].bad.push(msg); fails++; }
+    }
+    function report(head){
+      var lines = order.map(function(g){
+        var q = G[g], h = (q.bad.length ? ' FAIL ' : '  ok  ') + g + '  (' + (q.n-q.bad.length) + '/' + q.n + ')';
+        return q.bad.length ? h + '\n        ' + q.bad.join('\n        ') : h;
+      });
+      out.innerHTML = '<b>' + (fails ? fails + ' assert(s) FAILED' : 'all asserts pass') + '</b>  ·  ' + head
+        + (skipped.length ? '\n<i>skipped: ' + skipped.join('; ') + '</i>' : '') + '\n' + lines.join('\n');
+    }
+
+    var g = V.G, dm = V.dims();
+    assert('load', !!V.render && !!V.anchors && !!V.dims, 'rig exports render/anchors/dims');
+    assert('load', V.PX === 32 && V.DIRS === 8 && V.W === 384 && V.H === 320, 'scale 32 px/m, 8 facings, the road cell');
+
+    for(var d=0; d<8; d++){
+      var p = V.project(d, [0,0,0]);
+      assert('pivot', near(p.x, V.pivot.x, 0.51) && near(p.y, V.pivot.y, 0.51),
+        FACE[d] + ': origin projects to ' + p.x.toFixed(1) + ',' + p.y.toFixed(1) + ' not ' + V.pivot.x + ',' + V.pivot.y);
+    }
+
+    var rest = { paint:'white', weather:0.45 };
+    var wide = { paint:'white', weather:0.45, dL:1, dR:1, hood:1 };
+    var noskirt = { paint:'white', weather:0.45, skirts:false };
+    var restB = [], wideB = [], noskirtB = [];
+    for(d=0; d<8; d++){
+      var br = bbox(V.render(d, rest)), bw = bbox(V.render(d, wide)), bn = bbox(V.render(d, noskirt));
+      restB.push(br); wideB.push(bw); noskirtB.push(bn);
+      assert('bounds', br[0] >= 0 && br[1] >= 0 && br[2] <= V.W-1 && br[3] <= V.H-1, FACE[d] + ': at-rest paint leaves the cell');
+      assert('bounds', bw[0] >= 1 && bw[1] >= 1 && bw[2] <= V.W-2 && bw[3] <= V.H-2,
+        FACE[d] + ': wide-open paint [' + bw.join(',') + '] has no 1 px margin in a ' + V.W + '×' + V.H + ' cell');
+    }
+
+    function pixDiff(a, b){
+      var painted = 0, moved = 0;
+      for(var i=0;i<a.length;i+=4){
+        var pa = a[i+3] > 0, pb = b[i+3] > 0;
+        if(pa) painted++;
+        if(pa !== pb || (pa && (a[i]!==b[i] || a[i+1]!==b[i+1] || a[i+2]!==b[i+2]))) moved++;
+      }
+      return { painted:painted, moved:moved, pct:100*moved/painted };
+    }
+    var CUE_AT = { doors:6, hood:6, roll:6, bounce:6, steer:4, turn:6 };
+    var CUE_T1 = { turn:0.25 };
+    var CUE_MIN = { roll:100, steer:60, turn:1000, doors:300, hood:1000, bounce:1000 };
+    Object.keys(CUE_AT).forEach(function(c){
+      var at = CUE_AT[c], t1 = CUE_T1[c] || 0.5, min = CUE_MIN[c] || 200;
+      var d0 = pixDiff(V.render(at, Object.assign({}, rest, V.CUES[c](0))), V.render(at, Object.assign({}, rest, V.CUES[c](t1))));
+      assert('cues', d0.moved > min, 'cue ' + c + ' at ' + FACE[at] + ': only ' + d0.moved + ' px move between t=0 and t=' + t1);
+    });
+    var rd = pixDiff(V.render(6, Object.assign({}, rest, {roll:0})), V.render(6, Object.assign({}, rest, {roll:1})));
+    assert('cues', rd.pct < 0.6, 'roll:1 differs from roll:0 by ' + rd.pct.toFixed(2) + '% of painted px (' + rd.moved
+      + ') — over the 0.6% the loop seam becomes visible');
+
+    var up = bbox(V.render(2, Object.assign({}, rest, {susF:1, susR:1})));
+    var flat = bbox(V.render(2, rest));
+    assert('suspension', up[1] > flat[1], 'compressing both axle groups did not lower the fairing (top row ' + up[1] + ' vs ' + flat[1] + ')');
+    assert('suspension', up[3] === flat[3], 'the wheels moved with the body (bottom row ' + up[3] + ' vs ' + flat[3] + ')');
+
+    // the coupling group — the tier's whole point
+    var A0 = V.anchors(0, rest);
+    assert('coupling', near(A0.fifthWheel.m[0], 0) && near(A0.fifthWheel.m[1], g.fw.y) && near(A0.fifthWheel.m[2], g.fw.topZ),
+      'anchors().fifthWheel is not the plate top centre [0,' + g.fw.y + ',' + g.fw.topZ + ']');
+    var gap = Math.abs(g.cabBackY - g.fw.y), swing = Math.sqrt(1.22*1.22 + 0.90*0.90);
+    assert('coupling', gap > swing, 'kingpin-to-cabback ' + gap.toFixed(3) + ' m does NOT clear the 2.44 m trailer nose swing ' + swing.toFixed(3) + ' m');
+    assert('coupling', g.fw.topZ > 1.10 && g.fw.topZ < 1.30, 'fifth wheel plate top ' + g.fw.topZ + ' m is outside the sane coupling band');
+    var comp = Object.assign({}, rest, {susR:1});
+    var Ac = V.anchors(2, comp), Af = V.anchors(2, rest);
+    assert('coupling', Ac.fifthWheel.y > Af.fifthWheel.y,
+      'compressing the rear group did not lower the coupling point on screen — the fifth wheel is not riding the suspension');
+    assert('coupling', A0.gladHands.m[2] > 1.8, 'glad hands are not up on the back wall');
+
+    // skirts: pixels change, the bbox does not
+    assert('skirts', pixDiff(V.render(6, rest), V.render(6, noskirt)).moved > 200,
+      'skirts:false barely changes the bake — the fairings may not be wired');
+    for(d=0; d<8; d++)
+      assert('skirts', noskirtB[d].join(',') === restB[d].join(','),
+        FACE[d] + ': skirts:false moved the painted bbox ([' + noskirtB[d].join(',') + '] vs [' + restB[d].join(',') + '])');
+
+    var AK = AKEYS;
+    for(d=0; d<8; d++){
+      var A = V.anchors(d, rest), ok = true, bad = '';
+      AK.forEach(function(k){ if(!(A[k].x >= 0 && A[k].x < V.W && A[k].y >= 0 && A[k].y < V.H)){ ok = false; bad = k; } });
+      assert('anchors', ok, FACE[d] + ': anchor ' + bad + ' projects outside the cell');
+      assert('anchors', A.fifthWheel.m[1] < A.deck.m[1], FACE[d] + ': the fifth wheel is not aft of the catwalk');
+    }
+
+    var lock = pixDiff(V.render(4, rest), V.render(4, Object.assign({}, rest, {steer:1})));
+    assert('steering', lock.moved > 60, 'full lock moves only ' + lock.moved + ' px at S — the front wheels are not yawing');
+    assert('steering', pixDiff(V.render(4, Object.assign({}, rest, {steer:1})), V.render(4, Object.assign({}, rest, {steer:-1}))).moved > 60,
+      'left lock and right lock look the same');
+    var env = V.G.frontWX + (V.G.tireW/2)*Math.cos(V.steer.maxInnerDeg*Math.PI/180) + V.G.wheelR*Math.sin(V.steer.maxInnerDeg*Math.PI/180);
+    assert('steering', env <= V.G.hwFender + 0.005, 'at full lock a front tire corner reaches |x| ' + env.toFixed(3)
+      + ' m, outside the ' + V.G.hwFender + ' m fenders');
+    var sa = V.steer.angles(1);
+    assert('steering', sa.L > sa.R && near(sa.L, 32, 0.01), 'Ackermann is backwards or off: inner ' + sa.L.toFixed(2) + ' outer ' + sa.R.toFixed(2));
+    var yq = pixDiff(V.render(1, Object.assign({}, rest, {yaw:45})), V.render(2, rest));
+    assert('steering', yq.moved === 0, 'yaw 45 at NE is not identical to E (' + yq.moved + ' px) — the heading maths has drifted');
+    var yb = bbox(V.render(1, Object.assign({}, rest, {yaw:22.5})));
+    assert('steering', yb[0] >= 0 && yb[1] >= 0 && yb[2] < V.W && yb[3] < V.H, 'a yawed cell paints outside the cell [' + yb.join(',') + ']');
+    assert('steering', near(V.project(1, [0,0,0], null, 22.5).x, V.pivot.x) && near(V.project(1, [0,0,0], null, 22.5).y, V.pivot.y),
+      'the pivot moved under yaw');
+
+    report('rig-only groups done, ' + dm.label);
+
+    Promise.all([
+      json('aeroSemi.contract.json').catch(function(){ return null; }),
+      json('aeroSemiIsoRig.aeroSemi.gameplay.json').catch(function(){ return null; }),
+      text('aeroSemiIsoRig.js').catch(function(){ return null; })
+    ]).then(function(res){
+      var C = res[0], S = res[1], SRC = res[2];
+      if(!C) skipped.push('contract.json not fetchable (file:// ?) — published-bbox and coupling checks');
+      if(!S) skipped.push('gameplay.json not fetchable — sidecar cross-checks');
+
+      if(C){
+        for(var d2=0; d2<8; d2++){
+          var f = FACE[d2];
+          assert('published', C.painted_bbox.at_rest[f].join(',') === restB[d2].join(','),
+            f + ': contract at_rest [' + C.painted_bbox.at_rest[f] + '] vs fresh bake [' + restB[d2] + ']');
+          assert('published', C.painted_bbox.all_open[f].join(',') === wideB[d2].join(','),
+            f + ': contract all_open [' + C.painted_bbox.all_open[f] + '] vs fresh bake [' + wideB[d2] + ']');
+          assert('published', C.painted_bbox.no_skirts[f].join(',') === noskirtB[d2].join(','),
+            f + ': contract no_skirts [' + C.painted_bbox.no_skirts[f] + '] vs fresh bake [' + noskirtB[d2] + ']');
+        }
+        assert('published', C.dims.loa === dm.loa && C.dims.width === dm.width && C.dims.wheelbase === dm.wheelbase,
+          'contract dims disagree with dims()');
+        assert('published', C.bake.cell.W === V.W && C.bake.cell.H === V.H && C.bake.pivot.x === V.pivot.x && C.bake.pivot.y === V.pivot.y,
+          'contract cell/pivot disagree with the rig');
+        assert('published', near(C.coupling.plate_top_z, g.fw.topZ) && near(C.coupling.kingpin_to_cabback_m, Math.abs(g.cabBackY - g.fw.y), 0.011),
+          'contract coupling numbers disagree with G');
+        assert('published', C.dims.fwY === g.fw.y && C.dims.fwZ === g.fw.topZ, 'contract dims.fwY/fwZ disagree with G.fw');
+      }
+
+      if(S){
+        assert('sidecar', S.derivedFromRigSha256 && S.derivedFromRigSha256.length === 64, 'derivedFromRigSha256 is missing or not a sha256');
+        assert('sidecar', near(S.CAB.floor.z, g.cabFloorZ), 'CAB.floor.z ' + S.CAB.floor.z + ' vs G.cabFloorZ ' + g.cabFloorZ);
+        assert('sidecar', S.BODY.loa_m === dm.loa && S.BODY.wheelbase_m === dm.wheelbase && S.BODY.height_m === dm.height,
+          'BODY block disagrees with dims()');
+        assert('sidecar', S.WHEELS.list.length === 10, 'WHEELS.list should carry 10 wheels');
+        var wx = { FL:-g.frontWX, FR:g.frontWX, MLi:-g.dualXi, MLo:-g.dualXo, MRi:g.dualXi, MRo:g.dualXo, RLi:-g.dualXi, RLo:-g.dualXo, RRi:g.dualXi, RRo:g.dualXo };
+        var wy = { FL:g.axF, FR:g.axF, MLi:g.tandA, MLo:g.tandA, MRi:g.tandA, MRo:g.tandA, RLi:g.tandB, RLo:g.tandB, RRi:g.tandB, RRo:g.tandB };
+        S.WHEELS.list.forEach(function(w){
+          assert('sidecar', near(w.pos[0], wx[w.id], 0.011) && near(w.pos[1], wy[w.id], 0.011), 'wheel ' + w.id + ' position vs G');
+          assert('sidecar', near(w.pos[2], g.wheelR), 'wheel ' + w.id + ' sits at z ' + w.pos[2] + ' not the tire radius');
+        });
+        assert('sidecar', near(S.SUSPENSION.travel_m.front, V.travel.F) && near(S.SUSPENSION.travel_m.rear, V.travel.R),
+          'SUSPENSION travel vs V.travel');
+        assert('sidecar', S.STEP.boards.length === 4 && near(S.STEP.boards[0].top_z, 0.44) && near(S.STEP.boards[1].top_z, 0.80),
+          'STEP: four tank treads at 0.44/0.80');
+        assert('sidecar', S.TOW.fifth_wheel && near(S.TOW.fifth_wheel.coupling_point[1], g.fw.y) && near(S.TOW.fifth_wheel.coupling_point[2], g.fw.topZ),
+          'TOW.fifth_wheel coupling point vs G.fw');
+        assert('sidecar', near(S.TOW.swing_clearance.kingpin_to_cabback_m, Math.abs(g.cabBackY - g.fw.y), 0.011),
+          'TOW.swing_clearance vs G geometry');
+        assert('sidecar', S.HOOD.deg[1] === g.hoodDeg, 'HOOD.deg vs G.hoodDeg');
+        ['WASHBOARD','CLEATS','walkable_roof','fuel_fill','exhaust_stack','rear_bumper'].forEach(function(k){
+          assert('sidecar', !!S._excluded[k], '_excluded.' + k + ' is missing — an absence must be recorded, not silent'); });
+        if(C) assert('sidecar', S.derivedFromRigSha256 === C.rigSha256, 'sidecar sha ' + S.derivedFromRigSha256.slice(0,8) + ' vs contract ' + String(C.rigSha256).slice(0,8));
+      }
+
+      if(SRC && C && window.crypto && crypto.subtle){
+        return crypto.subtle.digest('SHA-256', new TextEncoder().encode(SRC)).then(function(d3){
+          var hex = Array.from(new Uint8Array(d3)).map(function(b){ return b.toString(16).padStart(2,'0'); }).join('');
+          assert('sha', hex === C.rigSha256, 'rig as served hashes ' + hex.slice(0,12) + '…, contract claims ' + String(C.rigSha256).slice(0,12) + '…');
+        });
+      }
+      if(!SRC || !window.crypto || !crypto.subtle) skipped.push('rig re-hash (needs the file over http + SubtleCrypto)');
+    }).then(function(){
+      report(dm.label + ' · 8 facings baked three ways · ' + (fails ? 'see failures' : 'bake, contract, sidecar and the coupling agree'));
+    });
+  };
+
+  draw();
+})();
+</script>
+</body>
+</html>
