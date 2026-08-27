@@ -708,6 +708,105 @@ namespace HiddenHarbours.Tools.RigBaking
                         "return out;})()",
                 },
 
+                // ---- THE ROAD FLEET (kit drop 2026-08-27) — five wheeled rigs, one shape --------
+                // Every one of them is the Dually's generator shape exactly: no `MATS` const,
+                // because the table is built per-pose by a private `makeMats(s)` off the paint and
+                // weather axes; `MATS[f.mat] || MATS.paint` is the rig's own fallback; `paint` is
+                // the first key and IS used, so it stays index 0 — which is what the face packer
+                // resolves an unknown material name to. Keyed by NAME, not index-ordered, so the
+                // fleet's "MATS order IS the baked material index" law does not transfer.
+                //
+                // ⚠️ Both names are unqualified ON PURPOSE — this expression is inserted INSIDE the
+                // rig's own closure, where `makeMats` and `resolve` are in scope. Qualifying them
+                // is the shape a PROBE needs and is wrong here.
+                //
+                // MEASURED in the repo's own V8 through this exact injection, 2026-08-27
+                // (declared → filtered):
+                //     vanIsoRig        17 → 15      aeroSemiIsoRig     17 → 15
+                //     boxIsoRig        17 → 16      classicSemiIsoRig  17 → 16
+                //     convBoxIsoRig    17 → 16
+                // All five fit the facet shader's float4[16] `_RampMeta` at the DEFAULT pose, which
+                // is the pose the face list is extracted at — so the palette and the geometry go on
+                // describing one truck.
+                //
+                // ⚠️ WHAT THE FILTER DROPS IS THE NIGHT LAMP, and that is a real limit rather than
+                // an oversight. `head` (unlit) and `glow` (lit) are the two forms of one lamp and
+                // MEASURED NEVER APPEAR IN THE SAME BUILD — so the day pose keeps `head` and drops
+                // `glow`, exactly as the Otter's night pass is dropped. A mesh that had to carry
+                // both would be SEVENTEEN on the two box trucks and the classic semi (the van and
+                // the aero fit at 16). RoadFleetKitProbeTests pins both halves.
+                ["vanIsoRig.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
+                {
+                    ["MATS"] =
+                        "(function(){var M=makeMats(resolve({})),F=build(resolve({}))," +
+                        "used={},out={};" +
+                        "for(var i=0;i<F.length;i++)used[F[i].mat]=1;" +
+                        "for(var k in M)if(used[k])out[k]=M[k];" +
+                        "return out;})()",
+                },
+                ["boxIsoRig.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
+                {
+                    ["MATS"] =
+                        "(function(){var M=makeMats(resolve({})),F=build(resolve({}))," +
+                        "used={},out={};" +
+                        "for(var i=0;i<F.length;i++)used[F[i].mat]=1;" +
+                        "for(var k in M)if(used[k])out[k]=M[k];" +
+                        "return out;})()",
+                },
+                ["convBoxIsoRig.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
+                {
+                    ["MATS"] =
+                        "(function(){var M=makeMats(resolve({})),F=build(resolve({}))," +
+                        "used={},out={};" +
+                        "for(var i=0;i<F.length;i++)used[F[i].mat]=1;" +
+                        "for(var k in M)if(used[k])out[k]=M[k];" +
+                        "return out;})()",
+                },
+                ["aeroSemiIsoRig.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
+                {
+                    ["MATS"] =
+                        "(function(){var M=makeMats(resolve({})),F=build(resolve({}))," +
+                        "used={},out={};" +
+                        "for(var i=0;i<F.length;i++)used[F[i].mat]=1;" +
+                        "for(var k in M)if(used[k])out[k]=M[k];" +
+                        "return out;})()",
+                },
+                ["classicSemiIsoRig.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
+                {
+                    ["MATS"] =
+                        "(function(){var M=makeMats(resolve({})),F=build(resolve({}))," +
+                        "used={},out={};" +
+                        "for(var i=0;i<F.length;i++)used[F[i].mat]=1;" +
+                        "for(var k in M)if(used[k])out[k]=M[k];" +
+                        "return out;})()",
+                },
+
+                // ---- THE TRAILER SET — ONE rig, FOUR towed bodies -------------------------------
+                // ⚠️ NOT the five-line pattern above, and the difference is the whole (file, pick)
+                // trap. A `Reconstructions` entry is keyed by FILE and can produce only ONE table,
+                // but this rig builds four different bodies — so a filter run at ONE body drops the
+                // OTHERS' ramps, and the face packer resolves an unknown material name to index 0.
+                //
+                // MEASURED, 2026-08-27: `resolve({})` defaults to `reefer53`, and filtering there
+                // drops `wood` — which the flatbed deck is the only thing that names. The planked
+                // lumber deck would have rendered as body paint, silently, on both flatbeds.
+                //
+                // So this unions the used set over EVERY body, in the rig's own MATS key order —
+                // the zodiac's pattern, for the same reason she needed it (two builds, one table).
+                // Measured: the four bodies' `makeMats` tables are byte-identical (14 keys, same
+                // order), the union of what their faces name is TWELVE, `paint` is first and used,
+                // and the two dropped are `glass` and `glow` — the night pass, which this mesh does
+                // not carry. Twelve is comfortably inside the float4[16] `_RampMeta`.
+                ["trailerIsoRig.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
+                {
+                    ["MATS"] =
+                        "(function(){var M=makeMats(resolve({})),used={},out={};" +
+                        "for(var b in BODIES){var F=build(resolve({body:b}));" +
+                        "for(var i=0;i<F.length;i++)used[F[i].mat]=1;}" +
+                        "for(var k in M)if(used[k])out[k]=M[k];" +
+                        "return out;})()",
+                },
+
                 // The skiff motor is a LAYER, not a hull, so its export omits two things every hull
                 // rig publishes and the extractor reads unconditionally: the pixel scale and the bake
                 // elevation. Both exist under the rig's own names (`S`, `DEFAULT_ELEV`) — this is a

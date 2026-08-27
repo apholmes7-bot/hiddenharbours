@@ -1,0 +1,1561 @@
+{
+  "kit": "vehicle-rig-pack/semi-aero",
+  "rig": "aeroSemiIsoRig.js",
+  "exportSymbol": "AeroSemiIso",
+  "body": "aeroSemi",
+  "label": "Aero Sleeper Semi",
+  "kind": "semi_tractor",
+  "bake": {
+    "scale_px_per_m": 32,
+    "cell": {
+      "W": 384,
+      "H": 320
+    },
+    "pivot": {
+      "x": 192,
+      "y": 214
+    },
+    "dirs": 8,
+    "order": [
+      "N",
+      "NE",
+      "E",
+      "SE",
+      "S",
+      "SW",
+      "W",
+      "NW"
+    ],
+    "camera": {
+      "elev_deg": 40,
+      "step_deg": 45,
+      "projection": "flat-facet 3/4, z-buffered, ordered dither (4x4 Bayer), depth-edge darkening, no AA, binary alpha"
+    },
+    "keyline": {
+      "default": false,
+      "adr": "ADR-0031 ringless",
+      "opt_in": "{outline:true}"
+    },
+    "shading": {
+      "gain": 3.1,
+      "bias": 2.55,
+      "edge": 0.16,
+      "key": "fixed upper-LEFT"
+    },
+    "facing_note": "dir 0 (N) shows the FIFTH WHEEL and the bare frame end: the tractor points away. dir 4 (S) shows the grille and raked hood. Street side (-x, driver) reads at NE E SE; curb side at SW W NW.",
+    "pose_note": "the tractor bakes BOBTAIL. Trailers are separate bodies; the game couples them at anchors().fifthWheel and articulates the pair. skirts:false is a PART toggle with an identical painted bbox."
+  },
+  "dims": {
+    "key": "aeroSemi",
+    "label": "Aero Sleeper Semi",
+    "kind": "semi_tractor",
+    "travelF": 0.09,
+    "travelR": 0.11,
+    "loa": 7.57,
+    "bodyL": 7.4,
+    "width": 2.54,
+    "bodyW": 2.44,
+    "height": 3.89,
+    "wheelbase": 5.25,
+    "sleeper": 1.63,
+    "fwZ": 1.18,
+    "fwY": -2.4,
+    "wheels": 10
+  },
+  "coupling": {
+    "_what": "the tier’s point: this half COUPLES to the pack’s trailers.",
+    "fifth_wheel_anchor": "anchors().fifthWheel = [0, -2.40, 1.18] — pair it with a trailer’s kingpin anchor and hinge the pair there",
+    "plate_top_z": 1.18,
+    "slot_opens": "aft",
+    "kingpin_to_cabback_m": 1.52,
+    "trailer_nose_swing_r_m": 1.516,
+    "swing_basis": "a 2.44 m trailer with the pack’s 0.90 m kingpin set: sqrt(1.22^2 + 0.90^2)",
+    "verdict": "full jackknife clears the cab by 4 mm — keep the pack’s trailers at the 0.90 m set",
+    "glad_hands": [
+      0,
+      -0.87,
+      1.98
+    ],
+    "suspension_note": "the coupling point rides dz(y=-2.40) — re-read the anchor under load, do not cache 1.18"
+  },
+  "painted_bbox": {
+    "_units": "cell px, [x0,y0,x1,y1] inclusive, measured off the alpha channel",
+    "_measured_with": {
+      "at_rest": "fleet (white, weather 0.45), skirts fitted, all shut, bobtail",
+      "all_open": "+ dL dR hood all 1",
+      "no_skirts": "at rest, skirts:false — frame, tanks and batteries bared"
+    },
+    "at_rest": {
+      "N": [
+        145,
+        100,
+        238,
+        279
+      ],
+      "NE": [
+        71,
+        99,
+        292,
+        275
+      ],
+      "E": [
+        60,
+        100,
+        302,
+        234
+      ],
+      "SE": [
+        71,
+        94,
+        292,
+        283
+      ],
+      "S": [
+        145,
+        102,
+        238,
+        290
+      ],
+      "SW": [
+        91,
+        94,
+        312,
+        283
+      ],
+      "W": [
+        81,
+        100,
+        323,
+        234
+      ],
+      "NW": [
+        91,
+        99,
+        312,
+        275
+      ]
+    },
+    "all_open": {
+      "N": [
+        124,
+        52,
+        259,
+        279
+      ],
+      "NE": [
+        57,
+        68,
+        292,
+        275
+      ],
+      "E": [
+        40,
+        100,
+        302,
+        234
+      ],
+      "SE": [
+        57,
+        94,
+        292,
+        283
+      ],
+      "S": [
+        124,
+        102,
+        259,
+        290
+      ],
+      "SW": [
+        91,
+        94,
+        326,
+        283
+      ],
+      "W": [
+        81,
+        100,
+        343,
+        234
+      ],
+      "NW": [
+        91,
+        68,
+        326,
+        275
+      ]
+    },
+    "no_skirts": {
+      "N": [
+        145,
+        100,
+        238,
+        279
+      ],
+      "NE": [
+        71,
+        99,
+        292,
+        275
+      ],
+      "E": [
+        60,
+        100,
+        302,
+        234
+      ],
+      "SE": [
+        71,
+        94,
+        292,
+        283
+      ],
+      "S": [
+        145,
+        102,
+        238,
+        290
+      ],
+      "SW": [
+        91,
+        94,
+        312,
+        283
+      ],
+      "W": [
+        81,
+        100,
+        323,
+        234
+      ],
+      "NW": [
+        91,
+        99,
+        312,
+        275
+      ]
+    },
+    "union_at_rest": [
+      60,
+      94,
+      323,
+      290
+    ],
+    "union_all_open": [
+      40,
+      52,
+      343,
+      290
+    ],
+    "union_no_skirts": [
+      60,
+      94,
+      323,
+      290
+    ],
+    "union_everything": [
+      40,
+      52,
+      343,
+      290
+    ],
+    "crop_note": "pack from union_everything (40,52,343,290) to hold the tilted clip and both doors; union_at_rest is the tight default build. no_skirts is IDENTICAL to at_rest — the skirts live inside the silhouette."
+  },
+  "articulation": {
+    "doors": {
+      "params": [
+        "dL",
+        "dR"
+      ],
+      "range": [
+        0,
+        1
+      ],
+      "deg": [
+        0,
+        65
+      ],
+      "hinge": "forward edge, vertical, at x +/-1.18 y 1.77"
+    },
+    "hood": {
+      "param": "hood",
+      "range": [
+        0,
+        1
+      ],
+      "deg": [
+        0,
+        72
+      ],
+      "hinge": "x-axis at y 4.02 z 0.55 — the bumper stays; hood, fenders, arches, grille and headlamps all ride it. The CAB does not move.",
+      "bares": "engine block, valve cover, radiator wall and air cleaner; twin latches at the cowl corners",
+      "extreme": "at full tilt the hood nose reaches y 4.72 and the cowl edge z 2.76 — still inside the cell in all 8 facings."
+    },
+    "skirts": {
+      "part": "skirts:true|false",
+      "default": true,
+      "what": "aero chassis fairings between the axles; false bares frame, tanks and battery box",
+      "rule": "no z changes and an IDENTICAL painted bbox either way (asserted) — pack once, toggle freely"
+    },
+    "roll": {
+      "param": "roll",
+      "units": "revolutions",
+      "per_wheel": [
+        "wFL",
+        "wFR",
+        "wRL",
+        "wRR"
+      ],
+      "distance_per_rev_m": 3.142,
+      "cyclic": "one revolution returns the 10-fold lugs exactly and the tread to a sub-pixel phase (29.008 stripes of 0.1083 m): the seam is 32 px of 21205 painted (0.15%). Each tandem side shares its corner roll."
+    },
+    "suspension": {
+      "params": [
+        "susF",
+        "susR"
+      ],
+      "range": [
+        -1,
+        1
+      ],
+      "travel_m": {
+        "front": 0.09,
+        "rear": 0.11
+      },
+      "formula": "dz(y) = -(susF*0.09)*t - (susR*0.11)*(1-t),  t = (y - (-2.30)) / 5.25",
+      "note": "the BODY moves — including the fifth wheel and its coupling point; the wheels stay on the ground"
+    },
+    "steer": {
+      "param": "steer",
+      "range": [
+        -1,
+        1
+      ],
+      "sense": "+1 is full LEFT lock (the nose swings toward -x)",
+      "deg": {
+        "inner": 32,
+        "outer": 27.51
+      },
+      "geometry": "Ackermann: the inside wheel takes the larger angle. outer = atan(1/(1/tan(inner) + track/wheelbase)), front track 1.68, wheelbase 5.25 (to the tandem centre).",
+      "axis": "vertical, through each front wheel centre. No kingpin offset, no caster, no scrub radius.",
+      "swept_extreme_x_m": 1.232,
+      "note": "bobtail geometry — a coupled trailer tracks inside the arc and its off-tracking is the game’s arithmetic. The painted fenders (half-width 1.27 m) are the envelope."
+    },
+    "yaw": {
+      "param": "yaw",
+      "units": "degrees",
+      "range": [
+        -45,
+        45
+      ],
+      "what": "heading off the 45deg facing grid. Rotates the model about z before projection under the fixed key — the shading is REBAKED, not rotated.",
+      "pivot": "unaffected — the origin still projects to the published pivot at any yaw",
+      "painted_bbox_over_sweep": [
+        55,
+        94,
+        328,
+        294
+      ],
+      "coupled": "a tractor+trailer pair is two yaws hinged at the coupling point; the articulation angle is their difference"
+    },
+    "parts": {
+      "mirrors": true,
+      "mudflaps": true,
+      "skirts": true
+    },
+    "night": {
+      "param": "night",
+      "effect": "glass ramp swaps, headlamps become glow, lit spill on neighbouring pixels"
+    },
+    "weather": {
+      "param": "weather",
+      "range": [
+        0,
+        1
+      ],
+      "default": 0.32,
+      "effect": "greys and grimes the paint, rusts iron/galv/rubber, speckles at 5% x weather"
+    }
+  },
+  "paints": [
+    "white",
+    "cream",
+    "red",
+    "sage",
+    "blue",
+    "teal",
+    "gold",
+    "rustOrange",
+    "greyShingle",
+    "plum"
+  ],
+  "presets": {
+    "showroom": {
+      "paint": "white",
+      "weather": 0.05
+    },
+    "fleet": {
+      "paint": "white",
+      "weather": 0.45
+    },
+    "harbourLine": {
+      "paint": "teal",
+      "weather": 0.3
+    },
+    "ownerOp": {
+      "paint": "red",
+      "weather": 0.35
+    },
+    "longHaul": {
+      "paint": "blue",
+      "weather": 0.28,
+      "night": true
+    }
+  },
+  "cues": [
+    "doors",
+    "hood",
+    "roll",
+    "steer",
+    "turn",
+    "bounce"
+  ],
+  "anchors": {
+    "_units": "{x,y} in cell px for that facing, m = [x,y,z] in model metres",
+    "_measured_with": {
+      "paint": "white",
+      "weather": 0.45,
+      "skirts": true
+    },
+    "_fifth_wheel_note": "fifthWheel is the COUPLING POINT — hinge the trailer here. It rides the suspension; re-read it, do not cache it.",
+    "by_facing": {
+      "N": {
+        "fifthWheel": {
+          "x": 192,
+          "y": 234.4,
+          "m": [
+            0,
+            -2.4,
+            1.18
+          ]
+        },
+        "deck": {
+          "x": 192,
+          "y": 215.8,
+          "m": [
+            0,
+            -1.4,
+            1.1
+          ]
+        },
+        "gladHands": {
+          "x": 192,
+          "y": 183.4,
+          "m": [
+            0,
+            -0.87,
+            1.98
+          ]
+        },
+        "hoodLatch": {
+          "x": 192,
+          "y": 132.2,
+          "m": [
+            0,
+            2.07,
+            1.6
+          ]
+        },
+        "doorL": {
+          "x": 153,
+          "y": 152,
+          "m": [
+            -1.22,
+            1.05,
+            1.65
+          ]
+        },
+        "doorR": {
+          "x": 231,
+          "y": 152,
+          "m": [
+            1.22,
+            1.05,
+            1.65
+          ]
+        },
+        "roof": {
+          "x": 192,
+          "y": 127.9,
+          "m": [
+            0,
+            -0.4,
+            3.85
+          ]
+        },
+        "wheelFL": {
+          "x": 165.1,
+          "y": 141.1,
+          "m": [
+            -0.84,
+            2.95,
+            0.5
+          ]
+        },
+        "wheelFR": {
+          "x": 218.9,
+          "y": 141.1,
+          "m": [
+            0.84,
+            2.95,
+            0.5
+          ]
+        },
+        "wheelML": {
+          "x": 163.2,
+          "y": 236.7,
+          "m": [
+            -0.9,
+            -1.7,
+            0.5
+          ]
+        },
+        "wheelMR": {
+          "x": 220.8,
+          "y": 236.7,
+          "m": [
+            0.9,
+            -1.7,
+            0.5
+          ]
+        },
+        "wheelRL": {
+          "x": 163.2,
+          "y": 261.4,
+          "m": [
+            -0.9,
+            -2.9,
+            0.5
+          ]
+        },
+        "wheelRR": {
+          "x": 220.8,
+          "y": 261.4,
+          "m": [
+            0.9,
+            -2.9,
+            0.5
+          ]
+        },
+        "exhaust": {
+          "x": 172.8,
+          "y": 277.1,
+          "m": [
+            -0.6,
+            -3.4,
+            0.28
+          ]
+        }
+      },
+      "NE": {
+        "fifthWheel": {
+          "x": 246.3,
+          "y": 220,
+          "m": [
+            0,
+            -2.4,
+            1.18
+          ]
+        },
+        "deck": {
+          "x": 223.7,
+          "y": 207.4,
+          "m": [
+            0,
+            -1.4,
+            1.1
+          ]
+        },
+        "gladHands": {
+          "x": 211.7,
+          "y": 178.1,
+          "m": [
+            0,
+            -0.87,
+            1.98
+          ]
+        },
+        "hoodLatch": {
+          "x": 145.2,
+          "y": 144.7,
+          "m": [
+            0,
+            2.07,
+            1.6
+          ]
+        },
+        "doorL": {
+          "x": 140.6,
+          "y": 176,
+          "m": [
+            -1.22,
+            1.05,
+            1.65
+          ]
+        },
+        "doorR": {
+          "x": 195.8,
+          "y": 140.5,
+          "m": [
+            1.22,
+            1.05,
+            1.65
+          ]
+        },
+        "roof": {
+          "x": 201.1,
+          "y": 125.4,
+          "m": [
+            0,
+            -0.4,
+            3.85
+          ]
+        },
+        "wheelFL": {
+          "x": 106.2,
+          "y": 171.1,
+          "m": [
+            -0.84,
+            2.95,
+            0.5
+          ]
+        },
+        "wheelFR": {
+          "x": 144.3,
+          "y": 146.6,
+          "m": [
+            0.84,
+            2.95,
+            0.5
+          ]
+        },
+        "wheelML": {
+          "x": 210.1,
+          "y": 239.6,
+          "m": [
+            -0.9,
+            -1.7,
+            0.5
+          ]
+        },
+        "wheelMR": {
+          "x": 250.8,
+          "y": 213.4,
+          "m": [
+            0.9,
+            -1.7,
+            0.5
+          ]
+        },
+        "wheelRL": {
+          "x": 237.3,
+          "y": 257,
+          "m": [
+            -0.9,
+            -2.9,
+            0.5
+          ]
+        },
+        "wheelRR": {
+          "x": 278,
+          "y": 230.8,
+          "m": [
+            0.9,
+            -2.9,
+            0.5
+          ]
+        },
+        "exhaust": {
+          "x": 255.4,
+          "y": 265.3,
+          "m": [
+            -0.6,
+            -3.4,
+            0.28
+          ]
+        }
+      },
+      "E": {
+        "fifthWheel": {
+          "x": 268.8,
+          "y": 185.1,
+          "m": [
+            0,
+            -2.4,
+            1.18
+          ]
+        },
+        "deck": {
+          "x": 236.8,
+          "y": 187,
+          "m": [
+            0,
+            -1.4,
+            1.1
+          ]
+        },
+        "gladHands": {
+          "x": 219.8,
+          "y": 165.5,
+          "m": [
+            0,
+            -0.87,
+            1.98
+          ]
+        },
+        "hoodLatch": {
+          "x": 125.8,
+          "y": 174.8,
+          "m": [
+            0,
+            2.07,
+            1.6
+          ]
+        },
+        "doorL": {
+          "x": 158.4,
+          "y": 198.6,
+          "m": [
+            -1.22,
+            1.05,
+            1.65
+          ]
+        },
+        "doorR": {
+          "x": 158.4,
+          "y": 148.5,
+          "m": [
+            1.22,
+            1.05,
+            1.65
+          ]
+        },
+        "roof": {
+          "x": 204.8,
+          "y": 119.6,
+          "m": [
+            0,
+            -0.4,
+            3.85
+          ]
+        },
+        "wheelFL": {
+          "x": 97.6,
+          "y": 219,
+          "m": [
+            -0.84,
+            2.95,
+            0.5
+          ]
+        },
+        "wheelFR": {
+          "x": 97.6,
+          "y": 184.5,
+          "m": [
+            0.84,
+            2.95,
+            0.5
+          ]
+        },
+        "wheelML": {
+          "x": 246.4,
+          "y": 220.3,
+          "m": [
+            -0.9,
+            -1.7,
+            0.5
+          ]
+        },
+        "wheelMR": {
+          "x": 246.4,
+          "y": 183.2,
+          "m": [
+            0.9,
+            -1.7,
+            0.5
+          ]
+        },
+        "wheelRL": {
+          "x": 284.8,
+          "y": 220.3,
+          "m": [
+            -0.9,
+            -2.9,
+            0.5
+          ]
+        },
+        "wheelRR": {
+          "x": 284.8,
+          "y": 183.2,
+          "m": [
+            0.9,
+            -2.9,
+            0.5
+          ]
+        },
+        "exhaust": {
+          "x": 300.8,
+          "y": 219.5,
+          "m": [
+            -0.6,
+            -3.4,
+            0.28
+          ]
+        }
+      },
+      "SE": {
+        "fifthWheel": {
+          "x": 246.3,
+          "y": 150.2,
+          "m": [
+            0,
+            -2.4,
+            1.18
+          ]
+        },
+        "deck": {
+          "x": 223.7,
+          "y": 166.7,
+          "m": [
+            0,
+            -1.4,
+            1.1
+          ]
+        },
+        "gladHands": {
+          "x": 211.7,
+          "y": 152.8,
+          "m": [
+            0,
+            -0.87,
+            1.98
+          ]
+        },
+        "hoodLatch": {
+          "x": 145.2,
+          "y": 204.9,
+          "m": [
+            0,
+            2.07,
+            1.6
+          ]
+        },
+        "doorL": {
+          "x": 195.8,
+          "y": 206.6,
+          "m": [
+            -1.22,
+            1.05,
+            1.65
+          ]
+        },
+        "doorR": {
+          "x": 140.6,
+          "y": 171.1,
+          "m": [
+            1.22,
+            1.05,
+            1.65
+          ]
+        },
+        "roof": {
+          "x": 201.1,
+          "y": 113.8,
+          "m": [
+            0,
+            -0.4,
+            3.85
+          ]
+        },
+        "wheelFL": {
+          "x": 144.3,
+          "y": 256.9,
+          "m": [
+            -0.84,
+            2.95,
+            0.5
+          ]
+        },
+        "wheelFR": {
+          "x": 106.2,
+          "y": 232.4,
+          "m": [
+            0.84,
+            2.95,
+            0.5
+          ]
+        },
+        "wheelML": {
+          "x": 250.8,
+          "y": 190.1,
+          "m": [
+            -0.9,
+            -1.7,
+            0.5
+          ]
+        },
+        "wheelMR": {
+          "x": 210.1,
+          "y": 163.9,
+          "m": [
+            0.9,
+            -1.7,
+            0.5
+          ]
+        },
+        "wheelRL": {
+          "x": 278,
+          "y": 172.7,
+          "m": [
+            -0.9,
+            -2.9,
+            0.5
+          ]
+        },
+        "wheelRR": {
+          "x": 237.3,
+          "y": 146.5,
+          "m": [
+            0.9,
+            -2.9,
+            0.5
+          ]
+        },
+        "exhaust": {
+          "x": 282.5,
+          "y": 166.4,
+          "m": [
+            -0.6,
+            -3.4,
+            0.28
+          ]
+        }
+      },
+      "S": {
+        "fifthWheel": {
+          "x": 192,
+          "y": 135.7,
+          "m": [
+            0,
+            -2.4,
+            1.18
+          ]
+        },
+        "deck": {
+          "x": 192,
+          "y": 158.2,
+          "m": [
+            0,
+            -1.4,
+            1.1
+          ]
+        },
+        "gladHands": {
+          "x": 192,
+          "y": 147.6,
+          "m": [
+            0,
+            -0.87,
+            1.98
+          ]
+        },
+        "hoodLatch": {
+          "x": 192,
+          "y": 217.4,
+          "m": [
+            0,
+            2.07,
+            1.6
+          ]
+        },
+        "doorL": {
+          "x": 231,
+          "y": 195.2,
+          "m": [
+            -1.22,
+            1.05,
+            1.65
+          ]
+        },
+        "doorR": {
+          "x": 153,
+          "y": 195.2,
+          "m": [
+            1.22,
+            1.05,
+            1.65
+          ]
+        },
+        "roof": {
+          "x": 192,
+          "y": 111.4,
+          "m": [
+            0,
+            -0.4,
+            3.85
+          ]
+        },
+        "wheelFL": {
+          "x": 218.9,
+          "y": 262.4,
+          "m": [
+            -0.84,
+            2.95,
+            0.5
+          ]
+        },
+        "wheelFR": {
+          "x": 165.1,
+          "y": 262.4,
+          "m": [
+            0.84,
+            2.95,
+            0.5
+          ]
+        },
+        "wheelML": {
+          "x": 220.8,
+          "y": 166.8,
+          "m": [
+            -0.9,
+            -1.7,
+            0.5
+          ]
+        },
+        "wheelMR": {
+          "x": 163.2,
+          "y": 166.8,
+          "m": [
+            0.9,
+            -1.7,
+            0.5
+          ]
+        },
+        "wheelRL": {
+          "x": 220.8,
+          "y": 142.1,
+          "m": [
+            -0.9,
+            -2.9,
+            0.5
+          ]
+        },
+        "wheelRR": {
+          "x": 163.2,
+          "y": 142.1,
+          "m": [
+            0.9,
+            -2.9,
+            0.5
+          ]
+        },
+        "exhaust": {
+          "x": 211.2,
+          "y": 137.2,
+          "m": [
+            -0.6,
+            -3.4,
+            0.28
+          ]
+        }
+      },
+      "SW": {
+        "fifthWheel": {
+          "x": 137.7,
+          "y": 150.2,
+          "m": [
+            0,
+            -2.4,
+            1.18
+          ]
+        },
+        "deck": {
+          "x": 160.3,
+          "y": 166.7,
+          "m": [
+            0,
+            -1.4,
+            1.1
+          ]
+        },
+        "gladHands": {
+          "x": 172.3,
+          "y": 152.8,
+          "m": [
+            0,
+            -0.87,
+            1.98
+          ]
+        },
+        "hoodLatch": {
+          "x": 238.8,
+          "y": 204.9,
+          "m": [
+            0,
+            2.07,
+            1.6
+          ]
+        },
+        "doorL": {
+          "x": 243.4,
+          "y": 171.1,
+          "m": [
+            -1.22,
+            1.05,
+            1.65
+          ]
+        },
+        "doorR": {
+          "x": 188.2,
+          "y": 206.6,
+          "m": [
+            1.22,
+            1.05,
+            1.65
+          ]
+        },
+        "roof": {
+          "x": 182.9,
+          "y": 113.8,
+          "m": [
+            0,
+            -0.4,
+            3.85
+          ]
+        },
+        "wheelFL": {
+          "x": 277.8,
+          "y": 232.4,
+          "m": [
+            -0.84,
+            2.95,
+            0.5
+          ]
+        },
+        "wheelFR": {
+          "x": 239.7,
+          "y": 256.9,
+          "m": [
+            0.84,
+            2.95,
+            0.5
+          ]
+        },
+        "wheelML": {
+          "x": 173.9,
+          "y": 163.9,
+          "m": [
+            -0.9,
+            -1.7,
+            0.5
+          ]
+        },
+        "wheelMR": {
+          "x": 133.2,
+          "y": 190.1,
+          "m": [
+            0.9,
+            -1.7,
+            0.5
+          ]
+        },
+        "wheelRL": {
+          "x": 146.7,
+          "y": 146.5,
+          "m": [
+            -0.9,
+            -2.9,
+            0.5
+          ]
+        },
+        "wheelRR": {
+          "x": 106,
+          "y": 172.7,
+          "m": [
+            0.9,
+            -2.9,
+            0.5
+          ]
+        },
+        "exhaust": {
+          "x": 128.6,
+          "y": 149,
+          "m": [
+            -0.6,
+            -3.4,
+            0.28
+          ]
+        }
+      },
+      "W": {
+        "fifthWheel": {
+          "x": 115.2,
+          "y": 185.1,
+          "m": [
+            0,
+            -2.4,
+            1.18
+          ]
+        },
+        "deck": {
+          "x": 147.2,
+          "y": 187,
+          "m": [
+            0,
+            -1.4,
+            1.1
+          ]
+        },
+        "gladHands": {
+          "x": 164.2,
+          "y": 165.5,
+          "m": [
+            0,
+            -0.87,
+            1.98
+          ]
+        },
+        "hoodLatch": {
+          "x": 258.2,
+          "y": 174.8,
+          "m": [
+            0,
+            2.07,
+            1.6
+          ]
+        },
+        "doorL": {
+          "x": 225.6,
+          "y": 148.5,
+          "m": [
+            -1.22,
+            1.05,
+            1.65
+          ]
+        },
+        "doorR": {
+          "x": 225.6,
+          "y": 198.6,
+          "m": [
+            1.22,
+            1.05,
+            1.65
+          ]
+        },
+        "roof": {
+          "x": 179.2,
+          "y": 119.6,
+          "m": [
+            0,
+            -0.4,
+            3.85
+          ]
+        },
+        "wheelFL": {
+          "x": 286.4,
+          "y": 184.5,
+          "m": [
+            -0.84,
+            2.95,
+            0.5
+          ]
+        },
+        "wheelFR": {
+          "x": 286.4,
+          "y": 219,
+          "m": [
+            0.84,
+            2.95,
+            0.5
+          ]
+        },
+        "wheelML": {
+          "x": 137.6,
+          "y": 183.2,
+          "m": [
+            -0.9,
+            -1.7,
+            0.5
+          ]
+        },
+        "wheelMR": {
+          "x": 137.6,
+          "y": 220.3,
+          "m": [
+            0.9,
+            -1.7,
+            0.5
+          ]
+        },
+        "wheelRL": {
+          "x": 99.2,
+          "y": 183.2,
+          "m": [
+            -0.9,
+            -2.9,
+            0.5
+          ]
+        },
+        "wheelRR": {
+          "x": 99.2,
+          "y": 220.3,
+          "m": [
+            0.9,
+            -2.9,
+            0.5
+          ]
+        },
+        "exhaust": {
+          "x": 83.2,
+          "y": 194.8,
+          "m": [
+            -0.6,
+            -3.4,
+            0.28
+          ]
+        }
+      },
+      "NW": {
+        "fifthWheel": {
+          "x": 137.7,
+          "y": 220,
+          "m": [
+            0,
+            -2.4,
+            1.18
+          ]
+        },
+        "deck": {
+          "x": 160.3,
+          "y": 207.4,
+          "m": [
+            0,
+            -1.4,
+            1.1
+          ]
+        },
+        "gladHands": {
+          "x": 172.3,
+          "y": 178.1,
+          "m": [
+            0,
+            -0.87,
+            1.98
+          ]
+        },
+        "hoodLatch": {
+          "x": 238.8,
+          "y": 144.7,
+          "m": [
+            0,
+            2.07,
+            1.6
+          ]
+        },
+        "doorL": {
+          "x": 188.2,
+          "y": 140.5,
+          "m": [
+            -1.22,
+            1.05,
+            1.65
+          ]
+        },
+        "doorR": {
+          "x": 243.4,
+          "y": 176,
+          "m": [
+            1.22,
+            1.05,
+            1.65
+          ]
+        },
+        "roof": {
+          "x": 182.9,
+          "y": 125.4,
+          "m": [
+            0,
+            -0.4,
+            3.85
+          ]
+        },
+        "wheelFL": {
+          "x": 239.7,
+          "y": 146.6,
+          "m": [
+            -0.84,
+            2.95,
+            0.5
+          ]
+        },
+        "wheelFR": {
+          "x": 277.8,
+          "y": 171.1,
+          "m": [
+            0.84,
+            2.95,
+            0.5
+          ]
+        },
+        "wheelML": {
+          "x": 133.2,
+          "y": 213.4,
+          "m": [
+            -0.9,
+            -1.7,
+            0.5
+          ]
+        },
+        "wheelMR": {
+          "x": 173.9,
+          "y": 239.6,
+          "m": [
+            0.9,
+            -1.7,
+            0.5
+          ]
+        },
+        "wheelRL": {
+          "x": 106,
+          "y": 230.8,
+          "m": [
+            -0.9,
+            -2.9,
+            0.5
+          ]
+        },
+        "wheelRR": {
+          "x": 146.7,
+          "y": 257,
+          "m": [
+            0.9,
+            -2.9,
+            0.5
+          ]
+        },
+        "exhaust": {
+          "x": 101.5,
+          "y": 247.9,
+          "m": [
+            -0.6,
+            -3.4,
+            0.28
+          ]
+        }
+      }
+    }
+  },
+  "sheets": [
+    {
+      "file": "AeroSemi_white_8dir.png",
+      "cells": 8,
+      "layout": "1 row",
+      "grid": [
+        3072,
+        320
+      ],
+      "pose": "at rest, fleet (white, weather 0.45), bobtail",
+      "order": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ]
+    },
+    {
+      "file": "AeroSemi_skirtless_8dir.png",
+      "cells": 8,
+      "layout": "1 row",
+      "grid": [
+        3072,
+        320
+      ],
+      "pose": "skirts:false — frame, tanks and batteries bared; same bbox as at rest",
+      "order": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ]
+    },
+    {
+      "file": "AeroSemi_doors_W.png",
+      "cells": 8,
+      "grid": [
+        3072,
+        320
+      ],
+      "pose": "doors cue 0->65deg at W"
+    },
+    {
+      "file": "AeroSemi_hood_W.png",
+      "cells": 8,
+      "grid": [
+        3072,
+        320
+      ],
+      "pose": "hood cue 0->72deg at W — the front clip bares the engine"
+    },
+    {
+      "file": "AeroSemi_roll_W.png",
+      "cells": 10,
+      "grid": [
+        3840,
+        320
+      ],
+      "pose": "bounce cue at W — one wheel revolution + suspension, cyclic (frame 10 wraps to 0)"
+    },
+    {
+      "file": "AeroSemi_steer_S.png",
+      "cells": 8,
+      "layout": "1 row",
+      "grid": [
+        3072,
+        320
+      ],
+      "pose": "steer cue at S — full right lock to full left lock"
+    },
+    {
+      "file": "AeroSemi_paints_SE.png",
+      "cells": 10,
+      "layout": "5 x 2",
+      "grid": [
+        1920,
+        640
+      ],
+      "pose": "the ten harbour paints at SE, weather 0.22",
+      "order": [
+        "white",
+        "cream",
+        "red",
+        "sage",
+        "blue",
+        "teal",
+        "gold",
+        "rustOrange",
+        "greyShingle",
+        "plum"
+      ]
+    }
+  ],
+  "sidecar": "aeroSemiIsoRig.aeroSemi.gameplay.json",
+  "rigSha256": "9886154c4cbb972d7c16f2326d705cae8214a8361aab16c89f36103e8b49a7d8"
+}

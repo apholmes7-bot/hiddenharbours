@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Cabover Box Truck — harness</title>
+<style>
+  body{margin:0;background:#0b1216;color:#c8d4d7;font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;padding:18px;}
+  h1{font-size:14px;letter-spacing:.16em;text-transform:uppercase;color:#c9a86a;margin:0 0 4px;}
+  p.note{color:#6f7e83;margin:0 0 16px;max-width:74ch;}
+  .row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:9px;}
+  .row > span.lbl{color:#6f7e83;letter-spacing:.12em;text-transform:uppercase;font-size:10.5px;width:78px;}
+  .grp{display:flex;gap:6px;flex-wrap:wrap;}
+  button{font:inherit;font-size:12px;padding:4px 9px;border-radius:3px;border:1px solid #2a3b43;background:#132025;color:#93a4a8;cursor:pointer;}
+  button.on{border-color:#c9a86a;background:#2a2317;color:#e6d2a4;}
+  button.act{border-color:#2f6079;background:#122530;color:#7fd6c9;}
+  input[type=range]{width:150px;accent-color:#7fd6c9;}
+  #stage{border:1px solid #243137;background:#0e181d;margin:12px 0;overflow:auto;}
+  canvas{display:block;image-rendering:pixelated;}
+  pre{border:1px solid #243137;background:#0e181d;padding:11px 13px;margin:0;white-space:pre-wrap;color:#8fa3a8;font-size:12px;}
+  b{color:#c8d4d7;font-weight:400;} i{color:#c9a86a;font-style:normal;}
+</style>
+</head>
+<body>
+<h1>Cabover Box Truck — harness</h1>
+<p class="note">Standalone: no build, no deps, no project. Bakes any facing, paint, preset and pose off the same
+<b>boxIsoRig.js</b> the engine ships, and asserts the bake against <b>caboverBox.contract.json</b> and the geometry
+in <b>boxIsoRig.caboverBox.gameplay.json</b>. Served from a folder it also re-hashes the rig against the contract's
+<i>rigSha256</i>; opened straight off disk the JSON fetches are blocked by the browser and those groups are
+skipped, not silently passed.</p>
+
+<div class="row"><span class="lbl">facing</span><span class="grp" id="dirs"></span></div>
+<div class="row"><span class="lbl">paint</span><span class="grp" id="paints"></span></div>
+<div class="row"><span class="lbl">preset</span><span class="grp" id="presets"></span></div>
+<div class="row"><span class="lbl">open</span><span class="grp" id="opens"></span></div>
+<div class="row"><span class="lbl">rollup</span><input type="range" id="rollup" min="0" max="1" step="0.02" value="0">
+  <span class="lbl" style="width:auto">gate</span><input type="range" id="gate" min="0" max="1" step="0.02" value="0">
+  <span class="lbl" style="width:auto">roll</span><input type="range" id="roll" min="0" max="1" step="0.02" value="0">
+  <span class="lbl" style="width:auto">steer</span><input type="range" id="steer" min="-1" max="1" step="0.05" value="0"></div>
+<div class="row"><span class="lbl">export</span>
+  <button class="act" id="strip">bake 8-dir strip &darr;</button>
+  <button class="act" id="cue">bake rollup cue &darr;</button>
+  <button class="act" id="check">run asserts</button>
+  <button id="anchors">anchors</button>
+  <button id="pivot" class="on">pivot</button>
+</div>
+
+<div id="stage"><canvas id="cv" width="384" height="320"></canvas></div>
+<pre id="log">loading rig…</pre>
+
+<script src="boxIsoRig.js"></script>
+<script>
+(function(){
+  var B = window.BoxIso;
+  var cv = document.getElementById('cv'), ctx = cv.getContext('2d'), out = document.getElementById('log');
+  if(!B){ out.textContent = 'boxIsoRig.js did not load — check the <script src> tag.'; return; }
+  var FACE = B.order, PAINTS = Object.keys(B.BODY);
+  var OPENS = [['tilt','tilt cab'],['dL','door L'],['dR','door R'],['liftgate','liftgate'],['night','night']];
+  var st = { dir:6, paint:'white', weather:0.5, rollup:0, gate:0, roll:0, steer:0,
+             tilt:0, dL:0, dR:0, liftgate:1, night:0, showAnchors:false, showPivot:true };
+
+  function opts(extra){
+    var o = { paint:st.paint, weather:st.weather, rollup:st.rollup, gate:st.gate, roll:st.roll, steer:st.steer,
+              tilt:st.tilt, dL:st.dL, dR:st.dR, liftgate:!!st.liftgate, night:!!st.night };
+    if(extra) for(var k in extra) o[k] = extra[k];
+    return o;
+  }
+  function bake(dir, o){
+    var c = document.createElement('canvas'); c.width = B.W; c.height = B.H;
+    c.getContext('2d').putImageData(new ImageData(B.render(dir, o || opts()), B.W, B.H), 0, 0);
+    return c;
+  }
+  function bbox(rgba){
+    var x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
+    for(var y=0;y<B.H;y++) for(var x=0;x<B.W;x++) if(rgba[(y*B.W+x)*4+3]){
+      if(x<x0)x0=x; if(x>x1)x1=x; if(y<y0)y0=y; if(y>y1)y1=y; }
+    return [x0,y0,x1,y1];
+  }
+  function chips(host, list, isOn, pick){
+    host.innerHTML = '';
+    list.forEach(function(it){
+      var b = document.createElement('button');
+      b.textContent = it[1]; b.className = isOn(it[0]) ? 'on' : '';
+      b.onclick = function(){ pick(it[0]); };
+      host.appendChild(b);
+    });
+  }
+  function ui(){
+    chips(document.getElementById('dirs'), FACE.map(function(f,i){ return [i,f]; }),
+      function(i){ return i===st.dir; }, function(i){ st.dir=i; draw(); });
+    chips(document.getElementById('paints'), PAINTS.map(function(p){ return [p,p]; }),
+      function(p){ return p===st.paint; }, function(p){ st.paint=p; draw(); });
+    chips(document.getElementById('presets'), Object.keys(B.PRESETS).map(function(k){ return [k,k]; }),
+      function(){ return false; }, function(k){
+        st.tilt = st.dL = st.dR = st.night = 0; st.rollup = st.gate = 0; st.liftgate = 1;
+        var p = B.PRESETS[k]; for(var f in p) st[f] = (typeof p[f]==='boolean') ? (p[f]?1:0) : p[f];
+        draw(); });
+    chips(document.getElementById('opens'), OPENS,
+      function(k){ return k==='liftgate' ? !st[k] : !!st[k]; }, function(k){ st[k] = st[k] ? 0 : 1; draw(); });
+  }
+  ['rollup','gate','roll','steer'].forEach(function(k){
+    document.getElementById(k).oninput = function(e){ st[k] = +e.target.value; draw(); };
+  });
+  document.getElementById('pivot').onclick = function(){ st.showPivot = !st.showPivot; this.className = st.showPivot?'on':''; draw(); };
+  document.getElementById('anchors').onclick = function(){ st.showAnchors = !st.showAnchors; this.className = st.showAnchors?'on':''; draw(); };
+
+  var AKEYS = ['rollup','sill','gate','cargo','tiltLatch','doorL','doorR','roof','wheelFL','wheelFR','wheelRL','wheelRR','exhaust'];
+  function draw(){
+    ui();
+    var t0 = Date.now(), o = opts(), img = B.render(st.dir, o), ms = Date.now()-t0;
+    cv.width = B.W; cv.height = B.H;
+    ctx.clearRect(0,0,B.W,B.H); ctx.putImageData(new ImageData(img, B.W, B.H), 0, 0);
+    var b = bbox(img);
+    if(st.showPivot){
+      ctx.fillStyle = '#f05a50';
+      ctx.fillRect(B.pivot.x-5, B.pivot.y, 11, 1); ctx.fillRect(B.pivot.x, B.pivot.y-5, 1, 11);
+    }
+    if(st.showAnchors){
+      var A = B.anchors(st.dir, o);
+      ctx.fillStyle = '#7fd6c9';
+      AKEYS.forEach(function(k){ ctx.fillRect(Math.round(A[k].x)-1, Math.round(A[k].y)-1, 3, 3); });
+    }
+    var dm = B.dims(o);
+    out.innerHTML = '<b>' + dm.label + ' · ' + FACE[st.dir] + ' (' + (st.dir*45) + '°) · ' + st.paint
+      + ' · ' + (dm.liftgate?'liftgate':'plain tail') + '</b>\n'
+      + 'cell ' + B.W + '×' + B.H + ' · pivot ' + B.pivot.x + ',' + B.pivot.y + ' · painted [' + b.join(',') + '] '
+      + (b[2]-b[0]+1) + '×' + (b[3]-b[1]+1) + ' · baked in ' + ms + ' ms\n'
+      + dm.loa + ' m over bumpers · ' + dm.width + ' m over flares · ' + dm.height + ' m high · wheelbase '
+      + dm.wheelbase + ' m · ' + dm.wheels + ' wheels · box ' + dm.boxLen + ' m, floor ' + dm.boxFloor + ' m\n'
+      + 'crosshair = pivot (model z=0, ground centre) · roll-up and liftgate read at N NE NW';
+  }
+
+  function saveStrip(cells, name){
+    var s = document.createElement('canvas'); s.width = B.W*cells.length; s.height = B.H;
+    var sx = s.getContext('2d');
+    cells.forEach(function(c,k){ sx.drawImage(c, k*B.W, 0); });
+    s.toBlob(function(bl){
+      var u = URL.createObjectURL(bl), a = document.createElement('a');
+      a.href = u; a.download = name; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      setTimeout(function(){ URL.revokeObjectURL(u); }, 2000);
+    });
+  }
+  document.getElementById('strip').onclick = function(){
+    var cells = []; for(var d=0;d<8;d++) cells.push(bake(d));
+    saveStrip(cells, 'CaboverBox_' + st.paint + '_8dir.png');
+  };
+  document.getElementById('cue').onclick = function(){
+    var cells = []; for(var i=0;i<8;i++) cells.push(bake(st.dir, opts(B.CUES.rollup(i/7))));
+    saveStrip(cells, 'CaboverBox_' + st.paint + '_rollup_' + FACE[st.dir] + '.png');
+  };
+
+  /* ---------------- asserts ---------------- */
+  function json(path){
+    return fetch(path, {cache:'no-store'}).then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); });
+  }
+  function text(path){
+    return fetch(path, {cache:'no-store'}).then(function(r){ if(!r.ok) throw new Error(r.status); return r.text(); });
+  }
+  document.getElementById('check').onclick = function(){
+    var G = {}, order = [], fails = 0, skipped = [];
+    var near = function(a,b,e){ return Math.abs(a-b) < (e==null?0.001:e); };
+    function assert(g, ok, msg){
+      if(!G[g]){ G[g] = {n:0, bad:[]}; order.push(g); }
+      G[g].n++; if(!ok){ G[g].bad.push(msg); fails++; }
+    }
+    function report(head){
+      var lines = order.map(function(g){
+        var q = G[g], h = (q.bad.length ? ' FAIL ' : '  ok  ') + g + '  (' + (q.n-q.bad.length) + '/' + q.n + ')';
+        return q.bad.length ? h + '\n        ' + q.bad.join('\n        ') : h;
+      });
+      out.innerHTML = '<b>' + (fails ? fails + ' assert(s) FAILED' : 'all asserts pass') + '</b>  ·  ' + head
+        + (skipped.length ? '\n<i>skipped: ' + skipped.join('; ') + '</i>' : '') + '\n' + lines.join('\n');
+    }
+
+    var g = B.G, dm = B.dims();
+    assert('load', !!B.render && !!B.anchors && !!B.dims, 'rig exports render/anchors/dims');
+    assert('load', B.PX === 32 && B.DIRS === 8, 'scale 32 px/m, 8 facings');
+
+    for(var d=0; d<8; d++){
+      var p = B.project(d, [0,0,0]);
+      assert('pivot', near(p.x, B.pivot.x, 0.51) && near(p.y, B.pivot.y, 0.51),
+        FACE[d] + ': origin projects to ' + p.x.toFixed(1) + ',' + p.y.toFixed(1) + ' not ' + B.pivot.x + ',' + B.pivot.y);
+    }
+
+    var rest = { paint:'white', weather:0.5 };
+    var wide = { paint:'white', weather:0.5, dL:1, dR:1, rollup:1, gate:1, tilt:1 };
+    var dock = { paint:'white', weather:0.5, rollup:1, gate:0.7 };
+    var restB = [], wideB = [], dockB = [];
+    for(d=0; d<8; d++){
+      var br = bbox(B.render(d, rest)), bw = bbox(B.render(d, wide)), bd = bbox(B.render(d, dock));
+      restB.push(br); wideB.push(bw); dockB.push(bd);
+      assert('bounds', br[0] >= 0 && br[1] >= 0 && br[2] <= B.W-1 && br[3] <= B.H-1, FACE[d] + ': at-rest paint leaves the cell');
+      assert('bounds', bw[0] >= 1 && bw[1] >= 1 && bw[2] <= B.W-2 && bw[3] <= B.H-2,
+        FACE[d] + ': wide-open paint [' + bw.join(',') + '] has no 1 px margin in a ' + B.W + '×' + B.H + ' cell');
+      assert('bounds', br[3] <= B.pivot.y + 64, FACE[d] + ': at-rest paints ' + (br[3]-B.pivot.y) + ' px below the pivot — the nose bumper bottoms at 62');
+      assert('bounds', bw[3] <= B.pivot.y + 92, FACE[d] + ': wide-open paints ' + (bw[3]-B.pivot.y) + ' px below the pivot — the grounded platform reaches 88');
+    }
+
+    function pixDiff(a, b){
+      var painted = 0, moved = 0;
+      for(var i=0;i<a.length;i+=4){
+        var pa = a[i+3] > 0, pb = b[i+3] > 0;
+        if(pa) painted++;
+        if(pa !== pb || (pa && (a[i]!==b[i] || a[i+1]!==b[i+1] || a[i+2]!==b[i+2]))) moved++;
+      }
+      return { painted:painted, moved:moved, pct:100*moved/painted };
+    }
+    // each cue at a facing where its motion faces the camera (the rollup is edge-on at E/W, correctly)
+    var CUE_AT = { doors:6, rollup:0, gate:0, tilt:4, roll:6, bounce:6, steer:4, turn:6 };
+    Object.keys(CUE_AT).forEach(function(c){
+      var dd = CUE_AT[c];
+      var d0 = pixDiff(B.render(dd, Object.assign({}, rest, B.CUES[c](0))), B.render(dd, Object.assign({}, rest, B.CUES[c](0.5))));
+      assert('cues', d0.moved > 30, 'cue ' + c + ' at ' + FACE[dd] + ': only ' + d0.moved + ' px move between t=0 and t=0.5');
+    });
+    var rd = pixDiff(B.render(6, Object.assign({}, rest, {roll:0})), B.render(6, Object.assign({}, rest, {roll:1})));
+    assert('cues', rd.pct < 0.6, 'roll:1 differs from roll:0 by ' + rd.pct.toFixed(2) + '% of painted px (' + rd.moved
+      + ') — over the 0.6% the loop seam becomes visible (this rig bakes it bit-identical)');
+    assert('cues', pixDiff(B.render(6, Object.assign({}, rest, {roll:0})), B.render(6, Object.assign({}, rest, {roll:0.05}))).moved > rd.moved,
+      'a 5% turn moves fewer pixels than a whole one — the wheels may not be turning at all');
+
+    var up = bbox(B.render(2, Object.assign({}, rest, {susF:1, susR:1})));
+    var flat = bbox(B.render(2, rest));
+    assert('suspension', up[1] > flat[1], 'compressing both axles did not lower the roof (top row ' + up[1] + ' vs ' + flat[1] + ')');
+    assert('suspension', up[3] === flat[3], 'the wheels moved with the body (bottom row ' + up[3] + ' vs ' + flat[3] + ')');
+
+    // the roll-up never leaves the body: identical painted bbox at N, open vs shut — and it must reveal the bay
+    var rcN = bbox(B.render(0, rest)), roN = bbox(B.render(0, Object.assign({}, rest, {rollup:1})));
+    assert('rollup', rcN.join(',') === roN.join(','), 'open roll-up changed the painted bbox at N ([' + rcN + '] vs [' + roN + ']) — the door left the body');
+    assert('rollup', pixDiff(B.render(0, rest), B.render(0, Object.assign({}, rest, {rollup:1}))).moved > 400,
+      'opening the roll-up barely changes the bake — the slats may not be moving');
+
+    // liftgate: three distinct phases, and the platform reaches aft and down
+    var g0 = B.render(0, rest), g45 = B.render(0, Object.assign({}, rest, {gate:0.45}));
+    var g70 = B.render(0, Object.assign({}, rest, {gate:0.7})), g1 = B.render(0, Object.assign({}, rest, {gate:1}));
+    assert('gate', pixDiff(g0, g45).moved > 100, 'swing phase (0..0.45) barely moves pixels');
+    assert('gate', pixDiff(g45, g70).moved > 100, 'unfold phase (0.45..0.70) barely moves pixels');
+    assert('gate', pixDiff(g70, g1).moved > 100, 'lower phase (0.70..1) barely moves pixels');
+    assert('gate', bbox(g1)[3] > bbox(g0)[3], 'the grounded platform did not extend the paint below the tail at N');
+    assert('gate', pixDiff(g0, B.render(0, Object.assign({}, rest, {liftgate:false}))).moved > 100,
+      'liftgate:false looks the same as the stowed gate — the part toggle may not be wired');
+
+    // tilt: the cab noses over its front hinge; the box does not move
+    var t0 = B.render(4, rest), t1 = B.render(4, Object.assign({}, rest, {tilt:1}));
+    assert('tilt', pixDiff(t0, t1).moved > 800, 'full tilt moves only ' + pixDiff(t0, t1).moved + ' px at S');
+    assert('tilt', bbox(t1)[1] === bbox(t0)[1], 'tilting the cab changed the painted TOP at S — the box roof should still own it');
+
+    var AK = AKEYS;
+    for(d=0; d<8; d++){
+      var A = B.anchors(d, rest), ok = true, bad = '';
+      AK.forEach(function(k){ if(!(A[k].x >= 0 && A[k].x < B.W && A[k].y >= 0 && A[k].y < B.H)){ ok = false; bad = k; } });
+      assert('anchors', ok, FACE[d] + ': anchor ' + bad + ' projects outside the cell');
+      assert('anchors', A.gate.m[1] < A.sill.m[1], FACE[d] + ': the gate anchor is not aft of the sill');
+      assert('anchors', A.tiltLatch.m[1] > A.cargo.m[1], FACE[d] + ': the tilt latch is not forward of the cargo centre');
+    }
+
+    var lock = pixDiff(B.render(4, rest), B.render(4, Object.assign({}, rest, {steer:1})));
+    assert('steering', lock.moved > 30, 'full lock moves only ' + lock.moved + ' px at S — the front wheels are not yawing');
+    assert('steering', pixDiff(B.render(4, Object.assign({}, rest, {steer:1})), B.render(4, Object.assign({}, rest, {steer:-1}))).moved > 40,
+      'left lock and right lock look the same');
+    var env = B.G.frontWX + (B.G.tireW/2)*Math.cos(B.steer.maxInnerDeg*Math.PI/180) + B.G.wheelR*Math.sin(B.steer.maxInnerDeg*Math.PI/180);
+    assert('steering', env <= B.G.hwFlare + 0.005, 'at full lock a front tire corner reaches |x| ' + env.toFixed(3)
+      + ' m, outside the ' + B.G.hwFlare + ' m arch flares — the truck would get wider than its widest point');
+    var sa = B.steer.angles(1);
+    assert('steering', sa.L > sa.R && near(sa.L, 33, 0.01), 'Ackermann is backwards or off: inner ' + sa.L.toFixed(2) + ' outer ' + sa.R.toFixed(2));
+    var yq = pixDiff(B.render(1, Object.assign({}, rest, {yaw:45})), B.render(2, rest));
+    assert('steering', yq.moved === 0, 'yaw 45 at NE is not identical to E (' + yq.moved + ' px) — the heading maths has drifted');
+    var yb = bbox(B.render(1, Object.assign({}, rest, {yaw:22.5})));
+    assert('steering', yb[0] >= 0 && yb[1] >= 0 && yb[2] < B.W && yb[3] < B.H, 'a yawed cell paints outside the cell [' + yb.join(',') + ']');
+    assert('steering', near(B.project(1, [0,0,0], null, 22.5).x, B.pivot.x) && near(B.project(1, [0,0,0], null, 22.5).y, B.pivot.y),
+      'the pivot moved under yaw');
+
+    report('rig-only groups done, ' + dm.label);
+
+    Promise.all([
+      json('caboverBox.contract.json').catch(function(){ return null; }),
+      json('boxIsoRig.caboverBox.gameplay.json').catch(function(){ return null; }),
+      text('boxIsoRig.js').catch(function(){ return null; })
+    ]).then(function(res){
+      var C = res[0], S = res[1], SRC = res[2];
+      if(!C) skipped.push('contract.json not fetchable (file:// ?) — published-bbox and articulation checks');
+      if(!S) skipped.push('gameplay.json not fetchable — sidecar cross-checks');
+
+      if(C){
+        for(var d2=0; d2<8; d2++){
+          var f = FACE[d2];
+          assert('published', C.painted_bbox.at_rest[f].join(',') === restB[d2].join(','),
+            f + ': contract at_rest [' + C.painted_bbox.at_rest[f] + '] vs fresh bake [' + restB[d2] + ']');
+          assert('published', C.painted_bbox.all_open[f].join(',') === wideB[d2].join(','),
+            f + ': contract all_open [' + C.painted_bbox.all_open[f] + '] vs fresh bake [' + wideB[d2] + ']');
+          assert('published', C.painted_bbox.dock_work[f].join(',') === dockB[d2].join(','),
+            f + ': contract dock_work [' + C.painted_bbox.dock_work[f] + '] vs fresh bake [' + dockB[d2] + ']');
+        }
+        assert('published', C.dims.loa === dm.loa && C.dims.width === dm.width && C.dims.wheelbase === dm.wheelbase,
+          'contract dims disagree with dims()');
+        assert('published', C.bake.cell.W === B.W && C.bake.cell.H === B.H && C.bake.pivot.x === B.pivot.x && C.bake.pivot.y === B.pivot.y,
+          'contract cell/pivot disagree with the rig');
+        assert('published', near(C.articulation.rollup.travel_m, g.slats*g.slatH) && C.articulation.rollup.slats === g.slats,
+          'contract roll-up travel disagrees with the slat stack');
+        assert('published', C.articulation.gate.phases.swing[1] === 0.45 && C.articulation.gate.phases.unfold[1] === 0.7,
+          'contract gate phase breakpoints disagree with gatePose()');
+      }
+
+      if(S){
+        assert('sidecar', S.derivedFromRigSha256 && S.derivedFromRigSha256.length === 64, 'derivedFromRigSha256 is missing or not a sha256');
+        assert('sidecar', near(S.CARGO.floor.z, g.boxFloorZ), 'CARGO.floor.z ' + S.CARGO.floor.z + ' vs G.boxFloorZ ' + g.boxFloorZ);
+        assert('sidecar', S.BODY.loa_m === dm.loa && S.BODY.wheelbase_m === dm.wheelbase && S.BODY.height_m === dm.height,
+          'BODY block disagrees with dims()');
+        assert('sidecar', S.WHEELS.list.length === 6, 'WHEELS.list is not 6 wheels');
+        var wx = { FL:-g.frontWX, FR:g.frontWX, RLi:-g.dualXi, RLo:-g.dualXo, RRi:g.dualXi, RRo:g.dualXo };
+        S.WHEELS.list.forEach(function(w){
+          assert('sidecar', near(w.pos[0], wx[w.id], 0.011), 'wheel ' + w.id + ' x ' + w.pos[0] + ' vs G ' + wx[w.id]);
+          assert('sidecar', near(w.pos[2], g.wheelR), 'wheel ' + w.id + ' sits at z ' + w.pos[2] + ' not the tire radius');
+        });
+        S.THRESHOLD.forEach(function(t){
+          if(t.kind === 'rolling'){
+            assert('sidecar', near(t.sill_z, g.sillZ) && near(t.head_z, g.headZ), 'roll-up sill/head vs G');
+            assert('sidecar', !t.keep_clear.radius_m && !t.keep_clear.strip, 'the roll-up published a swept keep-clear — it must have NONE');
+          } else {
+            assert('sidecar', near(t.clear_width_m, g.doorY[1]-g.doorY[0], 0.011), t.id + ': clear width vs G.doorY');
+            assert('sidecar', t.swing_deg === 65, t.id + ': swing_deg is not 65');
+            assert('sidecar', near(t.head_z, g.doorHead), t.id + ': head_z vs G.doorHead');
+          }
+        });
+        assert('sidecar', near(S.LIFTGATE.heights_m.dock, g.gate.dockZ) && near(S.LIFTGATE.heights_m.ground, g.gate.groundZ),
+          'LIFTGATE dock/ground vs G.gate');
+        assert('sidecar', near(S.LIFTGATE.platform_m.width, g.gate.hwPlat*2) &&
+          near(S.LIFTGATE.platform_m.depth_unfolded, g.gate.mainD+g.gate.flipD), 'LIFTGATE platform vs G.gate');
+        assert('sidecar', near(S.TILT.hinge.at_y, g.tiltHinge.y) && near(S.TILT.hinge.at_z, g.tiltHinge.z) && S.TILT.deg[1] === g.tiltDeg,
+          'TILT hinge/deg vs G.tiltHinge');
+        assert('sidecar', near(S.SUSPENSION.travel_m.front, B.travel.F) && near(S.SUSPENSION.travel_m.rear, B.travel.R),
+          'SUSPENSION travel vs B.travel');
+        assert('sidecar', S.STEP.default === true && S.STEP.boards.length === 4, 'STEP: this body HAS four fixed treads');
+        assert('sidecar', S.TOW.hitch === null && S.TOW.front_hooks.length === 0, 'TOW: nothing on this truck couples');
+        ['WASHBOARD','CLEATS','walkable_roof','fuel_fill','spare_wheel','dock_bumpers'].forEach(function(k){
+          assert('sidecar', !!S._excluded[k], '_excluded.' + k + ' is missing — an absence must be recorded, not silent'); });
+        if(C) assert('sidecar', S.derivedFromRigSha256 === C.rigSha256, 'sidecar sha ' + S.derivedFromRigSha256.slice(0,8) + ' vs contract ' + String(C.rigSha256).slice(0,8));
+      }
+
+      if(SRC && C && window.crypto && crypto.subtle){
+        return crypto.subtle.digest('SHA-256', new TextEncoder().encode(SRC)).then(function(d3){
+          var hex = Array.from(new Uint8Array(d3)).map(function(b){ return b.toString(16).padStart(2,'0'); }).join('');
+          assert('sha', hex === C.rigSha256, 'rig as served hashes ' + hex.slice(0,12) + '…, contract claims ' + String(C.rigSha256).slice(0,12) + '…');
+        });
+      }
+      if(!SRC || !window.crypto || !crypto.subtle) skipped.push('rig re-hash (needs the file over http + SubtleCrypto)');
+    }).then(function(){
+      report(dm.label + ' · ' + FACE.length + ' facings baked three ways · ' + (fails ? 'see failures' : 'bake, contract and sidecar agree'));
+    });
+  };
+
+  draw();
+})();
+</script>
+</body>
+</html>
