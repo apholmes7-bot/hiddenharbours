@@ -174,3 +174,92 @@ that happens).
   draws it and neither may reference the other — the same reason `HullMeshDef` lives there (rule 4).
 - Proposals 1 and 3 are **coupled** (see Proposal 1's second bullet); they were ruled on together,
   2 and 4 stand alone.
+
+## Amendment — the CUTAWAY lands, and Proposal 3 gains a sentence (2026-08-26)
+
+The owner ruled on 2026-08-26 that a boat interior is a **cutaway composite**: the boat's exterior
+with a wall/roof cut away to reveal the interior, **exterior-only at the helm and on deck**. The
+interior-mesh spike ([`interior-mesh-verdict.md`](../design/spikes/interior-mesh-verdict.md), PR
+#644) had already proved the mechanism and named the one upstream item it was blocked on; the
+cutaway kit's pass-3 rigs supplied it, and batch 1 (lobster, trawler, packet) is now baked and
+gated. Four amendments follow, three of them the spike's own.
+
+1. **Proposal 3 gains its second sentence.** *"Entering a cabin does not add a sorting rule — it
+   swaps which sheet is on"* is true and **insufficient on a mesh hull**: culling the house does not
+   cull the hull's own near **topsides**, which in a ¾ view stand between the camera and a cabin
+   sole. Measured on the lobster: the swap alone leaves a revealed room **20.3%** visible; with the
+   rig's own per-face depth bias it is **97.6%**. The mechanism is `db` in **UV0.z**, already in
+   every baked mesh, subtracted from clip depth while the true depth (`o.wpos.z` — the
+   deck-occupant band and the keyline resolve) is left alone. The value is the hull's own
+   bounding-sphere diameter, so there is no constant to tune. **Recorded as the mechanism so nobody
+   invents a sorting rule for it later**, and pinned by `HullLevelTagBakeTests` so a re-bake cannot
+   drop it quietly.
+
+2. **Proposal 3's ⚠ open item is CLOSED for geometry and stays open for sheets.** Geometry has no
+   compositing window — it is in world space and the camera clips it like anything else. The
+   fit-out sheets keep the problem, so the warning survives with its scope shrunk to the layers that
+   are still pixels.
+
+3. **A level must publish a ceiling, and an open sky must say so.** The spike proposed this as a new
+   `BoatInteriorDef.CeilingZMeters`. It landed **one seam earlier instead** — on the RIG, as
+   `geometry().levels[].ceilingZ` plus an explicit `ceiling:{kind:'open'}` — and reaches the game on
+   `HullMeshDef.LevelTags`. That is the better place for the same reason the tag is: the rig knows
+   the number by DECLARATION (it draws the roof lip), and both of the spike's attempts to measure
+   one back off the mesh were wrong in ways only a render caught. `BoatInteriorDef` is unchanged.
+   **A level with no declared ceiling is refused a cut** rather than guessed at, which is what makes
+   "an absent field and an open sky must never look the same" enforceable rather than aspirational.
+
+4. **The exterior half of the swap has an answer on a mesh hull.** #622 left `BoatInterior`'s
+   `exterior` argument null and said so; on a mesh hull the house is geometry, not a sheet, and
+   there was nothing to hand it. The answer is not a `Renderer` at all — it is
+   `Core.IHullCutaway.ShowCutawayLevel`, driven by `BoatCutaway` from `CabinSignals` plus
+   `HelmSlot` occupancy. `ExactlyOneLayerOn` is untouched and still reports false on a mesh hull:
+   it asks about two sheets, and one of them has never existed.
+
+**Two vocabularies, one join, and it is DATA.** The rig names a room `house`; `BoatInteriorDef`
+names it `house_sole`; the interior sheets run a third order that is neither. The rig publishes the
+def's id in its own `deck` field and the baker carries it to `HullMeshDef.LevelTags[].DeckId`, so
+nothing re-derives the map from a `_sole` suffix at runtime. This is the same defect class that
+already shipped once on this fleet (the tanker's `house_sole` resolving to the sheet row `below`).
+
+### A cut takes its DECLARED ceiling (coordinator, 2026-08-27)
+
+Building the tag surfaced one thing the presentation ruling did not anticipate: **three enclosed
+levels have no hull faces of their own**, so they engaged the gate and removed nothing. Both ships'
+`below` is an engine space walled by the shell — which is `hull`, the one class a cut may never
+take — and the lobster's `cuddy` is a berth whose lid is the **foredeck**, a walkable level in its
+own right. Going below drew a whole boat.
+
+**Ruled:** when level *L* engages the gate, *L*'s own faces are culled **and** the faces of the
+level *L*'s `geometry()` ceiling record names as its lid. **One hop only, declaration-driven, never
+inferred from geometry.** Partial covers are untouched, and a per-level veto lets a rig opt out.
+
+Three properties are worth stating because each is enforced by the shape of the data rather than by
+a rule somebody has to remember:
+
+- **One hop is unrepresentable, not merely forbidden.** The shader has ONE lid uniform, a level
+  carries ONE lid field, and the bake refuses a lid that itself has a lid. A chain cannot be
+  written down, cannot be baked, and cannot be expressed on the GPU.
+- **The lid is culled; the lid's ROOM is not shown.** The interior branch tests only the level the
+  occupant is in. A lid is a thing that comes off, not a second room you are also standing in.
+- **An open level may not be cut INTO and may perfectly well BE a lid.** All three lids in batch 1
+  are open decks. That asymmetry looks like a bug until you say it out loud, so it is said here and
+  asserted in `HullMeshCutawayTableTests`.
+
+> ⚠️ **The declaration the ruling names does not exist in the data yet, and this is the standing
+> upstream ask.** Batch 1's ceiling records carry `of:`, which is PROSE — `'main-deck underside
+> (DECK-0.12)'`, `'foredeck underside = sheerZ(y)-0.16'`. Those spellings are not level ids
+> (`main-deck` is hyphenated where the id is `main_deck`; `boat-deck` and `wheelhouse deckhead` are
+> not levels at all), and substring-matching a human sentence is a worse inference than the
+> geometric one the ruling forbids. Matching a ceiling z against another level's sole z is that
+> forbidden inference AND needs a per-hull tolerance nobody can justify (the gaps are 0.110 m,
+> 0.120 m and 0.200 m — a deck-plate thickness the rig states in prose and publishes nowhere).
+> So the three lids are declared in `RigLevelLids`, each quoting the rig's own words for it, and
+> the extractor **refuses a bake where that table and a rig's `ceiling.lid` disagree** — the table
+> cannot outlive the field it stands in for. **Ask upstream for `ceiling.lid` (and `lid: null` as
+> the veto) and delete it.**
+
+**Still not decided here:** the shell (sole, walls, ceiling, door aperture) as geometry — the
+spike's HYBRID recommendation — which needs the three shell palette ramps inside the 16-slot
+`_RampMeta` budget and is a separate lane. Nothing in this amendment emits interior geometry; the
+mesh's TexCoord1.y is reserved for it and is 0 on every face baked so far.

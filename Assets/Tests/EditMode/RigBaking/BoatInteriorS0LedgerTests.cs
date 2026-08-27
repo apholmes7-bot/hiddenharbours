@@ -175,17 +175,23 @@ namespace HiddenHarbours.Tests.RigBaking
                     ? stale : System.Array.Empty<string>(),
                 "no hull has ever been stale-fatal on the current ledger");
 
-            CollectionAssert.AreEqual(
-                new[] { "capeIslanderIsoRig" }, byVerdict[BoatInteriorS0Verdict.ForkedRig],
-                "the cape is the one hull still refused, and she needs a rig MERGE, not a re-measure");
+            // The cape's FORKED-RIG was the last refusal standing, and it is discharged: her rig merge
+            // landed 2026-08-27 as the third sha 60d127c3… — repo main as the base, with the kit's aft
+            // door and published loft re-applied, #508's OKLCH paint and #247's washboards byte-identical
+            // through it. Asserted ABSENT rather than looked up, for the same reason as RefusedPin above.
+            CollectionAssert.IsEmpty(
+                byVerdict.TryGetValue(BoatInteriorS0Verdict.ForkedRig, out var forked)
+                    ? forked : System.Array.Empty<string>(),
+                "no hull is on a forked rig any more — the cape's merge closed the last fork");
 
             CollectionAssert.AreEqual(
-                new[] { "coastalPacketIsoRig", "lobsterBoatIsoRig", "lobsterBoatVariantsIsoRig",
-                        "sideDraggerIsoRig", "sportFisherIsoRig2.convertible",
-                        "sportFisherIsoRig2.skybridge", "sternTrawlerIsoRig", "sternTrawlerMk2IsoRig",
-                        "tankerIsoRig" },
+                new[] { "capeIslanderIsoRig", "coastalPacketIsoRig", "lobsterBoatIsoRig",
+                        "lobsterBoatVariantsIsoRig", "sideDraggerIsoRig",
+                        "sportFisherIsoRig2.convertible", "sportFisherIsoRig2.skybridge",
+                        "sternTrawlerIsoRig", "sternTrawlerMk2IsoRig", "tankerIsoRig" },
                 byVerdict[BoatInteriorS0Verdict.Clean],
-                "nine families clear — 26 sidecars once the eighteen lobster variants are counted");
+                "ten families clear — every hull in the drop — which is 27 sidecars once the eighteen " +
+                "lobster variants are counted");
         }
 
         [Test]
@@ -208,22 +214,26 @@ namespace HiddenHarbours.Tests.RigBaking
         }
 
         [Test]
-        public void TheCapeIsForkedNotStaleAndAsksForAMergeNotAReMeasure()
+        public void TheCapeIsCleanAndTheAskSheClearedOnWasAMergeNotAReMeasure()
         {
-            // The distinction this pins cost a wrong verdict to learn. Her rooms are SOUND: every input
-            // they are measured from is identical across both branches, and the washboards #247 moved
-            // are not in the published loft at all. What is broken is that main's rig and the kit's are
-            // two forks — main has the paint and the washboards but publishes no loft; the kit publishes
-            // the loft but has neither. Calling that "stale" sends upstream to re-measure, which would
-            // not help and cannot even be done: boatInteriorRig.js drops a hull whose rig has no loft.
+            // Until 2026-08-27 this test pinned her FORKED-RIG refusal — a distinction that cost a
+            // wrong verdict to learn (her rooms were SOUND; "stale" would have sent upstream to
+            // re-measure, which could not even be done: boatInteriorRig.js drops a hull whose rig
+            // has no loft). The rig merge the ask demanded landed as the third sha 60d127c3… —
+            // repo main as the base, the kit's aft door and published loft re-applied — and the
+            // verdict flipped to CLEAN in the ledger's dated _corrections entry. This now pins the
+            // DISCHARGED state, and that the recorded ask is still the historical merge ask: if the
+            // ledger ever re-refuses her, or the ask is rewritten into a re-measure, this reds.
             BoatInteriorS0Entry cape = BoatInteriorS0Ledger.For(Committed(), "capeIslanderIsoRig");
 
-            Assert.AreEqual(BoatInteriorS0Verdict.ForkedRig, cape.Verdict);
-            Assert.IsFalse(cape.IsClean, "forked still does not build — the rig cannot land as-is");
+            Assert.AreEqual(BoatInteriorS0Verdict.Clean, cape.Verdict,
+                            "the cape's fork was closed by the rig merge (third sha 60d127c3…) — " +
+                            "a non-CLEAN verdict here means she regressed or the ledger was rewritten");
+            Assert.IsTrue(cape.IsClean, "clean builds — the merged rig is main's and the kit's, byte for byte");
             StringAssert.Contains("merge", cape.UpstreamAsk.ToLowerInvariant(),
-                                  "the ask is a rig merge, and saying 're-measure' here is the bug");
+                                  "the ask she cleared on was a rig merge, and it stays recorded as one");
             Assert.IsFalse(cape.UpstreamAsk.ToLowerInvariant().Contains("re-measure against main"),
-                           "main's rig publishes no loft — measuring against it deletes her from the kit");
+                           "main's rig published no loft then — measuring against it would have deleted her from the kit");
         }
 
         [Test]

@@ -2,14 +2,14 @@ BOAT INTERIORS AS MESH — QUESTIONS A AND B, MEASURED (spike/interior-mesh)
 Committed defs in, numbers out. No asset written, nothing re-baked.
 
 FLEET SHAPE
-   interior-bearing hulls        : 24
-   levels across them            : 59
-   of those hulls, MESH-backed   : 24
-   level ids in use              : below_sole x5, bridge_sole x5, cuddy_sole x19, house_sole x24, main_deck x5, poop_deck x1
+   interior-bearing hulls        : 26
+   levels across them            : 65
+   of those hulls, MESH-backed   : 26
+   level ids in use              : below_sole x7, bridge_sole x6, cuddy_sole x19, helm_deck x1, house_sole x26, main_deck x5, poop_deck x1
 
 ==============================================================================
 LobsterBoatIso   (interior.lobster_boat_iso)
-   hull mesh: 2736 verts / 1384 tris   px/m 32   cell 456x420   azimuth CCW (MEASURED at bake)
+   hull mesh: 2816 verts / 1428 tris   px/m 32   cell 456x420   azimuth CCW (MEASURED at bake)
    hull extent (rig m): x [-2.22 .. 2.22]  y [-6 .. 6.5]  z [0 .. 5.96]
    def: px/m 32   watertight deck 0.5 m   levels 2
    MATERIAL BUDGET: this hull's faces reference 10 of the facet pass's 16 ramp slots -> 6 free for the interior rig's own ramps (SOLEW / CABIN / BIRCH / SHEET ...)
@@ -20,7 +20,7 @@ LobsterBoatIso   (interior.lobster_boat_iso)
    level          verts    tris   sole   wall   ceil   head    soleZ    ceilZ
    house_sole       258      86     20     46     20      0      0.5    2.124
    cuddy_sole       216      72     16     38     16      2     0.24    2.124
-   TOTAL interior shell: 474 verts / 158 tris  =  +11.4% on the hull's 1384 tris   buffer +24.1 KB (pos+nrm+uv0+uv1 = 48 B/vert, 4 B/index)
+   TOTAL interior shell: 474 verts / 158 tris  =  +11.1% on the hull's 1428 tris   buffer +24.1 KB (pos+nrm+uv0+uv1 = 48 B/vert, 4 B/index)
 
    [house_sole]  outline 22 pts   headroom 1.624 m   ceiling from HullRoofPlane   (highest hull vertex over this outline: 5.958 m — the masthead, NOT the roof)
       HEADROOM SWEEP (search floor -> resulting headroom; L = a level above, R = a hull roof plane): 0.6->1.62R  0.9->1.62R  1.2->1.62R  1.5->1.62R  1.8->2.39R
@@ -34,13 +34,13 @@ LobsterBoatIso   (interior.lobster_boat_iso)
       CONTAINMENT, bow as published: convex-hull violations 25/216 (worst 0.0368 m)   section violations 0/216 (worst -0.6509 m)
       CONTAINMENT, bow FLIPPED (the control): convex-hull violations 45/216 (worst 0.4122 m)   section violations 0/216 (worst -0.7 m)
 
-   B — level tag on the hull's OWN faces: 1384 faces, 227 tagged to a level, 10 ambiguous (straddling a level boundary) = 0.72%
-      house_sole: 219 hull faces
+   B — level tag on the hull's OWN faces: 1428 faces, 231 tagged to a level, 10 ambiguous (straddling a level boundary) = 0.70%
+      house_sole: 223 hull faces
       cuddy_sole: 8 hull faces
 
 ==============================================================================
 SternTrawlerIso   (interior.stern_trawler_iso)
-   hull mesh: 3210 verts / 1624 tris   px/m 32   cell 1344x1152   azimuth CCW (MEASURED at bake)
+   hull mesh: 3478 verts / 1762 tris   px/m 32   cell 1344x1152   azimuth CCW (MEASURED at bake)
    hull extent (rig m): x [-4.5 .. 4.5]  y [-19 .. 20.3]  z [0 .. 12.61]
    def: px/m 32   watertight deck 1.75 m   levels 4
    MATERIAL BUDGET: this hull's faces reference 12 of the facet pass's 16 ramp slots -> 4 free for the interior rig's own ramps (SOLEW / CABIN / BIRCH / SHEET ...)
@@ -53,10 +53,10 @@ SternTrawlerIso   (interior.stern_trawler_iso)
    house_sole        48      16      2     10      2      2      3.5     6.56
    bridge_sole       48      16      2     10      2      2     6.56     8.94
    below_sole       216      72     16     38     16      2     1.15      3.5
-   TOTAL interior shell: 612 verts / 204 tris  =  +12.6% on the hull's 1624 tris   buffer +31.1 KB (pos+nrm+uv0+uv1 = 48 B/vert, 4 B/index)
+   TOTAL interior shell: 612 verts / 204 tris  =  +11.6% on the hull's 1762 tris   buffer +31.1 KB (pos+nrm+uv0+uv1 = 48 B/vert, 4 B/index)
 
    [main_deck]  outline 26 pts   headroom 0.94 m   ceiling from HullRoofPlane   (highest hull vertex over this outline: 12.608 m — the masthead, NOT the roof)
-      HEADROOM SWEEP (search floor -> resulting headroom; L = a level above, R = a hull roof plane): 0.6->0.63R  0.9->0.94R  1.2->1.39R  1.5->1.52R  1.8->1.87R
+      HEADROOM SWEEP (search floor -> resulting headroom; L = a level above, R = a hull roof plane): 0.6->0.63R  0.9->0.94R  1.2->1.29R  1.5->1.52R  1.8->1.87R
       door: nearest edge 17 (len 2.805 m), threshold off the wall line by 3.8855 m, span t[0.668..1], head 0.94 m of 1.8 m clear   (edges cut: 1)
       CONTAINMENT, bow as published: convex-hull violations 0/300 (worst 0 m)   section violations 0/300 (worst -0.2414 m)
       CONTAINMENT, bow FLIPPED (the control): convex-hull violations 0/300 (worst 0 m)   section violations 138/300 (worst 8.6186 m)
@@ -79,8 +79,8 @@ SternTrawlerIso   (interior.stern_trawler_iso)
       CONTAINMENT, bow as published: convex-hull violations 0/216 (worst 0 m)   section violations 0/216 (worst -0.4719 m)
       CONTAINMENT, bow FLIPPED (the control): convex-hull violations 0/216 (worst 0 m)   section violations 0/216 (worst -0.5504 m)
 
-   B — level tag on the hull's OWN faces: 1624 faces, 706 tagged to a level, 10 ambiguous (straddling a level boundary) = 0.62%
-      main_deck: 630 hull faces
+   B — level tag on the hull's OWN faces: 1762 faces, 844 tagged to a level, 10 ambiguous (straddling a level boundary) = 0.57%
+      main_deck: 768 hull faces
       house_sole: 0 hull faces
       bridge_sole: 76 hull faces
       below_sole: 0 hull faces
@@ -88,7 +88,7 @@ SternTrawlerIso   (interior.stern_trawler_iso)
 
 ==============================================================================
 CoastalPacketIso   (interior.coastal_packet_iso)
-   hull mesh: 5016 verts / 2508 tris   px/m 32   cell 2112x1760   azimuth CCW (MEASURED at bake)
+   hull mesh: 5268 verts / 2638 tris   px/m 32   cell 2112x1760   azimuth CCW (MEASURED at bake)
    hull extent (rig m): x [-5.2 .. 5.2]  y [-30 .. 31.6]  z [0 .. 19.13]
    def: px/m 32   watertight deck 5 m   levels 4
    MATERIAL BUDGET: this hull's faces reference 12 of the facet pass's 16 ramp slots -> 4 free for the interior rig's own ramps (SOLEW / CABIN / BIRCH / SHEET ...)
@@ -97,17 +97,17 @@ CoastalPacketIso   (interior.coastal_packet_iso)
    containment reference: convex hull of the shell, 308 faces, closed=True, eps 1E-05, self-test PASSED (inputs inside, sabotage caught)
 
    level          verts    tris   sole   wall   ceil   head    soleZ    ceilZ
-   main_deck        258      86     20     46     20      0        5      6.1
+   main_deck        258      86     20     46     20      0        5    5.976
    house_sole        48      16      2     10      2      2        5       10
    bridge_sole       42      14      2     10      2      0       10    11.39
    below_sole       216      72     16     38     16      2      2.2        5
-   TOTAL interior shell: 564 verts / 188 tris  =  +7.5% on the hull's 2508 tris   buffer +28.6 KB (pos+nrm+uv0+uv1 = 48 B/vert, 4 B/index)
+   TOTAL interior shell: 564 verts / 188 tris  =  +7.1% on the hull's 2638 tris   buffer +28.6 KB (pos+nrm+uv0+uv1 = 48 B/vert, 4 B/index)
 
-   [main_deck]  outline 22 pts   headroom 1.1 m   ceiling from HullRoofPlane   (highest hull vertex over this outline: 19.13 m — the masthead, NOT the roof)
-      HEADROOM SWEEP (search floor -> resulting headroom; L = a level above, R = a hull roof plane): 0.6->1.1R  0.9->1.1R  1.2->1.35R  1.5->1.53R  1.8->1.93R
-      door: nearest edge 18 (len 4.892 m), threshold off the wall line by 3.1439 m, span t[0.567..0.73], head 1.1 m of 1.9 m clear   (edges cut: 1)
-      CONTAINMENT, bow as published: convex-hull violations 0/258 (worst -0.2927 m)   section violations 0/258 (worst -0.4496 m)
-      CONTAINMENT, bow FLIPPED (the control): convex-hull violations 72/258 (worst 1.6259 m)   section violations 72/258 (worst 2.9394 m)
+   [main_deck]  outline 22 pts   headroom 0.976 m   ceiling from HullRoofPlane   (highest hull vertex over this outline: 19.13 m — the masthead, NOT the roof)
+      HEADROOM SWEEP (search floor -> resulting headroom; L = a level above, R = a hull roof plane): 0.6->0.67R  0.9->0.98R  1.2->1.29R  1.5->1.53R  1.8->1.91R
+      door: nearest edge 18 (len 4.892 m), threshold off the wall line by 3.1439 m, span t[0.567..0.73], head 0.976 m of 1.9 m clear   (edges cut: 1)
+      CONTAINMENT, bow as published: convex-hull violations 0/258 (worst -0.3181 m)   section violations 0/258 (worst -0.4496 m)
+      CONTAINMENT, bow FLIPPED (the control): convex-hull violations 72/258 (worst 1.6179 m)   section violations 72/258 (worst 3.3387 m)
 
    [house_sole]  outline 4 pts   headroom 5 m   ceiling from LevelAbove   (highest hull vertex over this outline: 16.407 m — the masthead, NOT the roof)
       HEADROOM SWEEP (search floor -> resulting headroom; L = a level above, R = a hull roof plane): 0.6->5L  0.9->5L  1.2->5L  1.5->5L  1.8->5L
@@ -127,8 +127,8 @@ CoastalPacketIso   (interior.coastal_packet_iso)
       CONTAINMENT, bow as published: convex-hull violations 0/216 (worst -0.3573 m)   section violations 0/216 (worst -0.6175 m)
       CONTAINMENT, bow FLIPPED (the control): convex-hull violations 144/216 (worst 0.8219 m)   section violations 184/216 (worst 1.6866 m)
 
-   B — level tag on the hull's OWN faces: 2508 faces, 840 tagged to a level, 8 ambiguous (straddling a level boundary) = 0.32%
-      main_deck: 632 hull faces
+   B — level tag on the hull's OWN faces: 2638 faces, 970 tagged to a level, 8 ambiguous (straddling a level boundary) = 0.30%
+      main_deck: 762 hull faces
       house_sole: 132 hull faces
       bridge_sole: 76 hull faces
       below_sole: 0 hull faces
@@ -160,17 +160,19 @@ B (FLEET) — CAN A LEVEL'S OWN HULL FACES BE FOUND FROM LAYOUT HEIGHTS ALONE?
    SternTrawlerMk2Iso                          2458      704        0     0.00%        4
    TankerIso                                   3492     1974       12     0.34%        5
    LobsterOffshoreHardtopNewfoundlandIso       1724      336       16     0.93%        2
-   LobsterBoatIso                              1384      227       10     0.72%        2
+   LobsterBoatIso                              1428      231       10     0.70%        2
    LobsterOffshoreOpenNorthumberlandIso        1556      131       20     1.29%        2
-   SternTrawlerIso                             1624      706       10     0.62%        4
-   CoastalPacketIso                            2508      840        8     0.32%        4
+   SternTrawlerIso                             1762      844       10     0.57%        4
+   SportFisherSkybridgeIso                     7540     4366       48     0.64%        3
+   CoastalPacketIso                            2638      970        8     0.30%        4
    LobsterStandardOpenNorthumberlandIso        1356      130       18     1.33%        2
    SideDraggerIso                              1616      658        0     0.00%        4
    LobsterInshoreOpenNorthumberlandIso         1290      108       18     1.40%        2
    LobsterInshoreHardtopNewfoundlandIso        1294      166       12     0.93%        2
    LobsterInshoreHardtopNorthumberlandIso      1346      154       18     1.34%        2
+   SportFisherConvertibleIso                   6400     3145       14     0.22%        3
    LobsterOffshoreHardtopNorthumberlandIso     1752      319       20     1.14%        2
    LobsterStandardHardtopNewfoundlandIso       1388      215       12     0.86%        2
    LobsterStandardOpenNewfoundlandIso          1312      147       12     0.91%        2
    LobsterStandardHardtopFundyIso              1396      150       14     1.00%        2
-   TOTAL (24 hulls)                           38778     7992      308     0.79%
+   TOTAL (26 hulls)                           53030    15775      370     0.70%

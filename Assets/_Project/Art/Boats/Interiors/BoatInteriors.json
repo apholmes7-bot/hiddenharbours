@@ -7,6 +7,42 @@
     "importSizeCap": 4096,
     "sheets": [
         {
+            "hullStem": "capeIslanderIsoRig",
+            "hullFileStem": "capeIslanderIsoRig",
+            "defId": "interior.cape_islander_iso",
+            "interiorHullKey": "cape",
+            "variantSize": "",
+            "variantStyle": "",
+            "variantRegion": "",
+            "cellW": 456,
+            "cellH": 420,
+            "pivotX": 228,
+            "pivotY": 258,
+            "pixelsPerMetre": 32,
+            "levels": [
+                "house",
+                "cuddy"
+            ],
+            "facings": 8,
+            "convention": "CounterClockwise",
+            "doorOpen": 0.0,
+            "night": false,
+            "lamp": false,
+            "clutter": true,
+            "weather": 0.30000001192092898,
+            "pages": [
+                {
+                    "file": "CapeIslanderIsoInterior.png",
+                    "columns": 8,
+                    "rows": 2,
+                    "sheetW": 3648,
+                    "sheetH": 840,
+                    "firstCell": 0,
+                    "cellCount": 16
+                }
+            ]
+        },
+        {
             "hullStem": "coastalPacketIsoRig",
             "hullFileStem": "coastalPacketIsoRig",
             "defId": "interior.coastal_packet_iso",
@@ -1156,11 +1192,5 @@
             ]
         }
     ],
-    "refused": [
-        {
-            "hullStem": "capeIslanderIsoRig",
-            "verdict": "ForkedRig",
-            "upstreamAsk": "A RIG MERGE, not a re-measure: main as base, the aft DOOR and the published loft re-applied, producing a THIRD sha that must land in docs/art/rigs/capeIslanderIsoRig.js -- not only in the kit. RULED 2026-08-19: approved, as a SEPARATE PR after this intake lands, against the five-point acceptance bar in docs/art/rigs/boat-interiors-intake/README.md (its point 3 was amended and the amendment RULED 2026-08-19: byte-identity outside the aft doorway box across shipped poses, plus full byte-identity on the bow-on facings N/NE/NW). That PR must also re-stamp her deck sidecar and re-import her deck asset in the same commit, or DeckSidecarImportParityTests reds and she loses her measured deck. Until it lands she stays refused and hull-rigs/capeIslanderIsoRig.js carries a do-not-adopt flag."
-        }
-    ]
+    "refused": []
 }
