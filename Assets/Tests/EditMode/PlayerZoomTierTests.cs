@@ -730,7 +730,11 @@ namespace HiddenHarbours.Tests.EditMode
             {
                 CameraFollow follow = WalkingRig(go);
                 float carry = 0f;
-                int notches = CameraZoomPolicy.NotchesFromScroll(ref carry, 120f, follow.WheelUnitsPerNotch);
+                // 1f = one detent as the Input System actually reports it (owner-measured
+                // 2026-08-26). Feeding Win32's raw 120 here is how a dead wheel stayed green for
+                // three days: the device never sends that scale, so a test that does is testing a
+                // machine that does not exist.
+                int notches = CameraZoomPolicy.NotchesFromScroll(ref carry, 1f, follow.WheelUnitsPerNotch);
 
                 Assert.AreEqual(1, notches, "the shipped notch size must be the shipped device's detent");
                 Assert.IsTrue(follow.NudgePlayerZoom(notches));
