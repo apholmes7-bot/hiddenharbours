@@ -150,14 +150,19 @@ namespace HiddenHarbours.Tools.RigBaking
                     ["below"] = "main_deck",
                 },
 
-                // ⚠️ THE ONE THAT IS NOT main_deck. 'poop-deck underside (POOP-0.25)' — her
-                // accommodation sits under the RAISED POOP, not under the weather deck, and
-                // poop_deck is a level of its own (lv('poop_deck'): "the raised poop mooring deck
-                // strip"; id 6, the fleet table's newest). Reading "the underside of a deck" as
-                // main_deck because both batch-1 ships said so would put her lid on a deck three
-                // metres lower and thirty forward, and the cut would look plausible while opening
-                // the wrong hole — which is the whole argument for declaring lids over inferring
-                // them, restated by the first hull that could have been guessed wrong.
+                // ⚠️ THE ONE THAT IS NOT main_deck, AND THE ONE THAT CLOSES THE ARGUMENT ABOVE.
+                // 'poop-deck underside (POOP-0.25)' — her accommodation sits under the RAISED POOP,
+                // not under the weather deck, and poop_deck is a level of its own (lv('poop_deck'):
+                // "the raised poop mooring deck strip"; id 6, the fleet table's newest). Reading
+                // "the underside of a deck" as main_deck because both batch-1 ships said so would
+                // put her lid on the wrong deck entirely, and the cut would look plausible doing it.
+                //
+                // The z-matching alternative does not merely risk her — it CANNOT DECIDE her.
+                // Measured off her own geometry(): below's ceiling is 11.35 m, and the two levels
+                // whose sole sits 0.25 m above it are poop_deck AND house, both at 11.60. They
+                // share a sole; that is the tie her own tieBreak field exists to break. A rule that
+                // matched ceiling z to sole z would have to choose between the deck overhead and
+                // the room beside it with nothing to choose on.
                 ["tankerIsoRig.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
                 {
                     ["below"] = "poop_deck",
