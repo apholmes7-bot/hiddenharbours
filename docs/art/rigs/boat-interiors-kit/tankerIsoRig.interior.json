@@ -7,7 +7,7 @@
   "interior_rig": "boatInteriorRig.js",
   "derivedFromRigSha256": "34bb781303b9de9a47c7029a685bf83d357adefe2ffb95ff54451233ea7c46a7",
   "hullRigSha256": {
-    "tankerIsoRig": "c2faaa385e472e3c4c1fdc0a219b86d8889b71faafd02554a443e8bb20959f0c"
+    "tankerIsoRig": "abd17acb503fc08ce518ea57dd5f3cdee5bac9d02043c80a7c4594bd57b105db"
   },
   "frame": {
     "units": "m",

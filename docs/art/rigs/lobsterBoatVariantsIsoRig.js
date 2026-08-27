@@ -42,8 +42,33 @@
    Exposes globalThis.LobsterBoatVariantsIso = { W,H,PX,DIRS,pivot,order,ROCK,rock(i),
      SIZES,STYLES,REGIONS,PAINTS, resolve(v), render(dir,opts), hullMeta(v), paintRamps(id),
      windowPlan,glazingCheck,glazingReport, anchors,gameplayGeometry,
-     helmSeat,haulerMount,tubMounts,navMounts, DECKF,GRIP,GLAS,STEEL,IRON,KEY }.
-   opts = { size, style, region, paint, elev, roll, pitch, heave }. */
+     helmSeat,haulerMount,tubMounts,navMounts, doorMount,houseOf,loftOf,interiorEnv,
+     geometry,faces,doorFaces,LEVEL_IDS, DECKF,GRIP,GLAS,STEEL,IRON,KEY }.
+   opts = { size, style, region, paint, elev, roll, pitch, heave, doorOpen }.
+
+   PASS 4 — THE DOOR AND THE PUBLISHED HOUSE (tranche 4 of the interiors program). The aft doorway
+   (the dark panel every variant carries, offset a shade to port) is now a REAL opening closed by a
+   SLIDING door — opts.doorOpen 0..1 rides the leaf to starboard along an exterior track, parking
+   over the aft window (0 = closed, fleet default; no swept arc — the collider is the leaf itself).
+   doorMount(dir,opts) -> threshold + leading edge + clear state. houseOf(v)/loftOf(v) publish the
+   wheelhouse + cuddy + hull loft per variant so boatInteriorRig.js builds all 18 interiors from
+   these exact numbers; interiorEnv(v) hands boatInteriorRig a per-variant env. The house aft wall
+   is real; STYLE stays an aft-arrangement flag (roof only), so all 18 share the door mechanism.
+
+   PASS 5 — CUTAWAY DATA (batch 2 of the owner-ruled cutaway composite — same mechanism as the
+   canonical lobster, no new semantics). ONE variantAware rig = 18 boats: geometry(v), faces(v) and
+   the exported doorFaces(opts) take the SAME top-level {size,style,region} descriptor render()
+   takes — the nested `variant` spelling belongs to the interior sidecars, not this rig. ASK B:
+   every face DECLARES its level in `lv` — an authoring cursor inside facesFor(V), stamped on
+   F.push; ids match the lobster family table (hull/cockpit/foredeck/house/cuddy/rigging). ASK A:
+   geometry(v) publishes soleZ + ceilingZ (or an EXPLICIT open-above) per walkable level per
+   variant, declared from the same resolve(v)/houseOf(v) constants the mesh is built from; the
+   cuddy ceiling law is the foredeck underside the interior dresses (sheerZ(y)-0.16, the fleet
+   liner constant). THE TIE: cockpit and house share one sole z (DECK) on all 18 — the published
+   ceilings break it in-file. render(dir,{cullLevels:[...]}) is the reference cut. Outside the new
+   fields the meshes and pixels are byte-identical across all 18 — adjudicated against
+   qa/cutaway-baseline/ in qa/Boat Cutaway QA 2.dc.html. Adds geometry,faces,doorFaces,LEVEL_IDS
+   to the exports. */
 (function (root) {
   const PX = 32, S = 32;
   const W = 480, H = 420, cx = 240, cy = 232;
@@ -428,6 +453,11 @@
   function facesFor(V){
     if(_faceCache.has(V.key)) return _faceCache.get(V.key);
     const F = [];
+    /* PASS 5 — every face DECLARES its level (ASK B), identically across all 18 variants: LV is an
+       authoring cursor stamped on F.push, so every emission path carries it. */
+    let LV='hull';
+    const lv=(id)=>{ LV=id; };
+    F.push=function(){ for(let i=0;i<arguments.length;i++) arguments[i].lv=LV; return Array.prototype.push.apply(this,arguments); };
     const face=(v,mat,b,db)=>F.push({v,mat:mat||'hull',b:b||0,db:db||0});
     const boxF=(c,h,mat,b,db)=>{ F.push.apply(F, box(c,h,mat,b,db)); };
     const tubeF=(A,B2,rad,mat,b)=>{ F.push.apply(F, tube(A,B2,rad,mat,b)); };
@@ -442,6 +472,7 @@
     const hy=V.hy, cyf=V.cy;
     const Z=V.size, HS=V.region.house;
 
+    lv('hull');                                   // hull shell + bulwark liner + bottom + rail caps
     // ---- hull shell ----
     for(const side of [-1,1]){
       for(let i=0;i<NSEG;i++){
@@ -464,6 +495,7 @@
       }
     }
 
+    lv('cockpit');                                // the working deck and everything standing on it
     // ---- cockpit sole: house-colour margin + darker grippy panel ----
     const SOLE_U = V.SOLE_U;
     const DSEG=20, BORD=0.24*bK;
@@ -491,6 +523,7 @@
     const hw0=0.56*bK, hl0=0.44*lK, HFR=[0.26,0.47,0.69];
     for(let i=0;i<Z.hatches;i++) hatch(0,cyf(HFR[i]),hw0*(i===2?0.89:1),hl0*(i===2?0.95:1),true);
     if(Z.hatches>=3){ hatch(-1.00*bK,cyf(0.36),0.30*bK,0.32*lK,false); hatch(1.00*bK,cyf(0.36),0.30*bK,0.32*lK,false); }
+    lv('hull');                                   // washboards + side decks are hull structure
     // side decks / washboards — continuous, narrowing to the house wall
     const innerX=(st)=>{ if(st.y > HYaft-0.05) return Math.min(st.ws-TH-0.10, HXat(st.y)); return st.ws-TH-WB; };
     for(const side of [-1,1]){
@@ -508,6 +541,7 @@
     for(const [f0,f1,mat,b] of OB) face([tp(-1,f1),tp(1,f1),tp(1,f0),tp(-1,f0)], mat, (b||0)-0.8, 0.005);
     (function(){ const s0=station(0), zt=s0.kz+s0.dep, wsx=s0.ws-TH;
       face([[-wsx,s0.y,zt],[wsx,s0.y,zt],[wsx,s0.y+0.26*lK,zt-0.004],[-wsx,s0.y+0.26*lK,zt-0.004]],'deck',-0.9,0.03); })();
+    lv('foredeck');                               // the cuddy's lid — a walkable level of its own
     // ---- foredeck ----
     const FSEG=8, FCAP=0.985;
     const fz=V.fz, fw=V.fw, fy=V.fy;
@@ -518,12 +552,16 @@
     (function(){ const u=SOLE_U, wv=fw(u), z=fz(u), y=station(u).y, yF=fy(u), st=station(u);
       const hwid=(zz)=>{ const fr=Math.max(0,Math.min(1,(zz-st.kz)/st.dep)); return lerp(st.wb,st.ws,fr)-TH; };
       const wTop=Math.min(wv,hwid(z)), wDeck=hwid(DECK);
+      lv('house');                                // the V bulkhead is the base of the house front
       face([[-wTop,y,z],[wTop,y,z],[wDeck,y,DECK],[-wDeck,y,DECK]],'cream',-1.4,-0.03);
+      lv('foredeck');
       face([[-wv,y-0.36*lK,z],[wv,y-0.36*lK,z],[wv,yF,z],[-wv,yF,z]],'hull',0.5,-0.03); })();
     (function(){ const u=0.93, y=fy(u), z=fz(u); boxF([0, y, z+0.09],[0.035,0.05,0.09*dK],'iron',0.15,-0.02); })();
+    lv('hull');                                   // stern cleats ride the rail cap
     for(const s of [-1,1]) boxF([s*(station(0).ws-0.22*bK), station(0).y+0.28*lK, station(0).kz+station(0).dep+0.03],
                                 [0.05,0.09,0.05],'iron',0.15,-0.02);
 
+    lv('house');                                  // walls, glazing, vestibule, roof — cuts with the room
     // ---- WHEELHOUSE: parallel-sided over the glazed run, tapered windowless nose, raked screen ----
     const P = windowPlan(V);
     const SWZa = V.sheerAt(HYaft) - 0.15*dK, SWZn = V.sheerAt(noseY) - 0.15*dK,
@@ -579,6 +617,7 @@
     if(extAft!=null)   // grab rail under the cantilever's aft lip (trim, not structure)
       tubeF([-(RHX-0.12), extAft+0.10*lK, ROOFZ-0.06],[ (RHX-0.12), extAft+0.10*lK, ROOFZ-0.06],0.035,'steel',0.2);
 
+    lv('rigging');                                // DEDICATED class — signatures + arch gear survive every cut
     // ---- REGION SIGNATURE ----
     let NAVMAST = null;
     if(V.region.sig==='roofrail'){
@@ -612,17 +651,20 @@
     }
     if(V.region.sig==='stack'){
       // Newfoundland dry stack through the roof, starboard aft — dark iron with a rain cap
+      lv('house');                                // the stack is the funnel — it stands on the house roof
       const sx=0.52*HX, sy2=HYaft+0.30*lK, sz=ROOFZ+(Z.id==='inshore'?0.68:0.95)*dK;
       tubeF([sx,sy2,ROOFZ-0.04],[sx,sy2,sz],0.085*gK,'iron',0.35);
       tubeF([sx,sy2,sz],[sx,sy2,sz+0.10],0.105*gK,'iron',-0.5);               // cap ring
       boxF([sx,sy2,sz+0.13],[0.13*gK,0.13*gK,0.022],'iron',0.5,-0.02);        // rain cap
       if(!V.style.arch){
+        lv('rigging');                            // the light pole is a spar
         tubeF([-0.40*HX,hy(0.14),ROOFZ],[-0.40*HX,hy(0.12),ROOFZ+0.80*dK],0.04,'steel',0.2);
         boxF([-0.40*HX,hy(0.12),ROOFZ+0.85*dK],[0.05,0.05,0.05],'iron',0.2,-0.02);
         NAVMAST=[-0.40*HX,hy(0.12),ROOFZ+0.85*dK];
       }
     }
 
+    lv('rigging');                                // arch, dome, pods, floods, whips — class-tagged
     // ---- stainless arch over the cabin roof (hardtop / shelter), fit-out by size ----
     if(V.style.arch){
       const ATZ = ROOFZ + 0.96*dK;
@@ -646,6 +688,7 @@
       boxF([0, ARY-0.05, ATZ+0.02],[0.05,0.05,0.05],'iron',0.2,-0.02);
       if(!NAVMAST) NAVMAST=[0, ARY-0.05, ATZ];
       if(Z.raft){   // liferaft canister stowed on the cabin top, aft of the screen, clear of the arch
+        lv('house');                              // stowed on the house's lid — goes with the house
         const yR = hy(0.24);
         tubeF([-0.46*gK, yR, ROOFZ+0.20],[0.46*gK, yR, ROOFZ+0.20],0.155*gK,'cream',0.35);
         for(const s of [-1,1]) boxF([s*0.30*gK, yR, ROOFZ+0.20],[0.02,0.17*gK,0.17*gK],'iron',-0.2,0.02);
@@ -653,6 +696,7 @@
     }
     if(!NAVMAST) NAVMAST=[0, hy(0.12), ROOFZ+0.85*dK];
 
+    lv('hull');                                   // stanchion rails stand on the washboards — hull structure
     // ---- offshore washboard rails: stanchions + top rail from the house aft to the quarter ----
     if(Z.rails){
       for(const s of [-1,1]){
@@ -668,9 +712,11 @@
       }
     }
 
+    lv('house');                                  // exits the house aft corner
     // ---- side exhaust (wet) at the house aft corner — not on the stack boats, not inshore ----
     if(Z.exhaust && V.region.sig!=='stack')
       tubeF([HX-0.02, HYaft+0.20*lK, DECK+0.60*dK],[HX+0.16, HYaft+0.20*lK, DECK+0.60*dK],0.055,'steel',0.2);
+    lv('cockpit');                                // worked from the cockpit — rises from its level
     // ---- hauling block on the starboard washboard, just aft of the house ----
     (function(){ const y=cyf(0.313), st=station(V.uOf(y)), z=st.kz+st.dep, x=0.60*st.ws;
       boxF([x,y,z+0.10],[0.10,0.12,0.10],'iron',0.2);
@@ -773,8 +819,97 @@
   function render(dir, opts){
     opts = (typeof opts==='number') ? {elev:opts} : (opts||{});
     const V = resolve(opts), built = facesFor(V);
-    return _toRGBA(_paint(built.F, Object.assign({}, opts, {dir}), matsFor(V.paint)));
+    const t = Math.max(0,Math.min(1, opts.doorOpen!=null ? +opts.doorOpen : 0));
+    let fl = built.F.concat(doorFaces(V,t));
+    if(opts.cullLevels && opts.cullLevels.length){ const cut=new Set(opts.cullLevels); fl=fl.filter(f=>!cut.has(f.lv)); }   // pass-5 reference cut; absent → byte-identical
+    return _toRGBA(_paint(fl, Object.assign({}, opts, {dir}), matsFor(V.paint)));
   }
+  // ---- the sliding aft door — built per render so opts.doorOpen (0..1) can pose it ----
+  function doorOf(V){
+    const P=windowPlan(V), r3=(n)=>+n.toFixed(3), x0=-0.267*V.HX, x1=0.227*V.HX;
+    return { kind:'slide', face:'aft', y:r3(V.HYaft), x0:r3(x0), x1:r3(x1),
+      z0:r3(V.HZ0+0.02), z1:r3(P.aft.doorTop), travel:r3((x1-x0)*0.96), clearAt:0.55,
+      sillZ:r3(V.DECK), leaf:{ x0:r3(x0), x1:r3(x1) } };
+  }
+  function doorFaces(V,t){
+    const D=doorOf(V), AY=V.HYaft-0.03, sft=t*D.travel, x0=D.leaf.x0+sft, x1=D.leaf.x1+sft;
+    const out=[], zg0=Math.max(V.sillZ, D.z0+0.80), zg1=Math.min(V.headZ, D.z1-0.10);
+    out.push(faceO([[x0,AY-0.085,D.z0],[x1,AY-0.085,D.z0],[x1,AY-0.085,D.z1],[x0,AY-0.085,D.z1]],[0,-1,0],'cream',-0.35,DBP+0.02));
+    if(zg1>zg0+0.10){
+      out.push(faceO([[x0+0.07,AY-0.115,zg0],[x1-0.07,AY-0.115,zg0],[x1-0.07,AY-0.115,zg1],[x0+0.07,AY-0.115,zg1]],[0,-1,0],'iron',-0.15,DBP+0.03));
+      out.push(faceO([[x0+0.10,AY-0.13,zg0+0.03],[x1-0.10,AY-0.13,zg0+0.03],[x1-0.10,AY-0.13,zg1-0.03],[x0+0.10,AY-0.13,zg1-0.03]],[0,-1,0],'glas',-0.30,DBP+0.04));
+    }
+    out.push.apply(out, tube([D.x0-0.06,AY-0.10,D.z1+0.05],[D.x1+D.travel+0.06,AY-0.10,D.z1+0.05],0.026,'steel',0.25));  // track
+    out.push.apply(out, tube([x1-0.10,AY-0.12,D.z0+0.82],[x1-0.10,AY-0.12,D.z0+1.14],0.020,'steel',0.35));                // pull
+    for(const f of out) f.lv='house';             // the leaf is house enclosure — it cuts with the room
+    return out;
+  }
+  // door threshold anchor + open-state report for the enter cue
+  function doorMount(dir, opts){
+    const o=_opt(opts), V=resolve(o), D=doorOf(V), B=camBasis(Object.assign({},o,{dir}));
+    const t=Math.max(0,Math.min(1, o.doorOpen!=null ? +o.doorOpen : 0));
+    const p=projVert((D.x0+D.x1)/2, V.HYaft, V.DECK, B);
+    const le=projVert(D.leaf.x1+t*D.travel, V.HYaft, V.DECK, B);
+    return { x:p.sx, y:p.sy, lead:{x:le.sx,y:le.sy}, open:t, clear:t>=D.clearAt };
+  }
+  /* THE WHEELHOUSE + CUDDY, published per variant — boatInteriorRig.js builds the rooms inside this
+     shell and MUST measure against these exact numbers. */
+  function houseOf(v){
+    const V=resolve(v), P=windowPlan(V), r3=(n)=>+n.toFixed(3);
+    const cudLen=Math.min(0.21*V.L, (0.985-V.SOLE_U)*V.L*0.62);
+    return { soleZ:V.DECK, eaveZ:r3(V.HZ1-0.04), yAft:r3(V.HYaft), yFwd:r3(V.FYb),
+      hxAt:(y)=>V.HXat(y)-0.06, door:doorOf(V),
+      sideGlass:{ runs:P.side.map(w=>[r3(w.y0),r3(w.y1)]), z0:r3(P.sill), z1:r3(P.head) },
+      aftGlass:{ x0:r3(P.aft.x[0]*V.HX), x1:r3(P.aft.x[1]*V.HX), z0:r3(P.aft.z0), z1:r3(P.aft.z1) },
+      front:{ kind:'screen', yBot:r3(V.FYb), yTop:r3(V.FYt), zBot:r3(V.scrSill),
+              glass:{ panes:P.front.panes.map(p=>[r3(p[0]),r3(p[1])]), z0:r3(V.scrSill), z1:r3(V.scrHead) } },
+      cuddy:{ soleZ:r3(V.DECK-0.42*V.dK), y0:r3(V.HYfwd), y1:r3(V.HYfwd+cudLen),
+              opening:{ x0:r3(-0.44*V.lK), x1:r3(0.44*V.lK), z1:r3(V.HZ0+1.42*V.dK) }, step:{ treads:2 } } };
+  }
+  function loftOf(v){
+    const V=resolve(v);
+    return { halfAtZ:(y,z)=>{ const st=V.station(V.uOf(y));
+        const fr=Math.max(0,Math.min(1,(z-st.kz)/Math.max(0.2,st.dep))); return lerp(st.wb,st.ws,fr)-TH; },
+      sheerZ:(y)=>V.sheerAt(y), station:V.station, L:V.L, TH, DECK:V.DECK, SOLE_U:V.SOLE_U,
+      house:houseOf(v), shade:{ GAIN, BIAS, LN, BAYER, KEY, EDGE:0.30 }, cell:{ W, H, cx, cy, S } };
+  }
+  function interiorEnv(v){ return Object.assign({}, root.LobsterBoatVariantsIso, { loft:loftOf(v) }); }
+
+  /* PASS 5 — ASK A: geometry(v), per variant. Same record shape as the canonical lobster: one
+     record per WALKABLE level, DECLARED from the same resolve(v)/houseOf(v) constants the mesh is
+     built from — never re-measured off it. Open sky is explicit, never absent. */
+  const LEVEL_IDS = { hull:0, cockpit:1, foredeck:2, house:3, cuddy:4, rigging:5 };
+  function geometry(v){
+    const V=resolve(v), Hh=houseOf(v), C=Hh.cuddy, r3=(n)=>+n.toFixed(3);
+    const cl=(y)=>r3(V.sheerAt(y)-0.16);          // cuddy ceiling law — the foredeck underside boatInteriorRig dresses (topAt)
+    const fs=(y)=>r3(V.sheerAt(y)-0.05*V.dK);     // foredeck walking surface (rig fz law)
+    const yCap=r3(-V.L/2+0.985*V.L);              // foredeck forward cap (FCAP=0.985)
+    const roofUnder = V.region.sig==='stack' ? r3(V.ROOFZ+0.030-0.034) : r3(V.ROOFZ+0.045-0.05);
+    return {
+      schema:'hidden-harbours/hull-geometry@1', hull:'lobsterBoatVariantsIsoRig', units:'m',
+      variant:{ size:V.size.id, style:V.style.id, region:V.region.id },
+      frame:'+x stbd, +y bow, +z up; origin amidships, keel bottom, centreline',
+      ids:Object.assign({}, LEVEL_IDS),
+      riggingClass:'rigging — arch, dome, pods, floods, whips, mast & boom, cabin-top rail, light poles: tagged by CLASS, never welded to a cullable room',
+      tieBreak:'cockpit and house share one sole z ('+r3(V.DECK)+') — the published ceilings break the tie: house '+r3(Hh.eaveZ)+', cockpit open',
+      levels:[
+        { id:'house', deck:'house_sole', soleZ:r3(V.DECK), ceilingZ:r3(Hh.eaveZ),
+          ceiling:{ kind:'hard', z:r3(Hh.eaveZ), of:'wheelhouse eave — the deckhead the interior dresses (houseOf(v).eaveZ)' } },
+        { id:'cuddy', deck:'cuddy_sole', soleZ:C.soleZ, ceilingZ:cl(C.y0),
+          ceiling:{ kind:'raked', zAft:cl(C.y0), zFwd:cl(C.y1), y0:C.y0, y1:C.y1,
+                    of:'foredeck underside = sheerZ(y)-0.16, rising toward the bow; ceilingZ is the honest minimum at the companionway' } },
+        { id:'cockpit', deck:'cockpit', soleZ:r3(V.DECK), ceilingZ:null,
+          ceiling: V.extAft==null
+            ? { kind:'open', note:'open boat — the roof stops at the house; the deck is sky' }
+            : { kind:'open', partial:{ z:roofUnder, y0:r3(V.extAft), y1:r3(V.HYaft),
+                of:'hardtop-cantilever underside over the FORWARD cockpit only — aft of y '+r3(V.extAft)+' is sky' } } },
+        { id:'foredeck', deck:'foredeck', soleZ:fs(V.HYfwd), ceilingZ:null,
+          sole:{ kind:'raked', zAft:fs(V.HYfwd), zFwd:fs(yCap), follows:'sheer - 0.05·dK over y '+r3(V.HYfwd)+'..'+yCap },
+          ceiling:{ kind:'open' } },
+      ],
+    };
+  }
+  function faces(v){ return facesFor(resolve(v)).F; }   // the static TAGGED mesh for one variant; the posed leaf is the exported doorFaces(opts)
 
   // ============================ deck anchors (cell px; pass rock(i) to ride the wave) ============================
   const _opt=(opts)=>(typeof opts==='number'?{elev:opts}:(opts||{}));
@@ -875,5 +1010,7 @@
     SIZES, STYLES, REGIONS, PAINTS, resolve, hullMeta, paintRamps, anchors, gameplayGeometry,
     windowPlan, glazingCheck, glazingReport,
     DECKF, GRIP, GLAS, STEEL, IRON, KEY,
-    render, ROCK, rock:rockMotion, helmSeat, haulerMount, tubMounts, navMounts };
+    render, ROCK, rock:rockMotion, helmSeat, haulerMount, tubMounts, navMounts,
+    doorMount, houseOf, loftOf, interiorEnv, geometry, faces, LEVEL_IDS,
+    doorFaces:(opts)=>{ const o=_opt(opts), V=resolve(o), t=Math.max(0,Math.min(1, o.doorOpen!=null?+o.doorOpen:0)); return doorFaces(V,t); } };
 })(typeof globalThis!=='undefined'?globalThis:window);

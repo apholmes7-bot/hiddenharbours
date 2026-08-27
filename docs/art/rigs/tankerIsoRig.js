@@ -22,7 +22,32 @@
    range}. Pass the hull's rock(i) so overlays ride the wave — the slowest, longest loop in the
    fleet. Exposes globalThis.TankerIso = { W,H,PX,DIRS,pivot,order,ROCK,rock(i),render(dir,opts),
    helmSeat,HELM, craneMounts,CRANE, manifoldMount,MANIF, funnelMount,FUNL, tubMounts,TUBS,
-   navMounts, HULL,BOOT,WHITE,GREY,DECKG,GLAS,STEEL,IRON,NAVY,ORNG,YELL,KEY }. */
+   navMounts, HULL,BOOT,WHITE,GREY,DECKG,GLAS,STEEL,IRON,NAVY,ORNG,YELL,KEY }.
+
+   PASS 2 — THE DOOR, THE LADDERS AND THE PUBLISHED LOFT (tranche 3 of the interiors program).
+   The crew door is the AFT-wall door at poop level — a REAL opening closed by a HINGED weather-
+   tight steel leaf; opts.doorOpen 0..1 swings it 110° outward on its STARBOARD hinge onto the poop
+   mooring deck (swept quarter-arc = THRESHOLD keep_clear). doorMount(dir,opts) -> threshold +
+   leading edge + clear state. THREE exterior ladders are baked and published: poop-break ladders
+   port + stbd (weather deck → poop, on a new white break bulkhead) and a boat-deck ladder on the
+   aft wall stbd of the door. HOUSE publishes three interior levels (house at poop level / bridge /
+   below) + main/poop deck u-ranges + authored deck obstructions; L2-L3 are dressed (one stair
+   trunk carries house→bridge whole). The weather-deck front doors, side doors and compressor-cabin
+   door stay dressed closed. Also exposes doorMount,DOOR,HOUSE,loft.
+
+   PASS 3 — CUTAWAY DATA (batch 2 of the owner-ruled cutaway composite — same mechanism as batch 1,
+   no new semantics beyond one id: the ids table extends the fleet vocabulary with poop_deck:6, the
+   tanker's second exterior deck on the 59-count). ASK B: every face DECLARES its level in `lv` —
+   an authoring cursor set at each build section; bake via geometry().ids (TexCoord1.x). ASK A:
+   geometry() publishes soleZ + ceilingZ (or an EXPLICIT open-above) per walkable level — BOTH
+   exterior decks publish (main_deck open with the catwalk underside declared a partial cover;
+   poop_deck open with the bridge-wing underside declared a partial cover). THE TIE: house_sole and
+   poop_deck share one sole z (11.6) — the published ceilings break it. L2 cabins + L3 officers are
+   dressed house mass, flagged in geometry().dressed. faces() hands the tagged static mesh to the
+   extractor; doorFaces(opts) is the posed leaf (lv:'house'); render(dir,{cullLevels:[...]}) is the
+   reference cut. Outside the new fields the mesh and pixels are byte-identical to the base —
+   adjudicated against qa/cutaway-baseline/ in qa/Boat Cutaway QA 2.dc.html. Adds
+   geometry,faces,doorFaces,LEVEL_IDS to the exports. */
 (function (root) {
   const PX = 16, S = 16;
   const W = 1920, H = 1600, cx = 960, cy = 880;   // cell + pivot (projection of boat origin)
@@ -128,6 +153,12 @@
   const leftPanel =(x,ya,yb,za,zb,mat,b)=>({v:[[x,ya,zb],[x,yb,zb],[x,yb,za],[x,ya,za]],mat,b:b||0,db:DBP});
 
   const F = [];
+  /* PASS 3 — every face DECLARES its level (ASK B). LV is an authoring cursor: each build section
+     states its level before emitting. The stamp rides F.push, so every emission path (face / boxF /
+     tubeF / the text bakers / direct push) carries it. */
+  let LV='hull';
+  const lv=(id)=>{ LV=id; };
+  F.push=function(){ for(let i=0;i<arguments.length;i++) arguments[i].lv=LV; return Array.prototype.push.apply(this,arguments); };
   const face=(v,mat,b,db)=>F.push({v,mat:mat||'hull',b:b||0,db:db||0});
   const boxF=(c,h,mat,b,db,xf)=>{ F.push.apply(F, box(c,h,mat,b,db,xf)); };
   const tubeF=(A,B2,rad,mat,b)=>{ F.push.apply(F, tube(A,B2,rad,mat,b)); };
@@ -136,6 +167,7 @@
   function faceO(v, outward, mat, b, db){ const n=objNormal(v[0],v[1],v[2]);
     if(n[0]*outward[0]+n[1]*outward[1]+n[2]*outward[2] < 0) v=v.slice().reverse();
     return {v, mat, b:b||0, db:(db==null?DBP:db)}; }
+  function rrect(ua,ub,va,vb,c){ return [[ua+c,va],[ub-c,va],[ub,va+c],[ub,vb-c],[ub-c,vb],[ua+c,vb],[ua,vb-c],[ua,va+c]]; }
 
   // paint by ABSOLUTE z (the sheer varies): salmon bottom -> white boot line -> orange to the rail
   const ZBANDS = [ [-9, 3.25,'boot',-0.2,0], [3.25,3.95,'white',-0.45,0.01], [3.95,99,'hull',0,0] ];
@@ -172,11 +204,16 @@
   const F3=-29.5, A3=HA, X3=6.8, H3T=19.7;                    // level 3, set back
   const WX=5.9, WA=-46.6, WFB=-33.3, WFT=-32.55, WZ0=19.7, WZT=22.5, ROOFZ=22.55;  // wheelhouse, RAKED front
   const WGY0=-35.6, WGY1=-33.5, WGX=8.7;                      // full-beam bridge wings
+  // the crew door — hinged weather-tight steel in the AFT wall at poop level; hinge starboard,
+  // swings 110° outward onto the poop mooring deck. clearAt: walkable once the leaf has left the opening.
+  const DOOR = { kind:'hinge', face:'aft', y:HA, x0:-0.65, x1:0.65, z0:POOP+0.05, z1:13.85,
+                 hinge:'starboard', swingDeg:110, clearAt:0.60, sillZ:POOP };
   // tank covers
   const RX=6.3, ZB=8.8, HZ=4.85;
   const TANKS=[ {y0:6.2,y1:24.8}, {y0:-16.8,y1:1.8} ];
 
   (function build(){
+    lv('hull');                                   // hull shell + bulwark liners + bottom + rail caps + bulb
     // ---- hull shell (paint bands by absolute z so the waterline stays level under the sheer) ----
     for(const side of [-1,1]){
       for(let i=0;i<NSEG;i++){
@@ -218,8 +255,11 @@
         face([[-dw(u0,z0),station(u0).y,z0],[dw(u0,z0),station(u0).y,z0],[dw(u1,z1),y1,z1],[-dw(u1,z1),y1,z1]],mat,b);
       }
     };
+    lv('main_deck');                              // the weather deck strip
     strip(0.258,0.795,(u)=>DECK,'deck',-0.35,18);
+    lv('poop_deck');                              // the raised poop mooring deck strip
     strip(0.012,0.258,(u)=>POOP,'deck',-0.30,6);
+    lv('hull');                                   // foc'sle is raised hull structure, not a declared level
     const fz=(u)=>sheerZ(u)-0.35;
     (function(){ const FS=6, U0=0.795, U1=0.982;
       for(let i=0;i<FS;i++){
@@ -242,6 +282,7 @@
       }
     })();
 
+    lv('main_deck');                              // the covers stand on the weather deck (declared deckObstructions)
     // ---- TANK COVERS: two grey half-cylinders with seam bands + dome hatches ----
     for(const tk of TANKS){
       const NA=7, yc=(tk.y0+tk.y1)/2;
@@ -260,6 +301,7 @@
       boxF([0,yc,ZB+HZ+0.28],[0.85,1.25,0.30],'grey',0.35,-0.01);          // dome hatch on the crown
       for(const s of [-1,1]) tubeF([s*0.45,yc+0.7,ZB+HZ+0.5],[s*0.45,yc+0.7,ZB+HZ+1.35],0.09,'steel',0.1);
     }
+    lv('rigging');                                // elevated crossing gear — class-tagged; its underside is a declared partial cover
     // ---- centre catwalk over the crowns, house front -> foc'sle ----
     (function(){
       const Y0=-21.3, Y1=30.3, ZW=13.82;
@@ -273,6 +315,7 @@
         for(let yy=Y0;yy<=Y1;yy+=3.44) tubeF([s*0.72,yy,ZW+0.03],[s*0.72,yy,14.70],0.035,'steel',b);
       }
     })();
+    lv('main_deck');                              // cabin, pipe runs and manifold are deck machinery
     // ---- compressor cabin + riser cluster between the tanks ----
     boxF([0,4.0,10.5],[3.4,1.8,1.9],'white',-0.1,-0.01);
     boxF([0,4.0,12.47],[3.5,1.9,0.07],'grey',0.3,-0.01);
@@ -295,6 +338,7 @@
       for(const s of [-1,1]) tubeF([s*0.55,MY,10.6],[s*0.55,MY,18.8],0.12,'grey',s<0?0:-0.35);
       tubeF([0,MY,10.6],[0,MY,20.2],0.13,'grey',-0.1);
     })();
+    lv('rigging');                                // vent masts + hose crane — class-tagged
     // ---- vent masts fore + aft of the tank deck ----
     for(const s of [-1,1]){
       tubeF([s*1.5,30.8,DECK],[s*1.5,30.8,21.0],0.09,'steel',s<0?0.1:-0.35);
@@ -309,13 +353,24 @@
     tubeF([2.0,-14.85,16.5],[2.0,-14.85,11.0],0.03,'steel',-0.3);
     boxF([2.0,-14.85,10.88],[0.10,0.10,0.11],'iron',0.1,-0.02);
 
+    lv('hull');                                   // baked lettering on the hull sides
     // ---- "LPG" in white on both sides of the low midship hull ----
     sideText('LPG',  1, 8.72, -6.0, 7.6, 0.6, 'white', -0.25);
     sideText('LPG', -1, 8.72, -6.0, 7.6, 0.6, 'white', -0.25);
 
+    lv('house');                                  // walls, vestibule, boat deck, its rails, lifeboats, L3
     // ---- HOUSE main block (levels 1+2): the big white wall down to the weather deck ----
     F.push(faceO([[-HX,HF,H2T],[HX,HF,H2T],[HX,HF,DECK],[-HX,HF,DECK]],[0,1,0],'white',0.3,0));
-    F.push(faceO([[-HX,HA,H2T],[HX,HA,H2T],[HX,HA,POOP-0.4],[-HX,HA,POOP-0.4]],[0,-1,0],'white',-0.6,0));
+    // aft wall banded around the REAL crew door at poop level (pass 2)
+    F.push(faceO([[-HX,HA,H2T],[DOOR.x0,HA,H2T],[DOOR.x0,HA,POOP-0.4],[-HX,HA,POOP-0.4]],[0,-1,0],'white',-0.6,0));
+    F.push(faceO([[DOOR.x1,HA,H2T],[HX,HA,H2T],[HX,HA,POOP-0.4],[DOOR.x1,HA,POOP-0.4]],[0,-1,0],'white',-0.6,0));
+    F.push(faceO([[DOOR.x0,HA,H2T],[DOOR.x1,HA,H2T],[DOOR.x1,HA,DOOR.z1],[DOOR.x0,HA,DOOR.z1]],[0,-1,0],'white',-0.6,0));
+    F.push(faceO([[DOOR.x0,HA,DOOR.z0],[DOOR.x1,HA,DOOR.z0],[DOOR.x1,HA,POOP-0.4],[DOOR.x0,HA,POOP-0.4]],[0,-1,0],'white',-0.6,0));
+    // through the opening: dim vestibule (sole strip + far bulkhead) so an open door has depth
+    face([[DOOR.x0,HA,POOP+0.012],[DOOR.x1,HA,POOP+0.012],[DOOR.x1,HA+0.85,POOP+0.012],[DOOR.x0,HA+0.85,POOP+0.012]],'dark',-1.6,-0.02);
+    F.push(backPanel(HA+0.88,DOOR.x0-0.05,DOOR.x1+0.05,POOP,DOOR.z1-0.02,'dark',-0.6));
+    for(const r of [[DOOR.x0-0.05,DOOR.x0],[DOOR.x1,DOOR.x1+0.05]])                            // jambs
+      F.push(faceO([[r[0],HA-0.01,DOOR.z0],[r[1],HA-0.01,DOOR.z0],[r[1],HA-0.01,DOOR.z1],[r[0],HA-0.01,DOOR.z1]],[0,-1,0],'steel',-0.2,DBP));
     F.push(faceO([[-HX,HA,H2T],[-HX,HF,H2T],[-HX,HF,DECK],[-HX,HA,DECK]],[-1,0,0],'white',-0.1,0));
     F.push(faceO([[HX,HA,H2T],[HX,HF,H2T],[HX,HF,DECK],[HX,HA,DECK]],[1,0,0],'white',-1.0,0));
     frontText('NO SMOKING', HF+0.04, 0, 15.95, 0.22, 'hull', -0.55);
@@ -335,11 +390,6 @@
       F.push(P(s*(HX+0.03), -29.3, -28.5, POOP+0.05, 13.85, 'dark', -0.5)); // side doors
       F.push(P(s*(HX+0.04), -34.4, -33.8, 15.35, 15.95, 'orng', 0.3));      // life rings
     }
-    F.push(backPanel(HA-0.03,-0.65,0.65,POOP+0.05,13.85,'dark',-0.5));      // aft door
-    for(const xx of [-4.2,-1.6,1.6,4.2]){
-      F.push(backPanel(HA-0.03, xx-0.28, xx+0.28, 15.3, 15.9, 'iron', -0.15));
-      F.push(backPanel(HA-0.065, xx-0.21, xx+0.21, 15.37, 15.83, 'glas', -0.25));
-    }
     boxF([0,(HA+HF)/2,H2T+0.03],[HX+0.10,(HF-HA)/2+0.10,0.06],'white',0.45,-0.01);  // L2 roof / boat deck
     // boat-deck rails
     (function(){ const rz=18.15, xr=7.86;
@@ -352,6 +402,26 @@
       for(const xx of [-6,-3,0,3,6]) tubeF([xx,HA+0.1,H2T+0.09],[xx,HA+0.1,rz],0.024,'white',-0.1);
       tubeF([-7.86,HF-0.1,rz],[7.86,HF-0.1,rz],0.032,'white',0.25);
       for(const xx of [-6.6,-4.4,-2.2,0,2.2,4.4,6.6]) tubeF([xx,HF-0.1,H2T+0.09],[xx,HF-0.1,rz],0.024,'white',0.1);
+    })();
+    for(const xx of [-4.2,-1.6,1.6,4.2]){                                    // L2 aft windows
+      F.push(backPanel(HA-0.03, xx-0.28, xx+0.28, 15.3, 15.9, 'iron', -0.15));
+      F.push(backPanel(HA-0.065, xx-0.21, xx+0.21, 15.37, 15.83, 'glas', -0.25));
+    }
+    lv('hull');                                   // the poop break is the raised hull's own face; its ladders climb it
+    // ---- poop break: white bulkhead strips outboard of the house + side ladders to the weather deck ----
+    (function(){ const yB=-26.62;
+      for(const s of [-1,1]){
+        F.push(faceO([[s*7.8,yB,POOP],[s*8.48,yB,POOP],[s*8.48,yB,DECK],[s*7.8,yB,DECK]],[0,1,0],'white',-0.2,-0.01));
+        const lx=s*8.17, y=yB+0.10;
+        for(const k of [-1,1]) tubeF([lx+k*0.20,y,DECK+0.10],[lx+k*0.20,y,POOP+0.25],0.05,'steel',0.15);
+        for(let z=DECK+0.40; z<POOP+0.06; z+=0.31) tubeF([lx-0.18,y-0.02,z],[lx+0.18,y-0.02,z],0.038,'steel',0.05);
+      }
+    })();
+    lv('house');                                  // the house's own ladder + boat-deck gear
+    // external boat-deck ladder, aft wall stbd of the crew door — the route up; LADDER is PRESENT
+    (function(){ const lx=2.05, y=HA-0.12;
+      for(const s of [-1,1]) tubeF([lx+s*0.22,y,POOP+0.10],[lx+s*0.22,y,H2T+0.25],0.05,'steel',0.15);
+      for(let z=POOP+0.40; z<H2T+0.06; z+=0.31) tubeF([lx-0.18,y+0.02,z],[lx+0.18,y+0.02,z],0.038,'steel',0.05);
     })();
     // lifeboats (orange, both sides) + liferaft canisters on the boat deck
     for(const s of [-1,1]){
@@ -383,6 +453,7 @@
     (function(){ const rz=18.15;
       tubeF([-6.7,F3-0.35,rz],[6.7,F3-0.35,rz],0.03,'white',0.2);
     })();
+    lv('bridge');                                 // the wheelhouse + its full-beam wings cut with their room
     // ---- WHEELHOUSE with the RAKED windscreen (top leans forward, like the refs) ----
     F.push(faceO([[-WX,WFB,WZ0],[WX,WFB,WZ0],[WX,WFT,WZT],[-WX,WFT,WZT]],[0,1,0.25],'white',0.45,0));
     F.push(faceO([[-WX,WA,WZT],[WX,WA,WZT],[WX,WA,WZ0],[-WX,WA,WZ0]],[0,-1,0],'white',-0.7,0));
@@ -419,6 +490,7 @@
       tubeF([s*8.35,-33.9,WZ0-0.04],[s*X3,-34.6,18.4],0.05,'white',-0.2);
       boxF([s*8.5,-34.5,20.95],[0.09,0.09,0.13],'iron',0.1,-0.02);          // sidelight boxes
     }
+    lv('house');                                  // the funnel stands on the boat deck — the house's lid
     // ---- NAVY funnel, raked aft, on the boat deck ----
     (function(){
       const shear=(p)=>[p[0], p[1]-(p[2]-H2T)*0.18, p[2]];
@@ -428,6 +500,7 @@
       F.push(faceO([[2.04,-45.05,23.2],[2.04,-46.55,23.2],[2.04,-46.82,21.7],[2.04,-45.32,21.7]],[1,0,0],'white',-0.7,0.06));
       for(const s of [-1,1]) tubeF([s*0.7,-46.9,25.9],[s*0.7,-47.1,27.1],0.17,'iron',-0.2);
     })();
+    lv('rigging');                                // masts, dome, whips, stays — class-tagged
     // ---- radar mast + satdome + whips on the wheelhouse roof ----
     tubeF([0,-37.5,ROOFZ+0.04],[0,-37.5,30.6],0.12,'white',0.05);
     tubeF([-2.0,-37.5,28.6],[2.0,-37.5,28.6],0.05,'steel',0.15);
@@ -447,6 +520,7 @@
       tubeF([0,MY,26.5],[0,56.4,15.3],0.028,'steel',-0.1);                  // forestay to the stem head
       for(const s of [-1,1]) tubeF([s*0.12,MY,25.4],[s*5.4,32.2,10.6],0.024,'steel',s<0?-0.05:-0.3);
     })();
+    lv('hull');                                   // stands on the foc'sle — raised hull structure
     // ---- foc'sle furniture: windlass drums, bollards, anchors in the flare ----
     (function(){
       const zf2=fz(0.9)+0.02;
@@ -468,6 +542,7 @@
         for(let i=0;i<=NS2;i++){ const u=RU0+i*du; tubeF(P(s,u,0.0),P(s,u,0.95),0.025,'white',b); }
       }
     })();
+    lv('poop_deck');                              // mooring gear standing on the poop
     // ---- poop aft: mooring winches, bollards, stern light ----
     for(const s of [-1,1]){
       boxF([s*2.6,-51.6,POOP+0.25],[0.75,0.45,0.25],'iron',0.05,-0.02);
@@ -574,9 +649,28 @@
     }
     return rgba;
   }
+  // ---- the hinged leaf — built per render so opts.doorOpen (0..1) can pose it ----
+  function doorFaces(opts){
+    const t=Math.max(0,Math.min(1,opts&&opts.doorOpen!=null?+opts.doorOpen:0));
+    const A=t*DOOR.swingDeg*DEG, c=Math.cos(A), sn=Math.sin(A);
+    const hx=DOOR.x1, yw=HA-0.03, z0=DOOR.z0, z1=DOOR.z1, x0=DOOR.x0;
+    const P=(x,z,e)=>[ hx+(x-hx)*c + sn*(e||0), yw+(x-hx)*sn - c*(e||0), z ];
+    const nrm=[sn, -c, 0], out=[];
+    out.push(faceO([P(x0,z1),P(hx,z1),P(hx,z0),P(x0,z0)],nrm,'white',0.10,DBP+0.02));                       // the leaf
+    out.push(faceO([P(x0+0.08,z1-0.12,0.02),P(hx-0.08,z1-0.12,0.02),P(hx-0.08,z0+0.14,0.02),P(x0+0.08,z0+0.14,0.02)],nrm,'white',-0.8,DBP+0.03));  // dished panel
+    const pm=(x0+hx)/2;
+    out.push(faceO(rrect(pm-0.17,pm+0.17,12.55,12.98,0.11).map(([u,v])=>P(u,v,0.03)),nrm,'iron',-0.15,DBP+0.03));   // porthole trim
+    out.push(faceO(rrect(pm-0.12,pm+0.12,12.60,12.93,0.08).map(([u,v])=>P(u,v,0.045)),nrm,'glas',-0.2,DBP+0.04));   // porthole glass
+    out.push.apply(out,tube(P(x0+0.15,12.05,0.05),P(x0+0.15,12.50,0.05),0.030,'steel',0.25));               // dog handle, leading edge
+    for(const hz of [z0+0.35,z1-0.35]) out.push.apply(out,tube(P(hx-0.02,hz,0.012),P(hx+0.06,hz,0.012),0.035,'iron',0.1));  // hinge straps
+    for(const f of out) f.lv='house';             // the leaf is house enclosure — it cuts with the room
+    return out;
+  }
   function render(dir, opts){
     opts = (typeof opts==='number') ? {elev:opts} : (opts||{});
-    return _toRGBA(_paint(F, Object.assign({}, opts, {dir}), true));
+    let fl = F.concat(doorFaces(opts));
+    if(opts.cullLevels && opts.cullLevels.length){ const cut=new Set(opts.cullLevels); fl=fl.filter(f=>!cut.has(f.lv)); }   // pass-3 reference cut; absent → byte-identical
+    return _toRGBA(_paint(fl, Object.assign({}, opts, {dir}), true));
   }
 
   // ---- deck anchors (cell coords; pass rock(i) so overlays ride the wave) ----
@@ -626,7 +720,95 @@
     };
   }
 
+  // door threshold anchor + open-state report for the enter cue
+  function doorMount(dir, opts){
+    opts = Object.assign({}, (typeof opts==='number'?{elev:opts}:opts||{}), {dir});
+    const t=Math.max(0,Math.min(1,opts.doorOpen!=null?+opts.doorOpen:0));
+    const B=camBasis(opts), p=projVert((DOOR.x0+DOOR.x1)/2, HA, POOP, B);
+    const A=t*DOOR.swingDeg*DEG;
+    const le=projVert(DOOR.x1+(DOOR.x0-DOOR.x1)*Math.cos(A), HA+(DOOR.x0-DOOR.x1)*Math.sin(A), POOP, B);
+    return { x:p.sx, y:p.sy, lead:{x:le.sx,y:le.sy}, open:t, clear:t>=DOOR.clearAt };
+  }
+  // hull half-width at (y, z) — the flare law included — and sheer height at y (metres in, metres out)
+  function halfAtZ(y, z){ const u=Math.max(0,Math.min(1,(y+L/2)/L)), st=station(u);
+    const fr=Math.max(0,Math.min(1,(z-st.kz)/st.dep)); return lerp(st.wb,st.ws,Math.pow(fr,flareExp(u))); }
+  function sheerZy(y){ return sheerZ(Math.max(0,Math.min(1,(y+L/2)/L))); }
+  /* THE SHIP'S HOUSE, published — three interior levels (L2 cabins + L3 officers are dressed; one
+     stair trunk carries house→bridge whole). boatInteriorRig.js builds the rooms inside this shell
+     and MUST measure against these exact numbers. main/poop publish the deck u-ranges. */
+  const HOUSE = {
+    kind:'ship', soleZ:POOP, door:DOOR,
+    decks:{
+      house:{ soleZ:POOP, ceilZ:14.30, hx:HX, hxAt:(z)=>HX, y0:HA, y1:-38.0,
+              portholes:{ ys:[-45.2,-43.5,-41.8,-40.1,-38.4], z0:12.55, z1:13.15 } },
+      bridge:{ soleZ:WZ0, ceilZ:WZT, hx:WX, hxAt:(z)=>WX, y0:WA, front:{ yBot:WFB, yTop:WFT },
+               frontGlass:{ z0:20.45, z1:22.02, panes:[[-5.35,-3.70],[-3.54,-1.89],[-1.73,-0.08],[0.08,1.73],[1.89,3.54],[3.70,5.35]] },
+               sideGlass:{ z0:20.65, z1:21.85, runs:[[-40.2,-38.8],[-37.8,-36.4],[-35.4,-34.0]] },
+               aftGlass:{ z0:20.68, z1:21.77, panes:[[-4.6,-1.2],[1.2,4.6]] } },
+      below:{ soleZ:9.00, ceilZ:POOP-0.25, y0:-46.8, y1:-39.6, hxCap:6.4 },
+    },
+    block:{ hx:HX, y0:HA, y1:HF, topZ:H2T },
+    ladders:[
+      { id:'poop_break_ladder_port', face:'fwd', x:-8.17, y:-26.62, z0:DECK, z1:POOP+0.03,
+        connects:['main_deck','poop_deck'], note:'Poop break, port alleyway — weather deck to the poop mooring deck.' },
+      { id:'poop_break_ladder_stbd', face:'fwd', x: 8.17, y:-26.62, z0:DECK, z1:POOP+0.03,
+        connects:['main_deck','poop_deck'], note:'Poop break, starboard alleyway.' },
+      { id:'boat_deck_ladder', face:'aft', x:2.05, y:HA, z0:POOP, z1:H2T+0.03,
+        connects:['poop_deck','boat_deck'], note:'Poop to the boat deck, aft wall stbd of the crew door.' },
+    ],
+    main:{ u0:0.258, u1:0.795 },
+    poop:{ z:POOP, u0:0.012, u1:0.258 },
+    deckObstructions:[
+      { id:'tank_cover_fwd', footprint:[[-6.3,6.2],[6.3,6.2],[6.3,24.8],[-6.3,24.8]], height:5.05, treatment:'wall' },
+      { id:'tank_cover_aft', footprint:[[-6.3,-16.8],[6.3,-16.8],[6.3,1.8],[-6.3,1.8]], height:5.05, treatment:'wall' },
+      { id:'compressor_cabin', footprint:[[-3.4,2.2],[3.4,2.2],[3.4,5.8],[-3.4,5.8]], height:3.90, treatment:'wall' },
+      { id:'manifold', footprint:[[-3.3,-21.0],[3.3,-21.0],[3.3,-19.0],[-3.3,-19.0]], height:2.00, treatment:'wall' },
+      { id:'deckhouse_front', footprint:[[-7.8,-27.16],[7.8,-27.16],[7.8,-26.5],[-7.8,-26.5]], height:8.50, treatment:'wall' },
+    ],
+    excluded:{
+      weather_deck_doors:'the two house-front doors at weather-deck level are dressed closed — the poop crew door is the route in',
+      levels_2_3:'L2 cabins + L3 officers are dressed; one stair trunk carries house→bridge whole (game abstraction, flagged)',
+      catwalk:'the elevated centre catwalk is dressed gear this pass — fore-aft transit is on main_deck',
+      compressor_cabin:'compressor-cabin door dressed closed',
+    },
+    ramp:null,
+  };
+  /* PASS 3 — ASK A: geometry(). One record per WALKABLE level, DECLARED from the same build
+     constants the mesh is built from. BOTH exterior decks publish — the tanker carries two of the
+     59-count's exterior records (main_deck + poop_deck), each explicitly open with its partial
+     cover declared as a cover, not a ceiling. THE TIE: poop_deck and house_sole share z 11.6 and
+     nothing derivable separates them — the published ceilings do. */
+  const LEVEL_IDS = { hull:0, main_deck:1, house:2, bridge:3, below:4, rigging:5, poop_deck:6 };
+  function geometry(){
+    const D=HOUSE.decks;
+    return {
+      schema:'hidden-harbours/hull-geometry@1', hull:'tankerIsoRig', units:'m',
+      frame:'+x stbd, +y bow, +z up; origin amidships, keel bottom, centreline',
+      ids:Object.assign({}, LEVEL_IDS),
+      riggingClass:'rigging — centre catwalk, vent masts, hose crane, radar mast, satdome, whips, foremast, stays: tagged by CLASS, never welded to a cullable room',
+      tieBreak:'poop_deck and house share one sole z ('+POOP.toFixed(2)+') — the published ceilings break the tie: house '+D.house.ceilZ.toFixed(2)+', poop_deck open',
+      dressed:'L2 cabins + L3 officers are dressed house mass (tagged house) — one stair trunk carries house→bridge whole, per HOUSE.excluded.levels_2_3',
+      levels:[
+        { id:'house', deck:'house_sole', soleZ:D.house.soleZ, ceilingZ:D.house.ceilZ,
+          ceiling:{ kind:'hard', z:D.house.ceilZ, of:'L1 deckhead — the one boatInteriorRig dresses (HOUSE.decks.house.ceilZ)' } },
+        { id:'bridge', deck:'bridge_sole', soleZ:D.bridge.soleZ, ceilingZ:D.bridge.ceilZ,
+          ceiling:{ kind:'hard', z:D.bridge.ceilZ, of:'wheelhouse deckhead (HOUSE.decks.bridge.ceilZ)' } },
+        { id:'below', deck:'below_sole', soleZ:D.below.soleZ, ceilingZ:D.below.ceilZ,
+          ceiling:{ kind:'hard', z:D.below.ceilZ, of:'poop-deck underside (POOP-0.25)' } },
+        { id:'main_deck', deck:'main_deck', soleZ:DECK, ceilingZ:null,
+          ceiling:{ kind:'open', partial:{ z:13.765, x0:-0.78, x1:0.78, y0:-21.3, y1:30.3,
+                    of:'centre-catwalk underside over the centreline strip only (slab 13.82 − 0.055) — the catwalk itself is rigging; everything else is sky' } } },
+        { id:'poop_deck', deck:'poop_deck', soleZ:POOP, ceilingZ:null,
+          ceiling:{ kind:'open', partial:{ z:WZ0, y0:WGY0, y1:WGY1, x:'outboard of the house wall, |x| '+HX+'..'+WGX,
+                    of:'bridge-wing underside over the side alleyways only — declared as a cover, not a ceiling' } } },
+      ],
+    };
+  }
+  function faces(){ return F; }   // the static TAGGED mesh; the posed leaf is doorFaces(opts)
   root.TankerIso = { W, H, PX, DIRS:8, pivot:{x:cx,y:cy}, defaultElev:DEFAULT_ELEV,
     order:['N','NE','E','SE','S','SW','W','NW'], HULL, BOOT, WHITE, GREY, DECKG, GLAS, STEEL, IRON, NAVY, ORNG, YELL, KEY,
-    render, ROCK, rock:rockMotion, helmSeat, HELM, craneMounts, CRANE, manifoldMount, MANIF, funnelMount, FUNL, tubMounts, TUBS, navMounts };
+    render, ROCK, rock:rockMotion, helmSeat, HELM, craneMounts, CRANE, manifoldMount, MANIF, funnelMount, FUNL, tubMounts, TUBS, navMounts,
+    doorMount, DOOR, HOUSE, geometry, faces, doorFaces, LEVEL_IDS,
+    loft:{ station, skin, bowRake, flareExp, halfAtZ, sheerZ:sheerZy, L, TH, DECK, POOP, SOLE_U:0.795, NSEG,
+           house:HOUSE, shade:{ GAIN, BIAS, LN, BAYER, KEY, EDGE:0.30 }, cell:{ W, H, cx, cy, S } } };
 })(typeof globalThis!=='undefined'?globalThis:window);
