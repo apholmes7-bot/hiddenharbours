@@ -35,7 +35,7 @@ namespace HiddenHarbours.Tests.EditMode
     public class DoryOutboardPurchaseTests
     {
         const string DataBoats = "Assets/_Project/Data/Boats";
-        const string DataShip  = "Assets/_Project/Data/Shipwright";
+        const string DataShip  = "Assets/_Project/Data/Resources/Catalog/Shipwright";
 
         const string OutboardHullId = "boat.dory_outboard";
 

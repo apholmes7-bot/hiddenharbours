@@ -51,10 +51,10 @@ namespace HiddenHarbours.App.Editor
     public static class NineMileCreekBuilder
     {
         const string DataConfig  = "Assets/_Project/Data/Config";
-        const string DataShip    = "Assets/_Project/Data/Shipwright";
+        const string DataShip    = "Assets/_Project/Data/Resources/Catalog/Shipwright";
         const string DataRegions = "Assets/_Project/Data/Regions";
-        const string DataLicenses= "Assets/_Project/Data/Licenses";   // St Peters opening: the cod licence
-        const string DataGear    = "Assets/_Project/Data/Gear";        // St Peters opening: the rod
+        const string DataLicenses= "Assets/_Project/Data/Resources/Catalog/Licenses";   // St Peters opening: the cod licence
+        const string DataGear    = "Assets/_Project/Data/Resources/Catalog/Gear";        // St Peters opening: the rod
         const string ArtSprites  = "Assets/_Project/Art/Sprites";
         const string ArtSea      = "Assets/_Project/Art/Tilesets/Water/SeaTile.png";
         const string ArtWaterMat = "Assets/_Project/Art/Materials/Water.mat";   // the layered SIM-driven water shader (ADR 0010)
@@ -245,6 +245,17 @@ namespace HiddenHarbours.App.Editor
 
         /// <summary>The chandlery: the rod. In town.</summary>
         public static Vector3 ChandleryPos => NineMileCreekMainland.ChandleryPos;
+
+        /// <summary>The wharf's sellers. Each vendor component carries one of these, and the listings
+        /// name them back — which is what lets the same rod be stocked by both this chandlery and the
+        /// island store as ONE asset rather than two.</summary>
+        public const string SellerChandlery = "seller.nmc_chandlery";
+        /// <inheritdoc cref="SellerChandlery"/>
+        public const string SellerHarbourmaster = "seller.nmc_harbourmaster";
+        /// <inheritdoc cref="SellerChandlery"/>
+        public const string SellerYard = "seller.nmc_yard";
+        /// <inheritdoc cref="SellerChandlery"/>
+        public const string SellerHectorsBarrel = "seller.hectors_barrel";
 
         /// <summary>Flavour, north — one of the plan's nine town lots. The village kit's houses measure
         /// 6.6 × 8.1 m and 7.0 × 8.7 m in its own contract, and the plan reserves 6 m of radius per lot,
@@ -752,6 +763,7 @@ namespace HiddenHarbours.App.Editor
             var shipwright = shipwrightShed.AddComponent<Shipwright>();
             shipwrightShed.AddComponent<DevBuyInput>();      // RequireComponent(Shipwright) — present
             SetRef(shipwright, "_offer", puntOffer);
+            SetString(shipwright, "_sellerId", SellerYard);
             SetRef(shipwright, "_walletProvider", providersGo);
 
             // The shed also sells POTS (pots are bought, not conjured): one PotShop per pot kind on the
@@ -760,9 +772,11 @@ namespace HiddenHarbours.App.Editor
             // increments SaveData.PotStock; the T-set spends from it (PotLocker).
             var lobsterPotShop = shipwrightShed.AddComponent<PotShop>();
             SetRef(lobsterPotShop, "_offer", lobsterPotOffer);
+            SetString(lobsterPotShop, "_sellerId", SellerYard);
             SetRef(lobsterPotShop, "_walletProvider", providersGo);
             var crabPotShop = shipwrightShed.AddComponent<PotShop>();
             SetRef(crabPotShop, "_offer", crabPotOffer);
+            SetString(crabPotShop, "_sellerId", SellerYard);
             SetRef(crabPotShop, "_walletProvider", providersGo);
 
             // --- ST PETERS OPENING VENDORS (places + data wiring; interaction drivers are gameplay/ui) ---
@@ -779,12 +793,14 @@ namespace HiddenHarbours.App.Editor
             var harbourOffice = MakeBuilding("HarbourmasterOffice", LoadSpriteAny(ArtHouseRed), HarbourmasterPos, waterSprite, new Color(0.46f, 0.40f, 0.52f));
             var licenseVendor = harbourOffice.AddComponent<LicenseVendor>();
             SetRef(licenseVendor, "_license", codLicense);
+            SetString(licenseVendor, "_sellerId", SellerHarbourmaster);
             SetRef(licenseVendor, "_walletProvider", providersGo);
 
             // General store / chandlery: sells the rod (GearShop → gear.rod). South on the WEST land.
             var store = MakeBuilding("GeneralStore", LoadSpriteAny(ArtHouseTeal), ChandleryPos, waterSprite, new Color(0.40f, 0.50f, 0.40f));
             var gearShop = store.AddComponent<GearShop>();
             SetRef(gearShop, "_offer", rodOffer);
+            SetString(gearShop, "_sellerId", SellerChandlery);
             SetRef(gearShop, "_walletProvider", providersGo);
 
             // The DAMAGED DORY at the shipwright (the opening's prize): a second Shipwright stall wired with
@@ -794,6 +810,7 @@ namespace HiddenHarbours.App.Editor
             var doryYard = MakeBuilding("ShipwrightDoryYard", LoadSpriteAny(ArtShipwright), DoryYardPos, waterSprite, new Color(0.46f, 0.40f, 0.32f));
             var doryShipwright = doryYard.AddComponent<Shipwright>();
             SetRef(doryShipwright, "_offer", damagedDoryOffer);
+            SetString(doryShipwright, "_sellerId", SellerYard);
             SetRef(doryShipwright, "_walletProvider", providersGo);
 
             // --- HECTOR'S BARREL: THE USED OUTBOARD, NOW ACTUALLY FOR SALE ------------------------------
@@ -824,6 +841,7 @@ namespace HiddenHarbours.App.Editor
             outboardStall.transform.position = HectorsBarrelPos;
             var outboardSeller = outboardStall.AddComponent<Shipwright>();
             SetRef(outboardSeller, "_offer", doryOutboardOffer);
+            SetString(outboardSeller, "_sellerId", SellerHectorsBarrel);
             SetRef(outboardSeller, "_walletProvider", providersGo);
 
             // --- REGION SCENE-LOAD PATH -----------------------------------------------------

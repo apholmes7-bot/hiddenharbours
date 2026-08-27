@@ -17,3 +17,10 @@ MonoBehaviour:
   Flavor: 'A proper rod and reel - the step up from a hand-line. Fishes cod once you
     hold the cod licence. gameplay-systems maps gear.rod to the Rod Gear capability.'
   Price: 60
+  Catalog:
+    Listed: 1
+    Section: 5
+    Sellers:
+    - seller.leblancs
+    - seller.nmc_chandlery
+    SortOrder: 10

@@ -21,7 +21,7 @@ namespace HiddenHarbours.Economy
     /// protection duration here later is an additive field, not a reshape.</para>
     /// </summary>
     [CreateAssetMenu(menuName = "Hidden Harbours/Supply", fileName = "Supply")]
-    public class SupplyDef : ScriptableObject
+    public class SupplyDef : ScriptableObject, ICatalogListing
     {
         [Header("Identity")]
         [Tooltip("Stable, append-only supply id (e.g. \"supply.ice\"). Counted in SaveData.SupplyStock " +
@@ -37,5 +37,17 @@ namespace HiddenHarbours.Economy
                  "code). Ice is a RECURRING cost, so this number sets the running cost of keeping a catch " +
                  "cold away from Ginny's freezer (m1-progression-pacing §5).")]
         public int Price = 6;
+
+        [Header("Catalog")]
+        [Tooltip("Whether a seller's wares book lists this, on which shelf, and who stocks it. Off by " +
+                 "default: nothing appears in any book until this says so.")]
+        public CatalogListing Catalog;
+
+        // ---- ICatalogListing: read through one shape by the sweep and the book, so neither of them
+        //      has to learn the seven concrete Def types.
+        string ICatalogListing.ListingId => Id;
+        string ICatalogListing.ListingName => DisplayName;
+        string ICatalogListing.ListingFlavor => Flavor;
+        CatalogListing ICatalogListing.Catalog => Catalog;
     }
 }

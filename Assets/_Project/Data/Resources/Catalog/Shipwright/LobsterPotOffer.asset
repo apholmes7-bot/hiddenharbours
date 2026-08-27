@@ -10,10 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fef12c5e1ec945a4a7f6172f8783405b, type: 3}
-  m_Name: CrabPotOffer
+  m_Name: LobsterPotOffer
   m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.PotOffer
-  Id: offer.crab_pot
-  TrapDefId: trap.crab
-  DisplayName: Crab Pot
-  Flavor: A low, wide pot for the mud crab grounds. Takes fish scrap for bait.
-  Price: 60
+  Id: offer.lobster_pot
+  TrapDefId: trap.lobster
+  DisplayName: Lobster Pot
+  Flavor: A slatted timber pot. Bait her with herring, set her deep, come back to
+    the buoy.
+  Price: 120
+  Catalog:
+    Listed: 1
+    Section: 5
+    Sellers:
+    - seller.nmc_yard
+    SortOrder: 60

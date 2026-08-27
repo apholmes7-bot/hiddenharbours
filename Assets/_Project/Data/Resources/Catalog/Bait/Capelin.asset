@@ -20,3 +20,9 @@ MonoBehaviour:
   - fish.atlantic_cod
   - fish.mackerel
   - fish.pollock
+  Catalog:
+    Listed: 1
+    Section: 5
+    Sellers:
+    - seller.leblancs
+    SortOrder: 30

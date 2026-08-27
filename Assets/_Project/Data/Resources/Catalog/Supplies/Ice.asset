@@ -18,3 +18,9 @@ MonoBehaviour:
     round a catch it buys you hours - never days - and it is melting from the moment
     you pay for it. The reason the store is somewhere you come back to.'
   Price: 6
+  Catalog:
+    Listed: 1
+    Section: 5
+    Sellers:
+    - seller.leblancs
+    SortOrder: 20

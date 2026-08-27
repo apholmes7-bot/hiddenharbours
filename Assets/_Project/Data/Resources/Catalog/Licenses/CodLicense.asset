@@ -10,14 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 098d14b95fd34c6d95a5ae22cf1b40a9, type: 3}
-  m_Name: ClamLicense
+  m_Name: CodLicense
   m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.LicenseDef
-  Id: license.clam
-  DisplayName: Clam Digging Licence
-  Flavor: 'A shellfish licence for the St Peters flats, signed over the counter at the
-    general store. The fee is small and the paperwork is one line, but no buyer on the
-    island will weigh a bucket without it. The first licence of your life - and not the
-    one you pay for yourself.'
-  Price: 15
+  Id: license.cod
+  DisplayName: Cod Fishing License
+  Flavor: Nine Mile Creek's harbourmaster signs you off to take cod on rod and line.
+  Price: 120
   PermittedSpeciesIds:
-  - fish.soft_shell_clam
+  - fish.atlantic_cod
+  Catalog:
+    Listed: 1
+    Section: 5
+    Sellers:
+    - seller.nmc_harbourmaster
+    SortOrder: 50

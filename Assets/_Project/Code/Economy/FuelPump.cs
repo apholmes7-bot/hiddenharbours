@@ -11,7 +11,7 @@ namespace HiddenHarbours.Economy
     ///
     /// <para><b>Why an interact candidate and not a buy-screen vendor.</b> Every other thing this module
     /// sells is a ROW: a rod, a licence, a bag of ice — you open a counter and pick from a list, which is
-    /// what <c>BuyCatalog</c>/<c>BuyScreen</c> are for. Fuel is not like that. It is a thing you do to an
+    /// what <c>BuyCatalog</c> and the wares book are for. Fuel is not like that. It is a thing you do to an
     /// object you are already holding, at a place, and the diegetic-UI direction is explicit that the level
     /// reads off the can rather than off a screen. So this registers on the one interact seam
     /// (<see cref="IInteractable"/>) beside the pail and the clam hole, and no screen opens.</para>

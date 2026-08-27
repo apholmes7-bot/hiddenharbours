@@ -10,10 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c2990315689d4662aced4ce5bb0f79f1, type: 3}
-  m_Name: DamagedDoryOffer
+  m_Name: PuntOffer
   m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.ShipwrightOffer
-  BoatId: boat.dory
-  DisplayName: The Old Dory (needs work)
-  Price: 400
-  StartsDamaged: 1
+  BoatId: boat.punt
+  DisplayName: The Punt
+  Price: 1800
+  StartsDamaged: 0
   RepairCost: 300
+  Catalog:
+    Listed: 1
+    Section: 4
+    Sellers:
+    - seller.nmc_yard
+    SortOrder: 10

@@ -11,7 +11,7 @@ namespace HiddenHarbours.Economy
     /// Create via Assets ▸ Create ▸ Hidden Harbours ▸ Shipwright Offer, save in Data/Shipwright.
     /// </summary>
     [CreateAssetMenu(menuName = "Hidden Harbours/Shipwright Offer", fileName = "ShipwrightOffer")]
-    public class ShipwrightOffer : ScriptableObject
+    public class ShipwrightOffer : ScriptableObject, ICatalogListing
     {
         [Tooltip("Stable id of the boat this offer sells, matching its BoatHullDef.Id (e.g. \"boat.punt\").")]
         public string BoatId = "boat.punt";
@@ -31,5 +31,17 @@ namespace HiddenHarbours.Economy
         [Tooltip("₲ to repair this boat into a usable boat (only used when StartsDamaged). The economy-" +
                  "owned tunable; greybox-minimal = instant repair on payment.")]
         public int RepairCost = 300;
+
+        [Header("Catalog")]
+        [Tooltip("Whether a seller's wares book lists this, on which shelf, and who stocks it. Off by " +
+                 "default: nothing appears in any book until this says so.")]
+        public CatalogListing Catalog;
+
+        // ---- ICatalogListing: read through one shape by the sweep and the book, so neither of them
+        //      has to learn the seven concrete Def types.
+        string ICatalogListing.ListingId => BoatId;
+        string ICatalogListing.ListingName => DisplayName;
+        string ICatalogListing.ListingFlavor => "";
+        CatalogListing ICatalogListing.Catalog => Catalog;
     }
 }

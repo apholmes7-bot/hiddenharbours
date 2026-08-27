@@ -18,7 +18,7 @@ namespace HiddenHarbours.Economy
     /// Assets ▸ Create ▸ Hidden Harbours ▸ Pot Offer, save in Data/Shipwright.</para>
     /// </summary>
     [CreateAssetMenu(menuName = "Hidden Harbours/Pot Offer", fileName = "PotOffer")]
-    public class PotOffer : ScriptableObject
+    public class PotOffer : ScriptableObject, ICatalogListing
     {
         [Header("Identity")]
         [Tooltip("Stable, append-only offer id (e.g. \"offer.lobster_pot\"). Never reuse or rename.")]
@@ -36,5 +36,17 @@ namespace HiddenHarbours.Economy
         [Tooltip("Price in ₲ per pot. The economy-owned tunable — aim for a pot that pays for itself " +
                  "in about two good hauls (no magic number in code).")]
         public int Price = 120;
+
+        [Header("Catalog")]
+        [Tooltip("Whether a seller's wares book lists this, on which shelf, and who stocks it. Off by " +
+                 "default: nothing appears in any book until this says so.")]
+        public CatalogListing Catalog;
+
+        // ---- ICatalogListing: read through one shape by the sweep and the book, so neither of them
+        //      has to learn the seven concrete Def types.
+        string ICatalogListing.ListingId => Id;
+        string ICatalogListing.ListingName => DisplayName;
+        string ICatalogListing.ListingFlavor => Flavor;
+        CatalogListing ICatalogListing.Catalog => Catalog;
     }
 }

@@ -18,3 +18,9 @@ MonoBehaviour:
     is under you, and it will squeal at you before the bottom does. Bolted into the
     dash of whichever boat you bring - it does not come off again.'
   Price: 140
+  Catalog:
+    Listed: 1
+    Section: 5
+    Sellers:
+    - seller.leblancs
+    SortOrder: 40
