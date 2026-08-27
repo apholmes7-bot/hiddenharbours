@@ -54,17 +54,23 @@ namespace HiddenHarbours.Tests.PlayMode
             const float extent = 96f;
             Camera cam = MakeCamera();
 
-            // ⚠️ A DELIBERATELY FAST drift, and the reason matters. In batchmode a frame is about a
-            // millisecond, so 120 frames span a tenth of a second — at a realistic 0.9 m/s the buffer
-            // would cross the 0.125 m cell boundary ONCE in the whole run and this test would pass
-            // without ever exercising the frame that used to teleport. (It did exactly that on the
-            // first run: the coverage assertion below caught it at 1 crossing.) The invariant is
-            // independent of the drift's magnitude — `AdvectCells` banks whatever remainder it is
-            // given — so winding the speed up costs nothing but buys dozens of crossings, while
-            // `Time.deltaTime` stays REAL and variable, which is the half of this that EditMode
-            // cannot supply. The axis is off the camera's pan so the window move and the content
-            // move stay independent.
-            var driftPerSecond = new Vector2(40f, -26f);
+            // ⚠️ THE COVERAGE IS A LOOP CONDITION, NOT A HOPE — and it took two failures to get here.
+            // In batchmode a frame is a fraction of a millisecond, so a fixed frame count buys an
+            // amount of SIM TIME that depends entirely on how fast the machine is. At a realistic
+            // 0.9 m/s over 120 frames the buffer crossed the 0.125 m cell boundary ONCE; wound up to
+            // 40 m/s it managed 15, still short. A fixed count cannot be made reliable by tuning it,
+            // because the number it produces is a property of the hardware.
+            //
+            // So the loop runs until it has SEEN the crossings it needs, bounded by a frame ceiling
+            // that fails loudly rather than hanging. A fast machine spends more frames, a slow one
+            // fewer, and both exercise the frame that used to teleport the same number of times.
+            // `Time.deltaTime` stays REAL and variable throughout — that is the half of this EditMode
+            // cannot supply, and it survives because the invariant does not care about the drift's
+            // magnitude: `AdvectCells` banks whatever remainder it is handed. The axis is off the
+            // camera's pan so the window move and the content move stay independent.
+            const int TargetCrossings = 30;
+            const int MaxFrames = 2000;
+            var driftPerSecond = new Vector2(12f, -7.5f);
 
             var residual = Vector2.zero;
             Vector2 lattice = FoamBuffer.WorldCellOrigin(Vector2.zero, extent);
@@ -74,8 +80,10 @@ namespace HiddenHarbours.Tests.PlayMode
             int crossings = 0;
             float worstError = 0f;
 
-            for (int frame = 0; frame < 120; frame++)
+            int frame = 0;
+            while (crossings < TargetCrossings && frame < MaxFrames)
             {
+                frame++;
                 yield return null;
                 float dt = Time.deltaTime;
                 elapsed += dt;
@@ -102,12 +110,12 @@ namespace HiddenHarbours.Tests.PlayMode
                 worstError = Mathf.Max(worstError, (drawn - expected).magnitude);
             }
 
-            // The anti-vacuous guard, and it is not decoration: it is what caught the first version
-            // of this test running 120 near-instant batchmode frames and crossing a single cell.
-            Assert.Greater(crossings, 20,
-                $"only {crossings} whole-cell scrolls in the whole run, so the frames that used to " +
-                "teleport were barely exercised. Raise the drift or the frame count — do not trust " +
-                "this pass.");
+            // The anti-vacuous guard, and it is not decoration: it is what caught this test twice —
+            // once at 1 crossing and once at 15 — running near-instant batchmode frames.
+            Assert.GreaterOrEqual(crossings, TargetCrossings,
+                $"only {crossings} whole-cell scrolls in {frame} frames, so the frames that used to " +
+                "teleport were barely exercised. Either the machine is far slower than the ceiling " +
+                "allows for, or the drift stopped banking — do not trust this pass either way.");
 
             // Half a cell is the size of the artefact being ruled out; the true error is a float
             // accumulation and lands orders of magnitude under it.
