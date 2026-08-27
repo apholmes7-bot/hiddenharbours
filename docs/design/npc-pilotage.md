@@ -440,6 +440,50 @@ manoeuvre's own budget in code, derived from the tunables, so the shipped scene 
 without a rebuild — but the field now says something smaller than it means, and a Build click that
 re-serializes it to ~30 s would make it honest.
 
+### 8.3 ⭐ The intro cabin — the game opens BELOW his deck (world-content, 2026-08-27)
+
+The passage now starts inside the skipper's house rather than on his deck. She goes below on the
+cape's own `BoatInteriorDef`, can **move about the cabin** while he runs the marks, and comes up on
+deck through **his own aft door** for the come-alongside. From the moment she is on deck, S1 above is
+untouched — the docking, the tie-up, the moored beat and the step ashore are the same code, in the
+same order, with the same numbers.
+
+**It adds no second mechanism, and that is the whole design.** The room, the door, the level map and
+the cutaway are the ones `BoatInteriorInstaller` already grows on every hull that spawns (ADR 0038);
+going below is `BoatInterior.TryEnter`, so `CabinEntered` is published from its usual place and
+`BoatCutaway` opens the house through the seam it already listens on. Coming out is the real
+`BoatCabinDoor`, with the cue the sidecar measured. What is genuinely new is one thing: **a walker
+inside a moving hull has a position on the sole** — `BoatCabinWalkMath`, which is `DeckAreaMath`'s
+transform (called, not copied) over a `BoatInteriorLevel`'s outline and its furniture.
+
+Four things worth writing down:
+
+- **The cutaway needs no ruling here.** `BoatCutaway` refuses the cut for whoever is steering
+  (`HelmSlot.PilotedHull`, the occupancy law of #642), and the arrival never declares the player as
+  piloting anything — she is *carried*. So a passenger below gets the cut and Armand keeps his wheel,
+  read straight off the two facts that already say it.
+- **⚠️ The cape's rig has never had a cutaway pass**, so her `HullMeshDef` carries no `LevelTags` and
+  `CutawayForDeck` answers `Cut.None`. The gate engages correctly and opens nothing: what the player
+  sees below is the room drawn over her *closed* house — the overdraw the cabin gate was opened on
+  measured evidence to accept. Seven rigs have the pass (batch 1 + batch 2); hers is not among them.
+  **Upstream art item**, not a gameplay gap. `BoatCabinWalkMathTests` pins the join rule
+  (`BoatInteriorDef` level ids against `HullMeshDef.LevelTags[].DeckId`) so a bake that arrives in the
+  rig's vocabulary rather than the def's goes red instead of silently cutting nothing.
+- **⛔ No teleport at the threshold**, in either direction. Both intro teleports died with #661 and
+  continuity is the law. Crossing the door changes which *frame* she is placed in — sole to deck —
+  and the join is a **seed**, not a placement: coming out, `_passengerDeckOffset` is re-read from
+  where she is standing, so the next seat reproduces her exact world point and then carries it round
+  with the hull. The visible consequence is that she stands where she came out, at the threshold,
+  rather than at a point somebody typed. On a hull with no measured interior nothing above runs and
+  the authored offset stands, so the arrival is byte-for-byte the one that shipped.
+- **⚠ `CanStepAshore` gained "and she is not below."** You do not step onto a wharf from inside a
+  cabin, and the step is an arc from where she is standing. Nothing is taken away: the offer is not
+  on a clock (Q1's ruling), so it is simply waiting the moment she comes up.
+
+**Still the owner's:** her resting look — the surround is drawn at every `doorOpen`, so the aft face
+changes whichever pose ships, and this lane ships the kit default (`doorOpen 0`, closed) unchanged.
+And whether she may walk the DECK as well as the cabin, which the 08-22 playtest left open.
+
 ---
 
 ## 9. Open questions for the owner
