@@ -236,6 +236,66 @@ namespace HiddenHarbours.Tools.RigBaking
         [MenuItem(RigMeshGate.MenuRoot + "/Bake the 5 fleet-pack hull meshes", priority = 223)]
         public static void BakeFleetPack() => BakeFleetInternal(FleetPackHulls);
 
+        /// <summary>
+        /// <b>The cutaway kit's BATCH 1 — the lobster, the trawler and the packet, and nothing
+        /// else.</b> The three hulls whose rigs went pass 3 on 2026-08-26 and therefore the three
+        /// whose meshes gain a TexCoord1 level tag and a <c>LevelTags</c> table.
+        ///
+        /// <para><b>Its own entry point for the fleet pack's reason, verbatim:</b> a whole-fleet bake
+        /// rewrites all thirty-four defs, and Unity's serialisation is not byte-deterministic, so the
+        /// thirty-one this change does not touch would come back with regenerated sub-asset fileIDs
+        /// and reshuffled YAML for no change at all. Baking exactly the hulls whose rigs moved is
+        /// what keeps the diff readable — and readable is what lets a reviewer see that the tag
+        /// landed and nothing else did.</para>
+        ///
+        /// <para>Batch 2 (dragger, trawler Mk II, tanker, the eighteen lobster variants) is the same
+        /// mechanism with no new semantics; when it lands it goes through the existing whole-fleet
+        /// and variant entry points, and this one can retire.</para>
+        /// </summary>
+        public static IReadOnlyList<FleetHull> CutawayBatch1Hulls
+        {
+            get
+            {
+                var keys = new[] { "lobsterBoat", "sternTrawler", "coastalPacket" };
+                var hulls = new List<FleetHull>(keys.Length);
+                foreach (string k in keys) hulls.Add(HullMeshFleet.Get(k));
+                return hulls;
+            }
+        }
+
+        [MenuItem(RigMeshGate.MenuRoot + "/Bake the 3 cutaway batch-1 hull meshes", priority = 224)]
+        public static void BakeCutawayBatch1() => BakeFleetInternal(CutawayBatch1Hulls);
+
+        [MenuItem(RigMeshGate.MenuRoot + "/Bake the 3 cutaway batch-1 hull meshes", validate = true)]
+        static bool BakeCutawayBatch1Validate() => RigMeshGate.Enabled;
+
+        /// <summary>Headless entry (-executeMethod) for the three.</summary>
+        public static void BakeCutawayBatch1Cli()
+        {
+            try
+            {
+                var hulls = CutawayBatch1Hulls;
+                int failed = BakeFleetInternal(hulls);
+                if (failed > 0)
+                {
+                    Debug.LogError($"[rig-mesh] CLI cutaway batch-1 bake FAILED: {failed} of " +
+                                   $"{hulls.Count} hull(s) did not bake.");
+                    EditorApplication.Exit(1);
+                    return;
+                }
+                Debug.Log($"[rig-mesh] CLI cutaway batch-1 bake OK — {hulls.Count} hulls.");
+                // Exit as loudly on success as on failure — launched without -quit (the -quit/RunTests
+                // race), nothing else ever ends the editor, and the search indexer's idle CPU burn
+                // reads as a bake still working.
+                EditorApplication.Exit(0);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[rig-mesh] CLI cutaway batch-1 bake FAILED: {e}");
+                EditorApplication.Exit(1);
+            }
+        }
+
         [MenuItem(RigMeshGate.MenuRoot + "/Bake the 5 fleet-pack hull meshes", validate = true)]
         static bool BakeFleetPackValidate() => RigMeshGate.Enabled;
 
@@ -761,6 +821,26 @@ namespace HiddenHarbours.Tools.RigBaking
                 for (int y = 0; y < 4; y++)
                     def.Bayer16[x * 4 + y] = (float)data.Bayer[x, y];
 
+            // THE CUTAWAY TABLE (owner ruling 2026-08-26). Transcription, not tuning: every field
+            // comes off the rig's own geometry(), including the DeckId that joins her levels to the
+            // interior def's. A rig that publishes none leaves an empty array, which is the honest
+            // "this hull cannot be cut" — and re-baking such a hull writes the same empty array she
+            // already had, so nothing moves.
+            def.LevelTags = new HullMeshDef.LevelTag[data.Levels.Count];
+            for (int i = 0; i < data.Levels.Count; i++)
+            {
+                RigLevelRecord lvl = data.Levels[i];
+                def.LevelTags[i] = new HullMeshDef.LevelTag
+                {
+                    LevelId = lvl.Id,
+                    DeckId = lvl.DeckId,
+                    Tag = lvl.Tag,
+                    Enclosed = lvl.Enclosed,
+                    SoleZMeters = (float)lvl.SoleZ,
+                    CeilingZMeters = (float)lvl.CeilingZ,
+                };
+            }
+
             // The mesh sub-asset: replace, never accumulate. DestroyImmediate on the old one removes
             // it from the asset file; the new one is added under the same def.
             Mesh oldMesh = def.Mesh;
@@ -781,7 +861,10 @@ namespace HiddenHarbours.Tools.RigBaking
 
             Debug.Log($"[rig-mesh] {(created ? "Created" : "Refreshed")} {assetPath}: {build} — " +
                       $"azimuth {(def.AzimuthCounterClockwise ? "CCW (mapping negates)" : "CW")}, " +
-                      $"rock ({rollA}, {pitchA}, {heaveA}), usable = {def.IsUsable()}.");
+                      $"rock ({rollA}, {pitchA}, {heaveA}), usable = {def.IsUsable()}" +
+                      (def.LevelTags.Length > 0
+                          ? $", cutaway levels [{string.Join(" · ", data.Levels)}]"
+                          : ", no cutaway (her rig publishes no geometry())") + ".");
             if (!def.IsUsable())
                 throw new InvalidOperationException($"Baked def at {assetPath} is not usable — see fields.");
             return def;

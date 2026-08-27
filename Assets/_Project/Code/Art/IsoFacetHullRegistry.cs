@@ -201,6 +201,20 @@ namespace HiddenHarbours.Art
         public static readonly int PixelsPerMetre = Shader.PropertyToID("_PixelsPerMetre");
         public static readonly int HullId = Shader.PropertyToID("_HullId");
 
+        /// <summary>THE CUTAWAY (owner ruling 2026-08-26): which of this hull's levels the occupant is
+        /// inside, as a TexCoord1.x tag from her own <c>HullMeshDef.LevelTags</c>. 0 = draw her whole
+        /// exterior, which is the shipped picture and every hull's resting state. Written PER DRAW
+        /// through the property block and never as a global — sister ships share a def, so a global
+        /// would cut every lobster boat in the creek open the moment one of them was boarded. Read
+        /// only inside <c>HH_LEVEL_GATE</c>, which the renderer enables on its own instance material
+        /// and only on a hull whose mesh actually carries tags.</summary>
+        public static readonly int LevelShown = Shader.PropertyToID("_HHLevelShown");
+
+        /// <summary>The facet shader's cutaway keyword. <c>_local</c>, so it lives PER MATERIAL and
+        /// <c>Shader.EnableKeyword</c> does not reach it — the renderer writes its own instance
+        /// material (never <c>sharedMaterial</c> off an asset, which would dirty the asset).</summary>
+        public const string LevelGateKeyword = "HH_LEVEL_GATE";
+
         /// <summary>ADR 0033 — the hull frame's y→z shear: x = <c>g = cos(elev)(1−sin(elev))/sin(elev)</c>,
         /// y = the world y it is referenced to (the water's <see cref="WaterIsoDepthFrame.ReferenceY"/>).
         /// Written every frame by <c>IsoFacetHullRenderer.ApplyPose</c> and copied onto every bolted-on

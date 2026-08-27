@@ -75,7 +75,8 @@ namespace HiddenHarbours.Art
     /// </summary>
     [ExecuteAlways]
     [DisallowMultipleComponent]
-    public sealed class IsoFacetHullRenderer : MonoBehaviour, HiddenHarbours.Core.IHullMeshRenderer
+    public sealed class IsoFacetHullRenderer : MonoBehaviour,
+        HiddenHarbours.Core.IHullMeshRenderer, HiddenHarbours.Core.IHullCutaway
     {
         [Tooltip("Heading in RIG dir units (1 unit = 45°, CCW, fractional allowed).")]
         [SerializeField] private float _headingDirUnits;
@@ -128,6 +129,14 @@ namespace HiddenHarbours.Art
         // guarded per pixel instead, and a half-re-baked project is never wrong in a NEW way.
         private bool _hasInteriorFaces;
 
+        // THE CUTAWAY (owner ruling 2026-08-26). Read once at Configure, from the MESH — the same
+        // shape as _hasInteriorFaces above and for the same reason: a hull whose rig gained level
+        // tags but whose mesh has not been re-baked must keep the shipped whole-exterior picture
+        // rather than acquire a cut she has no geometry for. A cheap vertex-attribute question, not
+        // a scan: TexCoord1 is present only when the builder wrote it.
+        private bool _hasLevelTags;
+        private int _cutawayLevel;
+
         /// <summary>
         /// True when any face of <paramref name="mesh"/> is flagged interior (UV0.w). Allocates
         /// once per Configure — never per frame (rule 7) — and is deliberately a POSITIVE test:
@@ -142,6 +151,55 @@ namespace HiddenHarbours.Art
             for (int i = 0; i < uvs.Count; i++)
                 if (uvs[i].w > 0.5f) return true;
             return false;
+        }
+
+        /// <inheritdoc/>
+        public bool CarriesLevelTags => _hasLevelTags;
+
+        /// <inheritdoc/>
+        public int CutawayLevel => _cutawayLevel;
+
+        /// <summary>
+        /// <b>Cut this hull open at <paramref name="levelTag"/></b>, or 0 to close her up — the Core
+        /// <see cref="HiddenHarbours.Core.IHullCutaway"/> seam, driven by the Boats lane from
+        /// <c>CabinSignals</c> and helm occupancy.
+        ///
+        /// <para><b>Two writes, and they are deliberately different in kind.</b> The KEYWORD is
+        /// per-material state and is toggled here, on this component's OWN instance material
+        /// (<c>new Material(...)</c>, <c>HideAndDontSave</c>, built in <c>BuildFacetMaterial</c>) —
+        /// never on a <c>sharedMaterial</c> reached off an asset, which would dirty the asset, and
+        /// never through <c>Shader.EnableKeyword</c>, which does not reach a <c>_local</c> keyword at
+        /// all. The LEVEL is per-draw state and rides the property block out of
+        /// <see cref="ApplyPose"/> with <c>_HullId</c> and the deck-occupant slots, so two sister
+        /// ships in one creek can hold two different answers.</para>
+        ///
+        /// <para><b>A hull with no tags stays whole, silently.</b> Most of the fleet has no cutaway
+        /// geometry and never will; that is data, not a fault. Refusing loudly here would log once
+        /// per boarding, forever, on every boat the kit has not reached.</para>
+        ///
+        /// <para>Idempotent, and free when nothing changed — which matters because the natural caller
+        /// is a transition handler that would rather not remember what it last said.</para>
+        /// </summary>
+        public void ShowCutawayLevel(int levelTag)
+        {
+            if (levelTag < 0) levelTag = 0;
+            if (!_hasLevelTags) levelTag = 0;
+            if (levelTag == _cutawayLevel) return;
+
+            _cutawayLevel = levelTag;
+            ApplyCutawayKeyword();
+            ApplyPose();          // the level itself travels in the property block
+        }
+
+        // The keyword is only ever ON while a cut is actually live, so a hull nobody is inside
+        // compiles and runs the pre-gate program — the picture is identical either way (measured:
+        // 0 differing px across the variant boundary), but the discard is a real per-fragment cost
+        // on every hull every frame and rule 7 does not stop being true because it is small.
+        private void ApplyCutawayKeyword()
+        {
+            if (_facetMaterial == null) return;
+            if (_cutawayLevel > 0) _facetMaterial.EnableKeyword(IsoFacetShaderIds.LevelGateKeyword);
+            else _facetMaterial.DisableKeyword(IsoFacetShaderIds.LevelGateKeyword);
         }
 
         /// <summary>Heading in rig dir units (1 = 45° CCW). Continuous — that is the point.</summary>
@@ -339,10 +397,17 @@ namespace HiddenHarbours.Art
             _footprintRadiusMeters = DisplacedWaterMath.FootprintRadiusMeters(
                 setup.CellW, setup.PxPerMetre);
             _hasInteriorFaces = MeshCarriesInteriorFaces(setup.Mesh);
+            _hasLevelTags = setup.Mesh.HasVertexAttribute(
+                UnityEngine.Rendering.VertexAttribute.TexCoord1);
+            // A re-Configure (a repaint, a hull swap) must not leave a cut standing on geometry that
+            // is no longer the same geometry — and must not leave the keyword on a material that has
+            // just been rebuilt underneath it.
+            _cutawayLevel = 0;
 
             BuildRampTextures(setup);
             BuildFacetMaterial(setup);
             BuildChildren(setup);
+            ApplyCutawayKeyword();
             _poseDirty = true;
             ApplyPose();
         }
@@ -658,6 +723,10 @@ namespace HiddenHarbours.Art
             _props.SetFloat(IsoFacetShaderIds.HullId, _hullId / 255f);
             _props.SetFloat(IsoFacetShaderIds.HullIdFore, _foreHullId / 255f);
             _props.SetFloat(IsoFacetShaderIds.HullIdForeSpan, DeckOccupantSlots);
+            // THE CUTAWAY, per draw. Written unconditionally — including the 0 that means "whole
+            // exterior" — so a block re-used across hulls can never carry one boat's open house onto
+            // her sister. Inert while HH_LEVEL_GATE is off: nothing reads it.
+            _props.SetFloat(IsoFacetShaderIds.LevelShown, _cutawayLevel);
             PublishDeckSlots();
             _meshRenderer.SetPropertyBlock(_props);
             _overlayRenderer.SetPropertyBlock(_props);

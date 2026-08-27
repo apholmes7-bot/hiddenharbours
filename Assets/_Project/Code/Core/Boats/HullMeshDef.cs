@@ -42,6 +42,46 @@ namespace HiddenHarbours.Core
             public int Offset;
         }
 
+        /// <summary>
+        /// <b>One walkable level of this hull, as her rig declared it</b> — the row that lets a cabin
+        /// say which faces to cut without anybody re-deriving anything.
+        ///
+        /// <para><b>⚠️ Three vocabularies name the same room, and mixing them draws the wrong one.</b>
+        /// The rig calls it <c>house</c> (<see cref="LevelId"/>); <c>BoatInteriorDef</c> calls it
+        /// <c>house_sole</c> (<see cref="DeckId"/>); the interior SHEETS run their own row order,
+        /// which is neither. That last mismatch already shipped once — on the tanker, def index 2 is
+        /// <c>house_sole</c> and sheet row 2 is <c>below</c>, so walking into the wheelhouse drew the
+        /// engine space, and only a test noticed. The cure is the same here as there: the map is
+        /// BUILDER-COMPUTED DATA carried from the rig (its <c>geometry().levels[].deck</c> field IS
+        /// the def's level id), never a <c>_sole</c>-suffix rule invented at runtime.</para>
+        /// </summary>
+        [Serializable]
+        public struct LevelTag
+        {
+            [Tooltip("The rig's own level name — 'house', 'cuddy', 'below', 'bridge', 'main_deck'.")]
+            public string LevelId;
+
+            [Tooltip("The BoatInteriorDef level id this is the same room as — 'house_sole', " +
+                     "'cuddy_sole'. THE JOIN KEY, published by the rig; may be empty when the rig " +
+                     "declared a level the interior kit never measured.")]
+            public string DeckId;
+
+            [Tooltip("The int this level's faces carry in TexCoord1.x. The gate compares against it.")]
+            public int Tag;
+
+            [Tooltip("True when the rig declared a real ceiling. An OPEN level (a working deck, the " +
+                     "lobster's cockpit) is declared open, and cutting one would be cutting the sky — " +
+                     "so the gate refuses it. An absent field and an open sky must never look the same.")]
+            public bool Enclosed;
+
+            [Tooltip("Sole height above the keel bottom, hull-local metres. A raked sole publishes " +
+                     "its honest minimum, exactly as the rig does.")]
+            public float SoleZMeters;
+
+            [Tooltip("The overhead's underside, hull-local metres. Only meaningful when Enclosed.")]
+            public float CeilingZMeters;
+        }
+
         [Header("Identity")]
         [Tooltip("Stable id, append-only (CLAUDE.md §5): hullmesh.snake_case.")]
         public string Id = "hullmesh.unnamed";
@@ -93,6 +133,13 @@ namespace HiddenHarbours.Core
         public int CellW, CellH;
         [Tooltip("The rig's bake elevation (degrees above the horizon; 40 for the boat rigs).")]
         public float ElevationDeg = 40f;
+
+        [Header("Cutaway (the rig's own geometry() — read, never derived)")]
+        [Tooltip("One row per WALKABLE level the rig published, joining her mesh's TexCoord1.x tag to " +
+                 "the BoatInteriorDef level id it is the same room as. EMPTY on every hull baked " +
+                 "before the cutaway kit — an empty table means 'this hull cannot be cut', which is " +
+                 "the honest answer for a mesh with no tags in it.")]
+        public LevelTag[] LevelTags = Array.Empty<LevelTag>();
 
         [Header("Pose facts (per-artwork; measured or read off the rig — never tuned)")]
         [Tooltip("MEASURED azimuth convention (RigAzimuthProbe over rendered pixels): true = the rig's " +
@@ -167,6 +214,39 @@ namespace HiddenHarbours.Core
                 if (Ramps[i].Colors == null || Ramps[i].Colors.Length == 0) return false;
             if (Bayer16 == null || Bayer16.Length != 16) return false;
             return PxPerMetre > 0 && CellW > 0 && CellH > 0;
+        }
+
+        /// <summary>
+        /// <b>Can this hull be cut open?</b> True only when her rig published a level vocabulary AND
+        /// her mesh was baked since — the two are separate facts and both have to hold, because a def
+        /// re-serialised from a newer rig with an older mesh sub-asset is exactly the stale-bake state
+        /// this repo keeps meeting.
+        /// </summary>
+        public bool CarriesLevelTags =>
+            LevelTags != null && LevelTags.Length > 0 &&
+            Mesh != null && Mesh.HasVertexAttribute(UnityEngine.Rendering.VertexAttribute.TexCoord1);
+
+        /// <summary>
+        /// The TexCoord1.x tag for the <c>BoatInteriorDef</c> level id <paramref name="deckId"/>, or
+        /// <b>0</b> — <c>hull</c>, the level that is never cut — when this hull has no such row, when
+        /// the row exists but the rig declared that level OPEN, or when the id is empty.
+        ///
+        /// <para><b>0 is the refusal, and it is the same value as "gate off".</b> Cutting a level with
+        /// no ceiling is cutting the sky; cutting a level this hull never declared is guessing. Both
+        /// answer "draw her exterior", which is the shipped picture — a cutaway that does not happen
+        /// is a missing feature, and one that happens to the wrong room is a broken boat.</para>
+        ///
+        /// <para>A linear scan over 2–4 rows. Called on a cabin transition, not per frame.</para>
+        /// </summary>
+        public int CutawayTagForDeck(string deckId)
+        {
+            if (string.IsNullOrEmpty(deckId) || LevelTags == null) return 0;
+            for (int i = 0; i < LevelTags.Length; i++)
+            {
+                if (!string.Equals(LevelTags[i].DeckId, deckId, StringComparison.Ordinal)) continue;
+                return LevelTags[i].Enclosed ? LevelTags[i].Tag : 0;
+            }
+            return 0;
         }
     }
 }
