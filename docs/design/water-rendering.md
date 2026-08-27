@@ -3760,3 +3760,143 @@ camera with foam on screen: **nothing may crawl.**
 > a rigid buffer scroll is uniform by construction and cannot carry a position-dependent term. So near a
 > beach, buffered foam drifts on the wind/current axis while the shader's own fringe foam also leans
 > shoreward. Small, and stated rather than discovered.
+
+---
+
+## 29. The living wake — the age ramp, and bubbles (owner ask 2026-08-27)
+
+> *"i want to see bubbles form and drift but they arent entirely noticeable, everything looks very
+> organized and shader-like and not particle like, the wakes behind the boat are still a solid white
+> foam from wherever the boat interacts with, this should churn through different shades of blue,
+> distort and fade into the ambient ocean over time."*
+
+Three complaints, and the first two share one root cause.
+
+### 29.1 The defect: age existed, and never reached colour
+
+Every wake element shipped before this section drew at **one serialized colour for its whole life** and
+varied only its **alpha**. `BoatWakeEmitter` did `var col = foamColor; col.a = alpha;` for the foam
+puffs, the crest lines and the bow droplets; the water shader did
+`lerp(col.rgb, _FoamColor.rgb, saturate(wakeFoam) * _FoamColor.a)` for every texel of the advected
+buffer, fresh churn and week-old drift alike.
+
+Both sides already **knew** each element's age and threw it away:
+
+| Side | The age it was already carrying |
+|---|---|
+| Particles | `life01 = age / lifetime` — computed every frame, used only to fade and spread |
+| The foam buffer (§28) | its own **decayed coverage** — the buffer decays, so how much survives at a texel *is* how old that churn is |
+
+So "solid white foam" was never a missing feature. It was one channel that ended at alpha and should
+have continued into hue.
+
+### 29.2 The ramp — `WakeFoamAgeing` (Core), and its HLSL twin
+
+`Core/Environment/WakeFoamAgeing.cs`. Foam is born at the sea's **foam** anchor and walks down the
+water's own ramp — **foam → shallow → mid** — over its life, through three owner-tunable knots:
+
+| Knot | Default | Means |
+|---|---|---|
+| `WhiteHold` | 0.12 | fraction of life held at pure white — *"white only at the moment of churn"* |
+| `BlueReach` | 0.45 | life at which it has become the sea's shallow blue |
+| `DeepReach` | 0.85 | life at which it lands on the mid blue and stops descending |
+
+**The colours are never invented.** Every value returned is a convex combination of the live
+ADR 0015 palette anchors, so the "different shades of blue" are the ones the sea is already using and a
+preset swap or a mood turn carries the wake with it. That containment is a *provable* property, and
+`WakeFoamAgeingTests.EveryShade_StaysInsideTheSeasOwnPalette` pins it as a derived bound rather than a
+tolerance.
+
+**The last leg is the alpha fade, deliberately.** The ramp stops at the mid anchor; the existing fade
+takes it the rest of the way. The ambient ocean at any given spot is whatever depth, tide and light make
+it — dissolving into it beats guessing it.
+
+`_WakeFoamAgeStrength = 0` (shader) / `WakeAgeRamp.Strength = 0` (C#) is a **bit-exact** passthrough to
+the single-white look. The usual A/B contract.
+
+> ⚠️ **Twin discipline.** The knot curve and the three-stop lookup exist in both C# and HLSL
+> (`WakeFoamKnots` / `WakeFoamRamp3` in `HiddenHarboursWater.shader`). Change one, change **both** in the
+> same PR — `WakeFoamAgeingShaderTests` scrapes the two source files and compares the function bodies
+> after normalising for language, so drift goes red on CPU-only CI.
+
+### 29.3 The buffer's age proxy costs nothing to store
+
+The shader derives age from coverage: `age = saturate(1 - coverage / _WakeFoamFreshCover)`. Coverage at
+or above `_WakeFoamFreshCover` (0.72) is churn happening **now** and draws white; below it the texel has
+been decaying and walks down the ramp. **No second channel, no second render target** — the information
+was always in the buffer.
+
+The dissolve into the ambient sea then comes free, because the lerp **weight** is still the coverage: the
+oldest foam is both the bluest *and* the faintest.
+
+### 29.4 Bubbles — and why the ones that already existed did not count
+
+`WakeFoamTexture`'s aeration pass (#443) already drew bubbles — **baked into the foam puff's texture**.
+That is precisely the *"organized and shader-like"* read: a bubble that is part of a texture is a
+**pattern**, and every puff of a churn wears the same pattern in the same places.
+
+`Boats/WakeBubbleSystem.cs` is the answer: one pooled stream where the thing on screen and the thing in
+the pool are the same object. Four properties buy "particle-like", and **none of them is more shader**:
+
+| Property | Why |
+|---|---|
+| **Bursty arrival** (`BurstCount`) | a deterministic Bernoulli over `BurstSlots` slots, not `rate × dt`. Long-run rate identical; any given moment uneven. A metered rate is a metronome and the eye reads a metronome as machinery. |
+| **Heavy-tailed size** (`SizeAt`) | `min + (max−min)·u^SizeBias`, bias 2.6 — a haze of small bubbles with a scatter of big readable ones. A uniform draw gives a uniform field. |
+| **Pop, not fade** (`AlphaAt` / `SizeOverLife`) | holds full opacity, then in the last 22 % of life **swells** and goes. Deliberately *unlike* `WakeParticleSystem.LifeFade`; two streams that die the same way read as one stream. |
+| **Own clocks** | lifetime ±55 %, size, ramp position and drift all per-bubble off the birth seed. |
+
+They form at the two points where the hull works water — the **stern churn** and the **stem** — split by
+`BowFraction`, both anchored to the *drawn* hull ends, and both scattered over a radius expressed as a
+**fraction of hull length**, so the cluster grades with the boat without a second constant. Rate and
+birth opacity ride `WakeGrading.Magnitude01` (size × weight × speed): a dragger boils where a dory
+fizzes, which is the bow half of the original 2026-07-23 ask.
+
+Bubbles take a **larger share of the wind** than foam (0.35 vs the trail's 0.30) — they stand proud of
+the surface where the air reaches them, where a foam raft lies in it. That difference is what makes a
+bubble visibly *leave* the trail it formed in.
+
+### 29.5 The sea palette seam
+
+`Core/Environment/SeaPalette.cs`, mirroring `DisplacedSea` in shape and ownership discipline.
+`WaterSurface` publishes its four anchors **after** each frame's mood blend, from the values that just
+went onto the property block (MPB override where one exists, shared material otherwise — the precedence
+the GPU will apply). Boats reads the seam; it never touches a material (rule 4).
+
+**Publish the instance, never a copy.** The anchors are mood-eased every frame, so a consumer holding a
+copy would keep yesterday's blues through a squall — the stale-twin bug this repo has paid for before.
+No published palette ⇒ the ramp is skipped entirely and every element draws its flat serialized tint:
+the OFF contract, reached by absence rather than by a flag.
+
+### 29.6 What this deliberately does not do
+
+- **No age gradient along the plume/spray sprites.** Those are boat-attached authored images with one
+  tint each, depicting water whose age varies from apex to tail. That gradient belongs in the
+  **artwork**. They draw at `ShadeFresh` — the sea's own white rather than a component constant — and
+  the aged read astern is the deposited trail's job.
+- **The wake WAVE keeps its near-white tint.** Its sprite already carries a lit crest and a dark hollow
+  in its RGB; walking that tint down the palette would flatten the profile back into a painted line,
+  which is the thing that sprite replaced.
+- **Bubbles vs foam ordering within the wake band is not claimed.** Both sit at sorting order −1: safely
+  above the Sea plane (−5) and below the hull (0), which is the ordering that matters. There is no
+  integer between −1 and the hull.
+
+### 29.7 Budget (rule 7)
+
+| | |
+|---|---|
+| Bubble pool | 64 per boat, fixed, recycled round-robin. Steady state at the shipped 26/s × 1.1 s is ≈ 29 — `WakeBubbleSystemTests.TheShippedPoolCovers_TheShippedSteadyState` pins the two numbers as one budget. |
+| Per-tick cap | `BurstSlots` (6) by construction — a long frame cannot empty the pool in one tick. |
+| Sprites | 4 bubble films, 12 px each, built once at boot, shared by every bubble of every boat; mirrored per pool slot so 4 films cover 16 apparent shapes. Written once at build, never per frame. |
+| Allocation | none after construction, on either stream. |
+| The revert | `WakeBubbleConfig.Enabled = false` builds no films, no pool and no renderers — the off switch costs no memory either. |
+
+### 29.8 What is tested, and what is the owner's eye
+
+Pinned: the ramp's monotonicity and palette containment (derived bounds, not tuned tolerances), the
+bit-exact A/B at strength 0, the scatter's spread and its scatter-0 control, the knot curve under a
+mis-tuned config, the bubbles' four properties, both pool budgets, determinism on both streams, and the
+C#↔HLSL twin.
+
+**Not** pinned, and correctly so: whether it *looks* right. That is the owner's eyeball. Any pixel
+number quoted about this lane must state which load regime produced it — the drift-line probe's traps
+apply here unchanged.

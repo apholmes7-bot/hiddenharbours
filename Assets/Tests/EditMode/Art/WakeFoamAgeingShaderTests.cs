@@ -1,0 +1,196 @@
+using System.Globalization;
+using System.IO;
+using System.Text.RegularExpressions;
+using NUnit.Framework;
+using UnityEngine;
+using HiddenHarbours.Core;
+
+namespace HiddenHarbours.Tests.Art.EditMode
+{
+    /// <summary>
+    /// The TWIN GUARD for the wake foam's age ramp (owner ask 2026-08-27).
+    ///
+    /// <para>The ramp exists on both sides of the sea: <see cref="WakeFoamAgeing"/> shades the particle
+    /// wake, and a transcription in <c>HiddenHarboursWater.shader</c> shades the advected foam buffer.
+    /// Two halves of one look is exactly the shape that drifts silently — this repo has paid for a
+    /// twin-parity test that pinned a twin against itself rather than against the thing that actually
+    /// draws, so these guards read the SHADER SOURCE and the C# SOURCE and compare them to each other.</para>
+    ///
+    /// <para>CPU-only by construction: no GPU, no render, no device — so CI adjudicates it, which is the
+    /// whole point of a guard against a change nobody will notice until the owner looks at the water.</para>
+    /// </summary>
+    public class WakeFoamAgeingShaderTests
+    {
+        const string ShaderPath = "Assets/_Project/Art/Shaders/HiddenHarboursWater.shader";
+        const string TwinPath = "Assets/_Project/Code/Core/Environment/WakeFoamAgeing.cs";
+
+        static string Read(string projectRelative)
+        {
+            string path = Path.Combine(Application.dataPath, "..", projectRelative);
+            Assert.IsTrue(File.Exists(path), $"Not found: {projectRelative}");
+            return File.ReadAllText(path);
+        }
+
+        /// <summary>
+        /// Reduce one function body to the shape both languages share, so a real difference in the MATHS
+        /// fails and a difference in spelling does not. HLSL's <c>saturate</c> is <c>Mathf.Clamp01</c>,
+        /// its <c>lerp</c> is <c>Color.Lerp</c>, and its literals carry no <c>f</c> suffix and often a
+        /// redundant <c>.0</c>. Everything else — the comparisons, the knots, the divisors, the halves —
+        /// must match character for character after that.
+        /// </summary>
+        static string Normalize(string body)
+        {
+            string s = Regex.Replace(body, @"/\*.*?\*/", " ", RegexOptions.Singleline);
+            s = Regex.Replace(s, @"//[^\n]*", " ");
+            s = s.Replace("Mathf.Clamp01", "saturate").Replace("Mathf.Clamp", "clamp");
+            s = s.Replace("Color.Lerp", "lerp");
+            s = Regex.Replace(s, @"\s+", "");
+            s = Regex.Replace(s, @"([0-9.])f(?![A-Za-z0-9_])", "$1");   // 1f -> 1, 1e-4f -> 1e-4
+            s = Regex.Replace(s, @"(\d)\.0(?![0-9])", "$1");            // 1.0 -> 1, 2.0 -> 2
+            return s.ToLowerInvariant();
+        }
+
+        /// <summary>Pull one function's body (between its first { and its matching }) out of a source file.</summary>
+        static string Body(string source, string signatureStart)
+        {
+            int at = source.IndexOf(signatureStart, System.StringComparison.Ordinal);
+            Assert.Greater(at, -1,
+                $"'{signatureStart}' is gone. It is one half of a twin seam — if the ramp moved, BOTH " +
+                "halves move in the same PR, and this guard is how that is enforced.");
+            int open = source.IndexOf('{', at);
+            Assert.Greater(open, -1);
+
+            int depth = 0;
+            for (int i = open; i < source.Length; i++)
+            {
+                if (source[i] == '{') depth++;
+                else if (source[i] == '}')
+                {
+                    depth--;
+                    if (depth == 0) return source.Substring(open + 1, i - open - 1);
+                }
+            }
+            Assert.Fail($"Unbalanced braces after '{signatureStart}'.");
+            return null;
+        }
+
+        // ==== the twin ================================================================================
+
+        [Test]
+        public void TheKnotCurve_IsTranscribedLineForLine()
+        {
+            string hlsl = Body(Read(ShaderPath),
+                "float WakeFoamKnots(float t01, float whiteHold, float blueReach, float deepReach)");
+            string csharp = Body(Read(TwinPath),
+                "public static float Knots(float t01, float whiteHold, float blueReach, float deepReach)");
+
+            Assert.AreEqual(Normalize(csharp), Normalize(hlsl),
+                "The water shader's age curve has drifted from WakeFoamAgeing.Knots. The particle wake " +
+                "and the advected foam buffer are two halves of ONE look — when they age differently, " +
+                "the churn behind a boat is two different colours of water meeting along the edge of a " +
+                "render target, and nothing on a CPU-only CI would ever see it.");
+        }
+
+        [Test]
+        public void TheThreeStopRamp_IsTranscribedLineForLine()
+        {
+            string hlsl = Body(Read(ShaderPath),
+                "float3 WakeFoamRamp3(float age01, float3 foam, float3 shallow, float3 mid)");
+            string csharp = Body(Read(TwinPath),
+                "public static Color Ramp3(float age01, Color foam, Color shallow, Color mid)");
+
+            Assert.AreEqual(Normalize(csharp), Normalize(hlsl),
+                "The shader's palette lookup has drifted from WakeFoamAgeing.Ramp3.");
+        }
+
+        // ==== the seam's numbers ======================================================================
+
+        [Test]
+        public void TheShaderKnotDefaults_MatchTheShippedRamp()
+        {
+            string src = Read(ShaderPath);
+            var d = WakeAgeRamp.Default;
+
+            Assert.AreEqual(d.WhiteHold, PropertyDefault(src, "_WakeFoamWhiteHold"), 1e-4f,
+                "The shader's knot defaults and the C# ramp's are one look, tuned once. Two defaults " +
+                "means the buffer's foam and the particle foam turn blue at different ages.");
+            Assert.AreEqual(d.BlueReach, PropertyDefault(src, "_WakeFoamBlueReach"), 1e-4f);
+            Assert.AreEqual(d.DeepReach, PropertyDefault(src, "_WakeFoamDeepReach"), 1e-4f);
+        }
+
+        static float PropertyDefault(string shaderSource, string property)
+        {
+            // Anchor on the DECLARATION form — the name, then its display-name string literal, then the
+            // default after the '='. A looser pattern matches the shader's own COMMENTS about these
+            // properties (e.g. "_WakeFoamAgeStrength = 0 returns ...") and reads a number out of prose;
+            // a `\([^)]*\)` pattern is worse still, because it stops at the ')' inside `Range(0,1)` and
+            // silently never matches at all — which is a guard that passes by not looking.
+            Match m = Regex.Match(shaderSource,
+                Regex.Escape(property) + @"\s*\(\s*""[^""]*""\s*,[^=\n]*=\s*([0-9.eE+-]+)");
+            Assert.IsTrue(m.Success, $"{property} is gone from the water shader (or its declaration no " +
+                                     "longer carries a display name and a default).");
+            return float.Parse(m.Groups[1].Value, CultureInfo.InvariantCulture);
+        }
+
+        // ==== the defect, and the revert ==============================================================
+
+        [Test]
+        public void TheWakeCompose_NoLongerLerpsToOneFlatWhite()
+        {
+            string src = Read(ShaderPath);
+
+            // THE DEFECT the owner reported: "the wakes behind the boat are still a solid white foam from
+            // wherever the boat interacts with". That was this one line composing every texel of the
+            // buffer — fresh churn and week-old drift alike — toward a single constant.
+            Assert.IsFalse(
+                Regex.IsMatch(src, @"lerp\s*\(\s*col\.rgb\s*,\s*_FoamColor\.rgb\s*,\s*saturate\s*\(\s*wakeFoam"),
+                "The advected foam buffer is composing toward a single flat _FoamColor again. That is the " +
+                "2026-08-27 defect verbatim: the buffer already knows each texel's age (it DECAYS), and " +
+                "the compose is where that information was being thrown away.");
+
+            Assert.IsTrue(Regex.IsMatch(src, @"WakeFoamAgedColor\s*\(\s*wakeFoam\s*\)"),
+                "The wake compose must run its coverage through the age ramp — that is what makes the " +
+                "churn walk through the sea's blues instead of sitting on white.");
+        }
+
+        [Test]
+        public void TheAgeRamp_HasAnExactPassthroughAtZero()
+        {
+            string body = Body(Read(ShaderPath), "float3 WakeFoamAgedColor(float coverage)");
+
+            // Every visual layer in this shader ships with a knob whose 0 is the previous look, bit-exact.
+            // It is how the owner A/Bs a change and how a bad call gets reverted without a revert.
+            Assert.IsTrue(Regex.IsMatch(body, @"_WakeFoamAgeStrength[\s\S]*?return\s+_FoamColor\.rgb\s*;"),
+                "WakeFoamAgedColor must return _FoamColor.rgb unchanged at strength 0. Without that the " +
+                "age ramp cannot be switched off, and a look the owner dislikes becomes a code change " +
+                "instead of a slider.");
+        }
+
+        [Test]
+        public void TheRamp_ReadsTheSeasOwnPaletteAnchors()
+        {
+            string body = Body(Read(ShaderPath), "float3 WakeFoamAgedColor(float coverage)");
+
+            // ADR 0015: the "different shades of blue" must come from the water's own bounded ramp, so a
+            // preset swap moves them. A hand-picked blue here would look right in North Atlantic and
+            // wrong in every other preset, and nothing would fail.
+            foreach (string anchor in new[] { "_PaletteFoam", "_PaletteShallow", "_PaletteMid" })
+                Assert.IsTrue(body.Contains(anchor),
+                    $"The wake's age ramp no longer reads {anchor}. ADR 0015's palette anchors are where " +
+                    "the sea's blues live; anything else is an invented hex that a preset swap will " +
+                    "leave behind.");
+        }
+
+        [Test]
+        public void TheAgeProxy_IsTheBuffersOwnCoverage()
+        {
+            string body = Body(Read(ShaderPath), "float3 WakeFoamAgedColor(float coverage)");
+
+            Assert.IsTrue(Regex.IsMatch(body, @"1\.0\s*-\s*coverage\s*/"),
+                "The shader must derive age from the buffer's decayed COVERAGE. That is the whole reason " +
+                "this cost nothing to store: the buffer decays, so how much survives at a texel already " +
+                "IS how old that churn is. A second age channel would be a new render target for " +
+                "information the first one was already carrying.");
+        }
+    }
+}
