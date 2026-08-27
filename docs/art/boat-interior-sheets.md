@@ -26,12 +26,12 @@ named anywhere, on disk or in the contract.
 Re-bake: **Hidden Harbours ▸ Art ▸ Bake Boat Interior Sheets**, then **Slice Boat Interior Sheets**.
 Headless: `-executeMethod HiddenHarbours.Tools.RigBaking.BoatInteriorBakeMenu.BakeAndSliceCli`.
 
-> ⚠️ **That CLI's exit code means something, unlike the def builder's.**
-> `BoatInteriorDefBuilder.BuildAllCli` exits 1 on ANY refusal, so while the ledger holds its three it
-> is permanently 1 and a caller must parse the log. This one separates the two cases: a **ledger**
-> refusal is the expected steady state and does not colour the exit code; a **cleared** hull that
-> failed to bake does. The parseable line is still emitted either way:
-> `N baked, M refused by the ledger, K cleared-hull failures.`
+> ⚠️ **Both CLIs' exit codes mean something now.** `BoatInteriorDefBuilder.BuildAllCli` exits 1 on
+> ANY refusal — which made it permanently 1 while the ledger held refusals (three, then one). Since
+> the cape's rig merge cleared the last refusal (2026-08-27, the 27/27 ledger), a clean run exits 0
+> and a nonzero exit is REAL. This one separates the two cases either way: a **ledger** refusal does
+> not colour the exit code; a **cleared** hull that failed to bake does. The parseable line is still
+> emitted: `N baked, M refused by the ledger, K cleared-hull failures.`
 
 ---
 

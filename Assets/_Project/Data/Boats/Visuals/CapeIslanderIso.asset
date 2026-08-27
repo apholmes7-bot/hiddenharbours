@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: visual.cape_islander_iso
   Variant: 1
   HullMesh: {fileID: 11400000, guid: bd4f4d8467fc9184ca81249147950e0c, type: 2}
+  DesignWaterlineMeters: 0
   Deck: {fileID: 11400000, guid: a74f7b0779036a473a3341ae3ce4951c, type: 2}
   Facings:
   - {fileID: 7059747339026985028, guid: c8bfd215164f2bd4ca869c35175b66a0, type: 3}
@@ -107,7 +108,10 @@ MonoBehaviour:
   MotorVariant: 0
   MotorFit: 0
   MotorMesh: {fileID: 0}
+  MotorMeshFitmentOffsetMeters: {x: 0, y: 0, z: 0}
   MotorRockRollDegrees: 3.4
   MotorRockPitchDegrees: 1.9
   MotorRockHeavePixels: 1.3
   MotorMountLocalMeters: {x: 0, y: -3.53, z: 0.72}
+  PilotStance: 0
+  Interior: {fileID: 11400000, guid: e89021a3ba1d13c42b8fe9d383e9af62, type: 2}

@@ -280,10 +280,15 @@ namespace HiddenHarbours.Tests.RigBaking
             var refusedStems = _ledger.Values.Where(e => !e.IsClean)
                                              .Select(e => e.HullStem)
                                              .ToArray();
-            Assert.IsNotEmpty(refusedStems,
-                "the S0 ledger refuses nothing at all. That is possible — upstream may have fixed both " +
-                "outstanding items — but it must be a deliberate ledger change, so this fires to make " +
-                "the change visible rather than letting the guard quietly become vacuous.");
+            // The empty-refusal tripwire fired 2026-08-27 and the change WAS deliberate: the cape's
+            // rig merge (third sha 60d127c3…) discharged the last refusal, so 27/27 clear and an
+            // empty refused set is now the steady state. The guard stays non-vacuous in that state
+            // by asserting the parity in the OTHER direction: a contract that still names refusals
+            // the ledger no longer holds is stale and reads as covering less than it does.
+            if (refusedStems.Length == 0)
+                Assert.IsEmpty(Contract().refused,
+                    "the S0 ledger refuses nothing, but the contract still records refusals — the " +
+                    "contract is stale against the ledger it mirrors.");
 
             foreach (string stem in refusedStems)
             {
