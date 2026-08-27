@@ -146,7 +146,7 @@ generator makes them all, so no variant can drift from its family.
 
 ---
 
-## 5. C# verification
+## 5. C# verification — compiled, then RUN
 
 All 14 assemblies on the path compile from worktree sources.
 
@@ -160,6 +160,30 @@ Both negative-control arms fired, on **separate runs** (a combined control hides
 `CS0246` on an unresolvable type, and `CS0234` on a reach into `HiddenHarbours.Player` — so the
 harness both reports errors and enforces asmdef direction.
 
+**Then the tests were RUN**, in a `net8` reflection runner over the freshly-built assemblies. Two
+harness seams were needed and neither touches measurement: `Application.dataPath` is a native ECall,
+so harness-only copies of the two RigBaking assemblies carry a literal in its place (29 sites, and
+the patcher fails loudly on zero); and `Debug.Log*` bottoms out in the same kind of ECall, which was
+turning **every** extraction test into a skip — Unity's log handler is a managed seam, so swapping it
+is enough and no source is touched for it at all.
+
+| | result |
+|---|---|
+| `HullLevelTagBakeTests` | **7 pass / 0 fail / 3 skip** (the skips are `AssetDatabase` fixtures) |
+| whole RigBaking assembly, this branch | 534 pass / 149 fail / 225 skip |
+| whole RigBaking assembly, **control at `origin/main`** | 534 pass / 149 fail / 225 skip |
+
+**Name-by-name diff of the two runs: ZERO status changes**, across 908 tests each side. The only
+difference is the one renamed fixture (`Batch1_IsThreeHullsAndTheyAreAllInTheFleetTable` →
+`TheCutawayKitsHulls_AreAllInTheFleetTable`), passing on both. The 149 failures are harness limits —
+no `AssetDatabase`, no texture loading — reproduced identically on a detached worktree at
+`origin/main`. **That is not a claim that main is red on them**; it is the claim that they are not
+this branch's.
+
+Worth naming because it is the running proof of §2:
+`DeckSidecarImportParityTests.EverySidecarStillDescribesTheRigItNames` **passes** — every re-stamped
+root pin resolves against the rig bytes this branch lands.
+
 ---
 
 ## 6. What is NOT done here — the Unity last-mile
@@ -167,13 +191,40 @@ harness both reports errors and enforces asmdef direction.
 This lane lands rig sources, sidecars, the lid table and its fixtures. It bakes nothing. The
 following go red on arrival **by design**, and each is a bake instruction rather than a defect:
 
+Every fixture in this table is one the headless runner could only **skip** (it needs `AssetDatabase`),
+so none of them is covered by the green above and each is listed here rather than assumed.
+
 | family | why | what clears it |
 |---|---|---|
 | `NoHullOutsideBatch1_HasARigThatOutranHerBake` | 21 hulls now publish a vocabulary their committed mesh has not | whole-fleet mesh re-bake + retire the batch-1-only entry point |
 | `HullCutawayAssetTests` (batch-1 selection) | the batch-1-only selection is now stale | same re-bake |
+| `HullMeshFleetTests.EveryCommittedHullMesh_MatchesAFreshExtractionFromItsRig` | **the door leaf** (§4a below) changes the extracted face list on 21 hulls: +16 on each ship, +9 per variant. The committed meshes have no door | same re-bake |
+| `IsoFacetSideDraggerAcceptanceTests` and the variants' acceptance fixtures | they compare the committed mesh against the rig's own renderer, and the rig draws a door the mesh has not | same re-bake — the leaf should IMPROVE agreement, not worsen it |
 | deck defs / `EveryCommittedDeckDefMatchesItsSidecarVertexForVertex` | `Data/Boats/Decks/*.asset` carry their own `DerivedFromRigSha256` — e.g. `SideDraggerIso.asset` still holds `163f0cdf…`, the old root CRLF hash | re-import deck sidecars, then `git checkout --` the untouched hulls (they come back with ULP drift) |
 | `BoatInteriorDef` interiors | `Data/Boats/Interiors/*.asset` carry `HullRigSha256`; 21 of them still name a base sha (`SideDraggerIso.asset` → `b5223748…`) | re-run the interior def builder |
 | lobster sheet (`IsoFacetLobsterEndToEndTests`) | **pre-existing** — control-proved at `68cead28` by #666, owned by the sheet re-bake lane | not this lane |
+
+### 6a. The door leaf — a defect this lane found, and fixed
+
+Batch 2's rigs gained a posed door leaf that nothing on this side composed. Extraction took bare `F`
+(and bare `facesFor(V).F`), so all 21 hulls would have baked a mesh missing geometry their own
+picture draws. Four `RigMeshSymbols.Widenings` entries fix it — the three ships take the ships'
+composition, the variants take the generator's, whose private `doorFaces` takes `(V, t)` rather than
+an opts bag.
+
+**It was found by RUNNING, not by reading.** A compile cannot see it, and the drop's README says
+"same mechanism, no new semantics". `TheDoorLeaf_IsTaggedWithTheRoomItCloses` went red on the dragger
+the moment batch 2's hulls joined `Pass3Keys` — that fixture asserts `leaf > 0` *before* checking any
+tag, precisely so a missing leaf cannot pass by having nothing to check.
+
+The same run forced two fixture corrections, both worth reading as method notes:
+
+- the door fixture asked a **generator** for `faces()` with no argument, i.e. its default variant, and
+  so compared one hull's extraction against another hull's static list — reporting a *negative* leaf
+  (−50) that read as "the door is missing";
+- and the enclosed-level ledger was first written here as **five** entries with a comment explaining
+  why the tanker and the variants were absent. They were not absent: the runner was truncating the
+  failure message at six lines. It is 24, and the comment now states the measured fact.
 
 ---
 
