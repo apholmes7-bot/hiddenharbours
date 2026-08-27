@@ -200,7 +200,7 @@ namespace HiddenHarbours.Tests.EditMode
             var rows = new List<BuyRow>();
 
             // No pots owned yet → a plain buy row, no note.
-            BuyCatalog.Build(stall, 200, save, null, rows);
+            CatalogTestStall.BuildWired(stall, 200, save, null, rows);
             Assert.AreEqual(1, rows.Count);
             Assert.AreEqual("offer.lobster_pot", rows[0].Id);
             Assert.AreEqual(BuyRowKind.Pot, rows[0].Quote.Kind);
@@ -211,7 +211,7 @@ namespace HiddenHarbours.Tests.EditMode
             PotLocker.AddOwned(save, "trap.lobster", 3);
             save.PlacedTraps.Add(new PlacedTrapDto { TrapDefId = "trap.lobster", InstanceId = "a" });
             save.PlacedTraps.Add(new PlacedTrapDto { TrapDefId = "trap.lobster", InstanceId = "b" });
-            BuyCatalog.Build(stall, 200, save, null, rows);
+            CatalogTestStall.BuildWired(stall, 200, save, null, rows);
             Assert.AreEqual("You own 3 - 2 in the water.", rows[0].Note);
             Assert.IsFalse(rows[0].Quote.Owned, "still re-buyable at 3 owned");
         }

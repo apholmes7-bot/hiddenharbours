@@ -44,6 +44,32 @@ namespace HiddenHarbours.World
                  "only — a reply never leads to more options (that is the M2 knowledge-graph work).")]
         [TextArea] public string[] ReplyLines;
 
+        [Tooltip("OPTIONAL. A seller id (seller.snake_case, e.g. seller.leblancs) turns this row into " +
+                 "one that opens that seller's wares book and then COMES BACK. Leave it empty for an " +
+                 "ordinary row: empty is the default, so every conversation already authored keeps " +
+                 "exactly the behaviour it has.")]
+        public string CatalogSellerId;
+
+        [Tooltip("OPTIONAL, and only meaningful with a seller id. Which section of the book to open on " +
+                 "(lots/businesses/tools/vehicles/boats/gear). Anything unrecognised — including empty " +
+                 "— opens on the first stub that seller actually stocks.")]
+        public string CatalogSection;
+
+        /// <summary>
+        /// True when this row hands off to a seller's book instead of ending the conversation.
+        ///
+        /// <para><b>It is the ONE row kind that is deferred-terminal rather than terminal.</b> Picking it
+        /// publishes <c>Core.CatalogViewRequested</c> and the conversation HOLDS — bubble up and dimmed,
+        /// rows down, interaction still gated — until <c>Core.CatalogClosed</c> puts the same rows back.
+        /// That keeps browse → sell → "See you later." inside one conversation with one person, which is
+        /// the Animal Crossing shape the shop talk is asking for (owner ruling, 2026-08-27).</para>
+        ///
+        /// <para><b>It is still ONE ROUND</b> (rule 8): the rows that come back are the rows that went
+        /// down. No catalog row leads to a DIFFERENT second picker, so this is not the beginning of a
+        /// dialogue tree — that is still the M2/M3 knowledge-graph work.</para>
+        /// </summary>
+        public bool OpensCatalog => !string.IsNullOrEmpty(CatalogSellerId);
+
         /// <summary>True when this row is worth showing: it needs an id to report and a label to read.</summary>
         public bool IsAuthored => !string.IsNullOrEmpty(Id) && !string.IsNullOrEmpty(Label);
 
@@ -77,10 +103,10 @@ namespace HiddenHarbours.World
         /// fall before the next one counts. Input plumbing, not owner feel — the same class of number as
         /// <c>VillagerRoutine.ShelterCheckSeconds</c>: big enough that stick drift cannot step a row,
         /// small enough that a deliberate tap always does.</summary>
-        public const float AxisThreshold = 0.5f;
+        public const float AxisThreshold = HiddenHarbours.Core.AxisLatch.Threshold;
 
         private readonly int _count;
-        private bool _latched;
+        private readonly HiddenHarbours.Core.AxisLatch _latch = new HiddenHarbours.Core.AxisLatch();
 
         public DialogueOptionPicker(int optionCount)
         {
@@ -97,7 +123,7 @@ namespace HiddenHarbours.World
 
         /// <summary>True while the axis is still pushed from the last step — the next step waits for it to
         /// come back to neutral. Exposed because it is the half of the latch a test can see.</summary>
-        public bool IsLatched => _latched;
+        public bool IsLatched => _latch.IsLatched;
 
         /// <summary>
         /// Feed this frame's move axis (+1 = up the list, -1 = down). Returns true when the cursor
@@ -108,14 +134,13 @@ namespace HiddenHarbours.World
         /// </summary>
         public bool Step(float axis)
         {
-            if (_count <= 1) { _latched = Mathf.Abs(axis) >= AxisThreshold; return false; }
+            if (_count <= 1) { _latch.Absorb(axis); return false; }
 
-            if (Mathf.Abs(axis) < AxisThreshold) { _latched = false; return false; }
-            if (_latched) return false;
+            int dir = _latch.Step(axis);
+            if (dir == 0) return false;
 
-            _latched = true;
             // Up the list means TOWARD row 0 — the first row is drawn at the top of the bubble.
-            Index = axis > 0f ? (Index - 1 + _count) % _count : (Index + 1) % _count;
+            Index = dir > 0 ? (Index - 1 + _count) % _count : (Index + 1) % _count;
             return true;
         }
 

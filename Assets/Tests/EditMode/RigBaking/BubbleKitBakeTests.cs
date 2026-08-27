@@ -2,6 +2,7 @@ using System.IO;
 using NUnit.Framework;
 using HiddenHarbours.Tools.RigBaking;
 using HiddenHarbours.World;
+using HiddenHarbours.Core;
 
 namespace HiddenHarbours.Tests.RigBaking.EditMode
 {

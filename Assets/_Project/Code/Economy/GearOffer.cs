@@ -16,7 +16,7 @@ namespace HiddenHarbours.Economy
     /// owning the rod). Create via Assets ▸ Create ▸ Hidden Harbours ▸ Gear Offer, save in Data/Gear.</para>
     /// </summary>
     [CreateAssetMenu(menuName = "Hidden Harbours/Gear Offer", fileName = "GearOffer")]
-    public class GearOffer : ScriptableObject
+    public class GearOffer : ScriptableObject, ICatalogListing
     {
         [Header("Identity")]
         [Tooltip("Stable, append-only gear id (e.g. \"gear.rod\", \"gear.shovel\"). Saved in the owned-gear " +
@@ -30,5 +30,17 @@ namespace HiddenHarbours.Economy
         [Min(0)]
         [Tooltip("Price in ₲. The economy-owned tunable — what the shop charges (no magic number in code).")]
         public int Price = 60;
+
+        [Header("Catalog")]
+        [Tooltip("Whether a seller's wares book lists this, on which shelf, and who stocks it. Off by " +
+                 "default: nothing appears in any book until this says so.")]
+        public CatalogListing Catalog;
+
+        // ---- ICatalogListing: read through one shape by the sweep and the book, so neither of them
+        //      has to learn the seven concrete Def types.
+        string ICatalogListing.ListingId => Id;
+        string ICatalogListing.ListingName => DisplayName;
+        string ICatalogListing.ListingFlavor => Flavor;
+        CatalogListing ICatalogListing.Catalog => Catalog;
     }
 }

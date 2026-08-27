@@ -4,6 +4,8 @@ using UnityEngine;
 using HiddenHarbours.Core;
 using HiddenHarbours.Economy;
 
+using HiddenHarbours.Tests.EditMode;   // CatalogTestStall — same assembly, other namespace
+
 namespace HiddenHarbours.Tests.Economy
 {
     /// <summary>
@@ -576,7 +578,7 @@ namespace HiddenHarbours.Tests.Economy
                                  .SetValue(vendor, MakeLicense("license.clam", 15, "fish.soft_shell_clam"));
 
             var rows = new List<BuyRow>();
-            BuyCatalog.Build(stall, money: 100, save: save, licenses: new FakeLicenses(), into: rows);
+            CatalogTestStall.BuildWired(stall, 100, save, new FakeLicenses(), rows);
 
             var byId = new Dictionary<string, BuyRow>();
             foreach (BuyRow r in rows) byId[r.Id] = r;

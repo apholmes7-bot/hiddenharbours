@@ -4,6 +4,7 @@ using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
 using HiddenHarbours.World;
+using HiddenHarbours.Core;
 
 namespace HiddenHarbours.Tests.World.EditMode
 {

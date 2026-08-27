@@ -18,7 +18,7 @@ namespace HiddenHarbours.Economy
     /// <para><b>Price is a greybox placeholder</b> — flagged for economy-sim to tune against the market.</para>
     /// </summary>
     [CreateAssetMenu(menuName = "Hidden Harbours/Bait", fileName = "Bait")]
-    public class BaitDef : ScriptableObject
+    public class BaitDef : ScriptableObject, ICatalogListing
     {
         [Header("Identity")]
         [Tooltip("Stable, append-only bait id (e.g. \"bait.herring\"). A trap names this id as its " +
@@ -45,5 +45,17 @@ namespace HiddenHarbours.Economy
                  "content validation checks this). The Build 3 resolver soft-weights the catch off this: a " +
                  "trap baited with something a species favours is likelier to land it.")]
         public string[] FavorsSpeciesIds = { "fish.lobster" };
+
+        [Header("Catalog")]
+        [Tooltip("Whether a seller's wares book lists this, on which shelf, and who stocks it. Off by " +
+                 "default: nothing appears in any book until this says so.")]
+        public CatalogListing Catalog;
+
+        // ---- ICatalogListing: read through one shape by the sweep and the book, so neither of them
+        //      has to learn the seven concrete Def types.
+        string ICatalogListing.ListingId => Id;
+        string ICatalogListing.ListingName => DisplayName;
+        string ICatalogListing.ListingFlavor => Flavor;
+        CatalogListing ICatalogListing.Catalog => Catalog;
     }
 }
