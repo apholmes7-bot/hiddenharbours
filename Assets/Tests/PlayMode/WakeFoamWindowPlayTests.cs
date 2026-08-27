@@ -54,9 +54,17 @@ namespace HiddenHarbours.Tests.PlayMode
             const float extent = 96f;
             Camera cam = MakeCamera();
 
-            // A drift the buffer will spend many whole cells of over the run, on an axis that is not
-            // aligned with the camera's pan — so the window move and the content move are independent.
-            var driftPerSecond = new Vector2(0.9f, -0.55f);
+            // ⚠️ A DELIBERATELY FAST drift, and the reason matters. In batchmode a frame is about a
+            // millisecond, so 120 frames span a tenth of a second — at a realistic 0.9 m/s the buffer
+            // would cross the 0.125 m cell boundary ONCE in the whole run and this test would pass
+            // without ever exercising the frame that used to teleport. (It did exactly that on the
+            // first run: the coverage assertion below caught it at 1 crossing.) The invariant is
+            // independent of the drift's magnitude — `AdvectCells` banks whatever remainder it is
+            // given — so winding the speed up costs nothing but buys dozens of crossings, while
+            // `Time.deltaTime` stays REAL and variable, which is the half of this that EditMode
+            // cannot supply. The axis is off the camera's pan so the window move and the content
+            // move stay independent.
+            var driftPerSecond = new Vector2(40f, -26f);
 
             var residual = Vector2.zero;
             Vector2 lattice = FoamBuffer.WorldCellOrigin(Vector2.zero, extent);
@@ -94,9 +102,12 @@ namespace HiddenHarbours.Tests.PlayMode
                 worstError = Mathf.Max(worstError, (drawn - expected).magnitude);
             }
 
-            Assert.Greater(crossings, 10,
-                "the run never spent enough whole cells to exercise the frames that used to teleport — " +
-                "raise the drift or the frame count rather than trusting this pass.");
+            // The anti-vacuous guard, and it is not decoration: it is what caught the first version
+            // of this test running 120 near-instant batchmode frames and crossing a single cell.
+            Assert.Greater(crossings, 20,
+                $"only {crossings} whole-cell scrolls in the whole run, so the frames that used to " +
+                "teleport were barely exercised. Raise the drift or the frame count — do not trust " +
+                "this pass.");
 
             // Half a cell is the size of the artefact being ruled out; the true error is a float
             // accumulation and lands orders of magnitude under it.
