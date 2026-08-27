@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace HiddenHarbours.World
+namespace HiddenHarbours.Core
 {
     /// <summary>
     /// <b>The book's colours, in one place</b> — cover, stock, rule and the three weights of ink.

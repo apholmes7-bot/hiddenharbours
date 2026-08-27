@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using HiddenHarbours.World;
+using HiddenHarbours.Core;
 
 namespace HiddenHarbours.Tests.World.EditMode
 {

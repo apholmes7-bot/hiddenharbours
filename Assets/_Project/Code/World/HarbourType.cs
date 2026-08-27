@@ -1,3 +1,5 @@
+using HiddenHarbours.Core;
+
 namespace HiddenHarbours.World
 {
     /// <summary>

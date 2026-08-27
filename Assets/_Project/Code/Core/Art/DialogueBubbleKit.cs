@@ -1,4 +1,4 @@
-namespace HiddenHarbours.World
+namespace HiddenHarbours.Core
 {
     /// <summary>
     /// <b>THE BUBBLE KIT'S OWN NUMBERS</b>, as C#. Every value here is copied from

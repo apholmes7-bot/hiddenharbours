@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace HiddenHarbours.World
+namespace HiddenHarbours.Core
 {
     /// <summary>What a block of the book IS — the kit's four block kinds, verbatim.</summary>
     public enum NotebookBlockKind

@@ -1,4 +1,4 @@
-namespace HiddenHarbours.World
+namespace HiddenHarbours.Core
 {
     /// <summary>
     /// <b>THE NOTEBOOK KIT'S DECLARED NUMBERS</b> — the pixel counts, lanes and piece names the

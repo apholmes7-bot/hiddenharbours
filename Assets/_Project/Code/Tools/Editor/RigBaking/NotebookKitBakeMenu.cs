@@ -2,6 +2,7 @@ using System;
 using System.Text;
 using UnityEditor;
 using UnityEngine;
+using HiddenHarbours.Core;
 
 namespace HiddenHarbours.Tools.RigBaking
 {

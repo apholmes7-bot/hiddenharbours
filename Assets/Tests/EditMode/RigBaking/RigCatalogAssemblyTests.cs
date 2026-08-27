@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
 using HiddenHarbours.Tools.RigBaking;
+using HiddenHarbours.Core;
 
 namespace HiddenHarbours.Tests.RigBaking
 {
