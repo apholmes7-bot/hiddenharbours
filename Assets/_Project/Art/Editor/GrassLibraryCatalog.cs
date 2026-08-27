@@ -66,8 +66,21 @@ namespace HiddenHarbours.Art.Editor
         /// <summary>The one material every tuft shares, so hundreds of them batch (rule 7).</summary>
         public const string GrassMaterialPath = "Assets/_Project/Art/Materials/Grass.mat";
 
-        /// <summary>The height classes, in the order the paint tool's toggles read.</summary>
-        public static readonly string[] HeightClasses = { "short", "medium", "tall" };
+        /// <summary>The three height classes the rig files a variant into off its measured
+        /// <see cref="Entry.Climb"/>. Named rather than left as literals because the meadow's edge band
+        /// speaks about them BY NAME (its step-down goes interior → mid → short), and a typo in one of
+        /// those narrows a pool to nothing without failing.</summary>
+        public const string HeightShort = "short";
+
+        /// <inheritdoc cref="HeightShort"/>
+        public const string HeightMedium = "medium";
+
+        /// <inheritdoc cref="HeightShort"/>
+        public const string HeightTall = "tall";
+
+        /// <summary>The height classes, in the order the paint tool's toggles read — and, not by
+        /// accident, shortest first.</summary>
+        public static readonly string[] HeightClasses = { HeightShort, HeightMedium, HeightTall };
 
         /// <summary>
         /// The blade ramp, dark roots → light tips. Restated here for ONE purpose: so

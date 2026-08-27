@@ -99,11 +99,26 @@ namespace HiddenHarbours.App.Editor
             /// right, because it says WHICH ground got which art.</summary>
             public readonly Dictionary<string, int> PerHabitat = new Dictionary<string, int>();
 
+            /// <summary>Tufts per edge tier. ⭐ The number that says whether the edge band is DOING
+            /// anything: a bake that reports zero band and zero hem tufts has a falloff that never
+            /// fires, which looks exactly like the hard line it was meant to remove.</summary>
+            public readonly Dictionary<GrassTier, int> PerTier = new Dictionary<GrassTier, int>();
+
             public string HabitatSummary()
             {
                 var parts = new List<string>();
                 foreach (var kv in PerHabitat) parts.Add($"{kv.Key} {kv.Value}");
                 parts.Sort();
+                return string.Join(", ", parts);
+            }
+
+            /// <inheritdoc cref="PerTier"/>
+            public string TierSummary()
+            {
+                var parts = new List<string>();
+                foreach (GrassTier tier in new[] { GrassTier.Interior, GrassTier.Band, GrassTier.Hem })
+                    parts.Add($"{tier.ToString().ToLowerInvariant()} " +
+                              $"{(PerTier.TryGetValue(tier, out int n) ? n : 0)}");
                 return string.Join(", ", parts);
             }
         }
@@ -162,10 +177,12 @@ namespace HiddenHarbours.App.Editor
                 int at = (site.CellY * layout.CellsX + site.CellX) * layout.Slots + site.Slot;
                 if ((uint)at >= (uint)plane.Length) continue;
 
-                plane[at] = GrassFieldScatter.PackSlot(id, site.Broad);
+                plane[at] = GrassFieldScatter.PackSlot(id, site.Broad, site.Tier);
                 baked.Tufts++;
                 baked.PerHabitat[site.Habitat] =
                     baked.PerHabitat.TryGetValue(site.Habitat, out int n) ? n + 1 : 1;
+                baked.PerTier[site.Tier] =
+                    baked.PerTier.TryGetValue(site.Tier, out int t) ? t + 1 : 1;
             }
 
             baked.Sites = plane;

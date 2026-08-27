@@ -26,6 +26,7 @@ namespace HiddenHarbours.Tests.EditMode
                     "Grass", "Marram", "Sand", "Shingle", "Ripple", "Shelf", "Silt",
                     "Dirt", "Marsh", "Sedge", "Foreshore", "Talus", "Ledge", "Rockweed",
                     "Musselbed", "Oysterreef", "Eelgrass", "Irishmoss",
+                    "Lawn",
                 },
                 TerrainSplatBrush.MaterialNames,
                 "The brush's material order drifted from the canonical splat channel order.");
@@ -55,9 +56,9 @@ namespace HiddenHarbours.Tests.EditMode
                     $"material {m} does not round-trip through (texture, channel).");
             }
             // Texture E carries only two channels (eelgrass, irishmoss) — the last valid material
-            // is 17, so E.b and E.a are the two slots free.
+            // is 18 (Lawn, at E.b), so E.a is the ONE slot left free.
             Assert.AreEqual(4, TerrainSplatBrush.TextureOf(TerrainSplatBrush.MaterialCount - 1));
-            Assert.AreEqual(1, TerrainSplatBrush.ChannelOf(TerrainSplatBrush.MaterialCount - 1));
+            Assert.AreEqual(2, TerrainSplatBrush.ChannelOf(TerrainSplatBrush.MaterialCount - 1));
         }
 
         [Test]
@@ -86,22 +87,28 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual("SplatD.a", TerrainSplatBrush.ChannelLabel(15), "Oysterreef");
             Assert.AreEqual("SplatE.r", TerrainSplatBrush.ChannelLabel(16), "Eelgrass");
             Assert.AreEqual("SplatE.g", TerrainSplatBrush.ChannelLabel(17), "Irishmoss");
+            Assert.AreEqual("SplatE.b", TerrainSplatBrush.ChannelLabel(18), "Lawn");
 
             Assert.AreEqual("Musselbed", TerrainSplatBrush.MaterialNames[14]);
             Assert.AreEqual("Oysterreef", TerrainSplatBrush.MaterialNames[15]);
             Assert.AreEqual("Eelgrass", TerrainSplatBrush.MaterialNames[16]);
             Assert.AreEqual("Irishmoss", TerrainSplatBrush.MaterialNames[17]);
+            Assert.AreEqual("Lawn", TerrainSplatBrush.MaterialNames[18]);
         }
 
         [Test]
         public void TheTwoFreeSlots_AreAtTheEnd_SoTheNextAppendCannotCollide()
         {
-            // 18 materials in 20 channels. MaterialOf() is only meaningful below MaterialCount, so
+            // 19 materials in 20 channels. MaterialOf() is only meaningful below MaterialCount, so
             // spell out WHICH two are spare — a future kit appending at 18 must land on E.b.
             Assert.AreEqual(18, TerrainSplatBrush.MaterialOf(4, 2), "E.b should be the next slot (18).");
             Assert.AreEqual(19, TerrainSplatBrush.MaterialOf(4, 3), "E.a should be the last slot (19).");
-            Assert.AreEqual(TerrainSplatBrush.TextureCount * 4 - 2, TerrainSplatBrush.MaterialCount,
-                "Exactly two channels should be free — if that changed, say so deliberately.");
+            // ⭐ SAID DELIBERATELY, 2026-08-26: Lawn took E.b, so ONE channel is free, not two. The
+            // next material after it needs a SIXTH splat map — every region's committed PNGs, the
+            // surface's binding and the byte-zero gate all move — so this number going to 0 is a
+            // decision somebody has to make on purpose, which is what this assertion is for.
+            Assert.AreEqual(TerrainSplatBrush.TextureCount * 4 - 1, TerrainSplatBrush.MaterialCount,
+                "Exactly ONE channel should be free — if that changed, say so deliberately.");
         }
 
         [Test]

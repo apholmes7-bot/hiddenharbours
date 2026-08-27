@@ -36,6 +36,10 @@ namespace HiddenHarbours.Art.Editor
         {
             "Grass", "Marram", "Sand", "Shelf", "Dirt", "Marsh", "Sedge", "Ledge", "Rockweed",
             "Eelgrass", "Irishmoss",
+            // The mown dooryard lawn (2026-08-26). APPENDED, because the shader's MAT_SLICE table
+            // holds each material's base slice as a literal — inserting anywhere but the end would
+            // silently repaint every material after it.
+            "Lawn",
         };
 
         /// <summary>512-class materials (16 m tiles) in canonical slice order. Append only.

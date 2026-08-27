@@ -186,6 +186,7 @@ Shader "HiddenHarbours/TerrainSplat"
             //    0 grass   1 marram   2 sand       3 shingle   4 ripple     5 shelf      6 silt
             //    7 dirt    8 marsh    9 sedge     10 foreshore 11 talus    12 ledge     13 rockweed
             //   14 musselbed  15 oysterreef  16 eelgrass  17 irishmoss          (kit v3 reef beds)
+            //   18 lawn                                                          (the mown dooryard)
             //  MAT_ARRAY: 0 = the 256 array (8 m tiles), 1 = the 512 array (16 m tiles).
             //  MAT_SLICE: base slice (the _Lo step; +1 base, +2 _Hi — the kit ladder, README §2).
             //  MAT_OFFSET: hashed per-cell UV offset allowed (README §4: NEVER on a directional
@@ -196,16 +197,16 @@ Shader "HiddenHarbours/TerrainSplat"
             //  take an offset — oyster clusters are near-isotropic and moss cushions scatter — which
             //  is why the four beds do not share one flag.)
             // =========================================================================================
-            static const float MAT_ARRAY[18]  = { 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0 };
-            static const float MAT_SLICE[18]  = { 0, 3, 6, 0, 3, 9, 6, 12, 15, 18, 9, 12, 21, 24, 15, 18, 27, 30 };
-            static const float MAT_METRES[18] = { 8, 8, 8, 16, 16, 8, 16, 8, 8, 8, 16, 16, 8, 8, 16, 16, 8, 8 };
-            static const float MAT_OFFSET[18] = { 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 1, 0, 1 };
+            static const float MAT_ARRAY[19]  = { 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0 };
+            static const float MAT_SLICE[19]  = { 0, 3, 6, 0, 3, 9, 6, 12, 15, 18, 9, 12, 21, 24, 15, 18, 27, 30, 33 };
+            static const float MAT_METRES[19] = { 8, 8, 8, 16, 16, 8, 16, 8, 8, 8, 16, 16, 8, 8, 16, 16, 8, 8, 8 };
+            static const float MAT_OFFSET[19] = { 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 1, 0, 1, 1 };
 
             // The one place the material count lives for the fragment's local arrays and loops. The
             // four tables above must stay LITERAL-sized (the pin test parses their declared length
             // out of this source), but an array declared 18 and walked to 14 renders nothing for the
             // beds and says nothing about it — so the loops read this instead of a repeated digit.
-            #define HH_MAT_COUNT 18
+            #define HH_MAT_COUNT 19
 
             struct Attributes
             {
@@ -397,6 +398,12 @@ Shader "HiddenHarbours/TerrainSplat"
                 // the painter knows a bed grew there. Deriving one from the bands would carpet every
                 // metre of the same elevation on the island in mussels.
                 w[14] = 0.0; w[15] = 0.0; w[16] = 0.0; w[17] = 0.0;
+                // ⚠ AND THE LAWN, WHICH IS THE MOST PAINT-ONLY MATERIAL IN THE KIT. Nothing about an
+                // elevation says somebody mows it; a lawn is a property boundary's answer. Leaving
+                // this one unassigned is not a silent zero either — HLSL refuses the whole program
+                // with "variable 'w' used without having been completely initialized", which is the
+                // MAGENTA class, so every entry added to HH_MAT_COUNT needs a line here.
+                w[18] = 0.0;
                 {
                     float keep = 1.0 - spineW;
                     for (int bi = 0; bi < HH_MAT_COUNT; bi++) w[bi] *= keep;
@@ -414,7 +421,7 @@ Shader "HiddenHarbours/TerrainSplat"
                 p[4]  = pB.r; p[5]  = pB.g; p[6]  = pB.b; p[7]  = pB.a;
                 p[8]  = pC.r; p[9]  = pC.g; p[10] = pC.b; p[11] = pC.a;
                 p[12] = pD.r; p[13] = pD.g; p[14] = pD.b; p[15] = pD.a;
-                p[16] = pE.r; p[17] = pE.g;   // E.b / E.a: the two slots still free
+                p[16] = pE.r; p[17] = pE.g; p[18] = pE.b;   // E.a: the last free slot
 
                 // ⚠ D.a IS NOW READ. It was a free slot until v3, which means the Properties default
                 // of "black" — opaque, ALPHA 1 — used to be harmless here and no longer is: a
@@ -427,7 +434,7 @@ Shader "HiddenHarbours/TerrainSplat"
 
                 float paintSum = p[0]  + p[1]  + p[2]  + p[3]  + p[4]  + p[5]  + p[6]
                                + p[7]  + p[8]  + p[9]  + p[10] + p[11] + p[12] + p[13]
-                               + p[14] + p[15] + p[16] + p[17];
+                               + p[14] + p[15] + p[16] + p[17] + p[18];
                 float paintTotal = saturate(paintSum);
                 // The painted share (paintTotal) is distributed by each channel's fraction of the
                 // whole (p / paintSum) — in BOTH regimes, so the weights below always sum to 1.

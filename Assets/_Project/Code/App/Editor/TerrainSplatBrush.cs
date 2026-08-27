@@ -45,13 +45,17 @@ namespace HiddenHarbours.App.Editor
             "Grass", "Marram", "Sand", "Shingle", "Ripple", "Shelf", "Silt",
             "Dirt", "Marsh", "Sedge", "Foreshore", "Talus", "Ledge", "Rockweed",
             "Musselbed", "Oysterreef", "Eelgrass", "Irishmoss",
+            "Lawn",
         };
 
-        public const int MaterialCount = 18;
+        public const int MaterialCount = 19;
 
-        /// <summary>Five RGBA splat maps = 20 channels for 18 materials. The fifth (E) arrived with
+        /// <summary>Five RGBA splat maps = 20 channels for 19 materials. The fifth (E) arrived with
         /// kit v3: the two slots D.b/D.a left free at v2 took Musselbed and Oysterreef, and the
-        /// remaining two beds needed a new map. E.b and E.a are the two slots now free.</summary>
+        /// remaining two beds needed a new map. <b>E.b went to Lawn on 2026-08-26, so E.a is the
+        /// LAST free slot in the kit</b> — the next material after it needs a sixth splat map, which
+        /// is a bigger change than it sounds (every region's committed PNGs, the surface's binding,
+        /// and the byte-zero gate all move).</summary>
         public const int TextureCount = 5;
 
         /// <summary>The splat texture file suffixes, index-aligned with <see cref="TextureOf"/>.</summary>

@@ -1,17 +1,25 @@
-# Hidden Harbours — Terrain Material Kit v3
+# Hidden Harbours — Terrain Material Kit v4
 
-**20 materials × 3 intensity steps = 60 tileable albedo maps, plus 5 edge strips × 3 steps = 15 RGBA decals.**
+**21 materials × 3 intensity steps = 63 tileable albedo maps, plus 5 edge strips × 3 steps = 15 RGBA decals.**
 32 px/m, sRGB. Everything tileable here is exactly periodic; sample it with **Repeat + Point**, no filtering.
 
 ```
-tex/            60 PNGs — <Material>_Lo.png · <Material>.png · <Material>_Hi.png
+tex/            63 PNGs — <Material>_Lo.png · <Material>.png · <Material>_Hi.png
 edges/          15 PNGs — <Edge>_Lo.png · <Edge>.png · <Edge>_Hi.png   (RGBA, 256×128)
 materials.json  manifest: size, metres, projection, offset flag, step names
 edges.json      manifest: anchor, wrap rules, usual neighbours, the sampling formula
 ladders.jpg     contact sheet — every material at Lo · base · Hi, tiling inside each window
 edges.jpg       contact sheet — every strip at Lo · base · Hi, over its usual neighbours
-bake/           terrainBake.js + terrainBake2.js + terrainBake3.js + terrainBake4.js — the parametric source of truth
+bake/           terrainBake.js + terrainBake2.js + terrainBake3.js + terrainBake4.js
+                + terrainBake5.js — the parametric source of truth
 ```
+
+### What changed since v3
+
+- **One new material: Lawn** — the mown dooryard. ⚠ **Its ladder runs the OTHER WAY ROUND from
+  every wear ladder in the kit** (`_Lo` neglected → `_Hi` crisp), and §7 is why. Nothing new is
+  needed in the shader to use it beyond its table row.
+- Nothing from v3 was rebaked; the 60 v3 tiles and all 15 strips are byte-identical here.
 
 ### What changed since v2
 
@@ -91,6 +99,7 @@ bracket becomes two array slices in one sampler. The edge strips array the same 
 | Talus | a scatter of fallen slabs | a closed apron | a deep chaotic blockfield |
 | Ledge | intact bevelled pavement | dissected — benches, scour pans, weed | stripped to the third bed |
 | Rockweed | barnacled rock, scattered tufts | a closed olive canopy | deep drape, bladders, Ulva in the wet |
+| **Lawn** | neglected — moss, bare scuffs, first tussocks | kept — clover and a little wear | crisp — dense, fine, even, cut tips catching |
 | **Musselbed** | spat and scattered clumps on mud | a closed bed | thick and hummocked, dead shell in the troughs |
 | **Oysterreef** | singles and cultch on the mud | a working reef, channels open | a closed reef, channels choked with mud |
 | **Eelgrass** | sparse shoots on open sand | a closed meadow | deep, epiphyte crusted, cut blades drifted in |
@@ -105,7 +114,7 @@ over oyster bottom is a brush stroke on the intensity channel, not a new materia
 
 | | Materials | UV |
 |---|---|---|
-| **Plan** | Ripple, Shingle, Grass, Marram, Sand, Shelf, Silt, Dirt, Marsh, Sedge, Foreshore, Talus, Ledge, Rockweed, Musselbed, Oysterreef, Eelgrass, Irishmoss | world XZ ÷ tile metres |
+| **Plan** | Ripple, Shingle, Grass, Marram, Sand, Shelf, Silt, Dirt, Marsh, Sedge, Foreshore, Talus, Ledge, Rockweed, Musselbed, Oysterreef, Eelgrass, Irishmoss, Lawn | world XZ ÷ tile metres |
 | **Face** | **Sandstone, Bank** | **s along the cliff, t DOWN it** |
 
 Sandstone and Bank are cliff **faces**. They belong on face geometry — the vertical band between
@@ -127,9 +136,12 @@ Every tile's low-frequency mean is flattened before write, so a hashed per-chunk
 reveal a repeating light/dark blotch.
 
 **Apply offsets to:** Shingle · Grass · Sand · Shelf · Silt · Dirt · Marsh · Sedge · Talus ·
-Oysterreef · Irishmoss
+Oysterreef · Irishmoss · Lawn
 **Never to:** Ripple · Marram · Sandstone · Bank · Foreshore · Rockweed · Ledge · Musselbed ·
 Eelgrass
+
+Lawn takes an offset because its tile is isotropic: the mower STRIPES are not baked into it (see
+§7), so there is no stripe for an offset to slice apart at a chunk border.
 
 Those nine are directional. An offset slices a ripple train, a wind-combed stand, a bedding plane,
 a rill gully, a lie of fronds, a mussel lie or an eelgrass ribbon apart at the chunk border. All
@@ -357,3 +369,40 @@ edge — change the rig and re-bake. **Do not hand-edit the PNGs**; they will be
     packing.
 15. **A blade stroke has to lean the way its mat runs.** Upright strokes over a mat whose ribbons
     run across them turn a meadow into a lawn instantly.
+
+
+---
+
+## 7. Lawn — why its ladder runs backwards
+
+Every other ladder in this kit is a WEAR ladder: low means less of the material, sparser, more of
+the substrate showing. That works because the shader reads a painted channel's value as **both the
+blend weight and the ladder position**, and for wear those two agree — a thin rockweed drape *is*
+less rockweed.
+
+For a lawn they disagree, and the disagreement has no solution inside one channel. Grass's `_Lo` is
+literally *"grazed, trodden thin turf"*, which is what a lawn looks like — but the only way to ask
+for it is to paint the Grass channel LOW, which is also how you ask for LESS grass. You get sparse
+rank meadow with the wild band coming through. Paint it high instead and you land on `_Hi`: rank
+meadow **with seed heads**. There is no value that means *a lot of very short grass*.
+
+So Lawn inverts the convention: **more material means a better-kept lawn.**
+
+| painted | reads as |
+|---|---|
+| ~0.55 | a let-go dooryard — half-weight ordinary turf, the wild meadow growing up through the other half |
+| ~0.88 | an ordinary kept lawn |
+| 1.00 | crisp: dense, fine, even, cut tips catching the light |
+
+The coupling then works *for* the look instead of against it, and three tiers of care come out of one
+number with no second channel. ⚠ Anyone "fixing the weighting" by pushing every lawn to 1.0 gives the
+most neglected property on the island the tidiest grass on it.
+
+**Mower stripes are deliberately NOT baked.** A baked stripe runs the same way on every lawn in the
+world, because the tile is sampled from world XZ. They are drawn live instead, from each yard
+polygon's own long axis.
+
+**What sells "mown" at 32 px/m** is not blade length — a cut blade is one texel. In order: the
+absence of metre-scale blotching; the pale square **cut tips**; and **no seed heads at all**.
+⚠ Uniform is not featureless — the first bake of this material damped every scale at once and came
+out as flat green paint, measurably a lawn and visibly nothing. Damp the LOW frequencies only.

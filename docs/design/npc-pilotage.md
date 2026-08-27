@@ -1,6 +1,7 @@
 # NPC boat pilotage — coming alongside, keeping clear, and the busy wharf
 
-> **Status:** design capture, 2026-08-26. **Nothing here is built.** Subordinate to
+> **Status:** design capture, 2026-08-26. **S1 (the come-alongside) is BUILT** — see §8; everything
+> else here is still capture and nothing else is built. Subordinate to
 > [`../vision-and-pillars.md`](../vision-and-pillars.md) (canon), then
 > [`boats-and-navigation.md`](boats-and-navigation.md) §2/§3.4/§9.6/§9.9 and
 > [`nine-mile-creek-mainland.md`](nine-mile-creek-mainland.md) §5–6. Written in the seam style of
@@ -326,7 +327,7 @@ They are different regions and different slices, and conflating them is how S1 g
 
 | Slice | What | Lane | Size |
 |---|---|---|---|
-| **S1 — the come-alongside** | The phase machine over an abstract helm, **helmed backend only, one boat**: the intro skipper. Approach gate → parallel come-alongside at the set rate → astern stop → **the lines take the last half-metre**. **Both snaps deleted.** | gameplay-systems | **M1-polish** |
+| **S1 — the come-alongside** ✅ **SHIPPED** | The phase machine over an abstract helm, **helmed backend only, one boat**: the intro skipper. Approach gate → parallel come-alongside at the set rate → astern stop → **the lines take the last half-metre**. **Both snaps deleted.** | gameplay-systems | **M1-polish** |
 | **S1b — the berth line** | Derive each NMC berth's standoff from the hull that lies there, and assert it against the wall face (§3). Independent of S1, needed before any boat *arrives* at NMC. One derivation + one EditMode test. | world-content | **tiny** |
 | **S2 — she is a boat, not a fixture** | Departure as the machine reversed. NMC's moored register can leave and come home on a hand-written timetable — one boat at a time, no traffic yet. Proves the machine runs both ways before anything depends on it. | gameplay-systems | small |
 | **S3 — the deterministic timetable** | `SampleAt(clock)` over the register: ten boats, windows **derived from tide**, closed-form berth occupancy, save/load re-derive. Needs `IHarbourPlan`. | gameplay-systems + economy-sim | **M2** |
@@ -336,17 +337,130 @@ They are different regions and different slices, and conflating them is how S1 g
 **S1 is the whole owner ask #1 and it is buildable now** — it needs no new Core seam, no new data, and
 no traffic. Everything it touches is `App` and `Boats`.
 
+### 8.1 What S1 actually shipped, and the five things the build found
+
+`PilotageHelm.cs` (the phase enum + `IPilotageHelm` + the helmed backend), `BerthPilot.cs` (the pure
+come-alongside maths), `BerthingPilot.cs` (the phase machine), and the deletions in `ArrivalOpening`.
+It needed **no new Core seam** and **no scene or builder change** — §8's claim held. Five things the
+build learned that this document did not know:
+
+1. **⭐ The wharf line is the last authored route mark.** §2.1's Approach row wants a speed limit
+   "inside the wharf line" and never says where that line is. It does not need to be authored: the
+   route's **last mark before the berth** is the harbour's own front door — at St Peters it is
+   `ApproachFrom`, the dredged channel's mouth, 43.9 m out. So harbour speed costs the passage
+   43.9/3 − 43.9/5 = **5.9 s**, which is the ~6 s Q2 estimated, arrived at from the geometry rather
+   than from a guess. Re-cut the channel and the limit moves with it.
+
+2. **⚠ The crab must be capped by the pose tolerance, and §2.2 does not say so.** The set rate's aim
+   angle is `atan(closing ÷ alongSpeed)` — a geometry, not a gain — which means it GROWS as she slows,
+   because the denominator shrinks. Left uncapped, the last few metres of a come-alongside command a
+   bigger and bigger angle and she arrives lying across her own berth, out of pose, holding for ever.
+   The cap is `min(maxCrab, headingTolerance)`: *a boat may not aim herself out of the pose she is
+   trying to reach.*
+
+3. **⚠ The set rate is the COME-ALONGSIDE's number, not the line-up's** — §2.1 puts it in the
+   Alongside row and nowhere else, and §2.2 does not say what governs the Gate. Rate-limiting the
+   *line-up* at a fender's 0.25 m/s is a boat who cannot cross her own approach. Measured on the
+   real St Peters fairway: the last leg bears **−104°** against a berth on **−90°**, so she meets
+   the gate's capture ring about a metre INBOARD of the berth line with **2.96 m** still to come
+   across and roughly **5.2 s** of run left. At the set rate that buys 1.3 m — she reaches the
+   station 1.7 m off her line, fails the ±1 m pose, and holds there until the settle fallback.
+   Worse, the loop actively *undoes* the useful crab the leg's own bearing already gave her. The
+   gate therefore closes at the **berthing speed** and only the come-alongside closes at the set
+   rate, with the crab cap doing the real bounding either way.
+
+4. **⭐ A route is a set of marks; a hull is not a point — the WHEEL-OVER.** Nothing in §2 says how a
+   pilot leaves one leg for the next, and "steer for the mark until you are inside the arrive radius"
+   is not it. A 12.9 m hull at the fairway's 5 m/s turns at a **24 m radius**; St Peters' fairway
+   turns **65°** at its landfall and **61°** onto its last leg. Turning *at* the mark therefore puts
+   her out of the corner about **11 m** off the next leg — and pursuit then hauls her back toward a
+   mark already astern, which is a circle. Measured on the real fairway with the corner uncut: she
+   came out of the last turn eleven metres seaward, reached the gate's capture ring **7 m** off her
+   berth line with twelve metres of berth to fix it in, spent both aborts, and was tied up by the
+   settle fallback 7.11 m off — at both spring low and spring high, identically.
+
+   The fix is the number every paper passage plan already carries beside its course changes:
+   **wheel over `R · tan(Δ/2)` short of the mark**, with `R = speed ÷ turn rate`. It scales with
+   speed, so a boat slowing into the harbour cuts less, exactly as a real one does; it is bounded at
+   half the incoming leg, because a turn begun before the mark you are turning *from* is two corners
+   overlapping. One declared tunable — `TurnRateDegreesPerSecond`, a statement about the hull rather
+   than a taste — and the anticipation falls out of the geometry. A passed-mark arm ("once the buoy
+   is abeam you are on to the next one") backs it up for the corner the anticipation still misses.
+
+   ⚠ **And this is the second defect §8.2's collider fault was hiding.** With a 177 m turning circle
+   she could not round the corners at all; fixing the collider let her round them, and only then was
+   it visible that she rounded them *wide*.
+
+5. **⚠ An abort must actually go round.** §2.1 says Gate aborts to Approach; it does not say she must
+   leave the gate first. Without that, "take another turn" is a phase flip: she falls back still inside
+   the capture range, is re-captured on the next step, fails the same pose, and ping-pongs through the
+   abort budget without ever presenting a second time. **The gate is capturable only from ASTERN of
+   it** — which is the seamanship as well as the fix, and it is one line.
+
+### 8.2 ⛔ What the deleted snap was actually hiding: she could not turn
+
+The come-alongside landed green in EditMode and then failed every real-fairway PlayMode test the same
+way — *"stuck in Approaching/Passage, 206 m from the berth, throttle 0.92, steer −1.00"*. She was
+sailing away from the harbour in a slow circle. The cause is not the pilotage layer, and it is worth
+writing down because it is the anti-goal's whole point arriving on schedule.
+
+**`ArrivalOpening` sized the arrival hull's collider to the hull's real dimensions** —
+`LengthMeters × 0.37` = **4.77 × 12.9 m** — while every boat the player sails carries
+`PersistentCoreBuilder`'s fixed **1.7 × 4.0 m** capsule (`BoatController.SetHull` re-derives her MASS
+from the displacement and never touches the collider). **Unity derives a rigidbody's moment of inertia
+from its collider, and inertia goes as the square of the dimensions.** At `MassKg/100 = 60 kg`, full
+helm gives `RudderAuthority(5150) × RudderFeelScale(0.01) = 51.5 N·m` against `angularDamping = 2.5`,
+so her steady turn rate is `T / (I · d)`:
+
+| collider | `I` | turn rate | turning radius at cruise |
+|---|---:|---:|---:|
+| hull-sized (4.77 × 12.9) | 946 | **1.25 °/s** | **177 m** |
+| the shipping capsule (1.7 × 4.0) | 94 | **12.5 °/s** | **17.7 m** |
+
+**A twelve-metre boat with a 177 m turning circle.** St Peters' fairway turns **65°** at its landfall
+mark and **67°** back at the channel mouth; rounding those needs about **11 m** of tangent, which the
+27 m leg between them affords easily at 17.7 m and never at 177 m.
+
+⭐ **So the arrival has never navigated the fairway.** She ran straight through both corners, passed
+the berth about 22 m off, took the way off where the closest-approach guard caught her, and the SNAP
+put her on her berth. The passing test was measuring the teleport. This is §0's claim in its strongest
+form: *everything before the snap is already right* was itself only true because the snap was there.
+
+The fix is one line — she carries the same capsule as the boat the player is about to be handed, which
+is this class's own founding law (*"it had better be how they move"*) kept in the one place it was not
+— and it is pinned by a PlayMode test that measures the property rather than the mechanism: full helm,
+cruise, and a floor on the degrees per second.
+
+⚠ **And one number the S1 build could not change and the owner may want to.** The arrival's
+`_dockingSettleSeconds` — the "tie her up regardless" bound — is serialized at **12 s** in the
+committed St Peters scene, and it was measured against the OLD docking (point at the berth, ask for
+zero: a few seconds of astern). A come-alongside is about 27 s at the shipped tuning, so a 12 s
+stopwatch would fire in the middle of the manoeuvre it is a bound on. S1 floors the bound on the
+manoeuvre's own budget in code, derived from the tunables, so the shipped scene behaves correctly
+without a rebuild — but the field now says something smaller than it means, and a Build click that
+re-serializes it to ~30 s would make it honest.
+
 ---
 
 ## 9. Open questions for the owner
 
 **Q1 — Does the player walk herself ashore, or does the game put her there?**
-*Recommend: she walks.* The boat comes alongside; the player presses **E** and the existing step-ashore
+✅ **RULED 2026-08-26, the owner's words:** *"the player is on the boat until they use the exit key to
+step onto dock."* She stays aboard as long as she likes; **E** plays the existing step-ashore MOVE; the
+skipper's line waits indefinitely. No timer, no auto-hand-over, and `HandOver`'s player teleport
+**deleted** rather than relocated. Built in S1.
+*(Recommended below, and the recommendation is what was ruled.) Recommend: she walks.* The boat comes alongside; the player presses **E** and the existing step-ashore
 MOVE plays (M2-37/38 built it — *"stepping ashore is the same move mirrored"*). Her first act in the
 game is her own, and it teaches the verb she will use for the next forty hours. Cost: she can stand on
 the deck indefinitely — the skipper's line simply waits for her, which is fine and arguably better.
 
 **Q2 — Harbour speed: 3 m/s or the shipped 5?**
+⏳ **NOT RULED — and S1 did not block on it.** Harbour speed is a TUNABLE
+(`BerthPilot.Settings.HarbourSpeedMetresPerSecond`, serialized on the arrival beside the pilot's own
+settings), shipped at the recommendation below: **3 inside the wharf line, the fairway left at 5**. The
+measured cost is **5.9 s** on the 45 s passage — see §8.1, where the wharf line turns out to be the
+route's own last mark rather than a second authored number. Retune it without a recompile if 45 + 6 is
+too long.
 *Recommend: 5 down the fairway, 3 inside the wharf line.* `ArrivalPilot`'s own tooltip calls 3 m/s
 (≈ 6 kn) *"harbour speed for a working boat coming in"* and then ships 5 (≈ 9.7 kn). At 5 m/s her stop
 is **33 m**; at 3 m/s it is **13 m** — and 13 m is what fits between berths spaced 5.5 m apart. Cost:

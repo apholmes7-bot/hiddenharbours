@@ -115,9 +115,13 @@ namespace HiddenHarbours.Tests.EditMode
                 cells++;
                 if (!StPetersGrass.InSwathe(p)) continue;
 
-                float chance = StPetersWoods.InStand(p, _terrain.ElevationAt(p))
-                    ? StPetersGrass.ChanceWoods
-                    : StPetersGrass.ChanceOpen;
+                // ⭐ AND THE EDGE BAND, since 2026-08-26. The accept chance is no longer a two-valued
+                // step (open vs under-canopy): it is the ground's own chance, blended across the woods'
+                // edge, RAMPED DOWN as the field runs out. The prediction reads the same two deciders
+                // the scatter reads — restating either of them here is how a pin starts describing a
+                // different island from the one that ships.
+                float chance = StPetersGrass.ChanceAt(_terrain, p, _terrain.ElevationAt(p))
+                             * StPetersGrass.EdgeFalloff(_terrain, p);
                 expected += chance * StPetersGrass.TuftsAt(p, StPetersShoreMap.Hash01(ix, iy, 179));
             }
 
