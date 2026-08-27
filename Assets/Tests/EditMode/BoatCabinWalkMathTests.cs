@@ -73,7 +73,11 @@ namespace HiddenHarbours.Tests.EditMode
 
             Vector2 got = BoatCabinWalkMath.ClampToSole(level, new Vector2(5f, 1.2f), Vector2.zero);
 
-            Assert.AreEqual(2f, got.x, 1e-4f, "she should be standing against the starboard side");
+            // ⚠ Against the side, and a HAIR inside it — never exactly on the line. DeckAreaMath.Contains
+            // reads an on-edge point either way, so "on the wall" would be a position she is outside the
+            // room from about half the time. The tolerance is the clamp's own inset, not a fudge.
+            Assert.AreEqual(2f, got.x, 0.01f, "she should be standing against the starboard side");
+            Assert.Less(got.x, 2f, "…and strictly INSIDE it, not on the line");
             Assert.AreEqual(1.2f, got.y, 1e-4f,
                 "…and NOT dragged fore-and-aft: sliding along a wall is the whole point of a nearest-" +
                 "point clamp rather than a refusal");
@@ -119,10 +123,14 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void WedgedBetweenTwoPiecesOfFurniture_SheKeepsThePositionSheCameInWith()
         {
-            // A 0.02 m slot between two blocks: every push out of one lands inside the other.
-            BoatInteriorLevel level = Room(Block("port", -0.51f, 0f, "wall"),
-                                           Block("starboard", 0.51f, 0f, "wall"));
+            // ⚠ The blocks OVERLAP by 0.2 m — every push out of one lands inside the other, and the
+            // ping-pong is the point. (A GAP between them would leave a legal 2 cm slot to stand in, and
+            // the clamp would rightly put her there: that version of this fixture asserted nothing.)
+            BoatInteriorLevel level = Room(Block("port", -0.4f, 0f, "wall"),
+                                           Block("starboard", 0.4f, 0f, "wall"));
             var safe = new Vector2(0f, -1.5f);
+            Assert.IsFalse(BoatCabinWalkMath.IsStandable(level, Vector2.zero),
+                "the fixture is not wedging her at all — the blocks do not overlap");
 
             Vector2 got = BoatCabinWalkMath.ClampToSole(level, Vector2.zero, safe);
 

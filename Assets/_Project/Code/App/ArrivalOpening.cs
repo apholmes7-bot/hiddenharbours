@@ -292,7 +292,6 @@ namespace HiddenHarbours.App
         private bool _skipperPosed;            // did WE move him to the wheel?
         private Vector3 _skipperRestPosition;
         private int _skipperRestSortingOrder;
-        private float _skipperRestHeading;
 
         // --- the step ashore --------------------------------------------------------------------------
         private StepAshoreOffer _offer;
@@ -418,6 +417,22 @@ namespace HiddenHarbours.App
         /// and a fixture that wants the SEQUENCE proved over twenty metres rather than over the region's
         /// hundred and fifty.</summary>
         public void ConfigureAlongside(BerthPilot.Settings alongside) => _alongside = alongside;
+
+        /// <summary>
+        /// Say whether this opening begins BELOW DECKS. The third of the same family as
+        /// <see cref="ConfigurePilot"/> and <see cref="ConfigureAlongside"/>, and there for the same two
+        /// callers: the region builder, which authors the opening, and a fixture that wants the on-deck
+        /// SEQUENCE without a cabin in front of it.
+        ///
+        /// <para>⚠ <b>Only the switch, not the walk speed.</b> Where the game opens is an authoring
+        /// decision the region owns; how fast she crosses a cabin sole is a FEEL tunable, and those stay
+        /// serialized on the component beside <c>_mooredBeatSeconds</c> and <c>_stepAshoreSeconds</c>,
+        /// which the builder does not set either.</para>
+        ///
+        /// <para>Ignored — silently — on a hull the interiors kit has never measured, which is most of the
+        /// fleet: absence is data, and there is no room to start a game in.</para>
+        /// </summary>
+        public void ConfigureCabin(bool startBelowDecks) => _startBelowDecks = startBelowDecks;
 
         // =================================================================================================
         //  the decision
@@ -779,15 +794,22 @@ namespace HiddenHarbours.App
 
             _skipperRestPosition = figure.localPosition;
             _skipperRestSortingOrder = _skipperRenderer.sortingOrder;
-            _skipperRestHeading = _skipperSkin != null ? _skipperSkin.HeadingDegrees : 0f;
             _skipperPosed = true;
 
             _skipperRenderer.sortingOrder = RoomSortingOrder() + 1;
         }
 
-        /// <summary>Give the figure back exactly as he was found (idempotent). The twin of
+        /// <summary>Give the figure back where and how he was found (idempotent). The twin of
         /// <see cref="PoseTheSkipperAtHisWheel"/>, under the same "did I hold?" law as the player
-        /// release.</summary>
+        /// release.
+        ///
+        /// <para>⚠ <b>His FACING is not restored, because it cannot be read back.</b>
+        /// <c>MooredBoat</c> HOLDS his heading at spawn and <see cref="IsoCharacterSprite.HeadingDegrees"/>
+        /// reports the DRAWN one, which on the spawn frame has not been resolved from the hold yet — so a
+        /// saved value would be a zero, and restoring it would face him north. What happens instead is
+        /// stated rather than accidental: while this opening has a cabin at all, the arrival holds him to
+        /// the hull's own drawn heading for the whole passage. See <see cref="HoldTheSkipper"/>.</para>
+        /// </summary>
         private void LetTheSkipperStandAsHeWas()
         {
             if (!_skipperPosed) return;
@@ -796,36 +818,45 @@ namespace HiddenHarbours.App
             Transform figure = SkipperTransform();
             if (figure != null && figure != _boatRoot) figure.localPosition = _skipperRestPosition;
             if (_skipperRenderer != null) _skipperRenderer.sortingOrder = _skipperRestSortingOrder;
-            if (_skipperSkin != null) _skipperSkin.HoldHeading(_skipperRestHeading);
         }
 
         /// <summary>
-        /// Hold the skipper at his wheel, every frame, for as long as she is below. In LATE update beside
-        /// the seating and not in <see cref="Update"/>: this is a PICTURE (where a figure is drawn), and
-        /// the projection it goes through reads the hull's DRAWN heading, which the presenter writes in its
-        /// own early band. Inputs early, picture late — <c>DeckRiderVisual</c>'s rule.
+        /// Keep the skipper's picture honest, every frame of a passage that has a cabin in it. In LATE
+        /// update beside the seating and not in <see cref="Update"/>: this is a PICTURE (where a figure is
+        /// drawn and which way it looks), and the projection it goes through reads the hull's DRAWN
+        /// heading, which the presenter writes in its own early band. Inputs early, picture late —
+        /// <c>DeckRiderVisual</c>'s rule.
+        ///
+        /// <para><b>Two things, and only the second is conditional.</b> His FACING follows the hull for the
+        /// whole passage: a man at a wheel looks where his boat is going, and <c>MooredBoat</c> holds a
+        /// fixed bearing only because nothing moves its figures and it has no live heading to read — the
+        /// arrival has one. His PLACE moves to the interior helm anchor only while she is below, and comes
+        /// back when she is not.</para>
+        ///
+        /// <para>⚠ <b>Both are gated on this opening having a cabin</b>, so an arrival on any hull the
+        /// interiors kit has not measured draws her skipper exactly as the shipped one does.</para>
         /// </summary>
-        private void HoldTheSkipperAtHisWheel()
+        private void HoldTheSkipper()
         {
-            if (!_skipperPosed || _cabin == null || _boatRoot == null) return;
+            if (_cabin == null || _boatRoot == null) return;
 
             Transform figure = SkipperTransform();
             if (figure == null || figure == _boatRoot) return;
 
+            float heading = DrawnHeadingDegrees();
+            if (_skipperSkin == null) _skipperSkin = figure.GetComponent<IsoCharacterSprite>();
+            if (_skipperSkin != null) _skipperSkin.HoldHeading(heading);
+
+            if (!_skipperPosed) return;
+
             BoatInteriorDef def = _cabin.Cabin != null ? _cabin.Cabin.Def : null;
             Vector3 helm = HelmAnchorOf(def);
-            float heading = DrawnHeadingDegrees();
             Vector2 offset = BoatCabinWalkMath.ToWorldOffset(
                 new Vector2(helm.x, helm.y), helm.z, heading,
                 BoatInteriorInstaller.BakeElevationDegrees(HullVisual()),
                 BoatInteriorInstaller.ExteriorAzimuthCounterClockwise(HullVisual()));
 
             figure.localPosition = new Vector3(offset.x, offset.y, _skipperRestPosition.z);
-
-            // He looks where the boat is going, because that is what a man at a wheel does. Held rather
-            // than measured for MooredBoat's own reason — nothing moves this figure, so an unheld heading
-            // resolves from a zero velocity.
-            if (_skipperSkin != null) _skipperSkin.HoldHeading(heading);
         }
 
         /// <summary>The def's own <c>enter_helm</c> anchor — where her wheel is, in hull metres. Falls back
@@ -1474,7 +1505,7 @@ namespace HiddenHarbours.App
             // the seat below can never be the wrong frame's.
             FollowTheCabin();
             FollowTheDeck();
-            HoldTheSkipperAtHisWheel();
+            HoldTheSkipper();
             if (!_stepping) SeatThePlayer();
         }
 

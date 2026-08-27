@@ -219,13 +219,27 @@ namespace HiddenHarbours.Tests.PlayMode
             Vector2 startSole = opening.CabinLocalPosition;
             Vector3 startWorldRelative = _player.transform.position - opening.Boat.transform.position;
 
-            yield return WalkFor(new Vector2(0f, 1f), 0.6f);   // forward, into his house
+            // ⚠ All four directions, not one. She starts AT the doorway, which is on the aft edge of the
+            // sole by construction — so whichever screen direction happens to point aft at this heading is
+            // walking her into the bulkhead she is standing against, and a fixture that pressed only that
+            // one would call a working clamp a broken walk. (It did, first run: bow south, "up-screen" is
+            // aft, 3 mm of travel.) What is under test is that she can move ABOUT the cabin.
+            float furthestOnTheSole = 0f, furthestOnScreen = 0f;
+            foreach (Vector2 dir in new[] { Vector2.up, Vector2.down, Vector2.left, Vector2.right })
+            {
+                yield return WalkFor(dir, 0.35f);
+                furthestOnTheSole = Mathf.Max(furthestOnTheSole,
+                                              Vector2.Distance(opening.CabinLocalPosition, startSole));
+                furthestOnScreen = Mathf.Max(
+                    furthestOnScreen,
+                    Vector3.Distance(_player.transform.position - opening.Boat.transform.position,
+                                     startWorldRelative));
+            }
 
-            Assert.Greater(Vector2.Distance(opening.CabinLocalPosition, startSole), 0.15f,
-                $"she has not moved on the sole: {startSole} → {opening.CabinLocalPosition}. " + Where());
-            Assert.Greater(
-                Vector3.Distance(_player.transform.position - opening.Boat.transform.position,
-                                 startWorldRelative), 0.05f,
+            Assert.Greater(furthestOnTheSole, 0.15f,
+                $"she never left {startSole} in any direction (now {opening.CabinLocalPosition}). " +
+                Where());
+            Assert.Greater(furthestOnScreen, 0.05f,
                 "her sole position changed but her place on screen did not — the projection is not " +
                 "reaching her transform");
             Assert.IsTrue(opening.IsBelowDecks, "walking about the cabin took her out of it. " + Where());

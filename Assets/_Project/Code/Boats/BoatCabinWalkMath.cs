@@ -149,11 +149,32 @@ namespace HiddenHarbours.Boats
             return IsStandable(level, fallback) ? fallback : p;
         }
 
-        /// <summary>Inside the sole already, or the nearest point of its outline.</summary>
+        /// <summary>
+        /// Inside the sole already, or the nearest point of its outline — <b>and then a hair further
+        /// in</b>.
+        ///
+        /// <para>⚠ <b>The nudge is not tidiness; without it this method's own output is not standable.</b>
+        /// <see cref="DeckAreaMath.Contains"/> says in as many words that a point exactly on an edge
+        /// "may read either way", which is harmless for a deck clamp that only ever runs when the player
+        /// has pressed off the deck — and is NOT harmless here, because a cabin door's threshold sits on
+        /// the sole's edge BY CONSTRUCTION, so the very first frame of the game would place her on a line
+        /// she is on the wrong side of about half the time. Landing strictly inside makes
+        /// <c>IsStandable(ClampToSole(x))</c> true for every x, which is the property the caller needs and
+        /// the one a test can hold it to.</para>
+        ///
+        /// <para>The inward direction is the one that brought her here (outside → edge). A point already
+        /// ON the outline has no such direction, so it borrows the sole's own centre.</para>
+        /// </summary>
         private static Vector2 PullOntoTheSole(BoatInteriorLevel level, Vector2 p)
-            => DeckAreaMath.Contains(level.Outline, p)
-                   ? p
-                   : DeckAreaMath.ClosestPointOnOutline(level.Outline, p, out _);
+        {
+            if (DeckAreaMath.Contains(level.Outline, p)) return p;
+
+            Vector2 edge = DeckAreaMath.ClosestPointOnOutline(level.Outline, p, out float sqr);
+            Vector2 inward = sqr > 1e-12f ? edge - p : CentroidOf(level.Outline) - edge;
+            return inward.sqrMagnitude > 1e-12f
+                       ? edge + inward.normalized * ClearEpsilonMetres
+                       : edge;
+        }
 
         /// <summary>Out of a footprint by the nearest edge, plus a hair — so the crossing test on the next
         /// tick cannot report the walker as still inside the thing they were just pushed out of.</summary>
