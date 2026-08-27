@@ -85,15 +85,27 @@ Shader "HiddenHarbours/IsoFacet"
         HLSLINCLUDE
         #pragma target 3.5
 
-        // SPIKE ONLY (spike/interior-mesh) — the interior LEVEL GATE, behind a keyword that is
-        // OFF by default. Everything the spike adds lives inside #ifdef HH_LEVEL_GATE: the
-        // TEXCOORD1 vertex input, the extra varying, the uniform and the two discards. With the
-        // keyword off the compiled program is LITERALLY the pre-spike one — not "the same picture
-        // for a discard per fragment on every hull every frame", which is a cost (rule 7) and is
-        // what the first version of this branch actually did. shader_feature_local, so a player
-        // build in which no material enables it does not even carry the variant. Enabled by the
-        // spike fixture on its own instance material; nothing shipped enables it.
-        #pragma shader_feature_local HH_LEVEL_GATE
+        // THE CUTAWAY LEVEL GATE (owner ruling 2026-08-26), behind a keyword that is OFF by
+        // default. Everything it adds lives inside #ifdef HH_LEVEL_GATE: the TEXCOORD1 vertex
+        // input, the extra varying, the uniform and the two discards. With the keyword off the
+        // compiled program is LITERALLY the pre-gate one — not "the same picture for a discard per
+        // fragment on every hull every frame", which is a cost (rule 7) and is what the spike's
+        // first version actually did. The interior-mesh spike measured the boundary both ways:
+        // shipped program vs the gated variant at 0 = 0 differing px, and vs hull-plus-rooms
+        // through the gate at 0 = 0 differing px (the second is what says the gate HIDES the
+        // geometry rather than the geometry happening to be invisible).
+        //
+        // ⚠️ multi_compile_local, NOT shader_feature_local, and the difference shows up in a BUILD
+        // only. shader_feature keeps only the variants some MATERIAL ASSET enables — and this
+        // hull's material is never an asset: IsoFacetHullRenderer builds it at runtime with
+        // `new Material(Shader.Find(...))`, so nothing in the project would carry the keyword and
+        // the stripper would drop the gated variant. The cutaway would then work in the editor and
+        // quietly never happen in the player: the exact shape of bug this project keeps paying for.
+        // multi_compile always compiles both. Cost: one extra variant of this shader; the OFF
+        // variant is unchanged, so no hull pays anything at run time. _local, so the keyword lives
+        // per MATERIAL — Shader.EnableKeyword does not reach it (measured on the spike fixture);
+        // the renderer writes its own instance material.
+        #pragma multi_compile_local _ HH_LEVEL_GATE
 
         #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 
@@ -146,11 +158,24 @@ Shader "HiddenHarbours/IsoFacet"
             float4 _HullShear;
 
 #ifdef HH_LEVEL_GATE
-            // SPIKE ONLY — which level the camera is inside. A GLOBAL uniform and not a Property,
-            // so the spike drives it with Shader.SetGlobalFloat and no material serialises it.
-            // 0 = show the exterior, which is the shipped behaviour. See
-            // docs/design/spikes/interior-mesh-verdict.md.
+            // WHICH LEVEL THE OCCUPANT IS INSIDE. 0 = show the exterior, which is the shipped
+            // behaviour and the state every hull starts and ends in.
+            //
+            // ⚠️ PER DRAW, via the MaterialPropertyBlock — NOT Shader.SetGlobalFloat, which is what
+            // the spike used and what a fixture with one hull on screen cannot tell apart. Eighteen
+            // lobster boats can be afloat in one creek and only ONE of them has anybody below; a
+            // global would cut open every sister ship in the harbour at the same instant, and the
+            // sisters mostly share a def so the id in the tag would match on all of them. Same class
+            // as the deck-occupant properties beside it, and set from the same ApplyPose write.
             float  _HHLevelShown;
+            // THE LID (coordinator ruling 2026-08-27): the level whose faces are the ceiling of the
+            // one the occupant is inside, and which therefore comes off with it. 0 = none.
+            //
+            // ONE HOP IS ENFORCED BY THE SHAPE OF THIS DATA, not by a rule anybody has to remember:
+            // there is one lid uniform, so a chain simply cannot be expressed here. The bake refuses
+            // a lid that has a lid, and a level carries one lid field, so the same law holds in all
+            // three places it could be broken.
+            float  _HHLevelLid;
 #endif
 
             struct Attributes
@@ -164,8 +189,9 @@ Shader "HiddenHarbours/IsoFacet"
                 // decodes the rendered side).
                 float4 attrs      : TEXCOORD0;
 #ifdef HH_LEVEL_GATE
-                // SPIKE ONLY — x = LEVEL id (0 = belongs to no level), y = 1 on the emitted
-                // INTERIOR faces and 0 on the hull's own.
+                // x = the face's LEVEL id, from her rig's own geometry().ids (0 = hull, the
+                // exterior silhouette, never cut). y = 1 on emitted INTERIOR geometry, 0 on
+                // the hull's own faces. Absent on every hull baked before the cutaway kit.
                 float2 levelTag   : TEXCOORD1;
 #endif
             };
@@ -179,7 +205,7 @@ Shader "HiddenHarbours/IsoFacet"
                 nointerpolation float mat  : TEXCOORD1;
                 float3 wpos : TEXCOORD2;         // xy = dither frame  z = TRUE unbiased depth
 #ifdef HH_LEVEL_GATE
-                // SPIKE ONLY — xy = the level tag, z = 1 when the camera is rendering this
+                // xy = the level tag, z = 1 when the camera is rendering this
                 // face's FRONT (decoded from the stored normal exactly as vertGuard does).
                 nointerpolation float3 lvl : TEXCOORD3;
 #endif
@@ -239,7 +265,7 @@ Shader "HiddenHarbours/IsoFacet"
             }
 
 #ifdef HH_LEVEL_GATE
-            // SPIKE ONLY — one tag, both halves of ADR 0038's swap (question B).
+            // ONE tag, both halves of ADR 0038's swap (question B) — and the owner's cutaway.
             //   _HHLevelShown == 0 : the shipped picture. Interior faces (if any exist at
             //                        all) are off; nothing else is touched.
             //   _HHLevelShown == k : you are inside level k. The hull's own faces that
@@ -250,13 +276,38 @@ Shader "HiddenHarbours/IsoFacet"
             // The BACK-facing test on interior geometry is the rig's hand-written "THE CUT"
             // (near walls culled, far walls kept) falling out of the geometry for free, at
             // every heading instead of at eight.
+            //
+            // TWO LEVELS THIS CAN NEVER BE ASKED FOR, and both are structural rather than
+            // policed here. `hull` (the exterior silhouette) is id 0 on every rig in the kit,
+            // and 0 is the same value as "gate off" — so the shell can never be cut away and
+            // the room always shows INSIDE her own outline, which is the whole of what
+            // "cutaway" means. `rigging` (arch, aerials, gantry, masts, derricks) is id 5, and
+            // 5 is outside the 1..4 band a walkable level ever occupies — so a cut can never
+            // take a spar with the room it happens to stand over. Neither fact is transcribed
+            // into C#: the rigs publish the ids and the bake carries them.
+            //
+            // ⚠️ THE SWAP ALONE IS NOT ENOUGH, once room geometry exists. Culling the house
+            // does not cull the hull's own near TOPSIDES, which in a ¾ view stand between the
+            // camera and a cabin sole; the spike measured a revealed room surviving at only
+            // 20.3% because of them. The lever is already in the mesh — UV0.z, the rig's own
+            // per-face `db`, subtracted from clip depth in vert() above — and setting it on
+            // the room to the hull's bounding-sphere diameter took the same room to 97.6%.
+            // Recorded here because the next person to add the shell will meet it.
             bool HHLevelDiscards(float3 lvl)
             {
                 bool isInterior = lvl.y > 0.5;
                 if (_HHLevelShown < 0.5) return isInterior;
-                bool tagged = abs(lvl.x - _HHLevelShown) < 0.5;
-                if (isInterior) return !tagged || lvl.z < 0.5;
-                return tagged;
+                bool isShown = abs(lvl.x - _HHLevelShown) < 0.5;
+
+                // INTERIOR geometry tests the SHOWN level only. A lid is a thing that comes OFF; it
+                // is not a second room you are also standing in, and drawing its fit-out because you
+                // are under it would put two rooms in one hull.
+                if (isInterior) return !isShown || lvl.z < 0.5;
+
+                // HULL geometry loses the level you are inside AND its declared lid. Two compares,
+                // no loop, no chain.
+                bool isLid = _HHLevelLid >= 0.5 && abs(lvl.x - _HHLevelLid) < 0.5;
+                return isShown || isLid;
             }
 #endif
 
@@ -323,7 +374,7 @@ Shader "HiddenHarbours/IsoFacet"
                 float4 positionCS : SV_POSITION;
                 nointerpolation float interior : TEXCOORD0;
 #ifdef HH_LEVEL_GATE
-                nointerpolation float3 lvl : TEXCOORD1;   // SPIKE ONLY — see HHLevelDiscards
+                nointerpolation float3 lvl : TEXCOORD1;   // see HHLevelDiscards
 #endif
             };
 
