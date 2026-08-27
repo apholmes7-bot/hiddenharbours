@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 using HiddenHarbours.Core;
 using HiddenHarbours.Boats;
 using HiddenHarbours.Player;
@@ -160,6 +161,18 @@ namespace HiddenHarbours.App
                  "never restarted, so a re-presented approach cannot renew its own grace.")]
         [Min(0f)] [SerializeField] private float _dockingSettleSeconds = 12f;
 
+        [Header("Below decks — where the game opens")]
+        [Tooltip("Start the player BELOW, in the skipper's cabin, and let her come up through his aft " +
+                 "door when she wants to. Untick and the opening begins on deck exactly as it did before. " +
+                 "Ignored — silently — on a hull the interiors kit has never measured: absence is data, " +
+                 "and most of the fleet has no room to start a game in.")]
+        [SerializeField] private bool _startBelowDecks = true;
+
+        [Tooltip("How fast she moves about the cabin, in metres of SOLE per second. Slower than the " +
+                 "deck's 2.5: a cape islander's house is two and a half metres across, and a walk tuned " +
+                 "for open planking crosses it in a second and spends that second against a wall.")]
+        [Min(0f)] [SerializeField] private float _cabinWalkSpeed = 1.4f;
+
         [Header("Stepping ashore — the owner's Q1 ruling (2026-08-26)")]
         [Tooltip("How long the step off her rail onto the planks takes, real seconds. The shape and the " +
                  "number are ControlSwitcher's own disembark vault, because this IS that move — a hull " +
@@ -270,6 +283,17 @@ namespace HiddenHarbours.App
         private bool _tiedUpHonestly;          // did the HULL get herself there, or the stopwatch?
         private bool _scopeEased;
 
+        // --- below decks ------------------------------------------------------------------------------
+        private ArrivalCabinWalk _cabin;
+        private CabinDoorOffer _cabinOffer;
+        private bool _wasBelow;
+        private IsoCharacterSprite _skipperSkin;
+        private SpriteRenderer _skipperRenderer;
+        private bool _skipperPosed;            // did WE move him to the wheel?
+        private Vector3 _skipperRestPosition;
+        private int _skipperRestSortingOrder;
+        private float _skipperRestHeading;
+
         // --- the step ashore --------------------------------------------------------------------------
         private StepAshoreOffer _offer;
         private bool _stepping;
@@ -329,6 +353,50 @@ namespace HiddenHarbours.App
         /// <summary>The authored route, seaward first. Copy-free read for tests and tooling.</summary>
         public Vector2[] Route => _route;
 
+        // ---- below decks ------------------------------------------------------------------------------
+
+        /// <summary>⭐ <b>Is the player inside the skipper's cabin?</b> Asked of the CABIN, never of a
+        /// second flag here — <c>BoatInterior.IsInside</c> is the one answer, and the door may change it
+        /// without going through this component at all.</summary>
+        public bool IsBelowDecks => _cabin != null && _cabin.IsBelow;
+
+        /// <summary>Her cabin, once the boat is spawned, or null on a hull the interiors kit has never
+        /// measured. The room, the level and the swap are all reached through it.</summary>
+        public BoatInterior Cabin => _cabin?.Cabin;
+
+        /// <summary>The aft door she comes out of — the hull's own, with its measured cue.</summary>
+        public BoatCabinDoor CabinDoor => _cabin?.Door;
+
+        /// <summary>The cut this hull is being asked for while she is below. Read-only, and read from the
+        /// component that owns the ruling; the arrival never writes it.</summary>
+        public BoatCutaway CabinCutaway => _cabin?.Cutaway;
+
+        /// <summary>Where she is standing on the sole, in the hull's own metres. Zero when she is not
+        /// below.</summary>
+        public Vector2 CabinLocalPosition => _cabin != null ? _cabin.LocalPosition : Vector2.zero;
+
+        /// <summary>
+        /// ⭐ <b>Walk her about the cabin.</b> Public and input-driven for exactly the reason
+        /// <see cref="BoatCabinDoor.Tick"/> is public and time-driven: a PlayMode test cannot deliver a
+        /// virtual keypress to the New Input System in this project, so the component API IS the way in —
+        /// and <see cref="Update"/> is a one-line caller that hands it the real keys. Returns false when
+        /// there is nobody below to walk.
+        /// </summary>
+        public bool WalkTheCabin(Vector2 moveInput, float deltaSeconds)
+        {
+            if (!IsBelowDecks || _boatRoot == null) return false;
+            _cabin.Step(moveInput, deltaSeconds, DrawnHeadingDegrees());
+            return true;
+        }
+
+        /// <summary>
+        /// ⭐ <b>Work the aft door</b> — the same call <see cref="CabinDoorOffer.Interact"/> makes when the
+        /// player presses the one interact verb on it, and the same call the hull's own
+        /// <see cref="BoatCabinDoor"/> would take from the deck. The cue then runs on its own clock and the
+        /// swap lands at the end of it; nothing here shortcuts that.
+        /// </summary>
+        public bool WorkTheCabinDoor() => _cabin?.Door != null && _cabin.Door.TryUse();
+
         /// <summary>Wire the whole thing in one call — the region builder's seam, and the test's.</summary>
         public void Configure(BoatOwnerDef skipper, Vector2[] route, Vector2 berth,
                               float berthHeadingDegrees, Vector2 stepAshore,
@@ -386,9 +454,17 @@ namespace HiddenHarbours.App
             // is state only THIS component created, so relinquishing it can never stomp somebody else's.
             if (_deck != null) { StandableSurfaces.Unregister(_deck); _deck = null; }
             WithdrawTheStepAshore();
+            WithdrawTheCabinDoor();
             StopTheStepClip();
             _stepping = false;
             ReleaseThePlayer();
+
+            // ⚠ AND THE CABIN IS DELIBERATELY NOT CLOSED HERE. Root-toggling IS how a region hop works,
+            // and BoatInterior's state survives OnDisable by design for exactly that reason — a cabin
+            // that reset here would put the player back on deck at every boundary crossed while below.
+            // The figure is a different matter: what this restores is a transform and a sorting order it
+            // saved itself, under the same "did I hold?" law as everything above.
+            LetTheSkipperStandAsHeWas();
         }
 
         /// <summary>
@@ -555,8 +631,246 @@ namespace HiddenHarbours.App
             rb.linearVelocity = new Vector2(go.transform.up.x, go.transform.up.y)
                                 * _pilot.CruiseSpeedMetresPerSecond;
 
+            // ⭐ AND THE GAME OPENS BELOW. Before the player is held, because HoldThePlayer seats and poses
+            // her on the very first frame and one frame of a passenger standing on deck when the opening
+            // says she is in the cabin is one frame too many — the same reasoning that put the seat and
+            // the pose inside the hold rather than after it.
+            GoBelowDecks();
+
             HoldThePlayer();
             return true;
+        }
+
+        // =================================================================================================
+        //  below decks — the first room in the game
+        // =================================================================================================
+
+        /// <summary>
+        /// ⭐ <b>Open the game inside the skipper's cabin.</b> Silent and total when this hull has no
+        /// measured interior: <see cref="ArrivalCabinWalk.TryOpen"/> returns null, nothing below runs, and
+        /// the arrival is byte-for-byte the one that shipped — a passenger on deck for the whole passage.
+        /// Most of the fleet is that hull, and it is DATA rather than a fault.
+        ///
+        /// <para><b>The way out is offered from here on</b>, and it is offered on the ONE interact verb
+        /// rather than a key of its own, exactly as the step ashore is. See <see cref="CabinDoorOffer"/>
+        /// for why the hull's own door cannot be the candidate during an arrival.</para>
+        /// </summary>
+        private void GoBelowDecks()
+        {
+            if (!_startBelowDecks) return;
+
+            _cabin = ArrivalCabinWalk.TryOpen(_boat, _cabinWalkSpeed);
+            if (_cabin == null) return;
+
+            if (!_cabin.GoBelow())
+            {
+                Debug.LogWarning("[ArrivalOpening] her cabin refused the entry, so the opening stays " +
+                                 "topside. Nothing else about the arrival changes.");
+                _cabin = null;
+                return;
+            }
+
+            _wasBelow = true;
+            _cabinOffer = new CabinDoorOffer(this);
+            Interactables.Register(_cabinOffer);
+            PoseTheSkipperAtHisWheel();
+
+            Debug.Log($"[ArrivalOpening] the game opens BELOW — '{_cabin.Cabin.Def.Id}' level " +
+                      $"{_cabin.LevelIndex} ('{_cabin.Cabin.Def.Levels[_cabin.LevelIndex].Id}'), " +
+                      $"the way out is aft. The cut this hull is being asked for: " +
+                      $"{DescribeTheCut()}.");
+        }
+
+        /// <summary>
+        /// ⭐ <b>Follow the CABIN rather than command it.</b> The door owns the transition — it runs its
+        /// own cue on its own clock and calls <c>TryEnter</c>/<c>TryExit</c> at the end of it — so this
+        /// component finds out that she moved the same way any other listener would: by looking. Cheap,
+        /// idempotent, and called from both <see cref="Update"/> and <see cref="LateUpdate"/> so that the
+        /// frame she crosses the threshold is posed and seated in the same state whichever of the two
+        /// undefined-order <c>Update</c>s ran first.
+        ///
+        /// <para><b>⛔ AND THIS IS WHERE THE ABSENCE OF A TELEPORT LIVES.</b> Neither crossing writes her
+        /// position: coming out, the deck seat is SEEDED from where she is standing, so the next
+        /// <see cref="SeatThePlayer"/> reproduces her exact world point and then carries it round with the
+        /// hull; going back in, the sole point is seeded the same way. She steps through a doorway and the
+        /// frame she is placed in changes underneath her, which is the whole trick an interior is
+        /// (ADR 0038: a layer swap, not a place you travel to).</para>
+        /// </summary>
+        private void FollowTheCabin()
+        {
+            if (_cabin == null || _boatRoot == null) return;
+
+            bool below = _cabin.IsBelow;
+            if (below == _wasBelow) return;
+            _wasBelow = below;
+
+            if (below)
+            {
+                _cabin.SeedFromWorld(_boatRoot, _player != null ? _player.position : _boatRoot.position,
+                                     DrawnHeadingDegrees());
+                PoseTheSkipperAtHisWheel();
+                Debug.Log("[ArrivalOpening] she has gone below again.");
+                return;
+            }
+
+            SeedTheDeckSeatFromWhereSheStands();
+            LetTheSkipperStandAsHeWas();
+
+            // Her own motion is honest again the moment she is out on deck: nothing of hers moves her
+            // there, so the pose goes back to the hull's heading and a stated zero. PoseThePassenger is
+            // what says that, every Update; this only has to stop claiming otherwise.
+            Debug.Log("[ArrivalOpening] she has come up on deck through his aft door.");
+        }
+
+        /// <summary>
+        /// The passenger's place on deck, taken from where she is standing RIGHT NOW rather than from the
+        /// authored offset. Written into <see cref="_passengerDeckOffset"/> — the same field, in the same
+        /// frame (the hull's yaw, un-foreshortened), so <see cref="SeatThePlayer"/> is untouched and the
+        /// arrival that ships today is unchanged for every hull with no cabin.
+        ///
+        /// <para>⚠ <b>This is a SEED, not a placement.</b> It is chosen so that the very next seat puts
+        /// her exactly where she already is; the visible consequence is that she stands where she came out
+        /// — at the threshold — instead of being snapped to a point somebody typed. The precedent is
+        /// <c>DeckWalkController.SeedDeckLocalFromTransform</c>: when something else put the player
+        /// somewhere, read it rather than overrule it.</para>
+        /// </summary>
+        private void SeedTheDeckSeatFromWhereSheStands()
+        {
+            if (_player == null || _boatRoot == null) return;
+            Vector3 relative = _player.position - _boatRoot.position;
+            Vector3 local = Quaternion.Inverse(_boatRoot.rotation) * relative;
+            _passengerDeckOffset = new Vector2(local.x, local.y);
+        }
+
+        /// <summary>
+        /// ⭐ <b>Put Armand at his wheel while she is below.</b> With the house open she is looking INTO
+        /// the room he is steering from, and a skipper drawn at the hull's pivot — his own waterline
+        /// amidships — is a man standing in the bilge under his own feet.
+        ///
+        /// <para><b>Why here and not in <c>MooredBoat</c>.</b> That component places every hull's crew in
+        /// the fleet and states in as many words that the pivot is "the ONE deck point this component can
+        /// place a figure at without re-deriving the hull's iso projection". This is the one hull anybody
+        /// is ever inside, and the point is her interior def's own <c>enter_helm</c> anchor — content, not
+        /// a constant (rule 2). The arrival owns this boat and this skipper; nothing fleet-wide changes.
+        /// </para>
+        ///
+        /// <para><b>And he has to draw OVER the room.</b> The room sits at the installer's own order above
+        /// the hull and the skipper one above her visual's — which on this hull is the SAME number, and a
+        /// tie is not a rule. Raised while she is below, put back when she comes out, and guarded on
+        /// <see cref="_skipperPosed"/>: everything this touches is state it saved first, so an un-posed
+        /// restore has nothing of its own to undo.</para>
+        ///
+        /// <para>⚠ <b>What is NOT claimed.</b> He rides her at the hull's full amplitude while the room
+        /// rides at <c>InteriorRockScale</c>, so at the crest he moves a few pixels against the furniture —
+        /// the same overdraw the cabin gate was opened on measured evidence to accept. And on a hull whose
+        /// house is not CUT (see <see cref="DescribeTheCut"/>) he is drawn over the room's own picture
+        /// rather than seen through a cut wall.</para>
+        /// </summary>
+        private void PoseTheSkipperAtHisWheel()
+        {
+            if (_skipperPosed || _cabin == null || _boatRoot == null) return;
+
+            Transform figure = SkipperTransform();
+            if (figure == null || figure == _boatRoot) return;
+
+            _skipperRenderer = figure.GetComponent<SpriteRenderer>();
+            _skipperSkin = figure.GetComponent<IsoCharacterSprite>();
+            if (_skipperRenderer == null) return;
+
+            _skipperRestPosition = figure.localPosition;
+            _skipperRestSortingOrder = _skipperRenderer.sortingOrder;
+            _skipperRestHeading = _skipperSkin != null ? _skipperSkin.HeadingDegrees : 0f;
+            _skipperPosed = true;
+
+            _skipperRenderer.sortingOrder = RoomSortingOrder() + 1;
+        }
+
+        /// <summary>Give the figure back exactly as he was found (idempotent). The twin of
+        /// <see cref="PoseTheSkipperAtHisWheel"/>, under the same "did I hold?" law as the player
+        /// release.</summary>
+        private void LetTheSkipperStandAsHeWas()
+        {
+            if (!_skipperPosed) return;
+            _skipperPosed = false;
+
+            Transform figure = SkipperTransform();
+            if (figure != null && figure != _boatRoot) figure.localPosition = _skipperRestPosition;
+            if (_skipperRenderer != null) _skipperRenderer.sortingOrder = _skipperRestSortingOrder;
+            if (_skipperSkin != null) _skipperSkin.HoldHeading(_skipperRestHeading);
+        }
+
+        /// <summary>
+        /// Hold the skipper at his wheel, every frame, for as long as she is below. In LATE update beside
+        /// the seating and not in <see cref="Update"/>: this is a PICTURE (where a figure is drawn), and
+        /// the projection it goes through reads the hull's DRAWN heading, which the presenter writes in its
+        /// own early band. Inputs early, picture late — <c>DeckRiderVisual</c>'s rule.
+        /// </summary>
+        private void HoldTheSkipperAtHisWheel()
+        {
+            if (!_skipperPosed || _cabin == null || _boatRoot == null) return;
+
+            Transform figure = SkipperTransform();
+            if (figure == null || figure == _boatRoot) return;
+
+            BoatInteriorDef def = _cabin.Cabin != null ? _cabin.Cabin.Def : null;
+            Vector3 helm = HelmAnchorOf(def);
+            float heading = DrawnHeadingDegrees();
+            Vector2 offset = BoatCabinWalkMath.ToWorldOffset(
+                new Vector2(helm.x, helm.y), helm.z, heading,
+                BoatInteriorInstaller.BakeElevationDegrees(HullVisual()),
+                BoatInteriorInstaller.ExteriorAzimuthCounterClockwise(HullVisual()));
+
+            figure.localPosition = new Vector3(offset.x, offset.y, _skipperRestPosition.z);
+
+            // He looks where the boat is going, because that is what a man at a wheel does. Held rather
+            // than measured for MooredBoat's own reason — nothing moves this figure, so an unheld heading
+            // resolves from a zero velocity.
+            if (_skipperSkin != null) _skipperSkin.HoldHeading(heading);
+        }
+
+        /// <summary>The def's own <c>enter_helm</c> anchor — where her wheel is, in hull metres. Falls back
+        /// to the hull pivot, which is where <c>MooredBoat</c> already draws him, so a def that names no
+        /// helm changes nothing rather than guessing a spot.</summary>
+        private static Vector3 HelmAnchorOf(BoatInteriorDef def)
+        {
+            if (def == null || def.Anchors == null) return Vector3.zero;
+            for (int i = 0; i < def.Anchors.Length; i++)
+            {
+                BoatInteriorAnchor a = def.Anchors[i];
+                if (a != null && a.Action == "enter_helm") return a.ReachPoint;
+            }
+            return Vector3.zero;
+        }
+
+        /// <summary>This hull's visual def, or null — the one place the arrival reaches for it.</summary>
+        private BoatVisualDef HullVisual()
+            => _skipper != null && _skipper.Boat != null ? _skipper.Boat.Visual : null;
+
+        /// <summary>The order the interior room is drawn at, found by the installer's own published child
+        /// name rather than assumed. Falls back to the skipper's own resting order, which leaves the tie
+        /// exactly as it was rather than inventing a number.</summary>
+        private int RoomSortingOrder()
+        {
+            if (_boatRoot == null) return _skipperRestSortingOrder;
+            Transform room = _boatRoot.Find(BoatInteriorInstaller.RoomChildName);
+            SpriteRenderer r = room != null ? room.GetComponent<SpriteRenderer>() : null;
+            return r != null ? r.sortingOrder : _skipperRestSortingOrder;
+        }
+
+        /// <summary>What the cutaway is being asked for, in words, for the one console line that says
+        /// whether the player will actually see into this house. ⚠ <c>None</c> on a hull whose rig has
+        /// never been through a cutaway pass is the honest answer and not a fault — she is then drawn as
+        /// the accepted overdraw (the room over her closed house), which is the state the cabin gate was
+        /// opened in.</summary>
+        private string DescribeTheCut()
+        {
+            BoatCutaway cut = _cabin?.Cutaway;
+            if (cut == null) return "none — she is a sprite hull, with no geometry to cut";
+            HullMeshDef.Cut c = cut.RequestedCut;
+            return c.Opens
+                       ? c.ToString()
+                       : "NONE — this hull's rig has no cutaway pass, so the room draws over her closed " +
+                         "house (the accepted overdraw)";
         }
 
         // =================================================================================================
@@ -605,6 +919,15 @@ namespace HiddenHarbours.App
 
         private void Update()
         {
+            // Did the door move her across its own threshold since the last frame? Asked before anything
+            // is posed, because the answer decides WHICH pose is the honest one.
+            FollowTheCabin();
+
+            // ⭐ HER OWN STEP, and it is the one thing about the passage she is in charge of. In Update
+            // beside the pose and not in LateUpdate with the seating, for the same reason the pose is:
+            // this is an INPUT, and the picture is downstream of it.
+            if (IsBelowDecks) WalkTheCabin(ReadWalkInput(), Time.deltaTime);
+
             // ⭐ THE POSE IS STATED HERE, in Update, and NOT beside the seating in LateUpdate. The split
             // is not tidiness: IsoCharacterSprite consumes the holds in its own LateUpdate at execution
             // order 0 — the order this component also runs at — so which of the two LateUpdates runs
@@ -876,9 +1199,15 @@ namespace HiddenHarbours.App
         // =================================================================================================
 
         /// <summary>True while the wharf is there to be stepped onto: she is tied up, the settling beat is
-        /// done, and she is not already in the air.</summary>
+        /// done, and she is not already in the air.
+        ///
+        /// <para><b>⚠ …and she is not BELOW.</b> You do not step onto a wharf from inside a cabin, and the
+        /// step is an arc from where she is standing: run from the sole it would take her out through the
+        /// side of the house. Nothing is taken away by this — the offer is not on a clock (the owner's Q1
+        /// ruling), so it is simply there waiting the moment she comes up.</para></summary>
         public bool CanStepAshore =>
-            _phase == Phase.Moored && !_stepping && _mooredTimer >= _mooredBeatSeconds && _player != null;
+            _phase == Phase.Moored && !_stepping && _mooredTimer >= _mooredBeatSeconds
+            && _player != null && !IsBelowDecks;
 
         /// <summary>
         /// Offer the step ashore on the ONE interact verb (M2-39), rather than binding a key of its own.
@@ -904,6 +1233,16 @@ namespace HiddenHarbours.App
             if (_offer == null) return;
             Interactables.Unregister(_offer);
             _offer = null;
+        }
+
+        /// <summary>Take the cabin door's candidacy back off the registry (idempotent) — the same law, and
+        /// the same reason: an offer that outlives the arrival is a prompt to walk into a boat that is not
+        /// there any more.</summary>
+        private void WithdrawTheCabinDoor()
+        {
+            if (_cabinOffer == null) return;
+            Interactables.Unregister(_cabinOffer);
+            _cabinOffer = null;
         }
 
         /// <summary>
@@ -1010,6 +1349,12 @@ namespace HiddenHarbours.App
 
             if (_deck != null) { StandableSurfaces.Unregister(_deck); _deck = null; }
             WithdrawTheStepAshore();
+
+            // She is off his boat: his cabin is no longer somewhere she may walk into, and he goes back to
+            // standing on his own deck. ⚠ She cannot be below on this path — CanStepAshore refuses the
+            // press from inside — so this withdraws a candidate rather than closing a room around anybody.
+            WithdrawTheCabinDoor();
+            LetTheSkipperStandAsHeWas();
 
             _phase = Phase.HandedOver;
             EventBus.Publish(new ArrivalCompleted(_skipperLine, SkipperTransform(),
@@ -1123,7 +1468,13 @@ namespace HiddenHarbours.App
         private void LateUpdate()
         {
             if (_phase != Phase.Approaching && _phase != Phase.Docking && _phase != Phase.Moored) return;
+            // Asked here as well as in Update, and cheaply: the door resolves its cue in its OWN Update at
+            // the same execution order as this component's, so on the frame she crosses the threshold the
+            // two orderings differ by which of them saw it first. Idempotent, so asking twice is free and
+            // the seat below can never be the wrong frame's.
+            FollowTheCabin();
             FollowTheDeck();
+            HoldTheSkipperAtHisWheel();
             if (!_stepping) SeatThePlayer();
         }
 
@@ -1172,13 +1523,45 @@ namespace HiddenHarbours.App
         /// <para>And the <see cref="CharacterStance.Balance"/> brace, because that is what the game
         /// already means by standing on a working deck. A def with no brace art falls back to the free
         /// idle on its own, so this costs a boat whose skipper has no such sheets exactly nothing.</para>
+        ///
+        /// <para><b>⭐ BELOW DECKS THE SAME LAW GIVES THE OPPOSITE ANSWER, and that is the point of stating
+        /// it as a law.</b> "Whoever owns the frame supplies the facing and the speed" — and below she is
+        /// walking, so the frame's owner supplies her own walking facing and her own gait, in metres of
+        /// SOLE per second (<see cref="ArrivalCabinWalk"/>). A stated zero would be the walk-in-place
+        /// defect with the sign flipped: a fisher crossing a cabin, drawn standing still.</para>
         /// </summary>
         private void PoseThePassenger()
         {
             if (!_holding || _skin == null || _boatRoot == null) return;
             _skin.Stance = CharacterStance.Balance;
+
+            if (IsBelowDecks)
+            {
+                _skin.HoldHeading(_cabin.HeadingDegrees);
+                _skin.HoldSpeed(_cabin.SpeedMetresPerSecond);
+                return;
+            }
+
             _skin.HoldHeading(DrawnHeadingDegrees());
             _skin.HoldSpeed(0f);
+        }
+
+        /// <summary>
+        /// The walk keys, through the New Input System — mirroring <c>DeckWalkController.ReadInput</c>
+        /// exactly, because it is the same walk with a smaller floor and a player who has just been told
+        /// she may move should find the keys she is about to use everywhere else already working. Legacy
+        /// <c>Input</c> throws at runtime in this project; a real InputService replaces both later (ui-ux).
+        /// </summary>
+        private static Vector2 ReadWalkInput()
+        {
+            var kb = Keyboard.current;
+            if (kb == null) return Vector2.zero;
+            Vector2 m = Vector2.zero;
+            if (kb.wKey.isPressed || kb.upArrowKey.isPressed) m.y += 1f;
+            if (kb.sKey.isPressed || kb.downArrowKey.isPressed) m.y -= 1f;
+            if (kb.dKey.isPressed || kb.rightArrowKey.isPressed) m.x += 1f;
+            if (kb.aKey.isPressed || kb.leftArrowKey.isPressed) m.x -= 1f;
+            return m;
         }
 
         /// <summary>
@@ -1196,14 +1579,136 @@ namespace HiddenHarbours.App
             return hull != null ? hull.DrawnHeadingDegrees() : ArrivalPilot.HeadingOf(_boatRoot);
         }
 
+        /// <summary>
+        /// Put her where she is standing this frame — on the sole while she is below, at the passenger's
+        /// place on deck otherwise.
+        ///
+        /// <para><b>⚠ The two are different frames on purpose, and neither is a guess.</b> The DECK seat
+        /// is the hull's own yaw applied to an authored offset — the arrival's shipped behaviour,
+        /// untouched, and still the only thing that runs on a hull with no cabin. The SOLE is the
+        /// interior's hull-local metres through the projection her ART is drawn by, which is the transform
+        /// that also places her doorway (<c>HullLocalAnchor</c>) — and it has to be, or the threshold she
+        /// is walking toward would not be where the picture puts it.</para>
+        /// </summary>
         private void SeatThePlayer()
         {
             if (_player == null || _boatRoot == null) return;
+
+            if (IsBelowDecks)
+            {
+                _player.position = _cabin.WorldPosition(_boatRoot, DrawnHeadingDegrees(),
+                                                        _player.position.z);
+                return;
+            }
+
             Vector3 offset = _boatRoot.rotation *
                              new Vector3(_passengerDeckOffset.x, _passengerDeckOffset.y, 0f);
             _player.position = new Vector3(_boatRoot.position.x + offset.x,
                                            _boatRoot.position.y + offset.y,
                                            _player.position.z);
+        }
+    }
+
+    /// <summary>
+    /// ⭐ <b>THE WAY OUT OF THE SKIPPER'S CABIN, on the one interact verb</b> — the twin of
+    /// <see cref="StepAshoreOffer"/>, and there for the same reason it is: an arrival is a passage aboard
+    /// somebody else's boat, and the game's own on-deck fixtures cannot see the player during one.
+    ///
+    /// <para><b>⚠ WHY THE HULL'S OWN DOOR IS NOT THE CANDIDATE.</b> <see cref="BoatCabinDoor"/> declares
+    /// <see cref="InteractContext.OnDeck"/>, which is exactly right for a player standing on HER boat —
+    /// but the arrival publishes <see cref="ControlMode.OnDeck"/> on the bus without touching the
+    /// <c>ControlSwitcher</c>'s own mode (she is not aboard her boat, and she must come off this one on
+    /// foot), so the actor the resolver is handed reports <b>OnFoot</b> for the whole passage. A candidate
+    /// that insisted on one of the two would be unreachable exactly half the time — the sentence
+    /// <see cref="StepAshoreOffer"/> already carries, applied to the second offer the same passage needs.
+    /// </para>
+    ///
+    /// <para><b>It is a FORWARDER and not a second door.</b> The press goes to
+    /// <see cref="BoatCabinDoor.TryUse"/>, so the cue is the one the sidecar measured, the level is the one
+    /// the sill resolves to, the sheets load at the cue start, and the swap is published by
+    /// <see cref="BoatInterior"/> exactly as it would be on any other hull. Even the words are the door's
+    /// (<see cref="BoatCabinDoor.VerbLabel"/> — "Go below" / "Come out"), so the popup and the press cannot
+    /// drift apart. What this class contributes is one thing: a context the arrival's actor can match.
+    /// </para>
+    ///
+    /// <para><b>Both ways, deliberately.</b> Nothing here locks her out of the cabin once she has come up:
+    /// a door the player has just used and which then refuses her reads as a bug, not as a rule. What the
+    /// arrival does instead is refuse the STEP ASHORE while she is below — see
+    /// <see cref="ArrivalOpening.CanStepAshore"/> — which is a true statement about wharves rather than a
+    /// lock on a door.</para>
+    /// </summary>
+    internal sealed class CabinDoorOffer : IInteractable
+    {
+        private readonly ArrivalOpening _arrival;
+
+        public CabinDoorOffer(ArrivalOpening arrival) { _arrival = arrival; }
+
+        /// <summary>⚠ Its own id, NOT the hull door's. Both are live registrants during the passage (the
+        /// hull's own is simply never a candidate, being OnDeck-only), and ids must be unique among live
+        /// registrants.</summary>
+        public string Id => "arrival.cabin_door";
+
+        /// <inheritdoc/>
+        public string VerbLabel
+        {
+            get
+            {
+                BoatCabinDoor door = _arrival != null ? _arrival.CabinDoor : null;
+                return door != null ? door.VerbLabel : "";
+            }
+        }
+
+        /// <summary>The doorway itself, read LIVE off the anchor that follows her round as she turns — a
+        /// threshold is where the art puts it at every heading, not where it was when she spawned.</summary>
+        public Vector2 WorldPosition
+        {
+            get
+            {
+                BoatCabinDoor door = _arrival != null ? _arrival.CabinDoor : null;
+                return door != null ? (Vector2)door.transform.position : Vector2.zero;
+            }
+        }
+
+        /// <summary>The door's own reach, derived from the leaf the kit measured. Never re-typed here.
+        /// </summary>
+        public float ReachMeters
+        {
+            get
+            {
+                BoatCabinDoor door = _arrival != null ? _arrival.CabinDoor : null;
+                return door != null ? door.ReachMeters : 0f;
+            }
+        }
+
+        /// <inheritdoc/>
+        public int Priority => InteractPriority.Fixture;
+
+        /// <summary>Both contexts, for <see cref="StepAshoreOffer"/>'s reason — see the class remarks.
+        /// </summary>
+        public InteractContext Contexts => InteractContext.OnFoot | InteractContext.OnDeck;
+
+        /// <summary>Facing is not required: you open a door by standing at it. The hull door's own
+        /// answer.</summary>
+        public bool RequiresFacing => false;
+
+        /// <summary>The door's own availability — the entry policy, a threshold that exists, and no leaf
+        /// already moving — and only while the arrival is still running her. A candidate that outlived the
+        /// hand-over would offer a room on a boat the player has just walked away from.</summary>
+        public bool IsAvailable
+        {
+            get
+            {
+                if (_arrival == null || _arrival.Current == ArrivalOpening.Phase.HandedOver) return false;
+                if (_arrival.IsSteppingAshore) return false;
+                BoatCabinDoor door = _arrival.CabinDoor;
+                return door != null && door.IsAvailable;
+            }
+        }
+
+        /// <inheritdoc/>
+        public void Interact(in InteractActor actor)
+        {
+            if (_arrival != null) _arrival.WorkTheCabinDoor();
         }
     }
 
