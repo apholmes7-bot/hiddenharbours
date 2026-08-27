@@ -3835,9 +3835,10 @@ stays white — never disperses."*
 | So the proxy's input has **three values** | {0, 0.425, 0.85} at the shipped material — and a ramp indexed by three values is three colours |
 | Result | **72–81 % of the visible band drew at age exactly 0**, at every speed from 1.5 to 8 m/s |
 
-Retuning `_WakeFoamFreshCover` was therefore never the fix: at *every* legal setting one of the two
-visible bands still draws flat, so the knob only chooses **which** flat colour the band is. The owner
-would have reported the same defect in a different hue.
+Retuning `_WakeFoamFreshCover` was therefore never the fix. Swept across its **whole** legal range
+(0.05 → 1) the visible band still takes at most `_WakeFoamBands` shades and one of them still covers
+**over 60 %** of it — the knob only chooses *which* flat colour dominates. The owner would have
+reported the same defect in a different hue.
 
 **Round 2 stores true age.** The buffer is `RG16`:
 

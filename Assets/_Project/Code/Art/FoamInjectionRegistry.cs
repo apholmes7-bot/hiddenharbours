@@ -206,11 +206,16 @@ namespace HiddenHarbours.Art
         /// sampler would smear a half-strength foam wash across the whole sea on the first frame of
         /// every scene. Black is exactly "no foam". Same lesson, same shape, as the interior guard's
         /// black 1×1 and the reflection target's clear one.</para>
+        ///
+        /// <para><b>TWO channels, matching the real buffer.</b> The water shader reads <c>.rg</c> —
+        /// coverage and freshness — and the zero window bound alongside this makes it bail before it
+        /// looks. Matching the format anyway costs one byte and keeps "black means nothing here" a
+        /// property of the texture rather than of a guard somewhere else that might move.</para>
         /// </summary>
         static void EnsureFallbackBound()
         {
             if (s_BlackFallback != null) return;
-            s_BlackFallback = new Texture2D(1, 1, TextureFormat.R8, false, true)
+            s_BlackFallback = new Texture2D(1, 1, TextureFormat.RG16, false, true)
             {
                 name = "HHFoamBufferFallback",
                 hideFlags = HideFlags.HideAndDontSave,
