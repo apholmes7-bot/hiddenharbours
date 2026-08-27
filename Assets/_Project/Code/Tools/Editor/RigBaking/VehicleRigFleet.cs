@@ -227,16 +227,55 @@ namespace HiddenHarbours.Tools.RigBaking
 
             /// <summary>
             /// ⭐ <b>Two CENTRELINE anchors, aft and fore — the second azimuth oracle.</b> The first
-            /// is her front-axle abeam pair, which every vehicle rig publishes under the same two
-            /// names; this one has to be declared because the names are each rig's own. The Dually
-            /// runs stern-to-bow as <c>hitch</c>→<c>hoodLatch</c>; the Otter, a boat with wheels,
-            /// as <c>transom</c>→<c>bow</c>.
+            /// is her front-axle abeam pair, which every DRIVEN vehicle rig publishes under the same
+            /// two names; this one has to be declared because the names are each rig's own. The
+            /// Dually runs stern-to-bow as <c>hitch</c>→<c>hoodLatch</c>; the Otter, a boat with
+            /// wheels, as <c>transom</c>→<c>bow</c>; a cabover has no hood at all and runs
+            /// <c>rollup</c>→<c>tiltLatch</c>; a towed body <c>rear</c>→<c>kingpin</c>.
             ///
             /// <para>The point of a SECOND oracle is that it is independent: if the two disagree the
             /// baker refuses rather than picking one, because a mirrored heading map is the kind of
             /// wrong that looks fine until she drives backwards.</para>
             /// </summary>
             public readonly string AzimuthAftAnchor, AzimuthForeAnchor;
+
+            /// <summary>
+            /// ⚠️ <b>The ABEAM pair, and it is not <c>wheelFL</c>/<c>wheelFR</c> on everything.</b>
+            /// The first azimuth oracle wants two hubs at one screen y and opposite screen x —
+            /// which the whole road pack publishes under the front-axle names, because they all
+            /// have a front axle.
+            ///
+            /// <para><b>A towed body has neither.</b> No hood, no front axle: <c>wheelFL</c> is
+            /// simply absent from her <c>anchors()</c>, and the admissibility gate that would have
+            /// caught it reads <c>undefined.y</c> and throws instead. Hers are the axle hubs,
+            /// <c>wheelL</c>/<c>wheelR</c>. Defaulted so every driven machine says nothing.</para>
+            /// </summary>
+            public readonly string AzimuthAbeamLeftAnchor, AzimuthAbeamRightAnchor;
+
+            /// <summary>
+            /// ⭐⭐ <b>The pose the articulation probes measure FROM — and on a container rig it
+            /// carries the body.</b>
+            ///
+            /// <para>Every probe in <c>VehicleMeshAssetBaker.Partition</c> is "what moved between
+            /// rest and this axis", and rest was <c>resolve({})</c>. On <c>trailerIsoRig.js</c> that
+            /// is <c>reefer53</c> — so a flatbed's wheel probe would have compared the DEFAULT
+            /// body's face list against the default body's, and claimed the reefer's wheels for the
+            /// flatbed's fitting. Same <c>(file, pick)</c> trap as
+            /// <see cref="Pick"/>, one layer further in, and it does not throw either: the face
+            /// counts agree because it is the same body twice.</para>
+            ///
+            /// <para>A JS object literal. <c>{}</c> — the default — is every single-body rig, whose
+            /// probes are byte-identical to what they always were.</para>
+            /// </summary>
+            public readonly string RestPose;
+
+            /// <summary>
+            /// Which body's block inside a CONTAINER gameplay sidecar carries this one's geometry —
+            /// the trailer set puts each towed body's <c>BODY</c> under <c>bodies.&lt;pick&gt;</c>.
+            /// Empty = the root, which is every sidecar that describes one machine.
+            /// See <see cref="VehicleSidecarFacts.Read"/>.
+            /// </summary>
+            public readonly string SidecarBodyScope;
 
             /// <summary>
             /// ⭐ <b>Probe poses under which the BODY must not move at all</b> — the independent
@@ -269,7 +308,9 @@ namespace HiddenHarbours.Tools.RigBaking
                            VehicleChassisSource chassisSource = null,
                            string azimuthAftAnchor = null, string azimuthForeAnchor = null,
                            IReadOnlyList<string> bodyMustNotMove = null,
-                           string vehicleDefPath = null, string vehicleId = null, string label = null)
+                           string vehicleDefPath = null, string vehicleId = null, string label = null,
+                           string azimuthAbeamLeftAnchor = null, string azimuthAbeamRightAnchor = null,
+                           string restPose = null, string sidecarBodyScope = null)
             {
                 Key = key; ScriptPath = scriptPath; SidecarPath = sidecarPath; GlobalName = globalName;
                 Pick = pick;
@@ -279,6 +320,10 @@ namespace HiddenHarbours.Tools.RigBaking
                 Axes = axes ?? Array.Empty<Axis>();
                 ChassisSource = chassisSource;
                 AzimuthAftAnchor = azimuthAftAnchor; AzimuthForeAnchor = azimuthForeAnchor;
+                AzimuthAbeamLeftAnchor = azimuthAbeamLeftAnchor ?? "wheelFL";
+                AzimuthAbeamRightAnchor = azimuthAbeamRightAnchor ?? "wheelFR";
+                RestPose = string.IsNullOrEmpty(restPose) ? "{}" : restPose;
+                SidecarBodyScope = sidecarBodyScope ?? "";
                 BodyMustNotMove = bodyMustNotMove ?? Array.Empty<string>();
                 VehicleDefPath = vehicleDefPath; VehicleId = vehicleId; Label = label;
             }
@@ -398,6 +443,170 @@ namespace HiddenHarbours.Tools.RigBaking
             }
             return axes;
         }
+
+        // =============================================================================================
+        //  THE ROAD FLEET's articulation (kit drop 2026-08-27) — five rigs and four towed bodies
+        //  that share ONE shape, so they are GENERATED from each rig's own numbers rather than
+        //  typed out nine times. A transcription slip in one of nine near-identical literals bakes
+        //  a wheel in the wrong place and looks almost right; RoadFleetBakeTests asserts every
+        //  number below against the rig that published it.
+        // =============================================================================================
+
+        /// <summary>
+        /// ⭐ <b>The measured half-window that separates one axle station from its neighbour</b>, in
+        /// rig metres — the Otter's <see cref="Axis.YMin"/>/<see cref="Axis.YMax"/> filter, on a
+        /// truck.
+        ///
+        /// <para><b>Where the number comes from.</b> Measured 2026-08-27 on the two semis and the two
+        /// 53-ft trailers: their tandem stations sit <b>1.20 m apart</b> and the geometry that
+        /// actually rolls spans <b>±0.31</b> about each, so any half-window from ±0.32 (captures the
+        /// whole wheel) to ±0.88 (never reaches the neighbour's geometry) works.</para>
+        ///
+        /// <para>0.55 is chosen inside that band deliberately: 2×0.55 = 1.10 against a 1.20 spacing,
+        /// so neighbouring windows leave a <b>0.10 m gap</b> rather than overlapping. A face that
+        /// fell in a gap is caught LOUDLY — <c>BodyMustNotMove</c>'s master-roll probe reports it as
+        /// unclaimed — while a face in an overlap is claimed silently by whichever axis is listed
+        /// first. When both failure modes are available, take the one that shouts.</para>
+        /// </summary>
+        const float StationHalfWindow = 0.55f;
+
+        /// <summary>
+        /// The articulation of one WHEELED road rig: two steered front corners, a rear axle that is
+        /// either single or a tandem, and the two steering knuckles that are what is left of
+        /// <c>steer</c> once the front tyres are claimed.
+        /// </summary>
+        /// <param name="frontWX">half the front track (the rig's <c>G.frontWX</c>).</param>
+        /// <param name="rearWX">the rear hub's nominal x — the MEAN of the dual pair's inner and
+        /// outer wheels. For a rotation about the axle its x is arbitrary, and the mean is the
+        /// honest label (the Dually's precedent).</param>
+        /// <param name="rearStations">the rear axle's station centres, FORE to AFT. One entry is a
+        /// straight truck; two is a tandem sharing one axis per side, which needs the windows.</param>
+        static Axis[] BuildRoadAxes(float frontWX, float axF, float rearWX, float wheelR,
+                                    params float[] rearStations)
+        {
+            var axes = new List<Axis>(4 + rearStations.Length * 2);
+
+            // ⚠️ THE FRONT ROLL AXES FIRST, and the order is the whole plan: `steer` moves the wheel
+            // AND its knuckle, so with the tyres already claimed each steer axis finds only its
+            // 40-face knuckle. Listing steer first swallows both front corners.
+            axes.Add(new Axis("WheelFL", "{wFL:0.25}", VehicleFitmentMotion.SteerAndRoll,
+                              VehicleFitmentSide.Left, 0, new Vector3(-frontWX, axF, wheelR)));
+            axes.Add(new Axis("WheelFR", "{wFR:0.25}", VehicleFitmentMotion.SteerAndRoll,
+                              VehicleFitmentSide.Right, 0, new Vector3(frontWX, axF, wheelR)));
+
+            // The rear. ⚠️ On a semi ONE probe moves TWO axles — a tandem side rides one axis and no
+            // side filter can separate them, because they share a side. The station window can.
+            // Slots are numbered only when there is more than one, so a straight truck keeps the
+            // Dually's plain WheelRL/WheelRR.
+            for (int i = 0; i < rearStations.Length; i++)
+            {
+                string suffix = rearStations.Length > 1 ? (i + 1).ToString() : "";
+                float y = rearStations[i];
+                bool windowed = rearStations.Length > 1;
+
+                axes.Add(new Axis($"WheelRL{suffix}", "{wRL:0.25}", VehicleFitmentMotion.RollOnly,
+                                  VehicleFitmentSide.Left, 0, new Vector3(-rearWX, y, wheelR),
+                                  windowed ? y - StationHalfWindow : float.NegativeInfinity,
+                                  windowed ? y + StationHalfWindow : float.PositiveInfinity));
+                axes.Add(new Axis($"WheelRR{suffix}", "{wRR:0.25}", VehicleFitmentMotion.RollOnly,
+                                  VehicleFitmentSide.Right, 0, new Vector3(rearWX, y, wheelR),
+                                  windowed ? y - StationHalfWindow : float.NegativeInfinity,
+                                  windowed ? y + StationHalfWindow : float.PositiveInfinity));
+            }
+
+            // And the knuckles, LAST, with a side filter: steer moves both front corners at once.
+            axes.Add(new Axis("KnuckleFL", "{steer:1}", VehicleFitmentMotion.SteerOnly,
+                              VehicleFitmentSide.Left, -1, new Vector3(-frontWX, axF, wheelR)));
+            axes.Add(new Axis("KnuckleFR", "{steer:1}", VehicleFitmentMotion.SteerOnly,
+                              VehicleFitmentSide.Right, +1, new Vector3(frontWX, axF, wheelR)));
+
+            return axes.ToArray();
+        }
+
+        /// <summary>
+        /// The articulation of one TOWED body: her axle group, and her landing gear.
+        ///
+        /// <para><b>No steer, and that is a measurement rather than an omission</b> —
+        /// <c>trailerIsoRig.js</c> resolves no <c>steer</c> axis at all and publishes no
+        /// <c>steer</c> block, which is the same fact <c>VehicleKinds.IsDrivable(TowedBody)</c> is
+        /// written from. She is not a truck whose steering went unmodelled; she is dragged.</para>
+        ///
+        /// <para>⚠️⚠️ <b>AND NO LANDING GEAR, and that is the one deliberate deferral in this bake.</b>
+        /// The plan was a fitting: the drop's probe fixture measured <c>gear</c> 1 → 0 as moving 24
+        /// faces with a per-vertex deviation of <b>0</b>, which reads as an exact rigid translation —
+        /// one mesh at two positions, the way the Otter's <c>float</c> is.</para>
+        ///
+        /// <para><b>It is not one.</b> Re-measured 2026-08-27 in the repo's own V8 <i>without</i>
+        /// skipping the vertices that did not move — which is what the probe's deviation helper does,
+        /// correctly for what it measures and misleadingly for what its name says. Of the 24 faces:
+        /// <b>16 <c>iron</c> shoe faces DO translate rigidly by exactly [0, 0, 0.78]</b>, and the
+        /// other <b>8 <c>galv</c> faces are the leg tubes, which TELESCOPE</b> — their top two
+        /// vertices are pinned at z 1.120 while their bottoms rise 0.130 → 0.910. The leg shortens;
+        /// it does not move. 16 of the 96 vertices stay exactly where they are.</para>
+        ///
+        /// <para>So one mesh plus an offset cannot reproduce it: applied to the whole set it would
+        /// lift the leg tops off the frame, and applied to the shoes alone it would slide them up
+        /// inside a leg still drawn at full extension. The gear therefore bakes INTO THE BODY at
+        /// <c>gear:1</c> — PARKED, sand shoes grounded, which is the rig's own default, what
+        /// <c>frame.at_rest</c> declares, and what a placed trailer is. Raising the legs needs a
+        /// second body mesh or a two-part split, and that belongs with the coupling loop rather than
+        /// being approximated here. <c>RoadFleetBakeTests</c> pins the telescope in both directions,
+        /// so the day the rig makes it rigid the deferral is lifted rather than forgotten.</para>
+        ///
+        /// <para>⚠️ Which is also why <c>{gear:0}</c> is NOT in these bodies' <c>BodyMustNotMove</c>:
+        /// those 24 faces move under it and the body is meant to keep them.</para>
+        /// </summary>
+        /// <param name="stations">her axle station centres, FORE to AFT.</param>
+        static Axis[] BuildTrailerAxes(float wheelX, float wheelR, params float[] stations)
+        {
+            var axes = new List<Axis>(stations.Length * 2);
+
+            for (int i = 0; i < stations.Length; i++)
+            {
+                string suffix = stations.Length > 1 ? (i + 1).ToString() : "";
+                float y = stations[i];
+                bool windowed = stations.Length > 1;
+
+                axes.Add(new Axis($"WheelL{suffix}", "{wL:0.25}", VehicleFitmentMotion.RollOnly,
+                                  VehicleFitmentSide.Left, 0, new Vector3(-wheelX, y, wheelR),
+                                  windowed ? y - StationHalfWindow : float.NegativeInfinity,
+                                  windowed ? y + StationHalfWindow : float.PositiveInfinity));
+                axes.Add(new Axis($"WheelR{suffix}", "{wR:0.25}", VehicleFitmentMotion.RollOnly,
+                                  VehicleFitmentSide.Right, 0, new Vector3(wheelX, y, wheelR),
+                                  windowed ? y - StationHalfWindow : float.NegativeInfinity,
+                                  windowed ? y + StationHalfWindow : float.PositiveInfinity));
+            }
+
+            return axes.ToArray();
+        }
+
+        // ---- the five road rigs' own numbers, off each rig's `G` ---------------------------------
+        // frontWX · axF · mean(dualXi,dualXo) · wheelR · then the rear station(s), fore to aft.
+        // The semis publish their tandem stations as G.tandA (fore) and G.tandB (aft); the straight
+        // trucks publish a single G.axR. Asserted against the rigs in RoadFleetBakeTests.
+
+        static readonly Axis[] CaboverBoxAxes =
+            BuildRoadAxes(0.78f, 2.62f, 0.71f, 0.334f, -1.50f);
+
+        static readonly Axis[] ConvBoxAxes =
+            BuildRoadAxes(0.86f, 3.20f, 0.77f, 0.45f, -2.90f);
+
+        static readonly Axis[] AeroSemiAxes =
+            BuildRoadAxes(0.84f, 2.95f, 0.75f, 0.50f, -1.70f, -2.90f);
+
+        static readonly Axis[] ClassicSemiAxes =
+            BuildRoadAxes(0.84f, 3.45f, 0.75f, 0.50f, -1.60f, -2.80f);
+
+        // ---- the four towed bodies ---------------------------------------------------------------
+        // One rig, one G: wheelR 0.50, mean(dualXi 0.60, dualXo 0.90) = 0.75, gearAft 2.00 behind
+        // the kingpin. The stations and the kingpin are per BODY — the pups carry one axle at
+        // −2.90 and a kingpin at 3.365; the 53s a tandem at −5.50/−6.70 and a kingpin at 7.175.
+
+        static readonly Axis[] TrailerPupAxes =
+            BuildTrailerAxes(0.75f, 0.50f, -2.90f);
+
+        static readonly Axis[] Trailer53Axes =
+            BuildTrailerAxes(0.75f, 0.50f, -5.50f, -6.70f);
 
         /// <summary>
         /// Every road vehicle whose rig and sidecar are committed. Being here means the drop has
@@ -521,6 +730,8 @@ namespace HiddenHarbours.Tools.RigBaking
                 "docs/art/rigs/road-fleet-kit/boxtruck-cabover/boxIsoRig.js",
                 SidecarFolder + "/boxIsoRig.caboverBox.gameplay.json",
                 "BoxIso",
+                meshAssetPath: "Assets/_Project/Data/Vehicles/Meshes/CaboverBoxVehicleMesh.asset",
+                meshId: "vehiclemesh.cabover_box",
                 faceBuilderName: "build",
                 extraction: new RigHullExtraction
                 {
@@ -529,7 +740,26 @@ namespace HiddenHarbours.Tools.RigBaking
                     FaceExpression = "build(BoxIso.resolve({}))",
                     ExtraSymbols = new[] { "build" },
                 },
+                axes: CaboverBoxAxes,
+                chassisSource: new VehicleChassisSource
+                {
+                    Wheelbase = "BoxIso.G.axF - BoxIso.G.axR",
+                    FrontTrack = "BoxIso.G.frontWX * 2",
+                    WheelRadius = "BoxIso.G.wheelR",
+                    FrontAxleY = "BoxIso.G.axF",
+                    RearAxleY = "BoxIso.G.axR",
+                    MaxInnerDeg = "BoxIso.steer.maxInnerDeg",
+                    MaxOuterDeg = "BoxIso.steer.maxOuterDeg",
+                    TravelFront = "BoxIso.travel.F",
+                    TravelRear = "BoxIso.travel.R",
+                },
+                // ⚠️ NOT hoodLatch. A cabover's cab sits OVER the engine and tilts as a whole, so
+                // she has no hood at all — asking for one reads `undefined.x` at the admissibility
+                // gate, which is a throw rather than a wrong answer, but only because the gate runs.
                 azimuthAftAnchor: "rollup", azimuthForeAnchor: "tiltLatch",
+                vehicleDefPath: "Assets/_Project/Data/Vehicles/CaboverBox.asset",
+                vehicleId: "vehicle.cabover_box",
+                bodyMustNotMove: new[] { "{roll:0.25}", "{steer:1}" },
                 label: "Cabover Box Truck"),
 
             new Vehicle(
@@ -537,6 +767,8 @@ namespace HiddenHarbours.Tools.RigBaking
                 "docs/art/rigs/road-fleet-kit/boxtruck-conventional/convBoxIsoRig.js",
                 SidecarFolder + "/convBoxIsoRig.convBox.gameplay.json",
                 "ConvBoxIso",
+                meshAssetPath: "Assets/_Project/Data/Vehicles/Meshes/ConvBoxVehicleMesh.asset",
+                meshId: "vehiclemesh.conv_box",
                 faceBuilderName: "build",
                 extraction: new RigHullExtraction
                 {
@@ -545,7 +777,27 @@ namespace HiddenHarbours.Tools.RigBaking
                     FaceExpression = "build(ConvBoxIso.resolve({}))",
                     ExtraSymbols = new[] { "build" },
                 },
+                axes: ConvBoxAxes,
+                chassisSource: new VehicleChassisSource
+                {
+                    Wheelbase = "ConvBoxIso.G.axF - ConvBoxIso.G.axR",
+                    FrontTrack = "ConvBoxIso.G.frontWX * 2",
+                    WheelRadius = "ConvBoxIso.G.wheelR",
+                    FrontAxleY = "ConvBoxIso.G.axF",
+                    RearAxleY = "ConvBoxIso.G.axR",
+                    MaxInnerDeg = "ConvBoxIso.steer.maxInnerDeg",
+                    MaxOuterDeg = "ConvBoxIso.steer.maxOuterDeg",
+                    TravelFront = "ConvBoxIso.travel.F",
+                    TravelRear = "ConvBoxIso.travel.R",
+                },
                 azimuthAftAnchor: "rollup", azimuthForeAnchor: "hoodLatch",
+                // ⚠️ Her cell is 448×352 at pivot (224,214), not the pack's 384×320 — she is 9.6 m
+                // long. Nothing here says so: the extractor reads W/H/pivot off HER global, which is
+                // what makes a per-vehicle cell free. It is asserted in RoadFleetBakeTests so a bake
+                // that silently took the pack's cell (and cropped her tail) cannot pass.
+                vehicleDefPath: "Assets/_Project/Data/Vehicles/ConvBox.asset",
+                vehicleId: "vehicle.conv_box",
+                bodyMustNotMove: new[] { "{roll:0.25}", "{steer:1}" },
                 label: "Conventional Box Truck"),
 
             new Vehicle(
@@ -553,6 +805,8 @@ namespace HiddenHarbours.Tools.RigBaking
                 "docs/art/rigs/road-fleet-kit/semi-aero/aeroSemiIsoRig.js",
                 SidecarFolder + "/aeroSemiIsoRig.aeroSemi.gameplay.json",
                 "AeroSemiIso",
+                meshAssetPath: "Assets/_Project/Data/Vehicles/Meshes/AeroSemiVehicleMesh.asset",
+                meshId: "vehiclemesh.aero_semi",
                 faceBuilderName: "build",
                 extraction: new RigHullExtraction
                 {
@@ -561,7 +815,26 @@ namespace HiddenHarbours.Tools.RigBaking
                     FaceExpression = "build(AeroSemiIso.resolve({}))",
                     ExtraSymbols = new[] { "build" },
                 },
+                axes: AeroSemiAxes,
+                chassisSource: new VehicleChassisSource
+                {
+                    // ⚠️ Her `axR` is the TANDEM CENTRE (the rig says so in its own comment), not an
+                    // axle — which is exactly what a kinematic bicycle model wants for a tandem, and
+                    // is why the wheelbase reads 5.25 rather than to either station.
+                    Wheelbase = "AeroSemiIso.G.axF - AeroSemiIso.G.axR",
+                    FrontTrack = "AeroSemiIso.G.frontWX * 2",
+                    WheelRadius = "AeroSemiIso.G.wheelR",
+                    FrontAxleY = "AeroSemiIso.G.axF",
+                    RearAxleY = "AeroSemiIso.G.axR",
+                    MaxInnerDeg = "AeroSemiIso.steer.maxInnerDeg",
+                    MaxOuterDeg = "AeroSemiIso.steer.maxOuterDeg",
+                    TravelFront = "AeroSemiIso.travel.F",
+                    TravelRear = "AeroSemiIso.travel.R",
+                },
                 azimuthAftAnchor: "fifthWheel", azimuthForeAnchor: "hoodLatch",
+                vehicleDefPath: "Assets/_Project/Data/Vehicles/AeroSemi.asset",
+                vehicleId: "vehicle.aero_semi",
+                bodyMustNotMove: new[] { "{roll:0.25}", "{steer:1}" },
                 label: "Aero Sleeper Semi"),
 
             new Vehicle(
@@ -569,6 +842,8 @@ namespace HiddenHarbours.Tools.RigBaking
                 "docs/art/rigs/road-fleet-kit/semi-classic/classicSemiIsoRig.js",
                 SidecarFolder + "/classicSemiIsoRig.classicSemi.gameplay.json",
                 "ClassicSemiIso",
+                meshAssetPath: "Assets/_Project/Data/Vehicles/Meshes/ClassicSemiVehicleMesh.asset",
+                meshId: "vehiclemesh.classic_semi",
                 faceBuilderName: "build",
                 extraction: new RigHullExtraction
                 {
@@ -577,7 +852,23 @@ namespace HiddenHarbours.Tools.RigBaking
                     FaceExpression = "build(ClassicSemiIso.resolve({}))",
                     ExtraSymbols = new[] { "build" },
                 },
+                axes: ClassicSemiAxes,
+                chassisSource: new VehicleChassisSource
+                {
+                    Wheelbase = "ClassicSemiIso.G.axF - ClassicSemiIso.G.axR",
+                    FrontTrack = "ClassicSemiIso.G.frontWX * 2",
+                    WheelRadius = "ClassicSemiIso.G.wheelR",
+                    FrontAxleY = "ClassicSemiIso.G.axF",
+                    RearAxleY = "ClassicSemiIso.G.axR",
+                    MaxInnerDeg = "ClassicSemiIso.steer.maxInnerDeg",
+                    MaxOuterDeg = "ClassicSemiIso.steer.maxOuterDeg",
+                    TravelFront = "ClassicSemiIso.travel.F",
+                    TravelRear = "ClassicSemiIso.travel.R",
+                },
                 azimuthAftAnchor: "fifthWheel", azimuthForeAnchor: "hoodLatch",
+                vehicleDefPath: "Assets/_Project/Data/Vehicles/ClassicSemi.asset",
+                vehicleId: "vehicle.classic_semi",
+                bodyMustNotMove: new[] { "{roll:0.25}", "{steer:1}" },
                 label: "Classic Long-Nose Semi"),
 
             // ---- the TRAILER SET: ONE rig, ONE sidecar, FOUR towed bodies --------------------
@@ -585,6 +876,21 @@ namespace HiddenHarbours.Tools.RigBaking
             // ramp filter are all PER BODY — the pups take the 384×320 road cell and the 53s a
             // 640×480 one. See Vehicle.Pick for why (file, pick) is the key and a per-file cache
             // is a bug.
+            //
+            // ⚠️⚠️ FOUR PLACES CARRY THE PICK, and every one of them fails SILENTLY without it,
+            // because `trailerIsoRig.js` falls back to reefer53 rather than throwing:
+            //   1. Extraction.FaceExpression  — which body's faces are baked;
+            //   2. Extraction.HullScope       — which body's CELL and pivot (384×320 vs 640×480);
+            //   3. Extraction.ViewOptions     — which body the azimuth anchors are read for;
+            //   4. RestPose                   — which body the articulation probes measure from.
+            // Miss any one and the result is a plausible trailer.
+            //
+            // ⚠️ NO VehicleDef, DELIBERATELY. Every field on that asset is a DRIVEN machine's —
+            // top speed, acceleration, steering authority, camera height — and a towed body has
+            // none of them (VehicleKinds.IsDrivable(TowedBody) is false by explicit switch). PR 2
+            // bakes what she looks like; what a towed body needs to be placed and coupled is PR 3's
+            // to design, and inventing a half-used def here would be the "0 = not applicable" shape
+            // VehicleMeshDef's own class doc refuses.
 
             new Vehicle(
                 "trailerFlatbed28",
@@ -592,6 +898,9 @@ namespace HiddenHarbours.Tools.RigBaking
                 SidecarFolder + "/trailerIsoRig.trailers.gameplay.json",
                 "TrailerIso",
                 pick: "flatbed28",
+                meshAssetPath:
+                    "Assets/_Project/Data/Vehicles/Meshes/TrailerFlatbed28VehicleMesh.asset",
+                meshId: "vehiclemesh.trailer_flatbed_28",
                 faceBuilderName: "build",
                 extraction: new RigHullExtraction
                 {
@@ -599,12 +908,25 @@ namespace HiddenHarbours.Tools.RigBaking
                     // extraction that omitted the pick would bake four identical reefer53s and each
                     // would look like a perfectly good trailer.
                     FaceExpression = "build(TrailerIso.resolve({body:'flatbed28'}))",
-                    ExtraSymbols = new[] { "build" },
+                    // `cellOf` is RECONSTRUCTED (RigMeshSymbols.Reconstructions): the rig publishes
+                    // cellFor/pivotFor as two calls and a bare {W,H,cx,gy} record, and the extractor
+                    // reads one object with W/H/pivot/defaultElev on it.
+                    ExtraSymbols = new[] { "build", "cellOf" },
+                    HullScope = "cellOf('flatbed28')",
+                    ViewOptions = "{body:'flatbed28'}",
                 },
+                axes: TrailerPupAxes,
+                chassisSource: TrailerChassis("flatbed28"),
                 // A towed body has no hood and no front axle, so neither of the road pack's anchor
-                // pairs exists. Her aft→fore runs tail to kingpin; her abeam pair is wheelL/wheelR
-                // rather than wheelFL/wheelFR, which the bake will have to be told (PR 2).
+                // pairs exists. Her aft→fore runs tail to kingpin; her abeam pair is the axle hubs.
                 azimuthAftAnchor: "rear", azimuthForeAnchor: "kingpin",
+                azimuthAbeamLeftAnchor: "wheelL", azimuthAbeamRightAnchor: "wheelR",
+                restPose: "{body:'flatbed28'}",
+                sidecarBodyScope: "flatbed28",
+                // ⚠️ The master roll ONLY. `{gear:0}` is deliberately absent: the landing gear
+                // TELESCOPES rather than translating, so it is baked into the body at parked —
+                // see BuildTrailerAxes for the measurement and the deferral.
+                bodyMustNotMove: new[] { "{roll:0.25}" },
                 label: "Flatbed Trailer 28 ft"),
 
             new Vehicle(
@@ -613,19 +935,24 @@ namespace HiddenHarbours.Tools.RigBaking
                 SidecarFolder + "/trailerIsoRig.trailers.gameplay.json",
                 "TrailerIso",
                 pick: "flatbed53",
+                meshAssetPath:
+                    "Assets/_Project/Data/Vehicles/Meshes/TrailerFlatbed53VehicleMesh.asset",
+                meshId: "vehiclemesh.trailer_flatbed_53",
                 faceBuilderName: "build",
                 extraction: new RigHullExtraction
                 {
-                    // ⚠️ The BODY IS NAMED. `resolve({})` defaults to reefer53 on this rig, so an
-                    // extraction that omitted the pick would bake four identical reefer53s and each
-                    // would look like a perfectly good trailer.
                     FaceExpression = "build(TrailerIso.resolve({body:'flatbed53'}))",
-                    ExtraSymbols = new[] { "build" },
+                    ExtraSymbols = new[] { "build", "cellOf" },
+                    HullScope = "cellOf('flatbed53')",
+                    ViewOptions = "{body:'flatbed53'}",
                 },
-                // A towed body has no hood and no front axle, so neither of the road pack's anchor
-                // pairs exists. Her aft→fore runs tail to kingpin; her abeam pair is wheelL/wheelR
-                // rather than wheelFL/wheelFR, which the bake will have to be told (PR 2).
+                axes: Trailer53Axes,
+                chassisSource: TrailerChassis("flatbed53"),
                 azimuthAftAnchor: "rear", azimuthForeAnchor: "kingpin",
+                azimuthAbeamLeftAnchor: "wheelL", azimuthAbeamRightAnchor: "wheelR",
+                restPose: "{body:'flatbed53'}",
+                sidecarBodyScope: "flatbed53",
+                bodyMustNotMove: new[] { "{roll:0.25}" },
                 label: "Flatbed Trailer 53 ft"),
 
             new Vehicle(
@@ -634,41 +961,88 @@ namespace HiddenHarbours.Tools.RigBaking
                 SidecarFolder + "/trailerIsoRig.trailers.gameplay.json",
                 "TrailerIso",
                 pick: "reefer28",
+                meshAssetPath:
+                    "Assets/_Project/Data/Vehicles/Meshes/TrailerReefer28VehicleMesh.asset",
+                meshId: "vehiclemesh.trailer_reefer_28",
                 faceBuilderName: "build",
                 extraction: new RigHullExtraction
                 {
-                    // ⚠️ The BODY IS NAMED. `resolve({})` defaults to reefer53 on this rig, so an
-                    // extraction that omitted the pick would bake four identical reefer53s and each
-                    // would look like a perfectly good trailer.
                     FaceExpression = "build(TrailerIso.resolve({body:'reefer28'}))",
-                    ExtraSymbols = new[] { "build" },
+                    ExtraSymbols = new[] { "build", "cellOf" },
+                    HullScope = "cellOf('reefer28')",
+                    ViewOptions = "{body:'reefer28'}",
                 },
-                // A towed body has no hood and no front axle, so neither of the road pack's anchor
-                // pairs exists. Her aft→fore runs tail to kingpin; her abeam pair is wheelL/wheelR
-                // rather than wheelFL/wheelFR, which the bake will have to be told (PR 2).
+                axes: TrailerPupAxes,
+                chassisSource: TrailerChassis("reefer28"),
                 azimuthAftAnchor: "rear", azimuthForeAnchor: "kingpin",
+                azimuthAbeamLeftAnchor: "wheelL", azimuthAbeamRightAnchor: "wheelR",
+                restPose: "{body:'reefer28'}",
+                sidecarBodyScope: "reefer28",
+                bodyMustNotMove: new[] { "{roll:0.25}" },
                 label: "Reefer Trailer 28 ft"),
 
+            // ⚠️ THE RIG'S OWN DEFAULT BODY. She is the one a missing pick silently produces, so she
+            // is also the one whose bake proves nothing about the other three — the geometry hash in
+            // TrailerIsoKitProbeTests is what separates them, not this entry.
             new Vehicle(
                 "trailerReefer53",
                 "docs/art/rigs/road-fleet-kit/trailers/trailerIsoRig.js",
                 SidecarFolder + "/trailerIsoRig.trailers.gameplay.json",
                 "TrailerIso",
                 pick: "reefer53",
+                meshAssetPath:
+                    "Assets/_Project/Data/Vehicles/Meshes/TrailerReefer53VehicleMesh.asset",
+                meshId: "vehiclemesh.trailer_reefer_53",
                 faceBuilderName: "build",
                 extraction: new RigHullExtraction
                 {
-                    // ⚠️ The BODY IS NAMED. `resolve({})` defaults to reefer53 on this rig, so an
-                    // extraction that omitted the pick would bake four identical reefer53s and each
-                    // would look like a perfectly good trailer.
                     FaceExpression = "build(TrailerIso.resolve({body:'reefer53'}))",
-                    ExtraSymbols = new[] { "build" },
+                    ExtraSymbols = new[] { "build", "cellOf" },
+                    HullScope = "cellOf('reefer53')",
+                    ViewOptions = "{body:'reefer53'}",
                 },
-                // A towed body has no hood and no front axle, so neither of the road pack's anchor
-                // pairs exists. Her aft→fore runs tail to kingpin; her abeam pair is wheelL/wheelR
-                // rather than wheelFL/wheelFR, which the bake will have to be told (PR 2).
+                axes: Trailer53Axes,
+                chassisSource: TrailerChassis("reefer53"),
                 azimuthAftAnchor: "rear", azimuthForeAnchor: "kingpin",
+                azimuthAbeamLeftAnchor: "wheelL", azimuthAbeamRightAnchor: "wheelR",
+                restPose: "{body:'reefer53'}",
+                sidecarBodyScope: "reefer53",
+                bodyMustNotMove: new[] { "{roll:0.25}" },
                 label: "Reefer Trailer 53 ft"),
+        };
+
+        /// <summary>
+        /// ⭐ <b>A towed body's chassis, in the trailer rig's own words</b> — one expression set with
+        /// the body substituted, because all four really do share a vocabulary and typing it four
+        /// times is four chances to point one of them at another body's numbers.
+        ///
+        /// <para><b>What "wheelbase" means on something with no front axle.</b> The rig publishes it
+        /// directly as <c>kingpinToAxleCentre</c> — the distance from the coupling to the centre of
+        /// her axle group, which is the length scale her off-tracking is solved on, exactly as a
+        /// truck's axle separation is. 6.265 m on the pups, 13.275 on the 53s.</para>
+        ///
+        /// <para><b>And her "front axle" is the KINGPIN.</b> The suspension pivots there — the
+        /// coupling plane holds 1.18 m while the tail drops — so the front reference travels
+        /// <b>zero</b> and the rear travels the rig's one published group travel. That is not a
+        /// placeholder pair: it is the same <c>dz(y)</c> the def's tooltip describes, transcribed
+        /// for a machine whose front end is held up by a tractor.</para>
+        ///
+        /// <para>Steer stays <c>"0"</c> on both angles. Measured, not missing:
+        /// <c>trailerIsoRig.js</c> resolves no <c>steer</c> axis and exports no <c>steer</c> block,
+        /// and the kit's README says <i>"No steering — towed bodies"</i>.</para>
+        /// </summary>
+        static VehicleChassisSource TrailerChassis(string pick) => new VehicleChassisSource
+        {
+            Wheelbase = $"TrailerIso.BODIES['{pick}'].kingpinToAxleCentre",
+            // Her track is the outer duals — she has one axle width, not a front and a rear.
+            FrontTrack = "TrailerIso.G.dualXo * 2",
+            WheelRadius = "TrailerIso.G.wheelR",
+            FrontAxleY = $"TrailerIso.BODIES['{pick}'].kingpinY",
+            // The centre of the axle GROUP: one station on a pup, the mean of two on a 53.
+            RearAxleY = "(function(a){var s=0;for(var i=0;i<a.length;i++)s+=a[i];return s/a.length;})" +
+                        $"(TrailerIso.BODIES['{pick}'].axles)",
+            TravelFront = "0",
+            TravelRear = "TrailerIso.travel.group",
         };
 
 
@@ -677,15 +1051,25 @@ namespace HiddenHarbours.Tools.RigBaking
         /// committed under <c>Assets/_Project/Data/Vehicles/</c>, produced by
         /// <c>VehicleMeshAssetBaker</c>.
         /// </summary>
-        public static readonly IReadOnlyList<string> Baked = new[] { "dually3500", "otter8x8" };
+        public static readonly IReadOnlyList<string> Baked = new[]
+        {
+            "dually3500", "otter8x8",
+            // The road fleet, PR 2 of 4 — EIGHT of the drop's nine bodies. The hightop van is the
+            // ninth and she waits on an upstream re-stamp; see SidecarHashRefused.
+            "caboverBox", "convBox", "aeroSemi", "classicSemi",
+            "trailerFlatbed28", "trailerFlatbed53", "trailerReefer28", "trailerReefer53",
+        };
 
         /// <summary>
         /// ⭐ <b>Registered refusals: a vehicle that is not baked, and why.</b> The coverage test reads
         /// this, so nothing can be quietly left out — a vehicle in neither <see cref="Baked"/> nor here
         /// fails.
         ///
-        /// <para><b>Empty, and that is the good outcome.</b> Two entries have lived here and both
-        /// left the way an entry here should — deleted, not reworded.</para>
+        /// <para><b>ONE entry, and it is not a bake problem.</b> Two others have lived here and both
+        /// left the way an entry here should — deleted, not reworded. The one standing is the hightop
+        /// van, and what blocks her is upstream: her gameplay sidecar's stamp does not pin her rig, so
+        /// the geometry this bake reads out of that document may describe a different shape. The other
+        /// eight bodies of her drop are baked.</para>
         ///
         /// <para>The <b>Dually</b> held one from #548 until 2026-08-17, blocked on an architecture
         /// ruling rather than any technical obstacle; the ruling was given (lead-architect, on #548)
@@ -709,60 +1093,18 @@ namespace HiddenHarbours.Tools.RigBaking
             new Dictionary<string, string>(StringComparer.Ordinal)
             {
                 ["hightopVan"] =
-                    "PR 1 of 4 (kit intake + V8 probes) lands the art and MEASURES it; it bakes nothing, by " +
-                    "design. Her bake is PR 2's, and every number it needs is pinned in " +
-                    "RoadFleetKitProbeTests. ⚠️ AND SHE HAS A SECOND, HARDER BLOCKER: her gameplay " +
-                    "sidecar's derivedFromRigSha256 does NOT match her rig on disk, so her geometry may not " +
-                    "be read at all — see SidecarHashRefused. Measured 15 used ramps at the bake pose (fits " +
-                    "the float4[16] _RampMeta), 16 across every build including night.",
-                ["caboverBox"] =
-                    "PR 1 of 4 (kit intake + V8 probes) lands the art and MEASURES it; it bakes nothing, by " +
-                    "design. Her bake is PR 2's, and every number it needs is pinned in " +
-                    "RoadFleetKitProbeTests. Measured 16 used ramps at the bake pose — it fits _RampMeta " +
-                    "with ZERO headroom, and 17 if one mesh had to carry the night lamp as well. The day " +
-                    "mesh is what PR 2 bakes.",
-                ["convBox"] =
-                    "PR 1 of 4 (kit intake + V8 probes) lands the art and MEASURES it; it bakes nothing, by " +
-                    "design. Her bake is PR 2's, and every number it needs is pinned in " +
-                    "RoadFleetKitProbeTests. Measured 16 used ramps at the bake pose — fits with zero " +
-                    "headroom, 17 with the night lamp. ⚠️ Her cell is 448×352, NOT the pack's 384×320 road " +
-                    "cell: her sidecar says so and the bake must read it rather than assuming the pack's.",
-                ["aeroSemi"] =
-                    "PR 1 of 4 (kit intake + V8 probes) lands the art and MEASURES it; it bakes nothing, by " +
-                    "design. Her bake is PR 2's, and every number it needs is pinned in " +
-                    "RoadFleetKitProbeTests. Measured 15 used ramps at the bake pose, 16 across every build " +
-                    "including night. ⚠️ Her rear is a TANDEM on ONE roll axis per side (wRL/wRR each move " +
-                    "238 faces = two 119-face stations at y = −2.90 and −1.70), so her fittings need the " +
-                    "Otter's station windows, not the Dually's per-wheel probes.",
-                ["classicSemi"] =
-                    "PR 1 of 4 (kit intake + V8 probes) lands the art and MEASURES it; it bakes nothing, by " +
-                    "design. Her bake is PR 2's, and every number it needs is pinned in " +
-                    "RoadFleetKitProbeTests. Measured 16 used ramps at the bake pose — fits with zero " +
-                    "headroom, 17 with the night lamp. Tandem rear on one axis per side, stations at y = " +
-                    "−2.80 and −1.60.",
-                ["trailerFlatbed28"] =
-                    "PR 1 of 4 (kit intake + V8 probes) lands the art and MEASURES it; it bakes nothing, by " +
-                    "design. Her bake is PR 2's, and every number it needs is pinned in " +
-                    "RoadFleetKitProbeTests. Measured 8 used ramps. Single axle, 384×320 road cell. Her " +
-                    "deck is the set's one new material (wood) and it is the reason the ramp table is " +
-                    "unioned over all four bodies — see the trailerIsoRig.js entry in " +
-                    "RigMeshSymbols.Reconstructions.",
-                ["trailerFlatbed53"] =
-                    "PR 1 of 4 (kit intake + V8 probes) lands the art and MEASURES it; it bakes nothing, by " +
-                    "design. Her bake is PR 2's, and every number it needs is pinned in " +
-                    "RoadFleetKitProbeTests. Measured 8 used ramps. ⚠️ 640×480 cell @ 320,300, and a TANDEM " +
-                    "(wL/wR each move 254 faces = two 127-face stations at y = −6.70 and −5.50).",
-                ["trailerReefer28"] =
-                    "PR 1 of 4 (kit intake + V8 probes) lands the art and MEASURES it; it bakes nothing, by " +
-                    "design. Her bake is PR 2's, and every number it needs is pinned in " +
-                    "RoadFleetKitProbeTests. Measured 11 used ramps, 12 with the night pass. Single axle, " +
-                    "384×320 cell, doors that swing to 255° (54 faces, 27 a side).",
-                ["trailerReefer53"] =
-                    "PR 1 of 4 (kit intake + V8 probes) lands the art and MEASURES it; it bakes nothing, by " +
-                    "design. Her bake is PR 2's, and every number it needs is pinned in " +
-                    "RoadFleetKitProbeTests. Measured 11 used ramps, 12 with the night pass. ⚠️ 640×480 " +
-                    "cell @ 320,300, tandem at y = −6.70 / −5.50. She is also the rig's DEFAULT body, which " +
-                    "is what makes a missing pick silently render her in the other three's place.",
+                    "⚠️⚠️ HER SIDECAR DOES NOT PIN HER RIG, and that is the whole blocker — the other " +
+                    "eight bodies in this drop are baked (PR 2 of 4). Her rig, contract, sheets and " +
+                    "harness are sound and her geometry measures fine: 959 faces, 15 used ramps at the " +
+                    "bake pose (16 across every build including night), four disjoint roll groups of 87 " +
+                    "unioning to the master 348, an 80-face knuckle 40 a side, azimuth CCW on all three " +
+                    "oracles. What is refused is READING HER SIDECAR — the drive door, the collider box " +
+                    "and the seats the bake now takes from that document — because a stamp that does not " +
+                    "pin means those numbers may describe a different shape. See SidecarHashRefused for " +
+                    "the measurement. Re-stamp is owed UPSTREAM (art director); do not fix it here. The " +
+                    "day it lands, delete both entries and add her to Baked — her VehicleRigFleet entry " +
+                    "needs a mesh path, an id, her axes (BuildRoadAxes off her own G) and her chassis " +
+                    "expressions, and nothing else in this file changes.",
             };
 
         /// <summary>
