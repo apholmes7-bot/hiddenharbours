@@ -69,6 +69,17 @@ namespace HiddenHarbours.Core
             [Tooltip("The int this level's faces carry in TexCoord1.x. The gate compares against it.")]
             public int Tag;
 
+            [Tooltip("The rig level this level's ceiling is the underside OF — the one hop a cut of " +
+                     "this level also takes (coordinator ruling 2026-08-27). Empty for 'takes " +
+                     "nothing with it', which is the ordinary answer: a level that already folds its " +
+                     "own lid into its own tag needs no hop.")]
+            public string LidLevelId;
+
+            [Tooltip("The lid's TexCoord1.x tag. 0 — 'hull', the level that is never cut — when " +
+                     "there is no lid, so 'no lid' and 'gate off' are the same value in the shader " +
+                     "as well as in the data.")]
+            public int LidTag;
+
             [Tooltip("True when the rig declared a real ceiling. An OPEN level (a working deck, the " +
                      "lobster's cockpit) is declared open, and cutting one would be cutting the sky — " +
                      "so the gate refuses it. An absent field and an open sky must never look the same.")]
@@ -227,26 +238,59 @@ namespace HiddenHarbours.Core
             Mesh != null && Mesh.HasVertexAttribute(UnityEngine.Rendering.VertexAttribute.TexCoord1);
 
         /// <summary>
-        /// The TexCoord1.x tag for the <c>BoatInteriorDef</c> level id <paramref name="deckId"/>, or
-        /// <b>0</b> — <c>hull</c>, the level that is never cut — when this hull has no such row, when
-        /// the row exists but the rig declared that level OPEN, or when the id is empty.
+        /// <b>What a cut of one level actually removes</b> — the level's own faces and, per the
+        /// coordinator's ruling of 2026-08-27, the faces of the level its ceiling record names as its
+        /// LID. One hop, and one value, so the two can never be fetched apart.
+        /// </summary>
+        public readonly struct Cut
+        {
+            /// <summary>The level being cut into, as a TexCoord1.x tag. <b>0 = no cut</b> — which is
+            /// also the gate's "off", so every refusal lands on the shipped picture.</summary>
+            public readonly int Level;
+
+            /// <summary>The lid that comes off with it, or 0 for none.</summary>
+            public readonly int Lid;
+
+            public Cut(int level, int lid) { Level = level; Lid = lid; }
+
+            /// <summary>True when this actually opens something.</summary>
+            public bool Opens => Level > 0;
+
+            /// <summary>Nothing comes off — the whole exterior draws.</summary>
+            public static Cut None => default;
+
+            public override string ToString() =>
+                Opens ? (Lid > 0 ? $"level {Level} + lid {Lid}" : $"level {Level}") : "none";
+        }
+
+        /// <summary>
+        /// The cut for the <c>BoatInteriorDef</c> level id <paramref name="deckId"/>, or
+        /// <see cref="Cut.None"/> when this hull has no such row, when the row exists but the rig
+        /// declared that level OPEN, or when the id is empty.
         ///
         /// <para><b>0 is the refusal, and it is the same value as "gate off".</b> Cutting a level with
         /// no ceiling is cutting the sky; cutting a level this hull never declared is guessing. Both
         /// answer "draw her exterior", which is the shipped picture — a cutaway that does not happen
         /// is a missing feature, and one that happens to the wrong room is a broken boat.</para>
         ///
-        /// <para>A linear scan over 2–4 rows. Called on a cabin transition, not per frame.</para>
+        /// <para><b>⚠️ The lid is NOT gated on the lid's own <c>Enclosed</c>.</b> An open level may
+        /// not be cut INTO — you cannot take the roof off the sky — but it makes a perfectly good
+        /// lid, and all three lids in batch 1 are open decks (the lobster's foredeck, both ships'
+        /// main_deck). The asymmetry is the ruling, not an oversight.</para>
+        ///
+        /// <para>One linear scan over 2–4 rows, returning both halves. Called on a cabin transition,
+        /// not per frame.</para>
         /// </summary>
-        public int CutawayTagForDeck(string deckId)
+        public Cut CutawayForDeck(string deckId)
         {
-            if (string.IsNullOrEmpty(deckId) || LevelTags == null) return 0;
+            if (string.IsNullOrEmpty(deckId) || LevelTags == null) return Cut.None;
             for (int i = 0; i < LevelTags.Length; i++)
             {
                 if (!string.Equals(LevelTags[i].DeckId, deckId, StringComparison.Ordinal)) continue;
-                return LevelTags[i].Enclosed ? LevelTags[i].Tag : 0;
+                if (!LevelTags[i].Enclosed) return Cut.None;
+                return new Cut(LevelTags[i].Tag, LevelTags[i].LidTag);
             }
-            return 0;
+            return Cut.None;
         }
     }
 }

@@ -28,6 +28,13 @@ namespace HiddenHarbours.Tests.RigBaking
     /// literals would pin a document, not a mechanism, and would go red the day batch 2 adds a
     /// level. What is asserted instead is the handful of STRUCTURAL properties the gate actually
     /// depends on, each read back out of the rig itself.</para>
+    ///
+    /// <para><b>The LID, ruled 2026-08-27.</b> A cut takes its declared ceiling: when
+    /// level L engages the gate, L's own faces come off AND the faces of the level L's
+    /// ceiling record names as its lid. One hop, declaration-driven, never inferred. The
+    /// three fixtures at the end of this file are that ruling — it closed the question the
+    /// first round of this lane pinned OPEN, and they assert it as law rather than
+    /// reporting it as a finding.</para>
     /// </summary>
     public sealed class HullLevelTagBakeTests
     {
@@ -357,62 +364,194 @@ namespace HiddenHarbours.Tests.RigBaking
         }
 
         /// <summary>
-        /// <b>Which enclosed levels have NO hull faces of their own — and it is not none.</b>
+        /// <b>A cut takes its declared ceiling</b> — the coordinator's ruling of 2026-08-27, and the
+        /// answer to the question the first round of this lane pinned as OPEN.
         ///
-        /// <para>Cutting a level culls the faces tagged to it. A level nothing is tagged to is a cut
-        /// that opens nothing: the player goes below, the gate engages, and she looks at a whole
-        /// boat. That is not a defect in the gate — it is a fact about the rig's own tagging, and it
-        /// is invisible from every other angle, which is exactly why it is pinned rather than
-        /// merely logged.</para>
+        /// <para><b>What the question was.</b> Three enclosed levels have no hull faces of their own:
+        /// both ships' <c>below</c> and the lobster's <c>cuddy</c>. A cut of a level culls the faces
+        /// tagged to it, so all three engaged the gate and removed nothing — the player went below and
+        /// looked at a whole boat. The ruling closes it: when level L engages, L's faces come off AND
+        /// the faces of the level L's ceiling record names as its LID. One hop, declaration-driven.</para>
         ///
-        /// <para><b>Three, and they are not all the same case.</b> Both ships' <c>below</c> is
-        /// defensible on its face: an engine space under the main deck is enclosed by the SHELL,
-        /// which is <c>hull</c> — the one class a cut may never take — so there is genuinely
-        /// nothing to remove, and a cutaway there correctly shows the whole boat.</para>
-        ///
-        /// <para>⚠️ <b>The lobster's <c>cuddy</c> is a different question, and it is OPEN.</b> Her
-        /// forward berth is a room the player really enters (it is a level of 19 interior defs in
-        /// this fleet), and the thing over her head is not the shell — it is the FOREDECK, which
-        /// this same rig tags as its own walkable level (<c>foredeck</c>, and the rig's own ceiling
-        /// law for the cuddy is literally <c>sheerZ(y) − 0.16</c>, "the foredeck underside"). So
-        /// going below into the cuddy engages the gate and removes nothing, where the kit's own
-        /// standing-on rule ("a deckhouse wall belongs to the room it encloses, not the deck it
-        /// stands on") reads as though the lid should come off with the room. That is an upstream
-        /// TAGGING question — should a level's cut also take the level that is its ceiling? — and
-        /// it is deliberately not answered here.</para>
-        ///
-        /// <para>Asserted against the KNOWN list so the day it changes — a batch-2 hull with the
-        /// same gap, or upstream re-tagging — somebody is told.</para>
+        /// <para>So this asserts the thing that was missing: <b>every enclosed level either has faces
+        /// of its own or takes a lid that has some</b>. A level that has neither is a cut that opens
+        /// nothing, which is exactly the state this round exists to end — and the message says so
+        /// rather than reporting an inequality.</para>
         /// </summary>
         [Test]
-        public void TheEnclosedLevelsWithNoFacesOfTheirOwn_AreTheTwoEngineSpacesAndTheCuddy()
+        public void EveryEnclosedLevel_RemovesSomething_ItsOwnFacesOrItsDeclaredLids()
         {
-            var empty = new List<string>();
+            var opensNothing = new List<string>();
+            var viaLid = new List<string>();
 
             foreach (FleetHull hull in Pass3Hulls)
             {
                 RigMeshData data = Extract(hull, out IRigScriptHost host);
                 using (host)
                 {
-                    var tagged = new HashSet<int>();
-                    foreach (RigFace f in data.Faces) tagged.Add(f.Level);
+                    var faceCount = new Dictionary<int, int>();
+                    foreach (RigFace f in data.Faces)
+                    {
+                        faceCount.TryGetValue(f.Level, out int n);
+                        faceCount[f.Level] = n + 1;
+                    }
 
                     foreach (RigLevelRecord lvl in data.Levels)
                     {
-                        if (!lvl.Enclosed || tagged.Contains(lvl.Tag)) continue;
-                        empty.Add($"{hull.Key}.{lvl.Id}");
+                        if (!lvl.Enclosed) continue;   // an open level is never cut into
+
+                        faceCount.TryGetValue(lvl.Tag, out int own);
+                        int lid = 0;
+                        if (lvl.LidTag > 0) faceCount.TryGetValue(lvl.LidTag, out lid);
+
+                        if (own + lid == 0)
+                        {
+                            opensNothing.Add($"{hull.Key}.{lvl.Id} (lid '{lvl.LidLevelId}')");
+                            continue;
+                        }
+                        if (own == 0)
+                            viaLid.Add($"{hull.Key}.{lvl.Id} -> {lvl.LidLevelId} ({lid} faces)");
                     }
                 }
             }
 
+            CollectionAssert.IsEmpty(opensNothing,
+                "These enclosed levels remove NOTHING when they engage the gate — the occupant goes " +
+                "below and looks at a whole boat. Either the rig tags no faces to them and declares " +
+                "no lid, or the lid it declares has no faces either:\n  " +
+                string.Join("\n  ", opensNothing));
+
+            // Not merely "nothing is broken": the three that own no faces must be the three the
+            // ruling was made about, and they must be opening via their lid. A hull that quietly
+            // stopped needing its lid would pass the assertion above while the ruling went unused.
             CollectionAssert.AreEquivalent(
-                new[] { "lobsterBoat.cuddy", "sternTrawler.below", "coastalPacket.below" }, empty,
-                "The set of enclosed levels with no faces of their own has changed. Known: both " +
-                "ships' `below` (an engine space whose walls ARE the hull shell, never cut — so a " +
-                "cutaway there correctly removes nothing) and the lobster's `cuddy` (whose lid is " +
-                "the FOREDECK, a separate tagged level — the open upstream question, see the " +
-                "remarks). A level joining or leaving this list is an upstream tagging change and " +
-                "wants a look. Now: " + string.Join(", ", empty));
+                new[]
+                {
+                    "lobsterBoat.cuddy -> foredeck (15 faces)",
+                    "sternTrawler.below -> main_deck (142 faces)",
+                    "coastalPacket.below -> main_deck (92 faces)",
+                },
+                viaLid,
+                "The set of levels that open ONLY through their lid has changed. These three are the " +
+                "ruling's own examples and the reason it exists; a level joining or leaving this " +
+                "list is an upstream tagging change and wants a look. Now:\n  " +
+                string.Join("\n  ", viaLid));
+        }
+
+        /// <summary>
+        /// <b>Every declared lid is a legal one</b> — the shapes <see cref="RigMeshExtractor"/> refuses
+        /// at the bake, asserted here as properties of the shipped rigs rather than only as guards.
+        ///
+        /// <para>The extractor throws on each of these, so a green run here says the rigs are clean
+        /// AND that the guards were not silently satisfied by a rig that declares no lids at all —
+        /// which is why the count is asserted first.</para>
+        /// </summary>
+        [Test]
+        public void EveryDeclaredLid_IsALeafLevelThatIsNeitherHullNorRigging()
+        {
+            int lids = 0;
+
+            foreach (FleetHull hull in Pass3Hulls)
+            {
+                RigMeshData data = Extract(hull, out IRigScriptHost host);
+                using (host)
+                {
+                    var byId = new Dictionary<string, RigLevelRecord>();
+                    foreach (RigLevelRecord l in data.Levels) byId[l.Id] = l;
+
+                    foreach (RigLevelRecord lvl in data.Levels)
+                    {
+                        if (string.IsNullOrEmpty(lvl.LidLevelId))
+                        {
+                            Assert.AreEqual(0, lvl.LidTag,
+                                $"{hull.Key}.{lvl.Id}: no lid id but a non-zero lid tag.");
+                            continue;
+                        }
+                        lids++;
+
+                        Assert.AreNotEqual(lvl.Id, lvl.LidLevelId, $"{hull.Key}.{lvl.Id}: its own lid.");
+                        Assert.AreNotEqual(RigLevelTags.HullLevelId, lvl.LidLevelId,
+                            $"{hull.Key}.{lvl.Id}: takes the hull's own shell. That would eat the boat " +
+                            "the cutaway is a cutaway OF.");
+                        Assert.AreNotEqual(RigLevelTags.RiggingLevelId, lvl.LidLevelId,
+                            $"{hull.Key}.{lvl.Id}: takes the rigging class, which exists precisely so " +
+                            "a cut can never take a spar.");
+                        Assert.IsTrue(data.LevelIds.TryGetValue(lvl.LidLevelId, out int expected),
+                            $"{hull.Key}.{lvl.Id}: lid '{lvl.LidLevelId}' is not in geometry().ids.");
+                        Assert.AreEqual(expected, lvl.LidTag, $"{hull.Key}.{lvl.Id}: lid tag mismatch.");
+
+                        // ONE HOP. The shader has one lid uniform so it cannot express a chain; this
+                        // is the same law asserted where a chain could be WRITTEN.
+                        if (byId.TryGetValue(lvl.LidLevelId, out RigLevelRecord lidRecord))
+                            Assert.IsEmpty(lidRecord.LidLevelId ?? "",
+                                $"{hull.Key}.{lvl.Id} takes '{lvl.LidLevelId}', which itself takes " +
+                                $"'{lidRecord.LidLevelId}'. ONE HOP ONLY — a chain would peel a ship " +
+                                "open one deck at a time from wherever the occupant was standing.");
+                    }
+                }
+            }
+
+            Assert.AreEqual(3, lids,
+                "Batch 1 declares exactly three lids (lobster cuddy, both ships' below). A different " +
+                "count means every property above was checked against a different set of rigs than " +
+                "the one this fixture was written for.");
+        }
+
+        /// <summary>
+        /// <b>The stand-in table is a debt, and this is the ledger.</b>
+        ///
+        /// <para><see cref="RigLevelLids"/> exists only because batch 1's ceiling records do not name
+        /// their lid in a machine-readable form — they carry <c>of:</c>, which is prose
+        /// (<c>'main-deck underside (DECK-0.12)'</c>, where the level id is <c>main_deck</c>). The
+        /// moment a rig publishes <c>ceiling.lid</c>, the rig wins and its entry here must go; the
+        /// extractor refuses a bake where the two disagree, and this names what is still owed so the
+        /// debt cannot be forgotten rather than merely unpaid.</para>
+        /// </summary>
+        [Test]
+        public void TheStandInLidTable_StillMatchesTheRigsItStandsInFor()
+        {
+            var owed = new List<string>();
+
+            foreach (FleetHull hull in Pass3Hulls)
+            {
+                RigMeshData data = Extract(hull, out IRigScriptHost host);
+                using (host)
+                {
+                    var published = new HashSet<string>();
+                    foreach (RigLevelRecord l in data.Levels) published.Add(l.Id);
+
+                    foreach (var entry in RigLevelLids.AllFor(hull.ScriptPath))
+                    {
+                        Assert.Contains(entry.Key, published.ToArray(),
+                            $"{hull.Key}: {nameof(RigLevelLids)} declares a lid for level " +
+                            $"'{entry.Key}', which this rig does not publish at all. A table entry " +
+                            "for a level that does not exist is a silent no-op.");
+                        Assert.Contains(entry.Value, data.LevelIds.Keys.ToArray(),
+                            $"{hull.Key}.{entry.Key}: declared lid '{entry.Value}' is not in the " +
+                            "rig's own vocabulary.");
+                    }
+
+                    foreach (RigLevelRecord l in data.Levels)
+                        if (l.LidSource == RigLevelRecord.LidFromTable)
+                            owed.Add($"{hull.Key}.{l.Id} -> {l.LidLevelId}");
+                }
+            }
+
+            // Asserted, not merely logged: when this list EMPTIES, the rigs have started publishing
+            // ceiling.lid and RigLevelLids should be deleted rather than left standing as a second
+            // answer to a question the rig now answers itself.
+            CollectionAssert.AreEquivalent(
+                new[]
+                {
+                    "lobsterBoat.cuddy -> foredeck",
+                    "sternTrawler.below -> main_deck",
+                    "coastalPacket.below -> main_deck",
+                },
+                owed,
+                "The set of lids this repo is standing in for has changed. If it SHRANK, the rig now " +
+                "publishes ceiling.lid for that level — delete the table entry. If it GREW, a new " +
+                "entry was added without the upstream ask being logged. Now:\n  " +
+                string.Join("\n  ", owed));
         }
 
         private static string NameOf(RigMeshData data, int tag) =>

@@ -222,6 +222,43 @@ def's id in its own `deck` field and the baker carries it to `HullMeshDef.LevelT
 nothing re-derives the map from a `_sole` suffix at runtime. This is the same defect class that
 already shipped once on this fleet (the tanker's `house_sole` resolving to the sheet row `below`).
 
+### A cut takes its DECLARED ceiling (coordinator, 2026-08-27)
+
+Building the tag surfaced one thing the presentation ruling did not anticipate: **three enclosed
+levels have no hull faces of their own**, so they engaged the gate and removed nothing. Both ships'
+`below` is an engine space walled by the shell — which is `hull`, the one class a cut may never
+take — and the lobster's `cuddy` is a berth whose lid is the **foredeck**, a walkable level in its
+own right. Going below drew a whole boat.
+
+**Ruled:** when level *L* engages the gate, *L*'s own faces are culled **and** the faces of the
+level *L*'s `geometry()` ceiling record names as its lid. **One hop only, declaration-driven, never
+inferred from geometry.** Partial covers are untouched, and a per-level veto lets a rig opt out.
+
+Three properties are worth stating because each is enforced by the shape of the data rather than by
+a rule somebody has to remember:
+
+- **One hop is unrepresentable, not merely forbidden.** The shader has ONE lid uniform, a level
+  carries ONE lid field, and the bake refuses a lid that itself has a lid. A chain cannot be
+  written down, cannot be baked, and cannot be expressed on the GPU.
+- **The lid is culled; the lid's ROOM is not shown.** The interior branch tests only the level the
+  occupant is in. A lid is a thing that comes off, not a second room you are also standing in.
+- **An open level may not be cut INTO and may perfectly well BE a lid.** All three lids in batch 1
+  are open decks. That asymmetry looks like a bug until you say it out loud, so it is said here and
+  asserted in `HullMeshCutawayTableTests`.
+
+> ⚠️ **The declaration the ruling names does not exist in the data yet, and this is the standing
+> upstream ask.** Batch 1's ceiling records carry `of:`, which is PROSE — `'main-deck underside
+> (DECK-0.12)'`, `'foredeck underside = sheerZ(y)-0.16'`. Those spellings are not level ids
+> (`main-deck` is hyphenated where the id is `main_deck`; `boat-deck` and `wheelhouse deckhead` are
+> not levels at all), and substring-matching a human sentence is a worse inference than the
+> geometric one the ruling forbids. Matching a ceiling z against another level's sole z is that
+> forbidden inference AND needs a per-hull tolerance nobody can justify (the gaps are 0.110 m,
+> 0.120 m and 0.200 m — a deck-plate thickness the rig states in prose and publishes nowhere).
+> So the three lids are declared in `RigLevelLids`, each quoting the rig's own words for it, and
+> the extractor **refuses a bake where that table and a rig's `ceiling.lid` disagree** — the table
+> cannot outlive the field it stands in for. **Ask upstream for `ceiling.lid` (and `lid: null` as
+> the veto) and delete it.**
+
 **Still not decided here:** the shell (sole, walls, ceiling, door aperture) as geometry — the
 spike's HYBRID recommendation — which needs the three shell palette ramps inside the 16-slot
 `_RampMeta` budget and is a separate lane. Nothing in this amendment emits interior geometry; the

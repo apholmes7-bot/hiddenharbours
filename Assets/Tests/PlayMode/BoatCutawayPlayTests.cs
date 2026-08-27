@@ -35,7 +35,8 @@ namespace HiddenHarbours.Tests.PlayMode
         // holds. Real ids are used only so a failure message reads like a boat.
         private const int HouseTag = 3;
         private const int CuddyTag = 4;
-        private const int CockpitTag = 1;   // an OPEN level — declared open, never cut
+        private const int CockpitTag = 1;   // an OPEN level — declared open, never cut INTO
+        private const int ForedeckTag = 2;  // OPEN too, and the cuddy's declared LID
 
         private readonly List<Object> _spawned = new();
 
@@ -46,17 +47,20 @@ namespace HiddenHarbours.Tests.PlayMode
         private sealed class RecordingCutaway : MonoBehaviour, IHullCutaway
         {
             public bool Tagged = true;
-            public int Level;
+            public HullMeshDef.Cut Cut;
             public int Writes;
 
-            public bool CarriesLevelTags => Tagged;
-            public int CutawayLevel => Level;
+            public int Level => Cut.Level;
+            public int Lid => Cut.Lid;
 
-            public void ShowCutawayLevel(int levelTag)
+            public bool CarriesLevelTags => Tagged;
+            public HullMeshDef.Cut CutawayShown => Cut;
+
+            public void ShowCutaway(HullMeshDef.Cut cut)
             {
-                if (!Tagged) levelTag = 0;
-                if (levelTag == Level) return;   // mirrors the real renderer's idempotence
-                Level = levelTag;
+                if (!Tagged) cut = HullMeshDef.Cut.None;
+                if (cut.Level == Cut.Level && cut.Lid == Cut.Lid) return;   // the real renderer's idempotence
+                Cut = cut;
                 Writes++;
             }
         }
@@ -119,10 +123,15 @@ namespace HiddenHarbours.Tests.PlayMode
             {
                 new HullMeshDef.LevelTag { LevelId = "house", DeckId = "house_sole", Tag = HouseTag,
                                            Enclosed = true, SoleZMeters = 0.5f, CeilingZMeters = 2.9f },
+                // The CUDDY is the ruling's own example: no faces of her own, and her lid is the
+                // FOREDECK — a walkable level in its own right, and an OPEN one.
                 new HullMeshDef.LevelTag { LevelId = "cuddy", DeckId = "cuddy_sole", Tag = CuddyTag,
-                                           Enclosed = true, SoleZMeters = 0.24f, CeilingZMeters = 2.014f },
+                                           Enclosed = true, SoleZMeters = 0.24f, CeilingZMeters = 2.014f,
+                                           LidLevelId = "foredeck", LidTag = ForedeckTag },
                 new HullMeshDef.LevelTag { LevelId = "cockpit", DeckId = "cockpit", Tag = CockpitTag,
                                            Enclosed = false, SoleZMeters = 0.5f },
+                new HullMeshDef.LevelTag { LevelId = "foredeck", DeckId = "foredeck", Tag = ForedeckTag,
+                                           Enclosed = false, SoleZMeters = 2.124f },
             };
 
             var interior = ScriptableObject.CreateInstance<BoatInteriorDef>();
@@ -134,6 +143,7 @@ namespace HiddenHarbours.Tests.PlayMode
                 Level("house_sole", 0.5f),
                 Level("cuddy_sole", 0.24f),
                 Level("cockpit", 0.5f),
+                Level("foredeck", 2.124f),
             };
 
             GameObject root = Spawn(name);
@@ -176,7 +186,7 @@ namespace HiddenHarbours.Tests.PlayMode
         public void SheStartsWhole_BeforeAnybodyHasBoardedHer()
         {
             Rig hull = BuildHull();
-            Assert.AreEqual(0, hull.Cutaway.RequestedLevelTag);
+            Assert.IsFalse(hull.Cutaway.RequestedCut.Opens);
             Assert.AreEqual(0, hull.Renderer.Level, "A boat nobody is inside is drawn whole.");
             Assert.IsFalse(hull.Cutaway.OccupantIsBelow);
         }
@@ -194,6 +204,10 @@ namespace HiddenHarbours.Tests.PlayMode
             EventBus.Publish(new CabinEntered(hull.HullId, 1));      // a companionway taken while below
             Assert.AreEqual(CuddyTag, hull.Renderer.Level,
                 "Moving to another level re-publishes CabinEntered; the cut must follow her.");
+            Assert.AreEqual(ForedeckTag, hull.Renderer.Lid,
+                "And it must bring the cuddy's LID with it. The cuddy has no faces of her own — " +
+                "without the hop she engages the gate and removes nothing, which is the defect the " +
+                "2026-08-27 ruling closed.");
         }
 
         [Test]
@@ -204,6 +218,7 @@ namespace HiddenHarbours.Tests.PlayMode
             EventBus.Publish(new CabinLeft(hull.HullId));
 
             Assert.AreEqual(0, hull.Renderer.Level, "Player out on deck: exterior only (the ruling).");
+            Assert.AreEqual(0, hull.Renderer.Lid, "And the lid goes back on with the room.");
             Assert.IsFalse(hull.Cutaway.OccupantIsBelow);
         }
 
@@ -298,7 +313,7 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.AreEqual(0, hull.Renderer.Level,
                 "Most of the fleet has no cutaway geometry and never will. That is data, not a fault, " +
                 "and it must degrade to the shipped picture rather than to a half-cut boat.");
-            Assert.AreEqual(HouseTag, hull.Cutaway.RequestedLevelTag,
+            Assert.AreEqual(HouseTag, hull.Cutaway.RequestedCut.Level,
                 "And the refusal belongs to the RENDERER, which is the only thing that has met the " +
                 "mesh. The def still says which level she is on; splitting those two facts is what " +
                 "keeps a half-re-baked project from being wrong in a NEW way.");
@@ -318,7 +333,7 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.AreEqual(HouseTag, hull.Renderer.Level);
 
             hull.Root.SetActive(false);
-            hull.Renderer.Level = 0;              // the renderer is rebuilt/reset by the hop
+            hull.Renderer.Cut = HullMeshDef.Cut.None;   // the renderer is rebuilt/reset by the hop
             hull.Root.SetActive(true);
 
             Assert.AreEqual(HouseTag, hull.Renderer.Level,

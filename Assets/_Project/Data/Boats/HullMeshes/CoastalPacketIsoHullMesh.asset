@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!43 &-1641632973380473163
+--- !u!43 &-4552203354138915704
 Mesh:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -193,7 +193,7 @@ MonoBehaviour:
   Id: hullmesh.coastal_packet_iso
   SourceRigPath: docs/art/rigs/coastalPacketIsoRig.js
   SourceFaceBuilder: 
-  Mesh: {fileID: -1641632973380473163}
+  Mesh: {fileID: -4552203354138915704}
   Ramps:
   - Colors:
     - serializedVersion: 2
@@ -371,24 +371,32 @@ MonoBehaviour:
   - LevelId: house
     DeckId: house_sole
     Tag: 2
+    LidLevelId: 
+    LidTag: 0
     Enclosed: 1
     SoleZMeters: 5
     CeilingZMeters: 7.6
   - LevelId: bridge
     DeckId: bridge_sole
     Tag: 3
+    LidLevelId: 
+    LidTag: 0
     Enclosed: 1
     SoleZMeters: 10
     CeilingZMeters: 12.5
   - LevelId: below
     DeckId: below_sole
     Tag: 4
+    LidLevelId: main_deck
+    LidTag: 1
     Enclosed: 1
     SoleZMeters: 2.2
     CeilingZMeters: 4.8
   - LevelId: main_deck
     DeckId: main_deck
     Tag: 1
+    LidLevelId: 
+    LidTag: 0
     Enclosed: 0
     SoleZMeters: 5
     CeilingZMeters: 0

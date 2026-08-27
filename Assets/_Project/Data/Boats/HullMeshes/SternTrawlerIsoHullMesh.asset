@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: hullmesh.stern_trawler_iso
   SourceRigPath: docs/art/rigs/sternTrawlerIsoRig.js
   SourceFaceBuilder: 
-  Mesh: {fileID: 454457916555074870}
+  Mesh: {fileID: 9008804816709687103}
   Ramps:
   - Colors:
     - serializedVersion: 2
@@ -203,24 +203,32 @@ MonoBehaviour:
   - LevelId: house
     DeckId: house_sole
     Tag: 2
+    LidLevelId: 
+    LidTag: 0
     Enclosed: 1
     SoleZMeters: 3.5
     CeilingZMeters: 6.5
   - LevelId: bridge
     DeckId: bridge_sole
     Tag: 3
+    LidLevelId: 
+    LidTag: 0
     Enclosed: 1
     SoleZMeters: 6.56
     CeilingZMeters: 8.95
   - LevelId: below
     DeckId: below_sole
     Tag: 4
+    LidLevelId: main_deck
+    LidTag: 1
     Enclosed: 1
     SoleZMeters: 1.15
     CeilingZMeters: 3.38
   - LevelId: main_deck
     DeckId: main_deck
     Tag: 1
+    LidLevelId: 
+    LidTag: 0
     Enclosed: 0
     SoleZMeters: 3.5
     CeilingZMeters: 0
@@ -231,7 +239,7 @@ MonoBehaviour:
   RestingDraftMeters: 1.6
   WatertightDeckHeightMeters: 1.75
   WatertightHalfBeamMeters: 4.7
---- !u!43 &454457916555074870
+--- !u!43 &9008804816709687103
 Mesh:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

@@ -695,7 +695,12 @@ namespace HiddenHarbours.Tests.RigBaking
                 // ship in the creek open at once), and a block value overrides a global. The spike
                 // went on setting the global, the block went on saying 0, and the level's own hull
                 // faces went on drawing -- 13,615 px of them.
-                r.ShowCutawayLevel(Mathf.RoundToInt(levelShown));
+                // No LID here on purpose. The spike measures the tag mechanism on ITS OWN extruded
+                // rooms, whose level ids come from BoatInteriorDef indices and not from a rig's
+                // geometry(); it has no ceiling records and therefore no lid to declare. The lid is
+                // adjudicated on the real rigs, in HullLevelTagBakeTests.
+                r.ShowCutaway(new HiddenHarbours.Core.HullMeshDef.Cut(
+                    Mathf.RoundToInt(levelShown), 0));
                 // WHICH VARIANT, after and deliberately: the renderer only compiles the gate in
                 // while a cut is actually live (rule 7), so "the gated program at level 0" -- the
                 // measurement that proves the variant boundary costs no pixels -- is unreachable

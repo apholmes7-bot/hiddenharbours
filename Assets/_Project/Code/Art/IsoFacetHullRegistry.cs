@@ -210,6 +210,11 @@ namespace HiddenHarbours.Art
         /// and only on a hull whose mesh actually carries tags.</summary>
         public static readonly int LevelShown = Shader.PropertyToID("_HHLevelShown");
 
+        /// <summary>THE LID (coordinator ruling 2026-08-27): the level whose faces are the ceiling of
+        /// the one the occupant is inside, and which comes off with it. 0 = none. Written per draw
+        /// beside <see cref="LevelShown"/> and for the same reason.</summary>
+        public static readonly int LevelLid = Shader.PropertyToID("_HHLevelLid");
+
         /// <summary>The facet shader's cutaway keyword. <c>_local</c>, so it lives PER MATERIAL and
         /// <c>Shader.EnableKeyword</c> does not reach it — the renderer writes its own instance
         /// material (never <c>sharedMaterial</c> off an asset, which would dirty the asset).</summary>

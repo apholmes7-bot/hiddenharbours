@@ -89,30 +89,53 @@ namespace HiddenHarbours.Tests.RigBaking
                     ? new HashSet<string>()
                     : new HashSet<string>(interior.Levels.Where(l => l != null).Select(l => l.Id));
 
+                var tagOf = new Dictionary<string, int>();
+                foreach (HullMeshDef.LevelTag r in def.LevelTags) tagOf[r.LevelId] = r.Tag;
+
                 foreach (HullMeshDef.LevelTag row in def.LevelTags)
                 {
-                    int asked = def.CutawayTagForDeck(row.DeckId);
+                    HullMeshDef.Cut asked = def.CutawayForDeck(row.DeckId);
 
                     if (!row.Enclosed)
                     {
-                        if (asked != 0)
-                            wrong.Add($"{hull.Key}.{row.LevelId}: declared OPEN yet CutawayTagForDeck " +
-                                      $"answers {asked}. Cutting an open level is cutting the sky.");
+                        if (asked.Opens)
+                            wrong.Add($"{hull.Key}.{row.LevelId}: declared OPEN yet CutawayForDeck " +
+                                      $"answers {asked}. Cutting an open level is cutting the sky. " +
+                                      "(Being somebody else's LID is a different job and is fine.)");
                         continue;
                     }
 
                     if (row.Tag == 0)
                         wrong.Add($"{hull.Key}.{row.LevelId}: an enclosed level tagged 0, which is " +
                                   "'hull' AND the gate's off value — she could never be cut.");
-                    if (asked != row.Tag)
-                        wrong.Add($"{hull.Key}.{row.LevelId}: CutawayTagForDeck('{row.DeckId}') " +
-                                  $"answers {asked}, the row says {row.Tag}.");
+                    if (asked.Level != row.Tag)
+                        wrong.Add($"{hull.Key}.{row.LevelId}: CutawayForDeck('{row.DeckId}') " +
+                                  $"answers level {asked.Level}, the row says {row.Tag}.");
+
+                    // THE LID (ruling 2026-08-27). Committed rows must agree with themselves, and a
+                    // lid must name a level THIS def actually carries — a lid pointing at nothing is
+                    // a cut that silently takes nothing extra, which looks exactly like the feature
+                    // working.
+                    if (asked.Lid != row.LidTag)
+                        wrong.Add($"{hull.Key}.{row.LevelId}: CutawayForDeck answers lid " +
+                                  $"{asked.Lid}, the row says {row.LidTag}.");
+                    if (string.IsNullOrEmpty(row.LidLevelId))
+                    {
+                        if (row.LidTag != 0)
+                            wrong.Add($"{hull.Key}.{row.LevelId}: lid tag {row.LidTag} with no lid id.");
+                    }
+                    else if (!tagOf.TryGetValue(row.LidLevelId, out int lidTag))
+                        wrong.Add($"{hull.Key}.{row.LevelId}: lid '{row.LidLevelId}' is not a level " +
+                                  "of this def.");
+                    else if (lidTag != row.LidTag)
+                        wrong.Add($"{hull.Key}.{row.LevelId}: lid '{row.LidLevelId}' is tag " +
+                                  $"{lidTag}, the row says {row.LidTag}.");
                     if (defIds.Count > 0 && !string.IsNullOrEmpty(row.DeckId) && !defIds.Contains(row.DeckId))
                         wrong.Add($"{hull.Key}.{row.LevelId}: deck '{row.DeckId}' is not a level of " +
                                   $"interior def '{interior.Id}' [{string.Join(", ", defIds)}].");
                 }
 
-                Assert.AreEqual(0, def.CutawayTagForDeck("no_such_level"),
+                Assert.IsFalse(def.CutawayForDeck("no_such_level").Opens,
                     $"{hull.Key}: an unknown deck id must answer 0 — a guess here is a house that " +
                     "opens on the wrong boat.");
             }

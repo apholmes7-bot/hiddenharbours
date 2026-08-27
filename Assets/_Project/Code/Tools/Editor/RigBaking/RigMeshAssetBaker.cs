@@ -835,6 +835,8 @@ namespace HiddenHarbours.Tools.RigBaking
                     LevelId = lvl.Id,
                     DeckId = lvl.DeckId,
                     Tag = lvl.Tag,
+                    LidLevelId = lvl.LidLevelId,
+                    LidTag = lvl.LidTag,
                     Enclosed = lvl.Enclosed,
                     SoleZMeters = (float)lvl.SoleZ,
                     CeilingZMeters = (float)lvl.CeilingZ,

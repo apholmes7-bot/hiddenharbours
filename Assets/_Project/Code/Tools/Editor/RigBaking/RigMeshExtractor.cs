@@ -1205,7 +1205,7 @@ namespace HiddenHarbours.Tools.RigBaking
             // BEFORE the faces, and it has to be: the packer resolves each face's `lv` string against
             // this table inside JavaScript, so the vocabulary must exist by the time the blob is
             // built. A rig without geometry() leaves it empty and every face comes back Untagged.
-            ReadLevels(host, g, data);
+            ReadLevels(host, g, scriptPath, data);
 
             // Three arms, and the LAST is the one every hull baked before 2026-08-13 takes — passing
             // neither extraction leaves this method on the identical code path it has always had.
@@ -1521,7 +1521,7 @@ namespace HiddenHarbours.Tools.RigBaking
         /// opens. Batch 2 of the kit is "the same mechanism, no new semantics", so these hold for it
         /// too — and if they ever do not, the bake stops with the reason in the message.</para>
         /// </summary>
-        static void ReadLevels(IRigScriptHost host, string g, RigMeshData data)
+        static void ReadLevels(IRigScriptHost host, string g, string scriptPath, RigMeshData data)
         {
             if (!HasSymbol(host, g, "geometry")) return;
 
@@ -1558,18 +1558,26 @@ namespace HiddenHarbours.Tools.RigBaking
                     "silhouette is the one class a cut may never take — the room shows INSIDE the " +
                     "hull's own outline — so a vocabulary without it cannot express a cutaway.");
 
+            // The sixth field is the LID, and its three states are distinct on purpose (the ruling's
+            // per-level veto rests on it, and it is the kit's own "an absent field and an open sky
+            // must never look the same" law applied a second time):
+            //   "?"  the rig has no `lid` property at all  -> this repo's RigLevelLids stands in
+            //   "-"  the rig published `lid: null`         -> VETO: takes nothing, table overridden
+            //   id   the rig published a level id          -> the rig wins, always
+            string lidProp = RigLevelLids.RigLidProperty;
             string levelsRaw = host.EvaluateString(
                 $"(function(){{var G={g}.geometry();var L=(G&&G.levels)?G.levels:[];var b=[];" +
                 "for(var i=0;i<L.length;i++){var l=L[i];var c=l.ceiling||{};" +
+                $"var lid=('{lidProp}' in c)?(c.{lidProp}==null?'-':String(c.{lidProp})):'?';" +
                 "b.push([l.id,(l.deck==null?'':l.deck),String(l.soleZ)," +
-                "(l.ceilingZ==null?'':String(l.ceilingZ)),(c.kind==null?'':c.kind)].join('\\t'));}" +
+                "(l.ceilingZ==null?'':String(l.ceilingZ)),(c.kind==null?'':c.kind),lid].join('\\t'));}" +
                 "return b.join('\\n');})()");
 
             var levels = new List<RigLevelRecord>();
             foreach (string line in SplitLines(levelsRaw))
             {
                 string[] p = line.Split('\t');
-                if (p.Length != 5)
+                if (p.Length != 6)
                     throw new InvalidOperationException(
                         $"{g}.geometry().levels has a record this reader cannot parse: '{line}'.");
                 if (!ids.TryGetValue(p[0], out int tag))
@@ -1579,11 +1587,44 @@ namespace HiddenHarbours.Tools.RigBaking
                         "to be tagged with and no way to be shown.");
 
                 bool enclosed = !string.IsNullOrEmpty(p[3]);
+                string declared = RigLevelLids.For(scriptPath, p[0]);
+                string lid;
+                string lidSource;
+                if (p[5] == "-")
+                {
+                    // The rig opted this level out. It wins over the stand-in table by construction
+                    // -- a veto a local declaration could quietly outvote would not be a veto.
+                    lid = "";
+                    lidSource = RigLevelRecord.LidFromVeto;
+                }
+                else if (p[5] == "?")
+                {
+                    lid = declared ?? "";
+                    lidSource = declared != null ? RigLevelRecord.LidFromTable : RigLevelRecord.LidNone;
+                }
+                else
+                {
+                    lid = p[5];
+                    lidSource = RigLevelRecord.LidFromRig;
+                    // THE TABLE MUST RETIRE THE DAY THE FIELD ARRIVES. RigLevelLids stands in for a
+                    // `ceiling.lid` the batch-1 rigs do not publish; the instant one does, two
+                    // answers exist for one question and the stale one is the dangerous one. Refuse
+                    // rather than silently prefer either.
+                    if (declared != null && !string.Equals(declared, lid, StringComparison.Ordinal))
+                        throw new InvalidOperationException(
+                            $"{g}.geometry().levels['{p[0]}'].ceiling.{lidProp} says '{lid}' and " +
+                            $"{nameof(RigLevelLids)} says '{declared}'. The RIG is the authority -- " +
+                            "delete that entry from the table. It only ever existed because batch 1's " +
+                            "rigs predate the field.");
+                }
+
                 levels.Add(new RigLevelRecord
                 {
                     Id = p[0],
                     DeckId = p[1],
                     Tag = tag,
+                    LidLevelId = lid,
+                    LidSource = lidSource,
                     SoleZ = ParseJsNumber(p[2], $"{g}.geometry().levels['{p[0]}'].soleZ"),
                     Enclosed = enclosed,
                     CeilingZ = enclosed
@@ -1593,8 +1634,66 @@ namespace HiddenHarbours.Tools.RigBaking
                 });
             }
 
+            ResolveLids(g, ids, levels);
             data.LevelIds = ids;
             data.Levels = levels;
+        }
+
+        /// <summary>
+        /// Turn each level's declared lid ID into its TAG, and refuse every shape of lid that would
+        /// cut something a cut may not cut — the coordinator's ruling of 2026-08-27 made structural.
+        ///
+        /// <para><b>ONE HOP, enforced in three places rather than trusted once.</b> Here (a lid that
+        /// itself has a lid is refused at the bake); in the DATA (one lid field per level, so a chain
+        /// cannot be written down); and in the SHADER (one lid uniform, so a chain cannot be expressed
+        /// at all). Depth here is cheap and a runaway cut is not.</para>
+        /// </summary>
+        static void ResolveLids(string g, IReadOnlyDictionary<string, int> ids,
+                                List<RigLevelRecord> levels)
+        {
+            var byId = new Dictionary<string, RigLevelRecord>(StringComparer.Ordinal);
+            foreach (RigLevelRecord l in levels) byId[l.Id] = l;
+
+            foreach (RigLevelRecord l in levels)
+            {
+                if (string.IsNullOrEmpty(l.LidLevelId)) { l.LidTag = 0; continue; }
+
+                if (string.Equals(l.LidLevelId, l.Id, StringComparison.Ordinal))
+                    throw new InvalidOperationException(
+                        $"{g}: level '{l.Id}' names ITSELF as its lid. A level always takes its own " +
+                        "faces; saying so twice is a declaration that has gone wrong somewhere.");
+
+                if (string.Equals(l.LidLevelId, RigLevelTags.HullLevelId, StringComparison.Ordinal))
+                    throw new InvalidOperationException(
+                        $"{g}: level '{l.Id}' names '{RigLevelTags.HullLevelId}' as its lid. The " +
+                        "exterior silhouette is the one class a cut may never take — the room shows " +
+                        "INSIDE the hull's own outline, which is the whole of what cutaway means. " +
+                        "Taking it would eat the boat.");
+
+                if (string.Equals(l.LidLevelId, RigLevelTags.RiggingLevelId, StringComparison.Ordinal))
+                    throw new InvalidOperationException(
+                        $"{g}: level '{l.Id}' names '{RigLevelTags.RiggingLevelId}' as its lid. " +
+                        "Rigging is a DEDICATED class precisely so a cut can never take a spar with " +
+                        "the space it happens to stand over.");
+
+                if (!ids.TryGetValue(l.LidLevelId, out int lidTag))
+                    throw new InvalidOperationException(
+                        $"{g}: level '{l.Id}' names lid '{l.LidLevelId}', which geometry().ids does " +
+                        "not name. A lid outside the vocabulary has no tag, so the cut would silently " +
+                        "take nothing extra — which looks exactly like the feature working.");
+
+                // A lid need not be a WALKABLE level — the lobster's foredeck and both ships'
+                // main_deck are open decks and all three are lids — but if it is one it must be a
+                // LEAF: a lid with a lid of its own is the two-hop cut the ruling excludes.
+                if (byId.TryGetValue(l.LidLevelId, out RigLevelRecord lidRecord)
+                    && !string.IsNullOrEmpty(lidRecord.LidLevelId))
+                    throw new InvalidOperationException(
+                        $"{g}: level '{l.Id}' takes lid '{l.LidLevelId}', which itself takes " +
+                        $"'{lidRecord.LidLevelId}'. ONE HOP ONLY — a chain would peel a ship open one " +
+                        "deck at a time from wherever the occupant happened to be standing.");
+
+                l.LidTag = lidTag;
+            }
         }
 
         static IEnumerable<string> SplitLines(string raw) =>

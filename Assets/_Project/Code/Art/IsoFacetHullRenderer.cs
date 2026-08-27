@@ -135,7 +135,7 @@ namespace HiddenHarbours.Art
         // rather than acquire a cut she has no geometry for. A cheap vertex-attribute question, not
         // a scan: TexCoord1 is present only when the builder wrote it.
         private bool _hasLevelTags;
-        private int _cutawayLevel;
+        private HiddenHarbours.Core.HullMeshDef.Cut _cutaway;
 
         /// <summary>
         /// True when any face of <paramref name="mesh"/> is flagged interior (UV0.w). Allocates
@@ -157,7 +157,7 @@ namespace HiddenHarbours.Art
         public bool CarriesLevelTags => _hasLevelTags;
 
         /// <inheritdoc/>
-        public int CutawayLevel => _cutawayLevel;
+        public HiddenHarbours.Core.HullMeshDef.Cut CutawayShown => _cutaway;
 
         /// <summary>
         /// <b>Cut this hull open at <paramref name="levelTag"/></b>, or 0 to close her up — the Core
@@ -180,15 +180,17 @@ namespace HiddenHarbours.Art
         /// <para>Idempotent, and free when nothing changed — which matters because the natural caller
         /// is a transition handler that would rather not remember what it last said.</para>
         /// </summary>
-        public void ShowCutawayLevel(int levelTag)
+        public void ShowCutaway(HiddenHarbours.Core.HullMeshDef.Cut cut)
         {
-            if (levelTag < 0) levelTag = 0;
-            if (!_hasLevelTags) levelTag = 0;
-            if (levelTag == _cutawayLevel) return;
+            // A hull with no tags cannot be cut, and a cut with no level cannot have a lid: both
+            // collapse to None here rather than at four call sites.
+            if (!_hasLevelTags || cut.Level <= 0) cut = HiddenHarbours.Core.HullMeshDef.Cut.None;
+            else if (cut.Lid < 0) cut = new HiddenHarbours.Core.HullMeshDef.Cut(cut.Level, 0);
+            if (cut.Level == _cutaway.Level && cut.Lid == _cutaway.Lid) return;
 
-            _cutawayLevel = levelTag;
+            _cutaway = cut;
             ApplyCutawayKeyword();
-            ApplyPose();          // the level itself travels in the property block
+            ApplyPose();          // the level and its lid travel in the property block
         }
 
         // The keyword is only ever ON while a cut is actually live, so a hull nobody is inside
@@ -198,7 +200,7 @@ namespace HiddenHarbours.Art
         private void ApplyCutawayKeyword()
         {
             if (_facetMaterial == null) return;
-            if (_cutawayLevel > 0) _facetMaterial.EnableKeyword(IsoFacetShaderIds.LevelGateKeyword);
+            if (_cutaway.Opens) _facetMaterial.EnableKeyword(IsoFacetShaderIds.LevelGateKeyword);
             else _facetMaterial.DisableKeyword(IsoFacetShaderIds.LevelGateKeyword);
         }
 
@@ -402,7 +404,7 @@ namespace HiddenHarbours.Art
             // A re-Configure (a repaint, a hull swap) must not leave a cut standing on geometry that
             // is no longer the same geometry — and must not leave the keyword on a material that has
             // just been rebuilt underneath it.
-            _cutawayLevel = 0;
+            _cutaway = HiddenHarbours.Core.HullMeshDef.Cut.None;
 
             BuildRampTextures(setup);
             BuildFacetMaterial(setup);
@@ -726,7 +728,8 @@ namespace HiddenHarbours.Art
             // THE CUTAWAY, per draw. Written unconditionally — including the 0 that means "whole
             // exterior" — so a block re-used across hulls can never carry one boat's open house onto
             // her sister. Inert while HH_LEVEL_GATE is off: nothing reads it.
-            _props.SetFloat(IsoFacetShaderIds.LevelShown, _cutawayLevel);
+            _props.SetFloat(IsoFacetShaderIds.LevelShown, _cutaway.Level);
+            _props.SetFloat(IsoFacetShaderIds.LevelLid, _cutaway.Lid);
             PublishDeckSlots();
             _meshRenderer.SetPropertyBlock(_props);
             _overlayRenderer.SetPropertyBlock(_props);

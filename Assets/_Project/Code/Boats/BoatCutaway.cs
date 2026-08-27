@@ -51,9 +51,9 @@ namespace HiddenHarbours.Boats
         private int _belowLevel = NotBelow;
         private bool _subscribed;
 
-        /// <summary>The level tag this component last asked her renderer for — 0 = whole exterior.
-        /// Read by tests, and by anyone debugging a house that will not open.</summary>
-        public int RequestedLevelTag { get; private set; }
+        /// <summary>The cut this component last asked her renderer for — None = whole exterior. Read
+        /// by tests, and by anyone debugging a house that will not open.</summary>
+        public HullMeshDef.Cut RequestedCut { get; private set; }
 
         /// <summary>True while the occupant is below on this hull, whatever the helm says. Separate
         /// from <see cref="RequestedLevelTag"/> on purpose: "she is below but at the wheel" is a real
@@ -142,28 +142,32 @@ namespace HiddenHarbours.Boats
         /// </summary>
         private void Reassert()
         {
-            int tag = WantedLevelTag();
-            RequestedLevelTag = tag;
+            HullMeshDef.Cut cut = WantedCut();
+            RequestedCut = cut;
 
             IHullCutaway target = Renderer();
             if (target == null) return;     // a sprite hull, or the mesh has not been skinned on yet
-            target.ShowCutawayLevel(tag);
+            target.ShowCutaway(cut);
         }
 
         /// <summary>
-        /// The tag the ruling asks for. 0 — the whole exterior — is the answer to every question
-        /// except one, and each of the ways it can be 0 is a deliberate refusal rather than a gap:
-        /// nobody below; she is at THIS wheel; the def has no such level; the rig declared that level
-        /// OPEN (cutting one would be cutting the sky); this hull was baked before the cutaway kit.
+        /// The cut the ruling asks for — the level, and the lid its ceiling record names (the
+        /// coordinator ruling of 2026-08-27, one hop). None — the whole exterior — is the answer to
+        /// every question except one, and each of the ways it can be None is a deliberate refusal
+        /// rather than a gap: nobody below; she is at THIS wheel; the def has no such level; the rig
+        /// declared that level OPEN (cutting one would be cutting the sky); this hull was baked
+        /// before the cutaway kit.
         /// </summary>
-        private int WantedLevelTag()
+        private HullMeshDef.Cut WantedCut()
         {
-            if (_belowLevel == NotBelow) return 0;
-            if (PlayerIsAtThisHelm()) return 0;
-            if (_mesh == null) return 0;
+            if (_belowLevel == NotBelow) return HullMeshDef.Cut.None;
+            if (PlayerIsAtThisHelm()) return HullMeshDef.Cut.None;
+            if (_mesh == null) return HullMeshDef.Cut.None;
 
             string deckId = DeckIdOf(_belowLevel);
-            return string.IsNullOrEmpty(deckId) ? 0 : _mesh.CutawayTagForDeck(deckId);
+            return string.IsNullOrEmpty(deckId)
+                ? HullMeshDef.Cut.None
+                : _mesh.CutawayForDeck(deckId);
         }
 
         /// <summary>The def's own id for a level index — <c>house_sole</c>, <c>cuddy_sole</c>. The

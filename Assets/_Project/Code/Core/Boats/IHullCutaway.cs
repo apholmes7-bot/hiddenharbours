@@ -33,18 +33,24 @@ namespace HiddenHarbours.Core
         bool CarriesLevelTags { get; }
 
         /// <summary>
-        /// The level currently cut away — 0 for "none, draw her whole exterior", which is both the
-        /// shipped picture and the state every hull starts in.
+        /// The cut currently shown — <see cref="HullMeshDef.Cut.None"/> for "draw her whole
+        /// exterior", which is both the shipped picture and the state every hull starts in.
         /// </summary>
-        int CutawayLevel { get; }
+        HullMeshDef.Cut CutawayShown { get; }
 
         /// <summary>
-        /// Cut this hull open at <paramref name="levelTag"/> (a TexCoord1.x tag from her own
-        /// <see cref="HullMeshDef.LevelTags"/>), or 0 to close her up again.
+        /// Cut this hull open — <paramref name="cut"/>'s level and the lid that comes off with it
+        /// (both TexCoord1.x tags from her own <see cref="HullMeshDef.LevelTags"/>), or
+        /// <see cref="HullMeshDef.Cut.None"/> to close her up again.
+        ///
+        /// <para><b>The lid is the coordinator's 2026-08-27 ruling</b> — a cut takes its declared
+        /// ceiling, one hop, never inferred. It travels WITH the level rather than as a second call,
+        /// because a caller that could set one without the other would eventually set one without the
+        /// other: a room open with its lid still on is a hole in a solid deck.</para>
         ///
         /// <para>Idempotent, and cheap enough to call on a transition without checking first. Asking a
         /// hull with no tags for a cut is not an error — she simply cannot be cut, and stays whole.</para>
         /// </summary>
-        void ShowCutawayLevel(int levelTag);
+        void ShowCutaway(HullMeshDef.Cut cut);
     }
 }

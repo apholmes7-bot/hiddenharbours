@@ -168,6 +168,14 @@ Shader "HiddenHarbours/IsoFacet"
             // sisters mostly share a def so the id in the tag would match on all of them. Same class
             // as the deck-occupant properties beside it, and set from the same ApplyPose write.
             float  _HHLevelShown;
+            // THE LID (coordinator ruling 2026-08-27): the level whose faces are the ceiling of the
+            // one the occupant is inside, and which therefore comes off with it. 0 = none.
+            //
+            // ONE HOP IS ENFORCED BY THE SHAPE OF THIS DATA, not by a rule anybody has to remember:
+            // there is one lid uniform, so a chain simply cannot be expressed here. The bake refuses
+            // a lid that has a lid, and a level carries one lid field, so the same law holds in all
+            // three places it could be broken.
+            float  _HHLevelLid;
 #endif
 
             struct Attributes
@@ -289,9 +297,17 @@ Shader "HiddenHarbours/IsoFacet"
             {
                 bool isInterior = lvl.y > 0.5;
                 if (_HHLevelShown < 0.5) return isInterior;
-                bool tagged = abs(lvl.x - _HHLevelShown) < 0.5;
-                if (isInterior) return !tagged || lvl.z < 0.5;
-                return tagged;
+                bool isShown = abs(lvl.x - _HHLevelShown) < 0.5;
+
+                // INTERIOR geometry tests the SHOWN level only. A lid is a thing that comes OFF; it
+                // is not a second room you are also standing in, and drawing its fit-out because you
+                // are under it would put two rooms in one hull.
+                if (isInterior) return !isShown || lvl.z < 0.5;
+
+                // HULL geometry loses the level you are inside AND its declared lid. Two compares,
+                // no loop, no chain.
+                bool isLid = _HHLevelLid >= 0.5 && abs(lvl.x - _HHLevelLid) < 0.5;
+                return isShown || isLid;
             }
 #endif
 
