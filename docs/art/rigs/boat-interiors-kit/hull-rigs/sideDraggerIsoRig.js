@@ -28,7 +28,18 @@
    these exact numbers. Side doors stay dressed closed — not routes this pass.
    Exposes globalThis.SideDraggerIso = { W,H,PX,DIRS,pivot,order,ROCK,rock(i),
    render(dir,opts), helmSeat,HELM, haulerMount,HAULER, gallowsMounts,GALLOWS, tubMounts,TUBS, navMounts,
-   doorMount,DOOR,HOUSE,loft, HULL,BOOT,CREAM,DECKF,WOOD,GLAS,BUFF,NET,STEEL,IRON,KEY }. */
+   doorMount,DOOR,HOUSE,loft, HULL,BOOT,CREAM,DECKF,WOOD,GLAS,BUFF,NET,STEEL,IRON,KEY } — pass 3
+   adds geometry,faces,doorFaces,LEVEL_IDS.
+
+   PASS 3 — CUTAWAY DATA (batch 2 of the owner-ruled cutaway composite — same mechanism as batch 1,
+   no new semantics). ASK B: every face DECLARES its level in `lv` — an authoring cursor set at each
+   build section, nothing derived from geometry; bake via geometry().ids (TexCoord1.x). ASK A:
+   geometry() publishes soleZ + ceilingZ (or an EXPLICIT open-above — an absent field and an open
+   sky must never look the same) per walkable level. THE TIE: main_deck and house_sole share one
+   sole z (2.05) — the published ceilings break it. faces() hands the tagged static mesh to the
+   extractor; doorFaces(opts) is the posed leaf (lv:'house'); render(dir,{cullLevels:[...]}) is the
+   reference cut. Outside the new fields the mesh and pixels are byte-identical to the base —
+   adjudicated against qa/cutaway-baseline/ in qa/Boat Cutaway QA 2.dc.html. */
 (function (root) {
   const PX = 32, S = 32;
   const W = 896, H = 792, cx = 448, cy = 450;   // cell + pivot (projection of boat origin)
@@ -130,6 +141,11 @@
   const leftPanel =(x,ya,yb,za,zb,mat,b)=>({v:[[x,ya,zb],[x,yb,zb],[x,yb,za],[x,ya,za]],mat,b:b||0,db:DBP});
 
   const F = [];
+  /* PASS 3 — every face DECLARES its level (ASK B). LV is an authoring cursor: each build section
+     states its level before emitting. The stamp rides F.push, so every emission path carries it. */
+  let LV='hull';
+  const lv=(id)=>{ LV=id; };
+  F.push=function(){ for(let i=0;i<arguments.length;i++) arguments[i].lv=LV; return Array.prototype.push.apply(this,arguments); };
   const face=(v,mat,b,db)=>F.push({v,mat:mat||'hull',b:b||0,db:db||0});
   const boxF=(c,h,mat,b,db)=>{ F.push.apply(F, box(c,h,mat,b,db)); };
   const tubeF=(A,B2,rad,mat,b)=>{ F.push.apply(F, tube(A,B2,rad,mat,b)); };
@@ -159,6 +175,7 @@
                  hinge:'starboard', swingDeg:110, clearAt:0.60, sillZ:DECK };
 
   (function build(){
+    lv('hull');                                   // hull shell + bulwark liner + bottom + rail caps
     // ---- hull shell ----
     for(const side of [-1,1]){
       for(let i=0;i<NSEG;i++){
@@ -184,6 +201,7 @@
         face([oa,ob,inb(ib),inb(ia)],'deck',-1.2,0.03);
       }
     }
+    lv('main_deck');                              // the working deck and everything standing on it
     // ---- main working deck (taupe steel), stern quarter -> foc'sle break ----
     const SOLE_U = 0.80, U0 = 0.016, DSEG = 20;
     const dw=(u)=>{ const st=station(u); return (lerp(st.wb,st.ws,dfrac(st))-TH)*0.97; };
@@ -197,6 +215,7 @@
       face([[-hw+0.06,y-hl+0.06,DECK+0.30],[hw-0.06,y-hl+0.06,DECK+0.30],[hw-0.06,y+hl-0.06,DECK+0.30],[-hw+0.06,y+hl-0.06,DECK+0.30]],'dark',-0.3,0.02);
     };
     hatch(4.9,1.15,0.95); hatch(1.7,1.15,0.95); hatch(-0.9,1.0,0.8);
+    lv('hull');                                   // foc'sle is raised hull structure, not a declared level
     // ---- foc'sle: raised whaleback deck following the sheer, break bulkhead + crew door ----
     const FSEG=6, FCAP=0.985;
     const fz=(u)=>{ const st=station(u); return st.kz+st.dep-0.10; };
@@ -226,11 +245,13 @@
       face([tp(-1,f1),tp(1,f1),tp(1,f0),tp(-1,f0)], mat, (b||0)-0.8, 0.005);
     (function(){ const s0=station(0), zt=s0.kz+s0.dep, wsx=s0.ws-TH;
       face([[-wsx,s0.y,zt],[wsx,s0.y,zt],[wsx,s0.y+0.30,zt-0.004],[-wsx,s0.y+0.30,zt-0.004]],'deck',-0.9,0.03); })();
+    lv('main_deck');
     // stern capstan + quarter bollards
     tubeF([0,-12.0,DECK],[0,-12.0,DECK+0.50],0.18,'steel',-0.1);
     boxF([0,-12.0,DECK+0.54],[0.24,0.24,0.04],'steel',0.2);
     for(const s of [-1,1]) boxF([s*1.75,-11.8,DECK+0.10],[0.06,0.09,0.10],'iron',0.1,-0.02);
 
+    lv('house');                                  // walls, vestibule, boat deck, its rails, ladder
     // ---- DECKHOUSE lower block (cream) ---- front wall banded around the REAL door opening (pass 2)
     F.push(faceO([[-HXl,HYf,HZ1l],[DOOR.x0,HYf,HZ1l],[DOOR.x0,HYf,DECK],[-HXl,HYf,DECK]],[0,1,0],'cream',0.4,0));   // port of the doorway
     F.push(faceO([[DOOR.x1,HYf,HZ1l],[HXl,HYf,HZ1l],[HXl,HYf,DECK],[DOOR.x1,HYf,DECK]],[0,1,0],'cream',0.4,0));      // stbd of the doorway
@@ -264,6 +285,7 @@
       for(let z=DECK+0.38; z<HZ1l+0.06; z+=0.31) tubeF([lx-0.19,y-0.02,z],[lx+0.19,y-0.02,z],0.024,'steel',0.05);
     })();
 
+    lv('bridge');                                 // the wheelhouse cuts with its own room
     // ---- WHEELHOUSE (raked front, looks over the working deck) ----
     face([[-HXw,WYa,WZ0],[-HXw,WYa,WZ1],[-HXw,FYt,WZ1],[-HXw,FYb,WZ0]],'cream',-0.1);        // port
     face([[HXw,WYa,WZ0],[HXw,FYb,WZ0],[HXw,FYt,WZ1],[HXw,WYa,WZ1]],'cream',-1.0);            // starboard
@@ -290,6 +312,7 @@
       F.push(backPanel(WYa-0.065, xa, xb, 5.40, 6.10, 'glas', -0.25));
     }
     boxF([0,-6.25,ROOFZ],[2.20,1.90,0.06],'cream',0.6,-0.01);                                // roof (brow overhangs the screen)
+    lv('rigging');                                // radar, whips, horn — class-tagged
     // roof gear: radar, whip aerials, horn
     tubeF([0,-6.6,ROOFZ+0.05],[0,-6.6,7.30],0.08,'steel',0.1);
     tubeF([0,-6.6,7.30],[0,-6.6,7.52],0.34,'cream',0.15);
@@ -297,14 +320,17 @@
     for(const s of [-1,1]) tubeF([s*1.5,-7.5,ROOFZ+0.05],[s*1.85,-8.2,9.4],0.03,'steel',s<0?0.25:-0.2);
     boxF([-0.9,-5.4,ROOFZ+0.14],[0.10,0.22,0.08],'steel',0.2);
 
+    lv('house');                                  // the funnel stands on the boat deck — the house's lid
     // ---- FUNNEL (buff, black cap, raked aft) behind the wheelhouse ----
     tubeF([0,-9.65,HZ1l+0.04],[0,-9.95,6.35],0.58,'buff',-0.1);
     tubeF([0,-9.95,6.35],[0,-9.99,6.62],0.585,'hull',0.1);
     tubeF([0,-9.99,6.62],[0,-10.05,6.98],0.57,'blk',-0.3);
+    lv('rigging');                                // the mizzen is a spar — class-tagged
     // mizzen pole aft of the funnel + stay to the stern
     tubeF([0,-10.75,HZ1l+0.06],[0,-11.05,9.3],0.09,'buff',0.1);
     tubeF([0,-11.0,9.1],[0,-12.2,3.45],0.025,'steel',-0.2);
 
+    lv('rigging');                                // DEDICATED class — mast, derricks, stays survive every cut
     // ---- FOREMAST (ochre) with crosstree + twin derrick booms, forward of the hatches ----
     const MY=3.3;
     boxF([0,MY,DECK+0.14],[0.30,0.30,0.14],'iron',0.0,-0.02);                                // mast step
@@ -319,6 +345,7 @@
     tubeF([0,MY-0.12,10.7],[0,12.6,4.50],0.028,'steel',-0.1);                                // forestay to the stem head
     for(const s of [-1,1]) tubeF([s*0.10,MY-0.05,10.0],[s*1.6,-4.45,6.70],0.028,'steel',-0.2); // backstays to the brow
 
+    lv('rigging');                                // gallows frames, hung otter boards, warps — never welded to a room
     // ---- STARBOARD TRAWL GALLOWS ×2 (the working side) + otter boards + warps ----
     const gallows=(yc,xb)=>{
       for(const dy of [-0.45,0.45]) tubeF([xb,yc+dy,DECK],[xb+0.22,yc+dy,4.35],0.085,'buff',-0.35);
@@ -332,6 +359,7 @@
     tubeF([1.05,-3.52,2.90],[2.55,6.15,4.00],0.02,'steel',-0.5);                             // fwd warp
     tubeF([1.40,-3.50,2.75],[3.05,-1.60,4.00],0.02,'steel',-0.5);                            // aft warp
 
+    lv('main_deck');                              // winch, net pile and floats are deck machinery
     // ---- TRAWL WINCH athwartships in front of the house ----
     boxF([0,-3.6,DECK+0.18],[1.70,0.50,0.18],'iron',0.0,-0.02);
     for(const s of [-1,1]) tubeF([s*0.45,-3.6,DECK+0.68],[s*1.55,-3.6,DECK+0.68],0.42,'steel',s<0?-0.1:-0.45);
@@ -454,11 +482,14 @@
     out.push(faceO(rrect(pm-0.12,pm+0.12,3.07,3.37,0.08).map(([u,v])=>P(u,v,0.045)),nrm,'glas',-0.2,DBP+0.04));   // porthole glass
     out.push.apply(out,tube(P(x0+0.14,2.55,0.05),P(x0+0.14,2.98,0.05),0.024,'steel',0.3));                  // dog handle, leading edge
     for(const hz of [z0+0.32,z1-0.32]) out.push.apply(out,tube(P(hx-0.02,hz,0.012),P(hx+0.05,hz,0.012),0.030,'iron',0.1));  // hinge straps
+    for(const f of out) f.lv='house';             // the leaf is house enclosure — it cuts with the room
     return out;
   }
   function render(dir, opts){
     opts = (typeof opts==='number') ? {elev:opts} : (opts||{});
-    return _toRGBA(_paint(F.concat(doorFaces(opts)), Object.assign({}, opts, {dir}), true));
+    let fl = F.concat(doorFaces(opts));
+    if(opts.cullLevels && opts.cullLevels.length){ const cut=new Set(opts.cullLevels); fl=fl.filter(f=>!cut.has(f.lv)); }   // pass-3 reference cut; absent → byte-identical
+    return _toRGBA(_paint(fl, Object.assign({}, opts, {dir}), true));
   }
 
   // ---- deck anchors (cell coords; pass rock(i) so overlays ride the wave) ----
@@ -526,10 +557,35 @@
     ladder:{ id:'boat_deck_ladder', face:'fwd', x:-1.90, y:HYf, z0:DECK, z1:HZ1l+0.03 },
     ramp:null,
   };
+  /* PASS 3 — ASK A: geometry(). One record per WALKABLE level, DECLARED from the same build
+     constants the mesh is built from. THE TIE: main_deck and house_sole share z 2.05 and nothing
+     derivable separates them — the published ceilings do. Open sky is explicit, never absent. */
+  const LEVEL_IDS = { hull:0, main_deck:1, house:2, bridge:3, below:4, rigging:5 };
+  function geometry(){
+    const D=HOUSE.decks;
+    return {
+      schema:'hidden-harbours/hull-geometry@1', hull:'sideDraggerIsoRig', units:'m',
+      frame:'+x stbd, +y bow, +z up; origin amidships, keel bottom, centreline',
+      ids:Object.assign({}, LEVEL_IDS),
+      riggingClass:'rigging — foremast, derricks, gallows, otter boards, warps, mizzen, roof gear: tagged by CLASS, never welded to a cullable room',
+      tieBreak:'main_deck and house share one sole z ('+DECK.toFixed(2)+') — the published ceilings break the tie: house '+D.house.ceilZ.toFixed(2)+', main_deck open',
+      levels:[
+        { id:'house', deck:'house_sole', soleZ:D.house.soleZ, ceilingZ:D.house.ceilZ,
+          ceiling:{ kind:'hard', z:D.house.ceilZ, of:'boat-deck underside — the deckhead boatInteriorRig dresses (HOUSE.decks.house.ceilZ)' } },
+        { id:'bridge', deck:'bridge_sole', soleZ:D.bridge.soleZ, ceilingZ:D.bridge.ceilZ,
+          ceiling:{ kind:'hard', z:D.bridge.ceilZ, of:'wheelhouse deckhead (HOUSE.decks.bridge.ceilZ)' } },
+        { id:'below', deck:'below_sole', soleZ:D.below.soleZ, ceilingZ:D.below.ceilZ,
+          ceiling:{ kind:'hard', z:D.below.ceilZ, of:'main-deck underside (DECK-0.10)' } },
+        { id:'main_deck', deck:'main_deck', soleZ:DECK, ceilingZ:null,
+          ceiling:{ kind:'open', note:'the working deck is sky — the mast, derricks and gallows over it are rigging, not a ceiling' } },
+      ],
+    };
+  }
+  function faces(){ return F; }   // the static TAGGED mesh; the posed leaf is doorFaces(opts)
   root.SideDraggerIso = { W, H, PX, DIRS:8, pivot:{x:cx,y:cy}, defaultElev:DEFAULT_ELEV,
     order:['N','NE','E','SE','S','SW','W','NW'], HULL, BOOT, CREAM, DECKF, WOOD, GLAS, BUFF, NET, STEEL, IRON, KEY,
     render, ROCK, rock:rockMotion, helmSeat, HELM, haulerMount, HAULER, gallowsMounts, GALLOWS, tubMounts, TUBS, navMounts,
-    doorMount, DOOR, HOUSE,
+    doorMount, DOOR, HOUSE, geometry, faces, doorFaces, LEVEL_IDS,
     loft:{ station, skin, dfrac, bowRake, halfAtZ, sheerZ, L, TH, DECK, SOLE_U:0.80, NSEG,
            house:HOUSE, shade:{ GAIN, BIAS, LN, BAYER, KEY, EDGE:0.30 }, cell:{ W, H, cx, cy, S } } };
 })(typeof globalThis!=='undefined'?globalThis:window);

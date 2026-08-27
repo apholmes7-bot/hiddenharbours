@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: deck.side_dragger_iso
   SourceSidecar: docs/art/rigs/gameplay/sideDraggerIsoRig.gameplay.json
   SourceRig: docs/art/rigs/sideDraggerIsoRig.js
-  DerivedFromRigSha256: 163f0cdf2896413708c2760335136b0f8962fdf3e2ce2be5abff1e2c197617d2
+  DerivedFromRigSha256: c4ad181666aca73874e2b8c9a2e2367567ebf528c5021925ae8199fca880855b
   LoaMeters: 25
   Areas:
   - Id: aft_deck
@@ -81,7 +81,7 @@ MonoBehaviour:
     - {x: -3.223, y: -1.575}
     - {x: -3.222, y: -3.088}
     - {x: -3.137, y: -4.6}
-    HeightPlane: {x: 0, y: 0, z: 2.05}
+    HeightPlane: {x: 0, y: 2.5881502e-17, z: 2.05}
     HeightResidualMax: 0
     Bounds: {x: -3.224, y: -4.6, z: 3.224, w: 7.5}
   - Id: focsle_deck
@@ -101,8 +101,8 @@ MonoBehaviour:
     - {x: -2.065, y: 9.671}
     - {x: -2.263, y: 8.795}
     - {x: -2.46, y: 7.915}
-    HeightPlane: {x: 0, y: 0.23593915, z: 1.3804079}
-    HeightResidualMax: 0.0441338
+    HeightPlane: {x: 0, y: 0.23593915, z: 1.380408}
+    HeightResidualMax: 0.044133663
     Bounds: {x: -2.46, y: 7.915, z: 2.46, w: 13.021}
   Cleats:
   - Id: bow_1
@@ -120,5 +120,5 @@ MonoBehaviour:
   - Id: quarter_star
     Type: bollard
     PositionMeters: {x: 1.75, y: -11.8, z: 2.15}
-  WalkCenter: {x: 0, y: 0.4605}
+  WalkCenter: {x: 0, y: 0.46049976}
   WalkHalfExtents: {x: 3.224, y: 12.5605}

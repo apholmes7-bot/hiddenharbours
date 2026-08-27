@@ -31,9 +31,9 @@ namespace HiddenHarbours.Tests.RigBaking
         private static readonly string[] Batch1 = { "lobsterBoat", "sternTrawler", "coastalPacket" };
 
         private const string ReBake =
-            "\n\nRe-bake: Hidden Harbours ▸ Dev ▸ 3D Hulls ▸ Bake the 3 cutaway batch-1 hull meshes " +
-            "(headless: -executeMethod HiddenHarbours.Tools.RigBaking.RigMeshAssetBaker" +
-            ".BakeCutawayBatch1Cli), and commit the result.";
+            "\n\nRe-bake through the whole-fleet entry point (headless: -executeMethod " +
+            "HiddenHarbours.Tools.RigBaking.RigMeshAssetBaker.BakeFleetCli — the batch-1-only " +
+            "entry point retired with #670), and commit the result.";
 
         private static IEnumerable<FleetHull> Batch1Hulls =>
             HullMeshFleet.Hulls.Where(h => Batch1.Contains(h.Key));
@@ -178,8 +178,8 @@ namespace HiddenHarbours.Tests.RigBaking
                 "Cutaway batch 2 has arrived upstream and these hulls have not been re-baked, so " +
                 "their houses will never open:\n  " + string.Join("\n  ", owed) +
                 "\n\nRe-bake them through the whole-fleet entry point (Bake ALL fleet hull meshes / " +
-                "Bake the 18 lobster variant hull meshes), and retire the batch-1-only entry point " +
-                "with them.");
+                "Bake the 18 lobster variant hull meshes). The batch-1-only entry point already " +
+                "retired with #670.");
         }
 
         private static BoatInteriorDef InteriorDefFor(FleetHull hull)

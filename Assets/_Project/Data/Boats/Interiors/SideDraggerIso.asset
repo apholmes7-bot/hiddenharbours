@@ -19,7 +19,7 @@ MonoBehaviour:
   SourceInteriorRig: docs/art/rigs/boat-interiors-kit/boatInteriorRig.js
   SourceHullRig: docs/art/rigs/boat-interiors-kit/hull-rigs/sideDraggerIsoRig.js
   InteriorRigSha256: 34bb781303b9de9a47c7029a685bf83d357adefe2ffb95ff54451233ea7c46a7
-  HullRigSha256: b52237484f241f200656c5480ca63f81d3a1a70d20f7b649c06ad25dfd97d9e0
+  HullRigSha256: c4ad181666aca73874e2b8c9a2e2367567ebf528c5021925ae8199fca880855b
   PixelsPerMetre: 32
   CellPixels: {x: 896, y: 792}
   PivotPixels: {x: 448, y: 450}

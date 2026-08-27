@@ -236,65 +236,10 @@ namespace HiddenHarbours.Tools.RigBaking
         [MenuItem(RigMeshGate.MenuRoot + "/Bake the 5 fleet-pack hull meshes", priority = 223)]
         public static void BakeFleetPack() => BakeFleetInternal(FleetPackHulls);
 
-        /// <summary>
-        /// <b>The cutaway kit's BATCH 1 — the lobster, the trawler and the packet, and nothing
-        /// else.</b> The three hulls whose rigs went pass 3 on 2026-08-26 and therefore the three
-        /// whose meshes gain a TexCoord1 level tag and a <c>LevelTags</c> table.
-        ///
-        /// <para><b>Its own entry point for the fleet pack's reason, verbatim:</b> a whole-fleet bake
-        /// rewrites all thirty-four defs, and Unity's serialisation is not byte-deterministic, so the
-        /// thirty-one this change does not touch would come back with regenerated sub-asset fileIDs
-        /// and reshuffled YAML for no change at all. Baking exactly the hulls whose rigs moved is
-        /// what keeps the diff readable — and readable is what lets a reviewer see that the tag
-        /// landed and nothing else did.</para>
-        ///
-        /// <para>Batch 2 (dragger, trawler Mk II, tanker, the eighteen lobster variants) is the same
-        /// mechanism with no new semantics; when it lands it goes through the existing whole-fleet
-        /// and variant entry points, and this one can retire.</para>
-        /// </summary>
-        public static IReadOnlyList<FleetHull> CutawayBatch1Hulls
-        {
-            get
-            {
-                var keys = new[] { "lobsterBoat", "sternTrawler", "coastalPacket" };
-                var hulls = new List<FleetHull>(keys.Length);
-                foreach (string k in keys) hulls.Add(HullMeshFleet.Get(k));
-                return hulls;
-            }
-        }
-
-        [MenuItem(RigMeshGate.MenuRoot + "/Bake the 3 cutaway batch-1 hull meshes", priority = 224)]
-        public static void BakeCutawayBatch1() => BakeFleetInternal(CutawayBatch1Hulls);
-
-        [MenuItem(RigMeshGate.MenuRoot + "/Bake the 3 cutaway batch-1 hull meshes", validate = true)]
-        static bool BakeCutawayBatch1Validate() => RigMeshGate.Enabled;
-
-        /// <summary>Headless entry (-executeMethod) for the three.</summary>
-        public static void BakeCutawayBatch1Cli()
-        {
-            try
-            {
-                var hulls = CutawayBatch1Hulls;
-                int failed = BakeFleetInternal(hulls);
-                if (failed > 0)
-                {
-                    Debug.LogError($"[rig-mesh] CLI cutaway batch-1 bake FAILED: {failed} of " +
-                                   $"{hulls.Count} hull(s) did not bake.");
-                    EditorApplication.Exit(1);
-                    return;
-                }
-                Debug.Log($"[rig-mesh] CLI cutaway batch-1 bake OK — {hulls.Count} hulls.");
-                // Exit as loudly on success as on failure — launched without -quit (the -quit/RunTests
-                // race), nothing else ever ends the editor, and the search indexer's idle CPU burn
-                // reads as a bake still working.
-                EditorApplication.Exit(0);
-            }
-            catch (Exception e)
-            {
-                Debug.LogError($"[rig-mesh] CLI cutaway batch-1 bake FAILED: {e}");
-                EditorApplication.Exit(1);
-            }
-        }
+        // The cutaway batch-1-only entry point (CutawayBatch1Hulls + BakeCutawayBatch1 +
+        // BakeCutawayBatch1Cli) lived here from #666 until batch 2 landed. Its own docstring said
+        // "when [batch 2] lands it goes through the existing whole-fleet and variant entry points,
+        // and this one can retire" — batch 2 landed 2026-08-27 (#670) and it did.
 
         [MenuItem(RigMeshGate.MenuRoot + "/Bake the 5 fleet-pack hull meshes", validate = true)]
         static bool BakeFleetPackValidate() => RigMeshGate.Enabled;

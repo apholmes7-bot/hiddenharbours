@@ -27,7 +27,9 @@ namespace HiddenHarbours.Tests.RigBaking
     /// <c>hull 0 · cockpit 1 · foredeck 2 · house 3 · cuddy 4 · rigging 5</c> — but asserting those
     /// literals would pin a document, not a mechanism, and would go red the day batch 2 adds a
     /// level. What is asserted instead is the handful of STRUCTURAL properties the gate actually
-    /// depends on, each read back out of the rig itself.</para>
+    /// depends on, each read back out of the rig itself. <b>Batch 2 duly added one</b> (2026-08-27):
+    /// the tanker publishes <c>poop_deck 6</c>, a second exterior deck, and not one fixture in this
+    /// file had to be told about it.</para>
     ///
     /// <para><b>The LID, ruled 2026-08-27.</b> A cut takes its declared ceiling: when
     /// level L engages the gate, L's own faces come off AND the faces of the level L's
@@ -38,9 +40,26 @@ namespace HiddenHarbours.Tests.RigBaking
     /// </summary>
     public sealed class HullLevelTagBakeTests
     {
-        /// <summary>The cutaway kit's batch 1 — the lobster (the render-verified reference) and the
-        /// two ships that share a sole and therefore break the tie in data.</summary>
-        private static readonly string[] Pass3Keys = { "lobsterBoat", "sternTrawler", "coastalPacket" };
+        /// <summary>
+        /// Every hull whose rig publishes a level vocabulary — batch 1 AND batch 2 of the cutaway kit.
+        ///
+        /// <para>Batch 1: the lobster (the render-verified reference) and the two ships that share a
+        /// sole and therefore break the tie in data. Batch 2, landed 2026-08-27: the dragger, the
+        /// trawler Mk II, the tanker — who brings <c>poop_deck</c>, a seventh level id and the fleet's
+        /// first SECOND exterior deck — and the eighteen lobster variants.</para>
+        ///
+        /// <para>The eighteen come off <see cref="LobsterVariantFleet"/> rather than being spelled
+        /// out, for the reason <c>HullMeshFleet</c> gives where it does the same: eighteen hand-typed
+        /// rows are exactly the number where one mismatch survives review. The six one-hull rigs stay
+        /// literal, because there a rename SHOULD fail
+        /// <see cref="TheCutawayKitsHulls_AreAllInTheFleetTable"/> loudly rather than quietly
+        /// shrinking the set.</para>
+        /// </summary>
+        private static readonly string[] Pass3Keys =
+            new[] { "lobsterBoat", "sternTrawler", "coastalPacket",
+                    "sideDragger", "sternTrawlerMk2", "tanker" }
+                .Concat(LobsterVariantFleet.All.Select(v => v.Key))
+                .ToArray();
 
         private static IEnumerable<FleetHull> Pass3Hulls =>
             HullMeshFleet.Hulls.Where(h => Pass3Keys.Contains(h.Key));
@@ -57,14 +76,19 @@ namespace HiddenHarbours.Tests.RigBaking
         }
 
         [Test]
-        public void Batch1_IsThreeHullsAndTheyAreAllInTheFleetTable()
+        public void TheCutawayKitsHulls_AreAllInTheFleetTable()
         {
             // A key that stops matching (a rename, a re-key) would silently empty every fixture
             // below and turn this whole file green by testing nothing.
             CollectionAssert.AreEquivalent(Pass3Keys, Pass3Hulls.Select(h => h.Key).ToArray(),
-                "The cutaway kit's batch-1 hulls are no longer in HullMeshFleet under these keys. " +
+                "The cutaway kit's hulls are no longer in HullMeshFleet under these keys. " +
                 "Every test in this file selects by them, so a rename does not fail here — it makes " +
                 "them all vacuous.");
+
+            Assert.AreEqual(24, Pass3Keys.Length,
+                "Batch 1 is three hulls and batch 2 is twenty-one (three ships + eighteen variants). " +
+                "A different total means a rig was added to the kit without this file being told, or " +
+                "LobsterVariantFleet stopped enumerating eighteen.");
         }
 
         /// <summary>
@@ -85,7 +109,7 @@ namespace HiddenHarbours.Tests.RigBaking
                 {
                     Assert.IsTrue(data.CarriesLevelTags,
                         $"{hull.Key}: her rig publishes no geometry().ids, so she cannot be cut open. " +
-                        "Batch 1 of the cutaway kit is pass 3 on all three of these rigs.");
+                        "Every rig selected here is pass 3 or later — batch 1 and batch 2 of the kit.");
 
                     var vocabulary = new HashSet<int>(data.LevelIds.Values);
                     var seen = new Dictionary<int, int>();
@@ -170,7 +194,16 @@ namespace HiddenHarbours.Tests.RigBaking
                 RigMeshData data = Extract(hull, out IRigScriptHost host);
                 using (host)
                 {
-                    int staticCount = (int)host.EvaluateNumber($"{hull.GlobalName}.faces().length");
+                    // ⚠️ ASK THE RIG FOR THE SAME BOAT THE EXTRACTOR BUILT. A generator's `faces()`
+                    // with no argument builds its DEFAULT variant, so on the eighteen lobsters this
+                    // compared one hull's extraction against another hull's static list and reported
+                    // a NEGATIVE leaf — the fixture reading as "the door is missing" when the real
+                    // fault was that it had asked about a different boat.
+                    string opts = hull.Extraction != null && hull.Extraction.IsVariant
+                                  && !string.IsNullOrEmpty(hull.Extraction.ViewOptions)
+                        ? hull.Extraction.ViewOptions
+                        : "";
+                    int staticCount = (int)host.EvaluateNumber($"{hull.GlobalName}.faces({opts}).length");
                     int leaf = data.Faces.Count - staticCount;
                     Assert.Greater(leaf, 0,
                         $"{hull.Key}: the extracted face list is no longer LONGER than her static " +
@@ -421,18 +454,35 @@ namespace HiddenHarbours.Tests.RigBaking
                 "no lid, or the lid it declares has no faces either:\n  " +
                 string.Join("\n  ", opensNothing));
 
-            // Not merely "nothing is broken": the three that own no faces must be the three the
+            // Not merely "nothing is broken": the levels that own no faces must be the ones the
             // ruling was made about, and they must be opening via their lid. A hull that quietly
             // stopped needing its lid would pass the assertion above while the ruling went unused.
+            //
+            // ⚠️ BATCH 2 TURNED THIS FROM A COINCIDENCE INTO A PATTERN, measured across 24 hulls:
+            // the set of levels that own NO faces is EXACTLY the set that declares a lid, both 24.
+            // Every enclosed room the rigs build has walls of its own EXCEPT the ones under a deck,
+            // and those are voids the deck roofs — three ships' engine spaces (dragger 119, both
+            // trawlers 142, packet 92 lid faces), the tanker's accommodation under her poop (56),
+            // and nineteen cuddies under their foredeck (15 each). That is why the ruling was needed
+            // at all: with no lid these levels engage the gate and remove nothing, and the occupant
+            // goes below to look at a whole boat.
+            //
+            // The eighteen variants come off LobsterVariantFleet rather than being spelled out —
+            // they are one rig, one entry in RigLevelLids, and one line here.
             CollectionAssert.AreEquivalent(
                 new[]
                 {
                     "lobsterBoat.cuddy -> foredeck (15 faces)",
                     "sternTrawler.below -> main_deck (142 faces)",
                     "coastalPacket.below -> main_deck (92 faces)",
-                },
+                    "sideDragger.below -> main_deck (119 faces)",
+                    "sternTrawlerMk2.below -> main_deck (142 faces)",
+                    "tanker.below -> poop_deck (56 faces)",
+                }
+                .Concat(LobsterVariantFleet.All.Select(v => $"{v.Key}.cuddy -> foredeck (15 faces)"))
+                .ToArray(),
                 viaLid,
-                "The set of levels that open ONLY through their lid has changed. These three are the " +
+                "The set of levels that open ONLY through their lid has changed. These are the " +
                 "ruling's own examples and the reason it exists; a level joining or leaving this " +
                 "list is an upstream tagging change and wants a look. Now:\n  " +
                 string.Join("\n  ", viaLid));
@@ -491,21 +541,28 @@ namespace HiddenHarbours.Tests.RigBaking
                 }
             }
 
-            Assert.AreEqual(3, lids,
-                "Batch 1 declares exactly three lids (lobster cuddy, both ships' below). A different " +
-                "count means every property above was checked against a different set of rigs than " +
-                "the one this fixture was written for.");
+            Assert.AreEqual(24, lids,
+                "Batch 1 declares three lids (lobster cuddy, both ships' below) and batch 2 declares " +
+                "twenty-one (three ships' below — the TANKER's onto poop_deck, not main_deck — and " +
+                "the eighteen variants' cuddy). A different count means every property above was " +
+                "checked against a different set of rigs than the one this fixture was written for.");
         }
 
         /// <summary>
         /// <b>The stand-in table is a debt, and this is the ledger.</b>
         ///
-        /// <para><see cref="RigLevelLids"/> exists only because batch 1's ceiling records do not name
+        /// <para><see cref="RigLevelLids"/> exists only because the kit's ceiling records do not name
         /// their lid in a machine-readable form — they carry <c>of:</c>, which is prose
         /// (<c>'main-deck underside (DECK-0.12)'</c>, where the level id is <c>main_deck</c>). The
         /// moment a rig publishes <c>ceiling.lid</c>, the rig wins and its entry here must go; the
         /// extractor refuses a bake where the two disagree, and this names what is still owed so the
         /// debt cannot be forgotten rather than merely unpaid.</para>
+        ///
+        /// <para><b>Batch 2 grew the debt rather than paying it</b> (2026-08-27): its four rigs were
+        /// swept for <c>ceiling.lid</c> at intake and none publishes it, so the ask went from three
+        /// levels on three rig files to seven on seven. The tanker is the entry worth re-reading
+        /// before anybody is tempted to retire this table by inference — hers is the only lid in the
+        /// fleet that is not the obvious deck.</para>
         /// </summary>
         [Test]
         public void TheStandInLidTable_StillMatchesTheRigsItStandsInFor()
@@ -540,14 +597,24 @@ namespace HiddenHarbours.Tests.RigBaking
             // Asserted, not merely logged: when this list EMPTIES, the rigs have started publishing
             // ceiling.lid and RigLevelLids should be deleted rather than left standing as a second
             // answer to a question the rig now answers itself.
-            CollectionAssert.AreEquivalent(
-                new[]
+            //
+            // ⚠️ The debt does not retire in one go. It is four RIG FILES, and upstream can ship
+            // ceiling.lid on one without the others — so a SHRINKING list is the ordinary good news,
+            // and only an EMPTY one retires the table. The eighteen variant rows are one table entry
+            // seen eighteen times (the table is keyed by rig file); they will vanish together.
+            string[] expected = new[]
                 {
                     "lobsterBoat.cuddy -> foredeck",
                     "sternTrawler.below -> main_deck",
                     "coastalPacket.below -> main_deck",
-                },
-                owed,
+                    "sideDragger.below -> main_deck",
+                    "sternTrawlerMk2.below -> main_deck",
+                    "tanker.below -> poop_deck",
+                }
+                .Concat(LobsterVariantFleet.All.Select(v => $"{v.Key}.cuddy -> foredeck"))
+                .ToArray();
+
+            CollectionAssert.AreEquivalent(expected, owed,
                 "The set of lids this repo is standing in for has changed. If it SHRANK, the rig now " +
                 "publishes ceiling.lid for that level — delete the table entry. If it GREW, a new " +
                 "entry was added without the upstream ask being logged. Now:\n  " +

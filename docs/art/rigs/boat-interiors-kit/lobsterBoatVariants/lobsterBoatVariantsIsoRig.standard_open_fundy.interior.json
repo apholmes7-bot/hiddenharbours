@@ -7,7 +7,7 @@
   "interior_rig": "boatInteriorRig.js",
   "derivedFromRigSha256": "34bb781303b9de9a47c7029a685bf83d357adefe2ffb95ff54451233ea7c46a7",
   "hullRigSha256": {
-    "lobsterBoatVariantsIsoRig": "f5fa042997c21414bd9adcf558b0a2adde541849dce3f4b1ce399156940b0682"
+    "lobsterBoatVariantsIsoRig": "ce7d45ff4fbcd3e14a608bbccb5c5fd0854f9e65bdf4323b664e3a379eb5019b"
   },
   "frame": {
     "units": "m",

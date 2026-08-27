@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11110650f1338a5448a18175f8b903a0, type: 3}
+  m_Name: AeroSemi
+  m_EditorClassIdentifier: HiddenHarbours.Vehicles::HiddenHarbours.Vehicles.VehicleDef
+  Id: vehicle.aero_semi
+  DisplayName: Aero Sleeper Semi
+  KindToken: road_vehicle
+  Mesh: {fileID: 11400000, guid: a958a2d33bd1a9b48a14d42c3619d9ee, type: 2}
+  MassKg: 3500
+  MaxSpeedMetersPerSecond: 11
+  MaxReverseSpeedMetersPerSecond: 4
+  AccelerationMetersPerSecondSquared: 4.5
+  BrakingMetersPerSecondSquared: 8
+  CoastDecelerationMetersPerSecondSquared: 2.2
+  SteerRateFullLocksPerSecond: 2
+  SteerReturnFullLocksPerSecond: 3
+  SteerFalloffHalfSpeedMetersPerSecond: 9
+  SpinRateDegreesPerSecond: 75
+  AfloatSpinRateDegreesPerSecond: 30
+  AfloatMaxSpeedMetersPerSecond: 1.6
+  AfloatMaxReverseSpeedMetersPerSecond: 0.9
+  AfloatAccelerationMetersPerSecondSquared: 0.8
+  AfloatDragDecelerationMetersPerSecondSquared: 1.2
+  SwimHysteresisMeters: 0.06
+  CameraWorldHeightMeters: 18

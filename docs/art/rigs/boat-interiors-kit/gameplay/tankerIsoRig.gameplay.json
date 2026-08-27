@@ -2,7 +2,7 @@
   "schema": "hidden-harbours/boat-gameplay-geometry@1",
   "rig": "tankerIsoRig.js",
   "exportSymbol": "TankerIso",
-  "derivedFromRigSha256": "c2faaa385e472e3c4c1fdc0a219b86d8889b71faafd02554a443e8bb20959f0c",
+  "derivedFromRigSha256": "abd17acb503fc08ce518ea57dd5f3cdee5bac9d02043c80a7c4594bd57b105db",
   "cell": {
     "w": 1920,
     "h": 1600,

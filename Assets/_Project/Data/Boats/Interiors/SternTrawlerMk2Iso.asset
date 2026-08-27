@@ -19,7 +19,7 @@ MonoBehaviour:
   SourceInteriorRig: docs/art/rigs/boat-interiors-kit/boatInteriorRig.js
   SourceHullRig: docs/art/rigs/boat-interiors-kit/hull-rigs/sternTrawlerMk2IsoRig.js
   InteriorRigSha256: 34bb781303b9de9a47c7029a685bf83d357adefe2ffb95ff54451233ea7c46a7
-  HullRigSha256: e7fa9ea69a310ab03be5640cf89c4c18c1fd92b5b8b074056b5208f1eeb64628
+  HullRigSha256: 7bf879c450e78dcdce74c10b2573cdd3dd9ccdaacb4d912cbe5f9f38ae0639dc
   PixelsPerMetre: 32
   CellPixels: {x: 1344, y: 1152}
   PivotPixels: {x: 672, y: 672}

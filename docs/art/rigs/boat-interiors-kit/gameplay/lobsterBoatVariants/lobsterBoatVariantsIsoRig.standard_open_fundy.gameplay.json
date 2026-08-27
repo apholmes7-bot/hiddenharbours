@@ -8,7 +8,7 @@
     "region": "fundy",
     "paint": "gelcoat"
   },
-  "derivedFromRigSha256": "f5fa042997c21414bd9adcf558b0a2adde541849dce3f4b1ce399156940b0682",
+  "derivedFromRigSha256": "ce7d45ff4fbcd3e14a608bbccb5c5fd0854f9e65bdf4323b664e3a379eb5019b",
   "units": "metres",
   "frame": {
     "origin": "amidships / keel-bottom / centreline",

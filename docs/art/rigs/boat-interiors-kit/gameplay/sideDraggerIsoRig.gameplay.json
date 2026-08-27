@@ -2,7 +2,7 @@
   "schema": "hidden-harbours/boat-gameplay-geometry@1",
   "rig": "sideDraggerIsoRig.js",
   "exportSymbol": "SideDraggerIso",
-  "derivedFromRigSha256": "b52237484f241f200656c5480ca63f81d3a1a70d20f7b649c06ad25dfd97d9e0",
+  "derivedFromRigSha256": "c4ad181666aca73874e2b8c9a2e2367567ebf528c5021925ae8199fca880855b",
   "cell": {
     "w": 896,
     "h": 792,
