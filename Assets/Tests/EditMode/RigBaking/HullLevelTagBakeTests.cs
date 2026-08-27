@@ -194,7 +194,16 @@ namespace HiddenHarbours.Tests.RigBaking
                 RigMeshData data = Extract(hull, out IRigScriptHost host);
                 using (host)
                 {
-                    int staticCount = (int)host.EvaluateNumber($"{hull.GlobalName}.faces().length");
+                    // ⚠️ ASK THE RIG FOR THE SAME BOAT THE EXTRACTOR BUILT. A generator's `faces()`
+                    // with no argument builds its DEFAULT variant, so on the eighteen lobsters this
+                    // compared one hull's extraction against another hull's static list and reported
+                    // a NEGATIVE leaf — the fixture reading as "the door is missing" when the real
+                    // fault was that it had asked about a different boat.
+                    string opts = hull.Extraction != null && hull.Extraction.IsVariant
+                                  && !string.IsNullOrEmpty(hull.Extraction.ViewOptions)
+                        ? hull.Extraction.ViewOptions
+                        : "";
+                    int staticCount = (int)host.EvaluateNumber($"{hull.GlobalName}.faces({opts}).length");
                     int leaf = data.Faces.Count - staticCount;
                     Assert.Greater(leaf, 0,
                         $"{hull.Key}: the extracted face list is no longer LONGER than her static " +
@@ -445,18 +454,35 @@ namespace HiddenHarbours.Tests.RigBaking
                 "no lid, or the lid it declares has no faces either:\n  " +
                 string.Join("\n  ", opensNothing));
 
-            // Not merely "nothing is broken": the three that own no faces must be the three the
+            // Not merely "nothing is broken": the levels that own no faces must be the ones the
             // ruling was made about, and they must be opening via their lid. A hull that quietly
             // stopped needing its lid would pass the assertion above while the ruling went unused.
+            //
+            // ⚠️ BATCH 2 TURNED THIS FROM A COINCIDENCE INTO A PATTERN, measured across 24 hulls:
+            // the set of levels that own NO faces is EXACTLY the set that declares a lid, both 24.
+            // Every enclosed room the rigs build has walls of its own EXCEPT the ones under a deck,
+            // and those are voids the deck roofs — three ships' engine spaces (dragger 119, both
+            // trawlers 142, packet 92 lid faces), the tanker's accommodation under her poop (56),
+            // and nineteen cuddies under their foredeck (15 each). That is why the ruling was needed
+            // at all: with no lid these levels engage the gate and remove nothing, and the occupant
+            // goes below to look at a whole boat.
+            //
+            // The eighteen variants come off LobsterVariantFleet rather than being spelled out —
+            // they are one rig, one entry in RigLevelLids, and one line here.
             CollectionAssert.AreEquivalent(
                 new[]
                 {
                     "lobsterBoat.cuddy -> foredeck (15 faces)",
                     "sternTrawler.below -> main_deck (142 faces)",
                     "coastalPacket.below -> main_deck (92 faces)",
-                },
+                    "sideDragger.below -> main_deck (119 faces)",
+                    "sternTrawlerMk2.below -> main_deck (142 faces)",
+                    "tanker.below -> poop_deck (56 faces)",
+                }
+                .Concat(LobsterVariantFleet.All.Select(v => $"{v.Key}.cuddy -> foredeck (15 faces)"))
+                .ToArray(),
                 viaLid,
-                "The set of levels that open ONLY through their lid has changed. These three are the " +
+                "The set of levels that open ONLY through their lid has changed. These are the " +
                 "ruling's own examples and the reason it exists; a level joining or leaving this " +
                 "list is an upstream tagging change and wants a look. Now:\n  " +
                 string.Join("\n  ", viaLid));

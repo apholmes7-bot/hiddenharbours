@@ -427,6 +427,42 @@ namespace HiddenHarbours.Tools.RigBaking
                     ["F"] = "F.concat(doorFaces({doorOpen:0}))",
                 },
 
+                // ---- the cutaway kit's BATCH 2 (2026-08-27) --------------------------------------
+                // The same posed-leaf rule, a third time — and it was NOT obvious. Batch 2's drop is
+                // "rig sources, same mechanism, no new semantics", which reads like a change needing
+                // nothing on this side. It needs exactly this. All three ships gained a hinged leaf
+                // at pass 3 and their own render() draws `F.concat(doorFaces(opts))`, so bare `F`
+                // bakes a boat whose mesh is missing geometry her picture draws — the sport fisher's
+                // outrigger lesson, for the seventh hull running.
+                //
+                // ⚠️ CAUGHT BY RUNNING, NOT BY READING. TheDoorLeaf_IsTaggedWithTheRoomItCloses went
+                // red on the dragger the moment batch 2's hulls joined Pass3Keys — which is the whole
+                // reason that fixture asserts `leaf > 0` first, instead of only checking the tags of
+                // a leaf it happened to find. A compile could not have found this, and neither did
+                // reading the drop's README.
+                //
+                // Measured in the repo's own V8 before these entries existed, at doorOpen 0 — the
+                // fleet default and the pose every committed sheet was baked at:
+                //     dragger              833 static faces + 16 leaf
+                //     stern trawler Mk II  1,259 + 16
+                //     tanker               1,932 + 16
+                // Every leaf face carries lv:'house' on all three, so a cutaway takes the door with
+                // the room it closes rather than leaving it hanging over an opened wheelhouse.
+                ["sideDraggerIsoRig.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
+                {
+                    ["F"] = "F.concat(doorFaces({doorOpen:0}))",
+                },
+
+                ["sternTrawlerMk2IsoRig.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
+                {
+                    ["F"] = "F.concat(doorFaces({doorOpen:0}))",
+                },
+
+                ["tankerIsoRig.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
+                {
+                    ["F"] = "F.concat(doorFaces({doorOpen:0}))",
+                },
+
                 // ---- the Cape Islander's paint axis (drop of 2026-08-12) -------------------------
                 // The FOURTH hull to lose its `MATS` const to a paint axis, and the last one at Nine
                 // Mile Creek that could gain one — after her, only a boat with no hull mesh at all is
@@ -506,9 +542,24 @@ namespace HiddenHarbours.Tools.RigBaking
                 //     her paint table IS the hero hull's and that the committed paint.lobster_* defs
                 //     cover her. Order is load-bearing: the face packer resolves an unknown material
                 //     to index 0.
+                //
+                // ---- and her pass-5 SLIDING doors, ×18 (cutaway kit batch 2, 2026-08-27) ---------
+                // She gained the same posed leaf the ships did, and hers is the only one in the fleet
+                // that SLIDES rather than swings. The composition is the generator's, not the ships':
+                // her render() draws `facesFor(V).F.concat(doorFaces(V, t))` — the private doorFaces
+                // takes (V, t), not an opts bag, so `doorFaces({doorOpen:0})` would resolve V to
+                // undefined and throw rather than quietly draw the wrong boat. `resolve(v)` is bound
+                // ONCE and passed to both halves, so the leaf can never be posed onto a different
+                // variant than the hull it is closing.
+                //
+                // Measured in the repo's own V8 before this changed, at doorOpen 0 (standard/hardtop/
+                // fundy): 670 static faces + 9 leaf, every leaf face lv:'house'. Same catch as the
+                // three ships above, same fixture, and it would have shipped eighteen hulls whose
+                // meshes have no door.
                 ["lobsterBoatVariantsIsoRig.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
                 {
-                    ["variantFaces"] = "function(v){return facesFor(resolve(v)).F;}",
+                    ["variantFaces"] =
+                        "function(v){var V=resolve(v);return facesFor(V).F.concat(doorFaces(V,0));}",
                     ["MATS"] = "matsFor('gelcoat').MATS",
                 },
 
