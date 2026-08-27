@@ -585,6 +585,12 @@ namespace HiddenHarbours.Tools.RigBaking
         // The semis publish their tandem stations as G.tandA (fore) and G.tandB (aft); the straight
         // trucks publish a single G.axR. Asserted against the rigs in RoadFleetBakeTests.
 
+        // The van joined the baked set the day her re-stamped sidecar landed (2026-08-27, the same
+        // day it was asked): numbers off her own WHEELS block — frontWX 0.82, axF 2.20, single rear
+        // axle at −1.76 with the same track, wheelR 0.36.
+        static readonly Axis[] HightopVanAxes =
+            BuildRoadAxes(0.82f, 2.20f, 0.82f, 0.36f, -1.76f);
+
         static readonly Axis[] CaboverBoxAxes =
             BuildRoadAxes(0.78f, 2.62f, 0.71f, 0.334f, -1.50f);
 
@@ -714,6 +720,8 @@ namespace HiddenHarbours.Tools.RigBaking
                 "docs/art/rigs/road-fleet-kit/hightop-van/vanIsoRig.js",
                 SidecarFolder + "/vanIsoRig.hightopVan.gameplay.json",
                 "VanIso",
+                meshAssetPath: "Assets/_Project/Data/Vehicles/Meshes/HightopVanVehicleMesh.asset",
+                meshId: "vehiclemesh.hightop_van",
                 faceBuilderName: "build",
                 extraction: new RigHullExtraction
                 {
@@ -722,7 +730,23 @@ namespace HiddenHarbours.Tools.RigBaking
                     FaceExpression = "build(VanIso.resolve({}))",
                     ExtraSymbols = new[] { "build" },
                 },
+                axes: HightopVanAxes,
+                chassisSource: new VehicleChassisSource
+                {
+                    Wheelbase = "VanIso.G.axF - VanIso.G.axR",
+                    FrontTrack = "VanIso.G.frontWX * 2",
+                    WheelRadius = "VanIso.G.wheelR",
+                    FrontAxleY = "VanIso.G.axF",
+                    RearAxleY = "VanIso.G.axR",
+                    MaxInnerDeg = "VanIso.steer.maxInnerDeg",
+                    MaxOuterDeg = "VanIso.steer.maxOuterDeg",
+                    TravelFront = "VanIso.travel.F",
+                    TravelRear = "VanIso.travel.R",
+                },
                 azimuthAftAnchor: "hitch", azimuthForeAnchor: "hoodLatch",
+                vehicleDefPath: "Assets/_Project/Data/Vehicles/HightopVan.asset",
+                vehicleId: "vehicle.hightop_van",
+                bodyMustNotMove: new[] { "{roll:0.25}", "{steer:1}" },
                 label: "Hightop Van"),
 
             new Vehicle(
@@ -1054,9 +1078,9 @@ namespace HiddenHarbours.Tools.RigBaking
         public static readonly IReadOnlyList<string> Baked = new[]
         {
             "dually3500", "otter8x8",
-            // The road fleet, PR 2 of 4 — EIGHT of the drop's nine bodies. The hightop van is the
-            // ninth and she waits on an upstream re-stamp; see SidecarHashRefused.
-            "caboverBox", "convBox", "aeroSemi", "classicSemi",
+            // The road fleet — ALL NINE of the drop's bodies. Eight baked in PR 2 (#671); the
+            // hightop van joined the day her re-stamped sidecar landed (2026-08-27, same day asked).
+            "caboverBox", "convBox", "hightopVan", "aeroSemi", "classicSemi",
             "trailerFlatbed28", "trailerFlatbed53", "trailerReefer28", "trailerReefer53",
         };
 
@@ -1065,11 +1089,9 @@ namespace HiddenHarbours.Tools.RigBaking
         /// this, so nothing can be quietly left out — a vehicle in neither <see cref="Baked"/> nor here
         /// fails.
         ///
-        /// <para><b>ONE entry, and it is not a bake problem.</b> Two others have lived here and both
-        /// left the way an entry here should — deleted, not reworded. The one standing is the hightop
-        /// van, and what blocks her is upstream: her gameplay sidecar's stamp does not pin her rig, so
-        /// the geometry this bake reads out of that document may describe a different shape. The other
-        /// eight bodies of her drop are baked.</para>
+        /// <para><b>EMPTY, and that is the steady state to defend.</b> Three entries have lived here
+        /// and all three left the way an entry here should — deleted, not reworded (the last: the
+        /// hightop van's stamp refusal, discharged 2026-08-27 when upstream's re-stamp landed).</para>
         ///
         /// <para>The <b>Dually</b> held one from #548 until 2026-08-17, blocked on an architecture
         /// ruling rather than any technical obstacle; the ruling was given (lead-architect, on #548)
@@ -1092,19 +1114,10 @@ namespace HiddenHarbours.Tools.RigBaking
         public static readonly IReadOnlyDictionary<string, string> NotBaked =
             new Dictionary<string, string>(StringComparer.Ordinal)
             {
-                ["hightopVan"] =
-                    "⚠️⚠️ HER SIDECAR DOES NOT PIN HER RIG, and that is the whole blocker — the other " +
-                    "eight bodies in this drop are baked (PR 2 of 4). Her rig, contract, sheets and " +
-                    "harness are sound and her geometry measures fine: 959 faces, 15 used ramps at the " +
-                    "bake pose (16 across every build including night), four disjoint roll groups of 87 " +
-                    "unioning to the master 348, an 80-face knuckle 40 a side, azimuth CCW on all three " +
-                    "oracles. What is refused is READING HER SIDECAR — the drive door, the collider box " +
-                    "and the seats the bake now takes from that document — because a stamp that does not " +
-                    "pin means those numbers may describe a different shape. See SidecarHashRefused for " +
-                    "the measurement. Re-stamp is owed UPSTREAM (art director); do not fix it here. The " +
-                    "day it lands, delete both entries and add her to Baked — her VehicleRigFleet entry " +
-                    "needs a mesh path, an id, her axes (BuildRoadAxes off her own G) and her chassis " +
-                    "expressions, and nothing else in this file changes.",
+                // Three entries have lived here and all three left the way an entry here should —
+                // deleted, not reworded. The last was the hightop van's stamp refusal
+                // (2026-08-27, discharged the same day when upstream's re-stamp landed and her
+                // full digest matched her rig — see the git history of SidecarHashRefused).
             };
 
         /// <summary>
@@ -1133,21 +1146,12 @@ namespace HiddenHarbours.Tools.RigBaking
         public static readonly IReadOnlyDictionary<string, string> SidecarHashRefused =
             new Dictionary<string, string>(StringComparer.Ordinal)
             {
-                ["hightopVan"] =
-                    "MEASURED 2026-08-27, on intake. vanIsoRig.js hashes (LF) to " +
-                    "1ac7804ddb045ec3a9c9ba8797b8025547c21649d5ea70c61dc7b6e8ee048eb3; her gameplay " +
-                    "sidecar pins " +
-                    "1ac7804ddb045ec3cd41ab1952d33513b74fdcae64e1710b2b74c46eb2e35a41. " +
-                    "⚠️ THE FIRST 16 HEX DIGITS ARE IDENTICAL AND THE REMAINING 48 ARE NOT, which is " +
-                    "not something a reshaped rig does — a changed vertex changes the whole digest. " +
-                    "It is a STAMPING defect in one file, and her own hightopVan.contract.json " +
-                    "carries the CORRECT hash, which is the independent evidence: the kit measured " +
-                    "the right rig and only the sidecar's stamp is wrong. Five of the drop's six " +
-                    "sidecars pin correctly. Her rig, contract, sheets and harness are all sound " +
-                    "and are committed as shipped; what is refused is READING HER SIDECAR'S " +
-                    "GEOMETRY — thresholds, cargo, colliders, seats — which is exactly what PR 2's " +
-                    "bake and PR 3's placement need. Re-stamp is owed UPSTREAM (art director); do " +
-                    "not fix it in this repo.",
+                // The hightop van lived here from #668's intake (her stamp shared exactly the first
+                // 16 hex digits with her rig's true LF hash and diverged after — a stamping defect,
+                // proved by her own contract.json carrying the correct value). Upstream's re-stamp
+                // landed 2026-08-27: the delivered sidecar differs from the committed one by the
+                // stamp line ALONE, and the new stamp full-digest-matches the rig. Entry deleted per
+                // this table's own law: discharged, not reworded.
             };
     }
 }

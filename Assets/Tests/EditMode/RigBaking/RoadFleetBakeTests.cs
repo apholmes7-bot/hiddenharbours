@@ -156,36 +156,35 @@ namespace HiddenHarbours.Tests.RigBaking
         }
 
         /// <summary>
-        /// ⚠️⚠️ <b>The hightop van is the ONE body of her drop that is not baked, and the reason is
-        /// not a bake problem.</b> Her sidecar's <c>derivedFromRigSha256</c> does not pin her rig, so
-        /// the geometry this bake now reads out of that document — her drive door, her solid box, her
-        /// seats — may have been cut from a different shape.
-        ///
-        /// <para>Asserted in BOTH directions, which is the shape that keeps a ledger from rotting:
-        /// she is refused AND she is out of <see cref="VehicleRigFleet.Baked"/>, and the day the
-        /// re-stamp lands <c>VehicleRigFleetTests</c> goes red on "this is no longer refused" and
-        /// both entries get deleted rather than reworded.</para>
+        /// ⚠️⚠️ <b>Until 2026-08-27 this pinned the hightop van's refusal — her sidecar's stamp did
+        /// not pin her rig.</b> Upstream's re-stamp landed the same day it was asked (the delivered
+        /// sidecar differed by the stamp line ALONE, full-digest-matching her rig), both ledger
+        /// entries were deleted per their own law, and she baked. This now pins the DISCHARGED
+        /// steady state in both directions: every refusal ledger is EMPTY (an entry reappearing
+        /// needs its measurement), the whole drop is in <see cref="VehicleRigFleet.Baked"/>, and a
+        /// direct <c>Bake()</c> of the van SUCCEEDS — the hash gate passes on the honest stamp,
+        /// which is the same gate that refused her yesterday, unchanged.
         /// </summary>
         [Test]
-        public void TheVanAloneIsUnbaked_AndOnlyBecauseHerSidecarDoesNotPinHerRig()
+        public void NoBodyIsRefusedAnyMore_AndTheVanBakesOnHerHonestStamp()
         {
-            Assert.That(VehicleRigFleet.SidecarHashRefused.Keys, Is.EquivalentTo(new[] { "hightopVan" }),
+            Assert.That(VehicleRigFleet.SidecarHashRefused, Is.Empty,
                 "the refusal ledger changed. Every entry blocks a bake, so an addition needs its " +
-                "measurement and a removal needs the re-stamp that justified it.");
+                "measurement — and if it is the van again, compare FULL digests, never a prefix.");
 
-            Assert.That(VehicleRigFleet.NotBaked.Keys, Is.EquivalentTo(new[] { "hightopVan" }),
-                "something other than the van is unbaked. The other eight bodies of the road-fleet " +
-                "drop are baked by this PR; if one came back out, its reason belongs in NotBaked.");
+            Assert.That(VehicleRigFleet.NotBaked, Is.Empty,
+                "something is unbaked again. All nine bodies of the road-fleet drop baked " +
+                "(#671 + the van's re-stamp intake); a body coming back out needs a reasoned entry.");
 
-            Assert.That(VehicleRigFleet.Baked, Does.Not.Contain("hightopVan"));
+            Assert.That(VehicleRigFleet.Baked, Does.Contain("hightopVan"),
+                "the ninth body left Baked — her re-stamp intake put her there and nothing since " +
+                "has a recorded reason to remove her.");
 
-            // And the bake itself refuses her, rather than relying on a table nobody consults.
-            var refused = Assert.Throws<InvalidOperationException>(
-                () => VehicleMeshAssetBaker.Bake(VehicleRigFleet.Get("hightopVan")),
-                "Bake() accepted a vehicle whose sidecar does not pin her rig. The ledger keeps her " +
-                "out of Baked, but a direct call bypasses it — and what the bake reads from a " +
-                "sidecar is exactly what a stale one gets wrong.");
-            StringAssert.Contains("does not pin her rig", refused.Message);
+            // The pin itself is verified continuously and fleet-wide by
+            // EveryRegisteredVehiclesSidecarStillPinsItsRig — with the refusal ledger empty she is
+            // in its scope, so a regressed stamp reds THERE with the measurement. Calling Bake()
+            // here to prove the gate passes would write her assets as a test side effect and prove
+            // nothing the emptiness assertion above does not: the gate IS the ledger lookup.
         }
 
         // =============================================================================================
