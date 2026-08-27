@@ -805,6 +805,29 @@ namespace HiddenHarbours.Tools.RigBaking
                         "for(var i=0;i<F.length;i++)used[F[i].mat]=1;}" +
                         "for(var k in M)if(used[k])out[k]=M[k];" +
                         "return out;})()",
+
+                    // ⭐ THE PER-BODY CELL, in the one shape the extractor reads.
+                    //
+                    // This rig publishes each body's cell as TWO calls returning TWO records —
+                    // `cellFor(b)` gives {W,H,cx,gy} and `pivotFor(b)` gives {x,y} — while
+                    // ExtractFrom reads ONE object with `W`, `H`, `pivot.x/.y` and `defaultElev` on
+                    // it (RigHullExtraction.HullScope). So this is a RENAME, not an invention: every
+                    // value below is the rig's own, fetched through the rig's own accessors.
+                    //
+                    // ⚠️ IT MATTERS BECAUSE THE FOUR BODIES DO NOT SHARE A CELL. The global carries
+                    // the LONG one (640×480 @ 320,300) because a 16.15 m trailer needs it; the two
+                    // pups take the 384×320 road cell. Reading the global's for all four would put
+                    // the pups' pivot 86 px low and hand them a cell nearly three times the area
+                    // their art occupies — a silent, entirely plausible wrong bake, and the fourth
+                    // place in this drop where a missing pick does not throw.
+                    //
+                    // `defaultElev` rides along because HullScope redirects the elevation with the
+                    // cell (a rig that gives each body its own camera gives each its own bake
+                    // elevation). These four share one — DEFAULT_ELEV, 40 — and saying so explicitly
+                    // is what stops it reading `undefined` and posing the whole bake at NaN.
+                    ["cellOf"] =
+                        "function(b){var c=cellFor(b),p=pivotFor(b);" +
+                        "return {W:c.W,H:c.H,pivot:{x:p.x,y:p.y},defaultElev:DEFAULT_ELEV};}",
                 },
 
                 // The skiff motor is a LAYER, not a hull, so its export omits two things every hull

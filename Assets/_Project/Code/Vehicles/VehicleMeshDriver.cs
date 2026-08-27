@@ -279,7 +279,19 @@ namespace HiddenHarbours.Vehicles
                     VehicleFitmentMotion.SteerOnly =>
                         Quaternion.AngleAxis(steerDegrees, RigUp),
 
-                    _ => Quaternion.AngleAxis(rollDegrees, RigRight),
+                    VehicleFitmentMotion.RollOnly =>
+                        Quaternion.AngleAxis(rollDegrees, RigRight),
+
+                    // ⚠️ NAMED ARMS AND A THROWING DEFAULT — the standard #560 set for append-only
+                    // Core enums, applied here 2026-08-27. This was `_ => roll`, which is the trap
+                    // that standard exists for: the next motion appended to VehicleFitmentMotion
+                    // would have inherited "roll" in silence, and a part that does not turn would
+                    // have spun about the axle axis every frame with nothing to grep for.
+                    _ => throw new System.ArgumentOutOfRangeException(
+                        nameof(f.Motion), f.Motion,
+                        $"fitting '{f.Slot}' takes a motion this driver has no arm for. A baked " +
+                        "asset newer than this code, or a value nobody wired — either way, posing " +
+                        "it as something else is worse than stopping."),
                 };
             }
         }

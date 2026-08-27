@@ -79,6 +79,26 @@ namespace HiddenHarbours.Tools.RigBaking
 
             foreach (VehicleRigFleet.Vehicle v in VehicleRigFleet.Vehicles)
             {
+                // ⭐ THE TWO LEDGERS DECIDE WHAT IS BAKED, and they are read here rather than
+                // implied by whether a mesh path happens to be filled in. Before 2026-08-27 this
+                // loop bake-attempted EVERY registered vehicle, so the nine road-fleet bodies that
+                // PR 1 landed unbaked turned a clean run into nine failures and an exit code of 1 —
+                // a table that says "not baked, and here is why" was being argued with by the tool
+                // that reads it. A skip is reported, never silent: an entry that has quietly stopped
+                // being baked must look different from one that never was.
+                if (VehicleRigFleet.SidecarHashRefused.TryGetValue(v.Key, out string refusal))
+                {
+                    report.Append($"  ⊘ {v.Key}: REFUSED — her sidecar does not pin her rig, so her " +
+                                  $"published geometry may describe another shape. {Head(refusal)}\n");
+                    continue;
+                }
+
+                if (VehicleRigFleet.NotBaked.TryGetValue(v.Key, out string reason))
+                {
+                    report.Append($"  – {v.Key}: not baked, by declaration. {Head(reason)}\n");
+                    continue;
+                }
+
                 try
                 {
                     VehicleMeshDef def = Bake(v);
@@ -107,9 +127,32 @@ namespace HiddenHarbours.Tools.RigBaking
             return failures.Count;
         }
 
+        /// <summary>The first sentence of a ledger reason — enough to read the skip in the log
+        /// without pasting a paragraph into every line of the report.</summary>
+        static string Head(string reason)
+        {
+            if (string.IsNullOrEmpty(reason)) return "";
+            int stop = reason.IndexOf(". ", StringComparison.Ordinal);
+            return stop < 0 ? reason : reason.Substring(0, stop + 1);
+        }
+
         /// <summary>Extract + split + measure + write one vehicle's assets.</summary>
         public static VehicleMeshDef Bake(in VehicleRigFleet.Vehicle v)
         {
+            // ⚠️⚠️ THE HASH REFUSAL, ENFORCED AT THE ONE PLACE THAT READS THE GEOMETRY. The ledger
+            // and VehicleRigFleetTests already forbid a refused vehicle from being listed as Baked,
+            // but a direct Bake(v) call bypasses both — and what this method now reads out of a
+            // sidecar is her drive door, her solid box and her seats. A stamp that does not pin its
+            // rig means those numbers may have been cut from a different shape, which is the one
+            // failure that looks entirely correct until somebody walks through a wall.
+            if (VehicleRigFleet.SidecarHashRefused.TryGetValue(v.Key, out string refusal))
+                throw new InvalidOperationException(
+                    $"{v.Key}: her gameplay sidecar does not pin her rig, so this bake will not read " +
+                    $"her published geometry.\n{refusal}\n⚠️ The fix is UPSTREAM (art director). Do " +
+                    "NOT re-stamp the hash in this repo: a hash corrected on our side comes back " +
+                    "wrong on the next regeneration, and re-stamping a bad stamp fakes exactly the " +
+                    "freshness the pin exists to prove.");
+
             using IRigScriptHost host = RigScriptHostFactory.Create();
             RigMeshData data = RigMeshExtractor.ExtractFrom(host, v.ScriptPath, v.GlobalName,
                                                            hull: v.Extraction);
@@ -129,6 +172,7 @@ namespace HiddenHarbours.Tools.RigBaking
             VehiclePartition split = Partition(host, v, data.Faces.Count);
             AzimuthConvention convention = MeasureAzimuth(host, v, data.DefaultElev);
             Chassis chassis = ReadChassis(host, v);
+            VehicleSidecarFacts facts = ReadSidecar(v);
 
             EnsureFolder(MeshFolder);
             EnsureFolder(WheelFolder);
@@ -183,11 +227,14 @@ namespace HiddenHarbours.Tools.RigBaking
             def.Ramps = ReadRamps(data);
             def.Bayer16 = ReadBayer(data);
 
+            WriteSidecarFacts(v, def, facts);
+
             SwapMesh(def, ref def.Mesh, body.Mesh, v.MeshAssetPath);
 
             Debug.Log($"[rig-vehicle] {v.MeshAssetPath}: {body} — body {split.Body.Count} faces, " +
                       $"{fitments.Count} fitting(s), azimuth " +
                       $"{(def.AzimuthCounterClockwise ? "CCW (mapping negates)" : "CW")}, " +
+                      $"cell {def.CellW}×{def.CellH} @ pivot ({def.PivotPx.x},{def.PivotPx.y}), " +
                       $"usable = {def.IsUsable()}.");
 
             if (!def.IsUsable())
@@ -229,6 +276,84 @@ namespace HiddenHarbours.Tools.RigBaking
                           ? "Created with the class's tuning defaults — every handling number on it is " +
                             "the owner's to change from the Inspector."
                           : "Refreshed FIELD-SCOPED: her id and her mesh, and nothing the owner has tuned."));
+        }
+
+        // =============================================================================================
+        //  THE FACTS A FACE LIST DOES NOT CARRY
+        // =============================================================================================
+
+        /// <summary>
+        /// Read this vehicle's published geometry — the drive door, the driver's seat, the solid box
+        /// and (for an amphibian) the four flotation numbers. Refuses on any error rather than
+        /// baking a partial answer.
+        /// </summary>
+        static VehicleSidecarFacts ReadSidecar(in VehicleRigFleet.Vehicle v)
+        {
+            string full = Path.Combine(RigCatalog.RepoRoot, v.SidecarPath);
+            if (!File.Exists(full))
+                throw new FileNotFoundException(
+                    $"{v.Key}: her gameplay sidecar is missing at {v.SidecarPath}. It carries the " +
+                    "drive door, the collider box and the seats — none of which a face list contains " +
+                    "— so a bake without it would write four deliberate-looking zeros.", full);
+
+            VehicleSidecarFacts facts =
+                VehicleSidecarFacts.Read(File.ReadAllText(full), v.SidecarPath, v.SidecarBodyScope);
+
+            if (facts.Errors.Count > 0)
+                throw new InvalidOperationException(
+                    $"{v.Key}: {v.SidecarPath} could not be read —\n  " +
+                    string.Join("\n  ", facts.Errors));
+
+            return facts;
+        }
+
+        /// <summary>
+        /// ⭐⭐ <b>Write what the ART published, and write the ABSENCES too.</b>
+        ///
+        /// <para><b>Why the zeros are written rather than left.</b> This is the Otter's trap, and it
+        /// is worth restating because the road fleet is the inverted case. In #581 the baker wrote
+        /// geometry and chassis only, so a freshly-baked amphibian carried <c>FloatSink = 0</c>,
+        /// <c>Floats</c> read false, and she was a machine that drove into the water and never
+        /// floated — with every existing test still green, because they build their defs in code and
+        /// none of them read the asset. Here zero is the CORRECT answer for all eight bodies: a box
+        /// truck sinks, and a towed body has no driver's door. But "correct" and "nobody looked" must
+        /// not be the same bytes, so the flotation block is written from the sidecar on every bake
+        /// and its absence is reported in the log as a measured zero.</para>
+        ///
+        /// <para><b>And they are READ, not typed.</b> The Otter's four numbers and her door were
+        /// typed onto her asset by hand and pinned by a test whose own doc says why —
+        /// <i>"typed numbers drift"</i>. Eight more bodies is eight more chances; the bake now reads
+        /// the same document the test pins it against, so there is one number rather than two.</para>
+        /// </summary>
+        static void WriteSidecarFacts(in VehicleRigFleet.Vehicle v, VehicleMeshDef def,
+                                      VehicleSidecarFacts facts)
+        {
+            def.DriveDoorLocal = facts.HasDriveDoor ? facts.DriveDoorLocal : Vector2.zero;
+            def.DriverSeatLocal = facts.HasDriverSeat ? facts.DriverSeatLocal : Vector3.zero;
+
+            def.ColliderMinMeters = facts.HasCollider ? facts.ColliderMin : Vector3.zero;
+            def.ColliderMaxMeters = facts.HasCollider ? facts.ColliderMax : Vector3.zero;
+
+            def.FloatSinkMeters = facts.HasFlotation ? facts.FloatSinkMeters : 0f;
+            def.FloatDraftMeters = facts.HasFlotation ? facts.FloatDraftMeters : 0f;
+            def.WatertightHalfBeamMeters = facts.HasFlotation ? facts.WatertightHalfBeamMeters : 0f;
+            def.WatertightDeckHeightMeters =
+                facts.HasFlotation ? facts.WatertightDeckHeightMeters : 0f;
+
+            string where = string.IsNullOrEmpty(facts.BodyScope)
+                ? v.SidecarPath
+                : $"{v.SidecarPath} → bodies.{facts.BodyScope}";
+
+            Debug.Log(
+                $"[rig-vehicle] {v.Key} sidecar facts from {where}: " +
+                $"drive door {(facts.HasDriveDoor ? def.DriveDoorLocal.ToString("0.###") : "none")}, " +
+                $"driver seat {(facts.HasDriverSeat ? def.DriverSeatLocal.ToString("0.###") : "hidden")}, " +
+                $"collider {(def.HasCollider ? $"{def.ColliderMinMeters:0.##}..{def.ColliderMaxMeters:0.##}" : "none")}, " +
+                $"floats = {def.Floats}." +
+                (facts.Absences.Count == 0
+                    ? ""
+                    : "\n  Absent, and each absence is an ANSWER rather than a gap:\n    – " +
+                      string.Join("\n    – ", facts.Absences)));
         }
 
         // =============================================================================================
@@ -294,8 +419,21 @@ namespace HiddenHarbours.Tools.RigBaking
             // be. A skid-steer machine exports roll per SIDE (the Otter's `rollL`/`rollR`), so one
             // probe moves four wheels that share a side and only their fore-aft station separates
             // them. Defaults are ±Infinity, so a vehicle that does not need it is unaffected.
+            // ⚠️⚠️ EVERY POSE IS MERGED ONTO THE VEHICLE'S REST POSE, and on a container rig that
+            // rest pose carries the BODY. `__vfaces({})` was the neutral pose until 2026-08-27, and
+            // on trailerIsoRig.js that is `reefer53` — so a flatbed's wheel probe would have diffed
+            // the default body against the default body, found the reefer's wheels, and handed them
+            // to the flatbed's fitting with the right count and no error. An unknown or absent body
+            // does not throw on this rig; it falls back. The merge is written so the axis pose WINS
+            // on a collision, but the body is never a probe key, so it cannot be overridden.
             host.Execute($@"
-                function __vfaces(o){{ return {g}.{v.FaceBuilderName}({g}.resolve(o)); }}
+                function __vbase(){{ return {v.RestPose}; }}
+                function __vpose(o){{
+                  var s = __vbase();
+                  for (var k in o) s[k] = o[k];
+                  return s;
+                }}
+                function __vfaces(o){{ return {g}.{v.FaceBuilderName}({g}.resolve(__vpose(o))); }}
                 function __vmoved(pose, sideSign, yMin, yMax){{
                   var a = __vfaces({{}}), b = __vfaces(pose), out = [];
                   for (var i = 0; i < a.length; i++) {{
@@ -463,6 +601,20 @@ namespace HiddenHarbours.Tools.RigBaking
             string g = v.GlobalName;
             string sin = Math.Sin(elevationDeg * Math.PI / 180.0).ToString("R", Inv);
 
+            // ⚠️⚠️ WHICH BODY THE ANCHORS ARE ASKED FOR. `anchors(dir, {})` answers for whatever the
+            // rig resolves, and on a container rig that is its DEFAULT body — so asking once for the
+            // file would hand all four trailers reefer53's bearings. RigHullExtraction.ViewOptions
+            // is exactly the descriptor for this ("what a probe needs in order to photograph THIS
+            // hull rather than the generator's default"), and it is the fourth and last place in
+            // this drop where a missing pick does not throw.
+            string opts = string.IsNullOrEmpty(v.Extraction?.ViewOptions) ? "{}" : v.Extraction.ViewOptions;
+
+            // ⚠️ The ABEAM pair is per-vehicle. Every DRIVEN rig publishes wheelFL/wheelFR; a towed
+            // body has no front axle at all and publishes wheelL/wheelR instead. Asking a trailer
+            // for wheelFL reads `undefined.y` — and the admissibility gate below is what turns that
+            // into a throw rather than a NaN bearing that quietly resolves CounterClockwise.
+            string abeamL = v.AzimuthAbeamLeftAnchor, abeamR = v.AzimuthAbeamRightAnchor;
+
             if (!host.EvaluateBool($"typeof {g}.anchors === 'function'"))
                 throw new InvalidOperationException(
                     $"{v.Key}: the rig publishes no anchors(), so there is no analytic oracle for her " +
@@ -470,17 +622,19 @@ namespace HiddenHarbours.Tools.RigBaking
                     "meaningless on a box and would mirror her heading mapping on a coin flip.");
 
             if (!host.EvaluateBool(
-                    $"(function(a){{return !!a && !!a.wheelFL && !!a.wheelFR && " +
-                    $"Math.abs(a.wheelFR.y - a.wheelFL.y) < 1e-6 && " +
-                    $"Math.abs(a.wheelFR.x - a.wheelFL.x) > 1e-6;}})({g}.anchors(0,{{}}))"))
+                    $"(function(a){{return !!a && !!a.{abeamL} && !!a.{abeamR} && " +
+                    $"Math.abs(a.{abeamR}.y - a.{abeamL}.y) < 1e-6 && " +
+                    $"Math.abs(a.{abeamR}.x - a.{abeamL}.x) > 1e-6;}})({g}.anchors(0,{opts}))"))
                 throw new InvalidOperationException(
-                    $"{v.Key}: the rig's front wheel anchors are not an admissible ABEAM pair at " +
-                    "heading 0 (equal screen y, different screen x). Something moved the front axle " +
-                    "off-square, and the bearing below would not be a vehicle bearing.");
+                    $"{v.Key}: '{abeamL}' and '{abeamR}' are not an admissible ABEAM pair at heading 0 " +
+                    "(both present, equal screen y, different screen x). Either the axle moved " +
+                    "off-square or this machine does not publish those two anchors — a truck's are " +
+                    "wheelFL/wheelFR, a towed body's are wheelL/wheelR. Either way the bearing below " +
+                    "would not be a vehicle bearing.");
 
             double bearing = host.EvaluateNumber(
-                $"(function(a){{return Math.atan2((a.wheelFR.y-a.wheelFL.y)/{sin}," +
-                $"a.wheelFR.x-a.wheelFL.x)*180/Math.PI;}})({g}.anchors(2,{{}}))");
+                $"(function(a){{return Math.atan2((a.{abeamR}.y-a.{abeamL}.y)/{sin}," +
+                $"a.{abeamR}.x-a.{abeamL}.x)*180/Math.PI;}})({g}.anchors(2,{opts}))");
             AzimuthConvention abeam = bearing > 0 ? AzimuthConvention.Clockwise
                                                   : AzimuthConvention.CounterClockwise;
 
@@ -494,7 +648,7 @@ namespace HiddenHarbours.Tools.RigBaking
 
             if (!host.EvaluateBool(
                     $"(function(a){{return !!a && !!a.{aft} && !!a.{fore} && " +
-                    $"Math.abs(a.{fore}.x - a.{aft}.x) < 1e-6;}})({g}.anchors(0,{{}}))"))
+                    $"Math.abs(a.{fore}.x - a.{aft}.x) < 1e-6;}})({g}.anchors(0,{opts}))"))
                 throw new InvalidOperationException(
                     $"{v.Key}: '{aft}' and '{fore}' are not an admissible CENTRELINE pair at heading 0 " +
                     "(both present, same screen x). One of them is missing from her anchors(), or it " +
@@ -502,7 +656,7 @@ namespace HiddenHarbours.Tools.RigBaking
                     "signal.");
 
             double noseDx = host.EvaluateNumber(
-                $"(function(a){{return a.{fore}.x - a.{aft}.x;}})({g}.anchors(2,{{}}))");
+                $"(function(a){{return a.{fore}.x - a.{aft}.x;}})({g}.anchors(2,{opts}))");
             AzimuthConvention foreAft = noseDx > 0 ? AzimuthConvention.Clockwise
                                                    : AzimuthConvention.CounterClockwise;
 
@@ -516,9 +670,9 @@ namespace HiddenHarbours.Tools.RigBaking
                     "reference in one host and compare bearings before baking anything.");
 
             Debug.Log($"[rig-vehicle] {v.Key} azimuth {abeam} — CONFIRMED by two independent oracles: " +
-                      $"front-axle abeam ground bearing {bearing:F2}° at a quarter turn, and " +
-                      $"centreline {aft}→{fore} screen dx {noseDx:F1} px. The silhouette taper was NOT " +
-                      "consulted: she is a box and it carries no signal.");
+                      $"abeam {abeamL}→{abeamR} ground bearing {bearing:F2}° at a quarter turn, and " +
+                      $"centreline {aft}→{fore} screen dx {noseDx:F1} px, both at {opts}. The " +
+                      "silhouette taper was NOT consulted: she is a box and it carries no signal.");
             return abeam;
         }
 

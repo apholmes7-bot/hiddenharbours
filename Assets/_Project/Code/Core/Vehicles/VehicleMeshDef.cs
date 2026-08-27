@@ -231,6 +231,36 @@ namespace HiddenHarbours.Core
         /// rather than assuming the kind implies the geometry.</summary>
         public bool Floats => FloatSinkMeters > 0f && FloatDraftMeters > 0f;
 
+        [Header("Hard points (the art's own solid box — placement and collision)")]
+        [Tooltip("The low corner of the machine's solid bounding box, in rig metres (+x curb side, " +
+                 "+y nose, +z up) — the gameplay sidecar's own BODY.collider_bbox, read at bake time.")]
+        public Vector3 ColliderMinMeters;
+
+        [Tooltip("The high corner of the same box.\n\n" +
+                 "⚠️ It is the box the ART says is solid, and it is deliberately NOT the mesh's " +
+                 "bounds. Every sidecar in the fleet carves parts out of it in as many words — the " +
+                 "cabover's mirrors reach 2.60 m over against a 2.14 m body and are excluded, her " +
+                 "mudflaps are rubber ('sweep them, do not collide them'), and a flatbed's headboard " +
+                 "is published as a separate addition rather than folded in. A box taken off the " +
+                 "mesh would collide with all of it.\n\n" +
+                 "Min == Max means no box was published, which VehicleMeshDef.HasCollider reads as " +
+                 "'unknown' rather than 'zero-sized'. Measured art, not feel (rule 6).")]
+        public Vector3 ColliderMaxMeters;
+
+        /// <summary>
+        /// True when this def carries the art's solid box. The same shape as <see cref="Floats"/>
+        /// and <see cref="ShowsDriver"/> beside it: the question is answered by the geometry she
+        /// actually publishes, never by her <see cref="VehicleKind"/>.
+        ///
+        /// <para>A def baked before this field existed reads false, which is exactly what it was:
+        /// nothing on the vehicle path built a collider from a def, and a consumer must fall back
+        /// rather than collide with a zero-sized box at the origin.</para>
+        /// </summary>
+        public bool HasCollider =>
+            ColliderMaxMeters.x > ColliderMinMeters.x &&
+            ColliderMaxMeters.y > ColliderMinMeters.y &&
+            ColliderMaxMeters.z > ColliderMinMeters.z;
+
         [Header("Wheels (the articulated fittings lifted out of the body mesh)")]
         [Tooltip("Every part that moves relative to the body, with the motion it takes. Written by " +
                  "the baker; the driver poses each one every LateUpdate.")]
@@ -297,7 +327,12 @@ namespace HiddenHarbours.Core
         /// the corner but do not turn with the tyre. Steer only.</summary>
         SteerOnly = 1,
 
-        /// <summary>A rear wheel (on the Dually, a dual pair driven by one roll axis). Roll only.</summary>
+        /// <summary>A rear wheel (on the Dually, a dual pair driven by one roll axis). Roll only.
+        ///
+        /// <para>On a semi's tandem and a 53-ft trailer's, ONE roll axis drives two axles and the
+        /// two are separated by an axle-station window rather than by a probe — so a rear fitting
+        /// there is one axle of a pair, not one wheel. See <c>VehicleRigFleet.Axis.YMin</c>.</para>
+        /// </summary>
         RollOnly = 2,
     }
 
