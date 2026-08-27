@@ -93,7 +93,8 @@
       "evidence": "Hashing every blob of this rig across all 588 commits and every ref yields exactly ONE distinct version, which is main's current. Main cannot have drifted out from under the measurement. The bundled revision keeps the paint kit intact and adds doorFaces(V,t) - purely additive. AXIS A NOW PASSES: the re-export re-stamped every sidecar to the renderer that shipped (34bb7813), verified computationally. The bundled hull rig is byte-identical to drop 1, so the Axis B finding above is unchanged.",
       "inherits_to": "all 18 lobsterBoatVariants sidecars",
       "upstream_ask": "Nothing. Axis A and Axis B both pass against the re-export.",
-      "_superseded_verdict": "REFUSED-PIN in drop 1 \u2014 cleared by the re-export."
+      "_superseded_verdict": "REFUSED-PIN in drop 1 \u2014 cleared by the re-export.",
+      "_batch2_note": "2026-08-27, CUTAWAY BATCH 2: this hull's exterior rig MOVED, and the fields above are the drop-1 adjudication, kept as written. Read them as historical. Root canon went ff8414f8\u2026 -> ce7d45ff\u2026 (pass 5), and the kit copy the interior sidecars actually pinned went f5fa0429\u2026 -> the SAME ce7d45ff\u2026, so docs/art/rigs/ and boat-interiors-kit/hull-rigs/ hold identical bytes for this hull for the first time. 'drift: none possible - one version across the entire history' was true when written and is now false; there are two. The verdict is unchanged and was not re-earned - see _corrections, 2026-08-27."
     },
     {
       "hull_stem": "sideDraggerIsoRig",
@@ -106,7 +107,8 @@
       "drift": "none possible - one version across the entire history",
       "evidence": "The gameplay sidecar's _supersedes points at the kit's OWN new rig, so the stamp says nothing. Discovery settles it anyway: one distinct blob across all refs. The bundled revision removes the deckhouse front wall face and its painted-on 'deck door' frontPanel and replaces them with published DOOR geometry - the additive revision the manifest claims. AXIS A NOW PASSES: the re-export re-stamped every sidecar to the renderer that shipped (34bb7813), verified computationally. The bundled hull rig is byte-identical to drop 1, so the Axis B finding above is unchanged.",
       "upstream_ask": "Nothing. Axis A and Axis B both pass against the re-export.",
-      "_superseded_verdict": "REFUSED-PIN in drop 1 \u2014 cleared by the re-export."
+      "_superseded_verdict": "REFUSED-PIN in drop 1 \u2014 cleared by the re-export.",
+      "_batch2_note": "2026-08-27, CUTAWAY BATCH 2: this hull's exterior rig MOVED, and the fields above are the drop-1 adjudication, kept as written. Read them as historical. Root canon went 3e82a11e\u2026 -> c4ad1816\u2026 (pass 3), and the kit copy the interior sidecars actually pinned went b5223748\u2026 -> the SAME c4ad1816\u2026, so docs/art/rigs/ and boat-interiors-kit/hull-rigs/ hold identical bytes for this hull for the first time. 'drift: none possible - one version across the entire history' was true when written and is now false; there are two. The verdict is unchanged and was not re-earned - see _corrections, 2026-08-27."
     },
     {
       "hull_stem": "sternTrawlerIsoRig",
@@ -132,7 +134,8 @@
       "drift": "none possible - one version across the entire history",
       "evidence": "One distinct blob across all refs. Same additive door revision as the mk1. AXIS A NOW PASSES: the re-export re-stamped every sidecar to the renderer that shipped (34bb7813), verified computationally. The bundled hull rig is byte-identical to drop 1, so the Axis B finding above is unchanged.",
       "upstream_ask": "Nothing. Axis A and Axis B both pass against the re-export.",
-      "_superseded_verdict": "REFUSED-PIN in drop 1 \u2014 cleared by the re-export."
+      "_superseded_verdict": "REFUSED-PIN in drop 1 \u2014 cleared by the re-export.",
+      "_batch2_note": "2026-08-27, CUTAWAY BATCH 2: this hull's exterior rig MOVED, and the fields above are the drop-1 adjudication, kept as written. Read them as historical. Root canon went 4656fd3d\u2026 -> 7bf879c4\u2026 (pass 3), and the kit copy the interior sidecars actually pinned went e7fa9ea6\u2026 -> the SAME 7bf879c4\u2026, so docs/art/rigs/ and boat-interiors-kit/hull-rigs/ hold identical bytes for this hull for the first time. 'drift: none possible - one version across the entire history' was true when written and is now false; there are two. The verdict is unchanged and was not re-earned - see _corrections, 2026-08-27."
     },
     {
       "hull_stem": "coastalPacketIsoRig",
@@ -159,7 +162,8 @@
       "evidence": "No provenance stamp; discovery gives one distinct blob across all refs. The bundled revision replaces the poop aft wall face, its painted aft door and four painted port lights with published DOOR geometry. AXIS A NOW PASSES: the re-export re-stamped every sidecar to the renderer that shipped (34bb7813), verified computationally. The bundled hull rig is byte-identical to drop 1, so the Axis B finding above is unchanged.",
       "pixels_per_metre": 16,
       "upstream_ask": "Nothing. Axis A and Axis B both pass against the re-export.",
-      "_superseded_verdict": "REFUSED-PIN in drop 1 \u2014 cleared by the re-export."
+      "_superseded_verdict": "REFUSED-PIN in drop 1 \u2014 cleared by the re-export.",
+      "_batch2_note": "2026-08-27, CUTAWAY BATCH 2: this hull's exterior rig MOVED, and the fields above are the drop-1 adjudication, kept as written. Read them as historical. Root canon went deec4594\u2026 -> abd17acb\u2026 (pass 3), and the kit copy the interior sidecars actually pinned went c2faaa38\u2026 -> the SAME abd17acb\u2026, so docs/art/rigs/ and boat-interiors-kit/hull-rigs/ hold identical bytes for this hull for the first time. 'drift: none possible - one version across the entire history' was true when written and is now false; there are two. The verdict is unchanged and was not re-earned - see _corrections, 2026-08-27."
     }
   ],
   "_corrections": [
@@ -190,8 +194,7 @@
     "  TheSportFishersRefusalNamesTheTemplateAndNotSomethingVaguer,",
     "  EveryStampedHullPinResolvesToTheBundledRigItNames and",
     "  TheReExportClearedTwentyFourAndBrokeTheTwoThatWereAlreadyClean -- were updated in the SAME",
-    "  change, which is what those tests asked for in their own comments."
-,
+    "  change, which is what those tests asked for in their own comments.",
     "2026-08-26 (late), sportFisherIsoRig2 (both hulls): the bundled hull rig moved ebc77bac... -> 205a93c9...",
     "  by exactly ONE non-visual literal (interior.bridge.deckId 'sky_sole' -> 'bridge_sole', the skybridge",
     "  walkable-id reconciliation this intake asked for; diff verified, one line, no geometry). Upstream's",
@@ -228,7 +231,43 @@
     "    px over 27 poses, all recolour, no silhouette change. No facing is 100% byte-identical, so",
     "    that clause could not have been met as written by ANY correct merge. Point 3 is therefore",
     "    asserted on the aft-wall bound, which IS met, and the labels are recorded here as unreliable",
-    "    (the cape's own slice test warns her art is baked counter-clockwise)."
+    "    (the cape's own slice test warns her art is baked counter-clockwise).",
+    "",
+    "2026-08-27, CUTAWAY BATCH 2 (sideDragger + sternTrawlerMk2 + tanker pass 3, lobsterBoatVariants",
+    "  pass 5): four exterior rigs moved and 63 sidecar pins moved with them. NO VERDICT CHANGED and",
+    "  the cover stays 27 - these four hulls were already CLEAN on both axes and are counted in the",
+    "  ten family rows above. What follows is the sha record, not a re-adjudication.",
+    "",
+    "  Root canon -> pass, and the kit copy -> the same pass (they are now identical bytes, per hull):",
+    "    sideDraggerIsoRig          root 3e82a11e... | kit b5223748... -> c4ad1816...",
+    "    sternTrawlerMk2IsoRig      root 4656fd3d... | kit e7fa9ea6... -> 7bf879c4...",
+    "    tankerIsoRig               root deec4594... | kit c2faaa38... -> abd17acb...",
+    "    lobsterBoatVariantsIsoRig  root ff8414f8... | kit f5fa0429... -> ce7d45ff...",
+    "  Note the TWO baselines. Axis B resolved each hull's baseline against ROOT, because root was all",
+    "  main had; the interiors were in fact cut from the KIT copy, which main never held. Both are",
+    "  recorded here so the pair is never mistaken for one number, and the receipt's own lineage claim",
+    "  (base sha == the cut-time pin) was checked against the KIT copies, where it holds 4/4.",
+    "",
+    "  THE PINS. 63 files, 63 pin lines, in three layers - 21 x docs/art/rigs/gameplay/, 21 x",
+    "  boat-interiors-kit/**/*.interior.json (hullRigSha256), 21 x boat-interiors-kit/gameplay/. The 42",
+    "  in the kit layers came from upstream's refresh and were verified line by line against the",
+    "  receipt's old->new pairs BEFORE landing: 42/42 single-line moves, base -> pass, nothing else in",
+    "  the diff. The 21 root sidecars were NOT in the refresh (that layer lives in upstream's tree) and",
+    "  were stamped here with the LF sha of the bytes landed in the same commit - the same value",
+    "  upstream declared. After landing, all 63 were re-checked as resolving to the bytes they name.",
+    "",
+    "  WHAT LICENSES MOVING A PIN, measured rather than read off the receipt. A standalone ClearScript",
+    "  V8 harness ran each BASE rig against its PASS rig. Ships: loft, HOUSE, every published anchor and",
+    "  16 renders (8 facings x door 0/1) byte-identical on all three; the only keys added are geometry,",
+    "  faces, doorFaces, LEVEL_IDS, and none was removed. Variants: loftOf/houseOf/anchors/",
+    "  gameplayGeometry/hullMeta/resolve/windowPlan identical on all 18, and 43/43 renders byte-",
+    "  identical. interiorEnv(v) DID differ on all 18 - chased down to the four added keys plus the",
+    "  source text of render()'s new cullLevels branch; compared data-only it is identical 18/18. The",
+    "  harness was controlled first: it reproduces #660's already-adjudicated batch-1 trawler as",
+    "  additive, and it catches a 1 cm move of DECK in loft, HOUSE and every pixel probe.",
+    "",
+    "  \u26a0 NOT re-stamped, deliberately: the _supersedes history lines (history stays history) and",
+    "  interiorDerivedFromRigSha256 (boatInteriorRig's own layer, untouched by this batch)."
   ],
   "_reexport": [
     "The re-export (commit 74be6b70) was verified against the bytes, not accepted on its gate report.",
