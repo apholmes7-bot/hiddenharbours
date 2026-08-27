@@ -148,6 +148,55 @@ namespace HiddenHarbours.Boats
             if (lateral.sqrMagnitude <= 1e-8f) return 0f;
             return Mathf.Atan2(lateral.y, lateral.x) * Mathf.Rad2Deg;
         }
+
+        // ==== PER-CREST VARIANCE (owner eyeball 2026-08-27, defect 1) ================================
+        //
+        // "the old static rear wakes ... read as a sprite baked staticly, are never manipulated, and
+        // don't follow the deposited trail's pattern."
+        //
+        // Every crest in the wake wave is the SAME authored sprite at the SAME analytic orientation,
+        // scaled by an amplitude that varies only with the hull. Laid at an even spacing down a straight
+        // track, that is a stamped pattern — the "everything looks very organized and shader-like"
+        // complaint arriving through a second stream after the bubbles cured it in the first. The cure
+        // is the bubble lane's doctrine and NOT more pattern: per-thing variance off each crest's own
+        // birth seed. Both knobs at 0 restore the shipped rigid look exactly.
+
+        /// <summary>
+        /// A crest's own drawn LENGTH: the shared length scattered by ±<see cref="WakeWaveConfig.LengthJitter"/>
+        /// from its birth seed. Two crests laid a third of a metre apart are no longer the same bar, so a
+        /// run of them reads as water standing up rather than as a ruled pattern repeating.
+        ///
+        /// <para>Deterministic (rule 5) — the seed is the particle's, run through the wake's shared
+        /// avalanche with its own salt, so it correlates with nothing else the crest does. Jitter 0
+        /// returns <paramref name="lengthMeters"/> unchanged, bit-exact. Floored above zero so a
+        /// mis-tuned jitter can never collapse a crest to a degenerate quad.</para>
+        /// </summary>
+        public static float CrestLengthMeters(float lengthMeters, float seed01, in WakeWaveConfig c)
+        {
+            float jitter = Mathf.Clamp01(c.LengthJitter);
+            if (jitter <= 0f) return lengthMeters;
+            float k = 1f + (WakeParticleSystem.Hash01((uint)(Mathf.Clamp01(seed01) * 16777215f) ^ 0x5BD1u)
+                            - 0.5f) * 2f * jitter;
+            return Mathf.Max(0.01f, lengthMeters * k);
+        }
+
+        /// <summary>
+        /// A crest's own drawn ORIENTATION: the baked analytic angle wobbled by
+        /// ±<see cref="WakeWaveConfig.OrientJitterDeg"/> from its birth seed.
+        ///
+        /// <para>Deliberately SMALL. The baked angle is the emergent V's actual locus and the reason the
+        /// arms read as a wake at all (orienting by live velocity was the "horizontal dashes" defect);
+        /// this does not replace it, it stops a row of crests being pixel-identical copies of one
+        /// another. A few degrees is the difference between water and a rubber stamp. 0 = the exact
+        /// baked angle.</para>
+        /// </summary>
+        public static float CrestOrientDeg(float orientDeg, float seed01, in WakeWaveConfig c)
+        {
+            float wobble = Mathf.Max(0f, c.OrientJitterDeg);
+            if (wobble <= 0f) return orientDeg;
+            return orientDeg + (WakeParticleSystem.Hash01(
+                (uint)(Mathf.Clamp01(seed01) * 16777215f) ^ 0x9C17u) - 0.5f) * 2f * wobble;
+        }
     }
 
     /// <summary>
@@ -192,6 +241,20 @@ namespace HiddenHarbours.Boats
                  "is what stops long overlapping crests reading as drawn lines.")]
         public float CrestUndulation;
 
+        [Header("Living crests (owner eyeball 2026-08-27: they must not read as a baked sprite)")]
+        [Tooltip("How far a crest's tint walks down the SEA'S OWN colour ramp over its life, as a " +
+                 "MULTIPLY on the sprite (so its lit-crest/dark-hollow profile is scaled, never " +
+                 "flattened). 0 = the flat near-white the crests shipped with, bit-exact — which is " +
+                 "what made them the one wake stream that never changed colour at all.")]
+        [Range(0f, 1f)] public float AgeStrength;
+        [Tooltip("+/- per-crest length variation from its own birth seed. 0 = every crest the same " +
+                 "bar, which is what makes a run of them read as a stamped pattern.")]
+        [Range(0f, 0.5f)] public float LengthJitter;
+        [Tooltip("+/- per-crest orientation wobble (degrees) about the baked analytic angle. Small: " +
+                 "the baked angle IS the emergent V and must survive; this only stops neighbouring " +
+                 "crests being pixel-identical copies.")]
+        [Range(0f, 15f)] public float OrientJitterDeg;
+
         [Header("The STERN ROLL (what the retired plume decal was really drawing)")]
         [Tooltip("Lay a crest ACROSS the track at each deposit — the raised water the transom drags. " +
                  "Off = arms only.")]
@@ -221,6 +284,13 @@ namespace HiddenHarbours.Boats
             MinCrestHeightMeters    = 0.10f,
             Opacity                 = 0.72f,   // water, not paint
             CrestUndulation         = 0.22f,
+
+            // The crests join the age ramp (2026-08-27). 0.7 rather than 1: a crest is standing water
+            // catching the light, so it stays a shade brighter than the flat foam lying beside it even
+            // when both are old — a full walk would sink the profile into the sea it is standing out of.
+            AgeStrength             = 0.7f,
+            LengthJitter            = 0.28f,   // +/- a quarter — visibly different bars, still one wake
+            OrientJitterDeg         = 4f,      // a wobble, not a scatter: the V must still read as a V
 
             TransomCrest            = true,
             TransomAmplitudeScale   = 1.45f,   // the stern roll is the biggest wave she makes

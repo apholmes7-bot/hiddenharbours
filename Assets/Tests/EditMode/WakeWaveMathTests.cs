@@ -178,6 +178,100 @@ namespace HiddenHarbours.Tests.EditMode
 
         // ==== the A/B and the pool budget ============================================================
 
+        // ==== PER-CREST VARIANCE + AGEING (owner eyeball 2026-08-27, defect 1) ======================
+        //
+        // "the old static rear wakes ... read as a sprite baked staticly, are never manipulated". The
+        // crests WERE the rear wake and WERE the one stream with no variation of any kind: same sprite,
+        // same baked angle, same length, and — uniquely — a tint that never moved at all, because #665
+        // excluded them from the age ramp to protect the sprite's own crest/hollow profile.
+
+        [Test]
+        public void CrestLength_VariesPerCrest_SoARunOfThemIsNotAStamp()
+        {
+            var cfg = WakeWaveConfig.Default;
+            Assert.Greater(cfg.LengthJitter, 0f, "the shipped wave must actually vary its crests");
+
+            var seen = new System.Collections.Generic.HashSet<float>();
+            float min = float.MaxValue, max = float.MinValue;
+            for (int i = 0; i < 200; i++)
+            {
+                float seed = i / 199f;
+                float len = WakeWaveMath.CrestLengthMeters(4f, seed, in cfg);
+                seen.Add(Mathf.Round(len * 1000f) / 1000f);
+                min = Mathf.Min(min, len);
+                max = Mathf.Max(max, len);
+            }
+            Assert.Greater(seen.Count, 100, "every crest came out the same length — that is the stamp");
+            Assert.GreaterOrEqual(min, 4f * (1f - cfg.LengthJitter) - 1e-4f, "jitter escaped its bound (low)");
+            Assert.LessOrEqual(max, 4f * (1f + cfg.LengthJitter) + 1e-4f, "jitter escaped its bound (high)");
+        }
+
+        [Test]
+        public void CrestOrientation_WobblesSmall_SoTheVStillReadsAsAV()
+        {
+            var cfg = WakeWaveConfig.Default;
+            Assert.Greater(cfg.OrientJitterDeg, 0f, "…and must actually wobble");
+            Assert.LessOrEqual(cfg.OrientJitterDeg, 8f,
+                "The baked analytic angle IS the emergent V, and orienting crests by anything looser " +
+                "was the 'horizontal dashes' defect. This is a wobble, not a scatter.");
+
+            for (int i = 0; i < 200; i++)
+            {
+                float got = WakeWaveMath.CrestOrientDeg(37f, i / 199f, in cfg);
+                Assert.LessOrEqual(Mathf.Abs(got - 37f), cfg.OrientJitterDeg + 1e-4f,
+                    "the wobble escaped its configured bound");
+            }
+        }
+
+        [Test]
+        public void BothCrestJitters_AreBitExactPassthroughsAtZero()
+        {
+            var cfg = WakeWaveConfig.Default;
+            cfg.LengthJitter = 0f;
+            cfg.OrientJitterDeg = 0f;
+            for (int i = 0; i < 50; i++)
+            {
+                float seed = i / 49f;
+                Assert.AreEqual(4.25f, WakeWaveMath.CrestLengthMeters(4.25f, seed, in cfg), 0f,
+                    "length jitter 0 must return the shared length to the bit");
+                Assert.AreEqual(-113.5f, WakeWaveMath.CrestOrientDeg(-113.5f, seed, in cfg), 0f,
+                    "orient jitter 0 must return the baked angle to the bit");
+            }
+        }
+
+        [Test]
+        public void TheCrestJitters_AreDeterministic_AndDecorrelated()
+        {
+            var cfg = WakeWaveConfig.Default;
+            // Rule 5: same seed, same crest, every run.
+            Assert.AreEqual(WakeWaveMath.CrestLengthMeters(3f, 0.31f, in cfg),
+                            WakeWaveMath.CrestLengthMeters(3f, 0.31f, in cfg), 0f);
+
+            // …and a crest that happens to be long must not also be systematically rotated one way, or
+            // the two "variations" are one variation wearing two hats.
+            int longAndLeft = 0, longAndRight = 0;
+            for (int i = 0; i < 400; i++)
+            {
+                float seed = i / 399f;
+                if (WakeWaveMath.CrestLengthMeters(3f, seed, in cfg) <= 3f) continue;
+                if (WakeWaveMath.CrestOrientDeg(0f, seed, in cfg) < 0f) longAndLeft++; else longAndRight++;
+            }
+            int total = longAndLeft + longAndRight;
+            Assert.Greater(total, 50, "sanity: some crests must come out long");
+            Assert.Greater(Mathf.Min(longAndLeft, longAndRight), total * 0.3f,
+                "length and orientation are correlated — they must be independent draws off the seed");
+        }
+
+        [Test]
+        public void TheCrests_ShipAging_AndZeroIsTheOldFlatWhite()
+        {
+            Assert.Greater(WakeWaveConfig.Default.AgeStrength, 0f,
+                "The crests were the ONE wake stream that never changed colour for its whole life — " +
+                "which is exactly the 'baked statically, never manipulated' the owner reported. " +
+                "AgeStrength 0 is the look he already rejected and cannot be the shipped default.");
+            Assert.LessOrEqual(WakeWaveConfig.Default.AgeStrength, 1f, "it is a 0..1 dial");
+        }
+
         [Test]
         public void TheDefaultRetiresThePlumeDecal_AndStandsTheWaveInItsPlace()
         {

@@ -862,21 +862,26 @@ Shader "HiddenHarbours/Water"
         // with, this should churn through different shades of blue, distort and fade into the
         // ambient ocean over time."
         //
-        // The buffer already carries the age: it DECAYS, so a texel's stored coverage is how fresh
-        // that patch of churn is. What was missing is that the compose ignored it and lerped every
-        // texel toward one constant _FoamColor. Now the coverage indexes the sea's OWN palette ramp
-        // (_PaletteFoam -> _PaletteShallow -> _PaletteMid, ADR 0015) exactly as the particle wake
-        // does, so both halves of the wake age through the same blues. The dissolve into the
-        // ambient sea is already free: the lerp WEIGHT is the coverage, so the oldest foam barely
-        // tints the water it is lying on.
+        // The age indexes the sea's OWN palette ramp (_PaletteFoam -> _PaletteShallow ->
+        // _PaletteMid, ADR 0015) exactly as the particle wake does, so both halves of the wake age
+        // through the same blues. The dissolve into the ambient sea is free: the lerp WEIGHT is the
+        // COVERAGE, so the oldest foam barely tints the water it is lying on.
         //
-        // C# twin: WakeFoamAgeing.Knots / Ramp3 (Core). Change one, change BOTH in the same PR -
-        // a source-scrape test reads these lines and fails red on drift.
+        // 🔴 ROUND 2 (owner eyeball, 2026-08-27): the age is read from the buffer's FRESHNESS
+        // channel, not from its coverage. Coverage cannot carry age - it saturates within ~0.4 s of
+        // deposit and this shader then thresholds and posterizes it, so the value the proxy received
+        // could only ever be one of three ({0, 0.425, 0.85}) and 72-81% of a visible wake drew at
+        // age exactly 0. That is "stays white, never disperses", and no threshold retune can undo
+        // it. Freshness is a clock the injection MAXes and time decays, so it never clamps.
+        //
+        // C# twin: WakeFoamAgeing.Age01FromFreshness / Knots / Ramp3 (Core). Change one, change BOTH
+        // in the same PR - a source-scrape test reads these lines and fails red on drift.
         // 0 = a BIT-EXACT passthrough to the single-white compose (the A/B).
         _WakeFoamAgeStrength ("Wake foam age ramp (0 = one flat white, the shipped look)", Range(0,1)) = 1
-        // The stored coverage at/above which a texel is FRESH CHURN and draws pure white. Below it
-        // the texel has decayed and starts down the ramp.
-        _WakeFoamFreshCover  ("Wake foam coverage that still reads as fresh churn", Range(0.05,1)) = 0.72
+        // The buffer FRESHNESS at/above which a texel is churning right now and draws pure white.
+        // At 1 that is the instant of churn alone and the white HOLD is _WakeFoamWhiteHold's job -
+        // one knob for one idea. Lower it to let recently-churned water stay white a little longer.
+        _WakeFoamFreshFloor  ("Wake foam freshness that still reads as fresh churn", Range(0.05,1)) = 1
         // The same three knots the particle ramp uses, in AGE (0 = just churned, 1 = old).
         _WakeFoamWhiteHold   ("Wake foam: age it stays white until", Range(0,1)) = 0.12
         _WakeFoamBlueReach   ("Wake foam: age it reaches the shallow blue", Range(0,1)) = 0.45
@@ -1334,7 +1339,7 @@ Shader "HiddenHarbours/Water"
                 float  _WakeFoamLace;
                 float  _WakeFoamLaceScale;
                 float  _WakeFoamAgeStrength;
-                float  _WakeFoamFreshCover;
+                float  _WakeFoamFreshFloor;
                 float  _WakeFoamWhiteHold;
                 float  _WakeFoamBlueReach;
                 float  _WakeFoamDeepReach;
@@ -2572,19 +2577,28 @@ Shader "HiddenHarbours/Water"
             // default ON) on the SAME world-locked Bayer cell every other banded layer uses.
             // col.rgb / col.a dressing ONLY — never depth/clip()/_WaterLevel/the height read/the sim
             // (P1 integrity, rule 5). _WakeFoamStrength = 0 skips the whole block.
-            float WakeFoamCoverage(float2 worldXY, float bayer)
+            float WakeFoamCoverage(float2 worldXY, float bayer, out float freshness)
             {
+                freshness = 0.0;
                 if (_WakeFoamStrength <= 0.001) return 0.0;
                 // z = the window extent; <= 0 means the feature has never published one (no injector, or
                 // the pass disabled), so there is no foam rather than a grey wash from an unbound read.
                 if (_HHFoamBufferWorld.z <= 0.0) return 0.0;
 
+                // WARNING .xy is the DRAW origin: the cell lattice PLUS the sub-cell drift the buffer
+                // has banked but not yet spent as a whole-cell scroll (FoamBuffer.DrawOrigin). Reading
+                // through the bare lattice is what made the whole band teleport a cell at a time
+                // instead of drifting - the owner's "they shift in large groups".
                 float2 uv = (worldXY - _HHFoamBufferWorld.xy) * _HHFoamBufferWorld.w;
                 // Outside the window there is simply no record of this water. Clamping instead would
                 // smear the edge texel across the open sea as a hard band.
                 if (any(uv < 0.0) || any(uv > 1.0)) return 0.0;
 
-                float stored = SAMPLE_TEXTURE2D(_HHFoamBufferTex, sampler_HHFoamBufferTex, uv).r;
+                // ONE fetch, both channels: r = coverage (how much churn is on this water),
+                // g = freshness (how recently it was churned - the age clock).
+                float2 buffered = SAMPLE_TEXTURE2D(_HHFoamBufferTex, sampler_HHFoamBufferTex, uv).rg;
+                float stored = buffered.x;
+                freshness = buffered.y;
 
                 // ---- LACE (2026-08-05, the owner's "it needs another pass") -------------------------
                 // TEAR the stored coverage before it is thresholded. The buffer records how much churn
@@ -2663,22 +2677,37 @@ Shader "HiddenHarbours/Water"
                                 : lerp(shallow, mid, (t - 0.5) * 2.0);
             }
 
-            // The colour this patch of wake foam should be composed toward, given how much of it survives.
+            // TWIN of WakeFoamAgeing.Age01FromFreshness. How OLD this patch of churn is, from the
+            // buffer's FRESHNESS channel: 1 = churning right now, decaying toward 0 on its own
+            // half-life. Floored off zero so a mis-tuned material divides by nothing.
+            float WakeFoamAge01(float freshness, float freshFloor)
+            {
+                float fresh = max(freshFloor, 1e-4);
+                return saturate(1.0 - freshness / fresh);
+            }
+
+            // The colour this patch of wake foam should be composed toward, given how recently it was
+            // churned.
             //
-            // THE AGE PROXY: the buffer decays, so a texel's stored coverage IS its freshness. Coverage at
-            // or above _WakeFoamFreshCover is churn happening now (age 0, white); below it the texel has
-            // been decaying and walks down the ramp. Nothing new has to be stored to know a texel's age -
-            // the information was always in the buffer and the compose simply threw it away.
+            // THE AGE COMES FROM THE FRESHNESS CHANNEL, NOT THE COVERAGE. #665 used the coverage on the
+            // reasoning that a decaying buffer's surviving coverage is its age. Measured, that cannot
+            // work: coverage saturates at 1.0 within ~0.4 s of deposit, and WakeFoamCoverage above has
+            // already thresholded and posterized it before anything can read it - so the proxy's input
+            // could only ever take three values ({0, 0.425, 0.85} at the shipped material) and 72-81% of
+            // a visible wake drew at age exactly 0, pure white, at every speed. That is precisely the
+            // owner's "the big foam band stays white - never disperses", and it is not tunable: any
+            // threshold over three values still yields one flat colour for the whole band. The buffer
+            // now carries a freshness CLOCK the injection MAXes and time decays, which cannot clamp
+            // (FoamBuffer.Freshness). WakeFoamAgeingMeasurementTests keeps the old compression red.
             //
             // _WakeFoamAgeStrength = 0 returns _FoamColor.rgb unchanged: the shipped single-white compose,
             // bit-exact.
-            float3 WakeFoamAgedColor(float coverage)
+            float3 WakeFoamAgedColor(float freshness)
             {
                 float strength = saturate(_WakeFoamAgeStrength);
                 if (strength <= 0.001) return _FoamColor.rgb;
 
-                float fresh = max(_WakeFoamFreshCover, 1e-4);
-                float age   = saturate(1.0 - coverage / fresh);
+                float age   = WakeFoamAge01(freshness, _WakeFoamFreshFloor);
                 float t     = WakeFoamKnots(age, _WakeFoamWhiteHold, _WakeFoamBlueReach, _WakeFoamDeepReach);
                 float3 ramp = WakeFoamRamp3(t, _PaletteFoam.rgb, _PaletteShallow.rgb, _PaletteMid.rgb);
                 return lerp(_FoamColor.rgb, ramp, strength);
@@ -4417,15 +4446,16 @@ Shader "HiddenHarbours/Water"
                 // height read/the sim (P1 integrity, rule 5), and it leaves col.a's transmission contract
                 // (ADR 0027 #7) untouched. _WakeFoamStrength = 0 makes WakeFoamCoverage return 0 on its
                 // first line, so the shipped look is byte-identical until the owner dials it in.
-                float wakeFoam = WakeFoamCoverage(worldXY, bay);
+                float wakeFresh;
+                float wakeFoam = WakeFoamCoverage(worldXY, bay, wakeFresh);
                 if (wakeFoam > 0.001)
                 {
                     // AGED (owner ask 2026-08-27): white only where the hull is working the water right
-                    // now, then down the sea's own ramp as the buffer decays. The dissolve into the
-                    // ambient ocean needs no extra term - the lerp WEIGHT is the coverage, so the oldest
-                    // foam is both the bluest and the faintest, which is what "fades into the ambient
-                    // ocean over time" is.
-                    col.rgb = lerp(col.rgb, WakeFoamAgedColor(wakeFoam), saturate(wakeFoam) * _FoamColor.a);
+                    // now, then down the sea's own ramp as the freshness clock runs down. The two
+                    // channels do different jobs and must not be confused: FRESHNESS picks the colour,
+                    // COVERAGE is the weight - so the oldest foam is both the bluest and the faintest,
+                    // which is what "fades into the ambient ocean over time" is.
+                    col.rgb = lerp(col.rgb, WakeFoamAgedColor(wakeFresh), saturate(wakeFoam) * _FoamColor.a);
                 }
 
                 // ---- STORM FOAM LANES: long downwind foam streaks in a blow (col.rgb ONLY; Arc C, default OFF)

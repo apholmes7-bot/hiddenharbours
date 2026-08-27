@@ -23,13 +23,25 @@ namespace HiddenHarbours.Art
         /// <summary>How much foam to add at the centre of the band this frame, 0..1 (already
         /// dt-scaled by the injector, so the deposit is frame-rate independent).</summary>
         public readonly float Amount;
+        /// <summary>
+        /// How hard this hull is working the water right now, 0..1 — <c>FoamBuffer.Injection01</c>'s own
+        /// output, <b>before</b> it is turned into a per-frame amount.
+        ///
+        /// <para>It exists because the buffer's FRESHNESS channel is a clock, not an accumulation
+        /// (<see cref="FoamBuffer.Freshness"/>): the mark it stamps must say "this water was churned
+        /// this hard", which is dt-independent. <see cref="Amount"/> cannot answer that — it is the
+        /// same number multiplied by the frame's dt, so at 144 fps it would stamp a third of the
+        /// freshness it stamps at 48, and a wake's colour would depend on the frame rate.</para>
+        /// </summary>
+        public readonly float Vigour;
 
-        public FoamInjection(Vector2 from, Vector2 to, float radius, float amount)
+        public FoamInjection(Vector2 from, Vector2 to, float radius, float amount, float vigour)
         {
             From = from;
             To = to;
             Radius = radius;
             Amount = amount;
+            Vigour = vigour;
         }
     }
 
@@ -239,7 +251,14 @@ namespace HiddenHarbours.Art
         /// <summary>Advect pass: per-slot injection segment — <c>xy</c> = from, <c>zw</c> = to (world m).</summary>
         public static readonly int InjectSeg = Shader.PropertyToID("_HHFoamInjectSeg");
         /// <summary>Advect pass: per-slot injection shape — <c>x</c> = radius (m), <c>y</c> = amount
-        /// (0 in an unused slot, which is what makes the fixed-length loop cost nothing).</summary>
+        /// (0 in an unused slot, which is what makes the fixed-length loop cost nothing),
+        /// <c>z</c> = vigour 0..1 (the FRESHNESS mark; see <see cref="FoamInjection.Vigour"/>).</summary>
         public static readonly int InjectShape = Shader.PropertyToID("_HHFoamInjectShape");
+
+        /// <summary>Advect pass: this frame's exponential decay multiplier for the FRESHNESS channel
+        /// (<see cref="FoamBuffer.DecayFactor"/> on the age half-life — a different, shorter half-life
+        /// than the coverage channel's, so the colour walk completes while the foam is still visible).
+        /// </summary>
+        public static readonly int AgeDecay = Shader.PropertyToID("_HHFoamAgeDecay");
     }
 }

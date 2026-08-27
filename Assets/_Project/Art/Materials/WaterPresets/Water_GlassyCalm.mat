@@ -109,12 +109,17 @@ Material:
     - _UseSparkleTex: 1
     - _UseSurfaceTex: 1
     - _UseWhitecapTex: 1
+    - _WakeFoamAgeStrength: 1
     - _WakeFoamBands: 3
+    - _WakeFoamBlueReach: 0.45
+    - _WakeFoamDeepReach: 0.85
+    - _WakeFoamFreshFloor: 1
     - _WakeFoamLace: 0.7
     - _WakeFoamLaceScale: 1.8
     - _WakeFoamSoftness: 0.18
     - _WakeFoamStrength: 0.85
     - _WakeFoamThreshold: 0.12
+    - _WakeFoamWhiteHold: 0.12
     - _WaterLevel: 0
     - _WhitecapTexScale: 0.0625
     - _WhitecapTexStrength: 0.6
