@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: deck.tanker_iso
   SourceSidecar: docs/art/rigs/gameplay/tankerIsoRig.gameplay.json
   SourceRig: docs/art/rigs/tankerIsoRig.js
-  DerivedFromRigSha256: f1745a485e288f16bf9684bfe26532eaf3bf73d6038161b9271c12c29e868060
+  DerivedFromRigSha256: abd17acb503fc08ce518ea57dd5f3cdee5bac9d02043c80a7c4594bd57b105db
   LoaMeters: 110
   Areas:
   - Id: poop_aft
@@ -88,7 +88,7 @@ MonoBehaviour:
     - {x: -8.326, y: -6.4}
     - {x: -8.326, y: -11.6}
     - {x: -8.312, y: -16.8}
-    HeightPlane: {x: 0, y: 0, z: 8.6}
+    HeightPlane: {x: 3.1235147e-17, y: -2.2960054e-17, z: 8.6}
     HeightResidualMax: 0
     Bounds: {x: -8.326, y: -16.8, z: -6.3, w: 24.8}
   - Id: tank_lane_star
@@ -105,7 +105,7 @@ MonoBehaviour:
     - {x: 8.013, y: 24.8}
     - {x: 6.3, y: 24.8}
     - {x: 6.3, y: -16.8}
-    HeightPlane: {x: 0, y: 0, z: 8.6}
+    HeightPlane: {x: -3.1235147e-17, y: -2.2960054e-17, z: 8.6}
     HeightResidualMax: 0
     Bounds: {x: 6.3, y: -16.8, z: 8.326, w: 24.8}
   - Id: fore_deck
@@ -151,8 +151,8 @@ MonoBehaviour:
     - {x: -7.136, y: 39.663}
     - {x: -7.414, y: 36.455}
     - {x: -7.692, y: 33.25}
-    HeightPlane: {x: 0, y: 0.15926644, z: 5.784159}
-    HeightResidualMax: 0.09120314
+    HeightPlane: {x: 0, y: 0.15926647, z: 5.7841578}
+    HeightResidualMax: 0.09120369
     Bounds: {x: -7.692, y: 33.25, z: 7.692, w: 55.301}
   Cleats:
   - Id: bow_1
@@ -176,5 +176,5 @@ MonoBehaviour:
   - Id: stern_star
     Type: bollard
     PositionMeters: {x: 6.1, y: -53.5, z: 11.74}
-  WalkCenter: {x: 0, y: 0.8105}
+  WalkCenter: {x: 0, y: 0.8104992}
   WalkHalfExtents: {x: 8.326, y: 54.4905}
