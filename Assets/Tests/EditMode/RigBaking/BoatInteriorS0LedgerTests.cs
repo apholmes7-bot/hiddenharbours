@@ -146,46 +146,64 @@ namespace HiddenHarbours.Tests.RigBaking
         }
 
         [Test]
-        public void TheReExportClearedTwentyFourAndBrokeTheTwoThatWereAlreadyClean()
+        public void TheCutawayKitsStampClearedTheLastTwoAndOnlyTheCapeIsStillRefused()
         {
+            // ⚠️ THIS EXPECTATION MOVED ON 2026-08-26, which is the whole point of pinning it.
+            //
             // Drop 1: 2 clean (both sport fishers), 24 refused on the phantom renderer pin, 1 forked.
             // The re-export re-stamped all 27 to the renderer that shipped — clearing the 24 — and in
             // the same pass shipped an unsubstituted export template into the sport fishers' hull pins,
-            // which refuses exactly the two that were already good. Both halves pinned here, because a
-            // re-adjudication that quietly moved a hull either way is the thing this ledger exists to
-            // prevent. Update in the same change as any future re-export.
+            // which refused exactly the two that were already good. The cutaway kit (batch 1) then
+            // shipped the substitution, and the two REFUSED-PIN rows went back to CLEAN against the
+            // landed bytes: the stamp ebc77bac… is the LF sha256 of the bundled sportFisherIsoRig2.js.
+            //
+            // Every hop is still pinned, because a re-adjudication that quietly moves a hull in either
+            // direction is the thing this ledger exists to prevent. RefusedPin is now asserted ABSENT
+            // rather than looked up — a lookup would throw KeyNotFound and read as a broken test rather
+            // than as a cleared fleet. Update in the same change as any future re-export or import.
             var byVerdict = Committed().Values
                 .GroupBy(e => e.Verdict)
                 .ToDictionary(g => g.Key, g => g.Select(e => e.HullStem)
                                                 .OrderBy(x => x, System.StringComparer.Ordinal).ToArray());
 
-            CollectionAssert.AreEqual(
-                new[] { "sportFisherIsoRig2.convertible", "sportFisherIsoRig2.skybridge" },
-                byVerdict[BoatInteriorS0Verdict.RefusedPin],
-                "only the two sport fishers carry the re-export's unstamped pin");
+            CollectionAssert.IsEmpty(
+                byVerdict.TryGetValue(BoatInteriorS0Verdict.RefusedPin, out var refused)
+                    ? refused : System.Array.Empty<string>(),
+                "no hull is refused on its pin any more — the cutaway kit stamped the last two");
+            CollectionAssert.IsEmpty(
+                byVerdict.TryGetValue(BoatInteriorS0Verdict.StaleFatal, out var stale)
+                    ? stale : System.Array.Empty<string>(),
+                "no hull has ever been stale-fatal on the current ledger");
 
             CollectionAssert.AreEqual(
-                new[] { "capeIslanderIsoRig" }, byVerdict[BoatInteriorS0Verdict.ForkedRig]);
+                new[] { "capeIslanderIsoRig" }, byVerdict[BoatInteriorS0Verdict.ForkedRig],
+                "the cape is the one hull still refused, and she needs a rig MERGE, not a re-measure");
 
             CollectionAssert.AreEqual(
                 new[] { "coastalPacketIsoRig", "lobsterBoatIsoRig", "lobsterBoatVariantsIsoRig",
-                        "sideDraggerIsoRig", "sternTrawlerIsoRig", "sternTrawlerMk2IsoRig",
+                        "sideDraggerIsoRig", "sportFisherIsoRig2.convertible",
+                        "sportFisherIsoRig2.skybridge", "sternTrawlerIsoRig", "sternTrawlerMk2IsoRig",
                         "tankerIsoRig" },
                 byVerdict[BoatInteriorS0Verdict.Clean],
-                "seven families clear — 24 sidecars once the eighteen variants are counted");
+                "nine families clear — 26 sidecars once the eighteen lobster variants are counted");
         }
 
         [Test]
-        public void TheSportFishersRefusalNamesTheTemplateAndNotSomethingVaguer()
+        public void TheSportFishersClearanceCitesTheStampItWasFlippedAgainst()
         {
-            // The upstream fix is one substitution. A refusal that said "pin mismatch" would send
-            // somebody hunting a geometry problem that does not exist.
+            // The mirror of the refusal this replaces. That one insisted the refusal name the TEMPLATE
+            // rather than something vaguer, so nobody went hunting a geometry problem that did not
+            // exist; this one insists the clearance name the SHA it was flipped against, so nobody has
+            // to take "cleared" on trust. A verdict flips against bytes or it does not flip.
             foreach (string stem in new[] { "sportFisherIsoRig2.convertible", "sportFisherIsoRig2.skybridge" })
             {
                 BoatInteriorS0Entry e = BoatInteriorS0Ledger.For(Committed(), stem);
-                Assert.AreEqual(BoatInteriorS0Verdict.RefusedPin, e.Verdict);
-                StringAssert.Contains("STAMP_AT_EXPORT", e.Evidence);
-                StringAssert.Contains("template", e.UpstreamAsk.ToLowerInvariant());
+                Assert.AreEqual(BoatInteriorS0Verdict.Clean, e.Verdict);
+                StringAssert.Contains(
+                    "ebc77bace833361b578f5315e175e10de61d1acf77b5037390217ceb09221bcb", e.Evidence,
+                    "the clearance must carry the stamp it was checked against, not just a date");
+                StringAssert.Contains("sportFisherIsoRig2.js", e.Evidence);
+                StringAssert.DoesNotContain("STAMP_AT_EXPORT", e.UpstreamAsk);
             }
         }
 

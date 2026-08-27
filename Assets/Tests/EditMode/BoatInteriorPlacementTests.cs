@@ -26,12 +26,56 @@ namespace HiddenHarbours.Tests.EditMode
         private const string CellsFolder =
             "Assets/_Project/Resources/" + BoatInteriorCellsDef.ResourcesFolder;
 
-        /// <summary>The three hulls the S0 intake ledger REFUSES. Named here as the test's own
-        /// statement of the law — a def must never exist for one, and wiring must never reach one.</summary>
+        /// <summary>The hulls the S0 intake ledger REFUSES. Named here as the test's own statement of
+        /// the law — a def must never exist for one, and wiring must never reach one.
+        ///
+        /// <para>⚠️ This was THREE until 2026-08-26. The two sport fishers were refused on an unstamped
+        /// renderer pin — an export template sitting where the hash belongs — and the cutaway kit
+        /// shipped the substitution, so the ledger flipped both to CLEAN against the landed bytes
+        /// (<c>docs/art/rigs/boat-interiors-intake/s0-verdicts.json</c>, and its dated
+        /// <c>_corrections</c> entry). Their interiors were then baked and their defs built, which is
+        /// what a clearance authorises. The cape is the one hull still refused, and for a different
+        /// reason: her rig is FORKED, not unstamped, and she wants a rig merge rather than a
+        /// re-stamp.</para>
+        ///
+        /// <para>The list stays STATED here rather than read from the ledger, deliberately: this is the
+        /// last gate before a refused hull becomes enterable content, and a gate that derives its own
+        /// rule from the file it is guarding cannot catch that file being widened. It does mean this
+        /// array must move whenever a verdict does — which is exactly what happened here, and is why
+        /// the ledger change and this edit belong to one another.</para></summary>
         private static readonly string[] RefusedStems =
         {
-            "SportFisherConvertibleIso", "SportFisherSkybridgeIso", "CapeIslanderIso",
+            "CapeIslanderIso",
         };
+
+        /// <summary>The same refusals in the LEDGER's own vocabulary (interior hull-stems), for the
+        /// cross-check below.</summary>
+        private static readonly string[] RefusedLedgerHulls = { "capeIslanderIsoRig" };
+
+        [Serializable] private class LedgerRow { public string hull_stem; public string verdict; }
+        [Serializable] private class Ledger { public LedgerRow[] hulls; }
+
+        /// <summary>
+        /// The OTHER direction of the stated-list bargain. <see cref="RefusedStems"/> stays stated so
+        /// the gate cannot be widened by editing the file it guards — but a stated list can go STALE,
+        /// and did: the sport fishers sat in it after the ledger cleared them. This reads the ledger
+        /// with <see cref="JsonUtility"/> (no Tools-assembly reference needed) and fails when the two
+        /// disagree in either direction, naming the move to make.
+        /// </summary>
+        [Test]
+        public void TheRefusedTranscriptionMatchesTheLedger()
+        {
+            string path = Path.Combine(Directory.GetParent(Application.dataPath)!.FullName,
+                                       "docs/art/rigs/boat-interiors-intake/s0-verdicts.json");
+            Ledger ledger = JsonUtility.FromJson<Ledger>(File.ReadAllText(path));
+            string[] refused = ledger.hulls.Where(h => h.verdict != "CLEAN")
+                                     .Select(h => h.hull_stem)
+                                     .OrderBy(s => s, StringComparer.Ordinal).ToArray();
+            CollectionAssert.AreEqual(RefusedLedgerHulls, refused,
+                "the S0 ledger's refused set and this file's stated transcription (RefusedStems + " +
+                "RefusedLedgerHulls) disagree — move them in the SAME change as the ledger, with its " +
+                "citation, the way the 2026-08-26 sport-fisher re-clearance did.");
+        }
 
         private readonly List<UnityEngine.Object> _spawned = new();
 
@@ -106,8 +150,9 @@ namespace HiddenHarbours.Tests.EditMode
             }
 
             Assert.IsEmpty(wrong,
-                "the S0 ledger refuses these hulls (two sport fishers on an unstamped renderer pin, the " +
-                "cape on a forked rig). Fix the intake upstream, never this test:\n  " +
+                "the S0 ledger refuses these hulls (the cape, on a forked rig that wants a merge rather " +
+                "than a re-measure). Fix the intake upstream, never this test — and if a verdict has " +
+                "genuinely changed, move RefusedStems in the SAME change as the ledger:\n  " +
                 string.Join("\n  ", wrong));
         }
 

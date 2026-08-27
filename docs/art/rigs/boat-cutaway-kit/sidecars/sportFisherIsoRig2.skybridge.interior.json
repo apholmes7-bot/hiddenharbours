@@ -7,8 +7,8 @@
   "interior_rig": "boatInteriorRig.js",
   "derivedFromRigSha256": "34bb781303b9de9a47c7029a685bf83d357adefe2ffb95ff54451233ea7c46a7",
   "hullRigSha256": {
-    "sportFisherIsoRig2.skybridge": "205a93c9e0e39a1df72cadeacac335d9bbf7f87390a204ad98bcd4cc629c4691",
-    "sportFisherIsoRig2": "205a93c9e0e39a1df72cadeacac335d9bbf7f87390a204ad98bcd4cc629c4691"
+    "sportFisherIsoRig2.skybridge": "ebc77bace833361b578f5315e175e10de61d1acf77b5037390217ceb09221bcb",
+    "sportFisherIsoRig2": "ebc77bace833361b578f5315e175e10de61d1acf77b5037390217ceb09221bcb"
   },
   "frame": {
     "units": "m",
@@ -408,7 +408,7 @@
         }
       ]
     },
-    "bridge_sole": {
+    "sky_sole": {
       "z": 7.3,
       "polygon": [
         [
@@ -929,7 +929,7 @@
       {
         "id": "house_to_bridge",
         "from": "house_sole",
-        "to": "bridge_sole",
+        "to": "sky_sole",
         "mechanism": "InteriorStair",
         "opening": {
           "x0": 0.55,

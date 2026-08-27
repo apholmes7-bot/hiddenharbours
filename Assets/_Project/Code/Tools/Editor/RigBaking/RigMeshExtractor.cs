@@ -344,6 +344,30 @@ namespace HiddenHarbours.Tools.RigBaking
                 ["lobsterBoatIsoRig.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
                 {
                     ["MATS"] = "matsFor('gelcoat').MATS",
+                    // Pass 3 (cutaway kit, 2026-08-26): her aft door is a POSED LEAF, not a fitting.
+                    // Her own render() draws `F.concat(doorFaces(opts))`, so taking `F` alone bakes a
+                    // boat whose mesh is missing geometry her picture draws — the sport fisher's
+                    // outrigger lesson, verbatim (see faceList('stowed') below). doorOpen 0 is the
+                    // fleet default and the pose every committed sheet was baked at; the leaf's faces
+                    // carry lv:'house', so the cutaway takes the door with the room, as it should.
+                    // Measured by the #660 lane in node before this entry existed: extracting bare F
+                    // leaves 490 px of leaf undrawn on her renders (1.29%, one cluster, 0 silhouette).
+                    ["F"] = "F.concat(doorFaces({doorOpen:0}))",
+                },
+
+                // ---- the cutaway kit's pass-3 tie pair (2026-08-26) ------------------------------
+                // Same posed-leaf rule as the lobster above: pass 3 gave both ships a hinged door
+                // whose leaf lives in doorFaces(opts), composed by their own render() as
+                // `F.concat(doorFaces(opts))`. Bare `F` was correct for their pass-1 rigs and stops
+                // being the drawn boat at pass 3. doorOpen 0 = closed = the fleet default.
+                ["sternTrawlerIsoRig.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
+                {
+                    ["F"] = "F.concat(doorFaces({doorOpen:0}))",
+                },
+
+                ["coastalPacketIsoRig.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
+                {
+                    ["F"] = "F.concat(doorFaces({doorOpen:0}))",
                 },
 
                 // ---- the Cape Islander's paint axis (drop of 2026-08-12) -------------------------

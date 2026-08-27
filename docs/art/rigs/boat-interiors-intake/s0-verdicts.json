@@ -28,29 +28,29 @@
   "hulls": [
     {
       "hull_stem": "sportFisherIsoRig2.convertible",
-      "verdict": "REFUSED-PIN",
+      "verdict": "CLEAN",
       "axis_a_interior_pin": "PASS (renderer 34bb7813, verified)",
       "axis_b_hull_baseline": "PASS (bundled rig byte-identical to drop 1)",
       "baseline_source": "_supersedes",
       "baseline_lf_sha256": "152eb5f3cf1f4f38fba781161e86320cd7e06f0d0cdc98a82b14d6973e3b4061",
       "main_lf_sha256": "152eb5f3cf1f4f38fba781161e86320cd7e06f0d0cdc98a82b14d6973e3b4061",
       "drift": "none - the stamped baseline IS main's current rig",
-      "evidence": "Both axes pass. Refused on a THIRD ground the re-export introduced: hullRigSha256 now holds two entries and one is an unsubstituted generator template, 'STAMP_AT_EXPORT_LF_SHA256_OF_sportFisherIsoRig2.js'. An unstamped stamp is worse than an absent one \u2014 it occupies a provenance field looking like a value \u2014 so the reader refuses it by name.",
-      "_superseded_verdict": "CLEAN in drop 1 \u2014 REGRESSED by the re-export's unstamped pin.",
-      "upstream_ask": "Substitute the export template. hullRigSha256 carries a second entry keyed by the HULL stem whose value is the literal string 'STAMP_AT_EXPORT_LF_SHA256_OF_sportFisherIsoRig2.js'. Either stamp it with the real LF sha of the bundled sportFisherIsoRig2.js (ebc77bac\u2026) or drop the extra entry \u2014 the correctly-stamped rig-stem entry is already there and already right. One-line generator fix; the rooms are untouched and were clean in drop 1."
+      "evidence": "Both axes pass, and the THIRD ground is now DISCHARGED. The cutaway kit's re-stamped sidecar landed 2026-08-26: the generator template is substituted with 'ebc77bace833361b578f5315e175e10de61d1acf77b5037390217ceb09221bcb'. Flipped against the BYTES, not against the claim \u2014 that value is independently the LF sha256 of docs/art/rigs/boat-interiors-kit/hull-rigs/sportFisherIsoRig2.js, and it equals the correctly-stamped rig-stem entry that was already in the file, so both entries of hullRigSha256 now name the same shipped rig. The landing diff is ONE line per sidecar; no geometry, no rooms and no renderer pin were touched, which is why drop 1's CLEAN is restored rather than re-earned.",
+      "_superseded_verdict": "CLEAN in drop 1 \u2014 REGRESSED to REFUSED-PIN by the re-export's unstamped pin \u2014 RE-CLEARED 2026-08-26 when the cutaway kit's re-stamped sidecar landed.",
+      "upstream_ask": "Nothing \u2014 the one-line generator fix was made upstream and has landed here. All three grounds now clear: axis A (renderer 34bb7813), axis B (no drift) and the hull-rig stamp."
     },
     {
       "hull_stem": "sportFisherIsoRig2.skybridge",
-      "verdict": "REFUSED-PIN",
+      "verdict": "CLEAN",
       "axis_a_interior_pin": "PASS (renderer 34bb7813, verified)",
       "axis_b_hull_baseline": "PASS (bundled rig byte-identical to drop 1)",
       "baseline_source": "_supersedes",
       "baseline_lf_sha256": "152eb5f3cf1f4f38fba781161e86320cd7e06f0d0cdc98a82b14d6973e3b4061",
       "main_lf_sha256": "152eb5f3cf1f4f38fba781161e86320cd7e06f0d0cdc98a82b14d6973e3b4061",
       "drift": "none - the stamped baseline IS main's current rig",
-      "evidence": "Both axes pass. Refused on a THIRD ground the re-export introduced: hullRigSha256 now holds two entries and one is an unsubstituted generator template, 'STAMP_AT_EXPORT_LF_SHA256_OF_sportFisherIsoRig2.js'. An unstamped stamp is worse than an absent one \u2014 it occupies a provenance field looking like a value \u2014 so the reader refuses it by name.",
-      "_superseded_verdict": "CLEAN in drop 1 \u2014 REGRESSED by the re-export's unstamped pin.",
-      "upstream_ask": "Substitute the export template. hullRigSha256 carries a second entry keyed by the HULL stem whose value is the literal string 'STAMP_AT_EXPORT_LF_SHA256_OF_sportFisherIsoRig2.js'. Either stamp it with the real LF sha of the bundled sportFisherIsoRig2.js (ebc77bac\u2026) or drop the extra entry \u2014 the correctly-stamped rig-stem entry is already there and already right. One-line generator fix; the rooms are untouched and were clean in drop 1."
+      "evidence": "Both axes pass, and the THIRD ground is now DISCHARGED. The cutaway kit's re-stamped sidecar landed 2026-08-26: the generator template is substituted with 'ebc77bace833361b578f5315e175e10de61d1acf77b5037390217ceb09221bcb'. Flipped against the BYTES, not against the claim \u2014 that value is independently the LF sha256 of docs/art/rigs/boat-interiors-kit/hull-rigs/sportFisherIsoRig2.js, and it equals the correctly-stamped rig-stem entry that was already in the file, so both entries of hullRigSha256 now name the same shipped rig. The landing diff is ONE line per sidecar; no geometry, no rooms and no renderer pin were touched, which is why drop 1's CLEAN is restored rather than re-earned.",
+      "_superseded_verdict": "CLEAN in drop 1 \u2014 REGRESSED to REFUSED-PIN by the re-export's unstamped pin \u2014 RE-CLEARED 2026-08-26 when the cutaway kit's re-stamped sidecar landed.",
+      "upstream_ask": "Nothing \u2014 the one-line generator fix was made upstream and has landed here. All three grounds now clear: axis A (renderer 34bb7813), axis B (no drift) and the hull-rig stamp."
     },
     {
       "hull_stem": "capeIslanderIsoRig",
@@ -177,7 +177,30 @@
     "  The two files are not stale-vs-current, they are two 'pass 2' FORKS that never merged: main =",
     "  OKLCH paint (#508) + #247 washboards, no loft/HOUSE; kit = the real aft DOOR + published loft,",
     "  no paint, no #247. Neither can be adopted whole. The original judgment is kept below rather than",
-    "  deleted -- provenance is the point."
+    "  deleted -- provenance is the point.",
+    "",
+    "2026-08-26, sportFisherIsoRig2.convertible + .skybridge: REFUSED-PIN -> CLEAN. The refusal named one",
+    "  thing and one thing only \u2014 an unsubstituted generator template sitting in a provenance",
+    "  field \u2014 and the cutaway kit (batch 1) shipped the substitution. Landed here as a one-line",
+    "  diff per sidecar; the stamp is",
+    "  'ebc77bace833361b578f5315e175e10de61d1acf77b5037390217ceb09221bcb', which is the LF sha256 of",
+    "  the bundled hull-rigs/sportFisherIsoRig2.js and equals the rig-stem entry that was already",
+    "  correct. Both hulls return to the verdict they held in drop 1. The fails-by-design guards that",
+    "  pinned the regression from both sides -- TheOnlyUnstampedHullPinsAreTheTwoSportFishersTheReExportBroke,",
+    "  TheSportFishersRefusalNamesTheTemplateAndNotSomethingVaguer,",
+    "  EveryStampedHullPinResolvesToTheBundledRigItNames and",
+    "  TheReExportClearedTwentyFourAndBrokeTheTwoThatWereAlreadyClean -- were updated in the SAME",
+    "  change, which is what those tests asked for in their own comments.",
+    "2026-08-26 (late), sportFisherIsoRig2 (both hulls): the bundled hull rig moved ebc77bac... -> 205a93c9...",
+    "  by exactly ONE non-visual literal (interior.bridge.deckId 'sky_sole' -> 'bridge_sole', the skybridge",
+    "  walkable-id reconciliation this intake asked for; diff verified, one line, no geometry). Upstream's",
+    "  refresh re-stamped the SKYBRIDGE pin with the regeneration but missed that the shared rig file",
+    "  stales the SIBLING's pin -- the convertible arrived still naming ebc77bac against a 205a93c9 bundle.",
+    "  Coordinator re-stamped the convertible's two entries in place (unanimity preserved), justified the",
+    "  way the cape bar ratifies a stamp-without-re-measure: additive pass, cores untouched, zero pixel",
+    "  change. Converges with upstream's generator, which stamps the current rig on any future export;",
+    "  upstream notified to apply the same one-liner in their tree. Both CLEAN verdicts stand -- the",
+    "  clearance evidence's ebc77bac citation is the HISTORICAL flip value and stays as written."
   ],
   "_reexport": [
     "The re-export (commit 74be6b70) was verified against the bytes, not accepted on its gate report.",

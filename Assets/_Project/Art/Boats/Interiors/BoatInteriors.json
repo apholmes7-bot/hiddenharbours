@@ -1,6 +1,6 @@
 {
     "schema": "hidden-harbours/boat-interior-sheets@1",
-    "generated": "2026-08-20",
+    "generated": "2026-08-27",
     "interiorRig": "docs/art/rigs/boat-interiors-kit/boatInteriorRig.js",
     "interiorRigSha256": "4df2f2f43e905071622d969900a74bd5424d918d5524de182a032338818f31b8",
     "engine": "V8 (ClearScript 7.5.1.0)",
@@ -873,6 +873,97 @@
             ]
         },
         {
+            "hullStem": "sportFisherIsoRig2.convertible",
+            "hullFileStem": "sportFisherConvertibleIso",
+            "defId": "interior.sport_fisher_convertible_iso",
+            "interiorHullKey": "sport53",
+            "variantSize": "",
+            "variantStyle": "",
+            "variantRegion": "",
+            "cellW": 820,
+            "cellH": 770,
+            "pivotX": 410,
+            "pivotY": 475,
+            "pixelsPerMetre": 32,
+            "levels": [
+                "house",
+                "below"
+            ],
+            "facings": 8,
+            "convention": "CounterClockwise",
+            "doorOpen": 0.0,
+            "night": false,
+            "lamp": false,
+            "clutter": true,
+            "weather": 0.30000001192092898,
+            "pages": [
+                {
+                    "file": "SportFisherConvertibleIsoInterior.png",
+                    "columns": 4,
+                    "rows": 4,
+                    "sheetW": 3280,
+                    "sheetH": 3080,
+                    "firstCell": 0,
+                    "cellCount": 16
+                }
+            ]
+        },
+        {
+            "hullStem": "sportFisherIsoRig2.skybridge",
+            "hullFileStem": "sportFisherSkybridgeIso",
+            "defId": "interior.sport_fisher_skybridge_iso",
+            "interiorHullKey": "sport90",
+            "variantSize": "",
+            "variantStyle": "",
+            "variantRegion": "",
+            "cellW": 1200,
+            "cellH": 1170,
+            "pivotX": 600,
+            "pivotY": 730,
+            "pixelsPerMetre": 32,
+            "levels": [
+                "bridge",
+                "house",
+                "below"
+            ],
+            "facings": 8,
+            "convention": "CounterClockwise",
+            "doorOpen": 0.0,
+            "night": false,
+            "lamp": false,
+            "clutter": true,
+            "weather": 0.30000001192092898,
+            "pages": [
+                {
+                    "file": "SportFisherSkybridgeIsoInterior0.png",
+                    "columns": 3,
+                    "rows": 3,
+                    "sheetW": 3600,
+                    "sheetH": 3510,
+                    "firstCell": 0,
+                    "cellCount": 8
+                },
+                {
+                    "file": "SportFisherSkybridgeIsoInterior1.png",
+                    "columns": 3,
+                    "rows": 3,
+                    "sheetW": 3600,
+                    "sheetH": 3510,
+                    "firstCell": 8,
+                    "cellCount": 8
+                },
+                {
+                    "file": "SportFisherSkybridgeIsoInterior2.png",
+                    "columns": 3,
+                    "rows": 3,
+                    "sheetW": 3600,
+                    "sheetH": 3510,
+                    "firstCell": 16,
+                    "cellCount": 8
+                }
+            ]
+        },
+        {
             "hullStem": "sternTrawlerIsoRig",
             "hullFileStem": "sternTrawlerIsoRig",
             "defId": "interior.stern_trawler_iso",
@@ -1070,16 +1161,6 @@
             "hullStem": "capeIslanderIsoRig",
             "verdict": "ForkedRig",
             "upstreamAsk": "A RIG MERGE, not a re-measure: main as base, the aft DOOR and the published loft re-applied, producing a THIRD sha that must land in docs/art/rigs/capeIslanderIsoRig.js -- not only in the kit. RULED 2026-08-19: approved, as a SEPARATE PR after this intake lands, against the five-point acceptance bar in docs/art/rigs/boat-interiors-intake/README.md (its point 3 was amended and the amendment RULED 2026-08-19: byte-identity outside the aft doorway box across shipped poses, plus full byte-identity on the bow-on facings N/NE/NW). That PR must also re-stamp her deck sidecar and re-import her deck asset in the same commit, or DeckSidecarImportParityTests reds and she loses her measured deck. Until it lands she stays refused and hull-rigs/capeIslanderIsoRig.js carries a do-not-adopt flag."
-        },
-        {
-            "hullStem": "sportFisherIsoRig2.convertible",
-            "verdict": "RefusedPin",
-            "upstreamAsk": "Substitute the export template. hullRigSha256 carries a second entry keyed by the HULL stem whose value is the literal string 'STAMP_AT_EXPORT_LF_SHA256_OF_sportFisherIsoRig2.js'. Either stamp it with the real LF sha of the bundled sportFisherIsoRig2.js (ebc77bac…) or drop the extra entry — the correctly-stamped rig-stem entry is already there and already right. One-line generator fix; the rooms are untouched and were clean in drop 1."
-        },
-        {
-            "hullStem": "sportFisherIsoRig2.skybridge",
-            "verdict": "RefusedPin",
-            "upstreamAsk": "Substitute the export template. hullRigSha256 carries a second entry keyed by the HULL stem whose value is the literal string 'STAMP_AT_EXPORT_LF_SHA256_OF_sportFisherIsoRig2.js'. Either stamp it with the real LF sha of the bundled sportFisherIsoRig2.js (ebc77bac…) or drop the extra entry — the correctly-stamped rig-stem entry is already there and already right. One-line generator fix; the rooms are untouched and were clean in drop 1."
         }
     ]
 }

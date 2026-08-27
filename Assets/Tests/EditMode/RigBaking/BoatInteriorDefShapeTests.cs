@@ -316,12 +316,22 @@ namespace HiddenHarbours.Tests.RigBaking
         }
 
         [Test]
-        public void TheOnlyUnstampedHullPinsAreTheTwoSportFishersTheReExportBroke()
+        public void NoHullPinIsAnUnsubstitutedExportTemplate()
         {
-            // Pins the regression from BOTH sides: it must not spread, and it must not vanish silently
-            // either — when upstream substitutes the template, this test fails and gets updated in the
-            // same PR that re-clears them. Drop 1 had both sport fishers CLEAN; the re-export shipped
-            // "STAMP_AT_EXPORT_LF_SHA256_OF_sportFisherIsoRig2.js" into their hullRigSha256.
+            // ⚠️ THIS TEST CHANGED SHAPE ON 2026-08-26, exactly as its previous form asked to be.
+            //
+            // It used to be TheOnlyUnstampedHullPinsAreTheTwoSportFishersTheReExportBroke, and it named
+            // the two files the re-export had regressed: their hullRigSha256 carried the literal string
+            // "STAMP_AT_EXPORT_LF_SHA256_OF_sportFisherIsoRig2.js". It pinned that from BOTH sides — the
+            // regression must not spread, and it must not vanish silently either — and said in its own
+            // comment that when upstream substituted the template, this test should fail and be updated
+            // in the same change that re-cleared the hulls. The cutaway kit (batch 1) shipped the
+            // substitution; the S0 ledger's two REFUSED-PIN rows went back to CLEAN in that same commit.
+            //
+            // So the expectation is now the general one it should always have been able to be: NOTHING
+            // in the kit carries an unstamped stamp. An unstamped stamp is worse than an absent one — it
+            // occupies a provenance field looking like a value — and that is true of any hull, not just
+            // of the two that once had it.
             string kit = Path.Combine(RepoRoot, KitFolder);
             var unstamped = new List<string>();
 
@@ -330,16 +340,13 @@ namespace HiddenHarbours.Tests.RigBaking
                 object root = DeckSidecarJson.Parse(File.ReadAllText(path));
                 foreach (var kv in DeckSidecarJson.AsObject(DeckSidecarJson.Member(root, "hullRigSha256")))
                     if (!BoatInteriorSidecarReader.IsSha256Hex(kv.Value as string))
-                        unstamped.Add(Path.GetFileName(path));
+                        unstamped.Add($"{Path.GetFileName(path)} [{kv.Key}] = {kv.Value}");
             }
             unstamped.Sort(System.StringComparer.Ordinal);
 
-            CollectionAssert.AreEqual(
-                new[] { "sportFisherIsoRig2.convertible.interior.json",
-                        "sportFisherIsoRig2.skybridge.interior.json" },
-                unstamped,
-                "the set of unstamped hull pins changed — if upstream fixed them, re-clear those hulls " +
-                "in the S0 ledger in this same change rather than loosening this test");
+            CollectionAssert.IsEmpty(unstamped,
+                "a hull pin is not a sha256 — if an export template has come back, refuse the hull in " +
+                "the S0 ledger in this same change rather than loosening this test");
         }
 
         [Test]
@@ -347,8 +354,16 @@ namespace HiddenHarbours.Tests.RigBaking
         {
             // The other half: every pin that IS a SHA must describe the rig shipped beside it. The
             // builder originally hashed docs/art/rigs/ here and would have refused all 27.
+            //
+            // ⚠️ A pin key may be a VARIANT stem. The two sport fishers pin their hull twice — once as
+            // "sportFisherIsoRig2" and once as "sportFisherIsoRig2.convertible"/".skybridge" — and both
+            // entries name the same file, because one rig makes both boats. Before 2026-08-26 the
+            // variant-keyed entry was an unsubstituted export template and was skipped as unstamped, so
+            // this loop only ever saw bare stems and could take the key as a filename directly. Now that
+            // the kit has stamped it, the key is split the way the resolver splits every other hull stem
+            // (BoatInteriorHullResolver.Split) rather than being special-cased by name.
             string kit = Path.Combine(RepoRoot, KitFolder);
-            int stamped = 0;
+            int stamped = 0, variantKeyed = 0;
 
             foreach (string path in Directory.GetFiles(kit, "*.interior.json", SearchOption.AllDirectories))
             {
@@ -357,16 +372,23 @@ namespace HiddenHarbours.Tests.RigBaking
                 {
                     string sha = kv.Value as string;
                     if (!BoatInteriorSidecarReader.IsSha256Hex(sha)) continue;
-                    string bundled = Path.Combine(kit, "hull-rigs", kv.Key + ".js");
+                    BoatInteriorHullResolver.Split(kv.Key, out string rigStem, out string variant);
+                    if (variant.Length > 0) variantKeyed++;
+
+                    string bundled = Path.Combine(kit, "hull-rigs", rigStem + ".js");
                     Assert.IsTrue(File.Exists(bundled),
-                                  $"{Path.GetFileName(path)} names a rig the kit does not ship: {kv.Key}.js");
+                                  $"{Path.GetFileName(path)} names a rig the kit does not ship: {rigStem}.js");
                     Assert.AreNotEqual(RigHashMatch.None,
                         DeckSidecarReader.MatchRigHash(File.ReadAllBytes(bundled), sha, out _),
-                        $"{Path.GetFileName(path)} does not describe the {kv.Key}.js shipped beside it");
+                        $"{Path.GetFileName(path)} pin '{kv.Key}' does not describe the {rigStem}.js " +
+                        "shipped beside it");
                     stamped++;
                 }
             }
-            Assert.AreEqual(27, stamped, "27 sidecars, one correctly-stamped rig-stem pin each");
+            Assert.AreEqual(29, stamped,
+                            "27 sidecars, one correctly-stamped rig-stem pin each, plus the two sport " +
+                            "fishers' variant-keyed pins that the cutaway kit stamped on 2026-08-26");
+            Assert.AreEqual(2, variantKeyed, "only the two sport fishers pin by variant stem as well");
         }
 
         [Test]

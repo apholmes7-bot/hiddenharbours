@@ -47,6 +47,18 @@ node tools/rig-recipes/fisher-rod-mount.mjs --check
 ```
 
 ```bash
+# ⭐ THE CUTAWAY IMPORT, RE-PROVEN IN OUR TREE. For the batch-1 hulls (lobster, trawler, packet):
+#   geometry() publishes every walkable level with a ceiling or an EXPLICIT open · both shared-sole
+#   ties broken in data · every face carries lv · nothing moved off the kit-bundled pass 2 (face
+#   stream field by field, every published anchor and table, 0 differing pixels) · and the lobster,
+#   which is a three-way MERGE, still carries BOTH the 12-scheme paint kit and every pass-3 export.
+node tools/rig-recipes/cutaway-intake.mjs
+node tools/rig-recipes/cutaway-intake.mjs --facings 8      # the full turntable, not four
+node tools/rig-recipes/cutaway-intake.mjs --hull lobster   # one hull
+node tools/rig-recipes/cutaway-intake.mjs --json           # the measurements, machine-readable
+```
+
+```bash
 # ⭐ THE REACH IS THE RIG'S. Re-renders every committed reach sheet (and the two runs the 6.6 drop
 #   completed) from the rig sources and byte-compares against the committed PNG — the character
 #   sheets' half of the #654 standard, which the recipe ledger does not cover. Also pins the two
@@ -89,6 +101,7 @@ mismatch throws rather than being compared. `check-slices.mjs` needs none of thi
 |---|---|
 | `verify-ledger.mjs` | the proof: committed recipe → rigs → pixels → compare |
 | `check-slices.mjs` | recipe vs the slicer's own rects in `<stem>.png.meta` — no rig, no LFS |
+| `cutaway-intake.mjs` | the batch-1 cutaway hulls: geometry contract, byte-discipline vs pass 2, and the lobster's paint × pass-3 merge proof |
 | `bake-ledger.mjs` | derive + verify + (with `--write`) commit the ledger, per kit |
 | `rod-continuity.mjs` | the rod is ONE rod: every hold ↔ cast ↔ rest seam, measured off the render |
 | `reach-continuity.mjs` | the reach sheets re-render byte for byte, and the two rigs agree about the hand-over |

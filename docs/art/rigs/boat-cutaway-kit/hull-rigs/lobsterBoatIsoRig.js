@@ -16,14 +16,6 @@
    day one: helmSeat(dir,opts) -> wheelhouse operator; haulerMount(dir,opts) -> starboard hauling block;
    tubMounts(dir,opts) -> cockpit crate anchors; navMounts(dir,opts) -> {port,star,stern,mast} nav-light
    points for the night bake. Pass the hull's rock(i) so overlays ride the wave.
-   PAINT (#497): the hull colour is a parameter, not a constant. render(dir,{paint:'harbour'}) swaps the
-   topsides / boot / stripe / house ramps for one of 12 schemes lifted verbatim from
-   lobsterBoatVariantsIsoRig.js — OKLCH-generated on the same lightness/chroma discipline as the sampled KTC
-   gelcoat, which stays the DEFAULT and bakes pixel-identical to the pre-paint rig. Nothing else moves:
-   geometry, cell, pivot, camera, rock and every deck anchor are untouched, so all 12 schemes share one
-   silhouette and one face list and a scheme swap costs a re-raster, not a rebuild. The four shared ramps
-   (deck, grip, glass, stainless, iron) are paint-independent — non-skid, sea-grey glass and stainless do not
-   take a colour.
 
    PASS 2 — THE DOOR AND THE PUBLISHED LOFT. The aft doorway is now a REAL opening (wall built as
    bands around it, dim vestibule inside) closed by a SLIDING leaf on an exterior stainless track —
@@ -32,6 +24,9 @@
    with open/clear state for the enter cue. The loft is PUBLISHED (camperIsoRig precedent) so
    boatInteriorRig.js measures the room from these exact functions — a re-derived profile is how an
    interior drifts off its hull.
+   Exposes globalThis.LobsterBoatIso = { W,H,PX,DIRS,pivot,order,ROCK,rock(i),render(dir,opts),
+   helmSeat,HELM, haulerMount,HAULER, tubMounts,TUBS, navMounts, doorMount,DOOR,HOUSE,loft,
+   HULL,BOOT,CREAM,DECKF,GLAS,BLUE,STEEL,IRON,KEY } — pass 3 adds geometry,faces,doorFaces,LEVEL_IDS.
 
    PASS 3 — CUTAWAY DATA (upstream ask 2026-08-26, the owner-ruled cutaway composite).
    ASK B: every face DECLARES its level in `lv` — an authoring cursor set at each build section,
@@ -40,19 +35,7 @@
    never look the same) per walkable level. faces() hands the tagged static mesh to the extractor;
    doorFaces(opts) is the posed leaf (lv:'house'); render(dir,{cullLevels:['house']}) is the
    reference cut. Outside the new fields the mesh, ramps and pixels are byte-identical to pass 2 —
-   adjudicated against qa/cutaway-baseline/ in qa/Boat Cutaway QA.dc.html.
-   Exposes globalThis.LobsterBoatIso = { W,H,PX,DIRS,pivot,order,ROCK,rock(i),render(dir,opts),
-   PAINTS,paintRamps(id),defaultPaint,
-   helmSeat,HELM, haulerMount,HAULER, tubMounts,TUBS, navMounts, doorMount,DOOR,HOUSE,loft,
-   HULL,BOOT,CREAM,DECKF,GRIP,GLAS,BLUE,STEEL,IRON,KEY } — pass 3 adds geometry,faces,doorFaces,LEVEL_IDS.
-
-   THIS FILE IS A THREE-WAY MERGE (2026-08-26 cutaway import). Base = the intake ledger's axis-B
-   baseline d8bb0caa (docs/art/rigs/boat-interiors-intake/s0-verdicts.json); OURS = root canon
-   (base + the PAINT kit); THEIRS = the cutaway kit's pass 3 (base + pass 2 + lv + geometry), which
-   descends from the kit-bundled pass-2 copy 77a2e16f, never from root. Both features survive whole:
-   the default 'gelcoat' scheme renders byte-identical to the kit's pass 3, and all 12 schemes share
-   one face stream — proven by tools/rig-recipes/cutaway-intake.mjs.
-*/
+   adjudicated against qa/cutaway-baseline/ in qa/Boat Cutaway QA.dc.html. */
 (function (root) {
   const PX = 32, S = 32;
   const W = 456, H = 420, cx = 228, cy = 258;   // cell + pivot (projection of boat origin)
@@ -79,88 +62,11 @@
   const STEEL = ['#3a4148','#565f66','#7a858c','#9fabb1','#c3ced2','#e6edee'];             // stainless: arch, rails, aerials
   const IRON  = ['#0e1114','#171b21','#232a32','#333c46'];                                 // dark fittings
   const KEY   = '#0d1418';
-  // ---- PAINT: 12 schemes over the same hull (ramps only — no vertex moves) ----------------------------
-  // OKLCH ramp generation, identical to lobsterBoatVariantsIsoRig.js so the two rigs bake the same colours.
-  function oklchHex(Lp, C, h){
-    const hr = h*DEG, a = C*Math.cos(hr), b = C*Math.sin(hr);
-    const l_ = Lp + 0.3963377774*a + 0.2158037573*b;
-    const m_ = Lp - 0.1055613458*a - 0.0638541728*b;
-    const s_ = Lp - 0.0894841775*a - 1.2914855480*b;
-    const l = l_*l_*l_, m = m_*m_*m_, s = s_*s_*s_;
-    const r =  4.0767416621*l - 3.3077115913*m + 0.2309699292*s;
-    const g = -1.2684380046*l + 2.6097574011*m - 0.3413193965*s;
-    const bb = -0.0041960863*l - 0.7034186147*m + 1.7076147010*s;
-    const enc = (u)=>{ u = u<=0.0031308 ? 12.92*u : 1.055*Math.pow(Math.max(u,0),1/2.4)-0.055;
-      const n = Math.round(Math.max(0,Math.min(1,u))*255); return (n<16?'0':'')+n.toString(16); };
-    return '#'+enc(r)+enc(g)+enc(bb);
-  }
-  // n-step ramp dark->light at fixed hue, chroma easing off toward the light end so the top steps stay paint
-  function mkRamp(n, L0, L1, C, h){
-    const out = [];
-    for(let i=0;i<n;i++){ const t = n===1?0:i/(n-1);
-      out.push(oklchHex(L0+(L1-L0)*t, C*(1-0.12*t), h)); }
-    return out;
-  }
-  /* spec = [Ldark, Llight, chroma, hue]; topsides/house 7 steps, boot/stripe 5.
-     Roles: top = topsides paint · boot = boot-top + bottom · stripe = waterline + cove accent
-            house = wheelhouse gelcoat + inner bulwark liner + cockpit sole margin.
-     Calibration note: flat-facet shading (GAIN 3.0 / BIAS 2.7) lands most lit hull faces on ramp steps 3-5,
-     so a dark paint needs a COMPRESSED, low L range — otherwise navy renders as pale blue-grey. The L range
-     is chosen so step 4 sits on the paint's true value and step 6 is only its highlight. */
-  const PAINTS = [
-    { id:'gelcoat',  label:'WHITE GELCOAT',  note:'The canonical Knuckles & Claws slice — white topsides, near-black boot, twin blue stripes.',
-      literal:{ top:HULL, boot:BOOT, stripe:BLUE, house:CREAM } },
-    { id:'harbour',  label:'HARBOUR NAVY',   note:'Deep navy topsides, white house, a red waterline and cove.',
-      top:[0.24,0.52,0.080,262], boot:[0.16,0.29,0.050,262], stripe:[0.38,0.64,0.150,30],  house:[0.60,0.96,0.008,250] },
-    { id:'spruce',   label:'SPRUCE GREEN',   note:'Dark spruce topsides over a black bottom, cream cove — the old wooden-boat scheme.',
-      top:[0.26,0.52,0.062,152], boot:[0.15,0.28,0.016,150], stripe:[0.58,0.84,0.050,92],  house:[0.60,0.95,0.020,96] },
-    { id:'ochre',    label:'OCHRE',          note:'Mustard-ochre topsides, dark green boot — the loudest hull in the harbour.',
-      top:[0.44,0.74,0.100,82],  boot:[0.17,0.30,0.040,150], stripe:[0.26,0.48,0.055,150], house:[0.62,0.96,0.014,88] },
-    { id:'oxblood',  label:'OXBLOOD',        note:'Deep oxblood topsides with a cream cove stripe.',
-      top:[0.30,0.58,0.105,26],  boot:[0.16,0.28,0.040,20],  stripe:[0.60,0.86,0.045,88],  house:[0.62,0.95,0.014,60] },
-    { id:'fog',      label:'FOG GREY',       note:'Pale cool grey topsides, white house, oxblood boot.',
-      top:[0.50,0.86,0.014,232], boot:[0.22,0.38,0.085,24],  stripe:[0.34,0.58,0.095,24],  house:[0.64,0.97,0.006,240] },
-    { id:'capelin',  label:'CAPELIN',        note:'Seafoam blue-green topsides, blue cove — the inshore favourite.',
-      top:[0.52,0.86,0.042,178], boot:[0.16,0.28,0.025,200], stripe:[0.40,0.64,0.095,235], house:[0.64,0.96,0.008,190] },
-    { id:'buff',     label:'DORY BUFF',      note:'Buff-tan topsides over an oxblood bottom, straight off a dory.',
-      top:[0.54,0.87,0.052,74],  boot:[0.22,0.38,0.085,24],  stripe:[0.34,0.58,0.090,26],  house:[0.64,0.96,0.016,72] },
-    { id:'tarblack', label:'TAR BLACK',      note:'Black topsides, white cove, red boot — the hard-used workhorse.',
-      top:[0.19,0.44,0.010,250], boot:[0.26,0.42,0.120,28],  stripe:[0.64,0.90,0.006,250], house:[0.58,0.94,0.006,250] },
-    { id:'bluefin',  label:'BLUEFIN',        note:'Mid cerulean topsides, white house, white cove.',
-      top:[0.38,0.68,0.100,250], boot:[0.16,0.28,0.040,250], stripe:[0.66,0.92,0.008,240], house:[0.64,0.97,0.006,240] },
-    { id:'rust',     label:'RED LEAD',       note:'Red-lead primer topsides — never finished, always working.',
-      top:[0.40,0.70,0.110,45],  boot:[0.18,0.31,0.035,40],  stripe:[0.26,0.50,0.034,46],  house:[0.60,0.92,0.022,62] },
-    { id:'pearl',    label:'PEARL & GOLD',   note:'Off-white pearl topsides, blue-grey boot, a gold cove line.',
-      top:[0.56,0.92,0.018,88],  boot:[0.22,0.36,0.028,250], stripe:[0.52,0.76,0.090,78],  house:[0.64,0.98,0.008,88] },
-  ];
-  const PAINT_BY = {}; PAINTS.forEach(p=>{ PAINT_BY[p.id]=p; });
-  const _rampCache = {};
-  function paintRamps(id){
-    const p = PAINT_BY[id] || PAINT_BY.gelcoat;
-    if(_rampCache[p.id]) return _rampCache[p.id];
-    const r = p.literal ? p.literal : {
-      top:    mkRamp(7, p.top[0],    p.top[1],    p.top[2],    p.top[3]),
-      boot:   mkRamp(5, p.boot[0],   p.boot[1],   p.boot[2],   p.boot[3]),
-      stripe: mkRamp(5, p.stripe[0], p.stripe[1], p.stripe[2], p.stripe[3]),
-      house:  mkRamp(7, p.house[0],  p.house[1],  p.house[2],  p.house[3]),
-    };
-    return (_rampCache[p.id] = r);
-  }
-  // material table + reverse ramp index, per paint. The face list is paint-independent: mats are named,
-  // so one bake of F serves every scheme and only the lookup tables change.
-  const _matCache = {};
-  function matsFor(id){
-    const key = PAINT_BY[id] ? id : 'gelcoat';
-    if(_matCache[key]) return _matCache[key];
-    const R = paintRamps(key);
-    const MATS = { hull:{ramp:R.top,off:0}, boot:{ramp:R.boot,off:0}, cream:{ramp:R.house,off:0},
-                   deck:{ramp:DECKF,off:0}, grip:{ramp:GRIP,off:0}, glas:{ramp:GLAS,off:0},
-                   blue:{ramp:R.stripe,off:0}, steel:{ramp:STEEL,off:0}, iron:{ramp:IRON,off:0},
-                   blk:{ramp:R.boot,off:-1}, dark:{ramp:R.boot,off:-2} };
-    const RINDEX = {};
-    [R.top,R.boot,R.house,DECKF,GRIP,GLAS,R.stripe,STEEL,IRON].forEach(r=>r.forEach((c,i)=>{ RINDEX[c]={r,i}; }));
-    return (_matCache[key] = { MATS, RINDEX });
-  }
+  const MATS = { hull:{ramp:HULL,off:0}, boot:{ramp:BOOT,off:0}, cream:{ramp:CREAM,off:0},
+                 deck:{ramp:DECKF,off:0}, grip:{ramp:GRIP,off:0}, glas:{ramp:GLAS,off:0}, blue:{ramp:BLUE,off:0},
+                 steel:{ramp:STEEL,off:0}, iron:{ramp:IRON,off:0},
+                 blk:{ramp:BOOT,off:-1}, dark:{ramp:BOOT,off:-2} };
+  const RINDEX = {}; [HULL,BOOT,CREAM,DECKF,GRIP,GLAS,BLUE,STEEL,IRON].forEach(r=>r.forEach((c,i)=>{ RINDEX[c]={r,i}; }));
   const GAIN = 3.0, BIAS = 2.7;
   const LN = (() => { const v=[-0.42,0.72,0.52]; const m=Math.hypot(...v); return v.map(c=>c/m); })();
   const BAYER = [[0,8,2,10],[12,4,14,6],[3,11,1,9],[15,7,13,5]].map(r=>r.map(v=>(v+0.5)/16));
@@ -486,10 +392,8 @@
     const xr=x1*B.ct - y2*B.stt, yr=x1*B.stt + y2*B.ct, zr=z2;
     return { xr,yr,zr, sx:gx+xr*S, sy:gy-(yr*B.se+zr*B.ce)*S - B.heave, d:(yr*B.ce-zr*B.se) };
   }
-  function _paint(faces, opts, doEdge, G, MAT){
+  function _paint(faces, opts, doEdge, G){
     const PW=G?G.W:W, PH=G?G.H:H;
-    MAT = MAT || matsFor('gelcoat');
-    const MATS=MAT.MATS, RINDEX=MAT.RINDEX;
     const B=camBasis(opts);
     const zbuf=new Float32Array(PW*PH).fill(Infinity);
     const col=new Array(PW*PH).fill(null);
@@ -580,7 +484,7 @@
     opts = (typeof opts==='number') ? {elev:opts} : (opts||{});
     let fl = F.concat(doorFaces(opts));
     if(opts.cullLevels && opts.cullLevels.length){ const cut=new Set(opts.cullLevels); fl=fl.filter(f=>!cut.has(f.lv)); }   // pass-3 reference cut; absent → byte-identical
-    return _toRGBA(_paint(fl, Object.assign({}, opts, {dir}), true, null, matsFor(opts.paint)));
+    return _toRGBA(_paint(fl, Object.assign({}, opts, {dir}), true));
   }
 
   // ---- deck anchors (cell coords; pass rock(i) so they ride the wave) ----
@@ -673,8 +577,7 @@
   }
   function faces(){ return F; }   // the static TAGGED mesh; the posed leaf is doorFaces(opts)
   root.LobsterBoatIso = { W, H, PX, DIRS:8, pivot:{x:cx,y:cy}, defaultElev:DEFAULT_ELEV,
-    order:['N','NE','E','SE','S','SW','W','NW'], HULL, BOOT, CREAM, DECKF, GRIP, GLAS, BLUE, STEEL, IRON, KEY,
-    PAINTS, paintRamps, defaultPaint:'gelcoat',
+    order:['N','NE','E','SE','S','SW','W','NW'], HULL, BOOT, CREAM, DECKF, GLAS, BLUE, STEEL, IRON, KEY,
     render, ROCK, rock:rockMotion, helmSeat, HELM, haulerMount, HAULER, tubMounts, TUBS, navMounts,
     doorMount, DOOR, HOUSE, geometry, faces, doorFaces, LEVEL_IDS,
     loft:{ station, skin, dfrac, bowRake, halfAtZ, sheerZ, L, TH, DECK, SOLE_U:0.80, NSEG,

@@ -258,14 +258,15 @@ namespace HiddenHarbours.Tools.RigBaking
                                "carries the one it replaces.");
         }
 
-        /// <summary>The one SHA in the interior's <c>hullRigSha256</c> object, or empty when it names
-        /// none or more than one.</summary>
+        /// <summary>The one SHA the interior's <c>hullRigSha256</c> object unanimously pins
+        /// (<see cref="BoatInteriorHullResolver.TryUnanimousHullRigPin"/> — the fourth of the four
+        /// same-shape gates; the sport fishers' two identically-stamped entries are one loft), or
+        /// empty when the pin is absent or its entries disagree.</summary>
         static string SingleHullRigSha(Dictionary<string, object> interior)
         {
             var pin = DeckSidecarJson.AsObject(DeckSidecarJson.Member(interior, "hullRigSha256"));
-            if (pin == null || pin.Count != 1) return "";
-            foreach (var kv in pin) return kv.Value as string ?? "";
-            return "";
+            return BoatInteriorHullResolver.TryUnanimousHullRigPin(pin, out _, out string sha, out _)
+                ? sha : "";
         }
     }
 }
