@@ -44,6 +44,32 @@ namespace HiddenHarbours.World
                  "only — a reply never leads to more options (that is the M2 knowledge-graph work).")]
         [TextArea] public string[] ReplyLines;
 
+        [Tooltip("OPTIONAL. A seller id (seller.snake_case, e.g. seller.leblancs) turns this row into " +
+                 "one that opens that seller's wares book and then COMES BACK. Leave it empty for an " +
+                 "ordinary row: empty is the default, so every conversation already authored keeps " +
+                 "exactly the behaviour it has.")]
+        public string CatalogSellerId;
+
+        [Tooltip("OPTIONAL, and only meaningful with a seller id. Which section of the book to open on " +
+                 "(lots/businesses/tools/vehicles/boats/gear). Anything unrecognised — including empty " +
+                 "— opens on the first stub that seller actually stocks.")]
+        public string CatalogSection;
+
+        /// <summary>
+        /// True when this row hands off to a seller's book instead of ending the conversation.
+        ///
+        /// <para><b>It is the ONE row kind that is deferred-terminal rather than terminal.</b> Picking it
+        /// publishes <c>Core.CatalogViewRequested</c> and the conversation HOLDS — bubble up and dimmed,
+        /// rows down, interaction still gated — until <c>Core.CatalogClosed</c> puts the same rows back.
+        /// That keeps browse → sell → "See you later." inside one conversation with one person, which is
+        /// the Animal Crossing shape the shop talk is asking for (owner ruling, 2026-08-27).</para>
+        ///
+        /// <para><b>It is still ONE ROUND</b> (rule 8): the rows that come back are the rows that went
+        /// down. No catalog row leads to a DIFFERENT second picker, so this is not the beginning of a
+        /// dialogue tree — that is still the M2/M3 knowledge-graph work.</para>
+        /// </summary>
+        public bool OpensCatalog => !string.IsNullOrEmpty(CatalogSellerId);
+
         /// <summary>True when this row is worth showing: it needs an id to report and a label to read.</summary>
         public bool IsAuthored => !string.IsNullOrEmpty(Id) && !string.IsNullOrEmpty(Label);
 
