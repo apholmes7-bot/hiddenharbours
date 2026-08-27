@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: deck.stern_trawler_mk2_iso
   SourceSidecar: docs/art/rigs/gameplay/sternTrawlerMk2IsoRig.gameplay.json
   SourceRig: docs/art/rigs/sternTrawlerMk2IsoRig.js
-  DerivedFromRigSha256: d68bc8cb2befa9848ec687da8e593bed3cfcd0f1c3ebb58c64274102d86e8a1c
+  DerivedFromRigSha256: 7bf879c450e78dcdce74c10b2573cdd3dd9ccdaacb4d912cbe5f9f38ae0639dc
   LoaMeters: 38
   Areas:
   - Id: ramp_strip_port
@@ -113,8 +113,8 @@ MonoBehaviour:
     - {x: -3.538, y: 13.364}
     - {x: -3.722, y: 11.711}
     - {x: -3.906, y: 10.066}
-    HeightPlane: {x: 0, y: 0.20517513, z: 2.9722214}
-    HeightResidualMax: 0.042903937
+    HeightPlane: {x: 0, y: 0.2051751, z: 2.9722214}
+    HeightResidualMax: 0.042904377
     Bounds: {x: -3.906, y: 10.066, z: 3.906, w: 19.724}
   Cleats:
   - Id: bow_1
@@ -132,5 +132,5 @@ MonoBehaviour:
   - Id: quarter_star
     Type: bollard
     PositionMeters: {x: 2.6, y: -18, z: 3.61}
-  WalkCenter: {x: 0, y: 0.666}
+  WalkCenter: {x: 0, y: 0.66600037}
   WalkHalfExtents: {x: 4.174, y: 19.058}

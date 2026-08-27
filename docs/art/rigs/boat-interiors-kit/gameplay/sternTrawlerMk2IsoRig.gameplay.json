@@ -2,7 +2,7 @@
   "schema": "hidden-harbours/boat-gameplay-geometry@1",
   "rig": "sternTrawlerMk2IsoRig.js",
   "exportSymbol": "SternTrawlerMk2Iso",
-  "derivedFromRigSha256": "e7fa9ea69a310ab03be5640cf89c4c18c1fd92b5b8b074056b5208f1eeb64628",
+  "derivedFromRigSha256": "7bf879c450e78dcdce74c10b2573cdd3dd9ccdaacb4d912cbe5f9f38ae0639dc",
   "cell": {
     "w": 1344,
     "h": 1152,
