@@ -531,7 +531,7 @@ namespace HiddenHarbours.Art
                         {
                             FoamInjection inj = _foamInjections[i];
                             state.Segments[i] = new Vector4(inj.From.x, inj.From.y, inj.To.x, inj.To.y);
-                            // z = the dt-INDEPENDENT vigour: the mark the freshness clock is reset to.
+                            // z = the dt-INDEPENDENT vigour: the GATE that resets the freshness clock.
                             state.Shapes[i] = new Vector4(inj.Radius, inj.Amount, inj.Vigour, 0f);
                         }
                         else

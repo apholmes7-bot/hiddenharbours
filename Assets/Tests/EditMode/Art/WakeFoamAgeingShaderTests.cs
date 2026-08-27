@@ -36,8 +36,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
         /// <summary>
         /// Reduce one function body to the shape both languages share, so a real difference in the MATHS
         /// fails and a difference in spelling does not. HLSL's <c>saturate</c> is <c>Mathf.Clamp01</c>,
-        /// its <c>lerp</c> is <c>Color.Lerp</c>, and its literals carry no <c>f</c> suffix and often a
-        /// redundant <c>.0</c>. Everything else — the comparisons, the knots, the divisors, the halves —
+        /// its <c>lerp</c> is <c>Color.Lerp</c>, its <c>max</c>/<c>min</c> are <c>Mathf.Max</c>/
+        /// <c>Mathf.Min</c>, and its literals carry no <c>f</c> suffix and often a redundant <c>.0</c>. Everything else — the comparisons, the knots, the divisors, the halves —
         /// must match character for character after that.
         /// </summary>
         static string Normalize(string body)
@@ -45,6 +45,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             string s = Regex.Replace(body, @"/\*.*?\*/", " ", RegexOptions.Singleline);
             s = Regex.Replace(s, @"//[^\n]*", " ");
             s = s.Replace("Mathf.Clamp01", "saturate").Replace("Mathf.Clamp", "clamp");
+            s = s.Replace("Mathf.Max", "max").Replace("Mathf.Min", "min");
             s = s.Replace("Color.Lerp", "lerp");
             s = Regex.Replace(s, @"\s+", "");
             s = Regex.Replace(s, @"([0-9.])f(?![A-Za-z0-9_])", "$1");   // 1f -> 1, 1e-4f -> 1e-4

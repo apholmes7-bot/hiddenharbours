@@ -8,10 +8,12 @@ namespace HiddenHarbours.Art
     /// <c>Art/Shaders/FoamBufferAdvect.shader</c>; change one, change BOTH in the same PR, and the
     /// <c>FoamBufferTests</c> tripwires read the shader source to prove it).
     ///
-    /// <para><b>What the buffer is.</b> One persistent single-channel render target, ping-ponged per
-    /// frame, holding "how much churned foam is on this patch of sea". Every frame it is scrolled,
-    /// decayed and injected into where hulls disturb the water; the water shader samples it as a mask
-    /// that <b>ADDS</b> to the existing foam. It is a mark left on a PLACE IN THE SEA — foam the
+    /// <para><b>What the buffer is.</b> One persistent TWO-channel render target, ping-ponged per
+    /// frame, holding <b>R</b> = "how much churned foam is on this patch of sea" and <b>G</b> = "how
+    /// recently it was churned" (<see cref="Freshness"/> — the clock the wake's colour walks down).
+    /// Every frame it is scrolled, decayed and injected into where hulls disturb the water; the water
+    /// shader samples R as a mask that <b>ADDS</b> to the existing foam and G as the age that picks its
+    /// colour. It is a mark left on a PLACE IN THE SEA — foam the
     /// shipped <c>BoatWakeEmitter</c> trail cannot make, because it persists and drifts downwind
     /// after the boat has gone, and because it churns around a hull that is merely BOBBING.</para>
     ///
@@ -259,9 +261,13 @@ namespace HiddenHarbours.Art
         /// the ramp means the same thing everywhere; the fast hull whose thin coverage never reached
         /// the old threshold is no longer born blue.</para>
         ///
-        /// <para><paramref name="mark01"/> is the injection's <b>vigour</b> (0..1, dt-independent) times
-        /// its band falloff, so the churned heart is born white and the torn fringe is born already a
-        /// step down the ramp — which is what the edge of a churn looks like, and it costs nothing.</para>
+        /// <para><paramref name="mark01"/> is <b>1 wherever a hull churned this water this frame</b> and 0
+        /// elsewhere — deliberately NOT scaled by how hard she was working. A clock scaled by vigour
+        /// conflates "how hard" with "how long ago": a dory at half her knee speed would be born
+        /// half-aged and could never make white foam at all, which is the same category error round 1
+        /// made with the coverage channel, one level down. (Caught by
+        /// <c>WakeFoamAgeingMeasurementTests</c> on the first run, at 1.5 m/s.) How MUCH foam is on this
+        /// water is the R channel's job, and it already does it.</para>
         /// </summary>
         public static float Freshness(float previous, float decayFactor, float mark01)
         {

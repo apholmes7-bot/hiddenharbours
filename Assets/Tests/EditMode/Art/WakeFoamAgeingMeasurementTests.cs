@@ -170,7 +170,10 @@ namespace HiddenHarbours.Tests.Art.EditMode
             for (int i = 0; i < exposureFrames; i++)
             {
                 stored = Mathf.Clamp01(stored * coverStep + amount);
-                fresh = FoamBuffer.Freshness(fresh, ageStep, rate01);
+                // The mark is a GATE, not a scale: a hull working the water at all resets the clock to
+                // fully fresh. Passing rate01 here instead was this fixture's first red — at 1.5 m/s a
+                // dory's brand-new churn was born half-aged and could never draw white.
+                fresh = FoamBuffer.Freshness(fresh, ageStep, rate01 > 0f ? 1f : 0f);
             }
 
             var samples = new System.Collections.Generic.List<Sample>();
@@ -218,24 +221,42 @@ namespace HiddenHarbours.Tests.Art.EditMode
         }
 
         [Test]
-        public void TheBrightestBand_DrewAgeZero_WhateverTheThresholdWasSetTo()
+        public void TheRoundOneProxy_CollapsedToOneFlatShade_AtEveryLegalThreshold()
         {
+            // The retune option, ruled out by sweep rather than by argument. The old proxy was
+            // age = 1 − composed/freshCover with freshCover on Range(0.05, 1). At EVERY setting in that
+            // range the visible band takes at most a couple of shades and ONE of them covers most of
+            // it — because the input has three values, and no threshold can add a fourth. Turning the
+            // knob only chooses WHICH flat colour the band is; it can never make the band walk.
             Tuning t = Live();
-            float brightest = Compose(1f, in t);
+            Sample[] wake = Wake(3f, in t);
 
-            // The old proxy was age = 1 − composed/freshCover, with freshCover on Range(0.05, 1).
-            // Sweep the WHOLE legal range: there is no setting at which the band's own value stops
-            // reading as age 0 while the fainter band is still visible at all.
             for (float freshCover = 0.05f; freshCover <= 1.0001f; freshCover += 0.05f)
             {
-                float ageOfBrightest = Mathf.Clamp01(1f - brightest / freshCover);
-                float ageOfNext = Mathf.Clamp01(1f - Compose(0.5f, in t) / freshCover);
-                bool bandIsWhite = RampAt(ageOfBrightest, in t) <= 0.02f;
-                bool nextIsWhiteToo = RampAt(ageOfNext, in t) <= 0.02f;
-                Assert.IsTrue(bandIsWhite || nextIsWhiteToo,
-                    "Sanity: at every legal _WakeFoamFreshCover one of the two visible bands still drew " +
-                    "flat white. Retuning could only choose WHICH flat colour the band was — which is " +
-                    $"why round 2 stores true age instead (freshCover {freshCover:0.00}).");
+                var shades = new System.Collections.Generic.Dictionary<float, int>();
+                int visible = 0;
+                foreach (Sample s in wake)
+                {
+                    if (s.Composed <= 0.001f) continue;
+                    visible++;
+                    float shade = Mathf.Round(
+                        RampAt(Mathf.Clamp01(1f - s.Composed / freshCover), in t) * 10000f) / 10000f;
+                    shades[shade] = shades.TryGetValue(shade, out int n) ? n + 1 : 1;
+                }
+                Assert.Greater(visible, 0, "no visible band — the simulation is wrong");
+
+                int dominant = 0;
+                foreach (int n in shades.Values) dominant = Mathf.Max(dominant, n);
+
+                Assert.LessOrEqual(shades.Count, Mathf.RoundToInt(t.Bands),
+                    $"at freshCover {freshCover:0.00} the band took more shades than there are bands, " +
+                    "which is arithmetically impossible — the simulation has drifted from the compose.");
+                Assert.Greater(dominant / (float)visible, 0.6f,
+                    $"At freshCover {freshCover:0.00} the most common shade covers only " +
+                    $"{dominant / (float)visible:P0} of the visible band. This assertion documents WHY " +
+                    "round 2 stores true age instead of retuning: if a threshold could ever spread the " +
+                    "band across its shades, the cheap fix would have been the right one and this " +
+                    "PR's second channel would be unjustified.");
             }
         }
 
@@ -284,10 +305,13 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 "coverage must be measured as SATURATED at a dawdling speed — that is the claim.");
             Assert.AreEqual(1f, cruise[0].Stored, 1e-3f, "…and at cruise.");
 
-            // Freshness, by contrast, is born at the churn's own vigour and never clamps.
-            Assert.Less(slow[0].Fresh, 1.0001f, "freshness cannot exceed 1 by construction.");
-            Assert.Greater(slow[0].Fresh, cruise[0].Fresh * 0.4f,
-                "sanity: both speeds mark a strong freshness at birth.");
+            // Freshness, by contrast, is a clock: born fully fresh at ANY working speed, and
+            // bounded by 1 because the update is a max rather than an add.
+            Assert.AreEqual(1f, slow[0].Fresh, 1e-5f,
+                "a dawdling hull's brand-new churn is still BRAND NEW — the clock must not be scaled " +
+                "by how hard she is working, or slow boats can never make white foam.");
+            Assert.AreEqual(1f, cruise[0].Fresh, 1e-5f, "…and the same at cruise, which is the point: " +
+                "the ramp means the same thing at every speed.");
         }
 
         // ==== 3. THE NEW PROXY — the walk the owner asked for ======================================

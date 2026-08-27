@@ -276,7 +276,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             // buffer BEFORE PaletteGrade is what makes that true for free — and it is a one-line
             // mistake to "fix" a too-dim wake by moving it after the grade.
             string src = Read(WaterShaderPath);
-            int composeAt = src.IndexOf("float wakeFoam = WakeFoamCoverage(worldXY, bay);",
+            int composeAt = src.IndexOf("float wakeFoam = WakeFoamCoverage(worldXY, bay, wakeFresh);",
                                         System.StringComparison.Ordinal);
             int gradeAt = src.IndexOf("col.rgb = PaletteGrade(col.rgb, dayNightLuma);",
                                       System.StringComparison.Ordinal);

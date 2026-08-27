@@ -14,7 +14,7 @@
 //                 visible, so freshness dies faster than coverage.
 //   3. INJECT   — add a capsule of foam along each hull's swept segment this frame (a segment, not a
 //                 point, so a fast boat or a frame hitch cannot lay a dashed trail), and MAX the
-//                 freshness against how hard that hull is working the water.
+//                 freshness clock back to fully-fresh wherever that hull churned.
 //
 // 🔴 WHY G EXISTS (owner eyeball 2026-08-27: the wake "stays white — never disperses"). #665 read a
 // texel's age off its coverage. Measured, that cannot work: coverage saturates at 1.0 within ~0.4 s
@@ -85,7 +85,7 @@ Shader "Hidden/HiddenHarbours/FoamBufferAdvect"
             float  _HHFoamAgeDecay;      // exponential decay multiplier for FRESHNESS this frame
 
             float4 _HHFoamInjectSeg[FOAM_MAX_INJECTORS];     // xy = from, zw = to (world m)
-            // x = radius (m), y = amount (0 = unused slot), z = vigour 0..1 (the freshness mark)
+            // x = radius (m), y = amount (0 = unused slot), z = vigour 0..1 (the freshness GATE)
             float4 _HHFoamInjectShape[FOAM_MAX_INJECTORS];
 
             // Distance from a point to a segment — the capsule that keeps a fast boat's trail
@@ -143,9 +143,20 @@ Shader "Hidden/HiddenHarbours/FoamBufferAdvect"
                     foam += shape.y * falloff;
                     // The freshness CLOCK: a MAX, never an add — that is what stops this channel
                     // saturating the way coverage does, and it is the whole reason the wake can
-                    // change colour at all. step() gates the unused slots (amount 0) branchlessly, so
-                    // a spare slot still marks nothing.
-                    fresh = max(fresh, saturate(shape.z) * falloff * step(1e-6, shape.y));
+                    // change colour at all.
+                    //
+                    // The mark is 1 wherever this hull churned this frame and 0 everywhere else. It is
+                    // deliberately NOT scaled by how hard she is working: a clock scaled by vigour
+                    // conflates "how hard" with "how long ago", so a dory at half her knee speed would
+                    // be born half-aged and could never make white foam at all — the same category
+                    // error round 1 made with the coverage channel, one level down. How MUCH foam is
+                    // on this water is the R channel's job, and it already does it.
+                    //
+                    // Two branchless gates: shape.z is the injector's dt-INDEPENDENT vigour (0 in an
+                    // unused slot, and 0 for a hull that is not working the water), and the falloff
+                    // keeps the mark inside the band this hull actually swept.
+                    float churned = step(1e-6, shape.z) * step(1e-3, falloff);
+                    fresh = max(fresh, churned);
                 }
 
                 return float4(saturate(foam), saturate(fresh), 0, 1);

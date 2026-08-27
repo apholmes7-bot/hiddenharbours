@@ -3842,11 +3842,17 @@ would have reported the same defect in a different hue.
 **Round 2 stores true age.** The buffer is `RG16`:
 
 - **R = coverage** — how much churn is on this water. Accumulates, decays, saturates. Unchanged.
-- **G = freshness** — how recently it was churned. A **clock**: the injection takes a `max` against the
-  hull's vigour (never an add), and it decays on its own, shorter half-life. Because the mark is bounded
-  by 1 and the update is a max, this channel *cannot* clamp, so it is monotone in time-since-churn by
-  construction — exactly the property coverage lost. Fresh churn reads 1.0 for every hull at every speed,
-  so the ramp means the same thing everywhere.
+- **G = freshness** — how recently it was churned. A **clock**: a hull that is working the water at all
+  `max`es it back to 1 (never an add), and it decays on its own, shorter half-life. Because the mark is
+  bounded by 1 and the update is a max, this channel *cannot* clamp, so it is monotone in
+  time-since-churn by construction — exactly the property coverage lost.
+
+⚠️ **The mark is a GATE, not a scale, and the first draft got this wrong.** Scaling it by the hull's
+vigour looks obviously right and is the same category error one level down: it conflates *how hard* with
+*how long ago*. The measurement fixture caught it on its first run — at 1.5 m/s a dory's mark was 0.5, so
+her brand-new churn was born half-aged and could never draw white at all. Marked as a gate, fresh churn
+reads 1.0 for every hull at every speed, so the ramp means the same thing everywhere. How MUCH foam is on
+that water is the R channel's job, and it already does it.
 
 The price is one byte per world cell: 768² × RG16 × 2 (ping-pong) = **2.4 MB per camera** at the 96 m
 window, up from 1.1 MB. Twin: `FoamBuffer.Freshness` ↔ the advect shader's `fresh` line; proxy twin:
