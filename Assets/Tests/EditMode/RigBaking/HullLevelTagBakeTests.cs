@@ -356,6 +356,65 @@ namespace HiddenHarbours.Tests.RigBaking
                 "fleet has gone pass 3, retire this test rather than leaving it vacuous.");
         }
 
+        /// <summary>
+        /// <b>Which enclosed levels have NO hull faces of their own — and it is not none.</b>
+        ///
+        /// <para>Cutting a level culls the faces tagged to it. A level nothing is tagged to is a cut
+        /// that opens nothing: the player goes below, the gate engages, and she looks at a whole
+        /// boat. That is not a defect in the gate — it is a fact about the rig's own tagging, and it
+        /// is invisible from every other angle, which is exactly why it is pinned rather than
+        /// merely logged.</para>
+        ///
+        /// <para><b>Three, and they are not all the same case.</b> Both ships' <c>below</c> is
+        /// defensible on its face: an engine space under the main deck is enclosed by the SHELL,
+        /// which is <c>hull</c> — the one class a cut may never take — so there is genuinely
+        /// nothing to remove, and a cutaway there correctly shows the whole boat.</para>
+        ///
+        /// <para>⚠️ <b>The lobster's <c>cuddy</c> is a different question, and it is OPEN.</b> Her
+        /// forward berth is a room the player really enters (it is a level of 19 interior defs in
+        /// this fleet), and the thing over her head is not the shell — it is the FOREDECK, which
+        /// this same rig tags as its own walkable level (<c>foredeck</c>, and the rig's own ceiling
+        /// law for the cuddy is literally <c>sheerZ(y) − 0.16</c>, "the foredeck underside"). So
+        /// going below into the cuddy engages the gate and removes nothing, where the kit's own
+        /// standing-on rule ("a deckhouse wall belongs to the room it encloses, not the deck it
+        /// stands on") reads as though the lid should come off with the room. That is an upstream
+        /// TAGGING question — should a level's cut also take the level that is its ceiling? — and
+        /// it is deliberately not answered here.</para>
+        ///
+        /// <para>Asserted against the KNOWN list so the day it changes — a batch-2 hull with the
+        /// same gap, or upstream re-tagging — somebody is told.</para>
+        /// </summary>
+        [Test]
+        public void TheEnclosedLevelsWithNoFacesOfTheirOwn_AreTheTwoEngineSpacesAndTheCuddy()
+        {
+            var empty = new List<string>();
+
+            foreach (FleetHull hull in Pass3Hulls)
+            {
+                RigMeshData data = Extract(hull, out IRigScriptHost host);
+                using (host)
+                {
+                    var tagged = new HashSet<int>();
+                    foreach (RigFace f in data.Faces) tagged.Add(f.Level);
+
+                    foreach (RigLevelRecord lvl in data.Levels)
+                    {
+                        if (!lvl.Enclosed || tagged.Contains(lvl.Tag)) continue;
+                        empty.Add($"{hull.Key}.{lvl.Id}");
+                    }
+                }
+            }
+
+            CollectionAssert.AreEquivalent(
+                new[] { "lobsterBoat.cuddy", "sternTrawler.below", "coastalPacket.below" }, empty,
+                "The set of enclosed levels with no faces of their own has changed. Known: both " +
+                "ships' `below` (an engine space whose walls ARE the hull shell, never cut — so a " +
+                "cutaway there correctly removes nothing) and the lobster's `cuddy` (whose lid is " +
+                "the FOREDECK, a separate tagged level — the open upstream question, see the " +
+                "remarks). A level joining or leaving this list is an upstream tagging change and " +
+                "wants a look. Now: " + string.Join(", ", empty));
+        }
+
         private static string NameOf(RigMeshData data, int tag) =>
             data.LevelIds.FirstOrDefault(kv => kv.Value == tag).Key ?? tag.ToString();
 

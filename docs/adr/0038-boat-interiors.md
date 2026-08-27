@@ -174,3 +174,55 @@ that happens).
   draws it and neither may reference the other — the same reason `HullMeshDef` lives there (rule 4).
 - Proposals 1 and 3 are **coupled** (see Proposal 1's second bullet); they were ruled on together,
   2 and 4 stand alone.
+
+## Amendment — the CUTAWAY lands, and Proposal 3 gains a sentence (2026-08-26)
+
+The owner ruled on 2026-08-26 that a boat interior is a **cutaway composite**: the boat's exterior
+with a wall/roof cut away to reveal the interior, **exterior-only at the helm and on deck**. The
+interior-mesh spike ([`interior-mesh-verdict.md`](../design/spikes/interior-mesh-verdict.md), PR
+#644) had already proved the mechanism and named the one upstream item it was blocked on; the
+cutaway kit's pass-3 rigs supplied it, and batch 1 (lobster, trawler, packet) is now baked and
+gated. Four amendments follow, three of them the spike's own.
+
+1. **Proposal 3 gains its second sentence.** *"Entering a cabin does not add a sorting rule — it
+   swaps which sheet is on"* is true and **insufficient on a mesh hull**: culling the house does not
+   cull the hull's own near **topsides**, which in a ¾ view stand between the camera and a cabin
+   sole. Measured on the lobster: the swap alone leaves a revealed room **20.3%** visible; with the
+   rig's own per-face depth bias it is **97.6%**. The mechanism is `db` in **UV0.z**, already in
+   every baked mesh, subtracted from clip depth while the true depth (`o.wpos.z` — the
+   deck-occupant band and the keyline resolve) is left alone. The value is the hull's own
+   bounding-sphere diameter, so there is no constant to tune. **Recorded as the mechanism so nobody
+   invents a sorting rule for it later**, and pinned by `HullLevelTagBakeTests` so a re-bake cannot
+   drop it quietly.
+
+2. **Proposal 3's ⚠ open item is CLOSED for geometry and stays open for sheets.** Geometry has no
+   compositing window — it is in world space and the camera clips it like anything else. The
+   fit-out sheets keep the problem, so the warning survives with its scope shrunk to the layers that
+   are still pixels.
+
+3. **A level must publish a ceiling, and an open sky must say so.** The spike proposed this as a new
+   `BoatInteriorDef.CeilingZMeters`. It landed **one seam earlier instead** — on the RIG, as
+   `geometry().levels[].ceilingZ` plus an explicit `ceiling:{kind:'open'}` — and reaches the game on
+   `HullMeshDef.LevelTags`. That is the better place for the same reason the tag is: the rig knows
+   the number by DECLARATION (it draws the roof lip), and both of the spike's attempts to measure
+   one back off the mesh were wrong in ways only a render caught. `BoatInteriorDef` is unchanged.
+   **A level with no declared ceiling is refused a cut** rather than guessed at, which is what makes
+   "an absent field and an open sky must never look the same" enforceable rather than aspirational.
+
+4. **The exterior half of the swap has an answer on a mesh hull.** #622 left `BoatInterior`'s
+   `exterior` argument null and said so; on a mesh hull the house is geometry, not a sheet, and
+   there was nothing to hand it. The answer is not a `Renderer` at all — it is
+   `Core.IHullCutaway.ShowCutawayLevel`, driven by `BoatCutaway` from `CabinSignals` plus
+   `HelmSlot` occupancy. `ExactlyOneLayerOn` is untouched and still reports false on a mesh hull:
+   it asks about two sheets, and one of them has never existed.
+
+**Two vocabularies, one join, and it is DATA.** The rig names a room `house`; `BoatInteriorDef`
+names it `house_sole`; the interior sheets run a third order that is neither. The rig publishes the
+def's id in its own `deck` field and the baker carries it to `HullMeshDef.LevelTags[].DeckId`, so
+nothing re-derives the map from a `_sole` suffix at runtime. This is the same defect class that
+already shipped once on this fleet (the tanker's `house_sole` resolving to the sheet row `below`).
+
+**Still not decided here:** the shell (sole, walls, ceiling, door aperture) as geometry — the
+spike's HYBRID recommendation — which needs the three shell palette ramps inside the 16-slot
+`_RampMeta` budget and is a separate lane. Nothing in this amendment emits interior geometry; the
+mesh's TexCoord1.y is reserved for it and is 0 on every face baked so far.

@@ -7,6 +7,12 @@ One upstream datum blocks the shell, and it is one number per level.
 > surrounding numbers both say 53; the committed `BoatInteriorDef`s carry **59** — `house_sole` ×24,
 > `cuddy_sole` ×19, `below_sole` ×5, `bridge_sole` ×5, `main_deck` ×5, `poop_deck` ×1. Every one of
 > them is mesh-backed. Correct this wherever 53 appears.
+>
+> **And it has moved again since: 65 levels across 26 hulls** (2026-08-26, re-measured by this
+> spike's own fixture — see `interior-mesh-measurements.txt`, regenerated alongside the cutaway
+> bake). Two more interior-bearing hulls landed from other lanes, and `helm_deck` joins the level
+> ids. The point of the correction stands; the number is a moving one and the FILE is the oracle,
+> not this paragraph.
 
 - **Branch:** `spike/interior-mesh` · **Date:** 2026-08-22 · **Author:** coordinator
 - **Asked by:** the S-spike handoff of 2026-08-22 (questions A–D)
@@ -31,8 +37,8 @@ default**, so the program every hull compiles is literally the pre-spike one.
 
 | | answer | the number that says so |
 |---|---|---|
-| **A. Extrudable?** | **Yes, and cheaply.** | +7.5% to +12.6% triangles, +24–31 KB per hull. **Zero** per-level section-containment violations on all three hulls. |
-| **B. One tag, both halves?** | **Yes — proven, on a mesh hull, for the first time.** | Keyword off (the shipped program) vs the gated variant at 0: **0** differing px. Gate on: the level's own hull faces draw **0 px**, the room draws 8,534 px. |
+| **A. Extrudable?** | **Yes, and cheaply.** (shell not yet built) | +7.5% to +12.6% triangles, +24–31 KB per hull. **Zero** per-level section-containment violations on all three hulls. |
+| **B. One tag, both halves?** | **Yes — and SHIPPED for batch 1, 2026-08-26.** | Keyword off (the shipped program) vs the gated variant at 0: **0** differing px. Gate on: the level's own hull faces draw **0 px**, the room draws 8,534 px. |
 | **B. 59 subsets derivable?** | **Yes from geometry — but NOT from LAYOUT alone.** | **0.79%** of faces ambiguous fleet-wide (308 of 38,778, 24 hulls, two hulls at 0.00%) — *once a per-level ceiling exists*. It does not. |
 | **C. The look** | Owner's call. Five PNGs committed. | — |
 | **D. Hybrid cost** | Shell geometry, fit-out pixels. | Shell needs **3–6** palette ramps; the hull leaves **4–6** free of 16. The fit-out declares **21**. |
@@ -298,7 +304,11 @@ reason this is HYBRID and not GO.**
 **Proposed, for the art director's lane — not edited here.** A `geometry()` export beside
 `render()`, publishing per level, in the same frame the sidecar already uses:
 
-1. **`ceilingZ`** — the overhead's **underside**, in metres. *This is the blocking item.* Without it
+1. **`ceilingZ`** — the overhead's **underside**, in metres. *This was the blocking item;*
+   **✅ SUPPLIED 2026-08-26** by the cutaway kit's pass-3 rigs, as `geometry().levels[].ceilingZ`
+   with `kind: 'hard' | 'raked' | 'open'` and partial covers declared as covers. Both shared-sole
+   ties (§B) are broken in the data. Batch 1 is baked and gated; see the ADR 0038 amendment.
+   *Originally:* Without it
    the extrusion guesses (§A) and the tag cannot break a shared-sole tie (§B). The rig knows it: it
    draws the roof lip.
 2. **`wallOuter`** — the un-inset polygon, so a wall can have its measured 0.07 m of thickness
@@ -355,8 +365,10 @@ re-baking anything.** A `geometry()` export can be landed and proven before a si
 tagged by level in `TexCoord1.x`, gated by one fragment compare, pulled forward by the rig's own
 `db`. **Do not:** move the fit-out. It is 21 ramps against 4 free slots, and it is where the art is.
 
-**Blocked on one upstream item:** the rig publishing `ceilingZ` per level. Everything else in §A and
-§B is proven on committed data.
+**~~Blocked on one upstream item:~~ UNBLOCKED 2026-08-26** — the cutaway kit's pass-3 rigs publish
+`ceilingZ` per level, and the lobster, trawler and packet are baked with their TexCoord1 tags and
+gated at runtime. What landed is the TAG and the GATE (§B); the SHELL as geometry (§A, §D) is
+still a separate lane and still wants its three palette ramps inside the 16-slot budget.
 
 ### ADR 0038 amendments this needs
 
