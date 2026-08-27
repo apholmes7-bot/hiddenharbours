@@ -103,10 +103,10 @@ namespace HiddenHarbours.World
         /// fall before the next one counts. Input plumbing, not owner feel — the same class of number as
         /// <c>VillagerRoutine.ShelterCheckSeconds</c>: big enough that stick drift cannot step a row,
         /// small enough that a deliberate tap always does.</summary>
-        public const float AxisThreshold = 0.5f;
+        public const float AxisThreshold = HiddenHarbours.Core.AxisLatch.Threshold;
 
         private readonly int _count;
-        private bool _latched;
+        private readonly HiddenHarbours.Core.AxisLatch _latch = new HiddenHarbours.Core.AxisLatch();
 
         public DialogueOptionPicker(int optionCount)
         {
@@ -123,7 +123,7 @@ namespace HiddenHarbours.World
 
         /// <summary>True while the axis is still pushed from the last step — the next step waits for it to
         /// come back to neutral. Exposed because it is the half of the latch a test can see.</summary>
-        public bool IsLatched => _latched;
+        public bool IsLatched => _latch.IsLatched;
 
         /// <summary>
         /// Feed this frame's move axis (+1 = up the list, -1 = down). Returns true when the cursor
@@ -134,14 +134,13 @@ namespace HiddenHarbours.World
         /// </summary>
         public bool Step(float axis)
         {
-            if (_count <= 1) { _latched = Mathf.Abs(axis) >= AxisThreshold; return false; }
+            if (_count <= 1) { _latch.Absorb(axis); return false; }
 
-            if (Mathf.Abs(axis) < AxisThreshold) { _latched = false; return false; }
-            if (_latched) return false;
+            int dir = _latch.Step(axis);
+            if (dir == 0) return false;
 
-            _latched = true;
             // Up the list means TOWARD row 0 — the first row is drawn at the top of the bubble.
-            Index = axis > 0f ? (Index - 1 + _count) % _count : (Index + 1) % _count;
+            Index = dir > 0 ? (Index - 1 + _count) % _count : (Index + 1) % _count;
             return true;
         }
 

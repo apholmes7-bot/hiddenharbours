@@ -20,6 +20,16 @@ namespace HiddenHarbours.Core
         /// <summary>The board the leaves are bound into — the dark green-black of the cover.</summary>
         public static readonly Color Cover = new Color(0.055f, 0.180f, 0.180f, 1f);
 
+        /// <summary>
+        /// <b>The OTHER book's cover</b> — the wares ledger a seller keeps under the counter and turns
+        /// around for you. Oiled oxblood against her notebook's deep teal.
+        ///
+        /// <para>Same paper, same rule, same ink, same 5-px hand: the two books are one visual language
+        /// and must never drift a shade apart. Only the cover differs, because the stock in it is not
+        /// hers and the book is not on her key.</para>
+        /// </summary>
+        public static readonly Color LedgerCover = new Color(0.204f, 0.086f, 0.075f, 1f);
+
         /// <summary>Warm paper stock.</summary>
         public static readonly Color Paper = new Color(0.921f, 0.886f, 0.800f, 1f);
 

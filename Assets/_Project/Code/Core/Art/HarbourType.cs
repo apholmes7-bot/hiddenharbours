@@ -1,6 +1,4 @@
-using HiddenHarbours.Core;
-
-namespace HiddenHarbours.World
+namespace HiddenHarbours.Core
 {
     /// <summary>
     /// <b>THE ONE FACE — where the game's type lives once it is a Unity asset.</b>

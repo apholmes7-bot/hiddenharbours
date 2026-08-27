@@ -1364,6 +1364,10 @@ namespace HiddenHarbours.App.Editor
             // absence. Nothing baked → every piece stays null → the presenter draws its tinted-rect
             // greybox exactly as before.
             DialogueBubbleArt.Dress(presenter);
+            // The wares book rides the same GameObject as the bubble: it is opened BY a conversation
+            // (CatalogViewRequested) and closed back TO one (CatalogClosed), and it sorts below the
+            // bubble so the speaker is never hidden behind the book she is holding out.
+            dialogueGo.AddComponent<HiddenHarbours.Economy.CatalogBookPresenter>();
 
             var interactorGo = new GameObject("WorldInteractor");
             var interactor = interactorGo.AddComponent<WorldInteractor>();

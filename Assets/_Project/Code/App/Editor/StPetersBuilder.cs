@@ -1831,6 +1831,10 @@ namespace HiddenHarbours.App.Editor
             var dialogueGo = new GameObject("DialogueUI");
             var presenter = dialogueGo.AddComponent<DialoguePresenter>();
             DialogueBubbleArt.Dress(presenter);
+            // The wares book rides the same GameObject as the bubble: it is opened BY a conversation
+            // (CatalogViewRequested) and closed back TO one (CatalogClosed), and it sorts below the
+            // bubble so the speaker is never hidden behind the book she is holding out.
+            dialogueGo.AddComponent<HiddenHarbours.Economy.CatalogBookPresenter>();
 
             // Aunt Ginny — by the cottage on the island plateau. Teaches the buy-and-repair loop; finishing
             // her conversation sets met_ginny (which gates the first onboarding nudge + her warmer re-greet).
