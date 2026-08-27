@@ -19,7 +19,7 @@ MonoBehaviour:
   SourceInteriorRig: docs/art/rigs/boat-interiors-kit/boatInteriorRig.js
   SourceHullRig: docs/art/rigs/boat-interiors-kit/hull-rigs/sportFisherIsoRig2.js
   InteriorRigSha256: 34bb781303b9de9a47c7029a685bf83d357adefe2ffb95ff54451233ea7c46a7
-  HullRigSha256: ebc77bace833361b578f5315e175e10de61d1acf77b5037390217ceb09221bcb
+  HullRigSha256: 205a93c9e0e39a1df72cadeacac335d9bbf7f87390a204ad98bcd4cc629c4691
   PixelsPerMetre: 32
   CellPixels: {x: 820, y: 770}
   PivotPixels: {x: 410, y: 475}

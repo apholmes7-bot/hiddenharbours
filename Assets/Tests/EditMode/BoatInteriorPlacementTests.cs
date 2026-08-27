@@ -48,6 +48,35 @@ namespace HiddenHarbours.Tests.EditMode
             "CapeIslanderIso",
         };
 
+        /// <summary>The same refusals in the LEDGER's own vocabulary (interior hull-stems), for the
+        /// cross-check below.</summary>
+        private static readonly string[] RefusedLedgerHulls = { "capeIslanderIsoRig" };
+
+        [Serializable] private class LedgerRow { public string hull_stem; public string verdict; }
+        [Serializable] private class Ledger { public LedgerRow[] hulls; }
+
+        /// <summary>
+        /// The OTHER direction of the stated-list bargain. <see cref="RefusedStems"/> stays stated so
+        /// the gate cannot be widened by editing the file it guards — but a stated list can go STALE,
+        /// and did: the sport fishers sat in it after the ledger cleared them. This reads the ledger
+        /// with <see cref="JsonUtility"/> (no Tools-assembly reference needed) and fails when the two
+        /// disagree in either direction, naming the move to make.
+        /// </summary>
+        [Test]
+        public void TheRefusedTranscriptionMatchesTheLedger()
+        {
+            string path = Path.Combine(Directory.GetParent(Application.dataPath)!.FullName,
+                                       "docs/art/rigs/boat-interiors-intake/s0-verdicts.json");
+            Ledger ledger = JsonUtility.FromJson<Ledger>(File.ReadAllText(path));
+            string[] refused = ledger.hulls.Where(h => h.verdict != "CLEAN")
+                                     .Select(h => h.hull_stem)
+                                     .OrderBy(s => s, StringComparer.Ordinal).ToArray();
+            CollectionAssert.AreEqual(RefusedLedgerHulls, refused,
+                "the S0 ledger's refused set and this file's stated transcription (RefusedStems + " +
+                "RefusedLedgerHulls) disagree — move them in the SAME change as the ledger, with its " +
+                "citation, the way the 2026-08-26 sport-fisher re-clearance did.");
+        }
+
         private readonly List<UnityEngine.Object> _spawned = new();
 
         [TearDown]

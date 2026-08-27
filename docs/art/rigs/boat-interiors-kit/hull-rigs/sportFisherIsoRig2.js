@@ -1122,7 +1122,7 @@
     extLadders:[ { cx:2.05, hw:0.24, y0:-11.30, z0:2.90, y1:-10.85, z1:7.24, rungs:13 } ],
     interior:{ soleZ:2.83, bridgeSole:9.74,
       // the FULL DECK dedicated to the helm: the skylounge, baked as a real interior level
-      bridge:{ deckId:'sky_sole', soleZ:7.30, ceilZ:9.35, hx:2.28, y0:-9.50,
+      bridge:{ deckId:'bridge_sole', soleZ:7.30, ceilZ:9.35, hx:2.28, y0:-9.50,
                front:{ yBot:0.05, yTop:-0.50 },
                frontGlass:{ z0:8.20, z1:9.18, panes:[[-1.45,-0.10],[0.10,1.45]] },
                sideGlass:{ z0:8.45, z1:9.15, runs:[[-7.2,-5.8],[-5.4,-4.0],[-3.6,-2.2]] },

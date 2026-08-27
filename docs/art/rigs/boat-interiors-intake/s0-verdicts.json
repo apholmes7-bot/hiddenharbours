@@ -190,7 +190,17 @@
     "  TheSportFishersRefusalNamesTheTemplateAndNotSomethingVaguer,",
     "  EveryStampedHullPinResolvesToTheBundledRigItNames and",
     "  TheReExportClearedTwentyFourAndBrokeTheTwoThatWereAlreadyClean -- were updated in the SAME",
-    "  change, which is what those tests asked for in their own comments."
+    "  change, which is what those tests asked for in their own comments.",
+    "2026-08-26 (late), sportFisherIsoRig2 (both hulls): the bundled hull rig moved ebc77bac... -> 205a93c9...",
+    "  by exactly ONE non-visual literal (interior.bridge.deckId 'sky_sole' -> 'bridge_sole', the skybridge",
+    "  walkable-id reconciliation this intake asked for; diff verified, one line, no geometry). Upstream's",
+    "  refresh re-stamped the SKYBRIDGE pin with the regeneration but missed that the shared rig file",
+    "  stales the SIBLING's pin -- the convertible arrived still naming ebc77bac against a 205a93c9 bundle.",
+    "  Coordinator re-stamped the convertible's two entries in place (unanimity preserved), justified the",
+    "  way the cape bar ratifies a stamp-without-re-measure: additive pass, cores untouched, zero pixel",
+    "  change. Converges with upstream's generator, which stamps the current rig on any future export;",
+    "  upstream notified to apply the same one-liner in their tree. Both CLEAN verdicts stand -- the",
+    "  clearance evidence's ebc77bac citation is the HISTORICAL flip value and stays as written."
   ],
   "_reexport": [
     "The re-export (commit 74be6b70) was verified against the bytes, not accepted on its gate report.",

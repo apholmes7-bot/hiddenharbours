@@ -1,6 +1,6 @@
 {
     "schema": "hidden-harbours/boat-interior-sheets@1",
-    "generated": "2026-08-26",
+    "generated": "2026-08-27",
     "interiorRig": "docs/art/rigs/boat-interiors-kit/boatInteriorRig.js",
     "interiorRigSha256": "4df2f2f43e905071622d969900a74bd5424d918d5524de182a032338818f31b8",
     "engine": "V8 (ClearScript 7.5.1.0)",
