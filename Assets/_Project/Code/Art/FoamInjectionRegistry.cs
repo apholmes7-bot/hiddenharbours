@@ -23,13 +23,26 @@ namespace HiddenHarbours.Art
         /// <summary>How much foam to add at the centre of the band this frame, 0..1 (already
         /// dt-scaled by the injector, so the deposit is frame-rate independent).</summary>
         public readonly float Amount;
+        /// <summary>
+        /// How hard this hull is working the water right now, 0..1 — <c>FoamBuffer.Injection01</c>'s own
+        /// output, <b>before</b> it is turned into a per-frame amount.
+        ///
+        /// <para>It is the freshness channel's <b>GATE</b>, not a scale: the advect pass asks only
+        /// "is this hull working the water at all this frame", and marks the clock fully fresh if so
+        /// (<see cref="FoamBuffer.Freshness"/> says why it must not be scaled). <see cref="Amount"/>
+        /// cannot answer that question — it is this same number multiplied by the frame's dt, so at a
+        /// high frame rate a gently-working hull's amount rounds toward nothing and the gate would
+        /// flicker with the frame rate. A wake's colour must not depend on how fast the machine is.</para>
+        /// </summary>
+        public readonly float Vigour;
 
-        public FoamInjection(Vector2 from, Vector2 to, float radius, float amount)
+        public FoamInjection(Vector2 from, Vector2 to, float radius, float amount, float vigour)
         {
             From = from;
             To = to;
             Radius = radius;
             Amount = amount;
+            Vigour = vigour;
         }
     }
 
@@ -193,11 +206,16 @@ namespace HiddenHarbours.Art
         /// sampler would smear a half-strength foam wash across the whole sea on the first frame of
         /// every scene. Black is exactly "no foam". Same lesson, same shape, as the interior guard's
         /// black 1×1 and the reflection target's clear one.</para>
+        ///
+        /// <para><b>TWO channels, matching the real buffer.</b> The water shader reads <c>.rg</c> —
+        /// coverage and freshness — and the zero window bound alongside this makes it bail before it
+        /// looks. Matching the format anyway costs one byte and keeps "black means nothing here" a
+        /// property of the texture rather than of a guard somewhere else that might move.</para>
         /// </summary>
         static void EnsureFallbackBound()
         {
             if (s_BlackFallback != null) return;
-            s_BlackFallback = new Texture2D(1, 1, TextureFormat.R8, false, true)
+            s_BlackFallback = new Texture2D(1, 1, TextureFormat.RG16, false, true)
             {
                 name = "HHFoamBufferFallback",
                 hideFlags = HideFlags.HideAndDontSave,
@@ -239,7 +257,14 @@ namespace HiddenHarbours.Art
         /// <summary>Advect pass: per-slot injection segment — <c>xy</c> = from, <c>zw</c> = to (world m).</summary>
         public static readonly int InjectSeg = Shader.PropertyToID("_HHFoamInjectSeg");
         /// <summary>Advect pass: per-slot injection shape — <c>x</c> = radius (m), <c>y</c> = amount
-        /// (0 in an unused slot, which is what makes the fixed-length loop cost nothing).</summary>
+        /// (0 in an unused slot, which is what makes the fixed-length loop cost nothing),
+        /// <c>z</c> = vigour 0..1 (the FRESHNESS gate; see <see cref="FoamInjection.Vigour"/>).</summary>
         public static readonly int InjectShape = Shader.PropertyToID("_HHFoamInjectShape");
+
+        /// <summary>Advect pass: this frame's exponential decay multiplier for the FRESHNESS channel
+        /// (<see cref="FoamBuffer.DecayFactor"/> on the age half-life — a different, shorter half-life
+        /// than the coverage channel's, so the colour walk completes while the foam is still visible).
+        /// </summary>
+        public static readonly int AgeDecay = Shader.PropertyToID("_HHFoamAgeDecay");
     }
 }

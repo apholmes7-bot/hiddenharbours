@@ -35,9 +35,10 @@ namespace HiddenHarbours.Core
     /// BIT-EXACTLY, so the whole feature is one knob's worth of A/B (this repo's standing contract).</para>
     ///
     /// <para><b>The shader twin.</b> <c>HiddenHarboursWater.shader</c>'s advected-foam compose carries a
-    /// transcription of <see cref="Age01"/> and <see cref="Ramp3"/> for the buffer's own age proxy — its
-    /// decayed coverage. Change one, change BOTH in the same PR; a source-scrape test reads the shader and
-    /// fails red on drift, the same discipline <c>ShoreFadeMath</c>/<c>Fade01</c> keeps.</para>
+    /// transcription of <see cref="Age01FromFreshness"/>, <see cref="Knots"/> and <see cref="Ramp3"/> for
+    /// the buffer's own age — its FRESHNESS channel. Change one, change BOTH in the same PR; a
+    /// source-scrape test reads the shader and fails red on drift, the same discipline
+    /// <c>ShoreFadeMath</c>/<c>Fade01</c> keeps.</para>
     /// </summary>
     public static class WakeFoamAgeing
     {
@@ -115,6 +116,38 @@ namespace HiddenHarbours.Core
         }
 
         /// <summary>
+        /// How OLD a patch of buffered wake foam is, from the advected buffer's FRESHNESS channel —
+        /// <b>the half the water shader transcribes</b>, and the piece round 2 replaced.
+        ///
+        /// <para><b>What it replaced, and why measurement decided it.</b> #665 derived the buffer's age
+        /// from its COVERAGE: <c>age = 1 − coverage/freshCover</c>, on the reasoning that a decaying
+        /// buffer's surviving coverage is its freshness. The owner's eyeball (2026-08-27) found the
+        /// band still solid white, and the arithmetic says why — coverage <b>saturates</b> (a dory at 3
+        /// m/s pins a texel at 1.000 within 36 frames of deposit) and is then <b>thresholded and
+        /// posterized</b> by the compose, so the value the proxy actually received could only ever be
+        /// one of three: {0, 0.425, 0.85}. 72–81% of the visible band drew at age exactly 0 at every
+        /// speed. Retuning the threshold cannot recover a gradient from three values — it only chooses
+        /// which single flat colour the band is. <c>WakeFoamAgeingMeasurementTests</c> holds that
+        /// measurement so the compression cannot come back unnoticed.</para>
+        ///
+        /// <para><b>What it is now.</b> The buffer carries a second channel that is a CLOCK: churn
+        /// resets it (a max, never an add — see <c>FoamBuffer.Freshness</c>), and it decays on its own
+        /// half-life. It cannot clamp, so it is monotone in time-since-churn by construction, and it
+        /// reads 1.0 at the moment of churn for every hull at every speed — so the ramp means the same
+        /// thing everywhere.</para>
+        ///
+        /// <para><paramref name="freshFloor"/> is the freshness at or above which water still reads as
+        /// churning right now (age 0). At the shipped 1 that is the instant of churn alone and the
+        /// white HOLD is left to <see cref="Knots"/>, where it is one knob rather than two ways of
+        /// spelling the same thing. Floored off zero so a mis-tuned material divides by nothing.</para>
+        /// </summary>
+        public static float Age01FromFreshness(float freshness, float freshFloor)
+        {
+            float fresh = Mathf.Max(freshFloor, 1e-4f);
+            return Mathf.Clamp01(1f - freshness / fresh);
+        }
+
+        /// <summary>
         /// The three-stop colour lookup: <paramref name="age01"/> 0 → <paramref name="foam"/>,
         /// 0.5 → <paramref name="shallow"/>, 1 → <paramref name="mid"/>. Alpha is not touched — the
         /// element's own life fade owns that, and this must never fight it.
@@ -166,6 +199,39 @@ namespace HiddenHarbours.Core
             return new Color(Mathf.Lerp(legacy.r, aged.r, strength),
                              Mathf.Lerp(legacy.g, aged.g, strength),
                              Mathf.Lerp(legacy.b, aged.b, strength),
+                             legacy.a);
+        }
+
+        /// <summary>
+        /// The age ramp applied as a <b>MULTIPLY</b>, for an element whose sprite carries its own shading
+        /// in its RGB — the wake WAVE's crests, which are drawn with a lit crest above the waterline and a
+        /// darker hollow below it.
+        ///
+        /// <para><b>Why this exists and <see cref="Shade"/> would not do.</b> <see cref="Shade"/> LERPS
+        /// toward a single aged colour, which is right for a foam puff (one flat tone) and destroys a
+        /// crest (every texel converges on the same value and the profile flattens into a painted line —
+        /// the exact thing the wave sprite replaced). That is why #665 excluded the crests from the ramp
+        /// altogether, and it is why the owner's next look found them still reading as <i>"a sprite baked
+        /// statically … never manipulated"</i>: they were the one wake stream that never changed colour at
+        /// all. A multiply is the operator that fits the case — it SCALES the sprite's own light and dark
+        /// together, so the crest keeps every bit of its internal contrast while the whole thing walks
+        /// down the sea's blues.</para>
+        ///
+        /// <para><paramref name="strength"/> 0 multiplies by pure white, so it returns
+        /// <paramref name="legacy"/> BIT-EXACTLY (x·1 is exact in IEEE) — the A/B, on the same terms as
+        /// every other knob in this file. Alpha is passed through untouched; the caller's life fade owns
+        /// it.</para>
+        /// </summary>
+        public static Color ShadeMultiply(Color legacy, float life01, float seed01, float strength,
+                                          in WakeAgeRamp ramp, in SeaPaletteState palette)
+        {
+            float k = Mathf.Clamp01(strength) * Mathf.Clamp01(ramp.Strength);
+            if (k <= 0f) return legacy;
+
+            Color aged = Ramp3(Age01(life01, seed01, in ramp), palette.Foam, palette.Shallow, palette.Mid);
+            return new Color(legacy.r * Mathf.Lerp(1f, aged.r, k),
+                             legacy.g * Mathf.Lerp(1f, aged.g, k),
+                             legacy.b * Mathf.Lerp(1f, aged.b, k),
                              legacy.a);
         }
 

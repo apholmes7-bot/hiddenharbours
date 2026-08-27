@@ -132,6 +132,14 @@ namespace HiddenHarbours.Boats
                  "no pool ticked, no renderers built, nothing drawn.")]
         [SerializeField] private WakeBubbleConfig _bubbles = WakeBubbleConfig.Default;
 
+        [Header("BOW IMPACT (owner eyeball 2026-08-27: the bow must not read as the stern)")]
+        [Tooltip("Drive the bow splash from IMPACT — speed x sea state through the displaced-sea seam — " +
+                 "with bursty per-droplet throws that hold and then fall back. The stern's churn is " +
+                 "continuous and long-lived; a bow splash is a collision, and giving the two the same " +
+                 "arrival law and the same death is what made them read as one effect twice. " +
+                 "Enabled = false restores the shipped metered stream, keyed to speed alone.")]
+        [SerializeField] private BowImpactConfig _bowImpact = BowImpactConfig.Default;
+
         // Displaced sea (ADR 0023 — the wake rides the same sea the boat rides): the wave field comes
         // from GameConfig.WaveField via GameServices (ADR 0018 §(5)), so the foam rides the same swell
         // as the hull and the drawn surface BY CONSTRUCTION, not by a parity comment. The exaggeration
@@ -143,9 +151,11 @@ namespace HiddenHarbours.Boats
         [Tooltip("Max live crest-LINE streaks PER BOAT (a separate fixed, recycled pool). Kept smaller than the " +
                  "foam pool — a few crisp crests read richer than a wall of lines.")]
         [Min(0)] [SerializeField] private int _linePoolPerBoat = 48;
-        [Tooltip("Max live BOW-WAVE droplets PER BOAT (a third fixed, recycled pool). Small — spray is flecks " +
-                 "with a sub-second life, not foam.")]
-        [Min(0)] [SerializeField] private int _dropletPoolPerBoat = 24;
+        [Tooltip("Max live BOW-WAVE droplets PER BOAT (a third fixed, recycled pool). Spray is flecks with " +
+                 "a sub-second life, not foam — but the impact stream throws in BURSTS, so the pool is " +
+                 "sized against its own arithmetic: 34/s at a 0.45 s life is a steady-state population " +
+                 "near 15, and 48 carries the burstiest cluster several times over without ever growing.")]
+        [Min(0)] [SerializeField] private int _dropletPoolPerBoat = 48;
         [Tooltip("Max live STERN-ROLL crests PER BOAT (a fourth fixed, recycled pool — the wake wave's " +
                  "transom segment). Its own pool rather than a share of the crest pool so the arms' " +
                  "overlap law and the roll's much shorter life never compete for slots.")]
@@ -395,7 +405,7 @@ namespace HiddenHarbours.Boats
             for (int r = 0; r < _rigs.Count; r++)
                 _rigs[r].Tick(current, wind, roughness, time, dt, _config, _foamColor, _lineConfig, _lineColor,
                               _grade, _spray, _sprayColor, _trail, _bowWave, _wave, _waveColor, in lift,
-                              in ramp, in palette, in _bubbles);
+                              in ramp, in palette, in _bubbles, in _bowImpact);
         }
 
         /// <summary>
@@ -883,7 +893,14 @@ namespace HiddenHarbours.Boats
             private float _lineEmitCarry;
             // --- TRAIL DEPOSITION state (metres-of-track carries + the previous frame anchors) -------------
             private float _depositCarry;        // metres of stern travel since the last laid deposit
-            private float _dropletCarry;        // fractional bow droplets carried between ticks
+            private float _dropletCarry;        // fractional bow droplets carried between ticks (legacy A/B)
+            private uint _bowDraw;              // monotonic tick index -> the bow burst's deterministic dice
+            // The bow's IMPACT history: the sea's height at the cutwater and at the hull's own centre last
+            // tick. The DIFFERENCE between them is what says the stem is burying rather than the whole
+            // boat rising, and its rate is the splash (BowImpactMath.EncounterRate).
+            private float _prevStemLift;
+            private float _prevHullLift;
+            private bool _hasPrevLift;
             private Vector2 _prevStern;         // where the stern anchor was last tick (world)
             private Vector2 _prevPos;           // where the BOAT ORIGIN was last tick (world) — the course
             private bool _hasPrevStern;
@@ -1107,7 +1124,8 @@ namespace HiddenHarbours.Boats
                              in WakeGradeConfig grade, in BowSprayGradeConfig spray, Color sprayColor,
                              in WakeTrailConfig trail, in BowWaveConfig bowWave,
                              in WakeWaveConfig wave, Color waveColor, in SeaLift lift,
-                             in WakeAgeRamp ramp, in SeaPaletteState palette, in WakeBubbleConfig bubbles)
+                             in WakeAgeRamp ramp, in SeaPaletteState palette, in WakeBubbleConfig bubbles,
+                             in BowImpactConfig impact)
             {
                 if (Boat == null) return;
 
@@ -1168,7 +1186,13 @@ namespace HiddenHarbours.Boats
                 }
 
                 // --- BOW-WAVE DROPLETS (thrown off the cutwater, left behind in world space) ---------------
-                if (_dropletSys != null && bowWave.DropletsEnabled)
+                // IMPACT-DRIVEN by default (owner eyeball 2026-08-27): what the bow throws is set by how
+                // hard the stem is meeting the water, not by the boat's speed alone, and it arrives in
+                // bursts rather than at a metered rate. The legacy path is one bool away.
+                if (_dropletSys != null && impact.Enabled)
+                    ThrowBowImpact(pos, bow, speed, aground, length, bakeElev, spray, in impact,
+                                   in lift, dt);
+                else if (_dropletSys != null && bowWave.DropletsEnabled)
                     DepositBowDroplets(pos, bow, speed, aground, length, mass, bakeElev, spray, bowWave, dt);
 
                 // --- BUBBLES (owner ask 2026-08-27) — formed where the hull WORKS the water --------------
@@ -1211,8 +1235,9 @@ namespace HiddenHarbours.Boats
 
                 if (_dropletSys != null)
                 {
-                    _dropletSys.Step(current, bowWave.DropletVelocityDecay, dt);
-                    RenderDroplets(time, bowWave, sprayColor, in lift, in ramp, in palette);
+                    float dropletDecay = impact.Enabled ? impact.VelocityDecay : bowWave.DropletVelocityDecay;
+                    _dropletSys.Step(current, dropletDecay, dt);
+                    RenderDroplets(time, bowWave, sprayColor, in lift, in ramp, in palette, in impact);
                 }
 
                 if (_bubbleSys != null && bubbles.Enabled)
@@ -1460,6 +1485,87 @@ namespace HiddenHarbours.Boats
             }
 
             /// <summary>
+            /// THROW this tick's bow spray — the impact-driven replacement for the metered droplet stream
+            /// and for the authored spray sheet it stood beside (owner eyeball 2026-08-27: <i>"the bow
+            /// splash reads identical to the rear wake … not physics based or dynamic"</i>).
+            ///
+            /// <para><b>The signal is the COLLISION, not the speed.</b> The sea is sampled twice through
+            /// the shared <see cref="SeaLift"/> — the Core displaced-sea seam, at the drawn cutwater and at
+            /// the hull's own centre — and what drives the splash is the RATE at which the gap between them
+            /// opens: the stem burying into a face. A hull merely rising on a swell lifts both points and
+            /// cancels out, so a boat riding a big smooth roll throws nothing while the same boat punching
+            /// into a short head sea throws hard. That difference is the whole of "dynamic", and no amount
+            /// of speed-keyed tuning could produce it.</para>
+            ///
+            /// <para><b>Everything about the throw is per-droplet</b> (the bubble lane's doctrine): arrival
+            /// is a Bernoulli burst rather than a metered rate, size is heavy-tailed so a few gouts are
+            /// individually readable in a haze of fine spray, and each carries its own scatter, life and
+            /// launch ray. Deterministic from the tick counter (rule 5), hard-capped per tick by the burst
+            /// slots (rule 7), allocation-free.</para>
+            ///
+            /// <para>With no displaced sea the encounter rate is identically 0 and the splash falls back to
+            /// the speed carrier alone — a real flat-plane limit, not an approximation of one.</para>
+            /// </summary>
+            private void ThrowBowImpact(Vector2 pos, Vector2 bow, float speed, bool aground,
+                                        float hullLength, float bakeElevationDegrees,
+                                        in BowSprayGradeConfig spray, in BowImpactConfig cfg,
+                                        in SeaLift lift, float dt)
+            {
+                Vector2 cutwater = BowSprayGrading.BowAnchor(pos, bow, hullLength, spray.SprayBowOffset,
+                                                             bakeElevationDegrees);
+
+                // The two reads that make this an impact rather than a speed ramp. Both go through the ONE
+                // shared rule (rule 4); inactive lift returns 0 for both, so the difference is 0 too.
+                float stemLift = lift.LiftAt(cutwater);
+                float hullLift = lift.LiftAt(pos);
+                float encounter = _hasPrevLift
+                    ? BowImpactMath.EncounterRate(stemLift, hullLift, _prevStemLift, _prevHullLift, dt)
+                    : 0f;
+                _prevStemLift = stemLift;
+                _prevHullLift = hullLift;
+                _hasPrevLift = true;
+
+                float impact01 = BowImpactMath.Impact01(speed, encounter, in cfg);
+                int count = BowImpactMath.BurstCount(impact01, aground, in cfg, dt, _bowDraw);
+                _bowDraw++;
+                if (count <= 0) return;
+
+                // A per-droplet config carrying only the lifetime jitter — size comes from the impact's own
+                // heavy-tailed draw, not from EmitAt's symmetric one, because a symmetric jitter about a
+                // mean is exactly the uniform field this stream exists to break. Struct copy, no allocation.
+                WakeConfig dcfg = default;
+                dcfg.Lifetime = Mathf.Max(0.05f, cfg.Lifetime);
+                dcfg.FoamSize = 1f;                       // the size scale below carries the real diameter
+                dcfg.LifetimeJitter = Mathf.Clamp01(cfg.LifetimeJitter);
+                dcfg.SizeJitter = 0f;
+                dcfg.StartAlpha = 1f;
+                dcfg.FadePower = 1f;
+                dcfg.SpreadFactor = 1f;
+
+                for (int i = 0; i < count; i++)
+                {
+                    uint dice = _bowDraw * 0x27D4EB2Fu + (uint)i * 0x9E3779B1u;
+                    float fan = WakeParticleSystem.Hash01(dice) * 2f - 1f;
+                    float uSize = WakeParticleSystem.Hash01(dice * 40503u + 7u);
+                    float uAngle = WakeParticleSystem.Hash01(dice * 22695477u + 29u);
+                    float uRad = WakeParticleSystem.Hash01(dice * 1103515245u + 31u);
+
+                    // sqrt keeps the scatter AREA-uniform; a raw uniform radius piles every burst at its
+                    // own centre, which is the stacked look the scatter exists to avoid.
+                    float ang = uAngle * Mathf.PI * 2f;
+                    float rad = Mathf.Max(0f, cfg.ScatterMeters) * Mathf.Sqrt(uRad);
+                    Vector2 at = cutwater + new Vector2(Mathf.Cos(ang), Mathf.Sin(ang)) * rad;
+
+                    Vector2 v = BowImpactMath.LaunchVelocity(bow, speed, fan, impact01, in cfg);
+                    // The birth strength is BAKED at the impact that threw it, like every other stream's:
+                    // a droplet thrown hard keeps its brightness after the boat has driven past.
+                    _dropletSys.EmitAt(at, v, in dcfg, 1f, BowImpactMath.SizeAt(uSize, in cfg),
+                                       Mathf.Clamp01(impact01));
+                }
+            }
+
+            /// <summary>
+            /// Shed this tick's BOW-WAVE droplets: flecks thrown forward off the cutwater inside a fan, at a            /// <summary>
             /// Shed this tick's BOW-WAVE droplets: flecks thrown forward off the cutwater inside a fan, at a
             /// fraction of boat speed, which the boat then drives PAST — deposited in world space, they
             /// stream down the flanks and die in under a second: the "crashing against the bow" read. Rate
@@ -1751,7 +1857,8 @@ namespace HiddenHarbours.Boats
             /// other wake element. Same pooled discipline as the foam (hidden when dead, never destroyed).
             /// </summary>
             private void RenderDroplets(float time, in BowWaveConfig bowWave, Color sprayColor, in SeaLift lift,
-                                        in WakeAgeRamp ramp, in SeaPaletteState palette)
+                                        in WakeAgeRamp ramp, in SeaPaletteState palette,
+                                        in BowImpactConfig impact)
             {
                 // A minimal per-tick render config for the life curves (struct copy, no allocation).
                 WakeConfig rcfg = default;
@@ -1771,8 +1878,16 @@ namespace HiddenHarbours.Boats
                     }
 
                     float life = WakeParticleSystem.Life01(p.Age, p.Lifetime);
-                    float alpha = WakeParticleSystem.LifeFade(life, rcfg) * p.BirthStrength;
-                    float sizeM = WakeParticleSystem.LifeSpread(p.BaseSize, life, rcfg);
+                    // The impact stream dies by its OWN signature: it HOLDS, then falls back and SHRINKS.
+                    // The foam beside it fades for its whole life and the bubbles swell as they pop —
+                    // three streams that die alike read as one stream, and telling them apart is most of
+                    // what "the bow must not look like the stern" means to an eye.
+                    float alpha = impact.Enabled
+                        ? BowImpactMath.AlphaAt(life, in impact) * p.BirthStrength
+                        : WakeParticleSystem.LifeFade(life, rcfg) * p.BirthStrength;
+                    float sizeM = impact.Enabled
+                        ? BowImpactMath.SizeOverLife(p.BaseSize, life, in impact)
+                        : WakeParticleSystem.LifeSpread(p.BaseSize, life, rcfg);
                     float ride = lift.LiftAt(p.Pos);
 
                     var t = sr.transform;
@@ -1891,6 +2006,16 @@ namespace HiddenHarbours.Boats
                     float lengthM = trail.Enabled
                         ? lengthMeters
                         : WakeLineGeometry.StreakLength(p.BirthStrength, life, in lineCfg);
+                    // PER-CREST VARIANCE (owner eyeball 2026-08-27): the crests were the one wake stream
+                    // with no per-thing variation at all — same sprite, same angle, same length, every
+                    // deposit. Off each crest's own birth seed, so a run of them reads as water standing
+                    // up rather than a stamp repeating. Both knobs at 0 restore the shipped look exactly.
+                    float orientDeg = p.OrientDeg;
+                    if (asWave)
+                    {
+                        lengthM = WakeWaveMath.CrestLengthMeters(lengthM, p.Seed, in wave);
+                        orientDeg = WakeWaveMath.CrestOrientDeg(orientDeg, p.Seed, in wave);
+                    }
 
                     float crossM;
                     float standM;
@@ -1912,15 +2037,19 @@ namespace HiddenHarbours.Boats
                     var t = sr.transform;
                     // ride = the swell passing under the crest; standM = the crest's OWN displaced water.
                     t.position = new Vector3(renderPos.x, renderPos.y + ride + standM, 0f);
-                    t.localRotation = Quaternion.Euler(0f, 0f, p.OrientDeg);
+                    t.localRotation = Quaternion.Euler(0f, 0f, orientDeg);
                     t.localScale = new Vector3(lengthM / (asWave ? WaveNativeLength : LineNativeLength),
                                                crossM / nativeCross, 1f);
-                    // Crests age like the foam does — but only the FLAT legacy lines are tinted here. The
-                    // wake WAVE carries its own lit-crest/dark-hollow profile in the sprite's RGB, and
-                    // walking that tint down the palette would flatten the profile back into a painted
-                    // line, which is the thing the wave sprite replaced. So the wave keeps its near-white
-                    // multiplier and lets its own shading speak.
-                    var col = asWave ? tint : WakeFoamAgeing.Shade(tint, life, p.Seed, in ramp, in palette);
+                    // Crests age like the foam does — through a DIFFERENT operator, because the wave
+                    // sprite carries its own lit-crest/dark-hollow profile in its RGB. Shade() lerps
+                    // toward one flat colour, which is right for a foam puff and flattens a crest back
+                    // into the painted line the wave replaced — which is why #665 excluded the crests
+                    // from the ramp, and why the owner's next look found them "baked statically … never
+                    // manipulated". ShadeMultiply SCALES the sprite's own light and dark together, so
+                    // the profile survives intact while the crest walks down the sea's blues.
+                    var col = asWave
+                        ? WakeFoamAgeing.ShadeMultiply(tint, life, p.Seed, wave.AgeStrength, in ramp, in palette)
+                        : WakeFoamAgeing.Shade(tint, life, p.Seed, in ramp, in palette);
                     col.a = Mathf.Clamp01(alpha);
                     sr.color = col;
                     if (!sr.gameObject.activeSelf) sr.gameObject.SetActive(true);

@@ -3819,15 +3819,52 @@ the single-white look. The usual A/B contract.
 > same PR — `WakeFoamAgeingShaderTests` scrapes the two source files and compares the function bodies
 > after normalising for language, so drift goes red on CPU-only CI.
 
-### 29.3 The buffer's age proxy costs nothing to store
+### 29.3 The buffer's age proxy — ⚠️ round 1 got this wrong, and here is the measurement that says so
 
-The shader derives age from coverage: `age = saturate(1 - coverage / _WakeFoamFreshCover)`. Coverage at
-or above `_WakeFoamFreshCover` (0.72) is churn happening **now** and draws white; below it the texel has
-been decaying and walks down the ramp. **No second channel, no second render target** — the information
-was always in the buffer.
+**Round 1 (#665) derived age from coverage:** `age = saturate(1 - coverage / _WakeFoamFreshCover)`, on the
+reasoning that a decaying buffer's surviving coverage *is* its freshness, so no second channel was needed.
+It reads well. It cannot work, and the owner's eyeball found it in one playthrough: *"the big foam band
+stays white — never disperses."*
 
-The dissolve into the ambient sea then comes free, because the lerp **weight** is still the coverage: the
-oldest foam is both the bluest *and* the faintest.
+**Why, measured** (`WakeFoamAgeingMeasurementTests` simulates the whole shipped chain headlessly):
+
+| | |
+|---|---|
+| Coverage **saturates** | a dory at 3 m/s lays 36 frames of deposit into one texel and pins it at 1.000; two texels of different ages read the same number |
+| …then the compose **destroys the rest** | `smoothstep(0.12, 0.30)` maps the entire useful range onto 1.0, and `_WakeFoamBands` 3 posterizes what is left |
+| So the proxy's input has **three values** | {0, 0.425, 0.85} at the shipped material — and a ramp indexed by three values is three colours |
+| Result | **72–81 % of the visible band drew at age exactly 0**, at every speed from 1.5 to 8 m/s |
+
+Retuning `_WakeFoamFreshCover` was therefore never the fix. Swept across its **whole** legal range
+(0.05 → 1) the visible band still takes at most `_WakeFoamBands` shades and one of them still covers
+**over 60 %** of it — the knob only chooses *which* flat colour dominates. The owner would have
+reported the same defect in a different hue.
+
+**Round 2 stores true age.** The buffer is `RG16`:
+
+- **R = coverage** — how much churn is on this water. Accumulates, decays, saturates. Unchanged.
+- **G = freshness** — how recently it was churned. A **clock**: a hull that is working the water at all
+  `max`es it back to 1 (never an add), and it decays on its own, shorter half-life. Because the mark is
+  bounded by 1 and the update is a max, this channel *cannot* clamp, so it is monotone in
+  time-since-churn by construction — exactly the property coverage lost.
+
+⚠️ **The mark is a GATE, not a scale, and the first draft got this wrong.** Scaling it by the hull's
+vigour looks obviously right and is the same category error one level down: it conflates *how hard* with
+*how long ago*. The measurement fixture caught it on its first run — at 1.5 m/s a dory's mark was 0.5, so
+her brand-new churn was born half-aged and could never draw white at all. Marked as a gate, fresh churn
+reads 1.0 for every hull at every speed, so the ramp means the same thing everywhere. How MUCH foam is on
+that water is the R channel's job, and it already does it.
+
+The price is one byte per world cell: 768² × RG16 × 2 (ping-pong) = **2.4 MB per camera** at the 96 m
+window, up from 1.1 MB. Twin: `FoamBuffer.Freshness` ↔ the advect shader's `fresh` line; proxy twin:
+`WakeFoamAgeing.Age01FromFreshness` ↔ `WakeFoamAge01`.
+
+**The age half-life must stay SHORTER than the coverage half-life** (4 s vs 6 s, both on
+`IsoFacetHullFeature`, pinned by test). Equal or longer puts the sea's blues in the tail the alpha has
+already faded to nothing — which is the round-1 defect arriving by a second route.
+
+The dissolve into the ambient sea still comes free, because the lerp **weight** is the coverage while the
+**colour** is the freshness: the oldest foam is both the bluest *and* the faintest.
 
 ### 29.4 Bubbles — and why the ones that already existed did not count
 
@@ -3900,3 +3937,111 @@ C#↔HLSL twin.
 **Not** pinned, and correctly so: whether it *looks* right. That is the owner's eyeball. Any pixel
 number quoted about this lane must state which load regime produced it — the drift-line probe's traps
 apply here unchanged.
+
+---
+
+## 30. Round 2 — the eyeball verdict, and the three things knobs could not fix
+
+The owner played #665 on **2026-08-27**. **Bubbles passed** (*"look great"*) and are untouched. Four
+defects came back; §29.3 above carries the first. The other three are recorded here because each is a
+**code shape**, not a tuning — a lane that arrives at this file looking for a slider will not find one.
+
+### 30.1 The band shifted as ONE unit — the drawn window must follow the drift
+
+*"the whole foam band shifts by 1–2 px as ONE unit … it's noticeable it's a separate entity from the
+water; they shift in large groups."*
+
+The buffer scrolls its content downwind in **whole cells** and banks the sub-cell remainder — and it
+must, because a sub-texel scroll resamples the buffer into itself every frame and smudges the wake into
+a blur. The defect was that the buffer was also **drawn** at the bare lattice origin, so the bank was
+invisible until it crossed a cell and the entire band teleported 0.125 m (4 screen px at PPU 32) at
+once. Every texel moved together, because a buffer scroll is rigid — that is the *"one unit / large
+groups"* read exactly, and it happened while the sea around it flowed continuously.
+
+**The fix is one addition and it is exact.** Publish `lattice + residual` as the window
+(`FoamBuffer.DrawOrigin`). Let `C` be the content's cumulative whole-cell displacement and `R` the
+banked remainder; `AdvectCells` guarantees `C + R` advances by exactly this frame's drift for *any*
+drift sequence. So the drawn position moves smoothly at the true drift speed, and on the frame the
+content jumps a cell the residual drops by the same cell — the jump cancels to nothing.
+
+⚠️ **Both shaders take the same origin.** The water's read maps a world position through it and the
+advect pass stamps new injections through it, so a mark is born exactly under the hull that made it and
+then drifts. Feeding them different origins tears the two apart by the residual.
+
+Zero drift ⇒ `R` = 0 ⇒ bit-exact the window that shipped before, so a windless harbour cannot have
+changed. Pinned in EditMode (the invariant, plus a sabotage that measures the teleport it replaces) and
+in PlayMode (real frames, a real camera pan, real variable deltas).
+
+### 30.2 The rear wake read as a baked sprite — the crests had to start living
+
+*"the old static rear wakes now stand out … read as a sprite baked statically, are never manipulated,
+and don't follow the deposited trail's pattern."*
+
+⚠️ **A record correction first.** The brief named the `WakeSpriteLibrary` **plume tiers**. Those have
+shipped **off** since 2026-08-06, when the deposited wake wave replaced them, and turning them back on
+would be the opposite of the fix. What is actually astern is the **wake wave's crests** — and they were
+the one wake stream with no variation of any kind: the same authored sprite, the same baked analytic
+angle, the same length every deposit, and, uniquely, **a tint that never moved at all**, because #665
+excluded them from the age ramp on purpose (a flat lerp would flatten the sprite's own lit-crest /
+dark-hollow profile back into the painted line the wave replaced).
+
+That objection was right about the *operator* and wrong about the *conclusion*. The cure is a
+**multiply**, not a lerp: `WakeFoamAgeing.ShadeMultiply` scales the sprite's own light and dark
+together, so the profile survives to the bit while the crest walks down the sea's blues. Strength 0
+multiplies by white and is bit-exact.
+
+Beside it, the bubble lane's doctrine applied to the crests — **per-thing variance, never more
+pattern**: each crest takes its own length (`LengthJitter`) and a small orientation wobble
+(`OrientJitterDeg`) off its own birth seed. The wobble is deliberately a few degrees: the baked analytic
+angle *is* the emergent V, and orienting crests by anything looser was the 2026-07-23 "horizontal
+dashes" defect.
+
+The last boat-attached authored sprite in the wake, the **bow-spray sheet**, is retired here
+(`BowSprayGradeConfig.SprayEnabled` → false, kept as the A/B) — see §30.3 for what stands in its place.
+
+### 30.3 The bow read as the stern — because it *was* the stern
+
+*"bow splash reads identical to the rear wake … not physics based or dynamic."*
+
+It was the same machinery at both ends: an authored graded tier sprite pinned to the hull, particles
+shed at a **metered** rate keyed to nothing but speed, and the same fade at the end. A wake is water the
+hull has already disturbed streaming away behind her — continuous, long-lived. A bow splash is a
+**collision**: it happens when the stem meets a face of water, it is over in a moment, and it is violent
+in proportion to how hard the two met.
+
+`BowImpactMath` (new) makes that the mechanism:
+
+| property | how |
+|---|---|
+| driven by **encounter**, not speed | the sea is sampled twice through the shared `SeaLift` (the Core `DisplacedSea` seam) — at the drawn cutwater and at the hull's own centre — and the splash rides the **rate the gap between them opens**. A hull rising bodily on a swell lifts both and cancels; a stem burying in a face does not. `SeaGain` 0 restores a pure speed ramp, bit-exact |
+| **bursty** arrival | a deterministic Bernoulli over `BurstSlots`, so a wave met head-on throws a cluster and the next moment throws nothing. The shipped `DropletCount` carried a remainder, which is *precisely* a device for making output even |
+| **heavy-tailed** size | mostly fine spray, a few individually readable gouts |
+| its **own** death | it HOLDS, then falls back and **shrinks** — the opposite sign from a bubble's burst swell and unlike the foam's whole-life fade. Three streams that die alike read as one stream |
+
+Aged down the same ramp as everything else, deterministic from the tick counter (rule 5), hard-capped
+per tick by the burst slots and pooled at 48 per boat (rule 7). `BowImpactConfig.Enabled` = false
+restores the metered stream exactly.
+
+### 30.4 The knobs the owner has now
+
+All five age keys are serialized on **all nine** water materials as of this round. They were serialized
+by **none** of them before — every material silently rode the shader Properties default, so the tooltips
+promised a tuning the owner could not actually reach. That is the `_RippleWavelength` trap verbatim (a
+key absent *everywhere* looks consistent and is invisible to a value-based check) and
+`FoamRealnessTests`' preset guard now covers them.
+
+| knob | where | what it does |
+|---|---|---|
+| `_WakeFoamAgeStrength` | the nine water materials | 0 = one flat white (the pre-#665 compose), 1 = full palette walk |
+| `_WakeFoamFreshFloor` | ” | freshness that still reads as churning *now*. Ships at 1 so the white hold has exactly one owner |
+| `_WakeFoamWhiteHold/BlueReach/DeepReach` | ” | the three knots, in age |
+| `_foamAgeHalfLifeSeconds` | `IsoFacetHullFeature` | how fast the colour walk runs. **Keep it under the coverage half-life** |
+| `AgeStrength` / `LengthJitter` / `OrientJitterDeg` | `WakeWaveConfig` | how much the crests age, and how much they differ from one another |
+| `SeaGain` / `ThrowPerSecond` / `BurstSlots` / `SizeBias` / `FallShrink` | `BowImpactConfig` | how hard the sea drives the bow, and how the throw reads |
+
+### 30.5 What round 2 does not claim
+
+The measurement fixture proves the colour walk now spans the visible band instead of living in
+invisible pixels; the window tests prove the foam no longer moves relative to the water it sits in; the
+bow tests prove the mechanism is an impact rather than a speed ramp. **None of them claims the sea looks
+right.** That is the owner's next eyeball, and it is the only acceptance bar this round has.

@@ -244,6 +244,79 @@ namespace HiddenHarbours.Tests.EditMode
 
         // ==== the knot curve (the half the shader transcribes) ========================================
 
+        // ==== ShadeMultiply — the operator a self-shaded sprite needs (round 2) ======================
+
+        [Test]
+        public void ShadeMultiply_IsBitExactAtStrengthZero()
+        {
+            // The A/B, and it is exact rather than close because multiplying by 1 is exact in IEEE.
+            var legacy = new Color(0.83f, 0.91f, 0.97f, 0.44f);
+            Color got = WakeFoamAgeing.ShadeMultiply(legacy, 0.7f, 0.31f, 0f,
+                                                     WakeAgeRamp.Default, ShippedPalette());
+            Assert.AreEqual(legacy.r, got.r, 0f);
+            Assert.AreEqual(legacy.g, got.g, 0f);
+            Assert.AreEqual(legacy.b, got.b, 0f);
+            Assert.AreEqual(legacy.a, got.a, 0f, "alpha belongs to the caller's life fade, always");
+        }
+
+        [Test]
+        public void ShadeMultiply_PRESERVES_TheSpritesOwnContrast_WhereShadeFlattensIt()
+        {
+            // THE reason this operator exists. A wake-wave crest sprite carries its own lit crest and
+            // dark hollow in its RGB. Shade() lerps every texel toward ONE aged colour, so a bright
+            // texel and a dark one converge and the profile flattens into the painted line the wave
+            // replaced — which is why #665 excluded the crests from the ramp and left them the one
+            // stream that never aged. A multiply SCALES both together, so the ratio survives.
+            var ramp = WakeAgeRamp.Default;
+            SeaPaletteState palette = ShippedPalette();
+            var bright = new Color(1f, 1f, 1f, 1f);
+            var dark = new Color(0.45f, 0.45f, 0.45f, 1f);
+            const float life = 0.9f;   // well down the ramp, where the flattening would show
+
+            float beforeRatio = dark.r / bright.r;
+
+            Color mulBright = WakeFoamAgeing.ShadeMultiply(bright, life, 0.5f, 1f, in ramp, in palette);
+            Color mulDark = WakeFoamAgeing.ShadeMultiply(dark, life, 0.5f, 1f, in ramp, in palette);
+            Assert.AreEqual(beforeRatio, mulDark.r / mulBright.r, 1e-5f,
+                "the multiply must preserve the sprite's internal contrast exactly");
+
+            Color lerpBright = WakeFoamAgeing.Shade(bright, life, 0.5f, in ramp, in palette);
+            Color lerpDark = WakeFoamAgeing.Shade(dark, life, 0.5f, in ramp, in palette);
+            Assert.Greater(lerpDark.r / lerpBright.r, beforeRatio + 0.05f,
+                "…and the lerp must visibly NOT, or there would be no reason for two operators. If " +
+                "this ever stops being true, the crests can go back to Shade().");
+        }
+
+        [Test]
+        public void ShadeMultiply_WalksDownTheRamp_AndNeverBrightens()
+        {
+            var ramp = WakeAgeRamp.Default;
+            SeaPaletteState palette = ShippedPalette();
+            var tint = new Color(1f, 1f, 1f, 1f);
+
+            float previous = 2f;
+            for (float life = 0f; life <= 1.0001f; life += 0.05f)
+            {
+                Color c = WakeFoamAgeing.ShadeMultiply(tint, life, 0f, 1f, in ramp, in palette);
+                float lum = WakeFoamAgeing.Luminance(c);
+                Assert.LessOrEqual(lum, previous + 1e-4f, "churned water never brightens as it ages");
+                Assert.LessOrEqual(c.r, 1f + 1e-5f, "a multiply by a palette colour cannot exceed the tint");
+                previous = lum;
+            }
+            Assert.Less(previous, WakeFoamAgeing.Luminance(tint) * 0.9f,
+                "…and it must actually END somewhere darker, or the crest still never changes colour");
+        }
+
+        [Test]
+        public void ShadeMultiply_RespectsTheMasterStrength_Too()
+        {
+            // Two dials multiply rather than fight: the wave's own AgeStrength and the ramp master.
+            var off = WakeAgeRamp.Off;
+            var tint = new Color(0.9f, 0.95f, 1f, 1f);
+            Color got = WakeFoamAgeing.ShadeMultiply(tint, 0.8f, 0.2f, 1f, in off, ShippedPalette());
+            Assert.AreEqual(tint.r, got.r, 0f, "the ramp master at 0 must silence this path too");
+        }
+
         [Test]
         public void Knots_HitTheThreeStops_AndAreMonotone()
         {

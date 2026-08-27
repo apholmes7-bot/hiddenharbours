@@ -11,7 +11,9 @@ namespace HiddenHarbours.Tests.Art.EditMode
     /// The TWIN GUARD for the wake foam's age ramp (owner ask 2026-08-27).
     ///
     /// <para>The ramp exists on both sides of the sea: <see cref="WakeFoamAgeing"/> shades the particle
-    /// wake, and a transcription in <c>HiddenHarboursWater.shader</c> shades the advected foam buffer.
+    /// wake, and a transcription in <c>HiddenHarboursWater.shader</c> shades the advected foam buffer
+    /// (from its FRESHNESS channel — see <see cref="TheAgeProxy_IsTheBuffersFreshnessChannel"/> for why
+    /// the round-1 coverage proxy was replaced).
     /// Two halves of one look is exactly the shape that drifts silently — this repo has paid for a
     /// twin-parity test that pinned a twin against itself rather than against the thing that actually
     /// draws, so these guards read the SHADER SOURCE and the C# SOURCE and compare them to each other.</para>
@@ -34,8 +36,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
         /// <summary>
         /// Reduce one function body to the shape both languages share, so a real difference in the MATHS
         /// fails and a difference in spelling does not. HLSL's <c>saturate</c> is <c>Mathf.Clamp01</c>,
-        /// its <c>lerp</c> is <c>Color.Lerp</c>, and its literals carry no <c>f</c> suffix and often a
-        /// redundant <c>.0</c>. Everything else — the comparisons, the knots, the divisors, the halves —
+        /// its <c>lerp</c> is <c>Color.Lerp</c>, its <c>max</c>/<c>min</c> are <c>Mathf.Max</c>/
+        /// <c>Mathf.Min</c>, and its literals carry no <c>f</c> suffix and often a redundant <c>.0</c>. Everything else — the comparisons, the knots, the divisors, the halves —
         /// must match character for character after that.
         /// </summary>
         static string Normalize(string body)
@@ -43,6 +45,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             string s = Regex.Replace(body, @"/\*.*?\*/", " ", RegexOptions.Singleline);
             s = Regex.Replace(s, @"//[^\n]*", " ");
             s = s.Replace("Mathf.Clamp01", "saturate").Replace("Mathf.Clamp", "clamp");
+            s = s.Replace("Mathf.Max", "max").Replace("Mathf.Min", "min");
             s = s.Replace("Color.Lerp", "lerp");
             s = Regex.Replace(s, @"\s+", "");
             s = Regex.Replace(s, @"([0-9.])f(?![A-Za-z0-9_])", "$1");   // 1f -> 1, 1e-4f -> 1e-4
@@ -148,15 +151,21 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 "2026-08-27 defect verbatim: the buffer already knows each texel's age (it DECAYS), and " +
                 "the compose is where that information was being thrown away.");
 
-            Assert.IsTrue(Regex.IsMatch(src, @"WakeFoamAgedColor\s*\(\s*wakeFoam\s*\)"),
-                "The wake compose must run its coverage through the age ramp — that is what makes the " +
-                "churn walk through the sea's blues instead of sitting on white.");
+            Assert.IsTrue(Regex.IsMatch(src, @"WakeFoamAgedColor\s*\(\s*wakeFresh\s*\)"),
+                "The wake compose must run the buffer's FRESHNESS through the age ramp — that is what " +
+                "makes the churn walk through the sea's blues instead of sitting on white. Passing the " +
+                "coverage instead is the round-1 defect (see TheAgeProxy_IsTheBuffersFreshnessChannel).");
+
+            Assert.IsTrue(Regex.IsMatch(src, @"saturate\s*\(\s*wakeFoam\s*\)\s*\*\s*_FoamColor\.a"),
+                "…while the COVERAGE stays the compose WEIGHT. The two channels do different jobs: " +
+                "freshness picks the colour, coverage says how much of it is there. Swapping them makes " +
+                "old foam opaque and fresh churn invisible.");
         }
 
         [Test]
         public void TheAgeRamp_HasAnExactPassthroughAtZero()
         {
-            string body = Body(Read(ShaderPath), "float3 WakeFoamAgedColor(float coverage)");
+            string body = Body(Read(ShaderPath), "float3 WakeFoamAgedColor(float freshness)");
 
             // Every visual layer in this shader ships with a knob whose 0 is the previous look, bit-exact.
             // It is how the owner A/Bs a change and how a bad call gets reverted without a revert.
@@ -169,7 +178,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
         [Test]
         public void TheRamp_ReadsTheSeasOwnPaletteAnchors()
         {
-            string body = Body(Read(ShaderPath), "float3 WakeFoamAgedColor(float coverage)");
+            string body = Body(Read(ShaderPath), "float3 WakeFoamAgedColor(float freshness)");
 
             // ADR 0015: the "different shades of blue" must come from the water's own bounded ramp, so a
             // preset swap moves them. A hand-picked blue here would look right in North Atlantic and
@@ -181,16 +190,56 @@ namespace HiddenHarbours.Tests.Art.EditMode
                     "leave behind.");
         }
 
+        /// <summary>
+        /// ⚠️ <b>This guard used to assert the opposite, and the opposite was the defect.</b> #665 derived
+        /// the age from the buffer's COVERAGE — "the buffer decays, so how much survives at a texel already
+        /// IS how old that churn is" — and a test pinned exactly that. It reads well and it is wrong for a
+        /// reason no amount of reasoning about the buffer would have found: by the time the compose sees a
+        /// coverage it has been SATURATED by accumulation and then THRESHOLDED and POSTERIZED, so it can
+        /// only take three values and 72–81% of a visible wake draws at age exactly 0. The owner's eyeball
+        /// found it; <c>WakeFoamAgeingMeasurementTests</c> now measures it. Age comes from the freshness
+        /// clock, which cannot clamp.
+        /// </summary>
         [Test]
-        public void TheAgeProxy_IsTheBuffersOwnCoverage()
+        public void TheAgeProxy_IsTheBuffersFreshnessChannel()
         {
-            string body = Body(Read(ShaderPath), "float3 WakeFoamAgedColor(float coverage)");
+            string body = Body(Read(ShaderPath), "float3 WakeFoamAgedColor(float freshness)");
 
-            Assert.IsTrue(Regex.IsMatch(body, @"1\.0\s*-\s*coverage\s*/"),
-                "The shader must derive age from the buffer's decayed COVERAGE. That is the whole reason " +
-                "this cost nothing to store: the buffer decays, so how much survives at a texel already " +
-                "IS how old that churn is. A second age channel would be a new render target for " +
-                "information the first one was already carrying.");
+            Assert.IsTrue(Regex.IsMatch(body, @"WakeFoamAge01\s*\(\s*freshness\s*,"),
+                "The shader must derive age from the buffer's FRESHNESS channel. Deriving it from the " +
+                "coverage is the round-1 defect: the coverage is saturated and posterized before the " +
+                "compose can read it, so the ramp collapses onto three values and the band draws white.");
+
+            Assert.IsFalse(Regex.IsMatch(body, @"1\.0\s*-\s*coverage\s*/"),
+                "The coverage-as-age proxy is back. It cannot work — see this test's own doc comment.");
+        }
+
+        /// <summary>The NEW half of the twin seam: the proxy itself. The knots and the palette lookup were
+        /// already compared line-for-line; the proxy is what round 2 changed, so it joins them rather than
+        /// being the one piece of the ramp that only exists in one language.</summary>
+        [Test]
+        public void TheAgeProxy_IsTranscribedLineForLine()
+        {
+            string hlsl = Body(Read(ShaderPath),
+                               "float WakeFoamAge01(float freshness, float freshFloor)");
+            string csharp = Body(Read(TwinPath),
+                                 "public static float Age01FromFreshness(float freshness, float freshFloor)");
+
+            Assert.AreEqual(Normalize(csharp), Normalize(hlsl),
+                "The water shader's age proxy has drifted from WakeFoamAgeing.Age01FromFreshness. The " +
+                "particle wake and the buffered wake would then reach the sea's blues at different ages, " +
+                "and the seam between them — which is the same water — would show.");
+        }
+
+        [Test]
+        public void TheFreshFloorDefault_LeavesTheWhiteHoldToTheKnots()
+        {
+            // Two ways to spell "stay white a bit longer" is one way too many: the floor at 1 means age 0
+            // is the instant of churn and nothing else, so WhiteHold is the only knob that holds white.
+            // A floor below 1 silently adds a second hold on top of it and the owner's WhiteHold stops
+            // meaning what its tooltip says.
+            Assert.AreEqual(1f, PropertyDefault(Read(ShaderPath), "_WakeFoamFreshFloor"), 1e-4f,
+                "_WakeFoamFreshFloor must ship at 1 — the white hold belongs to _WakeFoamWhiteHold.");
         }
     }
 }

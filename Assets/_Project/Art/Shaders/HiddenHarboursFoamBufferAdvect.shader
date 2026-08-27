@@ -1,15 +1,27 @@
 // ADR 0027 #6 — THE ADVECTED FOAM BUFFER: one blit that scrolls, decays and injects.
 //
-// The buffer holds "how much churned foam is on this patch of sea", ONE TEXEL PER WORLD CELL. Every
-// frame IsoFacetHullFeature runs this pass into the ping-pong's write side:
+// The buffer holds TWO things about each patch of sea, ONE TEXEL PER WORLD CELL:
+//   R = COVERAGE  — how much churned foam is on it (accumulates, decays, saturates)
+//   G = FRESHNESS — how recently it was churned (a CLOCK: reset by churn, decays, never accumulates)
+// Every frame IsoFacetHullFeature runs this pass into the ping-pong's write side:
 //
 //   1. SCROLL   — copy the previous buffer shifted by a WHOLE number of texels. That shift is the
 //                 camera window's move PLUS the wind/current drift, both already reduced to whole
 //                 world cells on the C# side (FoamBuffer.OriginShiftCells / FoamBuffer.AdvectCells).
 //   2. DECAY    — multiply by an exponential half-life factor (FoamBuffer.DecayFactor), so a wake
-//                 fades over seconds and the buffer's total never runs away.
+//                 fades over seconds and the buffer's total never runs away. The two channels decay
+//                 on their OWN half-lives: the colour walk has to finish while the foam is still
+//                 visible, so freshness dies faster than coverage.
 //   3. INJECT   — add a capsule of foam along each hull's swept segment this frame (a segment, not a
-//                 point, so a fast boat or a frame hitch cannot lay a dashed trail).
+//                 point, so a fast boat or a frame hitch cannot lay a dashed trail), and MAX the
+//                 freshness clock back to fully-fresh wherever that hull churned.
+//
+// 🔴 WHY G EXISTS (owner eyeball 2026-08-27: the wake "stays white — never disperses"). #665 read a
+// texel's age off its coverage. Measured, that cannot work: coverage saturates at 1.0 within ~0.4 s
+// of deposit and the water shader then thresholds and posterizes it to three values, so 72–81% of
+// the visible band drew at age exactly 0 whatever the threshold was set to. Freshness is bounded by
+// a MAX rather than an ADD, so it never clamps and is monotone in time-since-churn by construction.
+// Twin: FoamBuffer.Freshness.
 //
 // 🔴 THE CELL LAW. A render target is screen-space by nature, and that is exactly the trap ADR 0027
 // names for this item: with CameraFollow panning continuously behind the boat, a buffer whose cells
@@ -64,15 +76,17 @@ Shader "Hidden/HiddenHarbours/FoamBufferAdvect"
             // Twin: FoamBuffer.MaxInjectors.
             #define FOAM_MAX_INJECTORS 8
 
-            Texture2D<float4> _HHFoamPrev;   // r = the previous frame's foam (the ping-pong read side)
+            Texture2D<float4> _HHFoamPrev;   // r = previous COVERAGE, g = previous FRESHNESS
 
-            float4 _HHFoamBufferWorld;   // xy = cell-snapped window origin (m), z = extent (m), w = 1/extent
+            float4 _HHFoamBufferWorld;   // xy = DRAW origin (lattice + banked drift residual, m), z = extent, w = 1/extent
             float4 _HHFoamResolution;    // xy = texels, zw = 1/texels
             float4 _HHFoamShift;         // xy = WHOLE-texel content shift this frame (camera window + drift)
-            float  _HHFoamDecay;         // exponential decay multiplier for this frame's dt
+            float  _HHFoamDecay;         // exponential decay multiplier for COVERAGE this frame
+            float  _HHFoamAgeDecay;      // exponential decay multiplier for FRESHNESS this frame
 
             float4 _HHFoamInjectSeg[FOAM_MAX_INJECTORS];     // xy = from, zw = to (world m)
-            float4 _HHFoamInjectShape[FOAM_MAX_INJECTORS];   // x = radius (m), y = amount (0 = unused slot)
+            // x = radius (m), y = amount (0 = unused slot), z = vigour 0..1 (the freshness GATE)
+            float4 _HHFoamInjectShape[FOAM_MAX_INJECTORS];
 
             // Distance from a point to a segment — the capsule that keeps a fast boat's trail
             // continuous instead of a row of dots.
@@ -94,18 +108,25 @@ Shader "Hidden/HiddenHarbours/FoamBufferAdvect"
                 // SV_POSITION's coordinate convention — which removes the render-target Y-flip
                 // ambiguity a uv fetch would smuggle in (the ObjectReflection precedent, same reason).
                 int2 src = texel + int2(_HHFoamShift.xy);
-                float previous = 0.0;
+                float2 previous = float2(0.0, 0.0);   // x = coverage, y = freshness
                 // Off-buffer reads would wrap, or clamp a stale edge column across the sea, which
                 // reads as a smear pinned to the window edge. Foam that has scrolled out of the
                 // window simply is not there any more.
                 if (all(src >= int2(0, 0)) && all(src < res))
-                    previous = _HHFoamPrev.Load(int3(src, 0)).r;
+                    previous = _HHFoamPrev.Load(int3(src, 0)).rg;
 
-                float foam = previous * _HHFoamDecay;
+                float foam = previous.x * _HHFoamDecay;
+                // TWIN of FoamBuffer.Freshness (the decay half; the max half is the injection loop).
+                float fresh = saturate(previous.y) * saturate(_HHFoamAgeDecay);
 
                 // ---- 3. INJECT --------------------------------------------------------------------
                 // This texel's world position: the CENTRE of its world cell, so the deposit is
                 // evaluated on the same lattice the buffer stores (no half-cell bias).
+                //
+                // ⚠️ Through the DRAW origin (lattice + banked drift residual), the SAME origin the
+                // water shader reads through — so a mark is stamped exactly under the hull that made
+                // it and thereafter drifts with the residual. Two different origins here would tear
+                // the injection off the read by up to a cell. Twin: FoamBuffer.DrawOrigin.
                 float2 worldXY = _HHFoamBufferWorld.xy
                                + (float2(texel) + 0.5) * (1.0 / FOAM_CELLS_PER_UNIT);
 
@@ -113,16 +134,32 @@ Shader "Hidden/HiddenHarbours/FoamBufferAdvect"
                 for (int i = 0; i < FOAM_MAX_INJECTORS; i++)   // CONSTANT bound — never a runtime one
                 {
                     float4 seg   = _HHFoamInjectSeg[i];
-                    float2 shape = _HHFoamInjectShape[i].xy;   // x = radius (m), y = amount (0 = unused)
+                    float3 shape = _HHFoamInjectShape[i].xyz;  // x = radius, y = amount, z = vigour
                     float radius = max(shape.x, 1e-4);
                     // A soft-edged band: full along the swept line, gone by the radius. An unused
                     // slot's amount is 0, so it contributes nothing and needs no branch.
                     float d = DistanceToSegment(worldXY, seg.xy, seg.zw);
                     float falloff = 1.0 - smoothstep(radius * 0.5, radius, d);
                     foam += shape.y * falloff;
+                    // The freshness CLOCK: a MAX, never an add — that is what stops this channel
+                    // saturating the way coverage does, and it is the whole reason the wake can
+                    // change colour at all.
+                    //
+                    // The mark is 1 wherever this hull churned this frame and 0 everywhere else. It is
+                    // deliberately NOT scaled by how hard she is working: a clock scaled by vigour
+                    // conflates "how hard" with "how long ago", so a dory at half her knee speed would
+                    // be born half-aged and could never make white foam at all — the same category
+                    // error round 1 made with the coverage channel, one level down. How MUCH foam is
+                    // on this water is the R channel's job, and it already does it.
+                    //
+                    // Two branchless gates: shape.z is the injector's dt-INDEPENDENT vigour (0 in an
+                    // unused slot, and 0 for a hull that is not working the water), and the falloff
+                    // keeps the mark inside the band this hull actually swept.
+                    float churned = step(1e-6, shape.z) * step(1e-3, falloff);
+                    fresh = max(fresh, churned);
                 }
 
-                return float4(saturate(foam), 0, 0, 1);
+                return float4(saturate(foam), saturate(fresh), 0, 1);
             }
             ENDHLSL
         }
