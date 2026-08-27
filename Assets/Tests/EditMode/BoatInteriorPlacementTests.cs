@@ -29,14 +29,21 @@ namespace HiddenHarbours.Tests.EditMode
         /// <summary>The hulls the S0 intake ledger REFUSES. Named here as the test's own statement of
         /// the law — a def must never exist for one, and wiring must never reach one.
         ///
-        /// <para>⚠️ This was THREE until 2026-08-26. The two sport fishers were refused on an unstamped
-        /// renderer pin — an export template sitting where the hash belongs — and the cutaway kit
-        /// shipped the substitution, so the ledger flipped both to CLEAN against the landed bytes
-        /// (<c>docs/art/rigs/boat-interiors-intake/s0-verdicts.json</c>, and its dated
-        /// <c>_corrections</c> entry). Their interiors were then baked and their defs built, which is
-        /// what a clearance authorises. The cape is the one hull still refused, and for a different
-        /// reason: her rig is FORKED, not unstamped, and she wants a rig merge rather than a
-        /// re-stamp.</para>
+        /// <para>⚠️ This was THREE until 2026-08-26, ONE until 2026-08-27, and is now EMPTY. The two
+        /// sport fishers were refused on an unstamped renderer pin — an export template sitting where
+        /// the hash belongs — and the cutaway kit shipped the substitution, so the ledger flipped both
+        /// to CLEAN against the landed bytes. The cape was refused for a different reason: her rig was
+        /// FORKED, and wanted a rig merge rather than a re-stamp. That merge landed 2026-08-27 as the
+        /// third sha <c>60d127c3…</c> — repo main as the base, the kit's aft door and published loft
+        /// re-applied — and the ledger flipped her to CLEAN against it. Both moves are recorded in
+        /// <c>docs/art/rigs/boat-interiors-intake/s0-verdicts.json</c>'s dated <c>_corrections</c>.</para>
+        ///
+        /// <para><b>Empty is a real state, not a dead test.</b> The array stays, and so do both gates
+        /// below: they are the standing law for the NEXT refusal, and re-arming them is a one-line
+        /// edit rather than a resurrection. <see cref="TheRefusedTranscriptionMatchesTheLedger"/> is
+        /// what keeps that honest — with the list empty it now asserts that the ledger refuses
+        /// NOTHING, so a new refusal appearing upstream reds this file until someone transcribes it
+        /// here on purpose.</para>
         ///
         /// <para>The list stays STATED here rather than read from the ledger, deliberately: this is the
         /// last gate before a refused hull becomes enterable content, and a gate that derives its own
@@ -45,12 +52,12 @@ namespace HiddenHarbours.Tests.EditMode
         /// the ledger change and this edit belong to one another.</para></summary>
         private static readonly string[] RefusedStems =
         {
-            "CapeIslanderIso",
+            // (empty — the S0 ledger refuses no hull. See the note above before adding one back.)
         };
 
         /// <summary>The same refusals in the LEDGER's own vocabulary (interior hull-stems), for the
-        /// cross-check below.</summary>
-        private static readonly string[] RefusedLedgerHulls = { "capeIslanderIsoRig" };
+        /// cross-check below. Empty for the same reason as <see cref="RefusedStems"/>.</summary>
+        private static readonly string[] RefusedLedgerHulls = Array.Empty<string>();
 
         [Serializable] private class LedgerRow { public string hull_stem; public string verdict; }
         [Serializable] private class Ledger { public LedgerRow[] hulls; }
@@ -150,9 +157,9 @@ namespace HiddenHarbours.Tests.EditMode
             }
 
             Assert.IsEmpty(wrong,
-                "the S0 ledger refuses these hulls (the cape, on a forked rig that wants a merge rather " +
-                "than a re-measure). Fix the intake upstream, never this test — and if a verdict has " +
-                "genuinely changed, move RefusedStems in the SAME change as the ledger:\n  " +
+                "the S0 ledger refuses these hulls. Fix the intake upstream, never this test — and if a " +
+                "verdict has genuinely changed, move RefusedStems in the SAME change as the ledger, the " +
+                "way the 2026-08-26 sport-fisher re-clearance and the 2026-08-27 cape rig merge did:\n  " +
                 string.Join("\n  ", wrong));
         }
 

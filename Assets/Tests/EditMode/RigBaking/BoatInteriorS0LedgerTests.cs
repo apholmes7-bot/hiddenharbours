@@ -175,17 +175,23 @@ namespace HiddenHarbours.Tests.RigBaking
                     ? stale : System.Array.Empty<string>(),
                 "no hull has ever been stale-fatal on the current ledger");
 
-            CollectionAssert.AreEqual(
-                new[] { "capeIslanderIsoRig" }, byVerdict[BoatInteriorS0Verdict.ForkedRig],
-                "the cape is the one hull still refused, and she needs a rig MERGE, not a re-measure");
+            // The cape's FORKED-RIG was the last refusal standing, and it is discharged: her rig merge
+            // landed 2026-08-27 as the third sha 60d127c3… — repo main as the base, with the kit's aft
+            // door and published loft re-applied, #508's OKLCH paint and #247's washboards byte-identical
+            // through it. Asserted ABSENT rather than looked up, for the same reason as RefusedPin above.
+            CollectionAssert.IsEmpty(
+                byVerdict.TryGetValue(BoatInteriorS0Verdict.ForkedRig, out var forked)
+                    ? forked : System.Array.Empty<string>(),
+                "no hull is on a forked rig any more — the cape's merge closed the last fork");
 
             CollectionAssert.AreEqual(
-                new[] { "coastalPacketIsoRig", "lobsterBoatIsoRig", "lobsterBoatVariantsIsoRig",
-                        "sideDraggerIsoRig", "sportFisherIsoRig2.convertible",
-                        "sportFisherIsoRig2.skybridge", "sternTrawlerIsoRig", "sternTrawlerMk2IsoRig",
-                        "tankerIsoRig" },
+                new[] { "capeIslanderIsoRig", "coastalPacketIsoRig", "lobsterBoatIsoRig",
+                        "lobsterBoatVariantsIsoRig", "sideDraggerIsoRig",
+                        "sportFisherIsoRig2.convertible", "sportFisherIsoRig2.skybridge",
+                        "sternTrawlerIsoRig", "sternTrawlerMk2IsoRig", "tankerIsoRig" },
                 byVerdict[BoatInteriorS0Verdict.Clean],
-                "nine families clear — 26 sidecars once the eighteen lobster variants are counted");
+                "ten families clear — every hull in the drop — which is 27 sidecars once the eighteen " +
+                "lobster variants are counted");
         }
 
         [Test]

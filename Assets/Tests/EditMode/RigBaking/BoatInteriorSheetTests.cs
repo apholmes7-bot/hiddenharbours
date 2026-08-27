@@ -18,11 +18,12 @@ namespace HiddenHarbours.Tests.RigBaking
     ///
     /// <para>Two properties, and the whole kit is worthless without either.</para>
     ///
-    /// <para><b>1. Coverage is exactly the cleared set.</b> Twenty-four hulls have a
-    /// <c>BoatInteriorDef</c>; twenty-four have sheets; the three the S0 ledger refused (two sport
-    /// fishers on an unstamped renderer pin, the Cape Islander on a forked rig) have neither, and are
-    /// named nowhere. A kit that quietly covered 24 of 27 would look complete — that is exactly what
-    /// makes the count worth asserting rather than eyeballing.</para>
+    /// <para><b>1. Coverage is exactly the cleared set.</b> All twenty-seven hulls now have a
+    /// <c>BoatInteriorDef</c> and sheets: the two sport fishers were cleared 2026-08-26 when the
+    /// cutaway kit stamped their renderer pin, and the Cape Islander 2026-08-27 when her forked rig
+    /// was MERGED (third sha <c>60d127c3…</c>). A kit that quietly covered 24 of 27 would look
+    /// complete — that is exactly what makes the count worth asserting rather than eyeballing, and
+    /// the assertion is on the LEDGER's cleared set, so it tracks a future refusal too.</para>
     ///
     /// <para><b>2. Every sprite is the FULL hull cell at the HULL's pivot.</b> This is the property
     /// the runtime is built on ("composites under the exterior 1:1"), and it is the one that fails
@@ -238,15 +239,19 @@ namespace HiddenHarbours.Tests.RigBaking
                 "A cleared hull without art is a boat nobody can go below on; a sheet for an " +
                 "uncleared hull is art cut from a boat whose shape was never verified.");
 
-            // 26 = 27 in the drop − the cape (S0 FORKED RIG, still refused pending her rig merge).
-            // Moved 24 → 26 WITH the ledger change it tracks: the cutaway kit's sport-fisher stamp
-            // (ebc77bac…) cleared both sport fishers, recorded in the ledger's dated _corrections
-            // entry and flipped on the coordinator-ruled unanimity rule (PR #660).
-            Assert.AreEqual(26, shipped.Length,
-                $"the kit ships {shipped.Length} interior sheet sets where the intake cleared 26 hulls " +
-                "of the 27 in the drop. If the ledger has genuinely changed — the cape's rig merged, " +
-                "or a hull regressed — this number moves WITH a ledger change and an ADR note, never " +
-                "on its own.");
+            // 27 = ALL of the drop. The last refusal is discharged.
+            // Moved 24 → 26 → 27, each step WITH the ledger change it tracks:
+            //   24 → 26  the cutaway kit's sport-fisher stamp (ebc77bac…) cleared both sport fishers,
+            //            flipped on the coordinator-ruled unanimity rule (PR #660).
+            //   26 → 27  the cape's RIG MERGE landed as the third sha 60d127c3… — repo main as the
+            //            base, the kit's aft door and published loft re-applied, with #508's OKLCH
+            //            paint and #247's washboards byte-identical through it. Her FORKED-RIG
+            //            refusal is flipped to CLEAN in the ledger's dated _corrections entry.
+            Assert.AreEqual(27, shipped.Length,
+                $"the kit ships {shipped.Length} interior sheet sets where the intake cleared 27 hulls " +
+                "of the 27 in the drop — every one. If the ledger has genuinely changed — a hull " +
+                "regressed, or a new drop arrived — this number moves WITH a ledger change and an ADR " +
+                "note, never on its own.");
         }
 
         [Test]

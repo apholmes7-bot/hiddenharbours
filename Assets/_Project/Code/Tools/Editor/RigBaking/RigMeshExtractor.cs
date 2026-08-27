@@ -399,9 +399,26 @@ namespace HiddenHarbours.Tools.RigBaking
                 // Sabotage-proved: nudging ONE ramp step by 1/255 reddens 128–3,497 bytes per facing,
                 // and swapping two keys in the table reddens the order oracle while leaving the
                 // pixels alone — which is exactly why the order is asserted separately from them.
+                // ---- and her pass-3 door (rig merge, 2026-08-27) ---------------------------------
+                // Her aft doorway became a REAL opening closed by a POSED LEAF, exactly as the
+                // lobster's did above, and her own render() now draws `F.concat(doorFaces(opts))`.
+                // Taking bare `F` would bake a boat whose mesh is missing geometry her own picture
+                // draws — the sport fisher's outrigger lesson again. doorOpen 0 is the fleet default
+                // and the pose the merge ships.
+                //   ⚠ Her RESTING LOOK is still an OPEN OWNER ITEM (s0-verdicts.json
+                //   `_open_owner_item`): the jambs, header, sill, track and rail are drawn at every
+                //   doorOpen, so the aft face changes whichever pose ships and he is choosing HOW,
+                //   not whether. If he rules for a different resting pose, this literal is the one
+                //   place it changes.
+                //   Measured by the merge lane in the V8 harness before this entry existed: across
+                //   the 72 shipped poses, `doorFaces()` alone draws 24,186 px that bare `F` does not
+                //   — at doorOpen 0 the leaf also OVERDRAWS the vestibule behind it, so this is
+                //   larger than the leaf's own share of the merge's 28,700 px and had to be measured
+                //   directly rather than subtracted.
                 ["capeIslanderIsoRig.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
                 {
                     ["MATS"] = "palette({}).mats",
+                    ["F"] = "F.concat(doorFaces({doorOpen:0}))",
                 },
 
                 // ---- the lobster-boat GENERATOR (fleet rig pack, 2026-08-13) ----------------------
