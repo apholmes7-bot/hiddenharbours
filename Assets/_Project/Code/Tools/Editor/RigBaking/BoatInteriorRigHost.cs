@@ -43,16 +43,34 @@ namespace HiddenHarbours.Tools.RigBaking
             public readonly string DeclaredStem;
             /// <summary>True when the exterior rig makes many boats and needs a variant to resolve one.</summary>
             public readonly bool VariantAware;
+            /// <summary>The sub-hull this row picks out of a multi-hull exterior global
+            /// (<c>convertible</c>, <c>skybridge</c>) — empty when the global IS the hull object.</summary>
+            public readonly string Pick;
 
             public HullBinding(string key, string exteriorGlobal, string exteriorRigFileName,
-                               string declaredStem, bool variantAware)
+                               string declaredStem, bool variantAware, string pick)
             {
                 Key = key ?? "";
                 ExteriorGlobal = exteriorGlobal ?? "";
                 ExteriorRigFileName = exteriorRigFileName ?? "";
                 DeclaredStem = declaredStem ?? "";
                 VariantAware = variantAware;
+                Pick = pick ?? "";
             }
+
+            /// <summary>
+            /// The JS expression for this row's exterior HULL OBJECT — the thing that carries
+            /// W/H/pivot, <c>render()</c> and <c>rock()</c>. Mirrors the interior rig's own
+            /// resolution (<c>if(meta.pick &amp;&amp; E.byId) E=E.byId(meta.pick)</c>): a multi-hull
+            /// global (the sport fishers' <c>SportFisherIso2</c>) publishes geometry per hull, so
+            /// addressing the GLOBAL reads <c>undefined</c> and crashes where a refusal should be.
+            /// <c>byId</c> falls back to its default hull on an unknown pick — the registration
+            /// probe's agreement gate catches that by cell size.
+            /// </summary>
+            public string ExteriorHullJs =>
+                Pick.Length > 0
+                    ? $"({ExteriorGlobal}.byId && {ExteriorGlobal}.byId('{Pick}') || {ExteriorGlobal})"
+                    : ExteriorGlobal;
 
             /// <summary>The exterior rig's stem, i.e. its file name without <c>.js</c>.</summary>
             public string ExteriorRigStem =>
@@ -94,7 +112,8 @@ namespace HiddenHarbours.Tools.RigBaking
                     host.EvaluateString($"{h}.sym || ''"),
                     host.EvaluateString($"{h}.rig || ''"),
                     host.EvaluateString($"{h}.stem || ''"),
-                    host.EvaluateBool($"!!{h}.variantAware")));
+                    host.EvaluateBool($"!!{h}.variantAware"),
+                    host.EvaluateString($"{h}.pick || ''")));
             }
             return rows;
         }

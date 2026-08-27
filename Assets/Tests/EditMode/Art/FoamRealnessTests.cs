@@ -186,8 +186,15 @@ namespace HiddenHarbours.Tests.Art.EditMode
             // stamps the shader default over the live value the moment it is applied. Asserted on the
             // serialized TEXT, because a material that omits a key still ANSWERS from the shader
             // default — a value-based check passes vacuously for exactly the presets carrying the trap.
+            // The five AGE keys joined this list in round 2 (2026-08-27) because they were serialized by
+            // NO material at all — every one of the nine silently rode the shader Properties default, so
+            // the owner could not tune the ramp from the material even though the tooltips said he could.
+            // That is the _RippleWavelength trap verbatim: a key absent EVERYWHERE looks perfectly
+            // consistent and is invisible to a value-based check.
             string[] keys = { "_WakeFoamStrength", "_WakeFoamLace", "_WakeFoamLaceScale",
-                              "_WakeFoamThreshold", "_WakeFoamSoftness", "_WakeFoamBands" };
+                              "_WakeFoamThreshold", "_WakeFoamSoftness", "_WakeFoamBands",
+                              "_WakeFoamAgeStrength", "_WakeFoamFreshFloor", "_WakeFoamWhiteHold",
+                              "_WakeFoamBlueReach", "_WakeFoamDeepReach" };
             foreach (string name in PresetNames)
             {
                 string path = $"{PresetsFolder}/{name}.mat";
@@ -269,7 +276,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             // buffer BEFORE PaletteGrade is what makes that true for free — and it is a one-line
             // mistake to "fix" a too-dim wake by moving it after the grade.
             string src = Read(WaterShaderPath);
-            int composeAt = src.IndexOf("float wakeFoam = WakeFoamCoverage(worldXY, bay);",
+            int composeAt = src.IndexOf("float wakeFoam = WakeFoamCoverage(worldXY, bay, wakeFresh);",
                                         System.StringComparison.Ordinal);
             int gradeAt = src.IndexOf("col.rgb = PaletteGrade(col.rgb, dayNightLuma);",
                                       System.StringComparison.Ordinal);

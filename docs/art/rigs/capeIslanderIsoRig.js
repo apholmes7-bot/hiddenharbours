@@ -24,8 +24,15 @@
    The DEFAULT scheme 'sage-green' carries the pass-1 ramps as literals, so an unset colourway is the
    shipped boat byte for byte; that is the A/B control the whole kit rests on.
 
+   PASS 3 — THE DOOR AND THE PUBLISHED LOFT. The aft doorway is now a REAL opening (wall built as
+   bands around it, dim vestibule inside) closed by a SLIDING leaf on an exterior track —
+   opts.doorOpen 0..1 poses it (0 = closed, the fleet default; travel +x, parks over the stbd aft
+   wall; no swept arc — a slider's virtue). doorMount(dir,opts) -> threshold + leading-edge anchors
+   with open/clear state. The loft is PUBLISHED (camperIsoRig precedent) so boatInteriorRig.js
+   measures the room from these exact functions rather than re-deriving the hull.
+
    Exposes globalThis.CapeIslanderIso = { W,H,PX,DIRS,pivot,order,ROCK,rock(i),render(dir,opts),
-   helmSeat,HELM, haulerMount,HAULER, tubMounts,TUBS, navMounts,
+   helmSeat,HELM, haulerMount,HAULER, tubMounts,TUBS, navMounts, doorMount,DOOR,HOUSE,loft,
    SCHEMES,schemeIds,defaultScheme,palette,rampFrom,chipWall,C_CAP,
    HULL,BOOT,CREAM,WOOD,GLAS,GOLD,IRON,MOTO,KEY }. */
 (function (root) {
@@ -274,6 +281,12 @@
   // wheelhouse envelope (boat coords): forward of amidships, over the whaleback foredeck
   const HX = 1.32, HY0 = 0.5, HY1 = 2.9, HZ0 = DECK, HZ1 = 2.98;   // half-width, aft y, fwd y, floor, eaves
   const ROOFZ = 3.02;
+  const FYb = 2.54, FYt = 3.10;   // raked front wall bottom/top y — module scope since pass 3 (HOUSE reads them)
+  const AY = HY0-0.03;
+  // the sliding wheelhouse door — aft face, slides to starboard on an exterior track.
+  // clearAt: open fraction where the gap first reads 0.55 m (leaf x0 -0.40 + 0.80t vs opening x0+0.55)
+  const DOOR = { kind:'slide', face:'aft', y:AY, x0:-0.34, x1:0.40, z0:DECK+0.02, z1:2.34,
+                 leaf:{ x0:-0.40, x1:0.46, z1:2.40 }, travel:0.80, dir:+1, clearAt:0.76 };
 
   (function build(){
     // ---- hull shell ----
@@ -351,13 +364,15 @@
     for(const s of [-1,1]) boxF([s*(station(0).ws-0.22),-6.05,station(0).kz+station(0).dep+0.03],[0.05,0.09,0.05],'iron',0.15,-0.02);
 
     // ---- WHEELHOUSE (forward-raked front — the dated house: front-window TOP overhangs toward the bow) ----
-    const FYb=2.54, FYt=3.10;                                   // front wall bottom vs top y (top leans forward, to the bow)
     const AL=[-HX,HY0,HZ0], AR=[HX,HY0,HZ0], ALt=[-HX,HY0,HZ1], ARt=[HX,HY0,HZ1];
     const FLb=[-HX,FYb,HZ0], FRb=[HX,FYb,HZ0], FLt=[-HX,FYt,HZ1], FRt=[HX,FYt,HZ1];
     face([AL,ALt,FLt,FLb],'cream',-0.1);                        // port wall (-x)
     face([AR,FRb,FRt,ARt],'cream',-1.0);                        // starboard wall (+x, shaded)
     face([FLt,FRt,FRb,FLb],'cream',0.35);                       // front wall (forward-raked)
-    face([AL,AR,ARt,ALt],'cream',-0.7);                         // aft wall (-y, into cockpit)
+    // aft wall (-y, into cockpit) — bands around a REAL door opening since pass 3
+    face([AL,[DOOR.x0,HY0,HZ0],[DOOR.x0,HY0,HZ1],ALt],'cream',-0.7);                          // port of the doorway
+    face([[DOOR.x1,HY0,HZ0],AR,ARt,[DOOR.x1,HY0,HZ1]],'cream',-0.7);                          // stbd of the doorway
+    face([[DOOR.x0,HY0,DOOR.z1],[DOOR.x1,HY0,DOOR.z1],[DOOR.x1,HY0,HZ1],[DOOR.x0,HY0,HZ1]],'cream',-0.7);  // header
     boxF([0,(HY0+FYt)/2,ROOFZ+0.05],[HX+0.11,(FYt-HY0)/2+0.11,0.055],'cream',0.6);   // roof slab (overhangs the raked brow)
     // raked-front proud panel helper (outward normal = forward + down, following the rake)
     const _rny=(HZ1-HZ0), _rnz=-(FYt-FYb), _rn=Math.hypot(_rny,_rnz), nY=_rny/_rn, nZ=_rnz/_rn;
@@ -374,10 +389,13 @@
       glaze(mk, [side,0,0], HY0+0.26, 1.42, 1.98, 2.44, b0, 0.05);   // aft light
       glaze(mk, [side,0,0], 1.62, 2.36, 1.98, 2.44, b0, 0.05);       // fwd light
     }
-    // aft face: door opening (dark) + small stbd light, on the cockpit side (proud)
-    const AY=HY0-0.03;
-    F.push(backPanel(AY,-0.34,0.40, HZ0+0.02,2.34,'dark',-0.5));         // doorway (open, dark)
+    // through the opening: a dim vestibule (sole strip + far bulkhead) so an open door has depth
+    face([[DOOR.x0,HY0,HZ0+0.012],[DOOR.x1,HY0,HZ0+0.012],[DOOR.x1,HY0+0.85,HZ0+0.012],[DOOR.x0,HY0+0.85,HZ0+0.012]],'wood',-2.6,-0.02);
+    F.push(backPanel(HY0+0.88,DOOR.x0-0.05,DOOR.x1+0.05, HZ0,2.38,'dark',-0.9));
     glaze((pr)=>((x,z)=>[x, AY-pr, z]), [0,-1,0], 0.62,HX-0.14, 2.36,2.68, -0.25, 0.05);  // small aft light (rounded+trim)
+    // sliding-door hardware: overhead track to the pocket side + low guide strip
+    tubeF([DOOR.x0-0.10, AY-0.10, DOOR.z1+0.10],[Math.min(HX-0.04, DOOR.x1+DOOR.travel+0.14), AY-0.10, DOOR.z1+0.10],0.028,'moto',0.25);
+    F.push(backPanel(AY-0.02, DOOR.x0-0.06, Math.min(HX-0.06, DOOR.x1+DOOR.travel+0.10), HZ0+0.015, HZ0+0.05,'iron',-0.6));
     // ---- wet-exhaust stack by the house, starboard aft corner ----
     tubeF([0.86,0.34,DECK],[0.86,0.30,2.42],0.085,'moto',-0.1);
     boxF([0.86,0.30,2.46],[0.11,0.11,0.05],'blk',-0.3);                     // stack cap
@@ -488,9 +506,23 @@
     }
     return rgba;
   }
+  // ---- the sliding leaf — built per render so opts.doorOpen (0..1) can pose it ----
+  function doorFaces(opts){
+    const t = Math.max(0, Math.min(1, opts && opts.doorOpen!=null ? +opts.doorOpen : 0));
+    const s = t*DOOR.travel, Lf=DOOR.leaf, x0=Lf.x0+s, x1=Lf.x1+s, y=AY-0.085, z0=DOOR.z0, z1=Lf.z1;
+    const out=[], mk=(pr)=>((x,z)=>[x, y-0.012-pr, z]);
+    out.push({v:[[x1,y,z1],[x0,y,z1],[x0,y,z0],[x1,y,z0]],mat:'cream',b:0.15,db:DBP+0.02});                 // the leaf
+    out.push({v:[[x1-0.06,y-0.012,z0+0.80],[x0+0.06,y-0.012,z0+0.80],[x0+0.06,y-0.012,z0+0.10],[x1-0.06,y-0.012,z0+0.10]],mat:'cream',b:-0.85,db:DBP+0.03});  // recessed lower panel
+    out.push(winRR(mk(0.0),  [0,-1,0], x0+0.12,x1-0.16, 1.88,2.28, 0.12,'iron',-0.15));                     // window trim
+    out.push(winRR(mk(0.012),[0,-1,0], x0+0.17,x1-0.21, 1.94,2.22, 0.09,'glas',-0.30));                     // leaf glass
+    for(const hx of [x0+0.10, x1-0.10])                                                                     // top hangers
+      out.push({v:[[hx+0.035,y-0.015,DOOR.z1+0.12],[hx-0.035,y-0.015,DOOR.z1+0.12],[hx-0.035,y-0.015,z1-0.03],[hx+0.035,y-0.015,z1-0.03]],mat:'moto',b:0.3,db:DBP+0.03});
+    out.push.apply(out, tube([x0+0.07,y-0.045,1.02],[x0+0.07,y-0.045,1.44],0.021,'gold',0.5));              // brass pull, leading edge
+    return out;
+  }
   function render(dir, opts){
     opts = (typeof opts==='number') ? {elev:opts} : (opts||{});
-    return _toRGBA(_paint(F, Object.assign({}, opts, {dir}), true));
+    return _toRGBA(_paint(F.concat(doorFaces(opts)), Object.assign({}, opts, {dir}), true));
   }
 
   // ---- deck anchors (cell coords; pass rock(i) so they ride the wave) ----
@@ -527,8 +559,36 @@
     };
   }
 
+  // door threshold anchor + open-state report for the enter cue
+  function doorMount(dir, opts){
+    opts = Object.assign({}, (typeof opts==='number'?{elev:opts}:opts||{}), {dir});
+    const t = Math.max(0, Math.min(1, opts.doorOpen!=null?+opts.doorOpen:0));
+    const B=camBasis(opts), p=projVert((DOOR.x0+DOOR.x1)/2, AY, DECK, B);
+    const le=projVert(DOOR.leaf.x0+t*DOOR.travel, AY-0.085, DECK, B);
+    return { x:p.sx, y:p.sy, lead:{x:le.sx,y:le.sy}, open:t, clear:t>=DOOR.clearAt };
+  }
+  // hull half-width at (y, z) and sheer height at y — the two reads an interior shell needs
+  function halfAtZ(y, z){ const st=station(Math.max(0,Math.min(1,(y+L/2)/L)));
+    const fr=Math.max(0,Math.min(1,(z-st.kz)/st.dep)); return lerp(st.wb,st.ws,fr); }
+  function sheerZ(y){ const st=station(Math.max(0,Math.min(1,(y+L/2)/L))); return st.kz+st.dep; }
+  /* THE HOUSE, published. boatInteriorRig.js builds the room inside this shell and MUST measure
+     against these exact numbers — nothing here is re-derived there. */
+  const HOUSE = {
+    kind:'wheelhouse', soleZ:DECK, eaveZ:HZ1, roofZ:ROOFZ,
+    yAft:HY0, yFwd:FYb, hxAft:HX, hxFwd:HX, hxAt:(y)=>HX,
+    front:{ kind:'rake', yBot:FYb, yTop:FYt, zBot:DECK,
+            glass:{ z0:1.98, z1:2.58, panes:[[-1.04,-0.50],[-0.34,0.34],[0.50,1.04]] } },
+    sideGlass:{ z0:1.98, z1:2.44, runs:[[HY0+0.26,1.42],[1.62,2.36]] },
+    aftGlass:{ x0:0.62, x1:HX-0.14, z0:2.36, z1:2.68 },
+    door:DOOR,
+    cuddy:{ y0:FYb, y1:5.55, soleZ:0.30, opening:{ x0:-0.30, x1:0.30, z0:DECK, z1:1.80 },
+            step:{ riser:0.42, treads:2 } },
+  };
   root.CapeIslanderIso = { W, H, PX, DIRS:8, pivot:{x:cx,y:cy}, defaultElev:DEFAULT_ELEV,
     order:['N','NE','E','SE','S','SW','W','NW'], HULL, BOOT, CREAM, WOOD, GLAS, GOLD, IRON, MOTO, KEY,
     render, ROCK, rock:rockMotion, helmSeat, HELM, haulerMount, HAULER, tubMounts, TUBS, navMounts,
-    SCHEMES, schemeIds:Object.keys(SCHEMES), defaultScheme:DEFAULT_SCHEME, palette, rampFrom, chipWall, C_CAP };
+    SCHEMES, schemeIds:Object.keys(SCHEMES), defaultScheme:DEFAULT_SCHEME, palette, rampFrom, chipWall, C_CAP,
+    doorMount, DOOR, HOUSE,
+    loft:{ station, skin, dfrac, halfAtZ, sheerZ, L, TH, DECK, SOLE_U:0.74, NSEG,
+           house:HOUSE, shade:{ GAIN, BIAS, LN, BAYER, KEY, EDGE:0.30 }, cell:{ W, H, cx, cy, S } } };
 })(typeof globalThis!=='undefined'?globalThis:window);

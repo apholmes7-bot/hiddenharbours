@@ -68,6 +68,9 @@ namespace HiddenHarbours.Boats
         /// <summary>The door it built, or null.</summary>
         public BoatCabinDoor Door { get; private set; }
 
+        /// <summary>The cutaway it built, or null on a hull with no mesh to cut. Read by tests.</summary>
+        public BoatCutaway Cutaway { get; private set; }
+
         /// <summary>True when this hull was measured and built. False is the ordinary answer for most of
         /// the fleet and is not a fault.</summary>
         public bool Built => Interior != null;
@@ -138,6 +141,19 @@ namespace HiddenHarbours.Boats
                 deckPitchLiftMeters: PitchLiftMetres(visual),
                 // ⚠ The def's levels are NOT the sheet's rows; the map arrives with the cells.
                 cellRowForLevel: null);
+
+            // --- the cutaway --------------------------------------------------------------------
+            // The owner's 2026-08-26 ruling: below decks, her house is CUT AWAY rather than covered
+            // over. Only a MESH hull can be cut — a sprite hull's house is pixels in a cell — so a
+            // hull with no mesh gets no component at all rather than an inert one that subscribes to
+            // three signals forever to answer 0 every time. The controller is handed in as the helm
+            // identity token: it is the same object ControlSwitcher declares as the piloted hull, and
+            // re-deriving it later is how a token drifts off the declaration it is compared against.
+            if (visual.HasHullMesh())
+            {
+                Cutaway = gameObject.AddComponent<BoatCutaway>();
+                Cutaway.Configure(Interior, visual.HullMesh, transform, controller);
+            }
 
             // --- the door -----------------------------------------------------------------------
             BoatInteriorDoor door = def.Door;

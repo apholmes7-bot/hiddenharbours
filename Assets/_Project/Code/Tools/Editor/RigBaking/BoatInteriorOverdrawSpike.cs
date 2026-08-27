@@ -121,9 +121,9 @@ namespace HiddenHarbours.Tools.RigBaking
             }
 
             // THE RIG'S OWN POSE, not a re-derivation of it.
-            double roll = host.EvaluateNumber($"{binding.ExteriorGlobal}.rock({_rockFrame}).roll");
-            double pitch = host.EvaluateNumber($"{binding.ExteriorGlobal}.rock({_rockFrame}).pitch");
-            double heave = host.EvaluateNumber($"{binding.ExteriorGlobal}.rock({_rockFrame}).heave");
+            double roll = host.EvaluateNumber($"{binding.ExteriorHullJs}.rock({_rockFrame}).roll");
+            double pitch = host.EvaluateNumber($"{binding.ExteriorHullJs}.rock({_rockFrame}).pitch");
+            double heave = host.EvaluateNumber($"{binding.ExteriorHullJs}.rock({_rockFrame}).heave");
 
             log.AppendLine($"  {stem}: cell {w}x{h}, level '{level}', rock frame {_rockFrame} = " +
                            $"roll {roll:F3}° pitch {pitch:F3}° heave {heave:F3}px");
@@ -131,7 +131,7 @@ namespace HiddenHarbours.Tools.RigBaking
             for (int d = 0; d < BoatInteriorRigHost.Facings; d++)
             {
                 byte[] ext = host.EvaluateBytes(
-                    $"{binding.ExteriorGlobal}.render({d},{Pose("{}", roll, pitch, heave)})");
+                    $"{binding.ExteriorHullJs}.render({d},{Pose("{}", roll, pitch, heave)})");
                 Write(outDir, $"{stem}_ext_d{d}.png", ext, w, h, log);
 
                 foreach (float scale in Scales)

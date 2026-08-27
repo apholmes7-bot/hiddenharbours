@@ -1,0 +1,1529 @@
+{
+  "kit": "vehicle-rig-pack/boxtruck-cabover",
+  "rig": "boxIsoRig.js",
+  "exportSymbol": "BoxIso",
+  "body": "caboverBox",
+  "label": "Cabover Box Truck",
+  "kind": "box_truck",
+  "bake": {
+    "scale_px_per_m": 32,
+    "cell": {
+      "W": 384,
+      "H": 320
+    },
+    "pivot": {
+      "x": 192,
+      "y": 214
+    },
+    "dirs": 8,
+    "order": [
+      "N",
+      "NE",
+      "E",
+      "SE",
+      "S",
+      "SW",
+      "W",
+      "NW"
+    ],
+    "camera": {
+      "elev_deg": 40,
+      "step_deg": 45,
+      "projection": "flat-facet 3/4, z-buffered, ordered dither (4x4 Bayer), depth-edge darkening, no AA, binary alpha"
+    },
+    "keyline": {
+      "default": false,
+      "adr": "ADR-0031 ringless",
+      "opt_in": "{outline:true}"
+    },
+    "shading": {
+      "gain": 3.1,
+      "bias": 2.55,
+      "edge": 0.16,
+      "key": "fixed upper-LEFT"
+    },
+    "facing_note": "dir 0 (N) shows the ROLL-UP DOOR and the liftgate: the truck points away. dir 4 (S) shows the flat cab face. Street side (-x, driver) reads at NE E SE; curb side at SW W NW.",
+    "pose_note": "rollup and gate are POSES on the one body — there are no build variants on this class. liftgate:false is a PART toggle (plain-tail build), not a variant with its own z table."
+  },
+  "dims": {
+    "key": "caboverBox",
+    "label": "Cabover Box Truck",
+    "kind": "box_truck",
+    "travelF": 0.09,
+    "travelR": 0.12,
+    "loa": 6.72,
+    "bodyL": 6.34,
+    "width": 2.14,
+    "bodyW": 2.12,
+    "height": 3.08,
+    "wheelbase": 4.12,
+    "boxLen": 4.56,
+    "boxFloor": 0.92,
+    "wheels": 6
+  },
+  "painted_bbox": {
+    "_units": "cell px, [x0,y0,x1,y1] inclusive, measured off the alpha channel",
+    "_measured_with": {
+      "at_rest": "rental (white, weather 0.50), liftgate stowed, all shut",
+      "all_open": "+ dL dR rollup gate tilt all 1",
+      "dock_work": "rollup 1, gate 0.70 — platform unfolded at dock height"
+    },
+    "at_rest": {
+      "N": [
+        150,
+        94,
+        233,
+        270
+      ],
+      "NE": [
+        88,
+        97,
+        287,
+        264
+      ],
+      "E": [
+        83,
+        118,
+        297,
+        233
+      ],
+      "SE": [
+        88,
+        80,
+        287,
+        270
+      ],
+      "S": [
+        150,
+        76,
+        233,
+        276
+      ],
+      "SW": [
+        96,
+        80,
+        295,
+        270
+      ],
+      "W": [
+        86,
+        118,
+        300,
+        233
+      ],
+      "NW": [
+        96,
+        97,
+        295,
+        264
+      ]
+    },
+    "all_open": {
+      "N": [
+        129,
+        78,
+        254,
+        302
+      ],
+      "NE": [
+        64,
+        78,
+        309,
+        289
+      ],
+      "E": [
+        53,
+        118,
+        329,
+        233
+      ],
+      "SE": [
+        65,
+        80,
+        309,
+        270
+      ],
+      "S": [
+        129,
+        76,
+        254,
+        276
+      ],
+      "SW": [
+        74,
+        80,
+        318,
+        270
+      ],
+      "W": [
+        54,
+        118,
+        330,
+        233
+      ],
+      "NW": [
+        74,
+        78,
+        319,
+        289
+      ]
+    },
+    "dock_work": {
+      "N": [
+        150,
+        94,
+        233,
+        280
+      ],
+      "NE": [
+        88,
+        97,
+        309,
+        268
+      ],
+      "E": [
+        83,
+        118,
+        329,
+        233
+      ],
+      "SE": [
+        88,
+        80,
+        309,
+        270
+      ],
+      "S": [
+        150,
+        76,
+        233,
+        276
+      ],
+      "SW": [
+        74,
+        80,
+        295,
+        270
+      ],
+      "W": [
+        54,
+        118,
+        300,
+        233
+      ],
+      "NW": [
+        74,
+        97,
+        295,
+        268
+      ]
+    },
+    "union_at_rest": [
+      83,
+      76,
+      300,
+      276
+    ],
+    "union_all_open": [
+      53,
+      76,
+      330,
+      302
+    ],
+    "union_dock_work": [
+      54,
+      76,
+      329,
+      280
+    ],
+    "union_everything": [
+      53,
+      76,
+      330,
+      302
+    ],
+    "crop_note": "pack from union_everything (53,76,330,302) to hold the tilted cab, both doors, the rolled door and the grounded platform in one atlas cell; union_at_rest is the tight default build."
+  },
+  "articulation": {
+    "doors": {
+      "params": [
+        "dL",
+        "dR"
+      ],
+      "range": [
+        0,
+        1
+      ],
+      "deg": [
+        0,
+        65
+      ],
+      "hinge": "forward edge, vertical, at x +/-0.94 y 2.96"
+    },
+    "rollup": {
+      "param": "rollup",
+      "range": [
+        0,
+        1
+      ],
+      "opening": {
+        "x": [
+          -0.95,
+          0.95
+        ],
+        "sill_z": 0.92,
+        "head_z": 2.84
+      },
+      "slats": 12,
+      "slat_m": 0.16,
+      "travel_m": 1.92,
+      "track": "vertical 1.88 m up the rear plane (y -3.03), then forward under the roof — the stack lies flat at z 2.88, above the door head and below the ceiling",
+      "rule": "the door NEVER leaves the body: the painted bbox at N is identical closed and open, and the harness asserts it. Zero keep-clear behind the truck.",
+      "stack_over": {
+        "y": [
+          -2.97,
+          -1.05
+        ],
+        "z": [
+          2.88,
+          2.93
+        ]
+      }
+    },
+    "gate": {
+      "param": "gate",
+      "range": [
+        0,
+        1
+      ],
+      "phases": {
+        "swing": [
+          0,
+          0.45,
+          "the folded platform swings from the stow under the tail to dock height, level with the floor"
+        ],
+        "unfold": [
+          0.45,
+          0.7,
+          "the flip half rotates 180deg aft — full 1.20 m platform at dock height"
+        ],
+        "lower": [
+          0.7,
+          1,
+          "the arms lower the level platform to the ground"
+        ]
+      },
+      "platform_m": {
+        "width": 1.9,
+        "main": 0.62,
+        "flip": 0.58,
+        "total_depth": 1.2,
+        "thickness": 0.05
+      },
+      "dock_z": 0.92,
+      "ground_z": 0.03,
+      "arm_pivot": [
+        0.72,
+        -2.62,
+        0.56
+      ],
+      "stowed": "folded double under the tail, forward edge y -2.56 z 0.66, tilted 26deg — inside the LOA, above the 0.20 m hard clearance",
+      "deployed_over": {
+        "y": [
+          -3.1,
+          -4.3
+        ],
+        "x": [
+          -0.95,
+          0.95
+        ]
+      },
+      "part": "liftgate:true|false — false removes the mechanism entirely (plain-tail build with the same bumperettes and ICC bar)"
+    },
+    "tilt": {
+      "param": "tilt",
+      "range": [
+        0,
+        1
+      ],
+      "deg": [
+        0,
+        38
+      ],
+      "hinge": "x-axis at y 3.20 z 0.50 — the front bumper stays; cab, doors, mirrors, steps and interior all ride it",
+      "bares": "engine block, valve cover, radiator wall and air cleaner on the chassis; this class has NO hood",
+      "extreme": "at full tilt the roof leading edge reaches y 4.26 at z 1.96 — still inside the cell in all 8 facings"
+    },
+    "roll": {
+      "param": "roll",
+      "units": "revolutions",
+      "per_wheel": [
+        "wFL",
+        "wFR",
+        "wRL",
+        "wRR"
+      ],
+      "distance_per_rev_m": 2.099,
+      "cyclic": "one revolution returns hub lugs and hand-holes exactly and the tread to a 0.7 mm phase (21.007 stripes of 0.0999 m): the seam is 0 px of 20154 painted (0.00%). Seamless in motion; the index notch keeps it honest."
+    },
+    "suspension": {
+      "params": [
+        "susF",
+        "susR"
+      ],
+      "range": [
+        -1,
+        1
+      ],
+      "travel_m": {
+        "front": 0.09,
+        "rear": 0.12
+      },
+      "formula": "dz(y) = -(susF*0.09)*t - (susR*0.12)*(1-t),  t = (y - (-1.50)) / 4.12",
+      "note": "the BODY moves (cab, box, door, liftgate); the wheels stay on the ground"
+    },
+    "steer": {
+      "param": "steer",
+      "range": [
+        -1,
+        1
+      ],
+      "sense": "+1 is full LEFT lock (the nose swings toward -x)",
+      "deg": {
+        "inner": 33,
+        "outer": 27.53
+      },
+      "geometry": "Ackermann: the inside wheel takes the larger angle. outer = atan(1/(1/tan(inner) + track/wheelbase)), front track 1.56, wheelbase 4.12.",
+      "axis": "vertical, through each front wheel centre. No kingpin offset, no caster, no scrub radius.",
+      "swept_extreme_x_m": 1.062,
+      "note": "cabovers steer tight — the wheels sit at the corner. At full lock a tire corner reaches |x| 1.062 m, inside the 1.07 m black arch flares; the flares, not the 0.98 m cab side, are the envelope. That is why this class carries 33deg to the van's 24."
+    },
+    "yaw": {
+      "param": "yaw",
+      "units": "degrees",
+      "range": [
+        -45,
+        45
+      ],
+      "what": "heading off the 45deg facing grid. Rotates the model about z before projection under the fixed key — the shading is REBAKED, not rotated.",
+      "pivot": "unaffected — the origin still projects to the published pivot at any yaw"
+    },
+    "parts": {
+      "mirrors": true,
+      "mudflaps": true,
+      "liftgate": true
+    },
+    "night": {
+      "param": "night",
+      "effect": "glass ramp swaps, headlamps become glow, lit spill on neighbouring pixels"
+    },
+    "weather": {
+      "param": "weather",
+      "range": [
+        0,
+        1
+      ],
+      "default": 0.32,
+      "effect": "greys and grimes the paint, rusts iron/galv/rubber, speckles at 5% x weather"
+    }
+  },
+  "paints": [
+    "white",
+    "cream",
+    "red",
+    "sage",
+    "blue",
+    "teal",
+    "gold",
+    "rustOrange",
+    "greyShingle",
+    "plum"
+  ],
+  "presets": {
+    "showroom": {
+      "paint": "white",
+      "weather": 0.05
+    },
+    "rental": {
+      "paint": "white",
+      "weather": 0.5
+    },
+    "fishmonger": {
+      "paint": "teal",
+      "weather": 0.42
+    },
+    "produce": {
+      "paint": "sage",
+      "weather": 0.3
+    },
+    "nightHaul": {
+      "paint": "blue",
+      "weather": 0.28,
+      "night": true
+    }
+  },
+  "cues": [
+    "doors",
+    "rollup",
+    "gate",
+    "tilt",
+    "roll",
+    "steer",
+    "turn",
+    "bounce"
+  ],
+  "anchors": {
+    "_units": "{x,y} in cell px for that facing, m = [x,y,z] in model metres",
+    "_measured_with": {
+      "paint": "white",
+      "weather": 0.5
+    },
+    "_gate_note": "the gate anchor is the centre of the UNFOLDED platform at dock height (gate 0.70); stowed and grounded positions come from articulation.gate.",
+    "by_facing": {
+      "N": {
+        "rollup": {
+          "x": 192,
+          "y": 252.3,
+          "m": [
+            0,
+            -3.0300000000000002,
+            0.98
+          ]
+        },
+        "sill": {
+          "x": 192,
+          "y": 254.4,
+          "m": [
+            0,
+            -3.06,
+            0.92
+          ]
+        },
+        "gate": {
+          "x": 192,
+          "y": 267.6,
+          "m": [
+            0,
+            -3.7,
+            0.92
+          ]
+        },
+        "cargo": {
+          "x": 192,
+          "y": 207.5,
+          "m": [
+            0,
+            -0.78,
+            0.92
+          ]
+        },
+        "tiltLatch": {
+          "x": 192,
+          "y": 164.6,
+          "m": [
+            0,
+            1.83,
+            0.48
+          ]
+        },
+        "doorL": {
+          "x": 160.6,
+          "y": 140.6,
+          "m": [
+            -0.98,
+            2.02,
+            1.3
+          ]
+        },
+        "doorR": {
+          "x": 223.4,
+          "y": 140.6,
+          "m": [
+            0.98,
+            2.02,
+            1.3
+          ]
+        },
+        "roof": {
+          "x": 192,
+          "y": 155.5,
+          "m": [
+            0,
+            -0.78,
+            3.04
+          ]
+        },
+        "wheelFL": {
+          "x": 167,
+          "y": 151.9,
+          "m": [
+            -0.78,
+            2.62,
+            0.334
+          ]
+        },
+        "wheelFR": {
+          "x": 217,
+          "y": 151.9,
+          "m": [
+            0.78,
+            2.62,
+            0.334
+          ]
+        },
+        "wheelRL": {
+          "x": 165.1,
+          "y": 236.7,
+          "m": [
+            -0.84,
+            -1.5,
+            0.334
+          ]
+        },
+        "wheelRR": {
+          "x": 218.9,
+          "y": 236.7,
+          "m": [
+            0.84,
+            -1.5,
+            0.334
+          ]
+        },
+        "exhaust": {
+          "x": 172.2,
+          "y": 269.2,
+          "m": [
+            -0.62,
+            -2.96,
+            0.23
+          ]
+        }
+      },
+      "NE": {
+        "rollup": {
+          "x": 260.6,
+          "y": 234,
+          "m": [
+            0,
+            -3.0300000000000002,
+            0.98
+          ]
+        },
+        "sill": {
+          "x": 261.2,
+          "y": 236,
+          "m": [
+            0,
+            -3.06,
+            0.92
+          ]
+        },
+        "gate": {
+          "x": 275.7,
+          "y": 245.3,
+          "m": [
+            0,
+            -3.7,
+            0.92
+          ]
+        },
+        "cargo": {
+          "x": 209.6,
+          "y": 202.8,
+          "m": [
+            0,
+            -0.78,
+            0.92
+          ]
+        },
+        "tiltLatch": {
+          "x": 150.6,
+          "y": 175.6,
+          "m": [
+            0,
+            1.83,
+            0.48
+          ]
+        },
+        "doorL": {
+          "x": 124.1,
+          "y": 167,
+          "m": [
+            -0.98,
+            2.02,
+            1.3
+          ]
+        },
+        "doorR": {
+          "x": 168.5,
+          "y": 138.5,
+          "m": [
+            0.98,
+            2.02,
+            1.3
+          ]
+        },
+        "roof": {
+          "x": 209.6,
+          "y": 150.8,
+          "m": [
+            0,
+            -0.78,
+            3.04
+          ]
+        },
+        "wheelFL": {
+          "x": 115.1,
+          "y": 179.1,
+          "m": [
+            -0.78,
+            2.62,
+            0.334
+          ]
+        },
+        "wheelFR": {
+          "x": 150.4,
+          "y": 156.4,
+          "m": [
+            0.78,
+            2.62,
+            0.334
+          ]
+        },
+        "wheelRL": {
+          "x": 206.9,
+          "y": 239.8,
+          "m": [
+            -0.84,
+            -1.5,
+            0.334
+          ]
+        },
+        "wheelRR": {
+          "x": 244.9,
+          "y": 215.4,
+          "m": [
+            0.84,
+            -1.5,
+            0.334
+          ]
+        },
+        "exhaust": {
+          "x": 244.9,
+          "y": 260.4,
+          "m": [
+            -0.62,
+            -2.96,
+            0.23
+          ]
+        }
+      },
+      "E": {
+        "rollup": {
+          "x": 289,
+          "y": 190,
+          "m": [
+            0,
+            -3.0300000000000002,
+            0.98
+          ]
+        },
+        "sill": {
+          "x": 289.9,
+          "y": 191.4,
+          "m": [
+            0,
+            -3.06,
+            0.92
+          ]
+        },
+        "gate": {
+          "x": 310.4,
+          "y": 191.4,
+          "m": [
+            0,
+            -3.7,
+            0.92
+          ]
+        },
+        "cargo": {
+          "x": 217,
+          "y": 191.4,
+          "m": [
+            0,
+            -0.78,
+            0.92
+          ]
+        },
+        "tiltLatch": {
+          "x": 133.4,
+          "y": 202.2,
+          "m": [
+            0,
+            1.83,
+            0.48
+          ]
+        },
+        "doorL": {
+          "x": 127.4,
+          "y": 202.3,
+          "m": [
+            -0.98,
+            2.02,
+            1.3
+          ]
+        },
+        "doorR": {
+          "x": 127.4,
+          "y": 162,
+          "m": [
+            0.98,
+            2.02,
+            1.3
+          ]
+        },
+        "roof": {
+          "x": 217,
+          "y": 139.5,
+          "m": [
+            0,
+            -0.78,
+            3.04
+          ]
+        },
+        "wheelFL": {
+          "x": 108.2,
+          "y": 221.9,
+          "m": [
+            -0.78,
+            2.62,
+            0.334
+          ]
+        },
+        "wheelFR": {
+          "x": 108.2,
+          "y": 189.8,
+          "m": [
+            0.78,
+            2.62,
+            0.334
+          ]
+        },
+        "wheelRL": {
+          "x": 240,
+          "y": 223.1,
+          "m": [
+            -0.84,
+            -1.5,
+            0.334
+          ]
+        },
+        "wheelRR": {
+          "x": 240,
+          "y": 188.5,
+          "m": [
+            0.84,
+            -1.5,
+            0.334
+          ]
+        },
+        "exhaust": {
+          "x": 286.7,
+          "y": 221.1,
+          "m": [
+            -0.62,
+            -2.96,
+            0.23
+          ]
+        }
+      },
+      "SE": {
+        "rollup": {
+          "x": 260.6,
+          "y": 145.9,
+          "m": [
+            0,
+            -3.0300000000000002,
+            0.98
+          ]
+        },
+        "sill": {
+          "x": 261.2,
+          "y": 146.9,
+          "m": [
+            0,
+            -3.06,
+            0.92
+          ]
+        },
+        "gate": {
+          "x": 275.7,
+          "y": 137.6,
+          "m": [
+            0,
+            -3.7,
+            0.92
+          ]
+        },
+        "cargo": {
+          "x": 209.6,
+          "y": 180.1,
+          "m": [
+            0,
+            -0.78,
+            0.92
+          ]
+        },
+        "tiltLatch": {
+          "x": 150.6,
+          "y": 228.9,
+          "m": [
+            0,
+            1.83,
+            0.48
+          ]
+        },
+        "doorL": {
+          "x": 168.5,
+          "y": 225.8,
+          "m": [
+            -0.98,
+            2.02,
+            1.3
+          ]
+        },
+        "doorR": {
+          "x": 124.1,
+          "y": 197.3,
+          "m": [
+            0.98,
+            2.02,
+            1.3
+          ]
+        },
+        "roof": {
+          "x": 209.6,
+          "y": 128.1,
+          "m": [
+            0,
+            -0.78,
+            3.04
+          ]
+        },
+        "wheelFL": {
+          "x": 150.4,
+          "y": 255.3,
+          "m": [
+            -0.78,
+            2.62,
+            0.334
+          ]
+        },
+        "wheelFR": {
+          "x": 115.1,
+          "y": 232.6,
+          "m": [
+            0.78,
+            2.62,
+            0.334
+          ]
+        },
+        "wheelRL": {
+          "x": 244.9,
+          "y": 196.2,
+          "m": [
+            -0.84,
+            -1.5,
+            0.334
+          ]
+        },
+        "wheelRR": {
+          "x": 206.9,
+          "y": 171.8,
+          "m": [
+            0.84,
+            -1.5,
+            0.334
+          ]
+        },
+        "exhaust": {
+          "x": 273,
+          "y": 174.3,
+          "m": [
+            -0.62,
+            -2.96,
+            0.23
+          ]
+        }
+      },
+      "S": {
+        "rollup": {
+          "x": 192,
+          "y": 127.7,
+          "m": [
+            0,
+            -3.0300000000000002,
+            0.98
+          ]
+        },
+        "sill": {
+          "x": 192,
+          "y": 128.5,
+          "m": [
+            0,
+            -3.06,
+            0.92
+          ]
+        },
+        "gate": {
+          "x": 192,
+          "y": 115.3,
+          "m": [
+            0,
+            -3.7,
+            0.92
+          ]
+        },
+        "cargo": {
+          "x": 192,
+          "y": 175.4,
+          "m": [
+            0,
+            -0.78,
+            0.92
+          ]
+        },
+        "tiltLatch": {
+          "x": 192,
+          "y": 239.9,
+          "m": [
+            0,
+            1.83,
+            0.48
+          ]
+        },
+        "doorL": {
+          "x": 223.4,
+          "y": 223.7,
+          "m": [
+            -0.98,
+            2.02,
+            1.3
+          ]
+        },
+        "doorR": {
+          "x": 160.6,
+          "y": 223.7,
+          "m": [
+            0.98,
+            2.02,
+            1.3
+          ]
+        },
+        "roof": {
+          "x": 192,
+          "y": 123.4,
+          "m": [
+            0,
+            -0.78,
+            3.04
+          ]
+        },
+        "wheelFL": {
+          "x": 217,
+          "y": 259.7,
+          "m": [
+            -0.78,
+            2.62,
+            0.334
+          ]
+        },
+        "wheelFR": {
+          "x": 167,
+          "y": 259.7,
+          "m": [
+            0.78,
+            2.62,
+            0.334
+          ]
+        },
+        "wheelRL": {
+          "x": 218.9,
+          "y": 175,
+          "m": [
+            -0.84,
+            -1.5,
+            0.334
+          ]
+        },
+        "wheelRR": {
+          "x": 165.1,
+          "y": 175,
+          "m": [
+            0.84,
+            -1.5,
+            0.334
+          ]
+        },
+        "exhaust": {
+          "x": 211.8,
+          "y": 147.5,
+          "m": [
+            -0.62,
+            -2.96,
+            0.23
+          ]
+        }
+      },
+      "SW": {
+        "rollup": {
+          "x": 123.4,
+          "y": 145.9,
+          "m": [
+            0,
+            -3.0300000000000002,
+            0.98
+          ]
+        },
+        "sill": {
+          "x": 122.8,
+          "y": 146.9,
+          "m": [
+            0,
+            -3.06,
+            0.92
+          ]
+        },
+        "gate": {
+          "x": 108.3,
+          "y": 137.6,
+          "m": [
+            0,
+            -3.7,
+            0.92
+          ]
+        },
+        "cargo": {
+          "x": 174.4,
+          "y": 180.1,
+          "m": [
+            0,
+            -0.78,
+            0.92
+          ]
+        },
+        "tiltLatch": {
+          "x": 233.4,
+          "y": 228.9,
+          "m": [
+            0,
+            1.83,
+            0.48
+          ]
+        },
+        "doorL": {
+          "x": 259.9,
+          "y": 197.3,
+          "m": [
+            -0.98,
+            2.02,
+            1.3
+          ]
+        },
+        "doorR": {
+          "x": 215.5,
+          "y": 225.8,
+          "m": [
+            0.98,
+            2.02,
+            1.3
+          ]
+        },
+        "roof": {
+          "x": 174.4,
+          "y": 128.1,
+          "m": [
+            0,
+            -0.78,
+            3.04
+          ]
+        },
+        "wheelFL": {
+          "x": 268.9,
+          "y": 232.6,
+          "m": [
+            -0.78,
+            2.62,
+            0.334
+          ]
+        },
+        "wheelFR": {
+          "x": 233.6,
+          "y": 255.3,
+          "m": [
+            0.78,
+            2.62,
+            0.334
+          ]
+        },
+        "wheelRL": {
+          "x": 177.1,
+          "y": 171.8,
+          "m": [
+            -0.84,
+            -1.5,
+            0.334
+          ]
+        },
+        "wheelRR": {
+          "x": 139.1,
+          "y": 196.2,
+          "m": [
+            0.84,
+            -1.5,
+            0.334
+          ]
+        },
+        "exhaust": {
+          "x": 139.1,
+          "y": 156.3,
+          "m": [
+            -0.62,
+            -2.96,
+            0.23
+          ]
+        }
+      },
+      "W": {
+        "rollup": {
+          "x": 95,
+          "y": 190,
+          "m": [
+            0,
+            -3.0300000000000002,
+            0.98
+          ]
+        },
+        "sill": {
+          "x": 94.1,
+          "y": 191.4,
+          "m": [
+            0,
+            -3.06,
+            0.92
+          ]
+        },
+        "gate": {
+          "x": 73.6,
+          "y": 191.4,
+          "m": [
+            0,
+            -3.7,
+            0.92
+          ]
+        },
+        "cargo": {
+          "x": 167,
+          "y": 191.4,
+          "m": [
+            0,
+            -0.78,
+            0.92
+          ]
+        },
+        "tiltLatch": {
+          "x": 250.6,
+          "y": 202.2,
+          "m": [
+            0,
+            1.83,
+            0.48
+          ]
+        },
+        "doorL": {
+          "x": 256.6,
+          "y": 162,
+          "m": [
+            -0.98,
+            2.02,
+            1.3
+          ]
+        },
+        "doorR": {
+          "x": 256.6,
+          "y": 202.3,
+          "m": [
+            0.98,
+            2.02,
+            1.3
+          ]
+        },
+        "roof": {
+          "x": 167,
+          "y": 139.5,
+          "m": [
+            0,
+            -0.78,
+            3.04
+          ]
+        },
+        "wheelFL": {
+          "x": 275.8,
+          "y": 189.8,
+          "m": [
+            -0.78,
+            2.62,
+            0.334
+          ]
+        },
+        "wheelFR": {
+          "x": 275.8,
+          "y": 221.9,
+          "m": [
+            0.78,
+            2.62,
+            0.334
+          ]
+        },
+        "wheelRL": {
+          "x": 144,
+          "y": 188.5,
+          "m": [
+            -0.84,
+            -1.5,
+            0.334
+          ]
+        },
+        "wheelRR": {
+          "x": 144,
+          "y": 223.1,
+          "m": [
+            0.84,
+            -1.5,
+            0.334
+          ]
+        },
+        "exhaust": {
+          "x": 97.3,
+          "y": 195.6,
+          "m": [
+            -0.62,
+            -2.96,
+            0.23
+          ]
+        }
+      },
+      "NW": {
+        "rollup": {
+          "x": 123.4,
+          "y": 234,
+          "m": [
+            0,
+            -3.0300000000000002,
+            0.98
+          ]
+        },
+        "sill": {
+          "x": 122.8,
+          "y": 236,
+          "m": [
+            0,
+            -3.06,
+            0.92
+          ]
+        },
+        "gate": {
+          "x": 108.3,
+          "y": 245.3,
+          "m": [
+            0,
+            -3.7,
+            0.92
+          ]
+        },
+        "cargo": {
+          "x": 174.4,
+          "y": 202.8,
+          "m": [
+            0,
+            -0.78,
+            0.92
+          ]
+        },
+        "tiltLatch": {
+          "x": 233.4,
+          "y": 175.6,
+          "m": [
+            0,
+            1.83,
+            0.48
+          ]
+        },
+        "doorL": {
+          "x": 215.5,
+          "y": 138.5,
+          "m": [
+            -0.98,
+            2.02,
+            1.3
+          ]
+        },
+        "doorR": {
+          "x": 259.9,
+          "y": 167,
+          "m": [
+            0.98,
+            2.02,
+            1.3
+          ]
+        },
+        "roof": {
+          "x": 174.4,
+          "y": 150.8,
+          "m": [
+            0,
+            -0.78,
+            3.04
+          ]
+        },
+        "wheelFL": {
+          "x": 233.6,
+          "y": 156.4,
+          "m": [
+            -0.78,
+            2.62,
+            0.334
+          ]
+        },
+        "wheelFR": {
+          "x": 268.9,
+          "y": 179.1,
+          "m": [
+            0.78,
+            2.62,
+            0.334
+          ]
+        },
+        "wheelRL": {
+          "x": 139.1,
+          "y": 215.4,
+          "m": [
+            -0.84,
+            -1.5,
+            0.334
+          ]
+        },
+        "wheelRR": {
+          "x": 177.1,
+          "y": 239.8,
+          "m": [
+            0.84,
+            -1.5,
+            0.334
+          ]
+        },
+        "exhaust": {
+          "x": 111,
+          "y": 242.4,
+          "m": [
+            -0.62,
+            -2.96,
+            0.23
+          ]
+        }
+      }
+    }
+  },
+  "sheets": [
+    {
+      "file": "CaboverBox_white_8dir.png",
+      "cells": 8,
+      "layout": "1 row",
+      "grid": [
+        3072,
+        320
+      ],
+      "pose": "at rest, rental (white, weather 0.50)",
+      "order": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ]
+    },
+    {
+      "file": "CaboverBox_rollup_N.png",
+      "cells": 8,
+      "grid": [
+        3072,
+        320
+      ],
+      "pose": "rollup cue 0->1 at N — 12 slats climb the track and stack under the roof"
+    },
+    {
+      "file": "CaboverBox_gate_N.png",
+      "cells": 8,
+      "grid": [
+        3072,
+        320
+      ],
+      "pose": "gate cue 0->1 at N — swing out, unfold, lower to the ground"
+    },
+    {
+      "file": "CaboverBox_tilt_W.png",
+      "cells": 8,
+      "grid": [
+        3072,
+        320
+      ],
+      "pose": "tilt cue 0->38deg at W — the cab bares the engine"
+    },
+    {
+      "file": "CaboverBox_roll_W.png",
+      "cells": 10,
+      "grid": [
+        3840,
+        320
+      ],
+      "pose": "bounce cue at W — one wheel revolution + suspension, cyclic (frame 10 wraps to 0)"
+    },
+    {
+      "file": "CaboverBox_steer_S.png",
+      "cells": 8,
+      "layout": "1 row",
+      "grid": [
+        3072,
+        320
+      ],
+      "pose": "steer cue at S — full right lock to full left lock"
+    },
+    {
+      "file": "CaboverBox_paints_SE.png",
+      "cells": 10,
+      "layout": "5 x 2",
+      "grid": [
+        1920,
+        640
+      ],
+      "pose": "the ten harbour paints at SE, weather 0.22",
+      "order": [
+        "white",
+        "cream",
+        "red",
+        "sage",
+        "blue",
+        "teal",
+        "gold",
+        "rustOrange",
+        "greyShingle",
+        "plum"
+      ]
+    }
+  ],
+  "sidecar": "boxIsoRig.caboverBox.gameplay.json",
+  "rigSha256": "a93cb4b3c0bc4805fbe6f15342a0efa2071249f6500ba19a58b6549541ebd704"
+}

@@ -9,13 +9,20 @@ namespace HiddenHarbours.Tools.RigBaking
     {
         public Mesh Mesh;
         public int Faces, Vertices, Triangles, Materials;
-        /// <summary>Vertex + index buffer bytes: pos(12) + normal(12) + uv0(16) per vertex,
-        /// plus 4 bytes per index. The comparison ADR 0022 makes is against RGBA32 sheet bytes.</summary>
+        /// <summary>Vertex + index buffer bytes: pos(12) + normal(12) + uv0(16) per vertex, plus
+        /// uv1(8) on a hull that carries level tags, plus 4 bytes per index. The comparison ADR 0022
+        /// makes is against RGBA32 sheet bytes.</summary>
         public long BufferBytes;
+
+        /// <summary>How many faces carry a real level tag — 0 on every rig that publishes no
+        /// <c>geometry()</c>. Reported so a bake log SAYS whether the cutaway channel was written,
+        /// rather than leaving it to be inferred from a byte count.</summary>
+        public int TaggedFaces;
 
         public override string ToString() =>
             $"{Faces} faces → {Triangles} tris / {Vertices} verts, {Materials} materials, " +
-            $"{BufferBytes / 1024.0:F1} KB";
+            $"{BufferBytes / 1024.0:F1} KB" +
+            (TaggedFaces > 0 ? $", {TaggedFaces} level-tagged" : "");
     }
 
     /// <summary>
@@ -52,6 +59,25 @@ namespace HiddenHarbours.Tools.RigBaking
         /// The guard pass decodes the rendered side from the stored normal, so the code is
         /// meaningful whichever way mirroring left the winding.</summary>
         public const int AttrUvChannel = 0;
+
+        /// <summary>
+        /// UV1 channel carrying the CUTAWAY tag: <c>x = level id, y = 1 on emitted INTERIOR
+        /// geometry and 0 on the hull's own faces</c>. Flat across the face, like UV0.
+        ///
+        /// <para><b>Written only when the rig published a level vocabulary</b>
+        /// (<see cref="RigMeshData.CarriesLevelTags"/>). Every hull baked before the cutaway kit, and
+        /// every fitting, gets no channel at all — so their meshes are byte-for-byte what they were,
+        /// their golden masters do not move, and <c>Mesh.HasVertexAttribute(TexCoord1)</c> is an
+        /// honest answer to "can this hull be cut?" rather than a field of zeros that reads as
+        /// "everything is hull".</para>
+        ///
+        /// <para><b>y is 0 on every face this builder writes today.</b> The hull is the only half of
+        /// the spike's HYBRID that exists: shell geometry (the room) is a later lane, and when it
+        /// arrives it writes 1 here so ONE fragment compare does both halves of the swap — cull the
+        /// house you are inside of, draw the room. Reserving the component now costs nothing and
+        /// keeps the shader's decode from having to change under a shipped bake.</para>
+        /// </summary>
+        public const int LevelUvChannel = 1;
 
         /// <summary>
         /// Build the mesh. <paramref name="interior"/> is the side-blind per-FACE interior mask, in
@@ -91,6 +117,9 @@ namespace HiddenHarbours.Tools.RigBaking
             var verts = new Vector3[vcount];
             var norms = new Vector3[vcount];
             var attrs = new Vector4[vcount];
+            bool tagged = data.CarriesLevelTags;
+            var levels = tagged ? new Vector2[vcount] : null;
+            int taggedFaces = 0;
             var tris = new List<int>(data.TriangleCount * 3);
 
             int v = 0;
@@ -103,12 +132,25 @@ namespace HiddenHarbours.Tools.RigBaking
                 faceIndex++;
                 var attr = new Vector4(f.Mat, (float)f.B, (float)f.Db, sideCode);
 
+                // ⚠️ A tagged rig cannot have an untagged face — extraction refuses one — so this is
+                // the invariant restated at the only other place that could break it, not a fallback.
+                // Writing 0 here for a face whose tag went missing would mean 'hull' = never culled.
+                if (tagged && f.Level < 0)
+                    throw new InvalidOperationException(
+                        $"{data.RigKey} publishes a level vocabulary but face {faceIndex - 1} carries " +
+                        $"no tag ({nameof(RigFace.Level)} = {f.Level}). A mesh must not be built from a " +
+                        "half-tagged face list: the missing tag would bake as level 0 = hull = never " +
+                        "cull, and the room would stop opening in exactly one wall.");
+                var levelTag = tagged ? new Vector2(f.Level, 0f) : default;
+                if (tagged) taggedFaces++;
+
                 int baseIndex = v;
                 for (int k = 0; k < f.V.Length; k++, v++)
                 {
                     verts[v] = f.V[k].ToVector3();
                     norms[v] = n;
                     attrs[v] = attr;
+                    if (tagged) levels[v] = levelTag;
                 }
 
                 // Fan, exactly as _paint does: for(t=1; t+1<rv.length; t++) fillTri(rv[0],rv[t],rv[t+1]).
@@ -129,6 +171,7 @@ namespace HiddenHarbours.Tools.RigBaking
             mesh.vertices = verts;
             mesh.normals = norms;
             mesh.SetUVs(AttrUvChannel, attrs);
+            if (tagged) mesh.SetUVs(LevelUvChannel, levels);
             mesh.SetTriangles(tris, 0, calculateBounds: true);
 
             return new RigMeshBuild
@@ -138,7 +181,8 @@ namespace HiddenHarbours.Tools.RigBaking
                 Vertices = vcount,
                 Triangles = tris.Count / 3,
                 Materials = data.Materials.Count,
-                BufferBytes = (long)vcount * (12 + 12 + 16) + (long)tris.Count * 4,
+                TaggedFaces = taggedFaces,
+                BufferBytes = (long)vcount * (12 + 12 + 16 + (tagged ? 8 : 0)) + (long)tris.Count * 4,
             };
         }
 

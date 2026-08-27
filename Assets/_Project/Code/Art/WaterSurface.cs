@@ -496,6 +496,10 @@ namespace HiddenHarbours.Art
             GameServices.TidalTerrainChanged -= OnTidalTerrainChanged;
             // Clear the per-renderer overrides so the shared material reads as authored if this is removed.
             if (_renderer != null) _renderer.SetPropertyBlock(null);
+            // Withdraw the published palette. Only this surface's own entry is cleared (the seam checks the
+            // owner), so a region hop that enables the next sea before disabling the old one cannot leave
+            // the wake with no palette.
+            SeaPalette.Clear(this);
             // Leave the published waterline UNSET rather than frozen on the last tide — a stopped play
             // session must not haunt the editor's globals, and a scene with no water must not leave a
             // cliff standing in a sea that is not there (the _DayNightTint / _MoonDir "unset" convention,
@@ -782,7 +786,53 @@ namespace HiddenHarbours.Art
             ApplyWeatherPalette(_mpb);
 
             _renderer.SetPropertyBlock(_mpb);
+
+            // (owner ask 2026-08-27) PUBLISH THE PALETTE. The wake's foam ages down the sea's own ramp
+            // rather than into transparency, and the ramp it must walk is the one THIS surface is drawing
+            // itself with right now — after the mood blend above, which the weather moves every frame. So it
+            // is published from the values that just went onto the block, never from the asset and never
+            // from a copy taken once: a consumer holding a copy would keep yesterday's blues through a
+            // squall. Core seam, so Boats never reaches into Art (rule 4). Presentation only (rule 5).
+            PublishSeaPalette();
         }
+
+        /// <summary>
+        /// Push the four ADR 0015 palette anchors onto the Core <see cref="SeaPalette"/> seam as they stand
+        /// after this frame's mood blend.
+        ///
+        /// <para>Each anchor is read from the property BLOCK when the blend wrote one there and from the
+        /// shared material otherwise — which is the honest reading of "what is this surface drawing with",
+        /// because that is exactly the precedence the GPU will apply. A material with no palette anchors at
+        /// all (an old preset) publishes nothing, and every consumer falls back to its own serialized colour:
+        /// the OFF contract, reached by absence rather than by a flag.</para>
+        /// </summary>
+        private void PublishSeaPalette()
+        {
+            if (_renderer == null) return;
+            Material mat = _renderer.sharedMaterial;
+            if (mat == null || !mat.HasProperty(PaletteFoamId)) return;
+
+            SeaPalette.Publish(this, new SeaPaletteState(
+                EffectivePaletteColor(mat, PaletteDeepId),
+                EffectivePaletteColor(mat, PaletteMidId),
+                EffectivePaletteColor(mat, PaletteShallowId),
+                EffectivePaletteColor(mat, PaletteFoamId)));
+        }
+
+        /// <summary>The value the GPU will actually see for one colour property: the MPB override where one
+        /// exists, else the shared material's own value.</summary>
+        private Color EffectivePaletteColor(Material mat, int id)
+        {
+            if (_mpb != null && _mpb.HasColor(id)) return _mpb.GetColor(id);
+            return mat.HasProperty(id) ? mat.GetColor(id) : Color.white;
+        }
+
+        // The four ADR 0015 anchor ids, resolved once. Deliberately independent of the MoodColorNames
+        // array: the palette must publish whether or not the weather-mood blend is switched on.
+        private static readonly int PaletteDeepId    = Shader.PropertyToID("_PaletteDeep");
+        private static readonly int PaletteMidId     = Shader.PropertyToID("_PaletteMid");
+        private static readonly int PaletteShallowId = Shader.PropertyToID("_PaletteShallow");
+        private static readonly int PaletteFoamId    = Shader.PropertyToID("_PaletteFoam");
 
         /// <summary>
         /// SLOW TIER (the throttled tick): read the deterministic sim and the mood anchor materials into the

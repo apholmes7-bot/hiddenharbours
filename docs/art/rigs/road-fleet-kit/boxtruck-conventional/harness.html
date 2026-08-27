@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Conventional Box Truck — harness</title>
+<style>
+  body{margin:0;background:#0b1216;color:#c8d4d7;font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;padding:18px;}
+  h1{font-size:14px;letter-spacing:.16em;text-transform:uppercase;color:#c9a86a;margin:0 0 4px;}
+  p.note{color:#6f7e83;margin:0 0 16px;max-width:74ch;}
+  .row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:9px;}
+  .row > span.lbl{color:#6f7e83;letter-spacing:.12em;text-transform:uppercase;font-size:10.5px;width:78px;}
+  .grp{display:flex;gap:6px;flex-wrap:wrap;}
+  button{font:inherit;font-size:12px;padding:4px 9px;border-radius:3px;border:1px solid #2a3b43;background:#132025;color:#93a4a8;cursor:pointer;}
+  button.on{border-color:#c9a86a;background:#2a2317;color:#e6d2a4;}
+  button.act{border-color:#2f6079;background:#122530;color:#7fd6c9;}
+  input[type=range]{width:150px;accent-color:#7fd6c9;}
+  #stage{border:1px solid #243137;background:#0e181d;margin:12px 0;overflow:auto;}
+  canvas{display:block;image-rendering:pixelated;}
+  pre{border:1px solid #243137;background:#0e181d;padding:11px 13px;margin:0;white-space:pre-wrap;color:#8fa3a8;font-size:12px;}
+  b{color:#c8d4d7;font-weight:400;} i{color:#c9a86a;font-style:normal;}
+</style>
+</head>
+<body>
+<h1>Conventional Box Truck — harness</h1>
+<p class="note">Standalone: no build, no deps, no project. Bakes any facing, paint, preset, part and pose off
+the same <b>convBoxIsoRig.js</b> the engine ships, and asserts the bake against <b>convBox.contract.json</b>
+and the geometry in <b>convBoxIsoRig.convBox.gameplay.json</b>. Served from a folder it also re-hashes the
+rig against the contract's <i>rigSha256</i>; opened straight off disk the JSON fetches are blocked by the
+browser and those groups are skipped, not silently passed. Mind the cell: <b>448 &times; 352 @ 224,214</b> —
+this kit does not use the 384 road cell.</p>
+
+<div class="row"><span class="lbl">facing</span><span class="grp" id="dirs"></span></div>
+<div class="row"><span class="lbl">paint</span><span class="grp" id="paints"></span></div>
+<div class="row"><span class="lbl">preset</span><span class="grp" id="presets"></span></div>
+<div class="row"><span class="lbl">open</span><span class="grp" id="opens"></span></div>
+<div class="row"><span class="lbl">rollup</span><input type="range" id="rollup" min="0" max="1" step="0.02" value="0">
+  <span class="lbl" style="width:auto">gate</span><input type="range" id="gate" min="0" max="1" step="0.02" value="0">
+  <span class="lbl" style="width:auto">roll</span><input type="range" id="roll" min="0" max="1" step="0.02" value="0">
+  <span class="lbl" style="width:auto">steer</span><input type="range" id="steer" min="-1" max="1" step="0.05" value="0"></div>
+<div class="row"><span class="lbl">export</span>
+  <button class="act" id="strip">bake 8-dir strip &darr;</button>
+  <button class="act" id="cue">bake rollup cue &darr;</button>
+  <button class="act" id="check">run asserts</button>
+  <button id="anchors">anchors</button>
+  <button id="pivot" class="on">pivot</button>
+</div>
+
+<div id="stage"><canvas id="cv" width="448" height="352"></canvas></div>
+<pre id="log">loading rig…</pre>
+
+<script src="convBoxIsoRig.js"></script>
+<script>
+(function(){
+  var V = window.ConvBoxIso;
+  var cv = document.getElementById('cv'), ctx = cv.getContext('2d'), out = document.getElementById('log');
+  if(!V){ out.textContent = 'convBoxIsoRig.js did not load — check the <script src> tag.'; return; }
+  var FACE = V.order, PAINTS = Object.keys(V.BODY);
+  var OPENS = [['hood','hood'],['dL','door L'],['dR','door R'],['liftgate','liftgate'],['fairing','fairing'],['night','night']];
+  var st = { dir:6, paint:'white', weather:0.50, rollup:0, gate:0, roll:0, steer:0, showAnchors:false, showPivot:true,
+             hood:0, dL:0, dR:0, liftgate:1, fairing:1, night:0 };
+  function opts(extra){
+    var o = { paint:st.paint, weather:st.weather, rollup:st.rollup, gate:st.gate, roll:st.roll, steer:st.steer,
+              hood:st.hood, dL:st.dL, dR:st.dR, liftgate:!!st.liftgate, fairing:!!st.fairing, night:!!st.night };
+    if(extra) for(var k in extra) o[k] = extra[k];
+    return o;
+  }
+  function bake(dir, o){
+    var c = document.createElement('canvas'); c.width = V.W; c.height = V.H;
+    c.getContext('2d').putImageData(new ImageData(V.render(dir, o || opts()), V.W, V.H), 0, 0);
+    return c;
+  }
+  function bbox(rgba){
+    var x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
+    for(var y=0;y<V.H;y++) for(var x=0;x<V.W;x++) if(rgba[(y*V.W+x)*4+3]){
+      if(x<x0)x0=x; if(x>x1)x1=x; if(y<y0)y0=y; if(y>y1)y1=y; }
+    return [x0,y0,x1,y1];
+  }
+  function chips(host, list, isOn, pick){
+    host.innerHTML = '';
+    list.forEach(function(it){
+      var b = document.createElement('button');
+      b.textContent = it[1]; b.className = isOn(it[0]) ? 'on' : '';
+      b.onclick = function(){ pick(it[0]); };
+      host.appendChild(b);
+    });
+  }
+  function ui(){
+    chips(document.getElementById('dirs'), FACE.map(function(f,i){ return [i,f]; }),
+      function(i){ return i===st.dir; }, function(i){ st.dir=i; draw(); });
+    chips(document.getElementById('paints'), PAINTS.map(function(p){ return [p,p]; }),
+      function(p){ return p===st.paint; }, function(p){ st.paint=p; draw(); });
+    chips(document.getElementById('presets'), Object.keys(V.PRESETS).map(function(k){ return [k,k]; }),
+      function(){ return false; }, function(k){
+        st.hood=0; st.dL=0; st.dR=0; st.rollup=0; st.gate=0; st.liftgate=1; st.fairing=1; st.night=0;
+        var p = V.PRESETS[k]; for(var f in p) st[f] = (typeof p[f]==='boolean') ? (p[f]?1:0) : p[f];
+        if(p.night) st.night=1; draw(); });
+    chips(document.getElementById('opens'), OPENS,
+      function(k){ return !!st[k]; }, function(k){ st[k] = st[k] ? 0 : 1; draw(); });
+  }
+  ['rollup','gate','roll','steer'].forEach(function(k){
+    document.getElementById(k).oninput = function(e){ st[k] = +e.target.value; draw(); };
+  });
+  document.getElementById('pivot').onclick = function(){ st.showPivot = !st.showPivot; this.className = st.showPivot?'on':''; draw(); };
+  document.getElementById('anchors').onclick = function(){ st.showAnchors = !st.showAnchors; this.className = st.showAnchors?'on':''; draw(); };
+
+  var AKEYS = ['rollup','sill','gate','cargo','hoodLatch','doorL','doorR','roof','fairing','wheelFL','wheelFR','wheelRL','wheelRR','exhaust'];
+  function draw(){
+    ui();
+    var t0 = Date.now(), o = opts(), img = V.render(st.dir, o), ms = Date.now()-t0;
+    cv.width = V.W; cv.height = V.H;
+    ctx.clearRect(0,0,V.W,V.H); ctx.putImageData(new ImageData(img, V.W, V.H), 0, 0);
+    var b = bbox(img);
+    if(st.showPivot){
+      ctx.fillStyle = '#f05a50';
+      ctx.fillRect(V.pivot.x-5, V.pivot.y, 11, 1); ctx.fillRect(V.pivot.x, V.pivot.y-5, 1, 11);
+    }
+    if(st.showAnchors){
+      var A = V.anchors(st.dir, o);
+      ctx.fillStyle = '#7fd6c9';
+      AKEYS.forEach(function(k){ ctx.fillRect(Math.round(A[k].x)-1, Math.round(A[k].y)-1, 3, 3); });
+    }
+    var dm = V.dims(o);
+    out.innerHTML = '<b>' + dm.label + ' · ' + FACE[st.dir] + ' (' + (st.dir*45) + '°) · ' + st.paint
+      + ' · ' + (dm.liftgate?'liftgate':'plain tail') + ' · ' + (dm.fairing?'fairing':'bare roof') + '</b>\n'
+      + 'cell ' + V.W + '×' + V.H + ' · pivot ' + V.pivot.x + ',' + V.pivot.y + ' · painted [' + b.join(',') + '] '
+      + (b[2]-b[0]+1) + '×' + (b[3]-b[1]+1) + ' · baked in ' + ms + ' ms\n'
+      + dm.loa + ' m over bumpers · ' + dm.width + ' m over fenders · ' + dm.height + ' m high · wheelbase '
+      + dm.wheelbase + ' m · box ' + dm.boxLen + ' m, floor ' + dm.boxFloor + ' m · ' + dm.wheels + ' wheels\n'
+      + 'crosshair = pivot (model z=0, ground centre of the body footprint)';
+  }
+
+  function saveStrip(cells, name){
+    var s = document.createElement('canvas'); s.width = V.W*cells.length; s.height = V.H;
+    var sx = s.getContext('2d');
+    cells.forEach(function(c,k){ sx.drawImage(c, k*V.W, 0); });
+    s.toBlob(function(bl){
+      var u = URL.createObjectURL(bl), a = document.createElement('a');
+      a.href = u; a.download = name; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      setTimeout(function(){ URL.revokeObjectURL(u); }, 2000);
+    });
+  }
+  document.getElementById('strip').onclick = function(){
+    var cells = []; for(var d=0;d<8;d++) cells.push(bake(d));
+    saveStrip(cells, 'ConvBox_' + st.paint + '_8dir.png');
+  };
+  document.getElementById('cue').onclick = function(){
+    var cells = []; for(var i=0;i<8;i++) cells.push(bake(st.dir, opts(V.CUES.rollup(i/7))));
+    saveStrip(cells, 'ConvBox_' + st.paint + '_rollup_' + FACE[st.dir] + '.png');
+  };
+
+  /* ---------------- asserts ---------------- */
+  function json(path){
+    return fetch(path, {cache:'no-store'}).then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); });
+  }
+  function text(path){
+    return fetch(path, {cache:'no-store'}).then(function(r){ if(!r.ok) throw new Error(r.status); return r.text(); });
+  }
+  document.getElementById('check').onclick = function(){
+    var G = {}, order = [], fails = 0, skipped = [];
+    var near = function(a,b,e){ return Math.abs(a-b) < (e==null?0.001:e); };
+    function assert(g, ok, msg){
+      if(!G[g]){ G[g] = {n:0, bad:[]}; order.push(g); }
+      G[g].n++; if(!ok){ G[g].bad.push(msg); fails++; }
+    }
+    function report(head){
+      var lines = order.map(function(g){
+        var q = G[g], h = (q.bad.length ? ' FAIL ' : '  ok  ') + g + '  (' + (q.n-q.bad.length) + '/' + q.n + ')';
+        return q.bad.length ? h + '\n        ' + q.bad.join('\n        ') : h;
+      });
+      out.innerHTML = '<b>' + (fails ? fails + ' assert(s) FAILED' : 'all asserts pass') + '</b>  ·  ' + head
+        + (skipped.length ? '\n<i>skipped: ' + skipped.join('; ') + '</i>' : '') + '\n' + lines.join('\n');
+    }
+
+    var g = V.G, dm = V.dims();
+    assert('load', !!V.render && !!V.anchors && !!V.dims && !!V.gatePose && !!V.rollPath, 'rig exports render/anchors/dims/gatePose/rollPath');
+    assert('load', V.PX === 32 && V.DIRS === 8 && V.W === 448 && V.H === 352, 'scale 32 px/m, 8 facings, the 448x352 cell');
+
+    for(var d=0; d<8; d++){
+      var p = V.project(d, [0,0,0]);
+      assert('pivot', near(p.x, V.pivot.x, 0.51) && near(p.y, V.pivot.y, 0.51),
+        FACE[d] + ': origin projects to ' + p.x.toFixed(1) + ',' + p.y.toFixed(1) + ' not ' + V.pivot.x + ',' + V.pivot.y);
+    }
+
+    var rest = { paint:'white', weather:0.50 };
+    var wide = { paint:'white', weather:0.50, dL:1, dR:1, rollup:1, gate:1, hood:1 };
+    var dock = { paint:'white', weather:0.50, rollup:1, gate:0.7 };
+    var nofair = { paint:'white', weather:0.50, fairing:false };
+    var restB = [], wideB = [], dockB = [], nofairB = [];
+    for(d=0; d<8; d++){
+      var br = bbox(V.render(d, rest)), bw = bbox(V.render(d, wide)), bd = bbox(V.render(d, dock)), bn = bbox(V.render(d, nofair));
+      restB.push(br); wideB.push(bw); dockB.push(bd); nofairB.push(bn);
+      assert('bounds', br[0] >= 0 && br[1] >= 0 && br[2] <= V.W-1 && br[3] <= V.H-1, FACE[d] + ': at-rest paint leaves the cell');
+      assert('bounds', bw[0] >= 1 && bw[1] >= 1 && bw[2] <= V.W-2 && bw[3] <= V.H-2,
+        FACE[d] + ': wide-open paint [' + bw.join(',') + '] has no 1 px margin in a ' + V.W + '×' + V.H + ' cell');
+      assert('bounds', bd[0] >= 1 && bd[2] <= V.W-2, FACE[d] + ': dock-work paint has no 1 px margin');
+    }
+
+    function pixDiff(a, b){
+      var painted = 0, moved = 0;
+      for(var i=0;i<a.length;i+=4){
+        var pa = a[i+3] > 0, pb = b[i+3] > 0;
+        if(pa) painted++;
+        if(pa !== pb || (pa && (a[i]!==b[i] || a[i+1]!==b[i+1] || a[i+2]!==b[i+2]))) moved++;
+      }
+      return { painted:painted, moved:moved, pct:100*moved/painted };
+    }
+    // each cue is tested at a facing where its motion faces the camera
+    var CUE_AT = { doors:6, rollup:0, gate:0, hood:6, roll:6, bounce:6, steer:4, turn:6 };
+    var CUE_T1 = { turn:0.25 };
+    var CUE_MIN = { roll:20, turn:20 };
+    Object.keys(CUE_AT).forEach(function(c){
+      var at = CUE_AT[c], t1 = CUE_T1[c] || 0.5, min = CUE_MIN[c] || 200;
+      var d0 = pixDiff(V.render(at, Object.assign({}, rest, V.CUES[c](0))), V.render(at, Object.assign({}, rest, V.CUES[c](t1))));
+      assert('cues', d0.moved > min, 'cue ' + c + ' at ' + FACE[at] + ': only ' + d0.moved + ' px move between t=0 and t=' + t1);
+    });
+    var rd = pixDiff(V.render(6, Object.assign({}, rest, {roll:0})), V.render(6, Object.assign({}, rest, {roll:1})));
+    assert('cues', rd.pct < 0.6, 'roll:1 differs from roll:0 by ' + rd.pct.toFixed(2) + '% of painted px (' + rd.moved
+      + ') — over the 0.6% the loop seam becomes visible');
+
+    var up = bbox(V.render(2, Object.assign({}, rest, {susF:1, susR:1})));
+    var flat = bbox(V.render(2, rest));
+    assert('suspension', up[1] > flat[1], 'compressing both axles did not lower the roof (top row ' + up[1] + ' vs ' + flat[1] + ')');
+    assert('suspension', up[3] === flat[3], 'the wheels moved with the body (bottom row ' + up[3] + ' vs ' + flat[3] + ')');
+
+    // the roll-up never leaves the body; the liftgate is the only thing that claims ground
+    var nOpen = bbox(V.render(0, Object.assign({}, rest, {rollup:1})));
+    assert('rollup', nOpen.join(',') === restB[0].join(','),
+      'painted bbox at N moved when the door rolled up ([' + nOpen.join(',') + '] vs [' + restB[0].join(',') + ']) — the door left the body');
+    assert('rollup', pixDiff(V.render(0, rest), V.render(0, Object.assign({}, rest, {rollup:1}))).moved > 300,
+      'the roll-up barely changes the bake at N — the slats may not be moving');
+    assert('gate', dockB[2][2] > restB[2][2] + 25, 'at E the dock platform does not reach past the tail (x1 ' + dockB[2][2] + ' vs ' + restB[2][2] + ')');
+    var grounded = bbox(V.render(0, Object.assign({}, rest, {gate:1})));
+    assert('gate', grounded[3] > bbox(V.render(0, Object.assign({}, rest, {gate:0.7})))[3] + 10,
+      'lowering the gate from dock to ground does not drop the painted bottom at N');
+    assert('gate', pixDiff(V.render(0, rest), V.render(0, Object.assign({}, rest, {liftgate:false}))).moved > 100,
+      'liftgate:false changes almost nothing — the stowed gate may not be drawn');
+
+    // fairing: pixels change, the skyline does not — the box owns the top row
+    assert('fairing', pixDiff(V.render(6, rest), V.render(6, nofair)).moved > 200,
+      'fairing:false barely changes the bake — the cap may not be wired');
+    assert('fairing', nofairB[6][1] === restB[6][1],
+      'removing the fairing changed the painted TOP at W (' + nofairB[6][1] + ' vs ' + restB[6][1] + ') — the box roof should own the skyline');
+
+    var AK = ['rollup','sill','gate','cargo','hoodLatch','doorL','doorR','roof','fairing','wheelFL','wheelFR','wheelRL','wheelRR','exhaust'];
+    for(d=0; d<8; d++){
+      var A = V.anchors(d, rest), ok = true, bad = '';
+      AK.forEach(function(k){ if(!(A[k].x >= 0 && A[k].x < V.W && A[k].y >= 0 && A[k].y < V.H)){ ok = false; bad = k; } });
+      assert('anchors', ok, FACE[d] + ': anchor ' + bad + ' projects outside the cell');
+      assert('anchors', A.gate.m[1] < A.sill.m[1], FACE[d] + ': gate anchor is not aft of the sill');
+      assert('anchors', A.fairing.m[2] > g.cabRoofZ, FACE[d] + ': fairing anchor is not above the cab roof');
+    }
+
+    var lock = pixDiff(V.render(4, rest), V.render(4, Object.assign({}, rest, {steer:1})));
+    assert('steering', lock.moved > 100, 'full lock moves only ' + lock.moved + ' px at S — the front wheels are not yawing');
+    assert('steering', pixDiff(V.render(4, Object.assign({}, rest, {steer:1})), V.render(4, Object.assign({}, rest, {steer:-1}))).moved > 100,
+      'left lock and right lock look the same');
+    var env = V.G.frontWX + (V.G.tireW/2)*Math.cos(V.steer.maxInnerDeg*Math.PI/180) + V.G.wheelR*Math.sin(V.steer.maxInnerDeg*Math.PI/180);
+    assert('steering', env <= V.G.hwFender + 0.005, 'at full lock a front tire corner reaches |x| ' + env.toFixed(3)
+      + ' m, outside the ' + V.G.hwFender + ' m fenders — the truck would get wider than its widest point');
+    var sa = V.steer.angles(1);
+    assert('steering', sa.L > sa.R && near(sa.L, 35, 0.01), 'Ackermann is backwards or off: inner ' + sa.L.toFixed(2) + ' outer ' + sa.R.toFixed(2));
+    var yq = pixDiff(V.render(1, Object.assign({}, rest, {yaw:45})), V.render(2, rest));
+    assert('steering', yq.moved === 0, 'yaw 45 at NE is not identical to E (' + yq.moved + ' px) — the heading maths has drifted');
+    var yb = bbox(V.render(1, Object.assign({}, rest, {yaw:22.5})));
+    assert('steering', yb[0] >= 0 && yb[1] >= 0 && yb[2] < V.W && yb[3] < V.H, 'a yawed cell paints outside the cell [' + yb.join(',') + ']');
+    assert('steering', near(V.project(1, [0,0,0], null, 22.5).x, V.pivot.x) && near(V.project(1, [0,0,0], null, 22.5).y, V.pivot.y),
+      'the pivot moved under yaw');
+
+    report('rig-only groups done, ' + dm.label);
+
+    Promise.all([
+      json('convBox.contract.json').catch(function(){ return null; }),
+      json('convBoxIsoRig.convBox.gameplay.json').catch(function(){ return null; }),
+      text('convBoxIsoRig.js').catch(function(){ return null; })
+    ]).then(function(res){
+      var C = res[0], S = res[1], SRC = res[2];
+      if(!C) skipped.push('contract.json not fetchable (file:// ?) — published-bbox and articulation checks');
+      if(!S) skipped.push('gameplay.json not fetchable — sidecar cross-checks');
+
+      if(C){
+        for(var d2=0; d2<8; d2++){
+          var f = FACE[d2];
+          assert('published', C.painted_bbox.at_rest[f].join(',') === restB[d2].join(','),
+            f + ': contract at_rest [' + C.painted_bbox.at_rest[f] + '] vs fresh bake [' + restB[d2] + ']');
+          assert('published', C.painted_bbox.all_open[f].join(',') === wideB[d2].join(','),
+            f + ': contract all_open [' + C.painted_bbox.all_open[f] + '] vs fresh bake [' + wideB[d2] + ']');
+          assert('published', C.painted_bbox.dock_work[f].join(',') === dockB[d2].join(','),
+            f + ': contract dock_work [' + C.painted_bbox.dock_work[f] + '] vs fresh bake [' + dockB[d2] + ']');
+          assert('published', C.painted_bbox.no_fairing[f].join(',') === nofairB[d2].join(','),
+            f + ': contract no_fairing [' + C.painted_bbox.no_fairing[f] + '] vs fresh bake [' + nofairB[d2] + ']');
+        }
+        assert('published', C.dims.loa === dm.loa && C.dims.width === dm.width && C.dims.wheelbase === dm.wheelbase && C.dims.boxLen === dm.boxLen,
+          'contract dims disagree with dims()');
+        assert('published', C.bake.cell.W === V.W && C.bake.cell.H === V.H && C.bake.pivot.x === V.pivot.x && C.bake.pivot.y === V.pivot.y,
+          'contract cell/pivot disagree with the rig');
+        assert('published', C.articulation.rollup.slats === g.slats && near(C.articulation.rollup.travel_m, g.slats*g.slatH),
+          'contract roll-up slats/travel disagree with G');
+        assert('published', near(C.articulation.gate.dock_z, g.gate.dockZ) && near(C.articulation.gate.platform_m.main, g.gate.mainD)
+          && near(C.articulation.gate.platform_m.flip, g.gate.flipD), 'contract gate numbers disagree with G.gate');
+      }
+
+      if(S){
+        assert('sidecar', S.derivedFromRigSha256 && S.derivedFromRigSha256.length === 64, 'derivedFromRigSha256 is missing or not a sha256');
+        assert('sidecar', near(S.CARGO.floor.z, g.boxFloorZ), 'CARGO.floor.z ' + S.CARGO.floor.z + ' vs G.boxFloorZ ' + g.boxFloorZ);
+        assert('sidecar', S.BODY.loa_m === dm.loa && S.BODY.wheelbase_m === dm.wheelbase && S.BODY.height_m === dm.height,
+          'BODY block disagrees with dims()');
+        var roll = S.THRESHOLD.filter(function(t){ return t.kind === 'rolling'; })[0];
+        assert('sidecar', roll && near(roll.sill_z, g.sillZ) && near(roll.head_z, g.headZ) && near(roll.sill_z, g.boxFloorZ),
+          'rolling threshold sill/head disagree with G (sill must BE the floor)');
+        S.THRESHOLD.forEach(function(t){
+          if(t.kind === 'hinged'){
+            assert('sidecar', near(t.clear_width_m, g.doorY[1]-g.doorY[0], 0.011), t.id + ': clear width vs span');
+            assert('sidecar', near(Math.abs(t.hinge_axis.at[1]), g.doorY[1], 0.011), t.id + ': hinge is not on the forward edge');
+            assert('sidecar', t.swing_deg === 65, t.id + ': swing_deg is not 65');
+          }
+        });
+        var wx = { FL:-g.frontWX, FR:g.frontWX, RLi:-g.dualXi, RLo:-g.dualXo, RRi:g.dualXi, RRo:g.dualXo };
+        assert('sidecar', S.WHEELS.list.length === 6, 'WHEELS.list should carry 6 wheels');
+        S.WHEELS.list.forEach(function(w){
+          assert('sidecar', near(w.pos[0], wx[w.id], 0.011), 'wheel ' + w.id + ' x ' + w.pos[0] + ' vs G ' + wx[w.id]);
+          assert('sidecar', near(w.pos[2], g.wheelR), 'wheel ' + w.id + ' sits at z ' + w.pos[2] + ' not the tire radius');
+        });
+        assert('sidecar', near(S.SUSPENSION.travel_m.front, V.travel.F) && near(S.SUSPENSION.travel_m.rear, V.travel.R),
+          'SUSPENSION travel vs V.travel');
+        assert('sidecar', S.STEP.boards.length === 4 && near(S.STEP.boards[0].top_z, 0.38) && near(S.STEP.boards[1].top_z, 0.70),
+          'STEP: four frame treads at 0.38/0.70');
+        assert('sidecar', S.TOW.hitch === null && S.TOW.front_hooks.length === 0, 'TOW: nothing on this truck couples');
+        assert('sidecar', S.HOOD.deg[1] === g.hoodDeg, 'HOOD.deg vs G.hoodDeg');
+        assert('sidecar', near(S.LIFTGATE.heights_m.dock, g.gate.dockZ) && near(S.LIFTGATE.heights_m.ground, g.gate.groundZ),
+          'LIFTGATE heights vs G.gate');
+        ['WASHBOARD','CLEATS','walkable_roof','fuel_fill','exhaust_stack'].forEach(function(k){
+          assert('sidecar', !!S._excluded[k], '_excluded.' + k + ' is missing — an absence must be recorded, not silent'); });
+        if(C) assert('sidecar', S.derivedFromRigSha256 === C.rigSha256, 'sidecar sha ' + S.derivedFromRigSha256.slice(0,8) + ' vs contract ' + String(C.rigSha256).slice(0,8));
+      }
+
+      if(SRC && C && window.crypto && crypto.subtle){
+        return crypto.subtle.digest('SHA-256', new TextEncoder().encode(SRC)).then(function(d3){
+          var hex = Array.from(new Uint8Array(d3)).map(function(b){ return b.toString(16).padStart(2,'0'); }).join('');
+          assert('sha', hex === C.rigSha256, 'rig as served hashes ' + hex.slice(0,12) + '…, contract claims ' + String(C.rigSha256).slice(0,12) + '…');
+        });
+      }
+      if(!SRC || !window.crypto || !crypto.subtle) skipped.push('rig re-hash (needs the file over http + SubtleCrypto)');
+    }).then(function(){
+      report(dm.label + ' · 8 facings baked four ways · ' + (fails ? 'see failures' : 'bake, contract and sidecar agree'));
+    });
+  };
+
+  draw();
+})();
+</script>
+</body>
+</html>

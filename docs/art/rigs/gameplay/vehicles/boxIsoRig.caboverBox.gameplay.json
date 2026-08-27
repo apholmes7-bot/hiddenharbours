@@ -1,0 +1,324 @@
+{
+  "rig": "boxIsoRig.js",
+  "exportSymbol": "BoxIso",
+  "variant": "caboverBox",
+  "derivedFromRigSha256": "a93cb4b3c0bc4805fbe6f15342a0efa2071249f6500ba19a58b6549541ebd704",
+  "kind": "road_vehicle",
+  "label": "Cabover Box Truck",
+  "generated": "measured off the rig source by hand-transcription with per-value provenance; no generator in the rig",
+  "frame": {
+    "units": "metres",
+    "scale_px_per_m": 32,
+    "origin": "ground-centre of the body footprint (bumpers excluded from the centring; z=0 is the road)",
+    "axes": "+x curb side, +y nose, +z up",
+    "heading_independent": true,
+    "at_rest": "every value here is at susF=susR=0, doors and roll-up shut, cab down, liftgate stowed. See LIFTGATE and TILT for what moves.",
+    "pivot_px": { "x": 192, "y": 214, "cell": [384, 320], "_note": "model z=0 projects to the pivot row in all 8 facings" }
+  },
+  "VARIANTS": {
+    "_what": "NONE. This class has no build variants — no roof heights, no glass options. The one body covers the class.",
+    "liftgate": {
+      "values": [true, false],
+      "default": true,
+      "_note": "a PART toggle, not a variant: false removes the tuck-under mechanism entirely and nothing else changes — same bumperettes, same ICC bar, same published z table. Decide it at spawn all the same.",
+      "provenance": "buildGate early-return on !s.liftgate"
+    }
+  },
+  "BODY": {
+    "loa_m": 6.72,
+    "body_length_m": 6.34,
+    "width_over_flares_m": 2.14,
+    "width_over_mirrors_m": 2.60,
+    "body_width_m": 2.12,
+    "cab_width_m": 1.96,
+    "height_m": 3.08,
+    "box_roof_z": 3.04,
+    "cab_roof_z": 2.30,
+    "wheelbase_m": 4.12,
+    "box_length_m": 4.56,
+    "wheels": 6,
+    "collider_bbox": {
+      "x": [-1.07, 1.07],
+      "y": [-3.3, 3.42],
+      "z": [0, 3.08],
+      "_note": "the black front arch flares are the widest hard point (2.14 m); the box is 2.12. Mirrors reach 2.60 over — add 0.23 m per side above z 1.68 if they must be solid."
+    },
+    "ground_clearance_m": {
+      "hard": 0.19,
+      "source": "rear diff tube r 0.145 centred z 0.334 (buildWheels)",
+      "frame_rails": 0.44,
+      "gate_stowed": 0.34,
+      "mudflaps": 0.06,
+      "_note": "mudflaps are rubber — sweep them, do not collide them. The stowed liftgate is STEEL at 0.34 m: it does collide."
+    },
+    "overhang_m": { "front": 0.8, "rear": 1.8 },
+    "provenance": "BODIES.caboverBox + G; mirrors from buildCab boxes |1.20..1.30|"
+  },
+  "CAB": {
+    "_what": "a low-cab-forward crew compartment ON TOP of the engine: high flat floor, three-across seating, and the whole room TILTS (see TILT).",
+    "floor": {
+      "polygon": [[-0.94, 1.78], [0.94, 1.78], [0.94, 3.16], [-0.94, 3.16]],
+      "z": 0.85,
+      "winding": "ccw_from_above",
+      "headroom_m": 1.37,
+      "provenance": "buildCab floor slab at G.cabFloorZ; headliner z 2.22"
+    },
+    "helm": {
+      "side": "street (-x)",
+      "wheel_hub": [-0.52, 2.96, 1.28],
+      "wheel_r_m": 0.17,
+      "dash_face_y": 3.02,
+      "provenance": "buildCab tube [-0.52,3.00,1.24]->[-0.52,2.92,1.31] — left-hand drive"
+    },
+    "seats": [
+      { "id": "driver", "kind": "bucket", "cushion": { "x": [-0.72, -0.30], "y": [2.16, 2.62], "top_z": 1.22 }, "back": { "y": [2.06, 2.20], "top_z": 1.72 }, "seat_ref": [-0.51, 2.39, 1.22], "height_above_floor_m": 0.37, "role": "driver" },
+      { "id": "bench_curb", "kind": "bench", "cushion": { "x": [0.14, 0.90], "y": [2.16, 2.62], "top_z": 1.22 }, "back": { "y": [2.06, 2.20], "top_z": 1.72 }, "seat_ref": [0.52, 2.39, 1.22], "width_m": 0.76, "role": "two passengers, undivided", "_note": "occupancy split is gameplay's call" }
+    ],
+    "obstructions": [
+      { "id": "engine_hump", "footprint": { "x": [-0.28, 0.28], "y": [1.90, 3.10] }, "top_z": 1.24, "height_above_floor_m": 0.39, "treatment": "step_over", "_note": "the engine tunnel between the seats — the cross-cab route goes over it" },
+      { "id": "dash", "footprint": { "x": [-0.90, 0.90], "y": [3.02, 3.24] }, "top_z": 1.32, "treatment": "wall" }
+    ],
+    "provenance": "buildCab interior block, read verbatim"
+  },
+  "CARGO": {
+    "floor": {
+      "polygon": [[-1.0, -3.04], [1.0, -3.04], [1.0, 1.46], [-1.0, 1.46]],
+      "z": 0.92,
+      "winding": "ccw_from_above",
+      "size_m": [2.0, 4.5],
+      "load_height_m": 0.92,
+      "provenance": "buildBox floor slab at G.boxFloorZ — exact"
+    },
+    "walls": { "inner_x": [-1.0, 1.0], "headroom_m": 2.04, "ceiling_z": 2.96, "front_y": 1.46 },
+    "door_entry": { "clear_width_m": 1.9, "entry_headroom_m": 1.92, "_note": "the opening head (2.84) is 0.12 under the ceiling — tall cargo clears the bay but not the door" },
+    "obstructions": [
+      { "id": "rollup_stack", "present_when": { "rollup": "> 0" }, "footprint": { "x": [-0.95, 0.95], "y": [-2.97, -1.05] }, "below_z": 2.84, "above_z": 2.88, "treatment": "headroom_cap", "_note": "the open door lies flat under the ceiling over the aft 1.9 m of bay — nothing taller than 1.92 m stands there while the door is up" }
+    ],
+    "flat": "NO wheel tubs, no step, no hump — the 0.92 m floor rides ABOVE the duals, flat wall to wall. That is the class's whole argument.",
+    "walkable": "UNRULED — see _confirm.cargo_walkable",
+    "visible_facings": ["N", "NE", "E", "SE", "S", "SW", "W", "NW"]
+  },
+  "THRESHOLD": [
+    {
+      "id": "rollup",
+      "side": "tail",
+      "kind": "rolling",
+      "span_x": [-0.95, 0.95],
+      "clear_width_m": 1.9,
+      "sill_z": 0.92,
+      "head_z": 2.84,
+      "clear_height_m": 1.92,
+      "motion": {
+        "travel_m": 1.92,
+        "slats": 12,
+        "rule": "12 slats climb a vertical track 1.88 m in the rear plane, bend forward and stack flat at z 2.88 under the ceiling",
+        "stack_over": { "y": [-2.97, -1.05], "z": [2.88, 2.93] }
+      },
+      "keep_clear": {
+        "_note": "NONE. Zero swept volume behind the truck — the door never leaves the body, and the painted bbox at N is identical closed and open (the harness asserts it). Loading clearance behind the tail is the LIFTGATE's, not the door's."
+      },
+      "boarding": { "ground_to_sill_m": 0.92, "_note": "sill = cargo floor. Bare, it is a climb; the liftgate at gate=1 is the step" },
+      "reach_point": { "pos": [0, -3.7, 0], "_note": "NOT tested against ground colliders, and it stands ON the liftgate keep-clear — see _confirm.reach_vs_gate" },
+      "visible_facings": ["N", "NE", "NW"],
+      "provenance": "buildRollup + G.openHW/sillZ/headZ/vTrack/stackZ; rollPath()"
+    },
+    {
+      "id": "door_l",
+      "side": "street (-x, driver)",
+      "kind": "hinged",
+      "span_y": [1.84, 2.96],
+      "clear_width_m": 1.12,
+      "sill_z": 0.82,
+      "head_z": 2.14,
+      "clear_height_m": 1.32,
+      "hinge_axis": { "kind": "vertical", "at": [-0.94, 2.96], "edge": "forward" },
+      "swing_deg": 65,
+      "swing_sense": "CCW seen from above",
+      "keep_clear": {
+        "radius_m": 1.12,
+        "sector_deg": [0, 65],
+        "arc_at_sill": [[-0.98, 1.84], [-1.29, 1.89], [-1.58, 2.02], [-1.83, 2.22], [-2.0, 2.49]],
+        "outboard_extreme_x": -2.0,
+        "_note": "sweep of the free edge about the hinge axis; the collider is the arc, not the leaf. RIDES THE TILT — a tilted cab carries its door arcs with it."
+      },
+      "boarding": { "treads_z": [0.30, 0.58], "floor_z": 0.85, "_note": "two steps then the high floor — see STEP" },
+      "reach_point": { "pos": [-1.95, 2.35, 0], "hinge_clearance_m": 1.6, "_note": "outside the swept disc; NOT tested against ground colliders" },
+      "mirror": { "outboard_x": -1.3, "z": [1.68, 2.04], "rides": "the CAB (A-pillar arms), not this door" },
+      "visible_facings": ["NE", "E", "SE"],
+      "provenance": "buildDoors + G.doorY/doorZ0/doorHead; hinge (sx*0.94, 2.96); a = sx*pose*65deg"
+    },
+    {
+      "id": "door_r",
+      "side": "curb (+x)",
+      "kind": "hinged",
+      "span_y": [1.84, 2.96],
+      "clear_width_m": 1.12,
+      "sill_z": 0.82,
+      "head_z": 2.14,
+      "clear_height_m": 1.32,
+      "hinge_axis": { "kind": "vertical", "at": [0.94, 2.96], "edge": "forward" },
+      "swing_deg": 65,
+      "swing_sense": "CW seen from above",
+      "keep_clear": {
+        "radius_m": 1.12,
+        "sector_deg": [0, 65],
+        "arc_at_sill": [[0.98, 1.84], [1.29, 1.89], [1.58, 2.02], [1.83, 2.22], [2.0, 2.49]],
+        "outboard_extreme_x": 2.0
+      },
+      "boarding": { "treads_z": [0.30, 0.58], "floor_z": 0.85 },
+      "reach_point": { "pos": [1.95, 2.35, 0], "hinge_clearance_m": 1.6 },
+      "mirror": { "outboard_x": 1.3, "z": [1.68, 2.04], "rides": "the CAB" },
+      "visible_facings": ["SW", "W", "NW"],
+      "provenance": "buildDoors; symmetric"
+    }
+  ],
+  "LIFTGATE": {
+    "_what": "a tuck-under liftgate on the tail: one 0..1 param, three phases, and the only thing on this truck that wants clearance behind it.",
+    "present_when": { "liftgate": true },
+    "platform_m": { "width": 1.9, "depth_unfolded": 1.2, "main": 0.62, "flip": 0.58, "thickness": 0.05 },
+    "phases": {
+      "swing": { "t": [0, 0.45], "what": "the folded platform swings out from under the tail to dock height, level with the cargo floor" },
+      "unfold": { "t": [0.45, 0.7], "what": "the flip half rotates 180deg aft — full 1.20 m platform at dock height, flush with the sill" },
+      "lower": { "t": [0.7, 1], "what": "parallel arms lower the level platform to the ground" }
+    },
+    "heights_m": { "dock": 0.92, "ground": 0.03, "lift": 0.89 },
+    "stowed": { "fwd_edge": [-2.56, 0.66], "tilt_deg": 26, "bottom_z": 0.34, "_note": "folded double under the tail, inside the LOA — nothing pokes past the bumperettes" },
+    "keep_clear": {
+      "deployed": { "x": [-0.95, 0.95], "y": [-4.3, -3.1], "_note": "the platform plan while gate > 0.45; during the swing (0..0.45) the same rectangle is swept at and below dock height" },
+      "loading_zone": { "x": [-1.3, 1.3], "y": [-4.9, -3.1], "_note": "a working margin for the hand truck and the loader — a REQUEST, not geometry" }
+    },
+    "arm_pivot": [0.72, -2.62, 0.56],
+    "load_rating": "UNRULED — see _confirm.gate_load",
+    "visible_facings": ["N", "NE", "NW"],
+    "provenance": "buildGate + gatePose(); G.gate, verbatim"
+  },
+  "STEP": {
+    "boards": [
+      { "id": "step_l_low", "side": "street", "x": [-1.02, -0.86], "y": [1.88, 2.14], "top_z": 0.30 },
+      { "id": "step_l_high", "side": "street", "x": [-1.02, -0.88], "y": [1.88, 2.14], "top_z": 0.58 },
+      { "id": "step_r_low", "side": "curb", "x": [0.86, 1.02], "y": [1.88, 2.14], "top_z": 0.30 },
+      { "id": "step_r_high", "side": "curb", "x": [0.88, 1.02], "y": [1.88, 2.14], "top_z": 0.58 }
+    ],
+    "default": true,
+    "_note": "two fixed treads per side under the doors' aft half — 0.30, 0.58, then the 0.85 m floor. They are CAB parts and ride the tilt. The liftgate at gate=1 is the only step into the BOX."
+  },
+  "TOW": {
+    "hitch": null,
+    "front_hooks": [],
+    "_note": "NOTHING. No ball, no pintle, no fifth wheel, no front recovery points. The ICC underride bar (y -3.20..-3.14, z 0.40..0.48) is a safety bar, not a coupling — do not let a game hang a trailer on it."
+  },
+  "SUSPENSION": {
+    "travel_m": { "front": 0.09, "rear": 0.12 },
+    "input_range": [-1, 1],
+    "formula": "dz(y) = -(susF*0.09)*t - (susR*0.12)*(1-t),  t = (y - (-1.50)) / 4.12",
+    "applies_to": "the whole body group (frame, cab, box, roll-up, liftgate in any phase) — the wheels do NOT move",
+    "consequence": "every polygon in CAB, CARGO, THRESHOLD and LIFTGATE rides that dz; t extrapolates past both axles so the bumpers pitch further than the travel.",
+    "provenance": "build() dz(y), verbatim"
+  },
+  "WHEELS": {
+    "radius_m": 0.334,
+    "tire_width_m": 0.24,
+    "axles": { "front_y": 2.62, "rear_y": -1.5, "wheelbase_m": 4.12 },
+    "list": [
+      { "id": "FL", "pos": [-0.78, 2.62, 0.334], "role": "steer", "steer_axis": { "kind": "vertical", "at": [-0.78, 2.62] } },
+      { "id": "FR", "pos": [0.78, 2.62, 0.334], "role": "steer", "steer_axis": { "kind": "vertical", "at": [0.78, 2.62] } },
+      { "id": "RLi", "pos": [-0.58, -1.5, 0.334], "role": "drive", "dual_of": "RLo" },
+      { "id": "RLo", "pos": [-0.84, -1.5, 0.334], "role": "drive" },
+      { "id": "RRi", "pos": [0.58, -1.5, 0.334], "role": "drive", "dual_of": "RRo" },
+      { "id": "RRo", "pos": [0.84, -1.5, 0.334], "role": "drive" }
+    ],
+    "track_m": { "front": 1.56, "rear_outer": 1.68 },
+    "contact_z": 0,
+    "_note": "roll is per-CORNER (wFL wFR wRL wRR, REVOLUTIONS) — each dual pair shares its corner's roll. One revolution (2.099 m) closes the bake bit-identical: 21.007 tread stripes of 0.0999 m plus 6-fold lugs.",
+    "provenance": "G.frontWX / dualXi / dualXo / axF / axR / wheelR / tireW — exact"
+  },
+  "STEERING": {
+    "param": "steer",
+    "range": [-1, 1],
+    "sense": "+1 = full LEFT lock; the nose swings toward -x",
+    "max_deg": { "inner": 33, "outer": 27.53 },
+    "ackermann": "outer = atan(1/(1/tan(inner) + track/wheelbase)), front track 1.56 m, wheelbase 4.12 m",
+    "axis": "vertical, through each front wheel centre — no kingpin offset, caster or scrub radius is modelled",
+    "applies_to": ["FL", "FR"],
+    "turning_radius_m": {
+      "rear_axle_centre": 6.34,
+      "outer_front_wheel_path": 8.22,
+      "_note": "geometric, at full lock. Tighter than the van (8.89) and the dually despite the longer wheelbase — the cabover's whole case in one number."
+    },
+    "swept_envelope": {
+      "tire_corner_x_m": 1.062,
+      "flare_x_m": 1.07,
+      "cab_side_x_m": 0.98,
+      "_note": "at full lock a front tire corner stands 0.082 m proud of the cab side but 8 mm INSIDE the black arch flares — the flares are the collider width and the lock stops at 33deg to keep it that way."
+    },
+    "does_not": "yaw the truck. STEERING turns the wheels; YAW turns the machine. A turning truck wants both.",
+    "provenance": "steerAngles() + wheelAt() yaw branch; STEER_MAX = 33"
+  },
+  "TILT": {
+    "param": "tilt",
+    "range": [0, 1],
+    "deg": [0, 38],
+    "hinge": { "kind": "x_axis", "at_y": 3.2, "at_z": 0.5 },
+    "rides": "cab shell, glass, doors (and their arcs), mirrors, steps, seats, dash — the one group",
+    "stays": "front bumper, frame, engine, box, roll-up, liftgate, wheels",
+    "bares": {
+      "engine_block": { "x": [-0.34, 0.34], "y": [2.15, 2.9], "top_z": 1.1 },
+      "radiator_wall": { "y": [3.12, 3.22], "top_z": 1.1 },
+      "air_cleaner": { "side": "curb", "at": [0.52, 2.28, 0.88] },
+      "latch": { "at": [0, 1.83, 0.48], "_note": "the cab locks down here — a repair interaction has a handle to pull" }
+    },
+    "extreme": "at tilt=1 the roof leading edge reaches y 4.26, z 1.96 — 0.84 m past the bumper. Do not tilt against a wall.",
+    "_note": "this class has NO hood — tilt IS the engine access, and the rig will happily tilt with people in the seats. Nothing stops it; see _confirm.",
+    "provenance": "buildCab part() + rotX about G.tiltHinge; G.tiltDeg = 38"
+  },
+  "YAW": {
+    "param": "yaw",
+    "units": "degrees",
+    "range": [-45, 45],
+    "what": "heading between the eight facings. The model turns about z before projection under a FIXED key, so the shading is rebaked for the new heading — this is not a rotated sprite.",
+    "pivot": "unaffected; the origin projects to the published pivot at any yaw",
+    "frame": "yaw is a RENDER param, not geometry. Every metre in this file is in the machine frame and does not move with it.",
+    "gameplay": "a heading is dir*45 + yaw. Colliders, reach points and seat refs rotate with the machine as they always did; nothing here needs a yaw correction."
+  },
+  "ATTACH": {
+    "exhaust_tip": { "pos": [-0.62, -2.96, 0.23], "_note": "street side, aft — smoke/heat FX attach" },
+    "fuel_tank": { "x": [0.6, 1.0], "y": [0.2, 1.2], "z": [0.34, 0.74], "side": "curb", "_note": "the tank is modelled; the filler neck is not (see _excluded)" },
+    "battery_box": { "x": [-0.98, -0.6], "y": [0.35, 0.85], "side": "street" },
+    "box_roof": { "attach": [0, -0.78, 3.04], "flat_area": { "x": [-0.9, 0.9], "y": [-2.9, 1.3] }, "_note": "translucent-white panel — sign/rack attach; no rack is modelled and no route up exists" },
+    "box_front_lamps": { "at_z": 2.93, "xs": [-0.24, 0, 0.24], "kind": "amber clearance" },
+    "dock_sill": { "pos": [0, -3.06, 0.92], "_note": "the alignment point for backing to a dock or a quay edge" }
+  },
+  "INTERACT": [
+    { "id": "drive", "action": "enter_drive", "at": "door_l", "reach_point": [-1.95, 2.35, 0], "visible_facings": ["NE", "E", "SE"] },
+    { "id": "ride", "action": "enter_ride", "at": "door_r", "reach_point": [1.95, 2.35, 0], "visible_facings": ["SW", "W", "NW"] },
+    { "id": "rollup", "action": "open_close_load", "at": "rollup", "reach_point": [0, -3.7, 0], "visible_facings": ["N", "NE", "NW"] },
+    { "id": "gate", "action": "operate_liftgate", "at": "LIFTGATE", "reach_point": [1.35, -3.6, 0], "_note": "the control pendant hangs at the curb-side tail corner", "visible_facings": ["N", "NE", "NW"] },
+    { "id": "tilt", "action": "open_close_engine", "at": "TILT.bares.latch", "reach_point": [0, 4.0, 0], "visible_facings": ["SE", "S", "SW"] }
+  ],
+  "_interact_notes": {
+    "reach_point": "a request, not a promise — a ground-level standing spot derived from which face the item is on. NOT validated against terrain, kerb or another vehicle.",
+    "visible_facings": "the near-side test paint() uses: a feature with outward normal n is listed for facing d when nx*sin(d*45) + ny*cos(d*45) < -0.3, edge-on excluded. Top faces are visible at all eight."
+  },
+  "_excluded": {
+    "WASHBOARD": "not a hull.",
+    "CLEATS": "not a hull, and nothing on this truck couples to anything — see TOW.",
+    "walkable_roof": "a 1.80 x 4.20 m translucent panel at z 3.04 with no rack, no rail and no route up. Omitted rather than published as a surface.",
+    "fuel_fill": "no filler neck, cap or door is modelled anywhere on the body. The tank is in ATTACH.fuel_tank.",
+    "plate_and_wipers": "no licence plate, wipers, aerial or decals. At 32 px/m they are 1-3 px and were left out of the bake.",
+    "spare_wheel": "no spare is modelled, slung or otherwise.",
+    "dock_bumpers": "no rubber dock blocks on the tail — the bumperettes are steel and the sill plate is bare galv.",
+    "cab_marker_lamps": "the box carries its five ambers (three front header, two rear corners); the cab roof carries none.",
+    "interior_INTERACT": "nothing inside is an interactable — no glovebox, radio or handbrake in the rig."
+  },
+  "_confirm": {
+    "cargo_walkable": "CARGO.floor is a 2.00 x 4.50 m rubber sole 0.92 m up under 2.04 m of headroom. Whether a player walks it (vs. it being a container) is unruled. It is published as geometry either way.",
+    "gate_load": "the platform is drawn, not rated. Pallet-vs-person capacity, overload behaviour and whether it lifts a vehicle are gameplay's call.",
+    "gate_phase_stops": "gate is one continuous 0..1. A game that wants 'dock work' should HOLD 0.70 (unfolded, level with the floor) — nothing in the rig detents there.",
+    "reach_vs_gate": "the rollup reach point [0,-3.70,0] stands inside the liftgate's deployed rectangle. With the gate down it is ON the platform; with the gate stowed it is clear road. Sequence the two or move the loader.",
+    "rollup_headroom": "the open door caps the aft 1.9 m of bay at 1.92 m of headroom (CARGO.obstructions.rollup_stack). Close the door before standing a tall crate at the tail.",
+    "dock_height": "the sill is 0.92 m. Harbour quay and warehouse dock heights are the WORLD's numbers — the truck publishes its own and takes no position on the gap.",
+    "tilt_discipline": "nothing couples tilt to doors, gate, occupancy or motion. A game that tilts a loaded, running truck gets exactly that. The rig will not stop it.",
+    "mirror_collider": "BODY.collider_bbox stops at the flares (2.14 m). The mirrors reach 2.60 m over — decide before a mirror clips a doorframe.",
+    "steering_and_yaw": "STEERING moves the wheels only; YAW moves the machine. Nothing couples them — a game that turns the wheels without yawing (or the reverse) will look wrong, and the rig will not stop it."
+  }
+}

@@ -163,8 +163,32 @@ namespace HiddenHarbours.Tools.RigBaking
         public readonly struct Vehicle
         {
             /// <summary>Stable key — the sidecar's own <c>variant</c>, so the file and the table cannot
-            /// drift apart.</summary>
+            /// drift apart.
+            ///
+            /// <para>⚠️ <b>Except on a CONTAINER rig, where one sidecar describes several bodies.</b>
+            /// The trailer kit ships one rig, one sidecar and FOUR towed bodies, and its variant is
+            /// the plural <c>trailers-x4</c>. Those four keys are <c>variant</c> + <see cref="Pick"/>
+            /// instead, because a key has to name one registered body.</para></summary>
             public readonly string Key;
+
+            /// <summary>
+            /// ⭐⭐ <b>WHICH body inside a multi-body rig — and null for every rig that has only one.</b>
+            ///
+            /// <para><b>The trap this exists for.</b> A container rig resolves a body from its opts
+            /// (<c>resolve({body:…})</c>) and MEASURED 2026-08-27, <c>trailerIsoRig.js</c> FALLS BACK
+            /// silently: an unknown id returns the default, <c>reefer53</c>. So a mistyped pick does
+            /// not throw — it bakes the wrong trailer, and the result is a plausible trailer, which
+            /// is why nothing downstream catches it. Exactly the <c>byId</c> failure the sport
+            /// fisher's hulls carry.</para>
+            ///
+            /// <para>⚠️ <b>Anything cached per rig FILE replays the first body's answer onto the rest.</b>
+            /// Cache, group and key by <b>(ScriptPath, Pick)</b> — never by file alone. Measured cost
+            /// of getting it wrong here: filtering the ramp table at <c>reefer53</c> drops
+            /// <c>wood</c>, which only the flatbed deck names, and the face packer resolves an
+            /// unknown material to index 0 — so both flatbeds would have shipped with their planked
+            /// decks painted body colour.</para>
+            /// </summary>
+            public readonly string Pick;
             /// <summary>Repo-relative path to the rig <c>.js</c>.</summary>
             public readonly string ScriptPath;
             /// <summary>Repo-relative path to the gameplay sidecar.</summary>
@@ -238,6 +262,7 @@ namespace HiddenHarbours.Tools.RigBaking
             public readonly string Label;
 
             public Vehicle(string key, string scriptPath, string sidecarPath, string globalName,
+                           string pick = null,
                            string meshAssetPath = null, string meshId = null,
                            string faceBuilderName = null, RigHullExtraction extraction = null,
                            IReadOnlyList<Axis> axes = null,
@@ -247,6 +272,7 @@ namespace HiddenHarbours.Tools.RigBaking
                            string vehicleDefPath = null, string vehicleId = null, string label = null)
             {
                 Key = key; ScriptPath = scriptPath; SidecarPath = sidecarPath; GlobalName = globalName;
+                Pick = pick;
                 MeshAssetPath = meshAssetPath; MeshId = meshId;
                 FaceBuilderName = faceBuilderName;
                 Extraction = extraction;
@@ -466,6 +492,183 @@ namespace HiddenHarbours.Tools.RigBaking
                 vehicleDefPath: "Assets/_Project/Data/Vehicles/Otter8x8.asset",
                 vehicleId: "vehicle.otter_8x8",
                 label: "Otter 8x8"),
+
+            // =====================================================================================
+            //  ⭐ THE ROAD FLEET — kit drop of 2026-08-27, six kits, NINE registered bodies.
+            //
+            //  Registered means LANDED and hash-verified. None of them is baked: this PR is intake
+            //  and measurement only, so every one carries a NotBaked reason below.
+            // =====================================================================================
+
+            new Vehicle(
+                "hightopVan",
+                "docs/art/rigs/road-fleet-kit/hightop-van/vanIsoRig.js",
+                SidecarFolder + "/vanIsoRig.hightopVan.gameplay.json",
+                "VanIso",
+                faceBuilderName: "build",
+                extraction: new RigHullExtraction
+                {
+                    // ⚠️ `VanIso.resolve`, QUALIFIED — the shim widens `build` onto the GLOBAL and
+                    // does not put the closure's other privates in scope.
+                    FaceExpression = "build(VanIso.resolve({}))",
+                    ExtraSymbols = new[] { "build" },
+                },
+                azimuthAftAnchor: "hitch", azimuthForeAnchor: "hoodLatch",
+                label: "Hightop Van"),
+
+            new Vehicle(
+                "caboverBox",
+                "docs/art/rigs/road-fleet-kit/boxtruck-cabover/boxIsoRig.js",
+                SidecarFolder + "/boxIsoRig.caboverBox.gameplay.json",
+                "BoxIso",
+                faceBuilderName: "build",
+                extraction: new RigHullExtraction
+                {
+                    // ⚠️ `BoxIso.resolve`, QUALIFIED — the shim widens `build` onto the GLOBAL and
+                    // does not put the closure's other privates in scope.
+                    FaceExpression = "build(BoxIso.resolve({}))",
+                    ExtraSymbols = new[] { "build" },
+                },
+                azimuthAftAnchor: "rollup", azimuthForeAnchor: "tiltLatch",
+                label: "Cabover Box Truck"),
+
+            new Vehicle(
+                "convBox",
+                "docs/art/rigs/road-fleet-kit/boxtruck-conventional/convBoxIsoRig.js",
+                SidecarFolder + "/convBoxIsoRig.convBox.gameplay.json",
+                "ConvBoxIso",
+                faceBuilderName: "build",
+                extraction: new RigHullExtraction
+                {
+                    // ⚠️ `ConvBoxIso.resolve`, QUALIFIED — the shim widens `build` onto the GLOBAL and
+                    // does not put the closure's other privates in scope.
+                    FaceExpression = "build(ConvBoxIso.resolve({}))",
+                    ExtraSymbols = new[] { "build" },
+                },
+                azimuthAftAnchor: "rollup", azimuthForeAnchor: "hoodLatch",
+                label: "Conventional Box Truck"),
+
+            new Vehicle(
+                "aeroSemi",
+                "docs/art/rigs/road-fleet-kit/semi-aero/aeroSemiIsoRig.js",
+                SidecarFolder + "/aeroSemiIsoRig.aeroSemi.gameplay.json",
+                "AeroSemiIso",
+                faceBuilderName: "build",
+                extraction: new RigHullExtraction
+                {
+                    // ⚠️ `AeroSemiIso.resolve`, QUALIFIED — the shim widens `build` onto the GLOBAL and
+                    // does not put the closure's other privates in scope.
+                    FaceExpression = "build(AeroSemiIso.resolve({}))",
+                    ExtraSymbols = new[] { "build" },
+                },
+                azimuthAftAnchor: "fifthWheel", azimuthForeAnchor: "hoodLatch",
+                label: "Aero Sleeper Semi"),
+
+            new Vehicle(
+                "classicSemi",
+                "docs/art/rigs/road-fleet-kit/semi-classic/classicSemiIsoRig.js",
+                SidecarFolder + "/classicSemiIsoRig.classicSemi.gameplay.json",
+                "ClassicSemiIso",
+                faceBuilderName: "build",
+                extraction: new RigHullExtraction
+                {
+                    // ⚠️ `ClassicSemiIso.resolve`, QUALIFIED — the shim widens `build` onto the GLOBAL and
+                    // does not put the closure's other privates in scope.
+                    FaceExpression = "build(ClassicSemiIso.resolve({}))",
+                    ExtraSymbols = new[] { "build" },
+                },
+                azimuthAftAnchor: "fifthWheel", azimuthForeAnchor: "hoodLatch",
+                label: "Classic Long-Nose Semi"),
+
+            // ---- the TRAILER SET: ONE rig, ONE sidecar, FOUR towed bodies --------------------
+            // Four entries rather than one, because Baked/NotBaked, the mesh, the cell and the
+            // ramp filter are all PER BODY — the pups take the 384×320 road cell and the 53s a
+            // 640×480 one. See Vehicle.Pick for why (file, pick) is the key and a per-file cache
+            // is a bug.
+
+            new Vehicle(
+                "trailerFlatbed28",
+                "docs/art/rigs/road-fleet-kit/trailers/trailerIsoRig.js",
+                SidecarFolder + "/trailerIsoRig.trailers.gameplay.json",
+                "TrailerIso",
+                pick: "flatbed28",
+                faceBuilderName: "build",
+                extraction: new RigHullExtraction
+                {
+                    // ⚠️ The BODY IS NAMED. `resolve({})` defaults to reefer53 on this rig, so an
+                    // extraction that omitted the pick would bake four identical reefer53s and each
+                    // would look like a perfectly good trailer.
+                    FaceExpression = "build(TrailerIso.resolve({body:'flatbed28'}))",
+                    ExtraSymbols = new[] { "build" },
+                },
+                // A towed body has no hood and no front axle, so neither of the road pack's anchor
+                // pairs exists. Her aft→fore runs tail to kingpin; her abeam pair is wheelL/wheelR
+                // rather than wheelFL/wheelFR, which the bake will have to be told (PR 2).
+                azimuthAftAnchor: "rear", azimuthForeAnchor: "kingpin",
+                label: "Flatbed Trailer 28 ft"),
+
+            new Vehicle(
+                "trailerFlatbed53",
+                "docs/art/rigs/road-fleet-kit/trailers/trailerIsoRig.js",
+                SidecarFolder + "/trailerIsoRig.trailers.gameplay.json",
+                "TrailerIso",
+                pick: "flatbed53",
+                faceBuilderName: "build",
+                extraction: new RigHullExtraction
+                {
+                    // ⚠️ The BODY IS NAMED. `resolve({})` defaults to reefer53 on this rig, so an
+                    // extraction that omitted the pick would bake four identical reefer53s and each
+                    // would look like a perfectly good trailer.
+                    FaceExpression = "build(TrailerIso.resolve({body:'flatbed53'}))",
+                    ExtraSymbols = new[] { "build" },
+                },
+                // A towed body has no hood and no front axle, so neither of the road pack's anchor
+                // pairs exists. Her aft→fore runs tail to kingpin; her abeam pair is wheelL/wheelR
+                // rather than wheelFL/wheelFR, which the bake will have to be told (PR 2).
+                azimuthAftAnchor: "rear", azimuthForeAnchor: "kingpin",
+                label: "Flatbed Trailer 53 ft"),
+
+            new Vehicle(
+                "trailerReefer28",
+                "docs/art/rigs/road-fleet-kit/trailers/trailerIsoRig.js",
+                SidecarFolder + "/trailerIsoRig.trailers.gameplay.json",
+                "TrailerIso",
+                pick: "reefer28",
+                faceBuilderName: "build",
+                extraction: new RigHullExtraction
+                {
+                    // ⚠️ The BODY IS NAMED. `resolve({})` defaults to reefer53 on this rig, so an
+                    // extraction that omitted the pick would bake four identical reefer53s and each
+                    // would look like a perfectly good trailer.
+                    FaceExpression = "build(TrailerIso.resolve({body:'reefer28'}))",
+                    ExtraSymbols = new[] { "build" },
+                },
+                // A towed body has no hood and no front axle, so neither of the road pack's anchor
+                // pairs exists. Her aft→fore runs tail to kingpin; her abeam pair is wheelL/wheelR
+                // rather than wheelFL/wheelFR, which the bake will have to be told (PR 2).
+                azimuthAftAnchor: "rear", azimuthForeAnchor: "kingpin",
+                label: "Reefer Trailer 28 ft"),
+
+            new Vehicle(
+                "trailerReefer53",
+                "docs/art/rigs/road-fleet-kit/trailers/trailerIsoRig.js",
+                SidecarFolder + "/trailerIsoRig.trailers.gameplay.json",
+                "TrailerIso",
+                pick: "reefer53",
+                faceBuilderName: "build",
+                extraction: new RigHullExtraction
+                {
+                    // ⚠️ The BODY IS NAMED. `resolve({})` defaults to reefer53 on this rig, so an
+                    // extraction that omitted the pick would bake four identical reefer53s and each
+                    // would look like a perfectly good trailer.
+                    FaceExpression = "build(TrailerIso.resolve({body:'reefer53'}))",
+                    ExtraSymbols = new[] { "build" },
+                },
+                // A towed body has no hood and no front axle, so neither of the road pack's anchor
+                // pairs exists. Her aft→fore runs tail to kingpin; her abeam pair is wheelL/wheelR
+                // rather than wheelFL/wheelFR, which the bake will have to be told (PR 2).
+                azimuthAftAnchor: "rear", azimuthForeAnchor: "kingpin",
+                label: "Reefer Trailer 53 ft"),
         };
 
 
@@ -503,7 +706,107 @@ namespace HiddenHarbours.Tools.RigBaking
         /// unnoticed.</para>
         /// </summary>
         public static readonly IReadOnlyDictionary<string, string> NotBaked =
-            new Dictionary<string, string>(StringComparer.Ordinal);
+            new Dictionary<string, string>(StringComparer.Ordinal)
+            {
+                ["hightopVan"] =
+                    "PR 1 of 4 (kit intake + V8 probes) lands the art and MEASURES it; it bakes nothing, by " +
+                    "design. Her bake is PR 2's, and every number it needs is pinned in " +
+                    "RoadFleetKitProbeTests. ⚠️ AND SHE HAS A SECOND, HARDER BLOCKER: her gameplay " +
+                    "sidecar's derivedFromRigSha256 does NOT match her rig on disk, so her geometry may not " +
+                    "be read at all — see SidecarHashRefused. Measured 15 used ramps at the bake pose (fits " +
+                    "the float4[16] _RampMeta), 16 across every build including night.",
+                ["caboverBox"] =
+                    "PR 1 of 4 (kit intake + V8 probes) lands the art and MEASURES it; it bakes nothing, by " +
+                    "design. Her bake is PR 2's, and every number it needs is pinned in " +
+                    "RoadFleetKitProbeTests. Measured 16 used ramps at the bake pose — it fits _RampMeta " +
+                    "with ZERO headroom, and 17 if one mesh had to carry the night lamp as well. The day " +
+                    "mesh is what PR 2 bakes.",
+                ["convBox"] =
+                    "PR 1 of 4 (kit intake + V8 probes) lands the art and MEASURES it; it bakes nothing, by " +
+                    "design. Her bake is PR 2's, and every number it needs is pinned in " +
+                    "RoadFleetKitProbeTests. Measured 16 used ramps at the bake pose — fits with zero " +
+                    "headroom, 17 with the night lamp. ⚠️ Her cell is 448×352, NOT the pack's 384×320 road " +
+                    "cell: her sidecar says so and the bake must read it rather than assuming the pack's.",
+                ["aeroSemi"] =
+                    "PR 1 of 4 (kit intake + V8 probes) lands the art and MEASURES it; it bakes nothing, by " +
+                    "design. Her bake is PR 2's, and every number it needs is pinned in " +
+                    "RoadFleetKitProbeTests. Measured 15 used ramps at the bake pose, 16 across every build " +
+                    "including night. ⚠️ Her rear is a TANDEM on ONE roll axis per side (wRL/wRR each move " +
+                    "238 faces = two 119-face stations at y = −2.90 and −1.70), so her fittings need the " +
+                    "Otter's station windows, not the Dually's per-wheel probes.",
+                ["classicSemi"] =
+                    "PR 1 of 4 (kit intake + V8 probes) lands the art and MEASURES it; it bakes nothing, by " +
+                    "design. Her bake is PR 2's, and every number it needs is pinned in " +
+                    "RoadFleetKitProbeTests. Measured 16 used ramps at the bake pose — fits with zero " +
+                    "headroom, 17 with the night lamp. Tandem rear on one axis per side, stations at y = " +
+                    "−2.80 and −1.60.",
+                ["trailerFlatbed28"] =
+                    "PR 1 of 4 (kit intake + V8 probes) lands the art and MEASURES it; it bakes nothing, by " +
+                    "design. Her bake is PR 2's, and every number it needs is pinned in " +
+                    "RoadFleetKitProbeTests. Measured 8 used ramps. Single axle, 384×320 road cell. Her " +
+                    "deck is the set's one new material (wood) and it is the reason the ramp table is " +
+                    "unioned over all four bodies — see the trailerIsoRig.js entry in " +
+                    "RigMeshSymbols.Reconstructions.",
+                ["trailerFlatbed53"] =
+                    "PR 1 of 4 (kit intake + V8 probes) lands the art and MEASURES it; it bakes nothing, by " +
+                    "design. Her bake is PR 2's, and every number it needs is pinned in " +
+                    "RoadFleetKitProbeTests. Measured 8 used ramps. ⚠️ 640×480 cell @ 320,300, and a TANDEM " +
+                    "(wL/wR each move 254 faces = two 127-face stations at y = −6.70 and −5.50).",
+                ["trailerReefer28"] =
+                    "PR 1 of 4 (kit intake + V8 probes) lands the art and MEASURES it; it bakes nothing, by " +
+                    "design. Her bake is PR 2's, and every number it needs is pinned in " +
+                    "RoadFleetKitProbeTests. Measured 11 used ramps, 12 with the night pass. Single axle, " +
+                    "384×320 cell, doors that swing to 255° (54 faces, 27 a side).",
+                ["trailerReefer53"] =
+                    "PR 1 of 4 (kit intake + V8 probes) lands the art and MEASURES it; it bakes nothing, by " +
+                    "design. Her bake is PR 2's, and every number it needs is pinned in " +
+                    "RoadFleetKitProbeTests. Measured 11 used ramps, 12 with the night pass. ⚠️ 640×480 " +
+                    "cell @ 320,300, tandem at y = −6.70 / −5.50. She is also the rig's DEFAULT body, which " +
+                    "is what makes a missing pick silently render her in the other three's place.",
+            };
+
+        /// <summary>
+        /// ⚠️⚠️ <b>REGISTERED, BUT HER SIDECAR DOES NOT PIN HER RIG — so her geometry may not be
+        /// read.</b> A named, reasoned ledger, exactly like <see cref="NotBaked"/>, because the
+        /// alternative is worse in both directions: a red test nobody may merge, or a hash law
+        /// quietly loosened until it stops catching the thing it exists for.
+        ///
+        /// <para><b>What a mismatch means.</b> <c>derivedFromRigSha256</c> is the sidecar's claim
+        /// that its polygons, thresholds and colliders were cut from THIS rig. A sidecar whose
+        /// numbers came from a different shape is worse than no sidecar, so the repo's rule is a
+        /// refusal rather than a warning. That rule does not change here — an entry in this table
+        /// records the refusal, it does not excuse it, and
+        /// <c>VehicleRigFleetTests</c> additionally forbids anything listed here from being
+        /// <see cref="Baked"/>.</para>
+        ///
+        /// <para><b>⚠️ The fix is NEVER to re-stamp the sidecar here.</b> <c>docs/art/rigs/**</c> is
+        /// the art director's lane; a hash corrected on our side is a hash that comes back wrong on
+        /// the next regeneration, and re-stamping a bad stamp fakes freshness — the one thing the
+        /// pin exists to prevent. It goes back upstream.</para>
+        ///
+        /// <para>The day a re-stamped sidecar lands, the test that reads this goes RED on "this is
+        /// no longer refused" and the entry gets deleted. That is the same shape as
+        /// <see cref="NotBaked"/> and it is why both are tables rather than comments.</para>
+        /// </summary>
+        public static readonly IReadOnlyDictionary<string, string> SidecarHashRefused =
+            new Dictionary<string, string>(StringComparer.Ordinal)
+            {
+                ["hightopVan"] =
+                    "MEASURED 2026-08-27, on intake. vanIsoRig.js hashes (LF) to " +
+                    "1ac7804ddb045ec3a9c9ba8797b8025547c21649d5ea70c61dc7b6e8ee048eb3; her gameplay " +
+                    "sidecar pins " +
+                    "1ac7804ddb045ec3cd41ab1952d33513b74fdcae64e1710b2b74c46eb2e35a41. " +
+                    "⚠️ THE FIRST 16 HEX DIGITS ARE IDENTICAL AND THE REMAINING 48 ARE NOT, which is " +
+                    "not something a reshaped rig does — a changed vertex changes the whole digest. " +
+                    "It is a STAMPING defect in one file, and her own hightopVan.contract.json " +
+                    "carries the CORRECT hash, which is the independent evidence: the kit measured " +
+                    "the right rig and only the sidecar's stamp is wrong. Five of the drop's six " +
+                    "sidecars pin correctly. Her rig, contract, sheets and harness are all sound " +
+                    "and are committed as shipped; what is refused is READING HER SIDECAR'S " +
+                    "GEOMETRY — thresholds, cargo, colliders, seats — which is exactly what PR 2's " +
+                    "bake and PR 3's placement need. Re-stamp is owed UPSTREAM (art director); do " +
+                    "not fix it in this repo.",
+            };
     }
 }
 #endif

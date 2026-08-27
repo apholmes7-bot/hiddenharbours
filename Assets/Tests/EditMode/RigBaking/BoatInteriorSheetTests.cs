@@ -18,11 +18,12 @@ namespace HiddenHarbours.Tests.RigBaking
     ///
     /// <para>Two properties, and the whole kit is worthless without either.</para>
     ///
-    /// <para><b>1. Coverage is exactly the cleared set.</b> Twenty-four hulls have a
-    /// <c>BoatInteriorDef</c>; twenty-four have sheets; the three the S0 ledger refused (two sport
-    /// fishers on an unstamped renderer pin, the Cape Islander on a forked rig) have neither, and are
-    /// named nowhere. A kit that quietly covered 24 of 27 would look complete — that is exactly what
-    /// makes the count worth asserting rather than eyeballing.</para>
+    /// <para><b>1. Coverage is exactly the cleared set.</b> All twenty-seven hulls now have a
+    /// <c>BoatInteriorDef</c> and sheets: the two sport fishers were cleared 2026-08-26 when the
+    /// cutaway kit stamped their renderer pin, and the Cape Islander 2026-08-27 when her forked rig
+    /// was MERGED (third sha <c>60d127c3…</c>). A kit that quietly covered 24 of 27 would look
+    /// complete — that is exactly what makes the count worth asserting rather than eyeballing, and
+    /// the assertion is on the LEDGER's cleared set, so it tracks a future refusal too.</para>
     ///
     /// <para><b>2. Every sprite is the FULL hull cell at the HULL's pivot.</b> This is the property
     /// the runtime is built on ("composites under the exterior 1:1"), and it is the one that fails
@@ -110,7 +111,6 @@ namespace HiddenHarbours.Tests.RigBaking
                 if (BoatInteriorRigHost.TryBind(table, stem, out var b, out _))
                     bindingByStem[stem] = b;
 
-            var geometryByRig = new Dictionary<string, RigGeometry>(StringComparer.Ordinal);
             var bearingByStem = new Dictionary<string, double>(StringComparer.Ordinal);
             foreach (string rigFile in bindingByStem.Values.Select(b => b.ExteriorRigFileName).Distinct()
                                                     .OrderBy(s => s, StringComparer.Ordinal))
@@ -118,25 +118,30 @@ namespace HiddenHarbours.Tests.RigBaking
                 string abs = Path.Combine(RepoRoot, RigFolder, rigFile);
                 if (!File.Exists(abs)) continue;
 
-                string global = bindingByStem.Values.First(b => b.ExteriorRigFileName == rigFile).ExteriorGlobal;
-
                 using var host = RigScriptHostFactory.Create();
                 host.Execute(File.ReadAllText(abs));
-                if (!host.EvaluateBool($"!!(typeof {global} === 'object' && {global} && " +
-                                       $"typeof {global}.W === 'number' && {global}.pivot)")) continue;
 
-                geometryByRig[rigFile] = new RigGeometry(
-                    (int)host.EvaluateNumber($"{global}.W"),
-                    (int)host.EvaluateNumber($"{global}.H"),
-                    host.EvaluateNumber($"{global}.pivot.x"),
-                    host.EvaluateNumber($"{global}.pivot.y"),
-                    0, 0, 0);
-
-                // The handedness oracle, taken PER HULL because a variant-aware rig draws a different
-                // boat per variant and the ±X pair moves with her. One host serves them all.
+                // Geometry AND the handedness oracle are taken PER HULL, addressed through the
+                // binding's own hull object (ExteriorHullJs): a multi-hull global (the sport
+                // fishers' SportFisherIso2) publishes W/H/pivot per hull, and a per-file read
+                // would replay the first hull's cell onto the second — the same wrong boat the
+                // baker's own (file, pick) grouping exists to refuse. One host still serves
+                // every hull the file makes.
                 foreach (var kv in bindingByStem)
                 {
                     if (kv.Value.ExteriorRigFileName != rigFile) continue;
+                    string global = kv.Value.ExteriorHullJs;
+                    if (!host.EvaluateBool($"!!(typeof ({global}) === 'object' && ({global}) && " +
+                                           $"typeof ({global}).W === 'number' && ({global}).pivot)"))
+                        continue;
+
+                    _exteriorGeometryByHullStem[kv.Key] = new RigGeometry(
+                        (int)host.EvaluateNumber($"({global}).W"),
+                        (int)host.EvaluateNumber($"({global}).H"),
+                        host.EvaluateNumber($"({global}).pivot.x"),
+                        host.EvaluateNumber($"({global}).pivot.y"),
+                        0, 0, 0);
+
                     var sheet = _contract?.sheets?.FirstOrDefault(x => x.hullStem == kv.Key);
                     string extOpts = sheet == null
                         ? "{}"
@@ -146,10 +151,6 @@ namespace HiddenHarbours.Tests.RigBaking
                         bearingByStem[kv.Key] = step;
                 }
             }
-
-            foreach (var kv in bindingByStem)
-                if (geometryByRig.TryGetValue(kv.Value.ExteriorRigFileName, out RigGeometry geo))
-                    _exteriorGeometryByHullStem[kv.Key] = geo;
 
             _bearingByHullStem = bearingByStem;
         }
@@ -238,11 +239,19 @@ namespace HiddenHarbours.Tests.RigBaking
                 "A cleared hull without art is a boat nobody can go below on; a sheet for an " +
                 "uncleared hull is art cut from a boat whose shape was never verified.");
 
-            Assert.AreEqual(24, shipped.Length,
-                $"the kit ships {shipped.Length} interior sheet sets where the intake cleared 24 hulls " +
-                "of the 27 in the drop. If the ledger has genuinely changed — the sport fishers' pin " +
-                "stamped, or the cape's rig merged — this number moves WITH a ledger change and an " +
-                "ADR note, never on its own.");
+            // 27 = ALL of the drop. The last refusal is discharged.
+            // Moved 24 → 26 → 27, each step WITH the ledger change it tracks:
+            //   24 → 26  the cutaway kit's sport-fisher stamp (ebc77bac…) cleared both sport fishers,
+            //            flipped on the coordinator-ruled unanimity rule (PR #660).
+            //   26 → 27  the cape's RIG MERGE landed as the third sha 60d127c3… — repo main as the
+            //            base, the kit's aft door and published loft re-applied, with #508's OKLCH
+            //            paint and #247's washboards byte-identical through it. Her FORKED-RIG
+            //            refusal is flipped to CLEAN in the ledger's dated _corrections entry.
+            Assert.AreEqual(27, shipped.Length,
+                $"the kit ships {shipped.Length} interior sheet sets where the intake cleared 27 hulls " +
+                "of the 27 in the drop — every one. If the ledger has genuinely changed — a hull " +
+                "regressed, or a new drop arrived — this number moves WITH a ledger change and an ADR " +
+                "note, never on its own.");
         }
 
         [Test]
@@ -271,10 +280,15 @@ namespace HiddenHarbours.Tests.RigBaking
             var refusedStems = _ledger.Values.Where(e => !e.IsClean)
                                              .Select(e => e.HullStem)
                                              .ToArray();
-            Assert.IsNotEmpty(refusedStems,
-                "the S0 ledger refuses nothing at all. That is possible — upstream may have fixed both " +
-                "outstanding items — but it must be a deliberate ledger change, so this fires to make " +
-                "the change visible rather than letting the guard quietly become vacuous.");
+            // The empty-refusal tripwire fired 2026-08-27 and the change WAS deliberate: the cape's
+            // rig merge (third sha 60d127c3…) discharged the last refusal, so 27/27 clear and an
+            // empty refused set is now the steady state. The guard stays non-vacuous in that state
+            // by asserting the parity in the OTHER direction: a contract that still names refusals
+            // the ledger no longer holds is stale and reads as covering less than it does.
+            if (refusedStems.Length == 0)
+                Assert.IsEmpty(Contract().refused,
+                    "the S0 ledger refuses nothing, but the contract still records refusals — the " +
+                    "contract is stale against the ledger it mirrors.");
 
             foreach (string stem in refusedStems)
             {

@@ -471,6 +471,214 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 $"(0.8 Hz) at {shortChop:F3} m/s.");
         }
 
+        // ================= THE DRAWN WINDOW (owner eyeball 2026-08-27, defect 3) =================
+        //
+        // "the whole foam band shifts by 1-2 px as ONE unit ... it's noticeable it's a separate entity
+        // from the water; they shift in large groups". The content scrolls in WHOLE cells and banks the
+        // remainder, which it must — a sub-texel scroll resamples the buffer into itself every frame and
+        // smudges the wake. The defect was that the buffer was also DRAWN at the bare lattice origin, so
+        // the bank was invisible until it crossed a cell and the entire band teleported 0.125 m at once.
+
+        [Test]
+        public void TheDrawnFoam_AdvancesByExactlyTheDrift_EveryFrame_WithNoJumps()
+        {
+            // THE INVARIANT, and it is the whole fix: drawn displacement = whole cells scrolled +
+            // banked remainder, which AdvectCells guarantees advances by exactly this frame's drift
+            // for ANY sequence of drifts. So the frame the content jumps a cell, the residual drops by
+            // the same cell and the two cancel. Nothing the eye can see moves discontinuously.
+            var residual = Vector2.zero;
+            Vector2 lattice = FoamBuffer.WorldCellOrigin(Vector2.zero, 96f);
+            Vector2 contentMoved = Vector2.zero;
+            Vector2 expected = Vector2.zero;
+            float previousStep = -1f;
+            var previousDrawn = new Vector2(float.NaN, float.NaN);
+
+            // A drift that crosses a cell boundary many times over the run, at an awkward ratio so the
+            // crossings never line up with the frames.
+            var perFrame = new Vector2(0.0413f, -0.0271f);
+            for (int frame = 0; frame < 200; frame++)
+            {
+                Vector2Int cells = FoamBuffer.AdvectCells(ref residual, perFrame);
+                contentMoved += new Vector2(cells.x, cells.y) * FoamBuffer.CellSize;
+                expected += perFrame;
+
+                Vector2 drawnOrigin = FoamBuffer.DrawOrigin(lattice, residual);
+                // Where a mark laid at world 0 on frame 0 is DRAWN now: the content has moved
+                // `contentMoved`, and the window it is read through is offset by the residual.
+                Vector2 drawn = contentMoved + (drawnOrigin - lattice);
+
+                Assert.AreEqual(expected.x, drawn.x, 1e-3f,
+                    $"frame {frame}: the drawn foam is not where the wind has carried it. The whole " +
+                    "point of publishing lattice+residual is that the DRAWN position tracks the true " +
+                    "drift continuously while the buffer still scrolls in whole texels.");
+                Assert.AreEqual(expected.y, drawn.y, 1e-3f, $"frame {frame} (y)");
+
+                // …and EVERY frame moves it the same distance. Measured off the drawn position alone,
+                // so this is not a restatement of the assert above: with the bare lattice this number
+                // is 0 on most frames and a whole 0.125 m cell on the rest, which is the group shift
+                // the owner saw. previousStep starts negative to skip the first frame.
+                if (!float.IsNaN(previousDrawn.x))
+                {
+                    float step = (drawn - previousDrawn).magnitude;
+                    if (previousStep >= 0f)
+                        Assert.AreEqual(previousStep, step, 1e-3f,
+                            $"frame {frame}: the drawn band moved a DIFFERENT distance this frame than " +
+                            "last. That is the 1-2 px group shift — a whole-cell teleport showing through.");
+                    previousStep = step;
+                }
+                previousDrawn = drawn;
+            }
+        }
+
+        [Test]
+        public void SABOTAGE_DrawAtTheBareLattice_AndTheWholeBandTELEPORTS()
+        {
+            // The pre-fix behaviour, measured rather than described. Drawing at the lattice origin
+            // means the drawn position only ever changes when a whole cell is spent: it sits perfectly
+            // still for many frames and then jumps a full 0.125 m — 4 screen px at PPU 32, and every
+            // texel of the band does it in the same frame, which is why it read as one entity.
+            var residual = Vector2.zero;
+            var perFrame = new Vector2(0.0213f, 0f);
+            Vector2 contentMoved = Vector2.zero;
+
+            int stationary = 0, jumps = 0;
+            float biggestJump = 0f;
+            for (int frame = 0; frame < 200; frame++)
+            {
+                Vector2Int cells = FoamBuffer.AdvectCells(ref residual, perFrame);
+                float step = cells.x * FoamBuffer.CellSize;          // the BARE-lattice drawn step
+                contentMoved.x += step;
+                if (Mathf.Approximately(step, 0f)) stationary++;
+                else { jumps++; biggestJump = Mathf.Max(biggestJump, Mathf.Abs(step)); }
+            }
+
+            Assert.Greater(stationary, jumps * 2,
+                "The sabotage is not reproducing the defect — most frames must draw the band as " +
+                "perfectly stationary for the jump to read as a teleport.");
+            Assert.GreaterOrEqual(biggestJump, FoamBuffer.CellSize - 1e-4f,
+                $"…and when it does move it moves a whole cell ({FoamBuffer.CellSize} m) at once. " +
+                "That is what DrawOrigin exists to spread smoothly across the frames in between.");
+        }
+
+        [Test]
+        public void DrawOrigin_IsTheLatticeOrigin_BitExact_WithNoDrift()
+        {
+            // The A/B: on a windless, currentless sea the residual never leaves zero, so this round's
+            // change is provably invisible — the same window, to the bit, that shipped before it.
+            var residual = Vector2.zero;
+            for (int i = 0; i < 50; i++) FoamBuffer.AdvectCells(ref residual, Vector2.zero);
+
+            Vector2 lattice = FoamBuffer.WorldCellOrigin(new Vector2(-71.31f, 22.87f), 96f);
+            Vector2 drawn = FoamBuffer.DrawOrigin(lattice, residual);
+            Assert.AreEqual(lattice.x, drawn.x, 0f, "x is not bit-exact with no drift");
+            Assert.AreEqual(lattice.y, drawn.y, 0f, "y is not bit-exact with no drift");
+        }
+
+        [Test]
+        public void ASubTexelWindowAdvance_MovesTheComposedFoam_BySubTexelSteps_AcrossTheBoundary()
+        {
+            // The handoff's pin, run right through the frame that used to teleport. Advance the window
+            // an EIGHTH of a texel at a time: on step 8 the bank crosses a whole cell and the content
+            // scrolls, and the drawn foam must still have moved one eighth of a cell — not a whole one,
+            // and not nothing on the seven steps before it.
+            var residual = Vector2.zero;
+            Vector2 lattice = FoamBuffer.WorldCellOrigin(new Vector2(4f, 4f), 96f);
+            float eighth = FoamBuffer.CellSize / 8f;
+
+            Vector2 contentMoved = Vector2.zero;
+            float previousDrawn = float.NaN;
+            bool crossedACell = false;
+            for (int i = 0; i < 24; i++)
+            {
+                Vector2Int cells = FoamBuffer.AdvectCells(ref residual, new Vector2(eighth, 0f));
+                if (cells.x != 0) crossedACell = true;
+                contentMoved += new Vector2(cells.x, cells.y) * FoamBuffer.CellSize;
+
+                // Where a mark laid before the run is drawn now: content displacement, read through a
+                // window offset by the residual it has not spent yet.
+                float drawn = contentMoved.x + FoamBuffer.DrawOrigin(lattice, residual).x - lattice.x;
+                if (!float.IsNaN(previousDrawn))
+                    Assert.AreEqual(eighth, drawn - previousDrawn, 1e-5f,
+                        $"step {i}: the composed foam moved {drawn - previousDrawn:0.0000} m instead of " +
+                        $"{eighth:0.0000} m. On the steps between cell crossings the bare-lattice window " +
+                        "moved it 0, and on the crossing it moved it a whole cell — that pair IS the " +
+                        "owner's \"shifts as one unit\".");
+                previousDrawn = drawn;
+            }
+            Assert.IsTrue(crossedACell,
+                "the run never crossed a cell boundary, so it never exercised the frame that used to " +
+                "teleport — the test would be passing without testing anything.");
+        }
+
+        // ================= THE FRESHNESS CHANNEL (owner eyeball 2026-08-27, defect 2) ============
+
+        [Test]
+        public void Freshness_IsAClock_ResetByChurnAndNeverAccumulating()
+        {
+            // The property that made the second channel worth its byte: unlike coverage, this CANNOT
+            // saturate, because churn takes a max rather than adding. Hammer it for a second at 60 fps
+            // at full vigour and it sits at 1, not above it and not pinned there by accumulation.
+            float decay = FoamBuffer.DecayFactor(4f, 1f / 60f);
+            float fresh = 0f;
+            for (int i = 0; i < 60; i++) fresh = FoamBuffer.Freshness(fresh, decay, 1f);
+            Assert.AreEqual(1f, fresh, 1e-5f, "full-vigour churn must read exactly fresh");
+
+            // …and a HALF-vigour churn marks half, however long it goes on. Coverage would have added
+            // its way to the ceiling and lost the distinction entirely — that is the round-1 defect.
+            fresh = 0f;
+            for (int i = 0; i < 600; i++) fresh = FoamBuffer.Freshness(fresh, decay, 0.5f);
+            Assert.AreEqual(0.5f, fresh, 1e-5f,
+                "Freshness is a CLOCK, not an accumulation: a hull working the water half as hard " +
+                "marks half as fresh no matter how long it works. Adding here would re-create the " +
+                "saturation that made the wake draw one flat white.");
+        }
+
+        [Test]
+        public void Freshness_DecaysMonotonically_OnceTheChurnStops()
+        {
+            float decay = FoamBuffer.DecayFactor(4f, 0.25f);
+            float fresh = 1f, previous = 2f;
+            for (int i = 0; i < 80; i++)
+            {
+                fresh = FoamBuffer.Freshness(fresh, decay, 0f);
+                Assert.Less(fresh, previous, "water that has aged never gets younger");
+                previous = fresh;
+            }
+            Assert.Less(fresh, 0.05f, "after 20 s at a 4 s half-life the churn must be long cold");
+        }
+
+        [Test]
+        public void Freshness_HalvesAtItsOwnHalfLife_LikeTheCoverageChannel()
+        {
+            // Both channels are exponential and therefore frame-rate independent; they simply run at
+            // different rates. Ten small steps must age exactly as far as one big one.
+            float oneStep = FoamBuffer.Freshness(1f, FoamBuffer.DecayFactor(4f, 4f), 0f);
+            float many = 1f;
+            for (int i = 0; i < 40; i++) many = FoamBuffer.Freshness(many, FoamBuffer.DecayFactor(4f, 0.1f), 0f);
+            Assert.AreEqual(0.5f, oneStep, 1e-4f, "one half-life must halve the freshness");
+            Assert.AreEqual(oneStep, many, 1e-4f, "the decay must compose across step sizes");
+        }
+
+        [Test]
+        public void TheFreshnessUpdate_MatchesTheShader()
+        {
+            // The twin tripwire, same discipline as the cell grid and the slot count above: the max is
+            // the load-bearing operator, and an `+=` here would silently rebuild the saturation defect
+            // on the GPU side only, where no C# test could see it.
+            string code = StripComments(ReadShaderSource());
+            Assert.IsTrue(Regex.IsMatch(code, @"fresh\s*=\s*max\s*\(\s*fresh\s*,"),
+                "The advect pass no longer MAXes its freshness channel. Adding into it re-creates " +
+                "exactly the saturation that made the round-1 age proxy collapse — see " +
+                "FoamBuffer.Freshness and WakeFoamAgeingMeasurementTests.");
+            Assert.IsTrue(code.Contains("_HHFoamAgeDecay"),
+                "The freshness channel must decay on its OWN half-life (FoamShaderIds.AgeDecay). " +
+                "Sharing the coverage half-life puts the sea's blues in the tail the alpha has " +
+                "already faded to nothing.");
+            Assert.IsTrue(Regex.IsMatch(code, @"return\s+float4\s*\(\s*saturate\s*\(\s*foam\s*\)\s*,\s*saturate\s*\(\s*fresh\s*\)"),
+                "The pass must write BOTH channels: r = coverage, g = freshness. A single-channel " +
+                "write leaves the age reading whatever the target was cleared to.");
+        }
+
         // ================= THE SHADER SEAM (tripwires) ==========================================
 
         [Test]

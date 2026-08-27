@@ -8,10 +8,12 @@ namespace HiddenHarbours.Art
     /// <c>Art/Shaders/FoamBufferAdvect.shader</c>; change one, change BOTH in the same PR, and the
     /// <c>FoamBufferTests</c> tripwires read the shader source to prove it).
     ///
-    /// <para><b>What the buffer is.</b> One persistent single-channel render target, ping-ponged per
-    /// frame, holding "how much churned foam is on this patch of sea". Every frame it is scrolled,
-    /// decayed and injected into where hulls disturb the water; the water shader samples it as a mask
-    /// that <b>ADDS</b> to the existing foam. It is a mark left on a PLACE IN THE SEA — foam the
+    /// <para><b>What the buffer is.</b> One persistent TWO-channel render target, ping-ponged per
+    /// frame, holding <b>R</b> = "how much churned foam is on this patch of sea" and <b>G</b> = "how
+    /// recently it was churned" (<see cref="Freshness"/> — the clock the wake's colour walks down).
+    /// Every frame it is scrolled, decayed and injected into where hulls disturb the water; the water
+    /// shader samples R as a mask that <b>ADDS</b> to the existing foam and G as the age that picks its
+    /// colour. It is a mark left on a PLACE IN THE SEA — foam the
     /// shipped <c>BoatWakeEmitter</c> trail cannot make, because it persists and drifts downwind
     /// after the boat has gone, and because it churns around a hull that is merely BOBBING.</para>
     ///
@@ -111,6 +113,40 @@ namespace HiddenHarbours.Art
         }
 
         /// <summary>
+        /// 🔴 <b>THE ORIGIN THE SHADERS ARE GIVEN</b> — the cell-snapped lattice origin plus the
+        /// sub-cell drift that has been BANKED but not yet spent as a whole-cell scroll.
+        ///
+        /// <para><b>The defect this retires</b> (owner eyeball 2026-08-27: <i>"the whole foam band
+        /// shifts by 1–2 px as ONE unit … it's noticeable it's a separate entity from the water; they
+        /// shift in large groups"</i>). <see cref="AdvectCells"/> moves the buffer's content downwind in
+        /// WHOLE cells and banks the remainder, which is right — a sub-texel scroll would resample the
+        /// buffer into itself every frame and smudge the wake. But the content was also DRAWN at the
+        /// lattice origin, so the banked remainder was invisible until it crossed a whole cell and the
+        /// entire band teleported 0.125 m (4 screen px at PPU 32) at once. Every texel moved together,
+        /// because a buffer scroll is rigid: that is the "one unit / large groups" read exactly, and it
+        /// happened while the sea around it flowed continuously.</para>
+        ///
+        /// <para><b>The fix is one addition, and it is exact.</b> Draw at
+        /// <c>lattice + residual</c>. Let <c>C</c> be the content's cumulative whole-cell displacement
+        /// and <c>R</c> the banked remainder; <see cref="AdvectCells"/> guarantees
+        /// <c>C + R</c> increases by exactly this frame's drift, for ANY drift sequence. So the DRAWN
+        /// position advances smoothly at the true drift speed, and on the frame the content jumps a
+        /// whole cell the residual drops by the same whole cell — the jump cancels to nothing. The foam
+        /// never moves relative to the water it sits in; it only ever drifts, at the speed it should.
+        /// Zero drift ⇒ <c>R</c> = 0 ⇒ this returns the lattice origin BIT-EXACTLY, which is the A/B.</para>
+        ///
+        /// <para>Both shaders take this one origin: the water's read maps a world position through it,
+        /// and the advect pass stamps new injections through it, so a mark is born exactly under the
+        /// hull that made it and then drifts. Feeding them different origins would tear the two apart
+        /// by the residual — the <c>compositing-window-must-follow-the-ride</c> lesson, in a second
+        /// window.</para>
+        /// </summary>
+        public static Vector2 DrawOrigin(Vector2 latticeOrigin, Vector2 driftResidualMeters)
+        {
+            return latticeOrigin + driftResidualMeters;
+        }
+
+        /// <summary>
         /// ⚠️ <b>THE WRONG ANSWER, kept so the tests can measure how wrong.</b> The window origin
         /// taken straight off the camera with no world snap — the natural thing to reach for once the
         /// buffer lives in a render target, and precisely what the ADR warns against.
@@ -196,6 +232,47 @@ namespace HiddenHarbours.Art
         public static float Decay(float value, float halfLifeSeconds, float dt)
         {
             return value * DecayFactor(halfLifeSeconds, dt);
+        }
+
+        // ---- freshness: the SECOND channel, and the reason the wake can change colour -------------
+
+        /// <summary>
+        /// 🔴 <b>THE AGE CHANNEL.</b> One step of the buffer's <b>G</b> channel: decay what was there,
+        /// then take the MAX against this frame's churn mark. Twin: <c>FoamBufferAdvect.shader</c>'s
+        /// <c>fresh</c> line. Mirrored, tested, and — like the R channel — pure in its arguments.
+        ///
+        /// <para><b>Why a second channel exists at all, measured rather than argued.</b> #665 derived a
+        /// texel's age from its COVERAGE (<c>age = 1 − coverage/fresh</c>), on the reasoning that a
+        /// decaying buffer's surviving coverage IS its freshness. The owner's eyeball found the band
+        /// still solid white, and the numbers say why: coverage is <b>saturated</b> and then
+        /// <b>quantized</b> before anything reads it. A dory at 3 m/s lays 36 frames of deposit into
+        /// one texel and pins R at 1.000; the water shader then thresholds
+        /// (<c>smoothstep(0.12, 0.30)</c>) and posterizes to 3 bands, so the value the age proxy sees
+        /// can only ever be one of {0, 0.425, 0.85}. 72–81% of the visible band therefore drew at age
+        /// exactly 0 — white — at every speed. No threshold retune can recover a gradient from three
+        /// values; it can only pick which flat colour the band is. <c>WakeFoamAgeingMeasurementTests</c>
+        /// keeps that measurement red if it is ever true again.</para>
+        ///
+        /// <para><b>Why MAX and not ADD.</b> Adding is what saturated the coverage channel. Freshness is
+        /// not an amount, it is a CLOCK: churn resets it to how hard the hull is working right now, and
+        /// nothing else can raise it. Because the mark is bounded by 1 and the update takes a max, this
+        /// channel can never clamp, so it is monotone in time-since-churn by construction — which is
+        /// exactly the property coverage lost. Fresh churn reads 1.0 for every hull at every speed, so
+        /// the ramp means the same thing everywhere; the fast hull whose thin coverage never reached
+        /// the old threshold is no longer born blue.</para>
+        ///
+        /// <para><paramref name="mark01"/> is <b>1 wherever a hull churned this water this frame</b> and 0
+        /// elsewhere — deliberately NOT scaled by how hard she was working. A clock scaled by vigour
+        /// conflates "how hard" with "how long ago": a dory at half her knee speed would be born
+        /// half-aged and could never make white foam at all, which is the same category error round 1
+        /// made with the coverage channel, one level down. (Caught by
+        /// <c>WakeFoamAgeingMeasurementTests</c> on the first run, at 1.5 m/s.) How MUCH foam is on this
+        /// water is the R channel's job, and it already does it.</para>
+        /// </summary>
+        public static float Freshness(float previous, float decayFactor, float mark01)
+        {
+            float decayed = Mathf.Clamp01(previous) * Mathf.Clamp01(decayFactor);
+            return Mathf.Max(decayed, Mathf.Clamp01(mark01));
         }
 
         // ---- advection --------------------------------------------------------------------------

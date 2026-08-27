@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: deck.coastal_packet_iso
   SourceSidecar: docs/art/rigs/gameplay/coastalPacketIsoRig.gameplay.json
   SourceRig: docs/art/rigs/coastalPacketIsoRig.js
-  DerivedFromRigSha256: 723b916ad80574a2edb1390b8b11608a5ec79cd1297355b88d4eeaa6955b3ceb
+  DerivedFromRigSha256: 426e8caa1c2b6e535dcbf823cd19c6b49ac68d222b995ed1b25cb5879356a272
   LoaMeters: 60
   Areas:
   - Id: aft_deck
@@ -131,8 +131,8 @@ MonoBehaviour:
     - {x: -3.774, y: 23.913}
     - {x: -4.029, y: 22.159}
     - {x: -4.2, y: 20.395}
-    HeightPlane: {x: 0, y: 0.15233967, z: 2.3700979}
-    HeightResidualMax: 0.102934465
+    HeightPlane: {x: 0, y: 0.15233968, z: 2.3700974}
+    HeightResidualMax: 0.10293484
     Bounds: {x: -4.2, y: 20.395, z: 4.2, w: 30.693}
   Cleats:
   - Id: bow_port
@@ -147,5 +147,5 @@ MonoBehaviour:
   - Id: quarter_star
     Type: bollard
     PositionMeters: {x: 3, y: -29.3, z: 5.11}
-  WalkCenter: {x: 0, y: 0.7065}
+  WalkCenter: {x: 0, y: 0.70650005}
   WalkHalfExtents: {x: 4.941, y: 29.9865}

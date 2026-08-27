@@ -1,0 +1,179 @@
+{
+  "rig": "trailerIsoRig.js",
+  "exportSymbol": "TrailerIso",
+  "variant": "trailers-x4",
+  "derivedFromRigSha256": "8ba111c41a8ab2bae855a51dc9d2c75cf518af2b01ff8cc15665caf18c9264f2",
+  "kind": "towed_bodies",
+  "label": "Trailer Set: Flatbed 28/53, Reefer 28/53",
+  "generated": "measured off the rig source by hand-transcription with per-value provenance; no generator in the rig",
+  "frame": {
+    "units": "metres",
+    "scale_px_per_m": 32,
+    "origin": "ground-centre of the BODY footprint (the reefer nose unit overhang is excluded from the centring; z=0 is the road)",
+    "axes": "+x curb side, +y NOSE (kingpin end), +z up",
+    "heading_independent": true,
+    "at_rest": "every value here is at sus=0, gear=1 (PARKED, shoes grounded), doors shut. The trailers bake at COUPLED RIDE HEIGHT — deck plane 1.18 m — so pairing needs no z shift.",
+    "cells": {
+      "flatbed28": { "cell": [384, 320], "pivot": { "x": 192, "y": 214 }, "_note": "the road cell" },
+      "reefer28": { "cell": [384, 320], "pivot": { "x": 192, "y": 214 }, "_note": "the road cell" },
+      "flatbed53": { "cell": [640, 480], "pivot": { "x": 320, "y": 300 }, "_note": "16.15 m needs width AND depth; ground row 300" },
+      "reefer53": { "cell": [640, 480], "pivot": { "x": 320, "y": 300 }, "_note": "same long cell" }
+    }
+  },
+  "KINGPIN": {
+    "_what": "the coupling half that mates BOTH tractors. The game hinges anchors().kingpin to a tractor's anchors().fifthWheel and articulates the pair — the rig renders a lone trailer and publishes the numbers.",
+    "coupling_point_by_body": {
+      "flatbed28": [0, 3.365, 1.18], "flatbed53": [0, 7.175, 1.18],
+      "reefer28": [0, 3.365, 1.18], "reefer53": [0, 7.175, 1.18]
+    },
+    "set_from_nose_m": 0.9,
+    "width_m": 2.44,
+    "coupled_deck_z": 1.18,
+    "pin": { "r": 0.045, "z": [1.04, 1.16], "_note": "the pin hangs under the coupler plate; the coupling PLANE is 1.18 — the fifth-wheel plate top" },
+    "nose_swing_r_m": 1.516,
+    "swing_basis": "sqrt(1.22^2 + 0.90^2) — the nose corners about the kingpin",
+    "tractor_gap_m": 1.52,
+    "verdict": "full jackknife clears BOTH tractors' cabs by 4 mm. The 0.90 m set and the 2.44 m width are LOAD-BEARING numbers: widen either and the tractors' published margin is gone.",
+    "reefer_unit_swing_r_m": 1.302,
+    "unit_basis": "sqrt(0.55^2 + 1.18^2) — the nose unit corners; inside the 1.516 m corner swing, so the unit never leads",
+    "glad_hands": { "trailer_side": "[0, L/2-0.04, 1.49] per body — pairs with the tractor panel at z 1.98; the lines sag between them" },
+    "off_tracking_inputs": {
+      "_what": "the game's trailer-follow arithmetic wants kingpin-to-axle; published per body, with the tail sweep for swept-path checks",
+      "kingpin_to_axle_centre_m": { "flatbed28": 6.265, "flatbed53": 13.275, "reefer28": 6.265, "reefer53": 13.275 },
+      "tail_swing_r_m": { "flatbed28": 7.63, "flatbed53": 15.25, "reefer28": 7.63, "reefer53": 15.25 }
+    },
+    "provenance": "G.hw/kpSet/deckZ/kpZ + kpY(S); swing maths mirrors both tractor sidecars' TOW blocks"
+  },
+  "GEAR": {
+    "param": "gear",
+    "range": [0, 1],
+    "sense": "0 legs UP (coupled, towing) -> 1 legs DOWN, sand shoes grounded (parked — the bake default)",
+    "legs": { "x": [-0.95, 0.95], "y": "kingpinY - 2.00 per body", "drop_m": 0.78, "shoe": "0.14 x 0.18 plate, bottom at z 0.00 at gear=1" },
+    "crank": { "side": "street (-x)", "pos": "[-1.11, gearY, 1.02]", "_note": "the INTERACT handle" },
+    "discipline": "couple -> gear 0 BEFORE rolling; nothing in the rig stops a game dragging grounded shoes, and it will render exactly that.",
+    "provenance": "buildChassis gear block: drop = 0.25 + gear*0.78, foot = 1.10 - drop"
+  },
+  "bodies": {
+    "flatbed28": {
+      "label": "28 ft Flatbed Pup",
+      "BODY": { "loa_m": 8.53, "width_m": 2.44, "height_m": 2.35, "height_no_headboard_m": 1.18, "deck_z": 1.18, "kingpin_y": 3.365, "axles_y": [-2.9], "wheels": 4,
+        "collider_bbox": { "x": [-1.22, 1.22], "y": [-4.265, 4.265], "z": [0, 1.18], "headboard_adds": { "y": [4.165, 4.245], "z_to": 2.35 } },
+        "ground_clearance_m": { "hard": 0.4, "source": "ICC bar; the frame rails run at 0.78; grounded gear shoes at 0 when parked" } },
+      "CARGO": { "deck": { "polygon": [[-1.22, -4.265], [1.22, -4.265], [1.22, 4.265], [-1.22, 4.265]], "z": 1.18, "size_m": [2.44, 8.53], "surface": "planked lumber over steel rails, stake pockets both rails, 3 winches street side" },
+        "headboard": { "part": "headboard:true default", "top_z": 2.35, "_note": "the front bulkhead; false bares the full deck. Zero swept volume either way." },
+        "tie_downs": "stake pockets every 1.35 m per side + winches — published as ATTACH points, load rules are gameplay's" },
+      "THRESHOLD": []
+    },
+    "flatbed53": {
+      "label": "53 ft Flatbed",
+      "BODY": { "loa_m": 16.15, "width_m": 2.44, "height_m": 2.35, "height_no_headboard_m": 1.18, "deck_z": 1.18, "kingpin_y": 7.175, "axles_y": [-5.5, -6.7], "wheels": 8,
+        "collider_bbox": { "x": [-1.22, 1.22], "y": [-8.075, 8.075], "z": [0, 1.18], "headboard_adds": { "y": [7.975, 8.055], "z_to": 2.35 } },
+        "ground_clearance_m": { "hard": 0.4, "source": "ICC bar" } },
+      "CARGO": { "deck": { "polygon": [[-1.22, -8.075], [1.22, -8.075], [1.22, 8.075], [-1.22, 8.075]], "z": 1.18, "size_m": [2.44, 16.15], "surface": "planked lumber, stake pockets, 6 winches street side" },
+        "headboard": { "part": "headboard:true default", "top_z": 2.35 } },
+      "THRESHOLD": []
+    },
+    "reefer28": {
+      "label": "28 ft Reefer Pup",
+      "BODY": { "loa_m": 8.81, "body_length_m": 8.53, "width_m": 2.44, "height_m": 4.1, "floor_z": 1.3, "roof_z": 4.06, "kingpin_y": 3.365, "axles_y": [-2.9], "wheels": 4,
+        "collider_bbox": { "x": [-1.22, 1.22], "y": [-4.265, 4.545], "z": [0, 4.1], "_note": "+y end includes the 0.28 m nose unit" },
+        "ground_clearance_m": { "hard": 0.4, "source": "ICC bar" } },
+      "CARGO": { "bay": { "floor_polygon": [[-1.16, -4.225], [1.16, -4.225], [1.16, 4.205], [-1.16, 4.205]], "floor_z": 1.3, "size_m": [2.32, 8.43], "headroom_m": 2.68, "floor_surface": "ribbed aluminium T-floor" },
+        "door_entry": { "clear_width_m": 2.32, "clear_height_m": 2.62, "sill_z": 1.3, "_note": "sill = floor, dock height 1.30 — 0.20 over the box trucks' 1.10; quay-vs-floor gaps are the world's problem" } },
+      "THRESHOLD": [ { "id": "barn_l", "hinge": [-1.19, -4.245], "swing_deg": 255 }, { "id": "barn_r", "hinge": [1.19, -4.245], "swing_deg": 255 } ]
+    },
+    "reefer53": {
+      "label": "53 ft Reefer",
+      "BODY": { "loa_m": 16.43, "body_length_m": 16.15, "width_m": 2.44, "height_m": 4.1, "floor_z": 1.3, "roof_z": 4.06, "kingpin_y": 7.175, "axles_y": [-5.5, -6.7], "wheels": 8,
+        "collider_bbox": { "x": [-1.22, 1.22], "y": [-8.075, 8.355], "z": [0, 4.1], "_note": "+y end includes the 0.28 m nose unit" },
+        "ground_clearance_m": { "hard": 0.4, "source": "ICC bar" } },
+      "CARGO": { "bay": { "floor_polygon": [[-1.16, -8.035], [1.16, -8.035], [1.16, 8.015], [-1.16, 8.015]], "floor_z": 1.3, "size_m": [2.32, 16.05], "headroom_m": 2.68, "floor_surface": "ribbed aluminium T-floor" },
+        "door_entry": { "clear_width_m": 2.32, "clear_height_m": 2.62, "sill_z": 1.3 } },
+      "THRESHOLD": [ { "id": "barn_l", "hinge": [-8.055, "see doors"], "swing_deg": 255 }, { "id": "barn_r", "hinge": [8.055, "see doors"], "swing_deg": 255 } ]
+    }
+  },
+  "DOORS": {
+    "_what": "reefer rear barn doors — the only doors in the set. Flatbeds clamp barnL/barnR to 0.",
+    "params": ["barnL", "barnR"],
+    "range": [0, 1],
+    "deg": [0, 255],
+    "hinges": "vertical, at [±1.19, -L/2+0.02] — the OUTER rear corners",
+    "leaf_m": { "width": 1.145, "thickness": 0.05, "z": [1.3, 3.92] },
+    "keep_clear": {
+      "sector_deg": [0, 255],
+      "radius_m": 1.175,
+      "aft_extreme_y": "-L/2 - 1.20 at 90deg",
+      "outboard_extreme_x": 2.37,
+      "_note": "the sweep passes through FULL OUTBOARD at 180deg (|x| 2.37) before folding back; at 255deg the leaves lie along the sides and the trailer is 2.60 m wide with doors open. Dock approaches budget the whole fan."
+    },
+    "hardware": "two chrome lock rods + handle per leaf, at |x| 0.38 and 0.80",
+    "provenance": "buildReefer door part(); G.rf.doorDeg = 255"
+  },
+  "WHEELS": {
+    "radius_m": 0.5,
+    "tire_width_m": 0.3,
+    "pattern": "duals both sides of every axle: inner tire at |x| 0.60, outer wheel at 0.90 with 10-lug hub and FIVE hand-holes (the odd count is what makes half a revolution visible; one full revolution still closes exactly)",
+    "per_body_axles": { "flatbed28": [-2.9], "reefer28": [-2.9], "flatbed53": [-5.5, -6.7], "reefer53": [-5.5, -6.7] },
+    "track_outer_m": 1.8,
+    "contact_z": 0,
+    "roll": "master roll in REVOLUTIONS + per-side wL/wR; each side's axles share the roll. Distance per rev 3.142 m; loop seam 0-1 px (29.008 tread stripes of 0.1083 m).",
+    "steering": "NONE — trailer axles do not steer. The trailer's heading comes from the hinge; see KINGPIN.off_tracking_inputs.",
+    "provenance": "G.dualXi/dualXo/wheelR/tireW + SPECS[body].axles — exact"
+  },
+  "SUSPENSION": {
+    "param": "sus",
+    "range": [-1, 1],
+    "travel_m": 0.1,
+    "formula": "dz(y) = -(sus*0.10) * max(0, (kingpinY - y) / (kingpinY - axleCentreY))",
+    "pivot": "the KINGPIN: dz is zero at the coupling plane and grows aft — a coupled nose rides the TRACTOR's suspension, and the two meet at the plate",
+    "applies_to": "the whole body group (deck/box, doors, gear, ICC, lamps) — the wheels do NOT move",
+    "provenance": "build() dz(y), verbatim"
+  },
+  "YAW": {
+    "param": "yaw",
+    "units": "degrees",
+    "range": [-45, 45],
+    "what": "heading between the eight facings, rebaked under the fixed key — not a rotated sprite.",
+    "pivot": "unaffected; the origin projects to the published pivot at any yaw",
+    "coupled": "a tractor+trailer pair is two headings hinged at the coupling point. The articulation angle is their difference; the tractors publish the 1.52 m gap it lives inside."
+  },
+  "ATTACH": {
+    "reefer_unit": { "bodies": ["reefer28", "reefer53"], "box": { "x": [-0.55, 0.55], "beyond_nose_m": 0.28, "z": [1.62, 2.95] }, "grille": "front face, glows on night:true", "fuel_pack": "under-unit box at z 1.30", "_note": "hum/exhaust FX attach at anchors().unit; the unit face is the only glow on the set" },
+    "marker_lamps": { "reefers": "3 amber high on the nose, red at the rear roof corners", "flatbeds": "tail lamps only" },
+    "icc_bar": { "all": "[±0.94, -L/2+0.02..+0.08, 0.40..0.48] — the underride bar both tractor sidecars promised the trailer would bring" },
+    "stake_pockets": { "flatbeds": "every 1.35 m per rail, z 1.00..1.12", "winches": "street rail underside" }
+  },
+  "INTERACT": [
+    { "id": "couple", "action": "couple_uncouple", "at": "KINGPIN", "reach_point": "under the nose — but the ACT is the tractor backing on; the player-facing handle is the tractor's release", "visible_facings": ["S", "SE", "SW"] },
+    { "id": "gear", "action": "crank_landing_gear", "at": "GEAR.crank", "reach_point": "[-1.7, gearY, 0] street side", "visible_facings": ["NE", "E", "SE"] },
+    { "id": "doors", "action": "open_close_load", "bodies": ["reefer28", "reefer53"], "at": "DOORS", "reach_point": "[0, -L/2-1.6, 0]", "visible_facings": ["N", "NE", "NW"] },
+    { "id": "lines", "action": "connect_air_electric", "at": "KINGPIN.glad_hands", "reach_point": "[1.3, L/2-0.4, 0]", "visible_facings": ["S", "SE", "SW"] }
+  ],
+  "_interact_notes": {
+    "reach_point": "a request, not a promise — NOT validated against terrain or the coupled tractor.",
+    "visible_facings": "same near-side test as the whole fleet; dir 0 (N) shows the REAR."
+  },
+  "_excluded": {
+    "WASHBOARD": "not a hull.",
+    "CLEATS": "not a hull. The kingpin is a coupling, not mooring.",
+    "steer_axle": "trailer axles do not steer, and no lift axle is modelled. Heading is the hinge's business.",
+    "tractor": "no tractor in this kit — the pair is assembled by the GAME from two sprites hinged at the coupling point.",
+    "load": "the flatbed deck is EMPTY: no straps, tarps, coils or dunnage. Stake pockets and winches are attach points, not cargo.",
+    "brake_lines": "one slack line and a glad-hand stub on the nose; no full air run is modelled.",
+    "walkable_roof": "the reefer roof at 4.06 m has no rail and no route up. The flatbed DECK is the set's only stand-on surface, and whether players walk it is unruled.",
+    "fuel_fill": "the reefer unit's fuel pack is a slab; no filler is modelled.",
+    "rear_ladder": "none on any body.",
+    "plates_and_tape": "no licence plates, conspicuity tape or decals at 32 px/m.",
+    "interior_interact": "nothing inside the reefer bay is an interactable."
+  },
+  "_confirm": {
+    "coupling_owner": "pairing, articulation, off-tracking and jackknife physics are the GAME's. Hinge anchors().kingpin to anchors().fifthWheel; KINGPIN.off_tracking_inputs carries the follow arithmetic.",
+    "handshake_lock": "width 2.44 and set 0.90 are load-bearing — they ARE the tractors' 4 mm margin. A wider or shorter-set body needs the tractors' swing re-run first.",
+    "gear_discipline": "gear=1 grounds the shoes. Tow like that and the rig renders the drag; set gear 0 on couple.",
+    "door_dock_rule": "the door fan reaches |x| 2.37 m at 180deg — wider than the trailer. Budget the full fan at docks, then park the leaves at 255deg (2.60 m overall).",
+    "coupled_sus": "sus pivots at the kingpin, so the coupling plane holds 1.18 while the tail drops — consistent with a tractor that re-reads ITS fifthWheel anchor under load.",
+    "cell_rule": "pups bake in the road cell; the 53s take 640x480 @ 320,300. Pack from THIS contract's per-body painted_bbox, never a sibling's.",
+    "deck_material": "the WOOD ramp is the one addition to the harbour master ramps — deck lumber; every painted part uses the shared ten.",
+    "lamps": "the trailers bring their own tail lights and ICC bar, exactly as both tractor sidecars promise bobtail."
+  }
+}

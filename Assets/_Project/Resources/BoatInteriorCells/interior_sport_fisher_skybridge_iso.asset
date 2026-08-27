@@ -1,0 +1,48 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e70b01790414c67990a70b04eb3a2bb, type: 3}
+  m_Name: interior_sport_fisher_skybridge_iso
+  m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.BoatInteriorCellsDef
+  InteriorDefId: interior.sport_fisher_skybridge_iso
+  Cells:
+  - {fileID: -1828106027, guid: a5256201f94d03e4293d719fbe21a28a, type: 3}
+  - {fileID: 709560780, guid: a5256201f94d03e4293d719fbe21a28a, type: 3}
+  - {fileID: -1917852000, guid: a5256201f94d03e4293d719fbe21a28a, type: 3}
+  - {fileID: 1901462362, guid: a5256201f94d03e4293d719fbe21a28a, type: 3}
+  - {fileID: 1125990781, guid: a5256201f94d03e4293d719fbe21a28a, type: 3}
+  - {fileID: -2055753559, guid: a5256201f94d03e4293d719fbe21a28a, type: 3}
+  - {fileID: 963696003, guid: a5256201f94d03e4293d719fbe21a28a, type: 3}
+  - {fileID: 1138173308, guid: a5256201f94d03e4293d719fbe21a28a, type: 3}
+  - {fileID: -120520226, guid: b786531dee6acdf4d98ad6d0279866cb, type: 3}
+  - {fileID: 284485427, guid: b786531dee6acdf4d98ad6d0279866cb, type: 3}
+  - {fileID: 493380483, guid: b786531dee6acdf4d98ad6d0279866cb, type: 3}
+  - {fileID: -1363288269, guid: b786531dee6acdf4d98ad6d0279866cb, type: 3}
+  - {fileID: 925656293, guid: b786531dee6acdf4d98ad6d0279866cb, type: 3}
+  - {fileID: -1626229635, guid: b786531dee6acdf4d98ad6d0279866cb, type: 3}
+  - {fileID: -1154905906, guid: b786531dee6acdf4d98ad6d0279866cb, type: 3}
+  - {fileID: 1688268123, guid: b786531dee6acdf4d98ad6d0279866cb, type: 3}
+  - {fileID: -6204570, guid: b3f111e2bdd3c944ebc8adb52ff62ba1, type: 3}
+  - {fileID: -2090670327, guid: b3f111e2bdd3c944ebc8adb52ff62ba1, type: 3}
+  - {fileID: 1647909731, guid: b3f111e2bdd3c944ebc8adb52ff62ba1, type: 3}
+  - {fileID: 314892851, guid: b3f111e2bdd3c944ebc8adb52ff62ba1, type: 3}
+  - {fileID: -1796350662, guid: b3f111e2bdd3c944ebc8adb52ff62ba1, type: 3}
+  - {fileID: 557680564, guid: b3f111e2bdd3c944ebc8adb52ff62ba1, type: 3}
+  - {fileID: -2004158092, guid: b3f111e2bdd3c944ebc8adb52ff62ba1, type: 3}
+  - {fileID: -1623560157, guid: b3f111e2bdd3c944ebc8adb52ff62ba1, type: 3}
+  Facings: 8
+  CellLevels:
+  - bridge
+  - house
+  - below
+  CellRowForLevel: 010000000000000002000000
+  CellsAreCounterClockwise: 1
+  ResidentMegabytes: 144.60754

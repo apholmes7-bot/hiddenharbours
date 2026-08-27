@@ -12,9 +12,13 @@ re-export at `74be6b70`** — and nothing here modifies it.
 >
 > | verdict | hulls | what it needs |
 > |---|---|---|
-> | **CLEAN** (24 sidecars, 7 families) | coastalPacket · lobsterBoat · lobsterBoatVariants ×18 · sideDragger · sternTrawler · sternTrawlerMk2 · tanker | nothing |
-> | **REFUSED-PIN** (2) | both sport fishers | one substitution — see the re-export section |
-> | **FORKED-RIG** (1) | capeIslander | a rig merge, upstream, under the ruled bar |
+> | **CLEAN** (27 sidecars, 10 families) | capeIslander · coastalPacket · lobsterBoat · lobsterBoatVariants ×18 · sideDragger · sportFisher ×2 · sternTrawler · sternTrawlerMk2 · tanker | nothing |
+> | ~~**REFUSED-PIN** (2)~~ | ~~both sport fishers~~ | **DISCHARGED 2026-08-26** — the cutaway kit shipped the substitution (PR #660) |
+> | ~~**FORKED-RIG** (1)~~ | ~~capeIslander~~ | **DISCHARGED 2026-08-27** — the rig merge landed as the third sha `60d127c3…` |
+>
+> **Every hull in the drop is now cleared.** The two refusal rows are struck through rather than
+> deleted: the ledger records history, and each discharge is a dated `_corrections` entry in
+> `s0-verdicts.json`.
 >
 > Every claim below was verified against the bytes on this branch, never accepted from a report.
 
@@ -101,6 +105,11 @@ tr -d '\r' < path/to/rig.js | sha256sum
   `hull-rigs/capeIslanderIsoRig.js` carries a **do-not-adopt** flag: adopting it reverts #247 and
   #508; adopting main's deletes her from the kit. Neither file can be taken whole.
 
+  > **✅ DISCHARGED 2026-08-27.** The merge landed as the third sha `60d127c3…`, and the
+  > **do-not-adopt flag is lifted**: `hull-rigs/capeIslanderIsoRig.js` and
+  > `docs/art/rigs/capeIslanderIsoRig.js` are now the same bytes, so there is no longer a wrong
+  > one to adopt. The paragraph above is kept as the record of why the merge was needed.
+
 ## The cape rig merge — ruled, and its acceptance bar
 
 **Sequencing (owner, 2026-08-19): a SEPARATE PR, after the intake lands.** This intake is complete
@@ -139,6 +148,28 @@ construction:
 **The ruled point 3 is therefore:** byte-identity on every exterior pixel **outside the aft
 doorway's bounding box** across all shipped poses, **plus** full byte-identity on the **bow-on
 facings (N/NE/NW)** where the house occludes the aft face entirely.
+
+> ### ⚠️ The second clause was wrong, and could not have been met (merge lane, 2026-08-27)
+>
+> Measured in the V8 harness over all 72 shipped poses, **the facings are inverted**: the aft face
+> is *visible* on dirs 0/1/7 — the ones labelled N/NE/NW — and *hidden* on dirs 3/4/5 (SE/S/SW).
+>
+> | dir | 0 N | 1 NE | 2 E | 3 SE | 4 S | 5 SW | 6 W | 7 NW |
+> |---|---|---|---|---|---|---|---|---|
+> | px changed by the door | 10,675 | 7,848 | 1,403 | **5** | **3** | **112** | 863 | 7,791 |
+>
+> The labels are nominal — `CapeIslanderSheetSliceTests` already warns that *"the art is baked
+> counter-clockwise"*. So "full byte-identity on N/NE/NW" asked for zero change on the three
+> facings that show the door most, which **no correct merge could deliver**. And even the genuinely
+> stern-hidden facings are not perfectly zero: 120 px over 27 poses, all recolour, no silhouette
+> change.
+>
+> **What the merge was held to instead**, and met: *zero differing pixels outside the **aft wall***
+> — the face the doorway is cut into — across all 72 poses. That is the same guarantee the clause
+> was reaching for (#508's paint touches every hull pixel, so a paint regression cannot hide behind
+> it; #247's washboards are side-deck geometry well outside it), stated on a bound that is real.
+> The tighter door-assembly box holds all but 38 px, and those 38 are attributable by staged
+> measurement to the aft wall becoming three bands — the opening itself.
 
 That is sufficient, and this is why: #508's paint touches every hull pixel, so a paint regression
 cannot hide inside a doorway box; #247's washboards are side-deck geometry well outside it. Both
@@ -240,7 +271,7 @@ Every refusal carries an `upstream_ask`, and the three classes want **different*
 | class | hulls | what upstream must do |
 |---|---|---|
 | `REFUSED-PIN` | 7 families (+18 variants) | Re-stamp `derivedFromRigSha256` from the renderer that shipped. Clerical. |
-| `FORKED-RIG` | capeIslander | A **rig merge** — repo as base, door + published loft re-applied, landing a third sha in `docs/art/rigs/`. An owner call; **not** a re-measure. |
+| ~~`FORKED-RIG`~~ | ~~capeIslander~~ | **DONE 2026-08-27.** The rig merge landed: repo main as base, the aft door and published loft re-applied, third sha `60d127c3…` in both `docs/art/rigs/` and the kit. |
 | `CLEAN` | both sport fishers | Nothing. |
 
 Naming these apart is the point of having three words instead of two: telling upstream to

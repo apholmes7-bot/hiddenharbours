@@ -1,0 +1,338 @@
+fileFormatVersion: 2
+guid: b786531dee6acdf4d98ad6d0279866cb
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -209048027057998025
+    second: SportFisherSkybridgeIsoInterior1_0
+  - first:
+      213: -2724974103271397221
+    second: SportFisherSkybridgeIsoInterior1_1
+  - first:
+      213: -2613382954360615423
+    second: SportFisherSkybridgeIsoInterior1_2
+  - first:
+      213: 6528979907399913342
+    second: SportFisherSkybridgeIsoInterior1_3
+  - first:
+      213: 9005683976059797166
+    second: SportFisherSkybridgeIsoInterior1_4
+  - first:
+      213: -5407590728236440511
+    second: SportFisherSkybridgeIsoInterior1_5
+  - first:
+      213: -5527228553658825544
+    second: SportFisherSkybridgeIsoInterior1_6
+  - first:
+      213: 444155858947729876
+    second: SportFisherSkybridgeIsoInterior1_7
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: sportFisherSkybridgeIso_house_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 2340
+        width: 1200
+        height: 1170
+      alignment: 9
+      pivot: {x: 0.5, y: 0.37606838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 046a53a8c8d4c6a44a16d88c644b7c2a
+      internalID: -120520226
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sportFisherSkybridgeIso_house_d1
+      rect:
+        serializedVersion: 2
+        x: 1200
+        y: 2340
+        width: 1200
+        height: 1170
+      alignment: 9
+      pivot: {x: 0.5, y: 0.37606838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ec648f02f4cb2814b99b5c445d22cbfa
+      internalID: 284485427
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sportFisherSkybridgeIso_house_d2
+      rect:
+        serializedVersion: 2
+        x: 2400
+        y: 2340
+        width: 1200
+        height: 1170
+      alignment: 9
+      pivot: {x: 0.5, y: 0.37606838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 854104fd2043fe04ab99818fb6d8f97f
+      internalID: 493380483
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sportFisherSkybridgeIso_house_d3
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1170
+        width: 1200
+        height: 1170
+      alignment: 9
+      pivot: {x: 0.5, y: 0.37606838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 16a603393cb1243488d40cc85f940c6f
+      internalID: -1363288269
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sportFisherSkybridgeIso_house_d4
+      rect:
+        serializedVersion: 2
+        x: 1200
+        y: 1170
+        width: 1200
+        height: 1170
+      alignment: 9
+      pivot: {x: 0.5, y: 0.37606838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ae2b6666f1eb94b4abe01fc92e036b5e
+      internalID: 925656293
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sportFisherSkybridgeIso_house_d5
+      rect:
+        serializedVersion: 2
+        x: 2400
+        y: 1170
+        width: 1200
+        height: 1170
+      alignment: 9
+      pivot: {x: 0.5, y: 0.37606838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f52c0c393306eba49a2f502484041e79
+      internalID: -1626229635
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sportFisherSkybridgeIso_house_d6
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 1200
+        height: 1170
+      alignment: 9
+      pivot: {x: 0.5, y: 0.37606838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 511699098c24f9343911d03905c536eb
+      internalID: -1154905906
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sportFisherSkybridgeIso_house_d7
+      rect:
+        serializedVersion: 2
+        x: 1200
+        y: 0
+        width: 1200
+        height: 1170
+      alignment: 9
+      pivot: {x: 0.5, y: 0.37606838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 407849221f3f6d641abd4ed4bfc99d8d
+      internalID: 1688268123
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 17004506647ce69489af618a5ac536d8
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      sportFisherSkybridgeIso_house_d0: -120520226
+      sportFisherSkybridgeIso_house_d1: 284485427
+      sportFisherSkybridgeIso_house_d2: 493380483
+      sportFisherSkybridgeIso_house_d3: -1363288269
+      sportFisherSkybridgeIso_house_d4: 925656293
+      sportFisherSkybridgeIso_house_d5: -1626229635
+      sportFisherSkybridgeIso_house_d6: -1154905906
+      sportFisherSkybridgeIso_house_d7: 1688268123
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

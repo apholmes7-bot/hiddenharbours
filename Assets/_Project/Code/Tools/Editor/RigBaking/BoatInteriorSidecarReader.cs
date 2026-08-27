@@ -176,9 +176,11 @@ namespace HiddenHarbours.Tools.RigBaking
         /// <summary>
         /// <c>hullRigSha256</c> is an OBJECT keyed by the exterior rig's stem —
         /// <c>{"capeIslanderIsoRig": "a3be…"}</c> — because the sidecar is naming which loft it measured
-        /// as well as what that loft hashed to. Exactly one entry is expected; more than one would mean
-        /// an interior measured against two hulls, which nothing in the kit does and nothing here would
-        /// know how to check.
+        /// as well as what that loft hashed to. One entry is the common shape; the sport-fisher
+        /// sidecars ship TWO (a variant-keyed entry beside the bare stem, identically stamped), and
+        /// the rule for that is UNANIMITY — <see cref="BoatInteriorHullResolver.TryUnanimousHullRigPin"/>.
+        /// What would still mean an interior measured against two hulls — entries that disagree on
+        /// hash or rig stem — stays a refusal.
         /// </summary>
         static void ReadHullRigPin(object root, BoatInteriorRead read)
         {
@@ -206,19 +208,19 @@ namespace HiddenHarbours.Tools.RigBaking
             }
             if (read.Errors.Count > 0) return;
 
-            if (pin.Count > 1)
+            // THE UNANIMITY RULE (2026-08-26, ruled on #660): the sport-fisher sidecars ship a
+            // variant-keyed entry beside the bare-stem one, identically stamped, and our own intake
+            // ledger offered "stamp it" as a full remedy — a reader that refused the stamped result
+            // would make that offer a lie. The rule itself, and why the STEM and never the raw key
+            // is what names the bundled file, lives on the helper.
+            if (!BoatInteriorHullResolver.TryUnanimousHullRigPin(pin, out string stem, out string sha,
+                                                                 out string pinError))
             {
-                read.Errors.Add($"hullRigSha256 names {pin.Count} hull rigs " +
-                                $"({string.Join(", ", pin.Keys)}); one interior is measured against one " +
-                                "loft, and a second pin is either a duplicate or a mistake nothing here " +
-                                "can adjudicate. Not imported.");
+                read.Errors.Add(pinError + " Not imported.");
                 return;
             }
-            foreach (var kv in pin)
-            {
-                read.HullRigStem = kv.Key;
-                read.ExpectedHullRigSha = kv.Value as string ?? "";
-            }
+            read.HullRigStem = stem;               // the resolved stem — deterministic, and the FILE name
+            read.ExpectedHullRigSha = sha;
         }
 
         /// <summary>A value that is exactly 64 hex characters — the only shape a SHA-256 stamp may

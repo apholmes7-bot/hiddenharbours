@@ -1,6 +1,6 @@
 {
   "rig": "lobsterBoatIsoRig.js",
-  "derivedFromRigSha256": "08278a2017993c2d2c3ea5fbede808b39359440aafb51fa28eef4ecc3d853bd5",
+  "derivedFromRigSha256": "7a99b90298123820e235c5662d43aa82893bfeeeadbdf807a9743faeac4dcbc9",
   "generated": "2026-07-22",
   "frame": {
     "units": "m",

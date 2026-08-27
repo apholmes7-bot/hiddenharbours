@@ -2007,9 +2007,11 @@ namespace HiddenHarbours.Core
                  "to see where you are going outdoors without the fisher shrinking to a speck.")]
         [Min(0.5f)] public float FarthestWorldHeightMeters;
 
-        [Tooltip("How much raw scroll earns ONE tier. A mouse wheel reports 120 per detent, so 120 = " +
-                 "one tier per click; a trackpad reports a stream of small values and has to travel the " +
-                 "same distance to earn the same tier. Lower = a twitchier wheel.")]
+        [Tooltip("How much scroll earns ONE tier, in the Input System's OWN units — which reports ONE " +
+                 "per wheel detent on this project's setup (owner-measured 2026-08-26). The raw Win32 " +
+                 "120-per-detent scale never reaches this code; shipping 120 here made a tier cost 120 " +
+                 "clicks, a wheel dead to the hand. A trackpad reports a stream of fractions and has " +
+                 "to travel the same distance to earn the same tier.")]
         [Min(1f)] public float WheelUnitsPerNotch;
 
         [Tooltip("Seconds to ease one tier step. 0 = snap. Either way the view LANDS on a crisp " +
@@ -2053,7 +2055,7 @@ namespace HiddenHarbours.Core
             WheelEnabled = true,
             ClosestWorldHeightMeters = 5.625f,   // 1080 / (6 x 32)
             FarthestWorldHeightMeters = 11.25f,  // 1080 / (3 x 32)
-            WheelUnitsPerNotch = 120f,           // one mouse detent
+            WheelUnitsPerNotch = 1f,             // one detent, in Input System units — MEASURED, not Win32's 120
             StepSeconds = 0.18f,
             AboardStopsCloser = 2,               // two stops in from the hull's ruled framing…
             AboardStopsWider = 2,                // …and two out (owner ruling 2026-08-22)

@@ -42,6 +42,57 @@ namespace HiddenHarbours.Core
             public int Offset;
         }
 
+        /// <summary>
+        /// <b>One walkable level of this hull, as her rig declared it</b> — the row that lets a cabin
+        /// say which faces to cut without anybody re-deriving anything.
+        ///
+        /// <para><b>⚠️ Three vocabularies name the same room, and mixing them draws the wrong one.</b>
+        /// The rig calls it <c>house</c> (<see cref="LevelId"/>); <c>BoatInteriorDef</c> calls it
+        /// <c>house_sole</c> (<see cref="DeckId"/>); the interior SHEETS run their own row order,
+        /// which is neither. That last mismatch already shipped once — on the tanker, def index 2 is
+        /// <c>house_sole</c> and sheet row 2 is <c>below</c>, so walking into the wheelhouse drew the
+        /// engine space, and only a test noticed. The cure is the same here as there: the map is
+        /// BUILDER-COMPUTED DATA carried from the rig (its <c>geometry().levels[].deck</c> field IS
+        /// the def's level id), never a <c>_sole</c>-suffix rule invented at runtime.</para>
+        /// </summary>
+        [Serializable]
+        public struct LevelTag
+        {
+            [Tooltip("The rig's own level name — 'house', 'cuddy', 'below', 'bridge', 'main_deck'.")]
+            public string LevelId;
+
+            [Tooltip("The BoatInteriorDef level id this is the same room as — 'house_sole', " +
+                     "'cuddy_sole'. THE JOIN KEY, published by the rig; may be empty when the rig " +
+                     "declared a level the interior kit never measured.")]
+            public string DeckId;
+
+            [Tooltip("The int this level's faces carry in TexCoord1.x. The gate compares against it.")]
+            public int Tag;
+
+            [Tooltip("The rig level this level's ceiling is the underside OF — the one hop a cut of " +
+                     "this level also takes (coordinator ruling 2026-08-27). Empty for 'takes " +
+                     "nothing with it', which is the ordinary answer: a level that already folds its " +
+                     "own lid into its own tag needs no hop.")]
+            public string LidLevelId;
+
+            [Tooltip("The lid's TexCoord1.x tag. 0 — 'hull', the level that is never cut — when " +
+                     "there is no lid, so 'no lid' and 'gate off' are the same value in the shader " +
+                     "as well as in the data.")]
+            public int LidTag;
+
+            [Tooltip("True when the rig declared a real ceiling. An OPEN level (a working deck, the " +
+                     "lobster's cockpit) is declared open, and cutting one would be cutting the sky — " +
+                     "so the gate refuses it. An absent field and an open sky must never look the same.")]
+            public bool Enclosed;
+
+            [Tooltip("Sole height above the keel bottom, hull-local metres. A raked sole publishes " +
+                     "its honest minimum, exactly as the rig does.")]
+            public float SoleZMeters;
+
+            [Tooltip("The overhead's underside, hull-local metres. Only meaningful when Enclosed.")]
+            public float CeilingZMeters;
+        }
+
         [Header("Identity")]
         [Tooltip("Stable id, append-only (CLAUDE.md §5): hullmesh.snake_case.")]
         public string Id = "hullmesh.unnamed";
@@ -93,6 +144,13 @@ namespace HiddenHarbours.Core
         public int CellW, CellH;
         [Tooltip("The rig's bake elevation (degrees above the horizon; 40 for the boat rigs).")]
         public float ElevationDeg = 40f;
+
+        [Header("Cutaway (the rig's own geometry() — read, never derived)")]
+        [Tooltip("One row per WALKABLE level the rig published, joining her mesh's TexCoord1.x tag to " +
+                 "the BoatInteriorDef level id it is the same room as. EMPTY on every hull baked " +
+                 "before the cutaway kit — an empty table means 'this hull cannot be cut', which is " +
+                 "the honest answer for a mesh with no tags in it.")]
+        public LevelTag[] LevelTags = Array.Empty<LevelTag>();
 
         [Header("Pose facts (per-artwork; measured or read off the rig — never tuned)")]
         [Tooltip("MEASURED azimuth convention (RigAzimuthProbe over rendered pixels): true = the rig's " +
@@ -167,6 +225,72 @@ namespace HiddenHarbours.Core
                 if (Ramps[i].Colors == null || Ramps[i].Colors.Length == 0) return false;
             if (Bayer16 == null || Bayer16.Length != 16) return false;
             return PxPerMetre > 0 && CellW > 0 && CellH > 0;
+        }
+
+        /// <summary>
+        /// <b>Can this hull be cut open?</b> True only when her rig published a level vocabulary AND
+        /// her mesh was baked since — the two are separate facts and both have to hold, because a def
+        /// re-serialised from a newer rig with an older mesh sub-asset is exactly the stale-bake state
+        /// this repo keeps meeting.
+        /// </summary>
+        public bool CarriesLevelTags =>
+            LevelTags != null && LevelTags.Length > 0 &&
+            Mesh != null && Mesh.HasVertexAttribute(UnityEngine.Rendering.VertexAttribute.TexCoord1);
+
+        /// <summary>
+        /// <b>What a cut of one level actually removes</b> — the level's own faces and, per the
+        /// coordinator's ruling of 2026-08-27, the faces of the level its ceiling record names as its
+        /// LID. One hop, and one value, so the two can never be fetched apart.
+        /// </summary>
+        public readonly struct Cut
+        {
+            /// <summary>The level being cut into, as a TexCoord1.x tag. <b>0 = no cut</b> — which is
+            /// also the gate's "off", so every refusal lands on the shipped picture.</summary>
+            public readonly int Level;
+
+            /// <summary>The lid that comes off with it, or 0 for none.</summary>
+            public readonly int Lid;
+
+            public Cut(int level, int lid) { Level = level; Lid = lid; }
+
+            /// <summary>True when this actually opens something.</summary>
+            public bool Opens => Level > 0;
+
+            /// <summary>Nothing comes off — the whole exterior draws.</summary>
+            public static Cut None => default;
+
+            public override string ToString() =>
+                Opens ? (Lid > 0 ? $"level {Level} + lid {Lid}" : $"level {Level}") : "none";
+        }
+
+        /// <summary>
+        /// The cut for the <c>BoatInteriorDef</c> level id <paramref name="deckId"/>, or
+        /// <see cref="Cut.None"/> when this hull has no such row, when the row exists but the rig
+        /// declared that level OPEN, or when the id is empty.
+        ///
+        /// <para><b>0 is the refusal, and it is the same value as "gate off".</b> Cutting a level with
+        /// no ceiling is cutting the sky; cutting a level this hull never declared is guessing. Both
+        /// answer "draw her exterior", which is the shipped picture — a cutaway that does not happen
+        /// is a missing feature, and one that happens to the wrong room is a broken boat.</para>
+        ///
+        /// <para><b>⚠️ The lid is NOT gated on the lid's own <c>Enclosed</c>.</b> An open level may
+        /// not be cut INTO — you cannot take the roof off the sky — but it makes a perfectly good
+        /// lid, and all three lids in batch 1 are open decks (the lobster's foredeck, both ships'
+        /// main_deck). The asymmetry is the ruling, not an oversight.</para>
+        ///
+        /// <para>One linear scan over 2–4 rows, returning both halves. Called on a cabin transition,
+        /// not per frame.</para>
+        /// </summary>
+        public Cut CutawayForDeck(string deckId)
+        {
+            if (string.IsNullOrEmpty(deckId) || LevelTags == null) return Cut.None;
+            for (int i = 0; i < LevelTags.Length; i++)
+            {
+                if (!string.Equals(LevelTags[i].DeckId, deckId, StringComparison.Ordinal)) continue;
+                if (!LevelTags[i].Enclosed) return Cut.None;
+                return new Cut(LevelTags[i].Tag, LevelTags[i].LidTag);
+            }
+            return Cut.None;
         }
     }
 }

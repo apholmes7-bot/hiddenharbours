@@ -102,7 +102,7 @@ namespace HiddenHarbours.Art
                                  "(33.75 m down-screen, ~60 m across) or wake scrolls out of the " +
                                  "window while still on screen. The texel resolution is DERIVED from " +
                                  "this (extent x FoamBuffer.CellsPerUnit), so one texel is always " +
-                                 "exactly one world cell: 96 m -> 768^2 x R8 x 2 (ping-pong) = 1.1 MB.")]
+                                 "exactly one world cell: 96 m -> 768^2 x RG16 x 2 (ping-pong) = 2.4 MB.")]
         [Range(32f, 192f)]
         private float _foamWindowMeters = 96f;
 
@@ -111,6 +111,17 @@ namespace HiddenHarbours.Art
                                  "frame-rate independent.")]
         [Range(0.25f, 30f)]
         private float _foamHalfLifeSeconds = 6f;
+
+        [SerializeField, Tooltip("Seconds for churned water to walk HALF-WAY down the sea's colour " +
+                                 "ramp (owner ask 2026-08-27). Deliberately SHORTER than the foam " +
+                                 "half-life above: the colour walk has to finish while the foam is " +
+                                 "still bright enough to see it, or the wake is a white band that " +
+                                 "turns blue only after it has faded out — which is exactly the " +
+                                 "defect this round fixes. At 4 s the churn holds white for ~0.7 s " +
+                                 "(~2 m astern at 3 kn), reaches the shallow blue by ~3.4 s and the " +
+                                 "mid blue by ~11 s, across a band that is visible for ~13 s.")]
+        [Range(0.25f, 30f)]
+        private float _foamAgeHalfLifeSeconds = 4f;
 
         [SerializeField, Tooltip("The per-face INTERIOR MASK (ADR 0023). On: a guard pass marks " +
                                  "each pixel whose nearest hull surface is an open interior, and " +
@@ -237,6 +248,7 @@ namespace HiddenHarbours.Art
             _pass.FoamMaterial = _foamMaterial;
             _pass.FoamWindowMeters = _foamWindowMeters;
             _pass.FoamHalfLifeSeconds = _foamHalfLifeSeconds;
+            _pass.FoamAgeHalfLifeSeconds = _foamAgeHalfLifeSeconds;
             renderer.EnqueuePass(_pass);
         }
 
@@ -290,6 +302,8 @@ namespace HiddenHarbours.Art
             public float FoamWindowMeters;
             /// <summary>Half-life of buffered foam, seconds.</summary>
             public float FoamHalfLifeSeconds;
+            /// <summary>Half-life of the buffer's FRESHNESS channel (the age clock), seconds.</summary>
+            public float FoamAgeHalfLifeSeconds;
             /// <summary>Record the interior-guard pass (the per-face mask)? Only meaningful with
             /// both hulls and water live — with no sea there is nothing to keep out.</summary>
             public bool DrawGuard;
@@ -392,6 +406,7 @@ namespace HiddenHarbours.Art
                 public TextureHandle Prev;
                 public Vector4 World, Resolution, Shift;
                 public float DecayFactor;
+                public float AgeDecayFactor;
                 public Vector4[] Segments, Shapes;
             }
 
@@ -516,7 +531,8 @@ namespace HiddenHarbours.Art
                         {
                             FoamInjection inj = _foamInjections[i];
                             state.Segments[i] = new Vector4(inj.From.x, inj.From.y, inj.To.x, inj.To.y);
-                            state.Shapes[i] = new Vector4(inj.Radius, inj.Amount, 0f, 0f);
+                            // z = the dt-INDEPENDENT vigour: the GATE that resets the freshness clock.
+                            state.Shapes[i] = new Vector4(inj.Radius, inj.Amount, inj.Vigour, 0f);
                         }
                         else
                         {
@@ -525,7 +541,15 @@ namespace HiddenHarbours.Art
                         }
                     }
 
-                    var foamWorld = new Vector4(newOrigin.x, newOrigin.y, extent, 1f / extent);
+                    // 🔴 THE DRAWN window (owner eyeball 2026-08-27: "the whole foam band shifts by
+                    // 1-2 px as ONE unit"). The content scrolls in WHOLE cells and banks the
+                    // remainder; drawing at the bare lattice origin hid that bank until it crossed a
+                    // cell and the entire band teleported at once. Publishing lattice + residual makes
+                    // the drawn position advance by exactly this frame's drift and the whole-cell jump
+                    // cancel to nothing. Zero drift => residual 0 => bit-exact the previous window.
+                    // BOTH shaders take this one origin (see FoamBuffer.DrawOrigin).
+                    Vector2 drawOrigin = FoamBuffer.DrawOrigin(newOrigin, state.DriftResidual);
+                    var foamWorld = new Vector4(drawOrigin.x, drawOrigin.y, extent, 1f / extent);
                     // Only the FIRST frame after a (re)allocation clears: every later frame the read
                     // side IS last frame's foam, and clearing it would be the buffer's whole point
                     // thrown away. The write side never needs a clear — the blit covers every texel.
@@ -551,6 +575,7 @@ namespace HiddenHarbours.Art
                         passData.Resolution = new Vector4(res, res, 1f / res, 1f / res);
                         passData.Shift = new Vector4(sourceOffset.x, sourceOffset.y, 0f, 0f);
                         passData.DecayFactor = FoamBuffer.DecayFactor(FoamHalfLifeSeconds, dt);
+                        passData.AgeDecayFactor = FoamBuffer.DecayFactor(FoamAgeHalfLifeSeconds, dt);
                         passData.Segments = state.Segments;
                         passData.Shapes = state.Shapes;
 
@@ -567,6 +592,7 @@ namespace HiddenHarbours.Art
                             data.Material.SetVector(FoamShaderIds.Resolution, data.Resolution);
                             data.Material.SetVector(FoamShaderIds.Shift, data.Shift);
                             data.Material.SetFloat(FoamShaderIds.Decay, data.DecayFactor);
+                            data.Material.SetFloat(FoamShaderIds.AgeDecay, data.AgeDecayFactor);
                             data.Material.SetVectorArray(FoamShaderIds.InjectSeg, data.Segments);
                             data.Material.SetVectorArray(FoamShaderIds.InjectShape, data.Shapes);
                             Blitter.BlitTexture(ctx.cmd, new Vector4(1f, 1f, 0f, 0f), data.Material, 0);
@@ -882,14 +908,21 @@ namespace HiddenHarbours.Art
             /// The camera's foam ping-pong pair, allocated (or re-allocated when the window
             /// resolution changes) to <paramref name="resolution"/> square.
             ///
-            /// <para><b>R8, and the resolution is DERIVED, not chosen.</b> One texel is exactly one
+            /// <para><b>RG16, and the resolution is DERIVED, not chosen.</b> One texel is exactly one
             /// world cell by construction (<see cref="FoamBuffer.ResolutionForExtent"/>), so the
             /// pixel grid cannot drift away from the cell law by someone typing a different number.
             /// Point-filtered and clamped: an integer texel move must stay an exact copy. Budget at
-            /// the 96 m default — 768² × R8 × 2 = <b>1.1 MB per camera</b>, against the seabed bake's
-            /// 1.0 MB and the reflection target's ARGBHalf at camera resolution. A single channel is
-            /// all a coverage mask needs, and 256 levels are more than a posterized foam edge can
-            /// show (rule 7 — and it keeps the later mobile port affordable).</para>
+            /// the 96 m default — 768² × RG16 × 2 = <b>2.4 MB per camera</b>, against the seabed
+            /// bake's 1.0 MB and the reflection target's ARGBHalf at camera resolution. 256 levels
+            /// per channel are more than a posterized foam edge can show (rule 7 — and it keeps the
+            /// later mobile port affordable).</para>
+            ///
+            /// <para><b>Why the second channel, stated as a price.</b> R alone (coverage) cannot carry
+            /// age: it saturates in ~0.4 s of deposit and is thresholded and posterized before the
+            /// compose reads it, so 72–81% of a visible wake drew at age exactly 0 — the owner's
+            /// "stays white, never disperses". G is a freshness CLOCK
+            /// (<see cref="FoamBuffer.Freshness"/>), bounded by a max rather than an add, so it never
+            /// clamps. One extra byte per world cell is what the colour walk costs.</para>
             /// </summary>
             private FoamState GetFoamState(EntityId cameraId, int resolution)
             {
@@ -902,7 +935,12 @@ namespace HiddenHarbours.Art
                     return state;
 
                 state.Release();
-                var descriptor = new RenderTextureDescriptor(resolution, resolution, RenderTextureFormat.R8, 0)
+                // TWO channels: R = coverage, G = freshness (the age clock — FoamBuffer.Freshness).
+                // RG16 is 8 bits per channel, so this doubles the buffer to ~1.2 MB at the shipped
+                // 96 m window (768²) and ~2.4 MB per camera with the ping-pong — the stated price of
+                // a wake that can change colour, and the reason the age channel is a channel rather
+                // than a second target.
+                var descriptor = new RenderTextureDescriptor(resolution, resolution, RenderTextureFormat.RG16, 0)
                 {
                     sRGB = false,
                     msaaSamples = 1,

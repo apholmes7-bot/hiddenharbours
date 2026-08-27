@@ -224,9 +224,13 @@ namespace HiddenHarbours.Art
                                                   _wakeSpeedKnee, _wakeExponent, _wakeWeight,
                                                   _slapRateKnee, _slapExponent, _slapWeight);
             float amount = rate01 * Mathf.Max(_depositPerSecond, 0f) * dt * Mathf.Max(_strength, 0f);
+            // The FRESHNESS mark (the buffer's age channel) is the dt-INDEPENDENT rate, scaled by this
+            // hull's own contribution dial but never by the frame's dt — a clock reset, not a deposit.
+            float vigour = Mathf.Clamp01(rate01 * Mathf.Max(_strength, 0f));
 
             // The capsule from last frame's position to this one — continuous at any frame rate.
-            _pending = new FoamInjection(_previousPosition, position, RadiusMeters, Mathf.Clamp01(amount));
+            _pending = new FoamInjection(_previousPosition, position, RadiusMeters,
+                                         Mathf.Clamp01(amount), vigour);
             _hasPending = amount > 1e-5f;
             _pendingFrame = Time.frameCount;
             _previousPosition = position;

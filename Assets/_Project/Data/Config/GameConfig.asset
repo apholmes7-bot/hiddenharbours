@@ -346,7 +346,7 @@ MonoBehaviour:
     WheelEnabled: 1
     ClosestWorldHeightMeters: 5.625
     FarthestWorldHeightMeters: 11.25
-    WheelUnitsPerNotch: 120
+    WheelUnitsPerNotch: 1
     StepSeconds: 0.18
     AboardStopsCloser: 2
     AboardStopsWider: 2

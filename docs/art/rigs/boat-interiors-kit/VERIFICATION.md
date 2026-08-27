@@ -64,8 +64,9 @@ inside one kit — never conflate with the 32 px/m hulls.
   section (the one textual match is a `_note` pointing AT its STAIRS entry);
   `mechanism` now binds throughout.
 - **Hull rigs BYTE-IDENTICAL to the first drop, all nine** — the re-export changed
-  sidecars, renderer and docs only. The cape remains FORKED-RIG per the intake ledger;
-  her merge is upstream work under the ruled acceptance bar (see PR #589's comments).
+  sidecars, renderer and docs only. The cape was FORKED-RIG at the time of writing;
+  **her merge landed 2026-08-27** as the third sha `60d127c3…` under the ruled acceptance
+  bar, and the ledger now reads CLEAN for every hull in the drop.
 
 The S0 ledger's 24 `REFUSED-PIN` verdicts may now be re-adjudicated AGAINST THESE
 FILES — which is the intake lane's job, on this branch, not a report-flip.

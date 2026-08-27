@@ -207,7 +207,7 @@ namespace HiddenHarbours.Tests.RigBaking
                 }
 
                 // ---- THE VARIANT BOUNDARY, which is the claim the coordinator asked to be made
-                // honest. The gate lives behind #pragma shader_feature_local HH_LEVEL_GATE, so with
+                // honest. The gate lives behind #pragma multi_compile_local _ HH_LEVEL_GATE, so with
                 // the keyword off the compiled program is literally the pre-spike one — no
                 // TEXCOORD1 input, no varying, no discard, nothing per fragment. Two renders prove
                 // it costs nothing AND hides nothing:
@@ -219,7 +219,7 @@ namespace HiddenHarbours.Tests.RigBaking
                 int diffVariant = DifferingPixels(shippedProgram, gatedAtZero);
                 int diffRooms = DifferingPixels(shippedProgram, roomsGatedOff);
                 sb.AppendLine();
-                sb.AppendLine("THE VARIANT BOUNDARY (#pragma shader_feature_local HH_LEVEL_GATE, off by default):");
+                sb.AppendLine("THE VARIANT BOUNDARY (#pragma multi_compile_local _ HH_LEVEL_GATE, off by default):");
                 sb.AppendLine("   shipped program vs the gated variant at 0, same hull : " + diffVariant +
                               " differing px  (must be 0 — compiling the gate in changes no pixel)");
                 sb.AppendLine("   shipped program vs hull+ROOMS through the gate at 0  : " + diffRooms +
@@ -689,6 +689,22 @@ namespace HiddenHarbours.Tests.RigBaking
                 IsoFacetHullSetup setup = IsoFacetHullPresentationService.ToSetup(def);
                 setup.Mesh = mesh;
                 r.Configure(setup);
+                // WHICH level, through the shipped seam. It used to be Shader.SetGlobalFloat, and
+                // that stopped working the day the cutaway shipped: _HHLevelShown is now written
+                // per DRAW through the renderer's property block (a global would cut every sister
+                // ship in the creek open at once), and a block value overrides a global. The spike
+                // went on setting the global, the block went on saying 0, and the level's own hull
+                // faces went on drawing -- 13,615 px of them.
+                // No LID here on purpose. The spike measures the tag mechanism on ITS OWN extruded
+                // rooms, whose level ids come from BoatInteriorDef indices and not from a rig's
+                // geometry(); it has no ceiling records and therefore no lid to declare. The lid is
+                // adjudicated on the real rigs, in HullLevelTagBakeTests.
+                r.ShowCutaway(new HiddenHarbours.Core.HullMeshDef.Cut(
+                    Mathf.RoundToInt(levelShown), 0));
+                // WHICH VARIANT, after and deliberately: the renderer only compiles the gate in
+                // while a cut is actually live (rule 7), so "the gated program at level 0" -- the
+                // measurement that proves the variant boundary costs no pixels -- is unreachable
+                // through the shipped API and has to be forced here.
                 SetLevelGate(go, gateCompiledIn);
                 r.HeadingDirUnits = HullMeshMath.HeadingToDirUnits(PanelHeadingDegrees, 0f,
                                                                    def.AzimuthCounterClockwise);
@@ -698,11 +714,13 @@ namespace HiddenHarbours.Tests.RigBaking
                 r.HeavePixels = p.HeavePx;
                 r.ApplyPose();
                 SetLayerRecursive(go.transform, ProbeLayer);
-                Shader.SetGlobalFloat("_HHLevelShown", levelShown);
                 return RenderCell(def, def.CellW, def.CellH);
             }
             finally
             {
+                // The global is no longer the mechanism, but clear it anyway: a stale one left
+                // over from an older fixture would be silently overridden here and silently
+                // authoritative anywhere a property block does not write.
                 Shader.SetGlobalFloat("_HHLevelShown", 0f);
                 Object.DestroyImmediate(go);
             }

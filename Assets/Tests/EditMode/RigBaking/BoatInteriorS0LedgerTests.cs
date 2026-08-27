@@ -146,66 +146,94 @@ namespace HiddenHarbours.Tests.RigBaking
         }
 
         [Test]
-        public void TheReExportClearedTwentyFourAndBrokeTheTwoThatWereAlreadyClean()
+        public void TheCutawayKitsStampClearedTheLastTwoAndOnlyTheCapeIsStillRefused()
         {
+            // ⚠️ THIS EXPECTATION MOVED ON 2026-08-26, which is the whole point of pinning it.
+            //
             // Drop 1: 2 clean (both sport fishers), 24 refused on the phantom renderer pin, 1 forked.
             // The re-export re-stamped all 27 to the renderer that shipped — clearing the 24 — and in
             // the same pass shipped an unsubstituted export template into the sport fishers' hull pins,
-            // which refuses exactly the two that were already good. Both halves pinned here, because a
-            // re-adjudication that quietly moved a hull either way is the thing this ledger exists to
-            // prevent. Update in the same change as any future re-export.
+            // which refused exactly the two that were already good. The cutaway kit (batch 1) then
+            // shipped the substitution, and the two REFUSED-PIN rows went back to CLEAN against the
+            // landed bytes: the stamp ebc77bac… is the LF sha256 of the bundled sportFisherIsoRig2.js.
+            //
+            // Every hop is still pinned, because a re-adjudication that quietly moves a hull in either
+            // direction is the thing this ledger exists to prevent. RefusedPin is now asserted ABSENT
+            // rather than looked up — a lookup would throw KeyNotFound and read as a broken test rather
+            // than as a cleared fleet. Update in the same change as any future re-export or import.
             var byVerdict = Committed().Values
                 .GroupBy(e => e.Verdict)
                 .ToDictionary(g => g.Key, g => g.Select(e => e.HullStem)
                                                 .OrderBy(x => x, System.StringComparer.Ordinal).ToArray());
 
-            CollectionAssert.AreEqual(
-                new[] { "sportFisherIsoRig2.convertible", "sportFisherIsoRig2.skybridge" },
-                byVerdict[BoatInteriorS0Verdict.RefusedPin],
-                "only the two sport fishers carry the re-export's unstamped pin");
+            CollectionAssert.IsEmpty(
+                byVerdict.TryGetValue(BoatInteriorS0Verdict.RefusedPin, out var refused)
+                    ? refused : System.Array.Empty<string>(),
+                "no hull is refused on its pin any more — the cutaway kit stamped the last two");
+            CollectionAssert.IsEmpty(
+                byVerdict.TryGetValue(BoatInteriorS0Verdict.StaleFatal, out var stale)
+                    ? stale : System.Array.Empty<string>(),
+                "no hull has ever been stale-fatal on the current ledger");
+
+            // The cape's FORKED-RIG was the last refusal standing, and it is discharged: her rig merge
+            // landed 2026-08-27 as the third sha 60d127c3… — repo main as the base, with the kit's aft
+            // door and published loft re-applied, #508's OKLCH paint and #247's washboards byte-identical
+            // through it. Asserted ABSENT rather than looked up, for the same reason as RefusedPin above.
+            CollectionAssert.IsEmpty(
+                byVerdict.TryGetValue(BoatInteriorS0Verdict.ForkedRig, out var forked)
+                    ? forked : System.Array.Empty<string>(),
+                "no hull is on a forked rig any more — the cape's merge closed the last fork");
 
             CollectionAssert.AreEqual(
-                new[] { "capeIslanderIsoRig" }, byVerdict[BoatInteriorS0Verdict.ForkedRig]);
-
-            CollectionAssert.AreEqual(
-                new[] { "coastalPacketIsoRig", "lobsterBoatIsoRig", "lobsterBoatVariantsIsoRig",
-                        "sideDraggerIsoRig", "sternTrawlerIsoRig", "sternTrawlerMk2IsoRig",
-                        "tankerIsoRig" },
+                new[] { "capeIslanderIsoRig", "coastalPacketIsoRig", "lobsterBoatIsoRig",
+                        "lobsterBoatVariantsIsoRig", "sideDraggerIsoRig",
+                        "sportFisherIsoRig2.convertible", "sportFisherIsoRig2.skybridge",
+                        "sternTrawlerIsoRig", "sternTrawlerMk2IsoRig", "tankerIsoRig" },
                 byVerdict[BoatInteriorS0Verdict.Clean],
-                "seven families clear — 24 sidecars once the eighteen variants are counted");
+                "ten families clear — every hull in the drop — which is 27 sidecars once the eighteen " +
+                "lobster variants are counted");
         }
 
         [Test]
-        public void TheSportFishersRefusalNamesTheTemplateAndNotSomethingVaguer()
+        public void TheSportFishersClearanceCitesTheStampItWasFlippedAgainst()
         {
-            // The upstream fix is one substitution. A refusal that said "pin mismatch" would send
-            // somebody hunting a geometry problem that does not exist.
+            // The mirror of the refusal this replaces. That one insisted the refusal name the TEMPLATE
+            // rather than something vaguer, so nobody went hunting a geometry problem that did not
+            // exist; this one insists the clearance name the SHA it was flipped against, so nobody has
+            // to take "cleared" on trust. A verdict flips against bytes or it does not flip.
             foreach (string stem in new[] { "sportFisherIsoRig2.convertible", "sportFisherIsoRig2.skybridge" })
             {
                 BoatInteriorS0Entry e = BoatInteriorS0Ledger.For(Committed(), stem);
-                Assert.AreEqual(BoatInteriorS0Verdict.RefusedPin, e.Verdict);
-                StringAssert.Contains("STAMP_AT_EXPORT", e.Evidence);
-                StringAssert.Contains("template", e.UpstreamAsk.ToLowerInvariant());
+                Assert.AreEqual(BoatInteriorS0Verdict.Clean, e.Verdict);
+                StringAssert.Contains(
+                    "ebc77bace833361b578f5315e175e10de61d1acf77b5037390217ceb09221bcb", e.Evidence,
+                    "the clearance must carry the stamp it was checked against, not just a date");
+                StringAssert.Contains("sportFisherIsoRig2.js", e.Evidence);
+                StringAssert.DoesNotContain("STAMP_AT_EXPORT", e.UpstreamAsk);
             }
         }
 
         [Test]
-        public void TheCapeIsForkedNotStaleAndAsksForAMergeNotAReMeasure()
+        public void TheCapeIsCleanAndTheAskSheClearedOnWasAMergeNotAReMeasure()
         {
-            // The distinction this pins cost a wrong verdict to learn. Her rooms are SOUND: every input
-            // they are measured from is identical across both branches, and the washboards #247 moved
-            // are not in the published loft at all. What is broken is that main's rig and the kit's are
-            // two forks — main has the paint and the washboards but publishes no loft; the kit publishes
-            // the loft but has neither. Calling that "stale" sends upstream to re-measure, which would
-            // not help and cannot even be done: boatInteriorRig.js drops a hull whose rig has no loft.
+            // Until 2026-08-27 this test pinned her FORKED-RIG refusal — a distinction that cost a
+            // wrong verdict to learn (her rooms were SOUND; "stale" would have sent upstream to
+            // re-measure, which could not even be done: boatInteriorRig.js drops a hull whose rig
+            // has no loft). The rig merge the ask demanded landed as the third sha 60d127c3… —
+            // repo main as the base, the kit's aft door and published loft re-applied — and the
+            // verdict flipped to CLEAN in the ledger's dated _corrections entry. This now pins the
+            // DISCHARGED state, and that the recorded ask is still the historical merge ask: if the
+            // ledger ever re-refuses her, or the ask is rewritten into a re-measure, this reds.
             BoatInteriorS0Entry cape = BoatInteriorS0Ledger.For(Committed(), "capeIslanderIsoRig");
 
-            Assert.AreEqual(BoatInteriorS0Verdict.ForkedRig, cape.Verdict);
-            Assert.IsFalse(cape.IsClean, "forked still does not build — the rig cannot land as-is");
+            Assert.AreEqual(BoatInteriorS0Verdict.Clean, cape.Verdict,
+                            "the cape's fork was closed by the rig merge (third sha 60d127c3…) — " +
+                            "a non-CLEAN verdict here means she regressed or the ledger was rewritten");
+            Assert.IsTrue(cape.IsClean, "clean builds — the merged rig is main's and the kit's, byte for byte");
             StringAssert.Contains("merge", cape.UpstreamAsk.ToLowerInvariant(),
-                                  "the ask is a rig merge, and saying 're-measure' here is the bug");
+                                  "the ask she cleared on was a rig merge, and it stays recorded as one");
             Assert.IsFalse(cape.UpstreamAsk.ToLowerInvariant().Contains("re-measure against main"),
-                           "main's rig publishes no loft — measuring against it deletes her from the kit");
+                           "main's rig published no loft then — measuring against it would have deleted her from the kit");
         }
 
         [Test]

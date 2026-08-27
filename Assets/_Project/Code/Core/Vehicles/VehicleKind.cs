@@ -18,6 +18,19 @@ namespace HiddenHarbours.Core
 
         /// <summary>Drives ashore and swims. The water seam reads this.</summary>
         AmphibiousVehicle = 1,
+
+        /// <summary>
+        /// ⚠️ <b>TOWED. Not a vehicle that drives — a body that is dragged.</b> A semi-trailer has
+        /// no engine, no steering axle and no driver's seat; she goes where her tractor's fifth
+        /// wheel takes her.
+        ///
+        /// <para>She is in this enum rather than beside it because she arrives through the same
+        /// door: an art kit with a gameplay sidecar, scanned by the same coverage law, baked by the
+        /// same mesh path. What she must never do is reach a driving code path — see
+        /// <see cref="VehicleKinds.IsDrivable"/>, which is the one question that separates her from
+        /// the two above.</para>
+        /// </summary>
+        TowedBody = 2,
     }
 
     /// <summary>
@@ -65,6 +78,15 @@ namespace HiddenHarbours.Core
                 //     disk, and a reader that knew only one of them would work until it read the
                 //     other file.
                 ["amphib_xtv"] = VehicleKind.AmphibiousVehicle,
+
+                // The repo's ruled name for a towed body, and the road-fleet drop's own PLURAL
+                // spelling of it. The trailer kit ships ONE rig and ONE sidecar carrying FOUR
+                // bodies (flatbed 28/53, reefer 28/53), and its `kind` is plural because the
+                // document really does describe four — its `variant` is `trailers-x4`. Accepted
+                // as shipped, like the Otter's two spellings above; the ENUM stays singular,
+                // because a kind describes one registered body.
+                ["towed_body"] = VehicleKind.TowedBody,
+                ["towed_bodies"] = VehicleKind.TowedBody,
             };
 
         /// <summary>Every token this repo recognises — the coverage law enumerates it so a sidecar
@@ -93,6 +115,31 @@ namespace HiddenHarbours.Core
         {
             VehicleKind.RoadVehicle => "road_vehicle",
             VehicleKind.AmphibiousVehicle => "amphibious_vehicle",
+            VehicleKind.TowedBody => "towed_body",
+            _ => throw new ArgumentOutOfRangeException(nameof(kind), kind, "unmapped VehicleKind"),
+        };
+
+        /// <summary>
+        /// ⭐ <b>Can this kind be DRIVEN?</b> The one question that separates a towed body from the
+        /// two machines, and the reason <see cref="VehicleKind.TowedBody"/> is worth a value of its
+        /// own rather than a flag on a road vehicle.
+        ///
+        /// <para>⚠️ <b>A trailer has no engine, no steering axle and no seat</b> — measured, not
+        /// assumed: <c>trailerIsoRig.js</c> resolves no <c>steer</c> axis at all, and the kit's own
+        /// README says <i>"No steering — towed bodies"</i>. Every driving path (throttle, lock
+        /// angles, mounting, fuel burn) has to ask this before it poses anything, because a trailer
+        /// handed to a controller looks exactly like a truck with a broken steering rack: she
+        /// drives, badly, and nothing fails.</para>
+        ///
+        /// <para>Written as an explicit switch rather than <c>kind != TowedBody</c> so a new kind
+        /// added to the enum cannot silently inherit "drivable" — it stops compiling instead,
+        /// which is where that decision belongs.</para>
+        /// </summary>
+        public static bool IsDrivable(VehicleKind kind) => kind switch
+        {
+            VehicleKind.RoadVehicle => true,
+            VehicleKind.AmphibiousVehicle => true,
+            VehicleKind.TowedBody => false,
             _ => throw new ArgumentOutOfRangeException(nameof(kind), kind, "unmapped VehicleKind"),
         };
     }

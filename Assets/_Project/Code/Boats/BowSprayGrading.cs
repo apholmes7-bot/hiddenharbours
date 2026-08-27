@@ -101,7 +101,11 @@ namespace HiddenHarbours.Boats
     public struct BowSprayGradeConfig
     {
         [Header("Master switch")]
-        [Tooltip("Draw the graded bow spray at the cutwater. Off = no spray at all (the wake is untouched).")]
+        [Tooltip("Draw the authored graded bow-spray SHEET at the cutwater. RETIRED 2026-08-27: it is " +
+                 "the last boat-attached authored sprite in the wake, and the owner's eyeball named it " +
+                 "as reading like 'a sprite baked statically … never manipulated'. The live " +
+                 "impact-driven droplet burst (BowImpactConfig) replaces it. On = the old sheet returns " +
+                 "ON TOP of the droplets — the A/B the replacement is judged against.")]
         public bool SprayEnabled;
 
         [Header("Reference ranges (normalize each input to 0..1)")]
@@ -174,7 +178,10 @@ namespace HiddenHarbours.Boats
         /// <summary>The greybox default — speed-forward, gentle on the dory. The owner tunes on the component.</summary>
         public static BowSprayGradeConfig Default => new BowSprayGradeConfig
         {
-            SprayEnabled = true,
+            // RETIRED 2026-08-27 (owner eyeball). One authored tier sprite, pinned to the stem, its
+            // churn pulse too subtle to register — it is the "old static" read verbatim, and it now
+            // sits in front of a bow that throws live droplets on impact. Kept as the A/B, not deleted.
+            SprayEnabled = false,
 
             LengthRefMin = 4f,       // same hull-normalization frame as the wake grade
             LengthRefMax = 20f,

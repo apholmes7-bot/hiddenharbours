@@ -1,0 +1,287 @@
+{
+  "rig": "aeroSemiIsoRig.js",
+  "exportSymbol": "AeroSemiIso",
+  "variant": "aeroSemi",
+  "derivedFromRigSha256": "9886154c4cbb972d7c16f2326d705cae8214a8361aab16c89f36103e8b49a7d8",
+  "kind": "road_vehicle",
+  "label": "Aero Sleeper Semi",
+  "generated": "measured off the rig source by hand-transcription with per-value provenance; no generator in the rig",
+  "frame": {
+    "units": "metres",
+    "scale_px_per_m": 32,
+    "origin": "ground-centre of the body footprint (bumper excluded from the centring; z=0 is the road)",
+    "axes": "+x curb side, +y nose, +z up",
+    "heading_independent": true,
+    "at_rest": "every value here is at susF=susR=0, doors and hood shut, skirts fitted, BOBTAIL (no trailer). See TOW for the coupling.",
+    "pivot_px": { "x": 192, "y": 214, "cell": [384, 320], "_note": "the road cell — a bare tractor fits it; model z=0 projects to the pivot row in all 8 facings" }
+  },
+  "VARIANTS": {
+    "_what": "NONE. One PART toggle covers the fleet builds.",
+    "skirts": {
+      "values": [true, false],
+      "default": true,
+      "_note": "aero side fairings between the axles. false bares the frame, both fuel tanks and the battery box; NO published z changes and the painted bbox is IDENTICAL either way (the skirts sit inside the fender/cab silhouette — the harness asserts it).",
+      "provenance": "buildFrame skirts branch"
+    }
+  },
+  "BODY": {
+    "loa_m": 7.57,
+    "body_length_m": 7.4,
+    "width_over_fenders_m": 2.54,
+    "width_over_mirrors_m": 2.96,
+    "cab_width_m": 2.44,
+    "height_m": 3.89,
+    "fairing_top_z": 3.85,
+    "cab_roof_z": 2.86,
+    "sleeper_length_m": 1.63,
+    "wheelbase_m": 5.25,
+    "wheels": 10,
+    "collider_bbox": {
+      "x": [-1.27, 1.27],
+      "y": [-3.45, 4.12],
+      "z": [0, 3.89],
+      "_note": "the painted front fenders are the widest hard point (2.54 m). Mirrors reach 2.96 over — add 0.21 m per side above z 1.64 if they must be solid."
+    },
+    "ground_clearance_m": {
+      "hard": 0.33,
+      "source": "tandem diff tubes r 0.17 centred z 0.50 (buildWheels)",
+      "frame_rails": 0.55,
+      "skirts": 0.22,
+      "mudflaps": 0.06,
+      "_note": "mudflaps are rubber; the skirts are painted composite at 0.22 m — a kerb strike is gameplay's call, the rig draws neither bending"
+    },
+    "overhang_m": { "front": 1.17, "rear_of_tandem_centre": 1.15 },
+    "provenance": "BODIES.aeroSemi + G; mirrors from buildCab boxes |1.38..1.48|"
+  },
+  "CAB": {
+    "_what": "a two-seat sleeper cab: high flat floor, buckets, a 1.63 m bunk room behind the seats — one shell, no partition.",
+    "floor": {
+      "polygon": [[-1.14, -0.84], [1.14, -0.84], [1.14, 2.0], [-1.14, 2.0]],
+      "z": 1.15,
+      "winding": "ccw_from_above",
+      "headroom_m": 1.57,
+      "provenance": "buildCab floor slab at G.cabFloorZ; headliner z 2.72"
+    },
+    "helm": {
+      "side": "street (-x)",
+      "wheel_hub": [-0.62, 1.7, 1.52],
+      "wheel_r_m": 0.18,
+      "dash_face_y": 1.8,
+      "provenance": "buildCab tube [-0.62,1.74,1.48]->[-0.62,1.66,1.55] — left-hand drive"
+    },
+    "seats": [
+      { "id": "driver", "kind": "bucket", "cushion": { "x": [-0.88, -0.36], "y": [1.08, 1.54], "top_z": 1.52 }, "back": { "y": [0.96, 1.10], "top_z": 2.06 }, "seat_ref": [-0.62, 1.31, 1.52], "height_above_floor_m": 0.37, "role": "driver" },
+      { "id": "passenger", "kind": "bucket", "cushion": { "x": [0.36, 0.88], "y": [1.08, 1.54], "top_z": 1.52 }, "back": { "y": [0.96, 1.10], "top_z": 2.06 }, "seat_ref": [0.62, 1.31, 1.52], "role": "passenger" }
+    ],
+    "bunk": {
+      "kind": "sleeper berth",
+      "cushion": { "x": [-0.92, 0.92], "y": [-0.78, 0.60], "top_z": 1.48 },
+      "seat_ref": [0, -0.09, 1.48],
+      "window": { "sides": "both", "y": [-0.60, -0.10], "z": [1.75, 2.20] },
+      "_note": "one undivided berth across the sleeper. Occupancy, rest mechanics and privacy are gameplay's call."
+    },
+    "obstructions": [
+      { "id": "dash", "footprint": { "x": [-1.10, 1.10], "y": [1.80, 2.00] }, "top_z": 1.6, "treatment": "wall" }
+    ],
+    "provenance": "buildCab interior block, read verbatim"
+  },
+  "THRESHOLD": [
+    {
+      "id": "door_l",
+      "side": "street (-x, driver)",
+      "kind": "hinged",
+      "span_y": [0.75, 1.77],
+      "clear_width_m": 1.02,
+      "sill_z": 1.0,
+      "head_z": 2.42,
+      "clear_height_m": 1.42,
+      "hinge_axis": { "kind": "vertical", "at": [-1.18, 1.77], "edge": "forward" },
+      "swing_deg": 65,
+      "swing_sense": "CCW seen from above",
+      "keep_clear": {
+        "radius_m": 1.02,
+        "sector_deg": [0, 65],
+        "arc_at_sill": [[-1.22, 0.75], [-1.46, 0.8], [-1.73, 0.92], [-1.94, 1.11], [-2.1, 1.34]],
+        "outboard_extreme_x": -2.1,
+        "_note": "sweep of the free edge about the hinge axis; the collider is the arc, not the leaf"
+      },
+      "boarding": { "treads_z": [0.44, 0.80], "floor_z": 1.15, "_note": "two tank-top steps then the high floor — see STEP; the 1.15 m sill is the tallest climb in the pack" },
+      "reach_point": { "pos": [-2.05, 1.25, 0], "hinge_clearance_m": 1.6, "_note": "outside the swept disc; NOT tested against ground colliders" },
+      "mirror": { "outboard_x": -1.48, "z": [1.64, 2.06], "rides": "the CAB (A-pillar arms), not this door" },
+      "visible_facings": ["NE", "E", "SE"],
+      "provenance": "buildDoors + G.doorY/doorZ0/doorHead; hinge (sx*1.18, 1.77); a = sx*pose*65deg"
+    },
+    {
+      "id": "door_r",
+      "side": "curb (+x)",
+      "kind": "hinged",
+      "span_y": [0.75, 1.77],
+      "clear_width_m": 1.02,
+      "sill_z": 1.0,
+      "head_z": 2.42,
+      "clear_height_m": 1.42,
+      "hinge_axis": { "kind": "vertical", "at": [1.18, 1.77], "edge": "forward" },
+      "swing_deg": 65,
+      "swing_sense": "CW seen from above",
+      "keep_clear": { "radius_m": 1.02, "sector_deg": [0, 65], "arc_at_sill": [[1.22, 0.75], [1.46, 0.8], [1.73, 0.92], [1.94, 1.11], [2.1, 1.34]], "outboard_extreme_x": 2.1 },
+      "boarding": { "treads_z": [0.44, 0.80], "floor_z": 1.15 },
+      "reach_point": { "pos": [2.05, 1.25, 0], "hinge_clearance_m": 1.6 },
+      "mirror": { "outboard_x": 1.48, "z": [1.64, 2.06], "rides": "the CAB" },
+      "visible_facings": ["SW", "W", "NW"],
+      "provenance": "buildDoors; symmetric"
+    }
+  ],
+  "TOW": {
+    "_what": "the tier's whole point: this tractor COUPLES. Trailers are separate bodies with kingpin anchors; the GAME articulates the pair about the coupling point.",
+    "fifth_wheel": {
+      "coupling_point": [0, -2.4, 1.18],
+      "plate": { "y": [-2.8, -2.0], "half_width": 0.45, "top_z": 1.18 },
+      "slot": { "opens": "aft", "centre_x": 0, "half_width": 0.06, "reach_y": [-2.8, -2.4] },
+      "ramps": { "from_y": -2.8, "to": [-3.02, 1.0], "_note": "approach ramps angle down aft — back under a trailer nose and the kingpin rides up into the slot" },
+      "pedestal": { "y": [-2.55, -2.25], "x": [-0.35, 0.35], "z": [0.95, 1.13] },
+      "release_handle": { "pos": [-0.78, -2.4, 1.08], "side": "street" },
+      "offset_from_tandem_centre_m": -0.1,
+      "trailer_deck_z_when_coupled": 1.18,
+      "provenance": "buildFrame fifth-wheel block + G.fw, verbatim"
+    },
+    "swing_clearance": {
+      "kingpin_to_cabback_m": 1.52,
+      "nearest_obstruction": "the cab back wall (y -0.88); the side extenders sit 1.83 m from the kingpin — farther, despite looking closer",
+      "trailer_nose_swing_r_m": 1.516,
+      "swing_basis": "a 2.44 m-wide trailer with the pack's 0.90 m kingpin set: r = sqrt(1.22^2 + 0.90^2)",
+      "verdict": "FULL JACKKNIFE CLEARS — by 4 mm. Keep the pack's trailers at the 0.90 m set, or re-run this arithmetic before coupling anything else.",
+      "_note": "the game owns the articulation; the rig renders a bobtail tractor and publishes the numbers"
+    },
+    "glad_hands": { "panel": [0, -0.87, 1.98], "lines_to": "the trailer nose — air and electrics; the lines are drawn slack to the catwalk", "attach": "trailer-side anchor pairs with this point" },
+    "front_pins": { "at": [[-0.3, 4.1, 0.42], [0.3, 4.1, 0.42]], "kind": "recovery pins through the bumper", "_note": "recovery only — nothing couples here" },
+    "deck": { "catwalk": { "x": [-0.55, 0.55], "y": [-1.95, -0.92], "z": 1.1 }, "walkable": "UNRULED — see _confirm.deck", "_note": "grid-plate catwalk between cab and fifth wheel, where the lines are worked" }
+  },
+  "STEP": {
+    "boards": [
+      { "id": "step_l_low", "side": "street", "x": [-1.16, -0.84], "y": [0.95, 1.35], "top_z": 0.44 },
+      { "id": "step_l_high", "side": "street", "x": [-1.16, -0.86], "y": [0.95, 1.35], "top_z": 0.80 },
+      { "id": "step_r_low", "side": "curb", "x": [0.84, 1.16], "y": [0.95, 1.35], "top_z": 0.44 },
+      { "id": "step_r_high", "side": "curb", "x": [0.86, 1.16], "y": [0.95, 1.35], "top_z": 0.80 }
+    ],
+    "default": true,
+    "_note": "two tank-top treads per side under the doors — 0.44, 0.80, then the 1.15 m floor. Frame parts: they ride the suspension, never the hood."
+  },
+  "SUSPENSION": {
+    "travel_m": { "front": 0.09, "rear": 0.11 },
+    "input_range": [-1, 1],
+    "formula": "dz(y) = -(susF*0.09)*t - (susR*0.11)*(1-t),  t = (y - (-2.30)) / 5.25",
+    "applies_to": "the whole body group (frame, hood clip, cab, fairing, fifth wheel, deck) — the wheels do NOT move",
+    "consequence": "every polygon in CAB, THRESHOLD and TOW rides that dz — including the COUPLING POINT: a coupled game re-reads fifthWheel z under load rather than caching 1.18.",
+    "provenance": "build() dz(y), verbatim; axR is the tandem CENTRE (-2.30)"
+  },
+  "WHEELS": {
+    "radius_m": 0.5,
+    "tire_width_m": 0.3,
+    "axles": { "front_y": 2.95, "tandem_a_y": -1.7, "tandem_b_y": -2.9, "tandem_centre_y": -2.3, "wheelbase_m": 5.25 },
+    "list": [
+      { "id": "FL", "pos": [-0.84, 2.95, 0.5], "role": "steer", "steer_axis": { "kind": "vertical", "at": [-0.84, 2.95] } },
+      { "id": "FR", "pos": [0.84, 2.95, 0.5], "role": "steer", "steer_axis": { "kind": "vertical", "at": [0.84, 2.95] } },
+      { "id": "MLi", "pos": [-0.6, -1.7, 0.5], "role": "drive", "dual_of": "MLo" },
+      { "id": "MLo", "pos": [-0.9, -1.7, 0.5], "role": "drive" },
+      { "id": "MRi", "pos": [0.6, -1.7, 0.5], "role": "drive", "dual_of": "MRo" },
+      { "id": "MRo", "pos": [0.9, -1.7, 0.5], "role": "drive" },
+      { "id": "RLi", "pos": [-0.6, -2.9, 0.5], "role": "drive", "dual_of": "RLo" },
+      { "id": "RLo", "pos": [-0.9, -2.9, 0.5], "role": "drive" },
+      { "id": "RRi", "pos": [0.6, -2.9, 0.5], "role": "drive", "dual_of": "RRo" },
+      { "id": "RRo", "pos": [0.9, -2.9, 0.5], "role": "drive" }
+    ],
+    "track_m": { "front": 1.68, "rear_outer": 1.8 },
+    "contact_z": 0,
+    "_note": "roll is per-CORNER (wFL wFR wRL wRR, REVOLUTIONS) — each tandem SIDE shares its corner's roll across both axles, and each dual pair shares its wheel's. One revolution (3.142 m) closes to 0.15% of painted px: 29.008 tread stripes of 0.1083 m plus 10-fold lugs.",
+    "provenance": "G.frontWX / dualXi / dualXo / axF / tandA / tandB / wheelR / tireW — exact"
+  },
+  "STEERING": {
+    "param": "steer",
+    "range": [-1, 1],
+    "sense": "+1 = full LEFT lock; the nose swings toward -x",
+    "max_deg": { "inner": 32, "outer": 27.51 },
+    "ackermann": "outer = atan(1/(1/tan(inner) + track/wheelbase)), front track 1.68 m, wheelbase 5.25 m (to the tandem centre)",
+    "axis": "vertical, through each front wheel centre — no kingpin offset, caster or scrub radius is modelled",
+    "applies_to": ["FL", "FR"],
+    "turning_radius_m": {
+      "rear_axle_centre": 8.4,
+      "outer_front_wheel_path": 10.63,
+      "_note": "geometric, at full lock, BOBTAIL. A coupled trailer tracks inside this arc; off-tracking is the game's arithmetic."
+    },
+    "swept_envelope": {
+      "tire_corner_x_m": 1.232,
+      "fender_x_m": 1.27,
+      "cab_side_x_m": 1.22,
+      "_note": "at full lock a front tire corner keeps 38 mm inside the painted fenders — the fenders are the collider width and the lock stops at 32deg to keep it that way."
+    },
+    "does_not": "yaw the tractor. STEERING turns the wheels; YAW turns the machine. A turning tractor wants both — and a coupled trailer wants its OWN yaw.",
+    "provenance": "steerAngles() + wheelAt() yaw branch; STEER_MAX = 32"
+  },
+  "HOOD": {
+    "param": "hood",
+    "range": [0, 1],
+    "deg": [0, 72],
+    "hinge": { "kind": "x_axis", "at_y": 4.02, "at_z": 0.55 },
+    "rides": "the whole FRONT CLIP: raked hood, cheeks, both fenders and arches, liners, grille, headlamps — one group",
+    "stays": "bumper, frame, engine, CAB (doors, mirrors, steps), fairing, fifth wheel, wheels",
+    "bares": {
+      "engine_block": { "x": [-0.38, 0.38], "y": [2.25, 3.4], "top_z": 1.18 },
+      "valve_cover": { "top_z": 1.3 },
+      "radiator_wall": { "y": [3.86, 3.92], "top_z": 1.24 },
+      "air_cleaner": { "side": "curb", "at": [0.58, 2.75, 1.05] },
+      "latches": { "at": [[-0.92, 2.07, 1.6], [0.92, 2.07, 1.6]] }
+    },
+    "extreme": "at hood=1 the hood nose reaches y 4.72 (0.60 m past the bumper) and the cowl edge rises to z 2.76. Do not open against a wall.",
+    "provenance": "buildHoodClip part() + rotX about G.hoodHinge; G.hoodDeg = 72"
+  },
+  "YAW": {
+    "param": "yaw",
+    "units": "degrees",
+    "range": [-45, 45],
+    "what": "heading between the eight facings. The model turns about z before projection under a FIXED key, so the shading is rebaked for the new heading — this is not a rotated sprite.",
+    "pivot": "unaffected; the origin projects to the published pivot at any yaw",
+    "frame": "yaw is a RENDER param, not geometry. Every metre in this file is in the machine frame and does not move with it.",
+    "gameplay": "a heading is dir*45 + yaw. A COUPLED PAIR is two headings: tractor dir*45+yaw and trailer dir*45+yaw, hinged at the coupling point — the articulation angle is their difference, and TOW.swing_clearance is its limit."
+  },
+  "ATTACH": {
+    "exhaust_tip": { "pos": [-0.6, -3.4, 0.28], "_note": "under-frame, street side — smoke/heat FX attach. NO chrome stacks on the aero tier." },
+    "fuel_tanks": { "kind": "cylinders, BOTH sides", "axis_y": [-0.1, 1.3], "centre_xz": [0.88, 0.62], "r": 0.3, "_note": "hidden behind the skirts on the fleet build; skirts:false bares them" },
+    "battery_box": { "x": [-1.12, -0.82], "y": [-0.55, 0.05], "side": "street" },
+    "fairing_top": { "attach": [0, -0.4, 3.85], "_note": "beacon/aerial attach on the fairing crown" },
+    "frame_end_lamps": { "at_y": -3.42, "xs": [-0.38, 0.38], "kind": "red — the bobtail tail lights; a coupled trailer brings its own" }
+  },
+  "INTERACT": [
+    { "id": "drive", "action": "enter_drive", "at": "door_l", "reach_point": [-2.05, 1.25, 0], "visible_facings": ["NE", "E", "SE"] },
+    { "id": "ride", "action": "enter_ride", "at": "door_r", "reach_point": [2.05, 1.25, 0], "visible_facings": ["SW", "W", "NW"] },
+    { "id": "hood", "action": "open_close_engine", "at": "HOOD.bares.latches", "reach_point": [0, 4.75, 0], "visible_facings": ["SE", "S", "SW"] },
+    { "id": "couple", "action": "couple_uncouple", "at": "TOW.fifth_wheel.release_handle", "reach_point": [-1.6, -2.4, 0], "_note": "pull the release from the street side; the coupling itself is backing under the nose", "visible_facings": ["NE", "E", "N"] },
+    { "id": "lines", "action": "connect_air_electric", "at": "TOW.glad_hands", "reach_point": [1.3, -1.3, 0], "_note": "worked from the catwalk or the curb side of the deck", "visible_facings": ["N", "NE", "NW"] }
+  ],
+  "_interact_notes": {
+    "reach_point": "a request, not a promise — a ground-level standing spot derived from which face the item is on. NOT validated against terrain, kerb or another vehicle.",
+    "visible_facings": "the near-side test paint() uses: a feature with outward normal n is listed for facing d when nx*sin(d*45) + ny*cos(d*45) < -0.3, edge-on excluded. Top faces are visible at all eight."
+  },
+  "_excluded": {
+    "WASHBOARD": "not a hull.",
+    "CLEATS": "not a hull. The fifth wheel is TOW — a coupling, not mooring.",
+    "walkable_roof": "the fairing crown at 3.85 m has no rail and no route up. The CATWALK (TOW.deck) is the only intended standing surface off the ground.",
+    "fuel_fill": "no filler necks or caps — the tanks are in ATTACH.fuel_tanks.",
+    "exhaust_stack": "no chrome stacks — the aero tier runs under-frame after-treatment. The stacks are the CLASSIC tier's cue.",
+    "rear_bumper": "none. The frame ends bare with two lamp clusters; the trailer brings the ICC bar. Bobtail rear-end collision is a frame strike.",
+    "sleeper_interior": "the bunk is a slab; no cabinets, curtain or interior interactables are modelled.",
+    "plate_and_wipers": "no licence plate, wipers, aerial or decals. At 32 px/m they are 1-3 px and were left out of the bake.",
+    "spare_wheel": "no spare is modelled, slung or otherwise."
+  },
+  "_confirm": {
+    "coupling_owner": "the rig renders a BOBTAIL tractor and publishes the coupling point; pairing, articulation, off-tracking and jackknife physics are the GAME's. Pair anchors().fifthWheel with the trailer's kingpin anchor and hinge there.",
+    "swing_margin": "full jackknife clears the cab by 4 mm — with the pack's 0.90 m kingpin set and 2.44 m trailer width. A wider trailer or a shorter set contacts the cab; re-run TOW.swing_clearance before coupling anything foreign.",
+    "coupled_height": "the trailer deck rides at 1.18 m when coupled — and at dz(y=-2.40) under suspension. Re-read the anchor, do not cache it.",
+    "deck": "the catwalk is published as geometry (1.10 m, grid plate). Whether a player stands there to work the lines is unruled.",
+    "bobtail_lamps": "the frame-end lamps are the only tail lights bobtail. A coupled trailer's lamps take over; nothing in the rig wires that.",
+    "hood_discipline": "nothing couples the hood to motion or coupling state. Opening the clip under a trailer nose is geometrically possible and visually wrong; the rig will not stop it.",
+    "mirror_collider": "BODY.collider_bbox stops at the fenders (2.54 m). The mirrors reach 2.96 m over — the widest mirrors in the pack; decide before a lane squeeze.",
+    "skirt_rule": "skirts:false changes 1690 pixels and ZERO bbox — pack once, toggle freely.",
+    "fifth_wheel_slide": "the plate is FIXED at y -2.40 (0.10 aft of tandem centre). Real plates slide for weight distribution; this one does not, and nothing in the sidecar pretends otherwise.",
+    "steering_and_yaw": "STEERING moves the wheels only; YAW moves the machine. Nothing couples them — and nothing couples the trailer; see YAW.gameplay."
+  }
+}

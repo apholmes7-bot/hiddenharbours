@@ -186,13 +186,48 @@ namespace HiddenHarbours.Tests.RigBaking
         [Test]
         public void AnInteriorClaimingTwoLoftsIsRefused()
         {
+            // Same stamp on both entries, but the KEYS name two different rigs — identical hashes
+            // cannot make one interior belong to two lofts, so unanimity of value is not enough.
             string json = Sidecar().Replace(
                 $"{{ \"testBoatIsoRig\": \"{HullSha}\" }}",
                 $"{{ \"testBoatIsoRig\": \"{HullSha}\", \"otherIsoRig\": \"{HullSha}\" }}");
             BoatInteriorRead read = Read(json);
 
             Assert.IsFalse(read.Ok);
-            Assert.IsTrue(read.Errors.Any(e => e.Contains("names 2 hull rigs")), string.Join(" | ", read.Errors));
+            Assert.IsTrue(read.Errors.Any(e => e.Contains("name different rigs")), string.Join(" | ", read.Errors));
+        }
+
+        [Test]
+        public void AUnanimousVariantKeyedPinIsAcceptedAndTheStemNamesTheRig()
+        {
+            // The sport-fisher shape: a variant-keyed entry beside the bare stem, identically
+            // stamped. Unanimity (one hash, one stem) accepts it, and HullRigStem must be the
+            // STEM — a raw variant key would compose a hull-rig path that does not exist and
+            // turn a good drop into a misdiagnosed mismatch.
+            string json = Sidecar().Replace(
+                $"{{ \"testBoatIsoRig\": \"{HullSha}\" }}",
+                $"{{ \"testBoatIsoRig.convertible\": \"{HullSha}\", \"testBoatIsoRig\": \"{HullSha}\" }}");
+            BoatInteriorRead read = Read(json);
+
+            Assert.IsTrue(read.Ok, string.Join(" | ", read.Errors));
+            Assert.AreEqual("testBoatIsoRig", read.HullRigStem);
+            Assert.AreEqual(HullSha, read.ExpectedHullRigSha);
+        }
+
+        [Test]
+        public void APinWhoseEntriesDisagreeOnTheHashIsRefused()
+        {
+            // Two entries under one rig stem but with DIFFERENT stamps — the genuinely dangerous
+            // shape unanimity exists to keep refusing: nothing can adjudicate which loft the rooms
+            // were measured against. (InteriorSha is any valid 64-hex value that is not HullSha.)
+            string json = Sidecar().Replace(
+                $"{{ \"testBoatIsoRig\": \"{HullSha}\" }}",
+                $"{{ \"testBoatIsoRig.convertible\": \"{InteriorSha}\", \"testBoatIsoRig\": \"{HullSha}\" }}");
+            BoatInteriorRead read = Read(json);
+
+            Assert.IsFalse(read.Ok);
+            Assert.IsTrue(read.Errors.Any(e => e.Contains("DISAGREEING hashes")), string.Join(" | ", read.Errors));
+            Assert.IsEmpty(read.Levels);
         }
 
         [Test]

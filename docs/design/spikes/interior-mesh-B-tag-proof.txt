@@ -1,15 +1,15 @@
 B — ONE TAG, BOTH HALVES OF THE SWAP (spike/interior-mesh)
 hull: LobsterBoatIso   level tagged: house_sole (id 1)
-combined mesh: 5100 verts / 1542 tris  (hull 4152/1384 + rooms 948/158)
-hull faces carrying THIS level's tag: 219 of 227 tagged in all   interior material id reused: 2   fore bias 14.54 m (the hull's own bounding-sphere diameter)
+combined mesh: 5232 verts / 1586 tris  (hull 4284/1428 + rooms 948/158)
+hull faces carrying THIS level's tag: 223 of 231 tagged in all   interior material id reused: 2   fore bias 14.54 m (the hull's own bounding-sphere diameter)
 
 pixel accounting at the dock pose, 90 deg:
-   exterior house of the level, drawn alone : 13540 px
+   exterior house of the level, drawn alone : 13615 px
    the room, drawn alone                    : 8534 px
    the tagged house faces, DRAWN AT THE GATE: 0 px   (must be 0 — this is the cull, asked exactly)
-   hull revealed behind it while inside     : 4972 px  (the deck and far rail the house used to hide; NOT a leak)
-   room pixels outside the house silhouette : 491 px  (containment, in pixels)
-   room pixels the SHIPPED frame covers     : 8043 px  (overlap of the two masks: 8043)
+   hull revealed behind it while inside     : 5002 px  (the deck and far rail the house used to hide; NOT a leak)
+   room pixels outside the house silhouette : 446 px  (containment, in pixels)
+   room pixels the SHIPPED frame covers     : 8088 px  (overlap of the two masks: 8088)
 
    room pixels SURVIVING into the combined frame, WITH the fore bias : 8330 of 8534  (97.6%)
    room pixels SURVIVING with db = 0, the SWAP ALONE               : 1729 of 8534  (20.3%)
@@ -19,7 +19,7 @@ pixel accounting at the dock pose, 90 deg:
      The sprite path never met this because a sheet composites OVER the hull.
      The mesh path already owns the same lever: UV0.z, the rig's per-face db.
 
-THE VARIANT BOUNDARY (#pragma shader_feature_local HH_LEVEL_GATE, off by default):
+THE VARIANT BOUNDARY (#pragma multi_compile_local _ HH_LEVEL_GATE, off by default):
    shipped program vs the gated variant at 0, same hull : 0 differing px  (must be 0 — compiling the gate in changes no pixel)
    shipped program vs hull+ROOMS through the gate at 0  : 0 differing px  (must be 0 — the gate hides the interior geometry)
    With the keyword OFF the program has no TEXCOORD1 input, no extra varying

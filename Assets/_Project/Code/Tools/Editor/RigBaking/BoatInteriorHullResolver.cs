@@ -152,6 +152,74 @@ namespace HiddenHarbours.Tools.RigBaking
             return "";
         }
 
+        /// <summary>
+        /// The unanimity rule for a <c>hullRigSha256</c> pin: several entries are acceptable iff every
+        /// entry holds the identical value AND every key resolves through <see cref="Split"/> to the
+        /// same rig stem — the shape a generator produces when it stamps a variant-keyed entry
+        /// alongside the rig's own. The STEM, never a raw key, is what names the bundled hull-rig
+        /// file: <c>hull-rigs/</c> ships <c>sportFisherIsoRig2.js</c> and not
+        /// <c>sportFisherIsoRig2.convertible.js</c>, so a path built from a variant key misses, reads
+        /// as a null rig, and turns a good drop into a misdiagnosed HULL RIG MISMATCH. Entries that
+        /// disagree on either arm are refused with both sides named — an interior claiming two lofts
+        /// is the dangerous shape this gate exists for, and a future variant-with-its-own-rig
+        /// legitimately fails here until per-variant pin resolution is its own design.
+        /// </summary>
+        public static bool TryUnanimousHullRigPin(Dictionary<string, object> pin,
+                                                  out string rigStem, out string sha, out string error)
+        {
+            rigStem = ""; sha = ""; error = "";
+            if (pin == null || pin.Count == 0)
+            {
+                error = "hullRigSha256 is absent or empty.";
+                return false;
+            }
+
+            // Sorted so every refusal names the same keys in the same order on every run.
+            var keys = new List<string>(pin.Keys);
+            keys.Sort(StringComparer.Ordinal);
+
+            string stem = null, value = null;
+            foreach (string key in keys)
+            {
+                Split(key, out string keyStem, out _);
+                string v = pin[key] as string ?? "";
+                if (stem == null) { stem = keyStem; value = v; continue; }
+
+                // Hex is case-insensitive and IsSha256Hex accepts both cases, so unanimity must too.
+                if (!string.Equals(v, value, StringComparison.OrdinalIgnoreCase))
+                {
+                    error = $"hullRigSha256 names {pin.Count} hull rigs with DISAGREEING hashes " +
+                            $"({DescribePin(pin, keys)}); one interior is measured against one loft, " +
+                            "and nothing here can adjudicate which of them these rooms were " +
+                            "measured against.";
+                    return false;
+                }
+                if (!string.Equals(keyStem, stem, StringComparison.Ordinal))
+                {
+                    error = $"hullRigSha256's keys name different rigs ({string.Join(", ", keys)} — " +
+                            $"stems '{stem}' vs '{keyStem}'); several entries are only acceptable " +
+                            "when every key is one rig under at most a variant suffix, holding one " +
+                            "hash.";
+                    return false;
+                }
+            }
+
+            rigStem = stem;
+            sha = value;
+            return true;
+        }
+
+        static string DescribePin(Dictionary<string, object> pin, List<string> sortedKeys)
+        {
+            var parts = new List<string>(sortedKeys.Count);
+            foreach (string key in sortedKeys)
+            {
+                string v = pin[key] as string ?? "(null)";
+                parts.Add($"{key} = {(v.Length <= 12 ? v : v.Substring(0, 12) + "…")}");
+            }
+            return string.Join(", ", parts);
+        }
+
         /// <summary>Split <c>sportFisherIsoRig2.convertible</c> into rig stem and variant. A stem with
         /// no dot is a rig that makes one boat, and its variant is empty.</summary>
         public static void Split(string interiorHullStem, out string rigStem, out string variant)
