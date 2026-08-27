@@ -316,5 +316,96 @@ namespace HiddenHarbours.Boats
             float taper = Mathf.Clamp01(1f - x * x);
             return taper * taper;
         }
+
+        // ==== THE SINGLE BUBBLE (owner ask 2026-08-27) =============================================
+
+        /// <summary>Native pixel size of ONE bubble sprite (square). 12 px at PPU 32 = 0.375 m, which is
+        /// above the largest bubble the stream forms — so every bubble is drawn scaled DOWN and never
+        /// magnified past its own texels.</summary>
+        public const int BubblePixels = 12;
+
+        /// <summary>How many distinct bubble films are baked. Four, mirrored per pool slot, is enough that
+        /// a cluster never repeats a shape at bubble scale.</summary>
+        public const int BubbleVariantCount = 4;
+
+        /// <summary>
+        /// One bubble's coverage field, row-major, <paramref name="size"/> × <paramref name="size"/>, each
+        /// value 0..1.
+        ///
+        /// <para><b>Why a FILM and not a dot.</b> The aerated raft above already draws bubbles as part of a
+        /// foam puff, and that is exactly what reads as "shader-like": a bubble baked into a larger shape is
+        /// a pattern. This is the unit the bubble STREAM draws — one bubble, on its own, so it can have its
+        /// own position, size, shade and death. Its profile is what makes it read as a bubble rather than a
+        /// blob: a bright RIM where the film turns edge-on to the eye, a THIN interior you can see the water
+        /// through, and a small off-centre HIGHLIGHT where the sky catches it.</para>
+        ///
+        /// <para>Variant 3 is a BURSTING film — its rim is broken on one side. Mixed into a cluster it
+        /// stops every bubble from being a perfect circle, which is the difference between a handful of
+        /// bubbles and a handful of stamps.</para>
+        /// </summary>
+        public static float[] BuildBubbleCoverage(int variant, int size)
+        {
+            int n = Mathf.Max(3, size);
+            var field = new float[n * n];
+
+            int v = ((variant % BubbleVariantCount) + BubbleVariantCount) % BubbleVariantCount;
+
+            // Per-variant film character. Rim thickness and interior opacity are what separate a taut new
+            // bubble (thin bright rim, clear middle) from a tired one (thicker rim, cloudier middle).
+            float rimThickness = 0.22f + v * 0.06f;          // fraction of the radius the rim occupies
+            float interior     = 0.16f + v * 0.07f;          // how much the film covers through the middle
+            float highlightAng = 2.36f - v * 0.55f;          // where the sky catches it (radians, up-left-ish)
+            bool  bursting     = v == BubbleVariantCount - 1;
+
+            float cx = (n - 1) * 0.5f;
+            float cy = (n - 1) * 0.5f;
+            float rMax = (n - 1) * 0.5f;
+
+            // The highlight sits partway out along its angle, inside the rim.
+            float hx = cx + Mathf.Cos(highlightAng) * rMax * 0.45f;
+            float hy = cy + Mathf.Sin(highlightAng) * rMax * 0.45f;
+            float hR = Mathf.Max(0.8f, rMax * 0.22f);
+
+            for (int y = 0; y < n; y++)
+            for (int x = 0; x < n; x++)
+            {
+                float dx = x - cx;
+                float dy = y - cy;
+                float r = Mathf.Sqrt(dx * dx + dy * dy) / Mathf.Max(0.001f, rMax);   // 0 centre .. 1 edge
+
+                float a;
+                if (r > 1f)
+                {
+                    a = 0f;
+                }
+                else if (r >= 1f - rimThickness)
+                {
+                    a = 1f;                                   // the rim: the film seen edge-on
+                }
+                else
+                {
+                    // The interior film thins toward the middle — you see the most water dead centre.
+                    float inner = r / Mathf.Max(0.001f, 1f - rimThickness);
+                    a = interior * (0.45f + 0.55f * inner);
+                }
+
+                // A bursting film has lost its rim over one arc — the gap the water pours back through.
+                if (bursting && a > 0f)
+                {
+                    float ang = Mathf.Atan2(dy, dx);
+                    float delta = Mathf.Abs(Mathf.DeltaAngle(ang * Mathf.Rad2Deg, -50f));
+                    if (delta < 46f) a *= Mathf.Clamp01(delta / 46f);
+                }
+
+                // The sky-catch, added last so it survives the burst gap: this is the glint that makes a
+                // bubble read as a bubble at four pixels across, where the rim alone is just a ring.
+                float hd = Mathf.Sqrt((x - hx) * (x - hx) + (y - hy) * (y - hy)) / hR;
+                if (hd < 1f && r <= 1f) a = Mathf.Max(a, 1f - hd * hd);
+
+                field[y * n + x] = Mathf.Clamp01(a);
+            }
+
+            return field;
+        }
     }
 }

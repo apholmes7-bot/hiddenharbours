@@ -116,6 +116,22 @@ namespace HiddenHarbours.Boats
                  "Enabled = false falls back to the flat white crest LINES for an A/B.")]
         [SerializeField] private WakeWaveConfig _wave = WakeWaveConfig.Default;
 
+        [Header("THE AGE RAMP (owner ask 2026-08-27: churn white, then through the sea's blues)")]
+        [Tooltip("How churned water AGES in COLOUR: born at the sea's own foam anchor, then walking down " +
+                 "the water's palette — foam to shallow to mid — over each element's life, with a " +
+                 "per-particle scatter so one churn holds many ages at once instead of reading as a " +
+                 "single sheet. The anchors are the LIVE ones the water is drawing itself with (ADR 0015), " +
+                 "read through the Core SeaPalette seam — never invented here. Strength = 0 restores the " +
+                 "flat serialized tints below, bit-exact (the A/B).")]
+        [SerializeField] private WakeAgeRamp _ageRamp = WakeAgeRamp.Default;
+
+        [Header("BUBBLES (owner ask 2026-08-27: individually noticeable things, not a pattern)")]
+        [Tooltip("The discrete bubble stream: bubbles form in bursts where the hull works the water " +
+                 "(stern churn and the stem), each with its own size, life, shade and drift, and each " +
+                 "POPS on its own clock rather than fading like foam. Enabled = false is the revert — " +
+                 "no pool ticked, no renderers built, nothing drawn.")]
+        [SerializeField] private WakeBubbleConfig _bubbles = WakeBubbleConfig.Default;
+
         // Displaced sea (ADR 0023 — the wake rides the same sea the boat rides): the wave field comes
         // from GameConfig.WaveField via GameServices (ADR 0018 §(5)), so the foam rides the same swell
         // as the hull and the drawn surface BY CONSTRUCTION, not by a parity comment. The exaggeration
@@ -134,6 +150,10 @@ namespace HiddenHarbours.Boats
                  "transom segment). Its own pool rather than a share of the crest pool so the arms' " +
                  "overlap law and the roll's much shorter life never compete for slots.")]
         [Min(0)] [SerializeField] private int _transomPoolPerBoat = 24;
+        [Tooltip("Max live BUBBLES PER BOAT (a fifth fixed, recycled pool). Sized against the stream's own " +
+                 "arithmetic: at the shipped 26/s and a 1.1 s life the steady-state population is ~29, so " +
+                 "64 carries the burstiest cluster with room to spare and never grows.")]
+        [Min(0)] [SerializeField] private int _bubblePoolPerBoat = 64;
         [Tooltip("How many boats to drive at once (each gets its own pool). One active player boat dominates; " +
                  "spare slots cover NPC traffic when it arrives.")]
         [Min(1)] [SerializeField] private int _maxBoats = 4;
@@ -163,6 +183,13 @@ namespace HiddenHarbours.Boats
         [Tooltip("Order for the BOW SPRAY. Same band as the foam by default — above the water plane, below the " +
                  "hull, so the droplets read as kicked up at the cutwater without covering the boat.")]
         [SerializeField] private int _spraySortingOrder = -1;
+        [Tooltip("Order for the BUBBLES. The same wake band as the foam and spray (-1): safely above the " +
+                 "Sea plane (-5) and safely below the hull (0), which is the ordering that actually " +
+                 "matters. Bubbles vs foam WITHIN that band is left to the renderer rather than claimed " +
+                 "here — there is no integer between -1 and the hull, and both are wake elements at " +
+                 "similar alpha, so a tie reads the same either way. Raise it only if the owner wants " +
+                 "bubbles over the hull.")]
+        [SerializeField] private int _bubbleSortingOrder = -1;
 
         [Header("Cadence")]
         [Tooltip("How often (Hz) the wake sim ticks (emit + advect + render). The sea is slow; the boat moves " +
@@ -187,6 +214,10 @@ namespace HiddenHarbours.Boats
         private Sprite[] _tierSprites;
         // The four graded BOW SPRAY sprites [Small, Medium, Large, Huge] — same build, same per-tier fallback.
         private Sprite[] _spraySprites;
+        // The single-bubble films (owner ask 2026-08-27). A tiny shared set, one per variant, assigned to a
+        // pool slot ONCE at build so nothing is written per frame and the whole stream still batches.
+        // Null while the stream is disabled — the revert costs no memory (rule 7).
+        private Sprite[] _bubbleSprites;
         private float _tickTimer;
         private float _rescanTimer;
         // The wake's own eased wave-field animator (the BuoyWaveVisual pattern): ticked once per wake tick
@@ -213,6 +244,9 @@ namespace HiddenHarbours.Boats
             _foamSprites = BuildFoamSprites(_trail.FoamAeration, _trail.FoamAgeErosion);
             _lineSprite = BuildLineSprite();
             _waveSprite = BuildWaveSprite(_wave.CrestUndulation);
+            // The single-bubble films. Built only when the stream is on, so the revert costs no memory
+            // either (the same discipline the age-erosion ladder keeps).
+            _bubbleSprites = _bubbles.Enabled ? BuildBubbleSprites() : null;
 
             // ONE library load feeds both graded sprite sets. The pivot must sit on the art's BOAT end
             // whichever way the art is authored: the serialized pivot when un-flipped, mirrored when the owner
@@ -349,9 +383,19 @@ namespace HiddenHarbours.Boats
                                        sea.ShoreFadeBandMeters, sea.Exaggeration);
             }
 
+            // THE SEA'S OWN PALETTE (ADR 0015, owner ask 2026-08-27): the anchors the water is drawing
+            // ITSELF with this tick, read LIVE from the Core SeaPalette seam — the water eases them as the
+            // mood turns, so a copy taken once would leave the wake's blues behind the sea's. No published
+            // palette (no water surface in the region, or the preset has none) ⇒ the ramp is skipped
+            // entirely and every element draws its flat serialized tint, exactly as it did before this
+            // lane: the same OFF contract the displaced ride keeps two blocks up.
+            bool haveSea = SeaPalette.TryGet(out SeaPaletteState palette);
+            WakeAgeRamp ramp = haveSea ? _ageRamp : WakeAgeRamp.Off;
+
             for (int r = 0; r < _rigs.Count; r++)
                 _rigs[r].Tick(current, wind, roughness, time, dt, _config, _foamColor, _lineConfig, _lineColor,
-                              _grade, _spray, _sprayColor, _trail, _bowWave, _wave, _waveColor, in lift);
+                              _grade, _spray, _sprayColor, _trail, _bowWave, _wave, _waveColor, in lift,
+                              in ramp, in palette, in _bubbles);
         }
 
         /// <summary>
@@ -435,9 +479,11 @@ namespace HiddenHarbours.Boats
                 // when it is not — chosen ONCE here, so a rig never writes a sprite reference per frame.
                 Sprite crest = _wave.Enabled && _waveSprite != null ? _waveSprite : _lineSprite;
                 _rigs.Add(new WakeRig(boat, _poolPerBoat, _linePoolPerBoat, _dropletPoolPerBoat,
-                                      _wave.TransomCrest ? _transomPoolPerBoat : 0, _foamSprites,
-                                      crest, _tierSprites, _spraySprites, transform, _sortingLayer,
-                                      _sortingOrder, _lineSortingOrder, _plumeSortingOrder, _spraySortingOrder));
+                                      _wave.TransomCrest ? _transomPoolPerBoat : 0,
+                                      _bubbles.Enabled ? _bubblePoolPerBoat : 0, _foamSprites,
+                                      crest, _bubbleSprites, _tierSprites, _spraySprites, transform,
+                                      _sortingLayer, _sortingOrder, _lineSortingOrder, _plumeSortingOrder,
+                                      _spraySortingOrder, _bubbleSortingOrder));
             }
         }
 
@@ -631,6 +677,51 @@ namespace HiddenHarbours.Boats
         }
 
         /// <summary>
+        /// Build the SINGLE-BUBBLE films (owner ask 2026-08-27: "bubbles form and drift … not particle like").
+        ///
+        /// <para>Deliberately its own sprite rather than a smaller foam raft. The raft's bubbles are baked
+        /// INTO a puff, which is why they read as a pattern: every puff wears the same bubbles in the same
+        /// places. These are one bubble each, so the thing on screen and the thing in the pool are the same
+        /// object, and it can have its own size, shade, drift and death.</para>
+        ///
+        /// <para>Alpha uses the SAME band-and-dither law as every other wake sprite (the KTC pixel-foam
+        /// style), so a bubble is crisp pixel art beside the foam it sits in rather than a soft decal.
+        /// Four films, built once at boot, shared by every bubble of every boat (rule 7).</para>
+        /// </summary>
+        private static Sprite[] BuildBubbleSprites()
+        {
+            const int ppu = 32;
+            int size = WakeFoamTexture.BubblePixels;
+            var sprites = new Sprite[WakeFoamTexture.BubbleVariantCount];
+            for (int v = 0; v < sprites.Length; v++)
+            {
+                float[] coverage = WakeFoamTexture.BuildBubbleCoverage(v, size);
+                string label = $"BoatWake.Bubble[{v}]";
+                var tex = new Texture2D(size, size, TextureFormat.RGBA32, false, true)
+                {
+                    name = label,
+                    filterMode = FilterMode.Point,
+                    wrapMode = TextureWrapMode.Clamp,
+                };
+                var px = new Color32[size * size];
+                for (int y = 0; y < size; y++)
+                for (int x = 0; x < size; x++)
+                {
+                    int i = y * size + x;
+                    px[i] = new Color32(255, 255, 255, BandDitherAlpha(coverage[i], x, y));
+                }
+                tex.SetPixels32(px);
+                tex.Apply(false, false);
+                sprites[v] = Sprite.Create(tex, new Rect(0, 0, size, size), new Vector2(0.5f, 0.5f), ppu);
+                sprites[v].name = label;
+            }
+            return sprites;
+        }
+
+        /// <summary>The bubble sprite's native diameter in metres — what a bubble's own size scales against.</summary>
+        private const float BubbleNativeSize = WakeFoamTexture.BubblePixels / 32f;
+
+        /// <summary>
         /// Build the WAKE WAVE's crest sprite — the thing that replaces the authored plume decal.
         ///
         /// <para><b>The profile lives in the sprite's RGB, not in its tint.</b> A SpriteRenderer carries one
@@ -783,6 +874,11 @@ namespace HiddenHarbours.Boats
             // re-open the very gaps the overlap law closes.
             private readonly WakeParticleSystem _transomSys;
             private readonly SpriteRenderer[] _transomRenderers;
+            // The BUBBLES (owner ask 2026-08-27) — its own system, because a bubble is not a foam puff:
+            // it arrives in bursts, it is sized from a heavy tail, and it POPS rather than fading.
+            private readonly WakeBubbleSystem _bubbleSys;
+            private readonly SpriteRenderer[] _bubbleRenderers;
+            private uint _bubbleDraw;           // monotonic tick index -> the bursty arrival's deterministic dice
             private float _emitCarry;
             private float _lineEmitCarry;
             // --- TRAIL DEPOSITION state (metres-of-track carries + the previous frame anchors) -------------
@@ -812,9 +908,11 @@ namespace HiddenHarbours.Boats
             private const float PlanViewElevationDegrees = 90f;
 
             public WakeRig(BoatController boat, int pool, int linePool, int dropletPool, int transomPool,
-                           Sprite[][] foamRafts, Sprite crest,
+                           int bubblePool,
+                           Sprite[][] foamRafts, Sprite crest, Sprite[] bubbleFilms,
                            Sprite[] tierSprites, Sprite[] spraySprites, Transform parent, string sortingLayer,
-                           int sortingOrder, int lineSortingOrder, int plumeSortingOrder, int spraySortingOrder)
+                           int sortingOrder, int lineSortingOrder, int plumeSortingOrder, int spraySortingOrder,
+                           int bubbleSortingOrder)
             {
                 Boat = boat;
                 _sys = new WakeParticleSystem(pool);
@@ -885,6 +983,43 @@ namespace HiddenHarbours.Boats
                     _transomSys = new WakeParticleSystem(tp);
                     _transomRenderers = BuildRenderers(tp, "sternRoll", crest, sortingLayer, lineSortingOrder);
                 }
+
+                // The BUBBLES: a fifth pooled slice. Like the foam, each slot is given ONE of the shared
+                // films at build time (never per frame) so a cluster is a mix of shapes rather than one
+                // stamp repeated. Null films (stream disabled) cleanly disables the whole stream.
+                int bp = Mathf.Max(0, bubblePool);
+                if (bp > 0 && bubbleFilms != null && bubbleFilms.Length > 0)
+                {
+                    _bubbleSys = new WakeBubbleSystem(bp);
+                    _bubbleRenderers = BuildBubbleRenderers(_bubbleSys.Capacity, bubbleFilms, sortingLayer,
+                                                            bubbleSortingOrder);
+                }
+            }
+
+            /// <summary>
+            /// The BUBBLE pool's renderers. One shared film per slot, plus the same per-slot mirroring the
+            /// foam rafts use — so four films cover sixteen apparent shapes and a burst never repeats
+            /// itself. Written once, here; nothing per frame (rule 7).
+            /// </summary>
+            private SpriteRenderer[] BuildBubbleRenderers(int count, Sprite[] films, string sortingLayer,
+                                                          int sortingOrder)
+            {
+                var arr = new SpriteRenderer[count];
+                for (int i = 0; i < count; i++)
+                {
+                    var go = new GameObject("bubble");
+                    go.transform.SetParent(_root, worldPositionStays: false);
+                    var sr = go.AddComponent<SpriteRenderer>();
+                    sr.sprite = films[i % films.Length];
+                    WakeFoamTexture.MirrorForSlot(i, out bool flipX, out bool flipY);
+                    sr.flipX = flipX;
+                    sr.flipY = flipY;
+                    if (!string.IsNullOrEmpty(sortingLayer)) sr.sortingLayerName = sortingLayer;
+                    sr.sortingOrder = sortingOrder;
+                    go.SetActive(false);
+                    arr[i] = sr;
+                }
+                return arr;
             }
 
             /// <summary>
@@ -971,7 +1106,8 @@ namespace HiddenHarbours.Boats
                              in WakeConfig cfg, Color foamColor, in WakeLineConfig lineCfg, Color lineColor,
                              in WakeGradeConfig grade, in BowSprayGradeConfig spray, Color sprayColor,
                              in WakeTrailConfig trail, in BowWaveConfig bowWave,
-                             in WakeWaveConfig wave, Color waveColor, in SeaLift lift)
+                             in WakeWaveConfig wave, Color waveColor, in SeaLift lift,
+                             in WakeAgeRamp ramp, in SeaPaletteState palette, in WakeBubbleConfig bubbles)
             {
                 if (Boat == null) return;
 
@@ -1003,11 +1139,11 @@ namespace HiddenHarbours.Boats
 
                 // --- GRADED PLUME (the boat-attached transom churn — now alive: pulse + turn fade) ---
                 RenderPlume(pos, bow, speed, aground, magnitude, tier, length, bakeElev, foamColor, grade,
-                            trail, turnRate, time, in lift);
+                            trail, turnRate, time, in lift, in ramp, in palette);
 
                 // --- GRADED BOW SPRAY (speed-forward, its own grade — gentle on the dory by onset) ---
                 RenderSpray(pos, bow, speed, aground, length, mass, bakeElev, sprayColor, spray, bowWave, time,
-                            in lift);
+                            in lift, in ramp, in palette);
 
                 // --- THE DEPOSITED TRAIL (owner ask 2026-07-23) --------------------------------------------
                 // Deposits are laid at the STERN'S SWEPT TRACK — per metre travelled, not per second — and
@@ -1035,6 +1171,14 @@ namespace HiddenHarbours.Boats
                 if (_dropletSys != null && bowWave.DropletsEnabled)
                     DepositBowDroplets(pos, bow, speed, aground, length, mass, bakeElev, spray, bowWave, dt);
 
+                // --- BUBBLES (owner ask 2026-08-27) — formed where the hull WORKS the water --------------
+                // Two interaction points, both anchored to the drawn hull ends rather than her origin: the
+                // stern churn (the prop/keel wash) and the stem (the water working against the bow — the
+                // bow half of the original 2026-07-23 ask, graded by the same WakeGrading magnitude the
+                // plume uses). Arrival is bursty by construction; everything else about a bubble is its own.
+                if (_bubbleSys != null && bubbles.Enabled)
+                    FormBubbles(pos, bow, speed, aground, magnitude, length, bakeElev, in bubbles, dt);
+
                 // --- STEP + RENDER every stream (advect with the current, dissipate, ride the displaced sea) ---
                 // FOAM alone also takes a share of the WIND (owner 2026-08-07). Scoped deliberately: the
                 // crests are WATER standing up and do not blow downwind, and the bow droplets already have
@@ -1043,13 +1187,14 @@ namespace HiddenHarbours.Boats
                     ? WakeTrailMath.DriftVelocity(current, wind, trail.FoamWindDriftFraction)
                     : current;
                 _sys.Step(foamDrift, fcfg.VelocityDecay, dt);
-                RenderFoam(roughness, time, fcfg, foamColor, in trail, in lift);
+                RenderFoam(roughness, time, fcfg, foamColor, in trail, in lift, in ramp, in palette);
 
                 if (_lineSys != null)
                 {
                     _lineSys.Step(current, arm2.VelocityDecay, dt);
                     RenderCrests(_lineSys, _lineRenderers, ArmLengthMeters(in trail), roughness, time,
-                                 lineCfg, arm2, lineColor, in trail, in wave, waveColor, in lift);
+                                 lineCfg, arm2, lineColor, in trail, in wave, waveColor, in lift,
+                                 in ramp, in palette);
                 }
 
                 if (_transomSys != null)
@@ -1060,13 +1205,85 @@ namespace HiddenHarbours.Boats
                     float rollLength = Mathf.Max(0.05f, WakeTrailMath.ChurnHalfWidth(length, in trail)
                                                         * Mathf.Max(0f, wave.TransomLengthFraction));
                     RenderCrests(_transomSys, _transomRenderers, rollLength, roughness, time,
-                                 lineCfg, arm2, lineColor, in trail, in wave, waveColor, in lift);
+                                 lineCfg, arm2, lineColor, in trail, in wave, waveColor, in lift,
+                                 in ramp, in palette);
                 }
 
                 if (_dropletSys != null)
                 {
                     _dropletSys.Step(current, bowWave.DropletVelocityDecay, dt);
-                    RenderDroplets(time, bowWave, sprayColor, in lift);
+                    RenderDroplets(time, bowWave, sprayColor, in lift, in ramp, in palette);
+                }
+
+                if (_bubbleSys != null && bubbles.Enabled)
+                {
+                    // Bubbles take a LARGER share of the wind than the foam does — they stand proud of the
+                    // surface where the air reaches them. That difference is what makes a bubble visibly
+                    // leave the trail it formed in instead of riding along in it.
+                    Vector2 bubbleDrift = WakeBubbleSystem.DriftVelocity(current, wind, bubbles.WindDriftFraction);
+                    _bubbleSys.Step(bubbleDrift, bubbles.VelocityDecay, dt);
+                    RenderBubbles(time, in bubbles, foamColor, in lift, in ramp, in palette);
+                }
+            }
+
+            /// <summary>
+            /// Form this tick's bubbles at the two points where the hull works the water — the stern churn
+            /// and the stem — splitting them by <see cref="WakeBubbleConfig.BowFraction"/>.
+            ///
+            /// <para>Arrival is <see cref="WakeBubbleSystem.BurstCount"/>: a deterministic Bernoulli over a
+            /// handful of slots, so the long-run rate is the configured one while any given tick is uneven.
+            /// A metered rate is a metronome, and a metronome is exactly the "organized" read this stream
+            /// exists to break.</para>
+            ///
+            /// <para>Both anchors are the DRAWN hull ends (the projected stern/bow the plume and spray
+            /// already pin to), never the boat's origin — a bubble that forms amidships is not a bubble the
+            /// hull made. The birth push carries the boat's own motion outward from the churn, then decays
+            /// into the water's drift like everything else in the wake.</para>
+            /// </summary>
+            private void FormBubbles(Vector2 pos, Vector2 bow, float speed, bool aground, float magnitude,
+                                     float hullLength, float bakeElevationDegrees,
+                                     in WakeBubbleConfig cfg, float dt)
+            {
+                float vigour = WakeBubbleSystem.Vigour01(speed, magnitude, in cfg);
+                int n = WakeBubbleSystem.BurstCount(vigour, aground, in cfg, dt, _bubbleDraw);
+                _bubbleDraw++;
+                if (n <= 0) return;
+
+                float hull = Mathf.Max(0.1f, hullLength);
+
+                // Both scatters are FRACTIONS OF HULL LENGTH rather than absolute metres, which is what
+                // makes them grade with the boat for free: a dragger's churn is a wider patch of water than
+                // a dory's because a dragger is a bigger boat, not because a constant was tuned twice.
+                float sternScatter = hull * Mathf.Max(0f, cfg.SternScatterFraction);
+                float bowScatter = hull * Mathf.Max(0f, cfg.BowScatterFraction);
+
+                // The stern cluster forms just ABAFT the transom — in the water the hull has already left,
+                // not on the transom itself. The stem cluster forms right at the cutwater.
+                Vector2 sternPoint = WakeGrading.SternAnchor(pos, bow, hull, sternScatter * 0.5f,
+                                                             bakeElevationDegrees);
+                Vector2 stemPoint = BowSprayGrading.BowAnchor(pos, bow, hull, 0f, bakeElevationDegrees);
+
+                Vector2 abeam = new Vector2(bow.y, -bow.x);
+
+                for (int i = 0; i < n; i++)
+                {
+                    // Which end this one formed at — a deterministic draw per bubble, not an alternation,
+                    // so the split reads as chance rather than as a pattern.
+                    bool atBow = WakeBubbleSystem.Hash01(_bubbleDraw * 74531u + (uint)i * 9176u)
+                                 < Mathf.Clamp01(cfg.BowFraction);
+
+                    // Stern bubbles are pushed ASTERN by the wash; stem bubbles are thrown OUT to one side
+                    // or the other, which is what water working against a cutwater does.
+                    Vector2 push = atBow
+                        ? abeam * (speed * cfg.BirthSpeedScale
+                                   * (WakeBubbleSystem.Hash01(_bubbleDraw * 31337u + (uint)i) < 0.5f ? -1f : 1f))
+                        : -bow * (speed * cfg.BirthSpeedScale);
+
+                    _bubbleSys.Form(atBow ? stemPoint : sternPoint,
+                                    push,
+                                    atBow ? bowScatter : sternScatter,
+                                    vigour,
+                                    in cfg);
                 }
             }
 
@@ -1347,7 +1564,7 @@ namespace HiddenHarbours.Boats
             private void RenderPlume(Vector2 pos, Vector2 bow, float speed, bool aground, float magnitude, int tier,
                                      float hullLength, float bakeElevationDegrees, Color tint,
                                      in WakeGradeConfig grade, in WakeTrailConfig trail, float turnRateDegPerSec,
-                                     float time, in SeaLift lift)
+                                     float time, in SeaLift lift, in WakeAgeRamp ramp, in SeaPaletteState palette)
             {
                 if (_plume == null) return;
 
@@ -1379,7 +1596,9 @@ namespace HiddenHarbours.Boats
                 t.position = new Vector3(apex.x, apex.y + ride, 0f);
                 t.localRotation = Quaternion.Euler(0f, 0f, angleDeg);
                 t.localScale = new Vector3(scale, scale, 1f);
-                var col = tint;
+                // The plume IS the moment of churn, continuously — so it draws at the ramp's fresh end:
+                // the sea's own foam anchor rather than a component constant that happened to be white.
+                var col = WakeFoamAgeing.ShadeFresh(tint, in ramp, in palette);
                 col.a = Mathf.Clamp01(Mathf.Clamp01(grade.PlumeStartAlpha) * onset * turnFade * alphaPulse);
                 _plume.color = col;
                 if (!_plume.gameObject.activeSelf) _plume.gameObject.SetActive(true);
@@ -1398,7 +1617,7 @@ namespace HiddenHarbours.Boats
             private void RenderSpray(Vector2 pos, Vector2 bow, float speed, bool aground,
                                      float hullLength, float massKg, float bakeElevationDegrees, Color tint,
                                      in BowSprayGradeConfig spray, in BowWaveConfig bowWave, float time,
-                                     in SeaLift lift)
+                                     in SeaLift lift, in WakeAgeRamp ramp, in SeaPaletteState palette)
             {
                 if (_sprayRenderer == null) return;
 
@@ -1430,7 +1649,9 @@ namespace HiddenHarbours.Boats
                 t.position = new Vector3(impact.x, impact.y + ride, 0f);
                 t.localRotation = Quaternion.Euler(0f, 0f, angleDeg);
                 t.localScale = new Vector3(scale, scale, 1f);
-                var col = tint;
+                // Like the plume, the spray sheet is continuously fresh — the water working against the
+                // stem right now. It draws at the sea's own foam anchor rather than a component constant.
+                var col = WakeFoamAgeing.ShadeFresh(tint, in ramp, in palette);
                 col.a = Mathf.Clamp01(Mathf.Clamp01(spray.SprayStartAlpha) * onset * alphaPulse);
                 _sprayRenderer.color = col;
                 if (!_sprayRenderer.gameObject.activeSelf) _sprayRenderer.gameObject.SetActive(true);
@@ -1457,7 +1678,8 @@ namespace HiddenHarbours.Boats
             /// (<see cref="WakeTrailMath.DriftVelocity"/>).</para>
             /// </summary>
             private void RenderFoam(float roughness, float time, in WakeConfig cfg, Color foamColor,
-                                    in WakeTrailConfig trail, in SeaLift lift)
+                                    in WakeTrailConfig trail, in SeaLift lift,
+                                    in WakeAgeRamp ramp, in SeaPaletteState palette)
             {
                 var pool = _sys.Pool;
                 int stages = FoamStageCount();
@@ -1514,7 +1736,11 @@ namespace HiddenHarbours.Boats
                     var t = sr.transform;
                     t.position = new Vector3(renderPos.x, renderPos.y + ride, 0f);
                     t.localScale = new Vector3(sizeM, sizeM, 1f);
-                    var col = foamColor; col.a = alpha;
+                    // THE AGE RAMP (owner ask 2026-08-27): white only at the churn, then down the sea's own
+                    // palette. This is the line the old defect lived on — the tint used to be the same
+                    // serialized white for the whole life, and only `alpha` ever moved.
+                    var col = WakeFoamAgeing.Shade(foamColor, life, p.Seed, in ramp, in palette);
+                    col.a = alpha;
                     sr.color = col;
                     if (!sr.gameObject.activeSelf) sr.gameObject.SetActive(true);
                 }
@@ -1524,7 +1750,8 @@ namespace HiddenHarbours.Boats
             /// Draw the live BOW-WAVE droplets: tiny flecks fading fast, riding the displaced sea like every
             /// other wake element. Same pooled discipline as the foam (hidden when dead, never destroyed).
             /// </summary>
-            private void RenderDroplets(float time, in BowWaveConfig bowWave, Color sprayColor, in SeaLift lift)
+            private void RenderDroplets(float time, in BowWaveConfig bowWave, Color sprayColor, in SeaLift lift,
+                                        in WakeAgeRamp ramp, in SeaPaletteState palette)
             {
                 // A minimal per-tick render config for the life curves (struct copy, no allocation).
                 WakeConfig rcfg = default;
@@ -1551,7 +1778,56 @@ namespace HiddenHarbours.Boats
                     var t = sr.transform;
                     t.position = new Vector3(p.Pos.x, p.Pos.y + ride, 0f);
                     t.localScale = new Vector3(sizeM, sizeM, 1f);
-                    var col = sprayColor; col.a = alpha;
+                    // A thrown droplet ages too: bright at the stem, then the sea's blues as it falls back.
+                    var col = WakeFoamAgeing.Shade(sprayColor, life, p.Seed, in ramp, in palette);
+                    col.a = alpha;
+                    sr.color = col;
+                    if (!sr.gameObject.activeSelf) sr.gameObject.SetActive(true);
+                }
+            }
+
+            /// <summary>
+            /// Draw the BUBBLES (owner ask 2026-08-27). Same pooled discipline as every other stream —
+            /// hidden when dead, never destroyed, nothing allocated.
+            ///
+            /// <para>What is deliberately DIFFERENT from the foam loop, because these differences are the
+            /// whole feature: each bubble reads the age ramp at its OWN scattered point (so a cluster shows
+            /// several shades of the sea at once rather than one), holds its opacity and then POPS
+            /// (<see cref="WakeBubbleSystem.AlphaAt"/>) instead of fading the whole way, and SWELLS as it
+            /// bursts (<see cref="WakeBubbleSystem.SizeOverLife"/>). Everything the eye uses to tell one
+            /// thing from another is per-bubble.</para>
+            ///
+            /// <para>Like every other wake element it rides the displaced sea at its own position
+            /// (ADR 0023) through the shared <see cref="SeaLift"/> — never its own scale.</para>
+            /// </summary>
+            private void RenderBubbles(float time, in WakeBubbleConfig cfg, Color foamColor, in SeaLift lift,
+                                       in WakeAgeRamp ramp, in SeaPaletteState palette)
+            {
+                var pool = _bubbleSys.Pool;
+                for (int i = 0; i < pool.Length; i++)
+                {
+                    var sr = _bubbleRenderers[i];
+                    ref readonly var b = ref pool[i];
+                    if (!b.Alive)
+                    {
+                        if (sr.gameObject.activeSelf) sr.gameObject.SetActive(false);
+                        continue;
+                    }
+
+                    float life = WakeBubbleSystem.Life01(b.Age, b.Lifetime);
+                    float alpha = WakeBubbleSystem.AlphaAt(life, in cfg)
+                                  * Mathf.Clamp01(cfg.Opacity) * b.Strength;
+                    float sizeM = WakeBubbleSystem.SizeOverLife(b.BaseSize, life, in cfg);
+                    float ride = lift.LiftAt(b.Pos);
+
+                    var t = sr.transform;
+                    t.position = new Vector3(b.Pos.x, b.Pos.y + ride, 0f);
+                    // The film's native diameter is the divisor, so a bubble is always drawn at its own
+                    // metres and never magnified past its texels.
+                    float s = sizeM / BubbleNativeSize;
+                    t.localScale = new Vector3(s, s, 1f);
+                    var col = WakeFoamAgeing.Shade(foamColor, life, b.Seed, in ramp, in palette);
+                    col.a = Mathf.Clamp01(alpha);
                     sr.color = col;
                     if (!sr.gameObject.activeSelf) sr.gameObject.SetActive(true);
                 }
@@ -1582,7 +1858,7 @@ namespace HiddenHarbours.Boats
                                       float roughness, float time,
                                       in WakeLineConfig lineCfg, in WakeConfig arm, Color lineColor,
                                       in WakeTrailConfig trail, in WakeWaveConfig wave, Color waveColor,
-                                      in SeaLift lift)
+                                      in SeaLift lift, in WakeAgeRamp ramp, in SeaPaletteState palette)
             {
                 bool asWave = wave.Enabled;
                 Color tint = asWave ? waveColor : lineColor;
@@ -1639,7 +1915,13 @@ namespace HiddenHarbours.Boats
                     t.localRotation = Quaternion.Euler(0f, 0f, p.OrientDeg);
                     t.localScale = new Vector3(lengthM / (asWave ? WaveNativeLength : LineNativeLength),
                                                crossM / nativeCross, 1f);
-                    var col = tint; col.a = Mathf.Clamp01(alpha);
+                    // Crests age like the foam does — but only the FLAT legacy lines are tinted here. The
+                    // wake WAVE carries its own lit-crest/dark-hollow profile in the sprite's RGB, and
+                    // walking that tint down the palette would flatten the profile back into a painted
+                    // line, which is the thing the wave sprite replaced. So the wave keeps its near-white
+                    // multiplier and lets its own shading speak.
+                    var col = asWave ? tint : WakeFoamAgeing.Shade(tint, life, p.Seed, in ramp, in palette);
+                    col.a = Mathf.Clamp01(alpha);
                     sr.color = col;
                     if (!sr.gameObject.activeSelf) sr.gameObject.SetActive(true);
                 }
