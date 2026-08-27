@@ -258,5 +258,7 @@ on every run (log §0a). If it ever stops being true the harness says so in plac
 - **Rest anchors aboard** (ADR 0037) are a later slice — they touch the save. Logged, not built.
 - **Deck-occluder ids on entry** belong to `DeckRiderVisual` in the Player lane. ADR 0038 proposal
   3 names the write; this spike does not make it.
-- The three **refused** hulls (2 sport fishers REFUSED-PIN, 1 cape FORKED-RIG) are untouched. The
-  S0 ledger is the truth and nothing here bakes for or wires one.
+- The three hulls **refused** when this was written (2 sport fishers REFUSED-PIN, 1 cape
+  FORKED-RIG) were untouched here. Both refusals have since been discharged — the sport fishers
+  2026-08-26, the cape 2026-08-27 — so the ledger now clears all 27. The rule is unchanged and is
+  what matters: the S0 ledger is the truth, and nothing bakes for or wires a refused hull.

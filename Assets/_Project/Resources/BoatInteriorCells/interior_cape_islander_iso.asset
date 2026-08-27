@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e70b01790414c67990a70b04eb3a2bb, type: 3}
+  m_Name: interior_cape_islander_iso
+  m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.BoatInteriorCellsDef
+  InteriorDefId: interior.cape_islander_iso
+  Cells:
+  - {fileID: -737345276, guid: 6afc1e2a9f18d534fa1a4f3bb61c935a, type: 3}
+  - {fileID: -839396163, guid: 6afc1e2a9f18d534fa1a4f3bb61c935a, type: 3}
+  - {fileID: -1739270868, guid: 6afc1e2a9f18d534fa1a4f3bb61c935a, type: 3}
+  - {fileID: 702594410, guid: 6afc1e2a9f18d534fa1a4f3bb61c935a, type: 3}
+  - {fileID: 256805476, guid: 6afc1e2a9f18d534fa1a4f3bb61c935a, type: 3}
+  - {fileID: -1151855602, guid: 6afc1e2a9f18d534fa1a4f3bb61c935a, type: 3}
+  - {fileID: 1531066316, guid: 6afc1e2a9f18d534fa1a4f3bb61c935a, type: 3}
+  - {fileID: 72432729, guid: 6afc1e2a9f18d534fa1a4f3bb61c935a, type: 3}
+  - {fileID: 1947353456, guid: 6afc1e2a9f18d534fa1a4f3bb61c935a, type: 3}
+  - {fileID: 615807403, guid: 6afc1e2a9f18d534fa1a4f3bb61c935a, type: 3}
+  - {fileID: 126342595, guid: 6afc1e2a9f18d534fa1a4f3bb61c935a, type: 3}
+  - {fileID: 1591337590, guid: 6afc1e2a9f18d534fa1a4f3bb61c935a, type: 3}
+  - {fileID: 1969298486, guid: 6afc1e2a9f18d534fa1a4f3bb61c935a, type: 3}
+  - {fileID: 1399408488, guid: 6afc1e2a9f18d534fa1a4f3bb61c935a, type: 3}
+  - {fileID: -1947293851, guid: 6afc1e2a9f18d534fa1a4f3bb61c935a, type: 3}
+  - {fileID: 413898987, guid: 6afc1e2a9f18d534fa1a4f3bb61c935a, type: 3}
+  Facings: 8
+  CellLevels:
+  - house
+  - cuddy
+  CellRowForLevel: 0000000001000000
+  CellsAreCounterClockwise: 1
+  ResidentMegabytes: 11.689453
