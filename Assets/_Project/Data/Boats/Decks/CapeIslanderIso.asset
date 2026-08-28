@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: deck.cape_islander_iso
   SourceSidecar: docs/art/rigs/gameplay/capeIslanderIsoRig.gameplay.json
   SourceRig: docs/art/rigs/capeIslanderIsoRig.js
-  DerivedFromRigSha256: e1004316993e3337165e2d83d6c5100b7910471dc660af80aa6464ed44dd81dc
+  DerivedFromRigSha256: 1f2dd351bbb07327c9f3b439c68837a96940ee6c48c68cc30bb71621a07c96c2
   LoaMeters: 12.8
   Areas:
   - Id: cockpit_sole

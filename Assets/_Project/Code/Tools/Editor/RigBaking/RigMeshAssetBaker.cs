@@ -663,6 +663,43 @@ namespace HiddenHarbours.Tools.RigBaking
         static readonly System.Globalization.CultureInfo Inv =
             System.Globalization.CultureInfo.InvariantCulture;
 
+        /// <summary>
+        /// The cutaway table a bake writes, as a pure function of what the rig published.
+        ///
+        /// <para>Factored out of <c>BakeOne</c> on 2026-08-28 so the gate fixture can ask
+        /// <c>CutawayForDeck</c> the question through the SAME mapping the bake uses, rather than
+        /// transcribing these eight assignments into a test — where a field dropped here would go
+        /// green there. It is the only caller-visible seam between "what the rig said" and "what
+        /// the def carries", and it stays a transcription: no field is derived, defaulted or
+        /// tuned.</para>
+        ///
+        /// <para>A rig that published no <c>geometry()</c> yields an empty array — the honest
+        /// "this hull cannot be cut". Re-baking such a hull writes the same empty array she already
+        /// had, so nothing moves.</para>
+        /// </summary>
+        public static HullMeshDef.LevelTag[] LevelTableFor(RigMeshData data)
+        {
+            if (data == null || data.Levels == null) return System.Array.Empty<HullMeshDef.LevelTag>();
+
+            var table = new HullMeshDef.LevelTag[data.Levels.Count];
+            for (int i = 0; i < data.Levels.Count; i++)
+            {
+                RigLevelRecord lvl = data.Levels[i];
+                table[i] = new HullMeshDef.LevelTag
+                {
+                    LevelId = lvl.Id,
+                    DeckId = lvl.DeckId,
+                    Tag = lvl.Tag,
+                    LidLevelId = lvl.LidLevelId,
+                    LidTag = lvl.LidTag,
+                    Enclosed = lvl.Enclosed,
+                    SoleZMeters = (float)lvl.SoleZ,
+                    CeilingZMeters = (float)lvl.CeilingZ,
+                };
+            }
+            return table;
+        }
+
         /// <param name="extraction">Non-null to bake ONE VARIANT of a rig that generates several
         /// hulls. Null — every hull baked before 2026-08-13 — takes the rig's static <c>F</c>.</param>
         public static HullMeshDef Bake(string scriptPath, string globalName, string assetPath, string id,
@@ -771,22 +808,7 @@ namespace HiddenHarbours.Tools.RigBaking
             // interior def's. A rig that publishes none leaves an empty array, which is the honest
             // "this hull cannot be cut" — and re-baking such a hull writes the same empty array she
             // already had, so nothing moves.
-            def.LevelTags = new HullMeshDef.LevelTag[data.Levels.Count];
-            for (int i = 0; i < data.Levels.Count; i++)
-            {
-                RigLevelRecord lvl = data.Levels[i];
-                def.LevelTags[i] = new HullMeshDef.LevelTag
-                {
-                    LevelId = lvl.Id,
-                    DeckId = lvl.DeckId,
-                    Tag = lvl.Tag,
-                    LidLevelId = lvl.LidLevelId,
-                    LidTag = lvl.LidTag,
-                    Enclosed = lvl.Enclosed,
-                    SoleZMeters = (float)lvl.SoleZ,
-                    CeilingZMeters = (float)lvl.CeilingZ,
-                };
-            }
+            def.LevelTags = LevelTableFor(data);
 
             // The mesh sub-asset: replace, never accumulate. DestroyImmediate on the old one removes
             // it from the asset file; the new one is added under the same def.

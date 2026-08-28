@@ -7,7 +7,7 @@
   "interior_rig": "boatInteriorRig.js",
   "derivedFromRigSha256": "34bb781303b9de9a47c7029a685bf83d357adefe2ffb95ff54451233ea7c46a7",
   "hullRigSha256": {
-    "capeIslanderIsoRig": "60d127c3e77817ea5961419440d5c3ea6d563014c2aabdb621b33376cdb0873f"
+    "capeIslanderIsoRig": "a1304e1b34d3f34797da693e8b53bb8ad58ebfa10a9ff4fd4fdaa00c10dd7ce0"
   },
   "frame": {
     "units": "m",
