@@ -1,6 +1,6 @@
 {
   "rig": "sternTrawlerIsoRig.js",
-  "derivedFromRigSha256": "d3e98358f6901a67dad1e8cab039b6732366b466b4707f716e4d0a82694eaeab",
+  "derivedFromRigSha256": "0f48e416176c1e3d3e24b8a5a4fb2ab393eeb9c257c7d43bd1af82ae18378178",
   "generated": "2026-07-22",
   "frame": {
     "units": "m",

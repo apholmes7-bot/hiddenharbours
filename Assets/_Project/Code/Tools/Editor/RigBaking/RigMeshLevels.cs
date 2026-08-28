@@ -42,170 +42,33 @@ namespace HiddenHarbours.Tools.RigBaking
         /// happens to stand over. Its id is 5 on every rig in the kit — outside the 1..4 band a cutaway
         /// ever shows, which is the mechanism rather than a convention.</summary>
         public const string RiggingLevelId = "rigging";
-    }
 
-    /// <summary>
-    /// <b>Which level is this level's LID</b> — the coordinator's ruling of 2026-08-27: <i>a cut takes
-    /// its declared ceiling.</i> When level L engages the gate, L's own faces come off AND the faces
-    /// of the level L's ceiling record names as its lid. <b>One hop only, declaration-driven, never
-    /// inferred from geometry.</b>
-    ///
-    /// <para><b>⚠️ WHY THIS TABLE EXISTS, AND WHEN TO DELETE IT.</b> The ruling says the lid is what
-    /// the ceiling record NAMES. Neither batch's ceiling records name it in a form a machine can
-    /// read: they carry <c>of:</c>, which is PROSE — <c>'main-deck underside (DECK-0.12)'</c>,
-    /// <c>'foredeck underside = sheerZ(y)-0.16, rising toward the bow'</c>. Those spellings are not
-    /// level ids (<c>main-deck</c> is hyphenated where the id is <c>main_deck</c>; <c>boat-deck</c>
-    /// and <c>wheelhouse deckhead</c> are not levels at all), and substring-matching a human sentence
-    /// is a worse kind of inference than the geometric one the ruling forbids — it would silently
-    /// re-aim the moment upstream reworded a comment.
-    ///
-    /// <para>The other candidate, matching a ceiling z against another level's sole z, is exactly the
-    /// forbidden geometric inference AND needs a per-hull tolerance nobody can justify: the gaps are
-    /// 0.110 m (lobster), 0.120 m (trawler) and 0.200 m (packet), each a deck-plate thickness the rig
-    /// states in prose and publishes nowhere. Batch 2 adds three more of them — 0.10 (dragger), 0.12
-    /// (Mk II) and 0.25 (tanker) — and one hull that settles the argument outright: the TANKER's
-    /// <c>below</c> is lidded by <c>poop_deck</c>, not <c>main_deck</c>. Both prose-matching and
-    /// z-matching would have to get her right by accident, and a wrong lid does not look wrong; it
-    /// opens a plausible hole in the wrong deck.</para>
-    ///
-    /// <para>So the lid is DECLARED here, once, in the same place and for the same reason the
-    /// extractor already declares the facts a rig does not export
-    /// (<see cref="RigMeshSymbols.Widenings"/>, <see cref="RigPropExtraction.BackfaceRescueNeedsOptIn"/>).
-    /// <b>Every entry quotes the rig's own words for it</b> — the kit's authoring cursor states each
-    /// relationship in a comment beside the emission, which is a declaration in the source even though
-    /// it is not one in the data. <b>The moment a rig publishes <c>ceiling.lid</c>, the rig wins and
-    /// its entry here must be deleted</b>: <see cref="RigMeshExtractor"/> refuses a bake where the two
-    /// disagree, so the table cannot outlive the field it stands in for.</para>
-    /// </summary>
-    public static class RigLevelLids
-    {
-        /// <summary>The rig's <c>ceiling.lid</c> when it publishes one. A rig that sets it to
-        /// <c>null</c> — as opposed to omitting it — is the ruling's <b>per-level veto</b>: this level
-        /// takes nothing with it. Absent and null must never look the same, which is the same law the
-        /// kit already applies to an open sky.</summary>
-        public const string RigLidProperty = "lid";
-
-        /// <summary>Declared here because the cutaway kit's rigs — batch 1 and batch 2 alike —
-        /// predate <see cref="RigLidProperty"/>. Keyed by rig FILE NAME (as
-        /// <see cref="RigMeshSymbols.Widenings"/> is), then by the rig's own level id. Keying by FILE
-        /// is also why the eighteen lobster variants need one entry between them rather than
-        /// eighteen: one generator rig makes them all.</summary>
-        static readonly IReadOnlyDictionary<string, IReadOnlyDictionary<string, string>> Declared =
-            new Dictionary<string, IReadOnlyDictionary<string, string>>(StringComparer.Ordinal)
-            {
-                // The rig says it in as many words at the emission itself:
-                //   lobsterBoatIsoRig.js:354  lv('foredeck');  // the cuddy's lid — a walkable level of its own
-                // and again in the ceiling record's prose: 'foredeck underside = sheerZ(y)-0.16'.
-                // Her cuddy is a crawl-in berth under the foredeck, and the foredeck is a walkable
-                // level in its own right — which is exactly why the lid needs a hop instead of being
-                // folded into the cuddy's own tag the way the ships fold theirs.
-                ["lobsterBoatIsoRig.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
-                {
-                    ["cuddy"] = "foredeck",
-                },
-
-                // 'main-deck underside (DECK-0.12)' — the trawl deck is the engine space's lid, and
-                // it is a level of its own (lv('main_deck'): "the trawl deck and everything standing
-                // on it"). Her HOUSE needs no entry: its ceiling is the boat deck, whose faces the rig
-                // already tags `house` (lv('house'): "walls, vestibule, boat deck, its rails, ladder,
-                // liferafts"), so the house takes its own lid with it and one tag does the work. Same
-                // for her BRIDGE — "the wheelhouse cuts with its own room".
-                ["sternTrawlerIsoRig.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
-                {
-                    ["below"] = "main_deck",
-                },
-
-                // 'main-deck underside (DECK-0.20)'; lv('main_deck'): "the weather deck and everything
-                // standing on it". Her house and bridge fold their own lids in exactly as the
-                // trawler's do — lv('house') carries "L1 + the dressed L2 block, boat deck, rails,
-                // ladder, scoop", which is also what geometry().dressed is telling you.
-                ["coastalPacketIsoRig.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
-                {
-                    ["below"] = "main_deck",
-                },
-
-                // ---- BATCH 2 (2026-08-27) — same mechanism, same debt --------------------------
-                // These four rigs do not publish ceiling.lid either. They were swept for it at
-                // intake: the string 'lid' occurs in them only in prose and in the cursor comments
-                // quoted below, never as a geometry() field. So they JOIN this table rather than
-                // retiring it, and the ask above grows from three levels to seven.
-
-                // 'main-deck underside (DECK-0.10)'; lv('main_deck'): "the working deck and
-                // everything standing on it". Her house and bridge fold their own lids in as both
-                // batch-1 ships do — lv('house'): "walls, vestibule, boat deck, its rails, ladder"
-                // and, at the funnel, "the funnel stands on the boat deck — the house's lid";
-                // lv('bridge'): "the wheelhouse cuts with its own room".
-                ["sideDraggerIsoRig.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
-                {
-                    ["below"] = "main_deck",
-                },
-
-                // 'main-deck underside (DECK-0.12)' — the same 0.12 m deck plate her Mk I sister
-                // carries, and the same lid. lv('main_deck'): "the trawl deck and everything
-                // standing on it". Her BRIDGE needs no entry for a reason the rig states outright
-                // in the ceiling record itself: "the flared sides (hxAt) are the walls, not the
-                // lid", so the deckhead it does name is already inside lv('bridge').
-                ["sternTrawlerMk2IsoRig.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
-                {
-                    ["below"] = "main_deck",
-                },
-
-                // ⚠️ THE ONE THAT IS NOT main_deck, AND THE ONE THAT CLOSES THE ARGUMENT ABOVE.
-                // 'poop-deck underside (POOP-0.25)' — her accommodation sits under the RAISED POOP,
-                // not under the weather deck, and poop_deck is a level of its own (lv('poop_deck'):
-                // "the raised poop mooring deck strip"; id 6, the fleet table's newest). Reading
-                // "the underside of a deck" as main_deck because both batch-1 ships said so would
-                // put her lid on the wrong deck entirely, and the cut would look plausible doing it.
-                //
-                // The z-matching alternative does not merely risk her — it CANNOT DECIDE her.
-                // Measured off her own geometry(): below's ceiling is 11.35 m, and the two levels
-                // whose sole sits 0.25 m above it are poop_deck AND house, both at 11.60. They
-                // share a sole; that is the tie her own tieBreak field exists to break. A rule that
-                // matched ceiling z to sole z would have to choose between the deck overhead and
-                // the room beside it with nothing to choose on.
-                ["tankerIsoRig.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
-                {
-                    ["below"] = "poop_deck",
-                },
-
-                // The lobster family's own law, unchanged from the boat it was generalised from:
-                //   lobsterBoatVariantsIsoRig.js:544  lv('foredeck');  // the cuddy's lid — a
-                //                                                        walkable level of its own
-                // and the ceiling record's prose is her sister's word for word: 'foredeck underside
-                // = sheerZ(y)-0.16, rising toward the bow'. ONE entry covers all EIGHTEEN hulls —
-                // this table is keyed by rig FILE and one file makes them all, so no variant can
-                // drift away from its family here. Her house folds its own lid in: lv('house') is
-                // "walls, glazing, vestibule, roof — cuts with the room".
-                ["lobsterBoatVariantsIsoRig.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
-                {
-                    ["cuddy"] = "foredeck",
-                },
-            };
-
-        /// <summary>The declared lid for <paramref name="levelId"/> on the rig at
-        /// <paramref name="scriptPath"/>, or null for "this level takes nothing with it".</summary>
-        public static string For(string scriptPath, string levelId)
-        {
-            string file = FileNameOf(scriptPath);
-            return Declared.TryGetValue(file, out var byLevel)
-                   && byLevel.TryGetValue(levelId, out string lid)
-                ? lid
-                : null;
-        }
-
-        /// <summary>Every level this table declares a lid for, on one rig. Used by the tests that
-        /// police the table against the rig it stands in for.</summary>
-        public static IReadOnlyDictionary<string, string> AllFor(string scriptPath) =>
-            Declared.TryGetValue(FileNameOf(scriptPath), out var byLevel)
-                ? byLevel
-                : RigLevelTables.NoLids;
-
-        static string FileNameOf(string scriptPath)
-        {
-            if (string.IsNullOrEmpty(scriptPath)) return "";
-            int slash = scriptPath.LastIndexOfAny(new[] { '/', '\\' });
-            return slash >= 0 ? scriptPath.Substring(slash + 1) : scriptPath;
-        }
+        /// <summary>The name of the ceiling record's LID field — <b>which level is this level's
+        /// lid</b>, per the 2026-08-27 ruling: <i>a cut takes its declared ceiling</i>. When level L
+        /// engages the gate, L's own faces come off AND the faces of the level L's ceiling record
+        /// names here. <b>One hop only, declared, never inferred.</b>
+        ///
+        /// <para>Three states, all distinct on purpose:</para>
+        /// <list type="bullet">
+        ///   <item><description>a level id — this level's cut takes that level with it;</description></item>
+        ///   <item><description><c>null</c> — the ruling's <b>per-level veto</b>: takes nothing. Every
+        ///     level that folds its own lid into its own tag says this (both ships' <c>house</c>
+        ///     carries its boat deck, both <c>bridge</c>es their deckhead);</description></item>
+        ///   <item><description><b>absent — a REFUSAL.</b> <see cref="RigMeshExtractor"/> stops the
+        ///     bake. Absent and null must never look the same, which is the same law the kit already
+        ///     applies to an open sky, and the day a rig needs a lid the rig itself must say so.
+        ///     This repo stood in for the field once, in a table keyed by rig file, and that table is
+        ///     retired — it is not coming back as a silent default.</description></item>
+        /// </list>
+        ///
+        /// <para><b>Why it is declared and not measured.</b> Matching a ceiling z against another
+        /// level's sole z is the inference the ruling forbids, and the TANKER proves it could not
+        /// merely be risky but undecidable: her <c>below</c> is lidded by <c>poop_deck</c>, not the
+        /// obvious <c>main_deck</c>, and the two levels whose sole sits 0.25 m above that ceiling —
+        /// <c>poop_deck</c> and <c>house</c>, both at 11.60 m — share a sole. A z rule would have had
+        /// nothing to choose on, and a wrong lid does not look wrong: it opens a plausible hole in the
+        /// wrong deck.</para></summary>
+        public const string LidProperty = "lid";
     }
 
     /// <summary>
@@ -259,20 +122,24 @@ namespace HiddenHarbours.Tools.RigBaking
         /// that needs no policing.</summary>
         public const string LidFromRig = "rig";
 
-        /// <summary>This repo's <see cref="RigLevelLids"/> stood in for a field the rig does not yet
-        /// publish. Every one of these is a debt, and a test names them.</summary>
-        public const string LidFromTable = "declared";
-
-        /// <summary>The rig published <c>lid: null</c> — the ruling's per-level veto. Beats the
-        /// table.</summary>
+        /// <summary>The rig published <c>lid: null</c> — the ruling's per-level veto: this level
+        /// takes nothing with it. The ordinary answer, and the right one for every level that folds
+        /// its own lid into its own tag (both ships' <c>house</c> carries its boat deck, both
+        /// <c>bridge</c>es their deckhead).</summary>
         public const string LidFromVeto = "veto";
 
-        /// <summary>Nobody declared one: this level takes nothing with it, which is the ordinary
-        /// answer.</summary>
+        /// <summary>Nothing has resolved this record's lid — the field's initial value, and not a
+        /// state any EXTRACTED record is left in. <see cref="RigMeshExtractor"/> refuses a rig that
+        /// publishes levels without a lid on every one of them, so every record it returns carries
+        /// <see cref="LidFromRig"/> or <see cref="LidFromVeto"/>.
+        ///
+        /// <para>There was a third source once: a table in this repo, keyed by rig file, standing in
+        /// for a <c>ceiling.lid</c> the cutaway rigs did not publish. They publish it now, the table
+        /// is retired, and a fixture holds it retired.</para></summary>
         public const string LidNone = "none";
 
         /// <summary>Where <see cref="LidLevelId"/> came from, carried for the bake log and for the
-        /// test that retires <see cref="RigLevelLids"/>.</summary>
+        /// fixture that holds the retired stand-in table retired.</summary>
         public string LidSource = LidNone;
 
         /// <summary>Sole height above the keel bottom, rig metres. A raked sole publishes its honest
@@ -304,8 +171,5 @@ namespace HiddenHarbours.Tools.RigBaking
             new Dictionary<string, int>(StringComparer.Ordinal);
 
         public static readonly IReadOnlyList<RigLevelRecord> NoLevels = Array.Empty<RigLevelRecord>();
-
-        public static readonly IReadOnlyDictionary<string, string> NoLids =
-            new Dictionary<string, string>(StringComparer.Ordinal);
     }
 }

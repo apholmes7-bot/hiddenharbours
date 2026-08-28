@@ -894,18 +894,18 @@
       tieBreak:'cockpit and house share one sole z ('+r3(V.DECK)+') — the published ceilings break the tie: house '+r3(Hh.eaveZ)+', cockpit open',
       levels:[
         { id:'house', deck:'house_sole', soleZ:r3(V.DECK), ceilingZ:r3(Hh.eaveZ),
-          ceiling:{ kind:'hard', z:r3(Hh.eaveZ), of:'wheelhouse eave — the deckhead the interior dresses (houseOf(v).eaveZ)' } },
+          ceiling:{ kind:'hard', lid:null, z:r3(Hh.eaveZ), of:'wheelhouse eave — the deckhead the interior dresses (houseOf(v).eaveZ)' } },
         { id:'cuddy', deck:'cuddy_sole', soleZ:C.soleZ, ceilingZ:cl(C.y0),
-          ceiling:{ kind:'raked', zAft:cl(C.y0), zFwd:cl(C.y1), y0:C.y0, y1:C.y1,
+          ceiling:{ kind:'raked', lid:'foredeck', zAft:cl(C.y0), zFwd:cl(C.y1), y0:C.y0, y1:C.y1,
                     of:'foredeck underside = sheerZ(y)-0.16, rising toward the bow; ceilingZ is the honest minimum at the companionway' } },
         { id:'cockpit', deck:'cockpit', soleZ:r3(V.DECK), ceilingZ:null,
           ceiling: V.extAft==null
-            ? { kind:'open', note:'open boat — the roof stops at the house; the deck is sky' }
-            : { kind:'open', partial:{ z:roofUnder, y0:r3(V.extAft), y1:r3(V.HYaft),
+            ? { kind:'open', lid:null, note:'open boat — the roof stops at the house; the deck is sky' }
+            : { kind:'open', lid:null, partial:{ z:roofUnder, y0:r3(V.extAft), y1:r3(V.HYaft),
                 of:'hardtop-cantilever underside over the FORWARD cockpit only — aft of y '+r3(V.extAft)+' is sky' } } },
         { id:'foredeck', deck:'foredeck', soleZ:fs(V.HYfwd), ceilingZ:null,
           sole:{ kind:'raked', zAft:fs(V.HYfwd), zFwd:fs(yCap), follows:'sheer - 0.05·dK over y '+r3(V.HYfwd)+'..'+yCap },
-          ceiling:{ kind:'open' } },
+          ceiling:{ kind:'open', lid:null } },
       ],
     };
   }

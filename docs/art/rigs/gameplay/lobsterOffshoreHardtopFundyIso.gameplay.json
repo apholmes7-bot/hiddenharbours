@@ -2,7 +2,7 @@
   "schema": "hidden-harbours/boat-gameplay-geometry@1",
   "rig": "lobsterBoatVariantsIsoRig.js",
   "exportSymbol": "LobsterBoatVariantsIso",
-  "derivedFromRigSha256": "ce7d45ff4fbcd3e14a608bbccb5c5fd0854f9e65bdf4323b664e3a379eb5019b",
+  "derivedFromRigSha256": "69eb8cec03260fbc7c6e9f698b3fa4556c53a40f3d5d2cef1d5b498f26ae152e",
   "_provenance": "Extracted from the rig's own gameplayGeometry(offshore/hardtop/fundy) by LobsterVariantSidecarGenerator. The rig does not emit derivedFromRigSha256 itself, so this bake stamps the LF-normalised hash of the committed source; an absent hash is refused by DeckSidecarReader exactly like a stale one. Do not hand-edit — re-generate.",
   "variant": {
     "size": "offshore",

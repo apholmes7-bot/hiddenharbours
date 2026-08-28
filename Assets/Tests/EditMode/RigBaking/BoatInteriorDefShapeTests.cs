@@ -295,6 +295,88 @@ namespace HiddenHarbours.Tests.RigBaking
             foreach (BoatInteriorRoute r in def.Routes) Assert.IsNotEmpty(r.Id);
         }
 
+        /// <summary>
+        /// <b>The skybridge keeps BOTH of her decks, and her bridge ladder lands on the upper one.</b>
+        /// This is the HOLD of 2026-08-27 written down where it can be enforced rather than
+        /// remembered.
+        ///
+        /// <para><b>The collision it protects against.</b> <c>sportFisherIsoRig2.js</c> uses the id
+        /// <c>bridge_sole</c> for TWO walkables: the ENCLOSED skylounge sole at z 7.30
+        /// (<c>interior.bridge.deckId</c>) and the OPEN control coaming at z 9.74
+        /// (<c>interior.bridgeSole</c>, and <c>helms[0].deck</c>). Our committed mirror resolves that
+        /// by carrying both — the coaming as <c>bridge_sole</c> at 9.74 with its 42-vertex polygon,
+        /// the skylounge as <c>sky_sole</c> at 7.30.</para>
+        ///
+        /// <para><b>Why the offered replacement was refused.</b> Upstream's re-export resolved the
+        /// same collision by DELETING the 9.74 deck and renaming <c>sky_sole</c> to
+        /// <c>bridge_sole</c> — 218 lines shorter, and it strands the helm and the ladder that the
+        /// rig's own records put up there. Its own file says so: it keeps <c>bridge_ladder</c>
+        /// climbing z 7.32 → 9.55 and connecting to a <c>bridge_sole</c> it has left at 7.30, so the
+        /// ladder rises 2.23 m to arrive 0.02 m BELOW its own foot. That inconsistency is what the
+        /// second assertion here is written against, and it is the general law: <b>a ladder lands on
+        /// the deck it names.</b> The HOLD stands until the rig disambiguates the id and re-exports
+        /// (upstream ask 6); nothing on our side is re-stamped meanwhile, because a hash corrected
+        /// here would come back wrong on the next regeneration.</para>
+        ///
+        /// <para>⚠️ A string-grep is NOT this check. The staging pass that first cleared the offered
+        /// file counted <c>bridge_sole</c> occurrences — eight, none of them <c>sky_sole</c> — and
+        /// called the deck "fully present". A name's presence is not a deck's presence; both
+        /// assertions below read the polygon and the z.</para>
+        /// </summary>
+        [Test]
+        public void TheSkybridgeKeepsBothOfHerDecks_AndHerLadderLandsOnTheUpperOne()
+        {
+            string path = Path.Combine(RepoRoot, KitFolder, "gameplay",
+                                       "sportFisherIsoRig2.skybridge.gameplay.json");
+            object root = DeckSidecarJson.Parse(File.ReadAllText(path));
+
+            var byId = new Dictionary<string, (double Z, int Verts)>(System.StringComparer.Ordinal);
+            foreach (object d in DeckSidecarJson.AsArray(DeckSidecarJson.Member(root, "DECK")))
+            {
+                string id = DeckSidecarJson.String(DeckSidecarJson.Member(d, "id"));
+                if (string.IsNullOrEmpty(id)) continue;
+                List<object> poly = DeckSidecarJson.AsArray(DeckSidecarJson.Member(d, "polygon"));
+                byId[id] = (DeckSidecarJson.Float(DeckSidecarJson.Member(d, "z"), float.NaN),
+                            poly?.Count ?? 0);
+            }
+
+            Assert.IsTrue(byId.ContainsKey("bridge_sole"),
+                "the open control coaming is gone. It is where helms[0] and the bridge ladder land.");
+            Assert.IsTrue(byId.ContainsKey("sky_sole"),
+                "the enclosed skylounge sole is gone — renaming it onto bridge_sole is exactly the " +
+                "collapse this fixture refuses, because it leaves one id for two walkables again.");
+
+            Assert.AreEqual(9.74, byId["bridge_sole"].Z, 1e-6,
+                "bridge_sole is the OPEN coaming at 9.74 m. At 7.30 it is the skylounge wearing the " +
+                "coaming's name, and the helm above it has no deck.");
+            Assert.AreEqual(7.30, byId["sky_sole"].Z, 1e-6, "sky_sole is the enclosed skylounge sole.");
+            Assert.AreEqual(42, byId["bridge_sole"].Verts,
+                "the coaming's polygon is 42 vertices. A present id with an absent shape is how the " +
+                "offered replacement read to a string-grep.");
+
+            // The general law, and the one the refused file breaks on its own terms.
+            foreach (object l in DeckSidecarJson.AsArray(DeckSidecarJson.Member(root, "LADDER")))
+            {
+                List<object> connects = DeckSidecarJson.AsArray(DeckSidecarJson.Member(l, "connects"));
+                if (connects == null || connects.Count == 0) continue;
+                string top = DeckSidecarJson.String(connects[connects.Count - 1]);
+                if (top == null || !byId.TryGetValue(top, out var deck)) continue;
+
+                double z0 = DeckSidecarJson.Float(DeckSidecarJson.Member(l, "z0"), float.NaN);
+                double z1 = DeckSidecarJson.Float(DeckSidecarJson.Member(l, "z1"), float.NaN);
+                string id = DeckSidecarJson.String(DeckSidecarJson.Member(l, "id"));
+
+                Assert.GreaterOrEqual(deck.Z, z0,
+                    $"{id} climbs {z0:0.##} → {z1:0.##} m and lands on '{top}', which sits at " +
+                    $"{deck.Z:0.##} m — below the foot of its own ladder. A ladder lands on the deck " +
+                    "it names.");
+                Assert.AreEqual(z1, deck.Z, 0.35,
+                    $"{id} tops out at {z1:0.##} m but '{top}' sits at {deck.Z:0.##} m. The stringer " +
+                    "runs a little past the deck it serves; a metre and more apart means the ladder " +
+                    "and the deck are describing different levels.");
+            }
+        }
+
         [Test]
         public void EverySidecarPinsTheRendererThatActuallyShipped()
         {

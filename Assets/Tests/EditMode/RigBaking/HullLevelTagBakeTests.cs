@@ -468,7 +468,8 @@ namespace HiddenHarbours.Tests.RigBaking
             // goes below to look at a whole boat.
             //
             // The eighteen variants come off LobsterVariantFleet rather than being spelled out —
-            // they are one rig, one entry in RigLevelLids, and one line here.
+            // they are one generator rig, which declares the cuddy's lid once for all eighteen,
+            // and so they are one line here.
             CollectionAssert.AreEquivalent(
                 new[]
                 {
@@ -549,59 +550,70 @@ namespace HiddenHarbours.Tests.RigBaking
         }
 
         /// <summary>
-        /// <b>The stand-in table is a debt, and this is the ledger.</b>
+        /// <b>The stand-in table is retired, and this is what holds it retired.</b>
         ///
-        /// <para><see cref="RigLevelLids"/> exists only because the kit's ceiling records do not name
-        /// their lid in a machine-readable form — they carry <c>of:</c>, which is prose
-        /// (<c>'main-deck underside (DECK-0.12)'</c>, where the level id is <c>main_deck</c>). The
-        /// moment a rig publishes <c>ceiling.lid</c>, the rig wins and its entry here must go; the
-        /// extractor refuses a bake where the two disagree, and this names what is still owed so the
-        /// debt cannot be forgotten rather than merely unpaid.</para>
+        /// <para>There was a table in this repo — <c>RigLevelLids</c>, keyed by rig file — because
+        /// the cutaway rigs' ceiling records did not name their lid in a form a machine could read:
+        /// they carried <c>of:</c>, which is prose (<c>'main-deck underside (DECK-0.12)'</c>, where
+        /// the level id is <c>main_deck</c>). Upstream's ask-2 drop added <c>ceiling.lid</c> to all
+        /// seven rigs, so the rig answers the question itself and the table is gone.</para>
         ///
-        /// <para><b>Batch 2 grew the debt rather than paying it</b> (2026-08-27): its four rigs were
-        /// swept for <c>ceiling.lid</c> at intake and none publishes it, so the ask went from three
-        /// levels on three rig files to seven on seven. The tanker is the entry worth re-reading
-        /// before anybody is tempted to retire this table by inference — hers is the only lid in the
-        /// fleet that is not the obvious deck.</para>
+        /// <para><b>The ledger inverts.</b> It used to name what was still owed so the debt could not
+        /// be forgotten; it now asserts that nothing is owed and that no second answer has grown
+        /// back. Two halves, and the first is the one that matters: a table absent today can be
+        /// re-added tomorrow by anyone who meets a rig without a lid and reaches for the old shape.
+        /// It is asserted by NAME through reflection rather than by reference, because a test cannot
+        /// reference a type that must not exist.</para>
+        ///
+        /// <para>The second half is the source ledger: every level on every cutaway hull must have
+        /// got its lid from the RIG — <see cref="RigLevelRecord.LidFromRig"/> for the seven that
+        /// name one, <see cref="RigLevelRecord.LidFromVeto"/> for the rest, which publish
+        /// <c>lid: null</c>. Never <c>none</c>: an unresolved record would mean a level whose lid
+        /// nobody decided, and the extractor refuses that outright.</para>
         /// </summary>
         [Test]
-        public void TheStandInLidTable_StillMatchesTheRigsItStandsInFor()
+        public void TheStandInLidTable_StaysRetired_AndEveryLidComesFromTheRig()
         {
-            var owed = new List<string>();
+            // ---- half one: the table has not grown back ------------------------------------------
+            System.Type table = typeof(RigLevelRecord).Assembly
+                .GetType("HiddenHarbours.Tools.RigBaking.RigLevelLids", throwOnError: false);
+            Assert.IsNull(table,
+                "RigLevelLids is back. It existed only because the cutaway rigs predated " +
+                "ceiling.lid; they publish it now, so a table beside them is a SECOND answer to a " +
+                "question the rig already answers, and the stale one is the dangerous one — a wrong " +
+                "lid does not look wrong, it opens a plausible hole in the wrong deck. If a NEW rig " +
+                "arrives without the field, the extractor refuses its bake and the fix is upstream: " +
+                "add ceiling.lid to that rig.");
+
+            // ---- half two: every lid on every cutaway hull came from the rig ----------------------
+            var notFromTheRig = new List<string>();
+            var named = new List<string>();
 
             foreach (FleetHull hull in Pass3Hulls)
             {
                 RigMeshData data = Extract(hull, out IRigScriptHost host);
                 using (host)
                 {
-                    var published = new HashSet<string>();
-                    foreach (RigLevelRecord l in data.Levels) published.Add(l.Id);
-
-                    foreach (var entry in RigLevelLids.AllFor(hull.ScriptPath))
-                    {
-                        Assert.Contains(entry.Key, published.ToArray(),
-                            $"{hull.Key}: {nameof(RigLevelLids)} declares a lid for level " +
-                            $"'{entry.Key}', which this rig does not publish at all. A table entry " +
-                            "for a level that does not exist is a silent no-op.");
-                        Assert.Contains(entry.Value, data.LevelIds.Keys.ToArray(),
-                            $"{hull.Key}.{entry.Key}: declared lid '{entry.Value}' is not in the " +
-                            "rig's own vocabulary.");
-                    }
-
                     foreach (RigLevelRecord l in data.Levels)
-                        if (l.LidSource == RigLevelRecord.LidFromTable)
-                            owed.Add($"{hull.Key}.{l.Id} -> {l.LidLevelId}");
+                    {
+                        if (l.LidSource != RigLevelRecord.LidFromRig &&
+                            l.LidSource != RigLevelRecord.LidFromVeto)
+                            notFromTheRig.Add($"{hull.Key}.{l.Id} [{l.LidSource}]");
+
+                        if (l.LidSource == RigLevelRecord.LidFromRig)
+                            named.Add($"{hull.Key}.{l.Id} -> {l.LidLevelId}");
+                    }
                 }
             }
 
-            // Asserted, not merely logged: when this list EMPTIES, the rigs have started publishing
-            // ceiling.lid and RigLevelLids should be deleted rather than left standing as a second
-            // answer to a question the rig now answers itself.
-            //
-            // ⚠️ The debt does not retire in one go. It is four RIG FILES, and upstream can ship
-            // ceiling.lid on one without the others — so a SHRINKING list is the ordinary good news,
-            // and only an EMPTY one retires the table. The eighteen variant rows are one table entry
-            // seen eighteen times (the table is keyed by rig file); they will vanish together.
+            CollectionAssert.IsEmpty(notFromTheRig,
+                "These levels did not get their lid from the rig. Every walkable level must publish " +
+                "ceiling.lid — a level id, or null for the per-level veto — and nothing else may " +
+                "answer for it:\n  " + string.Join("\n  ", notFromTheRig));
+
+            // The same twenty-four relationships the fixtures above check, asserted here as
+            // PROVENANCE: they are now the rigs' own words rather than this repo's. The eighteen
+            // variant rows come off LobsterVariantFleet because one generator rig makes them all.
             string[] expected = new[]
                 {
                     "lobsterBoat.cuddy -> foredeck",
@@ -614,11 +626,10 @@ namespace HiddenHarbours.Tests.RigBaking
                 .Concat(LobsterVariantFleet.All.Select(v => $"{v.Key}.cuddy -> foredeck"))
                 .ToArray();
 
-            CollectionAssert.AreEquivalent(expected, owed,
-                "The set of lids this repo is standing in for has changed. If it SHRANK, the rig now " +
-                "publishes ceiling.lid for that level — delete the table entry. If it GREW, a new " +
-                "entry was added without the upstream ask being logged. Now:\n  " +
-                string.Join("\n  ", owed));
+            CollectionAssert.AreEquivalent(expected, named,
+                "The set of lids the RIGS declare has changed. This is upstream art moving, not a " +
+                "local table drifting — read the rig's ceiling records before touching this list. " +
+                "Now:\n  " + string.Join("\n  ", named));
         }
 
         private static string NameOf(RigMeshData data, int tag) =>
