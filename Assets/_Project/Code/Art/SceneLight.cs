@@ -111,7 +111,29 @@ namespace HiddenHarbours.Art
         [Header("Render")]
         [Tooltip("Sorting order of the additive light quad. MUST be ABOVE the day/night overlay (~32760) so the " +
                  "light brightens the darkened frame instead of being darkened by it.")]
-        [SerializeField] private int _sortingOrder = 32770;
+        [SerializeField] private int _sortingOrder = MaxSortingOrder;
+
+        /// <summary>
+        /// <b>The highest sorting order Unity can actually store</b> — and the reason this constant has
+        /// to exist at all.
+        ///
+        /// <para><c>Renderer.sortingOrder</c> is a <b>signed 16-bit</b> field. The property is typed
+        /// <c>int</c>, it accepts any int you hand it without a warning, and it then WRAPS: this light
+        /// shipped asking for <b>32770</b> and the renderer stored <b>−32766</b> — 32770 − 65536 — which
+        /// is not "above the day/night overlay" but below every sprite in the world, the sea and the
+        /// seabed included. Measured in the running game on 2026-08-28: the quad's own renderer
+        /// reported <c>order = −32766</c>.</para>
+        ///
+        /// <para><b>This is what ADR 0016's two failed "quad-sort fixes" were fighting.</b> The ADR
+        /// concluded the URP 2D renderer would not composite an additive mesh over the custom-shader
+        /// water and built an in-shader water term to get round it; the asymmetry it found most telling
+        /// — that the day/night overlay DOES draw over the water — has a simpler explanation than depth
+        /// ordering: the overlay asks for ~32760, which fits in a short, and the light asked for 32770,
+        /// which does not. The in-shader water path stays exactly as it is (it is shipped, tuned, and it
+        /// composes the beam with the foam and the reflections in a way a quad on top never could); this
+        /// only makes the LAND quad land where its own doc always said it did.</para>
+        /// </summary>
+        public const int MaxSortingOrder = short.MaxValue;   // 32767
 
         [Tooltip("Depth (metres) IN FRONT of the active camera to place the light quad each frame, mirroring how " +
                  "the day/night overlay sits at the camera (so the light reliably composites ABOVE the world). " +
@@ -141,6 +163,14 @@ namespace HiddenHarbours.Art
         private static Mesh _sharedMesh;
 
         // ---- public surface (so BoatSpotlight / tools drive a light without touching serialized fields) ----
+
+        /// <summary>
+        /// The sorting order actually written to the quad — the serialized wish, clamped into the
+        /// signed 16-bit range the renderer stores it in. Clamped rather than wrapped, because the two
+        /// answers are opposites: a wrap puts the light at the very BOTTOM of the world, which is
+        /// indistinguishable from the light being broken, and it fails silently.
+        /// </summary>
+        public int SafeSortingOrder => Mathf.Clamp(_sortingOrder, short.MinValue, MaxSortingOrder);
 
         /// <summary>The glow shape (cone beam vs round halo).</summary>
         public LightShape Shape { get => _shape; set => _shape = value; }
@@ -210,9 +240,17 @@ namespace HiddenHarbours.Art
             _quadRenderer.receiveShadows = false;
             _quadRenderer.lightProbeUsage = UnityEngine.Rendering.LightProbeUsage.Off;
             _quadRenderer.reflectionProbeUsage = UnityEngine.Rendering.ReflectionProbeUsage.Off;
-            _quadRenderer.sortingOrder = _sortingOrder;   // ABOVE the day/night overlay (~32760)
+            _quadRenderer.sortingOrder = SafeSortingOrder;   // ABOVE the day/night overlay (~32760)
 
-            // SORT AS 2D (the fix for "the beam lit land but NOT the water"). In the URP 2D renderer a MeshRenderer
+            // ⚠️ READ THE NOTE ON MaxSortingOrder BEFORE THIS BLOCK. It was written as "the fix for the beam lit
+            // land but NOT the water", and that diagnosis was wrong: the beam was invisible because the order
+            // asked for did not fit in a short and wrapped to the bottom of the world. The Sort-as-2D group is
+            // KEPT — a MeshRenderer genuinely does need it to sort against sprites by order at all, so it is
+            // load-bearing — but it never was the cure for the missing beam, and the paragraph below describes a
+            // mechanism that was never the one biting. Left standing, corrected rather than deleted, because the
+            // sorting fact it states is true and worth knowing.
+            //
+            // SORT AS 2D. In the URP 2D renderer a MeshRenderer
             // does NOT reliably sort against SpriteRenderers by sortingOrder alone — for a mesh-vs-sprite pair it
             // falls back to world-space DEPTH, so this light quad (at the boat's world depth) could be OVERDRAWN by
             // the big Sea SPRITE that shares that depth, even though the light's sortingOrder (~32770) is far above
@@ -223,7 +261,7 @@ namespace HiddenHarbours.Art
             // depth-based reads it. (The day/night overlay dodges this quirk a different way — it sits AT the
             // camera near plane, the closest depth — which we ALSO mirror via _cameraDepthOffset in PoseQuad.)
             _sortingGroup = go.AddComponent<UnityEngine.Rendering.SortingGroup>();
-            _sortingGroup.sortingOrder = _sortingOrder;
+            _sortingGroup.sortingOrder = SafeSortingOrder;
             _sortingGroup.sortAtRoot = true;   // "Sort as 2D": sort the group as one 2D element by its sorting order
 
             Material mat = Resources.Load<Material>(LightMaterialPath);
@@ -274,8 +312,8 @@ namespace HiddenHarbours.Art
             _mpb.SetFloat(IdThrow, throwQuad);
             _quadRenderer.SetPropertyBlock(_mpb);
 
-            _quadRenderer.sortingOrder = _sortingOrder;
-            if (_sortingGroup != null) _sortingGroup.sortingOrder = _sortingOrder;   // keep the 2D-sort group in sync
+            _quadRenderer.sortingOrder = SafeSortingOrder;
+            if (_sortingGroup != null) _sortingGroup.sortingOrder = SafeSortingOrder;   // keep the 2D-sort group in sync
             _quadRenderer.enabled = isActiveAndEnabled && _quadRenderer.sharedMaterial != null;
         }
 

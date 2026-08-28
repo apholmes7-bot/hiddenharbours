@@ -219,6 +219,34 @@ namespace HiddenHarbours.Art
         public Key ToggleKey => _toggleKey;
 
         /// <summary>
+        /// <b>Does the toggle key reach THIS lamp?</b> True on the boat the player switches by hand.
+        ///
+        /// <para>It has to be settable, because the key read is unconditional: every live
+        /// <see cref="BoatSpotlight"/> in the scene sees the same keyboard, so a second one aboard an
+        /// NPC boat would flip HER searchlight every time the player reached for their own. A hull
+        /// that carries a searchlight because her DEF says she does is somebody else's boat being
+        /// worked by somebody else, and she is switched off her own declaration, not off the player's
+        /// keyboard. Nothing else about the beam changes.</para>
+        /// </summary>
+        public bool KeyTogglesBeam
+        {
+            get => _keyTogglesBeam;
+            set => _keyTogglesBeam = value;
+        }
+
+        /// <summary>
+        /// Where the lamp is mounted, in the boat's own plane: x to starboard, y toward the bow, in
+        /// metres from her origin. This is the point the cone is thrown FROM, on land and on water
+        /// alike. Height above the keel is deliberately not part of it — the beam is aimed in the
+        /// boat's plane, and a searchlight one metre higher lights the same patch of sea.
+        /// </summary>
+        public Vector2 MountOffsetMetres
+        {
+            get => new Vector2(_sideOffset, _bowOffset);
+            set { _sideOffset = value.x; _bowOffset = value.y; }
+        }
+
+        /// <summary>
         /// Throw the light switch. Turning the beam OFF must leave NOTHING lit, and the beam reaches the frame by
         /// TWO independent mechanisms (ADR 0016), so both are shut down here: the additive <see cref="SceneLight"/>
         /// quad lights LAND (disabling it pools the quad renderer off — <c>SceneLight.OnDisable</c>), and the

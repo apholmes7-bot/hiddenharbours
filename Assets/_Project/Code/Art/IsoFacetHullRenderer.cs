@@ -41,6 +41,10 @@ namespace HiddenHarbours.Art
         /// <summary>The clamp's half-beam reach (rig ground metres) — the far-rail residual's
         /// exact term (<see cref="HiddenHarbours.Core.HullMeshDef.WatertightHalfBeamMeters"/>).</summary>
         public float WatertightHalfBeamMeters;
+        /// <summary>The lamps this hull burns at night, in her own rig metres
+        /// (<see cref="HiddenHarbours.Core.HullMeshDef.Lamps"/>). Null or empty = no lamps, which is
+        /// the shipped answer for every hull whose rig has not been measured: absence is data.</summary>
+        public HiddenHarbours.Core.HullLamp[] Lamps;
     }
 
     /// <summary>
@@ -351,6 +355,18 @@ namespace HiddenHarbours.Art
         /// moment the skiffs' engines became fittings and it had two mesh hulls to swap between.</para>
         /// </summary>
         public Transform PosedMesh => _meshChild;
+
+        /// <summary>
+        /// The lamps this hull carries, in her own rig metres — the def's table, handed straight
+        /// through. Empty until she is set up, and empty forever for a hull whose rig has not been
+        /// measured for lamps (absence is data, not a defect). <see cref="BoatLamps"/> reads this
+        /// rather than the def, because the renderer is the one thing that knows WHICH hull is
+        /// currently skinned onto this root.
+        /// </summary>
+        public HiddenHarbours.Core.HullLamp[] Lamps =>
+            _setup != null && _setup.Lamps != null
+                ? _setup.Lamps
+                : System.Array.Empty<HiddenHarbours.Core.HullLamp>();
 
         public bool IsConfigured => _setup != null;
 
