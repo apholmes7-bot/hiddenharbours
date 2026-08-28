@@ -155,6 +155,69 @@ namespace HiddenHarbours.Core
     }
 
     /// <summary>
+    /// <b>A conversation asking the counter to take what the player is carrying.</b> Published by the
+    /// dialogue presenter when the player picks a row authored with a counter-sell pointer; the economy
+    /// side listens, hands the wired hold to the seller's existing sell components, and answers with
+    /// <see cref="CounterSellReported"/>.
+    ///
+    /// <para><b>It is the sell verb's whole crossing, and it names no economy type</b> (rule 4). The
+    /// sale itself is not new: it is the same <c>FishBuyer</c> at the same <c>Market</c> quoting the same
+    /// <c>SellPricing</c> the counter has always used (owner ruling R7, 2026-08-27) — the row is a door
+    /// onto it, not a second implementation of it.</para>
+    ///
+    /// <para><b>Answered SYNCHRONOUSLY, on the same publish.</b> The presenter is holding the
+    /// conversation open on this and speaks the outcome in the seller's own bubble, so the reply has to
+    /// be in hand by the time the publish returns. A seller nobody answers for reads as a sale that sold
+    /// nothing, which is the same words as an empty pail and is the kind failure here.</para>
+    /// </summary>
+    public readonly struct CounterSellRequested
+    {
+        /// <summary>Whose counter is being sold over — the same seller id the browse row opens a book
+        /// with, matched against the <c>SellerId</c> on the vendor components that stand on it.</summary>
+        public readonly string SellerId;
+
+        /// <summary>The speaker's <c>NpcDef.Id</c> — who is doing the taking, so an economy-side log can
+        /// name the person rather than a counter.</summary>
+        public readonly string SpeakerId;
+
+        public CounterSellRequested(string sellerId, string speakerId)
+        {
+            SellerId = sellerId ?? ""; SpeakerId = speakerId ?? "";
+        }
+    }
+
+    /// <summary>
+    /// <b>What the counter did with it — facts, never words.</b> The economy reports the payout and how
+    /// much left the hold; world-content puts that into the seller's mouth from lines the owner authored
+    /// on the option asset.
+    ///
+    /// <para><b>The split is deliberate and is <see cref="FeeFronted"/>'s rule kept</b>: "the economy
+    /// never writes dialogue". A sentence composed here would be a seller's voice living in the buy
+    /// stack, unreachable to the owner and identical at every counter on the coast.</para>
+    /// </summary>
+    public readonly struct CounterSellReported
+    {
+        /// <summary>Whose counter answered — the id <see cref="CounterSellRequested.SellerId"/> asked.</summary>
+        public readonly string SellerId;
+
+        /// <summary>₲ paid for the lot. Zero when nothing was sold.</summary>
+        public readonly int Payout;
+
+        /// <summary>How many units actually left the hold. <b>This, not the payout, is what says a sale
+        /// happened</b> — a lot can price at ₲0 (a glutted market, a worthless species) and that is a
+        /// sale that emptied your pail, not an empty pail.</summary>
+        public readonly int UnitsSold;
+
+        /// <summary>True when the counter actually took something.</summary>
+        public bool SoldAnything => UnitsSold > 0;
+
+        public CounterSellReported(string sellerId, int payout, int unitsSold)
+        {
+            SellerId = sellerId ?? ""; Payout = payout; UnitsSold = unitsSold;
+        }
+    }
+
+    /// <summary>
     /// <b>The wares book has been shut.</b> Published by the economy side when the player closes the
     /// catalog; the dialogue presenter listens and re-arms the picker on the same rows, so the player is
     /// handed back to the person who lent them the book rather than to an empty street.
