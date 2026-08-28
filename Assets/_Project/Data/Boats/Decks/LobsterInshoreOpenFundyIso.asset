@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: deck.lobster_inshore_open_fundy_iso
   SourceSidecar: docs/art/rigs/gameplay/lobsterInshoreOpenFundyIso.gameplay.json
   SourceRig: docs/art/rigs/lobsterBoatVariantsIsoRig.js
-  DerivedFromRigSha256: ce7d45ff4fbcd3e14a608bbccb5c5fd0854f9e65bdf4323b664e3a379eb5019b
+  DerivedFromRigSha256: 69eb8cec03260fbc7c6e9f698b3fa4556c53a40f3d5d2cef1d5b498f26ae152e
   LoaMeters: 8.6
   Areas:
   - Id: cockpit

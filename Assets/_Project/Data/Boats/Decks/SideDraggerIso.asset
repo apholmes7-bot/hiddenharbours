@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: deck.side_dragger_iso
   SourceSidecar: docs/art/rigs/gameplay/sideDraggerIsoRig.gameplay.json
   SourceRig: docs/art/rigs/sideDraggerIsoRig.js
-  DerivedFromRigSha256: c4ad181666aca73874e2b8c9a2e2367567ebf528c5021925ae8199fca880855b
+  DerivedFromRigSha256: 587141fe8b6ded9ae6b18410a8141894cb7d08f3927ea98e474994a30b8dae84
   LoaMeters: 25
   Areas:
   - Id: aft_deck
