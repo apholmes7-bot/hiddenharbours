@@ -264,5 +264,42 @@ namespace HiddenHarbours.Tools.RigBaking
             cols = rows = sheetW = sheetH = 0;
             return false;
         }
+
+        // =========================================================================================
+        //  HOW A MARK TAKES A KNOCK — three laws, one measurement
+        // =========================================================================================
+        //
+        // The kit publishes exactly one physical number per rung: the hull DIAMETER. Everything the
+        // mooring needs is derived from it here, in one place, so the ladder stays monotonic by
+        // construction and a re-bake cannot leave a 3.0 m landfall buoy shoving like a 1.2 m can.
+        // Typed per-rung numbers would be ten opportunities to get the order wrong.
+
+        /// <summary>What a hull actually meets: her own diameter, halved.</summary>
+        public static float CollisionRadiusFor(float diameterMetres) =>
+            Mathf.Max(0.05f, diameterMetres * 0.5f);
+
+        /// <summary>
+        /// Her displacement in kg — and therefore the whole mass response, since a struck hull's
+        /// deflection is <c>m_buoy / (m_buoy + m_hull)</c> of the closing speed.
+        ///
+        /// <para>Goes as the SQUARE of the diameter, which is the honest middle: a steel buoy is
+        /// neither a flat plate (D¹) nor a solid ball (D³) — she is a shell with a counterweight, and
+        /// the published ladder (1.2 m harbour can → 3.0 m landfall pillar) lands on 288 kg → 1800 kg,
+        /// which is the right order for real channel furniture.</para>
+        ///
+        /// <para>Read against the fleet on <c>BoatHullDef.MassKg</c>: the dory is 400 kg, so a harbour
+        /// can is most of a dory and shoulders her visibly; the cape islander is 6000 kg and barely
+        /// feels one; the tanker does not notice at all. That IS the owner's ask, out of one number.</para>
+        /// </summary>
+        public static float MooredMassFor(float diameterMetres) =>
+            Mathf.Max(1f, 200f * diameterMetres * diameterMetres);
+
+        /// <summary>
+        /// How far she may swing before her chain comes taut, in metres. Scales with her size the way
+        /// scope does — a bigger mark stands in deeper water and lies to more chain — and is bounded
+        /// well inside the fairway half-width so a shoved mark still marks the edge it was placed on.
+        /// </summary>
+        public static float WatchRadiusFor(float diameterMetres) =>
+            Mathf.Max(0.5f, 2.5f * diameterMetres);
     }
 }
