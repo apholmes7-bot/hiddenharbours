@@ -296,65 +296,91 @@ namespace HiddenHarbours.Tests.RigBaking
         }
 
         /// <summary>
-        /// <b>The skybridge keeps BOTH of her decks, and her bridge ladder lands on the upper one.</b>
-        /// This is the HOLD of 2026-08-27 written down where it can be enforced rather than
-        /// remembered.
+        /// <b>The skybridge keeps BOTH of her walkables, and her bridge ladder lands on the upper
+        /// one.</b> The 2026-08-27 HOLD, rewritten on 2026-08-28 when the rig's own id split landed —
+        /// and rewritten to say what it always meant.
         ///
         /// <para><b>The collision it protects against.</b> <c>sportFisherIsoRig2.js</c> uses the id
         /// <c>bridge_sole</c> for TWO walkables: the ENCLOSED skylounge sole at z 7.30
         /// (<c>interior.bridge.deckId</c>) and the OPEN control coaming at z 9.74
-        /// (<c>interior.bridgeSole</c>, and <c>helms[0].deck</c>). Our committed mirror resolves that
-        /// by carrying both — the coaming as <c>bridge_sole</c> at 9.74 with its 42-vertex polygon,
-        /// the skylounge as <c>sky_sole</c> at 7.30.</para>
+        /// (<c>interior.bridgeSole</c>, and <c>helms[0].deck</c>). Our mirror used to resolve it by
+        /// carrying the coaming as <c>bridge_sole</c> at 9.74 and inventing <c>sky_sole</c> for the
+        /// skylounge — which disagreed with her INTERIOR sidecar, where <c>bridge_sole</c> has always
+        /// meant the 7.30 skylounge, and left this file's own <c>STAIRS.house_to_bridge</c> going
+        /// <c>to: sky_sole</c> through an <c>opening.in: bridge_sole</c> 2.44 m above it. The
+        /// 2026-08-28 changeset splits the id upstream instead: <c>bridge_sole</c> IS the skylounge,
+        /// the coaming becomes <c>helm_coaming</c>. Adopted.</para>
         ///
-        /// <para><b>Why the offered replacement was refused.</b> Upstream's re-export resolved the
-        /// same collision by DELETING the 9.74 deck and renaming <c>sky_sole</c> to
-        /// <c>bridge_sole</c> — 218 lines shorter, and it strands the helm and the ladder that the
-        /// rig's own records put up there. Its own file says so: it keeps <c>bridge_ladder</c>
-        /// climbing z 7.32 → 9.55 and connecting to a <c>bridge_sole</c> it has left at 7.30, so the
-        /// ladder rises 2.23 m to arrive 0.02 m BELOW its own foot. That inconsistency is what the
-        /// second assertion here is written against, and it is the general law: <b>a ladder lands on
-        /// the deck it names.</b> The HOLD stands until the rig disambiguates the id and re-exports
-        /// (upstream ask 6); nothing on our side is re-stamped meanwhile, because a hash corrected
-        /// here would come back wrong on the next regeneration.</para>
+        /// <para><b>Why this fixture no longer names either id.</b> Its first form asserted
+        /// <c>bridge_sole</c> at 9.74 and the presence of <c>sky_sole</c> — a name test standing in
+        /// for a geometry claim, and it would have gone red on a split that fixed the very thing it
+        /// guarded. What it was written to refuse is a hull losing a WALKABLE, so that is what it
+        /// says now: two decks up there, one at each height, each with its own polygon, and no id
+        /// naming two of them. That still refuses the 2026-08-27 export verbatim (it carried ONE deck
+        /// above the aft deck) and it now also refuses a re-collapse under any pair of names.</para>
         ///
-        /// <para>⚠️ A string-grep is NOT this check. The staging pass that first cleared the offered
-        /// file counted <c>bridge_sole</c> occurrences — eight, none of them <c>sky_sole</c> — and
-        /// called the deck "fully present". A name's presence is not a deck's presence; both
-        /// assertions below read the polygon and the z.</para>
+        /// <para>⚠️ A string-grep is NOT this check. The staging pass that first cleared the refused
+        /// file counted <c>bridge_sole</c> occurrences — eight — and called the deck "fully present".
+        /// A name's presence is not a deck's presence.</para>
         /// </summary>
         [Test]
-        public void TheSkybridgeKeepsBothOfHerDecks_AndHerLadderLandsOnTheUpperOne()
+        public void TheSkybridgeKeepsBothOfHerWalkables_AndHerLadderLandsOnTheUpperOne()
         {
             string path = Path.Combine(RepoRoot, KitFolder, "gameplay",
                                        "sportFisherIsoRig2.skybridge.gameplay.json");
             object root = DeckSidecarJson.Parse(File.ReadAllText(path));
 
             var byId = new Dictionary<string, (double Z, int Verts)>(System.StringComparer.Ordinal);
+            var seen = new List<string>();
             foreach (object d in DeckSidecarJson.AsArray(DeckSidecarJson.Member(root, "DECK")))
             {
                 string id = DeckSidecarJson.String(DeckSidecarJson.Member(d, "id"));
                 if (string.IsNullOrEmpty(id)) continue;
+                seen.Add(id);
                 List<object> poly = DeckSidecarJson.AsArray(DeckSidecarJson.Member(d, "polygon"));
                 byId[id] = (DeckSidecarJson.Float(DeckSidecarJson.Member(d, "z"), float.NaN),
                             poly?.Count ?? 0);
             }
 
-            Assert.IsTrue(byId.ContainsKey("bridge_sole"),
-                "the open control coaming is gone. It is where helms[0] and the bridge ladder land.");
-            Assert.IsTrue(byId.ContainsKey("sky_sole"),
-                "the enclosed skylounge sole is gone — renaming it onto bridge_sole is exactly the " +
-                "collapse this fixture refuses, because it leaves one id for two walkables again.");
+            // The collision law itself, and not a list of the names it happened to take.
+            CollectionAssert.AllItemsAreUnique(seen,
+                "one id names two DECK entries — which is the rig's own collision arriving in the " +
+                "sidecar, and it is what the split of 2026-08-28 exists to end.");
 
-            Assert.AreEqual(9.74, byId["bridge_sole"].Z, 1e-6,
-                "bridge_sole is the OPEN coaming at 9.74 m. At 7.30 it is the skylounge wearing the " +
-                "coaming's name, and the helm above it has no deck.");
-            Assert.AreEqual(7.30, byId["sky_sole"].Z, 1e-6, "sky_sole is the enclosed skylounge sole.");
-            Assert.AreEqual(42, byId["bridge_sole"].Verts,
-                "the coaming's polygon is 42 vertices. A present id with an absent shape is how the " +
-                "offered replacement read to a string-grep.");
+            // Named by HEIGHT, not by id and not by a band: her aft deck sits at 7.28, two
+            // centimetres under the skylounge, so "everything above 7 m" is three decks, not two.
+            var found = string.Join(", ", byId.Select(kv => kv.Key + "@" + kv.Value.Z));
+            var atSkylounge = byId.Where(kv => System.Math.Abs(kv.Value.Z - 7.30) < 1e-3).ToList();
+            var atCoaming = byId.Where(kv => System.Math.Abs(kv.Value.Z - 9.74) < 1e-3).ToList();
 
-            // The general law, and the one the refused file breaks on its own terms.
+            // Counted, not Single()'d: on the file this fixture exists to refuse there is NO deck at
+            // 9.74, and Single() answers that with "Sequence contains no matching element" instead of
+            // the sentence below. A guard that cannot say what is wrong on its own artefact is half
+            // a guard.
+            Assert.AreEqual(1, atCoaming.Count,
+                "no single walkable at z 9.74 — the OPEN control coaming, where helms[0] stands and " +
+                "the bridge ladder tops out. The 2026-08-27 export deleted it and stranded them both. " +
+                "Decks: [" + found + "]");
+            Assert.AreEqual(1, atSkylounge.Count,
+                "no single walkable at z 7.30 — the ENCLOSED skylounge sole, the full helm deck the " +
+                "interior companionway climbs to. Decks: [" + found + "]");
+
+            var skylounge = atSkylounge[0];
+            var coaming = atCoaming[0];
+            Assert.AreNotEqual(skylounge.Key, coaming.Key,
+                "the enclosed skylounge sole and the open control coaming are ONE deck. That is the " +
+                "collapse this fixture refuses — the 2026-08-27 export made it by deleting the 9.74 " +
+                "walkable, and stranded helms[0] and the head of the bridge ladder up there with " +
+                "nothing to stand on. Decks: [" + found + "]");
+            Assert.AreEqual(4, skylounge.Value.Verts,
+                "the skylounge sole (" + skylounge.Key + ") is the enclosed volume's rectangular sole.");
+            Assert.AreEqual(42, coaming.Value.Verts,
+                "the coaming (" + coaming.Key + ") is the open ring — 21 stations, both sides. A " +
+                "present id with an absent shape is how the refused file read to a string-grep.");
+
+            // The general law, and the one the refused file broke on its own terms:
+            // A LADDER LANDS ON THE DECK IT NAMES.
+            int laddersChecked = 0;
             foreach (object l in DeckSidecarJson.AsArray(DeckSidecarJson.Member(root, "LADDER")))
             {
                 List<object> connects = DeckSidecarJson.AsArray(DeckSidecarJson.Member(l, "connects"));
@@ -362,19 +388,179 @@ namespace HiddenHarbours.Tests.RigBaking
                 string top = DeckSidecarJson.String(connects[connects.Count - 1]);
                 if (top == null || !byId.TryGetValue(top, out var deck)) continue;
 
-                double z0 = DeckSidecarJson.Float(DeckSidecarJson.Member(l, "z0"), float.NaN);
                 double z1 = DeckSidecarJson.Float(DeckSidecarJson.Member(l, "z1"), float.NaN);
-                string id = DeckSidecarJson.String(DeckSidecarJson.Member(l, "id"));
-
-                Assert.GreaterOrEqual(deck.Z, z0,
-                    $"{id} climbs {z0:0.##} → {z1:0.##} m and lands on '{top}', which sits at " +
-                    $"{deck.Z:0.##} m — below the foot of its own ladder. A ladder lands on the deck " +
-                    "it names.");
-                Assert.AreEqual(z1, deck.Z, 0.35,
-                    $"{id} tops out at {z1:0.##} m but '{top}' sits at {deck.Z:0.##} m. The stringer " +
-                    "runs a little past the deck it serves; a metre and more apart means the ladder " +
-                    "and the deck are describing different levels.");
+                string lid = DeckSidecarJson.String(DeckSidecarJson.Member(l, "id"));
+                laddersChecked++;
+                Assert.LessOrEqual(System.Math.Abs(deck.Z - z1), 0.60,
+                    "LADDER " + lid + " tops out at z " + z1 + " and names deck " + top + " at z " +
+                    deck.Z + ". A ladder lands on the deck it names; the 2026-08-27 export had this " +
+                    "one rise 2.23 m to arrive 0.02 m BELOW its own foot.");
             }
+            Assert.Greater(laddersChecked, 0,
+                "no LADDER resolved to a deck, so the law above was never asked.");
+
+            // And the companionway's hole is cut through the sole of the UPPER deck it connects —
+            // down the salon hatch, up through the skylounge floor. Not "the deck it arrives at":
+            // that is only true climbing. Our own file said `to: sky_sole` through an
+            // `opening.in: bridge_sole` that was the 9.74 coaming — a third deck, 2.44 m clear of
+            // either end — and carried it from #589 until the id split gave the two soles
+            // distinguishable names.
+            object stairs = DeckSidecarJson.Member(DeckSidecarJson.Member(root, "STAIRS"), "companionways");
+            int stairsChecked = 0;
+            foreach (object c in DeckSidecarJson.AsArray(stairs))
+            {
+                string from = DeckSidecarJson.String(DeckSidecarJson.Member(c, "from"));
+                string to = DeckSidecarJson.String(DeckSidecarJson.Member(c, "to"));
+                string inDeck = DeckSidecarJson.String(
+                    DeckSidecarJson.Member(DeckSidecarJson.Member(c, "opening"), "in"));
+                if (from == null || to == null || inDeck == null) continue;
+                if (!byId.TryGetValue(from, out var a) || !byId.TryGetValue(to, out var b)) continue;
+
+                stairsChecked++;
+                string upper = a.Z >= b.Z ? from : to;
+                string id = DeckSidecarJson.String(DeckSidecarJson.Member(c, "id"));
+                Assert.AreEqual(upper, inDeck,
+                    "companionway " + id + " runs " + from + " (z " + a.Z + ") to " + to + " (z " +
+                    b.Z + ") through an opening declared in " + inDeck + ". The hole is cut through " +
+                    "the sole of the UPPER deck, which is " + upper + ".");
+            }
+            Assert.Greater(stairsChecked, 0, "no companionway resolved both its decks.");
+        }
+
+        /// <summary>
+        /// <b>The JOIN, on the boat the game opens inside.</b> Her rig names the deck each enclosed
+        /// level is — <c>house → house_sole</c>, <c>cuddy → cuddy_sole</c> — and those names are only
+        /// worth anything if the interior actually has rooms by them. Unjoined, the gate resolves to
+        /// 0 and the house never opens, silently.
+        ///
+        /// <para><c>HullLevelTagBakeTests.EveryPublishedLevel_HasACeilingOrADeclaredOpenSky_AndNamesA
+        /// DefLevel</c> asserts this across the fleet against the built <c>BoatInteriorDef</c>, and
+        /// was VACUOUS on the cape until 2026-08-28 because her rig published no levels to join. It
+        /// covers her now — but it loads an asset, so it only runs in the editor. This one asks the
+        /// same question of the two files on disk, which is where the answer comes from: the rig, run
+        /// in V8, against the interior sidecar the def is built from. It runs anywhere.</para>
+        ///
+        /// <para><b>The two vocabularies are deliberately different.</b> <c>house</c> and <c>cuddy</c>
+        /// are the rig's level ids and become TexCoord1 tags; <c>house_sole</c> and <c>cuddy_sole</c>
+        /// are the interior's room ids. Conflating them is exactly how a cutaway silently no-ops, so
+        /// the mapping is DECLARED by the rig (<c>geometry().levels[].deck</c>) and never derived
+        /// from a name here.</para>
+        /// </summary>
+        [Test]
+        public void TheCapesEnclosedLevelsNameRoomsHerInteriorSidecarActuallyHas()
+        {
+            FleetHull cape = HullMeshFleet.Hulls.Single(h => h.Key == "capeIslander");
+            RigMeshData data;
+            using (IRigScriptHost host = RigScriptHostFactory.Create())
+                data = RigMeshExtractor.ExtractFrom(host, cape.ScriptPath, cape.GlobalName,
+                                                    hull: cape.Extraction);
+
+            Assert.IsNotEmpty(data.Levels.ToArray(),
+                "her rig published no levels at all — cutaway pass 4 has not landed, and every claim " +
+                "below would be about an empty list.");
+
+            object interior = DeckSidecarJson.Parse(File.ReadAllText(
+                Path.Combine(RepoRoot, KitFolder, "capeIslanderIsoRig.interior.json")));
+            var rooms = new HashSet<string>(
+                DeckSidecarJson.AsObject(DeckSidecarJson.Member(interior, "WALKABLE")).Select(kv => kv.Key),
+                System.StringComparer.Ordinal);
+
+            var unjoined = new List<string>();
+            var enclosed = new List<string>();
+            foreach (RigLevelRecord lvl in data.Levels)
+            {
+                if (!lvl.Enclosed) continue;
+                enclosed.Add(lvl.Id + " -> " + lvl.DeckId);
+                if (string.IsNullOrEmpty(lvl.DeckId) || !rooms.Contains(lvl.DeckId))
+                    unjoined.Add(lvl.Id + " names deck '" + lvl.DeckId + "'");
+            }
+
+            CollectionAssert.IsEmpty(unjoined,
+                "her rig's enclosed levels name rooms her interior sidecar does not have, so the " +
+                "cutaway resolves to 0 and the house never opens. WALKABLE has [" +
+                string.Join(", ", rooms.OrderBy(r => r)) + "]:\n  " + string.Join("\n  ", unjoined));
+
+            CollectionAssert.AreEquivalent(
+                new[] { "house -> house_sole", "cuddy -> cuddy_sole" }, enclosed,
+                "the cape's two enclosed levels are the wheelhouse and the cuddy below the whaleback. " +
+                "A level joining or leaving this list is her rig changing shape and wants a look, not " +
+                "a wider assertion.");
+        }
+
+        /// <summary>
+        /// <b>The coaming's polygon is made of the RIG'S OWN points.</b> The 2026-08-28 changeset
+        /// arrived with this ring recomputed and 38 of its 42 vertices wrong — by up to 0.050 m in x,
+        /// under a note claiming it was "computed by the rig's own volume xAt law". It was not: the
+        /// deviation is zero at the four knots of the volume's <c>hw</c> half-breadth table
+        /// (y −1.1, −2.5, −4.5, −8.75) and peaks mid-segment, which is the signature of interpolating
+        /// that table LINEARLY where the rig runs it through <c>mono()</c>, a Fritsch–Carlson
+        /// monotone cubic. Reproducing it linearly matched all 42 vertices to zero error.
+        ///
+        /// <para>So the sidecar's ring is checked against the rig rather than against a prose claim.
+        /// The rig emits this sole as flat quads at exactly z 9.74 (<c>volume()</c>'s <c>o.open</c>
+        /// branch: <c>face([[-ax,A.y,sole],[ax,A.y,sole],[bx,B.y,sole],[-bx,B.y,sole]])</c>), so every
+        /// polygon vertex must be a point the rig actually put there. It is a SUBSET test on purpose —
+        /// the pod and the two seats also have bottoms on that plane, and their vertices are no
+        /// business of the deck's outline.</para>
+        ///
+        /// <para>Extracted from <c>hull-rigs/</c>, the copy this sidecar's
+        /// <c>derivedFromRigSha256</c> actually pins, rather than from the fleet's
+        /// <c>docs/art/rigs/</c> copy — the two are different files here (205a93c9… and 152eb5f3…),
+        /// they agree on this volume, and asserting against the pinned one is what makes the pin mean
+        /// something.</para>
+        /// </summary>
+        [Test]
+        public void TheCoamingsOutlineIsBuiltFromVerticesTheRigActuallyEmits()
+        {
+            FleetHull sky = HullMeshFleet.Hulls.Single(h => h.Key == "sportFisherSkybridge");
+            using IRigScriptHost host = RigScriptHostFactory.Create();
+            RigMeshData data = RigMeshExtractor.ExtractFrom(
+                host, KitFolder + "/hull-rigs/sportFisherIsoRig2.js", sky.GlobalName,
+                hull: sky.Extraction);
+
+            const double Sole = 9.74, Eps = 5e-4;
+            var onThePlane = new HashSet<(long X, long Y)>();
+            foreach (RigFace f in data.Faces)
+            {
+                bool flat = true;
+                foreach (Vector3d v in f.V)
+                    if (System.Math.Abs(v.Z - Sole) > Eps) { flat = false; break; }
+                if (!flat) continue;
+                foreach (Vector3d v in f.V)
+                    onThePlane.Add(((long)System.Math.Round(v.X * 1000.0),
+                                    (long)System.Math.Round(v.Y * 1000.0)));
+            }
+            Assert.Greater(onThePlane.Count, 40,
+                "the rig emitted almost nothing on the 9.74 plane — the extraction found the wrong " +
+                "hull, or the coaming has moved.");
+
+            object root = DeckSidecarJson.Parse(File.ReadAllText(Path.Combine(
+                RepoRoot, KitFolder, "gameplay", "sportFisherIsoRig2.skybridge.gameplay.json")));
+            List<object> atSole = DeckSidecarJson.AsArray(DeckSidecarJson.Member(root, "DECK"))
+                .Where(d => System.Math.Abs(
+                    DeckSidecarJson.Float(DeckSidecarJson.Member(d, "z"), float.NaN) - Sole) < 1e-6)
+                .ToList();
+            Assert.AreEqual(1, atSole.Count,
+                "the sidecar carries no single deck at z 9.74, so there is no outline to check. That " +
+                "is the deleted-coaming failure, and the fixture above is the one that says so.");
+            object coaming = atSole[0];
+
+            var strangers = new List<string>();
+            List<object> poly = DeckSidecarJson.AsArray(DeckSidecarJson.Member(coaming, "polygon"));
+            for (int i = 0; i < poly.Count; i++)
+            {
+                List<object> pt = DeckSidecarJson.AsArray(poly[i]);
+                double x = DeckSidecarJson.Float(pt[0], float.NaN);
+                double y = DeckSidecarJson.Float(pt[1], float.NaN);
+                var key = ((long)System.Math.Round(x * 1000.0), (long)System.Math.Round(y * 1000.0));
+                if (!onThePlane.Contains(key)) strangers.Add("[" + i + "] (" + x + ", " + y + ")");
+            }
+
+            CollectionAssert.IsEmpty(strangers,
+                "these polygon vertices are at no point the rig puts on the 9.74 plane, so the " +
+                "outline was recomputed rather than read. That is the 2026-08-28 defect verbatim — a " +
+                "ring derived with a linear hw interpolant instead of the rig's monotone cubic:\n  " +
+                string.Join("\n  ", strangers));
         }
 
         [Test]
