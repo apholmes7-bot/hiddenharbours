@@ -35,5 +35,5 @@ MonoBehaviour:
   - house
   - cuddy
   CellRowForLevel: 0000000001000000
-  CellsAreCounterClockwise: 1
+  CellsAreCounterClockwise: 0
   ResidentMegabytes: 12.3046875
