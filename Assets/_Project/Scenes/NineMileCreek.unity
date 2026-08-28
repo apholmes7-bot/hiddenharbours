@@ -280217,7 +280217,6 @@ GameObject:
   - component: {fileID: 1176619500}
   - component: {fileID: 1176619499}
   - component: {fileID: 1176619498}
-  - component: {fileID: 1176619497}
   m_Layer: 0
   m_Name: FishBuyerStall
   m_TagString: Untagged
@@ -280225,22 +280224,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1176619497
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1176619496}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7e4b20172b128be4e8e1e70cf069d550, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.DevSellInput
-  _reach:
-    _player: {fileID: 0}
-    _playerObjectName: Player
-    _range: 4
 --- !u!114 &1176619498
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -502501,7 +502484,6 @@ GameObject:
   - component: {fileID: 2028377149}
   - component: {fileID: 2028377148}
   - component: {fileID: 2028377147}
-  - component: {fileID: 2028377146}
   - component: {fileID: 2028377145}
   - component: {fileID: 2028377144}
   m_Layer: 0
@@ -502545,22 +502527,6 @@ MonoBehaviour:
   _onPurchased:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &2028377146
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2028377143}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2d55861ee6e34e50af1f8554d0926e90, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.DevBuyInput
-  _reach:
-    _player: {fileID: 0}
-    _playerObjectName: Player
-    _range: 4
 --- !u!114 &2028377147
 MonoBehaviour:
   m_ObjectHideFlags: 0

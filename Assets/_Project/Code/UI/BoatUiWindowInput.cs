@@ -11,7 +11,7 @@ namespace HiddenHarbours.UI
     /// recovery path back to a window (the watch included) whose own chrome is no longer on screen.
     ///
     /// <para><b>The binding: M</b> — swept free on 2026-08-07 against every <c>Key.*</c> read in the
-    /// project (WASD/arrows helm, Space brace/haul, E interact, Q mooring, P buy, B sell, T trap-drop,
+    /// project (WASD/arrows helm, Space brace/haul, E interact, Q mooring, T trap-drop,
     /// G grant, H haul, Y auto-yaw, L spotlight/ice, F fleet/freezer/bucket, V variant, I icebox,
     /// O displaced-water, N tide table, R anchor/rode, X dump-spoiled, Z neutral, K brow-cycle,
     /// J/U spike rig, C/1/2/Enter/LeftShift in InputSystem_Actions). Serialized so the owner can

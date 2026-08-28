@@ -730,12 +730,11 @@ namespace HiddenHarbours.App.Editor
             // this recreation exists to remove.
 
             // --- ECONOMY (reuse the cove's components, referenced by id) --------------------
-            // Fish Buyer stall: Market → FishBuyer → WharfSellPoint (+ dev 'B' to sell). The hold/wallet
+            // Fish Buyer stall: Market → FishBuyer → WharfSellPoint. The hold/wallet
             // providers (player's boat + wallet) live in the origin scene → left unwired (TODO).
             var market = fishStall.AddComponent<Market>();
             var buyer  = fishStall.AddComponent<FishBuyer>();
             var sell   = fishStall.AddComponent<WharfSellPoint>();
-            fishStall.AddComponent<DevSellInput>();          // RequireComponent(WharfSellPoint) — present
             SetRef(market, "_config", config);
             // ⭐ AND SAY WHICH MARKET IT IS. This was missing, and it was silent: Market defaults to
             // MarketId.Cove, so the creek's buyer has been quoting the HOME COVE's demand and price level.
@@ -759,9 +758,8 @@ namespace HiddenHarbours.App.Editor
             SetRef(sell, "_holdProvider", providersGo);
             SetRef(sell, "_walletProvider", providersGo);
 
-            // Shipwright shed: buy the Punt by id (+ dev 'P' to buy), paid from the persistent wallet proxy.
+            // Shipwright shed: buy the Punt by id, paid from the persistent wallet proxy.
             var shipwright = shipwrightShed.AddComponent<Shipwright>();
-            shipwrightShed.AddComponent<DevBuyInput>();      // RequireComponent(Shipwright) — present
             SetRef(shipwright, "_offer", puntOffer);
             SetString(shipwright, "_sellerId", SellerYard);
             SetRef(shipwright, "_walletProvider", providersGo);
@@ -831,9 +829,10 @@ namespace HiddenHarbours.App.Editor
             // this scene still draws are pre-existing debt against that same amendment, and the doc leaves
             // re-siting the yard open for world-content. Not moved here.)
             //
-            // No dev-input is attached, and it no longer needs one: BuyPointInstaller sweeps every loaded
-            // scene after each load and adds a DevBuyInput (P, on-foot + in reach) to any vendor stall
-            // lacking one — the driver the creek's other flagged tills already run on.
+            // No input driver is attached, and none is wanted: the way into a seller's book is the PERSON
+            // at the counter, through a dialogue row (design/shop-catalog-and-dialogue-choices.md §3.2).
+            // Hector's own conversation is where his outboards will be browsed when he gets a row; until
+            // then his till is reachable by the same seams it always was.
             var outboardStall = new GameObject("UsedOutboardSeller");
             // At Hector's own spot rather than an offset off the yard's corner: NineMileCreekPeople
             // already derives where he stands (out from the yard toward the water), and the man and his

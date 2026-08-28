@@ -24,7 +24,9 @@ namespace HiddenHarbours.Boats
     /// <para><b>Wiring.</b> Runtime-spawned by its same-module sibling <see cref="ShipHold"/> (the
     /// DeckContainerPresenter pattern — no builder re-run). The island store selling ice and lids is
     /// economy-sim's (§7.5); until it lands, the DEV keys below are the only source — greybox
-    /// scaffolding the shop replaces, exactly like DevSellInput.</para>
+    /// scaffolding the shop replaces. ⚠ The stall keys this used to point at as the same kind of
+    /// scaffolding (P to buy, B to sell) have since retired into the storekeeper's own conversation,
+    /// which is what "the shop replaces it" looks like when it happens.</para>
     ///
     /// <para><b>Known limit (flagged in the PR):</b> remaining ice/lid state is NOT in the save (the
     /// v5 shape carries hold contents only), so a quit-and-reload forfeits unspent ice: on load any

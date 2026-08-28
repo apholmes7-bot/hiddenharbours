@@ -54,11 +54,14 @@ namespace HiddenHarbours.Boats
 
         [Header("Keys (owner-editable)")]
         [Tooltip("Cycle to the next hull in the roster. F for Fleet. Free of every other binding in the " +
-                 "project (WASD/arrows helm, Space brace/haul, E interact, Q mooring, P buy, B sell, " +
+                 "project (WASD/arrows helm, Space brace/haul, E interact, Q mooring, " +
                  "T trap-drop, G grant, H haul, Y auto-yaw, Z neutral, X catch-dump, N tide panel, " +
                  "L spotlight/ice lid, O displaced water, I ice box, J/U character spike, " +
                  "K brow instrument, SHIFT+K pilot deck — gps/radar (both DevInstrumentCycle), " +
                  "Esc close). " +
+                 "⭐ FREE: P and B, returned 2026-08-27 when the store clerks landed — P browsed a " +
+                 "stall's book and B sold your hold at one, and both are now rows in the storekeeper's " +
+                 "own conversation. M is the other free letter (2026-08-20 sweep). " +
                  "⚠ THE KEY LEDGER LIVES HERE — a new dev binding is recorded in this list, and a " +
                  "candidate key is swept against it AND against the scenes/prefabs (a serialized " +
                  "instance value silently overrides a [SerializeField] default) before it is claimed. " +
