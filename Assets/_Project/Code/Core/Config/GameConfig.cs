@@ -54,6 +54,49 @@ namespace HiddenHarbours.Core
         /// it reproduces to within 4 %. See <see cref="CatchSize"/> for why the law is a cube root.</summary>
         public const float DefaultFishLengthPerKgCubeRootMeters = 0.477f;
 
+        /// <summary>
+        /// The default for <see cref="VehicleDoorSweepSeconds"/> — how long a vehicle door takes to
+        /// travel from shut to fully open.
+        ///
+        /// <para><b>Seconds per SWEEP rather than degrees per second, and that is a feel choice, not
+        /// a physical claim.</b> The fleet's sweeps run from a 42° van hood flap to a 255° reefer
+        /// barn; at a fixed angular rate the barn would take six times as long as the flap — arguably
+        /// truer, and it reads as a stall. One "time to open" keeps every door in the pack feeling
+        /// like the same hand opened it. It is the owner's to change (rule 6), and changing it moves
+        /// nothing that was measured: the sweeps themselves come off the art.</para>
+        /// </summary>
+        public const float DefaultVehicleDoorSweepSeconds = 0.85f;
+
+        /// <summary>
+        /// The default for <see cref="VehicleGearCrankSeconds"/> — how long a trailer's landing gear
+        /// takes to wind between down and up.
+        ///
+        /// <para>Longer than a door on purpose: it is a hand crank, and the trailer sidecar is
+        /// explicit that the discipline is <i>couple → gear 0 BEFORE rolling</i>. A crank that
+        /// snapped shut would make that discipline free.</para>
+        ///
+        /// <para>⚠️ The shoes slide smoothly across the whole crank; the LEGS swap at the END of it,
+        /// because they telescope and were baked at each end rather than posed. The end of a crank
+        /// the player has watched turn is exactly where that swap is least visible.</para>
+        /// </summary>
+        public const float DefaultVehicleGearCrankSeconds = 2.4f;
+
+        [Header("Vehicle doors")]
+        [Tooltip("How long a vehicle door takes to travel from shut to fully open, in seconds. One " +
+                 "time-to-open for every door in the road fleet, from the van's 42-degree hood flap " +
+                 "to a reefer's 255-degree barn leaf: a fixed angular rate would make the barn take " +
+                 "six times as long, which reads as a stall. The sweeps themselves are measured off " +
+                 "the art and are not tunable; this is the hand that works them, and it is yours.")]
+        [Min(0.05f)] public float VehicleDoorSweepSeconds = DefaultVehicleDoorSweepSeconds;
+
+        [Tooltip("How long a trailer's landing gear takes to wind between down and up, in seconds. " +
+                 "Longer than a door deliberately - it is a hand crank, and the kit's own discipline " +
+                 "is couple, then wind the legs up BEFORE rolling. A crank that snapped would make " +
+                 "that free. " +
+                 "The sand shoes slide smoothly across the whole wind; the leg tubes swap at the end " +
+                 "of it, because they telescope and were baked at each end rather than posed.")]
+        [Min(0.05f)] public float VehicleGearCrankSeconds = DefaultVehicleGearCrankSeconds;
+
         [Header("Clock")]
         [Tooltip("Real seconds per in-game day. 1800 = a 30-minute day (the owner's 2026-08-01 tide-pacing " +
                  "ruling; was 1200 = 20 min). Raising this slows EVERY real-time pace in the game — tide, " +

@@ -1,6 +1,6 @@
 {
   "rig": "tankerIsoRig.js",
-  "derivedFromRigSha256": "abd17acb503fc08ce518ea57dd5f3cdee5bac9d02043c80a7c4594bd57b105db",
+  "derivedFromRigSha256": "f933bbda7a387a76e324be1492b24015192ba89bca24faafc592b1e8e97b9a39",
   "generated": "2026-07-22",
   "frame": {
     "units": "m",

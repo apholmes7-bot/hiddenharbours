@@ -477,6 +477,15 @@ namespace HiddenHarbours.Core
         public static WaveFetchSettings WaveFetch =>
             Config != null ? Config.WaveFetch : WaveFetchSettings.Default;
 
+        /// <summary>The BREAKING-WAVE model's tunables (ADR 0040), same contract as
+        /// <see cref="WaveField"/> and <see cref="WaveFetch"/> including the <c>Config != null</c>
+        /// discipline. Read by the shader bridge (which solves the contour and publishes it) and by the
+        /// seakeeping side that takes the whitewater shove, so the surf the player sees is the surf the
+        /// hull is pushed by — the one-settings-instance rule again. Falls back to
+        /// <see cref="BreakerSettings.Default"/>, which is the textbook physics.</summary>
+        public static BreakerSettings Breakers =>
+            Config != null ? Config.Breakers : BreakerSettings.Default;
+
         /// <summary>
         /// <b>How much of her own rock a boat's INTERIOR draw takes</b> — ADR 0038 proposal 1's comfort
         /// clamp, same contract as <see cref="WaveField"/> including the <c>Config != null</c> discipline
@@ -498,6 +507,28 @@ namespace HiddenHarbours.Core
         public static float InteriorRockScale =>
             UnityEngine.Mathf.Clamp01(Config != null ? Config.InteriorRockScale
                                                      : GameConfig.DefaultInteriorRockScale);
+
+        /// <summary>
+        /// <b>How long a vehicle door takes to travel from shut to fully open</b>, in seconds — on
+        /// the same contract as <see cref="InteriorRockScale"/>: the <c>Config != null</c> discipline
+        /// (never <c>?.</c>/<c>??</c> on a <c>UnityEngine.Object</c>, which defeats Unity's
+        /// fake-null), resolved per read so the owner feels a slider move in Play, and falling back
+        /// to the shipped default so an unwired test rig works a door at the shipped pace rather
+        /// than instantly.
+        /// </summary>
+        public static float VehicleDoorSweepSeconds =>
+            UnityEngine.Mathf.Max(0.05f, Config != null ? Config.VehicleDoorSweepSeconds
+                                                        : GameConfig.DefaultVehicleDoorSweepSeconds);
+
+        /// <summary>
+        /// <b>How long a trailer's landing gear takes to wind between down and up</b>, in seconds.
+        /// Same contract as <see cref="VehicleDoorSweepSeconds"/>, and a separate number because a
+        /// hand crank is not a door — the kit's coupling discipline (couple, then wind the legs up
+        /// before rolling) leans on it taking time.
+        /// </summary>
+        public static float VehicleGearCrankSeconds =>
+            UnityEngine.Mathf.Max(0.05f, Config != null ? Config.VehicleGearCrankSeconds
+                                                        : GameConfig.DefaultVehicleGearCrankSeconds);
 
         /// <summary>
         /// <b>How long the walk up (or down) one storey takes</b>, in seconds — ADR 0036's climb, on the

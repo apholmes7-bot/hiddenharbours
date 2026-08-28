@@ -632,13 +632,13 @@
       dressed:{ level_2:'the L2 cabin deck is NOT a walkable level (the stair trunk carries house→bridge whole); its faces are tagged house — the block above the house ceiling' },
       levels:[
         { id:'house', deck:'house_sole', soleZ:D.house.soleZ, ceilingZ:D.house.ceilZ,
-          ceiling:{ kind:'hard', z:D.house.ceilZ, of:'boat-deck underside — the deckhead boatInteriorRig dresses (HOUSE.decks.house.ceilZ)' } },
+          ceiling:{ kind:'hard', lid:null, z:D.house.ceilZ, of:'boat-deck underside — the deckhead boatInteriorRig dresses (HOUSE.decks.house.ceilZ)' } },
         { id:'bridge', deck:'bridge_sole', soleZ:D.bridge.soleZ, ceilingZ:D.bridge.ceilZ,
-          ceiling:{ kind:'hard', z:D.bridge.ceilZ, of:'wheelhouse deckhead (HOUSE.decks.bridge.ceilZ)' } },
+          ceiling:{ kind:'hard', lid:null, z:D.bridge.ceilZ, of:'wheelhouse deckhead (HOUSE.decks.bridge.ceilZ)' } },
         { id:'below', deck:'below_sole', soleZ:D.below.soleZ, ceilingZ:D.below.ceilZ,
-          ceiling:{ kind:'hard', z:D.below.ceilZ, of:'main-deck underside (DECK-0.20)' } },
+          ceiling:{ kind:'hard', lid:'main_deck', z:D.below.ceilZ, of:'main-deck underside (DECK-0.20)' } },
         { id:'main_deck', deck:'main_deck', soleZ:DECK, ceilingZ:null,
-          ceiling:{ kind:'open', note:'the hold coaming and hatch covers are deck furniture, not a ceiling',
+          ceiling:{ kind:'open', lid:null, note:'the hold coaming and hatch covers are deck furniture, not a ceiling',
                     partial:{ z:WHZ, y0:WGY0, y1:WGY1, of:'bridge-wing underside over the side-deck walkways only — elsewhere sky' } } },
       ],
     };

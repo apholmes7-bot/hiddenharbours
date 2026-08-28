@@ -58,6 +58,21 @@ namespace HiddenHarbours.Tools.RigBaking
         public float FloatSinkMeters, FloatDraftMeters;
         public float WatertightHalfBeamMeters, WatertightDeckHeightMeters;
 
+        /// <summary>
+        /// ⭐ <b>Every INTERACT id the sidecar publishes, and the reach point of each</b> — the
+        /// handles the art drew, so a declared door group can be resolved to the place its own
+        /// document says to stand rather than to a number in a table.
+        ///
+        /// <para>An id present here with NO entry in <see cref="ReachPoints"/> is one whose
+        /// <c>reach_point</c> is not a numeric point. That is a real case, not a parse failure: the
+        /// trailer kit's <c>couple</c> entry carries prose there — <i>"the ACT is the tractor
+        /// backing on"</i> — because the act belongs to the other vehicle. Reading it as (0,0) would
+        /// hang a handle on the machine's own origin.</para>
+        /// </summary>
+        public readonly List<string> InteractIds = new List<string>();
+        public readonly Dictionary<string, Vector2> ReachPoints =
+            new Dictionary<string, Vector2>(StringComparer.Ordinal);
+
         /// <summary>What was absent and why that is the right answer — logged by the bake so a
         /// deliberate zero reads as one in the report rather than as silence.</summary>
         public readonly List<string> Absences = new List<string>();
@@ -188,9 +203,23 @@ namespace HiddenHarbours.Tools.RigBaking
 
             object drive = null;
             foreach (object entry in interact)
-                if (string.Equals(DeckSidecarJson.String(DeckSidecarJson.Member(entry, "id")), "drive",
-                                  StringComparison.Ordinal))
-                { drive = entry; break; }
+            {
+                string id = DeckSidecarJson.String(DeckSidecarJson.Member(entry, "id"));
+                if (string.IsNullOrEmpty(id)) continue;
+
+                facts.InteractIds.Add(id);
+
+                // The reach point, WHERE IT IS ONE. Absent is a fact about the interaction, not a
+                // failure to read it — see the doc on ReachPoints.
+                List<object> reachArray = DeckSidecarJson.AsArray(
+                    DeckSidecarJson.Member(entry, "reach_point"));
+                if (reachArray != null && reachArray.Count >= 2 &&
+                    DeckSidecarJson.TryDouble(reachArray[0], out double rx) &&
+                    DeckSidecarJson.TryDouble(reachArray[1], out double ry))
+                    facts.ReachPoints[id] = new Vector2((float)rx, (float)ry);
+
+                if (string.Equals(id, "drive", StringComparison.Ordinal)) drive = entry;
+            }
 
             if (drive == null)
             {

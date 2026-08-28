@@ -137,7 +137,14 @@ namespace HiddenHarbours.Core
         /// the shift, so a borrowed engine stays on its bracket at every helm angle.</para>
         ///
         /// <para>Authored per boat as <c>BoatVisualDef.MotorMeshFitmentOffsetMeters</c> and written
-        /// once at install, not per frame — it is a fact of the fit, not of the tick.</para>
+        /// once at install — for a borrowed engine it is a fact of the fit, not of the tick.</para>
+        ///
+        /// <para>⭐ <b>A SLIDING part writes it every frame, and that is the same quantity.</b> The
+        /// van's curb-side door and a trailer's landing-gear sand shoes were each measured to be an
+        /// exact rigid translation at every pose — deviation 0 — which is precisely "move this whole
+        /// fitting, pivot included". Giving them a second, parallel channel would mean two things
+        /// that must be added everywhere they are read; one channel, one meaning (the shift), and
+        /// what differs is only how often it is written.</para>
         /// </summary>
         Vector3 FitmentOffsetMeters { get; set; }
 

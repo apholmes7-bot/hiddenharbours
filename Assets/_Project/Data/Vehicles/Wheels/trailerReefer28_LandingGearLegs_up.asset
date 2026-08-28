@@ -1,0 +1,398 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7a183bdcbdd04f40ba313a1453773cd, type: 3}
+  m_Name: trailerReefer28_LandingGearLegs_up
+  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.HullPropMeshDef
+  Id: vehicleprop.trailer_reefer28_landing_gear_legs_up
+  SourceRigPath: docs/art/rigs/road-fleet-kit/trailers/trailerIsoRig.js
+  SourceFaceBuilder: build(TrailerIso.resolve({body:'reefer28'}))
+  Mesh: {fileID: 8671886231017909959}
+  FixedMesh: {fileID: 0}
+  Ramps:
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4287139465
+    - serializedVersion: 2
+      rgba: 4288521633
+    - serializedVersion: 2
+      rgba: 4290034873
+    - serializedVersion: 2
+      rgba: 4291416526
+    - serializedVersion: 2
+      rgba: 4292469216
+    - serializedVersion: 2
+      rgba: 4293258475
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4287139465
+    - serializedVersion: 2
+      rgba: 4288521633
+    - serializedVersion: 2
+      rgba: 4290034873
+    - serializedVersion: 2
+      rgba: 4291416526
+    - serializedVersion: 2
+      rgba: 4292469216
+    - serializedVersion: 2
+      rgba: 4293258475
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279904056
+    - serializedVersion: 2
+      rgba: 4280497226
+    - serializedVersion: 2
+      rgba: 4281090910
+    - serializedVersion: 2
+      rgba: 4281815409
+    - serializedVersion: 2
+      rgba: 4282605956
+    - serializedVersion: 2
+      rgba: 4283462295
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279703067
+    - serializedVersion: 2
+      rgba: 4280426788
+    - serializedVersion: 2
+      rgba: 4281347633
+    - serializedVersion: 2
+      rgba: 4282399807
+    - serializedVersion: 2
+      rgba: 4283518543
+    - serializedVersion: 2
+      rgba: 4284768866
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4283913815
+    - serializedVersion: 2
+      rgba: 4285229675
+    - serializedVersion: 2
+      rgba: 4286611329
+    - serializedVersion: 2
+      rgba: 4288059032
+    - serializedVersion: 2
+      rgba: 4289506735
+    - serializedVersion: 2
+      rgba: 4290954438
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4283715657
+    - serializedVersion: 2
+      rgba: 4285228894
+    - serializedVersion: 2
+      rgba: 4287070585
+    - serializedVersion: 2
+      rgba: 4288847253
+    - serializedVersion: 2
+      rgba: 4290492594
+    - serializedVersion: 2
+      rgba: 4292203727
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4283650122
+    - serializedVersion: 2
+      rgba: 4285163359
+    - serializedVersion: 2
+      rgba: 4287005050
+    - serializedVersion: 2
+      rgba: 4288781718
+    - serializedVersion: 2
+      rgba: 4290492594
+    - serializedVersion: 2
+      rgba: 4292203728
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279768340
+    - serializedVersion: 2
+      rgba: 4280294682
+    - serializedVersion: 2
+      rgba: 4281017891
+    - serializedVersion: 2
+      rgba: 4281676077
+    - serializedVersion: 2
+      rgba: 4282596664
+    - serializedVersion: 2
+      rgba: 4283583557
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279307787
+    - serializedVersion: 2
+      rgba: 4279768079
+    - serializedVersion: 2
+      rgba: 4280228372
+    - serializedVersion: 2
+      rgba: 4280819994
+    - serializedVersion: 2
+      rgba: 4281412129
+    - serializedVersion: 2
+      rgba: 4282004008
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279702291
+    - serializedVersion: 2
+      rgba: 4280491805
+    - serializedVersion: 2
+      rgba: 4281478443
+    - serializedVersion: 2
+      rgba: 4282662202
+    - serializedVersion: 2
+      rgba: 4283912524
+    - serializedVersion: 2
+      rgba: 4285294433
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4278848570
+    - serializedVersion: 2
+      rgba: 4279112282
+    - serializedVersion: 2
+      rgba: 4279508093
+    - serializedVersion: 2
+      rgba: 4280101541
+    - serializedVersion: 2
+      rgba: 4280958153
+    - serializedVersion: 2
+      rgba: 4282341348
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4278660170
+    - serializedVersion: 2
+      rgba: 4278927981
+    - serializedVersion: 2
+      rgba: 4279392911
+    - serializedVersion: 2
+      rgba: 4280252336
+    - serializedVersion: 2
+      rgba: 4281571020
+    - serializedVersion: 2
+      rgba: 4283806949
+    Offset: 0
+  LightN: {x: -0.42750445, y: 0.73286474, z: 0.5292912}
+  Gain: 3.1
+  Bias: 2.55
+  Bayer16:
+  - 0.03125
+  - 0.53125
+  - 0.15625
+  - 0.65625
+  - 0.78125
+  - 0.28125
+  - 0.90625
+  - 0.40625
+  - 0.21875
+  - 0.71875
+  - 0.09375
+  - 0.59375
+  - 0.96875
+  - 0.46875
+  - 0.84375
+  - 0.34375
+  Keyline:
+    serializedVersion: 2
+    rgba: 4280425498
+  PivotPx: {x: 192, y: 214}
+  PxPerMetre: 32
+  CellW: 384
+  CellH: 320
+  ElevationDeg: 40
+  PivotLocalMeters: {x: 0, y: 1.365, z: 0}
+  MaxSteerDegrees: 0
+  MaxTiltDegrees: 0
+  LateralMountsMeters: []
+--- !u!43 &8671886231017909959
+Mesh:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: trailerReefer28LandingGearLegs_upMesh
+  serializedVersion: 12
+  m_SubMeshes:
+  - serializedVersion: 2
+    firstByte: 0
+    indexCount: 48
+    topology: 0
+    baseVertex: 0
+    firstVertex: 0
+    vertexCount: 32
+    localAABB:
+      m_Center: {x: 0, y: 1.365, z: 1.015}
+      m_Extent: {x: 1, y: 0.049999952, z: 0.10499999}
+  m_Shapes:
+    vertices: []
+    shapes: []
+    channels: []
+    fullWeights: []
+  m_BindPose: []
+  m_BoneNameHashes: 
+  m_RootBoneNameHash: 0
+  m_BonesAABB: []
+  m_VariableBoneCountWeights:
+    m_Data: 
+  m_MeshCompression: 0
+  m_IsReadable: 1
+  m_KeepVertices: 1
+  m_KeepIndices: 1
+  m_IndexFormat: 0
+  m_IndexBuffer: 000001000200000002000300040005000600040006000700080009000a0008000a000b000c000d000e000c000e000f00100011001200100012001300140015001600140016001700180019001a0018001a001b001c001d001e001c001e001f00
+  m_VertexData:
+    serializedVersion: 3
+    m_VertexCount: 32
+    m_Channels:
+    - stream: 0
+      offset: 0
+      format: 0
+      dimension: 3
+    - stream: 0
+      offset: 12
+      format: 0
+      dimension: 3
+    - stream: 0
+      offset: 0
+      format: 0
+      dimension: 0
+    - stream: 0
+      offset: 0
+      format: 0
+      dimension: 0
+    - stream: 0
+      offset: 24
+      format: 0
+      dimension: 4
+    - stream: 0
+      offset: 0
+      format: 0
+      dimension: 0
+    - stream: 0
+      offset: 0
+      format: 0
+      dimension: 0
+    - stream: 0
+      offset: 0
+      format: 0
+      dimension: 0
+    - stream: 0
+      offset: 0
+      format: 0
+      dimension: 0
+    - stream: 0
+      offset: 0
+      format: 0
+      dimension: 0
+    - stream: 0
+      offset: 0
+      format: 0
+      dimension: 0
+    - stream: 0
+      offset: 0
+      format: 0
+      dimension: 0
+    - stream: 0
+      offset: 0
+      format: 0
+      dimension: 0
+    - stream: 0
+      offset: 0
+      format: 0
+      dimension: 0
+    m_DataSize: 1280
+    _typelessdata: 000080bfec51a83fc3f5683f00000000000080bf0000000000008040000000bf0000000000000000666666bfec51a83fc3f5683f00000000000080bf0000000000008040000000bf0000000000000000666666bfec51a83f295c8f3f00000000000080bf0000000000008040000000bf0000000000000000000080bfec51a83f295c8f3f00000000000080bf0000000000008040000000bf0000000000000000666666bfb81eb53fc3f5683f000000000000803f0000000000008040cdccccbd0000000000000000000080bfb81eb53fc3f5683f000000000000803f0000000000008040cdccccbd0000000000000000000080bfb81eb53f295c8f3f000000000000803f0000000000008040cdccccbd0000000000000000666666bfb81eb53f295c8f3f000000000000803f0000000000008040cdccccbd0000000000000000666666bfec51a83fc3f5683f0000803f0000000000000000000080400ad7a3bc0000000000000000666666bfb81eb53fc3f5683f0000803f0000000000000000000080400ad7a3bc0000000000000000666666bfb81eb53f295c8f3f0000803f0000000000000000000080400ad7a3bc0000000000000000666666bfec51a83f295c8f3f0000803f0000000000000000000080400ad7a3bc0000000000000000000080bfb81eb53fc3f5683f000080bf00000000000000000000804052b81ebf0000000000000000000080bfec51a83fc3f5683f000080bf00000000000000000000804052b81ebf0000000000000000000080bfec51a83f295c8f3f000080bf00000000000000000000804052b81ebf0000000000000000000080bfb81eb53f295c8f3f000080bf00000000000000000000804052b81ebf00000000000000006666663fec51a83fc3f5683f00000000000080bf0000000000008040000000bf00000000000000000000803fec51a83fc3f5683f00000000000080bf0000000000008040000000bf00000000000000000000803fec51a83f295c8f3f00000000000080bf0000000000008040000000bf00000000000000006666663fec51a83f295c8f3f00000000000080bf0000000000008040000000bf00000000000000000000803fb81eb53fc3f5683f000000000000803f0000000000008040cdccccbd00000000000000006666663fb81eb53fc3f5683f000000000000803f0000000000008040cdccccbd00000000000000006666663fb81eb53f295c8f3f000000000000803f0000000000008040cdccccbd00000000000000000000803fb81eb53f295c8f3f000000000000803f0000000000008040cdccccbd00000000000000000000803fec51a83fc3f5683f0000803f0000000000000000000080400ad7a3bc00000000000000000000803fb81eb53fc3f5683f0000803f0000000000000000000080400ad7a3bc00000000000000000000803fb81eb53f295c8f3f0000803f0000000000000000000080400ad7a3bc00000000000000000000803fec51a83f295c8f3f0000803f0000000000000000000080400ad7a3bc00000000000000006666663fb81eb53fc3f5683f000080bf00000000000000000000804052b81ebf00000000000000006666663fec51a83fc3f5683f000080bf00000000000000000000804052b81ebf00000000000000006666663fec51a83f295c8f3f000080bf00000000000000000000804052b81ebf00000000000000006666663fb81eb53f295c8f3f000080bf00000000000000000000804052b81ebf0000000000000000
+  m_CompressedMesh:
+    m_Vertices:
+      m_NumItems: 0
+      m_Range: 0
+      m_Start: 0
+      m_Data: 
+      m_BitSize: 0
+    m_UV:
+      m_NumItems: 0
+      m_Range: 0
+      m_Start: 0
+      m_Data: 
+      m_BitSize: 0
+    m_Normals:
+      m_NumItems: 0
+      m_Range: 0
+      m_Start: 0
+      m_Data: 
+      m_BitSize: 0
+    m_Tangents:
+      m_NumItems: 0
+      m_Range: 0
+      m_Start: 0
+      m_Data: 
+      m_BitSize: 0
+    m_Weights:
+      m_NumItems: 0
+      m_Data: 
+      m_BitSize: 0
+    m_NormalSigns:
+      m_NumItems: 0
+      m_Data: 
+      m_BitSize: 0
+    m_TangentSigns:
+      m_NumItems: 0
+      m_Data: 
+      m_BitSize: 0
+    m_FloatColors:
+      m_NumItems: 0
+      m_Range: 0
+      m_Start: 0
+      m_Data: 
+      m_BitSize: 0
+    m_BoneIndices:
+      m_NumItems: 0
+      m_Data: 
+      m_BitSize: 0
+    m_Triangles:
+      m_NumItems: 0
+      m_Data: 
+      m_BitSize: 0
+    m_UVInfo: 0
+  m_LocalAABB:
+    m_Center: {x: 0, y: 1.365, z: 1.015}
+    m_Extent: {x: 1, y: 0.049999952, z: 0.10499999}
+  m_MeshUsageFlags: 0
+  m_CookingOptions: 30
+  m_BakedConvexCollisionMesh: 
+  m_BakedTriangleCollisionMesh: 
+  'm_MeshMetrics[0]': 1
+  'm_MeshMetrics[1]': 1
+  m_MeshOptimizationFlags: 1
+  m_StreamData:
+    serializedVersion: 2
+    offset: 0
+    size: 0
+    path: 
+  m_MeshLodInfo:
+    serializedVersion: 2
+    m_LodSelectionCurve:
+      serializedVersion: 1
+      m_LodSlope: 0
+      m_LodBias: 0
+    m_NumLevels: 1
+    m_SubMeshes:
+    - serializedVersion: 2
+      m_Levels:
+      - serializedVersion: 1
+        m_IndexStart: 0
+        m_IndexCount: 0

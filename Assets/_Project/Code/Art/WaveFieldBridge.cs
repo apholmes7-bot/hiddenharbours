@@ -112,6 +112,30 @@ namespace HiddenHarbours.Art
         /// of a drifting wind is one more place for the two seas to disagree.</summary>
         private static readonly int IdWaveFetchParams2 = Shader.PropertyToID("_WaveFetchParams2");
 
+        /// <summary>xyz = the BREAK depth (metres) at fetch envelope 1, at the midpoint and at the lee
+        /// floor; w = the lee floor itself. Water shallower than the depth read off this triple is
+        /// breaking (ADR 0040). Solved on the tick by <c>BreakerMath.ContourFor</c> — inverting the
+        /// criterion once here is what lets the shader answer "is it breaking?" with one smoothstep
+        /// instead of shoaling the wave sixteen times per pixel.</summary>
+        private static readonly int IdBreakerDepths = Shader.PropertyToID("_BreakerDepths");
+
+        /// <summary>xyz = the gate's OUTER depth at the same three envelopes (where the surf begins to
+        /// come in); w = 1 when this sea breaks anywhere at all, 0 on glass or with the model dialled
+        /// off — the shader's cheapest possible skip.</summary>
+        private static readonly int IdBreakerOuter = Shader.PropertyToID("_BreakerOuter");
+
+        /// <summary>x = whitewater march step (metres), y = whitewater decay tau (seconds),
+        /// z = gravity, w = the dominant train's DEEP-WATER wave height H0 (metres, before fetch) —
+        /// the numerator of the Iribarren steepness the breaker TYPE reads.</summary>
+        private static readonly int IdBreakerParams = Shader.PropertyToID("_BreakerParams");
+
+        /// <summary>x = the dominant train's deep-water wavelength L0 (m), y = the breaker index gamma,
+        /// zw = the plunging band's lower and upper Iribarren limits. Together with H0 in
+        /// <c>_BreakerParams.w</c> this is everything the shader needs to work out, per pixel, whether
+        /// the seabed here has earned a lip and a barrel — <c>xi = tanB / sqrt(H0/L0)</c> against
+        /// Battjes' thresholds.</summary>
+        private static readonly int IdBreakerAnatomy = Shader.PropertyToID("_BreakerAnatomy");
+
         private const double TwoPi = Math.PI * 2.0;
 
         // The derivation constants come from GameConfig.WaveField via GameServices (ADR 0018 §(5)).
@@ -216,6 +240,11 @@ namespace HiddenHarbours.Art
             // hull consumers read — that shared instance is the whole reason the lee the player sees is
             // the lee the boat feels.
             PublishFetchGlobals(GameServices.WaveFetch, sample.WindVector);
+
+            // BREAKING (ADR 0040) rides alongside both: it consumes the SAME eased trains that were
+            // just published and the SAME fetch settings, so the surf line the player sees stands on
+            // the sea the hull is riding. One field, three readers.
+            PublishBreakerGlobals(trains.Dominant, GameServices.WaveFetch, GameServices.Breakers);
         }
 
         /// <summary>
@@ -242,6 +271,7 @@ namespace HiddenHarbours.Art
         {
             PublishGlobals(PackedWaveField.Empty);
             PublishFetchOff();
+            PublishBreakersOff();
         }
 
         /// <summary>
@@ -280,6 +310,55 @@ namespace HiddenHarbours.Art
         /// (the <c>_DayNightTint</c>/<c>_MoonDir</c> "unset" convention).</summary>
         public static void PublishFetchOff()
             => PublishFetchGlobals(default(WaveFetchSettings), Vector2.zero);
+
+        /// <summary>
+        /// Push the BREAKING-WAVE contour to the shader globals (ADR 0040). The inversion happens
+        /// <b>here</b>, once per tick, for the reason <see cref="BreakerContour"/> spells out: the
+        /// forward criterion costs a tanh, two pows, a sinh and a sqrt, and the whitewater march needs
+        /// it sixteen times per pixel.
+        ///
+        /// <para>Public for the same reason <see cref="PublishGlobals"/> and
+        /// <see cref="PublishFetchGlobals"/> are: this is the only place these uniform names live, and
+        /// the rendering acceptance suites drive the real shader with fields of their own.</para>
+        ///
+        /// <para>The <b>lee floor</b> handed to the solve is the fetch model's own minimum envelope
+        /// (<c>WaveFetch.Envelope01(0, …)</c>), so with the fetch dial down it is exactly 1 and the
+        /// contour collapses to a single anchor — the interpolation becomes a no-op rather than a
+        /// second thing to reason about.</para>
+        /// </summary>
+        public static void PublishBreakerGlobals(in WaveTrain dominant, in WaveFetchSettings fetch,
+                                                 in BreakerSettings breakers)
+        {
+            float leeEnvelope = WaveFetch.Envelope01(0f, in fetch);      // 1 when fetch is off
+            BreakerContour contour = BreakerMath.ContourFor(in dominant, leeEnvelope, in breakers);
+
+            Shader.SetGlobalVector(IdBreakerDepths, new Vector4(
+                contour.BreakDepths.x, contour.BreakDepths.y, contour.BreakDepths.z, contour.LeeEnvelope));
+            Shader.SetGlobalVector(IdBreakerOuter, new Vector4(
+                contour.OuterDepths.x, contour.OuterDepths.y, contour.OuterDepths.z, contour.Breaks ? 1f : 0f));
+            Shader.SetGlobalVector(IdBreakerParams, new Vector4(
+                Mathf.Max(BreakerMath.MinStepMeters, breakers.WhitewaterStepMeters),
+                Mathf.Max(BreakerMath.MinDecaySeconds, breakers.WhitewaterDecaySeconds),
+                Mathf.Max(0f, GameServices.WaveField.Gravity),
+                2f * Mathf.Max(0f, dominant.Amplitude)));                 // H0, before fetch
+
+            // The breaker-TYPE inputs. The shader reads the bed slope itself (it already derives the
+            // shore direction from the same gradient), so only the wave-side terms and the thresholds
+            // travel — which keeps the classification's constants in ONE place, GameConfig, exactly like
+            // gamma and the decay.
+            Shader.SetGlobalVector(IdBreakerAnatomy, new Vector4(
+                Mathf.Max(WaveTrain.MinWavelengthMeters, dominant.Wavelength),
+                Mathf.Max(0f, breakers.BreakerIndex),
+                Mathf.Max(0f, breakers.SpillingLimit),
+                Mathf.Max(0f, breakers.PlungingLimit)));
+        }
+
+        /// <summary>The breaker model SILENT — nothing breaks anywhere — so a stopped play session or a
+        /// bare art scene can never leave stale surf painted on the editor's globals (the
+        /// <c>_DayNightTint</c>/<c>_MoonDir</c> "unset" convention, and exactly what
+        /// <see cref="PublishFetchOff"/> does for the lee).</summary>
+        public static void PublishBreakersOff()
+            => PublishBreakerGlobals(default(WaveTrain), default(WaveFetchSettings), default(BreakerSettings));
 
         // ==== PURE packing (testable headless; no Unity scene needed) =====================================
 

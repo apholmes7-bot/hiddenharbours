@@ -571,13 +571,13 @@
       tieBreak:'main_deck and house share one sole z ('+DECK.toFixed(2)+') — the published ceilings break the tie: house '+D.house.ceilZ.toFixed(2)+', main_deck open',
       levels:[
         { id:'house', deck:'house_sole', soleZ:D.house.soleZ, ceilingZ:D.house.ceilZ,
-          ceiling:{ kind:'hard', z:D.house.ceilZ, of:'boat-deck underside — the deckhead boatInteriorRig dresses (HOUSE.decks.house.ceilZ)' } },
+          ceiling:{ kind:'hard', lid:null, z:D.house.ceilZ, of:'boat-deck underside — the deckhead boatInteriorRig dresses (HOUSE.decks.house.ceilZ)' } },
         { id:'bridge', deck:'bridge_sole', soleZ:D.bridge.soleZ, ceilingZ:D.bridge.ceilZ,
-          ceiling:{ kind:'hard', z:D.bridge.ceilZ, of:'wheelhouse deckhead (HOUSE.decks.bridge.ceilZ)' } },
+          ceiling:{ kind:'hard', lid:null, z:D.bridge.ceilZ, of:'wheelhouse deckhead (HOUSE.decks.bridge.ceilZ)' } },
         { id:'below', deck:'below_sole', soleZ:D.below.soleZ, ceilingZ:D.below.ceilZ,
-          ceiling:{ kind:'hard', z:D.below.ceilZ, of:'main-deck underside (DECK-0.10)' } },
+          ceiling:{ kind:'hard', lid:'main_deck', z:D.below.ceilZ, of:'main-deck underside (DECK-0.10)' } },
         { id:'main_deck', deck:'main_deck', soleZ:DECK, ceilingZ:null,
-          ceiling:{ kind:'open', note:'the working deck is sky — the mast, derricks and gallows over it are rigging, not a ceiling' } },
+          ceiling:{ kind:'open', lid:null, note:'the working deck is sky — the mast, derricks and gallows over it are rigging, not a ceiling' } },
       ],
     };
   }

@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: deck.coastal_packet_iso
   SourceSidecar: docs/art/rigs/gameplay/coastalPacketIsoRig.gameplay.json
   SourceRig: docs/art/rigs/coastalPacketIsoRig.js
-  DerivedFromRigSha256: 426e8caa1c2b6e535dcbf823cd19c6b49ac68d222b995ed1b25cb5879356a272
+  DerivedFromRigSha256: e1d6f43f4746375d19c4fa0015c7d327c787b6bf3da72b7147fd93402054c1ba
   LoaMeters: 60
   Areas:
   - Id: aft_deck

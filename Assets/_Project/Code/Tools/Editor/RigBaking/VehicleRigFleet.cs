@@ -120,15 +120,70 @@ namespace HiddenHarbours.Tools.RigBaking
             /// the fitting needs no articulation machinery beyond a single local rotation.</summary>
             public readonly Vector3 Pivot;
 
+            /// <summary>
+            /// ⭐ <b>Material filter — the third claim dimension, and the only one that separates the
+            /// landing gear.</b> Keeps only the faces whose rig material is named here; null keeps
+            /// everything the axis moves.
+            ///
+            /// <para><b>Why neither of the other two works here.</b> Raising a trailer's gear moves
+            /// 24 faces that are <b>16 rigid <c>iron</c> shoes and 8 telescoping <c>galv</c> leg
+            /// tubes</b>, interleaved in space: same side, same station, one stacked directly above
+            /// the other. No <see cref="SideSign"/> and no <see cref="YMin"/> window can tell them
+            /// apart. The rig already distinguishes them — it paints them differently — so the split
+            /// is read off the art rather than invented.</para>
+            /// </summary>
+            public readonly string[] Materials;
+
+            /// <summary>For <see cref="VehicleFitmentMotion.HingeRotation"/>: which axis, and how far.
+            /// ⚠️ The FULL published sweep, signed — a reefer barn is ∓255°, not the ±105° that
+            /// reaches the same pose the short way round.</summary>
+            public readonly VehicleHingeAxis HingeAxis;
+            public readonly float SweepDegrees;
+
+            /// <summary>For <see cref="VehicleFitmentMotion.Slide"/>: the pose fractions to sample the
+            /// path at. Put a sample at every CORNER and the interpolation between them is exact — the
+            /// van's slide has two, where her outboard pop starts overlapping her run aft (t = 0.1)
+            /// and where the pop finishes (t = 1/6).</summary>
+            public readonly float[] SlideSampleTs;
+
+            /// <summary>For <see cref="VehicleFitmentMotion.DiscreteStates"/>: the state names and the
+            /// JS pose literal each is baked at, parallel arrays. The face INDICES come from
+            /// <see cref="Probe"/> as usual, so every state must be a pose of the SAME build — which
+            /// is exactly why the rollup cannot be one of these.</summary>
+            public readonly string[] StateNames, StatePoses;
+
+            /// <summary>The slot this fitting hangs off, or null for the body — see
+            /// <see cref="VehicleFitment.ParentSlot"/>. The cabover's two doors hang off her tilting
+            /// cab.</summary>
+            public readonly string ParentSlot;
+
             public Axis(string slot, string probe, VehicleFitmentMotion motion,
                         VehicleFitmentSide side, int sideSign, Vector3 pivot,
                         float yMin = float.NegativeInfinity,
-                        float yMax = float.PositiveInfinity)
+                        float yMax = float.PositiveInfinity,
+                        string[] materials = null,
+                        VehicleHingeAxis hingeAxis = VehicleHingeAxis.None,
+                        float sweepDegrees = 0f,
+                        float[] slideSampleTs = null,
+                        string[] stateNames = null, string[] statePoses = null,
+                        string parentSlot = null)
             {
                 Slot = slot; Probe = probe; Motion = motion; Side = side;
                 SideSign = sideSign; Pivot = pivot;
                 YMin = yMin; YMax = yMax;
+                Materials = materials;
+                HingeAxis = hingeAxis; SweepDegrees = sweepDegrees;
+                SlideSampleTs = slideSampleTs;
+                StateNames = stateNames; StatePoses = statePoses;
+                ParentSlot = parentSlot;
             }
+
+            /// <summary>Anything the player opens, as opposed to anything the road turns. Asked in one
+            /// place so the bake report and the coverage tests agree on what a door is.</summary>
+            public bool IsDoor =>
+                Motion == VehicleFitmentMotion.HingeRotation ||
+                Motion == VehicleFitmentMotion.Slide ||
+                Motion == VehicleFitmentMotion.DiscreteStates;
         }
 
         /// <summary>
@@ -157,6 +212,38 @@ namespace HiddenHarbours.Tools.RigBaking
             public string Wheelbase, FrontTrack, WheelRadius, FrontAxleY, RearAxleY;
             public string MaxInnerDeg = "0", MaxOuterDeg = "0";
             public string TravelFront = "0", TravelRear = "0";
+        }
+
+        /// <summary>
+        /// One thing the player works, declared as the art's own <c>INTERACT</c> id and the fitting
+        /// slots it moves. The reach point is NOT here — the bake reads that out of the sidecar, so
+        /// the handle stays where the art put it and cannot drift into a table.
+        /// </summary>
+        public sealed class DoorGroupSpec
+        {
+            /// <summary>
+            /// ⚠️ <b>Where the art publishes a FORMULA instead of a point.</b> Null for the ordinary
+            /// case, where the sidecar gives a literal and the bake reads it.
+            ///
+            /// <para>The trailer kit has to: ONE sidecar serves FOUR bodies of different lengths, so
+            /// its reach points are written parametrically — <c>[-1.7, gearY, 0]</c> for the gear
+            /// crank and <c>[0, -L/2-1.6, 0]</c> for the rear doors. Those are not numbers and the
+            /// reader is right to refuse them; resolving them per body is this field, and
+            /// <c>RoadFleetDoorTests</c> recomputes each from the sidecar's own published
+            /// <c>L</c> and kingpin so the arithmetic cannot drift from the formula it came from.</para>
+            /// </summary>
+            public Vector2? ReachPointOverride;
+
+            /// <summary>The sidecar's own INTERACT id, verbatim — 'slide', 'barn', 'doors', 'hood',
+            /// 'tilt', 'gear'. ⚠️ Not guessable: the van calls her rear leaves 'barn' and the trailer
+            /// kit calls its own 'doors'.</summary>
+            public string Id;
+
+            /// <summary>The fitting slots it moves, in the art's own order.</summary>
+            public string[] Slots;
+
+            /// <summary>Which tunable paces it.</summary>
+            public VehicleDoorWork Work = VehicleDoorWork.Door;
         }
 
         /// <summary>One road vehicle: where its rig and sidecar are, and what installs it.</summary>
@@ -277,6 +364,10 @@ namespace HiddenHarbours.Tools.RigBaking
             /// </summary>
             public readonly string SidecarBodyScope;
 
+            /// <summary>What the player works on this machine, and which fittings each handle moves.
+            /// Empty for a machine with no worked openings.</summary>
+            public readonly IReadOnlyList<DoorGroupSpec> DoorGroups;
+
             /// <summary>
             /// ⭐ <b>Probe poses under which the BODY must not move at all</b> — the independent
             /// check that every articulating face was claimed by some fitting.
@@ -310,7 +401,8 @@ namespace HiddenHarbours.Tools.RigBaking
                            IReadOnlyList<string> bodyMustNotMove = null,
                            string vehicleDefPath = null, string vehicleId = null, string label = null,
                            string azimuthAbeamLeftAnchor = null, string azimuthAbeamRightAnchor = null,
-                           string restPose = null, string sidecarBodyScope = null)
+                           string restPose = null, string sidecarBodyScope = null,
+                           IReadOnlyList<DoorGroupSpec> doorGroups = null)
             {
                 Key = key; ScriptPath = scriptPath; SidecarPath = sidecarPath; GlobalName = globalName;
                 Pick = pick;
@@ -324,6 +416,7 @@ namespace HiddenHarbours.Tools.RigBaking
                 AzimuthAbeamRightAnchor = azimuthAbeamRightAnchor ?? "wheelFR";
                 RestPose = string.IsNullOrEmpty(restPose) ? "{}" : restPose;
                 SidecarBodyScope = sidecarBodyScope ?? "";
+                DoorGroups = doorGroups ?? Array.Empty<DoorGroupSpec>();
                 BodyMustNotMove = bodyMustNotMove ?? Array.Empty<string>();
                 VehicleDefPath = vehicleDefPath; VehicleId = vehicleId; Label = label;
             }
@@ -557,9 +650,10 @@ namespace HiddenHarbours.Tools.RigBaking
         /// those 24 faces move under it and the body is meant to keep them.</para>
         /// </summary>
         /// <param name="stations">her axle station centres, FORE to AFT.</param>
-        static Axis[] BuildTrailerAxes(float wheelX, float wheelR, params float[] stations)
+        static Axis[] BuildTrailerAxes(float wheelX, float wheelR, float gearY,
+                                       params float[] stations)
         {
-            var axes = new List<Axis>(stations.Length * 2);
+            var axes = new List<Axis>(stations.Length * 2 + 2);
 
             for (int i = 0; i < stations.Length; i++)
             {
@@ -577,42 +671,236 @@ namespace HiddenHarbours.Tools.RigBaking
                                   windowed ? y + StationHalfWindow : float.PositiveInfinity));
             }
 
+            // ---- ⭐ THE LANDING GEAR, SPLIT — PR 2's deferral, lifted ---------------------------
+            //
+            // PR 2 measured it and refused to fake it: raising the legs moves 24 faces of which 16
+            // translate rigidly by exactly [0, 0, 0.78] and 8 do not move at all at the top while
+            // their bottoms rise 0.130 → 0.910. One mesh plus an offset cannot be both, so the whole
+            // assembly was baked into the body at parked and the raise was deferred here.
+            //
+            // Re-measured 2026-08-27 for this PR, and the split falls out of the ART: the 16 rigid
+            // faces are the `iron` sand shoes and the 8 that telescope are the `galv` leg tubes. No
+            // side filter and no station window separates them — they are stacked on one another —
+            // so the claim is made on MATERIAL, which is the rig's own distinction.
+            //
+            //   · the SHOES ride down and up as one body: a Slide fitting, linear, deviation 0 at
+            //     every quarter (measured [0,0,0.195/0.390/0.585/0.780]).
+            //   · the LEGS are baked at both ends and swapped: a DiscreteStates fitting. Eight faces
+            //     twice is the whole cost of not lying about a telescope.
+            //
+            // ⚠️ T RUNS THE OTHER WAY FROM `gear`. The rig bakes at gear:1 (parked, shoes grounded,
+            // and what a placed trailer is), so the fitting's t = 0 IS gear 1 and t = 1 is gear 0.
+            // The probe pose is therefore {gear:0} — fully raised — for both.
+            axes.Add(new Axis("LandingGearShoes", "{gear:0}", VehicleFitmentMotion.Slide,
+                              VehicleFitmentSide.Centre, 0, new Vector3(0f, gearY, 0f),
+                              materials: new[] { "iron" }, slideSampleTs: LinearEnds));
+
+            axes.Add(new Axis("LandingGearLegs", "{gear:0}", VehicleFitmentMotion.DiscreteStates,
+                              VehicleFitmentSide.Centre, 0, new Vector3(0f, gearY, 0f),
+                              materials: new[] { "galv" },
+                              stateNames: new[] { "down", "up" },
+                              statePoses: new[] { "{gear:1}", "{gear:0}" }));
+
             return axes.ToArray();
         }
+
+        /// <summary>
+        /// A reefer's rear barn doors — the only doors in the towed set; the flatbeds clamp
+        /// <c>barnL</c>/<c>barnR</c> to zero and measure exactly that.
+        ///
+        /// <para>⚠️⚠️ <b>∓255°, NOT ±105°.</b> The two reach the identical pose — 255 wraps to −105 —
+        /// and a naive measurement reports the short one, because an angle read through
+        /// <c>atan2</c> comes back in (−180, 180]. Taking it would be a silent, plausible bug: the
+        /// door would arrive looking correct having swept through entirely the wrong volume. The
+        /// published <c>keep_clear</c> says which way it really goes — the fan passes FULL OUTBOARD
+        /// at 180° (|x| 2.37 m, wider than the trailer) before folding back along the sides, so a
+        /// leaf animated the short way sweeps through whatever is parked alongside.</para>
+        /// </summary>
+        static Axis[] ReeferBarns(float hingeY) => new[]
+        {
+            Hinged("BarnL", "{barnL:1}", VehicleFitmentSide.Left,
+                   VehicleHingeAxis.Vertical, new Vector3(-1.19f, hingeY, 0f), -255f),
+            Hinged("BarnR", "{barnR:1}", VehicleFitmentSide.Right,
+                   VehicleHingeAxis.Vertical, new Vector3(1.19f, hingeY, 0f), +255f),
+        };
 
         // ---- the five road rigs' own numbers, off each rig's `G` ---------------------------------
         // frontWX · axF · mean(dualXi,dualXo) · wheelR · then the rear station(s), fore to aft.
         // The semis publish their tandem stations as G.tandA (fore) and G.tandB (aft); the straight
         // trucks publish a single G.axR. Asserted against the rigs in RoadFleetBakeTests.
 
+        // =============================================================================================
+        //  THE DOORS (PR 3a) — every hinge below is the art's own, and every one of them was
+        //  MEASURED before it was declared.
+        //
+        //  The measurement is the landing gear's law applied to doors: rotate every vertex of the
+        //  moved faces back about the published hinge and look at what is left. A door that is one
+        //  rigid leaf leaves NOTHING — radius error 0, invariant-coordinate error 0, and an angle
+        //  spread of 0.000000 with the recovered angle equal to the sidecar's own swing_deg to four
+        //  decimals. Measured 2026-08-27 in the repo's own V8; RoadFleetDoorTests re-measures every
+        //  one of them against the rig rather than restating the numbers.
+        //
+        //  ⚠️ TWO PARTS OF THIS DROP MEASURE OTHERWISE AND ARE NOT HERE. The ROLLUP is not a pose at
+        //  all — at rollup:1 the face count CHANGES, so it is a different build, and mid-travel its
+        //  slats fan rather than moving as one (deviation 0.48 at a quarter, 0.96 at a half). The
+        //  LIFTGATE is a four-bar linkage: its published arm_pivot misses the platform by 0.65 m of
+        //  radius error across a 287° angle spread, `unfold` moves only 6 of its 36 faces, `lower`
+        //  leaves 24 vertices pinned while the rest move, and splitting by material does not
+        //  separate it — "parallel arms", as its own phase text says. Both need a whole-BODY
+        //  two-state bake, which changes the extraction rather than adding a fitting, and both are
+        //  PR 3c. Declared here so neither is mistaken for an oversight.
+        // =============================================================================================
+
+        /// <summary>A handle and the leaves it works. The ids are the ART's, not ours, and they do
+        /// not rhyme: the van calls her rear pair <c>barn</c> and the trailer kit calls its own
+        /// <c>doors</c>. Copying one onto the other silently produces a machine with a handle nobody
+        /// can find, so each is written from its own sidecar.</summary>
+        static DoorGroupSpec Group(string id, params string[] slots) =>
+            new DoorGroupSpec { Id = id, Slots = slots };
+
+        /// <summary>The gear crank, at the point her sidecar's formula gives for THIS body:
+        /// <c>[-1.7, gearY, 0]</c>, street side, where gearY is the leg station (kingpinY − 2.00).</summary>
+        static DoorGroupSpec GearGroup(float gearY) =>
+            new DoorGroupSpec
+            {
+                Id = "gear",
+                Slots = new[] { "LandingGearShoes", "LandingGearLegs" },
+                Work = VehicleDoorWork.LandingGear,
+                ReachPointOverride = new Vector2(-1.7f, gearY),
+            };
+
+        /// <summary>The reefer's rear-door handle, at her sidecar's <c>[0, -L/2-1.6, 0]</c> — well
+        /// aft of the leaves' own 1.175 m keep-clear fan, which is the point of standing there.</summary>
+        static DoorGroupSpec ReeferDoorsGroup(float bodyLength) =>
+            new DoorGroupSpec
+            {
+                Id = "doors",
+                Slots = new[] { "BarnL", "BarnR" },
+                ReachPointOverride = new Vector2(0f, -bodyLength / 2f - 1.6f),
+            };
+
+        // ⚠️ `drive` and `ride` ARE the cab doors. The art hangs getting in off the leaf you open
+        // to do it, and every truck in the pack publishes them at `door_l` and `door_r`. They are
+        // declared below so the leaves can be POSED; their HANDLES stay with the seat flow that
+        // already owns them (VehicleDoor / ControlSwitcher) rather than this PR growing a second
+        // way into a cab.
+
+        /// <summary>One rigid leaf on one published hinge. <paramref name="pin"/> is any point on
+        /// the axis — a vertical hinge's z and a lateral hinge's x are both arbitrary, because the
+        /// rotation is about a LINE, so both are written 0 rather than given a fictitious
+        /// precision.</summary>
+        static Axis Hinged(string slot, string probe, VehicleFitmentSide side,
+                           VehicleHingeAxis axis, Vector3 pin, float sweepDeg,
+                           string parentSlot = null) =>
+            new Axis(slot, probe, VehicleFitmentMotion.HingeRotation, side, 0, pin,
+                     hingeAxis: axis, sweepDegrees: sweepDeg, parentSlot: parentSlot);
+
+        /// <summary>The corners of the van's slide path. Her outboard pop and her run aft OVERLAP:
+        /// the pop ramps over t ∈ [0, 1/6] and the run aft over t ∈ [0.1, 1], so the path has two
+        /// corners rather than one and a sample at each makes the interpolation exact. Measured, and
+        /// <c>RoadFleetDoorTests</c> checks the polyline against the rig at three off-sample poses —
+        /// which is the assertion that the sample set is sufficient rather than merely present.</summary>
+        static readonly float[] VanSlideCorners = { 0f, 0.1f, 1f / 6f, 1f };
+
+        /// <summary>The gear's shoes translate linearly, so its two ends are its only corners.</summary>
+        static readonly float[] LinearEnds = { 0f, 1f };
+
+        /// <summary>Wheels first, doors after — the claim order is the whole plan, exactly as it is
+        /// for steer-after-roll. It matters most on the cabover, where the tilt moves the entire cab
+        /// INCLUDING her door leaves: taking the doors first leaves the tilting cab's own mesh
+        /// without them, and they ride it back via <see cref="Axis.ParentSlot"/>.</summary>
+        static Axis[] WithDoors(Axis[] wheels, params Axis[] doors)
+        {
+            var all = new List<Axis>(wheels.Length + doors.Length);
+            all.AddRange(wheels);
+            all.AddRange(doors);
+            return all.ToArray();
+        }
+
         // The van joined the baked set the day her re-stamped sidecar landed (2026-08-27, the same
         // day it was asked): numbers off her own WHEELS block — frontWX 0.82, axF 2.20, single rear
         // axle at −1.76 with the same track, wheelR 0.36.
-        static readonly Axis[] HightopVanAxes =
-            BuildRoadAxes(0.82f, 2.20f, 0.82f, 0.36f, -1.76f);
+        //
+        // ⭐ SIX openings, the most in the fleet: two cab doors, two rear barns, the curb-side
+        // slider and a stub clamshell hood. ⚠️ Her hood hinge is published by her RIG and not by her
+        // sidecar (`rotX(p, 1.74, G.hoodZc, …)` at 42°) — the rig is the authority on geometry, and
+        // the measurement confirms it exactly, so it is read rather than invented.
+        static readonly Axis[] HightopVanAxes = WithDoors(
+            BuildRoadAxes(0.82f, 2.20f, 0.82f, 0.36f, -1.76f),
+            Hinged("DoorFL", "{dFL:1}", VehicleFitmentSide.Left,
+                   VehicleHingeAxis.Vertical, new Vector3(-0.98f, 1.66f, 0f), -62f),
+            Hinged("DoorFR", "{dFR:1}", VehicleFitmentSide.Right,
+                   VehicleHingeAxis.Vertical, new Vector3(0.98f, 1.66f, 0f), +62f),
+            Hinged("BarnL", "{barnL:1}", VehicleFitmentSide.Left,
+                   VehicleHingeAxis.Vertical, new Vector3(-0.98f, -2.92f, 0f), -96f),
+            Hinged("BarnR", "{barnR:1}", VehicleFitmentSide.Right,
+                   VehicleHingeAxis.Vertical, new Vector3(0.98f, -2.92f, 0f), +96f),
+            new Axis("SlideDoor", "{slide:1}", VehicleFitmentMotion.Slide,
+                     VehicleFitmentSide.Right, 0, new Vector3(1.01f, -0.62f, 1.33f),
+                     slideSampleTs: VanSlideCorners),
+            Hinged("Hood", "{hood:1}", VehicleFitmentSide.Centre,
+                   VehicleHingeAxis.Lateral, new Vector3(0f, 1.74f, 1.28f), +42f));
 
-        static readonly Axis[] CaboverBoxAxes =
-            BuildRoadAxes(0.78f, 2.62f, 0.71f, 0.334f, -1.50f);
+        // ⭐ The CABOVER's cab TILTS — 237 faces, the largest fitting in the fleet, and her two doors
+        // are cut out of it. They are claimed FIRST and hang off it; see WithDoors and ParentSlot.
+        static readonly Axis[] CaboverBoxAxes = WithDoors(
+            BuildRoadAxes(0.78f, 2.62f, 0.71f, 0.334f, -1.50f),
+            Hinged("DoorL", "{dL:1}", VehicleFitmentSide.Left,
+                   VehicleHingeAxis.Vertical, new Vector3(-0.94f, 2.96f, 0f), -65f,
+                   parentSlot: "CabTilt"),
+            Hinged("DoorR", "{dR:1}", VehicleFitmentSide.Right,
+                   VehicleHingeAxis.Vertical, new Vector3(0.94f, 2.96f, 0f), +65f,
+                   parentSlot: "CabTilt"),
+            Hinged("CabTilt", "{tilt:1}", VehicleFitmentSide.Centre,
+                   VehicleHingeAxis.Lateral, new Vector3(0f, 3.20f, 0.50f), -38f));
 
-        static readonly Axis[] ConvBoxAxes =
-            BuildRoadAxes(0.86f, 3.20f, 0.77f, 0.45f, -2.90f);
+        static readonly Axis[] ConvBoxAxes = WithDoors(
+            BuildRoadAxes(0.86f, 3.20f, 0.77f, 0.45f, -2.90f),
+            Hinged("DoorL", "{dL:1}", VehicleFitmentSide.Left,
+                   VehicleHingeAxis.Vertical, new Vector3(-0.98f, 2.38f, 0f), -65f),
+            Hinged("DoorR", "{dR:1}", VehicleFitmentSide.Right,
+                   VehicleHingeAxis.Vertical, new Vector3(0.98f, 2.38f, 0f), +65f),
+            Hinged("Hood", "{hood:1}", VehicleFitmentSide.Centre,
+                   VehicleHingeAxis.Lateral, new Vector3(0f, 4.08f, 0.60f), -70f));
 
-        static readonly Axis[] AeroSemiAxes =
-            BuildRoadAxes(0.84f, 2.95f, 0.75f, 0.50f, -1.70f, -2.90f);
+        static readonly Axis[] AeroSemiAxes = WithDoors(
+            BuildRoadAxes(0.84f, 2.95f, 0.75f, 0.50f, -1.70f, -2.90f),
+            Hinged("DoorL", "{dL:1}", VehicleFitmentSide.Left,
+                   VehicleHingeAxis.Vertical, new Vector3(-1.18f, 1.77f, 0f), -65f),
+            Hinged("DoorR", "{dR:1}", VehicleFitmentSide.Right,
+                   VehicleHingeAxis.Vertical, new Vector3(1.18f, 1.77f, 0f), +65f),
+            Hinged("Hood", "{hood:1}", VehicleFitmentSide.Centre,
+                   VehicleHingeAxis.Lateral, new Vector3(0f, 4.02f, 0.55f), -72f));
 
-        static readonly Axis[] ClassicSemiAxes =
-            BuildRoadAxes(0.84f, 3.45f, 0.75f, 0.50f, -1.60f, -2.80f);
+        static readonly Axis[] ClassicSemiAxes = WithDoors(
+            BuildRoadAxes(0.84f, 3.45f, 0.75f, 0.50f, -1.60f, -2.80f),
+            Hinged("DoorL", "{dL:1}", VehicleFitmentSide.Left,
+                   VehicleHingeAxis.Vertical, new Vector3(-1.18f, 1.67f, 0f), -65f),
+            Hinged("DoorR", "{dR:1}", VehicleFitmentSide.Right,
+                   VehicleHingeAxis.Vertical, new Vector3(1.18f, 1.67f, 0f), +65f),
+            Hinged("Hood", "{hood:1}", VehicleFitmentSide.Centre,
+                   VehicleHingeAxis.Lateral, new Vector3(0f, 4.42f, 0.55f), -70f));
 
         // ---- the four towed bodies ---------------------------------------------------------------
         // One rig, one G: wheelR 0.50, mean(dualXi 0.60, dualXo 0.90) = 0.75, gearAft 2.00 behind
         // the kingpin. The stations and the kingpin are per BODY — the pups carry one axle at
         // −2.90 and a kingpin at 3.365; the 53s a tandem at −5.50/−6.70 and a kingpin at 7.175.
 
-        static readonly Axis[] TrailerPupAxes =
-            BuildTrailerAxes(0.75f, 0.50f, -2.90f);
+        // ⚠️ FOUR arrays now, not two: the reefers carry barn doors and the flatbeds do not, and the
+        // hinge is at −L/2 + 0.02 so the pup's and the 53's differ. gearY is kingpinY − G.gearAft:
+        // 3.365 − 2.00 on the pups, 7.175 − 2.00 on the 53s.
 
-        static readonly Axis[] Trailer53Axes =
-            BuildTrailerAxes(0.75f, 0.50f, -5.50f, -6.70f);
+        static readonly Axis[] TrailerFlatbed28Axes =
+            BuildTrailerAxes(0.75f, 0.50f, 3.365f - 2.00f, -2.90f);
+
+        static readonly Axis[] TrailerFlatbed53Axes =
+            BuildTrailerAxes(0.75f, 0.50f, 7.175f - 2.00f, -5.50f, -6.70f);
+
+        static readonly Axis[] TrailerReefer28Axes =
+            WithDoors(TrailerFlatbed28Axes, ReeferBarns(-8.53f / 2f + 0.02f));
+
+        static readonly Axis[] TrailerReefer53Axes =
+            WithDoors(TrailerFlatbed53Axes, ReeferBarns(-16.15f / 2f + 0.02f));
 
         /// <summary>
         /// Every road vehicle whose rig and sidecar are committed. Being here means the drop has
@@ -746,7 +1034,10 @@ namespace HiddenHarbours.Tools.RigBaking
                 azimuthAftAnchor: "hitch", azimuthForeAnchor: "hoodLatch",
                 vehicleDefPath: "Assets/_Project/Data/Vehicles/HightopVan.asset",
                 vehicleId: "vehicle.hightop_van",
-                bodyMustNotMove: new[] { "{roll:0.25}", "{steer:1}" },
+                bodyMustNotMove: new[] { "{roll:0.25}", "{steer:1}", "{dFL:1,dFR:1,barnL:1,barnR:1,slide:1,hood:1}" },
+                doorGroups: new[] { Group("slide", "SlideDoor"), Group("barn", "BarnL", "BarnR"),
+                                    Group("hood", "Hood"),
+                                    Group("drive", "DoorFL"), Group("ride", "DoorFR") },
                 label: "Hightop Van"),
 
             new Vehicle(
@@ -783,7 +1074,9 @@ namespace HiddenHarbours.Tools.RigBaking
                 azimuthAftAnchor: "rollup", azimuthForeAnchor: "tiltLatch",
                 vehicleDefPath: "Assets/_Project/Data/Vehicles/CaboverBox.asset",
                 vehicleId: "vehicle.cabover_box",
-                bodyMustNotMove: new[] { "{roll:0.25}", "{steer:1}" },
+                bodyMustNotMove: new[] { "{roll:0.25}", "{steer:1}", "{dL:1,dR:1,tilt:1}" },
+                doorGroups: new[] { Group("tilt", "CabTilt"),
+                                    Group("drive", "DoorL"), Group("ride", "DoorR") },
                 label: "Cabover Box Truck"),
 
             new Vehicle(
@@ -821,7 +1114,9 @@ namespace HiddenHarbours.Tools.RigBaking
                 // that silently took the pack's cell (and cropped her tail) cannot pass.
                 vehicleDefPath: "Assets/_Project/Data/Vehicles/ConvBox.asset",
                 vehicleId: "vehicle.conv_box",
-                bodyMustNotMove: new[] { "{roll:0.25}", "{steer:1}" },
+                bodyMustNotMove: new[] { "{roll:0.25}", "{steer:1}", "{dL:1,dR:1,hood:1}" },
+                doorGroups: new[] { Group("hood", "Hood"),
+                                    Group("drive", "DoorL"), Group("ride", "DoorR") },
                 label: "Conventional Box Truck"),
 
             new Vehicle(
@@ -858,7 +1153,9 @@ namespace HiddenHarbours.Tools.RigBaking
                 azimuthAftAnchor: "fifthWheel", azimuthForeAnchor: "hoodLatch",
                 vehicleDefPath: "Assets/_Project/Data/Vehicles/AeroSemi.asset",
                 vehicleId: "vehicle.aero_semi",
-                bodyMustNotMove: new[] { "{roll:0.25}", "{steer:1}" },
+                bodyMustNotMove: new[] { "{roll:0.25}", "{steer:1}", "{dL:1,dR:1,hood:1}" },
+                doorGroups: new[] { Group("hood", "Hood"),
+                                    Group("drive", "DoorL"), Group("ride", "DoorR") },
                 label: "Aero Sleeper Semi"),
 
             new Vehicle(
@@ -892,7 +1189,9 @@ namespace HiddenHarbours.Tools.RigBaking
                 azimuthAftAnchor: "fifthWheel", azimuthForeAnchor: "hoodLatch",
                 vehicleDefPath: "Assets/_Project/Data/Vehicles/ClassicSemi.asset",
                 vehicleId: "vehicle.classic_semi",
-                bodyMustNotMove: new[] { "{roll:0.25}", "{steer:1}" },
+                bodyMustNotMove: new[] { "{roll:0.25}", "{steer:1}", "{dL:1,dR:1,hood:1}" },
+                doorGroups: new[] { Group("hood", "Hood"),
+                                    Group("drive", "DoorL"), Group("ride", "DoorR") },
                 label: "Classic Long-Nose Semi"),
 
             // ---- the TRAILER SET: ONE rig, ONE sidecar, FOUR towed bodies --------------------
@@ -939,7 +1238,7 @@ namespace HiddenHarbours.Tools.RigBaking
                     HullScope = "cellOf('flatbed28')",
                     ViewOptions = "{body:'flatbed28'}",
                 },
-                axes: TrailerPupAxes,
+                axes: TrailerFlatbed28Axes,
                 chassisSource: TrailerChassis("flatbed28"),
                 // A towed body has no hood and no front axle, so neither of the road pack's anchor
                 // pairs exists. Her aft→fore runs tail to kingpin; her abeam pair is the axle hubs.
@@ -947,10 +1246,12 @@ namespace HiddenHarbours.Tools.RigBaking
                 azimuthAbeamLeftAnchor: "wheelL", azimuthAbeamRightAnchor: "wheelR",
                 restPose: "{body:'flatbed28'}",
                 sidecarBodyScope: "flatbed28",
-                // ⚠️ The master roll ONLY. `{gear:0}` is deliberately absent: the landing gear
-                // TELESCOPES rather than translating, so it is baked into the body at parked —
-                // see BuildTrailerAxes for the measurement and the deferral.
-                bodyMustNotMove: new[] { "{roll:0.25}" },
+                // ⭐ `{gear:0}` IS BACK. PR 2 left it out because the gear was baked INTO the body
+                // — it telescopes, and one mesh plus an offset could not carry it. PR 3a splits it
+                // on MATERIAL into rigid shoes and state-swapped legs, so the body must now keep
+                // not one face of it. The deferral is lifted rather than forgotten.
+                bodyMustNotMove: new[] { "{roll:0.25}", "{gear:0}" },
+                doorGroups: new[] { GearGroup(3.365f - 2.00f) },
                 label: "Flatbed Trailer 28 ft"),
 
             new Vehicle(
@@ -970,13 +1271,14 @@ namespace HiddenHarbours.Tools.RigBaking
                     HullScope = "cellOf('flatbed53')",
                     ViewOptions = "{body:'flatbed53'}",
                 },
-                axes: Trailer53Axes,
+                axes: TrailerFlatbed53Axes,
                 chassisSource: TrailerChassis("flatbed53"),
                 azimuthAftAnchor: "rear", azimuthForeAnchor: "kingpin",
                 azimuthAbeamLeftAnchor: "wheelL", azimuthAbeamRightAnchor: "wheelR",
                 restPose: "{body:'flatbed53'}",
                 sidecarBodyScope: "flatbed53",
-                bodyMustNotMove: new[] { "{roll:0.25}" },
+                bodyMustNotMove: new[] { "{roll:0.25}", "{gear:0}" },
+                doorGroups: new[] { GearGroup(7.175f - 2.00f) },
                 label: "Flatbed Trailer 53 ft"),
 
             new Vehicle(
@@ -996,13 +1298,14 @@ namespace HiddenHarbours.Tools.RigBaking
                     HullScope = "cellOf('reefer28')",
                     ViewOptions = "{body:'reefer28'}",
                 },
-                axes: TrailerPupAxes,
+                axes: TrailerReefer28Axes,
                 chassisSource: TrailerChassis("reefer28"),
                 azimuthAftAnchor: "rear", azimuthForeAnchor: "kingpin",
                 azimuthAbeamLeftAnchor: "wheelL", azimuthAbeamRightAnchor: "wheelR",
                 restPose: "{body:'reefer28'}",
                 sidecarBodyScope: "reefer28",
-                bodyMustNotMove: new[] { "{roll:0.25}" },
+                bodyMustNotMove: new[] { "{roll:0.25}", "{gear:0}", "{barnL:1,barnR:1}" },
+                doorGroups: new[] { GearGroup(3.365f - 2.00f), ReeferDoorsGroup(8.53f) },
                 label: "Reefer Trailer 28 ft"),
 
             // ⚠️ THE RIG'S OWN DEFAULT BODY. She is the one a missing pick silently produces, so she
@@ -1025,13 +1328,14 @@ namespace HiddenHarbours.Tools.RigBaking
                     HullScope = "cellOf('reefer53')",
                     ViewOptions = "{body:'reefer53'}",
                 },
-                axes: Trailer53Axes,
+                axes: TrailerReefer53Axes,
                 chassisSource: TrailerChassis("reefer53"),
                 azimuthAftAnchor: "rear", azimuthForeAnchor: "kingpin",
                 azimuthAbeamLeftAnchor: "wheelL", azimuthAbeamRightAnchor: "wheelR",
                 restPose: "{body:'reefer53'}",
                 sidecarBodyScope: "reefer53",
-                bodyMustNotMove: new[] { "{roll:0.25}" },
+                bodyMustNotMove: new[] { "{roll:0.25}", "{gear:0}", "{barnL:1,barnR:1}" },
+                doorGroups: new[] { GearGroup(7.175f - 2.00f), ReeferDoorsGroup(16.15f) },
                 label: "Reefer Trailer 53 ft"),
         };
 

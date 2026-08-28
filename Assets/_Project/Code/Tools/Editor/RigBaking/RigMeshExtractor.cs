@@ -1395,7 +1395,7 @@ namespace HiddenHarbours.Tools.RigBaking
             // BEFORE the faces, and it has to be: the packer resolves each face's `lv` string against
             // this table inside JavaScript, so the vocabulary must exist by the time the blob is
             // built. A rig without geometry() leaves it empty and every face comes back Untagged.
-            ReadLevels(host, g, scriptPath, data);
+            ReadLevels(host, g, data);
 
             // Three arms, and the LAST is the one every hull baked before 2026-08-13 takes — passing
             // neither extraction leaves this method on the identical code path it has always had.
@@ -1711,7 +1711,7 @@ namespace HiddenHarbours.Tools.RigBaking
         /// opens. Batch 2 of the kit is "the same mechanism, no new semantics", so these hold for it
         /// too — and if they ever do not, the bake stops with the reason in the message.</para>
         /// </summary>
-        static void ReadLevels(IRigScriptHost host, string g, string scriptPath, RigMeshData data)
+        static void ReadLevels(IRigScriptHost host, string g, RigMeshData data)
         {
             if (!HasSymbol(host, g, "geometry")) return;
 
@@ -1751,10 +1751,10 @@ namespace HiddenHarbours.Tools.RigBaking
             // The sixth field is the LID, and its three states are distinct on purpose (the ruling's
             // per-level veto rests on it, and it is the kit's own "an absent field and an open sky
             // must never look the same" law applied a second time):
-            //   "?"  the rig has no `lid` property at all  -> this repo's RigLevelLids stands in
-            //   "-"  the rig published `lid: null`         -> VETO: takes nothing, table overridden
-            //   id   the rig published a level id          -> the rig wins, always
-            string lidProp = RigLevelLids.RigLidProperty;
+            //   "?"  the rig has no `lid` property at all  -> REFUSED, below
+            //   "-"  the rig published `lid: null`         -> VETO: this level takes nothing
+            //   id   the rig published a level id          -> the one hop this level's cut takes
+            string lidProp = RigLevelTags.LidProperty;
             string levelsRaw = host.EvaluateString(
                 $"(function(){{var G={g}.geometry();var L=(G&&G.levels)?G.levels:[];var b=[];" +
                 "for(var i=0;i<L.length;i++){var l=L[i];var c=l.ceiling||{};" +
@@ -1777,35 +1777,35 @@ namespace HiddenHarbours.Tools.RigBaking
                         "to be tagged with and no way to be shown.");
 
                 bool enclosed = !string.IsNullOrEmpty(p[3]);
-                string declared = RigLevelLids.For(scriptPath, p[0]);
                 string lid;
                 string lidSource;
                 if (p[5] == "-")
                 {
-                    // The rig opted this level out. It wins over the stand-in table by construction
-                    // -- a veto a local declaration could quietly outvote would not be a veto.
+                    // The rig opted this level out: it takes nothing with it. The ordinary answer,
+                    // and the right one for every level that folds its own lid into its own tag.
                     lid = "";
                     lidSource = RigLevelRecord.LidFromVeto;
                 }
                 else if (p[5] == "?")
                 {
-                    lid = declared ?? "";
-                    lidSource = declared != null ? RigLevelRecord.LidFromTable : RigLevelRecord.LidNone;
+                    // THE DAY A RIG NEEDS A LID THE RIG ITSELF MUST SAY SO. This repo stood in for
+                    // `ceiling.lid` once, in a table keyed by rig file, because the cutaway rigs
+                    // predated the field. They publish it now and the table is retired -- so an
+                    // absent lid has no second answer to fall back on, and the only defensible
+                    // reading of silence is that nobody decided. Defaulting to "takes nothing"
+                    // would ship a room that engages the gate and removes the ceiling over it:
+                    // the occupant goes below and looks at a whole boat. Refuse instead.
+                    throw new InvalidOperationException(
+                        $"{g}.geometry().levels['{p[0]}'].ceiling publishes no '{lidProp}'. A level " +
+                        $"names the level its ceiling is the underside of, or it publishes " +
+                        $"'{lidProp}: null' to say it takes nothing -- absent and null must never " +
+                        "look the same, which is the same law this kit applies to an open sky. " +
+                        "There is no stand-in table any more; add the field to the rig.");
                 }
                 else
                 {
                     lid = p[5];
                     lidSource = RigLevelRecord.LidFromRig;
-                    // THE TABLE MUST RETIRE THE DAY THE FIELD ARRIVES. RigLevelLids stands in for a
-                    // `ceiling.lid` the batch-1 rigs do not publish; the instant one does, two
-                    // answers exist for one question and the stale one is the dangerous one. Refuse
-                    // rather than silently prefer either.
-                    if (declared != null && !string.Equals(declared, lid, StringComparison.Ordinal))
-                        throw new InvalidOperationException(
-                            $"{g}.geometry().levels['{p[0]}'].ceiling.{lidProp} says '{lid}' and " +
-                            $"{nameof(RigLevelLids)} says '{declared}'. The RIG is the authority -- " +
-                            "delete that entry from the table. It only ever existed because batch 1's " +
-                            "rigs predate the field.");
                 }
 
                 levels.Add(new RigLevelRecord

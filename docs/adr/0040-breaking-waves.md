@@ -213,6 +213,97 @@ grounding / keel-over (its own vision); capsize; nervous water over fish (M2); b
 retune of the #669 wake dials** — the owner's verdict on those is still pending and a mid-lane change
 would stale his judgment.
 
+## Revision (2026-08-28) — PR 2 landed, and two owner rulings it needed
+
+**PR 2 ships both drops.** Spilling + whitewater, then the plunging lip/barrel/pocket. Two things
+changed shape against the plan above, both because a measurement said so.
+
+### The criterion is INVERTED for the renderer (`BreakerContour`)
+
+The forward criterion costs a `tanh`, two `pow`s, a `sinh` and a `sqrt`, and the whitewater march needs
+it 16× per pixel — not a rule-7 budget. But `ratio(d)` is strictly decreasing in depth, so it inverts:
+solve for the break DEPTH once on the sim tick and the per-pixel question is one `smoothstep`. The march
+becomes 16 height taps and 16 smoothsteps — the `WaveFetch` cost shape exactly.
+
+The contour carries **three** depths because the fetch envelope moves the break line (a lee shore's
+smaller wave carries further in; at the shipped tuning a deep lee roughly halves the break depth). Solved
+at envelope 1 / mid / lee floor, interpolated piecewise. **That interpolation is measured, not asserted:
+worst 2.77 %** of the break depth across wavelengths 6–40 m × amplitudes 0.05–3.0 m. A two-point lerp
+measured 5.28 %; the closed form `dBreak(e) = dBreak(1)·e^0.8` — which follows from the shallow-water
+limit and reads entirely plausible — measured **38 %**, because big waves break in *intermediate* depth,
+not the shallow limit. That last one is why all three were measured instead of reasoned about. C# and
+HLSL run the same interpolation, so the twin stays exact and the 2.77 % is distance-from-exact, not a
+gap between the sides.
+
+### Ruling 1 (owner, 2026-08-28): **surf supersedes the shore fringe**
+
+The shore-foam fringe is a band drawn at a fixed width off the waterline — it was always the *geometric
+stand-in* for whitewater, drawn that way because nothing knew where waves really break. Now something
+does, so where the computed whitewater is alive it takes the fringe's place; everywhere it is not, the
+fringe is untouched. `_SurfSupersedeFringe = 0` restores today's look exactly.
+
+⚠️ It yields to the whitewater's **energy**, not to the break gate. The gate is 1 all the way up the
+beach, so yielding on that would delete the foam at the water's edge — where a spent bore becomes swash
+and there really is white. The white is *relocated* to where physics puts it, not removed.
+
+### Ruling 2 (owner, 2026-08-28): **the surf's width is not a knob**
+
+It is the depth band divided by the local slope, so a gentle shoal gets wide surf and a steep edge a thin
+line — and that difference is information the player can read off the water. Widening it uniformly would
+be painting surf on, which is the thing this ADR exists not to do.
+
+### The feather that moved a threshold — caught by its own test
+
+`PlungingWeight01` softens `ClassFor` so the anatomy fades instead of popping along a contour (the seabed
+is an 8-bit texture; its gradient is quantized). The first version feathered **upward** from each limit,
+putting the half-weight crossing at ξ 0.641 against Battjes' published 0.5 — a **28 % shift of the
+spilling/plunging boundary**, suppressing barrels on slopes that had earned them, silently. The docstring
+already said *"allowed to blur the boundary, NOT to move it"*; only the measurement noticed the code did
+not. The feather now straddles, and the crossing is pinned to ±0.02 on both sides of the twin.
+
+### What the wind does, measured from the shipped wave settings
+
+| wind | breaks in | ξ on 1:25 sand | ξ on a 1:8 bank |
+|---|---|---|---|
+| 2 m/s | 0.12 m | 0.45 · spills | 1.40 · plunges |
+| 8 m/s | 0.83 m | 0.21 · spills | 0.67 · plunges |
+| 14 m/s | 1.51 m | 0.19 · spills | 0.60 · plunges |
+| 22 m/s | 2.06 m | 0.20 · spills | 0.62 · plunges |
+
+A blow marches the break line offshore **seventeen-fold**. But ξ *falls* as it blows up, because a rising
+sea steepens faster than it lengthens: **a gale gives more spilling, not more barrelling.** The bed
+decides the type; the wind decides where. Two notes for the owner's eye: in the very lightest air, sand
+reads ξ = 0.45 — one nudge under the threshold, so a near-calm day is close to putting small barrels on a
+beach (real physics, small steep wavelets do plunge); and at a 2 m break depth in a gale the surf zone
+reaches into water the **whitecaps** also cover, so the two will draw on the same pixels exactly when the
+sea is most dramatic. Whitecaps are a genuinely separate phenomenon (open water, wind-gated, no depth
+term) and are left alone in this PR.
+
+### The whitecap thinning that was asked for, built, measured and then removed
+
+The owner asked (2026-08-28) for the obvious follow-on: a wave that has already broken has no crest left
+to cap, so whitecaps should thin inside the surf zone rather than stack a second white on the whitewater.
+It was built — a gate on `surfBreaking`, a dial, the lot — and then **measured, and it can never fire.**
+
+| measured, storm sea, break depth 1.89 m, shore fringe silenced so cap foam is the only white |  |
+|---|---|
+| cap foam INSIDE the surf zone, thinning off → on | **0.00 % → 0.00 %** |
+| cap foam OUTSIDE it, thinning off → on | 6.91 % → 6.88 % |
+| …and again with the caps' own shore fade dialled off (`_CapSalienceStrength` 0) | still **0.00 %** |
+
+Whitecaps do not reach the surf zone at all, under any tuning reachable from the material. The premise
+that prompted the request — *"in a gale the break line marches out to 2 m and the two layers start
+meeting"* — was an inference, and it is **false**: something upstream of the cap composite already keeps
+them out of water that shallow. The change was therefore **reverted rather than shipped**, because an
+inert dial is a property, a uniform, a multiply and a knob in the owner's inspector that can never
+change anything, and the codebase's own discipline is against silent no-ops.
+
+Three earlier measurements of the same question were wrong and are recorded so nobody repeats them: "some
+white is present inside the band" passed on 23 % that was shore fringe and bright dry ground; "white
+within 12 px of the surf" sampled mostly the DEEP side of the break line, where the gate is 0 by design;
+and differencing against a CALM shot does not isolate caps at all, because `_Roughness` also drives the
+fringe's field, band gate and density — that control returned a cap contribution of **minus 3.20 %**.
+
 ## Consequences
 
 **Good.** The painted seabed becomes legible from the helm, and the tide becomes legible in the water
