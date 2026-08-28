@@ -491,6 +491,33 @@ namespace HiddenHarbours.Tests.RigBaking
                 "the cape's two enclosed levels are the wheelhouse and the cuddy below the whaleback. " +
                 "A level joining or leaving this list is her rig changing shape and wants a look, not " +
                 "a wider assertion.");
+
+            // ---- and the OPEN levels, which are deliberately NOT required to join -------------------
+            //
+            // Pass 4 tags open decks too, because "this level is open, cut nothing" is a fact the
+            // cutaway needs. Their deck name is never handed to the gate: BoatCutaway.DeckIdOf returns
+            // def.Levels[i].Id and CutawayForDeck refuses any row that is not Enclosed.
+            //
+            // ⚠️ It is tempting to widen the rule to "an interior level OR a walkable area of the DECK
+            // def". Measured across the fleet on 2026-08-28, that rule is unsatisfiable: the two
+            // vocabularies are DISJOINT and at different granularity. The deck def splits the working
+            // deck into named polygons (cockpit_sole, washboard_port, …) while the rig names the whole
+            // open LEVEL (cockpit). The trawler, packet and tanker all tag `main_deck`, which none of
+            // their deck defs contains; the tanker adds `poop_deck` against a def that says `poop_aft`.
+            // Four of the five cutaway hulls would go red on it. What IS asserted is what is true.
+            var open = new List<string>();
+            foreach (RigLevelRecord lvl in data.Levels)
+            {
+                if (lvl.Enclosed) continue;
+                open.Add(lvl.Id);
+                Assert.IsNotEmpty(lvl.DeckId ?? "",
+                    "open level '" + lvl.Id + "' carries an EMPTY deck name. A blank reads as 'not " +
+                    "applicable', which is a claim, and this kit's whole lid law is that absent and " +
+                    "explicit must never look the same.");
+            }
+            CollectionAssert.AreEquivalent(new[] { "cockpit", "foredeck" }, open,
+                "her open levels are the working cockpit and the whaleback foredeck — no hardtop on " +
+                "this hull.");
         }
 
         /// <summary>

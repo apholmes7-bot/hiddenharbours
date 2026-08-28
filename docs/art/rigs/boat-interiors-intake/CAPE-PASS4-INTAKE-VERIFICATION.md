@@ -512,3 +512,70 @@ summary was inherited.** A summary that restates a prediction instead of the mea
 more than the prediction was.
 
 Cape half `dceaf997`, skybridge half `9379437d`. Merge on green.
+
+---
+
+## 10. The CI red — #673's join rule bit, and it bit slightly too wide
+
+CI: EditMode 9746/1. The one failure is
+`BoatCabinWalkMathTests.EveryCutawayTagOnHerHull_NamesALevelHerInteriorDefDeclares` — #673's rule
+doing exactly what it was written for: vacuous until her tags landed, biting the moment they did. Her
+bake writes four `DeckId`s (`house_sole`, `cuddy_sole`, `cockpit`, `foredeck`); her interior def
+declares two. The test predates rigs tagging OPEN decks and demanded every tag name an interior level.
+
+### The proposed amendment, measured — and it does not survive
+
+The coordinator proposed: *a `DeckId` must name **either** a level of her interior def **or** a
+walkable area of her deck def.* Measured against the committed fleet, that rule is unsatisfiable:
+
+| hull | open-level `DeckId` | in that hull's deck def? |
+|---|---|---|
+| cape | `cockpit` | **no** — the def says `cockpit_sole` |
+| cape | `foredeck` | yes *(coincidence — see below)* |
+| lobster | `cockpit` | **no** |
+| stern trawler | `main_deck` | **no** — the def has `trawl_deck`, `focsle_deck`, … |
+| coastal packet | `main_deck` | **no** |
+| tanker | `main_deck`, `poop_deck` | **no** — the def says `poop_aft`, `poop_alley_*` |
+
+**It would not even have made the cape green**, and it would have reddened four of the five cutaway
+hulls. The two vocabularies are **disjoint and at different granularity**: a deck def splits the
+working deck into named polygons (`cockpit_sole`, `washboard_port`) while the rig names the whole open
+LEVEL (`cockpit`). The cape's `foredeck` matching an area of the same name is a coincidence, not the
+pattern. The ENCLOSED ids (`house_sole`, `cuddy_sole`, `bridge_sole`, `below_sole`) are never deck-def
+areas either — they are interior def levels.
+
+### The rule that is actually true
+
+`BoatCutaway.DeckIdOf` returns `def.Levels[i].Id` — the gate is **only ever handed an interior def
+level id** — and `CutawayForDeck` refuses any row whose `Enclosed` is false. So:
+
+- **ENCLOSED → must name a level of her interior def.** The original rule, unweakened. This is the
+  half that stops a cut named in the rig's vocabulary from answering None forever.
+- **OPEN → not required to join**, because its name is never handed to the gate and could not
+  produce a cut if it were. Asserted instead: the name is **non-empty**, and the gate **REFUSES** it.
+
+That is the same shape `HullLevelTagBakeTests.EveryPublishedLevel_…NamesADefLevel` has had since #673
+(`if (!lvl.Enclosed …) continue;`) — and **that fixture went fleet-wide green on pass 4 while this one
+went red**, which is the tell that the rule here was the outlier, not the data.
+
+### Negative controls
+
+| arm | expected | result |
+|---|---|---|
+| enclosed `DeckId` → a nonsense name | the join breaks | red ✓ |
+| **enclosed `DeckId` → `cockpit_sole`, a REAL deck-def area** | **still red** — the strict half must not weaken | red ✓ |
+| open level's `DeckId` blanked | a blank is a claim | red ✓ |
+
+The middle arm is the one that matters: under the proposed "either/or" it would have **passed**, while
+the gate silently answered None forever. Headless **36 pass / 0 fail / 13 skip** (the fixture set now
+includes `BoatCabinWalkMathTests`, staged for a compile check — it loads assets through
+`AssetDatabase`, so it skips here and the coordinator's full EditMode sweep is its real run).
+
+### Process, and the half that is mine
+
+Neither of us caught this before CI because we both ran filters. Mine cannot run the full EditMode
+suite without Unity — but I could have read the fixtures that name the cape before claiming the lane
+was green, and `BoatCabinWalkMathTests` says "cape" in its own summary. Reading the tests that name
+your subject is cheaper than a CI round trip, and it is now the first thing this lane does after a
+bake lands.
+
