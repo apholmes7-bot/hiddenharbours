@@ -184,6 +184,16 @@ namespace HiddenHarbours.Core
                  "feel and wants a feel verdict, like the spectrum did.")]
         public WaveFetchSettings WaveFetch = WaveFetchSettings.Default;
 
+        [Tooltip("BREAKING WAVES (ADR 0040): where the sea gives out and how — the breaker index γ, " +
+                 "the Iribarren thresholds that separate a spilling crumble from a plunging barrel, and " +
+                 "the whitewater decay. Ships at the TEXTBOOK PHYSICS (γ = 0.78, Battjes' 0.5/3.3/5.0), " +
+                 "because these are constants of the sea rather than art direction.\n\n" +
+                 "⚠️ WHERE the surf appears is decided by the PAINTED SEABED and the TIDE, not here — " +
+                 "depth is waterLevel − seabed, so a bar that boils at half-ebb sleeps at high water with " +
+                 "nothing animating it. Widening the plunging band puts barrels on shoals that have not " +
+                 "earned them, which is the one dial to be careful with.")]
+        public BreakerSettings Breakers = BreakerSettings.Default;
+
         [Header("Market (VS-16)")]
         [Tooltip("Demand D at the home cove (Coddle Cove) in priceMult = 1/(1+e·S/D). 1 = neutral baseline.")]
         [Min(0.01f)] public float MarketDemandCove = 1f;
