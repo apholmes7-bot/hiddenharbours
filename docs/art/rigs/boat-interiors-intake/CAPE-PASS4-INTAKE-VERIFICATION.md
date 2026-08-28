@@ -365,9 +365,12 @@ That is this fixture doing its job, and it is the agreed two-part landing (the `
 **Owed to the coordinator's last-mile:**
 
 1. Re-bake her hull mesh — she gains TexCoord1 level tags, a `LevelTags` table, and the tagged door leaf.
-2. Re-import the decks — re-pins the cape and the skybridge; **the skybridge deck def GAINS
-   `helm_coaming`** and its `bridge_sole` row moves from 9.74 to 7.30. Anything downstream that
-   pinned that id by name should be read, not assumed.
+2. Re-import the decks — re-pins the cape and the skybridge, and **RENAMES** the skybridge's 9.74
+   area `bridge_sole` → `helm_coaming`. ⚠️ *Nothing is gained and nothing moves to 7.30* — the
+   original phrasing here (inherited from the handoff) was wrong: the deck def is built from the
+   WIRED sidecar, which carries the five EXTERIOR decks only, and the 7.30 skylounge has never been
+   a row in it. It is a level of the INTERIOR def and a deck of the merged kit mirror. Anything
+   downstream that pinned that id by name should be read, not assumed.
 3. Interior def builder — her `HullRigSha256` moves to the fourth sha `a1304e1b…`.
 4. Patch-list commit (⚠️ `unity-runs-rewrite-boat-assets`: revert the churn from `git status`, never
    from a memorised list).
@@ -481,3 +484,31 @@ that recorded the CRLF digest stays valid; this only changes what a NEW bake wri
 not moved (`152eb5f3…` is still correct), so there is nothing to re-stamp.** Changing the convention
 would force a deck-def re-bake for no gain, and the cape's own `_repin2` note records that switching
 root-gameplay pins to LF was "explicitly overruled" as a separate standing ask. Left alone, deliberately.
+
+---
+
+## 9. CLOSED 2026-08-28 — the import, and one phrase corrected
+
+`9379437d`: deck import 34/0, and the skybridge def moved by **exactly one line**, verified here
+against the commit rather than taken on report:
+
+```
+-  - Id: bridge_sole
++  - Id: helm_coaming
+```
+
+Polygon, winding and area count untouched; still five areas
+(`cockpit · mezzanine · foredeck · helm_coaming · aft_deck`). The def carries **no `z` per area at
+all** — outlines only.
+
+⚠️ **A phrase this record repeated was wrong, and the coordinator caught it.** "The deck def GAINS
+`helm_coaming` and its `bridge_sole` row moves 9.74 → 7.30" came from the handoff and I carried it
+into §6, the PR body and the hand-off summary without checking it against the file. The deck def is
+built from the WIRED sidecar, whose DECK list is the five exterior decks; **the 7.30 skylounge was
+never a row in it** — it is a level of the interior def and a deck of the merged kit mirror. The
+change is a RENAME of one id, not a gain and not a move. §8's own port table said as much
+("polygon, z and winding untouched"), which is exactly the tell: **the detail was right while the
+summary was inherited.** A summary that restates a prediction instead of the measurement is worth no
+more than the prediction was.
+
+Cape half `dceaf997`, skybridge half `9379437d`. Merge on green.
