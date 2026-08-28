@@ -345,12 +345,29 @@ kit's sprites are already loaded for the notebook, so a second book costs no new
 - **`DevBuyInput` + `BuyPointInstaller`** — deleted, with the `P` key returned to the ledger. Their own
   headers say they are placeholders for this.
 
-> ⚠ **AS BUILT.** They did **not** retire in PR 1, and could not: `DevBuyInput` opened `BuyScreen`, and
-> `BuyScreen` called the `Build(stall, …)` signature the inversion removes — so "delete the screen, keep
-> the dev keys" was self-contradictory. `DevBuyInput` was instead repointed: it reads the seller id off
-> its stall's vendor and publishes the **same** `CatalogViewRequested` a dialogue row publishes. The dev
-> key and the conversation now reach the book through one door, so PR 2 removes a *caller*, not a path.
-> `BuyPointInstaller` and `DevSellInput` are untouched and retire with it in PR 2.
+> ⚠ **AS BUILT (PR 1).** They did **not** retire in PR 1, and could not: `DevBuyInput` opened
+> `BuyScreen`, and `BuyScreen` called the `Build(stall, …)` signature the inversion removes — so "delete
+> the screen, keep the dev keys" was self-contradictory. `DevBuyInput` was instead repointed: it reads
+> the seller id off its stall's vendor and publishes the **same** `CatalogViewRequested` a dialogue row
+> publishes. The dev key and the conversation now reach the book through one door, so PR 2 removes a
+> *caller*, not a path.
+
+> ⭐ **AS BUILT (PR 2) — RETIRED, and it was THREE files and TWO keys, not two and one.**
+> `BuyPointInstaller`, `DevBuyInput` **and `DevSellInput`** are deleted. The commissioning handoff said
+> "P and O"; **`O` was never this — it is the displaced-water key**, and the sell placeholder was on
+> **`B`** (`DevSellInput.Update`, `bKey`). **`P` and `B`** are the letters returned, recorded in
+> `DevBoatPicker`'s tooltip (where the ledger lives) and in the six other tooltips that transcribe it,
+> so no stale copy can be swept against.
+>
+> Their six `AddComponent` sites across three builders are gone, and the four doc comments that named
+> them now name `StallReach` — which **stays**: the proximity gate is not placeholder work and
+> `HomeDoor` and `GinnyFreezer` already lean on it.
+>
+> ⚠ The six components were also serialized into `Greybox`/`NineMileCreek`/`StPeters`, so deleting the
+> classes would have left dangling script references until the next scene bank. Those six blocks are
+> stripped from the scene YAML in the same commit — pure deletions (17 lines each: the `MonoBehaviour`
+> document and the one `- component:` line pointing at it), which is exactly what the next builder run
+> would have produced.
 - **`BuyCatalog`'s component scan** — replaced by the tag sweep. **The quote arms and every note string
   survive** and move into the new source; they are the accumulated correctness of six vendor types and
   must not be retyped.
@@ -395,6 +412,52 @@ the seller-id seam (R1), and the three new offer types. Stock becomes content; s
 Both are in-phase for M2 only once the owner's handoff says so. **A is worth doing first even if B is
 ruled differently**, because a notebook-styled panel over the existing scan is strictly better than the
 dark overlay and throws nothing away.
+
+### 8.1 PR 2 — the people behind the counters, AS BUILT
+
+Four things the plan did not cover, recorded here rather than left for the next reader.
+
+**1. Marguerite already existed, and so did her day.** The brief asked for "a clerk at the St Peters
+general store — an `NpcDef` + routine = f(clock)". She has been standing at that counter since #354
+with a five-block routine that opens the shop at 07:00 and takes her upstairs at 21:00. PR 2 gave her
+**the conversation** and moved nothing else. The brief's own beat — *"a closed store is a clerk who is
+not there, no signage system needed yet"* — was therefore already true and cost nothing; it is pinned
+by reading her shipped routine through `RoutineSchedule.BlockIndexAt`, the engine's own block rule.
+
+**2. Nine Mile Creek's clerk is ANCHORED, and that is a ruling, not a shortcut.** The region has **no
+routine engine at all** — no station table, no lane graph, no indoor stand-point; the whole
+`RoutineDef`/`RoutineStations` machinery is St Peters-only, and `NineMileCreekPeople` says so in its own
+header (*"ANCHORED, NOT SCHEDULED"*). The owner ruled (2026-08-27) that the creek's storekeeper matches
+that shipped convention: **no store hours at Nine Mile Creek, she is simply there.** Standing up an NMC
+station table is its own properly-priced world-content lane. **⚠ DEBT, unpaid:** until it lands, the
+creek's shops cannot open and close, and its cast cannot walk anywhere.
+
+**3. The creek's general store gets NO sell row, deliberately (R7).** Its lot carries a `GearShop` and
+nothing else — no `Market`, no `FishBuyer`, no `WharfSellPoint`. R7 says the sell verb fronts a
+counter's **existing** sell components; there are none, so a sell row there would mean writing new sell
+economics, which this slice does not do. Fish is sold at the buyer's truck on the wharf, which is
+Wendell's. Pinned by a test so the omission reads as a decision.
+
+**4. A sell row's answer carries a number World cannot know**, so the crossing is two Core signals on
+the `CatalogViewRequested`/`CatalogClosed` pattern: World publishes `CounterSellRequested`, Economy's
+`CounterSellDesk` resolves the counter through the **same** `BuyCatalog.ArmsFor` lookup the book uses,
+sells through `WharfSellPoint`'s existing seam, and answers `CounterSellReported` on the same publish.
+**It reports facts, never words** — the payout and how many units left the hold — and the sentences
+around them are authored on the option asset with `{payout}`/`{units}` tokens. That keeps
+`FeeFronted`'s standing rule: *the economy never writes dialogue.*
+
+> ⚠⚠ **THE SHIPPED SCENES DO NOT CARRY ANY OF THIS YET, AND THAT IS THE NORMAL STATE.** Region scenes
+> are authored from the builders and banked separately by the owner's Build click; the last bank was
+> **2026-08-23**, and PR 1's builder edits (the `CatalogBookPresenter` on `DialogueUI`, `_sellerId` on
+> all seven vendor kinds) came after it. So in the scene bytes as they stand there is **no book to open
+> and no seller id to resolve**, and the whole shop-talk surface waits on the next bank.
+>
+> The failure that would have been is a **soft-lock**: the catalog hold is released by `CatalogClosed`
+> and by nothing else, and `Advance()` refuses while it is on — so a browse row published into a scene
+> with no presenter traps the player in a dimmed bubble with no way out. `ConfirmOption` now asks
+> `EventBus.HasSubscribers<CatalogViewRequested>()` first and falls through to the ordinary
+> answer-and-end arm when nobody is listening, with a warning naming the fix. The sell row degrades the
+> same way, to its empty-pail line. Both paths are pinned by PlayMode cases.
 
 ---
 

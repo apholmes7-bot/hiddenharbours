@@ -85,6 +85,13 @@ namespace HiddenHarbours.App.Editor
             ("HectorBernard", "skipper",
              "the old boat-yard man among his tired outboards. SHARES the skipper body with Basil — " +
              "different region, never on screen together (see the class note)"),
+
+            ("ClaudetteBoudreau", "packer",
+             "the mainland storekeeper, in the same apron and kerchief as the island's. SHARES the " +
+             "packer body with Marguerite on Hector's rule — different region, never on screen " +
+             "together — and for the same reason: a second counter body is art nobody has cut yet. " +
+             "⚠ THE TWO STOREKEEPERS ARE THE ONLY SHARE WHERE BOTH FIGURES ARE FOREGROUND, talked to " +
+             "and bought from. Their voices carry the difference until a body can"),
         };
 
         [MenuItem(MenuPath, priority = 233)]
