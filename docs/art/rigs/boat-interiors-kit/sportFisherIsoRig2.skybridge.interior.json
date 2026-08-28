@@ -1124,7 +1124,7 @@
     {
       "id": "helm_bridge",
       "action": "enter_helm",
-      "at": "bridge_sole",
+      "at": "helm_coaming",
       "reach_point": [
         0,
         -3.95,
@@ -1141,7 +1141,7 @@
         "NW"
       ],
       "exterior": true,
-      "_note": "mechanism: the existing helm · open control coaming helm pod — reached by the aft-deck ladder (extractor bridge_sole._notes.bridge_ladder)"
+      "_note": "mechanism: the existing helm · open control coaming helm pod — reached by the aft-deck ladder (LADDER.bridge_ladder)"
     }
   ],
   "mechanism_map": {
@@ -1185,11 +1185,11 @@
       "face": "aft",
       "rungs": 7,
       "rung_spacing_m": 0.31,
-      "note": "Aft deck to the open coaming — the rig’s own raked ladder, declared as a route (second leg to the upper helm).",
+      "note": "Aft deck to the open coaming — the rig’s own raked ladder, declared as a route (second leg to the upper helm). Top rung 9.55, rim step-over onto the 9.74 sole. Until 2026-08-28 this pointed at bridge_sole (7.30) — 2.23 m up to arrive below its own foot.",
       "provenance": "exterior rig HOUSE.ladders",
       "connects": [
         "aft_deck",
-        "bridge_sole"
+        "helm_coaming"
       ]
     }
   ],
@@ -1200,5 +1200,6 @@
     "rode_locker": "forepeak rode + thruster space forward of y 6.80 — dressed",
     "crew_cabin": "crew cabin abaft the engine room stays OUT with the machinery space — prize-boat guest spaces only this pass"
   },
-  "_stem_note": "Stem sportFisherIsoRig2.skybridge is not yet in the gameplay repo list — new stem, flagged for intake."
+  "_stem_note": "Stem sportFisherIsoRig2.skybridge is not yet in the gameplay repo list — new stem, flagged for intake.",
+  "_id_split_2026_08_28": "LADDER.bridge_ladder and INTERACT.helm_bridge now name helm_coaming, the OPEN coaming at 9.74. They used to name bridge_sole, which in THIS file means the 7.30 skylounge (WALKABLE.bridge_sole) — so the ladder rose 7.32 -> 9.55 to arrive 0.02 m BELOW its own foot, and the upper helm stood on the wrong deck. LADDER/STAIRS/INTERACT/THRESHOLD are taken WHOLESALE from this file by BoatInteriorGameplayMerge, so this is where the fix has to live; correcting only the kit's pre-merged mirror would be reverted by the next merge. WALKABLE.bridge_sole (7.30) and STAIRS.house_to_bridge are unchanged and were always right."
 }

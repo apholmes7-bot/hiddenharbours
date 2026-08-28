@@ -88,7 +88,7 @@ MonoBehaviour:
     HeightPlane: {x: -5.8287547e-17, y: 0.15060256, z: 3.662737}
     HeightResidualMax: 0.16845608
     Bounds: {x: -3.158, y: 2.185, z: 3.158, w: 14.719}
-  - Id: bridge_sole
+  - Id: helm_coaming
     Kind: 0
     Outline:
     - {x: -0.03, y: -1.52}

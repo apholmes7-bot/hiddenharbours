@@ -46,7 +46,10 @@ namespace HiddenHarbours.Tests.RigBaking
         /// <para>Batch 1: the lobster (the render-verified reference) and the two ships that share a
         /// sole and therefore break the tie in data. Batch 2, landed 2026-08-27: the dragger, the
         /// trawler Mk II, the tanker — who brings <c>poop_deck</c>, a seventh level id and the fleet's
-        /// first SECOND exterior deck — and the eighteen lobster variants.</para>
+        /// first SECOND exterior deck — and the eighteen lobster variants. <b>Pass 4, 2026-08-28:
+        /// the CAPE ISLANDER</b>, and she is the one that matters most, because the game opens
+        /// below her decks — every fixture in this file was vacuous on the flagship until her rig
+        /// published a vocabulary, and the join rule below in particular had nothing to join.</para>
         ///
         /// <para>The eighteen come off <see cref="LobsterVariantFleet"/> rather than being spelled
         /// out, for the reason <c>HullMeshFleet</c> gives where it does the same: eighteen hand-typed
@@ -57,7 +60,8 @@ namespace HiddenHarbours.Tests.RigBaking
         /// </summary>
         private static readonly string[] Pass3Keys =
             new[] { "lobsterBoat", "sternTrawler", "coastalPacket",
-                    "sideDragger", "sternTrawlerMk2", "tanker" }
+                    "sideDragger", "sternTrawlerMk2", "tanker",
+                    "capeIslander" }
                 .Concat(LobsterVariantFleet.All.Select(v => v.Key))
                 .ToArray();
 
@@ -85,10 +89,10 @@ namespace HiddenHarbours.Tests.RigBaking
                 "Every test in this file selects by them, so a rename does not fail here — it makes " +
                 "them all vacuous.");
 
-            Assert.AreEqual(24, Pass3Keys.Length,
-                "Batch 1 is three hulls and batch 2 is twenty-one (three ships + eighteen variants). " +
-                "A different total means a rig was added to the kit without this file being told, or " +
-                "LobsterVariantFleet stopped enumerating eighteen.");
+            Assert.AreEqual(25, Pass3Keys.Length,
+                "Batch 1 is three hulls, batch 2 is twenty-one (three ships + eighteen variants), and " +
+                "pass 4 added the cape islander. A different total means a rig was added to the kit " +
+                "without this file being told, or LobsterVariantFleet stopped enumerating eighteen.");
         }
 
         /// <summary>
@@ -285,6 +289,138 @@ namespace HiddenHarbours.Tests.RigBaking
         }
 
         /// <summary>
+        /// <b>The table the gate reads.</b> Everything above proves the rig published a vocabulary;
+        /// this proves the row the bake writes from it is one <see cref="HullMeshDef.CutawayForDeck"/>
+        /// can answer — an enclosed level joined to a DECK id, carrying its own tag and its declared
+        /// lid's.
+        ///
+        /// <para>Built by <see cref="RigMeshAssetBaker.LevelTableFor"/>, the bake's OWN mapping,
+        /// called rather than transcribed — a field dropped in the baker fails here instead of
+        /// passing against a copy of itself. Nothing is baked and no asset is touched;
+        /// <see cref="HullCutawayAssetTests"/> stays the separate question of whether the committed
+        /// bytes have caught up, and the end-to-end call through a real def is the fixture below.</para>
+        ///
+        /// <para><b>Why both arms.</b> "Every enclosed level has a cut" alone would pass on a table
+        /// that opened EVERYTHING, and cutting into an open deck is the failure the ruling is about —
+        /// you cannot take the roof off the sky. So an open level must carry <c>Enclosed=false</c> in
+        /// the same sweep, which is the field <c>CutawayForDeck</c> refuses on.</para>
+        /// </summary>
+        [Test]
+        public void TheBakesLevelTable_AnswersForEveryEnclosedLevelAndRefusesTheOpenOnes()
+        {
+            var unanswerable = new List<string>();
+            var wouldOverOpen = new List<string>();
+            int enclosedChecked = 0;
+
+            foreach (FleetHull hull in Pass3Hulls)
+            {
+                RigMeshData data = Extract(hull, out IRigScriptHost host);
+                using (host)
+                {
+                    HullMeshDef.LevelTag[] table = RigMeshAssetBaker.LevelTableFor(data);
+                    Assert.AreEqual(data.Levels.Count, table.Length,
+                        $"{hull.Key}: the bake's own mapping dropped a level on the way to the def.");
+
+                    for (int i = 0; i < table.Length; i++)
+                    {
+                        HullMeshDef.LevelTag row = table[i];
+                        RigLevelRecord lvl = data.Levels[i];
+
+                        Assert.AreEqual(lvl.Id, row.LevelId, $"{hull.Key}: row {i} lost its level id.");
+                        Assert.AreEqual(lvl.Tag, row.Tag,
+                            $"{hull.Key}.{lvl.Id}: the row carries tag {row.Tag}, the rig tagged her " +
+                            $"faces {lvl.Tag}. A row that names the wrong tag opens someone else's room.");
+                        Assert.AreEqual(lvl.LidTag, row.LidTag,
+                            $"{hull.Key}.{lvl.Id}: the row took lid {row.LidTag}, the rig declared " +
+                            $"'{lvl.LidLevelId}' ({lvl.LidTag}).");
+                        Assert.AreEqual(lvl.Enclosed, row.Enclosed, $"{hull.Key}.{lvl.Id}");
+
+                        if (!row.Enclosed)
+                        {
+                            // CutawayForDeck refuses on exactly this field. An open deck reaching the
+                            // table as enclosed is how the sky gets its roof taken off.
+                            if (row.Tag > 0 && row.Enclosed)
+                                wouldOverOpen.Add($"{hull.Key}.{lvl.Id}");
+                            continue;
+                        }
+
+                        enclosedChecked++;
+                        if (string.IsNullOrEmpty(row.DeckId))
+                            unanswerable.Add($"{hull.Key}.{lvl.Id}: enclosed, and joins to no deck id — " +
+                                             "CutawayForDeck can never be handed anything that matches it");
+                        else if (row.Tag <= 0)
+                            unanswerable.Add($"{hull.Key}.{lvl.Id}: deck '{row.DeckId}' carries tag " +
+                                             $"{row.Tag}, and 0 IS the gate's 'no cut'");
+                    }
+                }
+            }
+
+            CollectionAssert.IsEmpty(unanswerable,
+                "An enclosed level would engage the gate and get nothing back, so its ceiling stays on " +
+                "and the occupant goes below to look at a whole boat:\n  " +
+                string.Join("\n  ", unanswerable));
+            CollectionAssert.IsEmpty(wouldOverOpen,
+                "The table would open a level the rig published as OPEN:\n  " +
+                string.Join("\n  ", wouldOverOpen));
+            Assert.Greater(enclosedChecked, 0,
+                "Not one enclosed level was examined, so both assertions above compared empty lists.");
+        }
+
+        /// <summary>
+        /// <b>The cape, by name, through the real gate.</b> The sweep above reads the table; this one
+        /// asks <see cref="HullMeshDef.CutawayForDeck"/> the question the game asks, on the boat the
+        /// intro opens inside — so that losing her from the fleet table fails here rather than
+        /// shrinking a loop in silence.
+        ///
+        /// <para>Her rig's vocabulary is its own (<c>house</c>, <c>cuddy</c>) and the join to the
+        /// interior def is by DECK id (<c>house_sole</c>, <c>cuddy_sole</c>) — two namespaces on
+        /// purpose, and conflating them is how the gate silently resolves to 0.</para>
+        ///
+        /// <para>⚠️ Needs a live <c>ScriptableObject</c>, so it SKIPS in the no-editor harness the way
+        /// seven fixtures in this folder already do. It is a real check in the editor and in CI; the
+        /// data it depends on is covered headless by the sweep above.</para>
+        /// </summary>
+        [Test]
+        public void TheCapeIslandersHouseOpens_AndHerCuddyTakesTheForedeckWithIt()
+        {
+            FleetHull cape = HullMeshFleet.Hulls.Single(h => h.Key == "capeIslander");
+            RigMeshData data = Extract(cape, out IRigScriptHost host);
+            using (host)
+            {
+                var def = ScriptableObject.CreateInstance<HullMeshDef>();
+                try
+                {
+                    def.LevelTags = RigMeshAssetBaker.LevelTableFor(data);
+
+                    HullMeshDef.Cut house = def.CutawayForDeck("house_sole");
+                    Assert.IsTrue(house.Opens,
+                        "CutawayForDeck(house_sole) returned no cut. This is the call the intro makes " +
+                        "in the first minute of the game; unanswered, the room draws over her closed " +
+                        "wheelhouse — the #645 overdraw #673 accepted only because she had no pass yet.");
+                    Assert.AreEqual(0, house.Lid,
+                        "her house declares ceiling.lid null — a HARD eave deckhead, an explicit veto. " +
+                        "A lid here would take the roof slab off with the room.");
+
+                    HullMeshDef.Cut cuddy = def.CutawayForDeck("cuddy_sole");
+                    Assert.IsTrue(cuddy.Opens, "CutawayForDeck(cuddy_sole) returned no cut.");
+                    Assert.AreEqual(data.LevelIds["foredeck"], cuddy.Lid,
+                        "the cuddy has no faces of her own — she is a void under the whaleback, and her " +
+                        "ceiling is the foredeck's raked underside. Without that declared lid her cut " +
+                        "removes NOTHING and the foredeck stays over the berth, which is the exact " +
+                        "failure ceiling.lid was ruled for.");
+
+                    foreach (string open in new[] { "cockpit", "foredeck" })
+                        Assert.IsFalse(def.CutawayForDeck(open).Opens,
+                            $"'{open}' is an open deck on this hull — no hardtop, no whaleback over it.");
+                }
+                finally
+                {
+                    Object.DestroyImmediate(def);
+                }
+            }
+        }
+
+        /// <summary>
         /// <b>The tag reaches TexCoord1, flat across each face — and UV0.z still carries the rig's
         /// own <c>db</c>.</b>
         ///
@@ -473,6 +609,7 @@ namespace HiddenHarbours.Tests.RigBaking
             CollectionAssert.AreEquivalent(
                 new[]
                 {
+                    "capeIslander.cuddy -> foredeck (15 faces)",
                     "lobsterBoat.cuddy -> foredeck (15 faces)",
                     "sternTrawler.below -> main_deck (142 faces)",
                     "coastalPacket.below -> main_deck (92 faces)",
@@ -542,11 +679,12 @@ namespace HiddenHarbours.Tests.RigBaking
                 }
             }
 
-            Assert.AreEqual(24, lids,
-                "Batch 1 declares three lids (lobster cuddy, both ships' below) and batch 2 declares " +
+            Assert.AreEqual(25, lids,
+                "Batch 1 declares three lids (lobster cuddy, both ships' below), batch 2 declares " +
                 "twenty-one (three ships' below — the TANKER's onto poop_deck, not main_deck — and " +
-                "the eighteen variants' cuddy). A different count means every property above was " +
-                "checked against a different set of rigs than the one this fixture was written for.");
+                "the eighteen variants' cuddy), and pass 4 adds the CAPE's cuddy onto her " +
+                "whaleback foredeck. A different count means every property above was checked " +
+                "against a different set of rigs than the one this fixture was written for.");
         }
 
         /// <summary>
@@ -616,6 +754,7 @@ namespace HiddenHarbours.Tests.RigBaking
             // variant rows come off LobsterVariantFleet because one generator rig makes them all.
             string[] expected = new[]
                 {
+                    "capeIslander.cuddy -> foredeck",
                     "lobsterBoat.cuddy -> foredeck",
                     "sternTrawler.below -> main_deck",
                     "coastalPacket.below -> main_deck",

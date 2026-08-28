@@ -19,7 +19,7 @@ MonoBehaviour:
   SourceInteriorRig: docs/art/rigs/boat-interiors-kit/boatInteriorRig.js
   SourceHullRig: docs/art/rigs/boat-interiors-kit/hull-rigs/capeIslanderIsoRig.js
   InteriorRigSha256: 34bb781303b9de9a47c7029a685bf83d357adefe2ffb95ff54451233ea7c46a7
-  HullRigSha256: 60d127c3e77817ea5961419440d5c3ea6d563014c2aabdb621b33376cdb0873f
+  HullRigSha256: a1304e1b34d3f34797da693e8b53bb8ad58ebfa10a9ff4fd4fdaa00c10dd7ce0
   PixelsPerMetre: 32
   CellPixels: {x: 456, y: 420}
   PivotPixels: {x: 228, y: 258}

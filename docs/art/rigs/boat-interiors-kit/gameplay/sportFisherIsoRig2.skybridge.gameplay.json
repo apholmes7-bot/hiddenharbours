@@ -7,7 +7,7 @@
     "label": "90′ SKYBRIDGE",
     "loa": "27.4 m · 90′"
   },
-  "derivedFromRigSha256": "ebc77bace833361b578f5315e175e10de61d1acf77b5037390217ceb09221bcb",
+  "derivedFromRigSha256": "205a93c9e0e39a1df72cadeacac335d9bbf7f87390a204ad98bcd4cc629c4691",
   "units": "metres",
   "frame": {
     "origin": "amidships / keel-bottom / centreline",
@@ -537,224 +537,6 @@
       ]
     },
     {
-      "id": "bridge_sole",
-      "z": 9.74,
-      "winding": "ccw_from_above",
-      "polygon": [
-        [
-          -0.03,
-          -1.52
-        ],
-        [
-          -0.27,
-          -1.563
-        ],
-        [
-          -0.697,
-          -1.69
-        ],
-        [
-          -1.097,
-          -1.899
-        ],
-        [
-          -1.395,
-          -2.185
-        ],
-        [
-          -1.484,
-          -2.539
-        ],
-        [
-          -1.518,
-          -2.955
-        ],
-        [
-          -1.549,
-          -3.42
-        ],
-        [
-          -1.571,
-          -3.925
-        ],
-        [
-          -1.58,
-          -4.456
-        ],
-        [
-          -1.573,
-          -5
-        ],
-        [
-          -1.55,
-          -5.544
-        ],
-        [
-          -1.517,
-          -6.075
-        ],
-        [
-          -1.479,
-          -6.58
-        ],
-        [
-          -1.439,
-          -7.045
-        ],
-        [
-          -1.403,
-          -7.461
-        ],
-        [
-          -1.372,
-          -7.815
-        ],
-        [
-          -1.311,
-          -8.101
-        ],
-        [
-          -1.174,
-          -8.31
-        ],
-        [
-          -0.996,
-          -8.437
-        ],
-        [
-          -0.801,
-          -8.48
-        ],
-        [
-          0.801,
-          -8.48
-        ],
-        [
-          0.996,
-          -8.437
-        ],
-        [
-          1.174,
-          -8.31
-        ],
-        [
-          1.311,
-          -8.101
-        ],
-        [
-          1.372,
-          -7.815
-        ],
-        [
-          1.403,
-          -7.461
-        ],
-        [
-          1.439,
-          -7.045
-        ],
-        [
-          1.479,
-          -6.58
-        ],
-        [
-          1.517,
-          -6.075
-        ],
-        [
-          1.55,
-          -5.544
-        ],
-        [
-          1.573,
-          -5
-        ],
-        [
-          1.58,
-          -4.456
-        ],
-        [
-          1.571,
-          -3.925
-        ],
-        [
-          1.549,
-          -3.42
-        ],
-        [
-          1.518,
-          -2.955
-        ],
-        [
-          1.484,
-          -2.539
-        ],
-        [
-          1.395,
-          -2.185
-        ],
-        [
-          1.097,
-          -1.899
-        ],
-        [
-          0.697,
-          -1.69
-        ],
-        [
-          0.27,
-          -1.563
-        ],
-        [
-          0.03,
-          -1.52
-        ]
-      ],
-      "note": "Sole of the open control coaming, 9.74 m above the keel — the ring is the coaming plan less its 0.16 m rim. The coaming wall stands 0.62 m above this sole.",
-      "_notes": [
-        {
-          "id": "helm_pod",
-          "kind": "obstruction",
-          "type": "console",
-          "footprint": {
-            "x": [
-              -0.7,
-              0.7
-            ],
-            "y": [
-              -3.62,
-              -2.98
-            ]
-          },
-          "height_above_floor_m": {
-            "top": 0.78
-          },
-          "provenance": "exact, hull spec helmPod at (0,-3.3,9.74), hx=0.7, pod z0..z0+0.78 with glass above",
-          "note": "Upper helm console with a screen brow at +0.86. Seats: (-0.62,-5.9) (0.62,-5.9), 0.60 m tall boxes."
-        },
-        {
-          "id": "bridge_ladder",
-          "kind": "access",
-          "type": "ladder",
-          "footprint": {
-            "x": [
-              -0.45,
-              0.45
-            ],
-            "y": [
-              -9.08,
-              -9.7
-            ]
-          },
-          "height_above_floor_m": {
-            "top": "spans z 7.32 → 9.55"
-          },
-          "provenance": "exact, hull spec lads[0]: 0.45, -9.7, 7.32, 0.4, -9.08, 9.55, 6 (rungs = last value)",
-          "note": "The climb from the aft deck to this sole — 6 rungs, raked forward as it rises. This is how a character gets to the upper station."
-        }
-      ]
-    },
-    {
       "id": "aft_deck",
       "z": 7.28,
       "winding": "ccw_from_above",
@@ -1177,7 +959,7 @@
       ]
     },
     {
-      "id": "sky_sole",
+      "id": "bridge_sole",
       "z": 7.3,
       "winding": "ccw_from_above",
       "polygon": [
@@ -1198,7 +980,7 @@
           -0.56
         ]
       ],
-      "note": "The skylounge — a FULL DECK dedicated to the helm: glass on three sides, the helm against the windshield, companion settee aft; its own slider onto the aft deck (THRESHOLD.additional).",
+      "note": "The skylounge — a FULL DECK dedicated to the helm: glass on three sides, the helm against the windshield, companion settee aft; its own slider onto the aft deck (THRESHOLD.additional). The open coaming above it (sole 9.74) is DECK helm_coaming since 2026-08-28 — one id no longer names two walkables.",
       "_notes": [
         {
           "id": "helm_console",
@@ -1314,6 +1096,235 @@
           ],
           "height_above_sole_m": 0,
           "treatment": "stair_opening"
+        }
+      ]
+    },
+    {
+      "id": "helm_coaming",
+      "z": 9.74,
+      "winding": "ccw_from_above",
+      "polygon": [
+        [
+          -0.03,
+          -1.52
+        ],
+        [
+          -0.27,
+          -1.563
+        ],
+        [
+          -0.697,
+          -1.69
+        ],
+        [
+          -1.097,
+          -1.899
+        ],
+        [
+          -1.395,
+          -2.185
+        ],
+        [
+          -1.484,
+          -2.539
+        ],
+        [
+          -1.518,
+          -2.955
+        ],
+        [
+          -1.549,
+          -3.42
+        ],
+        [
+          -1.571,
+          -3.925
+        ],
+        [
+          -1.58,
+          -4.456
+        ],
+        [
+          -1.573,
+          -5
+        ],
+        [
+          -1.55,
+          -5.544
+        ],
+        [
+          -1.517,
+          -6.075
+        ],
+        [
+          -1.479,
+          -6.58
+        ],
+        [
+          -1.439,
+          -7.045
+        ],
+        [
+          -1.403,
+          -7.461
+        ],
+        [
+          -1.372,
+          -7.815
+        ],
+        [
+          -1.311,
+          -8.101
+        ],
+        [
+          -1.174,
+          -8.31
+        ],
+        [
+          -0.996,
+          -8.437
+        ],
+        [
+          -0.801,
+          -8.48
+        ],
+        [
+          0.801,
+          -8.48
+        ],
+        [
+          0.996,
+          -8.437
+        ],
+        [
+          1.174,
+          -8.31
+        ],
+        [
+          1.311,
+          -8.101
+        ],
+        [
+          1.372,
+          -7.815
+        ],
+        [
+          1.403,
+          -7.461
+        ],
+        [
+          1.439,
+          -7.045
+        ],
+        [
+          1.479,
+          -6.58
+        ],
+        [
+          1.517,
+          -6.075
+        ],
+        [
+          1.55,
+          -5.544
+        ],
+        [
+          1.573,
+          -5
+        ],
+        [
+          1.58,
+          -4.456
+        ],
+        [
+          1.571,
+          -3.925
+        ],
+        [
+          1.549,
+          -3.42
+        ],
+        [
+          1.518,
+          -2.955
+        ],
+        [
+          1.484,
+          -2.539
+        ],
+        [
+          1.395,
+          -2.185
+        ],
+        [
+          1.097,
+          -1.899
+        ],
+        [
+          0.697,
+          -1.69
+        ],
+        [
+          0.27,
+          -1.563
+        ],
+        [
+          0.03,
+          -1.52
+        ]
+      ],
+      "note": "The open control coaming ON the skylounge roof — the rig’s own words: “this IS the tower”. Sunk sole at 9.74 inside a 0.16 m rim (coaming top z1=10.36); plan = the open ‘bridge’ volume at z1 (hw table, nose/aft rounding, 0.06 inset) minus the rim, computed by the volume’s own xAt law. Until 2026-08-28 this walkable shipped UNDER the id bridge_sole, colliding with the enclosed skylounge (soleZ 7.30) — the id is split; the skylounge keeps bridge_sole. Reached by LADDER.bridge_ladder from the aft deck (top rung 9.55, rim step-over).",
+      "_notes": [
+        {
+          "id": "helm_pod",
+          "kind": "obstruction",
+          "type": "console",
+          "footprint": {
+            "x": [
+              -0.7,
+              0.7
+            ],
+            "y": [
+              -3.62,
+              -2.98
+            ]
+          },
+          "height_above_floor_m": {
+            "top": 0.83
+          },
+          "provenance": "exact, spec helmPod {x:0, y:-3.30, z:9.74, hx:0.70}: pod ya/yf = y∓0.32/y+0.32, z 9.74..10.52, crown +0.05",
+          "note": "The upper helm console. INTERACT.helm_bridge stands here (anchor y -3.30, reach y -3.95)."
+        },
+        {
+          "id": "helm_seats",
+          "kind": "obstruction",
+          "type": "seat",
+          "footprint": {
+            "x": [
+              [
+                -0.9,
+                -0.34
+              ],
+              [
+                0.34,
+                0.9
+              ]
+            ],
+            "y": [
+              [
+                -6.14,
+                -5.66
+              ],
+              [
+                -6.14,
+                -5.66
+              ]
+            ]
+          },
+          "height_above_floor_m": {
+            "top": 0.6
+          },
+          "provenance": "MEASURED out of the rig's own face stream on intake, not transcribed: each seat is the six-face box boxF([st, helmPod.z+0.30], [0.28,0.24,0.30]) over spec helmPod.seats [[-0.62,-5.9],[0.62,-5.9]] — AABB x -0.900..-0.340 and 0.340..0.900, y -6.140..-5.660, z 9.740..10.340, i.e. 0.60 m tall off the 9.74 sole. Half-extents are ±0.28 in x and ±0.24 in y, not the ±0.25 the drop assumed."
         }
       ]
     },
@@ -1796,7 +1807,7 @@
     "WASHBOARD": "NO washboards on this hull, and this is the load-bearing absence. The rig draws a deck margin alongside the house, but measured at the deck line it is 0.071–0.612 m wide (11 samples, y -9.65 → 1.53, widening only as the house nose narrows into the foredeck): a reveal between the house side and the covering board, not a strip anyone walks. It is that narrow by design — clampHW lands the house sides on the cap so the covering board reads as ONE unbroken line stem to transom. Consequence: cockpit and foredeck are separate walkable islands on the exterior.",
     "covering_board": "The teak cap outboard of the reveal is rolled and carries a toe rail lifting to 0.2 m forward of u=0.55 — a boundary, not a surface.",
     "house_interior": "Salon and skylounge are modelled as an exterior volume only — no interior floor exists to walk.",
-    "bridge_access_interior": "The only modelled climb is aft deck → bridge sole (DECK.bridge_sole._notes.bridge_ladder). Salon and skylounge interiors are not modelled.",
+    "bridge_access_interior": "The only modelled exterior climb is aft deck → helm coaming (LADDER.bridge_ladder); salon→skylounge is the interior companionway (STAIRS.house_to_bridge).",
     "foredeck_access": "Nothing in the rig connects the cockpit to the foredeck: no margin wide enough to walk, no ladder, no door in the house exterior other than the aft glass. Any walk-forward move a character makes on this hull has to be authored game-side.",
     "gear_above": "Outriggers, tower pipework, whips, radomes, hardtop slab and rod tubes are gear over the decks, not surfaces. Rod points are ANCHORS.rods.",
     "topside_detail": "Hull windows, louvre vents and the boot/cove bands are paint and detail, outside any walkable surface.",
@@ -1809,7 +1820,7 @@
   },
   "_confirm": {
     "cleat_identification": "All three CLEATS entries are read from unlabelled iron fittings (see each provenance). Positions are exact; the reading as tie-offs is the art side’s, and a gameplay ruling can demote any of them.",
-    "upper_decks": "bridge_sole, aft_deck are included because they are real modelled surfaces with real dimensions. If gameplay only ever walks the cockpit, mezzanine, side decks and foredeck, the upper polygons are inert data — they are not a claim that a character can reach them."
+    "upper_decks": "bridge_sole, helm_coaming, aft_deck are included because they are real modelled surfaces with real dimensions. If gameplay only ever walks the cockpit, mezzanine, side decks and foredeck, the upper polygons are inert data — they are not a claim that a character can reach them."
   },
   "THRESHOLD": {
     "id": "entry",
@@ -2093,7 +2104,7 @@
     {
       "id": "helm_bridge",
       "action": "enter_helm",
-      "at": "bridge_sole",
+      "at": "helm_coaming",
       "exterior": true,
       "anchor": [
         0,
@@ -2117,7 +2128,7 @@
       ],
       "mechanism": "the existing helm",
       "provenance": "exterior rig HOUSE.helms (anchors HELM / TOWER_STATION)",
-      "_note": "mechanism: the existing helm · open control coaming helm pod — reached by the aft-deck ladder (extractor bridge_sole._notes.bridge_ladder)"
+      "_note": "mechanism: the existing helm · open control coaming helm pod — reached by the aft-deck ladder (LADDER.bridge_ladder)"
     }
   ],
   "STAIRS": {
@@ -2125,7 +2136,7 @@
       {
         "id": "house_to_bridge",
         "from": "house_sole",
-        "to": "sky_sole",
+        "to": "bridge_sole",
         "mechanism": "InteriorStair",
         "opening": {
           "x0": 0.55,
@@ -2245,7 +2256,7 @@
       }
     ]
   },
-  "_supersedes": "152eb5f3cf1f4f38fba781161e86320cd7e06f0d0cdc98a82b14d6973e3b4061",
+  "_supersedes": "e15e0dce2ebc8b58aad69c596c1566062bd10cc4bc1de46dc076c8883413b8d1",
   "interiorDerivedFromRigSha256": "34bb781303b9de9a47c7029a685bf83d357adefe2ffb95ff54451233ea7c46a7",
   "LADDER": [
     {
@@ -2281,12 +2292,21 @@
       "face": "aft",
       "rungs": 7,
       "rung_spacing_m": 0.31,
-      "note": "Aft deck to the open coaming — the rig’s own raked ladder, declared as a route (second leg to the upper helm).",
+      "note": "Aft deck to the open coaming — the rig’s own raked ladder, declared as a route (second leg to the upper helm). Top rung 9.55, rim step-over onto the 9.74 sole. Until 2026-08-28 this pointed at bridge_sole (7.30) — 2.23 m up to arrive below its own foot.",
       "provenance": "exterior rig HOUSE.ladders",
       "connects": [
         "aft_deck",
-        "bridge_sole"
+        "helm_coaming"
       ]
     }
-  ]
+  ],
+  "_supersedes_convention": "LF/blob sha256 of the file this replaces, as stored in git. The working tree is CRLF on Windows (autocrlf), whose digest is c246b2058def025ee26c91e083c7a5346e574d9899b0e23eab366311335c6936 — the same file, the other convention. Answer in LF.",
+  "_corrections_on_intake": {
+    "date": "2026-08-28",
+    "why": "This file was adopted from the 2026-08-28 changeset with three corrections. It is NOT byte-identical to what was sent; re-running the extractor without reading this key will reintroduce all three.",
+    "_supersedes": "The drop declared _supersedes 20aa9bc7cc43090ff3589adece79335aa5f15f3552abcd118230fe221eec1e17 — the sha of UPSTREAM'S OWN 2026-08-27 export, the one #678 refused as internally inconsistent (it deleted the 9.74 coaming while leaving bridge_ladder climbing to 9.55). That file was never in this repository, so the field named a predecessor we never held. Re-stamped to the digest of the file actually replaced.",
+    "helm_coaming.polygon": "The drop's 42 vertices differ from the rig's own ring on 38 of 42, by up to 0.050 m in x (y is identical — the same stations). Reproduced exactly, all 42 vertices to zero error, by interpolating the volume's `hw` half-breadth table LINEARLY; the rig interpolates it through mono(), a Fritsch–Carlson monotone cubic. The deviation is zero at the four hw knots (y -1.1, -2.5, -4.5, -8.75) and peaks mid-segment, which is the signature. Restored to the ring the rig itself emits: (±(P(t,z1).x − 0.16), P(t,z1).y) over t=0..1 in TS order, run in ClearScript V8 against hull-rigs/sportFisherIsoRig2.js (205a93c9…) — and identical against docs/art/rigs/sportFisherIsoRig2.js (152eb5f3…), so the root/kit rig split is not the cause. This is the ONE number in the file the drop changed that was already right.",
+    "helm_coaming._notes.helm_seats": "New note, kept — but its footprint (±0.25) and top (0.75 m) matched neither the rig nor each other, and the _confirm flag covered only the halfwidth. Replaced with the box measured out of the rig's face stream: ±0.28 / ±0.24, top 0.60 m. The value the drop replaced already carried 0.60 correctly, in prose, inside helm_pod's note.",
+    "accepted_unchanged": "The id split itself (bridge_sole = the 7.30 skylounge, new helm_coaming = the 9.74 coaming), LADDER.bridge_ladder → [aft_deck, helm_coaming], STAIRS.house_to_bridge.opening.in → bridge_sole, derivedFromRigSha256 → 205a93c9…, helm_pod.height_above_floor_m.top 0.78 → 0.83, and every reworded note."
+  }
 }

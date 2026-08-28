@@ -334,18 +334,44 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         /// <summary>
-        /// ⚠️ <b>THE CUTAWAY GAP, PINNED AS A RULE RATHER THAN AS A NUMBER.</b> The cape's rig has never
-        /// been through a cutaway pass, so her hull mesh carries no level tags and her house cannot open —
-        /// the player below sees the room drawn over her closed house (the accepted overdraw). That is an
-        /// upstream art item, named in this lane's PR, and it must not be papered over here.
+        /// ⭐ <b>THE CUTAWAY JOIN, AND IT ONLY BINDS THE LEVELS THAT CAN BE CUT INTO.</b> Written on
+        /// 2026-08-27 as a vacuous rule waiting for her tags, it bit the moment cutaway pass 4 landed
+        /// (#685) — and bit slightly too wide, which is the useful half of the story.
         ///
-        /// <para>What IS asserted is the invariant that survives the day the tags land: every tag her mesh
-        /// carries must name a level her interior def declares. Vacuously true today, and the moment
-        /// somebody bakes her cutaway with a rig id (<c>house</c>) where the def says <c>house_sole</c>,
-        /// this goes red instead of the cut silently answering None forever.</para>
+        /// <para><b>What the gate is actually handed.</b> <see cref="BoatCutaway"/> resolves a cut with
+        /// <c>DeckIdOf(level)</c>, which returns <c>def.Levels[i].Id</c> — an INTERIOR DEF level id,
+        /// always. And <see cref="HullMeshDef.CutawayForDeck"/> refuses any row whose
+        /// <c>Enclosed</c> is false. So the join that must hold is exactly: <b>every ENCLOSED tag
+        /// names a level her interior def declares</b>. That is the original rule, unweakened, and it
+        /// is still what stops a cut named in the rig's vocabulary (<c>house</c>) from silently
+        /// answering None forever against a def that says <c>house_sole</c>.</para>
+        ///
+        /// <para><b>Why OPEN levels are not required to join, and must not be.</b> Pass 4 tags open
+        /// decks too — <c>cockpit</c> and <c>foredeck</c> here — because "this level is open, cut
+        /// nothing" is a fact the cutaway needs. Their <c>DeckId</c> is never handed to the gate and
+        /// could not produce a cut if it were. The tempting amendment — "must name a level of the
+        /// interior def OR a walkable area of her DECK def" — was measured against the fleet and is
+        /// not a rule this data can satisfy: the two vocabularies are DISJOINT and at different
+        /// granularity. Her deck def splits the working deck into named polygons
+        /// (<c>cockpit_sole</c>, <c>washboard_port</c>, …) while the rig names the whole open LEVEL
+        /// (<c>cockpit</c>); the trawler, packet and tanker all tag <c>main_deck</c>, which none of
+        /// their deck defs contains, and the tanker adds <c>poop_deck</c> against a def that says
+        /// <c>poop_aft</c>. Four of the five cutaway hulls would go red on a rule invented to make
+        /// this one green. The cape's <c>foredeck</c> matching a deck-def area of the same name is a
+        /// coincidence, not the pattern.</para>
+        ///
+        /// <para>So the open arm asserts what is actually true of them: a tag carries a name, and the
+        /// gate REFUSES it. That second half is not decoration — an open level reaching the table as
+        /// enclosed is how you take the roof off the sky.</para>
+        ///
+        /// <para>This is the same shape
+        /// <c>HullLevelTagBakeTests.EveryPublishedLevel_HasACeilingOrADeclaredOpenSky_AndNamesADefLevel</c>
+        /// has had since #673 (<c>if (!lvl.Enclosed …) continue;</c>) — that fixture went fleet-wide
+        /// green on pass 4 while this one went red, which is the tell that the rule here was the
+        /// outlier and not the data.</para>
         /// </summary>
         [Test]
-        public void EveryCutawayTagOnHerHull_NamesALevelHerInteriorDefDeclares()
+        public void EveryEnclosedCutawayTagOnHerHull_NamesALevelHerInteriorDefDeclares()
         {
             var visual = AssetDatabase.LoadAssetAtPath<BoatVisualDef>(
                 "Assets/_Project/Data/Boats/Visuals/CapeIslanderIso.asset");
@@ -355,22 +381,46 @@ namespace HiddenHarbours.Tests.EditMode
             BoatInteriorDef def = Cape();
             HullMeshDef.LevelTag[] tags = visual.HullMesh.LevelTags;
 
-            if (tags == null || tags.Length == 0)
-            {
-                Assert.Pass("Her rig has no cutaway pass yet, so BoatCutaway answers Cut.None on her and " +
-                            "the room draws over her closed house. Upstream art item; the join rule below " +
-                            "starts biting the day the tags arrive.");
-                return;
-            }
+            Assert.IsNotNull(tags, "her LevelTags array is null, which no bake writes.");
+            Assert.IsNotEmpty(tags,
+                "her mesh carries no cutaway tags. Pass 4 landed them in #685, so an empty table now " +
+                "means a bake regressed her — it is no longer the honest 'she has had no pass yet'.");
 
+            int enclosed = 0, open = 0;
             foreach (HullMeshDef.LevelTag tag in tags)
             {
-                if (string.IsNullOrEmpty(tag.DeckId)) continue;
+                Assert.IsNotEmpty(tag.DeckId ?? "",
+                    $"her level '{tag.LevelId}' carries an EMPTY deck id. A blank joins to nothing and " +
+                    "reads as 'not applicable', which is a claim no rig should make silently.");
+
+                if (!tag.Enclosed)
+                {
+                    open++;
+                    Assert.IsFalse(visual.HullMesh.CutawayForDeck(tag.DeckId).Opens,
+                        $"'{tag.DeckId}' is an OPEN level and the gate offered a cut for it. You cannot " +
+                        "take the roof off the sky, and this is the arm that catches an open deck " +
+                        "reaching the table as enclosed.");
+                    continue;
+                }
+
+                enclosed++;
                 Assert.IsNotNull(def.Level(tag.DeckId),
-                    $"her mesh declares cutaway level '{tag.DeckId}', which her interior def does not " +
-                    "declare — the join is by the def's own level ID, so a cut named in the rig's " +
-                    "vocabulary silently opens nothing");
+                    $"her mesh declares ENCLOSED cutaway level '{tag.DeckId}', which her interior def " +
+                    "does not declare — the join is by the def's own level ID, so a cut named in the " +
+                    "rig's vocabulary silently opens nothing. Her def declares: " +
+                    string.Join(", ", System.Linq.Enumerable.Select(
+                        def.Levels ?? System.Array.Empty<BoatInteriorLevel>(),
+                        l => l == null ? "<null>" : l.Id)));
+
+                Assert.IsTrue(visual.HullMesh.CutawayForDeck(tag.DeckId).Opens,
+                    $"'{tag.DeckId}' joins her def and is enclosed, and the gate STILL returned no cut.");
             }
+
+            Assert.AreEqual(2, enclosed,
+                "she has two rooms — the wheelhouse and the cuddy under the whaleback. A different " +
+                "count is her rig changing shape and wants a look, not a wider assertion.");
+            Assert.Greater(open, 0,
+                "not one open level was examined, so the refusal arm above proved nothing.");
         }
     }
 }
