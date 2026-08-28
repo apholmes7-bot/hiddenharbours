@@ -92,6 +92,15 @@ MonoBehaviour:
     Exponent: 1.3
     ShoreBandMeters: 0.5
     Bands: 0
+  Breakers:
+    BreakerIndex: 0.78
+    BreakBandRatio: 0.15
+    SpillingLimit: 0.5
+    PlungingLimit: 3.3
+    CollapsingLimit: 5
+    SlopeProbeMeters: 2
+    WhitewaterDecaySeconds: 3.5
+    WhitewaterStepMeters: 2
   MarketDemandCove: 1
   MarketDemandNineMileCreek: 1.4
   MarketDemandStPetersStore: 0.7

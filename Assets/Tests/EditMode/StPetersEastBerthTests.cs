@@ -199,6 +199,13 @@ namespace HiddenHarbours.Tests.EditMode
         /// <summary>
         /// And the pocket holds her whole LENGTH, not just the point she is moored at — a hull is
         /// 12.9 m of boat, and a pocket sized to her mooring pin alone puts her bow on the sand.
+        ///
+        /// <para>⚠ RE-POINTED 2026-08-27. This walked out from <see cref="StPetersBuilder.DoryMooredPos"/>,
+        /// which was the arrival's berth back when she lay bow-on off the pier head. She has berthed
+        /// ALONGSIDE since #641, and the dory has moved north out of the fairway since the arrival
+        /// corridor pass — so measuring the CAPE's pocket from the DORY's mooring had become a test
+        /// whose subject had walked away from it, and one that would go red for the next person who
+        /// moved a 4.5 m rowing boat. It now walks from the berth it is about.</para>
         /// </summary>
         [Test]
         public void TheBerthPocketHoldsHerWholeLength()
@@ -209,7 +216,7 @@ namespace HiddenHarbours.Tests.EditMode
 
             float needed = ArrivalDraughtMetres() + StPetersBuilder.BerthUnderKeelClearance;
             float water = SpringLowWater();
-            var moored = new Vector2(StPetersBuilder.DoryMooredPos.x, StPetersBuilder.DoryMooredPos.y);
+            var moored = new Vector2(StPetersBuilder.DockZonePos.x, StPetersBuilder.DockZonePos.y);
 
             // She lies along the channel — bow shoreward, stern seaward — so her extent is half her
             // length each way along the channel's own axis.
@@ -221,7 +228,7 @@ namespace HiddenHarbours.Tests.EditMode
                 Vector2 p = moored + axis * t;
                 float depth = water - _terrain.ElevationAt(p);
                 Assert.GreaterOrEqual(depth, needed - DepthEpsilon,
-                    $"{Mathf.Abs(t):F1} m {(t < 0f ? "astern of" : "ahead of")} the mooring at " +
+                    $"{Mathf.Abs(t):F1} m {(t < 0f ? "astern of" : "ahead of")} the berth at " +
                     $"({p.x:F1}, {p.y:F1}) there is {depth:F2} m at spring low against {needed:F2} m " +
                     $"needed. The pocket is shorter than the {hull.LengthMeters:F1} m hull it berths — " +
                     "move StPetersBuilder.ApproachTo shoreward.");

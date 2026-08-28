@@ -44,5 +44,5 @@ MonoBehaviour:
   - house
   - below
   CellRowForLevel: ffffffff010000000000000002000000
-  CellsAreCounterClockwise: 1
+  CellsAreCounterClockwise: 0
   ResidentMegabytes: 64.96875

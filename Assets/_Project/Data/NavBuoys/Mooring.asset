@@ -34,6 +34,9 @@ MonoBehaviour:
     SpriteHeightMeters: 1.4375
     FloatLineFraction: 0.45652175
     SlopeFollow: 0.6909895
+    CollisionRadiusMeters: 0.6
+    MooredMassKg: 288
+    WatchRadiusMeters: 3
   - SizeId: s18
     DiameterMeters: 1.75
     RatedWater: "5\u201320 m"
@@ -49,6 +52,9 @@ MonoBehaviour:
     SpriteHeightMeters: 2.125
     FloatLineFraction: 0.47058824
     SlopeFollow: 0.72678214
+    CollisionRadiusMeters: 0.875
+    MooredMassKg: 612.5
+    WatchRadiusMeters: 4.375
   - SizeId: s20
     DiameterMeters: 2
     RatedWater: "10\u201330 m"
@@ -64,6 +70,9 @@ MonoBehaviour:
     SpriteHeightMeters: 2.46875
     FloatLineFraction: 0.48101267
     SlopeFollow: 0.7204196
+    CollisionRadiusMeters: 1
+    MooredMassKg: 800
+    WatchRadiusMeters: 5
   - SizeId: s24
     DiameterMeters: 2.4
     RatedWater: "10\u201340 m"
@@ -79,6 +88,9 @@ MonoBehaviour:
     SpriteHeightMeters: 3.0625
     FloatLineFraction: 0.48979592
     SlopeFollow: 0.7160759
+    CollisionRadiusMeters: 1.2
+    MooredMassKg: 1152
+    WatchRadiusMeters: 6
   - SizeId: s30
     DiameterMeters: 3
     RatedWater: "20\u2013100 m"
@@ -94,4 +106,9 @@ MonoBehaviour:
     SpriteHeightMeters: 3.9375
     FloatLineFraction: 0.50793654
     SlopeFollow: 0.7126568
+    CollisionRadiusMeters: 1.5
+    MooredMassKg: 1800
+    WatchRadiusMeters: 7.5
   DefaultSizeIndex: 1
+  MooringSpringPerSecondSquared: 4
+  MooringDampingRatio: 0.5

@@ -73,10 +73,16 @@ namespace HiddenHarbours.Boats
                  "the HOUSE sole — a perfectly plausible picture of the wrong room.")]
         public int[] CellRowForLevel = Array.Empty<int>();
 
-        [Tooltip("Whether these cells run counter-clockwise — measured from the exterior's own " +
-                 "ground-plane bearing, true across the kit. Carried separately from the hull compass's " +
-                 "own handedness because the two are different artwork and genuinely disagree.")]
-        public bool CellsAreCounterClockwise = true;
+        [Tooltip("Whether the runtime must UN-MIRROR these cells — IsoFacing.HeadingToFacingIndex " +
+                 "does `idx = count - idx` when this is true. It is FALSE across this kit, and not " +
+                 "by accident: every cell is rendered through RigBaker.DirForCell, which corrects " +
+                 "the source rig's handedness AT BAKE TIME, so the cells come off the press " +
+                 "canonically clockwise (cell i depicts +45°·i). ⚠ Do NOT wire this to the " +
+                 "sheet contract's `convention` field: that records the RIG the room was cut " +
+                 "from, a different fact, and one that IS CounterClockwise across the kit. " +
+                 "Conflating the two mirrored every correct sheet on all 27 hulls, until it " +
+                 "reached the owner's eye as a cabin drawn on the wrong part of the boat.")]
+        public bool CellsAreCounterClockwise = false;
 
         [Header("Budget (imported — what loading this costs)")]
         [Tooltip("Megabytes of RGBA32 this hull's pages occupy once resident. Written by the builder " +
