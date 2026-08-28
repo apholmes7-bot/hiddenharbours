@@ -147,10 +147,35 @@ namespace HiddenHarbours.Tools.RigBaking
             public readonly float[] SlideSampleTs;
 
             /// <summary>For <see cref="VehicleFitmentMotion.DiscreteStates"/>: the state names and the
-            /// JS pose literal each is baked at, parallel arrays. The face INDICES come from
-            /// <see cref="Probe"/> as usual, so every state must be a pose of the SAME build — which
-            /// is exactly why the rollup cannot be one of these.</summary>
+            /// JS pose literal each is baked at, parallel arrays. With no <see cref="StateProbes"/>
+            /// the face INDICES come from <see cref="Probe"/> as usual, so every state must then be a
+            /// pose of the SAME build.</summary>
             public readonly string[] StateNames, StatePoses;
+
+            /// <summary>
+            /// ⭐ <b>A probe PER STATE — what lets a part whose face COUNT changes still be a
+            /// fitting.</b> Optional; null keeps the single-probe behaviour above.
+            ///
+            /// <para><b>Why the rollup needs it.</b> Her curtain rolls into a stack and six faces
+            /// stop existing — 1090 → 1084 on the cabover at rollup 25/32, 1211 → 1205 on the
+            /// conventional at 3/4. Across that the face list changes length, so indices claimed in
+            /// the shut build name different geometry in the open one. Each state is therefore
+            /// claimed inside its OWN build, by a probe on its own side of the change.</para>
+            ///
+            /// <para><b>Why that is sound — measured, not assumed.</b> Take each build, remove that
+            /// state's claimed door, and what is left is the same body <b>to the last bit</b>: 1072
+            /// faces on the cabover, 1190 on the conventional, worst vertex delta exactly 0 and no
+            /// material mismatch. The parameter touches the door and nothing else, so the body can be
+            /// baked once. <c>WriteFittingStates</c> re-proves that at every bake rather than
+            /// trusting this note, and a re-stamp that made the rollup move anything else goes red.
+            /// </para>
+            ///
+            /// <para>⚠️ <b>The probe values are not door facts and must not be read as any.</b> Each
+            /// only has to land on the same side of the topology change as its own state; the baker
+            /// asserts exactly that by face count, so a threshold that moved past one of them fails
+            /// the bake rather than silently claiming the wrong faces.</para>
+            /// </summary>
+            public readonly string[] StateProbes;
 
             /// <summary>The slot this fitting hangs off, or null for the body — see
             /// <see cref="VehicleFitment.ParentSlot"/>. The cabover's two doors hang off her tilting
@@ -166,6 +191,7 @@ namespace HiddenHarbours.Tools.RigBaking
                         float sweepDegrees = 0f,
                         float[] slideSampleTs = null,
                         string[] stateNames = null, string[] statePoses = null,
+                        string[] stateProbes = null,
                         string parentSlot = null)
             {
                 Slot = slot; Probe = probe; Motion = motion; Side = side;
@@ -175,6 +201,7 @@ namespace HiddenHarbours.Tools.RigBaking
                 HingeAxis = hingeAxis; SweepDegrees = sweepDegrees;
                 SlideSampleTs = slideSampleTs;
                 StateNames = stateNames; StatePoses = statePoses;
+                StateProbes = stateProbes;
                 ParentSlot = parentSlot;
             }
 
@@ -841,6 +868,70 @@ namespace HiddenHarbours.Tools.RigBaking
             Hinged("Hood", "{hood:1}", VehicleFitmentSide.Centre,
                    VehicleHingeAxis.Lateral, new Vector3(0f, 1.74f, 1.28f), +42f));
 
+        // =============================================================================================
+        //  THE TWO DOORS THAT ARE NOT POSES (PR 3c) — the pair PR 3a declared and deferred, now
+        //  measured properly and built.
+        //
+        //  Neither can be posed, and they fail that test in DIFFERENT ways — which is why they are
+        //  not one mechanism with two settings:
+        //
+        //    · the ROLLUP changes TOPOLOGY. Her curtain rolls into a stack and six faces stop
+        //      existing — cabover 1090 → 1084 at rollup 25/32, conventional 1211 → 1205 at 3/4 —
+        //      and she is non-rigid on BOTH sides of that (worst pairwise-distance change 0.298 m
+        //      below it, and the travel above is no better). So the face list changes length and
+        //      each state must be claimed inside its own build: StateProbes.
+        //
+        //    · the LIFTGATE keeps every face (1090 and 1211 at EVERY gate value) and is simply not
+        //      rigid. Measured by distance preservation — the metric that does not punish a rotation
+        //      for rotating, unlike the translation test that made this look decomposable at first:
+        //      swing deforms by 0.67/0.86 m, lower by 0.079/0.063 m, the whole travel by 1.54/1.74 m.
+        //      Splitting by material does not rescue it (galv 0.85 m, iron 0.77 m in swing alone),
+        //      which is her own sidecar's "parallel arms" being true. One face set, four stills.
+        //
+        //  ⚠️ THE ONLY RIGID THING IN EITHER is the liftgate's flip half: `unfold` moves 6 galv faces
+        //  and NOTHING else, distance change EXACTLY 0 on both trucks. It is not split out, because a
+        //  part that is rigid in one phase of three and carried by a linkage in the others is still
+        //  the linkage's — and posing it alone would leave the other two phases unexplained.
+
+        /// <summary>
+        /// ⭐ <b>The roll-up rear door</b>, baked shut and open.
+        ///
+        /// <para><b>Two states, and the count is the art's.</b> The sidecar distinguishes exactly one
+        /// boundary — <c>CARGO.obstructions.rollup_stack.present_when: {rollup: "&gt; 0"}</c>, the open
+        /// door lying flat under the ceiling and capping the aft bay at 1.92 m. There is no published
+        /// intermediate, and since the travel is non-rigid nothing could be interpolated between two
+        /// anyway, so a third state would be a number invented here.</para>
+        ///
+        /// <para>⚠️ <b>The probe values are not door facts.</b> 0.35 and 0.95 are only "safely below"
+        /// and "safely above" the topology change on BOTH trucks (25/32 and 3/4); the baker asserts
+        /// that by face count, so if a re-stamp moved the change past either one the bake fails
+        /// instead of claiming the wrong faces.</para>
+        /// </summary>
+        static Axis Rollup(float doorY) =>
+            new Axis("Rollup", "{rollup:0.35}", VehicleFitmentMotion.DiscreteStates,
+                     VehicleFitmentSide.Centre, 0, new Vector3(0f, doorY, 0f),
+                     stateNames: new[] { "shut", "open" },
+                     statePoses: new[] { "{rollup:0}", "{rollup:1}" },
+                     stateProbes: new[] { "{rollup:0.35}", "{rollup:0.95}" });
+
+        /// <summary>
+        /// ⭐ <b>The tuck-under liftgate</b>, baked at the four configurations her own sidecar names.
+        ///
+        /// <para><b>Four states, because the art publishes four.</b> LIFTGATE.phases gives
+        /// <c>swing</c> [0, 0.45], <c>unfold</c> [0.45, 0.7] and <c>lower</c> [0.7, 1] — so 0, 0.45,
+        /// 0.7 and 1 are the boundaries the rig itself works in, and <c>keep_clear</c> even changes
+        /// meaning at 0.45 ("the platform plan while gate &gt; 0.45"). Stopping at two would snap her
+        /// from stowed to grounded and throw away two configurations that cost 36 faces each.</para>
+        ///
+        /// <para>No StateProbes: her face count never changes, so one probe claims her once and every
+        /// state is that same set at another pose.</para>
+        /// </summary>
+        static Axis Liftgate(float pivotY) =>
+            new Axis("Liftgate", "{gate:1}", VehicleFitmentMotion.DiscreteStates,
+                     VehicleFitmentSide.Centre, 0, new Vector3(0f, pivotY, 0f),
+                     stateNames: new[] { "stowed", "docked", "unfolded", "grounded" },
+                     statePoses: new[] { "{gate:0}", "{gate:0.45}", "{gate:0.7}", "{gate:1}" });
+
         // ⭐ The CABOVER's cab TILTS — 237 faces, the largest fitting in the fleet, and her two doors
         // are cut out of it. They are claimed FIRST and hang off it; see WithDoors and ParentSlot.
         static readonly Axis[] CaboverBoxAxes = WithDoors(
@@ -852,7 +943,9 @@ namespace HiddenHarbours.Tools.RigBaking
                    VehicleHingeAxis.Vertical, new Vector3(0.94f, 2.96f, 0f), +65f,
                    parentSlot: "CabTilt"),
             Hinged("CabTilt", "{tilt:1}", VehicleFitmentSide.Centre,
-                   VehicleHingeAxis.Lateral, new Vector3(0f, 3.20f, 0.50f), -38f));
+                   VehicleHingeAxis.Lateral, new Vector3(0f, 3.20f, 0.50f), -38f),
+            Rollup(-3.04f),
+            Liftgate(-2.62f));
 
         static readonly Axis[] ConvBoxAxes = WithDoors(
             BuildRoadAxes(0.86f, 3.20f, 0.77f, 0.45f, -2.90f),
@@ -861,7 +954,9 @@ namespace HiddenHarbours.Tools.RigBaking
             Hinged("DoorR", "{dR:1}", VehicleFitmentSide.Right,
                    VehicleHingeAxis.Vertical, new Vector3(0.98f, 2.38f, 0f), +65f),
             Hinged("Hood", "{hood:1}", VehicleFitmentSide.Centre,
-                   VehicleHingeAxis.Lateral, new Vector3(0f, 4.08f, 0.60f), -70f));
+                   VehicleHingeAxis.Lateral, new Vector3(0f, 4.08f, 0.60f), -70f),
+            Rollup(-4.80f),
+            Liftgate(-4.38f));
 
         static readonly Axis[] AeroSemiAxes = WithDoors(
             BuildRoadAxes(0.84f, 2.95f, 0.75f, 0.50f, -1.70f, -2.90f),
@@ -1074,9 +1169,14 @@ namespace HiddenHarbours.Tools.RigBaking
                 azimuthAftAnchor: "rollup", azimuthForeAnchor: "tiltLatch",
                 vehicleDefPath: "Assets/_Project/Data/Vehicles/CaboverBox.asset",
                 vehicleId: "vehicle.cabover_box",
-                bodyMustNotMove: new[] { "{roll:0.25}", "{steer:1}", "{dL:1,dR:1,tilt:1}" },
+                bodyMustNotMove: new[] { "{roll:0.25}", "{steer:1}", "{dL:1,dR:1,tilt:1}",
+                                         "{gate:1}" },
                 doorGroups: new[] { Group("tilt", "CabTilt"),
-                                    Group("drive", "DoorL"), Group("ride", "DoorR") },
+                                    Group("drive", "DoorL"), Group("ride", "DoorR"),
+                                    // Both at the art's own points: the rollup pull-strap on the
+                                    // centreline aft, the gate's control pendant at the curb-side
+                                    // tail corner where the sidecar hangs it.
+                                    Group("rollup", "Rollup"), Group("gate", "Liftgate") },
                 label: "Cabover Box Truck"),
 
             new Vehicle(
@@ -1114,9 +1214,11 @@ namespace HiddenHarbours.Tools.RigBaking
                 // that silently took the pack's cell (and cropped her tail) cannot pass.
                 vehicleDefPath: "Assets/_Project/Data/Vehicles/ConvBox.asset",
                 vehicleId: "vehicle.conv_box",
-                bodyMustNotMove: new[] { "{roll:0.25}", "{steer:1}", "{dL:1,dR:1,hood:1}" },
+                bodyMustNotMove: new[] { "{roll:0.25}", "{steer:1}", "{dL:1,dR:1,hood:1}",
+                                         "{gate:1}" },
                 doorGroups: new[] { Group("hood", "Hood"),
-                                    Group("drive", "DoorL"), Group("ride", "DoorR") },
+                                    Group("drive", "DoorL"), Group("ride", "DoorR"),
+                                    Group("rollup", "Rollup"), Group("gate", "Liftgate") },
                 label: "Conventional Box Truck"),
 
             new Vehicle(
