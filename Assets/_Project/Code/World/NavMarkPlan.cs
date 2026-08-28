@@ -33,6 +33,17 @@ namespace HiddenHarbours.World
         /// <summary>Step (m) the navigability check walks the derived centreline at. Coarse enough
         /// to be cheap, fine enough that a 15 m gut cannot hide between two samples.</summary>
         public float FairwayProbeStepMetres = 5f;
+
+        /// <summary>
+        /// How far a turn's pair may be pushed out along the bisector to keep the channel's full
+        /// half-width on BOTH legs, as a multiple of that half-width. 1 = never mitre (a pair square
+        /// to the leg it arrives on, which is what stood a mark 3.85 m off the St Peters entrance).
+        ///
+        /// <para>2 keeps the promise exactly up to a 120° turn and clamps beyond it. Raising it
+        /// buys sharper corners and throws the marks further out, which is where a refusal comes
+        /// from — the limit is the honest place to trade the two.</para>
+        /// </summary>
+        public float TurnMitreLimit = 2f;
     }
 
     /// <summary>One mark the plan wants placed. A pure record — no scene, no asset, no component.</summary>
@@ -84,6 +95,10 @@ namespace HiddenHarbours.World
         public List<float> Along = new List<float>();
         /// <summary>Course (unit) at each station, seaward → harbour.</summary>
         public List<Vector2> Course = new List<Vector2>();
+        /// <summary>Where the PORT edge runs at each station, as a multiple of the channel's
+        /// half-width — the bisector mitre at a turn, the plain normal on a straight. The
+        /// starboard edge is its negation. See <see cref="NavChannelGeometry.PortEdgeOffset"/>.</summary>
+        public List<Vector2> PortEdge = new List<Vector2>();
     }
 
     /// <summary>Everything one region's nav-mark pass produced.</summary>
@@ -345,11 +360,19 @@ namespace HiddenHarbours.World
                     ? 0f
                     : SnapOffset(authored, port, channel, elevationAt, tuning, previousOffset);
 
+                // ⚠ The SNAP corridor stays square to the leg (a plain normal): it is a search for
+                // deep water across the fairway, not a statement about where the fairway's edge runs.
+                // The edge is the mitre below, and only the MARKS are hung off it.
+                NavChannelGeometry.CoursesAt(channel.Waypoints, stations[i],
+                                             out Vector2 courseIn, out Vector2 courseOut);
+
                 previousOffset = offset;
                 fairway.AuthoredStations.Add(authored);
                 fairway.Stations.Add(authored + port * offset);
                 fairway.Along.Add(stations[i]);
                 fairway.Course.Add(course);
+                fairway.PortEdge.Add(
+                    NavChannelGeometry.PortEdgeOffset(courseIn, courseOut, tuning.TurnMitreLimit));
             }
 
             return fairway;
@@ -402,7 +425,14 @@ namespace HiddenHarbours.World
                                             Func<Vector2, float> elevationAt, float springLow,
                                             NavMarkTuning tuning, NavMarkPlanResult result)
         {
-            Vector2 at = centre + NavChannelGeometry.Normal(course, hand) * channel.HalfWidthMetres;
+            // ⭐ The mark stands on the fairway's EDGE, which at a turn is the bisector mitre and
+            // not a perpendicular to one leg. Port is the stored offset; starboard is its exact
+            // negation, so a pair can never end up on the same side of the water.
+            Vector2 edge = station < fairway.PortEdge.Count
+                ? fairway.PortEdge[station]
+                : NavChannelGeometry.PortNormal(course);
+            if (hand == NavChannelHand.Starboard) edge = -edge;
+            Vector2 at = centre + edge * channel.HalfWidthMetres;
             float depth = DepthAt(elevationAt, at, springLow);
 
             if (depth <= tuning.MinDepthAtSpringLowMetres)

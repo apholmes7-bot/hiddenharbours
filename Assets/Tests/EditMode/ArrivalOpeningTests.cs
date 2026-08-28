@@ -463,5 +463,126 @@ namespace HiddenHarbours.Tests.EditMode
                 "he must not live in the Nine Mile Creek wharf register — everything in there is held " +
                 "to a berth and a lot on that wharf, and he keeps neither");
         }
+
+        /// <summary>
+        /// 🔴 <b>THE PILOT PASSES BETWEEN THE MARKS.</b> The owner watched the opening on
+        /// 2026-08-27 and said the skipper runs THROUGH the buoys on the way in. He was right, and it
+        /// was not the pilot: a turn's pair was offset square to the leg it arrives on, so at the
+        /// entrance's 64.8° and 67.3° corners the inside mark stood 4.26 m and 3.85 m off the route
+        /// — inside the beam of the hull the channel was dredged for. The marks mean "the channel is
+        /// between us"; a route that shaves one of them makes them furniture.
+        ///
+        /// <para>Asserted along the WHOLE route rather than at its waypoints: the fault lived exactly
+        /// between two of them, which is the blind spot a corner defect always hides in.</para>
+        /// </summary>
+        [Test]
+        public void TheRouteThreadsTheMarks_RatherThanRunningThroughThem()
+        {
+            float clearance = ClosestMarkToTheRoute(StPetersNavMarks.Tuning,
+                                                    out string who, out Vector2 where);
+            float beam = StPetersBuilder.ArrivalHullHalfBeamMetres;
+
+            Assert.Greater(clearance, beam + MarkPassingClearanceMetres,
+                $"the arrival passes {clearance:F2} m from '{who}' at ({where.x:F1}, {where.y:F1}). " +
+                $"She is {beam:F2} m of half-beam and the channel owes her " +
+                $"{MarkPassingClearanceMetres:F2} m more than that to pass a mark rather than shave it.");
+
+            Debug.Log($"[arrival] her closest mark is '{who}' at {clearance:F2} m, against a " +
+                      $"{beam:F2} m half-beam.");
+        }
+
+        /// <summary>
+        /// ⭐ <b>The negative control, and it is the OLD CODE.</b>
+        /// <see cref="NavMarkTuning.TurnMitreLimit"/> of 1 means "never mitre a corner", which is
+        /// precisely the arithmetic that shipped before 2026-08-27. So the guard above is proven able
+        /// to see the defect by being run against the geometry that HAD the defect — rather than by my
+        /// asserting that it would.
+        /// </summary>
+        [Test]
+        public void AndWithTheOldCornerGeometry_ThatGuardWouldFail()
+        {
+            NavMarkTuning squared = StPetersNavMarks.Tuning;
+            squared.TurnMitreLimit = 1f;                       // the pre-fix arithmetic, exactly
+
+            float clearance = ClosestMarkToTheRoute(squared, out string who, out _);
+            float floor = StPetersBuilder.ArrivalHullHalfBeamMetres + MarkPassingClearanceMetres;
+
+            Assert.Less(clearance, floor,
+                $"squaring a turn's pair to its inbound leg left {clearance:F2} m at '{who}', which " +
+                $"clears the {floor:F2} m floor. Either the route no longer turns sharply enough for " +
+                "the old defect to bite — in which case delete this control — or the guard above is " +
+                "measuring something that cannot fail.");
+        }
+
+        /// <summary>How much water the arrival is owed beside her own beam when she passes a mark. A
+        /// metre: she is steered past it by a person, not threaded through it by a machine.</summary>
+        private const float MarkPassingClearanceMetres = 1f;
+
+        /// <summary>
+        /// The closest any planned lateral of the ENTRANCE comes to the line the arrival actually
+        /// sails, walked at half-metre stations from seaward to the berth.
+        /// </summary>
+        private float ClosestMarkToTheRoute(NavMarkTuning tuning, out string who, out Vector2 where)
+        {
+            NavMarkPlanResult plan = NavMarkPlan.Plan(
+                StPetersNavMarks.Channels, StPetersNavMarks.Cardinals, _terrain.ElevationAt,
+                StPetersBuilder.TideMean, StPetersBuilder.TideAmplitude, tuning);
+
+            Vector2[] route = StPetersArrivalOpening.Route();
+            float best = float.MaxValue;
+            who = "(no mark)";
+            where = Vector2.zero;
+
+            foreach (PlannedNavMark m in plan.Marks)
+            {
+                if (!m.IsLateral || m.OwnerId != StPetersNavMarks.Entrance.Id) continue;
+
+                for (int i = 0; i < route.Length - 1; i++)
+                {
+                    float length = Vector2.Distance(route[i], route[i + 1]);
+                    int steps = Mathf.Max(1, Mathf.CeilToInt(length / 0.5f));
+                    for (int k = 0; k <= steps; k++)
+                    {
+                        Vector2 p = Vector2.Lerp(route[i], route[i + 1], k / (float)steps);
+                        float d = Vector2.Distance(p, m.At);
+                        if (d < best) { best = d; who = m.Id; where = p; }
+                    }
+                }
+            }
+            return best;
+        }
+
+        /// <summary>
+        /// ⚠⚠ <b>And the region's own moored dory is not in the fairway either.</b> The same eyeball
+        /// pass found her lying on the channel's centre-line at (215, 0), 5.29 m off the line the
+        /// skipper runs — a berth IN a fairway rather than beside one. She is a boat and not a mark,
+        /// so she owes the arrival both half-beams as well as the passing clearance.
+        /// </summary>
+        [Test]
+        public void TheMooredDoryIsClearOfTheArrivalTrack()
+        {
+            Vector2[] route = StPetersArrivalOpening.Route();
+            var moored = new Vector2(StPetersBuilder.DoryMooredPos.x, StPetersBuilder.DoryMooredPos.y);
+
+            float best = float.MaxValue;
+            for (int i = 0; i < route.Length - 1; i++)
+            {
+                float length = Vector2.Distance(route[i], route[i + 1]);
+                int steps = Mathf.Max(1, Mathf.CeilToInt(length / 0.5f));
+                for (int k = 0; k <= steps; k++)
+                    best = Mathf.Min(best, Vector2.Distance(
+                        Vector2.Lerp(route[i], route[i + 1], k / (float)steps), moored));
+            }
+
+            float needed = StPetersBuilder.ArrivalHullHalfBeamMetres
+                         + StPetersBuilder.DoryHalfBeamMetres
+                         + MarkPassingClearanceMetres;
+
+            Assert.Greater(best, needed,
+                $"the arrival passes {best:F2} m from the moored dory at ({moored.x:F1}, " +
+                $"{moored.y:F1}), and two hulls plus a passing gap need {needed:F2} m. The owner " +
+                "watched this happen on 2026-08-27: 'the test dory is in the way of the arrival " +
+                "boat'.");
+        }
     }
 }

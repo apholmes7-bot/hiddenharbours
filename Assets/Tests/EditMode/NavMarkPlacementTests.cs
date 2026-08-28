@@ -3,6 +3,7 @@ using NUnit.Framework;
 using UnityEngine;
 using HiddenHarbours.Core;
 using HiddenHarbours.World;
+using HiddenHarbours.Boats;   // NavBuoyMooringMath - the marks' own mooring
 using HiddenHarbours.App.Editor;
 
 namespace HiddenHarbours.Tests.EditMode
@@ -688,6 +689,294 @@ namespace HiddenHarbours.Tests.EditMode
             var seen = new HashSet<string>();
             foreach (PlannedNavMark m in plan.Marks)
                 Assert.That(seen.Add(m.Id), Is.True, $"{region}: duplicate mark id '{m.Id}'.");
+        }
+
+        // =============================================================================================
+        //  7. THE TURN — a pair squared to one leg stands in the other
+        // =============================================================================================
+
+        /// <summary>
+        /// ⚠⚠ <b>The defect the St Peters arrival ran into, pinned as pure geometry.</b> A station's
+        /// course is the leg it lies ON; offsetting a pair square to that leg puts the inside mark
+        /// <c>halfWidth × cos(turn)</c> from the leg the skipper LEAVES on, which at the entrance's
+        /// 67.3° corner is 3.85 m of a 10 m fairway. The edge of a fairway is the OFFSET of its
+        /// centreline, and an offset polyline mitres its corners on the bisector.
+        ///
+        /// <para>Measured against the LEGS, never against the formula that produced the offset — the
+        /// old code was self-consistent too, and that is exactly why every test passed over it.</para>
+        /// </summary>
+        [Test]
+        public void ATurnsPairStandsTheFullHalfWidthFromBothLegs()
+        {
+            const float halfWidth = 10f;
+
+            // A 60-degree turn to starboard: in heading east, out heading south-east-ish.
+            Vector2 courseIn = Vector2.right;
+            Vector2 courseOut = new Vector2(Mathf.Cos(-60f * Mathf.Deg2Rad),
+                                            Mathf.Sin(-60f * Mathf.Deg2Rad));
+            Vector2 vertex = new Vector2(100f, 0f);
+
+            Vector2 edge = NavChannelGeometry.PortEdgeOffset(courseIn, courseOut, 2f);
+
+            foreach ((string hand, Vector2 at) in new[]
+                     { ("port",      vertex + edge * halfWidth),
+                       ("starboard", vertex - edge * halfWidth) })
+            {
+                float fromIn  = Mathf.Abs(Vector2.Dot(at - vertex, NavChannelGeometry.PortNormal(courseIn)));
+                float fromOut = Mathf.Abs(Vector2.Dot(at - vertex, NavChannelGeometry.PortNormal(courseOut)));
+
+                Assert.That(fromIn, Is.EqualTo(halfWidth).Within(1e-3f),
+                    $"the {hand} mark stands {fromIn:F2} m from the leg she arrives on, not the " +
+                    $"{halfWidth:F2} m the channel claims to be wide.");
+                Assert.That(fromOut, Is.EqualTo(halfWidth).Within(1e-3f),
+                    $"the {hand} mark stands {fromOut:F2} m from the leg she LEAVES on. A pair squared " +
+                    "to one leg only is the defect: the inside mark ends up in the fairway and the " +
+                    "boat runs through it.");
+            }
+        }
+
+        /// <summary>
+        /// On a straight there is no corner to mitre, and the mitre must be exactly the identity — not
+        /// nearly. Every mark on every straight in both regions was placed by the old arithmetic and
+        /// must not move by a millimetre for a change that is about turns.
+        /// </summary>
+        [Test]
+        public void AStraightIsUnmovedByTheMitre()
+        {
+            foreach (Vector2 course in new[]
+                     { Vector2.right, Vector2.up, new Vector2(3f, -4f).normalized })
+            {
+                Vector2 edge = NavChannelGeometry.PortEdgeOffset(course, course, 2f);
+                Assert.That(Vector2.Distance(edge, NavChannelGeometry.PortNormal(course)),
+                    Is.LessThan(1e-5f),
+                    $"a station on a straight ({course}) moved its marks. The mitre is 1 where there " +
+                    "is no turn, and anything else is a regression dressed as a fix.");
+            }
+        }
+
+        /// <summary>
+        /// ⚠ A mitre grows without bound as a turn approaches 180°, so an unclamped join would fling a
+        /// hairpin's marks into open water (and, in both of this world's harbours, onto a shoal where
+        /// they would be refused every build forever). The limit is a stated tunable, and this is what
+        /// it buys: the offset never exceeds it, at any angle.
+        /// </summary>
+        [Test]
+        public void TheMitreLimitHoldsAtEveryAngle()
+        {
+            const float limit = 2f;
+            Vector2 courseIn = Vector2.right;
+
+            for (int deg = 0; deg <= 179; deg++)
+            {
+                Vector2 courseOut = new Vector2(Mathf.Cos(-deg * Mathf.Deg2Rad),
+                                                Mathf.Sin(-deg * Mathf.Deg2Rad));
+                float length = NavChannelGeometry.PortEdgeOffset(courseIn, courseOut, limit).magnitude;
+
+                Assert.That(length, Is.LessThanOrEqualTo(limit + 1e-4f),
+                    $"a {deg}° turn pushed its marks out to {length:F2}× the half-width against a " +
+                    $"limit of {limit:F1}×.");
+                Assert.That(length, Is.GreaterThanOrEqualTo(1f - 1e-4f),
+                    $"a {deg}° turn pulled its marks INSIDE the channel's own half-width " +
+                    $"({length:F2}×). A turn may widen the join; it may never narrow the fairway.");
+            }
+        }
+
+        /// <summary>
+        /// The two courses a station has. On a straight they are one vector; at a vertex they are the
+        /// legs either side of it — and reading only the first is what squared a pair to one leg.
+        /// </summary>
+        [Test]
+        public void CoursesAtSeesBothLegsAtAVertex_AndOneOnAStraight()
+        {
+            var points = new[] { new Vector2(0f, 0f), new Vector2(100f, 0f), new Vector2(100f, 100f) };
+
+            NavChannelGeometry.CoursesAt(points, 50f, out Vector2 midIn, out Vector2 midOut);
+            Assert.That(Vector2.Distance(midIn, midOut), Is.LessThan(1e-5f),
+                "mid-straight, the leg a station lies on and the leg it leads into are the same leg");
+
+            NavChannelGeometry.CoursesAt(points, 100f, out Vector2 cornerIn, out Vector2 cornerOut);
+            Assert.That(Vector2.Distance(cornerIn, Vector2.right), Is.LessThan(1e-4f),
+                "at the vertex, the inbound leg is the one she arrives on");
+            Assert.That(Vector2.Distance(cornerOut, Vector2.up), Is.LessThan(1e-4f),
+                "at the vertex, the outbound leg is the one she leaves on — reading the inbound one " +
+                "twice is exactly how a pair ends up square to half a turn");
+
+            NavChannelGeometry.CoursesAt(points, 200f, out Vector2 endIn, out Vector2 endOut);
+            Assert.That(Vector2.Distance(endIn, endOut), Is.LessThan(1e-5f),
+                "at the harbour end there is no leg to lead into; the last one is all there is");
+        }
+
+        /// <summary>
+        /// The regions, from the marks' side: no lateral on a real channel may stand closer to its own
+        /// fairway's centreline than the channel claims to be wide. This is the same property
+        /// <see cref="ATurnsPairStandsTheFullHalfWidthFromBothLegs"/> states in the abstract, asked of
+        /// the two routes that actually ship.
+        /// </summary>
+        [Test]
+        public void NoLateralStandsInsideItsOwnFairway()
+        {
+            AssertNoLateralIntrudes("Nine Mile Creek", _nmcPlan, NineMileCreekNavMarks.Channels);
+            AssertNoLateralIntrudes("St Peters", _spPlan, StPetersNavMarks.Channels);
+        }
+
+        private static void AssertNoLateralIntrudes(
+            string region, NavMarkPlanResult plan,
+            System.Collections.Generic.IReadOnlyList<NavChannel> channels)
+        {
+            foreach (PlannedNavMark m in plan.Marks)
+            {
+                if (!m.IsLateral) continue;
+
+                NavChannelFairway fairway = plan.Fairway(m.OwnerId);
+                float claimed = 0f;
+                foreach (NavChannel c in channels)
+                    if (c.Id == m.OwnerId) claimed = c.HalfWidthMetres;
+                if (fairway == null || claimed <= 0f) continue;
+
+                // Measured against the DERIVED centreline the fairway actually runs on, station to
+                // station — not against the one leg the mark was hung off.
+                float nearest = float.MaxValue;
+                for (int i = 1; i < fairway.Stations.Count; i++)
+                    nearest = Mathf.Min(nearest, DistanceToSegment(
+                        m.At, fairway.Stations[i - 1], fairway.Stations[i]));
+
+                Assert.That(nearest, Is.GreaterThanOrEqualTo(claimed - 0.05f),
+                    $"{region}: '{m.Id}' stands {nearest:F2} m from the centreline of a fairway that " +
+                    $"claims {claimed:F2} m each side. A mark inside its own channel is a mark the " +
+                    "boats it guides will hit.");
+            }
+        }
+
+        private static float DistanceToSegment(Vector2 p, Vector2 a, Vector2 b)
+        {
+            Vector2 ab = b - a;
+            float len2 = ab.sqrMagnitude;
+            float t = len2 <= 1e-6f ? 0f : Mathf.Clamp01(Vector2.Dot(p - a, ab) / len2);
+            return Vector2.Distance(p, a + ab * t);
+        }
+
+        // =============================================================================================
+        //  8. THE MOORING — she yields, she rebounds, she settles, and she never leaves
+        // =============================================================================================
+
+        /// <summary>The integrator Unity uses on a rigidbody: velocity from the acceleration, then
+        /// position from the velocity. Semi-implicit Euler, the same order <c>NavBuoyMooring</c>'s
+        /// <c>AddForce</c> + <c>FixedUpdate</c> produces — so this walks the shipped arithmetic rather
+        /// than a tidier one that would agree only with itself.</summary>
+        private static void StepMooring(ref Vector2 offset, ref Vector2 velocity,
+                                        float spring, float ratio, float watchRadius, float dt)
+        {
+            float damping = NavBuoyMooringMath.DampingFor(spring, ratio);
+            velocity += NavBuoyMooringMath.RestoringAcceleration(offset, velocity, spring, damping) * dt;
+            offset += velocity * dt;
+
+            NavBuoyMooringMath.Held held =
+                NavBuoyMooringMath.HoldTheWatchCircle(offset, velocity, watchRadius);
+            offset = held.Offset;
+            velocity = held.Velocity;
+        }
+
+        /// <summary>
+        /// ⭐ <b>The owner's word, as arithmetic: "struck, it yields, rebounds, and settles home".</b>
+        /// Shoved two metres off her anchor and still running, an under-damped mark must come back
+        /// PAST her anchor at least once — that overshoot is the whole difference between a buoy and a
+        /// door closer — and then be home and still.
+        /// </summary>
+        [Test]
+        public void AStruckMarkRebounds_AndSettlesBackOnHerAnchor()
+        {
+            const float dt = 0.02f;               // Unity's default fixed step
+            var offset = new Vector2(2f, 0f);
+            var velocity = new Vector2(0.5f, 0f);
+
+            bool rebounded = false;
+            float farthest = offset.magnitude;
+            for (int i = 0; i < 1500; i++)         // 30 s
+            {
+                StepMooring(ref offset, ref velocity, 4f, 0.5f, 3f, dt);
+                farthest = Mathf.Max(farthest, offset.magnitude);
+                if (offset.x < -0.05f) rebounded = true;
+            }
+
+            Assert.That(rebounded, Is.True,
+                "she was shoved off her anchor and crept back without ever overshooting it. That is a " +
+                "damper, not a mooring — check NavBuoyDef.MooringDampingRatio has not been pushed to 1.");
+            Assert.That(offset.magnitude, Is.LessThan(0.01f),
+                $"30 s after the knock she is still {offset.magnitude:F3} m off her anchor. A mark that " +
+                "does not settle is a mark that no longer marks where it was placed.");
+            Assert.That(velocity.magnitude, Is.LessThan(0.01f),
+                "she settled onto her anchor but is still moving — the spring and the damping disagree.");
+            Assert.That(farthest, Is.LessThanOrEqualTo(3f + 1e-3f),
+                $"she reached {farthest:F2} m from her anchor against a 3.00 m watch circle.");
+        }
+
+        /// <summary>At critical damping she comes home without overshooting at all. The tunable is a
+        /// RATIO of critical precisely so that this is the value 1 means and not a number to hunt for.</summary>
+        [Test]
+        public void AtCriticalDampingSheDoesNotOvershoot()
+        {
+            var offset = new Vector2(2f, 0f);
+            var velocity = Vector2.zero;
+
+            for (int i = 0; i < 1500; i++)
+            {
+                StepMooring(ref offset, ref velocity, 4f, 1f, 3f, 0.02f);
+                Assert.That(offset.x, Is.GreaterThan(-1e-3f),
+                    $"critically damped, she overshot her anchor to {offset.x:F4} m on step {i}.");
+            }
+            Assert.That(offset.magnitude, Is.LessThan(0.01f), "and she still has to get home");
+        }
+
+        /// <summary>
+        /// ⚠ <b>The chain takes her OUTWARD speed and leaves her swing.</b> Killing the whole velocity
+        /// at the rim would make a glancing blow vanish into the mooring, which reads as hitting the
+        /// sea floor rather than a floating object. Asserted component by component, because "she
+        /// slowed down" is true of both behaviours.
+        /// </summary>
+        [Test]
+        public void TheChainTakesTheOutwardSpeedAndLeavesTheSwing()
+        {
+            var offset = new Vector2(5f, 0f);                 // 5 m out on a 3 m circle
+            var velocity = new Vector2(2f, 1.5f);             // 2 outward, 1.5 across
+
+            NavBuoyMooringMath.Held held = NavBuoyMooringMath.HoldTheWatchCircle(offset, velocity, 3f);
+
+            Assert.That(held.Taut, Is.True, "5 m out on a 3 m circle and the chain is reported slack");
+            Assert.That(held.Offset.magnitude, Is.EqualTo(3f).Within(1e-4f),
+                "she is not on the rim of her own watch circle");
+            Assert.That(held.Velocity.x, Is.EqualTo(0f).Within(1e-4f),
+                "the outward speed survived the chain coming taut — she will keep going");
+            Assert.That(held.Velocity.y, Is.EqualTo(1.5f).Within(1e-4f),
+                "her speed ALONG the rim was taken too. A moored buoy struck a glancing blow swings " +
+                "round her anchor; one that stops dead reads as a collision with the ground.");
+        }
+
+        /// <summary>Inside her watch circle the chain is slack and says nothing at all — the spring is
+        /// the only thing acting. A chain that pulled from the middle would be a second spring.</summary>
+        [Test]
+        public void InsideTheWatchCircleTheChainIsSlack()
+        {
+            var offset = new Vector2(1f, 1f);                 // 1.41 m out on a 3 m circle
+            var velocity = new Vector2(2f, -1f);
+
+            NavBuoyMooringMath.Held held = NavBuoyMooringMath.HoldTheWatchCircle(offset, velocity, 3f);
+
+            Assert.That(held.Taut, Is.False);
+            Assert.That(Vector2.Distance(held.Offset, offset), Is.LessThan(1e-6f));
+            Assert.That(Vector2.Distance(held.Velocity, velocity), Is.LessThan(1e-6f));
+        }
+
+        /// <summary>The ratio is a ratio: 1 IS critical damping for the spring beside it.</summary>
+        [Test]
+        public void TheDampingRatioIsAFractionOfCritical()
+        {
+            foreach (float spring in new[] { 1f, 4f, 9f, 25f })
+                Assert.That(NavBuoyMooringMath.DampingFor(spring, 1f),
+                    Is.EqualTo(2f * Mathf.Sqrt(spring)).Within(1e-4f),
+                    $"a ratio of 1 must be critical damping for a spring of {spring}.");
+
+            Assert.That(NavBuoyMooringMath.DampingFor(4f, 0.5f),
+                Is.EqualTo(0.5f * 2f * Mathf.Sqrt(4f)).Within(1e-4f));
         }
     }
 }

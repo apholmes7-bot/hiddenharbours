@@ -202,5 +202,101 @@ namespace HiddenHarbours.Tests.RigBaking
                     $"NavBuoyVisual declares {perFrame} — it is WIRING. The bob belongs to " +
                     "BuoyWaveVisual; a second one puts the marks on a different sea from the boats.");
         }
+
+        /// <summary>
+        /// ⭐ <b>Every rung carries her own physics, and it is DERIVED from the one number the kit
+        /// measures her by.</b> The mooring reads her displacement, her girth and her scope off the
+        /// size rung she wears; a rung that carries zeroes moors a mark with the component's defaults
+        /// instead, which floats and collides and is simply the wrong buoy — the failure mode
+        /// [[fuel-storage-kit]] calls an omitted field poisoning a kit.
+        /// </summary>
+        [Test]
+        public void EveryRungsMooringNumbersFollowTheKitsOwnLaws()
+        {
+            foreach (NavBuoyDef def in _defs)
+            foreach (NavBuoyDef.SizeEntry size in def.Sizes)
+            {
+                Assert.That(size.DiameterMeters, Is.GreaterThan(0f),
+                    $"{def.MarkType}/{size.SizeId}: no diameter, so nothing about her can be derived");
+
+                Assert.That(size.CollisionRadiusMeters,
+                    Is.EqualTo(NavBuoyKit.CollisionRadiusFor(size.DiameterMeters)).Within(1e-3f),
+                    $"{def.MarkType}/{size.SizeId}: she collides at {size.CollisionRadiusMeters:F3} m " +
+                    $"against a {size.DiameterMeters:F2} m hull. You would miss her by looking at her.");
+
+                Assert.That(size.MooredMassKg,
+                    Is.EqualTo(NavBuoyKit.MooredMassFor(size.DiameterMeters)).Within(1e-2f),
+                    $"{def.MarkType}/{size.SizeId}: her displacement is off the kit's law. This is THE " +
+                    "mass-response knob — a rung that drifts from the ladder shoves a hull by the " +
+                    "wrong amount and nothing else would say so.");
+
+                Assert.That(size.WatchRadiusMeters,
+                    Is.EqualTo(NavBuoyKit.WatchRadiusFor(size.DiameterMeters)).Within(1e-3f),
+                    $"{def.MarkType}/{size.SizeId}: her scope is off the kit's law.");
+            }
+        }
+
+        /// <summary>
+        /// The ladder is a LADDER. Bigger marks are heavier, fatter and lie to more chain, in that
+        /// order, every time — measured across the rungs rather than trusted to the formula, because a
+        /// formula that stopped being monotonic would still satisfy the test above.
+        /// </summary>
+        [Test]
+        public void TheMooringLadderRisesWithTheSizeLadder()
+        {
+            foreach (NavBuoyDef def in _defs)
+            {
+                List<NavBuoyDef.SizeEntry> rungs =
+                    def.Sizes.OrderBy(s => s.DiameterMeters).ToList();
+
+                for (int i = 1; i < rungs.Count; i++)
+                {
+                    Assert.That(rungs[i].MooredMassKg, Is.GreaterThan(rungs[i - 1].MooredMassKg),
+                        $"{def.MarkType}: '{rungs[i].SizeId}' is the bigger mark and the lighter one.");
+                    Assert.That(rungs[i].CollisionRadiusMeters,
+                        Is.GreaterThan(rungs[i - 1].CollisionRadiusMeters),
+                        $"{def.MarkType}: '{rungs[i].SizeId}' is the bigger mark and the thinner one.");
+                    Assert.That(rungs[i].WatchRadiusMeters,
+                        Is.GreaterThan(rungs[i - 1].WatchRadiusMeters),
+                        $"{def.MarkType}: '{rungs[i].SizeId}' is the bigger mark on the shorter chain.");
+                }
+            }
+        }
+
+        /// <summary>
+        /// ⚠ The chain's own law is shared by every rung of a mark and must be a real spring. A zero
+        /// spring is a buoy that drifts away from the first boat that touches her and never comes back,
+        /// which looks exactly like a bug in the collision rather than an empty field.
+        /// </summary>
+        [Test]
+        public void EveryMarkIsOnARealChain()
+        {
+            foreach (NavBuoyDef def in _defs)
+            {
+                Assert.That(def.MooringSpringPerSecondSquared, Is.GreaterThan(0f),
+                    $"{def.MarkType} has no spring — knocked once, she never comes home.");
+                Assert.That(def.MooringDampingRatio, Is.GreaterThan(0f),
+                    $"{def.MarkType} has no damping — knocked once, she rings forever.");
+            }
+        }
+
+        /// <summary>
+        /// ⭐ The promotion, declared where it cannot rot: a mark's art and a mark's physics are one
+        /// component apart, so <see cref="NavBuoyVisual"/> REQUIRES the mooring. Nothing can dress a
+        /// mark without also mooring her.
+        /// </summary>
+        [Test]
+        public void DressingAMarkAlsoMoorsHer()
+        {
+            var required = (RequireComponent[])typeof(NavBuoyVisual)
+                .GetCustomAttributes(typeof(RequireComponent), inherit: false);
+
+            Assert.That(required.Any(r => r.m_Type0 == typeof(NavBuoyMooring)
+                                       || r.m_Type1 == typeof(NavBuoyMooring)
+                                       || r.m_Type2 == typeof(NavBuoyMooring)),
+                Is.True,
+                "NavBuoyVisual no longer requires NavBuoyMooring. A mark can then be dressed without " +
+                "being moored — she draws, she floats, and a boat sails straight through her.");
+        }
     }
 }
