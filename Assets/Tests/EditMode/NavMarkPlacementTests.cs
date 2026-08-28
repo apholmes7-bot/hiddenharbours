@@ -807,10 +807,19 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         /// <summary>
-        /// The regions, from the marks' side: no lateral on a real channel may stand closer to its own
-        /// fairway's centreline than the channel claims to be wide. This is the same property
-        /// <see cref="ATurnsPairStandsTheFullHalfWidthFromBothLegs"/> states in the abstract, asked of
-        /// the two routes that actually ship.
+        /// The regions, from the marks' side: no lateral on a real channel stands inside the width its
+        /// own channel claims — measured against BOTH legs that meet at its station, which is the pair
+        /// of lines the mark is a statement about. Same property as
+        /// <see cref="ATurnsPairStandsTheFullHalfWidthFromBothLegs"/>, asked of the two routes that
+        /// actually ship.
+        ///
+        /// <para>⚠ <b>Measured against the LEGS, not against the derived centreline — the first draft
+        /// got that wrong and the run said so.</b> A station may be SNAPPED sideways into deeper water
+        /// while its courses stay the authored ones (Nine Mile Creek's are), so the polyline through the
+        /// derived stations runs at an angle to the legs the marks were squared to: one mark read
+        /// 11.14 m from that line against a 12 m claim while being exactly 12 m from both of its own
+        /// legs. The half-width is a promise about the LEGS, and asserting it about the snapped line
+        /// asserts something the planner has never done and never claimed to.</para>
         /// </summary>
         [Test]
         public void NoLateralStandsInsideItsOwnFairway()
@@ -828,31 +837,28 @@ namespace HiddenHarbours.Tests.EditMode
                 if (!m.IsLateral) continue;
 
                 NavChannelFairway fairway = plan.Fairway(m.OwnerId);
-                float claimed = 0f;
+                NavChannel channel = null;
                 foreach (NavChannel c in channels)
-                    if (c.Id == m.OwnerId) claimed = c.HalfWidthMetres;
-                if (fairway == null || claimed <= 0f) continue;
+                    if (c.Id == m.OwnerId) channel = c;
+                if (fairway == null || channel == null || channel.HalfWidthMetres <= 0f) continue;
 
-                // Measured against the DERIVED centreline the fairway actually runs on, station to
-                // station — not against the one leg the mark was hung off.
-                float nearest = float.MaxValue;
-                for (int i = 1; i < fairway.Stations.Count; i++)
-                    nearest = Mathf.Min(nearest, DistanceToSegment(
-                        m.At, fairway.Stations[i - 1], fairway.Stations[i]));
+                int s = NearestStation(fairway, m.AlongMetres);
+                NavChannelGeometry.CoursesAt(channel.Waypoints, fairway.Along[s],
+                                             out Vector2 courseIn, out Vector2 courseOut);
 
-                Assert.That(nearest, Is.GreaterThanOrEqualTo(claimed - 0.05f),
-                    $"{region}: '{m.Id}' stands {nearest:F2} m from the centreline of a fairway that " +
-                    $"claims {claimed:F2} m each side. A mark inside its own channel is a mark the " +
-                    "boats it guides will hit.");
+                Vector2 fromStation = m.At - fairway.Stations[s];
+                foreach ((string leg, Vector2 course) in new[]
+                         { ("she arrives on", courseIn), ("she leaves on", courseOut) })
+                {
+                    float across = Mathf.Abs(Vector2.Dot(
+                        fromStation, NavChannelGeometry.PortNormal(course)));
+
+                    Assert.That(across, Is.GreaterThanOrEqualTo(channel.HalfWidthMetres - 0.05f),
+                        $"{region}: '{m.Id}' stands {across:F2} m off the leg {leg}, on a fairway that " +
+                        $"claims {channel.HalfWidthMetres:F2} m each side. A mark inside its own " +
+                        "channel is a mark the boats it guides will hit.");
+                }
             }
-        }
-
-        private static float DistanceToSegment(Vector2 p, Vector2 a, Vector2 b)
-        {
-            Vector2 ab = b - a;
-            float len2 = ab.sqrMagnitude;
-            float t = len2 <= 1e-6f ? 0f : Mathf.Clamp01(Vector2.Dot(p - a, ab) / len2);
-            return Vector2.Distance(p, a + ab * t);
         }
 
         // =============================================================================================

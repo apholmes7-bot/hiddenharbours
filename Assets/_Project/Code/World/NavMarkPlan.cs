@@ -36,12 +36,17 @@ namespace HiddenHarbours.World
 
         /// <summary>
         /// How far a turn's pair may be pushed out along the bisector to keep the channel's full
-        /// half-width on BOTH legs, as a multiple of that half-width. 1 = never mitre (a pair square
-        /// to the leg it arrives on, which is what stood a mark 3.85 m off the St Peters entrance).
+        /// half-width on BOTH legs, as a multiple of that half-width. 2 keeps the promise exactly up
+        /// to a 120° turn and clamps beyond it; raising it buys sharper corners and throws the marks
+        /// further out, which is where a refusal comes from.
         ///
-        /// <para>2 keeps the promise exactly up to a 120° turn and clamps beyond it. Raising it
-        /// buys sharper corners and throws the marks further out, which is where a refusal comes
-        /// from — the limit is the honest place to trade the two.</para>
+        /// <para>⚠ <b>1 is NOT the pre-2026-08-27 behaviour, and a test that assumed it was went
+        /// green on the wrong thing.</b> Clamping the mitre to 1 still offsets along the BISECTOR —
+        /// it narrows the marked width at a turn to <c>halfWidth·cos(turn/2)</c>, which at the St
+        /// Peters entrance is 8.32 m. The old arithmetic offset along the INBOUND leg's normal, a
+        /// different direction, which is what stood a mark 3.85 m from the route. There is no value
+        /// of this knob that reproduces it; the control that does lives in ArrivalOpeningTests and
+        /// builds the old positions itself.</para>
         /// </summary>
         public float TurnMitreLimit = 2f;
     }

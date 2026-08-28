@@ -474,49 +474,96 @@ namespace HiddenHarbours.Tests.EditMode
         ///
         /// <para>Asserted along the WHOLE route rather than at its waypoints: the fault lived exactly
         /// between two of them, which is the blind spot a corner defect always hides in.</para>
+        ///
+        /// <para>⚠⚠ <b>THE FLOOR IS THE FAIRWAY'S OWN HALF-WIDTH, and the first draft of this test
+        /// used the hull's beam instead — which would have PASSED on the broken code.</b> The old
+        /// geometry left 3.86 m, comfortably clear of a 2.40 m half-beam plus a metre; the owner
+        /// still watched the skipper go through the marks, because a hull with a 17.7 m turning
+        /// circle does not travel her own polyline round a 65° corner — she cuts inside it. So the
+        /// claim worth guarding here is not "she fits", it is <b>the route runs down the MIDDLE of
+        /// the channel it is marked with</b>: every mark stands at the channel's stated half-width,
+        /// which is the only version of this the plan can promise. What the TRACK does with that room
+        /// belongs to PlayMode, where there is a hull with a turning circle.</para>
         /// </summary>
         [Test]
         public void TheRouteThreadsTheMarks_RatherThanRunningThroughThem()
         {
             float clearance = ClosestMarkToTheRoute(StPetersNavMarks.Tuning,
                                                     out string who, out Vector2 where);
+            float claimed = StPetersNavMarks.Entrance.HalfWidthMetres;
             float beam = StPetersBuilder.ArrivalHullHalfBeamMetres;
 
-            Assert.Greater(clearance, beam + MarkPassingClearanceMetres,
-                $"the arrival passes {clearance:F2} m from '{who}' at ({where.x:F1}, {where.y:F1}). " +
-                $"She is {beam:F2} m of half-beam and the channel owes her " +
-                $"{MarkPassingClearanceMetres:F2} m more than that to pass a mark rather than shave it.");
+            Assert.Greater(clearance, claimed - MarkPassingToleranceMetres,
+                $"the arrival passes {clearance:F2} m from '{who}' at ({where.x:F1}, {where.y:F1}), " +
+                $"on a fairway that claims {claimed:F2} m each side. She is not running the middle " +
+                "of her own channel, which means a mark has come inside it — and a hull rounding " +
+                "that corner cuts inside her polyline before she ever gets there.");
 
-            Debug.Log($"[arrival] her closest mark is '{who}' at {clearance:F2} m, against a " +
-                      $"{beam:F2} m half-beam.");
+            // The plain-English consequence, kept as its own line so a failure says WHICH claim broke.
+            Assert.Greater(clearance, beam + MarkPassingClearanceMetres,
+                $"she passes {clearance:F2} m from '{who}' against {beam:F2} m of half-beam — she " +
+                "is shaving it.");
+
+            Debug.Log($"[arrival] her closest mark is '{who}' at {clearance:F2} m, on a " +
+                      $"{claimed:F2} m fairway, against a {beam:F2} m half-beam.");
         }
 
         /// <summary>
-        /// ⭐ <b>The negative control, and it is the OLD CODE.</b>
-        /// <see cref="NavMarkTuning.TurnMitreLimit"/> of 1 means "never mitre a corner", which is
-        /// precisely the arithmetic that shipped before 2026-08-27. So the guard above is proven able
-        /// to see the defect by being run against the geometry that HAD the defect — rather than by my
-        /// asserting that it would.
+        /// ⭐ <b>The negative control: the guard above, run against the geometry that HAD the defect.</b>
+        /// A clearance test passes just as happily when there is nothing near the route to measure, so
+        /// the microphone has to be proved live — and the honest way to prove it is to rebuild the
+        /// pre-2026-08-27 mark positions and watch the same floor fail.
+        ///
+        /// <para>⚠⚠ <b>The first draft of this control was wrong, and only running it said so.</b> It
+        /// set <see cref="NavMarkTuning.TurnMitreLimit"/> to 1, on the theory that "no mitre" is the old
+        /// behaviour. It is not: clamping the mitre still offsets along the BISECTOR and merely narrows
+        /// the marked width to <c>halfWidth·cos(turn/2)</c> — 8.32 m here, comfortably clear of the
+        /// floor. The old code offset along the INBOUND leg's normal, a different direction entirely. A
+        /// knob is not a time machine: to reproduce old arithmetic, write the old arithmetic.</para>
         /// </summary>
         [Test]
         public void AndWithTheOldCornerGeometry_ThatGuardWouldFail()
         {
-            NavMarkTuning squared = StPetersNavMarks.Tuning;
-            squared.TurnMitreLimit = 1f;                       // the pre-fix arithmetic, exactly
+            NavChannel entrance = StPetersNavMarks.Entrance;
+            NavChannelFairway fairway = NavMarkPlan.DeriveFairway(
+                entrance, _terrain.ElevationAt, StPetersNavMarks.Tuning);
+            Vector2[] route = StPetersArrivalOpening.Route();
 
-            float clearance = ClosestMarkToTheRoute(squared, out string who, out _);
-            float floor = StPetersBuilder.ArrivalHullHalfBeamMetres + MarkPassingClearanceMetres;
+            float clearance = float.MaxValue;
+            string who = "(no mark)";
+            for (int s = 0; s < fairway.Stations.Count; s++)
+            foreach (NavChannelHand hand in new[] { NavChannelHand.Port, NavChannelHand.Starboard })
+            {
+                // The arithmetic exactly as it shipped until 2026-08-27: square to the leg the
+                // station lies ON, which at a vertex is the one she ARRIVES on.
+                Vector2 at = fairway.Stations[s]
+                           + NavChannelGeometry.Normal(fairway.Course[s], hand)
+                             * entrance.HalfWidthMetres;
+
+                float d = ClosestApproach(route, at);
+                if (d < clearance) { clearance = d; who = $"station {s}, {hand} hand"; }
+            }
+
+            float floor = entrance.HalfWidthMetres - MarkPassingToleranceMetres;
 
             Assert.Less(clearance, floor,
-                $"squaring a turn's pair to its inbound leg left {clearance:F2} m at '{who}', which " +
-                $"clears the {floor:F2} m floor. Either the route no longer turns sharply enough for " +
-                "the old defect to bite — in which case delete this control — or the guard above is " +
-                "measuring something that cannot fail.");
+                $"the old geometry left {clearance:F2} m at {who}, which clears the {floor:F2} m " +
+                "floor. Either the route no longer turns sharply enough for that defect to bite — in " +
+                "which case delete this control — or the guard above is measuring something that " +
+                "cannot fail.");
         }
 
         /// <summary>How much water the arrival is owed beside her own beam when she passes a mark. A
         /// metre: she is steered past it by a person, not threaded through it by a machine.</summary>
         private const float MarkPassingClearanceMetres = 1f;
+
+        /// <summary>
+        /// How far off the channel's stated half-width a mark may sit before the route has stopped
+        /// running the middle of it. Half a metre — tight on purpose, because on a route whose marks
+        /// are DERIVED from that half-width the honest reading is exactly it (10.00 m, measured), and
+        /// anything looser is a tolerance for a defect rather than for arithmetic.
+        /// </summary>
+        private const float MarkPassingToleranceMetres = 0.5f;
 
         /// <summary>
         /// The closest any planned lateral of the ENTRANCE comes to the line the arrival actually
@@ -537,16 +584,30 @@ namespace HiddenHarbours.Tests.EditMode
             {
                 if (!m.IsLateral || m.OwnerId != StPetersNavMarks.Entrance.Id) continue;
 
-                for (int i = 0; i < route.Length - 1; i++)
+                float d = ClosestApproach(route, m.At, out Vector2 at);
+                if (d < best) { best = d; who = m.Id; where = at; }
+            }
+            return best;
+        }
+
+        /// <summary>How close the arrival comes to a point, walked at half-metre stations along the
+        /// WHOLE route — not sampled at its waypoints, where a corner defect is invisible.</summary>
+        private static float ClosestApproach(Vector2[] route, Vector2 point) =>
+            ClosestApproach(route, point, out _);
+
+        private static float ClosestApproach(Vector2[] route, Vector2 point, out Vector2 where)
+        {
+            float best = float.MaxValue;
+            where = Vector2.zero;
+            for (int i = 0; i < route.Length - 1; i++)
+            {
+                float length = Vector2.Distance(route[i], route[i + 1]);
+                int steps = Mathf.Max(1, Mathf.CeilToInt(length / 0.5f));
+                for (int k = 0; k <= steps; k++)
                 {
-                    float length = Vector2.Distance(route[i], route[i + 1]);
-                    int steps = Mathf.Max(1, Mathf.CeilToInt(length / 0.5f));
-                    for (int k = 0; k <= steps; k++)
-                    {
-                        Vector2 p = Vector2.Lerp(route[i], route[i + 1], k / (float)steps);
-                        float d = Vector2.Distance(p, m.At);
-                        if (d < best) { best = d; who = m.Id; where = p; }
-                    }
+                    Vector2 p = Vector2.Lerp(route[i], route[i + 1], k / (float)steps);
+                    float d = Vector2.Distance(p, point);
+                    if (d < best) { best = d; where = p; }
                 }
             }
             return best;
