@@ -1,6 +1,6 @@
 {
   "rig": "coastalPacketIsoRig.js",
-  "derivedFromRigSha256": "426e8caa1c2b6e535dcbf823cd19c6b49ac68d222b995ed1b25cb5879356a272",
+  "derivedFromRigSha256": "e1d6f43f4746375d19c4fa0015c7d327c787b6bf3da72b7147fd93402054c1ba",
   "generated": "2026-07-22",
   "frame": {
     "units": "m",

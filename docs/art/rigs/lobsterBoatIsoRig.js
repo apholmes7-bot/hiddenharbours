@@ -658,16 +658,16 @@
       riggingClass:'rigging — arch, dome, aerials: tagged by CLASS, never welded to a cullable room',
       levels:[
         { id:'house', deck:'house_sole', soleZ:DECK, ceilingZ:HZ1,
-          ceiling:{ kind:'hard', z:HZ1, of:'wheelhouse eave — the deckhead the interior dresses; the roof slab above is exterior cladding' } },
+          ceiling:{ kind:'hard', lid:null, z:HZ1, of:'wheelhouse eave — the deckhead the interior dresses; the roof slab above is exterior cladding' } },
         { id:'cuddy', deck:'cuddy_sole', soleZ:C.soleZ, ceilingZ:cl(C.y0),
-          ceiling:{ kind:'raked', zAft:cl(C.y0), zFwd:cl(C.y1), y0:C.y0, y1:C.y1,
+          ceiling:{ kind:'raked', lid:'foredeck', zAft:cl(C.y0), zFwd:cl(C.y1), y0:C.y0, y1:C.y1,
                     of:'foredeck underside = sheerZ(y)-0.16, rising toward the bow; ceilingZ is the honest minimum at the companionway' } },
         { id:'cockpit', deck:'cockpit', soleZ:DECK, ceilingZ:null,
-          ceiling:{ kind:'open', partial:{ z:+(ROOFZ+0.045-0.05).toFixed(3), y0:EXT_AFT, y1:HYaft,
+          ceiling:{ kind:'open', lid:null, partial:{ z:+(ROOFZ+0.045-0.05).toFixed(3), y0:EXT_AFT, y1:HYaft,
                     of:'extended-hardtop underside over the FORWARD cockpit only — aft of y '+EXT_AFT+' is sky' } } },
         { id:'foredeck', deck:'foredeck', soleZ:fs(HYfwd), ceilingZ:null,
           sole:{ kind:'raked', zAft:fs(HYfwd), zFwd:fs(5.82), follows:'sheer - 0.05 over y 3.60..5.82' },
-          ceiling:{ kind:'open' } },
+          ceiling:{ kind:'open', lid:null } },
       ],
     };
   }
