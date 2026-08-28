@@ -129,6 +129,13 @@ namespace HiddenHarbours.Art
         /// the numerator of the Iribarren steepness the breaker TYPE reads.</summary>
         private static readonly int IdBreakerParams = Shader.PropertyToID("_BreakerParams");
 
+        /// <summary>x = the dominant train's deep-water wavelength L0 (m), y = the breaker index gamma,
+        /// zw = the plunging band's lower and upper Iribarren limits. Together with H0 in
+        /// <c>_BreakerParams.w</c> this is everything the shader needs to work out, per pixel, whether
+        /// the seabed here has earned a lip and a barrel — <c>xi = tanB / sqrt(H0/L0)</c> against
+        /// Battjes' thresholds.</summary>
+        private static readonly int IdBreakerAnatomy = Shader.PropertyToID("_BreakerAnatomy");
+
         private const double TwoPi = Math.PI * 2.0;
 
         // The derivation constants come from GameConfig.WaveField via GameServices (ADR 0018 §(5)).
@@ -334,6 +341,16 @@ namespace HiddenHarbours.Art
                 Mathf.Max(BreakerMath.MinDecaySeconds, breakers.WhitewaterDecaySeconds),
                 Mathf.Max(0f, GameServices.WaveField.Gravity),
                 2f * Mathf.Max(0f, dominant.Amplitude)));                 // H0, before fetch
+
+            // The breaker-TYPE inputs. The shader reads the bed slope itself (it already derives the
+            // shore direction from the same gradient), so only the wave-side terms and the thresholds
+            // travel — which keeps the classification's constants in ONE place, GameConfig, exactly like
+            // gamma and the decay.
+            Shader.SetGlobalVector(IdBreakerAnatomy, new Vector4(
+                Mathf.Max(WaveTrain.MinWavelengthMeters, dominant.Wavelength),
+                Mathf.Max(0f, breakers.BreakerIndex),
+                Mathf.Max(0f, breakers.SpillingLimit),
+                Mathf.Max(0f, breakers.PlungingLimit)));
         }
 
         /// <summary>The breaker model SILENT — nothing breaks anywhere — so a stopped play session or a

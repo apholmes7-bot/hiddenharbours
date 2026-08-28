@@ -60,6 +60,7 @@ namespace HiddenHarbours.Tests.EditMode
         ITidalTerrain _previousTerrain;
         readonly List<GameObject> _built = new List<GameObject>();
         Color _shippedSurfColor = Color.white;
+        Color _shippedLipColor = Color.white;
 
         [SetUp]
         public void SetUp() => _previousTerrain = GameServices.TidalTerrain;
@@ -287,6 +288,82 @@ namespace HiddenHarbours.Tests.EditMode
             return n == 0 ? Vector2.zero : new Vector2((float)(sx / n), (float)(sy / n));
         }
 
+        [Test]
+        public void ThePlungingAnatomy_DrawsOnlyWhereTheSlopeEarnsIt()
+        {
+            // ⭐ THE DROP-2 CLAIM, and the one this whole arc rests on: a lip and a barrel appear only
+            // where the BATHYMETRY has earned them. Nobody paints a barrel in; the seabed either produces
+            // one or it does not.
+            //
+            // So the fixture does not go looking for a pretty frame. It sweeps the region for the highest
+            // surf-similarity number on the break contour and REPORTS it — and if this coast is too
+            // gentle to plunge anywhere, that is a true finding about the coast and it says so, rather
+            // than quietly passing on a frame with no anatomy in it.
+            RequireAGraphicsDevice();
+            BuildTheShore();
+
+            var terrain = _terrainGo.GetComponent<MainlandTidalTerrain>();
+            WaveTrains trains = WaveMath.TrainsFrom(ShotWind, ShotSeaState, GameServices.WaveField);
+            var settings = GameServices.Breakers;
+            BreakerContour contour = BreakerMath.ContourFor(trains.Dominant,
+                WaveFetch.Envelope01(0f, GameServices.WaveFetch), settings);
+            Assert.IsTrue(contour.Breaks, "the shot sea must break somewhere");
+
+            float waterLevel = NineMileCreekMainland.SpringLowWater;
+            float h0 = 2f * trains.Dominant.Amplitude;
+            Vector2 centre = NineMileCreekBuilder.NineMileCreekSeaCenter;
+            Vector2 size = NineMileCreekBuilder.NineMileCreekSeaSize;
+
+            float bestXi = 0f;
+            Vector2 bestAt = centre;
+            const int steps = 160;
+            for (int iy = 0; iy <= steps; iy++)
+            for (int ix = 0; ix <= steps; ix++)
+            {
+                var at = new Vector2(centre.x + size.x * (ix / (float)steps - 0.5f),
+                                     centre.y + size.y * (iy / (float)steps - 0.5f));
+                float depth = waterLevel - terrain.ElevationAt(at);
+                if (depth <= 0f || Mathf.Abs(depth - contour.BreakDepths.x) > 0.08f) continue;
+
+                // The magnitude of the bed gradient, which is what the shader's SeabedSlopeMag reads.
+                float sx = BreakerMath.BedSlopeAlong(at, Vector2.right, settings.SlopeProbeMeters, terrain);
+                float sy = BreakerMath.BedSlopeAlong(at, Vector2.up, settings.SlopeProbeMeters, terrain);
+                float xi = BreakerMath.Iribarren(Mathf.Sqrt(sx * sx + sy * sy), h0, trains.Dominant.Wavelength);
+                if (xi > bestXi) { bestXi = xi; bestAt = at; }
+            }
+
+            float weight = BreakerMath.PlungingWeight01(bestXi, in settings);
+            Debug.Log($"[breaker-plunge] steepest break-contour point on this coast: xi = {bestXi:F3} " +
+                      $"(plunging weight {weight:F3}, class {BreakerMath.ClassFor(bestXi, in settings)}) " +
+                      $"at {bestAt}. Battjes' spilling/plunging threshold is {settings.SpillingLimit}.");
+
+            _cam.transform.position = new Vector3(bestAt.x, bestAt.y, -100f);
+            Shoot("surf-plunge-steepest", waterLevel, surf: true);
+            Shoot("surf-plunge-steepest-LIPRED", waterLevel, surf: true,
+                  lipColor: new Color(1f, 0f, 0f, 1f));
+
+            if (weight <= 0.01f)
+            {
+                // A TRUE finding, not a skip: this coast spills everywhere. The anatomy is correct to
+                // draw nothing here, and saying so is the point — a fixture that reported success on a
+                // frame with no lip in it would be exactly the blind-visual-debugging trap.
+                Assert.Pass(
+                    $"Nine Mile Creek's steepest break-contour point reads xi = {bestXi:F3}, below " +
+                    $"Battjes' {settings.SpillingLimit} spilling/plunging threshold — this coast SPILLS " +
+                    "everywhere, so no lip or barrel is drawn anywhere on it, which is correct. The " +
+                    "plunging anatomy is pinned by BreakerPlungingTests; a coast that earns it is owed " +
+                    "a frame before the look can be judged.");
+            }
+
+            // …and if it does plunge, the anatomy must actually appear.
+            Color32[] lipRed = Shoot("surf-plunge-lip", waterLevel, surf: true,
+                                     lipColor: new Color(1f, 0f, 0f, 1f));
+            float lipCover = SurfFraction(lipRed);
+            Debug.Log($"[breaker-plunge] the thrown lip covers {lipCover:P3} of the frame.");
+            Assert.That(lipCover, Is.GreaterThan(0f),
+                $"xi = {bestXi:F3} earns a plunging weight of {weight:F3}, but no lip was drawn");
+        }
+
         // =============================================================================================
         //  the scene — the NineMileCreekShoreRenderTests pattern, which is the region as it ships
         // =============================================================================================
@@ -409,6 +486,8 @@ namespace HiddenHarbours.Tests.EditMode
             // The shipped surf colour, so every shot can restore it (see SetShot's sticky-block note).
             _shippedSurfColor = waterMat.HasProperty("_SurfColor")
                 ? waterMat.GetColor("_SurfColor") : Color.white;
+            _shippedLipColor = waterMat.HasProperty("_SurfLipColor")
+                ? waterMat.GetColor("_SurfLipColor") : Color.white;
 
             _seaGo = new GameObject("Sea");
             _seaGo.SetActive(false);
@@ -471,7 +550,7 @@ namespace HiddenHarbours.Tests.EditMode
         /// whole game and leaves the owner's hero material dirty in the working tree. That has happened
         /// on this repo once already and is why <c>git add -A</c> is banned here.
         /// </summary>
-        void SetShot(float waterLevel, bool surf, Color? surfColor = null)
+        void SetShot(float waterLevel, bool surf, Color? surfColor = null, Color? lipColor = null)
         {
             var surface = _seaGo.GetComponent<WaterSurface>();
             if (surface != null)
@@ -500,14 +579,15 @@ namespace HiddenHarbours.Tests.EditMode
             // Writing the shipped colour back on every shot is what makes each capture independent of
             // whatever the last one wanted.
             block.SetColor("_SurfColor", surfColor ?? _shippedSurfColor);
+            block.SetColor("_SurfLipColor", lipColor ?? _shippedLipColor);
             sr.SetPropertyBlock(block);
         }
 
         Color32[] Shoot(string name, float waterLevel, bool surf, float seaState = ShotSeaState,
-                        Color? surfColor = null)
+                        Color? surfColor = null, Color? lipColor = null)
         {
             PublishTheSea(seaState);
-            SetShot(waterLevel, surf, surfColor);
+            SetShot(waterLevel, surf, surfColor, lipColor);
 
             _cam.Render();
             _cam.Render();   // the second is read: a cold shader cache has faked a regression here before

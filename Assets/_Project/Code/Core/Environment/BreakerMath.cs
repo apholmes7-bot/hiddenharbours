@@ -783,6 +783,59 @@ namespace HiddenHarbours.Core
             return 1f - WaveFetch.SmoothstepEdge(breakDepth, outerDepth, depthMeters);
         }
 
+        // ==== THE PLUNGING BAND: where the bathymetry earns a lip and a barrel (PR 2 drop 2) =======
+
+        /// <summary>
+        /// <b>How plunging is this break, 0..1</b> — <see cref="ClassFor"/>'s hard table, softened into a
+        /// weight so the anatomy can fade in and out instead of snapping between breaker types as the
+        /// tide moves the slope under a wave.
+        ///
+        /// <para>1 in the middle of the plunging band, falling to 0 at the spilling boundary below and
+        /// the collapsing boundary above. The edges are smoothed over a fraction of the band, which is
+        /// the same reasoning that made the break gate a smoothstep: a hard classification would pop the
+        /// lip and the barrel on and off along a contour as the seabed gradient crossed a threshold, and
+        /// the seabed gradient is a sampled quantity with texture quantization in it.</para>
+        ///
+        /// <para><b>⚠️ This widens NOTHING.</b> It is a smoothing of the same Battjes thresholds
+        /// <see cref="ClassFor"/> uses, and at the band's centre the two agree exactly. Barrels still
+        /// appear only where the bathymetry earns them — which is the claim ADR 0040 is making, and the
+        /// one this weight must not quietly relax. <c>BreakerPlungingTests</c> pins that the weight is 0
+        /// wherever <see cref="ClassFor"/> says <see cref="BreakerClass.Spilling"/> at the shipped
+        /// thresholds' midpoints.</para>
+        /// </summary>
+        public static float PlungingWeight01(float iribarren, in BreakerSettings settings)
+        {
+            float spilling = Mathf.Max(0f, settings.SpillingLimit);
+            float plunging = Mathf.Max(spilling + 1e-3f, settings.PlungingLimit);
+
+            // Feather each edge by a tenth of the band, STRADDLING the threshold rather than starting at
+            // it — so the half-weight crossing lands exactly on Battjes' number.
+            //
+            // ⚠️ The first version feathered UPWARD from each limit, and its own test caught it: the
+            // half-weight point came out at ξ 0.641 against a published threshold of 0.5. That is not a
+            // softening, it is a 28 % shift of the spilling/plunging boundary — barrels suppressed on
+            // slopes that had earned them, silently, by an implementation detail. The docstring above
+            // already said "allowed to blur the boundary, NOT to move it"; only the measurement noticed
+            // that the code did not.
+            float half = (plunging - spilling) * 0.05f;
+            float risingIn = WaveFetch.SmoothstepEdge(spilling - half, spilling + half, iribarren);
+            float fallingOut = WaveFetch.SmoothstepEdge(plunging - half, plunging + half, iribarren);
+            return Mathf.Clamp01(risingIn * (1f - fallingOut));
+        }
+
+        /// <summary>
+        /// <b>How far forward the lip is thrown</b> (metres), for a wave of
+        /// <paramref name="waveHeightMeters"/> breaking at this plunging weight.
+        ///
+        /// <para>A plunging breaker's crest outruns its own base and lands ahead of it; the throw scales
+        /// with the height of the wave doing the throwing, which is the depth-limited <c>γ·d</c> here
+        /// rather than the deep-water height — a wave that has broken is only as tall as the water it is
+        /// running over. A spilling breaker throws nothing, so the weight multiplies the whole
+        /// thing.</para>
+        /// </summary>
+        public static float LipThrowMeters(float waveHeightMeters, float plungingWeight01, float throwPerHeight)
+            => Mathf.Max(0f, waveHeightMeters) * Mathf.Clamp01(plungingWeight01) * Mathf.Max(0f, throwPerHeight);
+
         /// <summary>
         /// <see cref="MetersSinceBreak"/> off the pre-solved contour, and along an <b>explicit</b>
         /// travel direction.
