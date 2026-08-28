@@ -649,5 +649,183 @@ namespace HiddenHarbours.Core
 
             return new BreakerSample(depth, local, celerity, ks, height, shoaled, breaking, slope, xi, cls);
         }
+
+        // ==== THE CONTOUR: invert the criterion once per tick, not once per pixel (PR 2) ============
+        //
+        // Everything above runs FORWARD — given a depth, shoal the wave and ask whether H >= gamma*d.
+        // That is the physical definition and it stays the definition. But it costs a tanh, two pows, a
+        // sinh and a sqrt, and MetersSinceBreak needs the answer at MarchSteps points per pixel. The
+        // renderer therefore INVERTS it once on the sim tick (see BreakerContour for the full why) and
+        // asks the cheap question per pixel instead: is the water shallower than the break depth?
+        //
+        // ⚠️ The C# and the HLSL run the SAME interpolation, so the twin is exact to float epsilon.
+        // The approximation these carry is the piecewise-in-envelope fit, and it is MEASURED and pinned
+        // in BreakerContourTests (2.77% of the break depth at the shipped lee floor) rather than
+        // asserted — a twin divergence would be a bug, a stated approximation is a cost.
+
+        /// <summary>The break criterion evaluated forward at one depth — the definition
+        /// <see cref="SolveBreakDepth"/> inverts. Strictly decreasing in depth, which is what makes the
+        /// inversion single-valued.</summary>
+        public static float BreakRatioAtDepth(in WaveTrain train, float depthMeters, float fetchEnvelope01,
+                                              float breakerIndex)
+            => BreakRatio(ShoaledHeightAt(in train, depthMeters, fetchEnvelope01), depthMeters, breakerIndex);
+
+        /// <summary>
+        /// The depth (metres) at which this train reaches <paramref name="ratioTarget"/> of the break
+        /// criterion — bisected over a fixed bracket in a fixed
+        /// <see cref="BreakerContour.SolveIterations"/> steps, so the solve is bounded and deterministic
+        /// (rule 5) rather than iterating to a tolerance.
+        ///
+        /// <para>Returns <b>0</b> when the wave never reaches the target even at the shallowest depth
+        /// the model admits — a train too small to break on this shore, which is a real answer and not
+        /// a failure.</para>
+        /// </summary>
+        public static float SolveBreakDepth(in WaveTrain train, float fetchEnvelope01, float breakerIndex,
+                                            float ratioTarget)
+        {
+            float lo = MinDepthMeters;
+            float hi = BreakerContour.MaxSolveDepthMeters;
+
+            // ratio is strictly DECREASING in depth, so lo is the "breaking" end of the bracket.
+            if (BreakRatioAtDepth(in train, lo, fetchEnvelope01, breakerIndex) < ratioTarget) return 0f;
+            if (BreakRatioAtDepth(in train, hi, fetchEnvelope01, breakerIndex) >= ratioTarget) return hi;
+
+            for (int i = 0; i < BreakerContour.SolveIterations; i++)
+            {
+                float mid = 0.5f * (lo + hi);
+                if (BreakRatioAtDepth(in train, mid, fetchEnvelope01, breakerIndex) >= ratioTarget) lo = mid;
+                else hi = mid;
+            }
+            return 0.5f * (lo + hi);
+        }
+
+        /// <summary>
+        /// Solve the whole contour for one train: the break depth and the gate's outer depth at
+        /// envelope 1, at the midpoint, and at the fetch lee floor. Call it on the sim tick and hand the
+        /// result to the renderer.
+        /// </summary>
+        /// <param name="train">The breaking train — normally the field's
+        /// <see cref="WaveTrains.Dominant"/>, taken from <see cref="SharedWaveField"/> so the surf and
+        /// the drawn sea are the same sea.</param>
+        /// <param name="leeEnvelope01">The fetch model's lee floor (<see cref="WaveFetchSettings"/>'s
+        /// effective floor, or 1 when fetch is off) — the lower anchor of the interpolation.</param>
+        public static BreakerContour ContourFor(in WaveTrain train, float leeEnvelope01,
+                                                in BreakerSettings settings)
+        {
+            if (train.Amplitude <= 0f) return BreakerContour.None;      // glass is sacred
+
+            float gamma = Mathf.Max(0f, settings.BreakerIndex);
+            if (gamma <= 0f) return BreakerContour.None;                // a stale settings struct is inert
+
+            float band = Mathf.Clamp(settings.BreakBandRatio, 0.01f, 0.9f);
+            float lee = Mathf.Clamp(leeEnvelope01, 0.01f, 1f);
+            float mid = MidEnvelopeFor(lee);
+
+            var breaks = new Vector3(SolveBreakDepth(in train, 1f, gamma, 1f),
+                                     SolveBreakDepth(in train, mid, gamma, 1f),
+                                     SolveBreakDepth(in train, lee, gamma, 1f));
+            var outer = new Vector3(SolveBreakDepth(in train, 1f, gamma, 1f - band),
+                                    SolveBreakDepth(in train, mid, gamma, 1f - band),
+                                    SolveBreakDepth(in train, lee, gamma, 1f - band));
+
+            return new BreakerContour(breaks, outer, lee, breaks.x > 0f);
+        }
+
+        /// <summary>The middle envelope a contour is solved at — the midpoint between the lee floor and
+        /// 1, so only the lee floor has to travel to the shader. Deriving it rather than publishing it
+        /// is what keeps the packing to two vectors.</summary>
+        public static float MidEnvelopeFor(float leeEnvelope01) => (1f + Mathf.Clamp01(leeEnvelope01)) * 0.5f;
+
+        /// <summary>
+        /// Read one of a contour's depth triples at a position's own fetch envelope — the piecewise
+        /// interpolation the HLSL twin spells identically.
+        ///
+        /// <para>A lee floor of 1 (fetch off) collapses to the single anchor, so the model is a
+        /// byte-exact no-op when the owner has the fetch dial down.</para>
+        /// </summary>
+        public static float DepthAtEnvelope(Vector3 depths, float leeEnvelope01, float envelope01)
+        {
+            float lee = Mathf.Clamp01(leeEnvelope01);
+            if (lee >= 1f - 1e-4f) return depths.x;          // fetch off: one anchor, no interpolation
+
+            float e = Mathf.Clamp01(envelope01);
+            float mid = MidEnvelopeFor(lee);
+            if (e >= mid)
+                return Mathf.Lerp(depths.y, depths.x, Mathf.Clamp01((e - mid) / Mathf.Max(1f - mid, 1e-4f)));
+            return Mathf.Lerp(depths.z, depths.y, Mathf.Clamp01((e - lee) / Mathf.Max(mid - lee, 1e-4f)));
+        }
+
+        /// <summary>
+        /// <b>The cheap break gate</b> — the same smooth 0..1 <see cref="Breaking01"/> answers, read off
+        /// the pre-solved contour instead of shoaling the wave again. 1 where the water is shallower
+        /// than the break depth, 0 out past the gate's outer edge, Hermite between.
+        ///
+        /// <para><b>⚠️ The gate's in-band SHAPE differs from <see cref="Breaking01"/>'s.</b> That one is
+        /// a Hermite in ratio-space; this is a Hermite in depth-space, and <c>ratio(depth)</c> is not
+        /// linear, so the two agree exactly at both edges and differ inside the band. Both are the same
+        /// physical criterion with the same break line — the band is a smoothing choice, not a claim —
+        /// and the divergence is measured and pinned rather than left for someone to trip over.</para>
+        ///
+        /// <para>⚠️ Still a GATE, never a scale on an age (the class note).</para>
+        /// </summary>
+        public static float Breaking01FromContour(float depthMeters, in BreakerContour contour,
+                                                  float fetchEnvelope01)
+        {
+            if (!contour.Breaks) return 0f;
+            if (depthMeters <= 0f) return 0f;                // dry ground breaks nothing
+
+            float breakDepth = DepthAtEnvelope(contour.BreakDepths, contour.LeeEnvelope, fetchEnvelope01);
+            if (breakDepth <= 0f) return 0f;
+            float outerDepth = Mathf.Max(DepthAtEnvelope(contour.OuterDepths, contour.LeeEnvelope, fetchEnvelope01),
+                                         breakDepth + WaveFetch.MinGateBand);
+
+            // Shallower = more broken, so the gate runs the other way round from a depth smoothstep.
+            return 1f - WaveFetch.SmoothstepEdge(breakDepth, outerDepth, depthMeters);
+        }
+
+        /// <summary>
+        /// <see cref="MetersSinceBreak"/> off the pre-solved contour, and along an <b>explicit</b>
+        /// travel direction.
+        ///
+        /// <para><b>Why the direction is a parameter here.</b> PR 1 marches along the train's
+        /// deep-water heading, which is right for a hull sampling the sea it is in. A drawn breaker line
+        /// is not that: a shoaling wave <b>refracts</b> toward shore-normal, which is why surf runs in
+        /// parallel to the depth contours however the swell was heading offshore. The renderer therefore
+        /// marches back along the seabed gradient — the shoreward direction it already derives per pixel
+        /// — and this overload is how both sides can be handed the same direction and stay exact twins.
+        /// Refraction is not otherwise modelled; the direction is where it enters, and that is stated
+        /// rather than quietly assumed.</para>
+        ///
+        /// <para>The contiguity product, the fixed bound and the no-clamp-before-the-decay discipline
+        /// are all exactly <see cref="MetersSinceBreak"/>'s — this is the same march with a cheaper gate
+        /// and a supplied heading.</para>
+        /// </summary>
+        public static float MetersSinceBreakAlong(Vector2 worldPos, Vector2 travelDirection,
+                                                  float waterLevelMeters, ITidalTerrain terrain,
+                                                  in BreakerContour contour, float fetchEnvelope01,
+                                                  in BreakerSettings settings)
+        {
+            if (terrain == null || !contour.Breaks) return 0f;
+
+            float sqrMagnitude = travelDirection.x * travelDirection.x + travelDirection.y * travelDirection.y;
+            if (sqrMagnitude < 1e-12f) return 0f;            // no heading, no bore
+            float inv = 1f / Mathf.Sqrt(sqrMagnitude);
+            Vector2 back = new Vector2(-travelDirection.x * inv, -travelDirection.y * inv);
+
+            float step = Mathf.Max(MinStepMeters, settings.WhitewaterStepMeters);
+
+            float contiguous = 1f;
+            float age = 0f;
+            for (int i = 1; i <= MarchSteps; i++)            // FIXED bound — the HLSL [unroll] contract
+            {
+                Vector2 p = WaveFetch.Pixelize(new Vector2(worldPos.x + back.x * (step * i),
+                                                           worldPos.y + back.y * (step * i)));
+                float depth = waterLevelMeters - terrain.ElevationAt(p);
+                contiguous *= Breaking01FromContour(depth, in contour, fetchEnvelope01);
+                age += contiguous;
+            }
+
+            return step * age;
+        }
     }
 }

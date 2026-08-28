@@ -477,6 +477,15 @@ namespace HiddenHarbours.Core
         public static WaveFetchSettings WaveFetch =>
             Config != null ? Config.WaveFetch : WaveFetchSettings.Default;
 
+        /// <summary>The BREAKING-WAVE model's tunables (ADR 0040), same contract as
+        /// <see cref="WaveField"/> and <see cref="WaveFetch"/> including the <c>Config != null</c>
+        /// discipline. Read by the shader bridge (which solves the contour and publishes it) and by the
+        /// seakeeping side that takes the whitewater shove, so the surf the player sees is the surf the
+        /// hull is pushed by — the one-settings-instance rule again. Falls back to
+        /// <see cref="BreakerSettings.Default"/>, which is the textbook physics.</summary>
+        public static BreakerSettings Breakers =>
+            Config != null ? Config.Breakers : BreakerSettings.Default;
+
         /// <summary>
         /// <b>How much of her own rock a boat's INTERIOR draw takes</b> — ADR 0038 proposal 1's comfort
         /// clamp, same contract as <see cref="WaveField"/> including the <c>Config != null</c> discipline
