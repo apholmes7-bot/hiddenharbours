@@ -393,3 +393,91 @@ starts answering), and the convertible.
    top; the `_confirm` flag was covering a value that was simply available.
 4. Receipts acknowledged: the lobster with the paint kit and our cape third sha are adopted upstream
    and the stale fork is deleted — the hand-restore #660 needed should not recur.
+
+---
+
+## 8. ⚠️ ADDENDUM 2026-08-28 — the split first landed in the WRONG FILE, and why the merge is the real story
+
+The coordinator's last-mile ran green on the cape (`BakeFleetCli` 34 hulls, deck import 34/0, interior
+defs 27/0) and then found this, correctly, before merging:
+
+> the skybridge deck def came out of the import BYTE-IDENTICAL — no `helm_coaming`, no `bridge_sole`
+> move.
+
+**They were right.** The shipped deck def is imported by `DeckSidecarImporter` from
+`docs/art/rigs/gameplay/` (`SidecarFolder`), and that folder names its files **by HULL** —
+`sportFisherSkybridgeIso.gameplay.json` — so a search for `sportFisherIsoRig2*` never sees it. The
+split had landed only in the kit's `boat-interiors-kit/gameplay/` mirror, and the PR body promised a
+deck-def change that could not happen from there.
+
+### The mechanism, and it is worse than a missed file
+
+The kit mirror is not a sibling of the wired sidecar — it is **derived from it**:
+
+> `BoatInteriorGameplayMerge`: "sections are additive against the hull's existing gameplay file:
+> **DECK entries replace by `id`**, THRESHOLD/STAIRS/LADDER/INTERACT replace wholesale, `_excluded`
+> merges."
+
+Run over the two committed sources **as they stood**, the repo's own merge reports:
+
+```
+DECK 'bridge_sole': REPLACED the base entry (same id).
+… 7 decks: cockpit · mezzanine · foredeck · bridge_sole@7.30 · aft_deck · house_sole · below_sole
+```
+
+The base named the OPEN coaming (9.74) `bridge_sole`; the interior sidecar names the ENCLOSED
+skylounge (7.30) `bridge_sole`. **The merge deletes the coaming — which is upstream's refused
+2026-08-27 export, reproduced exactly by our own code.** It was never carelessness; it was the merge
+contract meeting a colliding id. Our committed mirror escaped it only by the hand-rename to
+`sky_sole`, which no merge would reproduce and the next regeneration would have reverted.
+
+### What the port actually changes
+
+| file | change |
+|---|---|
+| `docs/art/rigs/gameplay/sportFisherSkybridgeIso.gameplay.json` (**the wired base**) | `DECK bridge_sole`@9.74 → **`helm_coaming`**; the reworded prose, `_excluded.bridge_access_interior`, `_confirm.upper_decks`, and the `_notes` (`helm_seats` in, the `bridge_ladder` annotation out — it is a `LADDER` record). **Polygon, z and winding untouched** — the base's ring was already the rig's own, vertex for vertex. |
+| `docs/art/rigs/boat-interiors-kit/sportFisherIsoRig2.skybridge.interior.json` | `LADDER.bridge_ladder.connects → [aft_deck, helm_coaming]` and `INTERACT.helm_bridge.at → helm_coaming`. These four sections are taken **wholesale** from this file, so this is the only place the fix can live. `WALKABLE.bridge_sole` (7.30) and `STAIRS.house_to_bridge` are unchanged and were always right. |
+
+Re-run over the ported sources:
+
+```
+DECK 'bridge_sole': appended (no base entry with that id).
+… 8 decks, including helm_coaming@9.74 (42 verts) AND bridge_sole@7.30 (4 verts)
+LADDER bridge_ladder connects = aft_deck, helm_coaming
+INTERACT helm_bridge at = helm_coaming
+```
+
+Merged against the kit's pre-merged mirror: **zero DECK differences of any kind** — every id, z and
+coordinate agrees. The 86 residual differences are all in `INTERACT` annotation fields (`anchor`,
+`footprint`, `label`, `prompt`, `provenance`) that the drop's generator writes and the interior
+sidecar does not carry, plus the lineage keys. That divergence is pre-existing and is the one
+`BoatInteriorGameplayMerge`'s own doc says it cannot reproduce.
+
+### The fixture that should have caught it
+
+`TheSkybridgeKeepsBothOfHerWalkables…` reads the kit's **pre-merged mirror** — a *derived* file. It
+stayed green while the collision lived on in the two sources it is merged from. New:
+**`MergingHerTwoSources_AppendsBothWalkables_AndReplacesNothing`** runs
+`BoatInteriorGameplayMerge` over the two committed sources and refuses **any** DECK `REPLACED` in the
+report — stated as the id-collision law, not as "`helm_coaming` exists", so it covers every hull whose
+interior contributes a deck. Negative control: reverting the id in the wired base alone reddens
+**exactly** that fixture, with the merge report in the message. Headless: **26 pass / 0 fail / 8 skip.**
+
+### ⚠️ One MORE red, newly owed
+
+`DeckSidecarImportParityTests.EveryCommittedDeckDefMatchesItsSidecarVertexForVertex` asserts
+`src.Id == baked.Id` per area. The committed `Data/Boats/Decks/SportFisherSkybridgeIso.asset` still
+says `bridge_sole`; the sidecar now says `helm_coaming`. **Red until the deck import is re-run** — and
+now it genuinely will change the def, which is what the PR body originally promised and could not
+deliver.
+
+### The pin question, answered rather than churned
+
+The coordinator's import log notes both sport-fisher sidecars' `derivedFromRigSha256` match only
+line-ending-normalised. That is **by design, not drift**: `DeckSidecarReader.MatchRigHash` tries the
+exact digest first and then the same bytes with line endings flipped — "the one difference that
+provably cannot move a vertex" — and its own doc says the normalised arm exists so "an older contract
+that recorded the CRLF digest stays valid; this only changes what a NEW bake writes". **The rig has
+not moved (`152eb5f3…` is still correct), so there is nothing to re-stamp.** Changing the convention
+would force a deck-def re-bake for no gain, and the cape's own `_repin2` note records that switching
+root-gameplay pins to LF was "explicitly overruled" as a separate standing ask. Left alone, deliberately.

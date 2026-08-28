@@ -322,6 +322,12 @@ namespace HiddenHarbours.Tests.RigBaking
         /// <para>⚠️ A string-grep is NOT this check. The staging pass that first cleared the refused
         /// file counted <c>bridge_sole</c> occurrences — eight — and called the deck "fully present".
         /// A name's presence is not a deck's presence.</para>
+        ///
+        /// <para>⚠️⚠️ <b>This fixture reads the kit's PRE-MERGED mirror, which is a DERIVED file.</b>
+        /// That is why it stayed green while the collision lived on in the two sources it is merged
+        /// from — #685 first landed the id split here only, where a re-merge would have reverted it.
+        /// <see cref="MergingHerTwoSources_AppendsBothWalkables_AndReplacesNothing"/> is the one that
+        /// asks the sources, and it is the load-bearing half of the pair.</para>
         /// </summary>
         [Test]
         public void TheSkybridgeKeepsBothOfHerWalkables_AndHerLadderLandsOnTheUpperOne()
@@ -485,6 +491,92 @@ namespace HiddenHarbours.Tests.RigBaking
                 "the cape's two enclosed levels are the wheelhouse and the cuddy below the whaleback. " +
                 "A level joining or leaving this list is her rig changing shape and wants a look, not " +
                 "a wider assertion.");
+        }
+
+        /// <summary>
+        /// <b>Merging her two committed SOURCES keeps both walkables.</b> This is the fixture the
+        /// 2026-08-27 refusal actually needed, and its absence is why the id split first landed in the
+        /// wrong file.
+        ///
+        /// <para><b>The mechanism, measured.</b> The kit's pre-merged gameplay mirror is
+        /// <c>BoatInteriorGameplayMerge.Merge(docs/art/rigs/gameplay/&lt;hull&gt;.gameplay.json,
+        /// &lt;stem&gt;.interior.json)</c>, and the merge contract is <b>"DECK entries replace by
+        /// <c>id</c>"</b>. Her base named the OPEN coaming (sole 9.74) <c>bridge_sole</c> and her
+        /// interior names the ENCLOSED skylounge (sole 7.30) <c>bridge_sole</c> — so the merge
+        /// REPLACED one with the other and returned seven decks instead of eight, silently deleting
+        /// the deck that carries <c>helms[0]</c> and the head of the bridge ladder.</para>
+        ///
+        /// <para>That is precisely the artefact upstream shipped on 2026-08-27 and #678 refused. It
+        /// was never carelessness: it is the merge contract meeting a colliding id, and our committed
+        /// mirror escaped it only by a HAND-RENAME to <c>sky_sole</c> that no merge would reproduce
+        /// and the next regeneration would have reverted. #685 splits the id in the two SOURCES
+        /// instead — the base names the coaming <c>helm_coaming</c> — so the merge appends where it
+        /// used to replace.</para>
+        ///
+        /// <para><b>Why it is stated as an id-collision rule and not as two names.</b> Asserting
+        /// "helm_coaming exists" would pin this fix; asserting that no id arrives twice pins the
+        /// LAW, and it covers every hull whose interior contributes a deck — see
+        /// <see cref="BoatInteriorGameplayMerge"/>'s own contract sentence.</para>
+        /// </summary>
+        [Test]
+        public void MergingHerTwoSources_AppendsBothWalkables_AndReplacesNothing()
+        {
+            string baseJson = File.ReadAllText(Path.Combine(
+                RepoRoot, "docs/art/rigs/gameplay/sportFisherSkybridgeIso.gameplay.json"));
+            string interiorJson = File.ReadAllText(Path.Combine(
+                RepoRoot, KitFolder, "sportFisherIsoRig2.skybridge.interior.json"));
+
+            InteriorMergeResult merged = BoatInteriorGameplayMerge.Merge(baseJson, interiorJson);
+            CollectionAssert.IsEmpty(merged.Errors, string.Join("\n  ", merged.Errors));
+            Assert.IsTrue(merged.Ok);
+
+            // The report says what it did. A REPLACE on a DECK is a deck destroyed, every time.
+            var replaced = merged.Changes
+                .Where(c => c.StartsWith("DECK ", System.StringComparison.Ordinal)
+                            && c.Contains("REPLACED"))
+                .ToList();
+            CollectionAssert.IsEmpty(replaced,
+                "the merge REPLACED a DECK entry, which means one walkable overwrote another under a " +
+                "shared id and the loser is simply gone. Full report:\n  " +
+                string.Join("\n  ", merged.Changes));
+
+            var byId = new Dictionary<string, (double Z, int Verts)>(System.StringComparer.Ordinal);
+            var order = new List<string>();
+            foreach (object d in DeckSidecarJson.AsArray(merged.Merged["DECK"]))
+            {
+                string id = DeckSidecarJson.String(DeckSidecarJson.Member(d, "id"));
+                if (string.IsNullOrEmpty(id)) continue;
+                order.Add(id);
+                byId[id] = (DeckSidecarJson.Float(DeckSidecarJson.Member(d, "z"), float.NaN),
+                            DeckSidecarJson.AsArray(DeckSidecarJson.Member(d, "polygon"))?.Count ?? 0);
+            }
+            CollectionAssert.AllItemsAreUnique(order,
+                "the merged DECK list names an id twice — the collision survived the merge instead of " +
+                "being destroyed by it, which is worse, not better.");
+
+            string found = string.Join(", ", order.Select(k => k + "@" + byId[k].Z));
+            var atCoaming = byId.Where(kv => System.Math.Abs(kv.Value.Z - 9.74) < 1e-3).ToList();
+            var atSkylounge = byId.Where(kv => System.Math.Abs(kv.Value.Z - 7.30) < 1e-3).ToList();
+            Assert.AreEqual(1, atCoaming.Count,
+                "the merge produced no single deck at z 9.74. That is the coaming, and losing it here " +
+                "is how it was lost on 2026-08-27. Merged: [" + found + "]");
+            Assert.AreEqual(1, atSkylounge.Count,
+                "the merge produced no single deck at z 7.30 — the enclosed skylounge the interior " +
+                "contributes. Merged: [" + found + "]");
+            Assert.AreEqual(42, atCoaming[0].Value.Verts, "the coaming's ring is 42 vertices.");
+
+            // And the routes the interior contributes wholesale must land on the deck they name.
+            foreach (object l in DeckSidecarJson.AsArray(merged.Merged["LADDER"]))
+            {
+                List<object> connects = DeckSidecarJson.AsArray(DeckSidecarJson.Member(l, "connects"));
+                if (connects == null || connects.Count == 0) continue;
+                string top = DeckSidecarJson.String(connects[connects.Count - 1]);
+                double z1 = DeckSidecarJson.Float(DeckSidecarJson.Member(l, "z1"), float.NaN);
+                if (top == null || !byId.TryGetValue(top, out var deck)) continue;
+                Assert.LessOrEqual(System.Math.Abs(deck.Z - z1), 0.60,
+                    "after the merge, LADDER " + DeckSidecarJson.String(DeckSidecarJson.Member(l, "id")) +
+                    " tops out at z " + z1 + " and names " + top + " at z " + deck.Z + ".");
+            }
         }
 
         /// <summary>
