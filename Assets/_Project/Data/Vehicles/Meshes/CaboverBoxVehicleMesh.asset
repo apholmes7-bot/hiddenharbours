@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: vehiclemesh.cabover_box
   SourceRigPath: docs/art/rigs/road-fleet-kit/boxtruck-cabover/boxIsoRig.js
   SourceFaceBuilder: build(BoxIso.resolve({}))
-  Mesh: {fileID: 3488159858337213288}
+  Mesh: {fileID: 6895816527128850752}
   Ramps:
   - Colors:
     - serializedVersion: 2
@@ -288,6 +288,24 @@ MonoBehaviour:
   WatertightHalfBeamMeters: 0
   ColliderMinMeters: {x: -1.07, y: -3.3, z: 0}
   ColliderMaxMeters: {x: 1.07, y: 3.42, z: 3.08}
+  FifthWheel:
+    Published: 0
+    CouplingPointLocal: {x: 0, y: 0, z: 0}
+    SlotHalfWidthMeters: 0
+    SlotMouthY: 0
+    SlotSeatY: 0
+    RampMouthY: 0
+    ReleaseHandleLocal: {x: 0, y: 0}
+    CabClearanceMeters: 0
+  Kingpin:
+    Published: 0
+    CouplingPointLocal: {x: 0, y: 0, z: 0}
+    NoseSwingRadiusMeters: 0
+    KingpinToAxleCentreMeters: 0
+    TailSwingRadiusMeters: 0
+    NoseHalfWidthMeters: 0
+    KingpinSetMeters: 0
+    PinRadiusMeters: 0
   DoorGroups:
   - Id: tilt
     Slots:
@@ -398,7 +416,7 @@ MonoBehaviour:
     StateProps: []
     StateNames: []
     ParentSlot: 
---- !u!43 &3488159858337213288
+--- !u!43 &6895816527128850752
 Mesh:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

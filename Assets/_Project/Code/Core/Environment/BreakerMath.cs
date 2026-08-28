@@ -783,6 +783,73 @@ namespace HiddenHarbours.Core
             return 1f - WaveFetch.SmoothstepEdge(breakDepth, outerDepth, depthMeters);
         }
 
+        // ==== THE SURF AS A FORCE: everything a hull in the broken water needs (PR 3) ==============
+
+        /// <summary>
+        /// The <b>shoreward</b> unit direction from the painted bed's gradient — the way a shoaling wave
+        /// actually runs, and the direction a bore shoves anything floating in it.
+        ///
+        /// <para>Identical in shape to the shader's <c>ShoreDir</c>: the elevation gradient points toward
+        /// shallower water, which is toward the shore. Zero on a flat bed (no shore preference, so no
+        /// shove has a defined direction and the caller does nothing).</para>
+        /// </summary>
+        public static Vector2 ShorewardDirection(Vector2 worldPos, float probeMeters, ITidalTerrain terrain)
+        {
+            if (terrain == null) return Vector2.zero;
+
+            float h = Mathf.Max(0.01f, probeMeters);
+            float ex = terrain.ElevationAt(WaveFetch.Pixelize(worldPos + new Vector2(h, 0f)))
+                     - terrain.ElevationAt(WaveFetch.Pixelize(worldPos - new Vector2(h, 0f)));
+            float ey = terrain.ElevationAt(WaveFetch.Pixelize(worldPos + new Vector2(0f, h)))
+                     - terrain.ElevationAt(WaveFetch.Pixelize(worldPos - new Vector2(0f, h)));
+
+            var gradient = new Vector2(ex, ey);
+            float magnitude = gradient.magnitude;
+            return magnitude > 1e-5f ? gradient / magnitude : Vector2.zero;
+        }
+
+        /// <summary>
+        /// <b>The whole surf state at a position</b> — the one read a hull in broken water needs, so the
+        /// force side composes exactly what the renderer draws rather than assembling a lookalike of its
+        /// own. Pure and deterministic like everything else here (rule 5).
+        ///
+        /// <para>Costs the depth sample, two probes for the shoreward direction, two more for the bed
+        /// slope, and the whitewater march. A hull samples it once per tick at her own position — not per
+        /// pixel — so this is a cheap read on the sim cadence.</para>
+        /// </summary>
+        /// <param name="deepHeightMeters">The train's deep-water wave height H0 (2 x amplitude), for the
+        /// Iribarren steepness. Pass it through the fetch envelope if one is in play.</param>
+        public static SurfState SurfAt(Vector2 worldPos, float waterLevelMeters, ITidalTerrain terrain,
+                                       in BreakerContour contour, float fetchEnvelope01,
+                                       float deepHeightMeters, float deepWavelengthMeters,
+                                       in BreakerSettings settings)
+        {
+            if (terrain == null || !contour.Breaks) return SurfState.Calm;
+
+            float depth = waterLevelMeters - terrain.ElevationAt(WaveFetch.Pixelize(worldPos));
+            if (depth <= 0f) return SurfState.Calm;                      // aground, not afloat in surf
+
+            float breaking = Breaking01FromContour(depth, in contour, fetchEnvelope01);
+            if (breaking <= 0f) return SurfState.Calm;                   // deeper than the break line
+
+            Vector2 shoreward = ShorewardDirection(worldPos, settings.SlopeProbeMeters, terrain);
+            if (shoreward == Vector2.zero) return SurfState.Calm;        // flat bed: no defined shove
+
+            float age = MetersSinceBreakAlong(worldPos, shoreward, waterLevelMeters, terrain,
+                                              in contour, fetchEnvelope01, in settings);
+            float alive = WhitewaterEnergy01(age, depth, 9.81f, in settings);
+
+            float slope = BedSlopeAlong(worldPos, shoreward, settings.SlopeProbeMeters, terrain);
+            float plunging = PlungingWeight01(Iribarren(slope, deepHeightMeters, deepWavelengthMeters),
+                                              in settings);
+
+            // A broken wave stands at gamma*d — only as tall as the water it is running over. That is the
+            // height that does the shoving, not the deep-water one.
+            float standing = Mathf.Max(0f, settings.BreakerIndex) * depth;
+
+            return new SurfState(depth, shoreward, breaking, alive, standing, plunging);
+        }
+
         // ==== THE PLUNGING BAND: where the bathymetry earns a lip and a barrel (PR 2 drop 2) =======
 
         /// <summary>

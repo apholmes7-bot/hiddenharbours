@@ -261,6 +261,22 @@ namespace HiddenHarbours.Core
             ColliderMaxMeters.y > ColliderMinMeters.y &&
             ColliderMaxMeters.z > ColliderMinMeters.z;
 
+        [Header("Coupling (the art's own plate and pin; empty on a machine that does neither)")]
+        [Tooltip("A tractor's fifth wheel, off TOW.fifth_wheel. Published only on the two semis.")]
+        public VehicleFifthWheel FifthWheel;
+
+        [Tooltip("A towed body's kingpin and her follow inputs, off KINGPIN — per body, because one " +
+                 "sidecar serves four lengths.")]
+        public VehicleKingpin Kingpin;
+
+        /// <summary>She can pull a trailer. Read from the geometry she publishes, never from her
+        /// <see cref="VehicleKind"/> — the same shape as <see cref="Floats"/> and
+        /// <see cref="ShowsDriver"/>: what a machine can do is decided by what she carries.</summary>
+        public bool CanTow => FifthWheel.Published;
+
+        /// <summary>She is something to be pulled.</summary>
+        public bool IsTowable => Kingpin.Published;
+
         [Header("Doors (what the player works, and where the art says to stand)")]
         [Tooltip("Every INTERACT entry the art publishes that moves a fitting, with the fittings it " +
                  "moves. Empty on a machine with no worked openings.\n\n" +

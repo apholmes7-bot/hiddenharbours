@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: vehiclemesh.dually_3500
   SourceRigPath: docs/art/rigs/dually-iso-kit/vehicleIsoRig.js
   SourceFaceBuilder: build(VehicleIso.resolve({}))
-  Mesh: {fileID: 8688820853765566388}
+  Mesh: {fileID: 86303670436655632}
   Ramps:
   - Colors:
     - serializedVersion: 2
@@ -288,6 +288,24 @@ MonoBehaviour:
   WatertightHalfBeamMeters: 0
   ColliderMinMeters: {x: -1.24, y: -3.34, z: 0}
   ColliderMaxMeters: {x: 1.24, y: 3.3, z: 2.05}
+  FifthWheel:
+    Published: 0
+    CouplingPointLocal: {x: 0, y: 0, z: 0}
+    SlotHalfWidthMeters: 0
+    SlotMouthY: 0
+    SlotSeatY: 0
+    RampMouthY: 0
+    ReleaseHandleLocal: {x: 0, y: 0}
+    CabClearanceMeters: 0
+  Kingpin:
+    Published: 0
+    CouplingPointLocal: {x: 0, y: 0, z: 0}
+    NoseSwingRadiusMeters: 0
+    KingpinToAxleCentreMeters: 0
+    TailSwingRadiusMeters: 0
+    NoseHalfWidthMeters: 0
+    KingpinSetMeters: 0
+    PinRadiusMeters: 0
   DoorGroups: []
   Wheels:
   - Slot: WheelFL
@@ -350,7 +368,7 @@ MonoBehaviour:
     StateProps: []
     StateNames: []
     ParentSlot: 
---- !u!43 &8688820853765566388
+--- !u!43 &86303670436655632
 Mesh:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

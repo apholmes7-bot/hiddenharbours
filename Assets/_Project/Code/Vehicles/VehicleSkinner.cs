@@ -118,6 +118,18 @@ namespace HiddenHarbours.Vehicles
 
             InstallHandles(root, visual, mesh, vehicle.Id, doors);
 
+            // ⭐ A fifth wheel, for anything whose def publishes one — which is decided by the ART
+            // (VehicleMeshDef.CanTow reads her plate), never by her kind. A machine that does not
+            // tow never grows the component, so a bobtail box truck has no release handle to find.
+            if (mesh.CanTow)
+            {
+                var hitch = root.GetComponent<VehicleHitch>();
+                if (hitch == null) hitch = root.AddComponent<VehicleHitch>();
+                hitch.Configure(mesh, controller != null ? controller
+                                                        : root.GetComponent<VehicleController>(),
+                                vehicle.Id);
+            }
+
             var driver = root.GetComponent<VehicleMeshDriver>();
             if (driver == null) driver = root.AddComponent<VehicleMeshDriver>();
             driver.Configure(visual, renderer, mesh,

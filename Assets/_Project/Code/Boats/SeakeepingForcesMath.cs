@@ -176,6 +176,81 @@ namespace HiddenHarbours.Boats
         }
 
         /// <summary>
+        /// <b>THE SURF'S OWN BITE</b> (ADR 0040 PR 3) — the shove a bore gives a hull floating in it, and
+        /// the slew the pocket gives her. Returned in the SAME <see cref="SeakeepingForce"/> the swell
+        /// uses, so the controller adds one force and one torque: there is deliberately no second force
+        /// path (the charter's own words).
+        ///
+        /// <para><b>The physical read.</b> Broken water is not a slope, it is a mass of aerated water
+        /// moving shoreward. So the shove points along <see cref="SurfState.ShorewardDirection"/> — not
+        /// down a gradient — and its size scales with what the bore is actually carrying:
+        /// <see cref="SurfState.StandingHeightMeters"/> (γ·d, the depth-limited height, because a bore is
+        /// only as tall as the water it runs over) times <see cref="SurfState.Whitewater01"/> (what is
+        /// left of its energy). A hull sitting in dead foam at the top of the beach is barely pushed; one
+        /// in the boil at the break line takes the lot.</para>
+        ///
+        /// <para><b>The broach.</b> A boat caught beam-on in breaking water gets thrown sideways and
+        /// slewed — the classic broach. The torque keys on the BEAM component of the shove (a shove
+        /// straight up the bow or dead astern does not turn you) and is boosted where the break is
+        /// plunging, which is the water that actually does it. Sign follows the controller's existing
+        /// rudder convention, exactly as <see cref="Resolve"/>'s does.</para>
+        ///
+        /// <para><b>⚠️⚠️ NOT scaled by <see cref="Exposure01"/>, and that is deliberate.</b> That
+        /// exposure is a depth ramp that reads shallow water as sheltered — correct for swell, backwards
+        /// for surf, and at the shipped tuning it is exactly 0 at the break depth. Routing the shove
+        /// through it would multiply the whole feature away precisely where it acts. The gate is
+        /// <see cref="SurfState.Breaking01"/> instead, which is a stricter guarantee of the same thing:
+        /// zero in all calm water, all water too deep to break, and every sheltered corner where the
+        /// waves never reach the criterion. Glass comes free — a glass sea has no contour.
+        /// See <see cref="SurfState"/> for the full note.</para>
+        ///
+        /// <para><b>M1 law: gentle-to-medium never capsizes.</b> This adds planar force and yaw only —
+        /// no roll, no swamping, no sinking. And it pushes rather than teleports: a hull's ~20 s time
+        /// constant means she leans into the shove over seconds, which is what being carried by surf
+        /// actually feels like.</para>
+        ///
+        /// <para>Pure, static, allocation-free, deterministic (rule 5). Returns
+        /// <see cref="SeakeepingForce.None"/> when disabled, out of the surf, on glass, or for an inert
+        /// hull — so every path that is not in broken water is byte-identical to before.</para>
+        /// </summary>
+        public static SeakeepingForce SurfShove(in SurfState surf, Vector2 heading,
+                                                in SeakeepingResponse response,
+                                                in SeakeepingSettings settings)
+        {
+            if (!settings.Enabled || !settings.SurfEnabled) return SeakeepingForce.None;
+            if (!surf.IsWorking || response.Response <= 0f) return SeakeepingForce.None;
+
+            float strength = Mathf.Max(0f, settings.SurfShoveStrength);
+            if (strength <= 0f) return SeakeepingForce.None;
+
+            // What the bore is carrying, times how much of it is left, times how readily this hull moves.
+            float magnitude = strength
+                            * surf.Breaking01
+                            * surf.Whitewater01
+                            * Mathf.Max(0f, surf.StandingHeightMeters)
+                            * response.Response;
+            if (magnitude <= 0f) return SeakeepingForce.None;
+
+            Vector2 shove = surf.ShorewardDirection * magnitude;
+
+            // The broach: only the BEAM component slews her, and the pocket is where it bites.
+            float sqrMagnitude = heading.x * heading.x + heading.y * heading.y;
+            Vector2 bow = sqrMagnitude < MinHeadingSqrMagnitude
+                ? Vector2.up
+                : heading * (1f / Mathf.Sqrt(sqrMagnitude));
+            Vector2 starboard = new Vector2(bow.y, -bow.x);
+
+            float shoveAlongBeam = shove.x * starboard.x + shove.y * starboard.y;
+            float pocket = surf.Breaking01 * surf.Whitewater01;
+            float torque = -shoveAlongBeam
+                         * Mathf.Max(0f, settings.SurfBroachTorque)
+                         * pocket
+                         * Mathf.Lerp(0.35f, 1f, Mathf.Clamp01(surf.PlungingWeight01));
+
+            return new SeakeepingForce(shove, torque);
+        }
+
+        /// <summary>
         /// Assemble the sea's force + yaw on the hull this tick — the heart of B3. <paramref name="wave"/>
         /// is <c>WaveMath.Sample</c> under the hull (its <c>Slope</c> and <c>Height</c> are read);
         /// <paramref name="heading"/> is the bow axis (<c>transform.up</c>, normalized here, +Y fallback);
