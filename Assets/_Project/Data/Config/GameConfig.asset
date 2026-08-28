@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0179168190fdb04498a0e074075b24eb, type: 3}
   m_Name: GameConfig
   m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.GameConfig
+  VehicleDoorSweepSeconds: 0.85
+  VehicleGearCrankSeconds: 2.4
   SecondsPerDay: 1800
   DaysPerWeek: 7
   DaysPerSeason: 28

@@ -261,6 +261,26 @@ namespace HiddenHarbours.Core
             ColliderMaxMeters.y > ColliderMinMeters.y &&
             ColliderMaxMeters.z > ColliderMinMeters.z;
 
+        [Header("Doors (what the player works, and where the art says to stand)")]
+        [Tooltip("Every INTERACT entry the art publishes that moves a fitting, with the fittings it " +
+                 "moves. Empty on a machine with no worked openings.\n\n" +
+                 "⚠️ Not one per fitting: the art publishes one 'barn' handle and a reefer has two " +
+                 "leaves, one 'gear' crank and a trailer has shoes and legs. The player reaches for " +
+                 "the handle that was drawn.")]
+        public VehicleDoorGroup[] DoorGroups = Array.Empty<VehicleDoorGroup>();
+
+        /// <summary>The group with this id, or false. Named lookup rather than an index because the
+        /// ids are the art's own and a caller should ask for the one it means.</summary>
+        public bool TryGetDoorGroup(string id, out VehicleDoorGroup group)
+        {
+            if (DoorGroups != null)
+                for (int i = 0; i < DoorGroups.Length; i++)
+                    if (string.Equals(DoorGroups[i].Id, id, StringComparison.Ordinal))
+                    { group = DoorGroups[i]; return true; }
+            group = default;
+            return false;
+        }
+
         [Header("Wheels (the articulated fittings lifted out of the body mesh)")]
         [Tooltip("Every part that moves relative to the body, with the motion it takes. Written by " +
                  "the baker; the driver poses each one every LateUpdate.")]
@@ -334,6 +354,69 @@ namespace HiddenHarbours.Core
         /// there is one axle of a pair, not one wheel. See <c>VehicleRigFleet.Axis.YMin</c>.</para>
         /// </summary>
         RollOnly = 2,
+
+        /// <summary>
+        /// ⭐ <b>A DOOR</b> — a leaf, a hood, or a whole tilting cab: one rigid body swinging about
+        /// one published hinge, from shut to its published sweep.
+        ///
+        /// <para><b>Every one of these was measured before it was declared</b>, over the WHOLE vertex
+        /// set of the moved faces — the landing gear's law, because a deviation helper that skips
+        /// unmoved vertices measures the moved subset and will call a telescope rigid. Each returned
+        /// a radius error of 0, an invariant-coordinate error of 0, and an angle spread of
+        /// <b>0.000000</b>, with the recovered angle equal to the sidecar's published sweep to four
+        /// decimals. A door that does not measure that way is NOT one of these — see the rollup
+        /// (a different BUILD, not a pose) and the liftgate (a four-bar linkage).</para>
+        ///
+        /// <para>The hinge rides <see cref="VehicleFitment.HingeAxis"/> and
+        /// <see cref="HullPropMeshDef.PivotLocalMeters"/>; the sweep rides
+        /// <see cref="VehicleFitment.SweepDegrees"/>.</para>
+        /// </summary>
+        HingeRotation = 3,
+
+        /// <summary>
+        /// ⭐ <b>A part that SLIDES</b> — the van's curb-side door and a trailer's landing-gear
+        /// shoes: an exact rigid translation at every pose, along a path the rig publishes.
+        ///
+        /// <para>Measured deviation <b>0 at every sample</b> on both. The van's is two-phase (she
+        /// pops 0.085 m outboard, then runs 1.16 m aft), the shoes' is linear, and one sampled path
+        /// carries both — see <see cref="VehicleFitment.SlidePath"/>. This is the shape the landing
+        /// gear as a whole failed to be, which is why the shoes are here and the legs are
+        /// <see cref="DiscreteStates"/>.</para>
+        /// </summary>
+        Slide = 4,
+
+        /// <summary>
+        /// ⚠️ <b>A part that is NOT rigid, baked at each end of its travel rather than faked.</b>
+        ///
+        /// <para>The trailer's landing-gear LEGS: 8 tubes whose top two vertices are pinned at
+        /// z 1.120 while their bottoms rise 0.130 → 0.910. They neither rotate nor translate — they
+        /// shorten. No pivot and no offset reproduces that, so the honest answer is a baked mesh at
+        /// each end and a swap, and the swap lands at the END of the crank rather than half-way
+        /// through it, which is also what a hand-cranked leg looks like.</para>
+        ///
+        /// <para>The meshes ride <see cref="VehicleFitment.StateProps"/>, one per named state.
+        /// <see cref="VehicleFitment.Prop"/> is the first of them, so anything reading a fitting's
+        /// mesh without knowing about states still gets a real one.</para>
+        /// </summary>
+        DiscreteStates = 5,
+    }
+
+    /// <summary>
+    /// Which of the rig's own axes a <see cref="VehicleFitmentMotion.HingeRotation"/> turns about.
+    /// Two occur in the fleet, and the sidecars name them in exactly these words.
+    /// </summary>
+    public enum VehicleHingeAxis
+    {
+        /// <summary>Not a hinge — what every wheel, knuckle, slide and state-swapped part carries.</summary>
+        None = 0,
+
+        /// <summary>The sidecars' <c>"kind": "vertical"</c> — rig +z, out of the road. A cab door, a
+        /// van barn, a reefer's rear leaf: it swings in plan and its z never changes.</summary>
+        Vertical = 1,
+
+        /// <summary>The sidecars' <c>"kind": "x_axis"</c> — rig +x, the curb-side lateral. A hood or
+        /// a tilting cab: it swings in elevation about a transverse pin and its x never changes.</summary>
+        Lateral = 2,
     }
 
     /// <summary>Which side of the machine a fitting is on — the Ackermann split gives the two front
@@ -344,6 +427,16 @@ namespace HiddenHarbours.Core
         Left = 0,
         /// <summary>Curb side (rig +x).</summary>
         Right = 1,
+
+        /// <summary>
+        /// Neither — one assembly spanning the centreline. A trailer's landing gear is a leg each
+        /// side, a crossbrace between them and a crank on the street side, raised by ONE axis as one
+        /// body: splitting it by centroid would cut the crossbrace in half. Appended rather than
+        /// folded into <see cref="Left"/> because the side a fitting claims is read as a fact — the
+        /// Ackermann split hands the front wheels different angles by it, and the bake tests assert
+        /// a fitting's hub really is on the side it names.
+        /// </summary>
+        Centre = 2,
     }
 
     /// <summary>
@@ -369,5 +462,144 @@ namespace HiddenHarbours.Core
 
         public VehicleFitmentMotion Motion;
         public VehicleFitmentSide Side;
+
+        // ---- doors ---------------------------------------------------------------------------
+
+        [Tooltip("For a HingeRotation fitting: which of the rig's axes the hinge turns about. The " +
+                 "pin itself is the fitting's own PivotLocalMeters.\n\n" +
+                 "None on everything else — a wheel's axes come from its motion, not from here.")]
+        public VehicleHingeAxis HingeAxis;
+
+        [Tooltip("For a HingeRotation fitting: the SIGNED sweep from shut to fully open, degrees, " +
+                 "as the art publishes it.\n\n" +
+                 "⚠️ THE FULL SWEEP, NOT THE SHORT WAY ROUND. A reefer's barn door is 255°, which " +
+                 "reaches the same pose as −105° and gets there through an entirely different fan: " +
+                 "the published keep_clear sweeps to FULL OUTBOARD (|x| 2.37 m) at 180° before " +
+                 "folding back along the sides. A door animated the short way misses that volume " +
+                 "completely — it would swing through whatever is parked alongside and arrive " +
+                 "looking correct.")]
+        public float SweepDegrees;
+
+        [Tooltip("For a Slide fitting: where the part sits at each sampled pose fraction, measured " +
+                 "off the rig at bake time and asserted to be an exact rigid translation at every " +
+                 "sample. Interpolated between samples, which reproduces a piecewise-linear path " +
+                 "exactly — the van's slide pops outboard before it runs aft, so no single vector " +
+                 "describes it.")]
+        public VehicleSlideSample[] SlidePath;
+
+        [Tooltip("For a DiscreteStates fitting: one baked mesh per named state, in state order. " +
+                 "The part is not rigid, so it is baked at each end of its travel and swapped " +
+                 "rather than posed. StateNames[i] names StateProps[i].")]
+        public HullPropMeshDef[] StateProps;
+
+        [Tooltip("The state names, parallel to StateProps — 'down'/'up' on a landing gear's legs. " +
+                 "Named rather than indexed so a caller asks for the state it means.")]
+        public string[] StateNames;
+
+        [Tooltip("⭐ The slot this fitting HANGS OFF, or empty for the body.\n\n" +
+                 "One case in the fleet and it is load-bearing: a cabover's cab TILTS, and her two " +
+                 "doors are cut out of that cab. The bake claims the doors first (so the tilting " +
+                 "cab's own mesh excludes them, exactly as the steer axes leave the tyres to the " +
+                 "roll axes), which would otherwise leave two doors hanging in the air when the cab " +
+                 "goes over. Her sidecar says so in as many words — the door keep-clear arc 'RIDES " +
+                 "THE TILT: a tilted cab carries its door arcs with it'.\n\n" +
+                 "The driver composes parent-then-child, so a door on a tilted cab is its own swing " +
+                 "applied within the cab's.")]
+        public string ParentSlot;
+
+        /// <summary>The part's position along its <see cref="SlidePath"/> at pose fraction
+        /// <paramref name="t"/>, in rig metres. Clamped at both ends, and linear between samples —
+        /// which is exact, because the samples were taken at the path's own corners.</summary>
+        public Vector3 SlideOffsetAt(float t)
+        {
+            if (SlidePath == null || SlidePath.Length == 0) return Vector3.zero;
+            if (t <= SlidePath[0].T) return SlidePath[0].OffsetMeters;
+
+            for (int i = 1; i < SlidePath.Length; i++)
+            {
+                if (t > SlidePath[i].T) continue;
+                float span = SlidePath[i].T - SlidePath[i - 1].T;
+                float u = span <= 0f ? 1f : (t - SlidePath[i - 1].T) / span;
+                return Vector3.Lerp(SlidePath[i - 1].OffsetMeters, SlidePath[i].OffsetMeters, u);
+            }
+            return SlidePath[SlidePath.Length - 1].OffsetMeters;
+        }
+
+        /// <summary>The index of a named state, or −1. Callers that get −1 must leave the fitting
+        /// where it is rather than falling back to state 0 — a door asked for a state it does not
+        /// have is a wiring bug, and snapping it shut hides one.</summary>
+        public int StateIndex(string name)
+        {
+            if (StateNames == null) return -1;
+            for (int i = 0; i < StateNames.Length; i++)
+                if (string.Equals(StateNames[i], name, StringComparison.Ordinal)) return i;
+            return -1;
+        }
+    }
+
+    /// <summary>Which tunable paces a group — a door's hand or a gear's crank. They are separate
+    /// numbers because a hand crank is not a door, and the kit's coupling discipline (couple, then
+    /// wind the legs up before rolling) leans on the crank taking time.</summary>
+    public enum VehicleDoorWork
+    {
+        Door = 0,
+        LandingGear = 1,
+    }
+
+    /// <summary>
+    /// <b>One thing the player works, and where they stand to work it</b> — the sidecar's own
+    /// <c>INTERACT</c> entry, resolved to the fittings it moves.
+    ///
+    /// <para>A group rather than a fitting because the two do not correspond: the art publishes one
+    /// <c>barn</c> interaction and a reefer has two leaves, one <c>gear</c> crank and a trailer has
+    /// shoes and legs. The player reaches for the handle the art drew, and the fittings follow.</para>
+    ///
+    /// <para>⚠️ <b>The reach point is a REQUEST, not a promise</b> — the sidecars' own
+    /// <c>_interact_notes</c> say so, and several add that a point is "NOT tested against ground
+    /// colliders". It is where the art would like the player to stand; whether they can is the
+    /// world's business, and a consumer that cannot honour it should say so rather than teleporting
+    /// anyone.</para>
+    /// </summary>
+    [Serializable]
+    public struct VehicleDoorGroup
+    {
+        [Tooltip("The sidecar's own INTERACT id — 'barn', 'slide', 'hood', 'tilt', 'gear'. Kept " +
+                 "verbatim so a reader can find it in the art's document.")]
+        public string Id;
+
+        [Tooltip("The fitting slots this works, in the order the art lists them. A reefer's 'barn' " +
+                 "moves two leaves; a trailer's 'gear' moves the shoes and the legs together.")]
+        public string[] Slots;
+
+        [Tooltip("Where the art would like the player to stand, in rig metres (+x curb, +y nose). " +
+                 "Meaningful only when HasReachPoint — see the class doc on why it is a request.")]
+        public Vector2 ReachPointLocal;
+
+        [Tooltip("False when the art published no numeric point for this interaction. The trailer " +
+                 "kit's 'couple' entry, for instance, carries PROSE there — 'the ACT is the tractor " +
+                 "backing on' — because the act belongs to the other vehicle. Reading that as (0,0) " +
+                 "would put a handle at the machine's own origin.")]
+        public bool HasReachPoint;
+
+        [Tooltip("Which tunable paces this group.")]
+        public VehicleDoorWork Work;
+    }
+
+    /// <summary>One sample of a sliding part's path — where it sits at a given pose fraction.
+    ///
+    /// <para>A PATH rather than one offset because the van's slide is two-phase: she pops outboard
+    /// before she runs aft, so no single vector describes her. Sampled off the rig at bake time and
+    /// asserted to be an exact rigid translation at each sample, then interpolated — a measurement,
+    /// not a model.</para>
+    /// </summary>
+    [Serializable]
+    public struct VehicleSlideSample
+    {
+        [Tooltip("The pose fraction this offset was measured at (0 = shut or down, 1 = open or up).")]
+        [Range(0f, 1f)] public float T;
+
+        [Tooltip("Where the part sits at that fraction, as an offset in rig metres from where it " +
+                 "was baked.")]
+        public Vector3 OffsetMeters;
     }
 }
