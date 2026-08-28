@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using HiddenHarbours.Core;
 using UnityEngine;
 
 namespace HiddenHarbours.Tools.RigBaking
@@ -73,6 +74,15 @@ namespace HiddenHarbours.Tools.RigBaking
         public readonly Dictionary<string, Vector2> ReachPoints =
             new Dictionary<string, Vector2>(StringComparer.Ordinal);
 
+        /// <summary>Her fifth wheel, if she tows. Absent is the answer for everything but the two
+        /// semis.</summary>
+        public bool HasFifthWheel;
+        public VehicleFifthWheel FifthWheel;
+
+        /// <summary>Her kingpin and follow inputs, if she is towed.</summary>
+        public bool HasKingpin;
+        public VehicleKingpin Kingpin;
+
         /// <summary>What was absent and why that is the right answer — logged by the bake so a
         /// deliberate zero reads as one in the report rather than as silence.</summary>
         public readonly List<string> Absences = new List<string>();
@@ -136,6 +146,8 @@ namespace HiddenHarbours.Tools.RigBaking
             ReadCollider(facts, body);
             ReadDriveDoorAndSeat(facts, root);
             ReadFlotation(facts, root);
+            ReadFifthWheel(facts, root);
+            ReadKingpin(facts, root, bodyScope);
             return facts;
         }
 
@@ -333,6 +345,139 @@ namespace HiddenHarbours.Tools.RigBaking
         }
 
         // ---- small readers -----------------------------------------------------------------------
+
+
+        // ---- coupling ----------------------------------------------------------------------------
+
+        /// <summary>
+        /// A tractor's plate, off <c>TOW.fifth_wheel</c>. Every number the capture test needs and not
+        /// one more: the seat, the throat, the reach, the ramp mouth, the release handle and the
+        /// clearance the jackknife cap is solved against.
+        /// </summary>
+        static void ReadFifthWheel(VehicleSidecarFacts facts, object root)
+        {
+            object tow = DeckSidecarJson.Member(root, "TOW");
+            object fw = DeckSidecarJson.Member(tow, "fifth_wheel");
+            if (DeckSidecarJson.AsObject(fw) == null)
+            {
+                facts.Absences.Add("no TOW.fifth_wheel - she does not pull a trailer.");
+                return;
+            }
+
+            object slot = DeckSidecarJson.Member(fw, "slot");
+            object ramps = DeckSidecarJson.Member(fw, "ramps");
+            object handle = DeckSidecarJson.Member(fw, "release_handle");
+            object swing = DeckSidecarJson.Member(tow, "swing_clearance");
+
+            if (!TryVector3(fw, "coupling_point", out Vector3 seat) ||
+                !TryNumber(slot, "half_width", out float halfWidth) ||
+                !TryPair(slot, "reach_y", out float reachA, out float reachB) ||
+                !TryPairAt(ramps, "to", out float rampY, out float _) ||
+                !TryVector3(handle, "pos", out Vector3 release) ||
+                !TryNumber(swing, "kingpin_to_cabback_m", out float clearance))
+            {
+                facts.Errors.Add(
+                    "TOW.fifth_wheel is present but incomplete - the capture test needs the seat, " +
+                    "the slot's half_width and reach_y, the ramps' aft end, the release handle and " +
+                    "swing_clearance.kingpin_to_cabback_m. A partial plate would couple on numbers " +
+                    "nobody published.");
+                return;
+            }
+
+            facts.HasFifthWheel = true;
+            facts.FifthWheel = new VehicleFifthWheel
+            {
+                Published = true,
+                CouplingPointLocal = seat,
+                SlotHalfWidthMeters = halfWidth,
+                SlotMouthY = Mathf.Min(reachA, reachB),
+                SlotSeatY = Mathf.Max(reachA, reachB),
+                RampMouthY = rampY,
+                ReleaseHandleLocal = new Vector2(release.x, release.y),
+                CabClearanceMeters = clearance,
+            };
+        }
+
+        /// <summary>
+        /// A towed body's pin, off <c>KINGPIN</c> — and ⚠️ PER BODY: her coupling point and both her
+        /// follow inputs are published as maps keyed by body id, because one sidecar serves four
+        /// lengths. Reading the map instead of the body is the (file, pick) trap again, in the one
+        /// place where getting it wrong makes a 28 ft pup track like a 53.
+        /// </summary>
+        static void ReadKingpin(VehicleSidecarFacts facts, object root, string bodyScope)
+        {
+            object kp = DeckSidecarJson.Member(root, "KINGPIN");
+            if (DeckSidecarJson.AsObject(kp) == null)
+            {
+                facts.Absences.Add("no KINGPIN - she is not something anybody tows.");
+                return;
+            }
+
+            if (string.IsNullOrEmpty(bodyScope))
+            {
+                facts.Errors.Add(
+                    "KINGPIN is published but no body was named. Her coupling point and follow " +
+                    "inputs are maps keyed by body id; without the pick there is nothing to read " +
+                    "but somebody else's trailer.");
+                return;
+            }
+
+            object byBody = DeckSidecarJson.Member(kp, "coupling_point_by_body");
+            object inputs = DeckSidecarJson.Member(kp, "off_tracking_inputs");
+
+            if (!TryVector3(byBody, bodyScope, out Vector3 pin) ||
+                !TryNumber(kp, "nose_swing_r_m", out float noseSwing) ||
+                !TryNumber(DeckSidecarJson.Member(inputs, "kingpin_to_axle_centre_m"), bodyScope,
+                           out float toAxle) ||
+                !TryNumber(DeckSidecarJson.Member(inputs, "tail_swing_r_m"), bodyScope,
+                           out float tailSwing) ||
+                !TryNumber(kp, "width_m", out float width) ||
+                !TryNumber(kp, "set_from_nose_m", out float set) ||
+                !TryNumber(DeckSidecarJson.Member(kp, "pin"), "r", out float pinRadius))
+            {
+                facts.Errors.Add(
+                    $"KINGPIN is present but carries nothing for '{bodyScope}'. It needs " +
+                    "coupling_point_by_body, nose_swing_r_m, pin.r, and both off_tracking_inputs " +
+                    "maps - " +
+                    "the last is the length her whole follow is solved on, and a missing one would " +
+                    "make her track like whichever trailer was read instead.");
+                return;
+            }
+
+            facts.HasKingpin = true;
+            facts.Kingpin = new VehicleKingpin
+            {
+                Published = true,
+                CouplingPointLocal = pin,
+                NoseSwingRadiusMeters = noseSwing,
+                KingpinToAxleCentreMeters = toAxle,
+                TailSwingRadiusMeters = tailSwing,
+                // The two the cap is solved from. Her swing radius is sqrt of their squares, which
+                // the sidecar states as its own swing_basis - so reading both is a cross-check as
+                // well as an input, and VehicleCouplingTests asserts they reproduce it.
+                NoseHalfWidthMeters = width * 0.5f,
+                KingpinSetMeters = set,
+                // Her shaft radius. The capture test asks whether PIN METAL is in the slot, so the
+                // size of the pin is an input to it - see VehicleCouplingMath.IsCaptured.
+                PinRadiusMeters = pinRadius,
+            };
+        }
+
+        static bool TryVector3(object owner, string key, out Vector3 v)
+        {
+            v = default;
+            List<object> a = DeckSidecarJson.AsArray(DeckSidecarJson.Member(owner, key));
+            if (a == null || a.Count < 3) return false;
+            if (!DeckSidecarJson.TryDouble(a[0], out double x)) return false;
+            if (!DeckSidecarJson.TryDouble(a[1], out double y)) return false;
+            if (!DeckSidecarJson.TryDouble(a[2], out double z)) return false;
+            v = new Vector3((float)x, (float)y, (float)z);
+            return true;
+        }
+
+        /// <summary>The first two numbers of an array member - `ramps.to` is [y, z].</summary>
+        static bool TryPairAt(object owner, string key, out float a, out float b) =>
+            TryPair(owner, key, out a, out b);
 
         static bool TryPair(object owner, string key, out float lo, out float hi)
         {

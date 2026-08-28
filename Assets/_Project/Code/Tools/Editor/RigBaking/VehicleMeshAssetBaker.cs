@@ -351,6 +351,11 @@ namespace HiddenHarbours.Tools.RigBaking
             def.ColliderMinMeters = facts.HasCollider ? facts.ColliderMin : Vector3.zero;
             def.ColliderMaxMeters = facts.HasCollider ? facts.ColliderMax : Vector3.zero;
 
+            // The coupling, if she does either. Both default to an unpublished struct, which every
+            // consumer checks before reading - a zeroed plate would be a coupling at the origin.
+            def.FifthWheel = facts.HasFifthWheel ? facts.FifthWheel : default;
+            def.Kingpin = facts.HasKingpin ? facts.Kingpin : default;
+
             def.FloatSinkMeters = facts.HasFlotation ? facts.FloatSinkMeters : 0f;
             def.FloatDraftMeters = facts.HasFlotation ? facts.FloatDraftMeters : 0f;
             def.WatertightHalfBeamMeters = facts.HasFlotation ? facts.WatertightHalfBeamMeters : 0f;
@@ -366,7 +371,18 @@ namespace HiddenHarbours.Tools.RigBaking
                 $"drive door {(facts.HasDriveDoor ? def.DriveDoorLocal.ToString("0.###") : "none")}, " +
                 $"driver seat {(facts.HasDriverSeat ? def.DriverSeatLocal.ToString("0.###") : "hidden")}, " +
                 $"collider {(def.HasCollider ? $"{def.ColliderMinMeters:0.##}..{def.ColliderMaxMeters:0.##}" : "none")}, " +
-                $"floats = {def.Floats}." +
+                $"floats = {def.Floats}, " +
+                (def.CanTow
+                    ? $"fifth wheel seats at {def.FifthWheel.CouplingPointLocal.y:0.##} (slot " +
+                      $"{def.FifthWheel.SlotHalfWidthMeters:0.###} x " +
+                      $"{Mathf.Abs(def.FifthWheel.SlotSeatY - def.FifthWheel.SlotMouthY):0.##}, ramp " +
+                      $"mouth {def.FifthWheel.RampMouthY:0.##}), capture within " +
+                      $"{VehicleCouplingMath.CaptureHeadingToleranceDegrees(def.FifthWheel):0.##} deg."
+                    : def.IsTowable
+                        ? $"kingpin at {def.Kingpin.CouplingPointLocal.y:0.###}, follows on " +
+                          $"{def.Kingpin.KingpinToAxleCentreMeters:0.###} m, jackknife cap " +
+                          $"{VehicleCouplingMath.JackknifeCapDegrees(def.Kingpin.NoseHalfWidthMeters, def.Kingpin.KingpinSetMeters, 1.52f):0.#} deg."
+                        : "neither tows nor is towed.") +
                 (facts.Absences.Count == 0
                     ? ""
                     : "\n  Absent, and each absence is an ANSWER rather than a gap:\n    – " +
