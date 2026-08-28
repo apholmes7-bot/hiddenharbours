@@ -1,0 +1,454 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!43 &-1810661609534745245
+Mesh:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: convBoxRollup_openMesh
+  serializedVersion: 12
+  m_SubMeshes:
+  - serializedVersion: 2
+    firstByte: 0
+    indexCount: 90
+    topology: 0
+    baseVertex: 0
+    firstVertex: 0
+    vertexCount: 60
+    localAABB:
+      m_Center: {x: 0, y: -3.67, z: 3.52}
+      m_Extent: {x: 1.095, y: 1.1999999, z: 0}
+  m_Shapes:
+    vertices: []
+    shapes: []
+    channels: []
+    fullWeights: []
+  m_BindPose: []
+  m_BoneNameHashes: 
+  m_RootBoneNameHash: 0
+  m_BonesAABB: []
+  m_VariableBoneCountWeights:
+    m_Data: 
+  m_MeshCompression: 0
+  m_IsReadable: 1
+  m_KeepVertices: 1
+  m_KeepIndices: 1
+  m_IndexFormat: 0
+  m_IndexBuffer: 000001000200000002000300040005000600040006000700080009000a0008000a000b000c000d000e000c000e000f00100011001200100012001300140015001600140016001700180019001a0018001a001b001c001d001e001c001e001f00200021002200200022002300240025002600240026002700280029002a0028002a002b002c002d002e002c002e002f00300031003200300032003300340035003600340036003700380039003a0038003a003b00
+  m_VertexData:
+    serializedVersion: 3
+    m_VertexCount: 60
+    m_Channels:
+    - stream: 0
+      offset: 0
+      format: 0
+      dimension: 3
+    - stream: 0
+      offset: 12
+      format: 0
+      dimension: 3
+    - stream: 0
+      offset: 0
+      format: 0
+      dimension: 0
+    - stream: 0
+      offset: 0
+      format: 0
+      dimension: 0
+    - stream: 0
+      offset: 24
+      format: 0
+      dimension: 4
+    - stream: 0
+      offset: 0
+      format: 0
+      dimension: 0
+    - stream: 0
+      offset: 0
+      format: 0
+      dimension: 0
+    - stream: 0
+      offset: 0
+      format: 0
+      dimension: 0
+    - stream: 0
+      offset: 0
+      format: 0
+      dimension: 0
+    - stream: 0
+      offset: 0
+      format: 0
+      dimension: 0
+    - stream: 0
+      offset: 0
+      format: 0
+      dimension: 0
+    - stream: 0
+      offset: 0
+      format: 0
+      dimension: 0
+    - stream: 0
+      offset: 0
+      format: 0
+      dimension: 0
+    - stream: 0
+      offset: 0
+      format: 0
+      dimension: 0
+    m_DataSize: 2400
+    _typelessdata: f6288cbf0ad79bc0ae47614000000000000000000000803f0000e040cdccccbd0000000000000000f6288c3f0ad79bc0ae47614000000000000000000000803f0000e040cdccccbd0000000000000000f6288c3f52b896c0ae47614000000000000000000000803f0000e040cdccccbd0000000000000000f6288cbf52b896c0ae47614000000000000000000000803f0000e040cdccccbd0000000000000000f6288cbf52b896c0ae47614000000000000000000000803f0000e0400ad7a33c0000000000000000f6288c3f52b896c0ae47614000000000000000000000803f0000e0400ad7a33c0000000000000000f6288c3f9a9991c0ae47614000000000000000000000803f0000e0400ad7a33c0000000000000000f6288cbf9a9991c0ae47614000000000000000000000803f0000e0400ad7a33c0000000000000000f6288cbf9a9991c0ae47614000000000000000000000803f0000e040cdccccbd0000000000000000f6288c3f9a9991c0ae47614000000000000000000000803f0000e040cdccccbd0000000000000000f6288c3fe17a8cc0ae47614000000000000000000000803f0000e040cdccccbd0000000000000000f6288cbfe17a8cc0ae47614000000000000000000000803f0000e040cdccccbd0000000000000000f6288cbfe17a8cc0ae47614000000000000000000000803f0000e0400ad7a33c0000000000000000f6288c3fe17a8cc0ae47614000000000000000000000803f0000e0400ad7a33c0000000000000000f6288c3f295c87c0ae47614000000000000000000000803f0000e0400ad7a33c0000000000000000f6288cbf295c87c0ae47614000000000000000000000803f0000e0400ad7a33c0000000000000000f6288cbf295c87c0ae47614000000000000000000000803f0000e040cdccccbd0000000000000000f6288c3f295c87c0ae47614000000000000000000000803f0000e040cdccccbd0000000000000000f6288c3f713d82c0ae47614000000000000000000000803f0000e040cdccccbd0000000000000000f6288cbf713d82c0ae47614000000000000000000000803f0000e040cdccccbd0000000000000000f6288cbf713d82c0ae47614000000000000000000000803f0000e0400ad7a33c0000000000000000f6288c3f713d82c0ae47614000000000000000000000803f0000e0400ad7a33c0000000000000000f6288c3f713d7ac0ae47614000000000000000000000803f0000e0400ad7a33c0000000000000000f6288cbf713d7ac0ae47614000000000000000000000803f0000e0400ad7a33c0000000000000000f6288cbf713d7ac0ae47614000000000000000000000803f0000e040cdccccbd0000000000000000f6288c3f713d7ac0ae47614000000000000000000000803f0000e040cdccccbd0000000000000000f6288c3f000070c0ae47614000000000000000000000803f0000e040cdccccbd0000000000000000f6288cbf000070c0ae47614000000000000000000000803f0000e040cdccccbd0000000000000000f6288cbf000070c0ae47614000000000000000000000803f0000e0400ad7a33c0000000000000000f6288c3f000070c0ae47614000000000000000000000803f0000e0400ad7a33c0000000000000000f6288c3f8fc265c0ae47614000000000000000000000803f0000e0400ad7a33c0000000000000000f6288cbf8fc265c0ae47614000000000000000000000803f0000e0400ad7a33c0000000000000000f6288cbf8fc265c0ae47614000000000000000000000803f0000e040cdccccbd0000000000000000f6288c3f8fc265c0ae47614000000000000000000000803f0000e040cdccccbd0000000000000000f6288c3f1f855bc0ae47614000000000000000000000803f0000e040cdccccbd0000000000000000f6288cbf1f855bc0ae47614000000000000000000000803f0000e040cdccccbd0000000000000000f6288cbf1f855bc0ae47614000000000000000000000803f0000e0400ad7a33c0000000000000000f6288c3f1f855bc0ae47614000000000000000000000803f0000e0400ad7a33c0000000000000000f6288c3fae4751c0ae47614000000000000000000000803f0000e0400ad7a33c0000000000000000f6288cbfae4751c0ae47614000000000000000000000803f0000e0400ad7a33c0000000000000000f6288cbfae4751c0ae47614000000000000000000000803f0000e040cdccccbd0000000000000000f6288c3fae4751c0ae47614000000000000000000000803f0000e040cdccccbd0000000000000000f6288c3f3d0a47c0ae47614000000000000000000000803f0000e040cdccccbd0000000000000000f6288cbf3d0a47c0ae47614000000000000000000000803f0000e040cdccccbd0000000000000000f6288cbf3d0a47c0ae47614000000000000000000000803f0000e0400ad7a33c0000000000000000f6288c3f3d0a47c0ae47614000000000000000000000803f0000e0400ad7a33c0000000000000000f6288c3fcdcc3cc0ae47614000000000000000000000803f0000e0400ad7a33c0000000000000000f6288cbfcdcc3cc0ae47614000000000000000000000803f0000e0400ad7a33c0000000000000000f6288cbfcdcc3cc0ae47614000000000000000000000803f0000e040cdccccbd0000000000000000f6288c3fcdcc3cc0ae47614000000000000000000000803f0000e040cdccccbd0000000000000000f6288c3f5c8f32c0ae47614000000000000000000000803f0000e040cdccccbd0000000000000000f6288cbf5c8f32c0ae47614000000000000000000000803f0000e040cdccccbd0000000000000000f6288cbf5c8f32c0ae47614000000000000000000000803f0000e0400ad7a33c0000000000000000f6288c3f5c8f32c0ae47614000000000000000000000803f0000e0400ad7a33c0000000000000000f6288c3fec5128c0ae47614000000000000000000000803f0000e0400ad7a33c0000000000000000f6288cbfec5128c0ae47614000000000000000000000803f0000e0400ad7a33c0000000000000000f6288cbfec5128c0ae47614000000000000000000000803f0000e040cdccccbd0000000000000000f6288c3fec5128c0ae47614000000000000000000000803f0000e040cdccccbd0000000000000000f6288c3f7b141ec0ae47614000000000000000000000803f0000e040cdccccbd0000000000000000f6288cbf7b141ec0ae47614000000000000000000000803f0000e040cdccccbd0000000000000000
+  m_CompressedMesh:
+    m_Vertices:
+      m_NumItems: 0
+      m_Range: 0
+      m_Start: 0
+      m_Data: 
+      m_BitSize: 0
+    m_UV:
+      m_NumItems: 0
+      m_Range: 0
+      m_Start: 0
+      m_Data: 
+      m_BitSize: 0
+    m_Normals:
+      m_NumItems: 0
+      m_Range: 0
+      m_Start: 0
+      m_Data: 
+      m_BitSize: 0
+    m_Tangents:
+      m_NumItems: 0
+      m_Range: 0
+      m_Start: 0
+      m_Data: 
+      m_BitSize: 0
+    m_Weights:
+      m_NumItems: 0
+      m_Data: 
+      m_BitSize: 0
+    m_NormalSigns:
+      m_NumItems: 0
+      m_Data: 
+      m_BitSize: 0
+    m_TangentSigns:
+      m_NumItems: 0
+      m_Data: 
+      m_BitSize: 0
+    m_FloatColors:
+      m_NumItems: 0
+      m_Range: 0
+      m_Start: 0
+      m_Data: 
+      m_BitSize: 0
+    m_BoneIndices:
+      m_NumItems: 0
+      m_Data: 
+      m_BitSize: 0
+    m_Triangles:
+      m_NumItems: 0
+      m_Data: 
+      m_BitSize: 0
+    m_UVInfo: 0
+  m_LocalAABB:
+    m_Center: {x: 0, y: -3.67, z: 3.52}
+    m_Extent: {x: 1.095, y: 1.1999999, z: 0}
+  m_MeshUsageFlags: 0
+  m_CookingOptions: 30
+  m_BakedConvexCollisionMesh: 
+  m_BakedTriangleCollisionMesh: 
+  'm_MeshMetrics[0]': 1
+  'm_MeshMetrics[1]': 1
+  m_MeshOptimizationFlags: 1
+  m_StreamData:
+    serializedVersion: 2
+    offset: 0
+    size: 0
+    path: 
+  m_MeshLodInfo:
+    serializedVersion: 2
+    m_LodSelectionCurve:
+      serializedVersion: 1
+      m_LodSlope: 0
+      m_LodBias: 0
+    m_NumLevels: 1
+    m_SubMeshes:
+    - serializedVersion: 2
+      m_Levels:
+      - serializedVersion: 1
+        m_IndexStart: 0
+        m_IndexCount: 0
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7a183bdcbdd04f40ba313a1453773cd, type: 3}
+  m_Name: convBox_Rollup_open
+  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.HullPropMeshDef
+  Id: vehicleprop.conv_box_rollup_open
+  SourceRigPath: docs/art/rigs/road-fleet-kit/boxtruck-conventional/convBoxIsoRig.js
+  SourceFaceBuilder: build(ConvBoxIso.resolve({}))
+  Mesh: {fileID: -1810661609534745245}
+  FixedMesh: {fileID: 0}
+  Ramps:
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4287139465
+    - serializedVersion: 2
+      rgba: 4288521634
+    - serializedVersion: 2
+      rgba: 4290034874
+    - serializedVersion: 2
+      rgba: 4291482319
+    - serializedVersion: 2
+      rgba: 4292535008
+    - serializedVersion: 2
+      rgba: 4293258732
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4287139465
+    - serializedVersion: 2
+      rgba: 4288521634
+    - serializedVersion: 2
+      rgba: 4290034874
+    - serializedVersion: 2
+      rgba: 4291482319
+    - serializedVersion: 2
+      rgba: 4292535008
+    - serializedVersion: 2
+      rgba: 4293258732
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4285888370
+    - serializedVersion: 2
+      rgba: 4286809474
+    - serializedVersion: 2
+      rgba: 4287730576
+    - serializedVersion: 2
+      rgba: 4288586141
+    - serializedVersion: 2
+      rgba: 4289309608
+    - serializedVersion: 2
+      rgba: 4289770159
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4280492061
+    - serializedVersion: 2
+      rgba: 4280952355
+    - serializedVersion: 2
+      rgba: 4281544234
+    - serializedVersion: 2
+      rgba: 4282136370
+    - serializedVersion: 2
+      rgba: 4282925372
+    - serializedVersion: 2
+      rgba: 4283714887
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4281017891
+    - serializedVersion: 2
+      rgba: 4281872942
+    - serializedVersion: 2
+      rgba: 4282793786
+    - serializedVersion: 2
+      rgba: 4283846216
+    - serializedVersion: 2
+      rgba: 4284964439
+    - serializedVersion: 2
+      rgba: 4286148456
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279307787
+    - serializedVersion: 2
+      rgba: 4279768079
+    - serializedVersion: 2
+      rgba: 4280228372
+    - serializedVersion: 2
+      rgba: 4280819994
+    - serializedVersion: 2
+      rgba: 4281412129
+    - serializedVersion: 2
+      rgba: 4282004008
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279703066
+    - serializedVersion: 2
+      rgba: 4280426788
+    - serializedVersion: 2
+      rgba: 4281413168
+    - serializedVersion: 2
+      rgba: 4282400062
+    - serializedVersion: 2
+      rgba: 4283584335
+    - serializedVersion: 2
+      rgba: 4284834658
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4283913815
+    - serializedVersion: 2
+      rgba: 4285229931
+    - serializedVersion: 2
+      rgba: 4286677377
+    - serializedVersion: 2
+      rgba: 4288125080
+    - serializedVersion: 2
+      rgba: 4289572784
+    - serializedVersion: 2
+      rgba: 4291020488
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4283715657
+    - serializedVersion: 2
+      rgba: 4285228895
+    - serializedVersion: 2
+      rgba: 4287070841
+    - serializedVersion: 2
+      rgba: 4288847509
+    - serializedVersion: 2
+      rgba: 4290558385
+    - serializedVersion: 2
+      rgba: 4292269264
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4283715658
+    - serializedVersion: 2
+      rgba: 4285163360
+    - serializedVersion: 2
+      rgba: 4287005306
+    - serializedVersion: 2
+      rgba: 4288781974
+    - serializedVersion: 2
+      rgba: 4290492850
+    - serializedVersion: 2
+      rgba: 4292269265
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279768340
+    - serializedVersion: 2
+      rgba: 4280294682
+    - serializedVersion: 2
+      rgba: 4281017891
+    - serializedVersion: 2
+      rgba: 4281676077
+    - serializedVersion: 2
+      rgba: 4282596920
+    - serializedVersion: 2
+      rgba: 4283583558
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279702291
+    - serializedVersion: 2
+      rgba: 4280491805
+    - serializedVersion: 2
+      rgba: 4281543979
+    - serializedVersion: 2
+      rgba: 4282662458
+    - serializedVersion: 2
+      rgba: 4283912524
+    - serializedVersion: 2
+      rgba: 4285294433
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4278848570
+    - serializedVersion: 2
+      rgba: 4279112282
+    - serializedVersion: 2
+      rgba: 4279508093
+    - serializedVersion: 2
+      rgba: 4280101541
+    - serializedVersion: 2
+      rgba: 4280958153
+    - serializedVersion: 2
+      rgba: 4282341348
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4278660170
+    - serializedVersion: 2
+      rgba: 4278927981
+    - serializedVersion: 2
+      rgba: 4279392911
+    - serializedVersion: 2
+      rgba: 4280252336
+    - serializedVersion: 2
+      rgba: 4281571020
+    - serializedVersion: 2
+      rgba: 4283806949
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4285229408
+    - serializedVersion: 2
+      rgba: 4285821285
+    - serializedVersion: 2
+      rgba: 4286544749
+    - serializedVersion: 2
+      rgba: 4287334262
+    - serializedVersion: 2
+      rgba: 4288979083
+    - serializedVersion: 2
+      rgba: 4291348400
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4281017883
+    - serializedVersion: 2
+      rgba: 4281872932
+    - serializedVersion: 2
+      rgba: 4282990895
+    - serializedVersion: 2
+      rgba: 4284240957
+    - serializedVersion: 2
+      rgba: 4286741341
+    - serializedVersion: 2
+      rgba: 4290426518
+    Offset: 0
+  LightN: {x: -0.42750445, y: 0.73286474, z: 0.5292912}
+  Gain: 3.1
+  Bias: 2.55
+  Bayer16:
+  - 0.03125
+  - 0.53125
+  - 0.15625
+  - 0.65625
+  - 0.78125
+  - 0.28125
+  - 0.90625
+  - 0.40625
+  - 0.21875
+  - 0.71875
+  - 0.09375
+  - 0.59375
+  - 0.96875
+  - 0.46875
+  - 0.84375
+  - 0.34375
+  Keyline:
+    serializedVersion: 2
+    rgba: 4280425498
+  PivotPx: {x: 224, y: 214}
+  PxPerMetre: 32
+  CellW: 448
+  CellH: 352
+  ElevationDeg: 40
+  PivotLocalMeters: {x: 0, y: -4.8, z: 0}
+  MaxSteerDegrees: 0
+  MaxTiltDegrees: 0
+  LateralMountsMeters: []

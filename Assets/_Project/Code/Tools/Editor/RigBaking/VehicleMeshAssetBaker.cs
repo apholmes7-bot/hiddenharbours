@@ -186,7 +186,7 @@ namespace HiddenHarbours.Tools.RigBaking
                 HullPropMeshDef prop;
                 if (plan.Motion == VehicleFitmentMotion.DiscreteStates)
                 {
-                    states = WriteFittingStates(v, plan, chassis);
+                    states = WriteFittingStates(v, plan, chassis, data);
                     prop = states[0];      // the baked-at pose, so a caller that ignores states still draws
                 }
                 else
@@ -1224,11 +1224,25 @@ namespace HiddenHarbours.Tools.RigBaking
         /// <summary>
         /// ⚠️ <b>Bake a part that is NOT rigid at each end of its travel instead of faking it.</b>
         ///
-        /// <para>One extraction per state, at the state's own pose, taking the SAME face indices the
-        /// probe claimed. That is only sound because every state is a pose of the same build — the
-        /// face list keeps its length and its order — which is exactly the property the rollup does
-        /// NOT have (at <c>rollup:1</c> its face count changes) and the reason the rollup is a
-        /// whole-body two-state bake in PR 3c rather than a fitting here.</para>
+        /// <para><b>Two ways to claim the faces, and the art picks which.</b></para>
+        ///
+        /// <list type="number">
+        ///   <item><b>One probe (no <c>StateProbes</c>).</b> Every state is a pose of the same build,
+        ///   so the face list keeps its length and its order and each state takes the SAME indices
+        ///   the probe claimed. The landing gear's legs are this.</item>
+        ///   <item><b>A probe per state.</b> The part's face COUNT changes across its travel, so
+        ///   indices claimed in one build name different geometry in another and each state must be
+        ///   claimed inside its own build. The rollup is this — her curtain rolls into a stack and
+        ///   six faces stop existing (1090 → 1084 cabover, 1211 → 1205 conventional).</item>
+        /// </list>
+        ///
+        /// <para>⭐ <b>The second way is only sound if the parameter touches the part and nothing
+        /// else, so that is PROVED here rather than assumed.</b> Every state's build, minus that
+        /// state's claimed faces, must equal the rest build minus its own — face for face, vertex for
+        /// vertex, material for material. Measured today at exactly 0 on both trucks (1072 faces and
+        /// 1190), and re-measured at every bake: a re-stamp that made the rollup nudge anything but
+        /// her own door fails here instead of shipping a body that quietly changes shape when a door
+        /// opens.</para>
         ///
         /// <para>⚠️ Each state pose is MERGED onto the vehicle's rest pose, so a container rig's body
         /// pick survives into the second extraction. Dropping it would bake the default trailer's
@@ -1236,15 +1250,21 @@ namespace HiddenHarbours.Tools.RigBaking
         /// drop.</para>
         /// </summary>
         static HullPropMeshDef[] WriteFittingStates(in VehicleRigFleet.Vehicle v, in FitmentPlan plan,
-                                                    in Chassis chassis)
+                                                    in Chassis chassis, RigMeshData restData)
         {
-            string[] names = plan.Axis.StateNames, poses = plan.Axis.StatePoses;
+            string[] names = plan.Axis.StateNames, poses = plan.Axis.StatePoses,
+                     probes = plan.Axis.StateProbes;
             if (names == null || poses == null || names.Length != poses.Length || names.Length < 2)
                 throw new InvalidOperationException(
                     $"{v.Key}: '{plan.Slot}' is a DiscreteStates fitting without at least two matching " +
                     "state names and poses. A part baked at its ends needs both ends named.");
+            if (probes != null && probes.Length != names.Length)
+                throw new InvalidOperationException(
+                    $"{v.Key}: '{plan.Slot}' names {names.Length} states but {probes.Length} state " +
+                    "probes. A per-state claim needs one probe per state — see Axis.StateProbes.");
 
             var props = new HullPropMeshDef[names.Length];
+            var counts = new int[names.Length];
             for (int i = 0; i < names.Length; i++)
             {
                 string pose = MergePose(v.RestPose, poses[i]);
@@ -1252,31 +1272,185 @@ namespace HiddenHarbours.Tools.RigBaking
                 // A FRESH host per state: ExtractFrom runs the rig source, and re-running it into a
                 // host that already holds one would stack two copies of the same IIFE.
                 using IRigScriptHost stateHost = RigScriptHostFactory.Create();
-                RigMeshData stateData = RigMeshExtractor.ExtractFrom(
-                    stateHost, v.ScriptPath, v.GlobalName,
-                    hull: new RigHullExtraction
-                    {
-                        FaceExpression = $"{v.FaceBuilderName}({v.GlobalName}.resolve({pose}))",
-                        ExtraSymbols = v.Extraction.ExtraSymbols,
-                        HullScope = v.Extraction.HullScope,
-                        ViewOptions = v.Extraction.ViewOptions,
-                    });
+                RigMeshData stateData = Build(stateHost, v, pose);
 
-                if (stateData.Faces.Count <= plan.Faces[plan.Faces.Count - 1])
-                    throw new InvalidOperationException(
-                        $"{v.Key}: '{plan.Slot}' state '{names[i]}' built {stateData.Faces.Count} faces, " +
-                        $"too few to hold the indices the probe claimed (up to " +
-                        $"{plan.Faces[plan.Faces.Count - 1]}). A state that changes the face COUNT is a " +
-                        "different build, not a pose, and cannot be a fitting — bake the whole body at " +
-                        "both states instead.");
+                List<int> faces;
+                if (probes == null)
+                {
+                    // ---- one probe: every state is a pose of the same build ---------------------
+                    if (stateData.Faces.Count <= plan.Faces[plan.Faces.Count - 1])
+                        throw new InvalidOperationException(
+                            $"{v.Key}: '{plan.Slot}' state '{names[i]}' built {stateData.Faces.Count} " +
+                            $"faces, too few to hold the indices the probe claimed (up to " +
+                            $"{plan.Faces[plan.Faces.Count - 1]}). A state that changes the face COUNT " +
+                            "is a different build, not a pose — give this axis a StateProbes array so " +
+                            "each state is claimed inside its own build.");
+                    faces = plan.Faces;
+                }
+                else
+                {
+                    // ---- a probe per state: claimed INSIDE this build ---------------------------
+                    using IRigScriptHost probeHost = RigScriptHostFactory.Create();
+                    RigMeshData probeData =
+                        Build(probeHost, v, MergePose(v.RestPose, probes[i]));
 
-                props[i] = WriteFitting(v, plan, stateData, chassis, names[i]);
+                    // ⚠️ The probe has to sit on the SAME SIDE of the topology change as its state.
+                    // If it does not, the two builds are different shapes and the diff below would
+                    // be meaningless — so this is checked rather than assumed. A re-stamp that moved
+                    // the change past a probe value lands here.
+                    if (probeData.Faces.Count != stateData.Faces.Count)
+                        throw new InvalidOperationException(
+                            $"{v.Key}: '{plan.Slot}' state '{names[i]}' builds " +
+                            $"{stateData.Faces.Count} faces but its probe {probes[i]} builds " +
+                            $"{probeData.Faces.Count}. The probe has crossed the part's topology " +
+                            "change, so it can no longer say which faces are this state's. Move it " +
+                            "to the state's own side of the change.");
+
+                    faces = ClaimMoved(stateData, probeData, plan.Axis);
+                    if (faces.Count == 0)
+                        throw new InvalidOperationException(
+                            $"{v.Key}: '{plan.Slot}' state '{names[i]}' claimed NO faces from probe " +
+                            $"{probes[i]} — the probe is a no-op at this state, so the fitting would " +
+                            "be an empty mesh.");
+
+                    ProveTheBodyIsUntouched(v, plan, restData, stateData, faces, names[i]);
+                }
+
+                counts[i] = faces.Count;
+                props[i] = WriteFitting(v, WithFaces(plan, faces), stateData, chassis, names[i]);
             }
 
-            Debug.Log($"[rig-vehicle] {v.Key} '{plan.Slot}': {plan.Faces.Count} faces baked at " +
-                      $"{names.Length} states ({string.Join(", ", names)}) because the part is not " +
-                      "rigid — it neither rotates nor translates, so there is nothing to pose it by.");
+            string sizes;
+            if (probes == null) sizes = $"{plan.Faces.Count} faces";
+            else
+            {
+                var parts = new string[names.Length];
+                for (int p2 = 0; p2 < names.Length; p2++) parts[p2] = $"{counts[p2]} {names[p2]}";
+                sizes = string.Join(" / ", parts);
+            }
+            Debug.Log($"[rig-vehicle] {v.Key} '{plan.Slot}': {sizes} baked at {names.Length} states " +
+                      $"({string.Join(", ", names)}) because the part is not rigid — it neither " +
+                      "rotates nor translates, so there is nothing to pose it by." +
+                      (probes == null ? "" : " Claimed per state; body proved untouched."));
             return props;
+        }
+
+        /// <summary>One extraction of the whole body at a pose — the shape every state and probe
+        /// build takes, in one place so they cannot drift apart.</summary>
+        static RigMeshData Build(IRigScriptHost host, in VehicleRigFleet.Vehicle v, string pose) =>
+            RigMeshExtractor.ExtractFrom(
+                host, v.ScriptPath, v.GlobalName,
+                hull: new RigHullExtraction
+                {
+                    FaceExpression = $"{v.FaceBuilderName}({v.GlobalName}.resolve({pose}))",
+                    ExtraSymbols = v.Extraction.ExtraSymbols,
+                    HullScope = v.Extraction.HullScope,
+                    ViewOptions = v.Extraction.ViewOptions,
+                });
+
+        static FitmentPlan WithFaces(in FitmentPlan plan, List<int> faces) =>
+            new FitmentPlan(plan.Slot, faces, plan.Motion, plan.Side, plan.Pivot,
+                            plan.Axis, plan.SlidePath);
+
+        /// <summary>
+        /// The same claim <c>__vmoved</c> makes, asked of two builds already in hand — used when a
+        /// state has to be claimed inside its own build rather than the rest one. The filters are
+        /// applied in the same order and with the same meaning, so a per-state claim and a
+        /// rest-claim cannot disagree about what a side sign or a station window means.
+        /// </summary>
+        static List<int> ClaimMoved(RigMeshData a, RigMeshData b, in VehicleRigFleet.Axis axis)
+        {
+            var mats = axis.Materials == null || axis.Materials.Length == 0
+                ? null : new HashSet<string>(axis.Materials);
+            var outIdx = new List<int>();
+
+            for (int i = 0; i < a.Faces.Count; i++)
+            {
+                RigFace fa = a.Faces[i], fb = b.Faces[i];
+                if (mats != null && !mats.Contains(a.Materials[fa.Mat].Name)) continue;
+
+                bool moved = false;
+                for (int k = 0; k < fa.V.Length && !moved; k++)
+                    if (fa.V[k].X != fb.V[k].X || fa.V[k].Y != fb.V[k].Y || fa.V[k].Z != fb.V[k].Z)
+                        moved = true;
+                if (!moved) continue;
+
+                if (axis.SideSign != 0)
+                {
+                    double cx = 0;
+                    for (int m = 0; m < fa.V.Length; m++) cx += fa.V[m].X;
+                    cx /= fa.V.Length;
+                    if (axis.SideSign < 0 ? cx >= 0 : cx < 0) continue;
+                }
+                if (axis.YMin > float.NegativeInfinity || axis.YMax < float.PositiveInfinity)
+                {
+                    double cy = 0;
+                    for (int n = 0; n < fa.V.Length; n++) cy += fa.V[n].Y;
+                    cy /= fa.V.Length;
+                    if (cy < axis.YMin || cy > axis.YMax) continue;
+                }
+                outIdx.Add(i);
+            }
+            return outIdx;
+        }
+
+        /// <summary>
+        /// ⭐ <b>The proof that lets a body be baked once.</b> Remove this state's claimed part from
+        /// its own build, remove the rest-claimed part from the rest build, and the two remainders
+        /// must be the same body — same face count, same materials, same vertices exactly.
+        ///
+        /// <para>Without this, a per-state claim would be an assumption: "the parameter only moves
+        /// the door". Measured today at worst-vertex-delta 0 on both box trucks (1072 faces and
+        /// 1190), and re-measured here at every bake, it is a fact the bake refuses to proceed
+        /// without. A rig change that made a rollup nudge her own door frame — plausible, invisible
+        /// in play, and permanent once baked — stops here.</para>
+        /// </summary>
+        static void ProveTheBodyIsUntouched(in VehicleRigFleet.Vehicle v, in FitmentPlan plan,
+                                            RigMeshData restData, RigMeshData stateData,
+                                            List<int> stateFaces, string stateName)
+        {
+            List<RigFace> restBody = Remainder(restData, plan.Faces);
+            List<RigFace> stateBody = Remainder(stateData, stateFaces);
+
+            if (restBody.Count != stateBody.Count)
+                throw new InvalidOperationException(
+                    $"{v.Key}: '{plan.Slot}' state '{stateName}' leaves {stateBody.Count} body faces " +
+                    $"but the rest build leaves {restBody.Count}. The parameter is moving more than " +
+                    "this part, so the body cannot be baked once and shared across the states.");
+
+            for (int i = 0; i < restBody.Count; i++)
+            {
+                RigFace p = restBody[i], q = stateBody[i];
+                if (restData.Materials[p.Mat].Name != stateData.Materials[q.Mat].Name)
+                    throw new InvalidOperationException(
+                        $"{v.Key}: '{plan.Slot}' state '{stateName}' body face {i} is " +
+                        $"'{stateData.Materials[q.Mat].Name}' where the rest build has " +
+                        $"'{restData.Materials[p.Mat].Name}'. The body is not the same body.");
+
+                if (p.V.Length != q.V.Length)
+                    throw new InvalidOperationException(
+                        $"{v.Key}: '{plan.Slot}' state '{stateName}' body face {i} has {q.V.Length} " +
+                        $"vertices where the rest build has {p.V.Length}.");
+
+                for (int k = 0; k < p.V.Length; k++)
+                    if (p.V[k].X != q.V[k].X || p.V[k].Y != q.V[k].Y || p.V[k].Z != q.V[k].Z)
+                        throw new InvalidOperationException(
+                            $"{v.Key}: '{plan.Slot}' state '{stateName}' moved a BODY vertex — face " +
+                            $"{i}, vertex {k}, ({p.V[k].X:0.######}, {p.V[k].Y:0.######}, " +
+                            $"{p.V[k].Z:0.######}) → ({q.V[k].X:0.######}, {q.V[k].Y:0.######}, " +
+                            $"{q.V[k].Z:0.######}). Working this part is supposed to move the part " +
+                            "and nothing else; here it reshapes the truck, and baking the body once " +
+                            "would freeze whichever state happened to be extracted first.");
+            }
+        }
+
+        static List<RigFace> Remainder(RigMeshData data, List<int> taken)
+        {
+            var drop = new HashSet<int>(taken);
+            var rest = new List<RigFace>(data.Faces.Count - drop.Count);
+            for (int i = 0; i < data.Faces.Count; i++)
+                if (!drop.Contains(i)) rest.Add(data.Faces[i]);
+            return rest;
         }
 
         static HullMeshDef.Ramp[] ReadRamps(RigMeshData data)
