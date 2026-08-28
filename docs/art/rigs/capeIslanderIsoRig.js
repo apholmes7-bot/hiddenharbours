@@ -34,7 +34,18 @@
    Exposes globalThis.CapeIslanderIso = { W,H,PX,DIRS,pivot,order,ROCK,rock(i),render(dir,opts),
    helmSeat,HELM, haulerMount,HAULER, tubMounts,TUBS, navMounts, doorMount,DOOR,HOUSE,loft,
    SCHEMES,schemeIds,defaultScheme,palette,rampFrom,chipWall,C_CAP,
-   HULL,BOOT,CREAM,WOOD,GLAS,GOLD,IRON,MOTO,KEY }. */
+   HULL,BOOT,CREAM,WOOD,GLAS,GOLD,IRON,MOTO,KEY,
+   geometry,faces,doorFaces,LEVEL_IDS }.
+
+   PASS 4 — CUTAWAY DATA (upstream ask 2026-08-28; lobsterBoatIsoRig pass-3 conventions — the
+   eighth hull to carry the pass). ASK B: every face DECLARES its level in `lv` — an authoring
+   cursor set at each build section, nothing derived from geometry; bake via geometry().ids
+   (TexCoord1.x). ASK A: geometry() publishes soleZ + ceilingZ (or an EXPLICIT open-above — an
+   absent field and an open sky must never look the same) per walkable level, plus a
+   machine-readable ceiling.lid — the level a cut takes with it; lid:null is an explicit veto.
+   faces() hands the tagged static mesh to the extractor; doorFaces(opts) is the posed leaf
+   (lv:'house'); render(dir,{cullLevels:['house']}) is the reference cut. Outside the new fields
+   the mesh, ramps and pixels are byte-identical to the adopted rig (60d127c3…). */
 (function (root) {
   const PX = 32, S = 32;
   const W = 456, H = 420, cx = 228, cy = 258;   // cell + pivot (projection of boat origin)
@@ -259,6 +270,13 @@
 
   // ---- face list ----
   const F = [];
+  /* PASS 4 — ASK B: every face declares its level. `lv(id)` is an authoring cursor; whatever
+     helper runs next (face / boxF / tubeF / glaze / direct push) carries it. `hull` = the exterior
+     silhouette, never culled; `rigging` = a DEDICATED class for mast/boom/aerials so a cut can
+     never take them with a room; the rest are walkable level ids (geometry().ids is the bake table). */
+  let LV='hull';
+  const lv=(id)=>{ LV=id; };
+  F.push=function(){ for(let i=0;i<arguments.length;i++) arguments[i].lv=LV; return Array.prototype.push.apply(this,arguments); };
   const face=(v,mat,b,db)=>F.push({v,mat:mat||'hull',b:b||0,db:db||0});
   const boxF=(c,h,mat,b,db)=>{ F.push.apply(F, box(c,h,mat,b,db)); };
   const tubeF=(A,B2,rad,mat,b)=>{ F.push.apply(F, tube(A,B2,rad,mat,b)); };
@@ -289,6 +307,7 @@
                  leaf:{ x0:-0.40, x1:0.46, z1:2.40 }, travel:0.80, dir:+1, clearAt:0.76 };
 
   (function build(){
+    lv('hull');                                   // hull shell + bulwark liner + bottom + covering boards
     // ---- hull shell ----
     for(const side of [-1,1]){
       for(let i=0;i<NSEG;i++){
@@ -316,6 +335,7 @@
         face([oa,ob,inb(ib),inb(ia)],'wood',-3.7,0.03);
       }
     }
+    lv('cockpit');                                // the working deck and everything standing on it
     // ---- cockpit sole (wood), transom -> foredeck bulkhead ----
     const SOLE_U = 0.74;
     const DSEG=20;
@@ -324,6 +344,7 @@
       const u0=SOLE_U*i/DSEG, u1=SOLE_U*(i+1)/DSEG;
       face([[-dw(u0),station(u0).y,DECK],[dw(u0),station(u0).y,DECK],[dw(u1),station(u1).y,DECK],[-dw(u1),station(u1).y,DECK]],'wood',-0.35);
     }
+    lv('hull');                                   // washboards + covering boards are hull structure
     // washboards (dark-brown side decks) along the FULL sheer, transom -> foredeck bulkhead (owner
     // 2026-07-22: "capes washboards go all the way to foredeck"). Winding forced up-facing per side (matches the covering board).
     const WB=0.42;
@@ -345,6 +366,7 @@
       face([tp(-1,f1),tp(1,f1),tp(1,f0),tp(-1,f0)], mat, (b||0)-0.8, 0.005);
     (function(){ const s0=station(0), zt=s0.kz+s0.dep, wsx=s0.ws-TH;   // covering board across the transom top (closes the dark-brown rail aft)
       face([[-wsx,s0.y,zt],[wsx,s0.y,zt],[wsx,s0.y+0.26,zt-0.004],[-wsx,s0.y+0.26,zt-0.004]],'wood',-3.6,0.03); })();
+    lv('foredeck');                               // the cuddy's lid — a walkable level of its own (bulkhead riser + bow bitt ride with it)
     // ---- whaleback foredeck (wood), following the sheer, forward of the house ----
     const FSEG=8, DROP=0.05, FCAP=0.985;
     const fz=(u)=>{ const st=station(u); return st.kz+st.dep-DROP; };
@@ -357,12 +379,15 @@
       face([[-wv,y,z],[wv,y,z],[wv,y,DECK],[-wv,y,DECK]],'cream',-1.6,-0.03);
     })();
     boxF([0,5.55,fz(0.965)+0.05],[0.05,0.13,0.05],'iron',0.2,-0.02);   // bow bitt
+    lv('cockpit');
     // ---- engine box / hatch amidships in the cockpit ----
     boxF([0,-1.25,DECK+0.20],[0.62,0.72,0.20],'cream',-0.2);
     boxF([0,-1.25,DECK+0.41],[0.66,0.76,0.02],'wood',0.5);             // hatch lid
+    lv('hull');
     // ---- stern cleats ----
     for(const s of [-1,1]) boxF([s*(station(0).ws-0.22),-6.05,station(0).kz+station(0).dep+0.03],[0.05,0.09,0.05],'iron',0.15,-0.02);
 
+    lv('house');                                  // walls, glazing, vestibule, door furniture — cuts with the room
     // ---- WHEELHOUSE (forward-raked front — the dated house: front-window TOP overhangs toward the bow) ----
     const AL=[-HX,HY0,HZ0], AR=[HX,HY0,HZ0], ALt=[-HX,HY0,HZ1], ARt=[HX,HY0,HZ1];
     const FLb=[-HX,FYb,HZ0], FRb=[HX,FYb,HZ0], FLt=[-HX,FYt,HZ1], FRt=[HX,FYt,HZ1];
@@ -396,14 +421,17 @@
     // sliding-door hardware: overhead track to the pocket side + low guide strip
     tubeF([DOOR.x0-0.10, AY-0.10, DOOR.z1+0.10],[Math.min(HX-0.04, DOOR.x1+DOOR.travel+0.14), AY-0.10, DOOR.z1+0.10],0.028,'moto',0.25);
     F.push(backPanel(AY-0.02, DOOR.x0-0.06, Math.min(HX-0.06, DOOR.x1+DOOR.travel+0.10), HZ0+0.015, HZ0+0.05,'iron',-0.6));
+    lv('cockpit');                                // free-standing in the cockpit corner — rises from its level, not the house
     // ---- wet-exhaust stack by the house, starboard aft corner ----
     tubeF([0.86,0.34,DECK],[0.86,0.30,2.42],0.085,'moto',-0.1);
     boxF([0.86,0.30,2.46],[0.11,0.11,0.05],'blk',-0.3);                     // stack cap
+    lv('rigging');                                // DEDICATED class — never welded to the cullable house
     // ---- signal mast on the house roof (slightly raked) + spreader + hauling boom over the cockpit ----
     tubeF([0,2.46,ROOFZ+0.04],[0,2.36,4.42],0.055,'moto',0.1);            // mast
     tubeF([-0.42,2.42,3.94],[0.42,2.42,3.94],0.035,'moto',0.0);           // spreader
     tubeF([0,2.40,3.86],[0,0.10,3.08],0.045,'wood',0.35);                 // hauling boom aft over cockpit
     boxF([0,2.36,4.46],[0.05,0.05,0.07],'iron',0.3,-0.02);                 // masthead
+    lv('cockpit');                                // worked from the cockpit — rises from its level
     // ---- hauling block on the starboard washboard ----
     (function(){ const st=station(0.30), z=st.kz+st.dep; boxF([1.30,st.y,z+0.10],[0.10,0.12,0.10],'iron',0.2);
       tubeF([1.18,st.y,z+0.14],[1.42,st.y,z+0.14],0.05,'moto',0.3); })();  // roller
@@ -518,11 +546,14 @@
     for(const hx of [x0+0.10, x1-0.10])                                                                     // top hangers
       out.push({v:[[hx+0.035,y-0.015,DOOR.z1+0.12],[hx-0.035,y-0.015,DOOR.z1+0.12],[hx-0.035,y-0.015,z1-0.03],[hx+0.035,y-0.015,z1-0.03]],mat:'moto',b:0.3,db:DBP+0.03});
     out.push.apply(out, tube([x0+0.07,y-0.045,1.02],[x0+0.07,y-0.045,1.44],0.021,'gold',0.5));              // brass pull, leading edge
+    out.forEach(f=>{ f.lv='house'; });            // the posed leaf cuts with the room (pass 4)
     return out;
   }
   function render(dir, opts){
     opts = (typeof opts==='number') ? {elev:opts} : (opts||{});
-    return _toRGBA(_paint(F.concat(doorFaces(opts)), Object.assign({}, opts, {dir}), true));
+    let fl = F.concat(doorFaces(opts));
+    if(opts.cullLevels && opts.cullLevels.length){ const cut=new Set(opts.cullLevels); fl=fl.filter(f=>!cut.has(f.lv)); }   // pass-4 reference cut; absent → byte-identical
+    return _toRGBA(_paint(fl, Object.assign({}, opts, {dir}), true));
   }
 
   // ---- deck anchors (cell coords; pass rock(i) so they ride the wave) ----
@@ -584,11 +615,42 @@
     cuddy:{ y0:FYb, y1:5.55, soleZ:0.30, opening:{ x0:-0.30, x1:0.30, z0:DECK, z1:1.80 },
             step:{ riser:0.42, treads:2 } },
   };
+  /* PASS 4 — ASK A: geometry(). One record per WALKABLE level: soleZ + the ceiling, DECLARED from
+     the same constants the mesh is built from (never re-measured off it). An open sky is an
+     explicit {kind:'open'} — an absent field and an open sky must never look the same. ceiling.lid
+     is machine-readable: the level a cut takes with it; lid:null is an explicit veto. `ids` is the
+     TexCoord1.x bake table shared by the face tags and these level records. */
+  const LEVEL_IDS = { hull:0, cockpit:1, foredeck:2, house:3, cuddy:4, rigging:5 };
+  function geometry(){
+    const C=HOUSE.cuddy;
+    const cl=(y)=>+(sheerZ(y)-0.16).toFixed(3);   // cuddy ceiling law — the whaleback underside boatInteriorRig dresses (lobster law: 0.05 surface drop + 0.11 planking)
+    const fs=(y)=>+(sheerZ(y)-0.05).toFixed(3);   // foredeck walking surface (fz: kz+dep-DROP)
+    const yFA=+station(0.74).y.toFixed(3), yFF=+station(0.985).y.toFixed(3);   // foredeck aft bulkhead / forward cap (SOLE_U / FCAP)
+    return {
+      schema:'hidden-harbours/hull-geometry@1', hull:'capeIslanderIsoRig', units:'m',
+      frame:'+x stbd, +y bow, +z up; origin amidships, keel bottom, centreline',
+      ids:Object.assign({}, LEVEL_IDS),
+      riggingClass:'rigging — mast, spreader, hauling boom, masthead: tagged by CLASS, never welded to a cullable room',
+      levels:[
+        { id:'house', deck:'house_sole', soleZ:DECK, ceilingZ:HZ1,
+          ceiling:{ kind:'hard', lid:null, z:HZ1, of:'wheelhouse eave — the deckhead the interior dresses; the roof slab above is exterior cladding' } },
+        { id:'cuddy', deck:'cuddy_sole', soleZ:C.soleZ, ceilingZ:cl(C.y0),
+          ceiling:{ kind:'raked', lid:'foredeck', zAft:cl(C.y0), zFwd:cl(C.y1), y0:C.y0, y1:C.y1,
+                    of:'whaleback foredeck underside = sheerZ(y)-0.16, rising toward the bow; ceilingZ is the honest minimum at the companionway (two steps down off the house sole)' } },
+        { id:'cockpit', deck:'cockpit', soleZ:DECK, ceilingZ:null,
+          ceiling:{ kind:'open', lid:null, note:'open working cockpit — no hardtop on this hull; boom and mast overhead are rigging class' } },
+        { id:'foredeck', deck:'foredeck', soleZ:fs(yFA), ceilingZ:null,
+          sole:{ kind:'raked', zAft:fs(yFA), zFwd:fs(yFF), follows:'sheer - 0.05 over y '+yFA+'..'+yFF },
+          ceiling:{ kind:'open', lid:null } },
+      ],
+    };
+  }
+  function faces(){ return F; }   // the static TAGGED mesh; the posed leaf is doorFaces(opts)
   root.CapeIslanderIso = { W, H, PX, DIRS:8, pivot:{x:cx,y:cy}, defaultElev:DEFAULT_ELEV,
     order:['N','NE','E','SE','S','SW','W','NW'], HULL, BOOT, CREAM, WOOD, GLAS, GOLD, IRON, MOTO, KEY,
     render, ROCK, rock:rockMotion, helmSeat, HELM, haulerMount, HAULER, tubMounts, TUBS, navMounts,
     SCHEMES, schemeIds:Object.keys(SCHEMES), defaultScheme:DEFAULT_SCHEME, palette, rampFrom, chipWall, C_CAP,
-    doorMount, DOOR, HOUSE,
+    doorMount, DOOR, HOUSE, geometry, faces, doorFaces, LEVEL_IDS,
     loft:{ station, skin, dfrac, halfAtZ, sheerZ, L, TH, DECK, SOLE_U:0.74, NSEG,
            house:HOUSE, shade:{ GAIN, BIAS, LN, BAYER, KEY, EDGE:0.30 }, cell:{ W, H, cx, cy, S } } };
 })(typeof globalThis!=='undefined'?globalThis:window);

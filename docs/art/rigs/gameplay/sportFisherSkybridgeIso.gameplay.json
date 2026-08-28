@@ -537,7 +537,7 @@
       ]
     },
     {
-      "id": "bridge_sole",
+      "id": "helm_coaming",
       "z": 9.74,
       "winding": "ccw_from_above",
       "polygon": [
@@ -710,7 +710,7 @@
           -1.52
         ]
       ],
-      "note": "Sole of the open control coaming, 9.74 m above the keel — the ring is the coaming plan less its 0.16 m rim. The coaming wall stands 0.62 m above this sole.",
+      "note": "The open control coaming ON the skylounge roof — the rig’s own words: “this IS the tower”. Sunk sole at 9.74 inside a 0.16 m rim (coaming top z1=10.36); plan = the open ‘bridge’ volume at z1 (hw table, nose/aft rounding, 0.06 inset) minus the rim, computed by the volume’s own xAt law. Until 2026-08-28 this walkable shipped UNDER the id bridge_sole, colliding with the enclosed skylounge (soleZ 7.30) — the id is split; the skylounge keeps bridge_sole. Reached by LADDER.bridge_ladder from the aft deck (top rung 9.55, rim step-over).",
       "_notes": [
         {
           "id": "helm_pod",
@@ -727,30 +727,41 @@
             ]
           },
           "height_above_floor_m": {
-            "top": 0.78
+            "top": 0.83
           },
-          "provenance": "exact, hull spec helmPod at (0,-3.3,9.74), hx=0.7, pod z0..z0+0.78 with glass above",
-          "note": "Upper helm console with a screen brow at +0.86. Seats: (-0.62,-5.9) (0.62,-5.9), 0.60 m tall boxes."
+          "provenance": "exact, spec helmPod {x:0, y:-3.30, z:9.74, hx:0.70}: pod ya/yf = y∓0.32/y+0.32, z 9.74..10.52, crown +0.05",
+          "note": "The upper helm console. INTERACT.helm_bridge stands here (anchor y -3.30, reach y -3.95)."
         },
         {
-          "id": "bridge_ladder",
-          "kind": "access",
-          "type": "ladder",
+          "id": "helm_seats",
+          "kind": "obstruction",
+          "type": "seat",
           "footprint": {
             "x": [
-              -0.45,
-              0.45
+              [
+                -0.9,
+                -0.34
+              ],
+              [
+                0.34,
+                0.9
+              ]
             ],
             "y": [
-              -9.08,
-              -9.7
+              [
+                -6.14,
+                -5.66
+              ],
+              [
+                -6.14,
+                -5.66
+              ]
             ]
           },
           "height_above_floor_m": {
-            "top": "spans z 7.32 → 9.55"
+            "top": 0.6
           },
-          "provenance": "exact, hull spec lads[0]: 0.45, -9.7, 7.32, 0.4, -9.08, 9.55, 6 (rungs = last value)",
-          "note": "The climb from the aft deck to this sole — 6 rungs, raked forward as it rises. This is how a character gets to the upper station."
+          "provenance": "MEASURED out of the rig's own face stream on intake, not transcribed: each seat is the six-face box boxF([st, helmPod.z+0.30], [0.28,0.24,0.30]) over spec helmPod.seats [[-0.62,-5.9],[0.62,-5.9]] — AABB x -0.900..-0.340 and 0.340..0.900, y -6.140..-5.660, z 9.740..10.340, i.e. 0.60 m tall off the 9.74 sole. Half-extents are ±0.28 in x and ±0.24 in y, not the ±0.25 the drop assumed."
         }
       ]
     },
@@ -1041,13 +1052,14 @@
     "WASHBOARD": "NO washboards on this hull, and this is the load-bearing absence. The rig draws a deck margin alongside the house, but measured at the deck line it is 0.071–0.612 m wide (11 samples, y -9.65 → 1.53, widening only as the house nose narrows into the foredeck): a reveal between the house side and the covering board, not a strip anyone walks. It is that narrow by design — clampHW lands the house sides on the cap so the covering board reads as ONE unbroken line stem to transom. Consequence: cockpit and foredeck are separate walkable islands on the exterior.",
     "covering_board": "The teak cap outboard of the reveal is rolled and carries a toe rail lifting to 0.2 m forward of u=0.55 — a boundary, not a surface.",
     "house_interior": "Salon and skylounge are modelled as an exterior volume only — no interior floor exists to walk.",
-    "bridge_access_interior": "The only modelled climb is aft deck → bridge sole (DECK.bridge_sole._notes.bridge_ladder). Salon and skylounge interiors are not modelled.",
+    "bridge_access_interior": "The only modelled exterior climb is aft deck → helm coaming (LADDER.bridge_ladder); salon→skylounge is the interior companionway (STAIRS.house_to_bridge).",
     "foredeck_access": "Nothing in the rig connects the cockpit to the foredeck: no margin wide enough to walk, no ladder, no door in the house exterior other than the aft glass. Any walk-forward move a character makes on this hull has to be authored game-side.",
     "gear_above": "Outriggers, tower pipework, whips, radomes, hardtop slab and rod tubes are gear over the decks, not surfaces. Rod points are ANCHORS.rods.",
     "topside_detail": "Hull windows, louvre vents and the boot/cove bands are paint and detail, outside any walkable surface."
   },
   "_confirm": {
     "cleat_identification": "All three CLEATS entries are read from unlabelled iron fittings (see each provenance). Positions are exact; the reading as tie-offs is the art side’s, and a gameplay ruling can demote any of them.",
-    "upper_decks": "bridge_sole, aft_deck are included because they are real modelled surfaces with real dimensions. If gameplay only ever walks the cockpit, mezzanine, side decks and foredeck, the upper polygons are inert data — they are not a claim that a character can reach them."
-  }
+    "upper_decks": "bridge_sole, helm_coaming, aft_deck are included because they are real modelled surfaces with real dimensions. If gameplay only ever walks the cockpit, mezzanine, side decks and foredeck, the upper polygons are inert data — they are not a claim that a character can reach them."
+  },
+  "_id_split_2026_08_28": "DECK bridge_sole (the OPEN control coaming, sole 9.74) is renamed helm_coaming. The rig uses bridge_sole for TWO walkables — this coaming and the ENCLOSED skylounge sole at 7.30 (interior.bridge.deckId) — and this file is the BASE of BoatInteriorGameplayMerge, whose contract is 'DECK entries replace by id'. Merging her interior sidecar into this file while both carried the id therefore DELETED the coaming: measured, not argued — the repo's own BoatInteriorGameplayMerge reports \"DECK 'bridge_sole': REPLACED the base entry (same id)\" and returns seven decks instead of eight. That is exactly the artefact upstream's 2026-08-27 export shipped and #678 refused, and it was the merge contract meeting a collision rather than carelessness. With the ids split the merge appends instead of replacing and both walkables survive. Polygon, z and winding are UNCHANGED — only the id, the prose and the _notes moved."
 }
