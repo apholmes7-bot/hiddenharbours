@@ -67,6 +67,25 @@ namespace HiddenHarbours.Core
                  "'demands active steering' teeth; 0 = pure translation, no wave-driven yaw.")]
         public float YawFromSlew;
 
+        [Header("BROKEN WATER (ADR 0040) — the surf shoves, and the pocket slews")]
+        [Tooltip("Master switch for the surf's own forces. ON by default — a bore running up a beach is " +
+                 "the most physical thing the sea does. Off restores the swell-only push exactly.\n\n" +
+                 "⚠️ This rides the SAME force channel as the swell above: one Resolve, one AddForce. " +
+                 "There is deliberately no second force path.")]
+        public bool SurfEnabled;
+
+        [Tooltip("How hard the broken water shoves a hull SHOREWARD (design-unit force multiplier). The " +
+                 "shove scales with the bore's standing height (gamma x depth) and its remaining energy, " +
+                 "so it is strongest in the boil at the break line and dies as the bore runs in.\n\n" +
+                 "⚠️ It is gated by Breaking01, NOT by the depth-ramp exposure the swell uses — surf " +
+                 "exists only in shallow water, which that ramp calls 'sheltered'. See SurfState.")]
+        public float SurfShoveStrength;
+
+        [Tooltip("How hard the POCKET slews the bow (design-unit torque multiplier) — the broach. Keyed " +
+                 "on the beam component of the shove and boosted where the break is plunging, because " +
+                 "that is the water that throws a boat sideways. 0 = the surf pushes but never turns you.")]
+        public float SurfBroachTorque;
+
         /// <summary>
         /// The reference "first feel" tuning (ADR 0018 B3 — moderate, gentle-to-medium, never capsizing in
         /// M1). Enabled; a moderate strength; a 1.35 sea-state exponent matching the field so the shove grows
@@ -86,6 +105,14 @@ namespace HiddenHarbours.Core
             BeamSeaWeight = 1.3f,
             FollowingSeaWeight = 0.7f,
             YawFromSlew = 0.9f,
+
+            // The surf's own bite (ADR 0040 PR 3) — a FIRST feel version, like the swell's was. The
+            // shove is a little stronger than the swell's master because broken water is more violent
+            // than a slope, and the broach is moderate: enough that being caught beam-on in the boil
+            // costs you the helm, not so much that it spins you.
+            SurfEnabled = true,
+            SurfShoveStrength = 260f,
+            SurfBroachTorque = 1.2f,
         };
     }
 }

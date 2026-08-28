@@ -208,7 +208,19 @@ namespace HiddenHarbours.Boats
 
             // Seakeeping policy: prefer the shared GameConfig (no magic numbers, rule 6); the serialized
             // field is the fallback (it mirrors the config default) so EditMode/unwired scenes still work.
+            //
+            // ⚠ The SHARED service is consulted when the serialized reference is empty, and that is a fix
+            // rather than a flourish: `_config` is a per-COMPONENT reference, so a boat created at
+            // runtime — spawned fleet, a test rig, anything not placed by a builder — had no config at
+            // all and silently ran the CODE defaults, ignoring whatever the owner had tuned in
+            // GameConfig.asset. ADR 0040's surf toggle is a GameConfig field, so without this a spawned
+            // hull could not be switched off by the very dial that is supposed to switch it off.
+            //
+            // Behaviour-neutral today: every pre-existing key in the shipped asset already equals the
+            // code default (Enabled 1, Strength 220, exponent 1.35, 6 m / 1 m, 1 / 1.3 / 0.7, yaw 0.9),
+            // so this changes what a spawned boat READS, not what it currently does.
             if (_config != null) _seakeeping = _config.Seakeeping;
+            else if (GameServices.Config != null) _seakeeping = GameServices.Config.Seakeeping;
         }
 
         /// <summary>
@@ -551,6 +563,37 @@ namespace HiddenHarbours.Boats
                 : SeakeepingForcesMath.ResponseFrom(hull.SeakeepingMassFactor, hull.SeakeepingLiveliness, hull.SeakeepingDamping);
 
         /// <summary>
+        /// The broken water under the hull this tick (ADR 0040) — solved from the SAME trains the swell
+        /// force just sampled, so the surf that shoves her and the sea she is riding are one sea.
+        ///
+        /// <para>The contour is inverted here rather than in <c>BreakerMath.SurfAt</c> because it is a
+        /// per-tick constant, not a per-position one: one solve serves the hull's whole tick, and the
+        /// march inside <c>SurfAt</c> reads it. No seabed map (open water) means nothing to break on, and
+        /// the state comes back <see cref="SurfState.Calm"/>.</para>
+        /// </summary>
+        private static SurfState SurfUnderTheHull(Vector2 pos, double now, in WaveTrains trains)
+        {
+            ITidalTerrain terrain = GameServices.TidalTerrain;
+            if (terrain == null) return SurfState.Calm;
+
+            IEnvironmentService environment = GameServices.Environment;
+            if (environment == null) return SurfState.Calm;
+
+            WaveFetchSettings fetch = GameServices.WaveFetch;
+            BreakerSettings breakers = GameServices.Breakers;
+            WaveTrain dominant = trains.Dominant;
+
+            BreakerContour contour = BreakerMath.ContourFor(
+                in dominant, WaveFetch.Envelope01(0f, in fetch), in breakers);
+            if (!contour.Breaks) return SurfState.Calm;
+
+            float waterLevel = environment.WaterLevelAt(now);
+            float envelope = GameServices.FetchEnvelopeAt(pos);
+            return BreakerMath.SurfAt(pos, waterLevel, terrain, in contour, envelope,
+                                      2f * dominant.Amplitude, dominant.Wavelength, in breakers);
+        }
+
+        /// <summary>
         /// Assemble and apply the sea's force + yaw on the hull this tick (ADR 0018 B3). Samples the shared
         /// deterministic wave field under the hull via the PURE SIM PATH — <see cref="WaveMath.TrainsFrom"/>
         /// + <see cref="WaveMath.Sample"/> at the clock's game-time, NOT the presentation animator (the ADR
@@ -607,6 +650,32 @@ namespace HiddenHarbours.Boats
             float displacedScale = SeakeepingForcesMath.DisplacedForceScale(displacedActive, depth, in displaced);
             Vector2 seaForce = sea.Force * displacedScale;
             float seaTorque = sea.Torque * displacedScale;
+
+            // ---- THE SURF'S OWN BITE (ADR 0040 PR 3) --------------------------------------------
+            // Broken water shoves a hull shoreward and the pocket slews her. It rides the SAME force
+            // channel as the swell above — one AddForce, one AddTorque below — because the charter is
+            // explicit that there is no second force path.
+            //
+            // ⚠️⚠️ IT IS ADDED BEFORE THE EARLY-OUT, AND THAT IS THE WHOLE POINT. `exposure` is a depth
+            // ramp that reads shallow water as sheltered, so at the shipped tuning (shelter 1 m) it is
+            // EXACTLY 0 at the 0.92 m break depth: the swell force in the surf zone is zero, `sea` is
+            // None, and an early-out placed above this would return before the surf was ever asked for.
+            // The feature would have been dead in precisely the water it exists for, silently, and every
+            // unit test of SurfShove would still have passed.
+            //
+            // The surf term carries its own place-gate (Breaking01), which is a stricter form of the
+            // same guarantee — zero in all calm water, all water too deep to break, and every sheltered
+            // corner the waves never reach. See SurfState for the full note.
+            //
+            // NOT scaled by displacedScale either: that factor exists to make the SWELL force read the
+            // displaced surface's exaggerated height, and it fades to 0 at the waterline. The surf is not
+            // a displaced-height read — it is a bore's momentum — so scaling it there would fade the
+            // shove out exactly up the beach where a bore is at its most insistent.
+            SurfState surf = SurfUnderTheHull(pos, now, in trains);
+            SeakeepingForce surfPush = SeakeepingForcesMath.SurfShove(in surf, fwd, in response, in _seakeeping);
+            seaForce += surfPush.Force;
+            seaTorque += surfPush.Torque;
+
             if (seaForce == Vector2.zero && seaTorque == 0f) return;
 
             _rb.AddForce(seaForce * ForceFeelScale, ForceMode2D.Force);

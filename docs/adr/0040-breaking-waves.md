@@ -304,6 +304,64 @@ within 12 px of the surf" sampled mostly the DEEP side of the break line, where 
 and differencing against a CALM shot does not isolate caps at all, because `_Roughness` also drives the
 fringe's field, band gate and density — that control returned a cap contribution of **minus 3.20 %**.
 
+## Revision (2026-08-28) — PR 3: the teeth, and a charter clause formally amended
+
+**Broken water shoves a hull shoreward and the pocket slews her**, through the EXISTING B3 channel: one
+`SeakeepingForce`, one `AddForce`, one `AddTorque`. There is no second force path.
+
+The shove points along the shoreward bed gradient (broken water is a mass moving, not a slope) and scales
+with what the bore is carrying — `StandingHeightMeters` (γ·d, since a bore is only as tall as the water it
+runs over) × `Whitewater01` (what is left of its energy) × the hull's response. The broach keys on the
+BEAM component of that shove and is boosted where the break is plunging.
+
+### ⚠️⚠️ The charter's "SeaState01 × exposure" is amended for the surf, and here is why
+
+`SeakeepingForcesMath.Exposure01` is a DEPTH RAMP: 0 in shallow water, 1 offshore, because the open sea's
+swell is what it models and a hull in the shallows is genuinely sheltered *from swell*. Surf is the
+opposite phenomenon — it exists **only** in shallow water.
+
+**At the shipped tuning the shelter depth is 1 m and the break depth is 0.92 m, so exposure at the break
+line is EXACTLY 0.** Routing the surf shove through it would have multiplied the whole feature away
+precisely where it acts, silently, with every unit test of the shove still green.
+
+*Those two numbers are here so the next person to "fix" the missing exposure factor trips over them.*
+
+The surf's place-gate is `Breaking01` instead, which is the **stricter** form of the same guarantee: zero
+in all calm water, zero in all water too deep to break, and zero in every sheltered corner where the waves
+never reach the criterion. Glass comes free — a glass sea has no contour at all. The invariants the
+charter actually wanted are all kept, and the M1 never-capsize law holds by construction: this adds
+planar force and yaw only, with no roll channel, no swamping and no sinking.
+**Ruled and approved by the coordinator, 2026-08-28.**
+
+### A fleet-wide behaviour change on spawned hulls, carried in this PR
+
+`BoatController._config` is a per-**component** serialized reference. A boat placed by a builder gets one;
+a boat created at **runtime** — spawned fleet, dev rigs, tests — got nothing and silently ran the CODE
+defaults, **ignoring `GameConfig.asset` entirely**. This is the `loadorcreate` / config-behind-the-code
+family. Since ADR 0040's surf toggle is a `GameConfig` field, a spawned hull could not be switched off by
+the very dial meant to switch it off — so the fix belongs with the feature that exposed it rather than in
+a five-line PR this one would have to wait behind.
+
+The controller now falls back to `GameServices.Config`. **Pinned as a FIX, not as today's neutrality**: the
+test sets the config to values no code default would produce and asserts a runtime-spawned hull reads
+them, because the owner tuning the asset away from the defaults is the system working, and spawned hulls
+following that tuning is the point.
+
+### Measured on the live physics loop
+
+| | |
+|---|---|
+| a 400 kg hull in the boil, 6 s | **3.71 m** carried shoreward |
+| the same hull, surf dial OFF | **0.000 m** |
+| in 19 m of water | −0.02 m |
+| light (400 kg) vs heavy (3200 kg) | 3.71 m vs 0.62 m |
+| **two identical hulls, same sea, same moment** | **2.8926 m and 2.8926 m** — bit-identical |
+| shoved, not teleported | 0.18 m in the first second, 0.65 m by the second |
+
+The shove profile is physically right end to end: it peaks at 229 design-units in 1.25 m of water — right
+at the break line, where the gate has just reached 1 and the bore is freshest — and falls to exactly 0 at
+the waterline, as both the standing height and the whitewater's energy run out together.
+
 ## Consequences
 
 **Good.** The painted seabed becomes legible from the helm, and the tide becomes legible in the water
