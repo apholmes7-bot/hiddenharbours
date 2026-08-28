@@ -1566,7 +1566,7 @@ the owner's tuned `_OceanSwell*` values **map on instead of resetting** (ADR 001
 > water renders the field's TRUE wavelengths (pixel == hull); the current tuned 0.07 renders ~2.8× shorter
 > waves — retune toward 0.025 when the B2 rocking should visibly match the crests on screen.
 
-**Not carried over** (out of Arc B scope — shore breakers are a later arc, ADR §(5)): the legacy path's
+**Not carried over** (out of Arc B scope — shore breakers were a later arc, ADR §(5); that arc is now **ADR 0040**, whose `BreakerMath` shoals the field over the painted depth and breaks it at γ·d): the legacy path's
 *shoreward crest-bias* — live trains run downwind everywhere; the foam **drift** shoreward bias (§5.12) is
 untouched. The legacy `SwellField` path itself stays byte-for-byte behind the count-0 fallback until the owner
 signs off the reworked look.

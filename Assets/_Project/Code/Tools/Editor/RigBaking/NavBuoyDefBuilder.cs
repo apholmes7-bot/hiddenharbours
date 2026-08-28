@@ -133,15 +133,25 @@ namespace HiddenHarbours.Tools.RigBaking
                     float floatFrac = (cell.cellH - cell.pivotY) / (float)cell.cellH;
                     float follow = (float)host.EvaluateNumber($"{g}.meta('{type}','{sizeId}').follow");
 
+                    float diameter =
+                        (float)host.EvaluateNumber($"{g}.meta('{type}','{sizeId}').D");
+
                     def.Sizes.Add(new NavBuoyDef.SizeEntry
                     {
                         SizeId = sizeId,
-                        DiameterMeters = (float)host.EvaluateNumber($"{g}.meta('{type}','{sizeId}').D"),
+                        DiameterMeters = diameter,
                         RatedWater = host.EvaluateString($"{g}.meta('{type}','{sizeId}').water"),
                         Facings = facings,
                         SpriteHeightMeters = heightM,
                         FloatLineFraction = floatFrac,
                         SlopeFollow = follow,
+
+                        // ⭐ Her physics comes off the ONE number the kit measures her by, so a
+                        // re-baked ladder cannot end up with a 3 m landfall buoy that shoves like
+                        // a can. See NavBuoyKit for the three laws and why each is that shape.
+                        CollisionRadiusMeters = NavBuoyKit.CollisionRadiusFor(diameter),
+                        MooredMassKg = NavBuoyKit.MooredMassFor(diameter),
+                        WatchRadiusMeters = NavBuoyKit.WatchRadiusFor(diameter),
                     });
                     rungs++;
                 }
@@ -203,6 +213,12 @@ namespace HiddenHarbours.Tools.RigBaking
 
                 var bob = root.AddComponent<BuoyWaveVisual>();
                 bob.Configure(sr, visual.transform);
+
+                // ⚠ ORDER MATTERS. NavBuoyVisual requires NavBuoyMooring, so adding it here
+                // first means the mooring is a component of the prefab in its own right rather
+                // than one Unity conjured to satisfy an attribute — and Configure below can
+                // then reach it. A mark added the other way round is moored by accident.
+                root.AddComponent<NavBuoyMooring>();
 
                 var mark = root.AddComponent<NavBuoyVisual>();
 

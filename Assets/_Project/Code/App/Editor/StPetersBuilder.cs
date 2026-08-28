@@ -800,14 +800,62 @@ namespace HiddenHarbours.App.Editor
         // water and nowhere else. These positions are now checked against the authored terrain by
         // StPetersLayoutTests rather than asserted in a comment.
         //
-        // ⭐ RE-DERIVED for the 2026-07-30 shrink, not shifted by a blind delta: the mooring sits 5 m
-        // past the beach toe onto the reef shelf (elliptical distance = beach end + 5), which is the
-        // SAME profile point the old (330, 0) occupied — so the measured bed is −1.05 m again and the
-        // whole §5.1a gate arithmetic (dory afloat 56.9% of the cycle, dries near spring low, working
-        // hulls gated harder than every skiff) carries over untouched. Beach ends at 140 from the
-        // island centre → mooring at 70 + 145 = 215. Disembark/arrival keep their ∓2 m offsets.
+        // ⭐ SHE LIES NORTH OF THE FAIRWAY, CLEAR OF THE COME-ALONGSIDE TRACK (owner eyeball,
+        // 2026-08-27: "the test dory is in the way of the arrival boat"). She sat on the channel's own
+        // centre-line at (215, 0) — 5.29 m from the line the skipper runs in on, against 2.40 m of
+        // arriving cape islander and 0.85 m of dory. That is not a berth beside a fairway; it is a berth
+        // IN one. Moving her north puts the whole marked width between her and the pier: 8.41 m,
+        // measured over the real terrain, with nothing else in the region moved.
+        //
+        // ⭐⭐ AND THE §5.1a ARITHMETIC THIS COMMENT USED TO CARRY WAS ALREADY STALE. It read: the mooring
+        // sits 5 m past the beach toe onto the reef shelf, measured bed −1.05 m, so a 0.30 m dory floats
+        // 56.9% of the cycle and dries near spring low. None of that has been true since the 2026-08-19
+        // dredge (#582) — <see cref="ApproachFrom"/> → <see cref="ApproachTo"/> cut the channel through
+        // this exact water, and the bed under her now measures <see cref="ApproachBedElevation"/>
+        // (−4.00 m): 1.80 m under a 0.30 m dory at the lowest water of the biggest spring tide, every
+        // hour of every month. The ruling that replaced it is the one StPetersLayoutTests states in its
+        // own NAME — TheMooringLiesInTheDredgedPocket_AndFloatsHerAtEveryTide — and the tide gate that
+        // used to be hers now lives on the BEACH slip at <see cref="BerthTo"/>, which still bares by
+        // 1.20 m. So the quantity to preserve across this move is not a drying fraction. It is that she
+        // stays IN the pocket, and she does: her bed is −4.00 m before and after.
+        //
+        // ⚠ WHICH IS WHY THE NEW BERTH IS DERIVED RATHER THAN NUDGED. North of the centre-line the
+        // dredged flat ends at <see cref="ApproachThalwegHalfWidth"/> and the shoulder climbs away fast
+        // (−2.52 m by y = 6). Her berth is that edge less her own half-beam, so her outboard RAIL is
+        // what lies on it and every part of her floats over dredged ground. One metre further out and
+        // the worst bed under her is −3.65 m; at y = 4.25 it is −3.45 m and climbing. The x does not
+        // move: she stays off the pier HEAD, which StPetersVillageTests holds in as many words ("a
+        // mooring under the planks is a mooring you cannot see").
+        //
+        // ⚠ PROVISIONAL, and the owner said so — "another small dock for now nearby". This is the
+        // nearest water that is dredged, off the head, and clear of the track. It is a BERTH, not a
+        // second dock: there is no other pier on this island to build her one against yet.
         public const float DockZoneRadius = 3.5f;                                  // ControlSwitcher's default _zoneRadius
-        public static readonly Vector3 DoryMooredPos  = new Vector3(215f, 0f, 0f); // east of the island, past the beach toe — the slip's own bed
+
+        /// <summary>
+        /// The starting dory's half-beam, in metres. ⚠ A MIRROR of <c>DoryIsoHullMesh.asset</c>'s
+        /// <c>WatertightHalfBeamMeters</c>, for exactly the reason <see cref="ArrivalHullHalfBeamMetres"/>
+        /// is one: a <c>const</c> cannot load an asset and her berth has to be a compile-time expression.
+        /// StPetersAlongsideBerthTests holds the two equal, so re-lofting her hull and forgetting this
+        /// fails loudly instead of quietly hanging her rail over the shoulder.
+        /// </summary>
+        public const float DoryHalfBeamMetres = 0.85f;
+
+        /// <summary>Where along the channel she lies. Unchanged by the 2026-08-27 move: east of
+        /// <see cref="StPetersWharf.HeadCellX"/>, so she is off the pier head and not under its planks.
+        /// (Its own derivation — beach ends 140 m from the island centre → 70 + 145 — is history now that
+        /// the dredge owns this water, but the number it produced is still the right one.)</summary>
+        public const float DoryMooredX = 215f;
+
+        /// <summary>
+        /// How far NORTH of the fairway's centre-line she lies: the dredged flat's own north edge, less
+        /// her own half-beam. Her rail sits on the edge; her whole hull floats over the cut. Derived, so
+        /// a re-dredge that narrows the flat brings her in with it rather than leaving her on a shoulder.
+        /// </summary>
+        public const float DoryMooredY = ApproachThalwegHalfWidth - DoryHalfBeamMetres;
+
+        /// <summary>The starting dory's berth — north of the fairway, off the pier head, in the cut.</summary>
+        public static readonly Vector3 DoryMooredPos = new Vector3(DoryMooredX, DoryMooredY, 0f);
 
         // ================================================================================================
         //  ⭐ SHE LIES ALONGSIDE (owner playtest, 2026-08-22)

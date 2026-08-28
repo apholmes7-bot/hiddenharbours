@@ -86,6 +86,20 @@ namespace HiddenHarbours.App.Editor
                     continue;
                 }
 
+                // ⭐ SHE IS MOORED BEFORE SHE IS DRESSED, and the order is load-bearing:
+                // NavBuoyVisual.Configure reads the size rung and hands the mooring its
+                // displacement, girth and scope, so the mooring has to EXIST by then or a mark
+                // ends up wearing the component's defaults instead of her own rung's numbers.
+                // (An older prefab carries no mooring at all; this is what promotes it.)
+                var mooring = go.GetComponent<NavBuoyMooring>();
+                if (mooring == null) mooring = go.AddComponent<NavBuoyMooring>();
+
+                // Her anchor is the PLANNED position, stated rather than inferred. Left to Awake
+                // she would moor at whatever her transform read then — the same number today, and
+                // silently "wherever the last knock left her" the first time anything moves a
+                // mark before it wakes.
+                mooring.MoorAt(mark.At);
+
                 // ⚠️ The facing is a PLACEMENT choice the plan derived, and the kit is CLOCKWISE
                 // (cell i = heading +45°·i). Do not "correct" it against the fleet's sheets.
                 visual.Configure(def, mark.SizeId, mark.Facing);

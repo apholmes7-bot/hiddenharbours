@@ -860,5 +860,110 @@ namespace HiddenHarbours.Tests.PlayMode
                         ArrivalPilot.Settings.Default.StopMetres + 3f,
                 "she came to rest somewhere else along the wharf than the berth she was sent to");
         }
+
+        // =============================================================================================
+        //  THE CORRIDOR — what her TRACK does, not what her route says
+        // =============================================================================================
+
+        /// <summary>
+        /// 🔴 <b>THE OWNER'S SECOND FINDING, ASSERTED ON THE TRACK SHE ACTUALLY SAILS.</b> On
+        /// 2026-08-27 he watched the skipper run THROUGH the buoyed entrance. The plan-side half of that
+        /// is fixed and guarded in EditMode (a turn's pair now mitres on the bisector, so every mark
+        /// stands the fairway's full half-width off the route). This is the other half, and it is the
+        /// one his eye was actually on: <b>a 12.9 m hull with a 17.7 m turning circle does not travel
+        /// her own polyline round a 65° corner — she cuts inside it.</b> Room on the chart is not room
+        /// in the water.
+        ///
+        /// <para>So this samples her position EVERY FRAME of the whole passage and holds her clear of
+        /// every mark the region actually plants — read from the same planner the region build runs, at
+        /// the same tide — and of the moored dory. The journey, not the artefact: an assertion that
+        /// took its sample points from the authored route could not see a track that leaves it.</para>
+        ///
+        /// <para>⚠ Stated against her VISUAL half-beam (<c>ArrivalHullHalfBeamMetres</c>, 2.40 m), not
+        /// against the 1.7 × 4.0 m capsule every hull actually carries. The owner is watching the art,
+        /// and the art is what looked wrong; the capsule would let her pass a metre and a half closer
+        /// and still be honest about the physics.</para>
+        /// </summary>
+        [UnityTest]
+        public IEnumerator SheClearsEveryMarkOnTheWayIn_AndTheMooredDory()
+        {
+            float tide = StPetersBuilder.TideMean - StPetersBuilder.TideAmplitude;
+            ArrivalOpening opening = Begin(tide);
+
+            // Every obstacle the region really stands up, from the planner the build itself calls.
+            var obstacles = new List<(string what, Vector2 at, float girth)>();
+            NavMarkPlanResult plan = StPetersNavMarks.Plan(_terrain);
+            Dictionary<string, NavBuoyDef> defs =
+                NavMarkPlacer.LoadDefsByMarkType(StPetersNavMarks.DefFolder);
+
+            foreach (PlannedNavMark m in plan.Marks)
+            {
+                float girth = 0.6f;                       // the harbour rung, if the def is missing
+                if (defs.TryGetValue(m.MarkType, out NavBuoyDef def) && def != null)
+                {
+                    NavBuoyDef.SizeEntry rung = def.Size(m.SizeId);
+                    if (rung == null) rung = def.DefaultSize();
+                    if (rung != null) girth = rung.CollisionRadiusMeters;
+                }
+                obstacles.Add((m.Id, m.At, girth));
+            }
+
+            obstacles.Add(("the moored dory",
+                           new Vector2(StPetersBuilder.DoryMooredPos.x, StPetersBuilder.DoryMooredPos.y),
+                           StPetersBuilder.DoryHalfBeamMetres));
+
+            Assert.That(obstacles.Count, Is.GreaterThan(1),
+                "the region planted no marks at all, so this test would pass by having nothing to " +
+                "measure — which is the failure mode it exists to avoid.");
+
+            float halfBeam = StPetersBuilder.ArrivalHullHalfBeamMetres;
+            var worst = new Dictionary<string, float>();
+            foreach ((string what, Vector2 _, float _g) in obstacles) worst[what] = float.MaxValue;
+
+            float deadline = Time.realtimeSinceStartup + TimeoutSeconds;
+            while (opening.Current != ArrivalOpening.Phase.Moored &&
+                   Time.realtimeSinceStartup < deadline)
+            {
+                if (opening.Boat != null)
+                {
+                    Vector2 her = opening.Boat.transform.position;
+                    foreach ((string what, Vector2 at, float girth) in obstacles)
+                    {
+                        float gap = Vector2.Distance(her, at) - halfBeam - girth;
+                        if (gap < worst[what]) worst[what] = gap;
+                    }
+                }
+                yield return null;
+            }
+
+            Assert.AreEqual(ArrivalOpening.Phase.Moored, opening.Current,
+                "she never tied up, so the track this test measured is not the whole passage — " +
+                Stuck(opening));
+
+            // Report the three tightest passes whatever happens: the number is the finding, and a
+            // green run that never says how close she came teaches the owner nothing.
+            var ranked = new List<KeyValuePair<string, float>>(worst);
+            ranked.Sort((a, b) => a.Value.CompareTo(b.Value));
+            var said = new System.Text.StringBuilder("[arrival/corridor] tightest passes:");
+            for (int i = 0; i < ranked.Count && i < 3; i++)
+                said.Append($"  {ranked[i].Key} {ranked[i].Value:F2} m");
+            Debug.Log(said.ToString());
+
+            KeyValuePair<string, float> tightest = ranked[0];
+            Assert.Greater(tightest.Value, 0f,
+                $"she passed within {tightest.Value:F2} m of '{tightest.Key}' — hull and mark " +
+                $"OVERLAPPING, measured every frame of the real passage at spring low. Her track cuts " +
+                "inside her route at the corners, so clearance on the chart is not clearance in the " +
+                "water: this is the fault the owner watched on 2026-08-27.");
+
+            Assert.Greater(tightest.Value, MarkPassingClearanceMetres,
+                $"she shaved '{tightest.Key}' by {tightest.Value:F2} m of water. She is steered past a " +
+                $"mark by a person and is owed {MarkPassingClearanceMetres:F2} m beside her own hull.");
+        }
+
+        /// <summary>How much clear water the arrival is owed beside her own hull when she passes a
+        /// mark. A metre — the same figure ArrivalOpeningTests states for the plan, so the chart and
+        /// the water are held to one standard.</summary>
+        private const float MarkPassingClearanceMetres = 1f;
     }
 }

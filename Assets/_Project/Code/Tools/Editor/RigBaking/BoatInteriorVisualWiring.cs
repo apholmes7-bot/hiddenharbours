@@ -191,7 +191,7 @@ namespace HiddenHarbours.Tools.RigBaking
                 results.Add(r);
                 log.AppendLine($"  {stem}: {cells.Length} cells " +
                                $"({sheet.levels.Length} levels x {sheet.facings} facings), " +
-                               $"{sheet.pixelsPerMetre} px/m, {sheet.convention}");
+                               $"{sheet.pixelsPerMetre} px/m, rig {sheet.convention} (cells clockwise)");
             }
 
             AssetDatabase.SaveAssets();
@@ -227,8 +227,38 @@ namespace HiddenHarbours.Tools.RigBaking
             asset.Facings = sheet.facings;
             asset.CellLevels = (string[])sheet.levels.Clone();
             asset.CellRowForLevel = rowForLevel;
-            asset.CellsAreCounterClockwise =
-                string.Equals(sheet.convention, "CounterClockwise", StringComparison.Ordinal);
+
+            // ⚠️⚠️ ALWAYS FALSE, AND THAT IS THE FIX — READ BEFORE "RESTORING" sheet.convention HERE.
+            //
+            // This line used to read `string.Equals(sheet.convention, "CounterClockwise")`, which
+            // conflated two different facts that happen to share a word:
+            //
+            //   • `sheet.convention` describes the RIG — "the measured azimuth convention of the
+            //     EXTERIOR rig this room was cut from, THE CONVENTION THE CELLS WERE CORRECTED BY"
+            //     (BoatInteriorKit.SheetEntry.convention). It is an INPUT, and
+            //     SheetConvention_IsTheExteriorsMeasuredHandedness asserts it against the shipped
+            //     exterior rig's own ground-plane bearing. It is correct and stays exactly as it is.
+            //
+            //   • `CellsAreCounterClockwise` describes the PIXELS — it is the flag
+            //     IsoFacing.HeadingToFacingIndex uses to UN-MIRROR counter-clockwise art
+            //     (`if (facingsAreCounterClockwise) idx = count - idx`). It is an OUTPUT.
+            //
+            // The baker already applied the correction at bake time: every cell is rendered through
+            // RigBaker.DirForCell(facing, facings, probe.Convention), which maps cell k to dir
+            // (facings-k)%facings for a counter-clockwise rig and to k for a clockwise one. Whatever
+            // the rig's handedness, the CELLS come off the press canonically CLOCKWISE — cell i
+            // depicts +45°·i, exactly as labelled. There is nothing left to un-mirror.
+            //
+            // Feeding the rig's convention in here therefore MIRRORED AN ALREADY-CORRECT SHEET and
+            // drew the wrong facing at every heading except the two that are their own mirror (0 and
+            // facings/2) — measured on the shipped pixels at 45.0–45.3° per column across the fleet.
+            // It is the same bug BoatVisualLibraryBuilder's LobsterBoatIso block calls "the precise
+            // bug that shipped five times in this project before anyone measured", and it is why the
+            // owner's intro cabin drew on the cuddy roof at a W heading.
+            //
+            // BoatInteriorCellHandednessTests reads the shipped PNGs and goes red the instant this
+            // flips back. Do not change this line to make a different test pass.
+            asset.CellsAreCounterClockwise = false;
             asset.ResidentMegabytes = ResidentMegabytes(sheet);
 
             if (fresh) AssetDatabase.CreateAsset(asset, path);

@@ -199,6 +199,88 @@ namespace HiddenHarbours.World
             hand == NavChannelHand.Port ? PortNormal(direction) : StarboardNormal(direction);
 
         /// <summary>
+        /// The course of the leg a station lies ON, and the course of the leg it leads INTO. They
+        /// differ only at a vertex, which is the only place they need to.
+        ///
+        /// <para><see cref="PointAlong"/> answers with one direction, and at a vertex that is the
+        /// INBOUND leg's. Everything that describes a mark as seen by a skipper meeting it (its
+        /// facing, the bearing it is met on) wants exactly that. Everything that describes where the
+        /// EDGE of the fairway runs needs both, because at a turn the edge is a mitre and not a
+        /// perpendicular.</para>
+        /// </summary>
+        public static void CoursesAt(Vector2[] points, float along,
+                                     out Vector2 courseIn, out Vector2 courseOut)
+        {
+            courseIn = Vector2.right;
+            courseOut = Vector2.right;
+            if (points == null || points.Length < 2) return;
+
+            float remaining = Mathf.Max(0f, along);
+            for (int i = 1; i < points.Length; i++)
+            {
+                Vector2 a = points[i - 1];
+                Vector2 b = points[i];
+                float seg = Vector2.Distance(a, b);
+                if (seg <= 1e-4f) continue;
+
+                courseIn = (b - a) / seg;
+                if (remaining > seg) { remaining -= seg; continue; }
+
+                // Standing ON the far vertex: the leg it leads into is the next one with length.
+                courseOut = courseIn;
+                if (remaining >= seg - 1e-3f)
+                    for (int j = i + 1; j < points.Length; j++)
+                    {
+                        float next = Vector2.Distance(points[j - 1], points[j]);
+                        if (next <= 1e-4f) continue;
+                        courseOut = (points[j] - points[j - 1]) / next;
+                        break;
+                    }
+                return;
+            }
+            courseOut = courseIn;   // past the end: the last leg is all there is
+        }
+
+        /// <summary>
+        /// <b>Where the PORT edge of the fairway runs at a station</b>, as a multiple of the
+        /// channel's half-width. Multiply by the half-width for the port mark's offset; negate it
+        /// for the starboard one.
+        ///
+        /// <para><b>⚠⚠ A TURN'S PAIR SQUARED TO ITS INBOUND LEG STANDS IN THE OUTBOUND ONE.</b>
+        /// This is the defect the St Peters arrival ran aground on (2026-08-27): the entrance turns
+        /// 64.8° and 67.3°, and a mark set 10 m off the leg it arrives on ends up 4.26 m and
+        /// 3.85 m from the leg the skipper leaves on — inside the beam of the hull the channel
+        /// was dredged for. The route ran THROUGH its own marks and every test passed, because every
+        /// test measured the mark against the leg it was hung off.</para>
+        ///
+        /// <para>The edge of a fairway of constant half-width is the OFFSET of its centreline, and an
+        /// offset polyline turns a corner on the BISECTOR, lengthened by <c>1/cos(turn/2)</c> —
+        /// the mitre. Then the mark stands the channel's full half-width from BOTH legs, which is what
+        /// "the fairway is this wide" was always supposed to mean. On a straight the two normals are
+        /// the same vector, the mitre is 1, and this returns exactly what the old code did.</para>
+        ///
+        /// <para><b>The limit is not decoration.</b> A mitre grows without bound as a turn approaches
+        /// 180°, so a hairpin would fling its marks into the next county (and, here, onto a
+        /// shoal). Past the limit the join is clamped: the marks come in, the turn is too sharp to
+        /// buoy honestly, and the depth check downstream is what refuses them if the water agrees.</para>
+        /// </summary>
+        public static Vector2 PortEdgeOffset(Vector2 courseIn, Vector2 courseOut, float mitreLimit)
+        {
+            Vector2 nIn = PortNormal(courseIn);
+            Vector2 nOut = PortNormal(courseOut);
+            Vector2 sum = nIn + nOut;
+
+            // A reversal (180 degrees) has no bisector at all - there is no mitre to build.
+            if (sum.sqrMagnitude <= 1e-8f) return nIn;
+
+            Vector2 bisector = sum.normalized;
+            float half = Vector2.Dot(bisector, nIn);          // cos(turn / 2)
+            float limit = Mathf.Max(1f, mitreLimit);
+            float mitre = half <= 1e-4f ? limit : Mathf.Min(1f / half, limit);
+            return bisector * mitre;
+        }
+
+        /// <summary>
         /// ⭐ <b>IALA REGION B, and it is one line because it has to be.</b> Returning FROM SEAWARD,
         /// <b>red to starboard, green to port</b> — "red right returning", as the Canadian Coast Guard
         /// flies it. Region A is the mirror of this and is NOT what this world uses.

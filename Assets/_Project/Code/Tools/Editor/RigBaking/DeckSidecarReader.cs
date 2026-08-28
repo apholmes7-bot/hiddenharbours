@@ -103,6 +103,28 @@ namespace HiddenHarbours.Tools.RigBaking
         /// difference that provably cannot move a vertex. Anything else is <see cref="RigHashMatch.None"/>
         /// — the hull was reshaped, and the sidecar must be re-derived before it is trusted.
         /// </summary>
+        /// <summary>
+        /// SHA-256 of the given rig bytes with line endings normalised to <b>LF</b> — the one digest
+        /// that is the same on every machine.
+        ///
+        /// <para>No <c>.gitattributes</c> rule covers <c>docs/art/rigs/**/*.js</c> and
+        /// <c>core.autocrlf</c> is true on Windows, so a rig is stored LF in the blob and checked out
+        /// CRLF. Hashing the raw working-tree bytes therefore records a DIFFERENT number for the same
+        /// rig depending on which platform ran the bake — a recorded artifact that is not reproducible
+        /// across machines. LF is what git stores and what the sidecars pin
+        /// (<c>docs/art/rigs/gameplay/README.md</c>), so it is the form a generated contract should
+        /// carry.</para>
+        ///
+        /// <para><see cref="MatchRigHash"/> accepts either form, so an older contract that recorded the
+        /// CRLF digest stays valid — this only changes what a NEW bake writes.</para>
+        /// </summary>
+        public static string Sha256HexLineEndingNormalised(byte[] bytes)
+        {
+            if (bytes == null) return "";
+            string lf = Encoding.UTF8.GetString(bytes).Replace("\r\n", "\n");
+            return Sha256Hex(Encoding.UTF8.GetBytes(lf));
+        }
+
         public static RigHashMatch MatchRigHash(byte[] rigBytes, string expectedSha, out string actualSha)
         {
             actualSha = Sha256Hex(rigBytes);

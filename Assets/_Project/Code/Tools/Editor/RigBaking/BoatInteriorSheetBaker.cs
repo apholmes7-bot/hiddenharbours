@@ -119,7 +119,10 @@ namespace HiddenHarbours.Tools.RigBaking
                     "would refuse its renderer pin.", interiorRigPath);
 
             byte[] interiorRigBytes = File.ReadAllBytes(interiorRigPath);
-            report.InteriorRigSha = DeckSidecarReader.Sha256Hex(interiorRigBytes);
+            // LF-normalised on purpose: the raw working-tree bytes are CRLF on a Windows checkout and
+            // LF on a Linux one, so hashing them recorded a different number for the SAME rig depending
+            // on where the bake ran. See DeckSidecarReader.Sha256HexLineEndingNormalised.
+            report.InteriorRigSha = DeckSidecarReader.Sha256HexLineEndingNormalised(interiorRigBytes);
             log.AppendLine($"  renderer   : {BoatInteriorKit.InteriorRigFileName} " +
                            $"({report.InteriorRigSha.Substring(0, 12)}…)");
 

@@ -436,6 +436,32 @@ namespace HiddenHarbours.Tests.EditMode
                 "bottom are both measured from it.");
         }
 
+        /// <summary>
+        /// The same argument for the DORY's half-beam, which is a mirror for the same reason and
+        /// carries the same risk. Her berth is the dredged flat's north edge less this number
+        /// (<see cref="StPetersBuilder.DoryMooredY"/>), so a re-lofted hull that forgets it hangs her
+        /// outboard rail over the shoulder — quietly, since the centre of her would still float.
+        /// </summary>
+        [Test]
+        public void TheDorysHalfBeamMirrorStillMatchesHerSidecar()
+        {
+            const string meshPath = "Assets/_Project/Data/Boats/HullMeshes/DoryIsoHullMesh.asset";
+
+            var mesh = AssetDatabase.LoadAssetAtPath<HullMeshDef>(meshPath);
+            Assert.IsNotNull(mesh, $"the starting dory's mesh sidecar must exist at {meshPath}");
+            Assert.AreEqual(mesh.WatertightHalfBeamMeters, StPetersBuilder.DoryHalfBeamMetres, 1e-4f,
+                $"the region berths her {StPetersBuilder.DoryHalfBeamMetres:F2} m inside the dredged " +
+                $"flat's edge but her sidecar reports a {mesh.WatertightHalfBeamMeters:F2} m " +
+                "half-beam. Update StPetersBuilder.DoryHalfBeamMetres.");
+
+            // And the derivation it feeds: her rail lands ON the flat's edge, never past it.
+            Assert.AreEqual(StPetersBuilder.ApproachThalwegHalfWidth,
+                            StPetersBuilder.DoryMooredY + StPetersBuilder.DoryHalfBeamMetres, 1e-4f,
+                "her berth is supposed to be the flat's north edge less her own half-beam, so that " +
+                "her outboard rail sits on the edge. It no longer adds up, which means somebody " +
+                "typed a berth instead of deriving one.");
+        }
+
         // =============================================================================================
         //  helpers
         // =============================================================================================
