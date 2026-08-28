@@ -23,3 +23,37 @@ MonoBehaviour:
   RepeatLines:
   - 'Back again. If you''re for the flats, go on the falling tide — I''ll still be here
     after.'
+  Options:
+  - Id: option.browse_wares
+    Label: 'What have you got in?'
+    ReplyLines: []
+    CatalogSellerId: seller.leblancs
+    CatalogSection: gear
+    SellAtSellerId:
+    NothingToSellLines: []
+  - Id: option.sell_catch
+    Label: 'Will you take what''s in my pail?'
+    ReplyLines:
+    - '₲{payout} for the lot, and it''s on the scale there where you can see it.'
+    - 'I''ll be straight with you — Wendell would give you more for that over at the
+      creek, and he''d be right to. I sell to the same island I buy from, so I can''t.'
+    - 'But you''re standing here and he isn''t, and it''s off your hands. Some days
+      that is the whole of it.'
+    CatalogSellerId:
+    CatalogSection:
+    SellAtSellerId: seller.leblancs
+    NothingToSellLines:
+    - 'There''s nothing in that pail but air, my dear. Bring it back with something
+      in it and I''ll weigh it gladly.'
+  - Id: option.ask_about_store
+    Label: 'How do you keep a shop going out here?'
+    ReplyLines:
+    - 'Badly, and on purpose. I stock what five families and a schoolteacher actually
+      use, and I''d sooner be out of a thing than sat on it all winter.'
+    - 'The boat comes Thursdays. If you want something particular, tell me Wednesday
+      and I''ll put it on the list. That is the entire ordering system, and it has never
+      once failed me.'
+    CatalogSellerId:
+    CatalogSection:
+    SellAtSellerId:
+    NothingToSellLines: []
