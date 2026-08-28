@@ -38,6 +38,14 @@ namespace HiddenHarbours.Vehicles
         private VehicleFitment[] _fitments = System.Array.Empty<VehicleFitment>();
         private IHullPropRenderer[] _wheels = System.Array.Empty<IHullPropRenderer>();
 
+        /// <summary>The extra renderers a DiscreteStates fitting needs — one per baked state, the
+        /// driver showing exactly one. Null at every index whose fitting poses instead of swapping,
+        /// which is all of them but a trailer's landing-gear legs.</summary>
+        private IHullPropRenderer[][] _states = System.Array.Empty<IHullPropRenderer[]>();
+
+        /// <summary>How open every opening is. Null on a machine with none.</summary>
+        private VehicleDoors _doors;
+
         /// <summary>Whether the waterline clamp is currently RAISED on the renderer. Dirty-checked so
         /// the toggle is two writes per water's edge rather than two per frame — and it starts false
         /// because a freshly installed machine is installed ashore-shaped (0/0, the road vehicle's
@@ -61,7 +69,8 @@ namespace HiddenHarbours.Vehicles
         /// </summary>
         public void Configure(Transform visual, IHullMeshRenderer renderer, VehicleMeshDef def,
                               VehicleController controller,
-                              VehicleFitment[] fitments, IHullPropRenderer[] wheels)
+                              VehicleFitment[] fitments, IHullPropRenderer[] wheels,
+                              IHullPropRenderer[][] states = null, VehicleDoors doors = null)
         {
             _visual = visual;
             _renderer = renderer;
@@ -69,6 +78,8 @@ namespace HiddenHarbours.Vehicles
             _controller = controller;
             _fitments = fitments ?? System.Array.Empty<VehicleFitment>();
             _wheels = wheels ?? System.Array.Empty<IHullPropRenderer>();
+            _states = states ?? System.Array.Empty<IHullPropRenderer[]>();
+            _doors = doors;
             // A freshly installed renderer carries the ashore clamp (0/0), so the dirty flag must
             // agree with it or the first afloat frame would decide there was nothing to raise.
             _waterlineClampRaised = false;
@@ -262,6 +273,18 @@ namespace HiddenHarbours.Vehicles
                 if (wheel == null) continue;
 
                 VehicleFitment f = _fitments[i];
+
+                // ⭐ A DOOR is posed from how open it is, not from the road. Handled before the
+                // road arms so the switch below stays about wheels — a hood driven by an odometer
+                // would be a quietly hilarious bug.
+                if (f.Motion == VehicleFitmentMotion.HingeRotation ||
+                    f.Motion == VehicleFitmentMotion.Slide ||
+                    f.Motion == VehicleFitmentMotion.DiscreteStates)
+                {
+                    PoseOpening(i, f, wheel);
+                    continue;
+                }
+
                 bool left = f.Side == VehicleFitmentSide.Left;
                 float steerDegrees = left ? leftDegrees : rightDegrees;
                 float rollDegrees = left ? rollLeftDegrees : rollRightDegrees;
@@ -294,6 +317,80 @@ namespace HiddenHarbours.Vehicles
                         "it as something else is worse than stopping."),
                 };
             }
+        }
+
+        /// <summary>
+        /// Pose one worked opening from how open it is.
+        ///
+        /// <para><b>Three kinds, and the kind is a measurement.</b> A leaf that turned out to be one
+        /// rigid body about a published pin gets that rotation; a part that turned out to be an exact
+        /// rigid translation gets its sampled path; a part that turned out to be neither gets the
+        /// mesh baked at whichever end it is nearest, because there is nothing to pose it BY. See
+        /// <see cref="VehicleFitmentMotion"/> for what each was measured to be.</para>
+        ///
+        /// <para>⚠️ <b>The hinge sweeps the FULL published angle</b>, which for a reefer's barn leaf
+        /// is 255° and not the −105° that reaches the same pose. Multiplying openness by the sweep is
+        /// what keeps the leaf travelling through the fan the art published — out to full outboard
+        /// at 180° before folding back along the side — rather than taking the short way through
+        /// whatever is parked alongside.</para>
+        ///
+        /// <para>⚠️ <b>A door on a PARENT rides it.</b> The cabover's leaves are cut out of a cab that
+        /// tilts, so their own swing composes INSIDE the cab's: parent first, then child, which is
+        /// the order that keeps a door on its hinges when the cab goes over.</para>
+        /// </summary>
+        private void PoseOpening(int index, in VehicleFitment f, IHullPropRenderer part)
+        {
+            float open = _doors != null ? _doors.Openness(index) : 0f;
+
+            switch (f.Motion)
+            {
+                case VehicleFitmentMotion.HingeRotation:
+                    Vector3 axis = f.HingeAxis == VehicleHingeAxis.Lateral ? RigRight : RigUp;
+                    Quaternion swing = Quaternion.AngleAxis(open * f.SweepDegrees, axis);
+                    part.LocalRotation = ParentSwingOf(f.ParentSlot) * swing;
+                    break;
+
+                case VehicleFitmentMotion.Slide:
+                    // FitmentOffsetMeters moves the whole fitting, pivot included — which is what a
+                    // slide is. The path was sampled at its corners and asserted rigid at each.
+                    part.FitmentOffsetMeters = f.SlideOffsetAt(open);
+                    part.LocalRotation = ParentSwingOf(f.ParentSlot);
+                    break;
+
+                case VehicleFitmentMotion.DiscreteStates:
+                    ShowState(index, f, open >= 0.5f ? 1 : 0);
+                    break;
+            }
+        }
+
+        /// <summary>The swing of the fitting a door hangs off, or identity for one on the body. Looked
+        /// up by slot rather than cached because a machine has at most a handful of fittings and a
+        /// cache that went stale on a re-skin would hang a door off the wrong thing.</summary>
+        private Quaternion ParentSwingOf(string parentSlot)
+        {
+            if (string.IsNullOrEmpty(parentSlot) || _doors == null) return Quaternion.identity;
+
+            int at = _doors.IndexOfSlot(parentSlot);
+            if (at < 0 || at >= _fitments.Length) return Quaternion.identity;
+
+            VehicleFitment parent = _fitments[at];
+            if (parent.Motion != VehicleFitmentMotion.HingeRotation) return Quaternion.identity;
+
+            Vector3 axis = parent.HingeAxis == VehicleHingeAxis.Lateral ? RigRight : RigUp;
+            return Quaternion.AngleAxis(_doors.Openness(at) * parent.SweepDegrees, axis);
+        }
+
+        /// <summary>Show exactly one baked state of a part that is neither a rotation nor a
+        /// translation. ⚠️ Exactly ONE: leaving two visible draws a telescoping leg at both lengths
+        /// at once, which reads as a graphical fault rather than as a door.</summary>
+        private void ShowState(int index, in VehicleFitment f, int state)
+        {
+            if (index >= _states.Length) return;
+            IHullPropRenderer[] built = _states[index];
+            if (built == null) return;
+
+            for (int k = 0; k < built.Length; k++)
+                if (built[k] != null) built[k].Visible = k == state;
         }
 
         /// <summary>The rig's own up axis (+z, out of the road). A positive rotation about it swings

@@ -500,6 +500,28 @@ namespace HiddenHarbours.Core
                                                      : GameConfig.DefaultInteriorRockScale);
 
         /// <summary>
+        /// <b>How long a vehicle door takes to travel from shut to fully open</b>, in seconds — on
+        /// the same contract as <see cref="InteriorRockScale"/>: the <c>Config != null</c> discipline
+        /// (never <c>?.</c>/<c>??</c> on a <c>UnityEngine.Object</c>, which defeats Unity's
+        /// fake-null), resolved per read so the owner feels a slider move in Play, and falling back
+        /// to the shipped default so an unwired test rig works a door at the shipped pace rather
+        /// than instantly.
+        /// </summary>
+        public static float VehicleDoorSweepSeconds =>
+            UnityEngine.Mathf.Max(0.05f, Config != null ? Config.VehicleDoorSweepSeconds
+                                                        : GameConfig.DefaultVehicleDoorSweepSeconds);
+
+        /// <summary>
+        /// <b>How long a trailer's landing gear takes to wind between down and up</b>, in seconds.
+        /// Same contract as <see cref="VehicleDoorSweepSeconds"/>, and a separate number because a
+        /// hand crank is not a door — the kit's coupling discipline (couple, then wind the legs up
+        /// before rolling) leans on it taking time.
+        /// </summary>
+        public static float VehicleGearCrankSeconds =>
+            UnityEngine.Mathf.Max(0.05f, Config != null ? Config.VehicleGearCrankSeconds
+                                                        : GameConfig.DefaultVehicleGearCrankSeconds);
+
+        /// <summary>
         /// <b>How long the walk up (or down) one storey takes</b>, in seconds — ADR 0036's climb, on the
         /// same contract as <see cref="InteriorRockScale"/>: the <c>Config != null</c> discipline (never
         /// <c>?.</c>/<c>??</c> on a <c>UnityEngine.Object</c>), resolved per read so the owner can feel a

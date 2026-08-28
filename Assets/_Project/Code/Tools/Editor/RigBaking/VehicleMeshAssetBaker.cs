@@ -182,13 +182,29 @@ namespace HiddenHarbours.Tools.RigBaking
             var fitments = new List<VehicleFitment>(split.Fitments.Count);
             foreach (FitmentPlan plan in split.Fitments)
             {
-                HullPropMeshDef prop = WriteFitting(v, plan, data, chassis);
+                HullPropMeshDef[] states = null;
+                HullPropMeshDef prop;
+                if (plan.Motion == VehicleFitmentMotion.DiscreteStates)
+                {
+                    states = WriteFittingStates(v, plan, chassis);
+                    prop = states[0];      // the baked-at pose, so a caller that ignores states still draws
+                }
+                else
+                {
+                    prop = WriteFitting(v, plan, data, chassis);
+                }
                 fitments.Add(new VehicleFitment
                 {
                     Slot = plan.Slot,
                     Prop = prop,
                     Motion = plan.Motion,
                     Side = plan.Side,
+                    HingeAxis = plan.Axis.HingeAxis,
+                    SweepDegrees = plan.Axis.SweepDegrees,
+                    SlidePath = plan.SlidePath,
+                    StateProps = states,
+                    StateNames = plan.Axis.StateNames,
+                    ParentSlot = plan.Axis.ParentSlot ?? "",
                 });
             }
 
@@ -228,6 +244,7 @@ namespace HiddenHarbours.Tools.RigBaking
             def.Bayer16 = ReadBayer(data);
 
             WriteSidecarFacts(v, def, facts);
+            def.DoorGroups = BuildDoorGroups(v, def, facts);
 
             SwapMesh(def, ref def.Mesh, body.Mesh, v.MeshAssetPath);
 
@@ -356,6 +373,81 @@ namespace HiddenHarbours.Tools.RigBaking
                       string.Join("\n    – ", facts.Absences)));
         }
 
+        /// <summary>
+        /// ⭐ <b>Resolve the declared handles against the art's own INTERACT block.</b>
+        ///
+        /// <para>The fleet table says which fittings a handle moves — that is a fact about the bake,
+        /// because only the bake knows what the fittings are called. WHERE the handle is stays in the
+        /// sidecar and is read here, so the place the player stands cannot drift into a C# table and
+        /// then disagree with the document it came from.</para>
+        ///
+        /// <para>Both halves are refusals rather than warnings. A group naming an id the art does not
+        /// publish is a handle nobody drew; a group naming a slot this vehicle did not bake is a
+        /// handle wired to nothing. Either would install silently and do nothing when pressed.</para>
+        /// </summary>
+        static VehicleDoorGroup[] BuildDoorGroups(in VehicleRigFleet.Vehicle v, VehicleMeshDef def,
+                                                  VehicleSidecarFacts facts)
+        {
+            if (v.DoorGroups == null || v.DoorGroups.Count == 0)
+                return Array.Empty<VehicleDoorGroup>();
+
+            var slots = new HashSet<string>(StringComparer.Ordinal);
+            foreach (VehicleFitment f in def.Wheels) slots.Add(f.Slot);
+
+            var built = new List<VehicleDoorGroup>(v.DoorGroups.Count);
+            foreach (VehicleRigFleet.DoorGroupSpec spec in v.DoorGroups)
+            {
+                if (!facts.InteractIds.Contains(spec.Id))
+                    throw new InvalidOperationException(
+                        $"{v.Key}: a door group is declared for INTERACT id '{spec.Id}', which " +
+                        $"{v.SidecarPath} does not publish. It publishes: " +
+                        $"{string.Join(", ", facts.InteractIds)}.\n\u26a0\ufe0f The ids do not rhyme across " +
+                        "the pack — the van calls her rear pair 'barn' and the trailer kit calls its " +
+                        "own 'doors' — so this is very likely one copied from another vehicle. A " +
+                        "handle nobody drew installs silently and does nothing when pressed.");
+
+                foreach (string slot in spec.Slots)
+                    if (!slots.Contains(slot))
+                        throw new InvalidOperationException(
+                            $"{v.Key}: door group '{spec.Id}' works a fitting called '{slot}', which " +
+                            $"this vehicle did not bake. She has: {string.Join(", ", slots)}.");
+
+                // The sidecar's literal, unless the art published a FORMULA there instead and the
+                // fleet resolved it for this body — see DoorGroupSpec.ReachPointOverride. An
+                // override where the sidecar ALSO gives a literal would be two sources for one
+                // number, so that is refused rather than silently preferred.
+                bool has = facts.ReachPoints.TryGetValue(spec.Id, out Vector2 reach);
+                if (spec.ReachPointOverride.HasValue)
+                {
+                    if (has)
+                        throw new InvalidOperationException(
+                            $"{v.Key}: door group '{spec.Id}' carries a ReachPointOverride, but " +
+                            $"{v.SidecarPath} publishes a literal point for it too " +
+                            $"({reach.x:0.###}, {reach.y:0.###}). The override exists only for the " +
+                            "case where the art writes a per-body FORMULA the reader cannot parse; " +
+                            "with a literal available there would be two sources for one number and " +
+                            "nothing to say which is current. Delete the override.");
+                    reach = spec.ReachPointOverride.Value;
+                    has = true;
+                }
+                built.Add(new VehicleDoorGroup
+                {
+                    Id = spec.Id,
+                    Slots = spec.Slots,
+                    ReachPointLocal = has ? reach : Vector2.zero,
+                    HasReachPoint = has,
+                    Work = spec.Work,
+                });
+            }
+
+            Debug.Log($"[rig-vehicle] {v.Key} works {built.Count} handle(s): " +
+                      string.Join("; ", built.ConvertAll(g =>
+                          $"{g.Id} \u2192 [{string.Join(", ", g.Slots)}]" +
+                          (g.HasReachPoint ? $" at ({g.ReachPointLocal.x:0.##}, {g.ReachPointLocal.y:0.##})"
+                                           : " (the art publishes no numeric reach point)"))));
+            return built.ToArray();
+        }
+
         // =============================================================================================
         //  THE ARTICULATION SPLIT
         // =============================================================================================
@@ -371,10 +463,21 @@ namespace HiddenHarbours.Tools.RigBaking
             /// is also a point on the vertical steer axis, so ONE pivot serves both rotations.</summary>
             public readonly Vector3 Pivot;
 
+            /// <summary>The catalog entry this plan came from — carried whole rather than copied
+            /// field by field, so a door's hinge, sweep, states and parent reach the written asset
+            /// without five more constructor parameters.</summary>
+            public readonly VehicleRigFleet.Axis Axis;
+
+            /// <summary>For a Slide: the path measured off the rig, sample by sample.</summary>
+            public readonly VehicleSlideSample[] SlidePath;
+
             public FitmentPlan(string slot, List<int> faces, VehicleFitmentMotion motion,
-                               VehicleFitmentSide side, Vector3 pivot)
+                               VehicleFitmentSide side, Vector3 pivot,
+                               VehicleRigFleet.Axis axis = default,
+                               VehicleSlideSample[] slidePath = null)
             {
                 Slot = slot; Faces = faces; Motion = motion; Side = side; Pivot = pivot;
+                Axis = axis; SlidePath = slidePath;
             }
         }
 
@@ -434,9 +537,14 @@ namespace HiddenHarbours.Tools.RigBaking
                   return s;
                 }}
                 function __vfaces(o){{ return {g}.{v.FaceBuilderName}({g}.resolve(__vpose(o))); }}
-                function __vmoved(pose, sideSign, yMin, yMax){{
+                function __vmoved(pose, sideSign, yMin, yMax, mats){{
                   var a = __vfaces({{}}), b = __vfaces(pose), out = [];
                   for (var i = 0; i < a.length; i++) {{
+                    // ⭐ THE MATERIAL CLAIM, and the only filter that separates a landing gear's
+                    // rigid shoes from its telescoping legs: they share a side and a station, one
+                    // stacked on the other, so neither the side sign nor the y window can. Piped
+                    // on both ends so 'iron' never matches 'irons'.
+                    if (mats && mats.indexOf('|' + a[i].mat + '|') < 0) continue;
                     var fa = a[i].v, fb = b[i].v, d = false;
                     for (var k = 0; k < fa.length && !d; k++)
                       for (var c = 0; c < 3; c++)
@@ -459,6 +567,8 @@ namespace HiddenHarbours.Tools.RigBaking
                   return out.join(',');
                 }}");
 
+            InstallDoorProbes(host);
+
             var claimed = new HashSet<int>();
             var fitments = new List<FitmentPlan>();
 
@@ -470,7 +580,8 @@ namespace HiddenHarbours.Tools.RigBaking
             foreach (VehicleRigFleet.Axis axis in v.Axes)
             {
                 var mine = new List<int>();
-                foreach (int i in MovedFaces(host, axis.Probe, axis.SideSign, axis.YMin, axis.YMax))
+                foreach (int i in MovedFaces(host, axis.Probe, axis.SideSign, axis.YMin, axis.YMax,
+                                             axis.Materials))
                     if (!claimed.Contains(i)) mine.Add(i);
 
                 if (mine.Count == 0)
@@ -483,7 +594,19 @@ namespace HiddenHarbours.Tools.RigBaking
                         "at a quarter.");
 
                 foreach (int i in mine) claimed.Add(i);
-                fitments.Add(new FitmentPlan(axis.Slot, mine, axis.Motion, axis.Side, axis.Pivot));
+
+                // ⭐ A DOOR IS PROVED BEFORE IT IS PLANNED. Wheels are believed on their partition
+                // alone; a door additionally has to be the rigid thing its declaration claims, and
+                // the check runs HERE — on exactly the faces this axis claimed, after the earlier
+                // axes took theirs — because that set is what the fitting will actually be.
+                VehicleSlideSample[] slide = null;
+                if (axis.Motion == VehicleFitmentMotion.HingeRotation)
+                    VerifyHinge(host, v, axis, mine);
+                else if (axis.Motion == VehicleFitmentMotion.Slide)
+                    slide = SampleSlide(host, v, axis, mine);
+
+                fitments.Add(new FitmentPlan(axis.Slot, mine, axis.Motion, axis.Side, axis.Pivot,
+                                             axis, slide));
             }
 
             var body = new List<int>(faceCount - claimed.Count);
@@ -529,15 +652,306 @@ namespace HiddenHarbours.Tools.RigBaking
             return new VehiclePartition(body, fitments);
         }
 
+        // =============================================================================================
+        //  THE DOORS — verified against their published hinge before anything is written
+        // =============================================================================================
+
+        /// <summary>
+        /// How far, in METRES, a door's worst vertex may sit from where one rotation about its
+        /// published pin would put it — <b>0.1 mm</b>, and the number is derived rather than picked.
+        ///
+        /// <para><b>The floor is float32, not zero.</b> A fitting's pivot is a <c>Vector3</c>, and
+        /// the hinges are declared in C# floats: at a 53 ft trailer's coordinates (|y| ≈ 8 m) a
+        /// float32 resolves about 1e-6 m, and her barn's own hinge — the rig computes
+        /// <c>-S.L/2 + 0.02</c> in double, we store <c>-16.15f/2f + 0.02f</c> — differs by ~2e-7 m
+        /// before anything rotates. Swung 255° that becomes a ~1e-6 m residual, which is what she
+        /// measured. Demanding zero would be demanding a precision the asset cannot hold.</para>
+        ///
+        /// <para><b>The ceiling is a pixel.</b> The pack draws at 32 px/m, so one pixel is 31 mm.
+        /// This sits 300× below that: nothing it admits can move a rendered pixel.</para>
+        ///
+        /// <para>⚠️ <b>And nothing in this drop is anywhere near it in either direction</b>, which is
+        /// what makes the exact value unimportant. Every door that ships measures ~1e-6 m or less
+        /// — a hundred times inside. Every part that genuinely is not one leaf misses by metres:
+        /// the liftgate's platform by 0.65 m of radius error, the rollup's slats by 0.48 m at a
+        /// quarter travel, the gear's legs by the full 0.78 m of their stretch. The gap between
+        /// passing and failing is four orders of magnitude, so this threshold separates kinds, not
+        /// degrees — which is the only kind of tolerance worth having.</para>
+        /// </summary>
+        const double HingeEpsilon = 1e-4;
+
+        /// <summary>The measuring apparatus for doors, installed beside the partition's. Both work over
+        /// EVERY vertex of the named faces and neither skips the ones that did not move — the landing
+        /// gear's law, and the reason its telescope was mistaken for a rigid translation through two
+        /// handoffs.</summary>
+        static void InstallDoorProbes(IRigScriptHost host)
+        {
+            host.Execute(@"
+                // How far the named faces sit from where ONE rotation about the published hinge
+                // would put them - a residual in METRES, over every vertex.
+                //
+                // NOT an angle spread, and that distinction cost a bake. Reading each vertex's
+                // turned angle and comparing the spread is ill-conditioned exactly where a door
+                // leaf keeps most of its vertices: ON the hinge edge, where the radius is ~0 and
+                // atan2 turns a last-bit position error into a large angular one. Measured that
+                // way these doors reported spreads of 6e-5 to 1.6e-3 degrees while their radius
+                // error was EXACTLY 0 - noise dressed as non-rigidity, and the obvious repair
+                // would have been to loosen a tolerance until it stopped meaning anything.
+                //
+                // A positional residual has no such blind spot: a vertex on the axis contributes
+                // ~0 because it genuinely does not move, and one at the leaf's free edge
+                // contributes its full error. It is also the quantity that matters - does the mesh
+                // land where the rotation says. Same law as the landing gear's: measure the
+                // POSITIONS, never a scalar derived from them.
+                //
+                // The angle is the LEAST-SQUARES best fit over every vertex, not one vertex's own.
+                // Taking it from a single best-conditioned vertex works and is what this did first,
+                // but it inherits whatever rounding that one vertex carries and then charges it to
+                // all the others scaled by their radius - which is how a 53 ft reefer's barn door
+                // came back 1.03 microns out while the identical door on the 28 ft pup passed. The
+                // closed-form fit is one pass and it is the estimator that actually minimises what
+                // is being measured, so there is no vertex left to have trusted wrongly.
+                // axisKind 'z' rotates in (x,y) leaving z; 'x' rotates in (y,z) leaving x.
+                // Returns angleDeg, maxResidualMetres.
+                function __vhinge(pose, idxCsv, axisKind, a, b){
+                  var A = __vfaces({}), B = __vfaces(pose);
+                  var idx = idxCsv.length ? idxCsv.split(',') : [];
+                  var iu = axisKind === 'z' ? 0 : 1;
+                  var iv = axisKind === 'z' ? 1 : 2;
+                  var iw = axisKind === 'z' ? 2 : 0;
+
+                  var sinAcc = 0, cosAcc = 0, seen = 0;
+                  for (var n = 0; n < idx.length; n++) {
+                    var i = +idx[n], p = A[i].v, q = B[i].v;
+                    for (var k = 0; k < p.length; k++) {
+                      var pu = p[k][iu] - a, pv = p[k][iv] - b;
+                      var qu = q[k][iu] - a, qv = q[k][iv] - b;
+                      sinAcc += pu*qv - pv*qu;      // the 2-D Procrustes solution: theta =
+                      cosAcc += pu*qu + pv*qv;      // atan2(sum of crosses, sum of dots)
+                      seen++;
+                    }
+                  }
+                  if (!seen) return '0,0';
+                  var ang = Math.atan2(sinAcc, cosAcc);
+
+                  var c = Math.cos(ang), s = Math.sin(ang), worst = 0;
+                  for (var n2 = 0; n2 < idx.length; n2++) {
+                    var i2 = +idx[n2], p2 = A[i2].v, q2 = B[i2].v;
+                    for (var k2 = 0; k2 < p2.length; k2++) {
+                      var du = p2[k2][iu] - a, dv = p2[k2][iv] - b;
+                      var eu = (a + du*c - dv*s) - q2[k2][iu];
+                      var ev = (b + du*s + dv*c) - q2[k2][iv];
+                      var ew = p2[k2][iw] - q2[k2][iw];
+                      worst = Math.max(worst, Math.sqrt(eu*eu + ev*ev + ew*ew));
+                    }
+                  }
+                  var deg = ang * 180 / Math.PI;
+                  while (deg > 180) deg -= 360;
+                  while (deg < -180) deg += 360;
+                  return deg + ',' + worst;
+                }
+
+                // The named faces' rigid translation between two poses, over EVERY vertex.
+                // Returns dx, dy, dz, deviation — deviation 0 means one offset moved all of them.
+                function __vslide(fromPose, toPose, idxCsv){
+                  var A = __vfaces(fromPose), B = __vfaces(toPose);
+                  var idx = idxCsv.length ? idxCsv.split(',') : [];
+                  var dx = null, worst = 0;
+                  for (var n = 0; n < idx.length; n++) {
+                    var i = +idx[n], p = A[i].v, q = B[i].v;
+                    for (var k = 0; k < p.length; k++) {
+                      var d = [q[k][0]-p[k][0], q[k][1]-p[k][1], q[k][2]-p[k][2]];
+                      if (dx === null) dx = d;
+                      for (var c = 0; c < 3; c++) worst = Math.max(worst, Math.abs(d[c] - dx[c]));
+                    }
+                  }
+                  return dx === null ? '0,0,0,0' : (dx[0] + ',' + dx[1] + ',' + dx[2] + ',' + worst);
+                }");
+        }
+
+        /// <summary>
+        /// ⭐⭐ <b>A door is verified before it is believed.</b> Rotate every vertex of the faces this
+        /// axis claimed back about the hinge it declares, and require that NOTHING is left over: the
+        /// radius unchanged, the axis-parallel coordinate unchanged, and every vertex turned through
+        /// the same angle — which must be the sweep the art publishes.
+        ///
+        /// <para><b>Why this is a refusal rather than a warning.</b> A door posed about the wrong pin
+        /// or by the wrong angle still draws a door. It arrives shut and it arrives open, and the only
+        /// thing wrong is the arc between — which is exactly the volume the sidecars publish
+        /// <c>keep_clear</c> for. The landing gear got through two handoffs as "an exact rigid
+        /// translation" on a measurement that skipped the vertices that did not move.</para>
+        ///
+        /// <para>⚠️ <b>The sweep is compared MODULO 360, and that is the trap it exists for.</b> A
+        /// reefer's barn opens 255°, which through <c>atan2</c> comes back as −105° — the same pose,
+        /// reached the other way round. Declaring the short one sweeps the leaf through the wrong half
+        /// of the world: the published fan passes full outboard at 180°, |x| 2.37 m, wider than the
+        /// trailer. So the measurement is allowed to wrap and the DECLARATION carries the real sweep.</para>
+        /// </summary>
+        static void VerifyHinge(IRigScriptHost host, in VehicleRigFleet.Vehicle v,
+                                in VehicleRigFleet.Axis axis, List<int> faces)
+        {
+            string kind = axis.HingeAxis == VehicleHingeAxis.Vertical ? "z" : "x";
+            double a = axis.HingeAxis == VehicleHingeAxis.Vertical ? axis.Pivot.x : axis.Pivot.y;
+            double b = axis.HingeAxis == VehicleHingeAxis.Vertical ? axis.Pivot.y : axis.Pivot.z;
+            string key = v.Key, slot = axis.Slot;
+
+            string[] parts = host.EvaluateString(
+                $"__vhinge({axis.Probe},'{string.Join(",", faces)}','{kind}'," +
+                $"{a.ToString("R", Inv)},{b.ToString("R", Inv)})").Split(',');
+
+            double measured = double.Parse(parts[0], Inv);
+            double residual = double.Parse(parts[1], Inv);
+
+            if (residual > HingeEpsilon)
+                throw new InvalidOperationException(
+                    $"{key}: '{slot}' is NOT one rigid leaf on the hinge it declares " +
+                    $"({kind}-axis at {a:0.###}, {b:0.###}). Turning every vertex of its " +
+                    $"{faces.Count} faces through one angle about that pin leaves them up to " +
+                    $"{residual:0.#########} m from where the rig actually puts them.\n" +
+                    "Either the pin moved or this part is not a leaf at all — the rollup fans and the " +
+                    "liftgate is a four-bar linkage, and both are baked at their ends instead (PR 3c). " +
+                    "⚠️ Do NOT loosen the tolerance to make a door fit: the residual is in METRES on " +
+                    "a 32 px/m grid, so anything this test can see is a change of kind, not of precision.");
+            double delta = Math.IEEERemainder(measured - axis.SweepDegrees, 360.0);
+            if (Math.Abs(delta) > 1e-4)
+                throw new InvalidOperationException(
+                    $"{key}: '{slot}' swings {measured:0.####}° (mod 360) but is declared at " +
+                    $"{axis.SweepDegrees:0.####}°. The art moved, or the declaration was copied from " +
+                    "another door.");
+
+            Debug.Log($"[rig-vehicle] {key} '{slot}': {faces.Count} faces, ONE rigid leaf on the " +
+                      $"published {kind}-hinge at ({a:0.###}, {b:0.###}) — worst vertex " +
+                      $"{residual:0.#########} m from where one rotation puts it. Declared " +
+                      $"{axis.SweepDegrees:0.##}°, measured {measured:0.####}° (mod 360)." +
+                      (Math.Abs(axis.SweepDegrees) > 180.0
+                          ? " ⚠️ OVER A HALF TURN — animate her the long way; the short way reaches " +
+                            "the same pose through the wrong fan."
+                          : ""));
+        }
+
+        /// <summary>
+        /// Sample a sliding part's path off the rig, asserting at every sample that ONE offset moved
+        /// all of it. A slide that fails this is a telescope wearing a door's name.
+        /// </summary>
+        static VehicleSlideSample[] SampleSlide(IRigScriptHost host, in VehicleRigFleet.Vehicle v,
+                                                in VehicleRigFleet.Axis axis, List<int> faces)
+        {
+            float[] ts = axis.SlideSampleTs;
+            string key = v.Key, slot = axis.Slot;
+
+            if (ts == null || ts.Length < 2)
+                throw new InvalidOperationException(
+                    $"{key}: '{slot}' is a Slide with fewer than two path samples. A path needs at " +
+                    "least its two ends, and a sample at every corner between them.");
+
+            string indices = string.Join(",", faces);
+            var samples = new VehicleSlideSample[ts.Length];
+
+            for (int i = 0; i < ts.Length; i++)
+            {
+                // The probe names the FULL travel, so a sample pose is that one parameter scaled.
+                // ⚠️ t runs from the BAKED pose outward, which on a landing gear is the opposite
+                // sense to `gear` — she bakes parked at gear 1 and t = 1 is gear 0, legs up.
+                string pose = SamplePose(host, v, axis.Probe, ts[i]);
+                string[] parts = host.EvaluateString($"__vslide({{}},{pose},'{indices}')").Split(',');
+
+                double dev = double.Parse(parts[3], Inv);
+                if (dev > HingeEpsilon)
+                    throw new InvalidOperationException(
+                        $"{key}: '{slot}' is not an exact rigid translation at t = {ts[i]} — deviation " +
+                        $"{dev:0.######} over every vertex of its {faces.Count} faces. It is not a " +
+                        "slide; do not ship it as one. (This is the measurement that separated the " +
+                        "landing gear's rigid shoes from its telescoping legs.)");
+
+                samples[i] = new VehicleSlideSample
+                {
+                    T = ts[i],
+                    OffsetMeters = new Vector3(float.Parse(parts[0], Inv),
+                                               float.Parse(parts[1], Inv),
+                                               float.Parse(parts[2], Inv)),
+                };
+            }
+
+            Debug.Log($"[rig-vehicle] {key} '{slot}': {faces.Count} faces slide an EXACT rigid " +
+                      "translation at every sample — " +
+                      string.Join("  ", Array.ConvertAll(samples,
+                          x => $"t {x.T:0.###} -> {x.OffsetMeters:F4}")));
+            return samples;
+        }
+
+        /// <summary>
+        /// The pose at fraction <paramref name="t"/> along a slide's travel: its one parameter
+        /// interpolated from the value the vehicle BAKES at to the value its probe names.
+        ///
+        /// <para>⚠️⚠️ <b>NOT the probe value scaled by t</b>, which is the obvious reading and is
+        /// wrong on half the fleet. The van's slide bakes shut at <c>slide 0</c> and probes at
+        /// <c>slide 1</c>, so scaling happens to work. A trailer's landing gear bakes PARKED at
+        /// <c>gear 1</c> and probes RAISED at <c>gear 0</c> — scaling would hand every sample
+        /// <c>gear 0</c>, every offset would come back identical, and the path would flatten into
+        /// "the shoes never move" with a deviation of 0 at every sample. It would have passed.</para>
+        ///
+        /// <para>So the rest value is asked of the RIG rather than assumed to be zero, and t runs
+        /// from the baked pose outward whichever way the parameter happens to point.</para>
+        ///
+        /// <para>Deliberately narrow otherwise: exactly one <c>name:number</c> pair, because a slide
+        /// is one parameter's travel and a probe naming two leaves "the fraction" meaning nothing.</para>
+        /// </summary>
+        static string SamplePose(IRigScriptHost host, in VehicleRigFleet.Vehicle v,
+                                 string probe, float t)
+        {
+            string inner = probe.Trim().TrimStart('{').TrimEnd('}');
+            int colon = inner.IndexOf(':');
+            if (colon < 0 || inner.IndexOf(',') >= 0)
+                throw new InvalidOperationException(
+                    $"A Slide axis's probe must name exactly one parameter; got '{probe}'. The path is " +
+                    "sampled by interpolating that parameter, and a probe naming two has no single " +
+                    "fraction to interpolate.");
+
+            string name = inner.Substring(0, colon).Trim();
+            double probeValue = double.Parse(inner.Substring(colon + 1).Trim(), Inv);
+
+            double restValue = host.EvaluateNumber(
+                $"{v.GlobalName}.resolve({v.RestPose}).{name}");
+            if (double.IsNaN(restValue))
+                throw new InvalidOperationException(
+                    $"{v.Key}: the rig resolves no '{name}' at her rest pose {v.RestPose}, so there is " +
+                    "no value for a slide sample to start from. Check the probe names an axis this " +
+                    "body actually has.");
+
+            double value = restValue + t * (probeValue - restValue);
+            return "{" + name + ":" + value.ToString("R", Inv) + "}";
+        }
+
+        /// <summary>
+        /// ⚠️ <b>Merge a state's pose onto the vehicle's rest pose</b> — <c>{body:'flatbed28'}</c> and
+        /// <c>{gear:0}</c> become <c>{body:'flatbed28',gear:0}</c>.
+        ///
+        /// <para>On a container rig the rest pose carries the BODY, and a state pose that dropped it
+        /// would bake the default trailer's legs under another trailer's name. Same
+        /// <c>(file, pick)</c> trap as everywhere else in this drop, in the one place a second
+        /// extraction is made.</para>
+        /// </summary>
+        static string MergePose(string restPose, string statePose)
+        {
+            string a = (restPose ?? "{}").Trim().TrimStart('{').TrimEnd('}').Trim();
+            string b = (statePose ?? "{}").Trim().TrimStart('{').TrimEnd('}').Trim();
+            if (a.Length == 0) return "{" + b + "}";
+            if (b.Length == 0) return "{" + a + "}";
+            return "{" + a + "," + b + "}";
+        }
+
         static List<int> MovedFaces(IRigScriptHost host, string probePose, int sideSign,
-                                    float yMin, float yMax)
+                                    float yMin, float yMax, string[] materials = null)
         {
             // ⚠️ The bounds are written as JS SOURCE, so they are emitted explicitly rather than
             // left to ToString: a culture or runtime that spells infinity any other way would
             // produce a script that does not parse, and the window is usually infinite.
+            string mats = materials == null || materials.Length == 0
+                ? "null"
+                : "'|" + string.Join("|", materials) + "|'";
             string csv = host.EvaluateString(
                 $"__vmoved({probePose},{sideSign.ToString(Inv)}," +
-                $"{JsNumber(yMin)},{JsNumber(yMax)})");
+                $"{JsNumber(yMin)},{JsNumber(yMax)},{mats})");
             var list = new List<int>();
             if (string.IsNullOrEmpty(csv)) return list;
             foreach (string s in csv.Split(','))
@@ -750,14 +1164,17 @@ namespace HiddenHarbours.Tools.RigBaking
         /// one rigid body; the part of the corner that does NOT turn with the tyre is its own
         /// fitting, because it takes the steer while the tyre takes steer AND roll.</para></summary>
         static HullPropMeshDef WriteFitting(in VehicleRigFleet.Vehicle v, in FitmentPlan plan,
-                                            RigMeshData data, in Chassis chassis)
+                                            RigMeshData data, in Chassis chassis,
+                                            string stateName = "")
         {
-            string path = $"{WheelFolder}/{v.Key}_{plan.Slot}.asset";
+            string suffix = stateName.Length == 0 ? "" : "_" + stateName;
+            string path = $"{WheelFolder}/{v.Key}_{plan.Slot}{suffix}.asset";
             RigMeshBuild build = RigMeshBuilder.Build(data.WithFaces(Subset(data, plan.Faces)),
-                                                      $"{v.Key}{plan.Slot}Mesh");
+                                                      $"{v.Key}{plan.Slot}{suffix}Mesh");
 
             HullPropMeshDef def = LoadOrCreate<HullPropMeshDef>(path);
-            def.Id = $"vehicleprop.{ToSnake(v.Key)}_{ToSnake(plan.Slot)}";
+            def.Id = $"vehicleprop.{ToSnake(v.Key)}_{ToSnake(plan.Slot)}" +
+                     (suffix.Length == 0 ? "" : "_" + stateName);
             def.SourceRigPath = v.ScriptPath;
             def.SourceFaceBuilder = v.Extraction.FaceExpression;
             def.LightN = data.LightN.ToVector3();
@@ -770,7 +1187,12 @@ namespace HiddenHarbours.Tools.RigBaking
             def.CellH = data.H;
             def.ElevationDeg = (float)data.DefaultElev;
             def.PivotLocalMeters = plan.Pivot;
-            def.MaxSteerDegrees = plan.Motion == VehicleFitmentMotion.RollOnly ? 0f : chassis.MaxInnerDeg;
+            // ⚠️ ONLY A STEERED WHEEL CARRIES THE STEERING LOCK. A door's travel is its own
+            // published sweep and lives on the fitment, not here — handing a barn door the truck's
+            // 30° Ackermann limit would be a number that means nothing about her.
+            def.MaxSteerDegrees =
+                plan.Motion == VehicleFitmentMotion.SteerAndRoll ||
+                plan.Motion == VehicleFitmentMotion.SteerOnly ? chassis.MaxInnerDeg : 0f;
             def.MaxTiltDegrees = 0f;
             def.LateralMountsMeters = Array.Empty<float>();
             def.Ramps = ReadRamps(data);
@@ -781,6 +1203,64 @@ namespace HiddenHarbours.Tools.RigBaking
             if (!def.IsUsable())
                 throw new InvalidOperationException($"Baked fitting at {path} is not usable — see fields.");
             return def;
+        }
+
+        /// <summary>
+        /// ⚠️ <b>Bake a part that is NOT rigid at each end of its travel instead of faking it.</b>
+        ///
+        /// <para>One extraction per state, at the state's own pose, taking the SAME face indices the
+        /// probe claimed. That is only sound because every state is a pose of the same build — the
+        /// face list keeps its length and its order — which is exactly the property the rollup does
+        /// NOT have (at <c>rollup:1</c> its face count changes) and the reason the rollup is a
+        /// whole-body two-state bake in PR 3c rather than a fitting here.</para>
+        ///
+        /// <para>⚠️ Each state pose is MERGED onto the vehicle's rest pose, so a container rig's body
+        /// pick survives into the second extraction. Dropping it would bake the default trailer's
+        /// legs under another trailer's name — the same silent fallback that runs through this whole
+        /// drop.</para>
+        /// </summary>
+        static HullPropMeshDef[] WriteFittingStates(in VehicleRigFleet.Vehicle v, in FitmentPlan plan,
+                                                    in Chassis chassis)
+        {
+            string[] names = plan.Axis.StateNames, poses = plan.Axis.StatePoses;
+            if (names == null || poses == null || names.Length != poses.Length || names.Length < 2)
+                throw new InvalidOperationException(
+                    $"{v.Key}: '{plan.Slot}' is a DiscreteStates fitting without at least two matching " +
+                    "state names and poses. A part baked at its ends needs both ends named.");
+
+            var props = new HullPropMeshDef[names.Length];
+            for (int i = 0; i < names.Length; i++)
+            {
+                string pose = MergePose(v.RestPose, poses[i]);
+
+                // A FRESH host per state: ExtractFrom runs the rig source, and re-running it into a
+                // host that already holds one would stack two copies of the same IIFE.
+                using IRigScriptHost stateHost = RigScriptHostFactory.Create();
+                RigMeshData stateData = RigMeshExtractor.ExtractFrom(
+                    stateHost, v.ScriptPath, v.GlobalName,
+                    hull: new RigHullExtraction
+                    {
+                        FaceExpression = $"{v.FaceBuilderName}({v.GlobalName}.resolve({pose}))",
+                        ExtraSymbols = v.Extraction.ExtraSymbols,
+                        HullScope = v.Extraction.HullScope,
+                        ViewOptions = v.Extraction.ViewOptions,
+                    });
+
+                if (stateData.Faces.Count <= plan.Faces[plan.Faces.Count - 1])
+                    throw new InvalidOperationException(
+                        $"{v.Key}: '{plan.Slot}' state '{names[i]}' built {stateData.Faces.Count} faces, " +
+                        $"too few to hold the indices the probe claimed (up to " +
+                        $"{plan.Faces[plan.Faces.Count - 1]}). A state that changes the face COUNT is a " +
+                        "different build, not a pose, and cannot be a fitting — bake the whole body at " +
+                        "both states instead.");
+
+                props[i] = WriteFitting(v, plan, stateData, chassis, names[i]);
+            }
+
+            Debug.Log($"[rig-vehicle] {v.Key} '{plan.Slot}': {plan.Faces.Count} faces baked at " +
+                      $"{names.Length} states ({string.Join(", ", names)}) because the part is not " +
+                      "rigid — it neither rotates nor translates, so there is nothing to pose it by.");
+            return props;
         }
 
         static HullMeshDef.Ramp[] ReadRamps(RigMeshData data)

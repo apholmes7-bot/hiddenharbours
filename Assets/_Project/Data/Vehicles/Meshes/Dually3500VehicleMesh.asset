@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: vehiclemesh.dually_3500
   SourceRigPath: docs/art/rigs/dually-iso-kit/vehicleIsoRig.js
   SourceFaceBuilder: build(VehicleIso.resolve({}))
-  Mesh: {fileID: 3990594472060634529}
+  Mesh: {fileID: 8688820853765566388}
   Ramps:
   - Colors:
     - serializedVersion: 2
@@ -288,32 +288,69 @@ MonoBehaviour:
   WatertightHalfBeamMeters: 0
   ColliderMinMeters: {x: -1.24, y: -3.34, z: 0}
   ColliderMaxMeters: {x: 1.24, y: 3.3, z: 2.05}
+  DoorGroups: []
   Wheels:
   - Slot: WheelFL
     Prop: {fileID: 11400000, guid: 45262cae64d810f4b835c68f8c986823, type: 2}
     Motion: 0
     Side: 0
+    HingeAxis: 0
+    SweepDegrees: 0
+    SlidePath: []
+    StateProps: []
+    StateNames: []
+    ParentSlot: 
   - Slot: WheelFR
     Prop: {fileID: 11400000, guid: 02d4606840d4de44999ce33348209f94, type: 2}
     Motion: 0
     Side: 1
+    HingeAxis: 0
+    SweepDegrees: 0
+    SlidePath: []
+    StateProps: []
+    StateNames: []
+    ParentSlot: 
   - Slot: WheelRL
     Prop: {fileID: 11400000, guid: 7d1ce722ade5a594ab314a5b14770d52, type: 2}
     Motion: 2
     Side: 0
+    HingeAxis: 0
+    SweepDegrees: 0
+    SlidePath: []
+    StateProps: []
+    StateNames: []
+    ParentSlot: 
   - Slot: WheelRR
     Prop: {fileID: 11400000, guid: 1d96b93dceb2c6b459538da7eded11fb, type: 2}
     Motion: 2
     Side: 1
+    HingeAxis: 0
+    SweepDegrees: 0
+    SlidePath: []
+    StateProps: []
+    StateNames: []
+    ParentSlot: 
   - Slot: KnuckleFL
     Prop: {fileID: 11400000, guid: f45dbdf4e51f23148ae7a3db8073ced4, type: 2}
     Motion: 1
     Side: 0
+    HingeAxis: 0
+    SweepDegrees: 0
+    SlidePath: []
+    StateProps: []
+    StateNames: []
+    ParentSlot: 
   - Slot: KnuckleFR
     Prop: {fileID: 11400000, guid: bf06a790ba345a54a92b100ae72166eb, type: 2}
     Motion: 1
     Side: 1
---- !u!43 &3990594472060634529
+    HingeAxis: 0
+    SweepDegrees: 0
+    SlidePath: []
+    StateProps: []
+    StateNames: []
+    ParentSlot: 
+--- !u!43 &8688820853765566388
 Mesh:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

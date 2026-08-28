@@ -92,7 +92,8 @@ namespace HiddenHarbours.Tests.RigBaking
             },
 
             // ---- the four towed bodies. No steer, so no knuckles; the landing gear stays in the
-            //      body (it telescopes — see TheLandingGearTelescopes… below).
+            //      body; the landing gear is split out (shoes slide, legs swap) — see
+            //      TheLandingGearsSplitIsStillTheOneTheMeasurementSupports below.
             new Baked
             {
                 Key = "trailerFlatbed28", Global = "TrailerIso", Pick = "flatbed28",
@@ -124,6 +125,27 @@ namespace HiddenHarbours.Tests.RigBaking
         };
 
         static VehicleRigFleet.Vehicle Entry(Baked b) => VehicleRigFleet.Get(b.Key);
+
+        /// <summary>
+        /// ⭐ <b>The fittings the ROAD turns, which is what this fixture is about.</b>
+        ///
+        /// <para>PR 3a gave every body its doors, and a door is a fitting too — so from that PR on,
+        /// <c>def.Wheels</c> holds leaves and hoods and a tilting cab beside the wheels. Everything
+        /// below asks wheel questions (does it take the Ackermann angle, is its hub at the rolling
+        /// radius, does its station window clear its neighbour) and a door answers all of them
+        /// wrongly and correctly: it is not a wheel.</para>
+        ///
+        /// <para>Filtering here rather than loosening each assertion keeps both halves sharp — the
+        /// wheels stay held to wheel laws, and the doors are held to door laws by
+        /// <c>RoadFleetDoorTests</c>, which measures each one against its published pin.</para>
+        /// </summary>
+        static IEnumerable<VehicleFitment> Wheels(VehicleMeshDef def) =>
+            def.Wheels.Where(f => f.Motion == VehicleFitmentMotion.SteerAndRoll ||
+                                  f.Motion == VehicleFitmentMotion.SteerOnly ||
+                                  f.Motion == VehicleFitmentMotion.RollOnly);
+
+        static IEnumerable<VehicleRigFleet.Axis> WheelAxes(VehicleRigFleet.Vehicle v) =>
+            v.Axes.Where(a => !a.IsDoor);
 
         static VehicleMeshDef LoadMesh(Baked b)
         {
@@ -204,15 +226,17 @@ namespace HiddenHarbours.Tests.RigBaking
         {
             VehicleMeshDef def = LoadMesh(b);
 
-            Assert.That(def.Wheels, Is.Not.Null.And.Length.EqualTo(b.Slots.Length),
-                $"'{b.Key}' baked {def.Wheels?.Length ?? 0} fittings, not {b.Slots.Length}. On the " +
+            VehicleFitment[] wheels = Wheels(def).ToArray();
+
+            Assert.That(wheels, Is.Not.Null.And.Length.EqualTo(b.Slots.Length),
+                $"'{b.Key}' baked {wheels.Length} WHEEL fittings, not {b.Slots.Length}. On the " +
                 "semis and the 53-ft trailers a rear side is a TANDEM split into two by station " +
                 "window, so a count that dropped to one per side means the windows stopped " +
                 "separating the axles.");
 
-            Assert.That(def.Wheels.Select(f => f.Slot).ToArray(), Is.EquivalentTo(b.Slots));
+            Assert.That(wheels.Select(f => f.Slot).ToArray(), Is.EquivalentTo(b.Slots));
 
-            foreach (VehicleFitment f in def.Wheels)
+            foreach (VehicleFitment f in wheels)
             {
                 Assert.That(f.Prop, Is.Not.Null, $"fitting '{f.Slot}' has no baked mesh def.");
                 Assert.That(f.Prop.IsUsable(), Is.True, $"fitting '{f.Slot}' is not usable.");
@@ -280,7 +304,7 @@ namespace HiddenHarbours.Tests.RigBaking
         {
             VehicleMeshDef def = LoadMesh(b);
 
-            foreach (VehicleFitment f in def.Wheels)
+            foreach (VehicleFitment f in Wheels(def))
             {
                 VehicleFitmentMotion expected =
                     f.Slot.StartsWith("Knuckle", StringComparison.Ordinal) ? VehicleFitmentMotion.SteerOnly
@@ -323,7 +347,7 @@ namespace HiddenHarbours.Tests.RigBaking
 
             float wheelR = (float)host.EvaluateNumber($"{b.Global}.G.wheelR");
 
-            foreach (VehicleRigFleet.Axis a in v.Axes)
+            foreach (VehicleRigFleet.Axis a in WheelAxes(v))
             {
                 Assert.That(a.Pivot.z, Is.EqualTo(wheelR).Within(1e-4f),
                     $"'{a.Slot}' turns about z {a.Pivot.z}, but the rig's rolling radius is {wheelR}. " +
@@ -369,9 +393,9 @@ namespace HiddenHarbours.Tests.RigBaking
             VehicleRigFleet.Vehicle v = Entry(b);
             using IRigScriptHost host = Host(b);
 
-            foreach (string probe in v.Axes.Select(a => a.Probe).Distinct())
+            foreach (string probe in WheelAxes(v).Select(a => a.Probe).Distinct())
             {
-                VehicleRigFleet.Axis[] sharing = v.Axes.Where(a => a.Probe == probe).ToArray();
+                VehicleRigFleet.Axis[] sharing = WheelAxes(v).Where(a => a.Probe == probe).ToArray();
                 int moved = (int)host.EvaluateNumber($"__movedSet({probe}).length");
 
                 int claimed = 0;
@@ -730,31 +754,26 @@ namespace HiddenHarbours.Tests.RigBaking
         // =============================================================================================
 
         /// <summary>
-        /// ⚠️⚠️ <b>THE LANDING GEAR TELESCOPES, so it is baked INTO the body and raising it is PR 3's.</b>
+        /// ⚠️⚠️ <b>THE LANDING GEAR TELESCOPES — measured in PR 2, and the split it forced is what
+        /// PR 3a shipped.</b>
         ///
-        /// <para>The plan was a fitting. <c>TrailerIsoKitProbeTests</c> measures <c>gear</c> 1 → 0 as
-        /// 24 faces at a per-vertex deviation of <b>0</b>, which reads as an exact rigid translation —
-        /// one mesh at two positions, the way the Otter's <c>float</c> is. That fixture's deviation
-        /// helper SKIPS vertices that did not move, which is right for what it measures and
-        /// misleading about what its name says.</para>
+        /// <para>Of the 24 faces raising the legs moves, <b>16 translate rigidly by exactly
+        /// [0, 0, 0.78]</b> and <b>8 have their top vertices PINNED at z 1.120</b> while their
+        /// bottoms rise 0.130 → 0.910. Sixteen of ninety-six vertices never move. The probe fixture
+        /// reads a deviation of 0 there because its helper SKIPS unmoved vertices — right for what
+        /// it measures, misleading about what its name says.</para>
         ///
-        /// <para><b>Measured without the skip:</b> 16 <c>iron</c> shoe faces DO translate rigidly by
-        /// exactly [0, 0, 0.78]; the other 8 <c>galv</c> faces are the leg tubes, and their top two
-        /// vertices are PINNED at z 1.120 while their bottoms rise 0.130 → 0.910. The leg shortens.
-        /// 16 of the 96 vertices never move at all.</para>
+        /// <para>PR 2 could not pose that with one mesh and an offset and refused to fake it, so the
+        /// whole assembly baked into the body at parked. PR 3a split it on the art's own
+        /// distinction: the rigid faces are the <c>iron</c> sand shoes (now a Slide) and the
+        /// telescoping ones the <c>galv</c> leg tubes (now baked at each end and swapped).</para>
         ///
-        /// <para>So one mesh plus an offset cannot reproduce it, and neither half works alone: applied
-        /// to the whole set it lifts the leg tops off the frame; applied to the shoes it slides them
-        /// up inside a leg still drawn at full extension. The gear bakes into the body at
-        /// <c>gear:1</c> — parked, shoes grounded, the rig's own default and what a placed trailer is
-        /// — and the raise needs a second body mesh or a two-part split, in the PR that couples her.</para>
-        ///
-        /// <para><b>Asserted in both directions.</b> The day the art side makes the whole assembly
-        /// rigid, this goes red on "it is rigid now" and the deferral is lifted rather than
-        /// outliving its reason.</para>
+        /// <para><b>This still measures the telescope</b>, because that is what decides the design:
+        /// the day the art makes the whole assembly rigid, this goes red and the legs can become a
+        /// second Slide instead of a swap.</para>
         /// </summary>
         [Test]
-        public void TheLandingGearTelescopes_SoItIsBakedIntoTheBodyRatherThanLiftedOut()
+        public void TheLandingGearsSplitIsStillTheOneTheMeasurementSupports()
         {
             Baked pup = Bodies.First(x => x.Key == "trailerFlatbed28");
             using IRigScriptHost host = Host(pup);
@@ -763,26 +782,25 @@ namespace HiddenHarbours.Tests.RigBaking
                 "the landing gear changed size.");
 
             Assert.That(host.EvaluateNumber("__pinnedVerts({gear:0})"), Is.EqualTo(16d),
-                "the landing gear no longer has vertices that stay put while others move. If the " +
-                "whole assembly now translates rigidly, it CAN be lifted out as one fitting with an " +
-                "offset — take that deliberately: add the axis back to " +
-                "VehicleRigFleet.BuildTrailerAxes, put {gear:0} back in BodyMustNotMove, and delete " +
-                "this test's reason for existing.");
+                "the landing gear no longer has vertices that stay put while others move.");
 
             Assert.That(host.EvaluateNumber("__rigidDeviation({gear:0})"), Is.GreaterThan(0.5d),
                 "measured over EVERY vertex of the moved faces rather than only the ones that " +
-                "moved, the gear is now within half a metre of a rigid translation — which is what " +
-                "the two-part story above says it is not.");
+                "moved, the gear is now within half a metre of a rigid translation.");
 
-            // And no fitting claims it: it is in the body, deliberately.
+            // ⭐ AND IT IS NO LONGER IN THE BODY. PR 2 baked the whole assembly into the trailer
+            // because one mesh plus an offset could not be both halves at once; PR 3a split it on
+            // the ART's own distinction — the rigid 16 are `iron` shoes and the telescoping 8 are
+            // `galv` tubes — so the shoes slide and the legs are baked at each end.
             foreach (Baked b in Bodies.Where(x => x.Pick != null))
             {
                 VehicleRigFleet.Vehicle v = Entry(b);
-                Assert.That(v.Axes.Any(a => a.Probe.Contains("gear")), Is.False,
-                    $"'{b.Key}' lifts the landing gear out as a fitting.");
-                Assert.That(v.BodyMustNotMove.Any(m => m.Contains("gear")), Is.False,
-                    $"'{b.Key}' asserts the body does not move under the gear axis. It does — the " +
-                    "gear is baked into it on purpose.");
+                Assert.That(v.Axes.Any(a => a.Probe.Contains("gear")), Is.True,
+                    $"'{b.Key}' no longer lifts the landing gear out. It was deferred in PR 2 and " +
+                    "discharged in PR 3a; putting it back in the body would re-freeze the legs down.");
+                Assert.That(v.BodyMustNotMove.Any(m => m.Contains("gear")), Is.True,
+                    $"'{b.Key}' no longer asserts her body stays put when the legs come up. With the " +
+                    "gear lifted out, that guard is what catches a leg silently welded back on.");
             }
         }
 
@@ -913,7 +931,7 @@ namespace HiddenHarbours.Tests.RigBaking
         /// <summary>The rear axle stations this vehicle DECLARES — the y of every rear roll fitting,
         /// deduplicated.</summary>
         static IEnumerable<float> DeclaredRearStations(VehicleRigFleet.Vehicle v) =>
-            v.Axes.Where(a => a.Motion == VehicleFitmentMotion.RollOnly)
+            WheelAxes(v).Where(a => a.Motion == VehicleFitmentMotion.RollOnly)
                   .Select(a => a.Pivot.y)
                   .Distinct();
 

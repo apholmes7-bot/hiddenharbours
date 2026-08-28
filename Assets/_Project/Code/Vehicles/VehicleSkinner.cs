@@ -72,19 +72,57 @@ namespace HiddenHarbours.Vehicles
             // The wheels, in the def's own order, so the driver's fitment array and its renderer
             // array are index-parallel by construction rather than by a lookup that could miss.
             var wheels = new List<IHullPropRenderer>(mesh.Wheels.Length);
+            var states = new List<IHullPropRenderer[]>(mesh.Wheels.Length);
+
             for (int i = 0; i < mesh.Wheels.Length; i++)
             {
                 VehicleFitment f = mesh.Wheels[i];
+
+                // ⭐ A part that is neither a rotation nor a translation was baked at each end of
+                // its travel instead (a trailer's telescoping legs, and so far only those). It
+                // installs as ONE RENDERER PER STATE and the driver shows exactly one — there is
+                // nothing to pose it by, so the alternative to a swap is a lie about its shape.
+                if (f.Motion == VehicleFitmentMotion.DiscreteStates &&
+                    f.StateProps != null && f.StateProps.Length > 0)
+                {
+                    var built = new IHullPropRenderer[f.StateProps.Length];
+                    for (int k = 0; k < f.StateProps.Length; k++)
+                    {
+                        if (f.StateProps[k] == null) continue;
+                        string name = f.StateNames != null && k < f.StateNames.Length
+                            ? f.StateNames[k] : k.ToString();
+                        built[k] = service.AttachWheel(
+                            visual.gameObject, f.StateProps[k], f.Slot + "#" + name);
+                        // Everything but the first is hidden until the driver's first pose, so a
+                        // freshly skinned trailer does not flash both leg lengths at once.
+                        if (built[k] != null) built[k].Visible = k == 0;
+                    }
+                    states.Add(built);
+                    wheels.Add(built.Length > 0 ? built[0] : null);
+                    continue;
+                }
+
+                states.Add(null);
                 wheels.Add(f.Prop != null
                     ? service.AttachWheel(visual.gameObject, f.Prop, f.Slot)
                     : null);
             }
 
+            // How open everything is. Configured before the driver so its first pose reads real
+            // state rather than an empty array, and snapped shut so a placed machine arrives with
+            // its doors closed rather than sweeping them open from nowhere.
+            var doors = root.GetComponent<VehicleDoors>();
+            if (doors == null) doors = root.AddComponent<VehicleDoors>();
+            doors.Configure(mesh);
+            doors.SnapAllShut();
+
+            InstallHandles(root, visual, mesh, vehicle.Id, doors);
+
             var driver = root.GetComponent<VehicleMeshDriver>();
             if (driver == null) driver = root.AddComponent<VehicleMeshDriver>();
             driver.Configure(visual, renderer, mesh,
                              controller != null ? controller : root.GetComponent<VehicleController>(),
-                             mesh.Wheels, wheels.ToArray());
+                             mesh.Wheels, wheels.ToArray(), states.ToArray(), doors);
 
             return new Rig(true, visual, driver, renderer);
         }
@@ -99,6 +137,57 @@ namespace HiddenHarbours.Vehicles
 
             var driver = root.GetComponent<VehicleMeshDriver>();
             if (driver != null) driver.Configure(null, null, null, null, null, null);
+        }
+
+        /// <summary>The child every handle lives under, so a re-skin can clear them in one go rather
+        /// than hunting components off the root.</summary>
+        private const string HandlesChildName = "Handles";
+
+        /// <summary>
+        /// Stand one <see cref="VehicleDoorHandle"/> at each worked opening the art published a place
+        /// for.
+        ///
+        /// <para>⚠️ <b><c>drive</c> and <c>ride</c> are skipped deliberately.</b> They ARE the cab
+        /// doors — the art hangs getting in off the leaf you open to do it — but the seat flow
+        /// already owns that press (<see cref="VehicleDoor"/>, which is both the door and the seat).
+        /// Registering a second interactable at the same point would put two candidates a few
+        /// centimetres apart and let the resolver's tie-break decide whether pressing E opens the
+        /// door or climbs in. The leaves are still POSED; what they do not get is a rival handle.</para>
+        ///
+        /// <para>⚠️ <b>A group with no reach point gets no handle</b>, and that is the art speaking
+        /// rather than a gap: a trailer's cranks are published as per-body formulas and her
+        /// <c>couple</c> point as prose, because the act belongs to the tractor. A handle at (0, 0)
+        /// would sit on the machine's own centreline.</para>
+        /// </summary>
+        private static void InstallHandles(GameObject root, Transform visual, VehicleMeshDef mesh,
+                                           string vehicleId, VehicleDoors doors)
+        {
+            Transform holder = root.transform.Find(HandlesChildName);
+            if (holder != null) UnityEngine.Object.DestroyImmediate(holder.gameObject);
+            if (mesh.DoorGroups == null || mesh.DoorGroups.Length == 0) return;
+
+            var go = new GameObject(HandlesChildName);
+            go.transform.SetParent(root.transform, false);
+            holder = go.transform;
+
+            for (int i = 0; i < mesh.DoorGroups.Length; i++)
+            {
+                VehicleDoorGroup group = mesh.DoorGroups[i];
+                if (!group.HasReachPoint) continue;
+                if (group.Id == "drive" || group.Id == "ride") continue;
+
+                // ⚠️ Built INACTIVE and switched on after Configure. AddComponent on a live object
+                // runs OnEnable — and so the registration — before the caller has said what this is;
+                // the handle's own id is computed live to survive that, but registering a handle
+                // that does not yet know its group would still offer a press that does nothing.
+                var child = new GameObject(group.Id);
+                child.SetActive(false);
+                child.transform.SetParent(holder, false);
+
+                var handle = child.AddComponent<VehicleDoorHandle>();
+                handle.Configure(doors, group, vehicleId);
+                child.SetActive(true);
+            }
         }
     }
 }
