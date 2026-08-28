@@ -18,12 +18,19 @@ namespace HiddenHarbours.Boats
     /// approaches from). ⚠️ The kit is CLOCKWISE by measurement: cell <c>i</c> depicts heading
     /// <c>+45°·i</c>, the OPPOSITE of every boat in the fleet. Do not "correct" it.</para>
     ///
-    /// <para><b>Decor tier, never saved (rule 5).</b> No collision, no chart, no light. A mark that
-    /// floats correctly and nothing more; the meaning it carries is data on the def, waiting on its
-    /// own slice.</para>
+    /// <para><b>⭐ SHE COLLIDES NOW — this class used to say she did not.</b> The decor tier
+    /// anticipated its own promotion and 2026-08-27 is when it came: the owner watched the arrival
+    /// run through the entrance marks and asked for buoys that push back. The physics belongs to
+    /// <see cref="NavBuoyMooring"/>, wired from the same size rung the art comes from — so a mark's
+    /// girth, her displacement and her scope can never describe a different buoy from the one on
+    /// screen. Still no chart and no light; those are their own slices.</para>
+    ///
+    /// <para><b>Never saved (rule 5).</b> Where a knocked mark is at this instant is transient and
+    /// recomputed from her anchor.</para>
     /// </summary>
     [DisallowMultipleComponent]
     [RequireComponent(typeof(BuoyWaveVisual))]
+    [RequireComponent(typeof(NavBuoyMooring))]
     public sealed class NavBuoyVisual : MonoBehaviour
     {
         [Header("Which mark, and how big")]
@@ -46,6 +53,7 @@ namespace HiddenHarbours.Boats
         [SerializeField] private Transform _visual;
 
         private BuoyWaveVisual _bob;
+        private NavBuoyMooring _mooring;
 
         /// <summary>The def this mark wears. Null until wired.</summary>
         public NavBuoyDef Def => _def;
@@ -97,6 +105,14 @@ namespace HiddenHarbours.Boats
 
             _bob.Configure(_renderer, _visual);
             _bob.ConfigureFloatGeometry(size.SpriteHeightMeters, size.FloatLineFraction, size.SlopeFollow);
+
+            // ⭐ The physics comes off the SAME rung as the art. A mark whose collider was sized
+            // from one size and whose sprite from another is a buoy you can miss by looking at it.
+            if (_mooring == null) _mooring = GetComponent<NavBuoyMooring>();
+            if (_mooring != null)
+                _mooring.Configure(size.MooredMassKg, size.CollisionRadiusMeters,
+                                   size.WatchRadiusMeters,
+                                   _def.MooringSpringPerSecondSquared, _def.MooringDampingRatio);
         }
 
 #if UNITY_EDITOR
