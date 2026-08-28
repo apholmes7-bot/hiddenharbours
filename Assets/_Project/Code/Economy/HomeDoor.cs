@@ -35,7 +35,7 @@ namespace HiddenHarbours.Economy
                  "overlap, the WorldInteractor precedent). ui-ux owns the real Interact mapping later.")]
         [SerializeField] private Key _interactKey = Key.F;
 
-        [Tooltip("On-foot + in-range gate (the DevSellInput stall pattern).")]
+        [Tooltip("On-foot + in-range gate (the shared StallReach pattern).")]
         [SerializeField] private StallReach _reach = new StallReach();
 
         [Tooltip("Has a room actually been stood inside this shell? FALSE until the interior rig lands " +

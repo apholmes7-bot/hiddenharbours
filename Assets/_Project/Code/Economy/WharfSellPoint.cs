@@ -34,6 +34,16 @@ namespace HiddenHarbours.Economy
         /// <summary>The ₲ paid by the most recent sale (0 if the last attempt sold nothing).</summary>
         public int LastPayout { get; private set; }
 
+        /// <summary>
+        /// How many units left the hold in the most recent sale (0 if it sold nothing).
+        ///
+        /// <para><b>This, not <see cref="LastPayout"/>, is what says a sale happened.</b> A lot can price
+        /// at ₲0 — a glutted market, a species nobody wants — and "she took it and gave you nothing"
+        /// is a different thing to say than "your pail is empty". The clerk's sell row needs to tell them
+        /// apart.</para>
+        /// </summary>
+        public int LastUnitsSold { get; private set; }
+
         private void Awake()
         {
             if (_holdProvider != null) _hold = _holdProvider.GetComponent<IHold>();
@@ -83,11 +93,32 @@ namespace HiddenHarbours.Economy
                 return 0;
             }
 
+            int before = hold.UsedUnits;
             int paid = _buyer.SellAll(hold, wallet);
             LastPayout = paid;
+            LastUnitsSold = Mathf.Max(0, before - hold.UsedUnits);
             Debug.Log($"[Wharf] Sold the hold for ₲{paid}.");
             if (paid > 0) _onSold?.Invoke(paid);
             return paid;
+        }
+
+        /// <summary>
+        /// Sell the WIRED hold to the WIRED wallet, and answer with the payout.
+        ///
+        /// <para><b>This is what the clerk's sell row fronts</b> (owner ruling R7, 2026-08-27). It is the
+        /// existing <see cref="Sell(IHold, IWallet)"/> seam called with this counter's own providers — the
+        /// same <see cref="FishBuyer"/>, the same market, the same <c>SellPricing</c>. No new economics
+        /// are written here, and nothing is quoted twice.</para>
+        ///
+        /// <para><b>It exists because <see cref="Sell()"/> cannot serve.</b> The no-arg entrypoint opens
+        /// <c>SellScreen</c> and returns 0 by design, which is exactly what a sale spoken in a bubble must
+        /// not do: the row's whole point is that a sale at a counter is something a person tells you, with
+        /// them still standing there. <c>SellScreen</c> is untouched and keeps its own callers.</para>
+        /// </summary>
+        public int SellOverTheCounter()
+        {
+            LastUnitsSold = 0;
+            return Sell(_hold, _wallet);
         }
     }
 }

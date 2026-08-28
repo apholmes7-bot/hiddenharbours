@@ -77,7 +77,7 @@ namespace HiddenHarbours.Art
         [SerializeField] private bool _displaced = false;
         [Tooltip("DEV A/B (ADR 0023): flip flat vs displaced water in place, same sim, same " +
                  "material. O for Ocean — free of every other binding (WASD/arrows helm, Space " +
-                 "brace/haul, E interact, Q mooring, P buy, B sell, T trap-drop, G grant, H haul, " +
+                 "brace/haul, E interact, Q mooring, T trap-drop, G grant, H haul, " +
                  "Y auto-yaw, F fleet, V hull variant, L spotlight, C camera).")]
         [SerializeField] private Key _toggleKey = Key.O;
 

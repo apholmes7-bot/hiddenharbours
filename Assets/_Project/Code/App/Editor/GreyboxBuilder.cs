@@ -472,7 +472,6 @@ namespace HiddenHarbours.App.Editor
             var market = wharf.AddComponent<Market>();
             var buyer = wharf.AddComponent<FishBuyer>();
             var sellPoint = wharf.AddComponent<WharfSellPoint>();
-            wharf.AddComponent<DevSellInput>();            // RequireComponent(WharfSellPoint) — present (greybox B to sell)
             SetRef(market, "_config", data.Config);
             SetRef(buyer, "_market", market);
             SetRef(sellPoint, "_buyer", buyer);
@@ -482,7 +481,6 @@ namespace HiddenHarbours.App.Editor
             var shipwrightGo = new GameObject("Shipwright");
             shipwrightGo.transform.SetParent(root, false);
             var shipwright = shipwrightGo.AddComponent<Shipwright>();
-            shipwrightGo.AddComponent<DevBuyInput>();      // RequireComponent(Shipwright) — present (greybox P to buy)
             SetRef(shipwright, "_offer", data.PuntOffer);
             SetRef(shipwright, "_walletProvider", providersGo);
 

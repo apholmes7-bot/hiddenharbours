@@ -41,7 +41,11 @@ namespace HiddenHarbours.World
 
         [Tooltip("What the speaker answers, if anything. Optional: an empty reply just closes the " +
                  "conversation, which is what a row that only fires a gameplay signal wants. One round " +
-                 "only — a reply never leads to more options (that is the M2 knowledge-graph work).")]
+                 "only — a reply never leads to more options (that is the M2 knowledge-graph work).\n\n" +
+                 "On a SELL row these are the words for a sale that went through, and two tokens are " +
+                 "filled in before they are spoken: {payout} is the ₲ paid and {units} is how much left " +
+                 "the hold. Plain tokens rather than {0}/{1} so an apostrophe-heavy line cannot be " +
+                 "mistaken for a format string, and so the owner can read what a number means.")]
         [TextArea] public string[] ReplyLines;
 
         [Tooltip("OPTIONAL. A seller id (seller.snake_case, e.g. seller.leblancs) turns this row into " +
@@ -54,6 +58,17 @@ namespace HiddenHarbours.World
                  "(lots/businesses/tools/vehicles/boats/gear). Anything unrecognised — including empty " +
                  "— opens on the first stub that seller actually stocks.")]
         public string CatalogSection;
+
+        [Tooltip("OPTIONAL. A seller id turns this row into one that SELLS what the player is carrying " +
+                 "over that seller's counter, through the sell components already standing on it — the " +
+                 "same buyer, the same market, the same prices (owner ruling R7). The answer is spoken " +
+                 "in the bubble, so a sale never opens a screen. Leave it empty for an ordinary row.")]
+        public string SellAtSellerId;
+
+        [Tooltip("OPTIONAL, and only meaningful with a sell-at seller id. What the speaker says when " +
+                 "there was NOTHING to sell — an empty pail is a different sentence from a sale of " +
+                 "nought. Empty falls back to ReplyLines, so a half-authored row still speaks.")]
+        [TextArea] public string[] NothingToSellLines;
 
         /// <summary>
         /// True when this row hands off to a seller's book instead of ending the conversation.
@@ -70,6 +85,28 @@ namespace HiddenHarbours.World
         /// </summary>
         public bool OpensCatalog => !string.IsNullOrEmpty(CatalogSellerId);
 
+        /// <summary>
+        /// True when this row sells the player's hold over a counter instead of ending the conversation
+        /// on authored words alone.
+        ///
+        /// <para><b>It is terminal, like an ordinary answering row</b> — the difference is only that
+        /// its answer carries a number the World module cannot know. Picking it publishes
+        /// <c>Core.CounterSellRequested</c>, the economy answers on the same publish with
+        /// <c>Core.CounterSellReported</c>, and the presenter speaks THESE lines with the report's
+        /// figures in them. No screen opens (owner ruling R7, 2026-08-27): a sale at a counter is
+        /// something a person tells you.</para>
+        ///
+        /// <para><b>A row may not do both.</b> <see cref="OpensCatalog"/> is checked first, so a row
+        /// carrying both ids browses; the content validator is where that is called a mistake rather
+        /// than silently resolved.</para>
+        /// </summary>
+        public bool SellsAtCounter => !string.IsNullOrEmpty(SellAtSellerId);
+
+        /// <summary>The tokens a sell row's lines may carry, filled from the counter's report.</summary>
+        public const string PayoutToken = "{payout}";
+        /// <summary>How much left the hold — the other half of "she counted it out".</summary>
+        public const string UnitsToken = "{units}";
+
         /// <summary>True when this row is worth showing: it needs an id to report and a label to read.</summary>
         public bool IsAuthored => !string.IsNullOrEmpty(Id) && !string.IsNullOrEmpty(Label);
 
@@ -79,6 +116,7 @@ namespace HiddenHarbours.World
             Id = CloseId,
             Label = WorldStrings.CloseConversationOption,
             ReplyLines = System.Array.Empty<string>(),
+            NothingToSellLines = System.Array.Empty<string>(),
         };
     }
 

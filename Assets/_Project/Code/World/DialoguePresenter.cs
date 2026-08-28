@@ -863,12 +863,41 @@ namespace HiddenHarbours.World
             // deliberately NOT cleared here - it is exactly what comes back (owner ruling on R2,
             // 2026-08-27). Finish() must not be reached: it would clear InteractionGate.IsBlocked, drop
             // the anchor and hide the bubble, which is the player walking away mid-book.
+            //
+            // ⚠ IT ONLY HOLDS IF SOMETHING IS ACTUALLY GOING TO OPEN A BOOK. The hold is released by
+            // CatalogClosed and by nothing else, and Advance() refuses while it is on - so publishing
+            // into a scene with no CatalogBookPresenter would wedge the player in a dimmed bubble with
+            // no way out. That is not hypothetical: the presenter is added by the region builders, and
+            // a region scene banked before those builders ran does not carry one. Asking first turns a
+            // soft-lock into a row that simply answers and ends.
             if (picked.OpensCatalog)
             {
-                _awaitingCatalog = true;
-                SetDimmed(true);
-                EventBus.Publish(new CatalogViewRequested(
-                    picked.CatalogSellerId, picked.CatalogSection, _speakerId));
+                if (EventBus.HasSubscribers<CatalogViewRequested>())
+                {
+                    _awaitingCatalog = true;
+                    SetDimmed(true);
+                    EventBus.Publish(new CatalogViewRequested(
+                        picked.CatalogSellerId, picked.CatalogSection, _speakerId));
+                    return;
+                }
+
+                Debug.LogWarning(
+                    $"[Dialogue] '{picked.Id}' offers {picked.CatalogSellerId}'s wares book, but nothing " +
+                    "in the loaded scenes opens one - no CatalogBookPresenter. The row answers and ends " +
+                    "rather than holding the conversation open for a book that is never coming. " +
+                    "Re-run the region builder (its DialogueUI carries the presenter) and bank the scene.");
+                // fall through to the ordinary reply/end arms below
+            }
+
+            // A SELL row is terminal like any answering row - the only difference is that its answer
+            // carries a number this module cannot know. The economy is asked on the spot and answers on
+            // the same publish (EventBus is synchronous), so the words are in hand before they are
+            // spoken and no screen is opened (owner ruling R7, 2026-08-27).
+            if (picked.SellsAtCounter)
+            {
+                string[] spoken = CounterSellAnswer(picked);
+                if (spoken != null && spoken.Length > 0) { PlayTerminalReply(spoken); return; }
+                Finish();
                 return;
             }
 
@@ -876,18 +905,76 @@ namespace HiddenHarbours.World
             // (rule 8) — a reply never leads to more options.
             if (picked.ReplyLines != null && picked.ReplyLines.Length > 0)
             {
-                var reply = new List<DialogueLine>(picked.ReplyLines.Length);
-                for (int i = 0; i < picked.ReplyLines.Length; i++)
-                    reply.Add(new DialogueLine(_speakerName, picked.ReplyLines[i]));
-
-                _options = null;                 // the reply is terminal — no second picker
-                _runner = new DialogueRunner(reply);
-                _runner.Open();
-                Render(_runner.Current);
+                PlayTerminalReply(picked.ReplyLines);
                 return;
             }
 
             Finish();
+        }
+
+        /// <summary>Speak an answer in the speaker's own voice and end on it. One round, no nesting
+        /// (rule 8): <c>_options</c> is dropped so no second picker can follow.</summary>
+        private void PlayTerminalReply(IReadOnlyList<string> lines)
+        {
+            var reply = new List<DialogueLine>(lines.Count);
+            for (int i = 0; i < lines.Count; i++)
+                reply.Add(new DialogueLine(_speakerName, lines[i]));
+
+            _options = null;                 // the reply is terminal — no second picker
+            _runner = new DialogueRunner(reply);
+            _runner.Open();
+            Render(_runner.Current);
+        }
+
+        /// <summary>
+        /// Ask the counter to take what the player is carrying, and return the words to say about it.
+        ///
+        /// <para><b>The crossing is two Core signals and no economy type</b> (rule 4): this publishes
+        /// <c>CounterSellRequested</c> and captures the <c>CounterSellReported</c> that comes back on the
+        /// same publish. The subscription is transient - taken for the length of one publish and dropped
+        /// in a finally - so a report meant for one conversation can never be read by another, and a
+        /// presenter torn down mid-sale leaves nothing on the bus.</para>
+        ///
+        /// <para><b>Nobody answering reads as a sale that sold nothing</b>, which speaks the empty-pail
+        /// line rather than hanging or lying about a payout. The economy side is a static desk with no
+        /// scene presence, so the only way to get here is a scene with no counter for that seller at
+        /// all.</para>
+        ///
+        /// <para><b>The words are the owner's, the numbers are the economy's</b> - the tokens are filled
+        /// here and the sentences around them are authored on the option asset (rule 2). The economy
+        /// never writes dialogue.</para>
+        /// </summary>
+        private string[] CounterSellAnswer(in DialogueOption picked)
+        {
+            string sellerId = picked.SellAtSellerId;
+            CounterSellReported? report = null;
+
+            void Capture(CounterSellReported r)
+            {
+                if (string.Equals(r.SellerId, sellerId, StringComparison.Ordinal)) report = r;
+            }
+
+            EventBus.Subscribe<CounterSellReported>(Capture);
+            try { EventBus.Publish(new CounterSellRequested(sellerId, _speakerId)); }
+            finally { EventBus.Unsubscribe<CounterSellReported>(Capture); }
+
+            bool sold = report.HasValue && report.Value.SoldAnything;
+            string[] pool = sold ? picked.ReplyLines : picked.NothingToSellLines;
+
+            // A half-authored row still speaks: an unwritten empty-pail line falls back to the sold one
+            // rather than ending the conversation in silence on a row the player deliberately chose.
+            if (pool == null || pool.Length == 0) pool = picked.ReplyLines;
+            if (pool == null || pool.Length == 0) return null;
+
+            int payout = report.HasValue ? report.Value.Payout : 0;
+            int units = report.HasValue ? report.Value.UnitsSold : 0;
+
+            var filled = new string[pool.Length];
+            for (int i = 0; i < pool.Length; i++)
+                filled[i] = (pool[i] ?? "")
+                    .Replace(DialogueOption.PayoutToken, payout.ToString())
+                    .Replace(DialogueOption.UnitsToken, units.ToString());
+            return filled;
         }
 
         private void DrawOptions()

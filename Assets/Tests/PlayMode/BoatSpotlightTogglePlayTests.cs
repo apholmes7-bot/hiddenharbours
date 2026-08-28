@@ -202,7 +202,7 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             // The key is a serialized owner tunable, so this pins the SHIPPED default rather than re-declaring
             // it. L for Light. Audited against every binding in the project: WASD/arrows helm, Space
-            // brace/haul, E interact, Q mooring, P buy, B sell, C/1/2/Enter/LeftShift
+            // brace/haul, E interact, Q mooring, C/1/2/Enter/LeftShift
             // (InputSystem_Actions.inputactions), F next-hull, G grant, H haul, T trap-drop and
             // rotation-mode, Y auto-yaw, Esc close.
             var spot = NewLitObject();

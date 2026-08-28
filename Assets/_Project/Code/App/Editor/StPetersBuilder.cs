@@ -1828,15 +1828,13 @@ namespace HiddenHarbours.App.Editor
             SetRef(storeSell, "_holdProvider", core.Bucket != null ? core.Bucket.gameObject : core.PlayerGo);
             SetRef(storeSell, "_walletProvider", storeWallet);
 
-            // The walk-up drivers, on the established stall pattern (StallReach finds the on-foot player
-            // itself — no wiring): P browses and buys, B sells. Both refuse unless you are ON FOOT and
-            // within StallGate.DefaultRange of this counter, so neither fires from across the green. These
-            // are the placeholder keys the whole coast already uses; ui-ux owns the real Interact mapping
-            // (§7.6). Adding DevBuyInput here rather than leaving it to BuyPointInstaller's runtime scan
-            // makes the counter self-describing in the saved scene; the installer's own check is
-            // idempotent, so it simply finds one already there.
-            storeCounter.AddComponent<DevSellInput>();   // RequireComponent(WharfSellPoint) — present above
-            storeCounter.AddComponent<DevBuyInput>();
+            // ⭐ NO WALK-UP KEYS. P (browse/buy) and B (sell) stood here as placeholders and are
+            // RETIRED: the way in is Marguerite. Her conversation carries a browse row onto this seller's
+            // book and a sell row onto the WharfSellPoint above it, which is what the keys were standing
+            // in for — "a book with nobody holding it is a menu"
+            // (design/shop-catalog-and-dialogue-choices.md §3.1). Both letters are back on the ledger
+            // (DevBoatPicker's tooltip). The counter still needs no wiring to her: she names the seller
+            // id, and the id is on the vendors above.
 
             if (rodOffer == null || clamLicence == null || iceSupply == null || capelinBait == null
                 || depthSounder == null)

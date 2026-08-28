@@ -23949,8 +23949,8 @@ MonoBehaviour:
     - {x: -8.042063, y: 6.399237}
     - {x: -7.7845383, y: 0.6049571}
   _thicknessMetres: 0.35
-  _reason: "RedSaltbox: PostRail fence \u2014 post and rail: a working household
-    with no time for painting pickets"
+  _reason: "RedSaltbox: PostRail fence \u2014 post and rail: a working household with
+    no time for painting pickets"
 --- !u!1 &259008016
 GameObject:
   m_ObjectHideFlags: 0
@@ -122512,8 +122512,8 @@ MonoBehaviour:
     StandHeadingDegrees: 0
     Interior: {fileID: 0}
     LaneNodeName: yard_ginny_plot
-    Why: "the garden on the cottage's south side \u2014 the sunny flank, and the
-      one clear of both the door and the sheds now that she gardens her own ground"
+    Why: "the garden on the cottage's south side \u2014 the sunny flank, and the one
+      clear of both the door and the sheds now that she gardens her own ground"
   - Id: station.st_peters.saltbox_dooryard
     Position: {x: 17.507397, y: 7.6669955}
     StandHeadingDegrees: -93.95532
@@ -122567,17 +122567,16 @@ MonoBehaviour:
     StandHeadingDegrees: 270
     Interior: {fileID: 0}
     LaneNodeName: flats_head
-    Why: "the head of the flats, a few strides off the wet bucket \u2014 where a
-      man who digs for a living stands, looking west out over the bar (#354's own
-      spot, unmoved)"
+    Why: "the head of the flats, a few strides off the wet bucket \u2014 where a man
+      who digs for a living stands, looking west out over the bar (#354's own spot,
+      unmoved)"
   - Id: station.st_peters.flats_lookout
     Position: {x: -52.009144, y: 2.734067}
     StandHeadingDegrees: 270
     Interior: {fileID: 0}
     LaneNodeName: flats_head
     Why: "a few strides inland of the digging, looking west \u2014 the sun goes down
-      over the bar, and this is the only place on the island you can watch it do
-      that"
+      over the bar, and this is the only place on the island you can watch it do that"
   - Id: station.st_peters.slip_head
     Position: {x: 190, y: 0}
     StandHeadingDegrees: 82.40455
@@ -122618,8 +122617,7 @@ MonoBehaviour:
     Interior: {fileID: 2000500437}
     LaneNodeName: yard_sage_cottage
     Why: "the same cottage, the other side \u2014 Basil's. Two men of the water under
-      one roof, and two people leaving one door at dawn is a thing you can watch
-      happen"
+      one roof, and two people leaving one door at dawn is a thing you can watch happen"
   - Id: station.st_peters.home_store
     Position: {x: 3.9999998, y: 28.557407}
     StandHeadingDegrees: 0.000011383649
@@ -122632,16 +122630,15 @@ MonoBehaviour:
     StandHeadingDegrees: 0
     Interior: {fileID: 1424967713}
     LaneNodeName: lane_school
-    Why: "the schoolroom \u2014 the teacher's desk at the stove end, facing back
-      down the room"
+    Why: "the schoolroom \u2014 the teacher's desk at the stove end, facing back down
+      the room"
   - Id: station.st_peters.post_office_counter
     Position: {x: 16.68, y: 41.039497}
     StandHeadingDegrees: 0
     Interior: {fileID: 1368836175}
     LaneNodeName: lane_post_office
-    Why: "behind the post office counter. \u26A0\uFE0F Its street door is on the
-      OPPOSITE wall to a house's and 1.68 m off its centre, both MEASURED \u2014
-      see InsideStandPoint"
+    Why: "behind the post office counter. \u26A0\uFE0F Its street door is on the OPPOSITE
+      wall to a house's and 1.68 m off its centre, both MEASURED \u2014 see InsideStandPoint"
 --- !u!1 &1221362738
 GameObject:
   m_ObjectHideFlags: 0

@@ -5,10 +5,16 @@ using HiddenHarbours.Core;
 namespace HiddenHarbours.Economy
 {
     /// <summary>
-    /// "Is the on-foot player standing at THIS stall?" — the proximity gate the placeholder stall inputs
-    /// (<see cref="DevSellInput"/> / <see cref="DevBuyInput"/>) share, so selling/buying only fire when
-    /// the walking player is in range of the stall (not from anywhere, not while aboard). The decision is
-    /// the pure <see cref="StallGate"/>; this composes it with the live state.
+    /// "Is the on-foot player standing at THIS stall?" — the proximity gate a stall-side interaction
+    /// uses, so it only fires when the walking player is in range of the stall (not from anywhere, not
+    /// while aboard). The decision is the pure <see cref="StallGate"/>; this composes it with the live
+    /// state.
+    ///
+    /// <para>⚠ <b>Its original callers are gone.</b> This was written for the placeholder stall keys
+    /// (P to buy, B to sell), which retired when the clerks landed — a counter is reached by talking to
+    /// the person at it now. It is kept because the gate itself is not placeholder work and two live
+    /// consumers already lean on it (<c>HomeDoor</c>, <c>GinnyFreezer</c>), and because the next
+    /// walk-up-to-a-thing feature wants exactly this and should not write it again.</para>
     ///
     /// <para>Cross-module-clean: it reads the on-foot state from the Core <see cref="ControlModeChanged"/>
     /// signal (and seeds it from the optional <see cref="IActiveBoatService"/>), and resolves the player

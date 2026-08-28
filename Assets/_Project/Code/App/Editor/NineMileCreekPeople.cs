@@ -8,13 +8,24 @@ using HiddenHarbours.Art;                 // YSortSprite — the creek's two lay
 namespace HiddenHarbours.App.Editor
 {
     /// <summary>
-    /// <b>THE TWO PEOPLE AT THE CREEK</b> — the buyer who takes your catch, and the man with the used
-    /// outboards. Nine Mile Creek is not a town and does not get a cast: §7.2 asks for a working creek,
-    /// and a working creek is two people who are busy and one of whom will give you an honest price for
-    /// a bucket of clams without making a fuss about it (<c>design/nine-mile-creek-wharf.md</c> §2).
+    /// <b>THE THREE PEOPLE AT THE CREEK</b> — the buyer who takes your catch, the man with the used
+    /// outboards, and the woman who keeps the store. §7.2 asks for a working creek, and a working creek
+    /// is people who are busy and one of whom will give you an honest price for a bucket of clams without
+    /// making a fuss about it (<c>design/nine-mile-creek-wharf.md</c> §2).
     ///
     /// <para><b>ANCHORED, NOT SCHEDULED</b> — §7.1's rule, and <see cref="NpcDef"/>'s own. Fixed spots,
-    /// no routines, nothing here reads the clock. Routines are M2.</para>
+    /// no routines, nothing here reads the clock, and the storekeeper is anchored with the other two by
+    /// the owner's 2026-08-27 ruling rather than by default: <b>this region has no routine engine at
+    /// all</b>. There is no NMC station table, no lane graph and no indoor stand-point — the
+    /// <c>RoutineDef</c>/<c>RoutineStations</c> machinery is St Peters-only. Standing one up here is its
+    /// own world-content lane, and it is not this one. So the creek's store has no hours: she is simply
+    /// there, which is the shipped convention of this file and not a shortcut taken inside it.</para>
+    ///
+    /// <para>⚠ <b>The header used to say the creek "does not get a cast".</b> That was true when this
+    /// was a two-person creek and <c>design/settlement-population.md</c> ruling 5 has since overturned
+    /// it — the mainland has more residents than the island. Rewriting this region's cast to that ruling
+    /// is the S6 roster slice; the storekeeper lands early because the wares book needs somebody to hold
+    /// it out, not because that slice has started.</para>
     ///
     /// <para><b>Nothing new is built.</b> An <see cref="NpcDef"/> + <see cref="DialogueDef"/> per person
     /// under <c>Data/NPCs</c>, placed onto an <see cref="Interactable"/> — the plumbing #354 already
@@ -102,7 +113,69 @@ namespace HiddenHarbours.App.Editor
                        new Color(0.52f, 0.56f, 0.60f),
                        "down the yard beside the old dory, with three tired outboards on a barrel — the " +
                        "man who sells you the hull is the man who sells you what pushes her"),
+
+            new Person("ClaudetteBoudreau", "Claudette",
+                       Toward(NineMileCreekBuilder.ChandleryPos, TownRoadAt(NineMileCreekBuilder.ChandleryPos),
+                              ShopStepMetres),
+                       new Color(0.70f, 0.62f, 0.66f),
+                       "on the step of the general store, between her own door and Route 19 — the town " +
+                       "end of the walk up from the wharf, and the other end of the line the island's " +
+                       "storekeeper has an opinion about",
+                       headingDegrees: BearingFrom(NineMileCreekBuilder.ChandleryPos,
+                                                   TownRoadAt(NineMileCreekBuilder.ChandleryPos))),
         };
+
+        /// <summary>
+        /// How far the storekeeper stands out from the store's own centre, toward the road.
+        ///
+        /// <para><b>MEASURED, not chosen.</b> The general store's <c>BoxCollider2D</c> in the shipped
+        /// scene is 5 × 5.5 m centred on the lot, so its wall is 2.5 m out and she walks almost due east
+        /// off it — anything shorter stands her inside her own building, where nobody can reach her and
+        /// the bug looks like a broken <c>Interactable</c> rather than a number. This is a metre clear of
+        /// that wall, well inside the interactor's 1.8 m radius from the step in front of her, and 25 m
+        /// short of Route 19's <see cref="NineMileCreekMainland.RoadHalfWidth"/> corridor.</para>
+        /// </summary>
+        public const float ShopStepMetres = 3.5f;
+
+        /// <summary>
+        /// The point on the through-road (Route 19) that a town lot fronts onto — the road's own
+        /// geometry, sampled, never a number typed beside the lot.
+        ///
+        /// <para>The town is "strung along the through-road", with the lots in two columns either side of
+        /// it, so "which way does a shopfront face?" has one honest answer: the road. Deriving it means
+        /// the storekeeper turns when the road is re-cut, which is #345's lesson applied to a facing
+        /// rather than to a position.</para>
+        /// </summary>
+        public static Vector2 TownRoadAt(Vector3 lot)
+        {
+            Vector2 from = new Vector2(lot.x, lot.y);
+            Vector2[] road = NineMileCreekMainland.ThroughRoad;
+            Vector2 best = road[0];
+            float bestSq = float.MaxValue;
+
+            for (int i = 0; i < road.Length - 1; i++)
+            {
+                Vector2 a = road[i], b = road[i + 1];
+                Vector2 ab = b - a;
+                float len2 = ab.sqrMagnitude;
+                float t = len2 < 1e-6f ? 0f : Mathf.Clamp01(Vector2.Dot(from - a, ab) / len2);
+                Vector2 p = a + ab * t;
+                float d = (p - from).sqrMagnitude;
+                if (d < bestSq) { bestSq = d; best = p; }
+            }
+            return best;
+        }
+
+        /// <summary>Which way to turn to look from <paramref name="site"/> at <paramref name="target"/>,
+        /// in the rig's own convention: degrees, 0 = North, clockwise. Same convention
+        /// <c>StPetersRoutines.HeadingTo</c> uses, so the two coasts aim people the same way.</summary>
+        public static float BearingFrom(Vector3 site, Vector2 target)
+        {
+            Vector2 d = target - new Vector2(site.x, site.y);
+            if (d.sqrMagnitude < 1e-6f) return 180f;
+            float deg = Mathf.Atan2(d.x, d.y) * Mathf.Rad2Deg;   // atan2(x, y) => 0 at +Y (north), CW
+            return deg < 0f ? deg + 360f : deg;
+        }
 
         /// <summary>How far the outboard man stands out from the yard, toward the water. Further than the
         /// buyer because he has a yard to stand in rather than a truck to stand at.</summary>

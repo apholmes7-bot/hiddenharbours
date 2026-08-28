@@ -21974,9 +21974,9 @@ MonoBehaviour:
     - {x: -7.665924, y: 9.720268}
     - {x: -8.382309, y: 1.6969376}
   _thicknessMetres: 0.35
-  _reason: "ParishHall: PostRail fence \u2014 the parish hall keeps a rail along
-    the road \u2014 the one public lot with a boundary, because the hall's ground
-    is the community's rather than a trade's"
+  _reason: "ParishHall: PostRail fence \u2014 the parish hall keeps a rail along the
+    road \u2014 the one public lot with a boundary, because the hall's ground is the
+    community's rather than a trade's"
 --- !u!1 &125662826
 GameObject:
   m_ObjectHideFlags: 0
@@ -400898,8 +400898,8 @@ MonoBehaviour:
     - {x: 9.569061, y: -10.894173}
     - {x: 10.378357, y: -1.8302307}
   _thicknessMetres: 0.35
-  _reason: "HouseSouth: SplitRail fence \u2014 the south house at the quiet end,
-    its split rail as old as the road"
+  _reason: "HouseSouth: SplitRail fence \u2014 the south house at the quiet end, its
+    split rail as old as the road"
 --- !u!1 &1447601069
 GameObject:
   m_ObjectHideFlags: 0

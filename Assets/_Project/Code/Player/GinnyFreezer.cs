@@ -32,7 +32,7 @@ namespace HiddenHarbours.Player
                  "WorldInteractor precedent). ui-ux owns the real Interact mapping later (§7.6).")]
         [SerializeField] private Key _interactKey = Key.F;
 
-        [Tooltip("On-foot + in-range gate (the DevSellInput stall pattern).")]
+        [Tooltip("On-foot + in-range gate (the shared StallReach pattern).")]
         [SerializeField] private StallReach _reach = new StallReach();
 
         private readonly List<CatchItem> _items = new();

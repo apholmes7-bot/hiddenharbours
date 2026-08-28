@@ -35,7 +35,7 @@ namespace HiddenHarbours.Boats
         [Header("Keys (owner-editable)")]
         [Tooltip("Snap the notched throttle straight to NEUTRAL (motorised hulls). Z — verified free " +
                  "of every other binding by a project-wide Key./KeyControl/.inputactions sweep " +
-                 "(WASD/arrows helm, Space brace/haul, E interact, Q mooring, P buy, B sell, " +
+                 "(WASD/arrows helm, Space brace/haul, E interact, Q mooring, " +
                  "T trap-drop, G grant, H haul, Y auto-yaw, L spotlight/ice, F fleet/freezer/bucket, " +
                  "V variant, I icebox, O displaced-water, N tide table, R anchor/rode, X DUMP SPOILED — " +
                  "CatchDumpInput listens scene-wide, so X here would dump the catch on every chop " +
