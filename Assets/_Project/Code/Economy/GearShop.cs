@@ -18,6 +18,12 @@ namespace HiddenHarbours.Economy
     {
         [Tooltip("The gear offered for sale here (id + price).")]
         [SerializeField] private GearOffer _offer;
+
+        [Tooltip("WHOSE counter this is (seller.snake_case, e.g. seller.leblancs). The other half of the " +
+                 "catalog tag: a listing names the sellers that stock it, and this names which seller " +
+                 "this component sells for. Empty means this vendor is in no book — it still works as a " +
+                 "direct seam, it just is not listed anywhere.")]
+        [SerializeField] private string _sellerId = "";
         [Tooltip("A GameObject carrying an IWallet (the player's PlayerWallet).")]
         [SerializeField] private GameObject _walletProvider;
 
@@ -28,6 +34,12 @@ namespace HiddenHarbours.Economy
 
         /// <summary>The gear offered here (id + price). Null until wired.</summary>
         public GearOffer Offer => _offer;
+
+        /// <summary>Whose counter this is. The book resolves a seller id to the components that own the
+        /// purchase seams through this, which is why stock can be content and the scene can stay out of
+        /// it (owner ruling R1: a field on the vendors, not a registry — the purchase flow does not
+        /// move, and this can become a registry later without touching content).</summary>
+        public string SellerId => _sellerId;
 
         /// <summary>True iff the most recent <see cref="TryBuy()"/> went through.</summary>
         public bool LastPurchaseSucceeded { get; private set; }
@@ -42,6 +54,15 @@ namespace HiddenHarbours.Economy
         /// <summary>The no-arg interaction entrypoint (dev input / the future buy screen). Buys the wired
         /// gear with the wired wallet, recording ownership on the live save.</summary>
         public bool TryBuy() => TryBuy(_offer, _wallet, GameServices.Save?.Current);
+        /// <summary>
+        /// Sell the piece of gear the book picked, rather than the one wired into this component.
+        ///
+        /// <para>The catalog inversion needs this: one GearShop on a counter now stands for a seller, and
+        /// the rows come from the listings tagged to that seller — so Confirm must be able to name which
+        /// one. It forwards straight to the existing seam with this component's own wallet, so the money,
+        /// the save write and the Core event are the same code they always were.</para>
+        /// </summary>
+        public bool TryBuy(GearOffer offer) => TryBuy(offer, _wallet, GameServices.Save?.Current);
 
         /// <summary>
         /// Core buy seam (testable): checks the price, spends from the wallet, and on success records the

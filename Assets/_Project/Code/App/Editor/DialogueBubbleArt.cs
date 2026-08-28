@@ -1,6 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 using HiddenHarbours.World;
+using HiddenHarbours.Core;
 
 namespace HiddenHarbours.App.Editor
 {

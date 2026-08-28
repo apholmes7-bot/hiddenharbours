@@ -18,7 +18,7 @@ namespace HiddenHarbours.Economy
     /// requires, not this list, so the two can't silently drift the gate.</para>
     /// </summary>
     [CreateAssetMenu(menuName = "Hidden Harbours/License", fileName = "License")]
-    public class LicenseDef : ScriptableObject
+    public class LicenseDef : ScriptableObject, ICatalogListing
     {
         [Header("Identity")]
         [Tooltip("Stable, append-only license id (e.g. \"license.cod\"). Saved in the license wallet; " +
@@ -39,5 +39,17 @@ namespace HiddenHarbours.Economy
                  "The runtime gate keys off the licence id the SPECIES requires; this list is the buy-UI " +
                  "blurb and the validation cross-check, so authoring stays legible.")]
         public string[] PermittedSpeciesIds = { "fish.atlantic_cod" };
+
+        [Header("Catalog")]
+        [Tooltip("Whether a seller's wares book lists this, on which shelf, and who stocks it. Off by " +
+                 "default: nothing appears in any book until this says so.")]
+        public CatalogListing Catalog;
+
+        // ---- ICatalogListing: read through one shape by the sweep and the book, so neither of them
+        //      has to learn the seven concrete Def types.
+        string ICatalogListing.ListingId => Id;
+        string ICatalogListing.ListingName => DisplayName;
+        string ICatalogListing.ListingFlavor => Flavor;
+        CatalogListing ICatalogListing.Catalog => Catalog;
     }
 }

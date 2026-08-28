@@ -4,6 +4,7 @@ using System.IO;
 using HiddenHarbours.World;
 using UnityEngine;
 using Stopwatch = System.Diagnostics.Stopwatch;
+using HiddenHarbours.Core;
 
 namespace HiddenHarbours.Tools.RigBaking
 {

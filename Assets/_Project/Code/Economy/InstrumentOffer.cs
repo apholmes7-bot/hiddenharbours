@@ -20,7 +20,7 @@ namespace HiddenHarbours.Economy
     /// Assets ▸ Create ▸ Hidden Harbours ▸ Instrument Offer, save in Data/Instruments.</para>
     /// </summary>
     [CreateAssetMenu(menuName = "Hidden Harbours/Instrument Offer", fileName = "InstrumentOffer")]
-    public class InstrumentOffer : ScriptableObject
+    public class InstrumentOffer : ScriptableObject, ICatalogListing
     {
         [Header("Identity")]
         [Tooltip("Stable, append-only instrument id (e.g. \"instrument.depth_sounder\"). Recorded against " +
@@ -37,5 +37,17 @@ namespace HiddenHarbours.Economy
         [Tooltip("Price in ₲. The economy-owned tunable — what the chandlery charges (no magic number " +
                  "in code). PLACEHOLDER until the owner rules on it.")]
         public int Price = 140;
+
+        [Header("Catalog")]
+        [Tooltip("Whether a seller's wares book lists this, on which shelf, and who stocks it. Off by " +
+                 "default: nothing appears in any book until this says so.")]
+        public CatalogListing Catalog;
+
+        // ---- ICatalogListing: read through one shape by the sweep and the book, so neither of them
+        //      has to learn the seven concrete Def types.
+        string ICatalogListing.ListingId => Id;
+        string ICatalogListing.ListingName => DisplayName;
+        string ICatalogListing.ListingFlavor => Flavor;
+        CatalogListing ICatalogListing.Catalog => Catalog;
     }
 }

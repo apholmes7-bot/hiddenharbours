@@ -119,4 +119,55 @@ namespace HiddenHarbours.Core
             StationId = stationId; Grade = grade; Litres = litres; PricePaid = pricePaid;
         }
     }
+
+    /// <summary>
+    /// <b>A conversation asking for a seller's wares book.</b> Published by the dialogue presenter when
+    /// the player picks a row that was authored with a catalog pointer; the economy side listens and
+    /// opens the book. It is the first and only thing World says about shopping, and it says it without
+    /// naming an economy type (rule 4) — World branches on nothing, and Economy never learns what a
+    /// <c>DialogueOption</c> is.
+    ///
+    /// <para><b>The conversation does not end on this.</b> The bubble stays up and dimmed, the rows go
+    /// down, and the picker comes back when <see cref="CatalogClosed"/> lands — so browse, then sell,
+    /// then "See you later." is one conversation with one person (the 2026-08-27 ruling on R2). A book
+    /// with nobody holding it is a menu.</para>
+    /// </summary>
+    public readonly struct CatalogViewRequested
+    {
+        /// <summary>Whose book to open — the seller id the row was authored with, matched against the
+        /// <c>SellerId</c> on the vendor components that own the purchase seams.</summary>
+        public readonly string SellerId;
+
+        /// <summary>Which section to open on, or empty for "the first stub this seller has". A plain
+        /// string on purpose: the section enum lives in Economy and World may not name it, and an
+        /// unrecognised value opening on the first tab is a kinder failure than a compile-time coupling
+        /// between the two modules.</summary>
+        public readonly string Section;
+
+        /// <summary>The speaker's <c>NpcDef.Id</c> — whose counter you are standing at, so the book can
+        /// head itself with the person you are actually talking to.</summary>
+        public readonly string SpeakerId;
+
+        public CatalogViewRequested(string sellerId, string section, string speakerId)
+        {
+            SellerId = sellerId; Section = section ?? ""; SpeakerId = speakerId;
+        }
+    }
+
+    /// <summary>
+    /// <b>The wares book has been shut.</b> Published by the economy side when the player closes the
+    /// catalog; the dialogue presenter listens and re-arms the picker on the same rows, so the player is
+    /// handed back to the person who lent them the book rather than to an empty street.
+    ///
+    /// <para><b>It carries the seller, not a result.</b> What was bought is already reported by the
+    /// purchase signals the vendors publish (<see cref="SupplyPurchased"/> and its siblings), and a
+    /// second telling of the same fact is a second place for it to be wrong.</para>
+    /// </summary>
+    public readonly struct CatalogClosed
+    {
+        /// <summary>Whose book was shut — the id <see cref="CatalogViewRequested.SellerId"/> opened.</summary>
+        public readonly string SellerId;
+
+        public CatalogClosed(string sellerId) { SellerId = sellerId; }
+    }
 }

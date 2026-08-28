@@ -5,6 +5,7 @@ using HiddenHarbours.Art.Editor;
 using HiddenHarbours.World;
 using UnityEditor;
 using UnityEngine;
+using HiddenHarbours.Core;
 
 namespace HiddenHarbours.Tools.RigBaking
 {

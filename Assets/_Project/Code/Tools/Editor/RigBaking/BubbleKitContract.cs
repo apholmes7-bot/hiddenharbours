@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using HiddenHarbours.World;
 using UnityEngine;
+using HiddenHarbours.Core;
 
 namespace HiddenHarbours.Tools.RigBaking
 {

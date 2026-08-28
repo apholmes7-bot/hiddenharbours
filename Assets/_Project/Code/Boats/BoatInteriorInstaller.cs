@@ -185,9 +185,20 @@ namespace HiddenHarbours.Boats
             => Mathf.Max(1.2f, door.ClearWidthMeters + 0.5f);
 
         /// <summary>The elevation this hull's art is presented at, off her own def — 40° for the iso
-        /// rigs. The mesh def states it; a sprite-only hull falls back to the compass's own field.</summary>
-        private static float BakeElevationDegrees(BoatVisualDef visual)
-            => visual.HullMesh != null ? visual.HullMesh.ElevationDeg : visual.ArtBakeElevationDegrees;
+        /// rigs. The mesh def states it; a sprite-only hull falls back to the compass's own field.
+        ///
+        /// <para><b>Public because it is the ONE derivation.</b> Anything that places a gameplay point on
+        /// this hull must project it the way her art projects, and two callers reading the same two fields
+        /// in two files is how a room and its own doorway come to disagree about where the door is. Both
+        /// halves of the intro cabin — the walker on the sole and the anchor the door hangs off — ask
+        /// here. ⚠ Null-safe now that a second caller exists: a hull with no visual def is presented in
+        /// PLAN view, which is the identity projection and therefore exactly the placement an unmeasured
+        /// hull already has.</para></summary>
+        public static float BakeElevationDegrees(BoatVisualDef visual)
+            => visual == null
+                   ? DeckAreaMath.PlanViewElevationDegrees
+                   : visual.HullMesh != null ? visual.HullMesh.ElevationDeg
+                                             : visual.ArtBakeElevationDegrees;
 
         /// <summary>
         /// The MEASURED handedness of this hull's exterior art. The mesh def's is the authority when
@@ -197,11 +208,17 @@ namespace HiddenHarbours.Boats
         /// <para>⚠ Never folded together with the INTERIOR sheets' handedness: they are different
         /// artwork and they genuinely differ (the lobster boat's compass runs clockwise where her
         /// interior runs counter-clockwise).</para>
+        ///
+        /// <para>Public for the same reason <see cref="BakeElevationDegrees"/> is: it is half of one
+        /// projection, and the half that MIRRORS the hull end for end when it is answered twice. Null-safe
+        /// — a hull with no def keeps the counter-clockwise convention <see cref="DeckAreaMath"/> itself
+        /// assumes, so an unmeasured hull's placement is unchanged.</para>
         /// </summary>
-        private static bool ExteriorAzimuthCounterClockwise(BoatVisualDef visual)
-            => visual.HullMesh != null
-                ? visual.HullMesh.AzimuthCounterClockwise
-                : visual.FacingsAreCounterClockwise;
+        public static bool ExteriorAzimuthCounterClockwise(BoatVisualDef visual)
+            => visual == null
+                || (visual.HullMesh != null
+                        ? visual.HullMesh.AzimuthCounterClockwise
+                        : visual.FacingsAreCounterClockwise);
 
         /// <summary>Peak roll of this hull's baked rock cycle — an ART FACT off her own def, never a
         /// constant here (rule 6). 0 when she has no mesh def, which draws a still cabin rather than a

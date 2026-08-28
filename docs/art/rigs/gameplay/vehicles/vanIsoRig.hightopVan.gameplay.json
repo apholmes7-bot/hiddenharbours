@@ -2,7 +2,7 @@
   "rig": "vanIsoRig.js",
   "exportSymbol": "VanIso",
   "variant": "hightopVan",
-  "derivedFromRigSha256": "1ac7804ddb045ec3cd41ab1952d33513b74fdcae64e1710b2b74c46eb2e35a41",
+  "derivedFromRigSha256": "1ac7804ddb045ec3a9c9ba8797b8025547c21649d5ea70c61dc7b6e8ee048eb3",
   "kind": "road_vehicle",
   "label": "Hightop Van",
   "generated": "measured off the rig source by hand-transcription with per-value provenance; no generator in the rig",

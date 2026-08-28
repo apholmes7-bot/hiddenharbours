@@ -5,6 +5,7 @@ using UnityEditor;
 using UnityEngine;
 using HiddenHarbours.Tools.RigBaking;
 using HiddenHarbours.World;
+using HiddenHarbours.Core;
 
 namespace HiddenHarbours.Tests.RigBaking
 {

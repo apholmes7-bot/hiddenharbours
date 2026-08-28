@@ -4,6 +4,7 @@ using System.Linq;
 using NUnit.Framework;
 using HiddenHarbours.Tools.RigBaking;
 using HiddenHarbours.World;
+using HiddenHarbours.Core;
 
 namespace HiddenHarbours.Tests.RigBaking.EditMode
 {

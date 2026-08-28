@@ -149,6 +149,14 @@ namespace HiddenHarbours.Tests.PlayMode
             opening.ConfigurePilot(ArrivalPilot.Settings.Default);
             opening.ConfigureAlongside(FixtureAlongside());
 
+            // ⚠ ON DECK for this fixture, deliberately. The shipped opening now starts the player BELOW in
+            // the skipper's cabin and she comes up through his aft door — but this suite's own remarks say
+            // what it is for: "What is under test here is the SEQUENCE." Leaving her below would make every
+            // wait in it a wait on a door press the sequence has nothing to do with. The cabin, the door
+            // and the journey through them are IntroCabinPassagePlayTests', which drives this same
+            // component from below and then runs this same sequence out to the planks.
+            opening.ConfigureCabin(startBelowDecks: false);
+
             go.SetActive(true);
             _opening = opening;
             return opening;

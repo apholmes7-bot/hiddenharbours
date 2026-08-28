@@ -62,7 +62,7 @@ namespace HiddenHarbours.App.Editor
         const string DataConfig = "Assets/_Project/Data/Config";
         const string DataBoats  = "Assets/_Project/Data/Boats";
         const string DataFish   = "Assets/_Project/Data/Fish";
-        const string DataShip   = "Assets/_Project/Data/Shipwright";
+        const string DataShip   = "Assets/_Project/Data/Resources/Catalog/Shipwright";
         const string DataRegions= "Assets/_Project/Data/Regions";        // VS-22 region defs (cove + Nine Mile Creek)
         const string ArtSprites = "Assets/_Project/Art/Sprites";
         const string ArtPunt    = "Assets/_Project/Art/Boats/Punt.png";          // tier-1 swap sprite (VS-16) — kept on the hull asset

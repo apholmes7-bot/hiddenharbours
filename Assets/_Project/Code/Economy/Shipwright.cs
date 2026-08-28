@@ -27,6 +27,12 @@ namespace HiddenHarbours.Economy
     {
         [Tooltip("The boat offered for sale here (id + price).")]
         [SerializeField] private ShipwrightOffer _offer;
+
+        [Tooltip("WHOSE counter this is (seller.snake_case, e.g. seller.leblancs). The other half of the " +
+                 "catalog tag: a listing names the sellers that stock it, and this names which seller " +
+                 "this component sells for. Empty means this vendor is in no book — it still works as a " +
+                 "direct seam, it just is not listed anywhere.")]
+        [SerializeField] private string _sellerId = "";
         [Tooltip("A GameObject carrying an IWallet (the player's PlayerWallet).")]
         [SerializeField] private GameObject _walletProvider;
 
@@ -39,6 +45,12 @@ namespace HiddenHarbours.Economy
 
         /// <summary>The boat offered for sale here (id + price). Null until wired.</summary>
         public ShipwrightOffer Offer => _offer;
+
+        /// <summary>Whose counter this is. The book resolves a seller id to the components that own the
+        /// purchase seams through this, which is why stock can be content and the scene can stay out of
+        /// it (owner ruling R1: a field on the vendors, not a registry — the purchase flow does not
+        /// move, and this can become a registry later without touching content).</summary>
+        public string SellerId => _sellerId;
 
         /// <summary>True iff the most recent <see cref="TryBuy()"/> went through.</summary>
         public bool LastPurchaseSucceeded { get; private set; }
@@ -58,6 +70,15 @@ namespace HiddenHarbours.Economy
         /// wired offer with the wired wallet.
         /// </summary>
         public bool TryBuy() => TryBuy(_offer, _wallet);
+        /// <summary>
+        /// Sell a hull the book picked, rather than the one wired into this component.
+        ///
+        /// <para>The catalog inversion needs this: one Shipwright on a counter now stands for a seller, and
+        /// the rows come from the listings tagged to that seller — so Confirm must be able to name which
+        /// one. It forwards straight to the existing seam with this component's own wallet, so the money,
+        /// the save write and the Core event are the same code they always were.</para>
+        /// </summary>
+        public bool TryBuy(ShipwrightOffer offer) => TryBuy(offer, _wallet);
 
         /// <summary>
         /// Core buy seam (testable): checks the price, spends from the wallet, and on success raises
@@ -101,6 +122,16 @@ namespace HiddenHarbours.Economy
         /// <summary>The no-arg repair entrypoint (dev input / the future repair screen). Repairs the wired
         /// damaged offer with the wired wallet, against the live save.</summary>
         public bool TryRepair() => TryRepair(_offer, _wallet, GameServices.Save?.Current);
+        /// <summary>
+        /// Repair the hull the book picked, rather than the one wired into this component.
+        ///
+        /// <para>The catalog inversion needs this: one Shipwright on a counter now stands for a seller, and
+        /// the rows come from the listings tagged to that seller — so Confirm must be able to name which
+        /// one. It forwards straight to the existing seam with this component's own wallet, so the money,
+        /// the save write and the Core event are the same code they always were.</para>
+        /// </summary>
+        public bool TryRepair(ShipwrightOffer offer) =>
+            TryRepair(offer, _wallet, GameServices.Save?.Current);
 
         /// <summary>
         /// Core repair seam (testable): pay <see cref="ShipwrightOffer.RepairCost"/> from the wallet to

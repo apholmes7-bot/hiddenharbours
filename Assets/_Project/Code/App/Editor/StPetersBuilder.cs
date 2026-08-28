@@ -57,13 +57,13 @@ namespace HiddenHarbours.App.Editor
         const string DataBoats   = "Assets/_Project/Data/Boats";    // the Dory + Punt hulls (the carried rig)
         const string DataFish    = "Assets/_Project/Data/Fish";     // the soft-shell clam (the flats' catch)
         const string DataTraps   = "Assets/_Project/Data/Traps";    // the lobster/crab pots (the trap-haul loop, Build 4)
-        const string DataBait    = "Assets/_Project/Data/Bait";     // the trap bait (herring/fish-scrap/mackerel)
+        const string DataBait    = "Assets/_Project/Data/Resources/Catalog/Bait";     // the trap bait (herring/fish-scrap/mackerel)
         const string DataTools   = "Assets/_Project/Data/Tools";    // the rod + clam shovel you pick up and carry
         const string DataNpcs    = "Assets/_Project/Data/NPCs";     // the opening cast (Aunt Ginny, Ned's letter)
-        const string DataGear     = "Assets/_Project/Data/Gear";      // the rod on the store's counter (§7.5)
-        const string DataLicenses = "Assets/_Project/Data/Licenses";  // the clam licence the store vends (§7.5)
-        const string DataSupplies = "Assets/_Project/Data/Supplies";  // the ice the store restocks (§7.3/§7.5)
-        const string DataInstruments = "Assets/_Project/Data/Instruments"; // helm instruments the counter fits (ADR 0025 S2)
+        const string DataGear     = "Assets/_Project/Data/Resources/Catalog/Gear";      // the rod on the store's counter (§7.5)
+        const string DataLicenses = "Assets/_Project/Data/Resources/Catalog/Licenses";  // the clam licence the store vends (§7.5)
+        const string DataSupplies = "Assets/_Project/Data/Resources/Catalog/Supplies";  // the ice the store restocks (§7.3/§7.5)
+        const string DataInstruments = "Assets/_Project/Data/Resources/Catalog/Instruments"; // helm instruments the counter fits (ADR 0025 S2)
         const string ArtSprites  = "Assets/_Project/Art/Sprites";
         // Opening-cast art (greybox; final St Peters storekeeper etc. are on the owner's draw-list).
         const string ArtGinny         = "Assets/_Project/Art/Characters/Ginny.png";   // Aunt Ginny standee
@@ -703,6 +703,12 @@ namespace HiddenHarbours.App.Editor
         /// till, for the same reason.</para>
         /// </summary>
         public const float StoreCounterStrideMetres = 1.5f;
+
+        /// <summary>Whose counter the general store's is — the seller id every vendor on it carries, and
+        /// the id a catalog row in Marguerite's dialogue opens her book against. Stock is CONTENT now
+        /// (CatalogListing): the listings name this seller, so adding to her shelf is one asset and never
+        /// a scene edit.</summary>
+        public const string StoreSellerId = "seller.leblancs";
 
         /// <summary>
         /// Where the general store's counter stands: DERIVED from the store's own site, out its door
@@ -1729,14 +1735,17 @@ namespace HiddenHarbours.App.Editor
             var rodShop = storeCounter.AddComponent<GearShop>();
             SetRef(rodShop, "_offer", rodOffer);
             SetRef(rodShop, "_walletProvider", storeWallet);
+            SetString(rodShop, "_sellerId", StoreSellerId);
 
             var baitShop = storeCounter.AddComponent<BaitShop>();
             SetRef(baitShop, "_bait", capelinBait);
             SetRef(baitShop, "_walletProvider", storeWallet);
+            SetString(baitShop, "_sellerId", StoreSellerId);
 
             var iceShop = storeCounter.AddComponent<SupplyShop>();
             SetRef(iceShop, "_supply", iceSupply);
             SetRef(iceShop, "_walletProvider", storeWallet);
+            SetString(iceShop, "_sellerId", StoreSellerId);
 
             // The DEPTH SOUNDER — the first purchasable helm instrument (ADR 0025 S2). It bolts into the
             // dash of the boat the player arrived in, so it sells here beside the rod rather than needing
@@ -1744,12 +1753,14 @@ namespace HiddenHarbours.App.Editor
             var sounderShop = storeCounter.AddComponent<InstrumentShop>();
             SetRef(sounderShop, "_offer", depthSounder);
             SetRef(sounderShop, "_walletProvider", storeWallet);
+            SetString(sounderShop, "_sellerId", StoreSellerId);
 
             // The clam licence — the FIRST licence of the game, and the one Ginny fronts the fee for. The
             // player still buys it themselves at this counter (§7.5: the transaction stays theirs).
             var clamVendor = storeCounter.AddComponent<LicenseVendor>();
             SetRef(clamVendor, "_license", clamLicence);
             SetRef(clamVendor, "_walletProvider", storeWallet);
+            SetString(clamVendor, "_sellerId", StoreSellerId);
 
             // ⚠️ SAY WHICH MARKET IT IS. Market defaults to MarketId.Cove, and a counter left on the default
             // quietly quotes the home cove's price level — the exact bug the creek shipped with for a year
@@ -1820,6 +1831,10 @@ namespace HiddenHarbours.App.Editor
             var dialogueGo = new GameObject("DialogueUI");
             var presenter = dialogueGo.AddComponent<DialoguePresenter>();
             DialogueBubbleArt.Dress(presenter);
+            // The wares book rides the same GameObject as the bubble: it is opened BY a conversation
+            // (CatalogViewRequested) and closed back TO one (CatalogClosed), and it sorts below the
+            // bubble so the speaker is never hidden behind the book she is holding out.
+            dialogueGo.AddComponent<HiddenHarbours.Economy.CatalogBookPresenter>();
 
             // Aunt Ginny — by the cottage on the island plateau. Teaches the buy-and-repair loop; finishing
             // her conversation sets met_ginny (which gates the first onboarding nudge + her warmer re-greet).

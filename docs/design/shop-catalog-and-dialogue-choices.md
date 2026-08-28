@@ -1,10 +1,14 @@
 # Hidden Harbours — Shop Talk & the Catalog (choices in the bubble, a wares book on the counter)
 
-> **Status: DESIGN PROPOSAL — owner-directed 2026-08-23; mock rendered; NOT built and NOT claimed.**
-> This is the design-and-mock half the owner asked for *before* code: it grounds the brief in what the
-> build actually contains today, names the one structural decision that needs making, and hands back a
-> short list of **rulings** (§9). Nothing here authorises construction — the owner writes the full
-> handoff after the mock (CLAUDE.md rule 8), and §11 is **PROPOSALS ONLY**.
+> **Status: BUILT — designed 2026-08-23, rulings taken 2026-08-27, PR 1 shipped the same day.**
+> The design-and-mock half came first (§1–§11 below); the owner ruled §9 on 2026-08-27 and PR 1 built
+> it. **Where this document and the build disagree, the build is right and the disagreement is marked
+> ⚠ AS BUILT inline.** Four such marks: R2 (§3.2), the module boundary (§2.4), the phasing (§8) and
+> the dev keys (§6).
+>
+> **Still not built, and still proposals:** the CLERKS who should be opening this book (PR 2 —
+> Marguerite at the island store, a clerk at the creek chandlery), and everything in §7 and §11 that
+> is not ticked.
 >
 > Design module. Subordinate to [`../vision-and-pillars.md`](../vision-and-pillars.md) (CANON — wins on
 > conflict), to [`diegetic-ui-and-inventory.md`](diegetic-ui-and-inventory.md) (the ratified keystone:
@@ -90,6 +94,17 @@ listing says where it is sold, and no scene is touched. That is the real change 
 
 ### 2.4 The notebook — the surface this borrows
 
+> ⚠ **AS BUILT.** The three pure files named below now live in **`Code/Core/Notebook/`**, not in World,
+> and `DialogueBubbleKit` and `HarbourType` moved to `Code/Core/Art/` with them. The reason is not
+> tidiness: `HiddenHarbours.Economy` and `HiddenHarbours.World` both reference only Core and nothing in
+> the project references World, so "share `NotebookInk`/`NotebookKit` exactly as `QuestPanelPresenter`
+> does" **does not compile** for a book that lives where the buy stack lives. `QuestPanelPresenter` is a
+> misleading precedent for exactly this reason — it is inside World. Adding a World reference to Economy
+> would be a feature module reaching into another feature module's concrete classes (rule 4), so the
+> book's *hand* became a Core surface language instead. `NotebookKit` was not pure as this section
+> assumed: it aliases six type metrics from `DialogueBubbleKit`, which being in the same namespace it
+> needed no `using` to do.
+
 ADR 0039 ruled the notebook the player's main UI. `Code/World/` holds a complete, pure, tested book:
 `NotebookLayout` (wrap → blocks → placements → leaves → spread), `NotebookKit` (the pixel geometry:
 5 px cells, 10 px pitch, a `5c+29` page, 8 fore-edge tabs, 5-character chips, integer scale only),
@@ -137,8 +152,15 @@ like to see what they have.
 2. **Economy listens** — it is the first subscriber that signal has ever had — and opens the book.
    World still branches on nothing and still names no economy type (rule 4).
 3. The conversation **holds** rather than ending: the bubble stays, dimmed, and the picker is gone.
-4. On close, the row's `ReplyLines` play — *"Come back if you change your mind"* — and the
-   conversation ends normally.
+4. On close, **the picker comes back on the same rows** and the conversation carries on normally from
+   there — the way out is still last, and taking it ends the conversation as it always did.
+
+> ⚠ **AS BUILT (owner ruling, 2026-08-27).** Step 4 originally read *"the row's `ReplyLines` play and the
+> conversation ends normally."* The owner ruled the other way: closing the book **re-arms the picker**,
+> so `browse → sell → "See you later."` is one conversation with one person. PR 2's clerk needs it —
+> her sell row is unreachable after a browse otherwise, and you would have to walk up and talk to her
+> twice to buy a thing and then sell a thing. It is still ONE ROUND (rule 8): the rows that come back
+> are the rows that went down, never a different second picker.
 
 > **This is still one round.** A catalog row never leads to a second picker, so the flat-and-one-round
 > rule (`DialogueOption.cs`, rule 8) holds: a dialogue TREE is still the M2/M3 knowledge-graph work.
@@ -322,6 +344,13 @@ kit's sprites are already loaded for the notebook, so a second book costs no new
 - **`BuyScreen`** — deleted. It is the "would a menu do this?" test failing in 466 lines.
 - **`DevBuyInput` + `BuyPointInstaller`** — deleted, with the `P` key returned to the ledger. Their own
   headers say they are placeholders for this.
+
+> ⚠ **AS BUILT.** They did **not** retire in PR 1, and could not: `DevBuyInput` opened `BuyScreen`, and
+> `BuyScreen` called the `Build(stall, …)` signature the inversion removes — so "delete the screen, keep
+> the dev keys" was self-contradictory. `DevBuyInput` was instead repointed: it reads the seller id off
+> its stall's vendor and publishes the **same** `CatalogViewRequested` a dialogue row publishes. The dev
+> key and the conversation now reach the book through one door, so PR 2 removes a *caller*, not a path.
+> `BuyPointInstaller` and `DevSellInput` are untouched and retire with it in PR 2.
 - **`BuyCatalog`'s component scan** — replaced by the tag sweep. **The quote arms and every note string
   survive** and move into the new source; they are the accumulated correctness of six vendor types and
   must not be retyped.
@@ -348,7 +377,13 @@ Named so nobody reads permission into the section above:
 
 ---
 
-## 8. Phasing (a way to land it in two safe pieces)
+## 8. Phasing (a way to land it in two safe pieces) — ⚠ SUPERSEDED
+
+> ⚠ **AS BUILT.** The A/B split below was **not** taken. PR 1 built both, because PR 2's clerks need
+> `SellerId` to exist to open their own books, so Phase B could not wait behind a separate review. The
+> resulting PR is large — four commits: the Core move, the dialogue row, the inversion, the book — and
+> that size is the known cost of the decision, not an accident of it. The advice below is still sound
+> for anyone landing a comparable surface who does *not* have a dependent PR queued behind it.
 
 **Phase A — the book replaces the screen.** New panel, same `BuyCatalog` component scan. No data
 change, no seller ids, no migration. Everything in §5 is visible and playable; `BuyScreen` dies.
@@ -363,7 +398,12 @@ dark overlay and throws nothing away.
 
 ---
 
-## 9. Owner rulings needed (capture, never guess)
+## 9. Owner rulings — **ALL TAKEN 2026-08-27**
+
+> Every ruling below was taken **at the recommendation**, with one addition (R7) and one reversal of the
+> doc's own text (R2, see §3.2). R1 · R3 · R4 · R5 · R6 as recommended; **R2 = hold AND re-arm**;
+> **R7 = the clerk's sell verb fronts the store's existing sell components** (PR 2 spends it — the Nine
+> Mile Creek general store has no sell components at all, so its clerk gets no sell row).
 
 **R1 · How does a seller id find the thing that sells?** *(§4, the ⚠)*
 With stock as content, `seller.macaulay` must resolve to the component owning `TryBuy()`. Options: a

@@ -115,6 +115,12 @@ namespace HiddenHarbours.World
         /// </summary>
         public const string ArtFolder = "Assets/_Project/Art/UI/DialogueBubble";
 
+        /// <summary>How far the bubble fades back while the speaker's book is open over the lower
+        /// screen. Presentation plumbing, not owner feel: far enough that the book is plainly what you
+        /// are reading, near enough that the speaker is plainly still standing there mid-sentence -
+        /// which is the whole of the design's "the book does not replace them".</summary>
+        public const float DimmedAlpha = 0.45f;
+
         /// <summary>True once the 9-sliced bubble body has been wired — i.e. the kit has landed and the
         /// greybox tinted-rect branch is no longer what ships. The readable half of "is this still
         /// greybox", for the tripwire and for tooling.</summary>
@@ -263,6 +269,8 @@ namespace HiddenHarbours.World
         private IReadOnlyList<DialogueOption> _options;
         private string _dialogueId;
         private string _speakerId;
+        private CanvasGroup _rootGroup;
+        private bool _awaitingCatalog;
 
         /// <summary>True while a conversation is on screen (lines or options).</summary>
         public bool IsShowing { get; private set; }
@@ -274,6 +282,16 @@ namespace HiddenHarbours.World
 
         /// <summary>True while the option rows are up and the move axis is choosing between them.</summary>
         public bool IsChoosing => _picker != null;
+
+        /// <summary>
+        /// True while a catalog row has handed off and the conversation is HOLDING for the book to shut.
+        ///
+        /// <para>The bubble is still up (dimmed), <see cref="IsShowing"/> is still true and the
+        /// interaction gate is still blocked - the player is mid-conversation, reading something the
+        /// speaker handed them. Nothing advances the conversation in this state; only
+        /// <c>Core.CatalogClosed</c> gets out of it.</para>
+        /// </summary>
+        public bool IsAwaitingCatalog => _awaitingCatalog;
 
         /// <summary>Which row the cursor is on, or -1 when nothing is being chosen. Exposed so the
         /// selection can be driven and asserted WITHOUT a key press — headless input cannot deliver one,
@@ -311,10 +329,39 @@ namespace HiddenHarbours.World
             HideRoot();
         }
 
+        private void OnEnable() => EventBus.Subscribe<CatalogClosed>(OnCatalogClosed);
+
         private void OnDisable()
         {
+            EventBus.Unsubscribe<CatalogClosed>(OnCatalogClosed);
+
             // A bubble destroyed/disabled mid-line must never leave interaction wedged off.
             if (IsShowing) InteractionGate.Reset();
+        }
+
+        /// <summary>
+        /// The book has been shut: put the same rows back and hand the player to the person who lent it.
+        ///
+        /// <para>Guarded on the hold flag so a stray close (a second book, a signal arriving after the
+        /// conversation was walked away from) cannot re-open a picker on a conversation that has already
+        /// ended. If the rows cannot be rebuilt the conversation ends cleanly, rather than hanging with
+        /// a dimmed bubble and no way out.</para>
+        /// </summary>
+        private void OnCatalogClosed(CatalogClosed closed)
+        {
+            if (!_awaitingCatalog) return;
+            _awaitingCatalog = false;
+            SetDimmed(false);
+
+            if (!IsShowing) return;
+            if (!TryOpenOptions()) Finish();
+        }
+
+        /// <summary>Fade the bubble back (or bring it forward) without hiding it - the speaker stays on
+        /// screen, animating, with the tail still pointing at them.</summary>
+        private void SetDimmed(bool dim)
+        {
+            if (_rootGroup != null) _rootGroup.alpha = dim ? DimmedAlpha : 1f;
         }
 
         // ---- public API (driven by WorldInteractor) -----------------------------------------
@@ -336,6 +383,8 @@ namespace HiddenHarbours.World
             _dialogueId = request.DialogueId;
             _speakerId = request.SpeakerId;
             _picker = null;
+            _awaitingCatalog = false;   // a fresh conversation never inherits a previous book's hold
+            SetDimmed(false);
 
             if (!_runner.IsOpen)
             {
@@ -374,6 +423,11 @@ namespace HiddenHarbours.World
         {
             if (!IsShowing) return false;
 
+            // The book is open over the lower screen and this conversation is holding for it. An
+            // Interact press belongs to the book, not to the bubble - without this the press would
+            // fall through to the runner and could END the conversation under the open panel.
+            if (_awaitingCatalog) return false;
+
             if (IsFilling) { _typewriter.CompleteNow(); Draw(); ShowHint(true); return true; }
             if (_picker != null) { ConfirmOption(); return true; }
 
@@ -411,6 +465,8 @@ namespace HiddenHarbours.World
         {
             IsShowing = false;
             _picker = null;
+            _awaitingCatalog = false;
+            SetDimmed(false);
             _typewriter = null;
             _anchor = null;
             TailIndex = -1;
@@ -801,6 +857,21 @@ namespace HiddenHarbours.World
 
             EventBus.Publish(new DialogueOptionPicked(_dialogueId, picked.Id, _speakerId));
 
+            // A CATALOG row hands off and comes back. The conversation does NOT end: the bubble stays
+            // up and fades back, the rows go down, IsShowing stays true and the interaction gate stays
+            // blocked, until CatalogClosed re-arms the picker on these same rows. _options is
+            // deliberately NOT cleared here - it is exactly what comes back (owner ruling on R2,
+            // 2026-08-27). Finish() must not be reached: it would clear InteractionGate.IsBlocked, drop
+            // the anchor and hide the bubble, which is the player walking away mid-book.
+            if (picked.OpensCatalog)
+            {
+                _awaitingCatalog = true;
+                SetDimmed(true);
+                EventBus.Publish(new CatalogViewRequested(
+                    picked.CatalogSellerId, picked.CatalogSection, _speakerId));
+                return;
+            }
+
             // A row that answers plays its answer and then the conversation ends. One round, no nesting
             // (rule 8) — a reply never leads to more options.
             if (picked.ReplyLines != null && picked.ReplyLines.Length > 0)
@@ -993,6 +1064,7 @@ namespace HiddenHarbours.World
             _root = new GameObject("DialogueRoot", typeof(RectTransform));
             _root.transform.SetParent(canvasGo.transform, false);
             Stretch(_root.GetComponent<RectTransform>());
+            _rootGroup = _root.AddComponent<CanvasGroup>();
 
             var rootRt = (RectTransform)_root.transform;
 

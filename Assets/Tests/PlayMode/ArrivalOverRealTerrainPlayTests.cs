@@ -193,6 +193,15 @@ namespace HiddenHarbours.Tests.PlayMode
                 StPetersArrivalOpening.BerthHeadingDegrees(),
                 StPetersArrivalOpening.StepAshore(),
                 StPetersBuilder.ApproachBedElevation);
+
+            // ⚠ ON DECK for this fixture, deliberately — the same call the region builder makes, with the
+            // opposite answer. What this suite exists to prove is the PASSAGE OVER THE REAL TERRAIN: that
+            // she runs the region's own fairway, at the region's own tides, and ends alongside the region's
+            // own wharf. The cabin is hull-local and region-independent, so starting her below would add a
+            // door press to fifteen long tests and prove nothing new about the water. The journey through
+            // the cabin is IntroCabinPassagePlayTests'.
+            _opening.ConfigureCabin(startBelowDecks: false);
+
             go.SetActive(true);
 
             Assert.IsTrue(_opening.TryBegin(), "the arrival must start on a fresh save");

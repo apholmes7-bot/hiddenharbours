@@ -190,7 +190,7 @@ namespace HiddenHarbours.Tests.EditMode
             SaveData save = Aboard("boat.skiff");
             var rows = new List<BuyRow>();
 
-            BuyCatalog.Build(stall, 500, save, null, rows);
+            CatalogTestStall.BuildWired(stall, 500, save, null, rows);
             Assert.AreEqual(1, rows.Count);
             Assert.AreEqual(BuyRowKind.Instrument, rows[0].Quote.Kind);
             Assert.IsFalse(rows[0].Quote.Owned);
@@ -198,17 +198,17 @@ namespace HiddenHarbours.Tests.EditMode
             StringAssert.Contains("boat.skiff", rows[0].Note, "the row says which boat it goes on");
 
             InstrumentLocker.Add(save, "boat.skiff", "instrument.depth_sounder");
-            BuyCatalog.Build(stall, 500, save, null, rows);
+            CatalogTestStall.BuildWired(stall, 500, save, null, rows);
             Assert.IsTrue(rows[0].Quote.Owned, "owned — for the boat you are on");
             Assert.IsFalse(rows[0].Quote.CanBuy);
 
             save.ActiveHullId = "boat.punt";
-            BuyCatalog.Build(stall, 500, save, null, rows);
+            CatalogTestStall.BuildWired(stall, 500, save, null, rows);
             Assert.IsFalse(rows[0].Quote.Owned, "…and available again from the punt's cockpit");
             Assert.IsTrue(rows[0].Quote.CanBuy);
 
             save.ActiveHullId = "";
-            BuyCatalog.Build(stall, 500, save, null, rows);
+            CatalogTestStall.BuildWired(stall, 500, save, null, rows);
             Assert.IsFalse(rows[0].Quote.CanBuy, "with no boat the row cannot be confirmed");
             StringAssert.Contains("aren't aboard", rows[0].Note);
         }

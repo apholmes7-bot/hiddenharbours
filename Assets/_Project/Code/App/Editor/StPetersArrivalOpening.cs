@@ -106,6 +106,13 @@ namespace HiddenHarbours.App.Editor
             var opening = go.AddComponent<ArrivalOpening>();
             opening.Configure(skipper, Route(), Berth(), BerthHeadingDegrees(), StepAshore(),
                               StPetersBuilder.ApproachBedElevation);
+
+            // ⭐ THE GAME OPENS BELOW HIS DECK. Stated by the REGION rather than left to a component
+            // default, for the same reason the route, the berth and the landing are stated here: where a
+            // new game begins is an authoring decision this file owns. It is a silent no-op on a skipper
+            // whose hull the interiors kit has never measured — and the cape has been measured.
+            opening.ConfigureCabin(startBelowDecks: true);
+
             go.SetActive(true);
 
             Vector2[] route = Route();

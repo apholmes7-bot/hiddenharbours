@@ -119,7 +119,7 @@ namespace HiddenHarbours.UI
 
         private void Update()
         {
-            // Close on Esc / gamepad East — the project's shared Cancel convention (BuyScreen/SellScreen).
+            // Close on Esc / gamepad East — the project's shared Cancel convention (the wares book / SellScreen).
             // New Input System only; legacy UnityEngine.Input compiles here and then throws at runtime.
             var kb = Keyboard.current;
             var pad = Gamepad.current;

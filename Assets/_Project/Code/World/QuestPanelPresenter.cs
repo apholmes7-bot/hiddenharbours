@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using HiddenHarbours.Core;
 
 namespace HiddenHarbours.World
 {
