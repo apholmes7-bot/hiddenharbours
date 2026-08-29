@@ -736,6 +736,16 @@ Shader "HiddenHarbours/Water"
         _BoatLightBrighten   ("Beam brighten (multiply-lift of the water inside the cone)", Range(0,8)) = 2.5
         _BoatLightTintAmount ("Beam warm tint (faint additive warmth inside the cone)", Range(0,2)) = 0.25
         _BoatLightGain       ("Beam cone weight gain (shapes the cone weight before the lift)", Range(0,4)) = 0.5
+
+        [Header(BEAM WAVE RELIEF (the beam lights the SEAS SHAPE   owner mandate 2026 08 28))]
+        // "it should highlight the water at crests and be shadowed at the valleys of waves unless the proper
+        // light angle exposes them." The cone weight above is radial x angular and blind to the sea under it;
+        // these scale it by the wave field's own relief (N.L against the SAME analytic waveSlope the swell
+        // FACE SHADING rides). Strength 0 is an EXACT passthrough — the shipped ADR 0016 cone, unchanged.
+        // col.rgb ONLY (P1, rule 5).
+        _BeamReliefStrength     ("Beam wave relief (0 = the flat shipped cone; 1 = full physical relief)", Range(0,2)) = 1.0
+        _BeamReliefMaxGain      ("Beam relief max gain (bounds crest sparkle on a face turned into the beam)", Range(1,6)) = 2.5
+        _BeamReliefMinElevation ("Beam relief grazing floor (min normalized lamp elevation; lower = harder rake)", Range(0.02,1)) = 0.15
         [Header(DISPLACED SURFACE (ADR 0023   the sea as real geometry))]
         // Read by the HHWater pass's vertex stage only — the flat Universal2D pass ignores them.
         // Exaggeration and band are PUSHED per tick by DisplacedWaterSurface (band is DERIVED via
@@ -1061,6 +1071,28 @@ Shader "HiddenHarbours/Water"
             float4 _BoatLightColor;     // rgb = beam colour
             float4 _BoatLightParams;    // x = intensity (<=0 means OFF), y = range (m), z = cos(halfAngle), w = cos(innerAngle)
             float4 _BoatLightParams2;   // x = radial edge softness, y = gate threshold, z = gate softness, w = cycle-off fallback
+
+            // ---- MANY WATER LIGHTS (the array the ADR 0016 note above reserved) ---------------------------
+            // Published by HiddenHarbours.Art.WaterLightBridge (the WaveFieldBridge pattern: self-installing,
+            // ONE owner of the globals, every frame). The bridge picks the nearest WATER_MAX_LIGHTS emitters to
+            // the camera and publishes them here; _WaterLightCount is how many slots are live.
+            //
+            // The SINGLETON ABOVE IS NOT SUMMED WHEN THESE ARE LIVE. _BoatLight* stays published because the
+            // OTHER lit path reads it — SpriteLitDecor.hlsl lights trees/shrubs/plants from that one lamp
+            // (TWO lit paths BY DESIGN; this PR touches only the water). Summing both would double-count the
+            // primary lamp on the water. Count 0 => no bridge running (a bare art scene, a legacy scene, a
+            // harness) => the water falls back to the singleton, which is EXACTLY the shipped ADR 0016 path.
+            //
+            // .z of a position is the lamp HEIGHT above mean water in metres — the lever the wave relief turns
+            // a uniform disc into a raking beam with (a high lamp flattens, a low one rakes). 0 = not published,
+            // which the relief reads as "no height known" and skips, leaving the flat cone exactly as it was.
+            #define WATER_MAX_LIGHTS 4
+            float4 _WaterLightPos[WATER_MAX_LIGHTS];      // xy = world lamp pos, z = lamp height (m)
+            float4 _WaterLightDir[WATER_MAX_LIGHTS];      // xy = world beam axis (~unit)
+            float4 _WaterLightColor[WATER_MAX_LIGHTS];    // rgb = beam colour
+            float4 _WaterLightParams[WATER_MAX_LIGHTS];   // x = intensity, y = range, z = cos(half), w = cos(inner)
+            float4 _WaterLightParams2[WATER_MAX_LIGHTS];  // x = edge soft, y = gate thr, z = gate soft, w = fallback
+            float  _WaterLightCount;                      // live slots; 0 = no bridge -> legacy singleton path
 
             // GLOBAL SHARED WAVE FIELD (ADR 0018 B1) — published by HiddenHarbours.Art.WaveFieldBridge via
             // Shader.SetGlobalVector, EVERY FRAME. The bridge ticks the SAME WaveFieldAnimator the boat's
@@ -1404,6 +1436,11 @@ Shader "HiddenHarbours/Water"
                 float  _BoatLightBrighten;
                 float  _BoatLightTintAmount;
                 float  _BoatLightGain;
+                // Beam WAVE RELIEF (owner mandate 2026-08-28): how hard the wave field's own slope shapes
+                // the cone. Strength 0 = the flat shipped cone, EXACTLY. col.rgb ONLY (P1, rule 5).
+                float  _BeamReliefStrength;
+                float  _BeamReliefMaxGain;
+                float  _BeamReliefMinElevation;
                 // ---- displaced surface (ADR 0023; read by the HHWater pass's vertex stage) ----
                 float  _WaveExaggeration;
                 float  _ShoreFadeBand;
@@ -3337,20 +3374,62 @@ Shader "HiddenHarbours/Water"
             //
             //   worldXY — this water pixel's world position (pixelized inside, so the pool of light reads pixel-art).
             //   RETURNS the cone WEIGHT (>=0; 0 outside the cone / by day / no boat), NOT a colour.
-            float BoatLightTerm(float2 worldXY)
+            // ---- WAVE RELIEF: the beam lights the SEA'S SHAPE (owner mandate, 2026-08-28) -------------------
+            // *"it should highlight the water at crests and be shadowed at the valleys of waves unless the
+            // proper light angle exposes them."* The cone weight above is radial x angular and blind to the
+            // sea under it -- the owner's "one uniform shape with a gentle gradient". This scales it by the
+            // wave field's OWN relief, using the SAME analytic waveSlope the swell FACE SHADING rides (ADR
+            // 0018: one field, one slope, one computation -- never a re-derivation of phase).
+            //
+            // A LAMP IS NOT THE SUN. The sun is a direction at infinity, so the face shading uses one world
+            // vector for the whole sea; a lamp is a POINT at a HEIGHT, so the incidence direction differs at
+            // every pixel -- steep under the lamp, grazing at the far end of the throw. Everything the owner
+            // asked for is that one fact, with no special cases: crest faces turned toward the lamp gain,
+            // trough walls and back slopes lose, a LOW lamp separates them hard and reaches INTO troughs
+            // while a HIGH one flattens the sea toward a disc, and the far end of a beam rakes more than its
+            // near end because the elevation to a fixed-height lamp falls off with distance.
+            //
+            // EXACTLY 1 ON FLAT WATER, BY CONSTRUCTION (the load-bearing property): N.L is divided by the
+            // dot product a FLAT facet would have had at the SAME pixel (lz, floored ONCE and reused in both
+            // places), so zero slope cancels to exactly 1 for ANY lamp geometry. A searchlight sweeping a
+            // dead-calm sea therefore leaves the §11 mirror exactly as it is today. Twin: LightMath.
+            // WaveReliefFactor (guarded against drift by a source assertion on this file's text).
+            //
+            //   slopeXY -- the shared field's analytic dh/dx, dh/dy at this pixel.
+            //   toLamp  -- pixel -> lamp, UNNORMALIZED, metres; .z = lamp height above THIS pixel's surface.
+            //   RETURNS the relief factor: 1 = as flat water, >1 = tilted into the beam, 0 = turned away.
+            float BeamRelief(float2 slopeXY, float3 toLamp)
             {
-                float intensity = _BoatLightParams.x;
+                float lenSq = dot(toLamp, toLamp);
+                if (lenSq < 1e-10) return 1.0;              // at the lamp itself the direction is undefined
+                float3 L = toLamp * rsqrt(lenSq);
+
+                // Floor the elevation ONCE and reuse the SAME lz below, so the zero-slope cancellation stays
+                // EXACT even for a lamp under the floor (a grazing beam). Bounds the runaway contrast of a
+                // light sinking to the water plane.
+                float lz = max(L.z, max(_BeamReliefMinElevation, 1e-4));
+
+                // N ∝ (-sx, -sy, 1)  =>  N.L = (lz - slope.L_xy) / |N|, then / lz (the flat-water reference).
+                float sDotL = dot(slopeXY, L.xy);
+                float invN  = rsqrt(1.0 + dot(slopeXY, slopeXY));
+                return clamp((lz - sDotL) * invN / lz, 0.0, max(_BeamReliefMaxGain, 1.0));
+            }
+
+            float BoatLightWeight(float4 lightPos, float4 lightDir, float4 lightParams, float4 lightParams2,
+                                  float2 worldXY, float2 waveSlopeXY, float waveHeightM)
+            {
+                float intensity = lightParams.x;
                 if (intensity <= 0.001)
                     return 0.0;                             // light off / not lighting water / no boat -> nothing
 
-                float range    = max(_BoatLightParams.y, 1e-4);
-                float cosHalf  = _BoatLightParams.z;
-                float cosInner = max(_BoatLightParams.w, cosHalf + 1e-4);
-                float edgeSoft = _BoatLightParams2.x;
+                float range    = max(lightParams.y, 1e-4);
+                float cosHalf  = lightParams.z;
+                float cosInner = max(lightParams.w, cosHalf + 1e-4);
+                float edgeSoft = lightParams2.x;
 
                 // pixel-snap the world position so the lit pool reads as pixel art like every other layer (§3).
                 float2 p = Pixelize(worldXY);
-                float2 toPixel = p - _BoatLightPos.xy;
+                float2 toPixel = p - lightPos.xy;
                 float dist = length(toPixel);
                 if (dist >= range)
                     return 0.0;                             // beyond the throw -> dark
@@ -3363,7 +3442,7 @@ Shader "HiddenHarbours/Water"
                 // ANGULAR (cone) falloff in COSINE space (mirrors LightMath.ConeFalloffCos): on-axis = full, at
                 // the half-angle = 0. At the lamp itself the direction is undefined -> treat as on-axis (the core).
                 float2 ndir = dist > 1e-5 ? toPixel / dist : float2(0, 0);
-                float2 bdir = normalize(_BoatLightDir.xy + float2(0, 1e-4));
+                float2 bdir = normalize(lightDir.xy + float2(0, 1e-4));
                 float cosAngle = dist > 1e-5 ? dot(ndir, bdir) : 1.0;
                 float cone = smoothstep(cosHalf, cosInner, cosAngle);
 
@@ -3376,9 +3455,9 @@ Shader "HiddenHarbours/Water"
                 // tuning the day/night cycle fades land + water together. When the cycle is NOT running the tint is
                 // near-black (unset) -> use the cycle-off FALLBACK (default 1 = show, for tuning / the demo), the
                 // same convention the reflection/palette layers use for an unset tint.
-                float threshold = _BoatLightParams2.y;
-                float softness  = _BoatLightParams2.z;
-                float fallback  = _BoatLightParams2.w;
+                float threshold = lightParams2.y;
+                float softness  = lightParams2.z;
+                float fallback  = lightParams2.w;
                 float dnSum = _DayNightTint.r + _DayNightTint.g + _DayNightTint.b;
                 float gate;
                 if (dnSum > 1e-3)
@@ -3397,8 +3476,48 @@ Shader "HiddenHarbours/Water"
                 // per-material gain the owner tunes (how strongly the cone weight ramps before the caller's
                 // multiply-brighten lift). >= 0; the caller lifts the water's OWN col.rgb by this (reveal, not
                 // paint). max() keeps it non-negative even if a tunable is set negative in the inspector.
-                return max(0.0, intensity * shape * gate * max(_BoatLightGain, 0.0));
+                // ---- WAVE RELIEF: the beam lights the SEA'S SHAPE, not a flat disc ------------------------
+                // Scale the cone weight by how this pixel's wave facet is turned relative to THIS lamp (see
+                // BeamRelief). TWO independent EXACT passthroughs guard the shipped look: a lamp with no
+                // published height (.z == 0 — a legacy publisher, a bare material) and a strength of 0 both
+                // leave the weight bit-identical to the flat cone above. Twin: LightMath.WaveReliefFactor +
+                // LightMath.ApplyReliefStrength.
+                float relief = 1.0;
+                float reliefStrength = max(_BeamReliefStrength, 0.0);
+                if (lightPos.z > 1e-4 && reliefStrength > 0.001)
+                {
+                    // toLamp.z is the lamp's height above THIS pixel's OWN water surface, so a crest riding up
+                    // toward the lamp is genuinely closer to it than the trough beside it.
+                    float3 toLamp = float3(lightPos.xy - p, lightPos.z - waveHeightM);
+                    relief = 1.0 + (BeamRelief(waveSlopeXY, toLamp) - 1.0) * reliefStrength;
+                }
+
+                return max(0.0, intensity * shape * gate * relief * max(_BoatLightGain, 0.0));
             }
+
+            // The TOTAL water-light cone weight at this pixel: every live light the bridge published, summed.
+            // Count 0 => no bridge is running (a bare art scene, a legacy scene, an EditMode harness) => fall
+            // back to the ONE _BoatLight* singleton, which is EXACTLY the ADR 0016 path this file shipped with.
+            // The singleton is deliberately NOT added on top of the array — it is the same primary lamp, kept
+            // published for SpriteLitDecor.hlsl's sake (the other lit path), so summing both would double it.
+            float BoatLightTerm(float2 worldXY, float2 waveSlopeXY, float waveHeightM)
+            {
+                int n = (int)(_WaterLightCount + 0.5);
+                if (n <= 0)
+                    return BoatLightWeight(_BoatLightPos, _BoatLightDir, _BoatLightParams, _BoatLightParams2,
+                                           worldXY, waveSlopeXY, waveHeightM);
+
+                float total = 0.0;
+                [unroll]
+                for (int i = 0; i < WATER_MAX_LIGHTS; i++)      // FIXED bound; the count masks inside
+                {
+                    if (i < n)
+                        total += BoatLightWeight(_WaterLightPos[i], _WaterLightDir[i], _WaterLightParams[i],
+                                                 _WaterLightParams2[i], worldXY, waveSlopeXY, waveHeightM);
+                }
+                return total;
+            }
+
 
             // ====================================================================================================
             // PALETTE GUARD-RAIL — the final soft colour-grade stage (ADR 0015). Mirrors WaterPaletteGrade.cs
@@ -4861,7 +4980,7 @@ Shader "HiddenHarbours/Water"
                 // day/night overlay, so lit water tracks the sea it lights (a floodlamp-flat compensation would
                 // re-introduce the wash). Weight 0 (by day / outside the cone / no boat) => an EXACT passthrough.
                 // col.rgb ONLY — never depth/clip/_WaterLevel/the height read/the sim (P1 integrity, rule 5).
-                float beamW = BoatLightTerm(worldXY);
+                float beamW = BoatLightTerm(worldXY, waveSlope, waveHeight);
                 col.rgb *= (1.0 + beamW * max(_BoatLightBrighten, 0.0));   // the REVEAL: lift the water's own colour
 
                 // ---- LIGHT CONTENT, post-grade + overlay-compensated: BEAM WARM TINT + the NIGHT SKY ------------

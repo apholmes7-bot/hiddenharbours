@@ -66,6 +66,9 @@ Material:
     m_Ints: []
     m_Floats:
     - _AbsorptionBands: 6
+    - _BeamReliefMaxGain: 2.5
+    - _BeamReliefMinElevation: 0.15
+    - _BeamReliefStrength: 1
     - _BoatLightBrighten: 2.5
     - _BoatLightGain: 0.5
     - _BoatLightTintAmount: 0.25

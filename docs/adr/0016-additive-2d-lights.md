@@ -284,6 +284,120 @@ bounds the lit pool (deliberate: it would clamp the compensated values); it stil
 Headless twin: `LightMath.CompensateForDayNightTint` (+ `DayNightCompensationMinChannel`), pinned in
 `LightMathTests`. Full mechanism: `design/water-rendering.md` §11.6.
 
+## Amendment — the beam lights the sea's SHAPE, and many lamps can do it (wave relief, 2026-08-29)
+
+**The owner, 2026-08-28:** *"the spotlights and headlights need to put shadows, the spotlight over the water
+is just one uniform shape with a gentle gradient. The light needs to affect the environment, create shadows.
+it should highlight the water at crests and be shadowed at the valleies of waves unless the proper light angle
+exposes them."*
+
+He is describing follow-up fix 2 exactly. `BoatLightTerm` returned `radial × cone` — a shape in the ground
+plane, blind to the sea underneath it. Lit water and unlit water differed only in brightness, so the beam read
+as a decal laid over the waves rather than light falling on them. **The additive glow stays what it always
+was — the lamp's own bloom. It is no longer the illumination model.**
+
+### The decision: N·L against the shared wave field, normalized by flat water
+
+The water fragment already evaluates the ADR 0018 wave field per pixel and already has its **analytic slope**
+(`WaveFieldSample`'s `slopeXY`, which the swell FACE SHADING rides). A height field's surface normal is
+`N ∝ (-∂h/∂x, -∂h/∂y, 1)`, so the relief is available for the cost of a dot product — no second field, no
+re-derived phase, no new sampling. One quantity, one computation.
+
+```
+L      = normalize(lampWorldXYZ - pixelXYZ)         // lamp height above THIS pixel's own surface
+lz     = max(L.z, _BeamReliefMinElevation)          // floored ONCE, reused in both places below
+relief = (lz - dot(slope, L.xy)) / (lz · sqrt(1 + |slope|²))
+weight = radial · cone · lerp(1, relief, strength)  // the ADR 0016 cone, now shaped by the sea
+```
+
+**Why a lamp is not the sun.** ADR 0013's sun is a direction at infinity: one world vector for the whole sea,
+which is why the swell face shading can use a constant. A lamp is a **point at a height**, so `L` differs at
+every pixel — steep underfoot, grazing at the far end of the throw. Every clause the owner asked for is that
+one fact, with no special cases in the code:
+
+| his words | what the maths does |
+|---|---|
+| "highlight the water at crests" | a facet turned into the beam has `dot(slope, L.xy) < 0` ⇒ relief > 1 |
+| "shadowed at the valleys" | the back slope has it > 0 ⇒ relief < 1, clamped at 0 when turned away |
+| "unless the proper light angle exposes them" | small `lz` (a low lamp) divides the term up; large `lz` divides it away |
+
+**Measured** (`BeamWaveReliefTests.Measure_ReliefSpreadAgainstLampHeight`, a real sea at sea-state 0.55):
+
+| lamp height | 0.5 m | 1 m | 2.5 m | 5 m | 10 m | 60 m | 1000 m |
+|---|---|---|---|---|---|---|---|
+| relief spread | 1.140 | 1.093 | 0.571 | 0.296 | 0.159 | 0.044 | 0.028 |
+
+Two things in that table are load-bearing. A **1 m** lamp separates crest from trough **24×** harder than a
+60 m one — the angle genuinely decides what the beam exposes. And at **1000 m** the spread converges on
+**0.0279** against a computed geometric floor of **0.0273**: pushed to infinity the lamp becomes the sun, the
+whole directional term vanishes, and only the area foreshortening a tilted facet always suffers is left. A
+model that kept any angular dependence out there would not land on that number.
+
+### The glass calm is sacred, by construction rather than by tuning
+
+`N·L` is divided by the dot product a **flat** facet would have had **at the same pixel** (`lz`, floored once
+and reused in both the numerator and the divisor). Zero slope therefore cancels to **exactly 1** for any lamp
+position, height or range — so a searchlight sweeping a dead-calm sea leaves §11's mirror bit-identical. This
+is asserted bit-exactly over a sweep of geometries, including lamps below the elevation floor, which is the
+case where a naive implementation (clamping one side but not the other) silently stops cancelling.
+
+Two independent **exact passthroughs** guard the shipped look, both bit-exact: `_BeamReliefStrength = 0`, and
+a lamp that publishes no height (`pos.z == 0` — a legacy publisher, a bare material). Either one yields the
+flat ADR 0016 cone unchanged.
+
+### Many lamps: the array this ADR reserved
+
+Follow-up fix 2 said *"the clean extension to many is to publish ARRAYS + a count and loop — the single-light
+path is a count-1 case of that."* That is now built: `WaterLightBridge` (Art, self-installing on the
+`WaveFieldBridge` pattern) collects registered `IWaterLightEmitter`s, keeps the **4 nearest the camera**, and
+publishes `_WaterLight*[4]` + `_WaterLightCount`. Budget (rule 7): the beam term is bounded at four cone
+evaluations per water pixel however many lamps a scene grows, the loop is `[unroll]`ed over the fixed bound
+with the count masking inside (the shape `WaveFieldSample` uses for its eight trains), and each slot
+early-outs on intensity — so a scene with one searchlight pays for one.
+
+**The legacy `_BoatLight*` singleton is kept and still published**, because a **second lit path** reads it:
+`SpriteLitDecor.hlsl` lights trees, shrubs and shore plants from that one lamp. Two lit paths are deliberate
+architecture (ADR 0013 / the lit-sprite ruling), so this change publishes the array **alongside** the singleton
+and alters neither the singleton's contract nor the decor path. The water sums the **array** when the count is
+live and falls back to the singleton when it is 0 — never both, or the primary lamp would be counted twice.
+
+### It reaches the screen, and it is measured there too
+
+The pure tests cannot prove a lit pixel exists, so `BeamReliefRenderTests` stands the real Nine Mile Creek
+coast at pre-dawn, publishes a real sea and a real searchlight through the shipped bridge, and photographs it.
+The metric is the **relative** luminance change of the lit pool, measured on the **pre-overlay HDR** values,
+against a control of **two identical shots** — same sea, same beam, same brightness, only the clock differing.
+Three earlier metrics had to be thrown away first: an absolute delta measured after the night overlay lands
+inside 8-bit quantization (it reported one least-significant bit); an out-of-cone control under-reads the clock
+because lit water is brighter; and aiming at the deepest water put the sea rect edge in frame, so half the
+control region was black void that could never change and silently flattered every ratio.
+
+| | dial moves the lit pool | clock alone | |
+|---|---|---|---|
+| a working sea | 12.8% | 1.9% | **6.6x the clock** |
+| a gale | 15.0% | 0.7% (out of cone) | confined to the cone |
+| **no waves at all** | **1.5%** | **3.2%** | **0.49x — less than the clock, i.e. nothing** |
+
+That last row is the glass calm proved in pixels as well as in algebra. And the relief **shapes** the pool
+rather than merely brightening it: mean in-cone luminance moves 0.480 to 0.492, **+2.4%**.
+
+### Known limitation, stated rather than hidden
+
+Since #686 raised the additive lights above the sea, the lamp's **quad** also lays its flat amber cone over
+the water the shader is now lighting with relief — two illuminations stacked, the flat one washing out the
+shaped one. The quad **cannot** tell water from land: it works in quad space and has neither the seabed height
+map nor the water level (both per-material on `Water.mat`). Making it spatially water-aware means publishing
+the seabed as new globals and rewiring the LAND lighting path, which is its own slice. What ships here is the
+lever, defaulted to today's look: `BoatSpotlight._quadGlowScale` (1 = the shipped full-length quad; lower pulls
+it back to a source glow at the lamp and lets the water channel carry the throw). The eyeball pack shows the
+pair; the value is the owner's call.
+
+**Implementation:** `LightMath.WaveReliefFactor` / `.ApplyReliefStrength` (the pure twin) ·
+`HiddenHarboursWater.shader` (`BeamRelief`, `BoatLightWeight`, the summing `BoatLightTerm`, `_WaterLight*[4]`) ·
+`WaterLightBridge.cs` + `IWaterLightEmitter` · `BoatSpotlight` (lamp height, registration, quad glow scale) ·
+`Water.mat` (the three dials) · `BeamWaveReliefTests`, `WaterLightBridgeTests`, `BeamReliefRenderTests`.
+The HLSL is guarded against drifting from the C# reference by source assertions on the shader text.
+
 ## Rejected alternatives
 
 - **URP `Light2D` now.** The sprites are Sprite-Unlit and sample no 2D light (the ADR-0013 finding); this needs

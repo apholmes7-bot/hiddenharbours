@@ -35,7 +35,7 @@ namespace HiddenHarbours.Art
     /// drives no sim, saves nothing (rule 5). Pooled, no per-frame alloc (rule 7).</para>
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class BoatSpotlight : MonoBehaviour
+    public sealed class BoatSpotlight : MonoBehaviour, IWaterLightEmitter
     {
         [Header("The switch (the owner asked for a BUTTON, not a per-hull field)")]
         [Tooltip("Is the beam lit when the boat wakes? OFF by default — the owner's call: a spotlight is " +
@@ -63,6 +63,15 @@ namespace HiddenHarbours.Art
                  "a single bow light.")]
         [SerializeField] private float _sideOffset = 0f;
 
+        [Tooltip("How high the lamp sits ABOVE THE WATER (metres). This is the angle lever behind the beam's " +
+                 "wave relief: a HIGH lamp shines nearly straight down and flattens the sea toward a disc, a LOW " +
+                 "one rakes it so crests catch the light and troughs fall into shadow. It is the whole difference " +
+                 "between a lamp and the sun (a direction at infinity), and it is what makes the owner's 'unless " +
+                 "the proper light angle exposes them' fall out of the maths instead of being a special case. " +
+                 "Default 2.5 m = a searchlight on a wheelhouse roof. 0 disables the relief (the flat ADR 0016 " +
+                 "cone). Tune here, or the response curve on Water.mat (rule 6).")]
+        [Min(0f)] [SerializeField] private float _lampHeightMeters = 2.5f;
+
         [Header("Beam feel (warm soft forward spotlight by default — all tunable, rule 6)")]
         [Tooltip("Beam colour. A warm low-amber reads as a ship's spotlight cutting the cold North-Atlantic dark.")]
         [ColorUsage(true, true)] [SerializeField] private Color _color = new Color(1f, 0.88f, 0.62f, 1f);
@@ -72,6 +81,19 @@ namespace HiddenHarbours.Art
 
         [Tooltip("How far the beam throws ahead of the bow (metres).")]
         [Min(0.5f)] [SerializeField] private float _range = 9f;
+
+        [Tooltip("How far the beam's additive QUAD throws, as a fraction of Range. The quad is what lights " +
+                 "LAND; the WATER is lit from inside the water shader, which keeps the full Range regardless " +
+                 "of this. Since #686 raised the additive lights above the sea, a full-length quad also lays " +
+                 "its flat amber cone OVER the water the shader is already lighting with wave relief -- two " +
+                 "illuminations stacked, and the flat one washes the relief out. Dropping this toward ~0.3 " +
+                 "pulls the quad back to a source GLOW at the lamp and lets the water channel carry the " +
+                 "throw: one illumination, on the surface that owns it. 1 = the shipped look exactly (the " +
+                 "quad throws the full Range), which is the default so this changes nothing until it is " +
+                 "dialled. NOTE: the quad cannot tell water from land -- it has neither the seabed height map " +
+                 "nor the water level -- so this shortens the beam over LAND too. That is the trade, and it " +
+                 "is the owner's eye to rule on.")]
+        [Range(0.05f, 1f)] [SerializeField] private float _quadGlowScale = 1f;
 
         [Tooltip("Cone HALF-angle (degrees): a tight searchlight (~15) to a broad floodlight (~50).")]
         [Range(0f, 90f)] [SerializeField] private float _coneHalfAngle = 26f;
@@ -176,6 +198,10 @@ namespace HiddenHarbours.Art
         // zeroes the global out (no stuck beam over the water). Set when a spotlight publishes; the publisher
         // that wrote last "owns" the global (single-light model). On disable we publish zero intensity.
         private SceneLight _light;
+
+        // This frame's water light, cached for WaterLightBridge to collect (it ASKS; we never write the array).
+        // Refreshed on the same rate-limited tick that publishes the legacy singleton, so the two agree.
+        private WaterLightState _waterLight;
         private Vector3 _lastPos;
         private float _smoothedSpeed;
         private float _publishTimer;
@@ -295,6 +321,10 @@ namespace HiddenHarbours.Art
         private void OnEnable()
         {
             if (_light == null) _light = GetComponent<SceneLight>();
+            // Join the water-light array (many lamps light the sea). The legacy _BoatLight* singleton is still
+            // published below for the OTHER lit path (SpriteLitDecor lights trees/shrubs from it) -- this
+            // registration is purely additive and changes nothing about that.
+            WaterLightBridge.Register(this);
             ConfigureLight();
             // Re-APPLY, never re-seed (see the latch note): a boat coming back to life keeps the switch the
             // player left it on.
@@ -314,6 +344,8 @@ namespace HiddenHarbours.Art
         {
             // The single-light model: a disabled/destroyed spotlight must turn the WATER term OFF, or the beam
             // would stick on the water with no boat. Publish zero intensity (the shader treats <= 0 as no light).
+            WaterLightBridge.Unregister(this);
+            _waterLight = default;
             PublishWaterLight(0f, Vector3.zero, Vector2.up);
         }
 
@@ -323,7 +355,9 @@ namespace HiddenHarbours.Art
             if (_light == null) return;
             _light.Shape = SceneLight.LightShape.Cone;
             _light.ConeHalfAngle = _coneHalfAngle;
-            _light.Range = _range;
+            // The quad lights LAND and is deliberately allowed to fall short of the water term's range -- see
+            // _quadGlowScale. The WATER range published below is always the full _range.
+            _light.Range = _range * Mathf.Clamp(_quadGlowScale, 0.05f, 1f);
             _light.Color = _color;
             _light.Intensity = _intensity;
             _light.FlickerAmount = _flickerAmount;
@@ -354,7 +388,9 @@ namespace HiddenHarbours.Art
 
             // Re-apply the live-tunable feel so inspector edits show immediately (cheap, no alloc).
             _light.ConeHalfAngle = _coneHalfAngle;
-            _light.Range = _range;
+            // The quad lights LAND and is deliberately allowed to fall short of the water term's range -- see
+            // _quadGlowScale. The WATER range published below is always the full _range.
+            _light.Range = _range * Mathf.Clamp(_quadGlowScale, 0.05f, 1f);
             _light.Color = _color;
             _light.FlickerAmount = _flickerAmount;
             _light.OriginOffset = new Vector2(_sideOffset, _bowOffset);
@@ -427,7 +463,11 @@ namespace HiddenHarbours.Art
             float innerAngle = half * (1f - Mathf.Clamp01(_angularSoftness));   // fully-lit out to here
             float cosInner = LightMath.CosFromHalfAngleDeg(innerAngle);
 
-            Shader.SetGlobalVector(IdBoatLightPos, new Vector4(lampWorld.x, lampWorld.y, 0f, 0f));
+            // pos.z carries the lamp HEIGHT for the water's wave relief. SAFE for the other lit path:
+            // SpriteLitDecor.hlsl reads _BoatLightPos.xy only, never .z (it takes its own elevation from the
+            // per-material _LampElevation). A zero height reads as "unknown" and the relief is skipped.
+            float lampHeight = intensity > 0f ? Mathf.Max(0f, _lampHeightMeters) : 0f;
+            Shader.SetGlobalVector(IdBoatLightPos, new Vector4(lampWorld.x, lampWorld.y, lampHeight, 0f));
             Shader.SetGlobalVector(IdBoatLightDir, new Vector4(beamDir.x, beamDir.y, 0f, 0f));
             Shader.SetGlobalColor(IdBoatLightColor, _color);
             Shader.SetGlobalVector(IdBoatLightParams,
@@ -435,6 +475,35 @@ namespace HiddenHarbours.Art
             Shader.SetGlobalVector(IdBoatLightParams2,
                 new Vector4(Mathf.Clamp01(_edgeSoftness), Mathf.Clamp01(_gateThreshold),
                             Mathf.Clamp01(_gateSoftness), Mathf.Clamp01(_gateFallback)));
+
+            // ...and the SAME numbers as one array-slot candidate, so the two publishing routes can never
+            // disagree about where this lamp is or how hard it is burning.
+            _waterLight = new WaterLightState
+            {
+                LampWorld = new Vector2(lampWorld.x, lampWorld.y),
+                LampHeightMeters = lampHeight,
+                BeamDir = beamDir,
+                Color = _color,
+                Intensity = Mathf.Max(0f, intensity),
+                Range = Mathf.Max(0.01f, _range),
+                CosHalfAngle = cosHalf,
+                CosInnerAngle = cosInner,
+                EdgeSoftness = Mathf.Clamp01(_edgeSoftness),
+                GateThreshold = Mathf.Clamp01(_gateThreshold),
+                GateSoftness = Mathf.Clamp01(_gateSoftness),
+                GateFallback = Mathf.Clamp01(_gateFallback),
+            };
+        }
+
+        /// <summary>
+        /// This lamp's contribution to the water-light array, for <see cref="WaterLightBridge"/> to collect.
+        /// Returns the state cached by the last publish tick, so the array and the legacy singleton always
+        /// describe the same beam. False when the lamp is dark / not lighting water (it must not hold a slot).
+        /// </summary>
+        public bool TryGetWaterLight(out WaterLightState state)
+        {
+            state = _waterLight;
+            return state.IsLive;
         }
 
         /// <summary>
