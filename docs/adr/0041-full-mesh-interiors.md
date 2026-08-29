@@ -32,7 +32,10 @@ shipped, and the owner has now ruled it out in favour of geometry.
 The spike (#644) had already answered *can the shell be geometry* — yes, at +7.5–12.6% tris, straight
 out of committed `BoatInteriorDef` data — and had banked the two levers that make a room readable
 inside a hull: the per-face **level tag** in `TexCoord1.x` behind
-`shader_feature_local HH_LEVEL_GATE`, and **`UV0.z = db`**, which reproduces the sprite path's
+`HH_LEVEL_GATE` (declared `shader_feature_local` in the spike, and **`multi_compile_local` now** —
+the hull's material is built at runtime with `new Material(...)`, so nothing in the project carries
+the keyword and the variant stripper would drop the gated program, making the cutaway work in the
+editor and silently never in the player), and **`UV0.z = db`**, which reproduces the sprite path's
 "composite over the hull" inside the depth test (a revealed room survives at 97.6% with it and 20.3%
 without).
 

@@ -187,11 +187,18 @@ Shader "HiddenHarbours/IsoFacet"
             // places and that the road fleet's night-lamp slot-reuse ruling (#668) rests on.
             //
             // Measured cost of the two, on the shipped target: widening is byte-identical in the
-            // compiled program (it costs 512 B of constant buffer, not instructions) but every
-            // hull pays it in every frame. This table costs 384 B and ~148 B of extra fragment
-            // code, and ONLY while a cut is live — because it lives in here, and
-            // IsoFacetHullRenderer.ApplyCutawayKeyword enables HH_LEVEL_GATE only then. On a
-            // harbour of boats nobody is aboard, this design costs nothing at all (rule 7).
+            // compiled program (it costs 512 B of constant buffer, not instructions) but EVERY hull
+            // pays it in every frame, converted or not. This table costs 384 B and ~148 B of extra
+            // fragment code, and it is paid PER HULL rather than fleet-wide.
+            //
+            // ⚠️ AND THE SPLIT IS NOT "while a cut is live" — that was this design's first cost
+            // story and its own PR refuted it. A hull whose MESH CARRIES A ROOM keeps
+            // HH_LEVEL_GATE on permanently, because the discard that hides her cabin lives inside
+            // this same #ifdef and nothing else hides it (measured with it off: 31-42% of her
+            // inked pixels wrong, in clusters of 11k-15k px). So: an UNCONVERTED hull pays nothing
+            // at all and compiles the shipped program byte for byte, and a CONVERTED hull pays
+            // this always. That is the price of the room being geometry, and it would have been
+            // the same price under a widened table.
             //
             // The two tables are separate INDEX SPACES: an interior face's matId counts from 0 in
             // here, so the hull's 16 stay exactly the hull's and neither side can starve the other.
@@ -346,6 +353,18 @@ Shader "HiddenHarbours/IsoFacet"
             // on every plank, which is the opposite of parity. If the art director fixes hash2, both
             // paths move together and this comment is the note that says where to look. Reported
             // upstream rather than fixed here: the sprite art is shipped and this is not our file.
+            //
+            // ⭐ WHERE EACH NUMBER BELOW CAME FROM, because nothing pixel-exact can guard this: the
+            // dith gap makes sheet-parity impossible for the fit-out by design, so the owner's eye
+            // is the only end-to-end check and it should know what it is confirming.
+            //   - The PERIOD is PROBED, per face, off the rig's own closure at bake time
+            //     (BoatInteriorGeometryExtractor.periodOf) — never scraped from a call site.
+            //   - The groove half-widths (0.022 / 0.026 / 0.030) and the shift magnitudes are
+            //     TRANSCRIBED from the rig's source, which is the only place they exist.
+            //   - The dead hash branch is PROBED, not assumed (3321/3321 samples below 0.5).
+            // InteriorTexTranscriptionTests pins all of it by evaluating the rig's own three
+            // functions over a grid and comparing against this logic, so a transcription slip is a
+            // red test rather than something only an eye could catch.
             float HHInteriorTex(float2 kp, float2 uv)
             {
                 int kind = (int)round(kp.x);

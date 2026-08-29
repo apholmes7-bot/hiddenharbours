@@ -60,11 +60,15 @@ namespace HiddenHarbours.Tools.RigBaking
         public enum TexKind
         {
             None = 0,
-            /// <summary>plankTex(p): a groove every p in v, plus a per-plank hash of 0 or −1.</summary>
+            /// <summary>plankTex(p): a groove every p in V. <b>−2 in the groove, 0 outside.</b> The
+            /// rig also branches on a per-plank hash for 0-or-−1 outside the groove, but that branch
+            /// is unreachable — see <see cref="InteriorGeometry"/>'s notes and the shader's, and
+            /// note that it is unreachable in the SPRITE path too.</summary>
             Plank = 1,
-            /// <summary>boardTex(p): a groove every p in u. −1 in the groove, 0 outside.</summary>
+            /// <summary>boardTex(p): a groove every p in U. −1 in the groove, 0 outside.</summary>
             Board = 2,
-            /// <summary>quiltTex(): a 0.20 grid, grooves −1, per-cell hash 0 or +1.</summary>
+            /// <summary>quiltTex(): a 0.20 grid, −1 in either groove, 0 elsewhere. The rig's
+            /// per-cell hash would make it +1 in some cells; that branch is unreachable too.</summary>
             Quilt = 3,
         }
 

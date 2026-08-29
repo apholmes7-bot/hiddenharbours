@@ -156,12 +156,6 @@ namespace HiddenHarbours.Art
         private HiddenHarbours.Core.HullMeshDef.Cut _cutaway;
 
         /// <summary>
-        /// True when any face of <paramref name="mesh"/> is flagged interior (UV0.w). Allocates
-        /// once per Configure — never per frame (rule 7) — and is deliberately a POSITIVE test:
-        /// "this mesh knows about interiors", not "this mesh is new enough", so it cannot be fooled
-        /// by a version stamp that says yes while the geometry says nothing.
-        /// </summary>
-        /// <summary>
         /// True when any face of <paramref name="mesh"/> is flagged as ROOM geometry (TexCoord1.y,
         /// ADR 0038 full mesh) — as distinct from <see cref="MeshCarriesInteriorFaces"/>, which asks
         /// the ADR 0023 water question off UV0.w. Two different meanings of the word "interior" that
@@ -182,6 +176,12 @@ namespace HiddenHarbours.Art
         /// <c>RigMeshBuilder.LevelUvChannel</c>, which is editor-only and cannot be referenced here.</summary>
         private const int LevelUvChannel = 1;
 
+        /// <summary>
+        /// True when any face of <paramref name="mesh"/> is flagged interior (UV0.w). Allocates
+        /// once per Configure — never per frame (rule 7) — and is deliberately a POSITIVE test:
+        /// "this mesh knows about interiors", not "this mesh is new enough", so it cannot be fooled
+        /// by a version stamp that says yes while the geometry says nothing.
+        /// </summary>
         private static bool MeshCarriesInteriorFaces(Mesh mesh)
         {
             if (mesh == null) return false;

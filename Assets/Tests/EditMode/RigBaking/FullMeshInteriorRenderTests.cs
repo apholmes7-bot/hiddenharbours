@@ -176,6 +176,131 @@ namespace HiddenHarbours.Tests.RigBaking
             }
         }
 
+        /// <summary>
+        /// <b>DIAGNOSTIC: where does the rigging level actually draw?</b> Raised by the coordinator
+        /// off the eyeball pack — a pole appears to hang below her keel, while her baked sheet draws
+        /// the tackle standing up from the house roof. Her rig puts those faces at z 2.953..5.958,
+        /// i.e. above the house (top 3.055), and they are NOT new: the July rig that baked her sheet
+        /// has the same 80 faces above z 3.10, topping at the same 5.958. So staleness cannot explain
+        /// it and the question is what the MESH path does with them.
+        ///
+        /// <para>This isolates them: cutting level 5 removes exactly the rigging faces, so the pixels
+        /// that change ARE the rigging, and their screen rows say which way it points. Reported, not
+        /// asserted — the fix (if there is one) is not this PR's, and a bare assertion here would
+        /// encode a conclusion nobody has reached yet.</para>
+        /// </summary>
+        [Test]
+        public void Diagnostic_WhereTheRiggingDraws()
+        {
+            RequireAGraphicsDevice();
+            HullMeshDef hm = LoadHullOrIgnore();
+
+            const int RiggingTag = 5;
+            var log = new StringBuilder();
+            log.AppendLine("WHERE THE RIGGING DRAWS — level 5 culled vs not");
+            log.AppendLine("Her rig places these faces at z 2.953..5.958; the house tops at 3.055.");
+            log.AppendLine("Rows are screen rows, 0 = TOP of the cell. Lower row number = higher up.");
+            log.AppendLine();
+
+            foreach (float heading in Headings)
+            {
+                byte[] whole = Render(hm, hm.Mesh, 0, heading);
+                byte[] noRig = Render(hm, hm.Mesh, RiggingTag, heading);
+
+                int w = hm.CellW, h = hm.CellH;
+                int minRow = int.MaxValue, maxRow = -1, n = 0;
+                for (int y = 0; y < h; y++)
+                    for (int x = 0; x < w; x++)
+                    {
+                        int i = (y * w + x) * 4;
+                        bool diff = whole[i] != noRig[i] || whole[i + 1] != noRig[i + 1]
+                                 || whole[i + 2] != noRig[i + 2] || whole[i + 3] != noRig[i + 3];
+                        if (!diff) continue;
+                        n++;
+                        if (y < minRow) minRow = y;
+                        if (y > maxRow) maxRow = y;
+                    }
+
+                (int top, int bottom) hull = InkedRows(noRig, w, h);
+                (int top, int bottom) all = InkedRows(whole, w, h);
+                log.AppendLine($"  heading {heading,5:0}°  whole rows {all.top}..{all.bottom}"
+                             + $"  |  without rigging {hull.top}..{hull.bottom}"
+                             + $"  |  rigging {n,5} px, rows {minRow}..{maxRow}");
+                // SELF-CHECK. Every changed pixel must lie inside the whole render's own inked band;
+                // a diff outside it means the two arms are not the same boat and the rest of this
+                // line is meaningless. The first cut of this diagnostic reported rigging at row 91
+                // against a whole-image top of 128 and I nearly published the conclusion anyway.
+                bool sane = n == 0 || (minRow >= all.top && maxRow <= all.bottom);
+                log.AppendLine($"  {"",13} self-check: changed rows inside the whole render's band? "
+                             + (sane ? "yes" : "NO — THIS LINE IS NOT TRUSTWORTHY"));
+                if (sane)
+                    log.AppendLine($"  {"",13} rigging sits {(minRow < hull.top ? "ABOVE" : "not above")} "
+                                 + $"the hull's top, and {(maxRow > hull.bottom ? "BELOW" : "not below")} "
+                                 + "its bottom.");
+            }
+            WriteReport("where-the-rigging-draws.txt", log.ToString());
+        }
+
+        static (int top, int bottom) InkedRows(byte[] rgba, int w, int h)
+        {
+            int top = int.MaxValue, bottom = -1;
+            for (int y = 0; y < h; y++)
+                for (int x = 0; x < w; x++)
+                    if (rgba[(y * w + x) * 4 + 3] > 8) { if (y < top) top = y; if (y > bottom) bottom = y; }
+            return (top, bottom);
+        }
+
+        /// <summary>
+        /// <b>THE PACK IS THE RIGHT WAY UP.</b> Her rigging sits at z 2.953..5.958, above a house
+        /// that tops at 3.055, so in a published frame the mast's ink must appear ABOVE the hull's
+        /// centre of mass, not below it. Cheap, and it is the check the first pack did not have:
+        /// every number in this file is computed on the render buffer, so an inverted FILE is
+        /// invisible to all of them.
+        /// </summary>
+        [Test]
+        public void ThePublishedPack_IsNotUpsideDown()
+        {
+            RequireAGraphicsDevice();
+            HullMeshDef hm = LoadHullOrIgnore();
+            const int RiggingTag = 5;
+
+            foreach (float heading in Headings)
+            {
+                byte[] whole = Render(hm, hm.Mesh, 0, heading);
+                byte[] noRig = Render(hm, hm.Mesh, RiggingTag, heading);
+                int w = hm.CellW, h = hm.CellH;
+
+                // the rigging's centre row, and the hull's, in PUBLISHED (top-left) orientation
+                long rigSum = 0, rigN = 0, hullSum = 0, hullN = 0;
+                for (int y = 0; y < h; y++)
+                    for (int x = 0; x < w; x++)
+                    {
+                        int i = (y * w + x) * 4;
+                        bool changed = whole[i] != noRig[i] || whole[i + 1] != noRig[i + 1]
+                                    || whole[i + 2] != noRig[i + 2] || whole[i + 3] != noRig[i + 3];
+                        if (changed) { rigSum += y; rigN++; }
+                        else if (noRig[i + 3] > 8) { hullSum += y; hullN++; }
+                    }
+                Assert.Greater(rigN, 0, $"no rigging pixels at {heading}° — this guard tested nothing.");
+
+                double rigRow = (double)rigSum / rigN, hullRow = (double)hullSum / hullN;
+                // ⚠️ NO ARITHMETIC HERE, ON PURPOSE. The published row EQUALS the buffer row: the
+                // pipeline flips twice — ReadBackTopLeft turns the bottom-left RenderTexture into a
+                // top-left buffer, SavePng flips that back into Texture2D's bottom-left space, and
+                // EncodeToPNG writes top-down. Two flips compose to identity, and it is VERIFIED
+                // that way rather than reasoned: the published files' inked row spans equal these
+                // buffers' to the row at all four headings. The first cut of this guard "corrected"
+                // for a flip that cancels and failed on a pack that was by then correct — a guard
+                // that models the pipeline instead of reading it is one more thing to get wrong.
+                Assert.Less(rigRow, hullRow,
+                    $"at {heading}° the mast's ink sits BELOW the hull's (rows {rigRow:0} vs " +
+                    $"{hullRow:0}). Her rigging is at z 2.953..5.958 over a house topping at 3.055, " +
+                    "so this is upside down. Check SavePng: ReadBackTopLeft is top-left origin and " +
+                    "Texture2D is bottom-left, and every OTHER measurement in this file reads the " +
+                    "buffer rather than the file, so all of them stay green through the defect.");
+            }
+        }
+
         /// <summary>The owner's pack: every enclosed level, closed and open, at every heading, plus
         /// the closed-up control. Not an assertion — this one exists to be looked at.</summary>
         [Test]
@@ -366,12 +491,34 @@ namespace HiddenHarbours.Tests.RigBaking
             return n;
         }
 
+        /// <summary>
+        /// ⚠️ <b>THE FLIP IS LOAD-BEARING.</b> <see cref="ReadBackTopLeft"/> hands back TOP-left-origin
+        /// bytes (that is its whole job), and <c>Texture2D</c> is BOTTOM-left origin — so writing the
+        /// buffer straight in through <c>LoadRawTextureData</c> saves the picture upside down while
+        /// every measurement in this file, which works on the buffer and never on the file, stays
+        /// perfectly correct.
+        ///
+        /// <para>That is exactly what happened: the first pack shipped inverted, and because the
+        /// numbers were right and only the pictures were wrong, it survived my own eye, a commit, and
+        /// a reviewer's — who reasonably read a mast standing correctly above the house as a pole
+        /// hanging through the keel, and traced it toward a mesh-path sign flip that does not exist.
+        /// A rendering fixture that measures one buffer and publishes another must flip in exactly
+        /// one place, and this is it.</para>
+        /// </summary>
         static void SavePng(string name, byte[] rgba, HullMeshDef hm)
         {
             string dir = Path.Combine(RepoRoot, ImageDir);
             Directory.CreateDirectory(dir);
-            var tex = new Texture2D(hm.CellW, hm.CellH, TextureFormat.RGBA32, false);
-            tex.LoadRawTextureData(rgba);
+            int w = hm.CellW, h = hm.CellH;
+            var tex = new Texture2D(w, h, TextureFormat.RGBA32, false);
+            var px = new Color32[w * h];
+            for (int y = 0; y < h; y++)
+                for (int x = 0; x < w; x++)
+                {
+                    int s = (y * w + x) * 4;
+                    px[(h - 1 - y) * w + x] = new Color32(rgba[s], rgba[s + 1], rgba[s + 2], rgba[s + 3]);
+                }
+            tex.SetPixels32(px);
             tex.Apply();
             File.WriteAllBytes(Path.Combine(dir, name), tex.EncodeToPNG());
             UnityEngine.Object.DestroyImmediate(tex);
