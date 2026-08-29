@@ -426,24 +426,55 @@ namespace HiddenHarbours.Tests.EditMode
                 "a loaner can was accepted inside the shop building");
         }
 
+        /// <summary>A wall with exactly one rectangular footprint and nothing bolted to it — the
+        /// fixture the pen control needs, and deliberately not a piece out of the kit.</summary>
+        StationPieceDef Slab(float half)
+        {
+            var def = ScriptableObject.CreateInstance<StationPieceDef>();
+            def.name = "test_slab";
+            _spawned.Add(def);
+            def.Blockers = new[]
+            {
+                new StationBlocker
+                {
+                    Kind = "slab",
+                    Level = "",                 // no level named reads as ground, as the shell's does
+                    Treatment = "wall",         // only wall and waist_block stop a body
+                    Footprint = new[]
+                    {
+                        new Vector2(-half, -half), new Vector2(half, -half),
+                        new Vector2(half, half), new Vector2(-half, half),
+                    },
+                },
+            };
+            return def;
+        }
+
         [Test]
         public void ACanWalledInOnEverySide_IsRefusedEvenThoughItsOwnSpotIsClear()
         {
-            RequireKit();
-
             // The third check earns its keep here and only here: this point is on good ground and inside
             // nothing, and it is still no place for a can, because a body cannot get to it. Without the
             // standing-spot probe, Standable would say yes.
-            var forecourt = new List<StationReachAudit.Placed>();
-            StationPieceDef store = StationCatalog.Find("store_sStore");
-            if (store == null) Assert.Ignore("the C-store is not installed");
+            // ⚠️ A SYNTHETIC SLAB, not a shipped storefront, and that is the point of the fixture.
+            // Two earlier versions of this control used store_sStore as a wall and failed on its
+            // BOLTED-ON blockers rather than on the code under test: the C-store carries `ice`,
+            // `propane_cage` and `ladder_cage` outside its building plan, and at any offset that
+            // puts the wall 0.3 m off the origin one of them reaches across the gap. The pen only
+            // needs to be an arrangement where the centre is clear and everything around it is
+            // blocked, so it is built from one clean rectangle and cannot drift when the kit is
+            // re-baked.
+            const float faceOff = 0.3f;     // clear of a can (0.22) and inside a body's first ring (0.44)
+            const float slabHalf = 4f;      // wide enough to close the diagonals out to the full reach
+            StationPieceDef slab = Slab(slabHalf);
 
-            // Four storefronts in a pinwheel leave a hole at the middle that is smaller than a body.
-            float r = 5.9f;     // just over half the C-store's 11.6 m plan: the walls close the gap
-            forecourt.Add(new StationReachAudit.Placed(store, new Vector2(r, 0f), 0, "east"));
-            forecourt.Add(new StationReachAudit.Placed(store, new Vector2(-r, 0f), 0, "west"));
-            forecourt.Add(new StationReachAudit.Placed(store, new Vector2(0f, 4.2f), 2, "north"));
-            forecourt.Add(new StationReachAudit.Placed(store, new Vector2(0f, -4.2f), 2, "south"));
+            var forecourt = new List<StationReachAudit.Placed>
+            {
+                new StationReachAudit.Placed(slab, new Vector2(slabHalf + faceOff, 0f), 0, "east"),
+                new StationReachAudit.Placed(slab, new Vector2(-(slabHalf + faceOff), 0f), 0, "west"),
+                new StationReachAudit.Placed(slab, new Vector2(0f, slabHalf + faceOff), 0, "north"),
+                new StationReachAudit.Placed(slab, new Vector2(0f, -(slabHalf + faceOff)), 0, "south"),
+            };
 
             Vector2 pen = Vector2.zero;
             Assert.That(StationReachAudit.BlockerAt(forecourt, pen, StationReachAudit.Level.Ground,

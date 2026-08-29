@@ -543,7 +543,17 @@ namespace HiddenHarbours.App.Editor
             ReportSite("the Route 91 station", road, roadDef, Route91FaceGrades);
             ReportTheGaps(roadDef);
 
-            return wharf.Count + road.Count + cans.Count;
+            // ⚠️ The cans are NOT counted here. This return is the number of KIT PIECES stood
+            // up, which is what the caller and NineMileCreekStationTests both read it as (two
+            // pedestals plus every piece of the forecourt). A loaner can is not a station piece,
+            // and folding it in silently redefined a number a test was already asserting. The
+            // cans report themselves instead.
+            if (cans.Count == 0 && Route91CanSpots().Count > 0)
+                Debug.LogWarning(
+                    $"{Tag} not one loaner can could be placed — see the refusals above. The " +
+                    "station sells fuel with nothing standing there to put it in.");
+
+            return wharf.Count + road.Count;
         }
 
         /// <summary>Site A: two dock pedestals on the apron, each one hose.</summary>
