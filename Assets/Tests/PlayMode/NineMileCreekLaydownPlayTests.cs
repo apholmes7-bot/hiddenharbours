@@ -191,69 +191,87 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         /// <summary>
-        /// ⭐ <b>She can pull out of her bay onto the lane</b> — the yard's own claim, which is about
-        /// GROUND rather than about input: is a machine parked nose-to-the-lane actually able to leave,
-        /// or has the bay been cut so tight she is walled in?
+        /// ⭐⭐ <b>ALL FIVE driven machines pull out of their bays onto the lane</b> — the acceptance
+        /// criterion in the owner's own count, not a sample of it. The yard's own claim, and it is
+        /// about GROUND rather than input: is a machine parked nose-to-the-lane actually able to
+        /// leave, or has her bay been cut so tight she is walled in?
+        ///
+        /// <para>The yard is stood up FRESH for each machine, so every one of them drives out of a
+        /// full yard rather than out of one the previous machines have already vacated. Driving them
+        /// in turn through a single placement would make each test easier than the last, which is the
+        /// sort of coverage that reads as five and proves one.</para>
         ///
         /// <para>⚠️ <b>Driven through <c>VehicleController.Throttle</c> and deliberately NOT through
         /// <c>ControlSwitcher.DriveInput</c>.</b> That method's own doc says it is "public and explicit
         /// so a headless test can drive it", but while the mode is Driving the switcher's Update calls
         /// <c>ReadDriveInput()</c> every frame, and with no key held that lands
-        /// <c>DriveInput(0, 0, false)</c> — so an explicit demand is zeroed before the next physics step
-        /// and the machine never moves. Measured here: 0.00 m under "full throttle" for 30 s of physics.
-        /// Taking the wheel is proved by the test above; what THIS one is about is the room she has, so
-        /// it drives the machine directly rather than fighting a keyboard read for the throttle.</para>
+        /// <c>DriveInput(0, 0, false)</c> — so an explicit demand is zeroed before the next physics
+        /// step and the machine never moves. Measured: 0.00 m under "full throttle" for 30 s of
+        /// physics. Taking the wheel is proved by the test above; what THIS one is about is the room
+        /// she has, so it drives the machine directly rather than fighting a keyboard read.</para>
         ///
-        /// <para>⚠️ Stepped on <see cref="WaitForFixedUpdate"/>, never on frames — the physics step is a
-        /// real duration and a frame is not.</para>
+        /// <para>⚠️ Stepped on <see cref="WaitForFixedUpdate"/>, never on frames — the physics step is
+        /// a real duration and a frame is not.</para>
         /// </summary>
         [UnityTest]
-        public IEnumerator SheCanPullOutOfHerBayOntoTheLane()
+        public IEnumerator EveryDrivenMachinePullsOutOfHerBayOntoTheLane()
         {
-            var made = new List<GameObject>();
-            yield return StandTheYard(made);
-
-            GameObject truckGo = made.Find(g => g != null && g.name == "ConvBoxAtTheLaydown");
-            Assert.That(truckGo, Is.Not.Null, "the conventional box was never placed.");
-
-            var controller = truckGo.GetComponent<VehicleController>();
-            Assert.That(controller, Is.Not.Null,
-                "the placed truck grew no VehicleController — she is scenery, not a machine.");
-
-            // Her bay comes from the solve, not from a number typed here: reorder the bay table and
-            // this test follows instead of quietly measuring the wrong rectangle.
-            int bayIndex = -1;
+            var driven = new List<string>();
             foreach (NineMileCreekLaydown.Placement p in NineMileCreekLaydown.Solve())
-                if (p.Unit.Name == "ConvBoxAtTheLaydown") bayIndex = p.Unit.Bay;
-            Assert.That(bayIndex, Is.GreaterThanOrEqualTo(0), "the conv box is not in the bay table.");
-            Rect bay = NineMileCreekLaydown.BayArea(bayIndex);
+                if (!p.Unit.IsTowed) driven.Add(p.Unit.Name);
 
-            Vector2 startedAt = truckGo.transform.position;
-            Assert.That(bay.Contains(startedAt), Is.True,
-                "she does not start inside her own bay, so leaving it would prove nothing.");
+            Assert.That(driven.Count, Is.EqualTo(5),
+                $"the yard solved {driven.Count} driven machines, not the five the owner asked for.");
 
-            float wanted = NineMileCreekLaydown.LongestUnitMetres;
-            float travelled = 0f;
-
-            for (int step = 0; step < 1500 && travelled < wanted; step++)
+            foreach (string name in driven)
             {
-                controller.Throttle = 1f;
-                yield return new WaitForFixedUpdate();
-                travelled = Vector2.Distance((Vector2)truckGo.transform.position, startedAt);
+                var made = new List<GameObject>();
+                yield return StandTheYard(made);
+
+                GameObject truckGo = made.Find(g => g != null && g.name == name);
+                Assert.That(truckGo, Is.Not.Null, $"{name} was never placed.");
+
+                var controller = truckGo.GetComponent<VehicleController>();
+                Assert.That(controller, Is.Not.Null,
+                    $"{name} grew no VehicleController — she is scenery, not a machine.");
+
+                int bayIndex = -1;
+                foreach (NineMileCreekLaydown.Placement p in NineMileCreekLaydown.Solve())
+                    if (p.Unit.Name == name) bayIndex = p.Unit.Bay;
+                Rect bay = NineMileCreekLaydown.BayArea(bayIndex);
+
+                Vector2 startedAt = truckGo.transform.position;
+                Assert.That(bay.Contains(startedAt), Is.True,
+                    $"{name} does not start inside her own bay, so leaving it would prove nothing.");
+
+                float wanted = NineMileCreekLaydown.LongestUnitMetres;
+                float travelled = 0f;
+
+                for (int step = 0; step < 1500 && travelled < wanted; step++)
+                {
+                    controller.Throttle = 1f;
+                    yield return new WaitForFixedUpdate();
+                    travelled = Vector2.Distance((Vector2)truckGo.transform.position, startedAt);
+                }
+                controller.Throttle = 0f;
+
+                Assert.That(travelled, Is.GreaterThanOrEqualTo(wanted),
+                    $"{name} moved {travelled:0.##} m under full throttle in 30 s of physics — she is " +
+                    "not driving off her slot.");
+
+                Assert.That(bay.Contains((Vector2)truckGo.transform.position), Is.False,
+                    $"{name} has travelled {travelled:0.##} m and is still inside her own bay.");
+
+                // And she left the way she was pointed: SOUTH, onto the lane, not sideways through a
+                // neighbour. Her heading never changed, so this is a pure statement about the yard.
+                Assert.That(truckGo.transform.position.y, Is.LessThan(startedAt.y),
+                    $"{name} pulled out NORTHWARD, away from the lane — her bay faces the wrong way.");
+
+                // Clear the yard before the next machine, so she too leaves a FULL one.
+                for (int i = 0; i < made.Count; i++)
+                    if (made[i] != null) Object.DestroyImmediate(made[i]);
+                yield return null;
             }
-            controller.Throttle = 0f;
-
-            Assert.That(travelled, Is.GreaterThanOrEqualTo(wanted),
-                $"she moved {travelled:0.##} m under full throttle in 30 s of physics — she is not " +
-                "driving off her slot.");
-
-            Assert.That(bay.Contains((Vector2)truckGo.transform.position), Is.False,
-                $"she has travelled {travelled:0.##} m and is still standing inside her own bay.");
-
-            // And she left the way she was pointed: SOUTH, onto the lane, not sideways through a
-            // neighbour. Her heading never changed, so this is a pure statement about the yard.
-            Assert.That(truckGo.transform.position.y, Is.LessThan(startedAt.y),
-                "she pulled out NORTHWARD, away from the lane — her bay faces the wrong way.");
         }
     }
 }
