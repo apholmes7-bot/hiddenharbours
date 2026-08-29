@@ -374,11 +374,26 @@ namespace HiddenHarbours.Art
                 offsets[m] = table[m].Offset;
             }
 
+            // THE INTERIOR PALETTE IS NOT REPAINTED BY AN EXTERIOR SCHEME. A paint scheme is a
+            // hull colour job (HullPaintSchemeDef.Ramps is indexed against def.Ramps); it says
+            // nothing about the cabin liner, and swapping the room's colours when the owner picks a
+            // new topside would be a change nobody asked for. Read from the def either way.
+            var interiorTable = def.InteriorRamps ?? System.Array.Empty<HullMeshDef.Ramp>();
+            var interiorRamps = new Color32[interiorTable.Length][];
+            var interiorOffsets = new int[interiorTable.Length];
+            for (int m = 0; m < interiorTable.Length; m++)
+            {
+                interiorRamps[m] = interiorTable[m].Colors;
+                interiorOffsets[m] = interiorTable[m].Offset;
+            }
+
             return new IsoFacetHullSetup
             {
                 Mesh = def.Mesh,
                 Ramps = ramps,
                 RampOffsets = offsets,
+                InteriorRamps = interiorRamps,
+                InteriorRampOffsets = interiorOffsets,
                 LightN = def.LightN,
                 Gain = def.Gain,
                 Bias = def.Bias,

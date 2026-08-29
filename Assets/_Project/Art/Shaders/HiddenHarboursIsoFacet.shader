@@ -176,6 +176,28 @@ Shader "HiddenHarbours/IsoFacet"
             // a lid that has a lid, and a level carries one lid field, so the same law holds in all
             // three places it could be broken.
             float  _HHLevelLid;
+
+            // ⭐ THE INTERIOR'S OWN PALETTE, AND WHY IT IS A SECOND TABLE RATHER THAN A WIDER ONE.
+            //
+            // A full-mesh room needs 20–21 ramps of its own (measured over every hull, level and
+            // facing of boatInteriorRig.js, counting distinct COLOUR ARRAYS rather than names).
+            // The hull's own faces already spend 10–13. One table would therefore have to hold
+            // THIRTY-THREE on the tanker — so the fleet's float4[16] cannot simply be widened to
+            // 24 or 32, and widening it to 48 would have re-opened a cap that is guarded in three
+            // places and that the road fleet's night-lamp slot-reuse ruling (#668) rests on.
+            //
+            // Measured cost of the two, on the shipped target: widening is byte-identical in the
+            // compiled program (it costs 512 B of constant buffer, not instructions) but every
+            // hull pays it in every frame. This table costs 384 B and ~148 B of extra fragment
+            // code, and ONLY while a cut is live — because it lives in here, and
+            // IsoFacetHullRenderer.ApplyCutawayKeyword enables HH_LEVEL_GATE only then. On a
+            // harbour of boats nobody is aboard, this design costs nothing at all (rule 7).
+            //
+            // The two tables are separate INDEX SPACES: an interior face's matId counts from 0 in
+            // here, so the hull's 16 stay exactly the hull's and neither side can starve the other.
+            float4 _RampMetaInterior[24];
+            Texture2D<float4> _RampTexInterior;
+            Texture2D<float4> _DarkRampTexInterior;
 #endif
 
             struct Attributes
@@ -326,8 +348,17 @@ Shader "HiddenHarbours/IsoFacet"
                 float bay = _Bayer[cell.x & 3][cell.y & 3];
 
                 int m    = (int)round(i.mat);
+#ifdef HH_LEVEL_GATE
+                // Which table this face reads from. lvl.y is the bake's own per-face interior
+                // flag and the fragment has already used it once, in HHLevelDiscards — this is
+                // the same bit asked a second time, not a new mechanism and not a new channel.
+                bool hhInterior = i.lvl.y > 0.5;
+                int len  = (int)(hhInterior ? _RampMetaInterior[m].x : _RampMeta[m].x);
+                int off  = (int)(hhInterior ? _RampMetaInterior[m].y : _RampMeta[m].y);
+#else
                 int len  = (int)_RampMeta[m].x;
                 int off  = (int)_RampMeta[m].y;
+#endif
                 float fbase = floor(i.fidx);
                 int idx = (int)fbase + ((i.fidx - fbase) > bay ? 1 : 0) + off;
                 idx = clamp(idx, 0, len - 1);
@@ -357,8 +388,15 @@ Shader "HiddenHarbours/IsoFacet"
                 }
 
                 FragOut o;
+#ifdef HH_LEVEL_GATE
+                o.facet = float4(hhInterior ? _RampTexInterior.Load(int3(idx, m, 0)).rgb
+                                            : _RampTex.Load(int3(idx, m, 0)).rgb, hullId);
+                o.dark  = float4(hhInterior ? _DarkRampTexInterior.Load(int3(idx, m, 0)).rgb
+                                            : _DarkRampTex.Load(int3(idx, m, 0)).rgb, 1.0);
+#else
                 o.facet = float4(_RampTex.Load(int3(idx, m, 0)).rgb, hullId);
                 o.dark  = float4(_DarkRampTex.Load(int3(idx, m, 0)).rgb, 1.0);
+#endif
                 o.key   = float4(_KeyColor.rgb, 1.0);
                 o.depth = i.wpos.z;
                 return o;

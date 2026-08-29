@@ -18,6 +18,13 @@ namespace HiddenHarbours.Art
         public Color32[][] Ramps;
         /// <summary>Per-material constant ramp-index offset (the rig's <c>off</c>).</summary>
         public int[] RampOffsets;
+        /// <summary>The INTERIOR's own palette, in its own index space
+        /// (<see cref="HiddenHarbours.Core.HullMeshDef.InteriorRamps"/>). Null or empty on every
+        /// hull with no interior geometry — the shipped answer for most of the fleet.</summary>
+        public Color32[][] InteriorRamps;
+        /// <summary>Per-interior-material ramp-index offset, parallel to
+        /// <see cref="InteriorRamps"/>.</summary>
+        public int[] InteriorRampOffsets;
         /// <summary>The rig's LN, normalised, in the rig's own right-handed frame. The component
         /// applies the reflection sign for the shader — hand it over untouched.</summary>
         public Vector3 LightN;
@@ -94,6 +101,8 @@ namespace HiddenHarbours.Art
         private Material _overlayMaterial;
         private Texture2D _rampTex;
         private Texture2D _darkRampTex;
+        private Texture2D _rampTexInterior;
+        private Texture2D _darkRampTexInterior;
         private Mesh _overlayQuad;
         private Transform _meshChild;
         // The overlay quad's transform, cached like _meshChild: ApplyPose moves it every frame
@@ -405,8 +414,19 @@ namespace HiddenHarbours.Art
             if (setup.Mesh == null) throw new ArgumentException("Setup has no mesh.", nameof(setup));
             if (setup.Ramps == null || setup.Ramps.Length == 0)
                 throw new ArgumentException("Setup has no ramps.", nameof(setup));
-            if (setup.Ramps.Length > 16)
+            if (setup.Ramps.Length > HiddenHarbours.Core.HullMeshDef.HullRampSlots)
                 throw new ArgumentException($"{setup.Ramps.Length} materials; the facet shader's _RampMeta holds 16.");
+            // The interior's table is checked SEPARATELY and against its own cap, which is the whole
+            // point of it being a second table: a room that outgrows 24 must not be able to fail by
+            // eating into the hull's 16, and a hull that outgrows 16 must not be rescuable by
+            // spending the room's.
+            int interiorCount = setup.InteriorRamps?.Length ?? 0;
+            if (interiorCount > HiddenHarbours.Core.HullMeshDef.InteriorRampSlots)
+                throw new ArgumentException(
+                    $"{interiorCount} interior materials; the facet shader's _RampMetaInterior holds " +
+                    $"{HiddenHarbours.Core.HullMeshDef.InteriorRampSlots}. Merge ramps in the " +
+                    "extraction, or take a widening upstream with a measured cost — do not spend the " +
+                    "hull's slots.");
             if (setup.Bayer16 == null || setup.Bayer16.Length != 16)
                 throw new ArgumentException("Bayer16 must be exactly 16 thresholds.", nameof(setup));
 
@@ -479,6 +499,45 @@ namespace HiddenHarbours.Art
             }
             _rampTex.Apply(false, true);
             _darkRampTex.Apply(false, true);
+
+            BuildInteriorRampTextures(setup);
+        }
+
+        /// <summary>
+        /// The interior's own pair of ramp textures — built only when the hull actually carries an
+        /// interior palette, so a hull without one allocates nothing and binds nothing.
+        ///
+        /// <para>Separate textures rather than extra ROWS of the hull's, because the two tables are
+        /// separate index spaces: interior material 0 and hull material 0 are different materials,
+        /// and the shader selects the table from the bake's own per-face interior flag. Sharing one
+        /// texture would mean offsetting every interior matId by the hull's count at bake time —
+        /// which re-couples exactly the budget this design exists to keep apart.</para>
+        /// </summary>
+        private void BuildInteriorRampTextures(IsoFacetHullSetup setup)
+        {
+            var table = setup.InteriorRamps;
+            if (table == null || table.Length == 0) return;
+
+            int maxLen = 0;
+            foreach (var ramp in table) maxLen = Mathf.Max(maxLen, ramp.Length);
+            if (maxLen == 0) return;
+
+            _rampTexInterior = MakeRampTexture("HHRampTexInterior", maxLen, table.Length);
+            _darkRampTexInterior = MakeRampTexture("HHDarkRampTexInterior", maxLen, table.Length);
+
+            Color32[][] dark = IsoFacetMath.BuildDarkenedRamps(table);
+            for (int m = 0; m < table.Length; m++)
+            {
+                var ramp = table[m];
+                for (int i = 0; i < maxLen; i++)
+                {
+                    int k = Mathf.Min(i, ramp.Length - 1);
+                    _rampTexInterior.SetPixel(i, m, ramp[k]);
+                    _darkRampTexInterior.SetPixel(i, m, dark[m][k]);
+                }
+            }
+            _rampTexInterior.Apply(false, true);
+            _darkRampTexInterior.Apply(false, true);
         }
 
         private static Texture2D MakeRampTexture(string name, int w, int h) =>
@@ -512,10 +571,30 @@ namespace HiddenHarbours.Art
             _facetMaterial.SetVector(IsoFacetShaderIds.PivotPx, setup.PivotPx);
             _facetMaterial.SetFloat(IsoFacetShaderIds.PixelsPerMetre, setup.PxPerMetre);
 
-            var meta = new Vector4[16];
+            var meta = new Vector4[HiddenHarbours.Core.HullMeshDef.HullRampSlots];
             for (int m = 0; m < setup.Ramps.Length; m++)
                 meta[m] = new Vector4(setup.Ramps[m].Length, setup.RampOffsets[m], 0, 0);
             _facetMaterial.SetVectorArray(IsoFacetShaderIds.RampMeta, meta);
+
+            // THE INTERIOR TABLE. Written unconditionally when the hull has one, even though only
+            // the HH_LEVEL_GATE variant reads it: the uniform costs nothing in the off variant (the
+            // program does not declare it) and writing it at Configure keeps the cut itself a pure
+            // two-float per-draw change, with no texture build hiding inside a boarding.
+            if (_rampTexInterior != null)
+            {
+                _facetMaterial.SetTexture(IsoFacetShaderIds.RampTexInterior, _rampTexInterior);
+                _facetMaterial.SetTexture(IsoFacetShaderIds.DarkRampTexInterior, _darkRampTexInterior);
+
+                var interiorMeta = new Vector4[HiddenHarbours.Core.HullMeshDef.InteriorRampSlots];
+                var table = setup.InteriorRamps;
+                for (int m = 0; m < table.Length; m++)
+                {
+                    int off = setup.InteriorRampOffsets != null && m < setup.InteriorRampOffsets.Length
+                              ? setup.InteriorRampOffsets[m] : 0;
+                    interiorMeta[m] = new Vector4(table[m].Length, off, 0, 0);
+                }
+                _facetMaterial.SetVectorArray(IsoFacetShaderIds.RampMetaInterior, interiorMeta);
+            }
 
             // BAYER[x&3][y&3]: row index is X, exactly as the rig holds it.
             var rows = new Vector4[4];
@@ -963,6 +1042,8 @@ namespace HiddenHarbours.Art
             Kill(_overlayMaterial);
             Kill(_rampTex);
             Kill(_darkRampTex);
+            Kill(_rampTexInterior);
+            Kill(_darkRampTexInterior);
             Kill(_overlayQuad);
             _meshChild = null;
             _overlayChild = null;
