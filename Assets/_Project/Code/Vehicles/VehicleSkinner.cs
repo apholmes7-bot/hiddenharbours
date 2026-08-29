@@ -52,11 +52,45 @@ namespace HiddenHarbours.Vehicles
         public static Rig Apply(GameObject root, VehicleDef vehicle, VehicleController controller = null)
         {
             if (root == null || vehicle == null || !vehicle.IsUsable()) return default;
+            return Install(root, vehicle.Mesh, vehicle.Id, controller);
+        }
+
+        /// <summary>
+        /// ⭐ <b>Dress a TOWED BODY, who has no <see cref="VehicleDef"/> and never will.</b>
+        ///
+        /// <para>PR 2 left every <c>VehicleDef</c> field off a trailer deliberately — they are all a
+        /// driven machine's — and the consequence surfaced only when something first tried to PLACE
+        /// one: <see cref="Apply"/> is the sole installer of a vehicle's picture and it takes a def a
+        /// trailer does not have, so a trailer stood in a scene as an invisible object. Nothing
+        /// warned, because nothing had ever asked.</para>
+        ///
+        /// <para>The picture never needed the def. The presentation service installs from a
+        /// <see cref="VehicleMeshDef"/> alone (<c>IVehicleMeshPresentationService.Install</c>), and
+        /// everything below that touches the def touches only its <c>Id</c> — so this is the same
+        /// installer with the mesh's own id standing in, NOT a second skinning path to keep in step.
+        /// A trailer gets her body, her wheels, her landing-gear state swap, her doors and her
+        /// handles from exactly the code a truck does.</para>
+        ///
+        /// <para>She grows no <see cref="VehicleHitch"/>: that is gated on <c>mesh.CanTow</c>, which
+        /// reads the art's own plate, and a towed body publishes a kingpin rather than a fifth wheel.
+        /// She is given no controller for the same reason — there is nothing to drive.</para>
+        /// </summary>
+        public static Rig ApplyTowed(GameObject root, VehicleMeshDef mesh)
+        {
+            if (root == null || mesh == null || !mesh.IsUsable()) return default;
+            return Install(root, mesh, mesh.Id, null);
+        }
+
+        /// <summary>The installer both paths share — everything a picture needs, off the MESH def and
+        /// an id. Private because the two public doors above are the ones that decide what may be
+        /// dressed and with what.</summary>
+        private static Rig Install(GameObject root, VehicleMeshDef mesh, string vehicleId,
+                                   VehicleController controller)
+        {
+            if (mesh == null) return default;
 
             IVehicleMeshPresentationService service = VehicleMeshPresentation.Service;
             if (service == null) return default;
-
-            VehicleMeshDef mesh = vehicle.Mesh;
 
             Transform visual = root.transform.Find(VisualChildName);
             if (visual == null)
@@ -116,7 +150,7 @@ namespace HiddenHarbours.Vehicles
             doors.Configure(mesh);
             doors.SnapAllShut();
 
-            InstallHandles(root, visual, mesh, vehicle.Id, doors);
+            InstallHandles(root, visual, mesh, vehicleId, doors);
 
             // ⭐ A fifth wheel, for anything whose def publishes one — which is decided by the ART
             // (VehicleMeshDef.CanTow reads her plate), never by her kind. A machine that does not
@@ -127,7 +161,7 @@ namespace HiddenHarbours.Vehicles
                 if (hitch == null) hitch = root.AddComponent<VehicleHitch>();
                 hitch.Configure(mesh, controller != null ? controller
                                                         : root.GetComponent<VehicleController>(),
-                                vehicle.Id);
+                                vehicleId);
             }
 
             var driver = root.GetComponent<VehicleMeshDriver>();
