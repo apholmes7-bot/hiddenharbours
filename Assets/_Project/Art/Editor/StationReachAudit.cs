@@ -233,6 +233,38 @@ namespace HiddenHarbours.Art.Editor
         }
 
         /// <summary>
+        /// <b>Is there room to stand — or to STAND SOMETHING — at this world point?</b> Returns the
+        /// name of the first placed blocker it is inside (<c>"piece/kind"</c>), or null for clear.
+        ///
+        /// <para>The same solids the reach pass marches against, asked one question instead of a whole
+        /// march. It exists because a forecourt gained a second kind of occupant: the pass above only
+        /// ever asks about a body reaching a fitting the KIT published, and a jerry can set down beside
+        /// the pumps is neither. Standing one inside the island kerb or under a canopy post would draw
+        /// perfectly and read as a bug.</para>
+        ///
+        /// <para>⚠️ There is no host exemption here, and that is the difference from the march: a
+        /// fitting is allowed to be right up against the machine it belongs to, and a loose object
+        /// belongs to nothing. Everything is tested inflated.</para>
+        ///
+        /// <para>⚠️ And this asks only about the FORECOURT. Whether there is ground under the point
+        /// at all is the REGION's question — ask its own obstruction predicate as well, the way
+        /// <see cref="Audit"/> does. A pass that tested only solids called a pump standing in mid-air
+        /// OK once already, and only a positive control caught it.</para>
+        /// </summary>
+        public static string BlockerAt(IReadOnlyList<Placed> pieces, Vector2 world, Level level,
+                                       float bodyRadius)
+        {
+            if (pieces == null || pieces.Count == 0) return null;
+
+            foreach (Solid s in SolidsOf(pieces))
+            {
+                if (s.OnLevel != level) continue;
+                if (s.Hits(world, bodyRadius)) return $"{s.OwnerName}/{s.Kind}";
+            }
+            return null;
+        }
+
+        /// <summary>
         /// The march itself, and it is the rig's: try the direction the bake asked for, then the same line
         /// flipped, then the four piece-local axes; step out from the body radius to the arm in 6 cm
         /// steps; take the first point that clears everything.

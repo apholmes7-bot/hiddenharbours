@@ -362,6 +362,78 @@ namespace HiddenHarbours.App.Editor
         }
 
         // =================================================================================================
+        //  THE LOANER CANS — what the owner asked for: something to FILL
+        // =================================================================================================
+        // Owner, 2026-08-28: "the gas station needs an interior and you should have a few emtpy fuel
+        // cansiters to test filling." The second half is this. Every mechanism already existed — the
+        // pump fills any IFuelVessel and charges for it, the hands carry one, eighty-four container Defs
+        // are baked — and none of it could be REACHED, because nowhere in the game was there a can. The
+        // only way to hold one was a dev menu item.
+
+        /// <summary>The cans' own root under the station, so they are one thing to find and to
+        /// rebuild.</summary>
+        public const string LoanerCansRootName = "LoanerCans";
+
+        /// <summary>
+        /// Where the row of cans stands, in the forecourt's own frame (metres, +y is the road).
+        ///
+        /// <para><b>Why here.</b> On the open apron between the C-store's front wall (its plan ends at
+        /// local y − 7.5) and the pumps (y 0), over on the west side away from the tanker fill caps.
+        /// Far enough from a hose that carrying one there is a real errand, and close enough that it
+        /// reads as station property rather than litter in a field. ⚠️ It is inside
+        /// <see cref="Route91ApronArea"/>, so the cans stand on the forecourt's own paving and not in
+        /// the meadow that stops at it.</para>
+        ///
+        /// <para>Tunable by the owner: this point and the spacing below are the whole siting (rule 6).
+        /// Every spot derived from them is PROVED before a can is placed — see
+        /// <see cref="StationFuelCans.Standable"/> — so moving the row cannot silently strand one.</para>
+        /// </summary>
+        public static readonly Vector2 LoanerCanRowCentreLocal = new Vector2(-4f, -5f);
+
+        /// <summary>Between two cans in the row (m). Wider than two cans' clearance, so each is its own
+        /// interact candidate and the resolver never has to choose between two at one distance.</summary>
+        public const float LoanerCanSpacingMetres = 0.6f;
+
+        /// <summary>
+        /// Which cans stand there, west to east — by Def ID, which is the append-only contract.
+        ///
+        /// <para>Two gas and one diesel, and the diesel is not decoration: the wharf sells diesel and
+        /// Route 91 posts it, so a player needs a way to carry some. It also makes the honest refusal
+        /// reachable — <c>FuelPump</c> claims the press for ANY fuel vessel precisely so that standing
+        /// at a gas hose with a diesel can TELLS you, and until now nothing in the world could put a
+        /// diesel can in your hands to try it.</para>
+        ///
+        /// <para>Two sizes because capacity is the thing that differs between them in play: 20 L and
+        /// 10 L cost different amounts to fill from the same hose at the same price.</para>
+        /// </summary>
+        public static readonly string[] LoanerCanDefIds =
+        {
+            "fuelstore.gas_jerry_s20",
+            "fuelstore.gas_jerry_s10",
+            "fuelstore.diesel_jerry_s20",
+        };
+
+        /// <summary>The row, laid out from its centre — pure, so a test can check the geometry without
+        /// a scene.</summary>
+        public static IReadOnlyList<StationFuelCans.Spot> Route91CanSpots()
+        {
+            var spots = new List<StationFuelCans.Spot>();
+            int n = LoanerCanDefIds.Length;
+            float first = -(n - 1) * 0.5f * LoanerCanSpacingMetres;
+
+            for (int i = 0; i < n; i++)
+            {
+                var at = new Vector2(LoanerCanRowCentreLocal.x + first + i * LoanerCanSpacingMetres,
+                                     LoanerCanRowCentreLocal.y);
+                spots.Add(new StationFuelCans.Spot(
+                    LoanerCanDefIds[i], at,
+                    "on the forecourt apron in front of the C-store, where a station keeps the cans it " +
+                    "lends you"));
+            }
+            return spots;
+        }
+
+        // =================================================================================================
         //  THE REGION'S OWN OBSTRUCTIONS — what makes the reach pass a WHOLE-SCENE one
         // =================================================================================================
 
@@ -459,9 +531,27 @@ namespace HiddenHarbours.App.Editor
             StationForecourt.Result wharf = PlaceWharfPumps(root.transform, wharfDef, wallet, sceneBlocks);
             StationForecourt.Result road = PlaceRoute91(root.transform, roadDef, wallet, sceneBlocks);
 
+            // The cans go down against the forecourt AS LAID OUT, so "is this spot inside a canopy post"
+            // is asked of the same pieces the reach pass audited rather than of a second description of
+            // them.
+            StationFuelCans.Result cans = StationFuelCans.Place(
+                root.transform, LoanerCansRootName,
+                Route91ForecourtPos, StationCatalog.FacingForHeading(Route91RoadHeadingDegrees),
+                Route91CanSpots(), Route91Layout().AsPlaced(), sceneBlocks, Tag);
+
             ReportSite("the wharf pumps", wharf, wharfDef, WharfPumpGrades);
             ReportSite("the Route 91 station", road, roadDef, Route91FaceGrades);
             ReportTheGaps(roadDef);
+
+            // ⚠️ The cans are NOT counted here. This return is the number of KIT PIECES stood
+            // up, which is what the caller and NineMileCreekStationTests both read it as (two
+            // pedestals plus every piece of the forecourt). A loaner can is not a station piece,
+            // and folding it in silently redefined a number a test was already asserting. The
+            // cans report themselves instead.
+            if (cans.Count == 0 && Route91CanSpots().Count > 0)
+                Debug.LogWarning(
+                    $"{Tag} not one loaner can could be placed — see the refusals above. The " +
+                    "station sells fuel with nothing standing there to put it in.");
 
             return wharf.Count + road.Count;
         }
@@ -551,6 +641,13 @@ namespace HiddenHarbours.App.Editor
                          $"fixture.route_91.pump{machine}{side}_{grade}");
                 }
             }
+
+            // ⭐ AND THE C-STORE OPENS. Its sales floor has been placed, drawn and furnished since
+            // #626 and has never once been reachable: the shell's `building` blocker fills the whole
+            // plan solid, so the room stood behind a wall with no door in it. This cuts the doorway the
+            // sidecar already publishes and lets BuildingInterior swap shell for room at the threshold
+            // — the owner's 2026-08-11 ruling that no placed building is a facade.
+            StationInteriorPlacement.OpenAll(result, Tag);
 
             return result;
         }
