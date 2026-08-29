@@ -1,0 +1,16 @@
+WHERE THE RIGGING DRAWS — level 5 culled vs not
+Her rig places these faces at z 2.953..5.958; the house tops at 3.055.
+Rows are screen rows, 0 = TOP of the cell. Lower row number = higher up.
+
+  heading    90°  whole rows 91..291  |  without rigging 147..291  |  rigging  1034 px, rows 91..209
+                self-check: changed rows inside the whole render's band? yes
+                rigging sits ABOVE the hull's top, and not below its bottom.
+  heading   135°  whole rows 116..337  |  without rigging 116..337  |  rigging  1641 px, rows 119..228
+                self-check: changed rows inside the whole render's band? yes
+                rigging sits not above the hull's top, and not below its bottom.
+  heading   180°  whole rows 105..374  |  without rigging 105..374  |  rigging  1849 px, rows 142..219
+                self-check: changed rows inside the whole render's band? yes
+                rigging sits not above the hull's top, and not below its bottom.
+  heading    45°  whole rows 75..364  |  without rigging 91..364  |  rigging  1272 px, rows 75..175
+                self-check: changed rows inside the whole render's band? yes
+                rigging sits ABOVE the hull's top, and not below its bottom.

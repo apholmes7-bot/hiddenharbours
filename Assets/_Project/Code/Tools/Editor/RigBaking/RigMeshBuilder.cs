@@ -79,6 +79,12 @@ namespace HiddenHarbours.Tools.RigBaking
         /// </summary>
         public const int LevelUvChannel = 1;
 
+        /// <summary>UV2: the ROOM's procedural surface — <c>xy = generator id + period</c> (flat per
+        /// face), <c>zw = the rig's own per-vertex uv</c>. Written only on a hull that carries
+        /// interior geometry, so no mesh baked before full-mesh interiors gains a channel and no
+        /// golden master moves.</summary>
+        public const int TexUvChannel = 2;
+
         /// <summary>
         /// Build the mesh. <paramref name="interior"/> is the side-blind per-FACE interior mask, in
         /// <c>data.Faces</c> order — kept for callers that predate the per-side codes; true maps to
@@ -119,6 +125,12 @@ namespace HiddenHarbours.Tools.RigBaking
             var attrs = new Vector4[vcount];
             bool tagged = data.CarriesLevelTags;
             var levels = tagged ? new Vector2[vcount] : null;
+            // THE ROOM'S PROCEDURAL SURFACE, in its own channel so TexCoord1 does not have to widen
+            // and no existing hull's vertex layout moves. xy are flat per face (generator + period),
+            // zw are the rig's own per-VERTEX uv, which paint() interpolates before calling the
+            // generator — so they must interpolate here too.
+            bool textured = data.CarriesInteriorGeometry;
+            var texAttrs = textured ? new Vector4[vcount] : null;
             int taggedFaces = 0;
             var tris = new List<int>(data.TriangleCount * 3);
 
@@ -141,7 +153,9 @@ namespace HiddenHarbours.Tools.RigBaking
                         $"no tag ({nameof(RigFace.Level)} = {f.Level}). A mesh must not be built from a " +
                         "half-tagged face list: the missing tag would bake as level 0 = hull = never " +
                         "cull, and the room would stop opening in exactly one wall.");
-                var levelTag = tagged ? new Vector2(f.Level, 0f) : default;
+                // y is the INTERIOR flag (ADR 0038, full mesh). 0 on the hull's own faces, so
+                // every mesh baked before rooms existed keeps the exact bytes it had.
+                var levelTag = tagged ? new Vector2(f.Level, f.Interior ? 1f : 0f) : default;
                 if (tagged) taggedFaces++;
 
                 int baseIndex = v;
@@ -151,6 +165,11 @@ namespace HiddenHarbours.Tools.RigBaking
                     norms[v] = n;
                     attrs[v] = attr;
                     if (tagged) levels[v] = levelTag;
+                    if (textured)
+                    {
+                        Vector2 uv = f.Uv != null && k < f.Uv.Length ? f.Uv[k] : Vector2.zero;
+                        texAttrs[v] = new Vector4(f.TexKind, (float)f.TexPeriod, uv.x, uv.y);
+                    }
                 }
 
                 // Fan, exactly as _paint does: for(t=1; t+1<rv.length; t++) fillTri(rv[0],rv[t],rv[t+1]).
@@ -172,6 +191,7 @@ namespace HiddenHarbours.Tools.RigBaking
             mesh.normals = norms;
             mesh.SetUVs(AttrUvChannel, attrs);
             if (tagged) mesh.SetUVs(LevelUvChannel, levels);
+            if (textured) mesh.SetUVs(TexUvChannel, texAttrs);
             mesh.SetTriangles(tris, 0, calculateBounds: true);
 
             return new RigMeshBuild

@@ -191,6 +191,14 @@ namespace HiddenHarbours.Art
         public static readonly int RampTex = Shader.PropertyToID("_RampTex");
         public static readonly int DarkRampTex = Shader.PropertyToID("_DarkRampTex");
         public static readonly int RampMeta = Shader.PropertyToID("_RampMeta");
+
+        /// <summary>The INTERIOR's own ramp table and its two palette textures — read only inside
+        /// <c>HH_LEVEL_GATE</c>, and only by faces the bake flagged interior. A second table rather
+        /// than a wider <c>_RampMeta</c>: measured, the fleet would need 33 slots in one table
+        /// (tanker), and widening the hull's 16 re-opens a cap three bake suites guard.</summary>
+        public static readonly int RampMetaInterior = Shader.PropertyToID("_RampMetaInterior");
+        public static readonly int RampTexInterior = Shader.PropertyToID("_RampTexInterior");
+        public static readonly int DarkRampTexInterior = Shader.PropertyToID("_DarkRampTexInterior");
         public static readonly int Bayer = Shader.PropertyToID("_Bayer");
         public static readonly int LightN = Shader.PropertyToID("_LN");
         public static readonly int Gain = Shader.PropertyToID("_Gain");

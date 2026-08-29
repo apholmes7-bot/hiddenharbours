@@ -1,0 +1,230 @@
+IS THE INTERIOR RIG'S build() GEOMETRY VIEW-INDEPENDENT?  (V8, no Unity)
+
+### lobster   levels: house, cuddy
+  house        per-dir face counts: [346,294,322,269,321,279,332,304]
+               union=393  intersection=180
+               faces appearing at exactly k of 8 facings:
+                 k=1:    0  k=2:    0  k=3:   19  k=4:    0
+                 k=5:  194  k=6:    0  k=7:    0  k=8:  180
+               by material (k=3 / k=5 / k=8):
+                 brass            0     8    18
+                 cab              0     4    21
+                 cavity           0     1     0
+                 ceil             0    20     0
+                 chart            0     8     0
+                 cush             0     0    11
+                 cut             19     0     0
+                 daylight         0    11     0
+                 frame            0    43     0
+                 glass            0     0     2
+                 iron             0     0    40
+                 leafIn           0     1     0
+                 linen            0     0     9
+                 liner            0    75     0
+                 panel            0     0     6
+                 slick            0     2     0
+                 sole             0     0     1
+                 steel            0     0    23
+                 wains            0    20     0
+                 wheel            0     0    48
+                 work             0     1     1
+               roll6/pitch3/heave0.4 at the SAME facing: identical=True
+
+  cuddy        per-dir face counts: [84,60,69,69,93,69,69,60]
+               union=111  intersection=18
+               faces appearing at exactly k of 8 facings:
+                 k=1:    0  k=2:    0  k=3:   18  k=4:    0
+                 k=5:   75  k=6:    0  k=7:    0  k=8:   18
+               by material (k=3 / k=5 / k=8):
+                 cab              0     4     1
+                 cavityWarm       0     1     0
+                 ceil             0    64     0
+                 cut             18     0     0
+                 linen            0     0    12
+                 liner            0     5     0
+                 quilt            0     0     4
+                 sole             0     1     1
+               roll6/pitch3/heave0.4 at the SAME facing: identical=True
+
+### cape   levels: house, cuddy
+  house        per-dir face counts: [313,283,313,265,295,255,303,273]
+               union=363  intersection=175
+               faces appearing at exactly k of 8 facings:
+                 k=1:    0  k=2:    0  k=3:   20  k=4:    0
+                 k=5:  168  k=6:    0  k=7:    0  k=8:  175
+               by material (k=3 / k=5 / k=8):
+                 brass            0     8    18
+                 cab              0     4    17
+                 cavity           0     1     0
+                 ceil             0    20     0
+                 cush             0     0    10
+                 cut             20     0     0
+                 daylight         0     9     0
+                 frame            0    35     0
+                 glass            0     0     2
+                 iron             0     0    40
+                 leafIn           0     1     0
+                 linen            0     0     9
+                 liner            0    74     0
+                 panel            0     0     6
+                 slick            0     2     0
+                 sole             0     0     1
+                 steel            0     0    23
+                 wains            0    14     0
+                 wheel            0     0    48
+                 work             0     0     1
+               roll6/pitch3/heave0.4 at the SAME facing: identical=True
+
+  cuddy        per-dir face counts: [97,60,70,70,107,83,83,73]
+               union=125  intersection=18
+               faces appearing at exactly k of 8 facings:
+                 k=1:    0  k=2:    0  k=3:   18  k=4:    0
+                 k=5:   89  k=6:    0  k=7:    0  k=8:   18
+               by material (k=3 / k=5 / k=8):
+                 cab              0     9     1
+                 cavityWarm       0     1     0
+                 ceil             0    64     0
+                 cut             18     0     0
+                 linen            0     0    12
+                 liner            0     5     0
+                 quilt            0     0     4
+                 sole             0     2     1
+                 steel            0     8     0
+               roll6/pitch3/heave0.4 at the SAME facing: identical=True
+
+### trawler   levels: bridge, house, below
+  bridge       per-dir face counts: [253,213,235,183,223,183,235,213]
+               union=279  intersection=117
+               faces appearing at exactly k of 8 facings:
+                 k=1:    0  k=2:    0  k=3:    4  k=4:    0
+                 k=5:  158  k=6:    0  k=7:    0  k=8:  117
+               by material (k=3 / k=5 / k=8):
+                 cab              0     0    14
+                 cavityWarm       0     0     1
+                 ceil             0     2     0
+                 chart            0     0     8
+                 cush             0     0    10
+                 cut              4     0     0
+                 daylight         0    13     0
+                 frame            0    52     0
+                 glass            0     0     2
+                 iron             0     0    16
+                 liner            0    77     0
+                 panel            0     0     1
+                 sole             0     0     1
+                 steel            0     0    16
+                 wains            0    14     0
+                 wheel            0     0    48
+               roll6/pitch3/heave0.4 at the SAME facing: identical=True
+
+  house        per-dir face counts: [241,189,236,235,287,217,218,171]
+               union=293  intersection=113
+               faces appearing at exactly k of 8 facings:
+                 k=1:    0  k=2:    0  k=3:    5  k=4:    0
+                 k=5:  175  k=6:    0  k=7:    0  k=8:  113
+               by material (k=3 / k=5 / k=8):
+                 brass            0    16    18
+                 cab              0     0    31
+                 cavityWarm       0     0     1
+                 ceil             0     2     0
+                 cush             0     0     1
+                 cut              5     0     0
+                 daylight         0    10     0
+                 frame            0    43     0
+                 iron             0     0    20
+                 leafIn           0     1     0
+                 linen            0     0     8
+                 liner            0    69     0
+                 slick            0     2     0
+                 sole             0     0    10
+                 steel            0     0    23
+                 wains            0    32     0
+                 work             0     0     1
+               roll6/pitch3/heave0.4 at the SAME facing: identical=True
+
+  below        per-dir face counts: [105,81,81,81,105,81,81,81]
+               union=123  intersection=39
+               faces appearing at exactly k of 8 facings:
+                 k=1:    0  k=2:    0  k=3:   18  k=4:    0
+                 k=5:   66  k=6:    0  k=7:    0  k=8:   39
+               by material (k=3 / k=5 / k=8):
+                 cab              0     0    14
+                 ceil             0    64     0
+                 cut             18     0     0
+                 linen            0     0    15
+                 liner            0     2     0
+                 quilt            0     0     3
+                 sole             0     0     7
+               roll6/pitch3/heave0.4 at the SAME facing: identical=True
+
+### packet   levels: bridge, house, below
+  bridge       per-dir face counts: [253,213,235,183,223,183,235,213]
+               union=279  intersection=117
+               faces appearing at exactly k of 8 facings:
+                 k=1:    0  k=2:    0  k=3:    4  k=4:    0
+                 k=5:  158  k=6:    0  k=7:    0  k=8:  117
+               by material (k=3 / k=5 / k=8):
+                 cab              0     0    14
+                 cavityWarm       0     0     1
+                 ceil             0     2     0
+                 chart            0     0     8
+                 cush             0     0    10
+                 cut              4     0     0
+                 daylight         0    13     0
+                 frame            0    52     0
+                 glass            0     0     2
+                 iron             0     0    16
+                 liner            0    77     0
+                 panel            0     0     1
+                 sole             0     0     1
+                 steel            0     0    16
+                 wains            0    14     0
+                 wheel            0     0    48
+               roll6/pitch3/heave0.4 at the SAME facing: identical=True
+
+  house        per-dir face counts: [255,203,230,218,270,200,212,185]
+               union=287  intersection=116
+               faces appearing at exactly k of 8 facings:
+                 k=1:    0  k=2:    0  k=3:    5  k=4:    0
+                 k=5:  166  k=6:    0  k=7:    0  k=8:  116
+               by material (k=3 / k=5 / k=8):
+                 brass            0    16    18
+                 cab              0     0    31
+                 cavityWarm       0     0     1
+                 ceil             0     2     0
+                 cush             0     0     1
+                 cut              5     0     0
+                 daylight         0    10     0
+                 frame            0    43     0
+                 iron             0     0    20
+                 leafIn           0     1     0
+                 linen            0     0     8
+                 liner            0    64     0
+                 slick            0     2     0
+                 sole             0     0    13
+                 steel            0     0    23
+                 wains            0    28     0
+                 work             0     0     1
+               roll6/pitch3/heave0.4 at the SAME facing: identical=True
+
+  below        per-dir face counts: [107,83,83,83,107,83,83,83]
+               union=125  intersection=41
+               faces appearing at exactly k of 8 facings:
+                 k=1:    0  k=2:    0  k=3:   18  k=4:    0
+                 k=5:   66  k=6:    0  k=7:    0  k=8:   41
+               by material (k=3 / k=5 / k=8):
+                 cab              0     0    10
+                 ceil             0    64     0
+                 cut             18     0     0
+                 iron             0     0     8
+                 linen            0     0    10
+                 liner            0     2     0
+                 panel            0     0     5
+                 quilt            0     0     2
+                 sole             0     0     6
+               roll6/pitch3/heave0.4 at the SAME facing: identical=True
+
+READING IT: k=8 faces are pose-invariant and bakeable as-is. Faces at k<8 are either
+(a) the same wall CULLED at some facings - bake it, let the shader cut - or
+(b) SYNTHESISED per facing (the section lip), which no single mesh can carry.
+The two are told apart by whether the k<8 faces' identities also appear at k=8.

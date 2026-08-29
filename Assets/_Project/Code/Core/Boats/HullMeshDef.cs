@@ -126,6 +126,17 @@ namespace HiddenHarbours.Core
         [Tooltip("Palette ramp + offset per rig material, in the rig's MATS order (max 16 — the facet shader's _RampMeta).")]
         public Ramp[] Ramps = Array.Empty<Ramp>();
 
+        /// <summary>Slots the facet shader's <c>_RampMeta</c> holds for a hull's OWN faces. A fleet
+        /// law, guarded in three bake suites and load-bearing for the road fleet's night-lamp
+        /// slot-reuse ruling (#668) — do not widen it. Full-mesh interiors deliberately did not:
+        /// they took a second, separately-scoped table instead (see <see cref="InteriorRamps"/>).</summary>
+        public const int HullRampSlots = 16;
+
+        /// <summary>Slots the facet shader's <c>_RampMetaInterior</c> holds. Sized from measurement:
+        /// the worst interior in the fleet paints 21 distinct ramps (lobster; 20 elsewhere), counted
+        /// over every level and facing with the per-facing section lip excluded.</summary>
+        public const int InteriorRampSlots = 24;
+
         [Tooltip("The rig's key light LN, normalised, in the rig's own right-handed frame. The Art side " +
                  "applies the reflection sign — this is handed over untouched.")]
         public Vector3 LightN = Vector3.forward;
@@ -151,6 +162,18 @@ namespace HiddenHarbours.Core
                  "before the cutaway kit — an empty table means 'this hull cannot be cut', which is " +
                  "the honest answer for a mesh with no tags in it.")]
         public LevelTag[] LevelTags = Array.Empty<LevelTag>();
+
+        [Tooltip("The INTERIOR's own palette — one ramp per interior material, in the interior " +
+                 "extraction's own order (max 24 — the facet shader's _RampMetaInterior).\n\n" +
+                 "A SECOND TABLE RATHER THAN A WIDER ONE, and the reason is measured: a full-mesh " +
+                 "room paints 20–21 ramps of its own and this fleet's hulls already spend 10–13, so " +
+                 "one table would have to hold 33 on the tanker. Widening the hull's 16 would have " +
+                 "re-opened a cap guarded in three places. These two are separate INDEX SPACES: an " +
+                 "interior face's materialId counts from 0 in HERE.\n\n" +
+                 "EMPTY on every hull with no interior geometry, which is most of the fleet and is " +
+                 "data, not a fault — the shader never reads this table on a hull that has no " +
+                 "interior faces to select it with.")]
+        public Ramp[] InteriorRamps = Array.Empty<Ramp>();
 
         [Header("Pose facts (per-artwork; measured or read off the rig — never tuned)")]
         [Tooltip("MEASURED azimuth convention (RigAzimuthProbe over rendered pixels): true = the rig's " +
