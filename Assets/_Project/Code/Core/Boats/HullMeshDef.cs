@@ -211,6 +211,20 @@ namespace HiddenHarbours.Core
                  "re-opens far-rail flooding — the storm acceptance adjudicates.")]
         [Min(0f)] public float WatertightHalfBeamMeters = 0f;
 
+        [Tooltip("THE LAMPS THIS HULL CARRIES (ADR 0016) — her navigation lights and her cabin " +
+                 "glow, each at a point in her OWN rig metres (+x starboard, +y bow, +z up from " +
+                 "the keel: the frame the deck polygons, the fitting pivots and the interior shell " +
+                 "already speak). EMPTY = this hull shows no lights, which is the shipped answer " +
+                 "for every hull whose rig has not been measured yet: ABSENCE IS DATA, not a " +
+                 "defect and not a fallback. GAME-SIDE like RestingDraftMeters and the watertight " +
+                 "pair — the mesh baker never writes this, so it survives a re-bake. The natural " +
+                 "long-term home is the rig's own export: the boat rigs already publish " +
+                 "navMounts(dir) as SCREEN points for the sprite bake, and what a MESH hull needs " +
+                 "is the boat-local triple behind them, published beside its projector the way " +
+                 "TUBS and DOOR already are. Migrate this when the export contract grows one, and " +
+                 "have the baker write it.")]
+        public HullLamp[] Lamps = Array.Empty<HullLamp>();
+
         /// <summary>
         /// True when this def can actually be drawn: a mesh, at least one non-empty ramp (≤ the
         /// shader's 16), a full 4×4 dither matrix and sane cell geometry. The skinner gates the mesh

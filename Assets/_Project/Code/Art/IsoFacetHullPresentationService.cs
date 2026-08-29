@@ -55,7 +55,111 @@ namespace HiddenHarbours.Art
             renderer.Configure(ToSetup(def, scheme));
             MakeReflective(renderer);
             MakeChurn(host, def);
+            MakeLit(host, def);
             return renderer;
+        }
+
+        /// <summary>
+        /// (ADR 0016) Give this hull the LAMPS her def says she wears.
+        ///
+        /// <para><b>Here, for the same reason the reflector and the churn are here</b> — this service
+        /// is the one place a mesh hull is ever installed, the fleet being built at runtime from Defs
+        /// rather than authored into a scene, so "wire it where the thing is made" lands in this
+        /// method. Every hull the game builds therefore lights up if her def says she should, in every
+        /// region, with no scene wiring and no builder re-run.</para>
+        ///
+        /// <para><b>Absence is data, and it is checked HERE.</b> A def with no lamps gets no component
+        /// at all — not a disabled one, not one holding an empty array — so the overwhelming majority
+        /// of the fleet, which has not been measured for lamps yet, costs exactly nothing: no
+        /// component, no LateUpdate, no quad. An unlit boat is the shipped picture, not a degraded
+        /// one. A hull that ALREADY carries the component keeps it (she may have just been re-skinned
+        /// from one lamp-bearing hull to another, and BoatLamps rebuilds off the renderer's own table);
+        /// a hull re-skinned to a hull with NO lamps has hers removed, because a lamp table that is
+        /// gone must take its lights with it.</para>
+        /// </summary>
+        static void MakeLit(GameObject host, HullMeshDef def)
+        {
+            bool wantsLamps = def.Lamps != null && def.Lamps.Length > 0;
+            var lamps = host.GetComponent<BoatLamps>();
+
+            if (!wantsLamps)
+            {
+                if (lamps != null) Destroy(lamps);
+                return;
+            }
+            if (lamps == null) host.AddComponent<BoatLamps>();
+
+            MakeSearchlit(host, def);
+        }
+
+        /// <summary>
+        /// (ADR 0016) Give this hull the SEARCHLIGHT her def declares — the one lamp that is a beam
+        /// rather than a glow, and so is drawn by the bespoke <see cref="BoatSpotlight"/> the ADR
+        /// already ships rather than by <see cref="BoatLamps"/>.
+        ///
+        /// <para><b>ON, and deaf to the toggle key — both deliberate.</b> A hull whose DEF carries a
+        /// searchlight is a working boat being worked by somebody else: her skipper has the lamp
+        /// going before dawn because that is his job, so she is lit from her own declaration and the
+        /// night-gate decides whether it reads. And she must NOT answer the player's switch — the key
+        /// read in <see cref="BoatSpotlight"/> is unconditional, so every spotlight in the scene sees
+        /// the same keyboard, and an NPC boat left listening would flip her beam every time the
+        /// player reached for their own. The player's own dory gets hers from
+        /// <c>PersistentCoreBuilder</c> instead, off by default and on her key.</para>
+        ///
+        /// <para><b>What this does to a spotlight that is ALREADY there</b> (the player's, if she ever
+        /// steps aboard a hull that declares one): it moves the MOUNT to where this hull wears her
+        /// lamp, and nothing else. That much is right — the lamp is a fact of the hull, not of the
+        /// person steering — while the switch and the key stay exactly as the player left them.</para>
+        ///
+        /// <para><b>The one thing PR 2 owes this method:</b> when the player is given a hull that
+        /// declares a searchlight, "is this the boat whose wheel the player is holding" becomes a
+        /// real question and the honest answer is the Core helm slot, not a per-install policy.
+        /// Today no such hull exists, so the policy is exact.</para>
+        /// </summary>
+        static void MakeSearchlit(GameObject host, HullMeshDef def)
+        {
+            int at = -1;
+            for (int i = 0; i < def.Lamps.Length; i++)
+                if (def.Lamps[i].Kind == HullLampKind.Spotlight) { at = i; break; }
+
+            // ⚠️ ON THE BOAT ROOT, NOT ON THE HOST. This service is handed the hull's VISUAL CHILD,
+            // and that child is stomped back to world-identity every LateUpdate — it does not turn
+            // with her. A searchlight there would aim along a fixed screen axis forever while the boat
+            // turned underneath it, which is the exact reason PersistentCoreBuilder puts the player's
+            // own beam on her root. The beam reads its carrier's transform for BOTH the heading it
+            // throws along and the speed its way-gate dims by, so it has to sit on the thing that
+            // actually turns and actually moves.
+            Transform rootT = BoatLamps.BoatRootOf(host.transform);
+            GameObject root = rootT != null ? rootT.gameObject : host;
+
+            var beam = root.GetComponent<BoatSpotlight>();
+            if (at < 0)
+            {
+                // Re-skinned onto a hull that declares none, so the beam goes with the hull it came
+                // with — but ONLY if it is OURS. A spotlight that still answers the toggle key is the
+                // player's own, put there by the builder and switched by hand; destroying it because
+                // she stepped aboard a hull whose def says nothing about searchlights would take her
+                // light away for good, with no way to get it back. "Does it answer the key" is exactly
+                // the mark this method stamps below, so it is a sound discriminator rather than a
+                // guess.
+                if (beam != null && !beam.KeyTogglesBeam) Destroy(beam);
+                return;
+            }
+
+            bool minted = beam == null;
+            if (minted) beam = root.AddComponent<BoatSpotlight>();
+
+            HullLamp lamp = def.Lamps[at];
+            beam.MountOffsetMetres = new Vector2(lamp.RigLocalMetres.x, lamp.RigLocalMetres.y);
+
+            // Only for a beam this method MINTED. A spotlight that was already on the host is the
+            // player's own — the builder puts one on the dory, off and on her key — and re-skinning
+            // her must not take her switch away or light her up without her asking.
+            if (minted)
+            {
+                beam.KeyTogglesBeam = false;
+                beam.SetBeam(true);
+            }
         }
 
         /// <summary>
@@ -287,6 +391,7 @@ namespace HiddenHarbours.Art
                 ElevationDeg = def.ElevationDeg,
                 WatertightDeckHeightMeters = def.WatertightDeckHeightMeters,
                 WatertightHalfBeamMeters = def.WatertightHalfBeamMeters,
+                Lamps = def.Lamps,
             };
         }
 
