@@ -740,6 +740,39 @@ namespace HiddenHarbours.Tools.RigBaking
                       "boat's cabin lands in her hull.");
         }
 
+        /// <summary>
+        /// Append this hull's ROOM to <paramref name="data"/> if she is a converted hull, and return
+        /// the bake-log report; null when she is not on <see cref="MeshInteriorHulls"/>.
+        ///
+        /// <para><b>Public, and shared with the fleet adjudicator on purpose.</b>
+        /// <c>HullMeshFleetTests.EveryCommittedHullMesh_MatchesAFreshExtractionFromItsRig</c> re-derives
+        /// every hull from her rig and compares against what is committed — so if the bake appended a
+        /// room and a fresh extraction did not, that test would report every converted hull as stale
+        /// forever, and the obvious "fix" is to teach the test a second copy of this logic. Two copies
+        /// of the rule is precisely the drift that test exists to catch. One method, two callers.</para>
+        /// </summary>
+        public static string AppendMeshInteriorIfConverted(IRigScriptHost host, string globalName,
+                                                          RigMeshData data)
+        {
+            if (!MeshInteriorHulls.Contains(globalName, StringComparer.Ordinal)) return null;
+
+            string repo = Directory.GetParent(Application.dataPath).FullName;
+            string interiorRig = Path.Combine(repo, InteriorKitFolder, InteriorRigFileName);
+            string interiorKey = InteriorHullKeyFor(host, globalName, interiorRig);
+
+            var room = BoatInteriorGeometryExtractor.Extract(host, interiorKey, data, interiorRig);
+            if (room.Materials.Count > HullMeshDef.InteriorRampSlots)
+                throw new InvalidOperationException(
+                    $"{globalName}'s room paints {room.Materials.Count} ramps and the facet shader's " +
+                    $"_RampMetaInterior holds {HullMeshDef.InteriorRampSlots}. Do NOT spend the hull's " +
+                    "own 16 to fix this — that cap is a fleet law. Merge ramps in the extraction, or " +
+                    "take a widening upstream with a measured cost.");
+
+            data.Faces.AddRange(room.Faces);
+            data.InteriorMaterials = room.Materials;
+            return room.Report;
+        }
+
         public static HullMeshDef Bake(string scriptPath, string globalName, string assetPath, string id,
                                        RigHullExtraction extraction = null)
         {
@@ -764,24 +797,11 @@ namespace HiddenHarbours.Tools.RigBaking
             // and lowest-interior heights are a committed evidence trail, and a cabin sole is not a
             // surface the SEA should start reasoning about. Zero is "exterior both sides", which is
             // what every face carried before the mask existed.
-            if (MeshInteriorHulls.Contains(globalName, StringComparer.Ordinal))
+            string roomReport = AppendMeshInteriorIfConverted(host, globalName, data);
+            if (roomReport != null)
             {
-                string repo = Directory.GetParent(Application.dataPath).FullName;
-                string interiorRig = Path.Combine(repo, InteriorKitFolder, InteriorRigFileName);
-                string interiorKey = InteriorHullKeyFor(host, globalName, interiorRig);
-
-                var room = BoatInteriorGeometryExtractor.Extract(host, interiorKey, data, interiorRig);
-                if (room.Materials.Count > HullMeshDef.InteriorRampSlots)
-                    throw new InvalidOperationException(
-                        $"{globalName}'s room paints {room.Materials.Count} ramps and the facet " +
-                        $"shader's _RampMetaInterior holds {HullMeshDef.InteriorRampSlots}. Do NOT " +
-                        "spend the hull's own 16 to fix this — that cap is a fleet law. Merge ramps " +
-                        "in the extraction, or take a widening upstream with a measured cost.");
-
-                data.Faces.AddRange(room.Faces);
-                data.InteriorMaterials = room.Materials;
                 Array.Resize(ref interiorSides, data.Faces.Count);   // rooms are 0 = exterior both sides
-                Debug.Log(room.Report.TrimEnd());
+                Debug.Log(roomReport.TrimEnd());
             }
 
             RigMeshBuild build = RigMeshBuilder.Build(data, $"{globalName}HullMesh", interiorSides);

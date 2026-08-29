@@ -166,6 +166,12 @@ namespace HiddenHarbours.Tests.RigBaking
                 using IRigScriptHost host = RigScriptHostFactory.Create();
                 RigMeshData fresh = RigMeshExtractor.ExtractFrom(host, hull.ScriptPath, hull.GlobalName,
                                                                  hull: hull.Extraction);
+                // A converted hull's committed mesh contains her ROOM (ADR 0041), so a fresh
+                // extraction has to contain it too or she reads as permanently stale. Through the
+                // BAKER's own method, never a copy of it: a second transcription of "which hulls are
+                // converted and how their room is appended" is exactly the drift this test exists to
+                // catch, and it would be catching it in the wrong direction.
+                RigMeshAssetBaker.AppendMeshInteriorIfConverted(host, hull.GlobalName, fresh);
                 RigMeshBuild built = RigMeshBuilder.Build(fresh, $"{hull.GlobalName}Check");
 
                 try
@@ -183,6 +189,7 @@ namespace HiddenHarbours.Tests.RigBaking
                     Same("PxPerMetre", def.PxPerMetre, fresh.PxPerMetre);
                     Same("ElevationDeg", def.ElevationDeg, (float)fresh.DefaultElev);
                     Same("Ramps", def.Ramps.Length, fresh.Materials.Count);
+                    Same("InteriorRamps", def.InteriorRamps.Length, fresh.InteriorMaterials.Count);
                     Same("SourceRigPath", def.SourceRigPath, hull.ScriptPath);
                     Same("Id", def.Id, hull.MeshId);
 
