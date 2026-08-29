@@ -700,6 +700,16 @@ namespace HiddenHarbours.App.Editor
             // constant, so the walk verdict moves her with the park. See NineMileCreekTruckPark.
             NineMileCreekTruckPark.Place();
 
+            // ⭐ THE LAYDOWN — one of each of the road fleet, stood off the park spur. The owner's ask
+            // after the nine baked: the truck park (three 6.7 m bays) cannot hold a 16.43 m trailer, let
+            // alone the 21.8 m coupled pair, so the yard that can is its own ground. Places and does NOT
+            // draw, per the moorage law above. The site is a PROPOSAL and every bay, heading and the
+            // spur derive from its one constant, so the walk verdict moves the whole yard together.
+            // The pair in bay 0 stands couple-ready — her pin in the plate's window — which is the
+            // affordance he asked to be able to walk up to. See NineMileCreekLaydown and
+            // NineMileCreekMainland.LaydownPos.
+            NineMileCreekLaydown.Place();
+
             // ⭐ THE OTTER, STAGED AT THE BOAT RAMP — the same gap, one machine along: #562 built her
             // drive⇄swim model and #581 baked her, and she stood nowhere. Places and does NOT draw.
             // Her site is a PROPOSAL derived from the ramp's own two ends, and the one thing to walk
