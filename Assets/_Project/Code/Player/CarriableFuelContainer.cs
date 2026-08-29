@@ -43,9 +43,20 @@ namespace HiddenHarbours.Player
                  "is derived from the Def id and the instance, which is safe but not readable.")]
         [SerializeField] private string _id;
 
+        /// <summary>
+        /// How close (m) the on-foot fisher must be to pick a LOOSE can up — the default
+        /// <see cref="ReachMeters"/>, stated as a constant because something other than a can now has to
+        /// know it.
+        ///
+        /// <para>A builder standing cans in the world must ask "can a body get within reach of this
+        /// spot", and the only honest answer to "within reach" is this number. Read rather than
+        /// re-typed, so moving it moves both.</para>
+        /// </summary>
+        public const float LooseReachMetres = 1.5f;
+
         [Tooltip("How close (m) the on-foot fisher must be to pick this up. Smaller than a fixture's " +
                  "step-up range: you reach for a can you are standing over, not one across the wharf.")]
-        [SerializeField, Min(0f)] private float _reachMeters = 1.5f;
+        [SerializeField, Min(0f)] private float _reachMeters = LooseReachMetres;
 
         [Tooltip("Require the fisher to be FACING it. Off, matching every interaction on this seam so " +
                  "far — a thing at your feet should not need you to look down at it.")]

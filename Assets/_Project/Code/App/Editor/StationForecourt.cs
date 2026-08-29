@@ -135,6 +135,15 @@ namespace HiddenHarbours.App.Editor
         {
             public GameObject Root;
             public readonly List<GameObject> Placed = new List<GameObject>();
+
+            /// <summary>The cell each placed piece was DRAWN at, index-aligned with
+            /// <see cref="Placed"/>. Carried because a piece's facing is not recoverable from the thing
+            /// in the scene — baked iso art places every piece at identity, so the transform says
+            /// nothing about which way it is turned, and anything that has to work in the piece's own
+            /// frame afterwards (a doorway cut in a storefront's wall) would otherwise have to guess.
+            /// ⚠️ Not the layout's own facing: a wharf pedestal faces the water while its layout faces
+            /// down the wall.</summary>
+            public readonly List<int> Facings = new List<int>();
             public readonly List<string> Missing = new List<string>();
             public List<StationReachAudit.Result> Reach = new List<StationReachAudit.Result>();
 
@@ -253,6 +262,7 @@ namespace HiddenHarbours.App.Editor
 
                 TurnColliders(go, p.Facing);
                 result.Placed.Add(go);
+                result.Facings.Add(p.Facing);
 
                 // ⚠️ The audit list is built from what ACTUALLY went in, index-aligned with Placed — not
                 // from the layout. A piece whose prefab is missing must not be audited as though it were
