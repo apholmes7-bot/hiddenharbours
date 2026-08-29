@@ -138,10 +138,17 @@ namespace HiddenHarbours.Art
         /// Sets only the shape/colour/size/softness/flicker/origin; the night-gate is the shader's job (every
         /// light gates off the same published <c>_DayNightTint</c>, ADR 0016), so a preset never touches it.
         /// </summary>
-        public static void Apply(SceneLight light, Kind kind)
+        public static void Apply(SceneLight light, Kind kind) => Stamp(light, For(kind));
+
+        /// <summary>
+        /// Write ONE <see cref="Config"/> onto a <see cref="SceneLight"/> — the single place a preset
+        /// becomes a light, whichever library the preset came from. <see cref="Apply"/> uses it for the
+        /// placed decor glows and <c>BoatLampPresets</c> for the fleet's lamps, so a field added to
+        /// <see cref="Config"/> can never reach one of them and not the other. Null-safe.
+        /// </summary>
+        public static void Stamp(SceneLight light, in Config c)
         {
             if (light == null) return;
-            Config c = For(kind);
             light.Shape = c.Shape;
             light.Color = c.Color;
             light.Intensity = c.Intensity;
