@@ -148,6 +148,11 @@ namespace HiddenHarbours.Art
         // rather than acquire a cut she has no geometry for. A cheap vertex-attribute question, not
         // a scan: TexCoord1 is present only when the builder wrote it.
         private bool _hasLevelTags;
+
+        // ⚠️ DOES THIS HULL'S MESH CONTAIN A ROOM? Read from the mesh for the same reason
+        // _hasInteriorFaces is: a positive test about what the geometry actually holds, not a
+        // version stamp that could say yes while the mesh says nothing.
+        private bool _hasRoomGeometry;
         private HiddenHarbours.Core.HullMeshDef.Cut _cutaway;
 
         /// <summary>
@@ -156,6 +161,27 @@ namespace HiddenHarbours.Art
         /// "this mesh knows about interiors", not "this mesh is new enough", so it cannot be fooled
         /// by a version stamp that says yes while the geometry says nothing.
         /// </summary>
+        /// <summary>
+        /// True when any face of <paramref name="mesh"/> is flagged as ROOM geometry (TexCoord1.y,
+        /// ADR 0038 full mesh) — as distinct from <see cref="MeshCarriesInteriorFaces"/>, which asks
+        /// the ADR 0023 water question off UV0.w. Two different meanings of the word "interior" that
+        /// happen to live one channel apart, so they are two named methods rather than one.
+        /// </summary>
+        private static bool MeshCarriesRoomGeometry(Mesh mesh)
+        {
+            if (mesh == null) return false;
+            if (!mesh.HasVertexAttribute(UnityEngine.Rendering.VertexAttribute.TexCoord1)) return false;
+            var tags = new List<Vector2>(mesh.vertexCount);
+            mesh.GetUVs(LevelUvChannel, tags);
+            for (int i = 0; i < tags.Count; i++)
+                if (tags[i].y > 0.5f) return true;
+            return false;
+        }
+
+        /// <summary>UV1 — where the bake writes (level id, is-room). Mirrors
+        /// <c>RigMeshBuilder.LevelUvChannel</c>, which is editor-only and cannot be referenced here.</summary>
+        private const int LevelUvChannel = 1;
+
         private static bool MeshCarriesInteriorFaces(Mesh mesh)
         {
             if (mesh == null) return false;
@@ -206,14 +232,26 @@ namespace HiddenHarbours.Art
             ApplyPose();          // the level and its lid travel in the property block
         }
 
-        // The keyword is only ever ON while a cut is actually live, so a hull nobody is inside
-        // compiles and runs the pre-gate program — the picture is identical either way (measured:
-        // 0 differing px across the variant boundary), but the discard is a real per-fragment cost
-        // on every hull every frame and rule 7 does not stop being true because it is small.
+        // ⚠️⚠️ A HULL THAT CARRIES A ROOM MUST KEEP THE KEYWORD ON, EVEN CLOSED UP.
+        //
+        // The original rule here was "on only while a cut is live", which was right while no mesh
+        // contained interior geometry: the gate's only job was to CULL the hull's own faces. Full
+        // mesh interiors (ADR 0038) changed the premise — the room's faces now live in the hull
+        // mesh, and the only thing that hides them is HHLevelDiscards, which exists only inside this
+        // keyword's #ifdef. Turning it off on a hull with a room does not restore the shipped
+        // picture; it draws her cabin through her own topsides, in the hull's palette, from every
+        // angle. MEASURED when this was wrong: 31-42% of her inked pixels differed from her baked
+        // sheet, in single connected clusters of 11k-15k px.
+        //
+        // So the honest cost statement is per hull, not fleet-wide: a hull with no room pays nothing
+        // (her program is byte-identical, 1362/1878), and a CONVERTED hull pays the gate's discard
+        // always. That is the price of the room being geometry, and it is the same price whichever
+        // palette design had been chosen.
         private void ApplyCutawayKeyword()
         {
             if (_facetMaterial == null) return;
-            if (_cutaway.Opens) _facetMaterial.EnableKeyword(IsoFacetShaderIds.LevelGateKeyword);
+            if (_cutaway.Opens || _hasRoomGeometry)
+                _facetMaterial.EnableKeyword(IsoFacetShaderIds.LevelGateKeyword);
             else _facetMaterial.DisableKeyword(IsoFacetShaderIds.LevelGateKeyword);
         }
 
@@ -437,6 +475,7 @@ namespace HiddenHarbours.Art
             _hasInteriorFaces = MeshCarriesInteriorFaces(setup.Mesh);
             _hasLevelTags = setup.Mesh.HasVertexAttribute(
                 UnityEngine.Rendering.VertexAttribute.TexCoord1);
+            _hasRoomGeometry = MeshCarriesRoomGeometry(setup.Mesh);
             // A re-Configure (a repaint, a hull swap) must not leave a cut standing on geometry that
             // is no longer the same geometry — and must not leave the keyword on a material that has
             // just been rebuilt underneath it.

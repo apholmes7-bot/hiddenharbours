@@ -702,6 +702,44 @@ namespace HiddenHarbours.Tools.RigBaking
 
         /// <param name="extraction">Non-null to bake ONE VARIANT of a rig that generates several
         /// hulls. Null — every hull baked before 2026-08-13 — takes the rig's static <c>F</c>.</param>
+        const string InteriorKitFolder = "docs/art/rigs/boat-interiors-kit";
+        const string InteriorRigFileName = "boatInteriorRig.js";
+
+        /// <summary>
+        /// <b>The hulls whose room is baked as MESH.</b> Opt-in, one global name per converted hull,
+        /// because the sprite-sheet interior system keeps working for every hull NOT on this list and
+        /// the two must never both draw for the same boat.
+        ///
+        /// <para>This is the fleet rollout's only switch: a batch adds its hulls here, re-bakes, and
+        /// retires those hulls' sheets once the pictures agree. A hull added here whose sheets are
+        /// still wired would draw her cabin twice.</para>
+        /// </summary>
+        public static readonly string[] MeshInteriorHulls = { "LobsterBoatIso" };
+
+        /// <summary>
+        /// Which key in the interior rig's own <c>HULLS</c> table is this hull — derived by asking
+        /// the rig, never transcribed. A table here would be a second place for the two rigs to
+        /// disagree about what boats exist.
+        /// </summary>
+        static string InteriorHullKeyFor(IRigScriptHost host, string globalName, string interiorRigPath)
+        {
+            host.Execute(BoatInteriorGeometryExtractor.WidenInteriorRig(File.ReadAllText(interiorRigPath)));
+            string matches = host.EvaluateString(
+                "(function(){var H=globalThis.BoatInterior.HULLS,o=[];" +
+                $"for(var k in H) if(H[k].sym==='{globalName}') o.push(k);" +
+                "return o.join(' ');})()");
+            string[] keys = matches.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            if (keys.Length == 1) return keys[0];
+            throw new InvalidOperationException(
+                keys.Length == 0
+                    ? $"'{globalName}' is listed in MeshInteriorHulls but the interior rig's HULLS " +
+                      "table names no hull with that sym, so there is no room to bake. Either the " +
+                      "list is wrong or the rig has not met this boat."
+                    : $"'{globalName}' matches {keys.Length} interior hulls ({matches}) — a multi-hull " +
+                      "rig needs its `pick` disambiguated before her room can be baked, or the wrong " +
+                      "boat's cabin lands in her hull.");
+        }
+
         public static HullMeshDef Bake(string scriptPath, string globalName, string assetPath, string id,
                                        RigHullExtraction extraction = null)
         {
@@ -717,6 +755,35 @@ namespace HiddenHarbours.Tools.RigBaking
             // hand-measured HullMeshDef.WatertightDeckHeightMeters — it does for 9 of the 11 hulls,
             // which is the independent cross-check that says the classifier is right.
             byte[] interiorSides = RigMeshInteriorClassifier.ClassifySides(data);
+
+            // ---- THE ROOM, AS GEOMETRY (ADR 0038, full mesh interiors) --------------------------
+            //
+            // Appended AFTER the ADR 0023 water mask is classified, and the side-code array is then
+            // extended with zeroes rather than re-classified. Two reasons, and both are about not
+            // changing something this PR has no business changing: the classifier's per-hull counts
+            // and lowest-interior heights are a committed evidence trail, and a cabin sole is not a
+            // surface the SEA should start reasoning about. Zero is "exterior both sides", which is
+            // what every face carried before the mask existed.
+            if (MeshInteriorHulls.Contains(globalName, StringComparer.Ordinal))
+            {
+                string repo = Directory.GetParent(Application.dataPath).FullName;
+                string interiorRig = Path.Combine(repo, InteriorKitFolder, InteriorRigFileName);
+                string interiorKey = InteriorHullKeyFor(host, globalName, interiorRig);
+
+                var room = BoatInteriorGeometryExtractor.Extract(host, interiorKey, data, interiorRig);
+                if (room.Materials.Count > HullMeshDef.InteriorRampSlots)
+                    throw new InvalidOperationException(
+                        $"{globalName}'s room paints {room.Materials.Count} ramps and the facet " +
+                        $"shader's _RampMetaInterior holds {HullMeshDef.InteriorRampSlots}. Do NOT " +
+                        "spend the hull's own 16 to fix this — that cap is a fleet law. Merge ramps " +
+                        "in the extraction, or take a widening upstream with a measured cost.");
+
+                data.Faces.AddRange(room.Faces);
+                data.InteriorMaterials = room.Materials;
+                Array.Resize(ref interiorSides, data.Faces.Count);   // rooms are 0 = exterior both sides
+                Debug.Log(room.Report.TrimEnd());
+            }
+
             RigMeshBuild build = RigMeshBuilder.Build(data, $"{globalName}HullMesh", interiorSides);
             LogInteriorMask(globalName, data, interiorSides);
 
@@ -796,6 +863,17 @@ namespace HiddenHarbours.Tools.RigBaking
                 {
                     Colors = data.Materials[m].Ramp,
                     Offset = data.Materials[m].Off,
+                };
+
+            // The room's own table. Empty on every hull not yet converted, which is what keeps the
+            // sheet system working for them: absence of an interior palette is how a hull says she
+            // still draws her cabin as a sprite.
+            def.InteriorRamps = new HullMeshDef.Ramp[data.InteriorMaterials.Count];
+            for (int m = 0; m < data.InteriorMaterials.Count; m++)
+                def.InteriorRamps[m] = new HullMeshDef.Ramp
+                {
+                    Colors = data.InteriorMaterials[m].Ramp,
+                    Offset = data.InteriorMaterials[m].Off,
                 };
 
             def.Bayer16 = new float[16];

@@ -215,6 +215,10 @@ Shader "HiddenHarbours/IsoFacet"
                 // exterior silhouette, never cut). y = 1 on emitted INTERIOR geometry, 0 on
                 // the hull's own faces. Absent on every hull baked before the cutaway kit.
                 float2 levelTag   : TEXCOORD1;
+                // THE ROOM'S SURFACE. xy = generator id + period, flat per face; zw = the rig's
+                // own per-vertex uv, which paint() interpolates before calling the generator.
+                // All zero on a hull with no room, and on every hull face of a hull that has one.
+                float4 texAttr    : TEXCOORD2;
 #endif
             };
 
@@ -230,6 +234,10 @@ Shader "HiddenHarbours/IsoFacet"
                 // xy = the level tag, z = 1 when the camera is rendering this
                 // face's FRONT (decoded from the stored normal exactly as vertGuard does).
                 nointerpolation float3 lvl : TEXCOORD3;
+                // xy flat (generator + period), zw INTERPOLATED — the uv has to vary across the
+                // face or the pattern would be one flat value per facet.
+                nointerpolation float2 texKp : TEXCOORD4;
+                float2 texUv : TEXCOORD5;
 #endif
             };
 
@@ -259,6 +267,8 @@ Shader "HiddenHarbours/IsoFacet"
                 o.mat  = v.attrs.x;
 #ifdef HH_LEVEL_GATE
                 o.lvl  = float3(v.levelTag, dot(wn, UNITY_MATRIX_V[2].xyz) >= 0.0 ? 1.0 : 0.0);
+                o.texKp = v.texAttr.xy;
+                o.texUv = v.texAttr.zw;
 #endif
                 // ⚠️ TWO DEPTHS, AND THE SPLIT IS THE DESIGN (ADR 0033).
                 //
@@ -315,6 +325,46 @@ Shader "HiddenHarbours/IsoFacet"
             // per-face `db`, subtracted from clip depth in vert() above — and setting it on
             // the room to the hull's bounding-sphere diameter took the same room to 97.6%.
             // Recorded here because the next person to add the shell will meet it.
+            // ⭐ THE ROOM'S PROCEDURAL SURFACE — boatInteriorRig.js's plankTex / boardTex /
+            // quiltTex, transcribed. paint() does `if (tex && uv) fi += tex(uu, vv)`, shifting the
+            // ramp index by a small INTEGER; because the shift is an integer, adding it to `idx`
+            // after the dither is exactly equivalent to adding it to `fidx` before, and leaves the
+            // Bayer term untouched. Measured coverage: 28.6% of the lobster's wheelhouse faces and
+            // 63.4% of her cuddy carry one, so this is most of a berth space's surface, not a
+            // garnish.
+            //
+            // ⚠️⚠️ THE RIG'S PER-PLANK HASH IS DEAD CODE, AND THIS TRANSCRIBES WHAT IT DOES, NOT
+            // WHAT IT MEANT. plankTex and quiltTex both branch on `hash2(...) < 0.5`, intending a
+            // per-plank / per-cell coin flip. hash2 ends with `((h ^ (h >> 16)) >>> 0) / 4294967296`
+            // — and in JS `>>` coerces to int32 and sign-extends, so bit 31 of `h ^ (h >> 16)` is
+            // ALWAYS the sign bit xored with itself, i.e. always 0. The value can therefore never
+            // reach 0.5. Measured in the repo's own V8 over a in [-40,40] x b in [-20,20]: 3321 of
+            // 3321 samples below 0.5, max 0.49996. So the hash branch never fires, plankTex never
+            // returns -1 and quiltTex never returns +1 — in the SPRITE path too.
+            //
+            // Transcribing the intent instead would make the mesh disagree with the shipped sheets
+            // on every plank, which is the opposite of parity. If the art director fixes hash2, both
+            // paths move together and this comment is the note that says where to look. Reported
+            // upstream rather than fixed here: the sprite art is shipped and this is not our file.
+            float HHInteriorTex(float2 kp, float2 uv)
+            {
+                int kind = (int)round(kp.x);
+                if (kind == 0) return 0.0;
+                float p = kp.y;
+                if (p <= 0.0) return 0.0;
+
+                // JS `((x % p) + p) % p` — a true positive modulo, since JS % keeps the dividend's
+                // sign and a room's uv crosses zero.
+                if (kind == 1)              // plankTex(p): a groove every p in V
+                    return (uv.y - p * floor(uv.y / p)) < 0.022 ? -2.0 : 0.0;
+                if (kind == 2)              // boardTex(p): a groove every p in U
+                    return (uv.x - p * floor(uv.x / p)) < 0.026 ? -1.0 : 0.0;
+                                            // quiltTex(): a 0.20 grid, grooves on both axes
+                float fu = uv.x - p * floor(uv.x / p);
+                float fv = uv.y - p * floor(uv.y / p);
+                return (fu < 0.030 || fv < 0.030) ? -1.0 : 0.0;
+            }
+
             bool HHLevelDiscards(float3 lvl)
             {
                 bool isInterior = lvl.y > 0.5;
@@ -361,6 +411,13 @@ Shader "HiddenHarbours/IsoFacet"
 #endif
                 float fbase = floor(i.fidx);
                 int idx = (int)fbase + ((i.fidx - fbase) > bay ? 1 : 0) + off;
+#ifdef HH_LEVEL_GATE
+                // Integer shift, so this is the rig's `fi += tex(u,v)` moved to the other side of
+                // the dither compare without changing it: floor(f + k) == floor(f) + k and the
+                // fractional part is untouched. Zero on every hull face — the attribute is zero
+                // there — so no hull pixel changes.
+                if (hhInterior) idx += (int)HHInteriorTex(i.texKp, i.texUv);
+#endif
                 idx = clamp(idx, 0, len - 1);
 
                 // WHICH OF THIS HULL'S IDS THIS PIXEL CARRIES. Camera looks along +Z, so a SMALLER
