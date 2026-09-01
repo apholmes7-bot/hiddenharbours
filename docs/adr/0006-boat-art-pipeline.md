@@ -1,6 +1,6 @@
 # ADR 0006 — Boat Art Pipeline: Pre-Rendered 3D → Sprite Sheets + Discrete Zoom Tiers
 
-- **Status:** **Proposed — deferred to M2.** This records a *direction* and locks a few
+- **Status:** **Superseded** *(2026-09-01 lead-architect review: the fleet's art is baked IN-ENGINE from the art director's rigs (ADR 0021) and the hulls are real-time meshes (ADR 0022); the pre-rendered-3D-to-sprite-sheet direction recorded here was never built — kept for the record; original line follows)* — **Proposed — deferred to M2.** This records a *direction* and locks a few
   forward-compatible conventions now (cheap insurance). It is **not** a commitment to build anything
   in M0/M1. No bake happens until M2, gated by the go/no-go below.
 - **Date:** 2026-06-21

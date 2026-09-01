@@ -1,6 +1,6 @@
 # ADR 0019 — Hand-authored scenes are the SOURCE OF TRUTH: builders CREATE once, then REFRESH logic only — the owner designs the levels
 
-- **Status:** **Proposed — awaiting owner sign-off.** Docs-only: this ADR ships no code. Merging this
+- **Status:** **Accepted** *(status flipped 2026-09-01 by the lead-architect review: every committed region scene is built CREATE-once/REFRESH and banked from the owner's editor, exactly as this ADR asks — original line follows)* — **Proposed — awaiting owner sign-off.** Docs-only: this ADR ships no code. Merging this
   PR = the owner's go-ahead to build **Phase 1** of the owner-tooling plan (generalize the
   create/refresh split to every region builder, adopt the regions one by one, then the authoring
   tools on top). Records the decision that the scene-authoring model **flips**: a region builder's
