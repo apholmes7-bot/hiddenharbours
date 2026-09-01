@@ -48,10 +48,45 @@ namespace HiddenHarbours.Vehicles
 
         public bool IsCoupled => CoupledTo != null;
 
-        /// <summary>Her heading in degrees, the same convention the controller uses. Held here
-        /// rather than read off the transform's rotation because the visual child is stomped to
-        /// screen-identity every frame — the picture turns by posing the mesh, not the object.</summary>
-        public float HeadingDegrees { get; set; }
+        /// <summary>
+        /// ⭐ <b>Her heading in degrees</b>, the same convention the controller and the hitch use —
+        /// and <b>carried by the ROOT TRANSFORM</b>, which is the whole point.
+        ///
+        /// <para>The picture is posed from <c>BearingDegrees(transform.up)</c>
+        /// (<see cref="VehicleMeshDriver.CurrentDirUnits"/>), and so is
+        /// <see cref="VehicleHitch.HeadingDegrees"/>. So a heading kept ONLY in a field here would be
+        /// a second copy of one fact, and the two would disagree the moment either moved without the
+        /// other. They did: a trailer under tow off-tracked correctly in the arithmetic while her
+        /// drawn picture stood frozen at the angle she was parked on, because
+        /// <see cref="FollowKingpin"/> wrote the field and nothing wrote the transform. It was
+        /// invisible only because nothing skinned a trailer yet.</para>
+        ///
+        /// <para>So the setter mirrors to the transform and the getter reads a field kept exactly in
+        /// step with it. The field is the one carrying full float precision — reading the bearing back
+        /// out of a quaternion every time would quantise every step of
+        /// <see cref="FollowKingpin"/>'s read-modify-write — while the transform is what every reader
+        /// already asks. One fact, one place, two spellings that cannot drift.</para>
+        ///
+        /// <para>⚠️ It is the ROOT that turns, never the visual child: the child is stomped to
+        /// screen-identity every frame, because the picture turns by posing the mesh. That is the
+        /// distinction the old note here was reaching for, and it argues for the root carrying the
+        /// heading rather than against it.</para>
+        /// </summary>
+        public float HeadingDegrees
+        {
+            get => _headingDegrees;
+            set
+            {
+                _headingDegrees = value;
+                // z = −bearing is the exact inverse of BoatKinematics.BearingDegrees(transform.up):
+                // up = (−sin z, cos z), and atan2(−sin z, cos z) = −z. Dirty-checked so a heading that
+                // does not move costs no transform write.
+                Quaternion want = Quaternion.Euler(0f, 0f, -value);
+                if (transform.rotation != want) transform.rotation = want;
+            }
+        }
+
+        private float _headingDegrees;
 
         /// <summary>
         /// ⚠️ <b>Are her shoes on the ground?</b> Read from the gear crank's own state, so there is
@@ -94,6 +129,15 @@ namespace HiddenHarbours.Vehicles
         public void Configure(VehicleMeshDef mesh)
         {
             _mesh = mesh;
+
+            // ⚠️⚠️ DO NOT TIDY THIS CALL AWAY — it is not a duplicate of OnEnable.
+            // An EDITOR builder never gets an OnEnable: AddComponent fires no callback on a plain
+            // MonoBehaviour outside play (memory editmode-has-no-onenable), so a trailer a region
+            // builder stands up would sit unregistered, at heading 0, while her picture drew on the
+            // angle she was placed at. Measured: her pin was reported 7.175 m on the WRONG SIDE of
+            // her, and the tractor parked on her plate was offered no couple at all.
+            AdoptTheTransformAndRegister();
+
             _doors = GetComponent<VehicleDoors>();
             if (_doors == null && mesh != null)
             {
@@ -142,10 +186,50 @@ namespace HiddenHarbours.Vehicles
         public float ArticulationAgainst(float tractorHeadingDegrees) =>
             Mathf.DeltaAngle(HeadingDegrees, tractorHeadingDegrees);
 
+        /// <summary>
+        /// ⭐ <b>Seed the heading from the transform</b> — what makes a trailer AUTHORED INTO A SCENE
+        /// come back on the angle she was placed on.
+        ///
+        /// <para><see cref="HeadingDegrees"/>'s backing field is not serialized and must not be: the
+        /// transform's rotation already is, and a second serialized copy is a second thing to get out
+        /// of step across a save. So the transform is the authority at load and the field is filled
+        /// from it here.</para>
+        ///
+        /// <para>Idempotent, because every setter write mirrors INTO the transform: re-enabling a
+        /// trailer whose heading was set in code reads back the value that was set, not a stale one.
+        /// Without this a scene-placed trailer loaded at heading 0 while her picture drew on the
+        /// authored angle — her pin reported somewhere she was not, and the tractor parked nose to
+        /// nose with her refused the couple.</para>
+        /// </summary>
         private void OnEnable()
         {
-            if (!Live.Contains(this)) Live.Add(this);
+            AdoptTheTransformAndRegister();
             if (_doors == null) _doors = GetComponent<VehicleDoors>();
+        }
+
+        /// <summary>
+        /// Take the heading the transform is carrying, and make sure the registry knows her — the two
+        /// things that must be true of a trailer standing in the world, done from BOTH the enable hook
+        /// and <see cref="Configure"/>.
+        ///
+        /// <para>Both, because neither alone covers both callers. A trailer deserialized from a saved
+        /// scene is never <c>Configure</c>d — her mesh is already on the component — so the hook is what
+        /// seeds her. A trailer a region BUILDER stands up gets no hook at all, because editor-time
+        /// <c>AddComponent</c> fires no callback on a plain MonoBehaviour. Idempotent, so doing it twice
+        /// costs a float and a list scan.</para>
+        ///
+        /// <para>The registry is compacted first. <see cref="OnDisable"/> is the normal way out, but an
+        /// editor fixture that destroys a trailer never gets one either, and a stale entry would be
+        /// asked for its pin by every capture test that ran afterwards.</para>
+        /// </summary>
+        private void AdoptTheTransformAndRegister()
+        {
+            _headingDegrees = BoatKinematics.BearingDegrees(transform.up);
+
+            for (int i = Live.Count - 1; i >= 0; i--)
+                if (Live[i] == null) Live.RemoveAt(i);
+
+            if (!Live.Contains(this)) Live.Add(this);
         }
 
         private void OnDisable()

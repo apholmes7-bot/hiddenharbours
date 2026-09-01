@@ -1118,6 +1118,47 @@ namespace HiddenHarbours.App.Editor
         /// </summary>
         public static readonly Vector3 TruckParkPos = new Vector3(-120f, 106f, 0f);
 
+        /// <summary>
+        /// ⭐ <b>THE LAYDOWN — where the road fleet is stood, and THE ONE NUMBER THAT SITES IT.</b>
+        ///
+        /// <para><b>This is a PROPOSAL awaiting the owner's walk</b>, exactly as
+        /// <see cref="TruckParkPos"/> is. Everything about the yard derives from this single point —
+        /// <see cref="NineMileCreekLaydown.ApronArea"/> centres the gravel on it, every bay, every
+        /// heading and the spur off the park all fall out of it — so moving the yard is editing this
+        /// Vector3 and rebuilding. No second copy of the site exists anywhere, and
+        /// <c>NineMileCreekLaydownTests</c> moves it to prove that.</para>
+        ///
+        /// <para><b>Why the yard is not the truck park.</b> The park is 20.1 × 13.4 m — three bays of a
+        /// 6.7 m envelope. The laydown stands nine machines of which the longest towed body is 16.43 m
+        /// and the coupled pair 21.8 m; the park could not hold two of them. The owner's ask said so
+        /// first: <i>"one of each parked at NMC — the truck park cannot hold them."</i></para>
+        ///
+        /// <para><b>Why here, north of the park at (−100, 136).</b> Four things had to be true at once,
+        /// and this band is where they all are:</para>
+        /// <list type="bullet">
+        /// <item>OFF THE SPUR, which is what was asked. The park spur already runs from Wharf Road to
+        /// <see cref="TruckParkPos"/>; <see cref="NineMileCreekLaydown.LaydownSpurRoute"/> continues
+        /// from the park to this point, so the yard is the next thing along the same gravel rather than
+        /// a second approach off the highway.</item>
+        /// <item>NOT IN THE WHARF YARD. The spit is full — the fish market misses its own site by
+        /// 0.38 m — and a 44.8 × 34.2 m apron is five times the ground the market could not find.</item>
+        /// <item>CLEAR of both carves and of every <see cref="TownLots"/> lot at
+        /// <see cref="TownLotRadius"/>. The barachois feathers to x = −72 and the apron's east edge
+        /// stops at −77.6; the nearest lot is the harbourmaster's, whose reserve ends at x = −144,
+        /// 21.6 m west of the apron. The marsh pool is 40 m south of Wharf Road and never in question.</item>
+        /// <item>CLEAR of the park itself, by 6.2 m — the two grounds read as neighbours and never
+        /// contend for a cell.</item>
+        /// </list>
+        ///
+        /// <para>⚠ Land here is <see cref="LandElevation"/> (6 m) against a spring high of
+        /// <see cref="SpringHighWater"/> (2.2 m), so the yard is dry at every tide — ASSERTED, not
+        /// assumed, the way the park's is: the dry-ground rule in <c>Pave</c> would silently eat an
+        /// apron sited in a pond, so <c>NineMileCreekLaydownTests</c> fails on a single trimmed cell.
+        /// The nine never float (<c>Floats == false</c> is pinned as INTENDED on all of them), which is
+        /// the second reason this yard stays well above the water rather than merely beside it.</para>
+        /// </summary>
+        public static readonly Vector3 LaydownPos = new Vector3(-100f, 136f, 0f);
+
         /// <summary>Half-width (m) of a road's cleared corridor — nothing may be sited inside it.</summary>
         public const float RoadHalfWidth = 3f;
 

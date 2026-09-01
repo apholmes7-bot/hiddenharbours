@@ -181,6 +181,8 @@ namespace HiddenHarbours.App.Editor
         public const string TownWalkNamePrefix = "TownWalk_";
         public const string ParkSpurName = "TruckParkSpur";
         public const string TruckParkName = "TruckPark";
+        public const string LaydownSpurName = "LaydownSpur";
+        public const string LaydownName = "Laydown";
 
         /// <summary>
         /// Every stroked way in the region: the canon four, then the town walks.
@@ -222,6 +224,16 @@ namespace HiddenHarbours.App.Editor
                         CarriagewayHalfWidthMetres, RankParkSpur, true,
                         "the turn-off from Wharf Road into the truck park — the region's first road built " +
                         "for a vehicle to stop rather than to pass through"),
+
+                // ⭐ THE LAYDOWN SPUR. The same gravel one ground further on: park to yard, because the
+                // owner asked for the laydown "off the spur" rather than off the highway. Same rank as
+                // the park spur, so it gives way to Wharf Road at the mouth and to BOTH pads at its ends
+                // — a spur that outranked the yard would draw its rounded stroke across the apron's
+                // square corner.
+                new Way(LaydownSpurName, GravelSurface, NineMileCreekLaydown.LaydownSpurRoute(),
+                        CarriagewayHalfWidthMetres, RankParkSpur, true,
+                        "the run from the truck park up to the laydown — a semi and a 53-ft trailer " +
+                        "cannot turn in the park, so the ground that holds them is its own"),
             };
 
             list.AddRange(TownWalks());
@@ -328,6 +340,12 @@ namespace HiddenHarbours.App.Editor
                 "⭐ the truck park at the east edge of the village — the ground a road vehicle is LEFT " +
                 "on. Same rank as the buyers' gravel because it is the same kind of thing; the two are " +
                 "210 m apart and never contend for a cell"),
+
+            new Pad(LaydownName, GravelSurface, NineMileCreekLaydown.ApronArea(), RankParking,
+                "⭐ the laydown north of the truck park — the ground the road fleet is STOOD on, as " +
+                "against the park, which is the ground one truck is LEFT on. Gravel and the same rank " +
+                "as the park for the same reason: it is the same kind of thing, and the two never " +
+                "contend for a cell (they are 23 m apart at the nearest corner)"),
 
             new Pad(StationForecourtName, ApronSurface, NineMileCreekStation.Route91ApronArea(), RankApron,
                 "⭐ the Route 91 forecourt — concrete, because that is what the station kit's own sidecar " +
