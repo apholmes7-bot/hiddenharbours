@@ -1,9 +1,9 @@
 # ADR 0041 — Full mesh interiors: the room becomes geometry, and gets a palette of its own
 
-- **Status:** **Proposed — awaiting the owner's eye.** This PR ships the ADR, the rendering path, the
-  extraction, and one converted hull (the lobster boat) end to end. The sprite-sheet interior system
-  is untouched and still draws every other hull. Merging = the go-ahead for the cape (the intro) and
-  then the fleet in batches.
+- **Status:** **Accepted — rolling out.** PR 1 (#688, the lobster) merged 2026-08-30 with the
+  owner's eyeball passed 2026-08-29; PR 2 (#690, the cape) merged 2026-09-01 on the owner's
+  approval. The sprite-sheet interior system still draws every unconverted hull. Rollout record at
+  the bottom of this file.
 - **Date:** 2026-08-29
 - **Decision owner:** `lead-architect` (a shipped-shader change plus a new Core field on
   `HullMeshDef` — CLAUDE.md rule 4). `gameplay-systems` owns the extraction and the bake;
@@ -163,3 +163,29 @@ is never cut and never hidden.
 - **Keeping the fit-out as sprites** (the spike's HYBRID). Ruled out by the owner.
 - **Baking the procedural texture into geometry** by subdividing faces. Multiplies the tri count to
   reproduce three pure functions of (u, v) that fit in a dozen lines of HLSL.
+
+## Rollout record
+
+Per-hull numbers, recorded as each batch lands (the "belongs in each rollout batch's PR body"
+promise above, kept here so the fleet's cost is one table rather than an archaeology of PR bodies).
+`RigMeshAssetBaker.MeshInteriorHulls` is the switch; the parity fixture derives its hull list from
+it, so a batch that adds a hull without its evidence reddens.
+
+| hull | PR | merged | room faces | interior ramps (cap 24) | tris hull + room | Δ tris | closed-up parity | cutaway reveal |
+|---|---|---|---|---|---|---|---|---|
+| lobster | #688 | 2026-08-30 | — (PR 1 end to end) | 22 | 1428 + 1014 = 2442 | +71.0% | owner eyeball passed 08-29 | — |
+| cape | #690 | 2026-09-01 | 450 | **18** | 1126 + 980 = 2106 | +87.0% | 0 px vs room-stripped control, 4 headings | 19.6–28.5% vs 4% floor |
+
+**Census correction (the cape).** The palette census above projected 21 distinct interior ramps for
+the cape; her baked room paints **18**. The decision the census drove is untouched — 10 + 18 = 28
+still does not fit a widened 16, and the scoped 24-slot table holds with headroom — but the census
+column is a projection and this table is the measurement.
+
+**Split out of the cape batch:** her sheet is a PRE-RIG 8-facing hand-export with the legacy CCW
+flag (not the lobster's staleness pattern) — its 8→32 CCW→CW migration is **PR 2b**, charter seeded
+in #690's body. Upstream asks recorded there: the cape rig exports no GAIN/BIAS/LN and no real
+F/MATS symbol (her reconstruction goes stale silently if her paint changes).
+
+**Still owed before boat-lights PR 2 rides on a converted hull:** lamps-over-mesh-interiors has no
+measurement — #690's parity fixture takes the ToSetup path, so no `BoatLamps` exists in either arm
+and the un-gate is structurally unclaimed.

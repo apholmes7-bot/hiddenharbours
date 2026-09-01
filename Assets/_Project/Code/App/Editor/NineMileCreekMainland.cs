@@ -1141,12 +1141,12 @@ namespace HiddenHarbours.App.Editor
         /// from the park to this point, so the yard is the next thing along the same gravel rather than
         /// a second approach off the highway.</item>
         /// <item>NOT IN THE WHARF YARD. The spit is full — the fish market misses its own site by
-        /// 0.38 m — and a 44.8 × 34.2 m apron is five times the ground the market could not find.</item>
+        /// 0.38 m — and a 44.8 × 35.9 m apron is five times the ground the market could not find.</item>
         /// <item>CLEAR of both carves and of every <see cref="TownLots"/> lot at
         /// <see cref="TownLotRadius"/>. The barachois feathers to x = −72 and the apron's east edge
         /// stops at −77.6; the nearest lot is the harbourmaster's, whose reserve ends at x = −144,
         /// 21.6 m west of the apron. The marsh pool is 40 m south of Wharf Road and never in question.</item>
-        /// <item>CLEAR of the park itself, by 6.2 m — the two grounds read as neighbours and never
+        /// <item>CLEAR of the park itself, by 5.3 m — the two grounds read as neighbours and never
         /// contend for a cell.</item>
         /// </list>
         ///

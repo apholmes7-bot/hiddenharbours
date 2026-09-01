@@ -345,7 +345,7 @@ namespace HiddenHarbours.App.Editor
                 "⭐ the laydown north of the truck park — the ground the road fleet is STOOD on, as " +
                 "against the park, which is the ground one truck is LEFT on. Gravel and the same rank " +
                 "as the park for the same reason: it is the same kind of thing, and the two never " +
-                "contend for a cell (they are 23 m apart at the nearest corner)"),
+                "contend for a cell (their nearest edges are 5.3 m apart)"),
 
             new Pad(StationForecourtName, ApronSurface, NineMileCreekStation.Route91ApronArea(), RankApron,
                 "⭐ the Route 91 forecourt — concrete, because that is what the station kit's own sidecar " +
