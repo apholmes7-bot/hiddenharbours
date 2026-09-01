@@ -1,9 +1,9 @@
 # ADR 0041 — Full mesh interiors: the room becomes geometry, and gets a palette of its own
 
-- **Status:** **Accepted — rolling out.** PR 1 (#688, the lobster) merged 2026-08-30 with the
-  owner's eyeball passed 2026-08-29; PR 2 (#690, the cape) merged 2026-09-01 on the owner's
-  approval. The sprite-sheet interior system still draws every unconverted hull. Rollout record at
-  the bottom of this file.
+- **Status:** **Accepted — rolling out.** PR 1 (#688, the lobster) merged 2026-08-29 (`79da14fa`)
+  with the owner's eyeball passed; PR 2 (#690, the cape) merged 2026-09-01 (`bfd765d4`) on the
+  owner's approval. The sprite-sheet interior system still draws every unconverted hull. Rollout
+  record at the bottom of this file.
 - **Date:** 2026-08-29
 - **Decision owner:** `lead-architect` (a shipped-shader change plus a new Core field on
   `HullMeshDef` — CLAUDE.md rule 4). `gameplay-systems` owns the extraction and the bake;
@@ -173,13 +173,14 @@ it, so a batch that adds a hull without its evidence reddens.
 
 | hull | PR | merged | room faces | interior ramps (cap 24) | tris hull + room | Δ tris | closed-up parity | cutaway reveal |
 |---|---|---|---|---|---|---|---|---|
-| lobster | #688 | 2026-08-30 | — (PR 1 end to end) | 22 | 1428 + 1014 = 2442 | +71.0% | owner eyeball passed 08-29 | — |
+| lobster | #688 | 2026-08-29 | 467 | **19** | 1428 + 1014 = 2442 | +71.0% | 0 px vs room-stripped control, 4 headings | house 34–53%, cuddy 10–14.5% vs 4% floor |
 | cape | #690 | 2026-09-01 | 450 | **18** | 1126 + 980 = 2106 | +87.0% | 0 px vs room-stripped control, 4 headings | 19.6–28.5% vs 4% floor |
 
-**Census correction (the cape).** The palette census above projected 21 distinct interior ramps for
-the cape; her baked room paints **18**. The decision the census drove is untouched — 10 + 18 = 28
-still does not fit a widened 16, and the scoped 24-slot table holds with headroom — but the census
-column is a projection and this table is the measurement.
+**Census correction (both hulls).** The palette census above projected 22 distinct interior ramps
+for the lobster and 21 for the cape; their baked rooms paint **19** and **18**. The decision the
+census drove is untouched — 11 + 19 = 30 and 10 + 18 = 28 still do not fit a widened 16, and the
+scoped 24-slot table holds with headroom on both — but the census column is a projection and this
+table is the measurement.
 
 **Split out of the cape batch:** her sheet is a PRE-RIG 8-facing hand-export with the legacy CCW
 flag (not the lobster's staleness pattern) — its 8→32 CCW→CW migration is **PR 2b**, charter seeded
