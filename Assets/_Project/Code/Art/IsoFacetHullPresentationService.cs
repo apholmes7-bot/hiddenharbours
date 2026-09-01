@@ -56,8 +56,18 @@ namespace HiddenHarbours.Art
             MakeReflective(renderer);
             MakeChurn(host, def);
             MakeLit(host, def);
+            MakeShadowCasting(host);
             return renderer;
         }
+
+        /// <summary>
+        /// (ADR 0016, lights PR B) Every mesh hull THROWS a lamp shadow — the owner's 2026-08-05
+        /// ruling that boats cast, applied to the fleet the way the reflector and the churn are:
+        /// here, where a mesh hull is made, so every hull in every region carries it with no scene
+        /// wiring. The caster is a registration and an id hand-off, and costs nothing until a lamp
+        /// is in range of her (see <see cref="HullLampShadowCaster"/>).
+        /// </summary>
+        static void MakeShadowCasting(GameObject host) => HullLampShadowCaster.Fit(host);
 
         /// <summary>
         /// (ADR 0016) Give this hull the LAMPS her def says she wears.

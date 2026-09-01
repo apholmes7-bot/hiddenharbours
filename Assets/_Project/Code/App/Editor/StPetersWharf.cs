@@ -4,6 +4,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using HiddenHarbours.Core;                // ITidalTerrain — the deck height is MEASURED off the terrain
+using HiddenHarbours.Art;                 // SpriteShadow — the standing fittings cast (sun and lamp)
 using HiddenHarbours.Art.Editor;          // WharfKitCatalog — the kit's published semantic map
 
 namespace HiddenHarbours.App.Editor
@@ -241,6 +242,13 @@ namespace HiddenHarbours.App.Editor
         public const int BollardSpacing = 9;
 
         /// <summary>
+        /// The fittings that STAND on the deck and therefore cast a shadow from their base — the
+        /// bollards and the pileheads. The hangers (ladder, tyre) pivot at the top; the cleat and the
+        /// ring lie flat on the planks. Hoisted so the budget test counts the same set the placer wires.
+        /// </summary>
+        public static bool IsStandingFitting(string fitting) => fitting == "bollard" || fitting == "pilehead";
+
+        /// <summary>
         /// The pier's fittings. All on the SOUTH edge, because that is the side the camera sees and the
         /// side whose tall face the kit actually draws — fittings on the north curb would be hidden behind
         /// the deck they stand on.
@@ -352,6 +360,11 @@ namespace HiddenHarbours.App.Editor
                     var sr = go.AddComponent<SpriteRenderer>();
                     sr.sprite = sprite;
                     sr.sortingOrder = SortingOrderMax + 1;
+                    // The STANDERS cast (ADR 0016, lights PR B — the searchlight raking the wharf wants
+                    // pilings to throw). Their pivot is their base, which is where a shadow anchors
+                    // (ADR 0026); the hangers (ladder, tyre) pivot at the TOP and would throw from the
+                    // wrong end, so they do not cast.
+                    if (IsStandingFitting(f.Name)) go.AddComponent<SpriteShadow>();
                 }
             }
             else

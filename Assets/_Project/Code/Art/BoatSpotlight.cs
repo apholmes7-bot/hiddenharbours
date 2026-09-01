@@ -363,6 +363,9 @@ namespace HiddenHarbours.Art
             _light.FlickerAmount = _flickerAmount;
             _light.AngularSoftness = _angularSoftness;
             _light.EdgeSoftness = _edgeSoftness;
+            // The searchlight's height reaches the LAND lamp too, so the shadows it throws (ADR 0016,
+            // lights PR B) rake by the same 2.5 m the water's wave relief already lights it from.
+            _light.LampHeightMeters = _lampHeightMeters;
             // The bow anchor: forward along the boat heading (transform.up) plus any side offset. SceneLight
             // throws the cone along this transform's up, so the beam already points along the bow.
             _light.OriginOffset = new Vector2(_sideOffset, _bowOffset);

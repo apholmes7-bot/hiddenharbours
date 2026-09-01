@@ -199,6 +199,11 @@ namespace HiddenHarbours.Art
 
                 var light = go.AddComponent<SceneLight>();
                 BoatLampPresets.Apply(light, lamp.Kind, lamp.SafeIntensityScale);
+                // The lamp's HEIGHT for the shadows it throws (ADR 0016, lights PR B): her rig's own z,
+                // metres up from the KEEL. The keel is the nearest thing her data offers to the plane
+                // her casters stand on — she floats about a metre above it, so a sidelight's rake is
+                // read a little steeper than truth. Stated, not hidden; the def carries no waterline.
+                light.LampHeightMeters = Mathf.Max(0f, lamp.RigLocalMetres.z);
                 _lights[i] = light;
             }
 
