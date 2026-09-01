@@ -124,7 +124,7 @@ namespace HiddenHarbours.App.Editor
 
         /// <summary>
         /// The apron: <b>eight bays across, and one lane plus one bay deep</b>, centred on
-        /// <see cref="NineMileCreekMainland.LaydownPos"/>. 44.8 × 35.5 m.
+        /// <see cref="NineMileCreekMainland.LaydownPos"/>. 44.8 × 35.9 m.
         ///
         /// <para>Every number is the fleet's, not the region's — bay width is the widest machine plus
         /// her door swing, bay depth is the coupled pair, and the lane is the worst turning circle. A
