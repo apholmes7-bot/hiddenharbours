@@ -382,3 +382,100 @@ a separate call a consumer opts into. Both are the `WaveFetch` cost shape, and b
   reason.
 - *A twin is a twin.* Two transcriptions of one formula cannot be made bit-identical; parity is held at a
   visual epsilon, and `MarchSteps` is the fixed `[unroll]` bound both sides move together.
+
+## Revision 3 (2026-09-01) — the BORE: one crest at a time (water-fidelity charter, PR 1)
+
+**The owner, 2026-09-01:** *"continue work on crashing washes using the new water physics."* The surf that
+shipped in revisions 1–2 is **steady-state**: the surf zone is a place, its whitewater an age in metres, the
+sheet a boil that drifts with the flow. Nothing in it knows that crests arrive one at a time — no train
+phase enters the surf block, so nothing arrives, nothing runs up, nothing drains, nothing crashes. This
+revision adds the missing per-crest event to the Core maths; the look (PR 2) and the feel (PR 3) consume it.
+
+### The bore is a READ, not a state
+
+Every term below is computed from data the game already owns — the field's published phase, the painted
+depth, the tide — and nothing is accumulated, saved or randomised (rule 5). Three pieces:
+
+1. **The travel time rides the SAME march.** `MetersSinceBreakAlong` marched 16 fixed taps upwave
+   accumulating a running product of the break gate. It now delegates to `MarchSinceBreakAlong`, which
+   integrates **both** `Σ contiguous·Δs` (metres, bit-identical to before — pinned) and
+   `Σ contiguous·Δs/√(g·dᵢ)` (seconds, the bore speed at each tap's own depth) in the one loop. A second
+   march is refused (rule 7); the partial gate at the surf-zone boundary supplies the sub-step fraction to
+   both integrals because they are the same integral — measured, not argued (below).
+2. **The phase is the field's PUBLISHED phase, read forward at a negative time.** The break line this bore
+   was born on is the marched distance back along the travel direction (`BreakLinePoint`); the bore's phase
+   here is `WaveMath.TrainPhaseDegrees(dominant, breakLinePoint, −travelSeconds)` — the phase the crest that
+   is now here had when it broke. Sampling the published trains at `−τ` is legal, pure and deterministic:
+   the animator bakes accumulated travel into `PhaseOffset` and the trains are sampled at t = 0, so
+   `t = −τ` is the same field τ seconds ago. Nothing reconstructs a phase from a surface (`atan2` of a
+   sampled height is not a phase — revision 1's law stands).
+3. **The pulse is SMOOTH.** `BorePulse01 = ((1 + sin θ)/2)^sharpness`, 1 at the crest (90° — the field's
+   profile peaks at `sin θ = 1`), a quiet at the trough. No cutoff, because a hard front is a step in the
+   travel time and a step sits on the march grid — the sabotage arm of the age measurement proves what the
+   smooth gate buys, and the same law binds the clock. `sharpness ≤ 0` returns exactly 1 everywhere:
+   the steady state.
+
+**Birth energy — the sets, for free.** `BoreBirthEnergy01` is the field's crest factor at the break line at
+the moment **the crest that owns this bore** passed it (`−(τ + SecondsSinceTheCrest)`, so every point on one
+bore's back reads the same birth, and the read is of the crest rather than of the surface between crests).
+A single train reads exactly 1 at every crest; the eight-train JONSWAP field with groups swings it over a
+set — the set's big one breaks near 1, the small ones between sets lower. The contour is still solved for
+the dominant train (one break line), so a set's big wave is a **brighter** bore rather than a further-out
+one; PR 2 may revisit if the eye wants the line itself to breathe.
+
+**Run-up — Hunt (1959).** `RunUpMeters = min(cap, coefficient·ξ·H)·whitewater01·bore01`: the vertical reach
+of the wash above still water for a bore of standing height `H = γ·d` on a bed of surf similarity ξ (clamped
+at the law's measured range, 2.3), scaled by what is left of the bore and pulsing with it, and **capped at
+0.35 m of level** — the drawn-edge ceiling the swash already honours (SEE≠FEEL, ratified 2026-08-01; the
+gameplay waterline never reads it). Metres of LEVEL: the renderer divides by the local slope for a contour
+excursion, exactly as the swash does.
+
+### What `SurfState` gains, and what it does not lose
+
+`Bore01`, `BorePhaseDegrees`, `TravelSeconds`, `BirthEnergy01`, `RunUpMeters`. The overload of `SurfAt`
+without a field returns the **steady state** — `Bore01 = 1`, `RunUpMeters = 0` — and its other terms are
+bit-identical to before (pinned), so nothing that consumed the surf in revision 2 changes until PR 3 chooses
+to. The field-taking overload composes the bore from the same march. `Bore01` is readable by any lane; audio
+in particular may read it (its own role — noted, not built).
+
+### Tunables (rule 6) and the stale asset
+
+`GameConfig.Breakers` gains `BorePulseSharpness` (2.6 = the **shipped asset's** `CrestSharpening` — on
+`GameConfig.asset` since #372; the code's `WaveFieldSettings.Default` still says 2.2, and the asset is the
+authority — so a bore is as pinched as the crest that made it), `BoreSetStrength` (1), `RunUpCoefficient` (1.0 — Hunt's published slope),
+`RunUpCapMeters` (0.35 — the swash's ceiling, shared). The YAML is hand-added in the same PR
+(`GameConfigAssetCoverageTests` would redden otherwise). ⚠️ A `GameConfig` serialized before today
+deserializes all four as **0**, and zero is **the steady state, not wrong**: no pulse (every phase reads 1),
+no run-up — the surf exactly as revision 2 shipped it.
+
+### Measured (2026-09-01, default tuning, the 1:25 shoal of the age measurement)
+
+| | |
+|---|---|
+| distinct travel times across the surf zone (3 decimals) | ≥ 100 of ~128 samples — the clock is not on the grid |
+| sabotage arm: gate band 0.15 → 0.01 | ⚠ a distinct-value count **cannot see it** for a clock — 129 shipped, 113 hard-gated: each tap's `1/√(g·dᵢ)` slides down the slope with the sample, so a hard-gated clock stays continuous within each plateau of tap count and then **jumps a whole tap** (~0.5 s) every 2 m. The metric that sees it is CONTINUITY: the largest neighbour increment against the smooth `Δs/√(g·d)` — **shipped 1.04×, hard-gated 4.22×** (`ANearHardBreakGate_MakesTheClockJUMP…`; 129 vs 113 distinct of 129 samples). A front that teleports half a second every two metres is what the smooth gate prevents. |
+| the pulse at a point inshore peaks after the pulse at its break line by | exactly `TravelSeconds` (mod T), to 0.02 s |
+| 8 m further inshore on ~1 m of water costs | ~2.6 s at √(g·d) — not the 1.5 s the deep-water celerity would give |
+| `MetersSinceBreakAlong` through the combined march | bit-identical to the revision-2 loop |
+
+### The one-language foam decision
+
+PR 2 deposits the bore front into the advected foam buffer (ADR 0027 #6) as a surf injection source beside
+the hull segments — freshness is a **gate**, never a scale — so whitewater churns white, walks
+`WakeFoamAgeing`'s blues, distorts with the surface and dissolves into the ambient sea. **One foam language
+for wake, surf and fringe.** The buffer is camera-windowed; surf outside the window keeps the shader sheet.
+Decided here so PR 2 builds it rather than debates it.
+
+### Twin cost, stated for PR 2 (rule 7)
+
+The seconds ride the existing 16 taps (free). The phase read is one `TrainPhaseDegrees` per pixel (a dot,
+a multiply, a wrap). The birth energy is one **more `WaveFieldSample` call site** at `(breakLinePoint, −τ)`
+— 9 → 10 fragment call sites, ≈ +11 % of the field's transcendental budget — and `BoreSetStrength = 0`
+skips it. `WaveFieldCostReport.RunHeadless` before and after is PR 2's evidence, both numbers in its body.
+
+### What this does NOT touch
+
+`WaveMath` and `WaveFieldAnimator` (read, never rewritten — `TheWaveField_IsNotTouched…` stays green);
+the contour and its solve; the whitewater's own energy clock (`WhitewaterEnergy01` keeps its local-depth
+bore speed — the marched seconds are the bore's clock, and PR 2 decides whether the two unify, since that
+moves the look); the walkability waterline; the shove (PR 3 pulses it); every pixel.

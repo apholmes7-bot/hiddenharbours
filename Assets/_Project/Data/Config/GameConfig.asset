@@ -104,6 +104,10 @@ MonoBehaviour:
     SlopeProbeMeters: 2
     WhitewaterDecaySeconds: 3.5
     WhitewaterStepMeters: 2
+    BorePulseSharpness: 2.6
+    BoreSetStrength: 1
+    RunUpCoefficient: 1
+    RunUpCapMeters: 0.35
   MarketDemandCove: 1
   MarketDemandNineMileCreek: 1.4
   MarketDemandStPetersStore: 0.7
