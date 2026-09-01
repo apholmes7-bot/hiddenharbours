@@ -53,6 +53,17 @@ namespace HiddenHarbours.Tests.PlayMode
         /// </summary>
         public static string WritePlate(Transform boatRoot, string fileName, float metresTall, int pxPerMetre)
         {
+            // GPU-only, by nature. CI has no graphics device: RenderTexture.Create fails there and the
+            // runner counts the logged error as a failure. The plate is a picture for the owner, never
+            // the claim — the SOURCE COUNT reads component state and needs no device, so a caller keeps
+            // its assertion and simply gets no plate here.
+            if (SystemInfo.graphicsDeviceType == UnityEngine.Rendering.GraphicsDeviceType.Null)
+            {
+                Debug.Log("[mesh-interiors-retirement] plate SKIPPED, NOT VERIFIED — no graphics device " +
+                          "(Renderer: Null Device); the count above still stands.");
+                return null;
+            }
+
             int h = Mathf.RoundToInt(metresTall * pxPerMetre);
             int w = Mathf.RoundToInt(h * 4f / 3f);
             var rt = new RenderTexture(w, h, 24, RenderTextureFormat.ARGB32) { filterMode = FilterMode.Point };
