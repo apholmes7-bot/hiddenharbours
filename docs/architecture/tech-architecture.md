@@ -1,7 +1,9 @@
 # Technical Architecture
 
 > The systems backbone. How the game boots, how services talk, how content is data-driven,
-> how the world stays deterministic enough to save reliably, and how it stays fast on a phone.
+> how the world stays deterministic enough to save reliably, and how it stays fast on the desktop
+> baseline (ADR 0005) while staying portable to mobile later. §1, §2, §7 and §9 were corrected to
+> the shipped reality on 2026-09-01 (lead-architect review).
 > Companion docs: `architecture/project-structure.md`, `architecture/data-model.md`, the ADRs.
 
 ## 1. Guiding principles
@@ -16,24 +18,33 @@
    communicate via Core interfaces and an EventBus. (`project-structure.md` §5)
 4. **Composition over inheritance.** Boats, NPCs, and facilities are assembled from small
    components configured by data, not deep class trees.
-5. **Mobile-first budgets.** Every system is written assuming a mid-range phone: tight draw
-   calls, pooled objects, simulation throttled by distance/visibility.
-6. **One perspective, one input abstraction.** Intent-based input so touch today maps to
-   mouse/gamepad later without rewrites. (`design/ux-and-mobile-controls.md`)
+5. **PC-first budgets, mobile-portable.** The target is 60 fps on a typical desktop/laptop GPU
+   (ADR 0005); the discipline that keeps the later mobile port cheap stays — tight draw calls,
+   pooled objects, texture-memory care, simulation throttled by distance/visibility.
+6. **One perspective, one input abstraction.** Intent-based input so KB/mouse + gamepad today
+   map to touch later without rewrites. (`design/ux-and-mobile-controls.md`)
 
 ## 2. Boot & lifetime
 
 ```
-Bootstrap.unity (build index 0)
-   └─ GameRoot  [DontDestroyOnLoad]
-        ├─ Installs persistent services (composition root):
-        │     EventBus, SaveService, TimeService, EnvironmentService,
-        │     RegionService (scene loader), EconomyService, NpcDirector,
-        │     InputService, AudioDirector, ContentDatabase
-        ├─ Loads ContentDatabase (all ScriptableObject defs)
-        ├─ Restores save (or starts new game at Uncle Ned's cottage)
-        └─ Additively loads the active region scene
+<start scene>.unity — StPeters.unity is build index 0 (the game opens there); Greybox is the M0 cove
+   └─ the PERSISTENT CORE, baked into every start scene by PersistentCoreBuilder (App/Editor),
+      each piece tagged PersistentObject → DontDestroyOnLoad, so no start scene can diverge:
+        ├─ services root: GameRoot (the composition root — wires GameServices), GameClock,
+        │     EnvironmentService, PlayerWallet, the glanceable HUD
+        ├─ the on-foot Player, the dory (moored/disabled at start), the follow camera,
+        │     the ControlSwitcher, the travel rig (RegionSceneLoader + RegionTravelCoordinator)
+        ├─ GameRoot.Awake wires the services; the save is re-applied in Start (after every scene
+        │     object's Awake) through SaveRestore → GameLoaded, the same sequence ShellFlow drives
+        │     from the title page
+        └─ region scenes (NineMileCreek, WestWater) are loaded ADDITIVELY by travel and receive
+              this core; each also carries an inactive DevRegionBootstrap dev core so the owner
+              can press Play in a region directly (it activates only when no persistent core exists)
 ```
+
+There is **no `Bootstrap.unity`** — the June scaffold planned one; the shipped model bakes the core
+into the start scene instead (`PersistentCoreBuilder`'s class note records why: #64 left St Peters
+with no controllable player when the core lived only in the cove).
 
 Use a lightweight **composition root** (a single installer that constructs services and injects
 dependencies). A full DI framework (Zenject/VContainer) is optional — start with a simple manual
@@ -329,8 +340,11 @@ parallel-friendly (a new boat = a new Def + prefab, not new subclasses).
 - **Tiered simulation.** Only the active region simulates in detail; neighbours simulate coarsely;
   distant regions are statistical (the NPC fleet still "fishes" to move the market — as numbers,
   not agents). NPCs use Active/Nearby/Dormant tiers.
-- **Mobile budgets:** target 60 fps on mid-range phones (30 fps floor), pooled sprites/objects,
-  sprite atlases, minimal overdraw on the parallax water, draw-call discipline via SRP batching.
+- **Desktop baseline (ADR 0005):** target 60 fps on a typical desktop/laptop GPU; keep the
+  mobile-portability discipline — pooled sprites/objects, atlases, minimal overdraw on the water,
+  draw-call discipline via SRP batching — so the later port does not start from zero. Rendering
+  budgets are stated per feature in its PR body (rule 7); the water shader's cost has its own
+  instrument (`WaveFieldCostReport`).
 - **Time scaling:** fast-forward (sleep/wait) advances `gameTime` and runs catch-up sim ticks
   deterministically rather than real-time stepping.
 
@@ -344,9 +358,10 @@ parallel-friendly (a new boat = a new Def + prefab, not new subclasses).
 - **CI (post-M0):** GameCI on GitHub Actions to build + run tests on PRs. `qa-test` owns this.
 
 ## 9. Multi-platform readiness (don't build now, don't block later)
-- Input through `InputService` intents → desktop/gamepad later is a new input map, not a rewrite.
-- UI built responsive (safe areas, anchors, scalable) so it reflows from phone to desktop.
-- No hard assumptions about touch in gameplay code — gameplay reacts to *intents*.
+- Input through `InputService` intents (the new Input System only — the legacy manager throws) →
+  touch later is a new input map, not a rewrite.
+- UI built responsive (safe areas, anchors, scalable) so it reflows from desktop to phone/console.
+- No hard assumptions about mouse/keyboard in gameplay code — gameplay reacts to *intents*.
 
 ## 10. Open questions (owned by `lead-architect`)
 - DI framework (manual installer vs VContainer) — start manual, revisit if wiring gets heavy.

@@ -19,20 +19,23 @@ areas freely; editing someone else's area needs a heads-up + their review on the
 |-------------|---------------|-------|
 | `Assets/_Project/Code/Core/` | **lead-architect** | shared contracts; changes ripple — review-heavy |
 | `Assets/_Project/Code/Environment/` | gameplay-systems | clock, tide, weather, EnvironmentService |
-| `Assets/_Project/Code/Boats/`, `Fishing/`, `Player/` | gameplay-systems | physics, navigation, fishing, controller, stamina |
+| `Assets/_Project/Code/Boats/`, `Vehicles/`, `Fishing/`, `Player/` | gameplay-systems | physics, navigation, seakeeping, road vehicles (ADR 0035), fishing, controller, deck rider |
+| `Assets/_Project/Code/Art/` | art-pipeline (rendering plumbing co-owned with lead-architect — §1.1) | water, lighting, foam, reflections, facet hulls, sprite paths, emitters |
+| `Assets/_Project/Code/App/` | lead-architect | the composition root (`GameRoot`), shell flow, dev bootstraps; `App/Editor` = the scene builders (co-owned with world-content per region) |
 | `Assets/_Project/Code/World/` | world-content | regions, scene flow, NPC, routines, quests |
 | `Assets/_Project/Code/Economy/` | economy-sim | market, business, staff, production, logistics |
 | `Assets/_Project/Code/UI/` | ui-ux | HUD, menus, screens, input mapping |
 | `Assets/_Project/Code/Audio/` | audio | audio director, adaptive music/sfx |
 | `Assets/_Project/Data/Fish/`, `Commodities/`, `Recipes/`, `Staff/` | economy-sim (+ world-content for flavor) | one entity per file |
 | `Assets/_Project/Data/Regions/`, `NPCs/` | world-content | one entity per file |
-| `Assets/_Project/Data/Boats/`, `Gear/`, `Bait/` | gameplay-systems | one entity per file |
+| `Assets/_Project/Data/Boats/` (+ `HullMeshes/`, `Interiors/` — baked, committed by name), `Vehicles/`, `Tackle/`, `Bites/`, `Traps/`, `RodFights/` | gameplay-systems | one entity per file; never `git add -A` after a Unity run (it rewrites boat assets) |
+| `Assets/_Project/Data/Terrain/` (painted seabed), `Decor/`, `NavBuoys/`, `Homes/`, `StationPieces/`, `FuelStations/`, `FuelContainers/`, `Routines/`, `Characters/` | world-content (+ art-pipeline / tools-editor for the bake tools) | one entity per file; the seabed is GAMEPLAY data (one height map, three consumers) |
 | `Assets/_Project/Data/Config/` (`GameConfig`) | economy-sim + lead-architect | balance/tunables; owner-facing |
 | `Assets/_Project/Scenes/<Region>.unity` | world-content | **one scene per region** — main anti-collision device |
-| `Assets/_Project/Scenes/Bootstrap.unity` | lead-architect | persistent services |
+| the persistent core (`PersistentCoreBuilder`, baked into every start scene — there is no `Bootstrap.unity`) | lead-architect | services root, player, dory, camera, travel rig; `StPeters.unity` is build index 0 |
 | `Assets/_Project/Art/**` | art-pipeline | LFS-tracked |
 | `Assets/_Project/Audio/**` | audio | LFS-tracked |
-| `Assets/_Project/Code/**/Editor/`, `Tools.Editor` | tools-editor | authoring aids, validators |
+| `Assets/_Project/Code/**/Editor/`, `Tools/Editor/` (`Tools.Editor`, `JsEngine.Editor`, `RigBaking.Editor`, `RigStudio.Editor`) | tools-editor (rig bake CONTRACTS with art-director) | authoring aids, validators, the in-engine rig bakers (ADR 0021/0022) |
 | `Assets/Tests/**` | qa-test (+ each role adds tests for its code) | EditMode/PlayMode |
 | `docs/art/rigs/**` | **art-director** | rig JS + gameplay sidecars; the ONE exception to the docs rule below — no other role edits here |
 | `docs/**` (except `art/rigs/`) | the role that owns the system (canon = lead-architect) | update docs in the same PR as the change |

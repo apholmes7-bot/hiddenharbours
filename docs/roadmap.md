@@ -12,6 +12,38 @@
 
 ---
 
+## 0.5 Where we are — snapshot 2026-09-01 (regenerate at every coordinator handoff)
+
+> This block is a **snapshot**, not the live state. The live state is the coordinator's handoff
+> (`HANDOFF-<date>-coordinator.md`, repo root, untracked) and the merged PR list; this block exists so
+> a reader of the phasing below is not misled about what already exists. Refresh it whenever the
+> phasing is re-read against reality, and date it.
+
+**Milestones.** M0 (the greybox loop) is long done. **M1 was re-scoped on 2026-08-01 to "Vertical
+Slice — St Peters"** ([`../backlog/plan-to-m1.md`](../backlog/plan-to-m1.md), owner decisions D1–D8): dig
+clams → walk the tide-gated bar → Nine Mile Creek → buy and repair the dory → sail. **Its world is
+built** — `StPeters.unity`, `NineMileCreek.unity` and `WestWater.unity` are committed hand-authored
+scenes (ADR 0011 / 0019) — but **the M1 Definition of Done (`plan-to-m1.md` §9) has never been
+formally ticked and no GO / POLISH / PIVOT verdict is recorded.** That gate is still the owner's to
+call; `qa-test` owes the written readiness verdict when he asks for it.
+
+**Built beyond the milestone order — all owner-directed and ADR-backed** (the "redirect later-phase
+work" rule below was consciously overridden by the owner for these; they are not drift): the fleet is
+real-time mesh from the dory to the tanker (ADR 0022, 0033); boat interiors as riding levels
+(ADR 0038) becoming full mesh rooms (ADR 0041, rolling out); a `Vehicles` module and the road fleet
+(ADR 0035); the deterministic sea — one shared wave field (0018), a displaced surface (0023), the
+realness pass (0027), breaking waves (0040) — with day/night (0013), additive lights (0016) and beam
+relief on the water; splat-shaded ground (0028); the quiet, diegetic HUD and the notebook (0039);
+Nine Mile Creek's wharf, gas station, shops and clerks. Active lanes at the snapshot: **water
+fidelity** (crashing washes + a look-and-feel pass) and the **mesh-interiors fleet rollout**.
+
+**What this means for the phasing below.** M2–M4 content is landing early wherever the owner's eye
+leads; the milestone tables remain the *dependency order* and the *fun-check gates*, not a schedule.
+When a later-phase system already exists, its milestone row is still where its acceptance criteria
+live — and the gate questions in §6 still apply to it.
+
+---
+
 ## 0. Scope reality — read this first (a blunt, kind note to the owner)
 
 You have written a **genuinely great, genuinely huge** design. Nine production-grade design docs, 100 fish,
@@ -26,7 +58,7 @@ Here is the honest situation and how we handle it:
   grow into the next. The first one is tiny — one cove, one little boat, six fish, one buyer — and it must be
   *fun on its own* before we add anything.
 - **The golden rule, never broken:** **there is always a playable build.** At the end of every milestone (and
-  ideally every week inside one) you can open the game on a phone and *play the loop*. We never enter a state
+  ideally every week inside one) you can open the build on the desktop and *play the loop*. We never enter a state
   where "it'll be playable again in three months." If a feature can't be added without breaking the playable
   build for long, it gets sliced smaller.
 - **Why slice this hard?** Three reasons. (1) **Fun is discovered, not designed** — the fishing→sell loop is
@@ -56,7 +88,7 @@ fill, the staff automation layer, the freight economy — all are *designed* and
 | Milestone | Name | Goal in one line | Shippable? | Fun lives here |
 |---|---|---|---|---|
 | **M0** | **Greybox Prototype** | Prove the fishing→sell loop is fun with placeholder art. | Internal only | The core loop: read tide → catch by hand → sell before it spoils. |
-| **M1** | **Vertical Slice — "Coddle Cove"** | Make that loop *genuinely good* in one real region. | **Yes — soft-launch candidate (Steam / itch.io closed playtest)** | "Is this game worth making?" One beautiful cove, real wind/tide on the dory, Ned, the Punt. |
+| **M1** | **Vertical Slice — "St Peters"** *(was "Coddle Cove"; re-scoped 2026-08-01 — §0.5, `plan-to-m1.md` D2)* | Make that loop *genuinely good* in one real region. | **Yes — soft-launch candidate (Steam / itch.io closed playtest)** | "Is this game worth making?" One beautiful cove, real wind/tide on the dory, Ned, the Punt. |
 | **M2** | **The Working Coast** | Expand to a living inshore+mid coast with danger and the first business steps. | Yes (Early-Access shape) | Grounding/rescue teeth, more regions/boats, supply-and-demand, storage, refining, NPC routines. |
 | **M3** | **Offshore & Enterprise** | Open the Banks and turn laborer into owner. | Yes | The offshore industry; the *first* automation (a staffed second boat); contracts. |
 | **M4** | **Dynasty** | Fleet command, freight empire, the full content fill, multi-platform. | Yes (1.0) | Directing a freight empire; Ironbound/Smother capstones; all 100 fish; desktop/console. |
@@ -93,8 +125,8 @@ minutes. **No town, no physics-based wind, no grounding, no NPCs.**
 
 | System | Owner role |
 |---|---|
-| Unity 6.3 project bootstrap (2D URP, mobile build target), asmdef module layout, Git LFS, persistent-core + additive-scene scaffold | `lead-architect` |
-| Input System with **intent abstraction** (`Move`, `SetThrottle`, `SetHeading`, `Interact`, `Haul`) — touch first | `lead-architect` |
+| Unity 6.5 (6000.5) project bootstrap (2D URP, PC-first desktop target — ADR 0005), asmdef module layout, Git LFS, persistent-core + additive-scene scaffold | `lead-architect` |
+| Input System with **intent abstraction** (`Move`, `SetThrottle`, `SetHeading`, `Interact`, `Haul`) — KB/mouse + gamepad first; touch retargets the same intents in the later mobile port | `lead-architect` |
 | Save/load scaffold (versioned schema; save = `{seed, gameTime, playerState}`) | `lead-architect` |
 | `EnvironmentService` v0: `gameTime` (double) clock + **deterministic semidiurnal tide** (the §3.4 formula), `OnDayRollover`, sleep/skip | `gameplay-systems` |
 | Dory controller v0 (simple top-down move + a follow-cam) — *kinematic, not yet the force model* | `gameplay-systems` |
@@ -123,11 +155,14 @@ wanting one more run."
 
 ---
 
-### M1 — Vertical Slice ("Coddle Cove")
+### M1 — Vertical Slice ("St Peters" — re-scoped 2026-08-01; the Coddle Cove text below is the original framing)
 
 > **The question this answers:** *Is this game worth making?* M0 proved the loop works; M1 makes one slice of it
-> genuinely, shippably **good** — the candidate for a first soft-launch / TestFlight. This is the milestone the
-> whole project is currently pointed at; its full spec is [`../backlog/milestone-1-vertical-slice.md`](../backlog/milestone-1-vertical-slice.md).
+> genuinely, shippably **good** — the candidate for a first soft-launch (a Steam / itch.io closed playtest, ADR 0005).
+> **The current M1 spec is [`../backlog/plan-to-m1.md`](../backlog/plan-to-m1.md)** (the St Peters arc, owner
+> decisions D1–D8, the amended Definition of Done); the original slice spec is
+> [`../backlog/milestone-1-vertical-slice.md`](../backlog/milestone-1-vertical-slice.md). The region narrative that
+> follows was written for Coddle Cove and is kept as the design intent — the Cove is now M2's home harbour.
 
 **Goal.** Take the M0 loop and make it *good* in one real, art-passed region — with the signature P1 feel (wind
 and tide as forces you read), a couple of named NPCs including **Uncle Ned**, the first taste of the market town,

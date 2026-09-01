@@ -92,7 +92,7 @@
 
 ---
 
-# M1 — Vertical Slice ("Coddle Cove")
+# M1 — Vertical Slice ("St Peters" — re-scoped 2026-08-01 per plan-to-m1 D2; the Cove is M2's home harbour. Epic ids and VS-xx mappings below are the original Coddle Cove framing)
 
 > **Goal:** make the loop *genuinely good* — the soft-launch candidate. **Detail + AC:** the M1-tagged `VS-xx`
 > items + the Definition of Done in [`milestone-1-vertical-slice.md`](milestone-1-vertical-slice.md).

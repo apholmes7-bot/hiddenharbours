@@ -1,6 +1,6 @@
 # ADR 0040 — Waves that BREAK: lip, barrel, pocket and whitewater, computed from the wave field × the painted depth × the tide
 
-- **Status:** **Proposed — awaiting owner sign-off.** This PR ships the ADR **and** the Core maths
+- **Status:** **Accepted** *(status flipped 2026-09-01 by the lead-architect review: PR 1 #675, PR 2 #680, PR 3 #682 all merged 2026-08-28 and the two owner rulings inside the revisions are the sign-off — original line follows)* — **Proposed — awaiting owner sign-off.** This PR ships the ADR **and** the Core maths
   (`BreakerMath`), pinned headless; it draws nothing and pushes nothing yet. Merging it = the go-ahead
   for the two consumer PRs below, each gated on the owner's own eye.
 - **Date:** 2026-08-27
