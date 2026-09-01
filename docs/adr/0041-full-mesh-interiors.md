@@ -190,3 +190,65 @@ F/MATS symbol (her reconstruction goes stale silently if her paint changes).
 **Still owed before boat-lights PR 2 rides on a converted hull:** lamps-over-mesh-interiors has no
 measurement — #690's parity fixture takes the ToSetup path, so no `BoatLamps` exists in either arm
 and the un-gate is structurally unclaimed.
+
+### Retirement (fleet rollout PR 0, 2026-09-01) — the sprite room goes, per hull, through the bake's own predicate
+
+**What was measured first, on main as it stood after #690.** Neither #688 nor #690 retired the
+converted hull's sheets, and `BoatInteriorInstaller.Install` built the sprite room for any def with
+`HasInterior()` without asking whether a mesh room existed. Counted off the live objects below decks
+(`BelowDecksDrawSources` — a sprite renderer enabled with a cabin cell, and a hull renderer holding an
+open cut), on the shipped wiring:
+
+| hull | where | sources drawing below decks on main | after PR 0 |
+|---|---|---|---|
+| lobster | the cabin journey (`BoatCabinJourneyPlayTests`) | **2** — sprite room DRAWING, mesh room DRAWING | 1 (the mesh) |
+| cape | the intro (`IntroCabinPassagePlayTests`, the real `ArrivalOpening`) | **2** — sprite room DRAWING, mesh room DRAWING | 1 (the mesh) |
+
+So the warning in this ADR's own consequences section was the live state of main from 2026-09-01
+(#690's merge) until PR 0: both converted hulls drew their cabin twice. Plates of the intro below
+decks before and after are under `docs/art/spikes/full-mesh-interiors/retirement/`.
+
+**The runtime predicate is the bake's output.** A hull is converted iff
+`HullMeshDef.HasMeshInterior()` — `InteriorRamps.Length > 0`, which the baker writes only through
+`AppendMeshInteriorIfConverted`. `BoatInteriorInstaller` reads it and builds **no sprite room at all**
+for a converted hull (no child, no `SpriteRenderer`, no cells; `BoatInterior.RoomIsGeometry` is set and
+`EnsureCells` never touches `Resources`). The def stays wired — levels, routes, the threshold, the door
+and the cutaway all read it; only the picture changed source. There is no second list of converted
+hulls anywhere: the sheet-side suites derive "converted" from `RigMeshAssetBaker.MeshInteriorHulls`
+(`ConvertedInteriors`, which also throws if a hull on the switch was never re-baked), and the runtime
+and the placement suite read the def.
+
+**Retired in the same change:** `LobsterBoatIsoInterior.png`, `CapeIslanderIsoInterior.png`, their two
+`BoatInteriorCellsDef` assets under `Resources/BoatInteriorCells/`, and their rows in
+`BoatInteriors.json` (27 → 25 sheets). `Sheets_CoverExactlyTheClearedHulls` is now cleared **minus**
+converted, both halves derived; `NoConvertedHull_HasASheetInTheContract` and
+`AConvertedHullShipsNoCellsAndNoSheet_AndStillLinksHerDef` make a batch that converts a hull and
+forgets to retire her reddening. The wiring menu (`BoatInteriorVisualWiring`) reports a converted hull
+as CONVERTED and will not resurrect a retired cells asset.
+
+**A consequence worth stating:** `GameConfig.InteriorRockScale` (the 0.45 comfort fraction) scaled
+the SPRITE room's lean. A converted hull has no second picture — her room is her mesh and rides at her
+own rock — so the clamp is inert on converted hulls and keeps serving the sprite hulls until PR 5.
+
+**Lamps over a mesh interior — the measurement this ADR owed the boat-lights lane.** Through the FULL
+`IsoFacetHullPresentationService.Install(host, def)` path in PlayMode (where `BoatLamps` and
+`SceneLight` genuinely wake), on the cape with her six lamps, at night (tint (0.10, 0.12, 0.20),
+luma 0.12 — the additive-light gate fully on), full mesh against the room-stripped control carrying
+the same lamps (`MeshInteriorLampsPlayTests`):
+
+| heading | dark noise floor | lit noise floor | (0) closed, dark: full vs stripped | (1) closed, lit: full vs stripped | (2) lamp footprint, closed | (3) lamp footprint over the open room | (4) room under lit lamps | (5) occupied boost | (6) searchlight alone |
+|---|---|---|---|---|---|---|---|---|---|
+| 90 | 0 px | 0 px | **0 px** | 30 px, none beyond 2 LSB | 15154 px | 15157 px | 6695 px | 6980 px | 15466 px |
+| 135 | 0 px | 0 px | **0 px** | 549 px, none beyond 2 LSB | 14349 px | 14353 px | 7472 px | 6550 px | 15466 px |
+| 180 | 0 px | 0 px | **0 px** | 473 px, none beyond 2 LSB | 13602 px | 13605 px | 5652 px | 6448 px | 15397 px |
+| 45 | 0 px | 0 px | **0 px** | 327 px, none beyond 2 LSB | 15927 px | 15931 px | 9047 px | 7013 px | 15383 px |
+
+Cell 456×420 (48 208 inked px at 90°). The five GLOWS (port and starboard sidelights, stern, masthead, cabin) are the lamps in (0)–(5); the SEARCHLIGHT is switched off for them and measured alone in (6), because its way-gate smoothing steps by a floored delta-time every frame even with time frozen and its cone differed by exactly 1 LSB over 8.5 k px between two arms enabled a few frames apart — a self-animating beam, not hull compositing. Read: (0) the arms agree exactly in the dark; (1) with the glows lit they differ on 30–549 px (0.2–3.8 % of the glow footprint), every one within 2 LSB, with both noise floors at 0 — blend quantisation of the additive glow, not geometry (a room showing through would be a structured region many LSB deep); the exact source of that ≤2-LSB shift was not run down here. (2)/(3) the glows' own footprint, closed and open; (4) how much room stands under lit lamps; (5) the cabin-glow occupied boost published the way `BoatInterior` publishes it.
+
+Three fixture traps, each of which first read as a finding: (a) two captures of one dark closed hull a frame apart differed by ~40 px — frame-time terms in the lit path, so `Time.timeScale` is 0 and a noise-floor column is asserted 0; (b) two hulls alive 20 m apart differed by 51 k px at 1–5 LSB across the whole hull — the lights publish scene-wide shader globals, last writer wins, so exactly one hull is alive per capture; (c) the searchlight above.
+
+The claim, in one line: with her five glows burning at night the room-stripped control and the full
+mesh agree to within 2 LSB on every pixel at every heading, and exactly in the dark — the room does
+not show through her lights. Plates and the report are under
+`docs/art/spikes/full-mesh-interiors/retirement/`. **PR 0 reports this and does not un-gate
+boat-lights PR 2** — that is the coordinator's call.

@@ -240,6 +240,16 @@ namespace HiddenHarbours.Boats
         /// hull with no sheets is not asked for them once per frame forever.</summary>
         private bool _cellsLoaded;
 
+        /// <summary>
+        /// <b>Her picture is the hull's own geometry (ADR 0041)</b> — the room's faces live in the hull
+        /// mesh and the cutaway reveals them, so this cabin owns NO interior renderer, NO cells, and must
+        /// never go to <c>Resources</c> for a sheet: there is none, and a converted hull whose sheets
+        /// were still wired would draw her cabin twice. Set by the installer off
+        /// <see cref="HullMeshDef.HasMeshInterior"/>, the bake's own output; everything else about the
+        /// def — levels, routes, the threshold, the door, the cutaway — is read exactly as before.
+        /// </summary>
+        public bool RoomIsGeometry { get; private set; }
+
         /// <summary>The cells id this cabin is HOLDING a reference to, or null. The "did I actually
         /// hold?" half of the release below — a cabin that never loaded must release nothing.</summary>
         private string _heldCellsId;
@@ -259,9 +269,10 @@ namespace HiddenHarbours.Boats
                               Sprite[] cells, int facings, bool cellsAreCounterClockwise,
                               float zeroHeadingDegrees,
                               float deckRollDegrees, float deckHeavePixels, float deckPitchLiftMeters,
-                              int[] cellRowForLevel = null)
+                              int[] cellRowForLevel = null, bool roomIsGeometry = false)
         {
             _def = def;
+            RoomIsGeometry = roomIsGeometry;
             _exterior = exterior;
             _interior = interior;
             _fittings = fittings;
@@ -537,6 +548,9 @@ namespace HiddenHarbours.Boats
         /// </summary>
         public void EnsureCells()
         {
+            // ADR 0041: a converted hull has no sheet to load and no renderer to show one in. Marked
+            // loaded so nothing asks again, and Resources is never touched — the asset is retired.
+            if (RoomIsGeometry) { _cellsLoaded = true; return; }
             if (_cellsLoaded || _cells is { Length: > 0 }) return;
             if (_def == null || string.IsNullOrEmpty(_def.Id)) return;
 

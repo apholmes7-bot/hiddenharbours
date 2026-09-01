@@ -1,5 +1,15 @@
 # Boat interior sheets — the bake record
 
+> ⚠️ **RETIRING, per hull, under ADR 0041 (full mesh interiors).** As each hull's room becomes
+> geometry her sheet pages, her `BoatInteriorCellsDef` under `Resources/BoatInteriorCells/` and her
+> row in `BoatInteriors.json` are deleted in the same PR (`RigMeshAssetBaker.MeshInteriorHulls` is the
+> switch; `BoatInteriorSheetTests.Sheets_CoverExactlyTheClearedHulls_MinusTheConverted` tracks it).
+> Retired so far — **2026-09-01, fleet rollout PR 0:** the lobster boat (#688's room) and the cape
+> islander (#690's room); the kit ships **25** of the 27 cleared hulls. The runtime never builds a
+> sprite room for a converted hull (`HullMeshDef.HasMeshInterior()`); the numbers below describe the
+> kit as baked on 2026-08-20 and are kept as the record. The whole sprite-interior system is deleted
+> after the last hull converts (rollout PR 5).
+
 **What this is.** The art half of ADR 0038: the rig-rendered cabin sheets that ADR 0038's runtime will
 draw. The def half landed in #589 (`BoatInteriorDef`, the reader, the merge); this is the pixels.
 

@@ -47,6 +47,10 @@ namespace HiddenHarbours.Tests.RigBaking
         static Dictionary<string, string[]> _sidecarLevelsByHullStem;
         static Dictionary<string, double> _bearingByHullStem;
         static string[] _cleanHullStems;
+        /// <summary>ADR 0041: hulls whose room is geometry, derived from the bake's switch (see
+        /// <see cref="ConvertedInteriors"/>). Their sheets are RETIRED, so the kit's cleared set is
+        /// cleared MINUS these — and it shrinks in lockstep with the switch, never with a list here.</summary>
+        static string[] _convertedHullStems;
 
         [OneTimeSetUp]
         public void LoadEverythingOnce()
@@ -82,6 +86,7 @@ namespace HiddenHarbours.Tests.RigBaking
             }
             clean.Sort(StringComparer.Ordinal);
             _cleanHullStems = clean.ToArray();
+            _convertedHullStems = ConvertedInteriors.HullStems().OrderBy(s => s, StringComparer.Ordinal).ToArray();
 
             LoadExteriorGeometry();
         }
@@ -228,16 +233,23 @@ namespace HiddenHarbours.Tests.RigBaking
         // ---- coverage ---------------------------------------------------------------------------
 
         [Test]
-        public void Sheets_CoverExactlyTheClearedHulls()
+        public void Sheets_CoverExactlyTheClearedHulls_MinusTheConverted()
         {
             var shipped = Contract().sheets.Select(s => s.hullStem).OrderBy(s => s, StringComparer.Ordinal).ToArray();
 
-            CollectionAssert.AreEqual(_cleanHullStems, shipped,
-                "the sheets and the S0 ledger's cleared set are not the same hulls.\n" +
-                $"  cleared but unbaked: {string.Join(", ", _cleanHullStems.Except(shipped))}\n" +
-                $"  baked but not cleared: {string.Join(", ", shipped.Except(_cleanHullStems))}\n" +
+            // ADR 0041: a converted hull's room is geometry and her sheets are retired — so the set the
+            // kit must cover is cleared MINUS converted, both halves derived (the ledger, the switch).
+            string[] expected = _cleanHullStems.Except(_convertedHullStems, StringComparer.Ordinal)
+                                               .OrderBy(s => s, StringComparer.Ordinal).ToArray();
+
+            CollectionAssert.AreEqual(expected, shipped,
+                "the sheets and (the S0 ledger's cleared set minus the mesh-converted hulls) are not " +
+                "the same hulls.\n" +
+                $"  cleared but unbaked: {string.Join(", ", expected.Except(shipped))}\n" +
+                $"  baked but not cleared, or baked for a CONVERTED hull: {string.Join(", ", shipped.Except(expected))}\n" +
                 "A cleared hull without art is a boat nobody can go below on; a sheet for an " +
-                "uncleared hull is art cut from a boat whose shape was never verified.");
+                "uncleared hull is art cut from a boat whose shape was never verified; a sheet for a " +
+                "converted hull draws her cabin twice.");
 
             // 27 = ALL of the drop. The last refusal is discharged.
             // Moved 24 → 26 → 27, each step WITH the ledger change it tracks:
@@ -247,11 +259,33 @@ namespace HiddenHarbours.Tests.RigBaking
             //            base, the kit's aft door and published loft re-applied, with #508's OKLCH
             //            paint and #247's washboards byte-identical through it. Her FORKED-RIG
             //            refusal is flipped to CLEAN in the ledger's dated _corrections entry.
-            Assert.AreEqual(27, shipped.Length,
-                $"the kit ships {shipped.Length} interior sheet sets where the intake cleared 27 hulls " +
-                "of the 27 in the drop — every one. If the ledger has genuinely changed — a hull " +
-                "regressed, or a new drop arrived — this number moves WITH a ledger change and an ADR " +
-                "note, never on its own.");
+            // Then the SHEETS started retiring per hull as rooms became geometry (ADR 0041, fleet
+            // rollout PR 0, 2026-09-01): the cleared count stays 27 and the shipped count is 27 minus
+            // however many hulls are on RigMeshAssetBaker.MeshInteriorHulls — read, not typed.
+            Assert.AreEqual(27, _cleanHullStems.Length,
+                $"the intake cleared {_cleanHullStems.Length} hulls where the drop has 27. If the ledger " +
+                "has genuinely changed — a hull regressed, or a new drop arrived — this number moves " +
+                "WITH a ledger change and an ADR note, never on its own.");
+            Assert.AreEqual(27 - _convertedHullStems.Length, shipped.Length,
+                $"the kit ships {shipped.Length} interior sheet sets for 27 cleared hulls of which " +
+                $"{_convertedHullStems.Length} are converted to mesh rooms.");
+        }
+
+        /// <summary>ADR 0041: a hull whose room is geometry must have NO sheet — the retirement half of
+        /// the rollout, asserted against the switch so a batch that converts a hull and forgets to
+        /// retire her sheet reddens here.</summary>
+        [Test]
+        public void NoConvertedHull_HasASheetInTheContract()
+        {
+            Assert.IsNotEmpty(_convertedHullStems, "no converted hull at all — this would pass vacuously");
+            var offenders = Contract().sheets
+                .Where(s => _convertedHullStems.Contains(s.hullStem, StringComparer.Ordinal))
+                .Select(s => $"{s.hullStem} ({s.defId}: {string.Join(", ", s.pages.Select(p => p.file))})")
+                .ToArray();
+            Assert.IsEmpty(offenders,
+                "these hulls have a MESH room (RigMeshAssetBaker.MeshInteriorHulls) and still ship a " +
+                "sprite sheet, so they draw their cabin twice. Retire the pages, the cells asset and the " +
+                "contract row in the same PR as the conversion:\n  " + string.Join("\n  ", offenders));
         }
 
         [Test]
@@ -267,6 +301,10 @@ namespace HiddenHarbours.Tests.RigBaking
 
             string[] fromSheets = Contract().sheets.Select(s => s.defId)
                                             .OrderBy(s => s, StringComparer.Ordinal).ToArray();
+
+            // ADR 0041: a converted hull keeps her DEF (the walker reads it) and loses her SHEET.
+            HashSet<string> converted = ConvertedInteriors.DefIds();
+            defs = defs.Where(d => !converted.Contains(d)).ToArray();
 
             CollectionAssert.AreEqual(defs, fromSheets,
                 "the interior DEFS and the interior SHEETS name different hulls. They are built from " +
