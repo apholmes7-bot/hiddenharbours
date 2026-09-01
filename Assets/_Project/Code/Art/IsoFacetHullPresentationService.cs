@@ -361,6 +361,10 @@ namespace HiddenHarbours.Art
             // to the sprite path must not keep sorting as a group.
             var group = host.GetComponent<SortingGroup>();
             if (group != null) Destroy(group);
+            // And the lamp-shadow caster goes with the renderer it casts from (ADR 0016, lights PR B):
+            // a sprite-path host has no id block in the screen texture to cast with.
+            var caster = host.GetComponent<HullLampShadowCaster>();
+            if (caster != null) Destroy(caster);
         }
 
         /// <summary>

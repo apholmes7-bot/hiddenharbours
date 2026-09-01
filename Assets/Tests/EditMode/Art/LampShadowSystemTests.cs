@@ -389,6 +389,23 @@ namespace HiddenHarbours.Tests.Art.EditMode
         }
 
         [Test]
+        public void ThePresentationService_TakesTheCasterWithTheRendererItRemoves()
+        {
+            var def = AssetDatabase.LoadAssetAtPath<HullMeshDef>(DoryMeshPath);
+            Assert.IsNotNull(def);
+            var host = new GameObject("dory-removed");
+            _spawned.Add(host);
+
+            var service = new IsoFacetHullPresentationService();
+            Assert.IsNotNull(service.Install(host, def));
+            Assert.IsNotNull(host.GetComponent<HullLampShadowCaster>(), "precondition: she casts");
+
+            service.Remove(host);
+            Assert.IsNull(host.GetComponent<HullLampShadowCaster>(),
+                "a host sent back to the sprite path has no id block to cast with — the caster leaves with the renderer");
+        }
+
+        [Test]
         public void TheProfileDefaults_AreTheShippedNumbers()
         {
             var p = LampShadowProfile.CreateDefault();
