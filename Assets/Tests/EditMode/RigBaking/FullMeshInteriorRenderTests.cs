@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using NUnit.Framework;
@@ -10,6 +12,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using HiddenHarbours.Art;
 using HiddenHarbours.Core;
+using HiddenHarbours.Tools.RigBaking;
 
 namespace HiddenHarbours.Tests.RigBaking
 {
@@ -31,10 +34,85 @@ namespace HiddenHarbours.Tests.RigBaking
     /// </summary>
     public class FullMeshInteriorRenderTests
     {
-        const string HullMeshPath = "Assets/_Project/Data/Boats/HullMeshes/LobsterBoatIsoHullMesh.asset";
         const string ImageDir = "docs/art/spikes/full-mesh-interiors";
         const int ProbeLayer = 31;
         const string LevelGateKeyword = "HH_LEVEL_GATE";
+
+        /// <summary>
+        /// One converted hull, as a test case. <see cref="ToString"/> is what NUnit shows, so a red
+        /// names the boat rather than a struct dump.
+        /// </summary>
+        public readonly struct ConvertedHull
+        {
+            /// <summary>Short, stable, and it is also the eyeball pack's filename prefix —
+            /// the interior rig's own vocabulary for this boat ("lobster", "cape").</summary>
+            public readonly string Name;
+            public readonly string MeshPath;
+
+            public ConvertedHull(string name, string meshPath) { Name = name; MeshPath = meshPath; }
+            public override string ToString() => Name;
+        }
+
+        /// <summary>
+        /// The pack/report prefix per converted hull. ⚠️ This map does NOT decide WHICH hulls are
+        /// tested — <see cref="ConvertedHulls"/> derives that from
+        /// <see cref="RigMeshAssetBaker.MeshInteriorHulls"/>, the bake's own switch, so the fixture
+        /// cannot drift from what was actually baked. All this supplies is the human-facing name,
+        /// and a hull converted without one FAILS LOUDLY there rather than quietly writing a pack
+        /// called "-090-closed.png".
+        /// </summary>
+        static readonly IReadOnlyDictionary<string, string> PackNames =
+            new Dictionary<string, string>(StringComparer.Ordinal)
+            {
+                ["LobsterBoatIso"] = "lobster",
+                ["CapeIslanderIso"] = "cape",
+            };
+
+        /// <summary>
+        /// <b>Every hull the baker actually converted — read from the baker, not transcribed.</b>
+        /// Adding a hull to <see cref="RigMeshAssetBaker.MeshInteriorHulls"/> and re-baking is what
+        /// enrols her here; a rollout batch adds a NAME to <see cref="PackNames"/>, never a file.
+        /// The two-copies-of-the-rule drift this avoids is the same one
+        /// <c>AppendMeshInteriorIfConverted</c> is factored to avoid on the bake side.
+        /// </summary>
+        public static IEnumerable<ConvertedHull> ConvertedHulls()
+        {
+            var found = new List<ConvertedHull>();
+            var matched = new HashSet<string>(StringComparer.Ordinal);
+
+            foreach (FleetHull hull in HullMeshFleet.Hulls)
+            {
+                if (!RigMeshAssetBaker.MeshInteriorHulls.Contains(hull.GlobalName, StringComparer.Ordinal))
+                    continue;
+                if (!PackNames.TryGetValue(hull.GlobalName, out string name))
+                    throw new InvalidOperationException(
+                        $"'{hull.GlobalName}' is on RigMeshAssetBaker.MeshInteriorHulls but " +
+                        "FullMeshInteriorRenderTests.PackNames has no short name for her, so her " +
+                        "eyeball pack and her reports would be written without a prefix — and would " +
+                        "overwrite another hull's. Add her name.");
+                matched.Add(hull.GlobalName);
+                found.Add(new ConvertedHull(name, hull.MeshAssetPath));
+            }
+
+            // ⚠️ COMPLETENESS, AND EAGERLY — the reason this method is a list and not an iterator.
+            // A name on MeshInteriorHulls that matches no fleet hull (a typo, or a hull retired from
+            // the catalog) is INERT everywhere else: the bake only ever walks the fleet, so it never
+            // looks the name up and never complains, and an iterator would simply yield one case
+            // fewer. The suite would go green having quietly stopped testing a converted hull —
+            // the same shape as the guard above, one level up. Built eagerly so this throws at
+            // DISCOVERY, where it is visible, rather than mid-enumeration.
+            string[] unmatched = RigMeshAssetBaker.MeshInteriorHulls
+                                                  .Where(g => !matched.Contains(g)).ToArray();
+            if (unmatched.Length > 0)
+                throw new InvalidOperationException(
+                    $"RigMeshAssetBaker.MeshInteriorHulls names {string.Join(", ", unmatched)}, " +
+                    "which no hull in HullMeshFleet.Hulls carries as a GlobalName. Either the name " +
+                    "is misspelled or she is no longer in the catalog — and until it is fixed she " +
+                    "is converted in the bake's eyes and untested in this fixture's.");
+
+            Assert.IsNotEmpty(found, "no converted hulls at all — this whole fixture would vacuously pass.");
+            return found;
+        }
 
         /// <summary>Headings for the pack. Beam and quarter, because a ¾ view is where the hull's
         /// own near topsides stand between the camera and a cabin sole — the case the depth shift
@@ -50,12 +128,12 @@ namespace HiddenHarbours.Tests.RigBaking
                               "These pictures need the local GPU; CI cannot produce them.");
         }
 
-        static HullMeshDef LoadHullOrIgnore()
+        static HullMeshDef LoadHullOrIgnore(ConvertedHull hull)
         {
-            var hm = AssetDatabase.LoadAssetAtPath<HullMeshDef>(HullMeshPath);
-            if (hm == null) Assert.Ignore($"{HullMeshPath} is not present — bake her first.");
+            var hm = AssetDatabase.LoadAssetAtPath<HullMeshDef>(hull.MeshPath);
+            if (hm == null) Assert.Ignore($"{hull.MeshPath} is not present — bake her first.");
             if (hm.InteriorRamps == null || hm.InteriorRamps.Length == 0)
-                Assert.Ignore($"{HullMeshPath} carries no interior palette, so she has not been " +
+                Assert.Ignore($"{hull.MeshPath} carries no interior palette, so she has not been " +
                               "converted to a mesh room yet. Add her to " +
                               "RigMeshAssetBaker.MeshInteriorHulls and re-bake.");
             return hm;
@@ -75,10 +153,11 @@ namespace HiddenHarbours.Tests.RigBaking
         /// way.</para>
         /// </summary>
         [Test]
-        public void ClosedUp_TheRoomChangesNothing_AgainstAHullWithNoRoomAtAll()
+        [TestCaseSource(nameof(ConvertedHulls))]
+        public void ClosedUp_TheRoomChangesNothing_AgainstAHullWithNoRoomAtAll(ConvertedHull hull)
         {
             RequireAGraphicsDevice();
-            HullMeshDef hm = LoadHullOrIgnore();
+            HullMeshDef hm = LoadHullOrIgnore(hull);
 
             Mesh stripped = MeshWithoutTheRoom(hm.Mesh, out int roomVerts, out int hullVerts);
             Assert.Greater(roomVerts, 0,
@@ -106,7 +185,7 @@ namespace HiddenHarbours.Tests.RigBaking
             }
             finally { UnityEngine.Object.DestroyImmediate(stripped); }
 
-            WriteReport("closed-up-costs-nothing.txt", log.ToString());
+            WriteReport($"{hull.Name}-closed-up-costs-nothing.txt", log.ToString());
         }
 
         /// <summary>
@@ -116,10 +195,11 @@ namespace HiddenHarbours.Tests.RigBaking
         /// hundred pixels of room has the same failure and would pass a nonzero test.
         /// </summary>
         [Test]
-        public void CutOpen_TheRoomActuallyArrives_AtEveryHeading()
+        [TestCaseSource(nameof(ConvertedHulls))]
+        public void CutOpen_TheRoomActuallyArrives_AtEveryHeading(ConvertedHull hull)
         {
             RequireAGraphicsDevice();
-            HullMeshDef hm = LoadHullOrIgnore();
+            HullMeshDef hm = LoadHullOrIgnore(hull);
 
             var log = new StringBuilder();
             log.AppendLine("CUT OPEN — how much of the picture the room accounts for");
@@ -149,7 +229,7 @@ namespace HiddenHarbours.Tests.RigBaking
                 }
             }
             Assert.IsTrue(any, "this hull declares no enclosed level, so nothing was tested.");
-            WriteReport("cut-open-the-room-arrives.txt", log.ToString());
+            WriteReport($"{hull.Name}-cut-open-the-room-arrives.txt", log.ToString());
         }
 
         /// <summary>
@@ -159,10 +239,11 @@ namespace HiddenHarbours.Tests.RigBaking
         /// repeating numbers read like a stable measurement, not like an absent one.
         /// </summary>
         [Test]
-        public void HeadingsAreActuallyApplied_OrEveryPerHeadingNumberHereIsOneNumber()
+        [TestCaseSource(nameof(ConvertedHulls))]
+        public void HeadingsAreActuallyApplied_OrEveryPerHeadingNumberHereIsOneNumber(ConvertedHull hull)
         {
             RequireAGraphicsDevice();
-            HullMeshDef hm = LoadHullOrIgnore();
+            HullMeshDef hm = LoadHullOrIgnore(hull);
 
             byte[] first = Render(hm, hm.Mesh, 0, Headings[0]);
             for (int i = 1; i < Headings.Length; i++)
@@ -190,16 +271,19 @@ namespace HiddenHarbours.Tests.RigBaking
         /// encode a conclusion nobody has reached yet.</para>
         /// </summary>
         [Test]
-        public void Diagnostic_WhereTheRiggingDraws()
+        [TestCaseSource(nameof(ConvertedHulls))]
+        public void Diagnostic_WhereTheRiggingDraws(ConvertedHull hull)
         {
             RequireAGraphicsDevice();
-            HullMeshDef hm = LoadHullOrIgnore();
+            HullMeshDef hm = LoadHullOrIgnore(hull);
 
-            const int RiggingTag = 5;
+            int RiggingTag = TopStructureTag(hm, out string topTable);
             var log = new StringBuilder();
-            log.AppendLine("WHERE THE RIGGING DRAWS — level 5 culled vs not");
-            log.AppendLine("Her rig places these faces at z 2.953..5.958; the house tops at 3.055.");
+            log.AppendLine($"WHERE THE TOP STRUCTURE DRAWS — level {RiggingTag} culled vs not");
+            log.AppendLine("The tag is DERIVED from the mesh (highest exterior geometry), not named.");
             log.AppendLine("Rows are screen rows, 0 = TOP of the cell. Lower row number = higher up.");
+            log.AppendLine();
+            log.AppendLine(topTable);
             log.AppendLine();
 
             foreach (float heading in Headings)
@@ -221,10 +305,10 @@ namespace HiddenHarbours.Tests.RigBaking
                         if (y > maxRow) maxRow = y;
                     }
 
-                (int top, int bottom) hull = InkedRows(noRig, w, h);
+                (int top, int bottom) hullRows = InkedRows(noRig, w, h);
                 (int top, int bottom) all = InkedRows(whole, w, h);
                 log.AppendLine($"  heading {heading,5:0}°  whole rows {all.top}..{all.bottom}"
-                             + $"  |  without rigging {hull.top}..{hull.bottom}"
+                             + $"  |  without rigging {hullRows.top}..{hullRows.bottom}"
                              + $"  |  rigging {n,5} px, rows {minRow}..{maxRow}");
                 // SELF-CHECK. Every changed pixel must lie inside the whole render's own inked band;
                 // a diff outside it means the two arms are not the same boat and the rest of this
@@ -234,11 +318,11 @@ namespace HiddenHarbours.Tests.RigBaking
                 log.AppendLine($"  {"",13} self-check: changed rows inside the whole render's band? "
                              + (sane ? "yes" : "NO — THIS LINE IS NOT TRUSTWORTHY"));
                 if (sane)
-                    log.AppendLine($"  {"",13} rigging sits {(minRow < hull.top ? "ABOVE" : "not above")} "
-                                 + $"the hull's top, and {(maxRow > hull.bottom ? "BELOW" : "not below")} "
+                    log.AppendLine($"  {"",13} rigging sits {(minRow < hullRows.top ? "ABOVE" : "not above")} "
+                                 + $"the hull's top, and {(maxRow > hullRows.bottom ? "BELOW" : "not below")} "
                                  + "its bottom.");
             }
-            WriteReport("where-the-rigging-draws.txt", log.ToString());
+            WriteReport($"{hull.Name}-where-the-rigging-draws.txt", log.ToString());
         }
 
         static (int top, int bottom) InkedRows(byte[] rgba, int w, int h)
@@ -258,11 +342,12 @@ namespace HiddenHarbours.Tests.RigBaking
         /// invisible to all of them.
         /// </summary>
         [Test]
-        public void ThePublishedPack_IsNotUpsideDown()
+        [TestCaseSource(nameof(ConvertedHulls))]
+        public void ThePublishedPack_IsNotUpsideDown(ConvertedHull hull)
         {
             RequireAGraphicsDevice();
-            HullMeshDef hm = LoadHullOrIgnore();
-            const int RiggingTag = 5;
+            HullMeshDef hm = LoadHullOrIgnore(hull);
+            int RiggingTag = TopStructureTag(hm, out string topTable);
 
             foreach (float heading in Headings)
             {
@@ -281,7 +366,9 @@ namespace HiddenHarbours.Tests.RigBaking
                         if (changed) { rigSum += y; rigN++; }
                         else if (noRig[i + 3] > 8) { hullSum += y; hullN++; }
                     }
-                Assert.Greater(rigN, 0, $"no rigging pixels at {heading}° — this guard tested nothing.");
+                Assert.Greater(rigN, 0,
+                    $"culling level {RiggingTag} changed no pixels at {heading}°, so this guard " +
+                    "tested nothing. Per-tag heights:" + System.Environment.NewLine + topTable);
 
                 double rigRow = (double)rigSum / rigN, hullRow = (double)hullSum / hullN;
                 // ⚠️ NO ARITHMETIC HERE, ON PURPOSE. The published row EQUALS the buffer row: the
@@ -304,18 +391,19 @@ namespace HiddenHarbours.Tests.RigBaking
         /// <summary>The owner's pack: every enclosed level, closed and open, at every heading, plus
         /// the closed-up control. Not an assertion — this one exists to be looked at.</summary>
         [Test]
-        public void EyeballPack_IsWritten()
+        [TestCaseSource(nameof(ConvertedHulls))]
+        public void EyeballPack_IsWritten(ConvertedHull hull)
         {
             RequireAGraphicsDevice();
-            HullMeshDef hm = LoadHullOrIgnore();
+            HullMeshDef hm = LoadHullOrIgnore(hull);
 
             foreach (float heading in Headings)
             {
-                SavePng($"lobster-{heading:000}-closed.png", Render(hm, hm.Mesh, 0, heading), hm);
+                SavePng($"{hull.Name}-{heading:000}-closed.png", Render(hm, hm.Mesh, 0, heading), hm);
                 foreach (HullMeshDef.LevelTag lvl in hm.LevelTags)
                 {
                     if (!lvl.Enclosed) continue;
-                    SavePng($"lobster-{heading:000}-open-{lvl.LevelId}.png",
+                    SavePng($"{hull.Name}-{heading:000}-open-{lvl.LevelId}.png",
                             Render(hm, hm.Mesh, lvl.Tag, heading, lvl.LidTag), hm);
                 }
             }
@@ -323,6 +411,60 @@ namespace HiddenHarbours.Tests.RigBaking
         }
 
         // ============================================================================ machinery
+
+        /// <summary>
+        /// <b>The level tag whose EXTERIOR geometry stands highest on this boat — measured off the
+        /// mesh, never named.</b>
+        ///
+        /// <para>This replaces a hard-coded <c>RiggingTag = 5</c>. Note first what 5 IS: a raw tag the
+        /// bake writes into TexCoord1.x, appearing in NO hull's declared <c>LevelTags</c> — both
+        /// converted hulls declare exactly house/cuddy/cockpit/foredeck (3/4/1/2), so nothing in the
+        /// committed data says 5 means rigging, or that a given hull has one.</para>
+        ///
+        /// <para><b>MEASURED, both hulls:</b> the derivation returns 5 for each, so this is the same
+        /// subject the transcribed constant had, not a behaviour change — but their rigging stands at
+        /// very different heights (lobster top z 5.958 over a house at 3.055; cape 4.53 over 3.125),
+        /// and the cape's is 72 verts against the lobster's 320. A hull whose top structure is tagged
+        /// otherwise — or absent — would have made the transcribed 5 cull nothing and the guard pass
+        /// by testing nothing, which is the failure its own <c>rigN &gt; 0</c> assertion catches one
+        /// hull too late. Deriving it means the guard finds its own subject on every future hull.</para>
+        ///
+        /// <para>Height is the mesh's local <c>z</c>: <c>Vector3d.ToVector3()</c> maps
+        /// (X, Y, Z) straight through, and the bake reports the same axis as "above the keel". Room
+        /// vertices are excluded — the question is which structure stands ON the boat, and a cabin
+        /// ceiling is inside her, not on top of her.</para>
+        /// </summary>
+        static int TopStructureTag(HullMeshDef hm, out string table)
+        {
+            var tags = new List<Vector2>();
+            hm.Mesh.GetUVs(1, tags);
+            Vector3[] v = hm.Mesh.vertices;
+
+            var topZ = new Dictionary<int, float>();
+            var count = new Dictionary<int, int>();
+            for (int i = 0; i < v.Length; i++)
+            {
+                if (tags[i].y > 0.5f) continue;                    // room faces are inside, not on top
+                int tag = Mathf.RoundToInt(tags[i].x);
+                if (tag <= 0) continue;                            // 0 is untagged hull structure
+                if (!topZ.TryGetValue(tag, out float z) || v[i].z > z) topZ[tag] = v[i].z;
+                count[tag] = count.TryGetValue(tag, out int c) ? c + 1 : 1;
+            }
+
+            var sb = new StringBuilder("  per-tag exterior height (mesh local z, m above the keel):");
+            foreach (var kv in topZ.OrderByDescending(k => k.Value))
+            {
+                sb.AppendLine();
+                sb.Append($"    tag {kv.Key,2}  top z {kv.Value,7:0.###}  "
+                        + $"({count[kv.Key]} verts)");
+            }
+            table = sb.ToString();
+
+            Assert.IsNotEmpty(topZ,
+                "this hull's mesh carries no exterior vertex with a level tag above 0, so there is " +
+                "no top structure to cull and the orientation guard would test nothing.");
+            return topZ.OrderByDescending(k => k.Value).First().Key;
+        }
 
         /// <summary>
         /// The same mesh with every room-flagged face removed — the control arm. Built by filtering

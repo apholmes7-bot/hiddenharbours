@@ -149,6 +149,19 @@ namespace HiddenHarbours.Tools.RigBaking
         /// <summary>Headless entry (-executeMethod) for the same bake.</summary>
         public static void BakeLobsterBoatCli() => BakeOneCli("lobsterBoat");
 
+        /// <summary>The intro flagship: the Cape Islander. Her own item for the same reason the
+        /// lobster has one — she is the second converted hull (ADR 0041 PR 2) and gets re-baked on
+        /// her own while her room is being settled, and a whole-fleet bake would rewrite twenty-nine
+        /// defs' worth of non-deterministic YAML to move one.</summary>
+        [MenuItem(RigMeshGate.MenuRoot + "/Bake Cape Islander hull-mesh asset", priority = 220)]
+        public static void BakeCapeIslander() => BakeOne("capeIslander");
+
+        [MenuItem(RigMeshGate.MenuRoot + "/Bake Cape Islander hull-mesh asset", validate = true)]
+        static bool BakeCapeIslanderValidate() => RigMeshGate.Enabled;
+
+        /// <summary>Headless entry (-executeMethod) for the cape's bake.</summary>
+        public static void BakeCapeIslanderCli() => BakeOneCli("capeIslander");
+
         /// <summary>
         /// <b>The hull that motivated the ADR (phase 5): the side dragger.</b> 25 m of riveted steel
         /// whose sheet set would have been <b>433.1 MiB</b> at 32 facings × 4 rock frames — against
@@ -289,6 +302,13 @@ namespace HiddenHarbours.Tools.RigBaking
             {
                 BakeOne(key);
                 Debug.Log("[rig-mesh] CLI bake OK.");
+                // ⚠️ EXIT ON SUCCESS, for the same reason BakeFleetCli spells out: these entries are
+                // launched -quit-less (the -quit/RunTests race), so nothing else ever ends the
+                // editor and the search indexer's idle CPU burn reads as a bake still working. The
+                // fleet path learned that at the cost of four phantom coordinator hours; this one
+                // was still missing it, so every single-hull CLI bake — lobster and dragger
+                // included — hung forever ON SUCCESS and only failures terminated.
+                EditorApplication.Exit(0);
             }
             catch (Exception e)
             {
@@ -714,7 +734,7 @@ namespace HiddenHarbours.Tools.RigBaking
         /// retires those hulls' sheets once the pictures agree. A hull added here whose sheets are
         /// still wired would draw her cabin twice.</para>
         /// </summary>
-        public static readonly string[] MeshInteriorHulls = { "LobsterBoatIso" };
+        public static readonly string[] MeshInteriorHulls = { "LobsterBoatIso", "CapeIslanderIso" };
 
         /// <summary>
         /// Which key in the interior rig's own <c>HULLS</c> table is this hull — derived by asking

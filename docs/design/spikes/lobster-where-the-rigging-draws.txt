@@ -1,6 +1,12 @@
-WHERE THE RIGGING DRAWS — level 5 culled vs not
-Her rig places these faces at z 2.953..5.958; the house tops at 3.055.
+WHERE THE TOP STRUCTURE DRAWS — level 5 culled vs not
+The tag is DERIVED from the mesh (highest exterior geometry), not named.
 Rows are screen rows, 0 = TOP of the cell. Lower row number = higher up.
+
+  per-tag exterior height (mesh local z, m above the keel):
+    tag  5  top z   5.958  (320 verts)
+    tag  3  top z   3.055  (328 verts)
+    tag  2  top z    2.74  (60 verts)
+    tag  1  top z     1.5  (308 verts)
 
   heading    90°  whole rows 91..291  |  without rigging 147..291  |  rigging  1034 px, rows 91..209
                 self-check: changed rows inside the whole render's band? yes
