@@ -14,8 +14,9 @@ namespace HiddenHarbours.App
     /// need to, which is the split earning its keep.
     ///
     /// <para><b>The binding audit.</b> The mouse wheel was unread anywhere in the project — no gameplay
-    /// or UI component touched <c>Mouse.scroll</c>, and the only claim on it is the stock
-    /// <c>InputSystem_Actions</c> UI map's ScrollWheel, which serves the EventSystem and not the world.
+    /// or UI component touched <c>Mouse.scroll</c>, and the only claim on it is the <c>UI</c> map's
+    /// ScrollWheel in <c>HiddenHarbours.inputactions</c>, which serves the EventSystem and not the world
+    /// (the tiered <c>Zoom</c> intent joins that asset's <c>UI</c> map in the input lane's PR 2, ADR 0043).
     /// On the pad, <b>LB / RB</b> (shoulders) are the one pair unclaimed in BOTH code and the actions
     /// asset: the dpad's up/down are the helm throttle (<c>DevBoatInput</c>) and the wardrobe's row nav,
     /// the sticks steer and walk, and the four face buttons are Confirm/Cancel/interact. Shoulders also

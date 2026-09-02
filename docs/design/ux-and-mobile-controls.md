@@ -473,6 +473,11 @@ gamepad **without a rewrite** (per `../architecture/tech-architecture.md`).
   **intents** (§9). A single `InputService` exposes intents to gameplay; gameplay never reads raw
   touch. Runtime rebinding + control-scheme switching (incl. on-the-fly touch↔controller on mobile
   with a gamepad). Detail/ownership in `../architecture/tech-architecture.md`.
+  **Landed 2026-09-02 — [ADR 0043](../adr/0043-input-intents-and-bindings.md):** the intents are
+  Core structs read through one `IControlIntentSource<T>` per control mode; the bindings are the
+  project-wide `Data/Input/HiddenHarbours.inputactions` (maps `Walk`, `Deck`, `Helm`, `Drive`, `UI`;
+  schemes `KeyboardMouse`, `Gamepad`). The walk and the deck read it (PR 0); the helm and the verbs
+  follow (PR 1); the pad table and the runtime rebinding UI are PR 2 / PR 3 of the same lane.
 - **Driving already reads through a seam (shipped 2026-09-02, ADR 0035 amendment):** the vehicle
   wheel is the one control that no longer polls raw keys in gameplay — `ControlSwitcher` reads an
   `IDriveInputSource` (Core), keyboard-backed today, so a gamepad binding plugs in there without

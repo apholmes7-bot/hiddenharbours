@@ -63,7 +63,8 @@ Assets/
 |   +-- Data/                      ScriptableObject assets, one entity per file (section 4). Folders as of 2026-09-01:
 |   |                              Art, Bites, Boats (+ Containers, DeckGear, Decks, Helms, HullMeshes, HullProps, Interiors,
 |   |                              Owners, PaintSchemes, Skippers, Visuals), Characters, Commodities, Config (GameConfig),
-|   |                              Decor, Fish, FuelContainers, FuelStations, Homes, NPCs, NavBuoys, Recipes, Regions,
+|   |                              Decor, Fish, FuelContainers, FuelStations, Homes, Input (HiddenHarbours.inputactions,
+|   |                              the bindings Def and project-wide actions asset, ADR 0043), NPCs, NavBuoys, Recipes, Regions,
 |   |                              Resources (quest/knowledge defs the notebook self-loads), RodFights, Routines, Spike,
 |   |                              Staff, StationPieces, Tackle, Terrain (painted seabed), Tools, Traps, Vehicles
 |   +-- Art/                       Boats, Characters, Fishing, Foliage, Materials, Palette, Portraits, Shaders,
@@ -75,7 +76,8 @@ Assets/
 |   +-- Scenes/                    StPeters (build index 0), NineMileCreek, WestWater, Greybox (the M0 cove), Greywick (legacy: section 3)
 |   +-- Settings/                  URP assets, render features
 +-- Scenes/SampleScene.unity       Unity template debris, still in the build list: remove (section 9)
-+-- Settings/, InputSystem_Actions.inputactions, DefaultVolumeProfile, URP global settings
++-- Settings/, DefaultVolumeProfile, URP global settings   (InputSystem_Actions.inputactions, Unity's
+                                  untouched template, was deleted 2026-09-02 — ADR 0043; the bindings live in Data/Input/)
 +-- Tests/
     +-- EditMode/                  HiddenHarbours.Tests.EditMode (the broad suite) plus per-area assemblies:
     |                              Tests.Art / Audio / Economy / RigBaking / RigSpike / RigStudio / Sell /

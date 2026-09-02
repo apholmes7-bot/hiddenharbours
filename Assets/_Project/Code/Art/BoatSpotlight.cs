@@ -45,9 +45,11 @@ namespace HiddenHarbours.Art
         [SerializeField] private bool _startOn = false;
 
         [Tooltip("The key that toggles the beam on/off. L for Light. AUDITED free of every other binding in the " +
-                 "project: WASD/arrows helm, Space brace/haul, E interact, Q mooring, C/1/2/Enter/" +
-                 "LeftShift (InputSystem_Actions), F next-hull, G grant, H haul, T trap-drop/rotation-mode, " +
-                 "Y auto-yaw, Esc close. Serialized so the owner can rebind it without touching code.")]
+                 "project: WASD/arrows helm, Space brace/haul, E interact, Q mooring, Enter/Esc (the UI map " +
+                 "of HiddenHarbours.inputactions), F next-hull, G grant, H haul, T trap-drop/rotation-mode, " +
+                 "Y auto-yaw, Esc close. Declared as Helm/Searchlight in HiddenHarbours.inputactions (ADR " +
+                 "0043; the read moves there in the input lane's PR 1). Serialized so the owner can rebind " +
+                 "it without touching code.")]
         [SerializeField] private Key _toggleKey = Key.L;
 
         [Tooltip("Let the toggle key work at all. Off = the beam is driven only through code/the Inspector " +
