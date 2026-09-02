@@ -188,3 +188,37 @@ loudly on that rather than shipping it.
 - **Not built here:** a pixel golden-master comparing the composed vehicle (body + six fittings)
   against the rig's own render. The hull path has one; a vehicle's would additionally have to model
   the two limits above. The structural guarantee that stands in the meantime is the exact partition.
+
+## Amendment 2026-09-02 — the drive-input seam, and the coupling's frame (driveable charter, PR 0)
+
+Two facts about the module the original text did not have to state, both surfaced by the road
+fleet's laydown (#692) and settled in PR 0 of the driveable charter.
+
+### The demand crosses ONE seam: `IDriveInputSource`
+
+`ControlSwitcher` used to read `Keyboard.current` inline every frame a machine was driven. With no key
+held — every frame of a headless run — that read landed a zero demand and overwrote anything a test had
+asked for: a journey that set full throttle and stepped thirty seconds of physics measured 0.00 m, and
+the failure pointed at the yard. The read now goes through `IDriveInputSource` (Core, beside
+`IDriveSeat`). `KeyboardDriveInputSource` (Player) is the shipped source, byte for byte the mapping it
+replaces — W/S throttle, A/D wheel, Space brake, LEFT is +1, the rig's own sense, pinned by
+`DriveInputSourceTests`. `HeldDriveInput` (Core) holds a demand across frames for a scripted driver, a
+replay, or an NPC at a wheel; `RoadFleetJourneyPlayTests` drives every machine in the built Nine Mile
+Creek data through it, via the real switcher. A gamepad is another implementation of the same interface:
+the socket exists, the device does not. ⚠️ This is not the intent layer `ux-and-mobile-controls.md` §9
+describes — the walk and the helm still read raw keys, and unifying the three is a project-wide input
+lane, not a vehicle change.
+
+### The coupling lives in the transform frame
+
+`BoatKinematics.BearingDegrees(transform.up)` — 0 north, clockwise — is the one heading convention, and
+its inverse is `z = −bearing`. `VehicleCouplingMath.BodyOriginFromKingpin` and `TowedBody.KingpinWorld`
+rotated the other way. They agreed with the drawn trailer only where `sin(heading) = 0`, which is why every
+coupling fixture stood its tractor north and the laydown was sited due south; at 90° the arithmetic put a
+pup's kingpin 6.73 m from where she was drawn, and a pair coupled off the north–south axis silently lost
+the hitch. `VehicleCouplingMath.LocalOffsetToWorld` is now the one rotation (nose along
+`NavMath.DirectionFromBearing`, curb side a quarter turn clockwise of it); both readers and the laydown's
+own placement use it; `VehicleCouplingTests` sweeps capture, follow and release through four headings
+against the TRANSFORM as the oracle, and `NineMileCreekLaydownTests` spins the pair through eight. The
+yard's heading is layout now, not a constraint. Law, restated: a fixture at the one heading where a
+mirror vanishes proves nothing about the mirror — the 90° fixture was written first and watched fail.

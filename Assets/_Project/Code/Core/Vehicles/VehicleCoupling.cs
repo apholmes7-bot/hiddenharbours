@@ -267,19 +267,48 @@ namespace HiddenHarbours.Core
         }
 
         /// <summary>
+        /// ⭐⭐ <b>A local offset in the WORLD, on a compass heading</b> — the one rotation the whole
+        /// coupling uses, and the frame it is written in is the law.
+        ///
+        /// <para><b>The transform frame is the compass.</b> Every reader of a heading in this game is
+        /// <c>BoatKinematics.BearingDegrees(transform.up)</c> — 0 north, clockwise positive — whose
+        /// exact inverse is a transform rotation of <c>z = −bearing</c>. So a machine's nose (local +y)
+        /// lies along <see cref="NavMath.DirectionFromBearing"/> and her curb side (local +x) a quarter
+        /// turn CLOCKWISE of it: facing east, +x is south. That is where the picture draws her door,
+        /// where <c>VehicleHitch.CouplingPointWorld</c> finds the plate through <c>TransformPoint</c>,
+        /// and — since 2026-09-02 — where this puts her kingpin.</para>
+        ///
+        /// <para>⚠️ <b>It was not, and nothing measured it.</b> <see cref="BodyOriginFromKingpin"/> and
+        /// <c>TowedBody.KingpinWorld</c> rotated <c>(x·c − y·s, x·s + y·c)</c> at <c>+heading</c>: a
+        /// COUNTER-clockwise turn, agreeing with the drawn frame only where <c>sin(heading) = 0</c>.
+        /// Every coupling fixture stood its tractor due north and the laydown was sited due south
+        /// because of it; at 90° the arithmetic put a pup's kingpin 6.73 m from where she was drawn,
+        /// and a pair coupled off the north–south axis silently lost the hitch. The 90° fixture in
+        /// <c>VehicleCouplingTests</c> was written first and watched fail, and then this was written —
+        /// the absence of that fixture was the defect (memory
+        /// <c>an-exact-boundary-passes-in-the-frame-that-built-it</c>).</para>
+        /// </summary>
+        public static Vector2 LocalOffsetToWorld(Vector2 local, float headingDegrees)
+        {
+            Vector2 nose = NavMath.DirectionFromBearing(headingDegrees);
+            var curb = new Vector2(nose.y, -nose.x);   // a quarter turn clockwise of the nose
+            return curb * local.x + nose * local.y;
+        }
+
+        /// <summary>
         /// Where a coupled trailer's ORIGIN sits, given where her kingpin is and which way she
-        /// points. Her kingpin is well forward of her origin (3.365 m on a pup), so a coupled pair
-        /// drawn from the pin alone would put her a whole nose too far ahead.
+        /// points — in the transform frame, through <see cref="LocalOffsetToWorld"/>. Her kingpin is
+        /// well forward of her origin (3.365 m on a pup), so a coupled pair drawn from the pin alone
+        /// would put her a whole nose too far ahead.
         /// </summary>
         public static Vector2 BodyOriginFromKingpin(Vector2 kingpinWorld, float trailerHeadingDegrees,
                                                     in VehicleKingpin pin)
         {
-            float rad = trailerHeadingDegrees * Mathf.Deg2Rad;
-            float s = Mathf.Sin(rad), c = Mathf.Cos(rad);
-            // The pin sits at (x, y) in her frame; rotate that into the world and step back from it.
-            Vector2 offset = new Vector2(
-                pin.CouplingPointLocal.x * c - pin.CouplingPointLocal.y * s,
-                pin.CouplingPointLocal.x * s + pin.CouplingPointLocal.y * c);
+            // The pin sits at (x, y) in her frame; put that into the world and step back from it —
+            // through the ONE rotation, so the origin this places and the pin KingpinWorld reports are
+            // exact inverses of each other, and both agree with the picture.
+            Vector2 offset = LocalOffsetToWorld(
+                new Vector2(pin.CouplingPointLocal.x, pin.CouplingPointLocal.y), trailerHeadingDegrees);
             return kingpinWorld - offset;
         }
 

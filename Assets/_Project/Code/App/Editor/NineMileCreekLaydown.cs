@@ -28,18 +28,16 @@ namespace HiddenHarbours.App.Editor
     /// defs — never a transcribed LOA. <see cref="Place"/> then does nothing but build GameObjects
     /// from that answer, so the whole yard is testable in EditMode without instantiating anything.</para>
     ///
-    /// <para>⚠️⚠️ <b>THE YARD FACES SOUTH, AND THAT IS NOT A TASTE DECISION.</b>
-    /// <see cref="VehicleCouplingMath.BodyOriginFromKingpin"/> and <c>TowedBody.KingpinWorld</c> rotate
-    /// a local offset COUNTER-clockwise by the heading, while the transform frame every other reader
-    /// uses — <c>VehicleHitch.HeadingDegrees</c>, <c>VehicleMeshDriver.CurrentDirUnits</c> and
-    /// <c>BoatKinematics.BearingDegrees(transform.up)</c> — is CLOCKWISE-positive compass. The two
-    /// agree only where <c>sin(heading) = 0</c>, i.e. due north and due south. Every coupling fixture
-    /// that ships builds its tractor heading north, so nothing has ever measured the difference. On
-    /// <see cref="YardHeadingDegrees"/> = 180° the pair's pin lands within a micrometre of the plate;
-    /// turn this yard 30° and the couple would silently stop being offered. <b>Do not rotate the yard
-    /// off the north–south axis until that mirror is reconciled</b> — <c>NineMileCreekLaydownTests</c>
-    /// pins the couple offer at the heading actually placed, so a rotation reddens rather than
-    /// disappears.</para>
+    /// <para><b>The yard's heading is free as far as the hitch is concerned.</b> It once was not: the
+    /// coupling arithmetic rotated counter-clockwise while the transform frame every reader uses is
+    /// clockwise compass, the two agreed only due north and due south, and this yard was sited due
+    /// south BECAUSE of it. PR 0 of the driveable charter (2026-09-02) put the coupling in the
+    /// transform frame (<see cref="VehicleCouplingMath.LocalOffsetToWorld"/>);
+    /// <c>VehicleCouplingTests</c> now sweeps capture, follow and release through four headings and
+    /// <c>NineMileCreekLaydownTests</c> spins the pair through eight, through this file's own
+    /// <see cref="CoupleReadyTrailer"/> and <see cref="PlaceOne"/>. So <see cref="YardHeadingDegrees"/>
+    /// is 180 for one reason only — the lane is the apron's south strip and the machines face it.
+    /// Turning the apron is the owner's walk, not a coupling question.</para>
     /// </summary>
     public static class NineMileCreekLaydown
     {
@@ -114,8 +112,9 @@ namespace HiddenHarbours.App.Editor
         /// <summary>One bay's depth, metres — the deepest occupant with a setback at each end.</summary>
         public static float BayDepthMetres => LongestPairMetres + 2f * NoseSetbackMetres;
 
-        /// <summary>Which way every machine in the yard points: due south, onto the lane.
-        /// ⚠️ See the class note — this being 0 or 180 is load-bearing, not cosmetic.</summary>
+        /// <summary>Which way every machine in the yard points: due south, onto the lane, which is the
+        /// apron's south strip. Layout, not a load-bearing number — the pair couples on any heading
+        /// (see the class note), so the day the walk turns the apron this turns with it.</summary>
         public const float YardHeadingDegrees = 180f;
 
         // -------------------------------------------------------------------------------------------
@@ -368,14 +367,25 @@ namespace HiddenHarbours.App.Editor
                     continue;
                 }
 
-                Vector2 pinWorld = CoupleReadyPinWorld(tractor);
-                Vector2 origin = VehicleCouplingMath.BodyOriginFromKingpin(
-                    pinWorld, YardHeadingDegrees, mesh.Kingpin);
-
-                placements.Add(new Placement(unit, origin, YardHeadingDegrees, mesh, null));
+                placements.Add(CoupleReadyTrailer(tractor, unit, mesh));
             }
 
             return placements;
+        }
+
+        /// <summary>
+        /// ⭐ <b>Where a towed body stands couple-ready on a tractor</b> — her origin set back from the
+        /// tractor's own capture window, on the tractor's heading, whatever that heading is. The pair,
+        /// solved. Public so a test can stand the pair at any heading the walk might pick and ask the
+        /// SHIPPED hitch whether the couple is offered.
+        /// </summary>
+        public static Placement CoupleReadyTrailer(in Placement tractor, Unit unit,
+                                                   VehicleMeshDef trailerMesh)
+        {
+            Vector2 pinWorld = CoupleReadyPinWorld(tractor);
+            Vector2 origin = VehicleCouplingMath.BodyOriginFromKingpin(
+                pinWorld, tractor.HeadingDegrees, trailerMesh.Kingpin);
+            return new Placement(unit, origin, tractor.HeadingDegrees, trailerMesh, null);
         }
 
         /// <summary>
@@ -406,13 +416,11 @@ namespace HiddenHarbours.App.Editor
         }
 
         /// <summary>A local offset in the WORLD, on a compass heading — the transform's own convention
-        /// (z = −bearing), which is the frame the hitch and the mesh driver read.</summary>
-        static Vector2 Rotate(Vector2 local, float headingDegrees)
-        {
-            float rad = -headingDegrees * Mathf.Deg2Rad;
-            float s = Mathf.Sin(rad), c = Mathf.Cos(rad);
-            return new Vector2(local.x * c - local.y * s, local.x * s + local.y * c);
-        }
+        /// (z = −bearing), which is the frame the hitch and the mesh driver read. Routed through the
+        /// coupling's ONE rotation rather than spelt out again here, so the pin this stands and the pin
+        /// the hitch finds cannot be in different frames.</summary>
+        static Vector2 Rotate(Vector2 local, float headingDegrees) =>
+            VehicleCouplingMath.LocalOffsetToWorld(local, headingDegrees);
 
         /// <summary>
         /// Stand the nine in the yard. Returns what was placed — empty when the bake is not on disk.
@@ -424,34 +432,36 @@ namespace HiddenHarbours.App.Editor
         public static List<GameObject> Place()
         {
             var made = new List<GameObject>();
+            foreach (Placement p in Solve()) made.Add(PlaceOne(p));
+            return made;
+        }
 
-            foreach (Placement p in Solve())
+        /// <summary>Stand ONE solved placement up — the builder's shape for a machine, and public so a
+        /// test can stand a pair anywhere through exactly the code the yard uses.</summary>
+        public static GameObject PlaceOne(in Placement p)
+        {
+            // A towed body carries no Rigidbody2D: she is placed and pulled, never simulated on her
+            // own — the shape the coupling fixtures build her in.
+            GameObject go = p.Unit.IsTowed
+                ? new GameObject(p.Unit.Name)
+                : new GameObject(p.Unit.Name, typeof(Rigidbody2D));
+
+            go.transform.position = new Vector3(p.Position.x, p.Position.y, 0f);
+            go.transform.rotation = p.Rotation;
+
+            if (p.Unit.IsTowed)
             {
-                // A towed body carries no Rigidbody2D: she is placed and pulled, never simulated on her
-                // own — the shape the coupling fixtures build her in.
-                GameObject go = p.Unit.IsTowed
-                    ? new GameObject(p.Unit.Name)
-                    : new GameObject(p.Unit.Name, typeof(Rigidbody2D));
-
-                go.transform.position = new Vector3(p.Position.x, p.Position.y, 0f);
-                go.transform.rotation = p.Rotation;
-
-                if (p.Unit.IsTowed)
-                {
-                    go.AddComponent<ParkedTrailer>().Configure(p.Mesh);
-                }
-                else
-                {
-                    // Serialized state carries gravityScale 0 too, though VehicleController.Awake
-                    // re-zeroes it at play — a truck must not fall south through a top-down world.
-                    go.GetComponent<Rigidbody2D>().gravityScale = 0f;
-                    go.AddComponent<ParkedVehicle>().Configure(p.Def, drivable: true);
-                }
-
-                made.Add(go);
+                go.AddComponent<ParkedTrailer>().Configure(p.Mesh);
+            }
+            else
+            {
+                // Serialized state carries gravityScale 0 too, though VehicleController.Awake
+                // re-zeroes it at play — a truck must not fall south through a top-down world.
+                go.GetComponent<Rigidbody2D>().gravityScale = 0f;
+                go.AddComponent<ParkedVehicle>().Configure(p.Def, drivable: true);
             }
 
-            return made;
+            return go;
         }
     }
 }
