@@ -373,5 +373,164 @@ namespace HiddenHarbours.Art
             }
             return true;
         }
+
+        // ==== the art's own anchors (round 2 — the frond hooks the line, the tail trails the sea) ======
+        //
+        // Every drift-weed clump publishes, in its own sprite frame (metres from the pivot, scale 1,
+        // +y up), 2–3 SNAG tips (the outer frond ends that catch on a line) and ONE DRAG TAIL (the end
+        // that trails when it drifts). These rules turn those anchors into a pose. All pure, all
+        // allocation-free, all knob-0-identical to the round-1 hashed-rotation / radius-rest behaviour.
+
+        /// <summary>
+        /// Below this transport speed (m/s) the sea has no direction worth aligning to, so the drag
+        /// alignment holds its current rotation rather than chasing float noise. A numerical guard, not
+        /// a feel knob: at 1 cm/s a clump takes a minute and a half to cross a metre.
+        /// </summary>
+        public const float TransportDeadBandMetersPerSecond = 0.01f;
+
+        /// <summary>Rotate a sprite-local offset by <paramref name="degrees"/> about z — the ONE
+        /// rotation every anchor rule below applies, so an anchor's world position and the sprite's
+        /// drawn rotation can never disagree about handedness.</summary>
+        public static Vector2 Rotate(Vector2 local, float degrees)
+        {
+            float r = degrees * Mathf.Deg2Rad;
+            float c = Mathf.Cos(r), s = Mathf.Sin(r);
+            return new Vector2(local.x * c - local.y * s, local.x * s + local.y * c);
+        }
+
+        /// <summary>Direction of a vector in degrees about z (0 = +x, 90 = +y) — the frame
+        /// <c>Quaternion.Euler(0,0,deg)</c> rotates in.</summary>
+        public static float DirectionDegrees(Vector2 v) => Mathf.Atan2(v.y, v.x) * Mathf.Rad2Deg;
+
+        /// <summary>
+        /// The drag alignment: ease a DRIFTING clump's rotation toward the one at which its
+        /// <paramref name="tailLocal"/> trails — points AGAINST the <paramref name="transport"/> that is
+        /// carrying it, the way anything towed streams out behind its motion (the rig's own words:
+        /// "the end that trails when drifting"). Eases at <paramref name="degreesPerSecond"/> along the
+        /// shorter arc; a rate of 0, a zero dt, a tail at the pivot or a transport under the dead band
+        /// all return <paramref name="currentDegrees"/> unchanged — so a becalmed sea, or a knob at 0,
+        /// keeps round 1's hashed rotation exactly. Pure, deterministic.
+        /// </summary>
+        public static float TailAlignedRotation(Vector2 transport, float currentDegrees, Vector2 tailLocal,
+                                                float degreesPerSecond, float dt)
+        {
+            if (degreesPerSecond <= 0f || dt <= 0f) return currentDegrees;
+            if (transport.sqrMagnitude < TransportDeadBandMetersPerSecond * TransportDeadBandMetersPerSecond) return currentDegrees;
+            if (tailLocal.sqrMagnitude < 1e-10f) return currentDegrees;
+
+            float target = DirectionDegrees(-transport) - DirectionDegrees(tailLocal);
+            return Mathf.MoveTowardsAngle(currentDegrees, target, degreesPerSecond * dt);
+        }
+
+        /// <summary>
+        /// The hung clump's counterpart of <see cref="TailAlignedRotation"/>: ease a HOOKED clump's hang
+        /// rotation toward <see cref="HangRotation"/>(<paramref name="anchorLocal"/>, transport) at
+        /// <paramref name="degreesPerSecond"/>, so when the set changes — the tide turns — the body
+        /// swings round to lie down-transport of the tip that holds it. The same guards: rate 0, zero
+        /// dt, a transport under the dead band or an anchor at the pivot hold the current rotation.
+        /// Pure, deterministic.
+        /// </summary>
+        public static float HangAlignedRotation(Vector2 transport, float currentDegrees, Vector2 anchorLocal,
+                                                float degreesPerSecond, float dt)
+        {
+            if (degreesPerSecond <= 0f || dt <= 0f) return currentDegrees;
+            if (transport.sqrMagnitude < TransportDeadBandMetersPerSecond * TransportDeadBandMetersPerSecond) return currentDegrees;
+            if (anchorLocal.sqrMagnitude < 1e-10f) return currentDegrees;
+
+            return Mathf.MoveTowardsAngle(currentDegrees, HangRotation(anchorLocal, transport), degreesPerSecond * dt);
+        }
+
+        /// <summary>
+        /// Which frond tip hooks the line: of the clump's <paramref name="snagsLocal"/> (as drawn, at
+        /// its current <paramref name="rotationDegrees"/>), the one reaching furthest along the
+        /// <paramref name="approach"/> direction — the tip that meets the line first as the sea carries
+        /// the clump onto it. Ties (within 1e-5 m) go to the lower index so the pick is deterministic
+        /// under float slop; −1 for a clump with no anchors (the greybox blob, a legacy sprite).
+        /// Only the first <paramref name="count"/> entries are live. Pure, allocation-free.
+        /// </summary>
+        public static int PickSnagAnchor(Vector2[] snagsLocal, int count, float rotationDegrees, Vector2 approach)
+        {
+            if (snagsLocal == null || count <= 0) return -1;
+            count = Mathf.Min(count, snagsLocal.Length);
+            float mag = approach.magnitude;
+            Vector2 dir = mag > 1e-6f ? approach / mag : Vector2.down;
+
+            int best = -1;
+            float bestReach = float.NegativeInfinity;
+            for (int i = 0; i < count; i++)
+            {
+                float reach = Vector2.Dot(Rotate(snagsLocal[i], rotationDegrees), dir);
+                if (reach > bestReach + 1e-5f) { bestReach = reach; best = i; }
+            }
+            return best;
+        }
+
+        /// <summary>
+        /// The rotation at which a clump hooked by <paramref name="anchorLocal"/> hangs off the line
+        /// with its body streaming <paramref name="downTransport"/> — the sea pushes the clump past the
+        /// line and it swings to lie downstream of the tip that caught. Geometrically: the pivot (the
+        /// clump's buoyancy centre) sits at <c>−anchorLocal</c> from the tip, so that vector is turned
+        /// to point down-transport. A degenerate direction hangs the clump due south (screen-down) of
+        /// the line, never at NaN; an anchor AT the pivot has no lever arm and returns 0. Pure.
+        /// </summary>
+        public static float HangRotation(Vector2 anchorLocal, Vector2 downTransport)
+        {
+            if (anchorLocal.sqrMagnitude < 1e-10f) return 0f;
+            Vector2 d = downTransport.sqrMagnitude > 1e-12f ? downTransport : Vector2.down;
+            return DirectionDegrees(d) - DirectionDegrees(-anchorLocal);
+        }
+
+        /// <summary>
+        /// Where the sprite's pivot goes so that <paramref name="anchorLocal"/>, drawn at
+        /// <paramref name="rotationDegrees"/>, sits exactly on <paramref name="contact"/>: the tip is
+        /// nailed to the line and the body swings about it. Pure — the inverse of
+        /// <c>contact = pivot + Rotate(anchorLocal, rot)</c>, to float precision.
+        /// </summary>
+        public static Vector2 PivotForAnchor(Vector2 contact, Vector2 anchorLocal, float rotationDegrees)
+            => contact - Rotate(anchorLocal, rotationDegrees);
+
+        /// <summary>
+        /// The point on a snag target's rim the drifter actually touches: the target's own centre for
+        /// a buoy line (radius 0), or the point on a hull's half-beam circle facing the drifter — weed
+        /// fouls on the planking, not at the keel. A drifter dead on the centre touches the south rim.
+        /// Pure.
+        /// </summary>
+        public static Vector2 ContactPoint(Vector2 piecePos, Vector2 targetPos, float targetRadius)
+        {
+            if (targetRadius <= 0f) return targetPos;
+            Vector2 dir = piecePos - targetPos;
+            float mag = dir.magnitude;
+            if (mag < 1e-5f) dir = Vector2.down; else dir /= mag;
+            return targetPos + dir * targetRadius;
+        }
+
+        /// <summary>
+        /// Index of the nearest snag target whose RIM is within <paramref name="reach"/> of
+        /// <paramref name="pos"/> (distance to the centre minus the target's own radius), or −1. With
+        /// every radius 0 this is exactly <see cref="NearestWithin(Vector2,Vector2[],int,float)"/>,
+        /// which is what keeps the player's buoy-only case byte-identical to round 1. Only the first
+        /// <paramref name="count"/> entries are live. Pure, allocation-free.
+        /// </summary>
+        public static int NearestWithin(Vector2 pos, Vector2[] points, float[] radii, int count, float reach)
+        {
+            int best = -1;
+            float bestGap = reach;
+            for (int i = 0; i < count; i++)
+            {
+                float r = radii != null && i < radii.Length ? radii[i] : 0f;
+                float gap = (points[i] - pos).magnitude - r;
+                if (gap <= bestGap) { bestGap = gap; best = i; }
+            }
+            return best;
+        }
+
+        /// <summary>
+        /// The wave-energy release: a hooked clump lets go when the swell at its anchor lifts or drops
+        /// the surface by <paramref name="breakWaveMeters"/> or more. 0 = never (the shipped default —
+        /// the timed release and the haul remain the ways off a line). Pure, deterministic from the
+        /// field.
+        /// </summary>
+        public static bool BreaksFree(float waveHeightAtAnchor, float breakWaveMeters)
+            => breakWaveMeters > 0f && Mathf.Abs(waveHeightAtAnchor) >= breakWaveMeters;
     }
 }

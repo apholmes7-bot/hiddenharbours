@@ -92,6 +92,7 @@ namespace HiddenHarbours.Boats
         {
             EventBus.Unsubscribe<TrapPlaced>(OnTrapPlaced);
             EventBus.Unsubscribe<TrapRemoved>(OnTrapRemoved);
+            for (int i = 0; i < _fleets.Count; i++) UnpublishFleet(_fleets[i]);
             if (_instance == this) _instance = null;
         }
 
@@ -272,6 +273,7 @@ namespace HiddenHarbours.Boats
                 {
                     fleet.Root.SetActive(false);
                     fleet.Active = false;
+                    UnpublishFleet(fleet);
                 }
             }
         }
@@ -311,6 +313,7 @@ namespace HiddenHarbours.Boats
             for (int b = 0; b < fleet.Boats.Length; b++)
             {
                 var fisher = new Fisher();
+                fisher.Id = $"fleet.{def.Id}.boat{b}";          // SnagTargets key while she lies-to
                 fisher.Root = new GameObject("AmbientFisher_" + b);
                 fisher.Root.transform.SetParent(fleet.Root.transform, worldPositionStays: true);
 
@@ -358,16 +361,18 @@ namespace HiddenHarbours.Boats
                 fisher.Buoys = new Buoy[spotsPerBoat];
                 Sprite buoySprite = BuildBuoySprite(tint);
                 for (int j = 0; j < spotsPerBoat; j++)
-                    fisher.Buoys[j] = BuildBuoy(fleet.Root.transform, b, j, buoySprite, def.BuoySortingOrder);
+                    fisher.Buoys[j] = BuildBuoy(fleet.Root.transform, def.Id, b, j, buoySprite, def.BuoySortingOrder);
 
                 fleet.Boats[b] = fisher;
             }
             return fleet;
         }
 
-        private static Buoy BuildBuoy(Transform parent, int boatIndex, int spotIndex, Sprite sprite, int sortingOrder)
+        private static Buoy BuildBuoy(Transform parent, string fleetId, int boatIndex, int spotIndex,
+                                      Sprite sprite, int sortingOrder)
         {
             var buoy = new Buoy();
+            buoy.Id = $"fleet.{fleetId}.boat{boatIndex}.buoy{spotIndex}";   // SnagTargets key while shown
             buoy.Root = new GameObject($"AmbientBuoy_{boatIndex}_{spotIndex}");
             buoy.Root.transform.SetParent(parent, worldPositionStays: true);
 
@@ -479,7 +484,11 @@ namespace HiddenHarbours.Boats
             for (int b = 0; b < fleet.Boats.Length; b++)
             {
                 var fisher = fleet.Boats[b];
-                if (fisher.Spots.Length == 0) continue;
+                if (fisher.Spots.Length == 0)
+                {
+                    if (slowTick) PublishHull(fisher, def);   // no work today → withdrawn from the water
+                    continue;
+                }
 
                 double s = AmbientFleetSchedule.SlotPosition(clock.DayFraction, def.SlotsPerDay, fisher.PhaseSlots);
 
@@ -491,6 +500,7 @@ namespace HiddenHarbours.Boats
                         fisher.TargetSpotIndex = nextSpot;
                         fisher.Holding = false;   // work's done here — get under way for the next spot
                     }
+                    PublishHull(fisher, def);     // lying-to → a hull in the water; under way → withdrawn
                     // Probe in the current bow frame and REMEMBER that frame: the correction is kept
                     // bow-relative (re-expressed every frame below), so a bow that swings between
                     // slow ticks can't leave the stored push pointing the wrong way.
@@ -540,12 +550,54 @@ namespace HiddenHarbours.Boats
                 buoy.State = BuoyState.Shown;
                 buoy.Root.SetActive(true);
                 buoy.WaveVisual.enabled = true;
+                PublishBuoy(buoy);
             }
             else
             {
                 buoy.State = BuoyState.Hidden;
                 buoy.WaveVisual.enabled = false;
                 buoy.Root.SetActive(false);
+                SnagTargets.Remove(buoy.Id);
+            }
+        }
+
+        // ---- what the drift can foul on (Core SnagTargets — rule 4: the reader never names this presenter) ----
+
+        /// <summary>A SHOWN buoy is a line in the water: published at its float, radius 0. Withdrawn the
+        /// moment the haul beat starts (the pot is coming up) — the same "only what is on the surface"
+        /// test the radar seam applies.</summary>
+        private static void PublishBuoy(Buoy buoy)
+        {
+            Vector3 p = buoy.Root.transform.position;
+            SnagTargets.Set(buoy.Id, new Vector2(p.x, p.y), 0f);
+        }
+
+        /// <summary>A fisher lying-to at her spot is a hull in the water (her half-beam as the radius, so
+        /// weed fouls on the planking); under way, or with no work today, she is withdrawn. Refreshed on
+        /// the slow tick — she holds station, so her position moves only by the settle.</summary>
+        private static void PublishHull(Fisher fisher, AmbientFleetDef def)
+        {
+            if (fisher.Holding && fisher.Root != null && fisher.Root.activeSelf)
+            {
+                SnagTargets.Set(fisher.Id, fisher.Position, def.HullSnagRadiusMeters);
+                fisher.HullPublished = true;
+            }
+            else if (fisher.HullPublished)
+            {
+                SnagTargets.Remove(fisher.Id);
+                fisher.HullPublished = false;
+            }
+        }
+
+        /// <summary>Withdraw everything a fleet published — on region exit and on teardown, so a
+        /// harbour's gear never lingers in the registry after its scene is gone.</summary>
+        private static void UnpublishFleet(FleetRuntime fleet)
+        {
+            for (int b = 0; b < fleet.Boats.Length; b++)
+            {
+                Fisher fisher = fleet.Boats[b];
+                if (fisher.HullPublished) { SnagTargets.Remove(fisher.Id); fisher.HullPublished = false; }
+                for (int j = 0; j < fisher.Buoys.Length; j++) SnagTargets.Remove(fisher.Buoys[j].Id);
             }
         }
 
@@ -564,6 +616,7 @@ namespace HiddenHarbours.Boats
                 buoy.Transition = buoy.State == BuoyState.Rising ? 1f - buoy.Transition : 0f;
                 buoy.State = BuoyState.Sinking;
                 buoy.WaveVisual.enabled = false;   // its OnDisable restores the base pose/colour
+                SnagTargets.Remove(buoy.Id);       // the pot is coming up — nothing to foul on
             }
 
             if (buoy.State != BuoyState.Rising && buoy.State != BuoyState.Sinking) return;
@@ -677,6 +730,7 @@ namespace HiddenHarbours.Boats
 
         private sealed class Buoy
         {
+            public string Id;                 // SnagTargets key — published while Shown
             public GameObject Root;
             public Transform Visual;
             public SpriteRenderer Renderer;
@@ -687,6 +741,8 @@ namespace HiddenHarbours.Boats
 
         private sealed class Fisher
         {
+            public string Id;                 // SnagTargets key — published while she lies-to
+            public bool HullPublished;
             public GameObject Root;
             public Vector2 Position;
             public Vector2 Heading;

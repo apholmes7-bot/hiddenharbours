@@ -35,10 +35,20 @@ namespace HiddenHarbours.Art.Editor
         //
         // Mirrors DriftWeedSheetSlicer's model deliberately, including the closed species set as FIELDS
         // (JsonUtility cannot read a dictionary). Two tools reading one contract two different ways is
-        // how they drift apart. The one addition is params.sizeM, which the slicer had no use for.
+        // how they drift apart. The additions are params.sizeM (the drawn size) and, since round 2, the
+        // per-variant anchors — buoy / snags[] / dragTail, each a cell pixel — which the slicer reads
+        // only for the buoy pivot.
 
         [Serializable] private class Params { public float sizeM; }
-        [Serializable] private class Variant { public int cell; public Params @params; }
+        [Serializable] private class Anchor { public int[] px; public float[] m; }
+        [Serializable] private class Variant
+        {
+            public int cell;
+            public Params @params;
+            public Anchor buoy;
+            public Anchor[] snags;
+            public Anchor dragTail;
+        }
 
         [Serializable]
         private class Species
@@ -60,6 +70,25 @@ namespace HiddenHarbours.Art.Editor
             public SpeciesSet species;
             public string[] ramp_rows;
             public string derivedFromRigSha256;
+            public float scale_px_per_m;
+            public float y_foreshorten;
+        }
+
+        /// <summary>
+        /// A sidecar anchor as the RUNTIME needs it: metres from the sprite pivot (the variant's buoy
+        /// pixel, which the slicer stamped as the pivot) at scale 1, +y up — cell pixels over the
+        /// sidecar's pixels-per-metre, y flipped because cell pixels count down the screen and Unity's
+        /// sprite frame counts up. The sidecar's own <c>m</c> is deliberately NOT used: it is plane
+        /// metres (y ÷ y_foreshorten), the rig's geometry, and a flat sprite's frond tip sits where its
+        /// pixel is, not where the un-foreshortened plane point would be (ADR 0042: the squash is baked
+        /// into the pixels). Null when the anchor is missing or lies outside the cell.
+        /// </summary>
+        private static Vector2? AnchorLocal(Anchor a, Anchor buoy, float pixelsPerMeter, int cellW, int cellH)
+        {
+            if (a?.px == null || a.px.Length != 2 || buoy?.px == null || buoy.px.Length != 2) return null;
+            if (a.px[0] < 0 || a.px[0] >= cellW || a.px[1] < 0 || a.px[1] >= cellH) return null;
+            return new Vector2((a.px[0] - buoy.px[0]) / pixelsPerMeter,
+                               -(a.px[1] - buoy.px[1]) / pixelsPerMeter);
         }
 
         /// <summary>Species in sidecar order — the order <see cref="DriftWeedKit.Species"/> records,
@@ -119,6 +148,9 @@ namespace HiddenHarbours.Art.Editor
                 report = $"[DriftWeedKitBuilder] '{sidecarPath}' parsed but carries no species block.";
                 return false;
             }
+
+            float pixelsPerMeter = sidecar.scale_px_per_m > 0f ? sidecar.scale_px_per_m : 32f;
+            float yForeshorten = sidecar.y_foreshorten > 0f ? sidecar.y_foreshorten : 0.72f;
 
             var speciesNames = new List<string>();
             var entries = new List<DriftWeedKit.Entry>();
@@ -192,6 +224,39 @@ namespace HiddenHarbours.Art.Editor
                             continue;
                         }
 
+                        // The drawn size and the anchors are metre-true at scale 1 ONLY if the sheet
+                        // imports at the sidecar's own pixels-per-metre. Check it where the number is.
+                        if (Mathf.Abs(sprite.pixelsPerUnit - pixelsPerMeter) > 1e-3f)
+                        {
+                            problems.Add($"{name}: '{spriteName}' imports at {sprite.pixelsPerUnit} PPU " +
+                                         $"but the sidecar's scale_px_per_m is {pixelsPerMeter} — at " +
+                                         "scale 1 neither the drawn size nor the anchors would be metres.");
+                            continue;
+                        }
+
+                        // The anchors (round 2) — every variant must carry ≥1 snag tip and a drag tail;
+                        // a clump with none would silently fall back to the round-1 radius rest.
+                        var snags = new List<Vector2>(3);
+                        if (v.snags != null)
+                            foreach (var s in v.snags)
+                            {
+                                Vector2? local = AnchorLocal(s, v.buoy, pixelsPerMeter, sp.cellW, sp.cellH);
+                                if (local.HasValue) snags.Add(local.Value);
+                                else problems.Add($"{name} cell {v.cell}: a snag anchor is missing its px or lies outside the {sp.cellW}×{sp.cellH} cell.");
+                            }
+                        if (snags.Count == 0)
+                        {
+                            problems.Add($"{name} cell {v.cell}: no snag anchors — the rig publishes 2–3 " +
+                                         "frond tips per variant; without them the clump cannot hook a line.");
+                            continue;
+                        }
+                        Vector2? tail = AnchorLocal(v.dragTail, v.buoy, pixelsPerMeter, sp.cellW, sp.cellH);
+                        if (!tail.HasValue)
+                        {
+                            problems.Add($"{name} cell {v.cell}: no dragTail anchor (or it lies outside the cell).");
+                            continue;
+                        }
+
                         entries.Add(new DriftWeedKit.Entry
                         {
                             Sprite = sprite,
@@ -199,6 +264,8 @@ namespace HiddenHarbours.Art.Editor
                             SpeciesIndex = speciesIndex,
                             RampIndex = r,
                             VariantCell = v.cell,
+                            Snags = snags.ToArray(),
+                            DragTail = tail.Value,
                         });
                         added++;
                     }
@@ -231,6 +298,8 @@ namespace HiddenHarbours.Art.Editor
                 ? sidecar.ramp_rows : new[] { "living", "golden", "bleached" };
             kit.Entries = entries.ToArray();
             kit.BuiltFromRigSha256 = sidecar.derivedFromRigSha256 ?? "";
+            kit.PixelsPerMeter = pixelsPerMeter;
+            kit.YForeshorten = yForeshorten;
             kit.InvalidateViews();
             EditorUtility.SetDirty(kit);
 

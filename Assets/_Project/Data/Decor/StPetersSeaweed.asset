@@ -31,6 +31,11 @@ MonoBehaviour:
   SnagReleaseSeconds: 0
   StrandDepthMeters: 0.08
   RefloatDepthMeters: 0.25
+  SnagByFrondTip: 1
+  DragAlignDegreesPerSecond: 25
+  SnagSwayDegrees: 6
+  SnagBreakWaveMeters: 0
+  SnagBreakFreeSeconds: 20
   BobPerMeter: 0.2
   MaxBobMeters: 0.35
   WobbleMaxDegrees: 9
