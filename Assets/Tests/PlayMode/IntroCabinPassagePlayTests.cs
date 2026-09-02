@@ -298,6 +298,37 @@ namespace HiddenHarbours.Tests.PlayMode
         /// mid-passage. Nothing new is published on the way back, either — a listener that re-ran its
         /// entry every boundary is the defect <c>CabinEntered</c>'s own remarks forbid.
         /// </summary>
+        /// <summary>
+        /// THE RETIREMENT MEASUREMENT ON THE INTRO (ADR 0041, fleet rollout PR 0). The cape's room has
+        /// been geometry since #690, and the intro is the one place every player sees a cabin from the
+        /// inside. Below decks in the shipped opening, how many things draw his cabin? Counted off the
+        /// live objects and logged either way, and a plate of what a camera on the hull sees is written
+        /// to the temporary cache (never into the repo) for the owner's eye.
+        /// </summary>
+        [UnityTest]
+        public IEnumerator BelowDecks_TheIntroDrawsHisCabinFromExactlyOneSource_AndWritesAPlate()
+        {
+            Assert.IsNotNull(_skipper);
+            ArrivalOpening opening = Build();
+            Assert.IsTrue(opening.TryBegin());
+            Assert.IsTrue(opening.IsBelowDecks, "the game did not open below decks. " + Where());
+            yield return null;   // the cabin's LateUpdate has shown its cell; the cutaway has re-asserted
+            yield return null;
+
+            Transform boat = opening.Boat.transform;
+            BelowDecksDrawSources.Count drawn = BelowDecksDrawSources.Measure(boat);
+            Debug.Log($"[mesh-interiors-retirement] cape (the intro), below decks: {drawn}");
+
+            // The plate first, so a red assertion still leaves the picture behind.
+            BelowDecksDrawSources.WritePlate(boat, "intro-below-decks.png", metresTall: 16f, pxPerMetre: 48);
+
+            Assert.IsTrue(drawn.MeshRoom,
+                "his house is not cut open while she is below — the mesh room is not being shown. " + drawn);
+            Assert.AreEqual(1, drawn.Total,
+                "a converted hull must draw her cabin from ONE source; two means the sprite room is still " +
+                "wired under the mesh room. " + drawn);
+        }
+
         [UnityTest]
         public IEnumerator TogglingTheRootWhileSheIsBelow_LeavesHerBelow_AndSaysNothingNew()
         {

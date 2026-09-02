@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
+using HiddenHarbours.Art;
 using HiddenHarbours.Boats;
 using HiddenHarbours.Core;
 using HiddenHarbours.Player;
@@ -164,9 +165,11 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.IsFalse(cabin.IsInside, "…and she is NOT inside while it is still moving");
             Assert.GreaterOrEqual(door.CueFrame, 0, "the cue publishes a frame for whoever draws it");
 
-            // ⭐ THE LOAD HAPPENS UNDER THE CUE, and nowhere earlier.
-            Assert.AreEqual(1, BoatInteriorCells.ResidentSets,
-                            "her sheets arrive at the CUE START, hidden by the leaf's own 560 ms");
+            // ⭐ THE LOAD USED TO HAPPEN HERE, under the cue. Since ADR 0041 her room is geometry
+            // (#688): there is no sheet, so the cue start loads NOTHING and Resources is never touched.
+            Assert.IsTrue(cabin.RoomIsGeometry, "the committed lobster's room is geometry (ADR 0041)");
+            Assert.AreEqual(0, BoatInteriorCells.ResidentSets,
+                            "a converted hull has no sheet to bring in at the cue — her cabin is in her mesh");
 
             yield return WaitForCue(door);
 
@@ -174,14 +177,14 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.IsTrue(cabin.IsInside, "the swap lands at the END of the cue");
             Assert.AreEqual(0, cabin.Level, "her sill is at house-sole height, so that is where she walks in");
 
-            Transform room = rig.Boat.transform.Find(BoatInteriorInstaller.RoomChildName);
-            var roomRenderer = room.GetComponent<SpriteRenderer>();
-            Assert.IsTrue(roomRenderer.enabled, "the room is what is drawn");
-            Assert.IsNotNull(roomRenderer.sprite, "…and it has a picture, loaded from Resources");
-            Assert.AreSame(rig.Boat.transform, room.parent,
-                           "the room hangs off the hull ROOT — never the visual child, which is where " +
-                           "her ride is applied and would give the room her heave twice");
-            Assert.AreNotSame(rig.Skin.Visual, room.parent);
+            // ADR 0041: her cabin is her own hull mesh, revealed by the cutaway — ONE picture. No
+            // sprite room exists on her at all (a second one would draw the cabin twice; measured on
+            // main 2026-09-01 before the retirement: two sources).
+            Assert.IsNull(rig.Boat.transform.Find(BoatInteriorInstaller.RoomChildName),
+                          "a converted hull must carry no sprite room child");
+            Assert.IsTrue(HullOf(rig).CutawayShown.Opens, "her house is cut open: the mesh room is what is drawn");
+            Assert.AreEqual(1, BelowDecksDrawSources.Measure(rig.Boat.transform).Total,
+                            "exactly one source draws below decks");
 
             // ---- and back out --------------------------------------------------------------
             Assert.AreEqual("Come out", door.VerbLabel, "the same door, said the other way round");
@@ -189,15 +192,54 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return WaitForCue(door);
 
             Assert.IsFalse(cabin.IsInside);
-            Assert.IsFalse(roomRenderer.enabled, "the room goes dark behind her");
+            yield return null;   // the cutaway re-asserts on CabinLeft
+            Assert.IsFalse(HullOf(rig).CutawayShown.Opens, "her house closes behind her");
             Assert.AreEqual(0, cabin.Level, "and the level resets on the way out");
 
             Assert.AreEqual(1, _entered.Count, "one entry, published once");
             Assert.AreEqual(1, _left.Count, "one exit, published once");
         }
 
+        /// <summary>
+        /// THE RETIREMENT MEASUREMENT (ADR 0041, fleet rollout PR 0). The lobster's room has been
+        /// geometry since #688. Below decks on her, how many things are drawing a cabin? The sprite
+        /// room the ADR 0038 installer builds for every measured hull, the mesh room her open cut reveals,
+        /// or exactly one of them. Measured on the shipped wiring, not reasoned about: the count is logged
+        /// whichever way it comes out, so the number is in the run's log even when the assertion is red.
+        /// </summary>
         [UnityTest]
-        public IEnumerator TheRoomRidesHerHullAtTheComfortFraction_AndTheHullIsUnmovedByIt()
+        public IEnumerator BelowDecks_HerCabinDrawsFromExactlyOneSource_TheGeometry()
+        {
+            Rig rig = NewLobsterRig();
+            if (rig.Boat == null) yield break;
+            yield return null;
+
+            yield return Board(rig);
+            yield return EnterTheCabin(rig);
+            yield return null;   // the cabin's LateUpdate has shown its cell; the cutaway has re-asserted
+            yield return null;
+
+            BelowDecksDrawSources.Count drawn = BelowDecksDrawSources.Measure(rig.Boat.transform);
+            Debug.Log($"[mesh-interiors-retirement] lobster, below decks: {drawn}");
+
+            Assert.IsTrue(drawn.MeshRoom,
+                "her house is not cut open while she is below — the mesh room, which IS her cabin now, " +
+                "is not being shown. " + drawn);
+            Assert.AreEqual(1, drawn.Total,
+                "a converted hull must draw her cabin from ONE source. Two means the sprite room is still " +
+                "wired under a mesh room — she draws her cabin twice (ADR 0041's own warning). " + drawn);
+        }
+
+        /// <summary>
+        /// <b>ADR 0041 changed what this test could measure.</b> It used to read the comfort fraction
+        /// (<c>InteriorRockScale</c>, 0.45) off a SPRITE room leaning under her hull. A converted hull has
+        /// no second picture: her room is her own mesh and rides at her own rock, and the comfort clamp
+        /// has nothing to scale. So the claim is now the structural one — there is no room transform to
+        /// lean — and the hull is still posed exactly as before. The clamp itself stays in
+        /// <c>GameConfig</c> for the sprite hulls the fleet still draws.
+        /// </summary>
+        [UnityTest]
+        public IEnumerator HerRoomIsHerHull_SoThereIsNoSecondPictureToRideAtTheComfortFraction()
         {
             const float tilt = 8f;
 
@@ -207,21 +249,16 @@ namespace HiddenHarbours.Tests.PlayMode
 
             yield return EnterTheCabin(rig);
 
-            // The hull leans. Her cabin takes InteriorRockScale of it — a comfort filter on ONE draw,
-            // which is rule 5's boundary and the reason the clamp was safe to accept at all.
             rig.Skin.Presenter.VisualTiltDegrees = tilt;
-            yield return null;   // one LateUpdate with the room on and the hull leaning
+            yield return null;
 
-            Transform room = rig.Boat.transform.Find(BoatInteriorInstaller.RoomChildName);
-            float scale = GameServices.InteriorRockScale;
-            Assert.AreEqual(GameConfig.DefaultInteriorRockScale, scale, 1e-6f,
-                            "the ruled default, so this test is measuring 0.45 and not whatever a " +
-                            "config asset drifted to");
-            Assert.AreEqual(tilt * scale, RoomLeanDegrees(room), 1e-3f,
-                            "the room leans by the comfort fraction of her hull's own lean");
+            Assert.IsTrue(rig.Installer.Interior.RoomIsGeometry);
+            Assert.IsNull(rig.Boat.transform.Find(BoatInteriorInstaller.RoomChildName),
+                          "a converted hull has no sprite room to lean — her cabin is in her mesh");
             Assert.AreEqual(tilt, rig.Skin.Presenter.VisualTiltDegrees, 1e-5f,
-                            "…and the hull is posed identically at every scale: the clamp never " +
-                            "reaches her pose, her handling or the save");
+                            "the hull is posed identically: nothing about the room reaches her pose");
+            Assert.AreEqual(GameConfig.DefaultInteriorRockScale, GameServices.InteriorRockScale, 1e-6f,
+                            "the comfort clamp still exists for the sprite hulls; it is simply inert here");
         }
 
         /// <summary>
@@ -380,36 +417,35 @@ namespace HiddenHarbours.Tests.PlayMode
         //  RESIDENCY — the sheets arrive at the cue and are given back when the boat is gone
         // =====================================================================================
 
+        /// <summary>
+        /// <b>A converted hull never touches Resources</b> — not at spawn, not at the cue, not inside,
+        /// not on destroy — and her cells asset does not exist to be found. (The sheets used to arrive
+        /// at the cue start and go back in OnDestroy; that mechanism still serves the sprite hulls and
+        /// is exercised on the tanker below.)
+        /// </summary>
         [UnityTest]
-        public IEnumerator HerSheetsArriveAtTheCueAndAreGivenBackWhenSheIsDestroyed()
+        public IEnumerator AConvertedHullNeverLoadsASheet_BecauseThereIsNone()
         {
             Rig rig = NewLobsterRig();
             if (rig.Boat == null) yield break;
             yield return null;
 
-            Assert.AreEqual(0, BoatInteriorCells.ResidentSets, "nothing before the handle is touched");
-            Assert.AreEqual(0f, BoatInteriorCells.ResidentMegabytes, 1e-4f);
+            BoatInteriorDef def = LoadCommitted<BoatVisualDef>(LobsterVisualPath).Interior;
+            Assert.IsNull(Resources.Load<BoatInteriorCellsDef>(BoatInteriorCellsDef.PathFor(def.Id)),
+                          "her cells asset is RETIRED — nothing should be under Resources for a mesh room");
 
+            Assert.AreEqual(0, BoatInteriorCells.ResidentSets, "nothing before the handle is touched");
             yield return Board(rig);
-            Assert.AreEqual(0, BoatInteriorCells.ResidentSets,
-                            "…and still nothing merely for standing on her deck");
+            Assert.AreEqual(0, BoatInteriorCells.ResidentSets, "…and nothing for standing on her deck");
 
             yield return EnterTheCabin(rig);
+            Assert.AreEqual(0, BoatInteriorCells.ResidentSets,
+                            "…and nothing INSIDE: the cue start asked for no sheet, because RoomIsGeometry");
+            Assert.AreEqual(0f, BoatInteriorCells.ResidentMegabytes, 1e-4f);
 
-            Assert.AreEqual(1, BoatInteriorCells.ResidentSets, "one hull's worth, and one only");
-            Assert.Less(BoatInteriorCells.ResidentMegabytes, 20f,
-                        "a lobster-class cabin is ~11.7 MB; a number far off that means the wiring " +
-                        "picked up another hull's sheets");
-            Assert.Greater(BoatInteriorCells.ResidentMegabytes, 0f);
-
-            // ⚠️ RELEASED IN OnDestroy, guarded on "did I actually hold?" — never OnDisable, which a
-            // region hop fires constantly and which would unload the cabin of a boat the player is
-            // standing inside, halfway across a boundary.
             UnityEngine.Object.Destroy(rig.Boat);
             yield return null;
-
-            Assert.AreEqual(0, BoatInteriorCells.ResidentSets,
-                            "the last holder is gone, so the sheets are let go");
+            Assert.AreEqual(0, BoatInteriorCells.ResidentSets, "nothing was held, so nothing is released");
         }
 
         // =====================================================================================
@@ -687,10 +723,12 @@ namespace HiddenHarbours.Tests.PlayMode
             return _readBlock.GetFloat(property);
         }
 
-        private static float RoomLeanDegrees(Transform room)
+        /// <summary>The hull's facet renderer — the mesh that IS her cabin on a converted hull.</summary>
+        private static IsoFacetHullRenderer HullOf(Rig rig)
         {
-            float z = room.localEulerAngles.z;
-            return z > 180f ? z - 360f : z;
+            var r = rig.Skin.Visual.GetComponent<IsoFacetHullRenderer>();
+            Assert.IsNotNull(r, "the committed lobster is a mesh hull; her visual child carries the facet renderer");
+            return r;
         }
 
         /// <summary>Load a committed def, or <c>Assert.Ignore</c> in a player build where the

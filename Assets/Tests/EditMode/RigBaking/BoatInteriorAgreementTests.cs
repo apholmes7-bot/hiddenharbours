@@ -65,7 +65,13 @@ namespace HiddenHarbours.Tests.RigBaking
                 yield break;
             }
 
+            // ADR 0041: a converted hull keeps her def and has NO sheet — there is nothing for the
+            // two halves to agree on, so she is not a case here. Derived from the bake's switch.
+            var converted = new HashSet<string>(ConvertedInteriors.All().Select(c => c.DefAssetPath),
+                                                StringComparer.Ordinal);
+
             foreach (string path in guids.Select(AssetDatabase.GUIDToAssetPath)
+                                         .Where(p => !converted.Contains(p))
                                          .OrderBy(p => p, StringComparer.Ordinal))
                 yield return new TestCaseData(path).SetName($"Def_{Path.GetFileNameWithoutExtension(path)}");
         }

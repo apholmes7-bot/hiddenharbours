@@ -7,42 +7,6 @@
     "importSizeCap": 4096,
     "sheets": [
         {
-            "hullStem": "capeIslanderIsoRig",
-            "hullFileStem": "capeIslanderIsoRig",
-            "defId": "interior.cape_islander_iso",
-            "interiorHullKey": "cape",
-            "variantSize": "",
-            "variantStyle": "",
-            "variantRegion": "",
-            "cellW": 456,
-            "cellH": 420,
-            "pivotX": 228,
-            "pivotY": 258,
-            "pixelsPerMetre": 32,
-            "levels": [
-                "house",
-                "cuddy"
-            ],
-            "facings": 8,
-            "convention": "CounterClockwise",
-            "doorOpen": 0.0,
-            "night": false,
-            "lamp": false,
-            "clutter": true,
-            "weather": 0.30000001192092898,
-            "pages": [
-                {
-                    "file": "CapeIslanderIsoInterior.png",
-                    "columns": 8,
-                    "rows": 2,
-                    "sheetW": 3648,
-                    "sheetH": 840,
-                    "firstCell": 0,
-                    "cellCount": 16
-                }
-            ]
-        },
-        {
             "hullStem": "coastalPacketIsoRig",
             "hullFileStem": "coastalPacketIsoRig",
             "defId": "interior.coastal_packet_iso",
@@ -175,42 +139,6 @@
                     "sheetH": 3520,
                     "firstCell": 22,
                     "cellCount": 2
-                }
-            ]
-        },
-        {
-            "hullStem": "lobsterBoatIsoRig",
-            "hullFileStem": "lobsterBoatIsoRig",
-            "defId": "interior.lobster_boat_iso",
-            "interiorHullKey": "lobster",
-            "variantSize": "",
-            "variantStyle": "",
-            "variantRegion": "",
-            "cellW": 456,
-            "cellH": 420,
-            "pivotX": 228,
-            "pivotY": 258,
-            "pixelsPerMetre": 32,
-            "levels": [
-                "house",
-                "cuddy"
-            ],
-            "facings": 8,
-            "convention": "CounterClockwise",
-            "doorOpen": 0.0,
-            "night": false,
-            "lamp": false,
-            "clutter": true,
-            "weather": 0.30000001192092898,
-            "pages": [
-                {
-                    "file": "LobsterBoatIsoInterior.png",
-                    "columns": 8,
-                    "rows": 2,
-                    "sheetW": 3648,
-                    "sheetH": 840,
-                    "firstCell": 0,
-                    "cellCount": 16
                 }
             ]
         },

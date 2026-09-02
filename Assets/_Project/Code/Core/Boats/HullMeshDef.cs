@@ -175,6 +175,16 @@ namespace HiddenHarbours.Core
                  "interior faces to select it with.")]
         public Ramp[] InteriorRamps = Array.Empty<Ramp>();
 
+        /// <summary>
+        /// <b>Is this hull's ROOM geometry?</b> (ADR 0041.) True iff the bake appended her interior to
+        /// the hull mesh — the baker writes <see cref="InteriorRamps"/> only through
+        /// <c>AppendMeshInteriorIfConverted</c>, so this is the bake's own output read back, and it is
+        /// the ONE runtime predicate for "converted". <c>BoatInteriorInstaller</c> reads it to decide
+        /// whether a hull gets a sprite room at all; the sheet suites read it to decide which hulls may
+        /// still ship cells. Never keep a second list of converted hulls anywhere — ask the def.
+        /// </summary>
+        public bool HasMeshInterior() => InteriorRamps != null && InteriorRamps.Length > 0;
+
         [Header("Pose facts (per-artwork; measured or read off the rig — never tuned)")]
         [Tooltip("MEASURED azimuth convention (RigAzimuthProbe over rendered pixels): true = the rig's " +
                  "dir argument turns the hull COUNTER-CLOCKWISE (dir d depicts compass heading −45°·d), " +
