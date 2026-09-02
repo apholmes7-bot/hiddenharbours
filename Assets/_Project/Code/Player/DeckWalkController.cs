@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 using HiddenHarbours.Boats;
 using HiddenHarbours.Core;
 
@@ -49,9 +48,11 @@ namespace HiddenHarbours.Player
     /// <c>ControlSwitcher.LateUpdate</c>, which holds it in every aboard mode; this one stays as the deck's
     /// own guarantee, and the two agree because both write the same identity.</para>
     ///
-    /// <para>Input is dev-keyed via the New Input System (legacy Input throws at runtime), mirroring
-    /// <see cref="PlayerWalkController.ReadInput"/>; a real InputService replaces it later (ui-ux).
-    /// The clamp maths is pure + static so the bounds rule is EditMode-testable.</para>
+    /// <para>Input arrives as <see cref="DeckIntents"/> (ADR 0043), read once per frame from
+    /// <see cref="DeckInputSource"/> — the bindings asset by default (<see cref="DeviceDeckIntentSource"/>,
+    /// the same four letters and four arrows this controller used to poll inline), or a
+    /// <see cref="HeldDeckIntents"/> handed in through <see cref="ConfigureDeckInput"/>. The clamp maths
+    /// is pure + static so the bounds rule is EditMode-testable.</para>
     /// </summary>
     public sealed class DeckWalkController : MonoBehaviour
     {
@@ -349,13 +350,31 @@ namespace HiddenHarbours.Player
 
         private void OnEnable() => SeedDeckLocalFromTransform();
 
+        /// <summary>Where the deck-walk intents come from (ADR 0043) — the bindings asset until something
+        /// else is configured; made lazily. Never serialized: a source is code, not scene data.</summary>
+        private IControlIntentSource<DeckIntents> _input;
+
+        public IControlIntentSource<DeckIntents> DeckInputSource
+        {
+            get
+            {
+                if (_input == null) _input = new DeviceDeckIntentSource();
+                return _input;
+            }
+        }
+
+        /// <summary>Hand the deck walk a different source — a scripted journey, a future device. Null
+        /// restores the bindings asset. Takes effect on the next frame's read.</summary>
+        public void ConfigureDeckInput(IControlIntentSource<DeckIntents> source) => _input = source;
+
         private void Update()
         {
             if (_boatRoot == null) return;
             Vector2 boatPos = _boatRoot.position;
             float drawnHeading = DrawnHeadingDegrees();
             BoatDeckDef deck = LiveDeck();
-            Vector2 input = ReadInput();
+            // THE ONE READ PER FRAME (ADR 0043 §2); the gates are applied inside the source.
+            Vector2 input = DeckInputSource.Read().Move;
 
             Vector2 relative, stanceCenter, stanceHalfExtents;
 
@@ -465,18 +484,6 @@ namespace HiddenHarbours.Player
             }
             heightMeters = height;
             return seated;
-        }
-
-        private static Vector2 ReadInput()
-        {
-            var kb = Keyboard.current;
-            if (kb == null) return Vector2.zero;
-            Vector2 m = Vector2.zero;
-            if (kb.wKey.isPressed || kb.upArrowKey.isPressed) m.y += 1f;
-            if (kb.sKey.isPressed || kb.downArrowKey.isPressed) m.y -= 1f;
-            if (kb.dKey.isPressed || kb.rightArrowKey.isPressed) m.x += 1f;
-            if (kb.aKey.isPressed || kb.leftArrowKey.isPressed) m.x -= 1f;
-            return m;
         }
 
         /// <summary>Wire the deck in one call (tests / editor builder).</summary>

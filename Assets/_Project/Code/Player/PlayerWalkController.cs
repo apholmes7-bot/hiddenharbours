@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 using HiddenHarbours.Core;
 
 namespace HiddenHarbours.Player
@@ -25,9 +24,14 @@ namespace HiddenHarbours.Player
     /// horizontal centre because the slices use a BottomCentre pivot, so the mirrored Right facing lands
     /// exactly where Left/Down/Up do — no sideways jump.</para>
     ///
-    /// Input is read here for the greybox (matching DevBoatInput/DevFishingInput, new Input System); a
-    /// real InputService replaces it later (ui-ux). The movement/facing/animation logic is pure static
-    /// helpers so it is fully unit-testable without the play-mode lifecycle.
+    /// <para><b>Input arrives as INTENTS</b> (<see cref="WalkIntents"/>, ADR 0043), read once per frame
+    /// from <see cref="WalkInputSource"/>: the bindings asset by default
+    /// (<see cref="DeviceWalkIntentSource"/> — the keys this controller used to poll inline, byte for
+    /// byte, now declared in <c>HiddenHarbours.inputactions</c>), or whatever
+    /// <see cref="ConfigureWalkInput"/> hands in — a <see cref="HeldWalkIntents"/> is how a PlayMode
+    /// journey walks her without a keypress. This controller never touches a device. The
+    /// movement/facing/animation logic is pure static helpers so it is fully unit-testable without the
+    /// play-mode lifecycle.</para>
     /// </summary>
     [RequireComponent(typeof(Rigidbody2D))]
     [RequireComponent(typeof(SpriteRenderer))]
@@ -100,6 +104,14 @@ namespace HiddenHarbours.Player
         private Facing _facing = Facing.Down;
         private Vector2 _moveInput;
         private bool _sprintHeld;
+
+        /// <summary>
+        /// ⭐ Where the on-foot intents come from — the one input seam of the walk (ADR 0043). Unset means
+        /// the bindings asset (<see cref="DeviceWalkIntentSource"/>); a test hands in a
+        /// <see cref="HeldWalkIntents"/> so a move survives the frame. Never serialized: a source is code,
+        /// not scene data (the <c>ControlSwitcher.DriveInputSource</c> pattern).
+        /// </summary>
+        private IControlIntentSource<WalkIntents> _input;
         private float _animTimer;
         private int _animStep;
 
@@ -108,6 +120,22 @@ namespace HiddenHarbours.Player
         private bool _waterStateInit;
 
         public Facing CurrentFacing => _facing;
+
+        /// <summary>The source the walk is read from — the bindings asset until something else is
+        /// configured. Made lazily, so a controller that never runs a frame never touches the input
+        /// system for it.</summary>
+        public IControlIntentSource<WalkIntents> WalkInputSource
+        {
+            get
+            {
+                if (_input == null) _input = new DeviceWalkIntentSource();
+                return _input;
+            }
+        }
+
+        /// <summary>Hand the walk a different source — a scripted journey, tooling, a future device. Null
+        /// restores the bindings asset. Takes effect on the next frame's read.</summary>
+        public void ConfigureWalkInput(IControlIntentSource<WalkIntents> source) => _input = source;
 
         /// <summary>The player's current on-foot water state (Dry/Wade/Swim) — public so the HUD/VFX can
         /// read it directly as well as via the <see cref="OnFootWaterStateChanged"/> signal. Deep never
@@ -376,8 +404,12 @@ namespace HiddenHarbours.Player
 
         private void Update()
         {
-            _moveInput = ReadInput();
-            _sprintHeld = ReadSprint();
+            // THE ONE READ PER FRAME (ADR 0043 §2): the gates — the shell holding the world, a UI owning
+            // the move axis — are applied inside the source, so the facing, the walk cycle and the
+            // velocity all derive from one already-gated answer and cannot disagree about it.
+            WalkIntents intents = WalkInputSource.Read();
+            _moveInput = intents.Move;
+            _sprintHeld = intents.Sprint;
             _facing = FacingFor(_moveInput, _facing);
 
             int column;
@@ -453,53 +485,12 @@ namespace HiddenHarbours.Player
             EventBus.Publish(new OnFootWaterStateChanged(next, prev, deepening, Mathf.Max(0f, depth)));
         }
 
-        /// <summary>
-        /// This frame's move input from the walk keys.
-        ///
-        /// <para><b>Zero while a UI owns the axis</b> (<see cref="MoveActionClaim"/>). The dev-key ledger
-        /// is exhausted A–Z, so an in-world picker steers on these same keys — and without this, arrowing
-        /// down a wardrobe's list would walk the fisher out of the wardrobe she is standing at. The claim
-        /// is raised for as long as such a UI is open and released on every path that closes it, so this
-        /// cannot wedge: a torn-down picker resets the flag.</para>
-        ///
-        /// <para><b>Read here rather than in <c>Update</c> on purpose.</b> This is the one function that
-        /// turns keys into movement, so gating it means the claim cannot be honoured in one place and
-        /// missed in another — the facing, the walk cycle and the velocity all derive from what this
-        /// returns.</para>
-        /// </summary>
-        private static Vector2 ReadInput()
-        {
-            if (MoveActionClaim.IsClaimed) return Vector2.zero;
-
-            var kb = Keyboard.current;
-            if (kb == null) return Vector2.zero;
-            Vector2 m = Vector2.zero;
-            if (kb.wKey.isPressed || kb.upArrowKey.isPressed) m.y += 1f;
-            if (kb.sKey.isPressed || kb.downArrowKey.isPressed) m.y -= 1f;
-            if (kb.dKey.isPressed || kb.rightArrowKey.isPressed) m.x += 1f;
-            if (kb.aKey.isPressed || kb.leftArrowKey.isPressed) m.x -= 1f;
-            return m;
-        }
-
-        /// <summary>
-        /// Is the sprint control held? Either Shift, polled the same way every other key here is (new Input
-        /// System device polling — the greybox pattern this controller and DevBoatInput/DevFishingInput all
-        /// share; a real InputService replaces the lot later).
-        ///
-        /// <para>Shift alone does nothing: sprint is only ever a MULTIPLIER on a move that is already
-        /// happening, because the speed it sets is handed to <see cref="VelocityFor"/> along with the move
-        /// input, and a zero input is still zero however fast you meant it.</para>
-        ///
-        /// <para><b>Gamepad sprint is deliberately deferred</b>, not forgotten — on-foot movement itself is
-        /// keyboard-only today, so a pad sprint would bind to a walk that no pad can start. It belongs with a
-        /// proper pad pass over the on-foot controller, not bolted on here.</para>
-        /// </summary>
-        private static bool ReadSprint()
-        {
-            var kb = Keyboard.current;
-            if (kb == null) return false;
-            return kb.leftShiftKey.isPressed || kb.rightShiftKey.isPressed;
-        }
+        // The move and the sprint used to be read here off Keyboard.current (W/A/S/D and the arrows summed
+        // per axis, either Shift), with the MoveActionClaim gate applied in the read. Both now arrive as
+        // WalkIntents from the source above, the gate applied in the source; the keys are declared in
+        // HiddenHarbours.inputactions and pinned by ControlIntentSourceTests. Sprint alone still does
+        // nothing: it is only ever a MULTIPLIER on a move that is already happening (SpeedFor feeds
+        // VelocityFor), and a zero move is still zero however fast you meant it.
 
         private void ApplyFrame(Facing facing, int column)
         {

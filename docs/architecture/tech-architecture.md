@@ -62,7 +62,7 @@ installer + a `ServiceLocator` exposed through Core interfaces. `lead-architect`
 | **ContentDatabase** | Loads and indexes all ScriptableObject defs; lookup by id. | Read-only at runtime. |
 | **EconomyService** | Market supply/demand sim tick, buyers, contracts, business/production/staff simulation. | Market state is **saved** (it's path-dependent). (`design/economy-and-business.md`) |
 | **NpcDirector** | Drives NPC routines/schedules against time/tide/weather; tiered simulation (active/nearby/dormant). | Positions recomputed on demand for dormant NPCs. (`design/npcs-and-routines.md`) |
-| **InputService** | Translates raw input → **intents** (`MoveIntent`, `ThrottleIntent`, `InteractIntent`, `SetHeadingIntent`). | Platform-swappable. |
+| **InputService** | Translates raw input → **intents** (`MoveIntent`, `ThrottleIntent`, `InteractIntent`, `SetHeadingIntent`). | Platform-swappable. **Landed 2026-09-02 as ADR 0043:** per-mode intent structs in Core (`WalkIntents`, `DeckIntents`, `DriveDemand`; `HelmIntents` in PR 1), one `IControlIntentSource<T>` read per mode per frame, bindings as data in `Data/Input/HiddenHarbours.inputactions`. |
 | **SaveService** | Versioned save/load, autosave, app-suspend safety. | See §6. |
 | **AudioDirector** | Adaptive ambient/music/SFX driven by region + EnvironmentSample. | (`design/art-and-audio-bible.md`) |
 
@@ -359,7 +359,9 @@ parallel-friendly (a new boat = a new Def + prefab, not new subclasses).
 
 ## 9. Multi-platform readiness (don't build now, don't block later)
 - Input through `InputService` intents (the new Input System only — the legacy manager throws) →
-  touch later is a new input map, not a rewrite.
+  touch later is a new input map, not a rewrite. **2026-09-02:** the intent layer is ADR 0043 — the
+  walk and the deck read intents from `HiddenHarbours.inputactions`; the helm and the verbs follow in
+  its PR 1, the gamepad scheme in PR 2.
 - UI built responsive (safe areas, anchors, scalable) so it reflows from desktop to phone/console.
 - No hard assumptions about mouse/keyboard in gameplay code — gameplay reacts to *intents*.
 

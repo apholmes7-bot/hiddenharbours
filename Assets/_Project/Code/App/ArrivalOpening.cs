@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 using HiddenHarbours.Core;
 using HiddenHarbours.Boats;
 using HiddenHarbours.Player;
@@ -957,7 +956,7 @@ namespace HiddenHarbours.App
             // ⭐ HER OWN STEP, and it is the one thing about the passage she is in charge of. In Update
             // beside the pose and not in LateUpdate with the seating, for the same reason the pose is:
             // this is an INPUT, and the picture is downstream of it.
-            if (IsBelowDecks) WalkTheCabin(ReadWalkInput(), Time.deltaTime);
+            if (IsBelowDecks) WalkTheCabin(CabinInputSource.Read().Move, Time.deltaTime);
 
             // ⭐ THE POSE IS STATED HERE, in Update, and NOT beside the seating in LateUpdate. The split
             // is not tidiness: IsoCharacterSprite consumes the holds in its own LateUpdate at execution
@@ -1578,22 +1577,27 @@ namespace HiddenHarbours.App
         }
 
         /// <summary>
-        /// The walk keys, through the New Input System — mirroring <c>DeckWalkController.ReadInput</c>
-        /// exactly, because it is the same walk with a smaller floor and a player who has just been told
-        /// she may move should find the keys she is about to use everywhere else already working. Legacy
-        /// <c>Input</c> throws at runtime in this project; a real InputService replaces both later (ui-ux).
+        /// Where the cabin walk's intents come from (ADR 0043) — the SAME source the deck walk reads
+        /// (<see cref="DeviceDeckIntentSource"/>, the <c>Deck</c> map of <c>HiddenHarbours.inputactions</c>),
+        /// because it is the same walk with a smaller floor and a player who has just been told she may
+        /// move should find the keys she is about to use everywhere else already working. A
+        /// <see cref="HeldDeckIntents"/> handed in through <see cref="ConfigureWalkInput"/> is how a
+        /// journey walks her through this component's own <see cref="Update"/> rather than around it.
+        /// Made lazily; never serialized.
         /// </summary>
-        private static Vector2 ReadWalkInput()
+        private IControlIntentSource<DeckIntents> _cabinInput;
+
+        public IControlIntentSource<DeckIntents> CabinInputSource
         {
-            var kb = Keyboard.current;
-            if (kb == null) return Vector2.zero;
-            Vector2 m = Vector2.zero;
-            if (kb.wKey.isPressed || kb.upArrowKey.isPressed) m.y += 1f;
-            if (kb.sKey.isPressed || kb.downArrowKey.isPressed) m.y -= 1f;
-            if (kb.dKey.isPressed || kb.rightArrowKey.isPressed) m.x += 1f;
-            if (kb.aKey.isPressed || kb.leftArrowKey.isPressed) m.x -= 1f;
-            return m;
+            get
+            {
+                if (_cabinInput == null) _cabinInput = new DeviceDeckIntentSource();
+                return _cabinInput;
+            }
         }
+
+        /// <summary>Hand the cabin walk a different source. Null restores the bindings asset.</summary>
+        public void ConfigureWalkInput(IControlIntentSource<DeckIntents> source) => _cabinInput = source;
 
         /// <summary>
         /// The compass heading of the hull PICTURE she is standing on — the presenter's own drawn
