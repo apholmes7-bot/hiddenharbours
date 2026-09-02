@@ -94,6 +94,26 @@ Material:
     - _SpecSharpness: 14
     - _SparkleTexScale: 0.5
     - _SparkleTexStrength: 0.6
+    - _SurfBandDither: 0.7
+    - _SurfBands: 4
+    - _SurfBarrelShade: 0.55
+    - _SurfBeatStrength: 0
+    - _SurfCrestBoost: 1.6
+    - _SurfCrestWidth: 3
+    - _SurfDepositStrength: 0
+    - _SurfEvolveSpeed: 0.5
+    - _SurfFrontSlope: 0
+    - _SurfLipThrow: 1.1
+    - _SurfLipWidth: 1.2
+    - _SurfNoiseScale: 0.9
+    - _SurfPlungeStrength: 1
+    - _SurfPocketBoost: 1.7
+    - _SurfPocketWidth: 4
+    - _SurfRunUpStrength: 0
+    - _SurfStrength: 1
+    - _SurfSupersedeFringe: 1
+    - _SurfThreshold: 0.42
+    - _SurfThresholdSoft: 0.16
     - _SurfaceTexStrength: 0.169
     - _SurfaceTint: 0.28
     - _SwashAmplitude: 1
@@ -185,6 +205,9 @@ Material:
     - _LightDir: {r: -0.6, g: 0.8, b: 0, a: 0}
     - _ShallowColor: {r: 0.36, g: 0.46, b: 0.5, a: 0.95}
     - _SpecColor: {r: 0.78, g: 0.82, b: 0.86, a: 1}
+    - _SurfBarrelColor: {r: 0.16, g: 0.26, b: 0.34, a: 1}
+    - _SurfColor: {r: 1, g: 1, b: 1, a: 1}
+    - _SurfLipColor: {r: 1, g: 1, b: 1, a: 1}
     - _WindDir: {r: 0, g: 1, b: 0, a: 0}
     - _CrossSwellDir: {r: 0, g: 0, b: 0, a: 0}
     - _FbmTint: {r: 0.4, g: 0.48, b: 0.52, a: 1}

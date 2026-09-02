@@ -349,6 +349,12 @@ namespace HiddenHarbours.Core
         /// before it multiplies the height. A guard on the law's own range, not a tunable.</summary>
         public const float HuntIribarrenLimit = 2.3f;
 
+        /// <summary>Standard gravity, used ONLY where the march's seconds are discarded
+        /// (<see cref="MetersSinceBreakAlong"/>) or a caller has no field to take it from. Every live
+        /// consumer passes the field's own <c>GameServices.WaveField.Gravity</c>; this is not a second
+        /// source of the number, it is the inert default the steady-state paths were written against.</summary>
+        public const float StandardGravity = 9.81f;
+
         // ---- shoaling: the wave feels the bottom -------------------------------------------------
 
         /// <summary>
@@ -961,7 +967,7 @@ namespace HiddenHarbours.Core
             // ONE march. The metres sum below is the same running-product sum this method has always
             // returned, tap for tap; the seconds ride in the same loop and are simply not read here.
             MarchSinceBreakAlong(worldPos, travelDirection, waterLevelMeters, terrain, in contour,
-                                 fetchEnvelope01, 9.81f, in settings, out float meters, out _);
+                                 fetchEnvelope01, StandardGravity, in settings, out float meters, out _);
             return meters;
         }
 
@@ -1061,8 +1067,19 @@ namespace HiddenHarbours.Core
         /// </summary>
         /// <param name="train">The breaking train — the field's dominant, from <see cref="SharedWaveField"/>
         /// in Play (sampled at time 0 plus the travel).</param>
-        public static float BorePhaseDegrees(in WaveTrain train, Vector2 breakLinePoint, float travelSeconds)
-            => WaveMath.TrainPhaseDegrees(in train, breakLinePoint, -(double)Mathf.Max(0f, travelSeconds));
+        /// <param name="freqScale">The scale the consumer's sea runs its wavelengths at — 1 for the sim
+        /// field a hull rides, <c>DisplacedSeaState.FreqScale</c> (the material's <c>_OceanSwellScale</c>
+        /// over 0.025) for the sea the shader DRAWS, so the bore leaves the break line with the crest the
+        /// eye sees arrive there. Scaling the POSITION is the sanctioned way to sample the field at a
+        /// scale without touching <see cref="WaveMath"/>: <c>θ = k·(d·(pos·s)) + φ ≡ k·s·(d·pos) + φ</c>,
+        /// and the phase speed is untouched.</param>
+        public static float BorePhaseDegrees(in WaveTrain train, Vector2 breakLinePoint, float travelSeconds,
+                                             float freqScale = 1f)
+        {
+            float s = Mathf.Max(1e-3f, freqScale);
+            return WaveMath.TrainPhaseDegrees(in train, new Vector2(breakLinePoint.x * s, breakLinePoint.y * s),
+                                              -(double)Mathf.Max(0f, travelSeconds));
+        }
 
         /// <summary>The train's period (seconds) — conserved through shoaling, so it is the bore's beat
         /// on every depth: <c>T = L₀ / c₀</c>.</summary>
@@ -1095,6 +1112,39 @@ namespace HiddenHarbours.Core
         public static float SecondsSinceTheCrest(float phaseDegrees, float periodSeconds)
             => Mathf.Repeat(90f - phaseDegrees, 360f) / 360f * Mathf.Max(0f, periodSeconds);
 
+        /// <summary>The bore's SHEET (ADR 0040 rev 3, the look): whitewater is made at the front and ages
+        /// behind it, so the sheet is 1 where the crest is passing and decays with the seconds since it
+        /// passed, on the whitewater's own time constant - one decay law for "how far" (metres, in
+        /// <see cref="WhitewaterEnergy01"/>) and for "how long ago" (this). Ahead of the front the water
+        /// belongs to the previous crest, nearly a period old. Twin: <c>SurfBoreSheet01</c>.</summary>
+        /// <summary>Seconds from the crest's passage, SIGNED: positive behind the front (the crest has
+        /// passed), negative ahead of it (the crest is coming), in (-T/2, T/2]. The travelling anatomy
+        /// (ADR 0040 rev 3, the look) measures the lip, barrel and pocket from the FRONT with this, so
+        /// they move with the bore instead of standing a fixed distance past the break line.
+        /// Twin: <c>SurfSignedSecondsFromCrest</c>.</summary>
+        public static float SignedSecondsFromCrest(float phaseDegrees, float periodSeconds)
+            => (Mathf.Repeat(90f - phaseDegrees + 180f, 360f) - 180f) / 360f * Mathf.Max(0f, periodSeconds);
+
+        public static float BoreSheet01(float phaseDegrees, float periodSeconds, float decaySeconds)
+        {
+            float tau = Mathf.Max(decaySeconds, 1e-3f);
+            return Mathf.Exp(-SecondsSinceTheCrest(phaseDegrees, periodSeconds) / tau);
+        }
+
+        /// <summary>The whitewater's energy by the seconds the bore has actually RUN (the march's own
+        /// travel integral, ADR 0040 rev 3) rather than by its metres over the LOCAL bore speed
+        /// (<see cref="WhitewaterEnergy01"/>, the shipped sheet's law). The two agree at the break line
+        /// and part in the shallows: the local law divides the whole run by the speed at the point being
+        /// asked, which at the wet edge is near zero, so it pronounces every wash dead before it can
+        /// reach the sand. The RUN-UP rides this one — a wash that could never reach the beach is not a
+        /// run-up — and the drawn sheet blends toward it only as the owner's run-up dial comes up, so
+        /// today's sheet is untouched at 0. Twin: <c>SurfWhitewaterByTravel01</c>.</summary>
+        public static float WhitewaterByTravel01(float travelSeconds, float decaySeconds)
+        {
+            float tau = Mathf.Max(MinDecaySeconds, decaySeconds);
+            return Mathf.Exp(-Mathf.Max(0f, travelSeconds) / tau);
+        }
+
         /// <summary>
         /// <b>How big a crest this bore was born from</b>, 0..1: the field's crest factor at the break
         /// line at the moment <em>that crest</em> passed it — <see cref="WaveMath.Sample"/> at minus the
@@ -1107,13 +1157,46 @@ namespace HiddenHarbours.Core
         /// </summary>
         public static float BoreBirthEnergy01(in WaveTrains field, Vector2 breakLinePoint, float travelSeconds,
                                               float phaseDegrees, float periodSeconds,
-                                              float fetchEnvelope01, float setStrength)
+                                              float fetchEnvelope01, float setStrength, float freqScale = 1f)
         {
             float strength = Mathf.Clamp01(setStrength);
             if (strength <= 0f || field.Count <= 0) return 1f;
             double birth = -((double)Mathf.Max(0f, travelSeconds) + SecondsSinceTheCrest(phaseDegrees, periodSeconds));
-            WaveSample born = WaveMath.Sample(breakLinePoint, birth, in field, fetchEnvelope01);
-            return Mathf.Lerp(1f, Mathf.Clamp01(born.CrestFactor), strength);
+            float s = Mathf.Max(1e-3f, freqScale);     // the drawn scale, by the position recipe (see BorePhaseDegrees)
+            WaveSample born = WaveMath.Sample(new Vector2(breakLinePoint.x * s, breakLinePoint.y * s), birth,
+                                              in field, fetchEnvelope01);
+            // Normalized by the DOMINANT train's own amplitude, not the field's total: a lone crest in
+            // an eight-train sea reaches only its share of the total, so a total-normalized read could
+            // never birth a full bore (measured on the shot sea: ~0.1, a beat too faint to draw).
+            // Against its own amplitude the average bore is born full, a set's constructive crest
+            // saturates and a destructive one is born weak - the swing that IS the set.
+            float dominantAmplitude = Mathf.Max(field.Dominant.Amplitude, 1e-6f);
+            return Mathf.Lerp(1f, Mathf.Clamp01(born.Height / dominantAmplitude), strength);
+        }
+
+        /// <summary>
+        /// <b>The bore front's slope</b> (metres of rise per metre along the travel direction) — the
+        /// derivative of the bore's own height profile <c>H·pulse(ψ)</c>, so the relief light and the sun's
+        /// face shade can catch a breaking face the way they catch a swell face. Along the path the phase
+        /// advances at <c>dψ/ds = ω/√(g·d)</c> (the clock's own rate), and
+        /// <c>d pulse/dψ = p·s^(p−1)·cos ψ / 2</c> with <c>s = (1+sin ψ)/2</c>. Positive = rising along the
+        /// travel direction; the front (90°) is the peak, so the face ahead of it rises and the back behind
+        /// it falls. 0 wherever the pulse is flat (<c>sharpness ≤ 0</c>) — the steady state has no face.
+        /// </summary>
+        /// <param name="frontHeightMeters">The bore's height — the standing height at the break line times
+        /// its birth energy.</param>
+        /// <param name="boreSpeed">√(g·d) at the position.</param>
+        /// <param name="omega">The train's angular frequency, <c>2π / period</c>.</param>
+        public static float BoreFrontSlope(float phaseDegrees, float sharpness, float frontHeightMeters,
+                                           float boreSpeed, float omega)
+        {
+            if (sharpness <= 0f || frontHeightMeters <= 0f || boreSpeed <= 1e-6f) return 0f;
+            float rad = phaseDegrees * Mathf.Deg2Rad;
+            float s = (Mathf.Sin(rad) + 1f) * 0.5f;
+            if (s <= 1e-6f) return 0f;
+            float dPulse = sharpness * Mathf.Pow(s, sharpness - 1f) * Mathf.Cos(rad) * 0.5f;   // per radian
+            float dPhaseDs = omega / boreSpeed;                                                // radians per metre
+            return frontHeightMeters * dPulse * dPhaseDs;
         }
 
         /// <summary>
@@ -1146,9 +1229,13 @@ namespace HiddenHarbours.Core
         /// <param name="field">The PUBLISHED trains (<see cref="SharedWaveField"/> in Play, sampled at
         /// time 0 plus the travel). Its dominant train is the breaking one.</param>
         /// <param name="gravity">The field's gravity (<c>GameServices.WaveField.Gravity</c>).</param>
+        /// <param name="freqScale">The scale the consumer's sea runs its wavelengths at — see
+        /// <see cref="BorePhaseDegrees"/>. A hull reads the sim field (1) or the <c>DisplacedSea</c> seam's
+        /// value; the shader passes its own drawn scale so the twin agrees.</param>
         public static SurfState SurfAt(Vector2 worldPos, float waterLevelMeters, ITidalTerrain terrain,
                                        in BreakerContour contour, float fetchEnvelope01,
-                                       in WaveTrains field, float gravity, in BreakerSettings settings)
+                                       in WaveTrains field, float gravity, in BreakerSettings settings,
+                                       float freqScale = 1f)
         {
             if (terrain == null || !contour.Breaks) return SurfState.Calm;
             if (field.Count <= 0) return SurfState.Calm;
@@ -1174,11 +1261,22 @@ namespace HiddenHarbours.Core
             float standing = Mathf.Max(0f, settings.BreakerIndex) * depth;
 
             Vector2 breakLine = BreakLinePoint(worldPos, shoreward, age);
-            float phase = BorePhaseDegrees(in dominant, breakLine, travel);
+            float phase = BorePhaseDegrees(in dominant, breakLine, travel, freqScale);
             float birth = BoreBirthEnergy01(in field, breakLine, travel, phase, PeriodSeconds(in dominant),
-                                            fetchEnvelope01, settings.BoreSetStrength);
+                                            fetchEnvelope01, settings.BoreSetStrength, freqScale);
             float bore = BorePulse01(phase, settings.BorePulseSharpness) * birth;
-            float runUp = RunUpMeters(standing, alive, xi, bore, in settings);
+
+            // The run-up is Hunt's law on the height the bore was BORN with — the depth-limited height at
+            // the break line — not the height it stands at here: at the wet edge the local γ·d is 0 by
+            // definition, and a law evaluated there would say the wash never reaches the beach it is
+            // running up. (Revision 3's first cut used the local height; the shader twin, which needs the
+            // reach AT the edge, is where that showed.)
+            float breakDepth = DepthAtEnvelope(contour.BreakDepths, contour.LeeEnvelope, fetchEnvelope01);
+            float standingAtBreak = Mathf.Max(0f, settings.BreakerIndex) * Mathf.Max(0f, breakDepth);
+            // …carried by the whitewater's TRAVEL-time energy (see WhitewaterByTravel01): the local law
+            // (Whitewater01, the shove's read) is near zero at the edge by construction.
+            float aliveByTravel = WhitewaterByTravel01(travel, settings.WhitewaterDecaySeconds);
+            float runUp = RunUpMeters(standingAtBreak, aliveByTravel, xi, bore, in settings);
 
             return new SurfState(depth, shoreward, breaking, alive, standing, plunging,
                                  bore, phase, travel, birth, runUp);

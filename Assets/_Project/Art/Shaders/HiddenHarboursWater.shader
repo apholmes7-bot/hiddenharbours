@@ -375,6 +375,20 @@ Shader "HiddenHarbours/Water"
         _SurfPocketWidth   ("Pocket width (m past the break it stays powerful)", Float) = 4
         _SurfPocketBoost   ("Pocket density boost", Range(1,3)) = 1.7
 
+        [Header(THE BORE   ADR 0040 rev 3   one crest at a time   all three ship at 0 which is today)]
+        // The surf's CLOCK (BreakerMath's bore: the field's published phase at the break line, carried
+        // inshore by the march's own travel time) exists per pixel whether or not these dials use it.
+        // Each dial is an exact passthrough at 0 — the steady boil, today's look — and the check-in
+        // plates were shot with all three at 1. The physics (pulse sharpness, sets, Hunt's run-up and
+        // its cap) are GameConfig.Breakers, published in _BreakerBore; these are the look only.
+        _SurfBeatStrength  ("Bore beat: the sheet and the lip/barrel/pocket pulse with the crest (0 = steady)", Range(0,1)) = 0
+        _SurfRunUpStrength ("Bore run-up moves the drawn wet edge where a bore is alive (0 = the cosmetic swash only)", Range(0,1)) = 0
+        _SurfFrontSlope    ("Bore front relief: the breaking face for the lamp and the sun (0 = no face)", Range(0,2)) = 0
+        // Read by C# only (WaterSurface mirrors it to the foam registry like _WakeFoamStrength): the
+        // ADVECTED wake buffer gains a source under every bore front, so a wash leaves foam BEHIND it
+        // that ages, drifts and dies on the buffer's own clocks. Needs _WakeFoamStrength > 0 to draw.
+        _SurfDepositStrength ("Bore foam DEPOSIT into the advected wake buffer (0 = none)", Range(0,2)) = 0
+
         [Header(Shore band quantization   the 8 bit height map is why the foam edge draws LINES)]
         // The foam band's edge is an ISO-CONTOUR of a depth that inherits the seabed height texture's
         // 8-bit quantization (3.91 cm per code over the -4..+6 m range, bilinear at ~2 px/m). Where the
@@ -1193,6 +1207,11 @@ Shader "HiddenHarbours/Water"
             float4 _BreakerOuter;
             float4 _BreakerParams;
             float4 _BreakerAnatomy;   // x = L0 (m), y = gamma, z = spilling limit, w = plunging limit
+            // ADR 0040 rev 3 — the BORE's dials from GameConfig.Breakers (WaveFieldBridge.PublishBreakerGlobals):
+            // x = pulse sharpness (0 = no pulse: the steady state), y = set strength (0 = every bore born at
+            // full energy), z = Hunt's run-up coefficient, w = the run-up cap (m of level). All-zero = a stale
+            // config = the surf exactly as revision 2 shipped it.
+            float4 _BreakerBore;
 
             // SRP-batcher friendly: every per-material property in one CBUFFER (the runtime sets these via a
             // MaterialPropertyBlock; the sim-driven ones change on the slow tick, not per frame).
@@ -1320,6 +1339,11 @@ Shader "HiddenHarbours/Water"
                 float4 _SurfBarrelColor;
                 float  _SurfPocketWidth;
                 float  _SurfPocketBoost;
+                // The bore's look dials (ADR 0040 rev 3) — 0 = the exact passthrough, each.
+                float  _SurfBeatStrength;
+                float  _SurfRunUpStrength;
+                float  _SurfFrontSlope;
+                float  _SurfDepositStrength;   // C#-read; see the property
                 // Organic shore fringe (LOOK-ONLY prototype; cosmetic, foam/alpha band only — ADR 0012).
                 float  _ShoreNoise;
                 float  _ShoreNoiseScale;
@@ -1977,6 +2001,7 @@ Shader "HiddenHarbours/Water"
             // toward the shore. We sample the seabed at +/- a small world step on each axis (central difference)
             // and normalize. Returns float2(0,0) on flat seabed (no height map / open deep water) so the caller
             // keeps the pure wind/current direction there. VISUAL-only — never touches depth/clip (P1, rule 5).
+            // ==== TWIN A (begin): the shore helpers, VERBATIM in HiddenHarboursFoamBufferAdvect.shader (BreakerDepositTests pins the copy) ====
             float2 ShoreDir(float2 worldXY)
             {
             #if defined(_USE_HEIGHTTEX)
@@ -2010,6 +2035,8 @@ Shader "HiddenHarbours/Water"
                 return 0.0;                                   // no height map => no shore, nothing to scale
             #endif
             }
+
+            // ==== TWIN A (end) ====
 
             // ---- near-shore WEIGHT: how strongly to steer toward shore at this depth ------------------------
             // Full at the wet edge (depth ~ 0), fading to 0 by _ShorewardFalloff metres deep, scaled by the
@@ -2184,6 +2211,7 @@ Shader "HiddenHarbours/Water"
             // (NEVER [unroll] a runtime count — the #96 magenta trap); pow bases floored at 1e-6 because
             // HLSL pow(0, 0) is NaN on some GPUs (the deviation lives where cos(theta) ~ 0 — invisible).
             // ====================================================================================================
+            // ==== TWIN B (begin): the fetch march, the breaker contour, the surf march and the bore, VERBATIM in HiddenHarboursFoamBufferAdvect.shader ====
             // ⚠️ WAVE_MAX_TRAINS is ONE HALF OF A SEAM. Its C# counterparts are
             // WaveTrains.MaxTrains, PackedWaveField.MaxTrains and the bridge's uniform push; they
             // move together in one commit or the hull rides a sea the shader is not drawing.
@@ -2353,26 +2381,46 @@ Shader "HiddenHarbours/Water"
             // Coords go through FetchPixelize — the march's own world grid (FETCH_MARCH_PPU), not the
             // material's _PixelsPerUnit — so the surf cannot crawl under camera translation and the C#
             // twin, which cannot read a material, marches the identical points.
-            #define SURF_MARCH_BODY(ELEV_FN)                                                           \
-                if (_BreakerOuter.w < 0.5) return 0.0;          /* breaks nowhere: not one tap */      \
-                float2 back = -travelDir;                                                              \
-                if (dot(back, back) < 1e-12) return 0.0;        /* no heading, no bore */              \
-                back = normalize(back);                                                                \
-                float stepLen = max(_BreakerParams.x, 0.05);                                           \
-                float contiguous = 1.0;                                                                \
-                float age = 0.0;                                                                       \
-                [unroll]                                                                               \
-                for (int si = 1; si <= SURF_MARCH_STEPS; si++)  /* FIXED bound — never a variable */   \
-                {                                                                                      \
-                    float2 sp = FetchPixelize(worldXY + back * (stepLen * si));                        \
-                    float sdepth = _WaterLevel - ELEV_FN(sp);                                          \
-                    contiguous *= SurfBreaking01(sdepth, fetchEnv);                                    \
-                    age += contiguous;                                                                 \
-                }                                                                                      \
-                return stepLen * age;
+            // Twin: BreakerMath.MarchSinceBreakAlong (ADR 0040 rev 3). ONE loop, BOTH integrals: the metres
+            // (Σ contiguous·Δs, exactly the sum this march has always returned) and the SECONDS the bore has
+            // been running (Σ contiguous·Δs/√(g·dᵢ), the bore speed at each tap's own depth). A second march
+            // was refused; the partial gate at the surf-zone boundary supplies the sub-step fraction to both
+            // — and for the clock that is what keeps a bore front off the 2 m grid (BreakerBoreTests: worst
+            // neighbour increment 1.04x the smooth Δs/√(g·d) shipped, 4.22x under a hard gate).
+            void SurfMarch(float2 worldXY, float2 travelDir, float fetchEnv, out float ageM, out float travelS)
+            {
+                ageM = 0.0;
+                travelS = 0.0;
+                if (_BreakerOuter.w < 0.5) return;              // breaks nowhere: not one tap
+                float2 back = -travelDir;
+                if (dot(back, back) < 1e-12) return;            // no heading, no bore
+                back = normalize(back);
+                float stepLen = max(_BreakerParams.x, 0.05);
+                float g = max(_BreakerParams.z, 0.0);
+                float contiguous = 1.0;
+                float age = 0.0;
+                float seconds = 0.0;
+                [unroll]
+                for (int si = 1; si <= SURF_MARCH_STEPS; si++)  // FIXED bound — never a variable
+                {
+                    float2 sp = FetchPixelize(worldXY + back * (stepLen * si));
+                    float sdepth = _WaterLevel - SeabedElevation(sp);
+                    contiguous *= SurfBreaking01(sdepth, fetchEnv);
+                    age += contiguous;
+                    float bore = sqrt(g * max(sdepth, 0.02));   // BreakerMath.MinDepthMeters floor
+                    seconds += bore > 1e-6 ? contiguous / bore : 0.0;
+                }
+                ageM = stepLen * age;
+                travelS = stepLen * seconds;
+            }
 
+            // Twin: BreakerMath.MetersSinceBreakAlong — the metres alone, through the same loop.
             float SurfAgeMeters(float2 worldXY, float2 travelDir, float fetchEnv)
-            { SURF_MARCH_BODY(SeabedElevation) }
+            {
+                float ageM, travelS;
+                SurfMarch(worldXY, travelDir, fetchEnv, ageM, travelS);
+                return ageM;
+            }
 
             // Twin: BreakerMath.WhitewaterEnergy01. exp(-t/tau) on a REAL clock: the age is the marched
             // DISTANCE past the break line divided by the bore's own shallow-water speed sqrt(g*d). The
@@ -2386,6 +2434,173 @@ Shader "HiddenHarbours/Water"
                 float tau = max(_BreakerParams.y, 1e-3);
                 return exp(-(max(ageMeters, 0.0) / bore) / tau);
             }
+
+            // Twin: BreakerMath.WhitewaterByTravel01 - the whitewater by the seconds the bore has actually
+            // RUN (the march's travel integral), not by its metres over the LOCAL speed, which at the wet
+            // edge is near zero and pronounces every wash dead before the sand. The run-up rides this;
+            // the drawn sheet blends toward it only as the run-up dial comes up (today's sheet at 0).
+            float SurfWhitewaterByTravel01(float travelS)
+            {
+                float tau = max(_BreakerParams.y, 1e-3);
+                return exp(-max(travelS, 0.0) / tau);
+            }
+
+            // ==== THE BORE (ADR 0040 rev 3): one crest at a time — twins of BreakerMath's bore functions ====
+            // Nothing here is accumulated, reconstructed or saved: the bore's phase is the field's PUBLISHED
+            // phase at the break line, read FORWARD at minus the travel time the march just integrated
+            // (sampling the published trains at a negative time is legal — the animator bakes the travel
+            // into _WavePhases and the shader samples at t = 0, so t = -tau is the same field tau seconds
+            // ago). No _Time anywhere in it: the bore advances because the bridge advances the phases.
+
+            // The dominant train's angular frequency, from the packed wave number and the field's gravity:
+            // omega = k * c = k * sqrt(g/k) = sqrt(g*k) (the deep-water dispersion relation WaveTrain's
+            // constructor carries; the period is conserved through shoaling, so this is the bore's beat on
+            // every depth). Twin: 2*pi / BreakerMath.PeriodSeconds.
+            float SurfBoreOmega()
+            {
+                float4 trains[WAVE_MAX_TRAINS] = { _WaveTrain0, _WaveTrain1, _WaveTrain2, _WaveTrain3,
+                                                   _WaveTrain4, _WaveTrain5, _WaveTrain6, _WaveTrain7 };
+                int dominant = clamp((int)(_WaveFieldParams.w + 0.5), 0, WAVE_MAX_TRAINS - 1);
+                float k = max(trains[dominant].z, 1e-6);
+                return sqrt(max(_BreakerParams.z, 0.0) * k);
+            }
+
+            // Twin: BreakerMath.BorePhaseDegrees(train, breakLinePoint, travelSeconds, freqScale) — degrees
+            // in [0, 360). The published phase FALLS with time (theta = k*(d*pos) - omega*t + phi), so the
+            // phase tau seconds AGO is theta + omega*tau. 90 degrees is the crest — the bore's FRONT — because
+            // the field's profile is (1 + sin theta)/2. freqScale is the DRAWN scale (_OceanSwellScale /
+            // 0.025), applied to the position exactly as the C# does, so the bore leaves the break line with
+            // the crest the eye sees arrive there.
+            float SurfBorePhaseDeg(float2 breakLinePoint, float travelS, float freqScale)
+            {
+                float4 trains[WAVE_MAX_TRAINS] = { _WaveTrain0, _WaveTrain1, _WaveTrain2, _WaveTrain3,
+                                                   _WaveTrain4, _WaveTrain5, _WaveTrain6, _WaveTrain7 };
+                float phis[WAVE_MAX_TRAINS] = { _WavePhases.x,  _WavePhases.y,  _WavePhases.z,  _WavePhases.w,
+                                                _WavePhases2.x, _WavePhases2.y, _WavePhases2.z, _WavePhases2.w };
+                int dominant = clamp((int)(_WaveFieldParams.w + 0.5), 0, WAVE_MAX_TRAINS - 1);
+                float k = trains[dominant].z;
+                float fs = max(freqScale, 1e-3);
+                float theta = k * dot(trains[dominant].xy, breakLinePoint * fs) + phis[dominant]
+                            + SurfBoreOmega() * max(travelS, 0.0);
+                float deg = theta * 57.29577951;
+                return deg - 360.0 * floor(deg / 360.0);
+            }
+
+            // Twin: BreakerMath.BorePulse01 — a SMOOTH periodic hump peaking at the front (90 degrees),
+            // ((1 + sin theta)/2)^sharpness. sharpness <= 0 returns exactly 1: no pulse, the steady state.
+            float SurfBorePulse01(float phaseDeg, float sharpness)
+            {
+                if (sharpness <= 0.0) return 1.0;
+                float s = (sin(phaseDeg * 0.01745329252) + 1.0) * 0.5;
+                return pow(saturate(s), sharpness);
+            }
+
+            // Twin: BreakerMath.SecondsSinceTheCrest — how long ago the crest that owns this bore passed
+            // the break line, counted back from the bore's own birth: Repeat(90 - phase, 360)/360 * T.
+            float SurfSecondsSinceCrest(float phaseDeg, float periodS)
+            {
+                float d = 90.0 - phaseDeg;
+                d = d - 360.0 * floor(d / 360.0);
+                return d / 360.0 * max(periodS, 0.0);
+            }
+
+            // Twin: BreakerMath.SignedSecondsFromCrest - positive behind the front, negative ahead of it,
+            // in (-T/2, T/2]: the coordinate the travelling anatomy measures the lip, barrel and pocket on.
+            float SurfSignedSecondsFromCrest(float phaseDeg, float periodS)
+            {
+                float d = 90.0 - phaseDeg + 180.0;
+                d = d - 360.0 * floor(d / 360.0) - 180.0;
+                return d / 360.0 * max(periodS, 0.0);
+            }
+
+            // Twin: BreakerMath.BoreSheet01. The SHEET is born at the front and ages behind it on the
+            // whitewater's own seconds (_BreakerParams.y) - one decay law for "how far" and "how long ago".
+            float SurfBoreSheet01(float phaseDeg, float periodS)
+            {
+                float tau = max(_BreakerParams.y, 1e-3);
+                return exp(-SurfSecondsSinceCrest(phaseDeg, periodS) / tau);
+            }
+
+            // Twin: WaveMath.Sample(pos*fs, -timeBack, field).CrestFactor — the field's crest factor at a
+            // position TIME-SHIFTED into the past. The same eight-train unrolled loop WaveFieldSample runs
+            // (height + crest factor only, no slope), with each train's phase advanced by its own omega =
+            // sqrt(g*k) (unscaled k: the drawn scale changes the wavelength on screen, never the beat).
+            // ⚠ COST: this is a tenth train-loop call site per pixel (WaveFieldCostReport counts it), paid
+            // only where the surf is alive and _BreakerBore.y > 0.
+            float WaveFieldSampleAt(float2 worldXY, float freqScale, float fetchEnv, float timeBack)
+            {
+                float4 trains[WAVE_MAX_TRAINS] = { _WaveTrain0, _WaveTrain1, _WaveTrain2, _WaveTrain3,
+                                                   _WaveTrain4, _WaveTrain5, _WaveTrain6, _WaveTrain7 };
+                float phis[WAVE_MAX_TRAINS] = { _WavePhases.x,  _WavePhases.y,  _WavePhases.z,  _WavePhases.w,
+                                                _WavePhases2.x, _WavePhases2.y, _WavePhases2.z, _WavePhases2.w };
+                int count = (int)(_WaveFieldParams.x + 0.5);
+                float p = max(_WaveFieldParams.y, 1.0);
+                // Twin: BreakerMath.BoreBirthEnergy01 - the height at the crest's passage against the
+                // DOMINANT's own amplitude (a total-normalized crest factor can never birth a full bore
+                // in a many-train sea; measured ~0.1 on the shot sea).
+                int dominant = clamp((int)(_WaveFieldParams.w + 0.5), 0, WAVE_MAX_TRAINS - 1);
+                float dominantAmp = max(trains[dominant].w, 1e-6);
+                float fs = max(freqScale, 1e-3);
+                float g = max(_BreakerParams.z, 0.0);
+                float height = 0.0;
+                [unroll]
+                for (int i = 0; i < WAVE_MAX_TRAINS; i++)          // FIXED bound; the count masks inside
+                {
+                    float amplitude = trains[i].w;
+                    if (i < count && amplitude > 0.0)
+                    {
+                        float k = trains[i].z;
+                        float theta = k * fs * dot(trains[i].xy, worldXY) + phis[i] + sqrt(g * k) * timeBack;
+                        float s = (sin(theta) + 1.0) * 0.5;
+                        height += amplitude * (2.0 * pow(max(s, 1e-6), p) - 1.0);
+                    }
+                }
+                height *= saturate(fetchEnv);
+                return saturate(height / dominantAmp);
+            }
+
+            // Twin: BreakerMath.BoreBirthEnergy01 — how big a crest this bore was born from: the field's
+            // crest factor at the break line when THAT crest passed it (the bore's birth, minus the time
+            // since its crest), blended toward 1 by the set strength. A lone train reads exactly 1.
+            float SurfBoreBirth01(float2 breakLinePoint, float travelS, float phaseDeg, float periodS,
+                                  float freqScale, float fetchEnv)
+            {
+                float setStrength = saturate(_BreakerBore.y);
+                if (setStrength <= 0.0) return 1.0;
+                float back = max(travelS, 0.0) + SurfSecondsSinceCrest(phaseDeg, periodS);
+                float crest = saturate(WaveFieldSampleAt(breakLinePoint, freqScale, fetchEnv, back));
+                return lerp(1.0, crest, setStrength);
+            }
+
+            // Twin: BreakerMath.RunUpMeters — Hunt (1959): R = coefficient * xi * H, xi clamped at the law's
+            // measured 2.3, capped at the drawn-edge ceiling, scaled by what is left of the bore and pulsing
+            // with it. Metres of LEVEL, applied to the same local foam-only depth the swash moves.
+            float SurfRunUpMeters(float standingAtBreak, float alive, float xi, float bore)
+            {
+                float coefficient = max(_BreakerBore.z, 0.0);
+                float cap = max(_BreakerBore.w, 0.0);
+                if (coefficient <= 0.0 || cap <= 0.0) return 0.0;
+                float x = clamp(xi, 0.0, 2.3);                  // BreakerMath.HuntIribarrenLimit
+                float reach = coefficient * x * max(standingAtBreak, 0.0);
+                return min(cap, reach) * saturate(alive) * saturate(bore);
+            }
+
+            // Twin: BreakerMath.BoreFrontSlope — the derivative of the bore's own height profile
+            // H * pulse(psi) along the travel direction: d pulse/d psi = p*s^(p-1)*cos(psi)/2 with
+            // s = (1 + sin psi)/2, and the phase advances along the path at omega / sqrt(g*d) — the clock's
+            // own rate. This is the FACE the relief light and the sun's shade could not see before (register
+            // row 1: "the light cannot see a crash"). Metres of rise per metre; 0 with no pulse.
+            float SurfFrontSlope(float phaseDeg, float sharpness, float frontHeightM, float boreSpeed, float omega)
+            {
+                if (sharpness <= 0.0 || frontHeightM <= 0.0 || boreSpeed <= 1e-6) return 0.0;
+                float rad = phaseDeg * 0.01745329252;
+                float s = (sin(rad) + 1.0) * 0.5;
+                if (s <= 1e-6) return 0.0;
+                float dPulse = sharpness * pow(s, sharpness - 1.0) * cos(rad) * 0.5;
+                return frontHeightM * dPulse * (omega / boreSpeed);
+            }
+
+            // ==== TWIN B (end) ====
 
             // Posterize the surf like every other band here, dithering the step edges off the same
             // world-locked Bayer cell the foam edge and the ripple bands use. Smooth surf reads as
@@ -3910,7 +4125,11 @@ Shader "HiddenHarbours/Water"
                 // NOTE the swash reaches ONLY this fragment's drawn edge. The gameplay waterline —
                 // ITidalTerrain / the walkability sim / _WaterLevel itself — is untouched, and the shift
                 // is capped well inside the standing "wade ~0.5 m" tolerance (P1 integrity, rule 5).
-                float swashEdgeReach = saturate(_SwashMaxEdgeShift) * step(1e-6, saturate(_SwashEdgeShift));
+                // ADR 0040 rev 3: the bore's run-up is the second thing allowed to move the drawn edge, and
+                // it shares the swash's hard cap - folded into the reach here, so the pre-clip below keeps
+                // its shape and the bound stays structural. _SurfRunUpStrength 0 = the swash's reach alone.
+                float swashEdgeReach = max(saturate(_SwashMaxEdgeShift) * step(1e-6, saturate(_SwashEdgeShift)),
+                                           saturate(_SwashMaxEdgeShift) * saturate(_SurfRunUpStrength));
                 clip(depth + swashEdgeReach + 1e-4);
 
                 // ---- ORGANIC SHORE FRINGE (LOOK-ONLY prototype; cosmetic depthC — ADR 0012) ------------------
@@ -3957,6 +4176,195 @@ Shader "HiddenHarbours/Water"
                 // the 0.18 m/m reference coast the swirl guard renders, so nothing that guard measures moves.
                 float swashSlope = max(shoreSlope, saturate(_ShoreSlopeFloor));
 
+                // ==== THE SURF, RESOLVED BEFORE THE EDGE (ADR 0040 rev 3) ==================================
+                // Moved up from after the sky layers so the BORE's run-up (below) can move the drawn wet
+                // edge's clip and the fringe's foam depth. Its outputs are read by the fringe and the surf
+                // compose further down exactly as before; nothing it reads is computed later than here.
+                // ---- BREAKING WAVES (ADR 0040), resolved BEFORE the fringe so the fringe can yield ----
+                // Owner ruling, 2026-08-28: "surf supersedes the fringe" where the sea is actually breaking.
+                //
+                // The shore-foam fringe is a band drawn at a fixed width off the waterline — it has always
+                // been the STAND-IN for whitewater, drawn geometrically because nothing knew where waves
+                // really break. Now something does. So where the computed whitewater is alive it takes the
+                // fringe's place, and everywhere it is not (calm water, sheltered water, a coast too deep
+                // to break on) the fringe is untouched.
+                //
+                // WARNING: it yields to `alive`, NOT to `breaking`. Breaking is 1 all the way up the beach,
+                // so superseding on that would delete the foam at the water's edge — where a bore that has
+                // already died becomes swash, and where there really is white. Yielding to the whitewater's
+                // ENERGY hands the fringe over exactly where the physical foam exists and hands it back
+                // where the bore has spent itself. The white is RELOCATED to where physics puts it, not
+                // removed.
+                float surfBreaking = 0.0, surfAlive = 0.0, surfCover = 0.0;
+                float surfXi = 0.0, surfPlunge = 0.0, surfLip = 0.0, surfBarrel = 0.0;
+                float ageM = 0.0;
+                float2 surfDir = float2(0.0, 0.0);
+                // The BORE (ADR 0040 rev 3): its pulse here (1 = a crest's front is passing), the wash's
+                // reach in metres of level, and the breaking face's slope for the light. All three stay at
+                // their zeros — no pulse read, no reach, no face — unless their look dials are up.
+                float surfBore = 1.0, surfSheet = 1.0, surfRunUpM = 0.0, anatomyAge = 0.0;
+                float2 surfFrontSlope = float2(0.0, 0.0);
+                // ADR 0040 rev 3: with the run-up dial up, the BEACH BAND - the metres of level the wash can
+                // reach above the still-water line - is evaluated too, or the drawn edge could never move
+                // onto the sand. A beach pixel reads the surf at its own WATERLINE point (projected down the
+                // floored shore slope, the swash's own metres-of-contour idiom), so it inherits that bore's
+                // age, phase and reach instead of marching from dry ground; the clip below then decides
+                // whether the wash has actually reached it. At the dial's 0 the reach is 0 and the gate is
+                // the previous 'depth > 0' exactly. The C# probe (BreakerMath.SurfAt) keeps its dry-ground
+                // refusal: it answers for hulls, and a hull is never on the beach.
+                float surfBeachReach = saturate(_SurfRunUpStrength) * saturate(_SwashMaxEdgeShift);
+                float2 surfEvalXY = worldXY;
+                float surfEvalDepth = depth;
+                if (_SurfStrength > 0.001 && _BreakerOuter.w > 0.5 && depth > -surfBeachReach)
+                {
+                    if (depth <= 0.0)
+                    {
+                        surfEvalXY = worldXY + ShoreDir(worldXY) * (depth / max(swashSlope, 1e-3));
+                        surfEvalDepth = 0.02;                       // BreakerMath.MinDepthMeters
+                    }
+                    // A shoaling wave REFRACTS toward shore-normal, which is why surf runs in parallel to
+                    // the depth contours however the swell was heading offshore. The seabed gradient IS
+                    // that direction and this shader already derives it per pixel. Refraction is not
+                    // otherwise modelled; this is where it enters, and BreakerMath.MetersSinceBreakAlong
+                    // takes the heading as a parameter so the C# reference can be handed the same one.
+                    surfDir = ShoreDir(surfEvalXY);
+                    surfBreaking = SurfBreaking01(surfEvalDepth, waveFetchEnv);
+                    if (surfBreaking > 0.002 && dot(surfDir, surfDir) > 1e-6)
+                    {
+                        float travelS = 0.0;
+                        SurfMarch(surfEvalXY, surfDir, waveFetchEnv, ageM, travelS);
+                        // The whitewater: the shipped local-speed law, blending toward the travel-time law
+                        // as the run-up dial comes up (a wash that could never reach the sand is not a
+                        // run-up; at 0 the sheet is today's exactly - see SurfWhitewaterByTravel01).
+                        float aliveLocal = SurfWhitewater01(ageM, surfEvalDepth);
+                        float aliveTravel = SurfWhitewaterByTravel01(travelS);
+                        surfAlive = lerp(aliveLocal, aliveTravel, saturate(_SurfRunUpStrength));
+                        anatomyAge = ageM;   // the steady anatomy stands a fixed distance past the break line
+
+                        // ---- THE BORE'S CLOCK (ADR 0040 rev 3) --------------------------------------
+                        // The break line this bore was born on is the marched distance back upwave; the
+                        // field's PUBLISHED phase there, read forward at minus the travel time, is the
+                        // bore's phase here. One pulse per wave period, advancing at sqrt(g*d): a crest
+                        // ARRIVES, peaks and passes. Evaluated at the DRAWN scale so it leaves with the
+                        // crest the eye sees. Cost when the beat dial is 0: the phase read (a dot and a
+                        // wrap) and nothing else — the birth sample is skipped below.
+                        // The surf-similarity number, read ONCE here (the anatomy below used to read it):
+                        // the bore's run-up and the plunging weight both key on it.
+                        surfXi = SurfIribarren(surfEvalXY);
+                        float boreBeat = saturate(_SurfBeatStrength);
+                        float boreEdge = saturate(_SurfRunUpStrength);
+                        float boreFace = max(_SurfFrontSlope, 0.0);
+                        if (boreBeat > 0.001 || boreEdge > 0.001 || boreFace > 0.001)
+                        {
+                            float surfFreqScale = max(_OceanSwellScale, 1e-4) / 0.025;   // WAVE_LEGACY_SCALE_REF
+                            float2 breakLinePt = surfEvalXY - surfDir * ageM;
+                            float omega = SurfBoreOmega();
+                            float periodS = omega > 1e-6 ? 6.2831853 / omega : 0.0;
+                            float borePhase = SurfBorePhaseDeg(breakLinePt, travelS, surfFreqScale);
+                            float birth = SurfBoreBirth01(breakLinePt, travelS, borePhase, periodS,
+                                                          surfFreqScale, waveFetchEnv);
+                            surfBore = SurfBorePulse01(borePhase, _BreakerBore.x) * birth;
+                            surfSheet = SurfBoreSheet01(borePhase, periodS) * birth;
+
+                            // The wash's reach: Hunt's law on the height the bore was BORN with (the
+                            // depth-limited height at the break line, not the local one, which is 0 at the
+                            // very edge where the reach matters), what is left of it, and its pulse.
+                            float breakDepth = BreakerDepthAtEnv(_BreakerDepths.xyz, _BreakerDepths.w, waveFetchEnv);
+                            float standingAtBreak = max(_BreakerAnatomy.y, 0.0) * max(breakDepth, 0.0);
+                            surfRunUpM = SurfRunUpMeters(standingAtBreak, surfAlive, surfXi, surfBore) * boreEdge;
+
+                            // The breaking FACE: the bore's own height profile, differentiated along the
+                            // travel direction, as a slope the relief light and the sun's shade can see.
+                            float boreSpeed = sqrt(max(_BreakerParams.z, 0.0) * max(surfEvalDepth, 0.02));
+                            // Gated by the break gate like everything else in the surf: seaward of the
+                            // break line the gate is barely open and there is no front to shade.
+                            surfFrontSlope = surfDir * SurfFrontSlope(borePhase, _BreakerBore.x,
+                                                                      standingAtBreak * birth * surfAlive * surfBreaking * boreFace,
+                                                                      boreSpeed, omega);
+
+                            // With the beat up the anatomy TRAVELS: the lip is thrown AHEAD of the front,
+                            // the barrel hollows under it and the pocket peels at the curl, all measured in
+                            // metres from the front (its seconds times its speed) rather than from the
+                            // break line - so the event arrives with the crest and leaves with it.
+                            float aheadOfFrontM = -SurfSignedSecondsFromCrest(borePhase, periodS) * boreSpeed;
+                            anatomyAge = lerp(ageM, aheadOfFrontM, boreBeat);
+                        }
+                        // The BEAT: where the dial is up, the sheet is born at the front and ages behind
+                        // it, and the anatomy below is an EVENT at the front rather than a standing band.
+                        // 0 = the steady state the surf shipped with, exactly.
+                        // Two-fold: the SHEET is born at the front and ages behind it; the anatomy is an
+                        // EVENT at the front (the pulse). Both blend from EXACTLY 1, the steady state.
+                        float beat = lerp(1.0, surfSheet, boreBeat);
+                        float boreEvent = lerp(1.0, surfBore, boreBeat);
+
+                        // The break line is denser than the bore trailing off it. This reads the SAME
+                        // marched age — it is not a second clock — so retuning the decay moves both.
+                        float crest = 1.0 - smoothstep(0.0, max(_SurfCrestWidth, 0.05), ageM);
+                        float density = surfAlive * lerp(1.0, max(_SurfCrestBoost, 1.0), crest) * beat;
+
+                        // Break the band up with the SAME evolving-churn language the fringe and the
+                        // whitecaps use, drifting shoreward with the bore rather than scrolling against it,
+                        // so the surf reads as this sea and not as a decal laid over it.
+                        float2 surfDrift = surfDir * (_Flow * t * 0.5);
+                        float churn = EvolvingField(worldXY, surfDrift,
+                                                    max(_SurfNoiseScale, 1e-3), _SurfEvolveSpeed, t);
+
+                        // Metaball soft-threshold, lifted by how live the water is here: at the break the
+                        // field clears the threshold almost everywhere (solid white), and as the bore ages
+                        // only the field's peaks still clear it, so the sheet breaks into drifting patches
+                        // and dies. That IS the dispersal, and it is the age doing it.
+                        float field = saturate(churn + density * 0.75);
+                        float thr = saturate(_SurfThreshold);
+                        float soft = max(_SurfThresholdSoft, 1e-3);
+                        surfCover = smoothstep(thr - soft, thr + soft, field) * saturate(surfBreaking * density);
+
+                        // ---- PLUNGING ANATOMY: the LIP, the BARREL, the POCKET ---------------------
+                        // Owner's three words, and each one is a read of quantities already computed
+                        // rather than a fourth model. All of them multiply by surfPlunge, which the
+                        // SEABED sets: on a gentle shoal it is 0 and this whole block is inert, which is
+                        // how "barrels only where the bathymetry earns them" is enforced rather than
+                        // promised.
+                        //
+                        // The stages are keyed to ageM — metres past the break line — which is the
+                        // marched geometry, not a reconstructed phase. atan2(height, slope*d/k) is exact
+                        // for one pure sine and is not a phase at all when fed the real four-train
+                        // sharpened field, so nothing here reconstructs one.
+                        // With the beat up, the lip is thrown AT the crest's arrival and travels with the
+                        // bore; the barrel's hollow shades under it and the pocket peels beside it, then all
+                        // of it collapses into the bore's back. Only where xi earns it — unchanged.
+                        surfPlunge = SurfPlunging01(surfXi) * saturate(_SurfPlungeStrength) * boreEvent;
+                        if (surfPlunge > 0.002)
+                        {
+                            // A broken wave stands at gamma*d — it is only as tall as the water it is
+                            // running over, which is why a big day and a small day throw the same lip in
+                            // the last few metres.
+                            float standing = max(_BreakerAnatomy.y, 0.0) * surfEvalDepth;
+                            float throwM = standing * surfPlunge * max(_SurfLipThrow, 0.0);
+
+                            // THE LIP: the crest outruns its base and lands AHEAD of it. A band centred
+                            // throwM metres past the break line is that, stated directly.
+                            surfLip = surfBreaking * surfPlunge
+                                    * (1.0 - smoothstep(0.0, max(_SurfLipWidth, 0.05), abs(anatomyAge - throwM)));
+
+                            // THE BARREL: the hollow the thrown lip encloses, between the break line and
+                            // where the lip lands. Dark because it is in the lip's shadow — that shadow
+                            // IS what makes a tube read as a tube.
+                            surfBarrel = surfBreaking * surfPlunge
+                                       * (1.0 - smoothstep(throwM * 0.75, throwM * 1.15, anatomyAge))
+                                       * smoothstep(0.0, max(throwM * 0.35, 0.05), anatomyAge);
+
+                            // THE POCKET: the powerful peeling zone beside the curl — breaking hard and
+                            // broken JUST now. It reads the SAME marched age the lip and barrel do.
+                            float pocket = surfPlunge * surfBreaking
+                                         * (1.0 - smoothstep(0.0, max(_SurfPocketWidth, 0.1), anatomyAge));
+                            surfCover = saturate(surfCover * lerp(1.0, max(_SurfPocketBoost, 1.0), pocket));
+                        }
+                    }
+                }
+                // How much of the fringe the physical whitewater has taken over here.
+                float surfSupersede = saturate(surfBreaking * surfAlive * saturate(_SurfStrength)
+                                               * saturate(_SurfSupersedeFringe));
+
                 // ---- THE DRAWN WET EDGE runs in and out (owner: "i would like the swash in and out of the
                 // water along with the tides"). Until now the swash moved ONLY the foam band — the water's
                 // own edge never budged, so nothing read as water advancing and retreating. Apply the same
@@ -3982,6 +4390,13 @@ Shader "HiddenHarbours/Water"
                 }
                 // The EXACT edge. Everything past the coarse pre-clip above that the swash has not actually
                 // run up onto is dry after all.
+                // ADR 0040 rev 3: where a bore is alive, the drawn edge rides its RUN-UP — metres of level,
+                // already capped at the swash's own ceiling — and drains between crests; elsewhere the
+                // cosmetic swash keeps its beat (the fringe-supersede precedent: yield on the bore, not on
+                // the gate). _SurfRunUpStrength = 0 (or no surf here) is the previous edge exactly.
+                float boreEdgeBlend = saturate(surfBreaking * saturate(_SurfStrength) * saturate(_SurfRunUpStrength));
+                float boreEdgeShift = clamp(surfRunUpM, -saturate(_SwashMaxEdgeShift), saturate(_SwashMaxEdgeShift));
+                edgeSwash = lerp(edgeSwash, boreEdgeShift, boreEdgeBlend);
                 clip(depth + edgeSwash + 1e-4);
 
                 float dt = saturate((depth - _ShallowDepth) / max(_DeepDepth - _ShallowDepth, 1e-3));
@@ -4214,7 +4629,8 @@ Shader "HiddenHarbours/Water"
                     // signal; the clamp bounds a heavy sea. 0.15 is the add ceiling (the swell-read idiom):
                     // at the 0.22 default the swing is +/-0.033 — shading, not glare — and the §13 palette
                     // rail bounds the extremes like every other layer.
-                    float faceSigned = clamp(-dot(waveSlope, shadeLd) * 2.0, -1.0, 1.0);
+                    // + the bore front's own face (ADR 0040 rev 3; zero unless _SurfFrontSlope is up).
+                    float faceSigned = clamp(-dot(waveSlope + surfFrontSlope, shadeLd) * 2.0, -1.0, 1.0);
                     col.rgb += faceSigned * saturate(_SwellFaceShade) * swellReadGate * 0.15;
                 }
 
@@ -4486,104 +4902,8 @@ Shader "HiddenHarbours/Water"
                 ObjectReflection(worldXY, waveSlope, IN.positionCS.xy, depth, objReflPre, objReflPost);
                 col.rgb = col.rgb * (1.0 - objReflPre.a) + objReflPre.rgb;
 
-                // ---- BREAKING WAVES (ADR 0040), resolved BEFORE the fringe so the fringe can yield ----
-                // Owner ruling, 2026-08-28: "surf supersedes the fringe" where the sea is actually breaking.
-                //
-                // The shore-foam fringe is a band drawn at a fixed width off the waterline — it has always
-                // been the STAND-IN for whitewater, drawn geometrically because nothing knew where waves
-                // really break. Now something does. So where the computed whitewater is alive it takes the
-                // fringe's place, and everywhere it is not (calm water, sheltered water, a coast too deep
-                // to break on) the fringe is untouched.
-                //
-                // WARNING: it yields to `alive`, NOT to `breaking`. Breaking is 1 all the way up the beach,
-                // so superseding on that would delete the foam at the water's edge — where a bore that has
-                // already died becomes swash, and where there really is white. Yielding to the whitewater's
-                // ENERGY hands the fringe over exactly where the physical foam exists and hands it back
-                // where the bore has spent itself. The white is RELOCATED to where physics puts it, not
-                // removed.
-                float surfBreaking = 0.0, surfAlive = 0.0, surfCover = 0.0;
-                float surfXi = 0.0, surfPlunge = 0.0, surfLip = 0.0, surfBarrel = 0.0;
-                float ageM = 0.0;
-                float2 surfDir = float2(0.0, 0.0);
-                if (_SurfStrength > 0.001 && _BreakerOuter.w > 0.5 && depth > 0.0)
-                {
-                    // A shoaling wave REFRACTS toward shore-normal, which is why surf runs in parallel to
-                    // the depth contours however the swell was heading offshore. The seabed gradient IS
-                    // that direction and this shader already derives it per pixel. Refraction is not
-                    // otherwise modelled; this is where it enters, and BreakerMath.MetersSinceBreakAlong
-                    // takes the heading as a parameter so the C# reference can be handed the same one.
-                    surfDir = ShoreDir(worldXY);
-                    surfBreaking = SurfBreaking01(depth, waveFetchEnv);
-                    if (surfBreaking > 0.002 && dot(surfDir, surfDir) > 1e-6)
-                    {
-                        ageM = SurfAgeMeters(worldXY, surfDir, waveFetchEnv);
-                        surfAlive = SurfWhitewater01(ageM, depth);
-
-                        // The break line is denser than the bore trailing off it. This reads the SAME
-                        // marched age — it is not a second clock — so retuning the decay moves both.
-                        float crest = 1.0 - smoothstep(0.0, max(_SurfCrestWidth, 0.05), ageM);
-                        float density = surfAlive * lerp(1.0, max(_SurfCrestBoost, 1.0), crest);
-
-                        // Break the band up with the SAME evolving-churn language the fringe and the
-                        // whitecaps use, drifting shoreward with the bore rather than scrolling against it,
-                        // so the surf reads as this sea and not as a decal laid over it.
-                        float2 surfDrift = surfDir * (_Flow * t * 0.5);
-                        float churn = EvolvingField(worldXY, surfDrift,
-                                                    max(_SurfNoiseScale, 1e-3), _SurfEvolveSpeed, t);
-
-                        // Metaball soft-threshold, lifted by how live the water is here: at the break the
-                        // field clears the threshold almost everywhere (solid white), and as the bore ages
-                        // only the field's peaks still clear it, so the sheet breaks into drifting patches
-                        // and dies. That IS the dispersal, and it is the age doing it.
-                        float field = saturate(churn + density * 0.75);
-                        float thr = saturate(_SurfThreshold);
-                        float soft = max(_SurfThresholdSoft, 1e-3);
-                        surfCover = smoothstep(thr - soft, thr + soft, field) * saturate(surfBreaking * density);
-
-                        // ---- PLUNGING ANATOMY: the LIP, the BARREL, the POCKET ---------------------
-                        // Owner's three words, and each one is a read of quantities already computed
-                        // rather than a fourth model. All of them multiply by surfPlunge, which the
-                        // SEABED sets: on a gentle shoal it is 0 and this whole block is inert, which is
-                        // how "barrels only where the bathymetry earns them" is enforced rather than
-                        // promised.
-                        //
-                        // The stages are keyed to ageM — metres past the break line — which is the
-                        // marched geometry, not a reconstructed phase. atan2(height, slope*d/k) is exact
-                        // for one pure sine and is not a phase at all when fed the real four-train
-                        // sharpened field, so nothing here reconstructs one.
-                        surfXi = SurfIribarren(worldXY);
-                        surfPlunge = SurfPlunging01(surfXi) * saturate(_SurfPlungeStrength);
-                        if (surfPlunge > 0.002)
-                        {
-                            // A broken wave stands at gamma*d — it is only as tall as the water it is
-                            // running over, which is why a big day and a small day throw the same lip in
-                            // the last few metres.
-                            float standing = max(_BreakerAnatomy.y, 0.0) * depth;
-                            float throwM = standing * surfPlunge * max(_SurfLipThrow, 0.0);
-
-                            // THE LIP: the crest outruns its base and lands AHEAD of it. A band centred
-                            // throwM metres past the break line is that, stated directly.
-                            surfLip = surfBreaking * surfPlunge
-                                    * (1.0 - smoothstep(0.0, max(_SurfLipWidth, 0.05), abs(ageM - throwM)));
-
-                            // THE BARREL: the hollow the thrown lip encloses, between the break line and
-                            // where the lip lands. Dark because it is in the lip's shadow — that shadow
-                            // IS what makes a tube read as a tube.
-                            surfBarrel = surfBreaking * surfPlunge
-                                       * (1.0 - smoothstep(throwM * 0.75, throwM * 1.15, ageM))
-                                       * smoothstep(0.0, max(throwM * 0.35, 0.05), ageM);
-
-                            // THE POCKET: the powerful peeling zone beside the curl — breaking hard and
-                            // broken JUST now. It reads the SAME marched age the lip and barrel do.
-                            float pocket = surfPlunge * surfBreaking
-                                         * (1.0 - smoothstep(0.0, max(_SurfPocketWidth, 0.1), ageM));
-                            surfCover = saturate(surfCover * lerp(1.0, max(_SurfPocketBoost, 1.0), pocket));
-                        }
-                    }
-                }
-                // How much of the fringe the physical whitewater has taken over here.
-                float surfSupersede = saturate(surfBreaking * surfAlive * saturate(_SurfStrength)
-                                               * saturate(_SurfSupersedeFringe));
+                // ---- BREAKING WAVES (ADR 0040): evaluated EARLIER now (before the drawn edge's clip), so the
+                // bore's run-up can move the wet edge. See 'THE SURF, RESOLVED BEFORE THE EDGE' above.
 
                 // ---- layer 3 foam fringe (depth ~ 0 band that hugs the moving waterline) ----------------------
                 // ALWAYS-ON swash: a cosmetic, _Time-driven depth offset that advances/recedes the wet edge.
@@ -4598,7 +4918,8 @@ Shader "HiddenHarbours/Water"
                 // shoreSlope (computed with the fringe above) turns the swash's depth amplitude into a
                 // CONTOUR excursion in metres — on a gently painted bar the run-up no longer sweeps a
                 // metres-wide worm tongue (the 2026-07-23 swirl defect); a steep edge keeps today's look.
-                float foamDepth  = depthC - BeachSwash(worldXY, depthC, t) * swashSlope * swashGate;  // local, foam-only
+                float foamDepth  = depthC - lerp(BeachSwash(worldXY, depthC, t) * swashSlope * swashGate,  // local, foam-only
+                                                 surfRunUpM, boreEdgeBlend);   // …and the foam rides the bore's wash too
                 // ---- DITHER the band edge (owner judge pass 2026-08-01: "the shoreline foam sometimes gets
                 // these artifact lines"). foamEdge is an ISO-CONTOUR of foamDepth, and foamDepth descends
                 // from the seabed height TEXTURE — 8 bits over a -4..+6 m range, i.e. 3.91 cm per code,
@@ -4980,7 +5301,8 @@ Shader "HiddenHarbours/Water"
                 // day/night overlay, so lit water tracks the sea it lights (a floodlamp-flat compensation would
                 // re-introduce the wash). Weight 0 (by day / outside the cone / no boat) => an EXACT passthrough.
                 // col.rgb ONLY — never depth/clip/_WaterLevel/the height read/the sim (P1 integrity, rule 5).
-                float beamW = BoatLightTerm(worldXY, waveSlope, waveHeight);
+                // The lamp's relief sees the bore front's face as well as the swell's (ADR 0040 rev 3).
+                float beamW = BoatLightTerm(worldXY, waveSlope + surfFrontSlope, waveHeight);
                 col.rgb *= (1.0 + beamW * max(_BoatLightBrighten, 0.0));   // the REVEAL: lift the water's own colour
 
                 // ---- LIGHT CONTENT, post-grade + overlay-compensated: BEAM WARM TINT + the NIGHT SKY ------------

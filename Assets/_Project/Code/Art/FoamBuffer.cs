@@ -72,6 +72,10 @@ namespace HiddenHarbours.Art
         /// distinguishing a slap from a swell.</summary>
         public const float MinShapeExponent = 1f;
 
+        /// <summary>ADR 0040 rev 3: foam laid per second under a full-strength bore front, before the
+        /// owner's <c>_SurfDepositStrength</c>. Twin: <c>SURF_DEPOSIT_RATE</c> in the advect shader.</summary>
+        public const float SurfDepositRatePerSecond = 2f;
+
         /// <summary>The size of one buffer cell, in metres (the reciprocal of <see cref="CellsPerUnit"/>).</summary>
         public static float CellSize => 1f / CellsPerUnit;
 
