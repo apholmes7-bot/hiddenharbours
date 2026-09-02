@@ -175,24 +175,24 @@ it, so a batch that adds a hull without its evidence reddens.
 |---|---|---|---|---|---|---|---|---|
 | lobster | #688 | 2026-08-29 | 467 | **19** | 1428 + 1014 = 2442 | +71.0% | 0 px vs room-stripped control, 4 headings | house 34–53%, cuddy 10–14.5% vs 4% floor |
 | cape | #690 | 2026-09-01 | 450 | **18** | 1126 + 980 = 2106 | +87.0% | 0 px vs room-stripped control, 4 headings | 19.6–28.5% vs 4% floor |
-| lobster variant inshore-hardtop-fundy | PR 1 | pending | 396 | **19** | 1332 + 872 = 2204 | +65.5% | 0 px vs room-stripped control, 4 headings | house 26.0–42.1%, cuddy 7.5–12.9% vs 4% floor |
-| lobster variant inshore-hardtop-newfoundland | PR 1 | pending | 396 | **19** | 1316 + 872 = 2188 | +66.3% | 0 px vs room-stripped control, 4 headings | house 34.1–50.6%, cuddy 5.7–11.9% vs 4% floor |
-| lobster variant inshore-hardtop-northumberland | PR 1 | pending | 444 | **19** | 1364 + 968 = 2332 | +71.0% | 0 px vs room-stripped control, 4 headings | house 36.5–51.1%, cuddy 5.8–11.1% vs 4% floor |
-| lobster variant inshore-open-fundy | PR 1 | pending | 396 | **19** | 1256 + 872 = 2128 | +69.4% | 0 px vs room-stripped control, 4 headings | house 22.9–37.6%, cuddy 7.7–12.9% vs 4% floor |
-| lobster variant inshore-open-newfoundland | PR 1 | pending | 396 | **19** | 1260 + 872 = 2132 | +69.2% | 0 px vs room-stripped control, 4 headings | house 30.4–45.3%, cuddy 5.8–11.9% vs 4% floor |
-| lobster variant inshore-open-northumberland | PR 1 | pending | 444 | **19** | 1308 + 968 = 2276 | +74.0% | 0 px vs room-stripped control, 4 headings | house 33.3–45.4%, cuddy 6.0–11.1% vs 4% floor |
-| lobster variant offshore-hardtop-fundy | PR 1 | pending | 425 | **19** | 1742 + 930 = 2672 | +53.4% | 0 px vs room-stripped control, 4 headings | house 23.4–33.7%, cuddy 7.4–10.9% vs 4% floor |
-| lobster variant offshore-hardtop-newfoundland | PR 1 | pending | 457 | **19** | 1746 + 994 = 2740 | +56.9% | 0 px vs room-stripped control, 4 headings | house 33.7–46.6%, cuddy 5.7–9.6% vs 4% floor |
-| lobster variant offshore-hardtop-northumberland | PR 1 | pending | 505 | **19** | 1774 + 1090 = 2864 | +61.4% | 0 px vs room-stripped control, 4 headings | house 36.5–45.5%, cuddy 6.3–9.9% vs 4% floor |
-| lobster variant offshore-open-fundy | PR 1 | pending | 425 | **19** | 1526 + 930 = 2456 | +60.9% | 0 px vs room-stripped control, 4 headings | house 19.7–28.3%, cuddy 7.6–10.9% vs 4% floor |
-| lobster variant offshore-open-newfoundland | PR 1 | pending | 457 | **19** | 1550 + 994 = 2544 | +64.1% | 0 px vs room-stripped control, 4 headings | house 29.7–39.4%, cuddy 5.9–9.6% vs 4% floor |
-| lobster variant offshore-open-northumberland | PR 1 | pending | 505 | **19** | 1578 + 1090 = 2668 | +69.1% | 0 px vs room-stripped control, 4 headings | house 32.7–39.6%, cuddy 6.5–9.9% vs 4% floor |
-| lobster variant standard-hardtop-fundy | PR 1 | pending | 425 | **19** | 1414 + 930 = 2344 | +65.8% | 0 px vs room-stripped control, 4 headings | house 24.3–36.1%, cuddy 7.5–11.5% vs 4% floor |
-| lobster variant standard-hardtop-newfoundland | PR 1 | pending | 433 | **19** | 1410 + 946 = 2356 | +67.1% | 0 px vs room-stripped control, 4 headings | house 33.1–46.9%, cuddy 5.7–10.3% vs 4% floor |
-| lobster variant standard-hardtop-northumberland | PR 1 | pending | 481 | **19** | 1454 + 1042 = 2496 | +71.7% | 0 px vs room-stripped control, 4 headings | house 36.9–47.0%, cuddy 5.8–9.6% vs 4% floor |
-| lobster variant standard-open-fundy | PR 1 | pending | 425 | **19** | 1318 + 930 = 2248 | +70.6% | 0 px vs room-stripped control, 4 headings | house 20.9–31.0%, cuddy 7.7–11.5% vs 4% floor |
-| lobster variant standard-open-newfoundland | PR 1 | pending | 433 | **19** | 1334 + 946 = 2280 | +70.9% | 0 px vs room-stripped control, 4 headings | house 29.3–40.1%, cuddy 5.9–10.3% vs 4% floor |
-| lobster variant standard-open-northumberland | PR 1 | pending | 481 | **19** | 1378 + 1042 = 2420 | +75.6% | 0 px vs room-stripped control, 4 headings | house 33.4–40.9%, cuddy 6.0–9.6% vs 4% floor |
+| lobster variant inshore-hardtop-fundy | #702 | pending | 396 | **19** | 1332 + 872 = 2204 | +65.5% | 0 px vs room-stripped control, 4 headings | house 26.0–42.1%, cuddy 7.5–12.9% vs 4% floor |
+| lobster variant inshore-hardtop-newfoundland | #702 | pending | 396 | **19** | 1316 + 872 = 2188 | +66.3% | 0 px vs room-stripped control, 4 headings | house 34.1–50.6%, cuddy 5.7–11.9% vs 4% floor |
+| lobster variant inshore-hardtop-northumberland | #702 | pending | 444 | **19** | 1364 + 968 = 2332 | +71.0% | 0 px vs room-stripped control, 4 headings | house 36.5–51.1%, cuddy 5.8–11.1% vs 4% floor |
+| lobster variant inshore-open-fundy | #702 | pending | 396 | **19** | 1256 + 872 = 2128 | +69.4% | 0 px vs room-stripped control, 4 headings | house 22.9–37.6%, cuddy 7.7–12.9% vs 4% floor |
+| lobster variant inshore-open-newfoundland | #702 | pending | 396 | **19** | 1260 + 872 = 2132 | +69.2% | 0 px vs room-stripped control, 4 headings | house 30.4–45.3%, cuddy 5.8–11.9% vs 4% floor |
+| lobster variant inshore-open-northumberland | #702 | pending | 444 | **19** | 1308 + 968 = 2276 | +74.0% | 0 px vs room-stripped control, 4 headings | house 33.3–45.4%, cuddy 6.0–11.1% vs 4% floor |
+| lobster variant offshore-hardtop-fundy | #702 | pending | 425 | **19** | 1742 + 930 = 2672 | +53.4% | 0 px vs room-stripped control, 4 headings | house 23.4–33.7%, cuddy 7.4–10.9% vs 4% floor |
+| lobster variant offshore-hardtop-newfoundland | #702 | pending | 457 | **19** | 1746 + 994 = 2740 | +56.9% | 0 px vs room-stripped control, 4 headings | house 33.7–46.6%, cuddy 5.7–9.6% vs 4% floor |
+| lobster variant offshore-hardtop-northumberland | #702 | pending | 505 | **19** | 1774 + 1090 = 2864 | +61.4% | 0 px vs room-stripped control, 4 headings | house 36.5–45.5%, cuddy 6.3–9.9% vs 4% floor |
+| lobster variant offshore-open-fundy | #702 | pending | 425 | **19** | 1526 + 930 = 2456 | +60.9% | 0 px vs room-stripped control, 4 headings | house 19.7–28.3%, cuddy 7.6–10.9% vs 4% floor |
+| lobster variant offshore-open-newfoundland | #702 | pending | 457 | **19** | 1550 + 994 = 2544 | +64.1% | 0 px vs room-stripped control, 4 headings | house 29.7–39.4%, cuddy 5.9–9.6% vs 4% floor |
+| lobster variant offshore-open-northumberland | #702 | pending | 505 | **19** | 1578 + 1090 = 2668 | +69.1% | 0 px vs room-stripped control, 4 headings | house 32.7–39.6%, cuddy 6.5–9.9% vs 4% floor |
+| lobster variant standard-hardtop-fundy | #702 | pending | 425 | **19** | 1414 + 930 = 2344 | +65.8% | 0 px vs room-stripped control, 4 headings | house 24.3–36.1%, cuddy 7.5–11.5% vs 4% floor |
+| lobster variant standard-hardtop-newfoundland | #702 | pending | 433 | **19** | 1410 + 946 = 2356 | +67.1% | 0 px vs room-stripped control, 4 headings | house 33.1–46.9%, cuddy 5.7–10.3% vs 4% floor |
+| lobster variant standard-hardtop-northumberland | #702 | pending | 481 | **19** | 1454 + 1042 = 2496 | +71.7% | 0 px vs room-stripped control, 4 headings | house 36.9–47.0%, cuddy 5.8–9.6% vs 4% floor |
+| lobster variant standard-open-fundy | #702 | pending | 425 | **19** | 1318 + 930 = 2248 | +70.6% | 0 px vs room-stripped control, 4 headings | house 20.9–31.0%, cuddy 7.7–11.5% vs 4% floor |
+| lobster variant standard-open-newfoundland | #702 | pending | 433 | **19** | 1334 + 946 = 2280 | +70.9% | 0 px vs room-stripped control, 4 headings | house 29.3–40.1%, cuddy 5.9–10.3% vs 4% floor |
+| lobster variant standard-open-northumberland | #702 | pending | 481 | **19** | 1378 + 1042 = 2420 | +75.6% | 0 px vs room-stripped control, 4 headings | house 33.4–40.9%, cuddy 6.0–9.6% vs 4% floor |
 
 **Census correction (both hulls).** The palette census above projected 22 distinct interior ramps
 for the lobster and 21 for the cape; their baked rooms paint **19** and **18**. The decision the
@@ -271,7 +271,7 @@ not show through her lights. Plates and the report are under
 `docs/art/spikes/full-mesh-interiors/retirement/`. **PR 0 reports this and does not un-gate
 boat-lights PR 2** — that is the coordinator's call.
 
-### The eighteen lobster variants (fleet rollout PR 1)
+### The eighteen lobster variants (fleet rollout PR 1, #702)
 
 One rig (`lobsterBoatVariantsIsoRig.js`), one interior key (`lobvar`), eighteen hulls. Two facts the
 census could not have said. **The switch names a rig FAMILY**: `RigMeshAssetBaker.MeshInteriorHulls`
