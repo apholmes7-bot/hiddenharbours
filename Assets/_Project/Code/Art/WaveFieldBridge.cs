@@ -135,6 +135,9 @@ namespace HiddenHarbours.Art
         /// the seabed here has earned a lip and a barrel — <c>xi = tanB / sqrt(H0/L0)</c> against
         /// Battjes' thresholds.</summary>
         private static readonly int IdBreakerAnatomy = Shader.PropertyToID("_BreakerAnatomy");
+        /// <summary>(pulse sharpness, set strength, run-up coefficient, run-up cap) — the bore's dials,
+        /// ADR 0040 revision 3. Read by the water shader's <c>SurfBore*</c> twins.</summary>
+        private static readonly int IdBreakerBore = Shader.PropertyToID("_BreakerBore");
 
         private const double TwoPi = Math.PI * 2.0;
 
@@ -351,6 +354,17 @@ namespace HiddenHarbours.Art
                 Mathf.Max(0f, breakers.BreakerIndex),
                 Mathf.Max(0f, breakers.SpillingLimit),
                 Mathf.Max(0f, breakers.PlungingLimit)));
+
+            // The BORE's dials (ADR 0040 revision 3): the pulse sharpness, how much the set decides a
+            // bore's size, Hunt's run-up coefficient and the drawn-edge ceiling. Physics constants from
+            // GameConfig like γ and the decay — the LOOK's own dials (beat, run-up and front-relief
+            // strengths) live on the material. A stale asset publishes zeros here and the shader's bore
+            // reads the steady state, exactly as the C# does.
+            Shader.SetGlobalVector(IdBreakerBore, new Vector4(
+                Mathf.Max(0f, breakers.BorePulseSharpness),
+                Mathf.Clamp01(breakers.BoreSetStrength),
+                Mathf.Max(0f, breakers.RunUpCoefficient),
+                Mathf.Max(0f, breakers.RunUpCapMeters)));
         }
 
         /// <summary>The breaker model SILENT — nothing breaks anywhere — so a stopped play session or a
@@ -419,6 +433,31 @@ namespace HiddenHarbours.Art
         /// so hull and water can never disagree about the field — the ONE-SEA rule, closed at the
         /// globals. Allocation-free (rule 7).
         /// </summary>
+        /// <summary>
+        /// The published field back as <see cref="WaveTrains"/>, for C# readers of the DRAWN sea (ADR 0040
+        /// rev 3: the lip spray's <see cref="BreakerMath.SurfAt"/> probe). The packed trains carry the
+        /// animator's travel in their phases, so a sample of this field at t = 0 is what the shader is
+        /// drawing this frame — which the pure-sim <see cref="WaveMath.TrainsFrom"/> path is not. The
+        /// wavelength is rebuilt from the packed wave number and the celerity from the field's gravity;
+        /// <c>SurfSprayTests</c> pins the round trip.
+        /// </summary>
+        public static WaveTrains UnpackTrains(in PackedWaveField field, float gravity)
+        {
+            int count = Mathf.Clamp(field.Count, 0, PackedWaveField.MaxTrains);
+            WaveTrain[] scratch = s_UnpackScratch;
+            for (int i = 0; i < PackedWaveField.MaxTrains; i++)
+            {
+                if (i >= count) { scratch[i] = default; continue; }
+                Vector4 t = field.Train(i);
+                float k = Mathf.Max(t.z, 1e-6f);
+                scratch[i] = new WaveTrain(new Vector2(t.x, t.y), 2f * Mathf.PI / k, Mathf.Max(0f, t.w),
+                                           field.Phase(i), gravity);
+            }
+            return WaveTrains.From(scratch, count, field.CrestSharpening, field.DominantIndex);
+        }
+
+        private static readonly WaveTrain[] s_UnpackScratch = new WaveTrain[PackedWaveField.MaxTrains];
+
         public static PackedWaveField ReadPublishedField()
         {
             return new PackedWaveField(

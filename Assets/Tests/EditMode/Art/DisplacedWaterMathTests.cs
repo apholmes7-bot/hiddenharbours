@@ -188,10 +188,12 @@ namespace HiddenHarbours.Tests.Art.EditMode
             //   1. the clip is still driven by the REAL `depth` (never _WaterLevel directly, never a
             //      displaced or wave-lifted height) — the vertex stage still hands the fragment
             //      undisplaced ground;
-            //   2. the only thing allowed to move it is the swash, and only by a HARD-CAPPED amount
-            //      (_SwashMaxEdgeShift, shipped 0.35 m, inside the standing "wade ~0.5 m" tolerance);
-            //   3. _SwashEdgeShift = 0 restores the previous edge exactly, so the divergence is revertible
-            //      from the material with no code change.
+            //   2. the only things allowed to move it are the swash and — since ADR 0040 rev 3 (the
+            //      crashing-washes look) — the bore's RUN-UP, each by a HARD-CAPPED amount and the SAME cap
+            //      (_SwashMaxEdgeShift, shipped 0.35 m, inside the standing "wade ~0.5 m" tolerance; the
+            //      run-up's reach is folded into swashEdgeReach where it is built);
+            //   3. _SwashEdgeShift = 0 restores the previous edge exactly, and _SurfRunUpStrength = 0 the
+            //      pre-bore one, so the divergence is revertible from the material with no code change.
             //
             // The gameplay waterline is untouched either way: nothing in the sim reads this fragment.
             // WaterShoreBandAndSwashTests pins the bound arithmetically; this pins the shader SHAPE.
@@ -201,6 +203,9 @@ namespace HiddenHarbours.Tests.Art.EditMode
             // The cap is applied where the offset is built — a clamp that could be edited away without
             // failing anything would make the bound above a comment rather than a guarantee.
             StringAssert.Contains("float cap = saturate(_SwashMaxEdgeShift);", src);
+            // …and the bore's run-up shares that cap where the pre-clip's reach is built (ADR 0040 rev 3).
+            StringAssert.Contains("saturate(_SwashMaxEdgeShift) * saturate(_SurfRunUpStrength)", src,
+                "the bore's run-up may widen the pre-clip only under the swash's own cap");
             Assert.IsTrue(System.Text.RegularExpressions.Regex.IsMatch(src, @"edgeSwash\s*=\s*clamp\("),
                 "the drawn-edge swash must be CLAMPED at its cap where it is computed — the bounded " +
                 "SEE-not-FEEL divergence is only acceptable because the bound is structural");

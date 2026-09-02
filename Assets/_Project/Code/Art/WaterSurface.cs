@@ -329,6 +329,9 @@ namespace HiddenHarbours.Art
         // wind/current blend the buffer advects along.
         private static readonly int IdWakeFoamStrength = Shader.PropertyToID("_WakeFoamStrength");
         private static readonly int IdFoamDriftWindVsCurrent = Shader.PropertyToID("_FoamDriftWindVsCurrent");
+        private static readonly int IdSurfDepositStrength = Shader.PropertyToID("_SurfDepositStrength");
+        private static readonly int IdOceanSwellScaleRead = Shader.PropertyToID("_OceanSwellScale");
+        private static readonly int IdShoreSampleStep = Shader.PropertyToID("_ShoreSampleStep");
 
         // ==== Weather-palette MOOD property key set (ADR 0017) ============================================
         // The MOOD/COLOUR properties the weather blend lerps from the anchor presets and pushes via the MPB.
@@ -505,6 +508,7 @@ namespace HiddenHarbours.Art
             // cliff standing in a sea that is not there (the _DayNightTint / _MoonDir "unset" convention,
             // and the WaveFieldBridge.PublishEmpty discipline).
             PublishSeaLevelUnset();
+            SeabedGlobals.PublishUnset();   // the published seabed goes with the waterline (ADR 0040 rev 3)
             // (WS-2) Free the baked fallback height texture (the painted path never allocates _heightTex).
             DestroyBakedHeightTexture();
         }
@@ -543,6 +547,14 @@ namespace HiddenHarbours.Art
         }
 
         /// <summary>The waterline SILENT — the unset convention (see <see cref="PublishSeaLevel"/>).</summary>
+        /// <summary>The material's shore-gradient sample step, for the published seabed's consumers (the
+        /// foam buffer's deposit derives the shore direction with it, as the fragment does).</summary>
+        private float ShoreSampleStep()
+        {
+            Material m = _renderer != null ? _renderer.sharedMaterial : null;
+            return m != null && m.HasProperty(IdShoreSampleStep) ? m.GetFloat(IdShoreSampleStep) : 0.4f;
+        }
+
         private static void PublishSeaLevelUnset()
             => Shader.SetGlobalVector(IdSeaLevelWorld, Vector4.zero);
 
@@ -739,6 +751,13 @@ namespace HiddenHarbours.Art
                     ? live.GetFloat(IdFoamDriftWindVsCurrent) : 0.5f;
                 FoamInjectionRegistry.PublishDriftVelocity(
                     FoamDriftDirection(_smoothedWind, _smoothedCurrent, windVsCurrent) * flow);
+                // (ADR 0040 rev 3) …and the bore's DEPOSIT dial, with the DRAWN wave scale the bore is
+                // evaluated at — the same _OceanSwellScale / WAVE_LEGACY_SCALE_REF the fragment uses, so the
+                // foam is laid under the front the water is drawing and not under the sim's.
+                float surfDeposit = live.HasProperty(IdSurfDepositStrength) ? live.GetFloat(IdSurfDepositStrength) : 0f;
+                float drawnScale = live.HasProperty(IdOceanSwellScaleRead)
+                    ? live.GetFloat(IdOceanSwellScaleRead) / DisplacedWaterSurface.WaveLegacyScaleRef : 1f;
+                FoamInjectionRegistry.PublishSurfDeposit(surfDeposit, drawnScale);
             }
 
             // ⭐ THE WATERLINE, PUBLISHED (2026-08-06). Everything that is NOT water but MEETS the water
@@ -1342,6 +1361,7 @@ namespace HiddenHarbours.Art
             _mpb.SetVector(IdHWorldMin, new Vector4(min.x, min.y, 0f, 0f));
             _mpb.SetVector(IdHWorldSize, new Vector4(_heightWorldSize.x, _heightWorldSize.y, 0f, 0f));
             FeedSeabedTexture(_mpb);
+            SeabedGlobals.Publish(_heightTex, min, _heightWorldSize, _heightMin, _heightMax, ShoreSampleStep());
             _renderer.SetPropertyBlock(_mpb);
 
             // Enable the shader's height-map branch so the depth read uses the bake.
@@ -1365,6 +1385,7 @@ namespace HiddenHarbours.Art
             _mpb.SetVector(IdHWorldMin, new Vector4(min.x, min.y, 0f, 0f));
             _mpb.SetVector(IdHWorldSize, new Vector4(_heightWorldSize.x, _heightWorldSize.y, 0f, 0f));
             FeedSeabedTexture(_mpb);
+            SeabedGlobals.Publish(_paintedHeightTex, min, _heightWorldSize, _heightMin, _heightMax, ShoreSampleStep());
             _renderer.SetPropertyBlock(_mpb);
 
             EnableHeightTexKeyword();

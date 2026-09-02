@@ -145,7 +145,7 @@ namespace HiddenHarbours.Art
         /// knob against (<c>WAVE_LEGACY_SCALE_REF</c> in HiddenHarboursWater.shader). At exactly
         /// this value the displaced vertex stage renders the field's TRUE wavelengths — the sea the
         /// hull physically rocks on. Any other value visually re-scales the DRAWN wavelengths.</summary>
-        private const float WaveLegacyScaleRef = 0.025f;
+        internal const float WaveLegacyScaleRef = 0.025f;   // read by WaterSurface for the drawn bore's scale
 
         private Renderer _flatRenderer;
         private MaterialPropertyBlock _mpb;

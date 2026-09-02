@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace HiddenHarbours.Art
@@ -352,6 +353,74 @@ namespace HiddenHarbours.Art
             MaxAlpha          = 0.7f,    // peak at a FULL downpour; a real squall lands ~0.07-0.32 after intensity
             NightFade         = 0.25f,
             MoonlightCatch    = 0.1f,
+        };
+    }
+
+    /// <summary>
+    /// The LIP SPRAY (ADR 0040 rev 3): torn puffs thrown shoreward off a PLUNGING breaker as its crest
+    /// arrives — <see cref="SurfSprayEmitter"/>. Ships ON (Intensity 1): a burst exists only live, so
+    /// no plate can judge it; the three gates are the bore's own quantities and keep it off every
+    /// spilling beach and off every ledge between bores.
+    /// </summary>
+    [Serializable]
+    public struct SurfSprayConfig
+    {
+        [Header("Pool & probes")]
+        [Tooltip("Max live puffs (a fixed, recycled pool — zero per-frame allocation). Rule 7 budget cap.")]
+        [Min(1)] public int MaxWisps;
+        [Tooltip("The n×n probe lattice over the camera frame that reads the bore (SurfAt) a few times a second.")]
+        [Range(4, 24)] public int ProbeCells;
+        [Tooltip("How often (Hz) the lattice is re-read. The bore beats at a few seconds; 10 Hz follows it.")]
+        [Min(0.5f)] public float ProbeHz;
+        [Header("The event")]
+        [Tooltip("The master. 0 = no lip spray at all.")]
+        [Range(0f, 2f)] public float Intensity;
+        [Tooltip("The PLUNGING gate on Battjes' weight (0..1): below it the bed spills and throws no lip.")]
+        [Range(0f, 1f)] public float PlungingGate;
+        [Tooltip("The ARRIVAL gate on the bore's pulse (0..1): the lip throws AT the crest, not all through the beat.")]
+        [Range(0f, 1f)] public float BoreGate;
+        [Tooltip("The whitewater floor (0..1): a bore that has died throws nothing.")]
+        [Range(0f, 1f)] public float WhitewaterGate;
+        [Tooltip("Puffs per second per probe cell at full weight, before Intensity.")]
+        public float WispsPerSecondPerCell;
+        [Header("Launch")]
+        [Tooltip("Launch speed as a multiple of the bore's own speed sqrt(g·d) — a deep ledge flings, the last centimetres barely lift.")]
+        public float LaunchSpeedPerBoreSpeed;
+        [Tooltip("Half-angle (degrees) of the shoreward fan a lip tears across.")]
+        public float SpreadDegrees;
+        [Header("Look")]
+        [Min(0.1f)] public float Lifetime;
+        [Range(0f, 1f)] public float FadeIn;
+        [Range(0f, 1f)] public float FadeOut;
+        [Min(0.01f)] public float Size;
+        [Range(0f, 1f)] public float SizeJitter;
+        public Color Color;
+        [Range(0f, 1f)] public float MaxAlpha;
+        [Header("Day / night")]
+        [Range(0f, 1f)] public float NightFade;
+        [Range(0f, 1f)] public float MoonlightCatch;
+
+        public static SurfSprayConfig Default => new SurfSprayConfig
+        {
+            MaxWisps               = 48,
+            ProbeCells             = 12,
+            ProbeHz                = 10f,
+            Intensity              = 1f,     // ON — see the summary
+            PlungingGate           = 0.25f,  // past the spilling regime
+            BoreGate               = 0.7f,   // the crest's arrival, not the whole pulse
+            WhitewaterGate         = 0.3f,
+            WispsPerSecondPerCell  = 8f,
+            LaunchSpeedPerBoreSpeed = 1.3f,
+            SpreadDegrees          = 30f,
+            Lifetime               = 0.7f,
+            FadeIn                 = 0.15f,
+            FadeOut                = 0.5f,
+            Size                   = 0.55f,
+            SizeJitter             = 0.4f,
+            Color                  = new Color(0.95f, 0.97f, 1f, 1f),
+            MaxAlpha               = 0.8f,
+            NightFade              = 0.5f,
+            MoonlightCatch         = 0.25f,
         };
     }
 

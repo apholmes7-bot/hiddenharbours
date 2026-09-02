@@ -383,7 +383,7 @@ namespace HiddenHarbours.Tests.EditMode
         /// breaks nowhere, the scan finds nothing and the test says so instead of quietly shooting a
         /// field.</para>
         /// </summary>
-        static Vector2 FindTheSurfZone(ITidalTerrain terrain, float waterLevel, float breakDepth)
+        internal static Vector2 FindTheSurfZone(ITidalTerrain terrain, float waterLevel, float breakDepth)
         {
             Vector2 centre = NineMileCreekBuilder.NineMileCreekSeaCenter;
             Vector2 size = NineMileCreekBuilder.NineMileCreekSeaSize;
@@ -442,7 +442,7 @@ namespace HiddenHarbours.Tests.EditMode
 
         /// <summary>The shoreward unit direction from the painted bed's gradient — the shader's own
         /// <c>ShoreDir</c>, in C#, so the fixture walks the way the surf does.</summary>
-        static Vector2 ShoreGradient(ITidalTerrain terrain, Vector2 at)
+        internal static Vector2 ShoreGradient(ITidalTerrain terrain, Vector2 at)
         {
             const float h = 1f;
             float ex = terrain.ElevationAt(at + new Vector2(h, 0f)) - terrain.ElevationAt(at - new Vector2(h, 0f));

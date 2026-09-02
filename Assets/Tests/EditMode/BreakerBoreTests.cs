@@ -518,6 +518,70 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
+        public void TheTravelWhitewater_AgreesAtTheBreakLine_AndOutlivesTheLocalLawInTheShallows()
+        {
+            var terrain = new SandyShoal();
+            var train = Swell();
+            var field = OneTrain(in train);
+            var settings = Settings;
+            var contour = Contour(in train, in settings);
+            float breakX = BreakX(terrain, in contour, 0f);
+
+            Assert.AreEqual(1f, BreakerMath.WhitewaterByTravel01(0f, settings.WhitewaterDecaySeconds), 1e-6f,
+                "no travel, no decay: the two laws agree at the break line");
+            Assert.AreEqual(Mathf.Exp(-1f), BreakerMath.WhitewaterByTravel01(settings.WhitewaterDecaySeconds,
+                settings.WhitewaterDecaySeconds), 1e-6f, "one time constant of travel is one e-fold");
+
+            // Shoreward of the break line the bed shoals, so the local speed at any point is slower than
+            // the speeds the bore actually ran at to get there: the local law over-ages every point, and
+            // the gap widens toward the edge. Measured on the shoal, not argued.
+            float lastLocal = 1f, lastTravel = 1f;
+            int shallower = 0, outlived = 0;
+            for (float x = breakX + 1f; x < breakX + 30f; x += 0.5f)
+            {
+                SurfState s = BreakerMath.SurfAt(new Vector2(x, 0f), 0f, terrain, in contour, 1f, in field, G, in settings);
+                if (s.Whitewater01 <= 0f && s.TravelSeconds <= 0f) continue;
+                float byTravel = BreakerMath.WhitewaterByTravel01(s.TravelSeconds, settings.WhitewaterDecaySeconds);
+                Assert.GreaterOrEqual(byTravel, s.Whitewater01 - 1e-5f,
+                    $"x = {x}: the travel law ({byTravel:F3}) fell below the local law ({s.Whitewater01:F3}) on a shoaling bed");
+                if (s.DepthMeters < contour.BreakDepths.x * 0.5f) { shallower++; if (byTravel > s.Whitewater01 * 1.5f) outlived++; }
+                lastLocal = s.Whitewater01; lastTravel = byTravel;
+            }
+            Assert.Greater(shallower, 3, "the sweep must reach the shallows");
+            Assert.Greater(outlived, 0, "in the shallows the travel law must outlive the local one by half again");
+            Assert.Greater(lastTravel, lastLocal, "at the last point asked the wash is more alive by travel than by the local speed");
+        }
+
+        [Test]
+        public void TheSignedSeconds_ArePositiveBehindTheFront_NegativeAhead_AndWrapAtHalfAPeriod()
+        {
+            const float period = 4f;
+            Assert.AreEqual(0f, BreakerMath.SignedSecondsFromCrest(90f, period), 1e-6f, "at the front");
+            Assert.AreEqual(1f, BreakerMath.SignedSecondsFromCrest(0f, period), 1e-6f, "a quarter period BEHIND the front");
+            Assert.AreEqual(-1f, BreakerMath.SignedSecondsFromCrest(180f, period), 1e-6f, "a quarter period AHEAD of it");
+            Assert.AreEqual(-2f, BreakerMath.SignedSecondsFromCrest(270f, period), 1e-6f, "the trough is half a period either way; the wrap lands on -T/2");
+            Assert.AreEqual(BreakerMath.SignedSecondsFromCrest(30f, period), BreakerMath.SignedSecondsFromCrest(390f, period), 1e-6f);
+            // Behind the front the unsigned and signed clocks agree; ahead, the unsigned one says "almost a period ago".
+            Assert.AreEqual(BreakerMath.SecondsSinceTheCrest(0f, period), BreakerMath.SignedSecondsFromCrest(0f, period), 1e-6f);
+            Assert.AreEqual(3f, BreakerMath.SecondsSinceTheCrest(180f, period), 1e-6f);
+        }
+
+        [Test]
+        public void TheSheet_IsBornAtTheFront_AndAgesOnTheWhitewatersSeconds()
+        {
+            const float period = 4f, decay = 3.5f;
+            Assert.AreEqual(1f, BreakerMath.BoreSheet01(90f, period, decay), 1e-6f, "at the front the sheet is whole");
+            float behind = BreakerMath.BoreSheet01(0f, period, decay);          // a quarter period behind the front
+            Assert.AreEqual(Mathf.Exp(-1f / decay), behind, 1e-6f, "one second behind: the whitewater's own decay");
+            float ahead = BreakerMath.BoreSheet01(180f, period, decay);         // ahead of the front: the previous crest's water
+            Assert.Less(ahead, behind, "ahead of the front is the PREVIOUS crest's old water");
+            Assert.Greater(ahead, 0f, "and it is old, not gone");
+            Assert.AreEqual(BreakerMath.BoreSheet01(30f, period, decay), BreakerMath.BoreSheet01(390f, period, decay), 1e-6f,
+                "a whole turn of phase is the same sheet");
+            Assert.AreEqual(1f, BreakerMath.BoreSheet01(90f, period, 0f), 1e-6f, "a zero decay is floored, never a division by zero");
+        }
+
+        [Test]
         public void TheBirthRead_IsOfTheCrest_SoEveryPointOnOneBoresBackReadsTheSameBirth()
         {
             // Two points on the same bore's back (their phases differ, their crest is the same crest)
@@ -581,7 +645,12 @@ namespace HiddenHarbours.Tests.EditMode
             {
                 SurfState s = BreakerMath.SurfAt(new Vector2(x, 0f), 0f, terrain, in contour, 1f, in field, G, in settings);
                 Assert.LessOrEqual(s.RunUpMeters, settings.RunUpCapMeters + 1e-6f);
-                Assert.AreEqual(BreakerMath.RunUpMeters(s.StandingHeightMeters, s.Whitewater01,
+                // Hunt's law on the height the bore was BORN with (gamma times the break-line depth),
+                // not the local standing height, which is 0 at the very edge where the reach matters.
+                float standingAtBreak = settings.BreakerIndex *
+                    BreakerMath.DepthAtEnvelope(contour.BreakDepths, contour.LeeEnvelope, 1f);
+                float aliveByTravel = BreakerMath.WhitewaterByTravel01(s.TravelSeconds, settings.WhitewaterDecaySeconds);
+                Assert.AreEqual(BreakerMath.RunUpMeters(standingAtBreak, aliveByTravel,
                                     BreakerMath.Iribarren(BreakerMath.BedSlopeAlong(new Vector2(x, 0f), s.ShorewardDirection,
                                         settings.SlopeProbeMeters, terrain), 2f * train.Amplitude, train.Wavelength),
                                     s.Bore01, in settings),

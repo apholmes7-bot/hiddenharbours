@@ -479,3 +479,90 @@ skips it. `WaveFieldCostReport.RunHeadless` before and after is PR 2's evidence,
 the contour and its solve; the whitewater's own energy clock (`WhitewaterEnergy01` keeps its local-depth
 bore speed — the marched seconds are the bore's clock, and PR 2 decides whether the two unify, since that
 moves the look); the walkability waterline; the shove (PR 3 pulses it); every pixel.
+
+## Revision 3, PR 2 (2026-09-01) — the LOOK of the bore: beats, the run-up, the event, the deposit
+
+PR 1 put the bore in Core and the shader read it; nothing on screen moved. This PR is what the eye gets,
+behind three look dials on the water material that **all ship at 0 = today's look** (the plate sweep at
+default dials is structurally identical to the pre-PR pair — 144 plates, every structural manifest column the
+same, the wet fraction unchanged on every plate; `AtDialZero_TheBoreIsAPassthrough…` moves 0.02 % of the four-band
+sheet over half a period of published time, against 58 % with the beat at 1):
+
+| dial | what it does at 1 | passthrough form |
+|---|---|---|
+| `_SurfBeatStrength` | the SHEET is born at the front and ages behind it; the anatomy is an EVENT at the front | `beat = lerp(1, sheet, dial)`, `event = lerp(1, pulse, dial)` |
+| `_SurfRunUpStrength` | the drawn wet edge rides the bore's run-up up the beach and drains between crests | `edge = lerp(edge, runUp, breaking·dial)`; the beach band's gate is `depth > −dial·cap` |
+| `_SurfFrontSlope` | the bore front's own face enters the sun shade and #691's lamp relief | `waveSlope + surfFrontSlope`, the latter 0 at 0 |
+
+### Four things the physics needed once a beat could be seen
+
+**The birth is normalized by the dominant's own amplitude.** Revision 3's "crest factor at the crest's
+passage" normalizes by the field's TOTAL amplitude, and in the shipped eight-train sea one crest reaches only
+its share of that — measured, every bore was born at ~0.1 and the beat was too faint to draw. Against the
+dominant's own amplitude the average bore is born full, a set's constructive crest saturates and a
+destructive one is born weak: the swing that IS the set, kept (`BirthEnergy_IsOneForEveryCrest…` and its
+eight-train arm still hold). C# and HLSL twins changed together.
+
+**The sheet ages on the whitewater's seconds; the anatomy pulses.** A symmetric pulse `((1+sin θ)/2)^p` is the
+right shape for a FORCE and the wrong one for a SHEET: whitewater is made at the crest and persists behind it.
+`BoreSheet01 = exp(−SecondsSinceTheCrest / WhitewaterDecaySeconds)` — one decay constant for "how far"
+(`WhitewaterEnergy01`, metres) and "how long ago" (this). The lip, barrel and pocket keep the pulse (the
+EVENT), and with the beat up they are measured from the FRONT (`SignedSecondsFromCrest × √(g·d)`, ahead
+positive) instead of from the break line, so the lip is thrown ahead of the arriving crest and travels with
+it, the barrel hollows under it, the pocket peels at the curl, and all of it leaves with the bore.
+
+**The run-up rides a travel-time whitewater.** The shipped `WhitewaterEnergy01` divides the marched metres by
+the LOCAL bore speed, which at the wet edge is `√(g·0.02)`, so it pronounces every wash dead before the sand
+whatever the bore does — the very thing PR 1's break-height run-up was meant to cure. The march already
+integrates the true seconds, so `WhitewaterByTravel01 = exp(−TravelSeconds/τ)`: equal at the break line,
+alive longer everywhere the bed shoals (pinned on the 1:25 shoal: ≥ 1.5× the local law in the shallows, never
+below it). The run-up rides it in C# and HLSL; the drawn sheet blends toward it only as the run-up dial comes
+up, so revision 2's sheet is untouched at 0. The shove's `Whitewater01` is unchanged (PR 3's business).
+
+**The beach band.** A pixel above the still-water line cannot march from dry ground, so with the run-up dial
+up the surf block evaluates such a pixel at its own WATERLINE point — projected down the floored shore slope,
+the swash's metres-of-contour idiom — inheriting that bore's age, phase and reach; the coarse pre-clip keeps
+the band alive for it; the exact clip then decides whether the wash has reached it. The C# probe keeps its
+dry-ground refusal: it answers for hulls. Measured: the dial adds 2342 px of drawn water up the beach at the
+sand shoal and removes 0 — the wash only ever extends the edge.
+
+The front's face is gated by the break gate and weighted by the whitewater (a dead bore has no face; seaward
+of the break line there is no front to shade): 95 %+ of the pixels the dial changes lie under a live bore.
+
+### The deposit (ADR 0027 #6 gains a source)
+
+`_SurfDepositStrength` (0 = none; draws only through `_WakeFoamStrength`) is mirrored to the foam registry
+beside the look dial, and the advect pass gains **4. THE BORE'S DEPOSIT**: under every bore front,
+`Breaking01 × Whitewater01 × Bore01 × strength × rate × dt` of coverage, and the freshness clock MAXed to
+fully fresh where the front passes now — a GATE, as a hull's churn is. The residue then ages, drifts and
+dies on the buffer's own clocks: what the sea leaves BEHIND a wash, in the wake's blues. The pass cannot
+include the water shader, so the surf physics it needs (the fetch march, the breaker contour, the surf march
+and the bore) is COPIED into it verbatim between `TWIN A/B` markers and `BreakerDepositTests` fails on the
+first differing byte — a copy that cannot drift is not a second bore. What the twinned text reads as a
+material property of the water (`_WaterLevel`, `_ShoreSampleStep`, the height map) it reads as published
+globals through macros; the seabed is published by `WaterSurface` (`SeabedGlobals`, the waterline global's
+sibling) at the moment it feeds its own `_HeightTex`. Parity on a synthetic beach: ≥ 97 % of surf texels
+within 0.02 of `SurfAt`'s own product, the gate agreeing on ≥ 97 %.
+
+### Spray at the lip
+
+`SurfSprayEmitter` (the `SprayEmitter` pattern: a self-installing host, a fixed pool, hashed salts) probes
+`SurfAt` on a 12×12 lattice over the camera frame at 10 Hz — the PUBLISHED field unpacked from the bridge
+(the animator's travel is in it) at the DRAWN scale — and throws shoreward puffs at √(g·d)×1.3 only where the
+bed PLUNGES, the crest is ARRIVING and the whitewater is live (`SurfSprayMath.Emission01`; a beach throws
+nothing, a ledge between bores throws nothing). ⚠ It ships ON: a burst exists only live and no plate can
+judge it; the owner's dial is the config's `Intensity`.
+
+### Cost (rule 7), measured with `WaveFieldCostReport.RunHeadless`
+
+Before: 9 fragment call sites, 72 train evaluations / 288 transcendentals per pixel; compiled fragment
+183 934 + 184 070 = 368 004 B. After: 10 call sites (the birth read), 80 / 320; compiled fragment
+186 162 + 186 298 = 372 460 B (+1.2 %). The march is still one loop of 16 taps; the deposit pass pays its own
+copy only on texels no deeper than the outer contour and only while the dial is up.
+
+### What this revision does NOT touch
+
+`WaveMath`, `WaveFieldAnimator`, the contour's solve, `PlungingLimit`, the shove (PR 3), the glass mirror and
+the dead calm (amplitude 0 → zero surf pixels), the eight presets' moods (the `_Surf*` keys are serialized on
+all nine materials at today's values, so `Apply water preset` can no longer stamp a 0), `_OceanSwellScale`
+(the ride ≠ drawn question stays the owner's call). Audio may read `SurfState.Bore01` as before.
