@@ -12,6 +12,12 @@ namespace HiddenHarbours.Core
     /// SCREEN angle, and the answer is wrong by up to <b>12.56°</b> off the cardinals — which is over a
     /// quarter of an eight-way facing cell.</para>
     ///
+    /// <para><b>Scope (ADR 0042).</b> "Squashed" is true of PICTURE-PLACEMENT — anything that must
+    /// coincide with baked ¾ art, which a bearing read off the screen is — and world XY is the unsquashed
+    /// GROUND plane for everything that MOVES or MEASURES (ADR 0004's 1 tile = 1 m: speeds, ranges, the
+    /// tile grid, the height field). This file serves the first: a world delta is a screen angle until it
+    /// is un-squashed. Nothing below changes; the ADR scopes the sentence above.</para>
+    ///
     /// <para><b>Why this lives in Core rather than reading the definition.</b>
     /// <c>HiddenHarbours.Art.SpriteLightMath.GroundDepthScale</c> IS the definition, but Core references
     /// nothing (rule 4), so it cannot see it. Same problem <c>BuildingInterior</c> has and the same answer:

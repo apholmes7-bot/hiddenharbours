@@ -22,13 +22,17 @@ namespace HiddenHarbours.App.Editor
     /// second copy of would get subtly wrong: the facing cell, the collider's turn, and the reach pass.
     /// </para>
     ///
-    /// <para><b>⚠️ THE SPRITE DOES NOT TURN; THE COLLIDERS DO.</b> Baked iso art already contains the
-    /// camera, so rotating a renderer shears the picture — the facing IS the rotation, and every kit in
-    /// this repo places its art at identity. The sidecar's footprints are a different thing: they are the
-    /// GROUND the piece covers, stated in the piece's own frame, so at any cell but 0 they are turned.
-    /// The blocker children therefore carry <see cref="StationCatalog.ColliderZRotation"/> and the root
-    /// stays at identity. Getting this backwards draws perfectly and puts the collision somewhere else,
-    /// which is the failure mode nobody notices until they walk it.</para>
+    /// <para><b>⚠️ THE SPRITE DOES NOT TURN; THE COLLIDERS ARE RE-DRAWN.</b> Baked iso art already
+    /// contains the camera, so rotating a renderer shears the picture — the facing IS the rotation, and
+    /// every kit in this repo places its art at identity. The sidecar's footprints are a different
+    /// thing: they are the GROUND the piece covers, stated in the piece's own frame, so at any cell but 0
+    /// they are turned — and at every cell they are SQUASHED, because the squash is in the pixels of the
+    /// picture they have to sit under (ADR 0042). The blocker children therefore get their paths
+    /// re-derived at the facing by <see cref="ProjectColliders"/> — rotate on the ground, then the art's
+    /// squash — and the root stays at identity. ⚠️ Paths, never a <c>localRotation</c>: a rotation turns
+    /// a shape without squashing it, which is how the kit's first answer left the C-store's walls 2.07 m
+    /// past each drawn side wall. Both mistakes draw perfectly and put the collision somewhere else, which
+    /// is the failure mode nobody notices until they walk it.</para>
     ///
     /// <para><b>Region-agnostic on purpose:</b> nothing here knows a tide, a road or a wharf. The one
     /// thing a caller passes that is not from the kit is the log tag and the region's own obstructions,
@@ -260,7 +264,7 @@ namespace HiddenHarbours.App.Editor
                 var sr = go.GetComponent<SpriteRenderer>();
                 if (sr != null) sr.sprite = sprite;
 
-                TurnColliders(go, p.Facing);
+                ProjectColliders(go, def, p.Facing);
                 result.Placed.Add(go);
                 result.Facings.Add(p.Facing);
 
@@ -304,19 +308,56 @@ namespace HiddenHarbours.App.Editor
         }
 
         /// <summary>
-        /// Turn a placed piece's collider children onto the ground it covers — see the class remarks for
-        /// why this is the children and not the root.
+        /// Put a placed piece's collider children on the ground its PICTURE covers at
+        /// <paramref name="facing"/>: every path re-derived from the Def — rotate on the ground, then
+        /// the art's squash (ADR 0042) — on children that stay at local zero with no rotation of their
+        /// own. Returns how many were projected.
         ///
-        /// <para>Every child is turned, deliberately: the prefabs #613 builds carry blocker children and
-        /// door LEAVES and nothing else, and both are ground shapes in the piece's own frame. A child
-        /// that must not turn would be a renderer, and this kit puts all of its art on the root.</para>
+        /// <para>Matched child by child against <see cref="StationCatalog.ColliderShapes"/>, the same
+        /// list the prefab was built from, in the same order. A prefab whose children do not match that
+        /// list has come apart from its Def; it is reported and left as the prefab drew it (cell 0's
+        /// shape) rather than half-projected, because a loud wrong collider is findable and a quiet one
+        /// is not.</para>
         /// </summary>
-        public static void TurnColliders(GameObject placed, int facing)
+        public static int ProjectColliders(GameObject placed, StationPieceDef def, int facing)
         {
-            if (placed == null) return;
-            var turn = Quaternion.Euler(0f, 0f, StationCatalog.ColliderZRotation(facing));
-            for (int i = 0; i < placed.transform.childCount; i++)
-                placed.transform.GetChild(i).localRotation = turn;
+            if (placed == null || def == null) return 0;
+
+            List<StationCatalog.ColliderShape> shapes = StationCatalog.ColliderShapes(def);
+            int next = 0, projected = 0;
+
+            for (int i = 0; i < placed.transform.childCount && next < shapes.Count; i++)
+            {
+                Transform child = placed.transform.GetChild(i);
+                var poly = child.GetComponent<PolygonCollider2D>();
+                if (poly == null) continue;
+
+                StationCatalog.ColliderShape shape = shapes[next];
+                if (child.name != shape.Name)
+                {
+                    Debug.LogWarning(
+                        $"[StationForecourt] '{placed.name}' child {i} is '{child.name}' where the Def's " +
+                        $"collider list expects '{shape.Name}' — the prefab and the Def have come apart. " +
+                        "Run Hidden Harbours ▸ Art ▸ Build Gas Station Defs + Prefabs. Its colliders are " +
+                        "left as the prefab drew them, at cell 0.", placed);
+                    return projected;
+                }
+
+                child.localPosition = Vector3.zero;
+                child.localRotation = Quaternion.identity;
+                poly.pathCount = 1;
+                poly.SetPath(0, StationCatalog.FootprintPath(shape.Local, facing));
+                next++;
+                projected++;
+            }
+
+            if (next < shapes.Count)
+                Debug.LogWarning(
+                    $"[StationForecourt] '{placed.name}' carries {next} collider children for the " +
+                    $"{shapes.Count} shapes its Def publishes — the prefab is behind the Def. Run Hidden " +
+                    "Harbours ▸ Art ▸ Build Gas Station Defs + Prefabs.", placed);
+
+            return projected;
         }
 
         // =====================================================================================

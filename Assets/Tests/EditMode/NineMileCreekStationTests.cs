@@ -467,12 +467,15 @@ namespace HiddenHarbours.Tests.EditMode
             var vent = StationCatalog.Find("fillport", "sVent");
             Assert.That(cluster.Interactables.Length, Is.GreaterThan(0));
 
-            // Stand the risers exactly on the cluster's first published standing spot.
-            Vector3 spot = cluster.Interactables[0].ReachPoint;
+            // Stand the risers exactly on the cluster's first published standing spot — in WORLD, where
+            // a standing spot is: the sidecar's local point projected the way the placement projects it
+            // (rotate on the ground, then the art's squash — ADR 0042). At cell 0 that is 0.643 of its
+            // local y; placed at the raw local point the risers would stand 0.25 m off the spot.
+            Vector2 spot = StationCatalog.LocalToWorld(cluster.Interactables[0].ReachPoint, Vector2.zero, 0);
             var stacked = new List<StationReachAudit.Placed>
             {
                 new StationReachAudit.Placed(cluster, Vector2.zero, 0, "fillport_sCluster"),
-                new StationReachAudit.Placed(vent, new Vector2(spot.x, spot.y), 0, "fillport_sVent"),
+                new StationReachAudit.Placed(vent, spot, 0, "fillport_sVent"),
             };
 
             var results = StationReachAudit.Audit(stacked);
@@ -652,6 +655,60 @@ namespace HiddenHarbours.Tests.EditMode
                     $"the C-store's '{id}' has no anchor. Its VERB does not exist yet (#613 recorded " +
                     "that), but the standing spot the whole-scene pass verified should still be " +
                     "something the owner can select.");
+
+            // ⭐ THE CANARY (ADR 0042). The wharf pedestals stand at their WORLD sitings — the standback
+            // is along world X and the spacing is two interact ranges of world metres — so the migration
+            // that squashed every piece's own colliders must not have moved them. If one has, a world
+            // siting was projected as though it were rig geometry, and something over-rotated.
+            Transform wharfRoot = root.transform.Find(NineMileCreekStation.WharfRootName);
+            Assert.That(wharfRoot, Is.Not.Null, "no wharf root was built");
+            var pedestals = new List<Transform>();
+            for (int i = 0; i < wharfRoot.childCount; i++)
+                if (wharfRoot.GetChild(i).name == "dispenser_sDock") pedestals.Add(wharfRoot.GetChild(i));
+            Assert.That(pedestals.Count, Is.EqualTo(NineMileCreekStation.WharfPumpPositions.Count),
+                "one placed pedestal per siting");
+            for (int i = 0; i < pedestals.Count; i++)
+                Assert.That(Vector2.Distance(pedestals[i].position, NineMileCreekStation.WharfPumpPositions[i]),
+                            Is.LessThan(1e-3f),
+                    $"wharf pedestal {i} was placed at {(Vector2)pedestals[i].position}; its siting is " +
+                    $"{NineMileCreekStation.WharfPumpPositions[i]}. WharfPumpPositions is the one authority.");
+
+            // …and every placed piece's colliders sit inside its own drawn cell — the alignment the whole
+            // migration exists for, checked in the SCENE (the projected paths on the placed instances)
+            // and not only in the arithmetic GasStationCansAndInteriorTests checks. A rotation on a
+            // collider child would be the retired mechanism coming back.
+            int piecesChecked = 0;
+            foreach (SpriteRenderer sr in root.GetComponentsInChildren<SpriteRenderer>(includeInactive: true))
+            {
+                if (sr.sprite == null || StationCatalog.Find(sr.name) == null) continue;
+                Bounds cell = sr.sprite.bounds;
+                float tol = 1f / sr.sprite.pixelsPerUnit + 1e-4f;
+
+                foreach (PolygonCollider2D poly in sr.GetComponentsInChildren<PolygonCollider2D>(true))
+                {
+                    if (poly.transform.parent != sr.transform) continue;
+                    Assert.That(Quaternion.Angle(poly.transform.localRotation, Quaternion.identity),
+                                Is.LessThan(1e-3f),
+                        $"{sr.name}/{poly.name} is turned — the facing lives in the path, never in a " +
+                        "rotation, because a rotation cannot squash (ADR 0042)");
+
+                    Vector2 at = poly.transform.localPosition;
+                    for (int path = 0; path < poly.pathCount; path++)
+                        foreach (Vector2 p in poly.GetPath(path))
+                        {
+                            Vector2 q = p + at;
+                            Assert.That(q.x, Is.InRange(cell.min.x - tol, cell.max.x + tol),
+                                $"{sr.name}/{poly.name}: collider vertex {q} is outside the drawn cell " +
+                                $"{cell.min}..{cell.max} across");
+                            Assert.That(q.y, Is.InRange(cell.min.y - tol, cell.max.y + tol),
+                                $"{sr.name}/{poly.name}: collider vertex {q} is outside the drawn cell " +
+                                $"{cell.min}..{cell.max} up the screen");
+                        }
+                }
+                piecesChecked++;
+            }
+            Assert.That(piecesChecked, Is.GreaterThan(5),
+                "fewer than six placed station pieces were checked — the scene alignment check is vacuous");
         }
 
         // =============================================================================================
