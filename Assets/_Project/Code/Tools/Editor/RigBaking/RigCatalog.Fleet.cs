@@ -20,6 +20,21 @@ namespace HiddenHarbours.Tools.RigBaking
                 ["punt"] = new RigEntry($"{RigFolder}/puntIsoRig.js", "PuntIso",
                                         AzimuthConvention.CounterClockwise),
 
+                // The Cape Islander — the hub workboat, and the LAST hull whose exterior sheet was a
+                // hand export (#224, before her rig was imported at #227). Registered here for the
+                // sprite re-bake that retired that sheet (PR 2b of the full-mesh rollout): the
+                // turntable resolves rigs by catalog key, and until this row existed only the MESH
+                // baker (which walks HullMeshFleet) could load her.
+                //
+                // The convention is MEASURED, not inherited, and from two independent sources: her
+                // committed HullMeshDef carries AzimuthCounterClockwise = 1 (the mesh bake's probe —
+                // "port→starboard ground bearing −90.00° at a quarter turn", #690), and the
+                // turntable's own pixel probe re-measures her at every sprite bake and REFUSES on a
+                // disagreement with this line (RigBaker.Bake). RigAzimuthConventionTests pins both
+                // readings against each other.
+                ["capeIslander"] = new RigEntry($"{RigFolder}/capeIslanderIsoRig.js", "CapeIslanderIso",
+                                                AzimuthConvention.CounterClockwise),
+
                 // The reason Phase 1 exists: Tier 3, ~12.0 m LOA, and no baked art anywhere.
                 //
                 // ⚠️ SHE CARRIES A PAINT AXIS (kit drop 2026-08-12). Twelve named schemes, and her
