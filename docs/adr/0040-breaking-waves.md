@@ -551,7 +551,8 @@ within 0.02 of `SurfAt`'s own product, the gate agreeing on ≥ 97 %.
 (the animator's travel is in it) at the DRAWN scale — and throws shoreward puffs at √(g·d)×1.3 only where the
 bed PLUNGES, the crest is ARRIVING and the whitewater is live (`SurfSprayMath.Emission01`; a beach throws
 nothing, a ledge between bores throws nothing). ⚠ It ships ON: a burst exists only live and no plate can
-judge it; the owner's dial is the config's `Intensity`.
+judge it; the owner's dial is **`GameConfig.SurfSprayIntensity`** (PR 3 moved it out of the code — see
+that revision).
 
 ### Cost (rule 7), measured with `WaveFieldCostReport.RunHeadless`
 
@@ -566,3 +567,109 @@ copy only on texels no deeper than the outer contour and only while the dial is 
 the dead calm (amplitude 0 → zero surf pixels), the eight presets' moods (the `_Surf*` keys are serialized on
 all nine materials at today's values, so `Apply water preset` can no longer stamp a 0), `_OceanSwellScale`
 (the ride ≠ drawn question stays the owner's call). Audio may read `SurfState.Bore01` as before.
+
+## Revision 3, PR 3 (2026-09-02) — the FEEL of the bore: the shove beats, and the wash picks her up
+
+PR 1 gave the bore a clock, PR 2 gave it a face. This is what the hull does about it. Two dials on
+`GameConfig.Seakeeping`, both shipping ON — because unlike a look dial, **neither can be judged from a
+plate**: a shove and a lift exist only at the helm. Their 0 is the pre-PR feel exactly.
+
+| dial | at 1 | at 0 |
+|---|---|---|
+| `SurfBorePulse01` | the whole shove rides `SurfState.Bore01` — a front arrives, peaks, passes; between crests the water lets go, and the drift up the beach arrives in STEPS one wave period apart | the steady lean PR 3 (2026-08-28) shipped, to the bit |
+| `SurfLiftScale` | the hull rises by the bore's run-up LEVEL as the front passes under her | no lift — the ride exactly as ADR 0023 left it |
+
+### The shove: one multiplication, and two exact passthroughs
+
+`SurfShove`'s magnitude gains `beat = lerp(1, Bore01, SurfBorePulse01)`. Lerped rather than multiplied,
+which buys both passthroughs from one line: the dial at 0 is `×1f`, the float identity; and a `SurfState`
+built by the pre-revision-3 constructor reads `Bore01 = 1`, which is the same 1. The broach inherits the
+beat for free, because it is keyed on the beam component of the shove it already scales.
+
+The place-gate stays `Breaking01` — **not** `Exposure01`, for the reason the 2026-08-28 revision sets out
+at length (shelter depth 1 m against break depth 0.92 m makes exposure exactly 0 where the surf lives), and
+the term stays ABOVE the swell's early-out for the same reason.
+
+**The hull now reads the bore-aware `SurfAt`.** `BoatController` was calling the overload without a field,
+which reports `Bore01 = 1` at every phase — the steady boil. It now passes the SIM trains it already
+sampled (the ADR 0018 addendum boundary: gameplay-consequential reads stay on the pure, `gameTime`-
+deterministic path, never the eased presentation animator — a stateful smoother agrees only with itself)
+at the `DisplacedSea` seam's `FreqScale`. That scale matters here for the same reason it mattered to the
+ride: the bore's phase is a read at a POSITION on the wave, so a hull consulting the field at 1 while the
+surface draws it at 2.8 would be shoved by a crest that is not the one on her.
+
+⚠️ **A pulse redistributes the shove; it does not add to it.** `((1+sin θ)/2)^2.6` averages well under 1
+over a period, so at the same `SurfShoveStrength` the beat hits harder at each front and carries her less
+far in total. Those are the owner's dials and are NOT moved here: the measured table is in the PR body and
+the retune is his call.
+
+### ⭐⭐ The clock the field is read on — the bug this PR found in revision 3's own seam
+
+Wiring the hull to the bore-aware read produced **no beat at all**, and the reason is worth recording
+because it would have shipped looking like a working feature.
+
+Revision 3 was built against the PUBLISHED field, whose trains carry the accumulated travel inside their
+own `PhaseOffset` — so for the renderer and the spray emitter "now" *is* time 0, and `BorePhaseDegrees`
+took no clock. The PURE SIM field a hull's forces run on (`WaveMath.TrainsFrom`) carries no time whatever:
+its phase offset is a hash of `(index, seed)`. Read at 0, the bore's phase is a function of POSITION only —
+a pulse that varies across the beach and never arrives. The steady state, in a new costume.
+
+`BorePhaseDegrees`, `BoreBirthEnergy01` and the bore-aware `SurfAt` now take `double timeSeconds = 0`. The
+default keeps every published-field caller byte-identical (pinned:
+`TheClocksDefaultOfZero_IsExactlyTodaysPublishedFieldReading`); the hull passes game time. The two are the
+same read — a published train has `φ_now = φ₀ − k·c·now` baked in, so reading it at 0 is reading the static
+train at `now` — and that identity is measured rather than asserted
+(`APublishedFieldAtZero_AndAStaticFieldAtNOW_NameTheSameCrest`), because the day they part is the day one
+path is shoving a hull with a crest the other cannot see.
+
+The acceptance for the fix stands still and lets time run: at one place in the surf, over one period,
+`Bore01` must come and go — and with the clock left at 0 the same sweep must be a flat line
+(`WithTheClock_TheWholeSurfStatePULSES_AtOnePlace`).
+
+### The lift: the run-up, and deliberately nothing else
+
+`SeakeepingForcesMath.SurfLiftMeters` returns `SurfState.RunUpMeters × SurfLiftScale`. That number is
+already *the level the wash reaches above still water here* — Hunt's run-up on the height the bore was born
+with, carried by the whitewater's TRAVEL-time energy so it survives to where a hull actually floats, pulsing
+with the same `Bore01` the shove rides, and capped at `RunUpCapMeters` (0.35 m, the ratified drawn-edge
+ceiling). A floating hull rises by the level the water rose, so re-deriving a bore height here would be a
+second computation of one quantity. It is also the very number the renderer turns into the drawn wet edge's
+excursion — so the water's statement about how far it rose and the hull's are the same statement.
+
+**It is presentation, not force.** There is no vertical axis in a 2D sim to push along, and the charter is
+explicit that the surf gets no second channel — so the lift is added to the displaced sea's EXISTING ride in
+`BoatWaveMotion`, upstream of `SetDisplacedHeaveMeters` / `SetDrawnRideMeters`, which means her passengers
+ride it without knowing it exists. It sits AFTER the B2.5 heave-weight filter (that filter is a spring chase
+of the swell; the bore is already a smooth periodic pulse on a physical clock, and a stateful smoother would
+hand it a second one) and behind `rideActive`, so the displaced-OFF side of the A/B stays byte-identical.
+
+**It can only ever DRY her.** The watertight z-heave clamp (§24 of `water-rendering.md`) exists to stop
+the sea drawing on deck, and it is computed from the WATER's lift, which this does not touch. Adding to
+the hull's ride raises her relative to that water, so the drawn waterline sits lower on her planking —
+the safe direction, by construction, with no new demand on the clamp.
+
+**One computation, two consumers.** `BoatController` caches the `SurfState` it solved for the shove and
+publishes it as `SurfUnderHull`; `BoatWaveMotion` reads it. Solving again in the presentation tick would
+mean a second contour inversion and a second 16-tap march per hull per FRAME — and, worse, a lift that could
+disagree with the shove it is the other half of. A visual reader sees at most one fixed step of lag; what it
+cannot see is a different surf.
+
+### The lip spray's master leaves the code (asked at #699's review)
+
+`SurfSprayEmitter` installs its own host at runtime, so anything serialized on it is a code default the owner
+can never reach — the complaint rule 6 exists to answer. `SurfSprayConfig.Intensity` is gone; the dial is
+`GameConfig.SurfSprayIntensityOffset`, resolved as `GameConfig.SurfSprayIntensity = clamp(1 + offset, 0, 2)`.
+
+⚠️ **Stored as an OFFSET on purpose.** A YAML key the shipped asset does not carry deserializes to ZERO
+(`GameConfigAssetCoverageTests` exists because of it), and for a plain intensity that zero would have
+silently switched the emitter OFF in every asset older than this PR — against the ruling that it ships ON.
+As an offset, zero *is* the shipped burst, and −1 / +1 still reach silence and double.
+
+### What this revision does NOT touch
+
+`SurfShoveStrength 260` / `SurfBroachTorque 1.2` (the owner's; proposed, never moved silently), the never-
+capsize law (planar force + yaw only), the walkability waterline, the clip contour, the save, `WaveMath`,
+`WaveFieldAnimator`, the contour's solve, any pixel of the shader, and the four `_Surf*` LOOK dials — which
+still ship at 0 pending the owner's nod on PR 2's two check-ins. Until he turns them up the hull beats and
+lifts to a bore the water does not yet draw; both halves are one nod apart, and the register says so.
+Audio may still read `SurfState.Bore01` — the surf's clock is public and unchanged.

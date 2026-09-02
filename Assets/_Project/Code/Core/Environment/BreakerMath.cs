@@ -1065,8 +1065,21 @@ namespace HiddenHarbours.Core
         /// FRONT. A crest that passed the break line τ seconds ago reappears here as the same
         /// characteristic; nothing is reconstructed and nothing is accumulated.
         /// </summary>
-        /// <param name="train">The breaking train — the field's dominant, from <see cref="SharedWaveField"/>
-        /// in Play (sampled at time 0 plus the travel).</param>
+        /// <param name="train">The breaking train — the field's dominant.</param>
+        /// <param name="timeSeconds">
+        /// <b>The clock the train is read on, and it is not optional for every caller.</b> A train from
+        /// <see cref="SharedWaveField"/> / the shader bridge carries the accumulated travel inside its
+        /// own <c>PhaseOffset</c>, so 0 already means "now" — that is the default, and it is what the
+        /// renderer and the spray emitter pass. A train from <see cref="WaveMath.TrainsFrom"/> — the
+        /// PURE SIM path a hull's forces run on — carries no time at all: its phase offset is a hash of
+        /// (index, seed) and nothing else. Passing 0 there would freeze the bore in place, a pulse that
+        /// varies across the beach and never ARRIVES, which is precisely the steady-state defect this
+        /// revision exists to end. Such a caller passes game time.
+        ///
+        /// <para>The two agree by construction: with a published train the read is
+        /// <c>k·d·B + k·c·τ + φ_now</c>, and <c>φ_now = φ₀ − k·c·now</c>, which is the same
+        /// <c>k·(d·B − c·(now − τ)) + φ₀</c> a static train gives at <c>timeSeconds = now</c>.</para>
+        /// </param>
         /// <param name="freqScale">The scale the consumer's sea runs its wavelengths at — 1 for the sim
         /// field a hull rides, <c>DisplacedSeaState.FreqScale</c> (the material's <c>_OceanSwellScale</c>
         /// over 0.025) for the sea the shader DRAWS, so the bore leaves the break line with the crest the
@@ -1074,11 +1087,11 @@ namespace HiddenHarbours.Core
         /// scale without touching <see cref="WaveMath"/>: <c>θ = k·(d·(pos·s)) + φ ≡ k·s·(d·pos) + φ</c>,
         /// and the phase speed is untouched.</param>
         public static float BorePhaseDegrees(in WaveTrain train, Vector2 breakLinePoint, float travelSeconds,
-                                             float freqScale = 1f)
+                                             float freqScale = 1f, double timeSeconds = 0.0)
         {
             float s = Mathf.Max(1e-3f, freqScale);
             return WaveMath.TrainPhaseDegrees(in train, new Vector2(breakLinePoint.x * s, breakLinePoint.y * s),
-                                              -(double)Mathf.Max(0f, travelSeconds));
+                                              timeSeconds - (double)Mathf.Max(0f, travelSeconds));
         }
 
         /// <summary>The train's period (seconds) — conserved through shoaling, so it is the bore's beat
@@ -1155,13 +1168,19 @@ namespace HiddenHarbours.Core
         /// single-train sea reads exactly 1 at every crest. <paramref name="setStrength"/> blends it
         /// toward 1 (0 = every bore born at full energy; a stale asset).
         /// </summary>
+        /// <param name="timeSeconds">The clock the field is read on — 0 for a published field whose
+        /// phases already carry it, game time for the pure sim field. See
+        /// <see cref="BorePhaseDegrees"/>, which must be given the SAME clock or the birth would be
+        /// read off a different crest from the one the phase names.</param>
         public static float BoreBirthEnergy01(in WaveTrains field, Vector2 breakLinePoint, float travelSeconds,
                                               float phaseDegrees, float periodSeconds,
-                                              float fetchEnvelope01, float setStrength, float freqScale = 1f)
+                                              float fetchEnvelope01, float setStrength, float freqScale = 1f,
+                                              double timeSeconds = 0.0)
         {
             float strength = Mathf.Clamp01(setStrength);
             if (strength <= 0f || field.Count <= 0) return 1f;
-            double birth = -((double)Mathf.Max(0f, travelSeconds) + SecondsSinceTheCrest(phaseDegrees, periodSeconds));
+            double birth = timeSeconds
+                         - ((double)Mathf.Max(0f, travelSeconds) + SecondsSinceTheCrest(phaseDegrees, periodSeconds));
             float s = Mathf.Max(1e-3f, freqScale);     // the drawn scale, by the position recipe (see BorePhaseDegrees)
             WaveSample born = WaveMath.Sample(new Vector2(breakLinePoint.x * s, breakLinePoint.y * s), birth,
                                               in field, fetchEnvelope01);
@@ -1230,12 +1249,20 @@ namespace HiddenHarbours.Core
         /// time 0 plus the travel). Its dominant train is the breaking one.</param>
         /// <param name="gravity">The field's gravity (<c>GameServices.WaveField.Gravity</c>).</param>
         /// <param name="freqScale">The scale the consumer's sea runs its wavelengths at — see
-        /// <see cref="BorePhaseDegrees"/>. A hull reads the sim field (1) or the <c>DisplacedSea</c> seam's
-        /// value; the shader passes its own drawn scale so the twin agrees.</param>
+        /// <see cref="BorePhaseDegrees"/>. The shader passes its own drawn scale; a hull passes the
+        /// <c>DisplacedSea</c> seam's value (1 while the displaced sea is off), so that the bore that
+        /// shoves her is the bore the water DRAWS arriving — the standing see==feel ruling, and the same
+        /// choice the RIDE already makes. The steady terms below are scale-free: the bore's phase and
+        /// its birth energy are the only positional reads of the field in this whole function.</param>
+        /// <param name="timeSeconds">The clock the field is read on — <b>0 for a PUBLISHED field</b>
+        /// (its phases already carry the travel: the renderer, the spray emitter), <b>game time for the
+        /// pure sim field</b> (<see cref="WaveMath.TrainsFrom"/>, which a hull's forces run on and which
+        /// carries no time whatever). See <see cref="BorePhaseDegrees"/> — passing 0 with a static field
+        /// leaves the bore standing still, which is the defect, not the feature.</param>
         public static SurfState SurfAt(Vector2 worldPos, float waterLevelMeters, ITidalTerrain terrain,
                                        in BreakerContour contour, float fetchEnvelope01,
                                        in WaveTrains field, float gravity, in BreakerSettings settings,
-                                       float freqScale = 1f)
+                                       float freqScale = 1f, double timeSeconds = 0.0)
         {
             if (terrain == null || !contour.Breaks) return SurfState.Calm;
             if (field.Count <= 0) return SurfState.Calm;
@@ -1261,9 +1288,9 @@ namespace HiddenHarbours.Core
             float standing = Mathf.Max(0f, settings.BreakerIndex) * depth;
 
             Vector2 breakLine = BreakLinePoint(worldPos, shoreward, age);
-            float phase = BorePhaseDegrees(in dominant, breakLine, travel, freqScale);
+            float phase = BorePhaseDegrees(in dominant, breakLine, travel, freqScale, timeSeconds);
             float birth = BoreBirthEnergy01(in field, breakLine, travel, phase, PeriodSeconds(in dominant),
-                                            fetchEnvelope01, settings.BoreSetStrength, freqScale);
+                                            fetchEnvelope01, settings.BoreSetStrength, freqScale, timeSeconds);
             float bore = BorePulse01(phase, settings.BorePulseSharpness) * birth;
 
             // The run-up is Hunt's law on the height the bore was BORN with — the depth-limited height at

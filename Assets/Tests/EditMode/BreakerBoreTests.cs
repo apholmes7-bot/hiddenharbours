@@ -729,5 +729,115 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(1f, d.RunUpCoefficient, "Hunt 1959: R = ξ·H");
             Assert.AreEqual(0.35f, d.RunUpCapMeters, 1e-6f, "the swash's drawn-edge ceiling, shared");
         }
+
+        // =========================================================================================
+        //  ⭐⭐ THE CLOCK THE FIELD IS READ ON (PR 3) — a bore that does not ARRIVE is not a bore
+        // =========================================================================================
+        //
+        //  Revision 3 was built against the PUBLISHED field, whose phases carry the accumulated travel
+        //  inside PhaseOffset — so "now" is time 0 and the reads below took no clock at all. The PURE
+        //  SIM field a hull's forces run on (WaveMath.TrainsFrom) carries no time whatever: its phase
+        //  offset is a hash of (index, seed). Reading it at 0 gives a bore that varies across the beach
+        //  and NEVER ARRIVES — the exact steady state the arc exists to end, and it would have shipped
+        //  looking like a working feature. These pin the clock, both ends of it.
+
+        [Test]
+        public void GivenTheClock_TheBoreAdvances_AndComesRoundAtThePeriod()
+        {
+            var train = Swell();
+            var breakLine = new Vector2(42f, 0f);
+            float period = BreakerMath.PeriodSeconds(in train);
+            Assert.Greater(period, 0.5f, "the test swell must have a period");
+
+            float at0 = BreakerMath.BorePhaseDegrees(in train, breakLine, 3f, 1f, 0.0);
+            float quarter = BreakerMath.BorePhaseDegrees(in train, breakLine, 3f, 1f, period * 0.25);
+            float full = BreakerMath.BorePhaseDegrees(in train, breakLine, 3f, 1f, period);
+
+            Assert.AreNotEqual(at0, quarter,
+                "a quarter of a period later the crest must be somewhere else — otherwise nothing arrives");
+            Assert.Greater(Mathf.Abs(Mathf.DeltaAngle(at0, quarter)), 45f,
+                $"…and by roughly a quarter turn ({Mathf.DeltaAngle(at0, quarter):F1}°)");
+            Assert.AreEqual(0f, Mathf.DeltaAngle(at0, full), 0.5f,
+                $"one whole period later it is back where it started ({at0:F2}° vs {full:F2}°)");
+        }
+
+        [Test]
+        public void TheClocksDefaultOfZero_IsExactlyTodaysPublishedFieldReading()
+        {
+            // Every existing caller (the renderer's twin, the spray emitter, the tests above) passes a
+            // PUBLISHED field and no clock. That path must not move by one bit.
+            var train = Swell();
+            var breakLine = new Vector2(37.5f, 11f);
+            foreach (float scale in new[] { 1f, 2.8f })
+            for (float travel = 0f; travel <= 6f; travel += 2f)
+                Assert.AreEqual(
+                    WaveMath.TrainPhaseDegrees(in train, new Vector2(breakLine.x * scale, breakLine.y * scale),
+                                               -(double)travel),
+                    BreakerMath.BorePhaseDegrees(in train, breakLine, travel, scale),
+                    $"the default clock must be the old reading exactly (scale {scale}, travel {travel} s)");
+        }
+
+        [Test]
+        public void APublishedFieldAtZero_AndAStaticFieldAtNOW_NameTheSameCrest()
+        {
+            // The identity the doc claims, measured rather than asserted in prose: a published train has
+            // φ_now = φ₀ − k·c·now baked in, so reading it at 0 is reading the static train at `now`.
+            // If these two ever part, one of the two paths is shoving a hull with a crest the other
+            // cannot see — which is the whole see==feel question in one line.
+            var stat = Swell();
+            const double Now = 17.25;
+            float k = 2f * Mathf.PI / stat.Wavelength;
+            var published = new WaveTrain(stat.Direction, stat.Wavelength, stat.Amplitude,
+                                          stat.PhaseOffset - (float)(k * stat.PhaseSpeed * Now), G);
+
+            var breakLine = new Vector2(42f, -3f);
+            foreach (float travel in new[] { 0f, 1.5f, 4f })
+            {
+                float fromStatic = BreakerMath.BorePhaseDegrees(in stat, breakLine, travel, 1f, Now);
+                float fromPublished = BreakerMath.BorePhaseDegrees(in published, breakLine, travel);
+                Assert.AreEqual(0f, Mathf.DeltaAngle(fromStatic, fromPublished), 0.05f,
+                    $"the two clocks must name the same crest (travel {travel} s: {fromStatic:F3}° vs {fromPublished:F3}°)");
+            }
+        }
+
+        [Test]
+        public void WithTheClock_TheWholeSurfStatePULSES_AtOnePlace()
+        {
+            // ⭐ THE ACCEPTANCE for the fix: stand still in the surf and let time run. The bore must come
+            // and go. Without the clock the same sweep is a flat line, which is asserted alongside so the
+            // pass cannot be a coincidence of the tuning.
+            var train = Swell();
+            var field = OneTrain(in train);
+            var terrain = new SandyShoal();
+            var settings = Settings;
+            var contour = Contour(in train, in settings);
+            float period = BreakerMath.PeriodSeconds(in train);
+
+            float x = float.NaN;
+            for (float probe = 42f; probe < 74f; probe += 0.5f)
+                if (BreakerMath.SurfAt(new Vector2(probe, 0f), 0f, terrain, in contour, 1f,
+                                       in field, G, in settings).IsWorking) { x = probe; break; }
+            Assert.IsFalse(float.IsNaN(x), "the shoal must carry working surf somewhere");
+
+            var pos = new Vector2(x, 0f);
+            float lo = float.MaxValue, hi = 0f, frozenLo = float.MaxValue, frozenHi = 0f;
+            const int Steps = 24;
+            for (int i = 0; i < Steps; i++)
+            {
+                double t = period * i / (double)Steps;
+                float live = BreakerMath.SurfAt(pos, 0f, terrain, in contour, 1f, in field, G, in settings, 1f, t).Bore01;
+                float frozen = BreakerMath.SurfAt(pos, 0f, terrain, in contour, 1f, in field, G, in settings).Bore01;
+                lo = Mathf.Min(lo, live); hi = Mathf.Max(hi, live);
+                frozenLo = Mathf.Min(frozenLo, frozen); frozenHi = Mathf.Max(frozenHi, frozen);
+            }
+
+            Debug.Log($"[bore-clock] at x = {x:F1} m over one period T = {period:F2} s: " +
+                      $"Bore01 ran {lo:F3}..{hi:F3} with the clock, {frozenLo:F3}..{frozenHi:F3} without it.");
+
+            Assert.Greater(hi - lo, 0.3f,
+                $"with the clock a bore must come and go at a fixed place — Bore01 only moved {hi - lo:F3}");
+            Assert.Less(frozenHi - frozenLo, 1e-5f,
+                "…and without one it must be a flat line, or this test is measuring something else");
+        }
     }
 }
