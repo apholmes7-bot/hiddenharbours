@@ -358,9 +358,12 @@ namespace HiddenHarbours.Art
 
     /// <summary>
     /// The LIP SPRAY (ADR 0040 rev 3): torn puffs thrown shoreward off a PLUNGING breaker as its crest
-    /// arrives — <see cref="SurfSprayEmitter"/>. Ships ON (Intensity 1): a burst exists only live, so
-    /// no plate can judge it; the three gates are the bore's own quantities and keep it off every
-    /// spilling beach and off every ledge between bores.
+    /// arrives — <see cref="SurfSprayEmitter"/>. Ships ON: a burst exists only live, so no plate can
+    /// judge it; the three gates are the bore's own quantities and keep it off every spilling beach and
+    /// off every ledge between bores.
+    ///
+    /// <para><b>The master intensity is NOT in this struct</b> — it is
+    /// <c>GameConfig.SurfSprayIntensity</c>, so the owner has a dial. See the note at "The event".</para>
     /// </summary>
     [Serializable]
     public struct SurfSprayConfig
@@ -373,8 +376,10 @@ namespace HiddenHarbours.Art
         [Tooltip("How often (Hz) the lattice is re-read. The bore beats at a few seconds; 10 Hz follows it.")]
         [Min(0.5f)] public float ProbeHz;
         [Header("The event")]
-        [Tooltip("The master. 0 = no lip spray at all.")]
-        [Range(0f, 2f)] public float Intensity;
+        // ⚠️ THE MASTER IS NOT HERE. It lives on GameConfig (SurfSprayIntensityOffset → the resolved
+        // GameConfig.SurfSprayIntensity), because this struct is only ever serialized on a host the
+        // emitter creates at runtime — so a value here is a CODE default the owner can never reach, which
+        // is the whole complaint rule 6 exists to answer. Asked for at #699's review.
         [Tooltip("The PLUNGING gate on Battjes' weight (0..1): below it the bed spills and throws no lip.")]
         [Range(0f, 1f)] public float PlungingGate;
         [Tooltip("The ARRIVAL gate on the bore's pulse (0..1): the lip throws AT the crest, not all through the beat.")]
@@ -405,7 +410,6 @@ namespace HiddenHarbours.Art
             MaxWisps               = 48,
             ProbeCells             = 12,
             ProbeHz                = 10f,
-            Intensity              = 1f,     // ON — see the summary
             PlungingGate           = 0.25f,  // past the spilling regime
             BoreGate               = 0.7f,   // the crest's arrival, not the whole pulse
             WhitewaterGate         = 0.3f,

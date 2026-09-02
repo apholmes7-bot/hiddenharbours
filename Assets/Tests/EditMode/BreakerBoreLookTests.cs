@@ -50,7 +50,10 @@ namespace HiddenHarbours.Tests.EditMode
         static readonly Color DebugRed = new Color(1f, 0f, 0f, 1f);
 
         /// <summary>Every _Time-driven knob the whiteout fixture's MakeStatic() zeroes (its list, verbatim —
-        /// see that method's history for why each one is here), minus the two the surf owns (set above).</summary>
+        /// see that method's history for why each one is here), minus the two the surf owns (set above) and
+        /// minus the four _Surf* dials that method also zeroes (_SurfBeatStrength, _SurfRunUpStrength,
+        /// _SurfFrontSlope, _SurfDepositStrength) — this fixture exists to drive those, so freezing them
+        /// here would freeze the thing under test.</summary>
         static readonly string[] FrozenLayers =
         {
             "_WindChopSpeed", "_CrossSwellSpeed", "_OceanSwellSpeed", "_FbmDriftSpeed", "_FoamEvolveSpeed",

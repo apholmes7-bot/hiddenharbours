@@ -21,9 +21,10 @@ namespace HiddenHarbours.Art
     /// <c>System.Random</c>, a <see cref="SortingGroup"/> and a small camera-ward nudge so the puffs
     /// clear the water plane but read around the boats. It drives no sim and enters no save.</para>
     ///
-    /// <para><b>⚠ This ships ON</b> (<see cref="SurfSprayConfig.Default"/>, intensity 1) — the one
-    /// default in the crashing-washes PR that is not "today's look", because a particle burst cannot be
-    /// judged from a plate: it exists only live. The owner's dial is the config's <c>Intensity</c>.</para>
+    /// <para><b>⚠ This ships ON</b> — the one default in the crashing-washes PR that is not "today's
+    /// look", because a particle burst cannot be judged from a plate: it exists only live. The owner's
+    /// dial is <c>GameConfig.SurfSprayIntensity</c> (stored as an offset whose 0 is the shipped burst),
+    /// read through <see cref="GameServices.SurfSprayIntensity"/> every tick.</para>
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class SurfSprayEmitter : MonoBehaviour
@@ -127,7 +128,11 @@ namespace HiddenHarbours.Art
         private void Tick(float dt)
         {
             Camera cam = AmbientGlobals.ResolveCamera();
-            if (cam == null || _config.Intensity <= 0f) { HideAll(); return; }
+            // The master is the OWNER's, off GameConfig (rule 6) — this component is installed at
+            // runtime, so anything serialized on it is a code default nobody can reach. Resolved per
+            // tick, so a live edit in Play lands on the next one.
+            float intensity = GameServices.SurfSprayIntensity;
+            if (cam == null || intensity <= 0f) { HideAll(); return; }
 
             _probeTimer -= dt;
             if (_probeTimer <= 0f)
@@ -137,7 +142,7 @@ namespace HiddenHarbours.Art
             }
 
             // ---- spawn: each live cell integrates its own rate with a carry ----
-            float rate = Mathf.Max(0f, _config.WispsPerSecondPerCell) * Mathf.Clamp01(_config.Intensity);
+            float rate = Mathf.Max(0f, _config.WispsPerSecondPerCell) * Mathf.Max(0f, intensity);
             for (int c = 0; c < _cellWeight.Length; c++)
             {
                 float w = _cellWeight[c];

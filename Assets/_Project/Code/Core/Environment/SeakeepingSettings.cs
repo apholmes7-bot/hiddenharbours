@@ -86,6 +86,26 @@ namespace HiddenHarbours.Core
                  "that is the water that throws a boat sideways. 0 = the surf pushes but never turns you.")]
         public float SurfBroachTorque;
 
+        [Tooltip("How much of the shove PULSES with the bore (ADR 0040 revision 3), 0..1. " +
+                 "0 = the steady lean the surf gave before the bore existed — a hull in the boil is " +
+                 "pushed evenly, second after second. 1 = the whole shove rides the bore's own clock: a " +
+                 "front arrives, peaks and passes, the water lets go between crests, and the drift up " +
+                 "the beach comes in STEPS one wave period apart. " +
+                 "⚠️ A pulse REDISTRIBUTES the shove, it does not add to it — the pulse averages well " +
+                 "under 1 over a period, so at 1 the same SurfShoveStrength hits harder at each front " +
+                 "and carries her less far overall. Raise SurfShoveStrength if you want the old reach " +
+                 "back with the beat on top.")]
+        [Range(0f, 1f)] public float SurfBorePulse01;
+
+        [Tooltip("How far a hull is LIFTED as a bore front passes under her: metres of ride per metre of " +
+                 "the bore's run-up level. 0 = no lift at all (the ride exactly as it was before the " +
+                 "bore); 1 = she rises by the level the wash actually reached, which is already capped " +
+                 "at the drawn-edge ceiling (Breakers ▸ RunUpCapMeters). " +
+                 "This one is PRESENTATION — there is no vertical axis in a 2D sim to push along, so it " +
+                 "rides the displaced sea's existing ride channel (the one her passengers stand on) and " +
+                 "is 0 whenever the displaced sea is off, exactly like every other ride.")]
+        [Range(0f, 2f)] public float SurfLiftScale;
+
         /// <summary>
         /// The reference "first feel" tuning (ADR 0018 B3 — moderate, gentle-to-medium, never capsizing in
         /// M1). Enabled; a moderate strength; a 1.35 sea-state exponent matching the field so the shove grows
@@ -113,6 +133,11 @@ namespace HiddenHarbours.Core
             SurfEnabled = true,
             SurfShoveStrength = 260f,
             SurfBroachTorque = 1.2f,
+            // …and the bore's own beat on top of it (revision 3). The pulse ships FULL: a bore is an
+            // event, and a steady lean is the thing the owner said the surf was missing. The lift ships
+            // at 1 = "she rises by the level the wash reached", which the run-up cap already bounds.
+            SurfBorePulse01 = 1f,
+            SurfLiftScale = 1f,
         };
     }
 }

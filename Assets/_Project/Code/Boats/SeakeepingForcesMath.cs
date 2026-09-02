@@ -223,11 +223,22 @@ namespace HiddenHarbours.Boats
             float strength = Mathf.Max(0f, settings.SurfShoveStrength);
             if (strength <= 0f) return SeakeepingForce.None;
 
+            // THE BEAT (revision 3). A bore is an EVENT, not a wind: one front per wave period arrives,
+            // peaks, passes, and between crests the water lets go. SurfState.Bore01 is that
+            // clock — the field's PUBLISHED phase at the break line carried inshore by the march's own
+            // travel time, so the shove it scales arrives with the crest that made it.
+            //
+            // LERPED rather than multiplied, which buys two exact passthroughs for one line: the dial at
+            // 0 is the steady shove to the last bit (×1f is the float identity), and so is a SurfState
+            // built without a field — the steady constructor sets Bore01 = 1, the same 1.
+            float beat = Mathf.Lerp(1f, Mathf.Clamp01(surf.Bore01), Mathf.Clamp01(settings.SurfBorePulse01));
+
             // What the bore is carrying, times how much of it is left, times how readily this hull moves.
             float magnitude = strength
                             * surf.Breaking01
                             * surf.Whitewater01
                             * Mathf.Max(0f, surf.StandingHeightMeters)
+                            * beat
                             * response.Response;
             if (magnitude <= 0f) return SeakeepingForce.None;
 
@@ -248,6 +259,41 @@ namespace HiddenHarbours.Boats
                          * Mathf.Lerp(0.35f, 1f, Mathf.Clamp01(surf.PlungingWeight01));
 
             return new SeakeepingForce(shove, torque);
+        }
+
+        /// <summary>
+        /// <b>THE LIFT</b> (ADR 0040 revision 3) — how far a hull floating in broken water RISES as a
+        /// bore front passes under her, in metres of the ride her visual (and everyone standing on her)
+        /// already moves by.
+        ///
+        /// <para><b>It is <see cref="SurfState.RunUpMeters"/>, and deliberately nothing else.</b> That
+        /// number is already <em>the level the wash reaches above still water here</em> — Hunt's run-up on
+        /// the height the bore was born with, carried by the whitewater's TRAVEL-time energy so it
+        /// survives to where a hull actually floats, pulsing with the same <see cref="SurfState.Bore01"/>
+        /// the shove above rides, and capped at the ratified drawn-edge ceiling
+        /// (<c>BreakerSettings.RunUpCapMeters</c>, 0.35 m). A floating hull rises by the level the water
+        /// rose; re-deriving a bore height here would be a second computation of one quantity, which is
+        /// the shape of every "two things that agree only by accident" bug this codebase has paid for.
+        /// It is also the very number the renderer turns into the drawn wet edge's excursion, so the
+        /// water's statement about how far it rose and the hull's are the same statement.</para>
+        ///
+        /// <para><b>Presentation, not force, and that is not a shortcut.</b> There is no vertical axis in
+        /// this 2D sim to push along, and the charter is explicit that the surf gets no second channel —
+        /// so the lift is applied through the displaced sea's EXISTING ride (the
+        /// <see cref="DisplacedSea"/> seam, published onward as <c>DrawnRideMeters</c>), and is 0
+        /// whenever that ride is, exactly like every other ride. Nothing here reaches the rigidbody, the
+        /// waterline, or the save.</para>
+        ///
+        /// <para>Pure, static, allocation-free, deterministic. 0 with either switch off, 0 with the dial
+        /// at 0, 0 out of the surf, 0 on glass, 0 wherever the run-up is — so every path that is not a
+        /// live bore is byte-identical to before revision 3.</para>
+        /// </summary>
+        public static float SurfLiftMeters(in SurfState surf, in SeakeepingSettings settings)
+        {
+            if (!settings.Enabled || !settings.SurfEnabled) return 0f;
+            float scale = Mathf.Max(0f, settings.SurfLiftScale);
+            if (scale <= 0f) return 0f;
+            return Mathf.Max(0f, surf.RunUpMeters) * scale;
         }
 
         /// <summary>

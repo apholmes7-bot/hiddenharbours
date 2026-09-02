@@ -963,6 +963,21 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 // a scene that turns it on would drift for a reason no "zero the speeds" reading of this
                 // method would ever suggest.
                 WaterMat.SetFloat("_WakeFoamStrength", 0f);
+                // …and the four dials ADR 0040 revision 3 added (#699), every one of which animates off
+                // _Time through the bore's own clock — the sheet born at each front and aged behind it,
+                // the wet edge riding the run-up up the beach and draining, the bore face swinging under
+                // the light, and the deposit, which is the _WakeFoamStrength animal again (a target
+                // ADVECTED and ACCUMULATED across frames, static by no speed setting whatever).
+                //
+                // They ship at 0 on every water material today, so nothing here is drifting yet. That is
+                // exactly why they go in now: the general law above ("anything NEW that animates off
+                // _Time must be added here") was written after three guards were found silently not
+                // guarding, and the day the owner turns these up is the day this method has to already
+                // know about them.
+                WaterMat.SetFloat("_SurfBeatStrength", 0f);
+                WaterMat.SetFloat("_SurfRunUpStrength", 0f);
+                WaterMat.SetFloat("_SurfFrontSlope", 0f);
+                WaterMat.SetFloat("_SurfDepositStrength", 0f);
             }
 
             /// <summary>

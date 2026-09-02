@@ -124,12 +124,80 @@ namespace HiddenHarbours.Tests.EditMode
         public void TheDefaults_ShipTheSprayOn_ButOnlyOffAPlungingCrest()
         {
             SurfSprayConfig d = SurfSprayConfig.Default;
-            Assert.Greater(d.Intensity, 0f, "the lip spray ships ON — a burst cannot be judged from a plate (see the emitter's docs)");
             Assert.GreaterOrEqual(d.PlungingGate, BreakerSettings.Default.SpillingLimit * 0.4f,
                 "the plunging gate must sit past the spilling regime, or a beach would throw spray");
             Assert.Greater(d.BoreGate, 0.5f, "the lip throws AT arrival, not all through the pulse");
             Assert.Greater(d.MaxWisps, 0);
             Assert.That(d.ProbeCells, Is.InRange(4, 24));
+        }
+
+        // =========================================================================================
+        //  The MASTER left the code for GameConfig (asked at #699's review) — and the shape it left in
+        // =========================================================================================
+
+        [Test]
+        public void WithNoConfigWiredAtAll_TheSprayStillShipsON()
+        {
+            // "No config" must not be a silent way to switch off a feature the owner ruled ON. A burst
+            // cannot be judged from a plate, so the emitter's default has to be the ruling itself.
+            GameServices.Reset();
+            try
+            {
+                Assert.AreEqual(1f, GameServices.SurfSprayIntensity, 1e-6f,
+                    "with no GameConfig wired the lip spray reads the shipped burst, not silence");
+            }
+            finally { GameServices.Reset(); }
+        }
+
+        [Test]
+        public void AConfigThatPredatesTheDial_StillShipsTheSprayON()
+        {
+            // ⭐ THE WHOLE REASON THE DIAL IS STORED AS AN OFFSET. A serialized field the shipped YAML
+            // does not carry deserializes to ZERO (that is what GameConfigAssetCoverageTests exists to
+            // catch), so a plain "SurfSprayIntensity" would have read 0 — silence — in every asset older
+            // than the PR that added it, against the ruling, with nothing anywhere saying so. Zero is a
+            // value this system produces by accident; it must therefore mean "as shipped".
+            var stale = ScriptableObject.CreateInstance<GameConfig>();
+            try
+            {
+                stale.SurfSprayIntensityOffset = 0f;      // exactly what a missing YAML key produces
+                Assert.AreEqual(1f, stale.SurfSprayIntensity, 1e-6f,
+                    "an asset with no key for the dial must read the SHIPPED burst, not 0");
+
+                GameServices.Config = stale;
+                Assert.AreEqual(1f, GameServices.SurfSprayIntensity, 1e-6f,
+                    "…and so must the service the emitter actually reads");
+            }
+            finally { GameServices.Reset(); Object.DestroyImmediate(stale); }
+        }
+
+        [Test]
+        public void TheDialReachesSilenceAndDouble()
+        {
+            var config = ScriptableObject.CreateInstance<GameConfig>();
+            try
+            {
+                config.SurfSprayIntensityOffset = -1f;
+                Assert.AreEqual(0f, config.SurfSprayIntensity, 1e-6f, "-1 is silence — the owner can turn it off");
+                config.SurfSprayIntensityOffset = 1f;
+                Assert.AreEqual(2f, config.SurfSprayIntensity, 1e-6f, "+1 is twice the shipped burst");
+                config.SurfSprayIntensityOffset = -0.5f;
+                Assert.AreEqual(0.5f, config.SurfSprayIntensity, 1e-6f, "and it is linear in between");
+            }
+            finally { Object.DestroyImmediate(config); }
+        }
+
+        [Test]
+        public void TheEmitterReadsTheOwnersDial_NotACodeDefault()
+        {
+            // The emitter installs its own host at runtime, so anything serialized ON it is a code
+            // default nobody can reach. Source-read, because the alternative is a Play-mode particle
+            // count: what matters is WHERE the number comes from.
+            string src = File.ReadAllText(EmitterPath, Encoding.UTF8);
+            StringAssert.Contains("GameServices.SurfSprayIntensity", src,
+                "the master must come from GameConfig through GameServices (rule 6)");
+            StringAssert.DoesNotContain("_config.Intensity", src,
+                "…and never from a value serialized on a runtime-installed host");
         }
     }
 }
