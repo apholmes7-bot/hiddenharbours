@@ -30,7 +30,10 @@ namespace HiddenHarbours.Tests.RigBaking
 
         public readonly struct Converted
         {
-            /// <summary>The rig's global — the switch's vocabulary ("LobsterBoatIso").</summary>
+            /// <summary>The fleet key ("lobsterBoat", "lobsterInshoreHardtopFundy") — one per hull.</summary>
+            public readonly string Key;
+            /// <summary>The rig's global — the switch's vocabulary ("LobsterBoatIso"); a generator
+            /// family shares one.</summary>
             public readonly string GlobalName;
             /// <summary>Her interior def id ("interior.lobster_boat_iso").</summary>
             public readonly string DefId;
@@ -40,11 +43,11 @@ namespace HiddenHarbours.Tests.RigBaking
             /// vocabulary ("lobsterBoatIsoRig", "lobsterBoatVariantsIsoRig.inshore_hardtop_fundy").</summary>
             public readonly string HullStem;
 
-            public Converted(string global, string defId, string defPath, string hullStem)
+            public Converted(string key, string global, string defId, string defPath, string hullStem)
             {
-                GlobalName = global; DefId = defId; DefAssetPath = defPath; HullStem = hullStem;
+                Key = key; GlobalName = global; DefId = defId; DefAssetPath = defPath; HullStem = hullStem;
             }
-            public override string ToString() => $"{GlobalName} ({DefId}, {HullStem})";
+            public override string ToString() => $"{Key} ({GlobalName}: {DefId}, {HullStem})";
         }
 
         static string RepoRoot => Directory.GetParent(Application.dataPath).FullName;
@@ -58,37 +61,42 @@ namespace HiddenHarbours.Tests.RigBaking
                                     .ToDictionary(x => x.def.Id, x => x, StringComparer.Ordinal);
 
             var found = new List<Converted>();
+            // A name on the switch is a rig GLOBAL, and a generator family (the eighteen lobster
+            // variants) shares one — so a name converts every hull that carries it, and each hull is
+            // derived on her own def and her own mesh. A global that matches no hull is caught first.
             foreach (string global in RigMeshAssetBaker.MeshInteriorHulls)
-            {
-                FleetHull hull = HullMeshFleet.Hulls.FirstOrDefault(
-                    h => string.Equals(h.GlobalName, global, StringComparison.Ordinal));
-                if (hull.GlobalName == null)
+                if (!HullMeshFleet.Hulls.Any(h => string.Equals(h.GlobalName, global, StringComparison.Ordinal)))
                     throw new InvalidOperationException(
                         $"RigMeshAssetBaker.MeshInteriorHulls names '{global}', which no hull in " +
                         "HullMeshFleet.Hulls carries as a GlobalName — misspelled, or retired from the " +
                         "catalog. The bake would never look her up, so nothing else would notice.");
 
+            foreach (FleetHull hull in HullMeshFleet.Hulls)
+            {
+                if (!RigMeshAssetBaker.IsMeshInteriorHull(hull.GlobalName)) continue;
+                string global = hull.GlobalName;
+
                 if (!hull.MeshId.StartsWith(MeshIdPrefix, StringComparison.Ordinal))
                     throw new InvalidOperationException(
-                        $"'{global}': mesh id '{hull.MeshId}' does not start with '{MeshIdPrefix}', so " +
-                        "her interior def id cannot be derived from it.");
+                        $"'{hull.Key}' ({global}): mesh id '{hull.MeshId}' does not start with " +
+                        $"'{MeshIdPrefix}', so her interior def id cannot be derived from it.");
                 string defId = DefIdPrefix + hull.MeshId.Substring(MeshIdPrefix.Length);
 
                 var meshDef = AssetDatabase.LoadAssetAtPath<HullMeshDef>(hull.MeshAssetPath);
                 if (meshDef == null || !meshDef.HasMeshInterior())
                     throw new InvalidOperationException(
-                        $"'{global}' is on MeshInteriorHulls but {hull.MeshAssetPath} carries no " +
+                        $"'{hull.Key}' ({global}) is converted by MeshInteriorHulls but {hull.MeshAssetPath} carries no " +
                         "InteriorRamps — she was put on the switch and not re-baked. The runtime would " +
                         "still build her a sprite room, so retiring her sheets now would leave her with " +
                         "no cabin at all. Re-bake her first.");
 
                 if (!defs.TryGetValue(defId, out var d))
                     throw new InvalidOperationException(
-                        $"'{global}' is converted but no BoatInteriorDef with id '{defId}' exists under " +
+                        $"'{hull.Key}' ({global}) is converted but no BoatInteriorDef with id '{defId}' exists under " +
                         $"{InteriorDefFolder}. The mesh room is cut by the def's levels; without the def " +
                         "there is nothing to walk on.");
 
-                found.Add(new Converted(global, defId, d.path, HullStemOf(d.def)));
+                found.Add(new Converted(hull.Key, global, defId, d.path, HullStemOf(d.def)));
             }
             return found;
         }

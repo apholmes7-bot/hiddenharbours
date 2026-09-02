@@ -214,6 +214,9 @@ namespace HiddenHarbours.Tools.RigBaking
                     return;
                 }
                 Debug.Log($"[rig-mesh] CLI lobster-variant bake OK — {hulls.Count} hulls.");
+                // EXIT ON SUCCESS — the same omission BakeFleetCli and BakeOneCli each carried once
+                // (four phantom hours, then #690): launched -quit-less, nothing else ends the editor.
+                EditorApplication.Exit(0);
             }
             catch (Exception e)
             {
@@ -734,7 +737,20 @@ namespace HiddenHarbours.Tools.RigBaking
         /// retires those hulls' sheets once the pictures agree. A hull added here whose sheets are
         /// still wired would draw her cabin twice.</para>
         /// </summary>
-        public static readonly string[] MeshInteriorHulls = { "LobsterBoatIso", "CapeIslanderIso" };
+        public static readonly string[] MeshInteriorHulls =
+        {
+            "LobsterBoatIso",
+            "CapeIslanderIso",
+            // The eighteen lobster VARIANTS share one rig global (LobsterVariantFleet.GlobalName) and
+            // convert as a family; each hull's own room comes from the variant triple her
+            // RigHullExtraction carries, handed to the interior rig nested under `variant`.
+            LobsterVariantFleet.GlobalName,
+        };
+
+        /// <summary>Is this hull converted — is her rig family on the switch? One predicate for
+        /// the bake, the fleet adjudicator and the fixtures.</summary>
+        public static bool IsMeshInteriorHull(string globalName)
+            => MeshInteriorHulls.Contains(globalName, StringComparer.Ordinal);
 
         /// <summary>
         /// Which key in the interior rig's own <c>HULLS</c> table is this hull — derived by asking
@@ -772,15 +788,23 @@ namespace HiddenHarbours.Tools.RigBaking
         /// of the rule is precisely the drift that test exists to catch. One method, two callers.</para>
         /// </summary>
         public static string AppendMeshInteriorIfConverted(IRigScriptHost host, string globalName,
-                                                          RigMeshData data)
+                                                          RigMeshData data,
+                                                          RigHullExtraction extraction = null)
         {
-            if (!MeshInteriorHulls.Contains(globalName, StringComparer.Ordinal)) return null;
+            if (!IsMeshInteriorHull(globalName)) return null;
 
             string repo = Directory.GetParent(Application.dataPath).FullName;
             string interiorRig = Path.Combine(repo, InteriorKitFolder, InteriorRigFileName);
             string interiorKey = InteriorHullKeyFor(host, globalName, interiorRig);
 
-            var room = BoatInteriorGeometryExtractor.Extract(host, interiorKey, data, interiorRig);
+            // A generator hull's variant triple rides on her extraction (ViewOptions is the same
+            // {size,style,region} literal the interior rig wants under `variant`). Without it every
+            // variant would bake the standard/hardtop/northumberland room — a correct-looking cabin
+            // that is not hers, and nothing downstream would notice.
+            string variantLiteral = extraction != null ? extraction.ViewOptions : null;
+
+            var room = BoatInteriorGeometryExtractor.Extract(host, interiorKey, data, interiorRig,
+                                                             variantLiteral);
             if (room.Materials.Count > HullMeshDef.InteriorRampSlots)
                 throw new InvalidOperationException(
                     $"{globalName}'s room paints {room.Materials.Count} ramps and the facet shader's " +
@@ -817,7 +841,7 @@ namespace HiddenHarbours.Tools.RigBaking
             // and lowest-interior heights are a committed evidence trail, and a cabin sole is not a
             // surface the SEA should start reasoning about. Zero is "exterior both sides", which is
             // what every face carried before the mask existed.
-            string roomReport = AppendMeshInteriorIfConverted(host, globalName, data);
+            string roomReport = AppendMeshInteriorIfConverted(host, globalName, data, extraction);
             if (roomReport != null)
             {
                 Array.Resize(ref interiorSides, data.Faces.Count);   // rooms are 0 = exterior both sides

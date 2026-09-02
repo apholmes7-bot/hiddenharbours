@@ -141,13 +141,17 @@ globalThis.__HHI = (function(){
     return -1;
   }
 
-  function extract(hull){
+  // `variant` is the NESTED triple the interior rig reads — {size, style, region} handed whole to
+  // resolve()'s opts.variant and on to hullEnv(). Null for a single-hull rig. A generator hull
+  // whose triple is omitted or mis-shaped falls through to standard/hardtop/northumberland and
+  // bakes a real, correct-looking room that is NOT hers (rig-variant-opts-two-spellings).
+  function extract(hull, variant){
     var levels = BI.levelsOf(hull), out = [], mats = {}, order = [];
     var hist = [0,0,0,0,0,0,0,0,0], lips = 0;
 
     for (var li = 0; li < levels.length; li++){
       var lvl = levels[li];
-      var s = BI.resolve({ hull: hull, level: lvl });
+      var s = BI.resolve({ hull: hull, level: lvl, variant: variant || null });
       var env = BI.hullEnv(hull, s.variant);
       if (!env) continue;
       var MM = BI.makeMats(s, env);
@@ -178,8 +182,8 @@ globalThis.__HHI = (function(){
 
   // A flat text protocol rather than JSON: no parser dependency on the C# side, and every number
   // crosses as its own token so a malformed row is a parse error rather than a plausible face.
-  function emit(hull){
-    var r = extract(hull), L = [];
+  function emit(hull, variant){
+    var r = extract(hull, variant), L = [];
     L.push('LEVELS ' + r.levels.join(' '));
     L.push('HIST ' + r.hist.slice(1).join(' '));   // k=1..8; index 0 is unused and would shift every column
     L.push('LIPS ' + r.lips);
@@ -214,9 +218,15 @@ globalThis.__HHI = (function(){
         /// <param name="interiorHullKey">The interior rig's own hull key (<c>lobster</c>, <c>cape</c>…).</param>
         /// <param name="hull">The hull's extracted mesh data, for her level vocabulary and her size.</param>
         /// <param name="interiorRigPath">Absolute path to <c>boatInteriorRig.js</c>.</param>
+        /// <param name="variantLiteral">For a GENERATOR hull, the JS object literal of her variant
+        /// triple — <c>{size:'inshore',style:'hardtop',region:'fundy'}</c>, the same descriptor her
+        /// <c>RigHullExtraction.ViewOptions</c> carries — handed to the interior rig NESTED under
+        /// <c>variant</c>, which is where it reads it. Null or empty for a single-hull rig.</param>
         public static InteriorGeometry Extract(IRigScriptHost host, string interiorHullKey,
-                                               RigMeshData hull, string interiorRigPath)
+                                               RigMeshData hull, string interiorRigPath,
+                                               string variantLiteral = null)
         {
+            string variantJs = string.IsNullOrWhiteSpace(variantLiteral) ? "null" : variantLiteral;
             if (host == null) throw new ArgumentNullException(nameof(host));
             if (hull == null) throw new ArgumentNullException(nameof(hull));
             if (!hull.CarriesLevelTags)
@@ -229,7 +239,7 @@ globalThis.__HHI = (function(){
             host.Execute(WidenInteriorRig(File.ReadAllText(interiorRigPath)));
             host.Execute(Helpers);
 
-            if (!host.EvaluateBool($"!!globalThis.BoatInterior.hullEnv('{interiorHullKey}', null)"))
+            if (!host.EvaluateBool($"!!globalThis.BoatInterior.hullEnv('{interiorHullKey}', {variantJs})"))
                 throw new InvalidOperationException(
                     $"the interior rig cannot bind hull '{interiorHullKey}' against the exterior rig on " +
                     "this host. Usual cause: the SHIPPED exterior rig does not publish the `loft` block " +
@@ -238,7 +248,7 @@ globalThis.__HHI = (function(){
                     "around here — a room built off a different revision of the hull is a room that " +
                     "does not fit her.");
 
-            string payload = host.EvaluateString($"globalThis.__HHI.emit('{interiorHullKey}')");
+            string payload = host.EvaluateString($"globalThis.__HHI.emit('{interiorHullKey}', {variantJs})");
             return Parse(payload, hull, interiorHullKey);
         }
 

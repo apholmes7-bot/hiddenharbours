@@ -171,7 +171,7 @@ namespace HiddenHarbours.Tests.RigBaking
                 // BAKER's own method, never a copy of it: a second transcription of "which hulls are
                 // converted and how their room is appended" is exactly the drift this test exists to
                 // catch, and it would be catching it in the wrong direction.
-                RigMeshAssetBaker.AppendMeshInteriorIfConverted(host, hull.GlobalName, fresh);
+                RigMeshAssetBaker.AppendMeshInteriorIfConverted(host, hull.GlobalName, fresh, hull.Extraction);
                 RigMeshBuild built = RigMeshBuilder.Build(fresh, $"{hull.GlobalName}Check");
 
                 try
