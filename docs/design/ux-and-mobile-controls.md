@@ -473,6 +473,11 @@ gamepad **without a rewrite** (per `../architecture/tech-architecture.md`).
   **intents** (§9). A single `InputService` exposes intents to gameplay; gameplay never reads raw
   touch. Runtime rebinding + control-scheme switching (incl. on-the-fly touch↔controller on mobile
   with a gamepad). Detail/ownership in `../architecture/tech-architecture.md`.
+- **Driving already reads through a seam (shipped 2026-09-02, ADR 0035 amendment):** the vehicle
+  wheel is the one control that no longer polls raw keys in gameplay — `ControlSwitcher` reads an
+  `IDriveInputSource` (Core), keyboard-backed today, so a gamepad binding plugs in there without
+  touching the drive mode. The walk and the helm still poll `Keyboard.current`; folding all three
+  under the intents above is the input lane this section describes, not a vehicle change.
 - **UI tech — recommendation: UI Toolkit for menus/HUD, with pragmatic uGUI exceptions.** For a
   **data-driven, responsive, many-screens** mobile UI, **UI Toolkit** (UXML/USS) is the recommended
   default — its fl/grid layout makes the summary-first card screens reflow cleanly portrait↔landscape

@@ -508,10 +508,10 @@ namespace HiddenHarbours.Tests.EditMode
         /// <see cref="VehicleHitch.CapturedTrailer"/>, over the real <c>TowedBody</c> registry, with all
         /// four trailers standing in the world so a false positive on the wrong one would fail here.
         ///
-        /// <para>⚠️⚠️ This also pins the yard's HEADING. The coupling math rotates counter-clockwise
-        /// while the transform frame the hitch reads is clockwise compass; they agree only where
-        /// <c>sin(heading) = 0</c>. Turn the yard off the north–south axis and this test reddens, which
-        /// is exactly what should happen — see the note on <see cref="NineMileCreekLaydown"/>.</para>
+        /// <para>This no longer pins the yard's HEADING. It did: the coupling math rotated
+        /// counter-clockwise while the transform frame the hitch reads is clockwise compass, so a yard
+        /// turned off the north–south axis reddened here. The frames agree now, and
+        /// <see cref="ThePairCouplesOnAnyHeadingTheWalkMayPick"/> is the proof.</para>
         /// </summary>
         [Test]
         public void ThePairStandsCoupleReadyWhereItIsPlaced()
@@ -588,6 +588,77 @@ namespace HiddenHarbours.Tests.EditMode
                 pinWorld, NineMileCreekLaydown.YardHeadingDegrees, trailer.Mesh.Kingpin);
             Assert.That((fromPin - trailer.Position).magnitude, Is.LessThan(1e-3f),
                 "the trailer's solved position does not put her pin on the plate.");
+        }
+
+        /// <summary>
+        /// ⭐⭐ <b>The pair couples on ANY heading the walk may pick.</b> The yard faces south because its
+        /// lane is on its south edge — not, any longer, because the coupling arithmetic only worked
+        /// there. Stood through the builder's own <see cref="NineMileCreekLaydown.PlaceOne"/> and the
+        /// pair's own <see cref="NineMileCreekLaydown.CoupleReadyTrailer"/> at eight headings and asked
+        /// of the SHIPPED hitch: this is the test that reddened at 45° before PR 0 of the driveable
+        /// charter, with the pin reported on the wrong side of the plate.
+        /// </summary>
+        [Test]
+        public void ThePairCouplesOnAnyHeadingTheWalkMayPick()
+        {
+            NineMileCreekLaydown.Placement aero = UnitNamed("AeroSemiAtTheLaydown");
+            NineMileCreekLaydown.Placement flatbed = UnitNamed("Flatbed53AtTheLaydown");
+            VehicleFifthWheel wheel = aero.Mesh.FifthWheel;
+            float aft = Mathf.Min(wheel.RampMouthY, wheel.SlotSeatY);
+            float fore = Mathf.Max(wheel.RampMouthY, wheel.SlotSeatY);
+
+            for (int i = 0; i < 8; i++)
+            {
+                float heading = 45f * i;
+                var tractor = new NineMileCreekLaydown.Placement(aero.Unit, YardCentre, heading,
+                                                                  aero.Mesh, aero.Def);
+                NineMileCreekLaydown.Placement trailer =
+                    NineMileCreekLaydown.CoupleReadyTrailer(tractor, flatbed.Unit, flatbed.Mesh);
+                Assert.That(trailer.HeadingDegrees, Is.EqualTo(heading).Within(1e-4f),
+                    "the pair's trailer is not on her tractor's heading.");
+
+                GameObject tractorGo = NineMileCreekLaydown.PlaceOne(tractor);
+                GameObject trailerGo = NineMileCreekLaydown.PlaceOne(trailer);
+                _spawned.Add(tractorGo);
+                _spawned.Add(trailerGo);
+
+                // EditMode registers no presentation service, so the skinner installs no hitch — wire
+                // the real one by hand, the shape ThePairStandsCoupleReadyWhereItIsPlaced uses.
+                var hitch = tractorGo.AddComponent<VehicleHitch>();
+                hitch.Configure(tractor.Mesh, tractorGo.GetComponent<VehicleController>(), tractor.Def.Id);
+                TowedBody body = trailerGo.GetComponent<ParkedTrailer>().Trailer;
+                Assert.That(body, Is.Not.Null, $"on {heading}°: the placed trailer grew no TowedBody.");
+
+                // ⭐ Her pin where the PICTURE draws it — rotation × local, through her transform — and
+                // then in the tractor's transform frame, the frame the plate is drawn in: in the middle
+                // of the window, on the slot's centre-line. Asked of the drawn pin and not of
+                // KingpinWorld, because a coupling that rotates the wrong way agrees with ITSELF at every
+                // heading (the placement and the report were the same wrong turn) and only the picture
+                // can see it. That is the arm this test lost first time round.
+                var pinLocal = new Vector3(flatbed.Mesh.Kingpin.CouplingPointLocal.x,
+                                           flatbed.Mesh.Kingpin.CouplingPointLocal.y, 0f);
+                Vector2 pinWorld = trailerGo.transform.TransformPoint(pinLocal);
+                Assert.That(Vector2.Distance(body.KingpinWorld, pinWorld), Is.LessThan(1e-3f),
+                    $"on {heading}°: KingpinWorld reports the pin {Vector2.Distance(body.KingpinWorld, pinWorld):0.###} m " +
+                    "from where the picture draws it — the coupling and the transform disagree.");
+                Vector3 local = tractorGo.transform.InverseTransformPoint(
+                    new Vector3(pinWorld.x, pinWorld.y, 0f));
+                Assert.That(local.y, Is.GreaterThan(aft + 0.1f).And.LessThan(fore - 0.1f),
+                    $"on {heading}°: the pin sits at y {local.y:0.###} in the plate's frame, outside the " +
+                    $"middle of [{aft:0.###}, {fore:0.###}] — the pair is placed in a different frame " +
+                    "from the one the plate is drawn in.");
+                Assert.That(Mathf.Abs(local.x), Is.LessThan(wheel.SlotHalfWidthMeters),
+                    $"on {heading}°: the pin is {Mathf.Abs(local.x):0.####} m off the slot's centre-line.");
+
+                TowedBody captured = hitch.CapturedTrailer();
+                Assert.That(captured, Is.SameAs(body),
+                    $"on {heading}°: the tractor is offered " +
+                    (captured == null ? "NOTHING" : captured.gameObject.name) +
+                    " — the pair only couples facing north or south.");
+
+                Object.DestroyImmediate(trailerGo);
+                Object.DestroyImmediate(tractorGo);
+            }
         }
 
         // =============================================================================================

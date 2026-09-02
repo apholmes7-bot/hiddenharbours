@@ -110,7 +110,13 @@ namespace HiddenHarbours.Vehicles
             _doors == null || _doors.Openness("LandingGearShoes") <= 0f;
 
         /// <summary>Where her kingpin is in the world right now, from her live pose. The pin sits
-        /// well forward of her origin (3.365 m on a pup), so this is not her position.</summary>
+        /// well forward of her origin (3.365 m on a pup), so this is not her position.
+        ///
+        /// <para>⭐ Through <see cref="VehicleCouplingMath.LocalOffsetToWorld"/> — the ONE rotation, in the
+        /// transform frame — so the pin is reported where the picture draws it. This used to be a
+        /// private counter-clockwise turn that agreed with the drawn trailer only facing north or
+        /// south; <c>VehicleCouplingTests</c> now asks at four headings that this and
+        /// <c>transform.TransformPoint</c> answer the same point.</para></summary>
         public Vector2 KingpinWorld
         {
             get
@@ -118,11 +124,9 @@ namespace HiddenHarbours.Vehicles
                 VehicleKingpin pin = Kingpin;
                 if (!pin.Published) return transform.position;
 
-                float rad = HeadingDegrees * Mathf.Deg2Rad;
-                float s = Mathf.Sin(rad), c = Mathf.Cos(rad);
                 Vector2 local = new Vector2(pin.CouplingPointLocal.x, pin.CouplingPointLocal.y);
-                Vector2 world = new Vector2(local.x * c - local.y * s, local.x * s + local.y * c);
-                return (Vector2)transform.position + world;
+                return (Vector2)transform.position
+                       + VehicleCouplingMath.LocalOffsetToWorld(local, HeadingDegrees);
             }
         }
 
