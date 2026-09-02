@@ -288,10 +288,14 @@ byte — measured pre-vs-post in the V8 harness: table identical entry for entry
 509-face list byte-identical, all 8 facings 0 bytes apart, committed hull mesh a no-op.
 Her `dith` weight is deliberately **not** ported either: adding it would have moved those pixels.
 
-⚠️ **`Art/Boats/CapeIslanderIso.png` is STALE** — baked in #224, before #247 ran her washboards out to the
-foredeck. It differs from her own renderer by 1,767 px (0.56% of opaque), in a band forward of amidships
-where the sheet still shows the bulwark liner and the rig now draws washboard. Pre-existing, and the paint
-axis moved it by 0 px. Same family as the stale PuntIso/ConsoleIso sheets; the re-bake is its own drop.
+✅ **`Art/Boats/CapeIslanderIso.png` was RE-BAKED through RigBaker (full-mesh rollout PR 2b, 2026-09-02)** —
+it had been STALE since #224 (baked before #247 ran her washboards out to the foredeck: 1,767 px / 0.56% of
+opaque in a band forward of amidships) and, more to the point, it was a **pre-rig hand export**: 8 cells,
+counter-clockwise, pivot recovered from pixels at (228, 263) ±4. It is now the lobster's shape exactly —
+32 facings on an 8×4 page, 4 rock frames on `CapeIslanderIsoRock0/1.png`, the rig's declared pivot (228,
+258), genuinely clockwise (`FacingsAreCounterClockwise = false`), with `CapeIslanderIsoAnchors.json` beside
+it — and `IsoFacetCapeEndToEndTests` compares her committed mesh against it at eight headings, the same
+detector the lobster has. The `PuntIso`/`ConsoleIso` sheets remain the stale hand exports in this family.
 
 ⚠️ **The dory's `'oars'` build is NOT "unchanged pixel-for-pixel"** as the drop's README claims. Measured
 across 192 cells / 4.79 M px: 96 of 96 hull cells differ, 34,703 px, because four additions landed in the

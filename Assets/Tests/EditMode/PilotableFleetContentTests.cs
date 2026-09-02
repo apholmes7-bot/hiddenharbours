@@ -79,7 +79,8 @@ namespace HiddenHarbours.Tests.EditMode
         {
             // --- drawn as a SPRITE COMPASS: Facings is how many headings her artwork is cut for ---
             ("Dory", 8), ("FishingSkiff", 8), ("PuntUpgraded", 8), ("ConsoleSkiff", 8),
-            ("SportSkiff", 8), ("SportSkiffTwin", 8), ("CapeIslander", 8),
+            ("SportSkiff", 8), ("SportSkiffTwin", 8),
+            ("CapeIslander", 32),  // baked in-engine since PR 2b, 11.25° steps — see CapeIslanderFacingTests
             ("LobsterBoat", 32),   // baked in-engine, 11.25° steps — see LobsterBoatFacingTests
 
             // --- MESH-ONLY (ADR 0022): zero sheets, so zero facings, and that is the ASSERTION ---
@@ -167,7 +168,8 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.AreEqual(expectedFacings, h.Visual.HeadingCount,
                     $"{file}: this hull's artwork is drawn for {expectedFacings} facings (see " +
                     nameof(ExpectedFacings) + "). The compass size is a per-artwork fact, not a project " +
-                    "constant — the lobster boat is 32-way and everything else is 8-way.");
+                    "constant — the two in-engine bakes (lobster boat, Cape Islander) are 32-way and every hand-exported " +
+                    "kit is 8-way.");
                 Assert.AreEqual(0f, h.Visual.ZeroHeadingDegrees, 0.0001f,
                     $"{file}: facing element 0 is NORTH — the project's bearing convention");
             }
