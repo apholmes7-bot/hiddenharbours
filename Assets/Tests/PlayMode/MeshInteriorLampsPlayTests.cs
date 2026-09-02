@@ -26,14 +26,13 @@ namespace HiddenHarbours.Tests.PlayMode
     ///
     /// <para><b>The numbers, per heading.</b> (0) Closed up, lamps DARK: the full mesh against the same
     /// hull with her room stripped out — the arms must agree before any lit number means anything.
-    /// (1) Closed up, lamps LIT: the same pair — no pixel may differ by more than 2 LSB, and fewer than
-    /// 5% of the lamp footprint may differ at all, or the room is leaking through her lights. (Measured:
-    /// the additive glow lands 1-LSB differences inside the cabin glow between two captures — from a
-    /// dozen to a few hundred px of ~15k lamp px, varying run to run and heading to heading — with the
-    /// DARK pair at exactly 0. That is blend quantisation, not geometry: a room showing through would
-    /// be a structured region many LSB deep. Both counts are reported, and the LIT noise floor — the
-    /// same arm, lit, on two frames — sits beside them so the reader can see what one capture is
-    /// worth.)
+    /// (1) Closed up, lamps LIT: the same pair — **0 px**, exactly, or the room is leaking through her
+    /// lights. (History: this used to allow "within 2 LSB and under 5% of the footprint", because the
+    /// two shots differed by a dozen to a few hundred 1-LSB pixels inside the cabin glow and the cause
+    /// was not known. It was the cabin glow's flicker seed — see the class remarks — and with the
+    /// re-tick in place the measured margin is zero at every heading, alone and behind other lighting
+    /// fixtures. A tolerance sitting on the number it tolerates is a boundary decided by noise; zero
+    /// is a claim.)
     /// (2) The lamps' own footprint closed up (lit vs dark) — must be &gt; 0, or (1) was vacuous.
     /// (3) Cut open, the lamps' footprint over the revealed room. (4) Cut open, the room's footprint under
     /// lit lamps. (5) The cabin-glow occupied boost. (3)–(5) are REPORTED — the composition the lights
@@ -47,6 +46,22 @@ namespace HiddenHarbours.Tests.PlayMode
     /// the two DARK arms differed by 51k px at 1–5 LSB across the whole hull: the lights publish
     /// scene-wide shader globals (last writer wins), so each hull was faintly lit by the other's lamps.
     /// So both arms stand at the origin and are toggled — exactly one alive when the camera looks.
+    /// ⚠️ And then the FULL PlayMode sweep on the 4060 reddened it (2565 px within 2 LSB against a
+    /// 15161 px footprint, position 404 of 712; 1/1 green alone): two hulls with two sets of light
+    /// objects inherit different state from whatever ran before. So there is now ONE host: the full
+    /// mesh is measured, then the SAME host is re-installed with the room-stripped def — same root,
+    /// same lamps component, same searchlight, same light objects re-stamped by the same code — and
+    /// the shared shader globals a prior fixture can leave behind are reset in SetUp, named.
+    /// ⭐ THE MECHANISM, found by looking at the 1746 px: every one of them was the FULL shot brighter
+    /// by 1 LSB, all inside the cabin glow's radius — one lamp's INTENSITY differing between the two
+    /// shots. The cabin glow's preset flickers (0.03); a SceneLight's flicker seed is its name hash
+    /// XOR its SIBLING INDEX; a re-install builds new lights while the old ones await their deferred
+    /// Destroy, so the new cabin glow gets a different sibling index and a different seed; and the
+    /// light ticks its flickered intensity into its property block in OnEnable and again in its first
+    /// Update — BEFORE the fixture's flicker freeze, after which (time frozen) it never ticks again.
+    /// So the freeze must be followed by a re-tick: the lights are cycled off and on, and OnEnable
+    /// pushes the frozen value. Different seeds at one frozen Time.time explain the run-to-run range
+    /// (30 px alone, 1746 px behind other fixtures): the two seeds' flicker values at that instant.
     /// And her SEARCHLIGHT (the sixth lamp, <c>BoatSpotlight</c>) is switched OFF for every parity
     /// column: its way-gate smoothing steps by a floored delta-time every frame even with time frozen,
     /// so its cone differed by exactly 1 LSB over 8.5k px between two arms enabled a few frames apart.
@@ -94,6 +109,13 @@ namespace HiddenHarbours.Tests.PlayMode
             Shader.SetGlobalColor(IdDayNightTint, NightTint);
             _timeScaleBefore = Time.timeScale;
             Time.timeScale = 0f;
+
+            // What a prior fixture can leave behind in SHADER GLOBALS, reset by name: a searchlight's
+            // water-light publication (BoatSpotlight), a published sun. Anything that survives a
+            // fixture's teardown and reaches a fragment is a term the two shots below would inherit.
+            foreach (string g in new[] { "_BoatLightPos", "_BoatLightDir", "_BoatLightParams", "_BoatLightParams2" })
+                Shader.SetGlobalVector(g, Vector4.zero);
+            Shader.SetGlobalColor("_BoatLightColor", Color.black);
         }
 
         [TearDown]
@@ -140,9 +162,15 @@ namespace HiddenHarbours.Tests.PlayMode
             _spawned.Add(stripped);
             Assert.Greater(roomVerts, 0, "no room-flagged vertices — the control arm would be the same mesh twice");
 
-            Arm full = BuildArm(def, def.Mesh, "CapeFull");
-            Arm control = BuildArm(def, stripped, "CapeRoomStripped");
-            control.Root.SetActive(false);   // one hull alive at a time — see the class remarks
+            // ONE host. `full` and `control` are the same objects; only the def installed on the
+            // host differs, and Reinstall() swaps it in place. See the class remarks.
+            Arm full = BuildArm(def, "Cape");
+            _installed = def;
+            HullMeshDef strippedDef = Object.Instantiate(def);
+            strippedDef.name = def.name + "_RoomStripped";
+            strippedDef.Mesh = stripped;
+            _spawned.Add(strippedDef);
+            Arm control = full;
             yield return null;
             yield return null;
 
@@ -158,33 +186,32 @@ namespace HiddenHarbours.Tests.PlayMode
             report.AppendLine($"night tint {NightTint} (luma {Luma(NightTint):0.000}); lamps {def.Lamps.Length}, live quads {litQuads}; " +
                               $"hull verts {hullVerts}, room verts {roomVerts}; cut = {house.LevelId} (tag {house.Tag}, lid {house.LidTag}); cell {def.CellW}x{def.CellH}");
             report.AppendLine("The five GLOWS (sidelights, stern, masthead, cabin) are the lamps in columns (0)-(5); the SEARCHLIGHT beam is off for them and measured alone in (6).");
-            report.AppendLine("heading | (n) noise floor: same arm, dark, two frames | (nL) noise floor: same arm, LIT, two frames | (0) closed, DARK: full vs stripped | (1) closed, LIT: full vs stripped (and how many beyond 2 LSB) | (2) closed: lit vs dark | (3) open: lit vs dark | (4) open, lit: full vs stripped | (5) open, lit: occupied boost vs not | (6) closed: searchlight on vs off (full arm)");
+            report.AppendLine("heading | (n) noise floor: same arm, dark, two frames | (nL) noise floor: same arm, LIT, two frames | (0) closed, DARK: full vs stripped | (1) closed, LIT: full vs stripped | (2) closed: lit vs dark | (3) open: lit vs dark | (4) open, lit: full vs stripped | (5) open, lit: occupied boost vs not | (6) closed: searchlight on vs off (full arm)");
 
             foreach (float heading in Headings)
             {
                 // closed up, lit
                 SetLamps(full, true); SetLamps(control, true);
-                yield return Pose(full, heading, HullMeshDef.Cut.None);
+                yield return Pose(full, def, heading, HullMeshDef.Cut.None);
                 byte[] fullClosedLit = Capture(full);
                 yield return null;
                 byte[] fullClosedLitAgain = Capture(full);   // the LIT noise floor: same arm, next frame
-                yield return Pose(control, heading, HullMeshDef.Cut.None);
+                yield return Pose(control, strippedDef, heading, HullMeshDef.Cut.None);
                 byte[] controlClosedLit = Capture(control);
 
                 // closed up, dark; then the same arm again a frame later (the noise floor)
                 SetLamps(full, false); SetLamps(control, false);
-                yield return Pose(full, heading, HullMeshDef.Cut.None);
+                yield return Pose(full, def, heading, HullMeshDef.Cut.None);
                 byte[] fullClosedDark = Capture(full);
                 yield return null;
                 byte[] fullClosedDarkAgain = Capture(full);
-                yield return Pose(control, heading, HullMeshDef.Cut.None);
+                yield return Pose(control, strippedDef, heading, HullMeshDef.Cut.None);
                 byte[] controlClosedDark = Capture(control);
 
                 int noiseFloor = CountDiffering(fullClosedDark, fullClosedDarkAgain);
                 int litNoiseFloor = CountDiffering(fullClosedLit, fullClosedLitAgain);
                 int parityClosedDark = CountDiffering(fullClosedDark, controlClosedDark);
                 int parityClosed = CountDiffering(fullClosedLit, controlClosedLit);
-                int parityClosedBeyondLsb = CountDifferingBeyond(fullClosedLit, controlClosedLit, 2);
                 int lampsClosed = CountDiffering(fullClosedLit, fullClosedDark);
 
                 int inked = CountInked(fullClosedLit);
@@ -199,12 +226,12 @@ namespace HiddenHarbours.Tests.PlayMode
 
                 // cut open, lit; cut open, dark
                 SetLamps(full, true); SetLamps(control, true);
-                yield return Pose(full, heading, cutOpen);
+                yield return Pose(full, def, heading, cutOpen);
                 byte[] fullOpenLit = Capture(full);
-                yield return Pose(control, heading, cutOpen);
+                yield return Pose(control, strippedDef, heading, cutOpen);
                 byte[] controlOpenLit = Capture(control);
                 SetLamps(full, false);
-                yield return Pose(full, heading, cutOpen);
+                yield return Pose(full, def, heading, cutOpen);
                 byte[] fullOpenDark = Capture(full);
 
                 int lampsOpen = CountDiffering(fullOpenLit, fullOpenDark);
@@ -215,26 +242,26 @@ namespace HiddenHarbours.Tests.PlayMode
                 // to push the boosted preset through OnEnable.
                 EventBus.Publish(new CabinEntered(full.Root.GetEntityId(), 0));
                 SetLamps(full, false); SetLamps(full, true);
-                yield return Pose(full, heading, cutOpen);
+                yield return Pose(full, def, heading, cutOpen);
                 byte[] fullOpenLitOccupied = Capture(full);
                 int boost = CountDiffering(fullOpenLitOccupied, fullOpenLit);
                 EventBus.Publish(new CabinLeft(full.Root.GetEntityId()));
                 SetLamps(full, false); SetLamps(full, true);
-                yield return Pose(full, heading, cutOpen);
+                yield return Pose(full, def, heading, cutOpen);
 
                 // (6) the searchlight on its own: the full arm, closed up, glows lit, beam on vs off
                 SetLamps(full, true);
                 full.Beam.SetBeam(true);
-                yield return Pose(full, heading, HullMeshDef.Cut.None);
+                yield return Pose(full, def, heading, HullMeshDef.Cut.None);
                 byte[] fullClosedBeam = Capture(full);
                 full.Beam.SetBeam(false);
-                yield return Pose(full, heading, HullMeshDef.Cut.None);
+                yield return Pose(full, def, heading, HullMeshDef.Cut.None);
                 byte[] fullClosedNoBeam = Capture(full);
                 int beamPx = CountDiffering(fullClosedBeam, fullClosedNoBeam);
                 if (heading == 135f)
                     SavePlate("cape-135-closed-lamps-and-searchlight-night.png", fullClosedBeam, def.CellW, def.CellH);
 
-                string row = $"{heading,5:0}°   | {noiseFloor,8} px | {litNoiseFloor,8} px | {parityClosedDark,8} px | {parityClosed,5} px ({parityClosedBeyondLsb} >2 LSB) | " +
+                string row = $"{heading,5:0}°   | {noiseFloor,8} px | {litNoiseFloor,8} px | {parityClosedDark,8} px | {parityClosed,8} px | " +
                              $"{lampsClosed,8} px | {lampsOpen,8} px | {roomOpenLit,8} px | {boost,8} px | {beamPx,8} px";
                 report.AppendLine(row);
                 Debug.Log("[mesh-interiors-retirement] " + row + $"   (inked {inked})");
@@ -252,14 +279,12 @@ namespace HiddenHarbours.Tests.PlayMode
                 Assert.Greater(lampsClosed, 0,
                     $"at {heading}° her lit lamps changed no pixels against her dark self — the lamps " +
                     "are not reaching the frame, so the parity number would be vacuous");
-                Assert.AreEqual(0, parityClosedBeyondLsb,
-                    $"closed up at {heading}° with her lamps lit, {parityClosedBeyondLsb} px differ by MORE " +
-                    "than 2 LSB between the full mesh and the room-stripped control carrying the same " +
-                    $"lamps ({parityClosed} px differ at all). The room is showing through her lights.");
-                Assert.Less(parityClosed, Mathf.Max(1, lampsClosed / 20),
-                    $"closed up at {heading}° with her lamps lit, {parityClosed} px differ (all within 2 LSB) " +
-                    $"against a lamp footprint of {lampsClosed} px — more than the few-percent blend " +
-                    "quantisation this fixture has measured; look at the plates before calling it noise.");
+                Assert.AreEqual(0, parityClosed,
+                    $"closed up at {heading}° with her lamps lit, {parityClosed} px differ between the " +
+                    "full mesh and the room-stripped control carrying the same lamps (footprint " +
+                    $"{lampsClosed} px). Measured margin is ZERO; if these are 1-LSB pixels inside one " +
+                    "glow, a lamp's intensity differs between the two shots — check that the flicker " +
+                    "freeze is followed by the re-tick (class remarks) before suspecting the room.");
                 Assert.Greater(roomOpenLit, 0, $"at {heading}° the cut revealed no room at all under lit lamps");
                 Assert.Greater(lampsOpen, 0, $"at {heading}° the lamps changed nothing over the revealed room");
             }
@@ -273,7 +298,7 @@ namespace HiddenHarbours.Tests.PlayMode
 
         // ------------------------------------------------------------------------------ machinery
 
-        Arm BuildArm(HullMeshDef def, Mesh mesh, string name)
+        Arm BuildArm(HullMeshDef def, string name)
         {
             var root = new GameObject(name);
             _spawned.Add(root);
@@ -282,14 +307,6 @@ namespace HiddenHarbours.Tests.PlayMode
             host.transform.SetParent(root.transform, false);
 
             HullMeshDef d = def;
-            if (!ReferenceEquals(mesh, def.Mesh))
-            {
-                d = Object.Instantiate(def);
-                d.name = def.name + "_RoomStripped";
-                d.Mesh = mesh;
-                _spawned.Add(d);
-            }
-
             IHullMeshRenderer installed = new IsoFacetHullPresentationService().Install(host, d);
             Assert.IsNotNull(installed, $"{name}: the full install path refused the def");
 
@@ -309,26 +326,49 @@ namespace HiddenHarbours.Tests.PlayMode
             return arm;
         }
 
+        /// <summary>The def currently installed on the one host.</summary>
+        HullMeshDef _installed;
+
+        /// <summary>
+        /// Swap the def on the ONE host in place: the presentation service re-Configures the existing
+        /// renderer (rebuilding its children and material under the same component), keeps the same
+        /// BoatLamps, which rebuilds its lights off the new lamp table by the same code, and keeps the
+        /// searchlight. Nothing else in the scene changes between the two shots.
+        /// </summary>
+        void Reinstall(Arm arm, HullMeshDef d)
+        {
+            if (ReferenceEquals(_installed, d)) return;
+            IHullMeshRenderer installed = new IsoFacetHullPresentationService().Install(arm.Hull.gameObject, d);
+            Assert.IsNotNull(installed, $"re-install of {d.name} refused");
+            Assert.AreSame(arm.Hull, arm.Hull.gameObject.GetComponent<IsoFacetHullRenderer>(),
+                           "the re-install must keep the same renderer component");
+            Assert.AreSame(arm.Lamps, arm.Hull.gameObject.GetComponent<BoatLamps>(),
+                           "the re-install must keep the same BoatLamps component");
+            arm.Beam.SetBeam(false);
+            _installed = d;
+        }
+
         static void SetLamps(Arm arm, bool on) => arm.Lamps.LampsOn = on;
 
         /// <summary>Make THIS arm the one alive, set her pose and cut, and let real time pass so the
         /// hull's LateUpdate, the lamps' rebuild, the lights' quad pose and SceneLight's property push
         /// have all landed. Toggling the root is what wakes BoatLamps (OnEnable rebuilds her lights) —
         /// so the flicker freeze is re-applied after it.</summary>
-        IEnumerator Pose(Arm arm, float heading, HullMeshDef.Cut cut)
+        IEnumerator Pose(Arm arm, HullMeshDef d, float heading, HullMeshDef.Cut cut)
         {
-            foreach (Arm other in _arms)
-            {
-                bool alive = ReferenceEquals(other.Root, arm.Root);
-                if (other.Root.activeSelf != alive) other.Root.SetActive(alive);
-            }
+            Reinstall(arm, d);
             arm.Hull.HeadingDirUnits = HullMeshMath.HeadingToDirUnits(heading, 0f, arm.Def.AzimuthCounterClockwise);
             arm.Hull.ShowCutaway(cut);
             yield return null;
             // A MEASUREMENT must not depend on the clock: the cabin glow's preset flickers (0.03), and
             // BoatLamps re-stamps the preset on every rebuild and on the occupied boost, so it is
-            // frozen after the arm has woken and again before the capture.
+            // frozen after the arm has woken — AND RE-TICKED. The light pushed its flickered intensity
+            // in OnEnable and its first Update, before this line ran, and with time frozen it never
+            // ticks again on its own; cycling the lamps off and on makes OnEnable push the frozen
+            // value. Without the re-tick the freeze is a no-op (see the class remarks).
             foreach (SceneLight l in arm.Lamps.GetComponentsInChildren<SceneLight>(true)) l.FlickerAmount = 0f;
+            if (arm.Lamps.LampsOn) { arm.Lamps.LampsOn = false; arm.Lamps.LampsOn = true; }
+            yield return null;
             yield return new WaitForSecondsRealtime(0.12f);
             yield return null;
             yield return null;
