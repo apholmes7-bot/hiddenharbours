@@ -171,10 +171,7 @@ namespace HiddenHarbours.Art
             var clock = GameServices.Clock;
             var env = GameServices.Environment;
             if (clock == null || env == null) return;
-
-            bool anyActive = false;
-            for (int i = 0; i < _beds.Count; i++) anyActive |= _beds[i].Active;
-            if (!anyActive) { _hasLastTime = false; return; }
+            if (!AnyBedActive()) { _hasLastTime = false; return; }
 
             // Game-time delta (the BoatWaveMotion pattern): a paused clock freezes the sea and the weed.
             double now = clock.TotalSeconds;
@@ -183,9 +180,29 @@ namespace HiddenHarbours.Art
             _hasLastTime = true;
 
             bool slowTick = Time.unscaledTime >= _nextSlowTick;
+            if (slowTick) _nextSlowTick = Time.unscaledTime + SlowTickSeconds;
+
+            Drive(env, now, dt, slowTick);
+        }
+
+        private bool AnyBedActive()
+        {
+            for (int i = 0; i < _beds.Count; i++)
+                if (_beds[i].Active) return true;
+            return false;
+        }
+
+        /// <summary>
+        /// One drive step over every active bed: the slow-tick terrain refresh, ONE animator tick on the
+        /// shared field, then the per-bed slow tick and per-frame ride. Split from <see cref="Update"/>
+        /// so the two clocks the presenter reads — game time for the sea, wall time for the cadences —
+        /// arrive as arguments, which is what lets a fixture step it deterministically
+        /// (<see cref="StepForTests"/>) while play keeps the exact ordering it always had.
+        /// </summary>
+        private void Drive(IEnvironmentService env, double now, float dt, bool slowTick)
+        {
             if (slowTick)
             {
-                _nextSlowTick = Time.unscaledTime + SlowTickSeconds;
                 _tickTerrain = GameServices.TidalTerrain;
                 _tickWaterLevel = env.WaterLevelAt(now);
             }
@@ -596,9 +613,49 @@ namespace HiddenHarbours.Art
             return Sprite.Create(tex, new Rect(0, 0, W, H), new Vector2(0.5f, 0.5f), ppu);
         }
 
+        // ---- test seams (internal — the PlayMode fixture drives one deterministic step at a time) -------
+
+        /// <summary>
+        /// Install a presenter over <paramref name="library"/> that never runs its own
+        /// <see cref="Update"/> — the fixture calls <see cref="StepForTests"/> with an explicit game-time
+        /// delta and slow-tick flag, so a 60 s scripted run is the same 60 s on every machine (wall-clock
+        /// cadences are what make the live presenter non-reproducible frame for frame). Replaces any
+        /// self-installed host for the rest of the play session; tests only.
+        /// </summary>
+        internal static SeaweedPresenter InstallForTests(SeaweedLibrary library)
+        {
+            if (_instance != null)
+            {
+                var stale = _instance;
+                _instance = null;
+                Destroy(stale.gameObject);
+            }
+            var go = new GameObject("[SeaweedPresenter:test]");
+            var presenter = go.AddComponent<SeaweedPresenter>();
+            presenter._library = library;
+            presenter.enabled = false;          // the fixture steps it; Update never runs
+            return presenter;
+        }
+
+        /// <summary>One <see cref="Update"/> worth of work at an explicit <paramref name="dt"/> (game
+        /// seconds) with the slow tick forced on or off: the gate first, exactly as play does, then the
+        /// drive. The clock's <c>TotalSeconds</c> is still read for "now" — advance the test clock by the
+        /// same dt before each call.</summary>
+        internal void StepForTests(float dt, bool slowTick)
+        {
+            EvaluateGate();
+            var clock = GameServices.Clock;
+            var env = GameServices.Environment;
+            if (clock == null || env == null || !AnyBedActive()) return;
+            Drive(env, clock.TotalSeconds, dt, slowTick);
+        }
+
+        /// <summary>The live beds, read-only, for a fixture asserting on positions and states.</summary>
+        internal IReadOnlyList<BedRuntime> BedsForTests => _beds;
+
         // ---- runtime shape (allocated at activation only) ----------------------------------------------
 
-        private sealed class BedRuntime
+        internal sealed class BedRuntime
         {
             public SeaweedDef Def;
             public GameObject Root;
