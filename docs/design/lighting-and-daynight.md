@@ -124,7 +124,8 @@ dawn/noon/dusk/night behaviour by `SpriteShadowCastsPlayTests`.
 | **Shore plants** | `StPetersWoodsPlanter.PlantShorePlants` | The **emergent stands only**: not algae, not the subtidal fringe, standing ≥ `ShadowCasterMinHeightM` (0.6 m). 8 of 16 species. |
 | **The player** | `PlayerShadowInstaller` (self-installing host) | Exactly one, covering every state — walk, iso skin, haul and rod-fight all swap the sprite on the *same* renderer. Attached from the Art lane by name, so no `Code/Player` edit (rule 4). |
 | **Grass** | — | 🔴 **Never.** Thousands of tufts each pushing a sheared quad and a per-frame `LateUpdate`, bought for a shadow the size of a blade, is the rule-7 violation the caster rules exist to prevent. Asserted, not merely intended. |
-| **Boats** | — | Not yet: the hull is a mesh (`IsoFacetHullRenderer`) and its shadow lands on moving displaced water — its own design slice. |
+| **Boats** | — (sun) / `IsoFacetHullPresentationService.Install` (lamps) | **Sun: not yet** — the hull is a mesh and its sun shadow lands on moving displaced water, its own design slice. **Lamps: every mesh hull** — `HullLampShadowCaster`, fitted where her lamps are, casts from the feature's resolved screen texture (§5.2). |
+| **Wharf fittings** | `StPetersWharf.Place` | The **standers** only (bollard, pilehead — `IsStandingFitting`): their pivot is their base. The hangers (ladder, tyre) pivot at the top and would throw from the wrong end. Sun and lamp alike. |
 
 Two things worth knowing before adding the next caster:
 
@@ -140,6 +141,38 @@ Two things worth knowing before adding the next caster:
 
 **Alternative noted (not chosen):** URP `ShadowCaster2D` + a `Light2D` — needs the Sprite-Lit migration ADR
 0013 rejects for now, and gives less control over the stylized skew. We ship the projected sprite.
+
+### 5.2 Lamp-cast shadows — SHIPPED (ADR 0016, lights PR B)
+
+The sun is one direction at infinity; a lamp is a point at a height, and that is the whole feature. Every
+`SceneLight` that is lit and open at the night gate pairs with every caster inside its range, and
+`LampShadowSystem` draws each pair one pooled quad with `HiddenHarbours/LampShadow`: the caster's silhouette
+sheared **away from that lamp through its feet**, by a length that grows with distance and shrinks with the
+lamp's height (the sun's own `ShadowLength` curve, driven by the lamp's elevation as seen from the feet), at
+an alpha that is the lamp's own falloff there — so the shadow feathers with the beam's edge, fades as a
+searchlight dims at a standstill, and vanishes with the lamp by day.
+
+**It draws ABOVE the glow and MULTIPLIES.** A lamp's light is added after the day/night multiply, so a dark
+sprite in the world sort would be crushed by the night and the glow added over it — invisible. The shadow
+quads therefore sort at the light quads' ceiling order and win the depth tie (overlay 0.02 m < shadows
+0.06 m < light quads 0.10 m in front of the camera), and `Blend Zero SrcColor` removes a fraction of whatever
+light is at the pixel — quad glow, water beam, lit decor — leaving an unlit pixel untouched. The water shader
+is not involved.
+
+**Who casts:** every `SpriteShadow` (the whole §5.1 table) registers as a lamp caster automatically; every
+mesh hull carries a `HullLampShadowCaster`, whose silhouette is her own pixels in `_HHHullScreenTex` filtered
+by her id block — whatever she is drawing this frame casts. The wharf's standers cast (above).
+
+**Budget:** the pool is `LampShadowProfile.MaxShadows` (24) quads; past it the nearest lamp-to-caster pairs
+win; the pairing scan is O(lamps × casters) at 10 Hz and the pose follows every frame.
+
+**Tunables (owner, no code):** `Assets ▸ Create ▸ Hidden Harbours ▸ Lighting ▸ Lamp Shadow Profile`, saved
+as `Resources/LampShadowProfile.asset` — `Strength` is THE dial (0 = today's frame, byte for byte). Per lamp:
+`SceneLight.CastsShadows`, `LampHeightMeters`.
+
+**The approximation:** a skewed silhouette, one direction per caster, screen height for world height — the
+`SpriteShadow` model with a point in place of the sun, not a raycast. The full statement, the sorting law and
+the rejected alternatives are the PR B amendment to ADR 0016.
 
 ## 6. Night lights — additive 2D lights + the boat spotlight — SHIPPED (ADR 0016)
 

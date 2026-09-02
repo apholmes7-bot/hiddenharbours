@@ -414,3 +414,143 @@ The HLSL is guarded against drifting from the C# reference by source assertions 
   camera-depth pin). The URP 2D renderer will not reliably composite an additive `MeshRenderer` over the
   full-screen **custom-shader** water `SpriteRenderer`; the water is lit **in its own fragment** instead
   (follow-up fix 2), which sidesteps ordering entirely. The land quad is kept (it works on land).
+
+## Amendment — lights PR B: the lamps cast SHADOWS (2026-09-01)
+
+**The owner, 2026-08-28:** *"the spotlights and headlights need to put shadows ... The light needs to
+affect the environment, create shadows."* PR A (#691) made the beam light the sea's shape. This is the
+other half of the sentence: a caster standing in a lamp's light now throws its silhouette AWAY from
+that lamp, by a length that grows with its distance from the lamp and shrinks with the lamp's height,
+at a strength that is the lamp's own falloff at its feet — and the shadow moves as the beam sweeps.
+
+**Implementation:** `Assets/_Project/Code/Art/LampShadowMath.cs` (the pure model), `LampShadowSystem.cs`
+(the self-installing pool), `LampShadowProfile.cs` (the owner's tunables), `HullLampShadowCaster.cs` (a
+mesh hull as a caster), `Assets/_Project/Art/Shaders/HiddenHarboursLampShadow.shader` +
+`Resources/LampShadow.mat` / `LampShadowHull.mat`; `SceneLight` gains `CastsShadows` /
+`LampHeightMeters` and registers with the system; every `SpriteShadow` (every sun caster) registers as
+a lamp caster; the presentation service fits a hull caster where it fits her lamps; the St Peters wharf's
+standing fittings (bollards, pileheads) gain a `SpriteShadow` so the pilings the searchlight rakes can
+throw. Tests: `LampShadowMathTests`, `LampShadowSystemTests`, `LampShadowRenderTests` (GPU, self-skipping
+on CI), `LampShadowPlayTests`.
+
+### The model: a MULTIPLY drawn ABOVE the glow — and why not a dark sprite under the caster
+
+The sun shadow (ADR 0013 §7, `SpriteShadow`) is a dark alpha-blended silhouette sorted one order UNDER its
+caster, and for the sun that is right: the world is what the sun lights. **A lamp's light is not in the
+world.** It is ADDED after the whole-frame multiply — this ADR's additive quad on land, the pre-compensated
+in-shader beam on water (fixes 2–3) — so a dark sprite in the world sort is crushed to black by the night
+along with everything else, and the glow is then added on top of it unchanged. At night such a shadow is
+invisible by construction (and it was measured so before this design was settled).
+
+So a lamp shadow is a THIRD thing: a quad drawn **above every glow** with `Blend Zero SrcColor`
+(`dst *= lerp(1, tint, alpha)`), which removes a fraction of whatever light is at the pixel — quad glow,
+water beam, lit decor — and leaves an unlit pixel exactly as it was. It is not a second illumination
+model: the additive quad stays the glow, the water's relief stays the water's, and the water shader, the
+foam buffer and the light bridge are untouched (the water lane's files).
+
+### The silhouette, per pixel, through the inverse shear
+
+The quad rasterised is the axis-aligned box of the caster's SHEARED image. Each fragment runs the shear
+backwards — `LampShadowMath.Unshear`, twinned verbatim in the HLSL and pinned by a source guard — to find
+which caster point it is the shadow of, and asks the caster's silhouette whether that point is opaque:
+
+| caster | silhouette source | why |
+|---|---|---|
+| a sprite (every `SpriteShadow`: trees, shrubs, shore plants, the player, the wharf's standers) | its own sheet, world → cell → texture uv (`_SpriteRectWorld` / `_SpriteRectUV`, published per renderer) | the same alpha the sun shadow shears |
+| a mesh hull (`HullLampShadowCaster`, every `IsoFacetHullRenderer`) | the feature's resolved screen texture `_HHHullScreenTex` at that point's screen pixel, filtered by her ID BLOCK — the same either-id test her overlay and reflection passes use | she has no sprite; whatever she is drawing this frame (heading, roll, an open house) is what casts, with no second silhouette pass and no bake |
+
+The charter asked whether the object-reflection target (`_HHReflectTex`, ADR 0027 #8) could serve as the
+hull's caster mask. Measured against the code: it holds every reflector MIRRORED about its own pivot, with
+no per-pixel owner, and is rendered only when reflectors are near water — a shadow read from it would carry
+a neighbouring boat's mirrored planking and vanish for a hull hauled ashore. `_HHHullScreenTex` is the
+unmirrored image, id-tagged per hull, rendered for every camera before any sprite draws. It serves; the
+mirror does not.
+
+A shadow never darkens its own caster: a fragment lying on the caster's own opaque pixels discards first
+(the sun shadow gets the same effect by sorting under its caster).
+
+### Direction, length, fade (`LampShadowMath`)
+
+- **Direction** — radially away from the lamp through the caster's feet, per (lamp, caster). A caster
+  under the lamp falls back to the beam axis (a cone) or down the screen (a round lamp).
+- **Length** — the sun's own elevation→length curve (`DayNightMath.ShadowLength`: a 0.35× stub at the
+  zenith, a 5× rake at the horizon, capped at 7×) driven by the LAMP's elevation as seen from the feet,
+  `h / sqrt(h² + d²)`. A low lamp rakes long behind a far caster; the height is floored at 0.5 m so a lamp
+  that never declared one throws a bounded rake. A shadow thrown down the screen is capped so the shear
+  stays invertible (`ClampShearFold`) — the sun never meets that case, a lamp can be anywhere.
+- **Fade** — alpha = strength × the lamp's own radial × cone falloff at the feet (`LightMath.ShapeIntensity`,
+  the additive quad's own curve) × the SAME night gate the glow uses × the lamp's intensity share (a
+  searchlight dimmed at a standstill fades its shadows). A caster in the feathered edge throws a feathered
+  shadow; outside the cone or beyond the range, none. `ShadowAlpha(0, …)` returns exactly `0f`.
+
+### The sorting law, in numbers
+
+There is no order above `short.MaxValue` (#686's clamp), so the shadow quads share the light quads' ceiling
+order and win the tie by DEPTH — the 2D renderer breaks equal orders back-to-front along the view axis:
+
+| element | order | depth pin (metres in front of the camera) |
+|---|---|---|
+| day/night overlay | 32760 | `DayNightController.OverlayNearOffset` = 0.02 |
+| lamp shadows | 32767 | `LampShadowSystem.ShadowDepthOffset` = **0.06** |
+| additive light quads | 32767 | `SceneLight.DefaultCameraDepthOffset` = 0.10 |
+
+Nearer draws later, so a shadow lands over every glow. `LampShadowMathTests.TheDepthPins_AreOrdered…`
+pins the three constants in that order.
+
+### Budget (rule 7)
+
+- **The pool:** `LampShadowProfile.MaxShadows` = **24** quads shipped, one shared unit mesh, two shared
+  materials, one property block, no per-frame allocation. Past the pool the NEAREST lamp-to-caster pairs
+  win (an insertion sort into the fixed slots, the `WaterLightBridge` shape).
+- **The scan:** O(lamps × casters) at 10 Hz (`RefreshHz`), the caster states gathered once per tick.
+  St Peters today: 6 lamps (the cape's five glows and her searchlight) against ~1,000 registered casters
+  = ~6,000 squared distances ten times a second. The POSE of the chosen shadows follows every frame.
+- **Idle cost:** a lamp gated off by day, or with no caster in range, pairs nothing and enables nothing.
+
+### Passthroughs, proved
+
+- **Strength 0 is today's frame, byte for byte** — `LampShadowRenderTests.APost_…` shoots strength 0 against
+  the system absent and compares every byte (the scene is clock-free, so two identical shots ARE identical).
+- **Sun shadows do not move** — the lamp system never writes a caster's own block; `LampShadowPlayTests.
+  TheSunShadow_IsUntouchedByALampInRange` reads the sun shadow's direction, length, alpha and pivot map with
+  and without a lamp in range.
+- **Noon is the control** — the shadow gates with its lamp (`LightMath.NightGateWithFallback`, the shader's
+  own ramp); at a bright tint nothing pairs and nothing is enabled.
+
+### The approximation, stated
+
+This is 2D iso. A lamp shadow is the caster's SKEWED SILHOUETTE — one direction per caster, parallel edges,
+screen height standing in for world height (a hull's far rail shears as if it were tall) — not a raycast.
+Known and accepted:
+
+- where two lamps overlap, one lamp's shadow also dims the other's light (a fraction of ALL light present
+  is removed, because the water and the land light by different models and the shadow cannot know how
+  much of a pixel is which lamp);
+- through twilight the multiply also dims the little ambient under the shadow, not only the lamp's share;
+- nothing self-shadows (a wheelhouse does not darken its own deck), and a rotated sprite casts its unrotated cell;
+- a hull's lamp heights are her rig's z above the KEEL (the def carries no waterline), so a sidelight's rake
+  reads a little steeper than truth;
+- shadows follow the additive quad's range; with `_quadGlowScale` pulled below 1 the water beam reaches
+  past where shadows are cast.
+
+The owner's eye is the judge; if the skew reads wrong, the lever is the profile's length curve, not a raytracer.
+
+### Tunables (rule 6)
+
+`Resources/LampShadowProfile.asset` (optional; code defaults otherwise): `Strength` 0.8 (THE dial, 0 = off),
+`ShadowColor`, `MaxShadows` 24, `RefreshHz` 10, `LengthAtNoon` 0.35 / `LengthAtHorizon` 5 / `MaxLength` 7,
+`MinLampHeightMeters` 0.5, `MinShearDenominator` 0.2, `PixelSnap` + `PixelsPerUnit` 32. Per lamp on
+`SceneLight`: `CastsShadows` (default on), `LampHeightMeters` (2.5; `BoatSpotlight` publishes its own,
+`BoatLamps` each lamp's rig z).
+
+### Rejected alternatives
+
+- **A dark sprite one order under the caster (the sun model).** Invisible at night by construction — see above.
+- **`_HHReflectTex` as the hull mask.** Mirrored, un-owned per pixel, water-gated — see above.
+- **A second silhouette render per hull (a CommandBuffer capture to a small RT).** Works, but duplicates a
+  silhouette the feature already resolves every frame with ids attached; rejected for cost and duplication.
+- **A subtractive blend removing the lamp's estimated contribution.** Exact for overlapping lamps in
+  principle, but the water's beam and the land's quad are different models, so the estimate would be wrong
+  on one surface or the other; the multiply is robust to both.
+- **Shadows into the water shader.** The water lane's file (serial PRs, one shader); the multiply above the
+  glow cuts the in-shader beam without touching it.
