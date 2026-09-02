@@ -48,6 +48,7 @@ When you add an ADR, add its row here in the same PR.
 | 0039 | The quiet HUD | Accepted |
 | 0040 | Waves that break: lip, barrel, pocket, whitewater | Accepted (flipped 2026-09-01; #675/#680/#682 merged, two owner rulings 2026-08-28) |
 | 0041 | Full mesh interiors: the room becomes geometry | Accepted — rolling out |
+| 0042 | The squash is an art fact: the world plane vs the bake projection | Accepted (ruled 2026-08-29; the station kit migrated in the same PR) |
 
 **Conventions.** `Proposed` = awaiting the named decider; `Accepted` = ratified (by the owner where
 the ADR says so, otherwise by `lead-architect` on merge); `Implemented` = accepted and the code

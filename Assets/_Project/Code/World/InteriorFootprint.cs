@@ -20,6 +20,14 @@ namespace HiddenHarbours.World
     /// footprint box built without that squash is half again too deep — the player would be stopped
     /// three metres past the drawn back wall.</para>
     ///
+    /// <para><b>Scope (ADR 0042).</b> That is true of PICTURE-PLACEMENT — geometry that must coincide
+    /// with baked ¾ art, which is what a room's walls are — and it is not a statement about the world
+    /// plane in general: world XY is the unsquashed GROUND plane for everything that moves or measures
+    /// (ADR 0004's 1 tile = 1 m). The squash is baked into the pixels of every cell and nothing at render
+    /// time transforms anything, so a picture-placed shape has to carry it too. The station kit adopted
+    /// exactly this transform (<c>StationCatalog.LocalDirToWorld</c>) under that ADR; the maths below is
+    /// unchanged.</para>
+    ///
     /// <para><b>⚠️ And a rotated footprint is a PARALLELOGRAM, not a rectangle.</b> Squashing one axis
     /// after rotating shears the box, which is why the walls come out of <see cref="WallQuads"/> as
     /// explicit quads for a <see cref="PolygonCollider2D"/> and not as rotated

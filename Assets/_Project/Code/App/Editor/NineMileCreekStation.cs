@@ -219,10 +219,14 @@ namespace HiddenHarbours.App.Editor
         /// forecourt's own front edge held within 1.5 m of Route 91's corridor so the apron meets the
         /// carriageway rather than sitting in a field near it. Measured at this point:</para>
         /// <list type="bullet">
-        /// <item><b>3.48 m</b> to the nearest thing — House South's dooryard — which is the binding
-        /// clearance and the reason the site is not further south.</item>
-        /// <item><b>3.51 m</b> to Wharf Road's own corridor.</item>
-        /// <item><b>1.33 m</b> from the front edge to Route 91's corridor: the apron meets the road.</item>
+        /// <item><b>6.35 m</b> to the nearest thing — House South's dooryard — which is the binding
+        /// clearance and the reason the site is not further south. (3.48 m when the site was chosen;
+        /// re-measured 2026-09-01 under ADR 0042, which squashed the forecourt's ACROSS extent to 0.643 of
+        /// the plan's metres — the yard lies on that axis, so the clearance grew.)</item>
+        /// <item><b>5.03 m</b> to Wharf Road's own corridor (3.51 m before the squash, same reason).</item>
+        /// <item><b>1.59 m</b> from the nearest edge to Route 91's corridor: the apron meets the road. The
+        /// front edge itself is on the plan's DEPTH axis, which lies along world X here and did not move
+        /// (1.33 m before; the corner nearest the junction is what moved).</item>
         /// <item>Land at <c>LandElevation</c> against a spring high of <c>SpringHighWater</c> — dry at
         /// every tide, and asserted rather than assumed.</item>
         /// </list>
@@ -315,8 +319,11 @@ namespace HiddenHarbours.App.Editor
             return layout;
         }
 
-        /// <summary>The forecourt's whole footprint in world metres — <c>plan()</c>'s own extent, turned
-        /// and placed. What a clearance test measures and what the paving is cut from.</summary>
+        /// <summary>The forecourt's whole footprint in world metres — <c>plan()</c>'s own extent, turned,
+        /// squashed and placed (ADR 0042). What a clearance test measures and what the paving is cut
+        /// from. At Route 91 the plan's DEPTH axis lies along world X, so the front edge is where it
+        /// always was; its ACROSS axis lies along world Y and is 0.643 of the plan's metres, as the drawn
+        /// island is.</summary>
         public static Rect Route91Extent()
         {
             // plan().extent for this cfg, measured in the same harness run as the layout above.
@@ -345,7 +352,8 @@ namespace HiddenHarbours.App.Editor
             return (def != null && def.DepthMeters > 0f ? def.DepthMeters : 8.82f) * 0.5f;
         }
 
-        /// <summary>A rectangle in the forecourt's own frame, turned and placed into the world.</summary>
+        /// <summary>A rectangle in the forecourt's own frame, placed into the world through the kit's own
+        /// projection — rotate on the ground, then the art's squash (ADR 0042) — and re-boxed.</summary>
         static Rect WorldRectOf(Vector2 lo, Vector2 hi)
         {
             int facing = StationCatalog.FacingForHeading(Route91RoadHeadingDegrees);
@@ -390,8 +398,12 @@ namespace HiddenHarbours.App.Editor
         /// </summary>
         public static readonly Vector2 LoanerCanRowCentreLocal = new Vector2(-4f, -5f);
 
-        /// <summary>Between two cans in the row (m). Wider than two cans' clearance, so each is its own
-        /// interact candidate and the resolver never has to choose between two at one distance.</summary>
+        /// <summary>Between two cans in the row, in WORLD metres. Wider than two cans' clearance, so each
+        /// is its own interact candidate and the resolver never has to choose between two at one distance
+        /// — and world metres because that is what <c>InteractResolver</c> measures in (ADR 0042:
+        /// move-and-measure). The row lies along the layout's local x, which the placement squashes at
+        /// this facing, so <see cref="Route91CanSpots"/> stretches the local step to keep this spacing
+        /// on screen.</summary>
         public const float LoanerCanSpacingMetres = 0.6f;
 
         /// <summary>
@@ -419,11 +431,21 @@ namespace HiddenHarbours.App.Editor
         {
             var spots = new List<StationFuelCans.Spot>();
             int n = LoanerCanDefIds.Length;
-            float first = -(n - 1) * 0.5f * LoanerCanSpacingMetres;
+
+            // ⚠️ The row's CENTRE is a place on the drawn apron, so it projects with the forecourt; the
+            // SPACING is interact separation, so it is world metres (ADR 0042). The row runs along the
+            // layout's local x, which lands on world Y at this facing and is squashed to 0.643 — so the
+            // local step is the world spacing divided by how long a metre of local x is on screen here.
+            // Placed at the raw 0.6 m the cans would stand 0.39 m apart in the world, inside two cans'
+            // clearance, and the resolver would pick between them by id ordinal forever.
+            int facing = StationCatalog.FacingForHeading(Route91RoadHeadingDegrees);
+            float perLocalMetre = StationCatalog.LocalDirToWorld(Vector2.right, facing).magnitude;
+            float step = LoanerCanSpacingMetres / Mathf.Max(1e-3f, perLocalMetre);
+            float first = -(n - 1) * 0.5f * step;
 
             for (int i = 0; i < n; i++)
             {
-                var at = new Vector2(LoanerCanRowCentreLocal.x + first + i * LoanerCanSpacingMetres,
+                var at = new Vector2(LoanerCanRowCentreLocal.x + first + i * step,
                                      LoanerCanRowCentreLocal.y);
                 spots.Add(new StationFuelCans.Spot(
                     LoanerCanDefIds[i], at,
@@ -574,12 +596,17 @@ namespace HiddenHarbours.App.Editor
 
             for (int i = 0; i < at.Count; i++)
             {
-                // The offsets are along the WALL, stated in the layout's own frame: its +y is seaward
-                // (east), so its +x runs south. ⚠ The layout's own cell and the PIECES' cell are
-                // deliberately different here — the layout is turned so its offsets run down the wall,
-                // and each pedestal is turned so its HOSE looks over the water, which is a quarter turn
-                // off it. See StationCatalog.FacingForLocalDirection for why those are two questions.
-                layout.Add("dispenser_sDock", new Vector2(i * WharfPumpSpacingMetres, 0f), WharfPumpFacing,
+                // ⚠️ Each pedestal stands at its WORLD siting, un-projected into the layout's frame —
+                // WharfPumpPositions is the one authority. The two are 4 m apart so that two 2 m interact
+                // ranges never overlap, and interact range is measured in world units: their SPACING is a
+                // siting, not a rig composition, so it is move-and-measure and stays on the world plane
+                // (ADR 0042). What IS squashed is each pedestal's own colliders and standing spot, by the
+                // placement. ⚠ The layout's own cell and the PIECES' cell are deliberately different here
+                // — the layout's +y is seaward (east) so its offsets run down the wall, and each pedestal
+                // is turned so its HOSE looks over the water, a quarter turn off it. See
+                // StationCatalog.FacingForLocalDirection for why those are two questions.
+                Vector2 local = StationCatalog.WorldToLocal(at[i], layout.Origin, layout.Facing);
+                layout.Add("dispenser_sDock", local, WharfPumpFacing,
                            i == 0
                                ? "the gas hose, four metres south of the brow — clear of the way down to " +
                                  "the float, on the stretch of wall the channel keeps wet at spring low"

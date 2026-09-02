@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &260371701771321426
+--- !u!1 &3679531515968955153
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,8 +8,8 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 3539122861340762453}
-  - component: {fileID: 3309555670130627815}
+  - component: {fileID: 682467389281360575}
+  - component: {fileID: 3843192549446404434}
   m_Layer: 0
   m_Name: blocker_post
   m_TagString: Untagged
@@ -17,13 +17,13 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &3539122861340762453
+--- !u!4 &682467389281360575
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 260371701771321426}
+  m_GameObject: {fileID: 3679531515968955153}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -32,13 +32,13 @@ Transform:
   m_Children: []
   m_Father: {fileID: 931042699878843802}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!60 &3309555670130627815
+--- !u!60 &3843192549446404434
 PolygonCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 260371701771321426}
+  m_GameObject: {fileID: 3679531515968955153}
   m_Enabled: 1
   serializedVersion: 3
   m_Density: 1
@@ -78,10 +78,10 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: -5.08, y: -0.14}
-      - {x: -4.82, y: -0.14}
-      - {x: -4.82, y: 0.14}
-      - {x: -5.08, y: 0.14}
+    - - {x: 4.82, y: -0.08999026}
+      - {x: 5.08, y: -0.08999026}
+      - {x: 5.08, y: 0.08999026}
+      - {x: 4.82, y: 0.08999026}
   m_UseDelaunayMesh: 1
 --- !u!1 &4355291645415856776
 GameObject:
@@ -114,8 +114,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 3539122861340762453}
   - {fileID: 2842032957929320490}
+  - {fileID: 682467389281360575}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &2373135158039852565
@@ -274,8 +274,8 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: 4.82, y: -0.14}
-      - {x: 5.08, y: -0.14}
-      - {x: 5.08, y: 0.14}
-      - {x: 4.82, y: 0.14}
+    - - {x: -5.08, y: -0.08999026}
+      - {x: -4.82, y: -0.08999026}
+      - {x: -4.82, y: 0.08999026}
+      - {x: -5.08, y: 0.08999026}
   m_UseDelaunayMesh: 1

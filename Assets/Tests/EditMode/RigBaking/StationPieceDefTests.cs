@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using HiddenHarbours.Art;
@@ -305,10 +306,62 @@ namespace HiddenHarbours.Tests.RigBaking
 
                 int wanted = d.Blockers.Count(b => b.Blocks);
                 int got = go.GetComponentsInChildren<Collider2D>(true)
-                            .Count(c => !(c is BoxCollider2D && c.name.StartsWith("door_")));
+                            .Count(c => !c.name.StartsWith("door_"));
                 Assert.That(got, Is.EqualTo(wanted),
                     $"{d.Id}: {got} blocker colliders for {wanted} blocking blockers. step_over and " +
                     "flat must NOT earn one.");
+            }
+        }
+
+        /// <summary>
+        /// A prefab's colliders are the Def's own footprints drawn at CELL 0 — rotated by nothing and
+        /// SQUASHED by the art's <c>sin 40°</c> (ADR 0042) — as polygon paths on children at local zero
+        /// with no rotation. A circle is an ellipse on screen and a shut leaf is a quad, so everything is
+        /// a polygon; and the list is the one <see cref="StationCatalog.ColliderShapes"/> publishes, in
+        /// its order, because <c>StationForecourt.ProjectColliders</c> re-projects each placed instance
+        /// child by child from that same list. A prefab that has come apart from it is a piece that
+        /// collides with cell 0's shape at every other cell.
+        /// </summary>
+        [Test]
+        public void Every_prefab_collider_is_the_defs_own_footprint_drawn_at_cell_0()
+        {
+            foreach (var d in Built())
+            {
+                var go = AssetDatabase.LoadAssetAtPath<GameObject>(
+                    $"{StationPieceDefBuilder.PrefabFolder}/{d.name}.prefab");
+                Assert.That(go, Is.Not.Null, d.Id);
+
+                Assert.That(go.GetComponentsInChildren<Collider2D>(true).Any(c => !(c is PolygonCollider2D)),
+                            Is.False,
+                    $"{d.Id}: a Box or Circle collider cannot be sheared or squashed — every collider in " +
+                    "this kit is a polygon path (ADR 0042)");
+
+                List<StationCatalog.ColliderShape> shapes = StationCatalog.ColliderShapes(d);
+                var polys = new List<PolygonCollider2D>();
+                for (int i = 0; i < go.transform.childCount; i++)
+                {
+                    var poly = go.transform.GetChild(i).GetComponent<PolygonCollider2D>();
+                    if (poly != null) polys.Add(poly);
+                }
+                Assert.That(polys.Count, Is.EqualTo(shapes.Count),
+                    $"{d.Id}: {polys.Count} collider children for the {shapes.Count} shapes the Def publishes");
+
+                for (int i = 0; i < shapes.Count; i++)
+                {
+                    Assert.That(polys[i].name, Is.EqualTo(shapes[i].Name), $"{d.Id}: collider {i}");
+                    Assert.That(polys[i].transform.localPosition.magnitude, Is.LessThan(1e-5f),
+                        $"{d.Id}/{shapes[i].Name} is offset — the path carries the position");
+                    Assert.That(Quaternion.Angle(polys[i].transform.localRotation, Quaternion.identity),
+                                Is.LessThan(1e-4f),
+                        $"{d.Id}/{shapes[i].Name} is turned — the path carries the facing");
+
+                    Vector2[] want = StationCatalog.FootprintPath(shapes[i].Local, facing: 0);
+                    Vector2[] got = polys[i].GetPath(0);
+                    Assert.That(got.Length, Is.EqualTo(want.Length), $"{d.Id}/{shapes[i].Name} vertex count");
+                    for (int k = 0; k < want.Length; k++)
+                        Assert.That(Vector2.Distance(got[k], want[k]), Is.LessThan(1e-4f),
+                            $"{d.Id}/{shapes[i].Name} vertex {k}: prefab {got[k]} vs Def at cell 0 {want[k]}");
+                }
             }
         }
 

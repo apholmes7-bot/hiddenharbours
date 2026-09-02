@@ -32,36 +32,24 @@ namespace HiddenHarbours.App.Editor
     /// exists and is tested; what this adds is the arithmetic that reads a station shell's geometry
     /// instead of a shop's.</para>
     ///
-    /// <para><b>⚠️⚠️ AND THE ONE THING THAT MUST NOT BE COPIED FROM THE SHOP: THE SQUASH.</b>
-    /// <see cref="ShopPlacement"/> passes <c>SpriteLightMath.GroundDepthScale</c> (0.643) because the
-    /// house family states its rooms in ground metres and draws them into a squashed world. <b>The
-    /// station kit takes the opposite position, in writing:</b>
-    /// <see cref="StationCatalog.LocalToWorld"/> is a PURE ROTATION — <c>ForwardOf</c> is a unit vector
-    /// with no depth term — and its own remark says "the world plane here IS the ground plane; the iso
-    /// squash is a RENDER transform the sprite already carries". Every station collider in the scene,
-    /// every pump standback and the whole reach audit are built on that. So this passes
-    /// <see cref="NoSquash"/>, and a 0.643 here would pull the C-store's back wall three metres in
-    /// front of where its own blockers stand.</para>
+    /// <para><b>⭐ AND THE SQUASH IS THE SAME ONE THE SHOP PASSES.</b> <see cref="ShopPlacement"/> hands
+    /// <see cref="InteriorFootprint"/> <c>SpriteLightMath.GroundDepthScale</c> (0.643) because the house
+    /// family's rooms are stated in ground metres and drawn into a squashed picture — and so are this
+    /// kit's. The squash is baked into every cell's pixels, not applied at render time, so a wall ring
+    /// that is to stand on the drawn walls carries it too (ADR 0042). Every other station collider is
+    /// placed by <see cref="StationCatalog.LocalToWorld"/>, which is the same rotate-then-squash, and
+    /// <c>GasStationCansAndInteriorTests</c> pins the two frames equal at all eight facings, so the
+    /// doorway can never be cut in a different frame from the building it belongs to.</para>
     ///
-    /// <para>⚠️ The two kits therefore disagree about whether world Y is squashed. That disagreement is
-    /// older than this file and is NOT settled here — this only keeps the station's doorway in the same
-    /// frame as the station's own colliders, which is the only frame that can be right for it.
-    /// <c>StationInteriorPlacementTests</c> pins the equivalence that makes it safe: at
-    /// <see cref="NoSquash"/>, <see cref="InteriorFootprint"/>'s frame and
-    /// <see cref="StationCatalog"/>'s are the same frame at all eight facings.</para>
+    /// <para>⚠️ Until ADR 0042 this file passed a depth scale of 1 to match a station kit that placed in
+    /// unsquashed metres — the C-store's wall ring then stood 2.07 m outside each drawn side wall, and
+    /// drew perfectly. The ADR measured it and settled the frame; the interim and its "the two kits
+    /// disagree" remark are gone with it.</para>
     /// </summary>
     public static class StationInteriorPlacement
     {
         /// <summary>The child the wall ring is built on, so a re-run can find and replace it.</summary>
         public const string WallsChildName = "InteriorWalls";
-
-        /// <summary>
-        /// The depth scale a station piece is placed with: <b>none</b>.
-        ///
-        /// <para>Named rather than typed as a bare <c>1f</c> because it is a CLAIM about this kit — see
-        /// the class remarks — and a claim wants somewhere to be read from and asserted against.</para>
-        /// </summary>
-        public const float NoSquash = 1f;
 
         /// <summary>The sidecar's own id for a storefront's floor. Named once.</summary>
         public const string SalesFloorId = "sales_floor";
@@ -299,7 +287,7 @@ namespace HiddenHarbours.App.Editor
             var footprint = new InteriorFootprint(
                 shellGo.transform.position,
                 plan.WidthMetres, plan.LengthMetres,
-                facing, StationCatalog.Facings, NoSquash,
+                facing, StationCatalog.Facings, SpriteLightMath.GroundDepthScale,
                 plan.DoorOnPlusY ? 1f : -1f, plan.DoorAcrossMetres);
 
             BuildWalls(shellGo.transform, footprint, plan);
@@ -314,7 +302,7 @@ namespace HiddenHarbours.App.Editor
 
             // ⚠️ And the solid goes LAST, after the ring that replaces it is standing. Disabled rather
             // than destroyed: the prefab connection stays intact and a builder re-run reverts cleanly.
-            bool solid = SealOff(shellGo.transform, shellDef, roomDef);
+            bool solid = SealOff(shellGo.transform, shellDef, roomDef, facing);
 
             var interior = shellGo.AddComponent<BuildingInterior>();
             interior.Configure(shellGo.GetComponent<SpriteRenderer>(),
@@ -322,7 +310,7 @@ namespace HiddenHarbours.App.Editor
                                props: null,
                                plan.WidthMetres, plan.LengthMetres,
                                facing, StationCatalog.Facings,
-                               NoSquash,
+                               SpriteLightMath.GroundDepthScale,
                                plan.WallThicknessMetres, plan.DoorwayWidthMetres,
                                doorOnPlusY: plan.DoorOnPlusY,
                                doorAcrossMetres: plan.DoorAcrossMetres);
@@ -433,9 +421,10 @@ namespace HiddenHarbours.App.Editor
         /// who occasionally slips through it. <see cref="ShopPlacement"/> pays for the same lesson.</para>
         ///
         /// <para>⚠️ And the quads go on a child at LOCAL ZERO with no rotation of its own, holding
-        /// world-derived paths — NOT on a child turned by <see cref="StationCatalog.ColliderZRotation"/>
-        /// like the kit's blockers. <see cref="InteriorFootprint.WallQuads"/> has already applied the
-        /// facing; turning them again would rotate the ring twice.</para>
+        /// world-derived paths — exactly the way the kit's own blockers are placed now
+        /// (<c>StationForecourt.ProjectColliders</c>). <see cref="InteriorFootprint.WallQuads"/> has
+        /// already applied the facing AND the squash; a rotation on the child would turn the ring twice,
+        /// and could not have squashed it anyway.</para>
         /// </summary>
         static void BuildWalls(Transform shellRoot, in InteriorFootprint footprint, in Plan plan)
         {
@@ -476,13 +465,17 @@ namespace HiddenHarbours.App.Editor
         ///
         /// <para>⚠️ Matched by NAME <b>and</b> by its collider's own bounds, because a station shell can
         /// carry two children of the same name (the C-store has two <c>blocker_plant</c>s) and a name
-        /// alone is not an identity here. The bounds come from the Def, so this switches off exactly the
-        /// blocker <see cref="BuildingBlockerOf"/> measured and never a neighbour.</para>
+        /// alone is not an identity here. The bounds come from the Def's footprint projected the way the
+        /// placement projected the child's path — rotate, then squash, at <paramref name="facing"/>
+        /// (<see cref="StationCatalog.FootprintPath"/>) — so this switches off exactly the blocker
+        /// <see cref="BuildingBlockerOf"/> measured and never a neighbour.</para>
         /// </summary>
-        static bool SealOff(Transform shellRoot, StationPieceDef shellDef, StationPieceDef roomDef)
+        static bool SealOff(Transform shellRoot, StationPieceDef shellDef, StationPieceDef roomDef, int facing)
         {
             StationBlocker building = BuildingBlockerOf(shellDef, roomDef);
-            if (building == null || !Bounds(building.Footprint, out Vector2 min, out Vector2 max)) return false;
+            if (building == null) return false;
+            if (!Bounds(StationCatalog.FootprintPath(building.Footprint, facing), out Vector2 min, out Vector2 max))
+                return false;
 
             string wanted = "blocker_" + building.Kind;
             for (int i = 0; i < shellRoot.childCount; i++)

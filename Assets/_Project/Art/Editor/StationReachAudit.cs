@@ -16,18 +16,21 @@ namespace HiddenHarbours.Art.Editor
     /// pass.</para>
     ///
     /// <para><b>It runs the SAME march, over the whole forecourt.</b> Same body radius, same arm lengths,
-    /// same 6 cm step, same order of attempts (as asked → flipped → the four axes), because a second
-    /// rule would mean two definitions of "can a body stand here" and the one that ships would be
-    /// whichever ran last. What changes is only the set of solids: every blocking blocker of every placed
-    /// piece at the same LEVEL, plus whatever else the region says is in the way — a quay wall, a road
-    /// corridor, a building.</para>
+    /// same 6 cm step, same order of attempts (as asked → flipped → the four axes) — in the piece's own
+    /// GROUND frame, the way the rig ran it, with each candidate projected to world only to be tested
+    /// (ADR 0042) — because a second rule would mean two definitions of "can a body stand here" and the
+    /// one that ships would be whichever ran last. What changes is only the set of solids: every
+    /// blocking blocker of every placed piece at the same LEVEL, plus whatever else the region says is
+    /// in the way — a quay wall, a road corridor, a building.</para>
     ///
     /// <para><b>⚠️ Hit-testing happens in each blocker's OWN frame, not in world.</b> The rig inflates a
     /// footprint's axis-aligned bounding box by the body radius rather than offsetting the polygon,
-    /// because "footprints in this kit are axis-aligned rectangles". Turned into the world at a facing
-    /// they are no longer axis-aligned, and inflating a world bbox would over-block a piece stood on a
-    /// diagonal by up to 41%. So a candidate point is taken back into the owning piece's local frame and
-    /// tested there, which is exactly the rig's own test on exactly the rig's own numbers.</para>
+    /// because "footprints in this kit are axis-aligned rectangles". Placed into the world they are
+    /// turned AND squashed — a parallelogram at the diagonals — and inflating a world bbox would
+    /// over-block a piece stood on a diagonal by up to 41%. So a candidate point is taken back into the
+    /// owning piece's local frame — un-squashed, then un-rotated
+    /// (<see cref="StationCatalog.WorldToLocal"/>) — and tested there, which is exactly the rig's own
+    /// test on exactly the rig's own numbers.</para>
     ///
     /// <para><b>Pure.</b> No scene, no assets beyond the Defs handed in, no time, no randomness — feed it
     /// a placement list and it returns the same verdicts every time, which is what lets an EditMode test
@@ -155,7 +158,8 @@ namespace HiddenHarbours.Art.Editor
             /// <see cref="Verdict.Ok"/>; meaningless on a refusal (check <see cref="Outcome"/> first).</summary>
             public readonly Vector2 Point;
 
-            /// <summary>How far the pass had to move it (m). 0 on <see cref="Verdict.Ok"/>.</summary>
+            /// <summary>How far the pass had to move it, in GROUND metres — the piece's own frame, the
+            /// rig's own unit. 0 on <see cref="Verdict.Ok"/>.</summary>
             public readonly float MovedMetres;
 
             public readonly Verdict Outcome;
@@ -269,8 +273,12 @@ namespace HiddenHarbours.Art.Editor
         /// flipped, then the four piece-local axes; step out from the body radius to the arm in 6 cm
         /// steps; take the first point that clears everything.
         ///
-        /// <para>The axes are the OWNING PIECE's local ones mapped to world, not world x/y, so a forecourt
-        /// stood on a diagonal repairs the same way the bake did.</para>
+        /// <para><b>⭐ It marches in the PIECE's own frame — ground metres, the rig's own numbers — and
+        /// projects each candidate to world only to test it</b> (ADR 0042). A 6 cm step is 6 cm of
+        /// ground whichever way the piece is turned; taken in world it would be 6 cm across and 9.3 cm
+        /// of ground up the screen, and the arm would reach further north than east. The axes are the
+        /// owning piece's local ones for the same reason, so a forecourt stood on a diagonal repairs the
+        /// same way the bake did; and <see cref="Result.MovedMetres"/> is ground metres too.</para>
         /// </summary>
         static Result March(Placed placed, int placedIndex, StationInteractable it, Level level,
                             Vector2 fitting, Vector2 asked, List<Solid> solids,
@@ -278,19 +286,19 @@ namespace HiddenHarbours.Art.Editor
         {
             float arm = ArmFor(it.Action);
 
-            Vector2 line = asked - fitting;
-            float L = line.magnitude;
-            Vector2 dir = L < 1e-6f ? StationCatalog.ForwardOf(placed.Facing) : line / L;
-            if (L < 1e-6f) L = BodyRadiusMetres;
+            var fittingLocal = new Vector2(it.Position.x, it.Position.y);
+            var askedLocal = new Vector2(it.ReachPoint.x, it.ReachPoint.y);
 
-            Vector2 right = StationCatalog.RightOf(placed.Facing);
-            Vector2 fwd = StationCatalog.ForwardOf(placed.Facing);
+            Vector2 line = askedLocal - fittingLocal;
+            float L = line.magnitude;
+            Vector2 dir = L < 1e-6f ? Vector2.up : line / L;
+            if (L < 1e-6f) L = BodyRadiusMetres;
 
             var attempts = new (Vector2 dir, float from)[]
             {
                 (dir, L), (-dir, BodyRadiusMetres),
-                (fwd, BodyRadiusMetres), (-fwd, BodyRadiusMetres),
-                (right, BodyRadiusMetres), (-right, BodyRadiusMetres),
+                (Vector2.up, BodyRadiusMetres), (Vector2.down, BodyRadiusMetres),
+                (Vector2.right, BodyRadiusMetres), (Vector2.left, BodyRadiusMetres),
             };
 
             string firstBlocker = null;
@@ -299,13 +307,14 @@ namespace HiddenHarbours.Art.Editor
             {
                 for (float t = Mathf.Max(a.from, BodyRadiusMetres); t <= arm + 1e-6f; t += StepMetres)
                 {
-                    Vector2 q = fitting + a.dir * t;
+                    Vector2 qLocal = fittingLocal + a.dir * t;
+                    Vector2 q = StationCatalog.LocalToWorld(qLocal, placed.Origin, placed.Facing);
 
                     string hit = FirstHit(q, level, solids, placedIndex, it);
                     if (hit == null && sceneBlocks != null && sceneBlocks(q, level)) hit = "the region";
                     if (hit != null) { firstBlocker ??= hit; continue; }
 
-                    float moved = (q - asked).magnitude;
+                    float moved = (qLocal - askedLocal).magnitude;
                     return new Result(placedIndex, placed.Name, placed.Def.name, it.Id, it.Action, level,
                                       fitting, asked, q, moved,
                                       moved > 0.005f ? Verdict.Moved : Verdict.Ok,
@@ -344,14 +353,12 @@ namespace HiddenHarbours.Art.Editor
                 IsCircle = isCircle; Center = center; Radius = radius; Min = min; Max = max;
             }
 
-            /// <summary>A world point taken back into this blocker's own frame.</summary>
-            public Vector2 ToLocal(Vector2 world)
-            {
-                Vector2 d = world - Origin;
-                // The inverse of x·right + y·forward, which is orthonormal, so the transpose does it.
-                Vector2 right = StationCatalog.RightOf(Facing), fwd = StationCatalog.ForwardOf(Facing);
-                return new Vector2(Vector2.Dot(d, right), Vector2.Dot(d, fwd));
-            }
+            /// <summary>A world point taken back into this blocker's own frame: UN-squash, then un-rotate
+            /// (<see cref="StationCatalog.WorldToLocal"/>). ⚠️ The transpose alone inverts a pure
+            /// rotation, and this kit's placement stopped being one under ADR 0042 — a transpose-only
+            /// inverse here would test the body against a footprint 1.56× too deep on the squashed axis,
+            /// which is the collider defect the ADR measured, re-created inside the audit.</summary>
+            public Vector2 ToLocal(Vector2 world) => StationCatalog.WorldToLocal(world, Origin, Facing);
 
             /// <summary>Does a body of <paramref name="r"/> at <paramref name="world"/> hit this?</summary>
             public bool Hits(Vector2 world, float r)

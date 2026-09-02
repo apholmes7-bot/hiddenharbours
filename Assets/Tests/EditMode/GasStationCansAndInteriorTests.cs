@@ -20,13 +20,16 @@ namespace HiddenHarbours.Tests.EditMode
     /// asked whether the room was PLACED and none asked whether it could be ENTERED. The owner found it
     /// by walking up to the building.</para>
     ///
-    /// <para><b>⭐ THE LOAD-BEARING TEST IS THE FRAME EQUIVALENCE, AND ITS CONTROL.</b> Opening the
-    /// storefront reuses the house family's <see cref="BuildingInterior"/>, whose geometry squashes world
-    /// Y by <c>sin 40°</c>. The station kit does not squash — it says so in
-    /// <see cref="StationCatalog.LocalToWorld"/>, and every collider on the forecourt is built that way.
-    /// The reuse is therefore safe only at <see cref="StationInteriorPlacement.NoSquash"/>, and that is
-    /// not an opinion to be held in a comment: it is measured here at all eight facings, and paired with
-    /// the control that shows the house's own scale would be metres wrong.</para>
+    /// <para><b>⭐ THE LOAD-BEARING TESTS ARE THE FRAME EQUIVALENCE AND THE ART ALIGNMENT.</b> Opening
+    /// the storefront reuses the house family's <see cref="BuildingInterior"/>, whose geometry rotates on
+    /// the ground and then squashes world Y by <c>sin 40°</c>. So does the station kit, since ADR 0042:
+    /// <see cref="StationCatalog.LocalToWorld"/> is the same rotate-then-squash, and every collider on
+    /// the forecourt is placed with it. That agreement is not an opinion held in a comment — it is
+    /// measured here at all eight facings, with a control that shows the frame really is squashed and
+    /// really inverts — and the alignment tests are the guard the whole arc earned: every piece's ground
+    /// footprint, projected the way the kit places it, fits inside the piece's own drawn cell, and the
+    /// UNSQUASHED projection (the kit's placement until ADR 0042) does not. That second test is the one
+    /// that would have caught the original defect on day one.</para>
     ///
     /// <para>Every can spot is likewise paired with a deliberate WRONG one, in this region's convention
     /// (<c>NineMileCreekStationTests</c>) and for its hard-won reason: the whole-scene reach pass once
@@ -67,7 +70,7 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         // =============================================================================================
-        //  1. THE FRAME — the claim the whole interior reuse rests on
+        //  1. THE FRAME — the claim the whole interior reuse rests on (ADR 0042)
         // =============================================================================================
 
         /// <summary>Off-axis on both axes and asymmetric, so a swapped axis, a sign flip or a
@@ -79,7 +82,7 @@ namespace HiddenHarbours.Tests.EditMode
         };
 
         [Test]
-        public void AtNoSquash_TheInteriorsFrameAndTheStationsFrameAreTheSameFrame()
+        public void TheInteriorsFrameAndTheStationsFrameAreTheSameFrame_AtTheSharedBakeSquash()
         {
             var centre = new Vector2(-191f, 81.6f);
 
@@ -87,7 +90,7 @@ namespace HiddenHarbours.Tests.EditMode
             {
                 var footprint = new InteriorFootprint(centre, 11.6f, 8.2f, facing,
                                                       StationCatalog.Facings,
-                                                      StationInteriorPlacement.NoSquash);
+                                                      SpriteLightMath.GroundDepthScale);
 
                 foreach (Vector2 p in ProbePoints)
                 {
@@ -104,30 +107,177 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void AndTheHouseFamilysSquash_WouldPutTheBackWallMetresWrong()
+        public void AndTheStationsFrame_IsRotateThenSquash_NotThePureRotationItUsedToBe()
         {
-            // The control for the test above. Without it that test could pass because BOTH sides were
-            // wrong in the same way, or because the probe points happened to sit on the one axis the
-            // squash does not touch.
+            // The control for the test above. Both sides could agree because both were wrong the same
+            // way — and they did, until ADR 0042, at a depth scale of 1. So: the frame the station places
+            // in must differ VISIBLY from the pure rotation it used to be on the axis the squash touches,
+            // agree exactly on the axis it does not, and invert exactly.
+            const int facing = 0;                       // local +y straight up the screen: the worst case
+            var backWall = new Vector2(0f, -4.1f);      // the C-store's back wall, in its own frame
+
+            Vector2 placed = StationCatalog.LocalDirToWorld(backWall, facing);
+            Vector2 rotatedOnly = StationCatalog.RightOf(facing) * backWall.x
+                                + StationCatalog.ForwardOf(facing) * backWall.y;
+
+            Assert.That(placed.x, Is.EqualTo(rotatedOnly.x).Within(1e-5f),
+                "the across axis is never squashed");
+            Assert.That(Vector2.Distance(placed, rotatedOnly),
+                        Is.EqualTo(4.1f * (1f - SpriteLightMath.GroundDepthScale)).Within(1e-3f),
+                "the back wall moves 1.46 m under the squash — the figure the interim's remark had as " +
+                "'three metres' (2.93 m is the change in TOTAL depth, not the wall's move)");
+            Assert.That(StationCatalog.DepthScale, Is.EqualTo(SpriteLightMath.GroundDepthScale),
+                "one squash for every kit: the station's depth scale IS the shared bake camera's");
+
             var centre = new Vector2(-191f, 81.6f);
-            const int facing = 0;           // local +y straight up the screen: the squash's worst case
+            for (int f = 0; f < StationCatalog.Facings; f++)
+                foreach (Vector2 p in ProbePoints)
+                {
+                    Vector2 back = StationCatalog.WorldToLocal(
+                        StationCatalog.LocalToWorld(p, centre, f), centre, f);
+                    Assert.That(Vector2.Distance(back, p), Is.LessThan(1e-4f),
+                        $"cell {f}: {p} did not survive the round trip ({back}) — the inverse the reach " +
+                        "audit stands on is not an inverse");
+                }
+        }
 
-            var honest = new InteriorFootprint(centre, 11.6f, 8.2f, facing, StationCatalog.Facings,
-                                               StationInteriorPlacement.NoSquash);
-            var squashed = new InteriorFootprint(centre, 11.6f, 8.2f, facing, StationCatalog.Facings,
-                                                 SpriteLightMath.GroundDepthScale);
+        // ---- the guard this arc earned: the colliders fit the PICTURE -------------------------------
 
-            var backWall = new Vector2(0f, -4.1f);
-            float gap = Vector2.Distance(honest.ModelToWorld(backWall), squashed.ModelToWorld(backWall));
+        /// <summary>Every ground footprint the piece publishes, projected at <paramref name="facing"/>
+        /// about the piece's origin — the kit's own way (rotate, then squash) or, for the control,
+        /// rotated only. By default ALL blockers, whether or not they stop a body — a step-over kerb is
+        /// ground the art draws; <paramref name="collidersOnly"/> narrows it to the blockers that become
+        /// colliders, which is what a body actually hits.</summary>
+        static IEnumerable<Vector2> GroundFootprintAt(StationPieceDef def, int facing, bool squashed,
+                                                      bool collidersOnly = false)
+        {
+            foreach (StationBlocker b in def.Blockers)
+            {
+                if (b == null || (collidersOnly && !b.Blocks)) continue;
+                Vector2[] local = b.IsCircle ? StationCatalog.CirclePolygon(b.Center, b.Radius) : b.Footprint;
+                if (local == null || local.Length < 3) continue;
+                foreach (Vector2 p in local)
+                    yield return squashed
+                        ? StationCatalog.LocalDirToWorld(p, facing)
+                        : StationCatalog.RightOf(facing) * p.x + StationCatalog.ForwardOf(facing) * p.y;
+            }
+        }
 
-            Assert.That(gap, Is.GreaterThan(1f),
-                "the house family's depth scale must be VISIBLY wrong for a station piece — if it were " +
-                "not, the equivalence test above would be proving nothing. Measured gap at the back " +
-                $"wall: {gap:0.###} m.");
+        /// <summary>How far a set of points pokes outside a cell (m); 0 when every one fits.</summary>
+        static float OverflowOf(IEnumerable<Vector2> points, Bounds cell)
+        {
+            float worst = 0f;
+            foreach (Vector2 p in points)
+            {
+                worst = Mathf.Max(worst, cell.min.x - p.x, p.x - cell.max.x);
+                worst = Mathf.Max(worst, cell.min.y - p.y, p.y - cell.max.y);
+            }
+            return worst;
+        }
 
-            Assert.That(StationInteriorPlacement.NoSquash, Is.EqualTo(1f),
-                "the station kit places in unsquashed ground metres — StationCatalog.LocalToWorld is a " +
-                "pure rotation. A NoSquash that was not 1 would be a different claim.");
+        [Test]
+        public void EveryPiecesColliders_FitInsideItsOwnDrawnCell_AtEveryFacing()
+        {
+            RequireKit();
+
+            // The drawn cell is the sprite's own bounds: cell px ÷ PPU about the pivot, and the pivot is
+            // the ground centre of the footprint (ADR 0026) — the same point the footprints are stated
+            // from. One pixel of slack: the cells are cropped to ink, and a footprint corner can land on
+            // an anti-aliased edge the rasteriser did not paint. Measured on the shipped kit the worst
+            // collider is 0.4 px out (the vent risers at cell 0); every other one is exact.
+            int piecesChecked = 0;
+            foreach (var kv in StationCatalog.Defs())
+            {
+                StationPieceDef def = kv.Value;
+                if (def == null || def.IsInterior || !def.HasArt) continue;
+
+                bool any = false;
+                for (int facing = 0; facing < StationCatalog.Facings; facing++)
+                {
+                    Sprite sprite = def.Frame(facing);
+                    Assert.That(sprite, Is.Not.Null, $"{def.name} cell {facing} has no sprite");
+
+                    var points = new List<Vector2>(
+                        GroundFootprintAt(def, facing, squashed: true, collidersOnly: true));
+                    if (points.Count == 0) continue;
+                    any = true;
+
+                    float overflow = OverflowOf(points, sprite.bounds);
+                    Assert.That(overflow, Is.LessThanOrEqualTo(1f / sprite.pixelsPerUnit + 1e-4f),
+                        $"{def.name} at cell {facing}: a collider, placed the kit's way, pokes " +
+                        $"{overflow:0.###} m ({overflow * sprite.pixelsPerUnit:0.#} px) outside the drawn " +
+                        $"cell {sprite.bounds.min}..{sprite.bounds.max}. A collider outside the picture " +
+                        "is a wall you walk into in empty air — the defect ADR 0042 measured at Route 91.");
+                }
+                if (any) piecesChecked++;
+            }
+
+            Assert.That(piecesChecked, Is.GreaterThan(10),
+                "fewer than eleven exterior pieces carry a collider — this test is passing vacuously");
+        }
+
+        [Test]
+        public void TheIslandsAndTheStores_WholeGroundFootprint_FitsTheirDrawnCells_AtEveryFacing()
+        {
+            RequireKit();
+
+            // The stronger claim, for the two families the ruling was measured on: EVERYTHING they
+            // publish as ground — the step-over kerb that IS the island, the building plan and what is
+            // bolted to it — fits the picture, at every cell. ⚠️ Not asserted kit-wide on purpose: the
+            // small dispensers' `flat` plinths are drawn inside their published footprints and overhang
+            // the ink by up to 3.6 px at the diagonals (kerb post, globe-top, cardlock). Nothing collides
+            // with a plinth, so that is an art nuance rather than a placement fault; the test above is
+            // the one that guards what a body hits.
+            int piecesChecked = 0;
+            foreach (var kv in StationCatalog.Defs())
+            {
+                StationPieceDef def = kv.Value;
+                if (def == null || def.IsInterior || !def.HasArt) continue;
+                if (def.PieceType != "island" && def.PieceType != "store") continue;
+
+                for (int facing = 0; facing < StationCatalog.Facings; facing++)
+                {
+                    Sprite sprite = def.Frame(facing);
+                    float overflow = OverflowOf(GroundFootprintAt(def, facing, squashed: true), sprite.bounds);
+                    Assert.That(overflow, Is.LessThanOrEqualTo(1f / sprite.pixelsPerUnit + 1e-4f),
+                        $"{def.name} at cell {facing}: the ground footprint pokes {overflow:0.###} m " +
+                        $"({overflow * sprite.pixelsPerUnit:0.#} px) outside the drawn cell " +
+                        $"{sprite.bounds.min}..{sprite.bounds.max}");
+                }
+                piecesChecked++;
+            }
+
+            Assert.That(piecesChecked, Is.GreaterThanOrEqualTo(6),
+                "four islands and two storefronts — the kit ships six; fewer means this ran on nothing");
+        }
+
+        [Test]
+        public void TheIslandAndTheCStore_WouldOverflowTheirCells_IfTheGroundWereNotSquashed()
+        {
+            RequireKit();
+
+            // ⭐ THE CONTROL, and the test that would have caught the original defect on day one: the
+            // kit's placement until ADR 0042 was the pure rotation, and at the SHIPPED facing it puts the
+            // island kerb and the C-store's walls a metre outside the pictures they belong to.
+            int facing = NineMileCreekStation.Route91Layout().Facing;
+
+            foreach (string key in new[] { "island_s2", "store_sStore" })
+            {
+                StationPieceDef def = StationCatalog.Find(key);
+                if (def == null) Assert.Ignore($"{key} is not installed");
+
+                Sprite sprite = def.Frame(facing);
+                float squashed = OverflowOf(GroundFootprintAt(def, facing, squashed: true), sprite.bounds);
+                float flat = OverflowOf(GroundFootprintAt(def, facing, squashed: false), sprite.bounds);
+
+                Assert.That(squashed, Is.LessThanOrEqualTo(1f / sprite.pixelsPerUnit + 1e-4f),
+                    $"{key}: squashed, the footprint must fit — it overflows by {squashed:0.###} m");
+                Assert.That(flat, Is.GreaterThan(0.5f),
+                    $"{key} at cell {facing}: the UNSQUASHED footprint overflows the drawn cell by only " +
+                    $"{flat:0.###} m ({flat * sprite.pixelsPerUnit:0} px). If it fits, the picture and " +
+                    "the ground plane agree here and the alignment test above cannot tell the two " +
+                    "placements apart. Measured on the shipped kit: 1.04 m (island), 1.07 m (store).");
+            }
         }
 
         // =============================================================================================
@@ -238,24 +388,29 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(StationInteriorPlacement.TryPlan(shell, room,
                             out StationInteriorPlacement.Plan plan, out _), Is.True);
 
+            // At cell 0 with the kit's own squash (ADR 0042) — the frame the walls are cut in. The probes
+            // are MODEL-frame points projected the same way the walls were, so this asks about the wall
+            // as it stands in the world, not about the plan on paper.
             var centre = Vector2.zero;
             var footprint = new InteriorFootprint(centre, plan.WidthMetres, plan.LengthMetres,
                                                   0, StationCatalog.Facings,
-                                                  StationInteriorPlacement.NoSquash,
+                                                  SpriteLightMath.GroundDepthScale,
                                                   plan.DoorOnPlusY ? 1f : -1f, plan.DoorAcrossMetres);
 
             Vector2[][] walls = footprint.WallQuads(plan.WallThicknessMetres, plan.DoorwayWidthMetres);
 
+            float doorWallY = (plan.DoorOnPlusY ? 1f : -1f)
+                            * (plan.LengthMetres * 0.5f - plan.WallThicknessMetres * 0.5f);
+
             // The threshold itself: a gap, or there is no way in.
-            var threshold = new Vector2(plan.DoorAcrossMetres, plan.LengthMetres * 0.5f
-                                                               - plan.WallThicknessMetres * 0.5f);
+            Vector2 threshold = footprint.ModelToWorld(new Vector2(plan.DoorAcrossMetres, doorWallY));
             Assert.That(InsideAny(walls, threshold), Is.False,
                 "the doorway the sidecar publishes is filled in with wall — the room would be sealed");
 
             // …and a doorway's width further along the SAME wall: solid, or the front of the shop is a
             // hole. This is the half that a gap cut at the wall's centre would fail.
-            var offToTheSide = new Vector2(plan.DoorAcrossMetres + plan.DoorwayWidthMetres,
-                                           threshold.y);
+            Vector2 offToTheSide = footprint.ModelToWorld(
+                new Vector2(plan.DoorAcrossMetres + plan.DoorwayWidthMetres, doorWallY));
             Assert.That(InsideAny(walls, offToTheSide), Is.True,
                 $"the front wall is open at x={offToTheSide.x:0.##} m, which is not where the door is " +
                 "drawn — a gap in the wrong place is a player walking in through the window");
@@ -468,12 +623,19 @@ namespace HiddenHarbours.Tests.EditMode
             const float slabHalf = 4f;      // wide enough to close the diagonals out to the full reach
             StationPieceDef slab = Slab(slabHalf);
 
+            // ⚠️ The slabs stand where their DRAWN faces would be. A slab's depth projects through the
+            // kit's own squash (ADR 0042), so the north and south faces are slabHalf × 0.643 from their
+            // centres, not slabHalf; placed unsquashed they would stand 1.4 m further off, the pen would
+            // have a gap a body fits through, and this control would fail for the wrong reason.
+            float across = slabHalf + faceOff;
+            float deep = StationCatalog.LocalDirToWorld(new Vector2(0f, slabHalf), 0).y + faceOff;
+
             var forecourt = new List<StationReachAudit.Placed>
             {
-                new StationReachAudit.Placed(slab, new Vector2(slabHalf + faceOff, 0f), 0, "east"),
-                new StationReachAudit.Placed(slab, new Vector2(-(slabHalf + faceOff), 0f), 0, "west"),
-                new StationReachAudit.Placed(slab, new Vector2(0f, slabHalf + faceOff), 0, "north"),
-                new StationReachAudit.Placed(slab, new Vector2(0f, -(slabHalf + faceOff)), 0, "south"),
+                new StationReachAudit.Placed(slab, new Vector2(across, 0f), 0, "east"),
+                new StationReachAudit.Placed(slab, new Vector2(-across, 0f), 0, "west"),
+                new StationReachAudit.Placed(slab, new Vector2(0f, deep), 0, "north"),
+                new StationReachAudit.Placed(slab, new Vector2(0f, -deep), 0, "south"),
             };
 
             Vector2 pen = Vector2.zero;
