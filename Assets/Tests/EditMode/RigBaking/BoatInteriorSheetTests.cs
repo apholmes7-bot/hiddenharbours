@@ -506,8 +506,12 @@ namespace HiddenHarbours.Tests.RigBaking
         {
             AssertCellsMatchTheRig("sideDraggerIsoRig",
                                    new[] { ("bridge", 2), ("house", 1), ("below", 5) });
-            AssertCellsMatchTheRig("lobsterBoatVariantsIsoRig.offshore_open_fundy",
-                                   new[] { ("house", 3), ("cuddy", 6) });
+            // ADR 0041 rollout PR 1 retired every lobster variant sheet (their rooms are geometry), so
+            // the variant-aware case this used to run on offshore_open_fundy has no pixels to check.
+            // The variant path is exercised by the mesh bake now (the triple rides the extraction);
+            // the sheet side keeps a second single-hull case on the biggest remaining kit.
+            AssertCellsMatchTheRig("coastalPacketIsoRig",
+                                   new[] { ("house", 3), ("below", 6) });
         }
 
         static void AssertCellsMatchTheRig(string hullStem, (string level, int facing)[] cells)

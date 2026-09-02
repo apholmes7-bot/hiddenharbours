@@ -55,6 +55,9 @@ namespace HiddenHarbours.Tests.PlayMode
         private const string LobsterVisualPath = "Assets/_Project/Data/Boats/Visuals/LobsterBoatIso.asset";
         private const string LobsterHullPath = "Assets/_Project/Data/Boats/LobsterBoat.asset";
         private const string TankerInteriorPath = "Assets/_Project/Data/Boats/Interiors/TankerIso.asset";
+        /// <summary>One of the eighteen lobster variants (ADR 0041 rollout PR 1) — a hardtop; she has a
+        /// committed visual and interior def but no BoatHullDef, so the journey wraps her visual in one.</summary>
+        private const string VariantVisualPath = "Assets/_Project/Data/Boats/Visuals/LobsterStandardHardtopFundyIso.asset";
 
         /// <summary>The shader property the hull's occluding id block is written into. Named here because
         /// the test reads back what reached the RENDERER, which is the only thing the GPU would see.</summary>
@@ -228,6 +231,56 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.AreEqual(1, drawn.Total,
                 "a converted hull must draw her cabin from ONE source. Two means the sprite room is still " +
                 "wired under a mesh room — she draws her cabin twice (ADR 0041's own warning). " + drawn);
+        }
+
+        /// <summary>
+        /// <b>ADR 0041 rollout PR 1 — one of the eighteen lobster variants goes below into her own mesh
+        /// room.</b> The variants have no BoatHullDef of their own (they are the ambient fleet), so the
+        /// committed visual — with her re-baked hull mesh and her interior def — is wrapped in one here,
+        /// skinned by the shipped skinner, and her installer built exactly as BoatController does it.
+        /// Below decks she must draw from ONE source, the geometry, and load no sheet: hers is retired.
+        /// </summary>
+        [UnityTest]
+        public IEnumerator AVariantOfTheBatch_GoesBelowIntoHerOwnMeshRoom_AndLoadsNoSheet()
+        {
+            var visual = LoadCommitted<BoatVisualDef>(VariantVisualPath);
+            if (visual == null) yield break;
+            Assert.IsNotNull(visual.Interior, "the variant's visual must link her interior def");
+            Assert.IsTrue(visual.HasHullMesh() && visual.HullMesh.HasMeshInterior(),
+                          "the variant's committed hull mesh must carry her room (re-bake her)");
+
+            var hullDef = ScriptableObject.CreateInstance<BoatHullDef>();
+            hullDef.Visual = visual;
+            _spawned.Add(hullDef);
+
+            var boatGo = Spawn("LobsterVariant");
+            var boat = boatGo.AddComponent<BoatController>();
+            boatGo.AddComponent<DevBoatInput>().enabled = false;
+            boat.SetHull(hullDef);
+            BoatHullSkinner.Rig skin = BoatHullSkinner.Apply(
+                boatGo, visual, boat, new BoatHullSkinner.Options { SkipWaveMotion = true });
+            Assert.IsTrue(skin.Skinned, "the variant must skin — she is a MESH hull");
+            var installer = boatGo.GetComponent<BoatInteriorInstaller>();
+            installer.Build();
+            Assert.IsTrue(installer.Built, "a measured variant grows her cabin on load");
+            Assert.IsTrue(installer.Interior.RoomIsGeometry, "…and it is geometry, off the bake's own output");
+            Assert.IsNull(boatGo.transform.Find(BoatInteriorInstaller.RoomChildName), "no sprite room child");
+            Assert.IsNull(Resources.Load<BoatInteriorCellsDef>(BoatInteriorCellsDef.PathFor(visual.Interior.Id)),
+                          "her cells asset is RETIRED");
+            yield return null;
+
+            BoatCabinDoor door = installer.Door;
+            Assert.IsNotNull(door, "…and a door at her measured threshold");
+            Assert.IsTrue(door.TryUse(), "her door offers, so the press is taken");
+            yield return WaitForCue(door);
+            Assert.IsTrue(installer.Interior.IsInside);
+            yield return null;
+
+            BelowDecksDrawSources.Count drawn = BelowDecksDrawSources.Measure(boatGo.transform);
+            Debug.Log($"[mesh-interiors-rollout] {visual.name}, below decks: {drawn}");
+            Assert.IsTrue(drawn.MeshRoom, "her house is cut open: the mesh room is what is drawn. " + drawn);
+            Assert.AreEqual(1, drawn.Total, "exactly one source draws below decks. " + drawn);
+            Assert.AreEqual(0, BoatInteriorCells.ResidentSets, "no sheet was loaded for her");
         }
 
         /// <summary>

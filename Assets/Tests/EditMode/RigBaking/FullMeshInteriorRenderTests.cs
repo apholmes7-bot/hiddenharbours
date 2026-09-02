@@ -45,28 +45,60 @@ namespace HiddenHarbours.Tests.RigBaking
         public readonly struct ConvertedHull
         {
             /// <summary>Short, stable, and it is also the eyeball pack's filename prefix —
-            /// the interior rig's own vocabulary for this boat ("lobster", "cape").</summary>
+            /// the interior rig's own vocabulary for this boat ("lobster", "cape",
+            /// "lobvar-inshore-hardtop-fundy").</summary>
             public readonly string Name;
             public readonly string MeshPath;
+            /// <summary>Whether her pack and reports are COMMITTED (the owner's sample) or written
+            /// to the temporary cache (the fixture carries the rest). See <see cref="CommittedPacks"/>.</summary>
+            public readonly bool Committed;
 
-            public ConvertedHull(string name, string meshPath) { Name = name; MeshPath = meshPath; }
+            public ConvertedHull(string name, string meshPath, bool committed)
+            {
+                Name = name; MeshPath = meshPath; Committed = committed;
+            }
             public override string ToString() => Name;
         }
 
         /// <summary>
-        /// The pack/report prefix per converted hull. ⚠️ This map does NOT decide WHICH hulls are
-        /// tested — <see cref="ConvertedHulls"/> derives that from
+        /// The pack/report prefix per converted hull, keyed by the FLEET KEY (a rig global is shared by
+        /// a whole generator family — the eighteen lobster variants are one global). ⚠️ This map does
+        /// NOT decide WHICH hulls are tested — <see cref="ConvertedHulls"/> derives that from
         /// <see cref="RigMeshAssetBaker.MeshInteriorHulls"/>, the bake's own switch, so the fixture
         /// cannot drift from what was actually baked. All this supplies is the human-facing name,
         /// and a hull converted without one FAILS LOUDLY there rather than quietly writing a pack
-        /// called "-090-closed.png".
+        /// called "-090-closed.png". The variants' names are DERIVED from the fleet's own list, so a
+        /// nineteenth variant would arrive named rather than unnamed.
         /// </summary>
-        static readonly IReadOnlyDictionary<string, string> PackNames =
-            new Dictionary<string, string>(StringComparer.Ordinal)
+        static readonly IReadOnlyDictionary<string, string> PackNames = BuildPackNames();
+
+        static IReadOnlyDictionary<string, string> BuildPackNames()
+        {
+            var names = new Dictionary<string, string>(StringComparer.Ordinal)
             {
-                ["LobsterBoatIso"] = "lobster",
-                ["CapeIslanderIso"] = "cape",
+                ["lobsterBoat"] = "lobster",
+                ["capeIslander"] = "cape",
             };
+            foreach (LobsterVariant v in LobsterVariantFleet.All)
+                names[v.Key] = $"lobvar-{v.Size}-{v.Style}-{v.Region}";
+            return names;
+        }
+
+        /// <summary>
+        /// The hulls whose eyeball packs and reports are COMMITTED under <see cref="ImageDir"/> —
+        /// the owner's sample: the two first conversions, and for the eighteen variants one hardtop,
+        /// one open, one per rig region (the handoff's rule). Every other converted hull is measured
+        /// by exactly the same guards; her pack goes to the temporary cache so a full sweep does not
+        /// rewrite two hundred committed pictures, and anyone can look at it from the log's path.
+        /// </summary>
+        static readonly HashSet<string> CommittedPacks = new(StringComparer.Ordinal)
+        {
+            "lobsterBoat",
+            "capeIslander",
+            "lobsterInshoreHardtopFundy",            // hardtop, Fundy
+            "lobsterOffshoreOpenNewfoundland",       // open, Newfoundland
+            "lobsterStandardHardtopNorthumberland",  // hardtop, Northumberland
+        };
 
         /// <summary>
         /// <b>Every hull the baker actually converted — read from the baker, not transcribed.</b>
@@ -82,16 +114,15 @@ namespace HiddenHarbours.Tests.RigBaking
 
             foreach (FleetHull hull in HullMeshFleet.Hulls)
             {
-                if (!RigMeshAssetBaker.MeshInteriorHulls.Contains(hull.GlobalName, StringComparer.Ordinal))
-                    continue;
-                if (!PackNames.TryGetValue(hull.GlobalName, out string name))
+                if (!RigMeshAssetBaker.IsMeshInteriorHull(hull.GlobalName)) continue;
+                if (!PackNames.TryGetValue(hull.Key, out string name))
                     throw new InvalidOperationException(
-                        $"'{hull.GlobalName}' is on RigMeshAssetBaker.MeshInteriorHulls but " +
-                        "FullMeshInteriorRenderTests.PackNames has no short name for her, so her " +
-                        "eyeball pack and her reports would be written without a prefix — and would " +
-                        "overwrite another hull's. Add her name.");
+                        $"'{hull.Key}' ({hull.GlobalName}) is converted by RigMeshAssetBaker." +
+                        "MeshInteriorHulls but FullMeshInteriorRenderTests.PackNames has no short " +
+                        "name for her, so her eyeball pack and her reports would be written without a " +
+                        "prefix — and would overwrite another hull's. Add her name.");
                 matched.Add(hull.GlobalName);
-                found.Add(new ConvertedHull(name, hull.MeshAssetPath));
+                found.Add(new ConvertedHull(name, hull.MeshAssetPath, CommittedPacks.Contains(hull.Key)));
             }
 
             // ⚠️ COMPLETENESS, AND EAGERLY — the reason this method is a list and not an iterator.
@@ -185,7 +216,7 @@ namespace HiddenHarbours.Tests.RigBaking
             }
             finally { UnityEngine.Object.DestroyImmediate(stripped); }
 
-            WriteReport($"{hull.Name}-closed-up-costs-nothing.txt", log.ToString());
+            WriteReport($"{hull.Name}-closed-up-costs-nothing.txt", log.ToString(), hull.Committed);
         }
 
         /// <summary>
@@ -229,7 +260,7 @@ namespace HiddenHarbours.Tests.RigBaking
                 }
             }
             Assert.IsTrue(any, "this hull declares no enclosed level, so nothing was tested.");
-            WriteReport($"{hull.Name}-cut-open-the-room-arrives.txt", log.ToString());
+            WriteReport($"{hull.Name}-cut-open-the-room-arrives.txt", log.ToString(), hull.Committed);
         }
 
         /// <summary>
@@ -322,7 +353,7 @@ namespace HiddenHarbours.Tests.RigBaking
                                  + $"the hull's top, and {(maxRow > hullRows.bottom ? "BELOW" : "not below")} "
                                  + "its bottom.");
             }
-            WriteReport($"{hull.Name}-where-the-rigging-draws.txt", log.ToString());
+            WriteReport($"{hull.Name}-where-the-rigging-draws.txt", log.ToString(), hull.Committed);
         }
 
         static (int top, int bottom) InkedRows(byte[] rgba, int w, int h)
@@ -335,11 +366,19 @@ namespace HiddenHarbours.Tests.RigBaking
         }
 
         /// <summary>
-        /// <b>THE PACK IS THE RIGHT WAY UP.</b> Her rigging sits at z 2.953..5.958, above a house
-        /// that tops at 3.055, so in a published frame the mast's ink must appear ABOVE the hull's
-        /// centre of mass, not below it. Cheap, and it is the check the first pack did not have:
-        /// every number in this file is computed on the render buffer, so an inverted FILE is
-        /// invisible to all of them.
+        /// <b>THE PUBLISHED FILE IS THE BUFFER.</b> Every number in this file is computed on the
+        /// render buffer, so a file saved the wrong way up is invisible to all of them — which is
+        /// exactly how the first pack shipped inverted with every test green. This guard closes that
+        /// hole at its source: the PNG <see cref="SavePng"/> writes is read back and must equal the
+        /// buffer BYTE FOR BYTE (PNG is lossless; a flip, a channel swap or a stride error all differ
+        /// on tens of thousands of pixels). No geometry is assumed.
+        ///
+        /// <para>The first form of this guard asserted "the mast's ink sits above the hull's mean row"
+        /// and it was heading-fragile by construction: in a ¾ view the far end of a hull projects
+        /// HIGHER on screen than a short mast amidships, and on two open/newfoundland lobster variants
+        /// (whose masthead sits on the dry stack, aft and to port) it read a correctly oriented pack
+        /// as upside down at 135°. A guard that models the projection is one more thing to get wrong;
+        /// this one reads the file.</para>
         /// </summary>
         [Test]
         [TestCaseSource(nameof(ConvertedHulls))]
@@ -347,44 +386,41 @@ namespace HiddenHarbours.Tests.RigBaking
         {
             RequireAGraphicsDevice();
             HullMeshDef hm = LoadHullOrIgnore(hull);
-            int RiggingTag = TopStructureTag(hm, out string topTable);
 
             foreach (float heading in Headings)
             {
                 byte[] whole = Render(hm, hm.Mesh, 0, heading);
-                byte[] noRig = Render(hm, hm.Mesh, RiggingTag, heading);
-                int w = hm.CellW, h = hm.CellH;
+                Assert.Greater(CountInked(whole), 0, $"nothing rendered at {heading}° — this guard would test nothing");
 
-                // the rigging's centre row, and the hull's, in PUBLISHED (top-left) orientation
-                long rigSum = 0, rigN = 0, hullSum = 0, hullN = 0;
-                for (int y = 0; y < h; y++)
-                    for (int x = 0; x < w; x++)
-                    {
-                        int i = (y * w + x) * 4;
-                        bool changed = whole[i] != noRig[i] || whole[i + 1] != noRig[i + 1]
-                                    || whole[i + 2] != noRig[i + 2] || whole[i + 3] != noRig[i + 3];
-                        if (changed) { rigSum += y; rigN++; }
-                        else if (noRig[i + 3] > 8) { hullSum += y; hullN++; }
-                    }
-                Assert.Greater(rigN, 0,
-                    $"culling level {RiggingTag} changed no pixels at {heading}°, so this guard " +
-                    "tested nothing. Per-tag heights:" + System.Environment.NewLine + topTable);
-
-                double rigRow = (double)rigSum / rigN, hullRow = (double)hullSum / hullN;
-                // ⚠️ NO ARITHMETIC HERE, ON PURPOSE. The published row EQUALS the buffer row: the
-                // pipeline flips twice — ReadBackTopLeft turns the bottom-left RenderTexture into a
-                // top-left buffer, SavePng flips that back into Texture2D's bottom-left space, and
-                // EncodeToPNG writes top-down. Two flips compose to identity, and it is VERIFIED
-                // that way rather than reasoned: the published files' inked row spans equal these
-                // buffers' to the row at all four headings. The first cut of this guard "corrected"
-                // for a flip that cancels and failed on a pack that was by then correct — a guard
-                // that models the pipeline instead of reading it is one more thing to get wrong.
-                Assert.Less(rigRow, hullRow,
-                    $"at {heading}° the mast's ink sits BELOW the hull's (rows {rigRow:0} vs " +
-                    $"{hullRow:0}). Her rigging is at z 2.953..5.958 over a house topping at 3.055, " +
-                    "so this is upside down. Check SavePng: ReadBackTopLeft is top-left origin and " +
-                    "Texture2D is bottom-left, and every OTHER measurement in this file reads the " +
-                    "buffer rather than the file, so all of them stay green through the defect.");
+                string path = SavePng($"{hull.Name}-{heading:000}-roundtrip.png", whole, hm, committed: false);
+                var tex = new Texture2D(2, 2, TextureFormat.RGBA32, false);
+                try
+                {
+                    Assert.IsTrue(ImageConversion.LoadImage(tex, File.ReadAllBytes(path), false),
+                                  $"the PNG at {path} did not decode");
+                    Assert.AreEqual(hm.CellW, tex.width); Assert.AreEqual(hm.CellH, tex.height);
+                    Color32[] px = tex.GetPixels32();   // bottom-left origin, like every Texture2D
+                    var fromFile = new byte[whole.Length];
+                    int w = hm.CellW, h = hm.CellH;
+                    for (int y = 0; y < h; y++)
+                        for (int x = 0; x < w; x++)
+                        {
+                            Color32 c = px[(h - 1 - y) * w + x];   // to top-left, the buffer's frame
+                            int o = (y * w + x) * 4;
+                            fromFile[o] = c.r; fromFile[o + 1] = c.g; fromFile[o + 2] = c.b; fromFile[o + 3] = c.a;
+                        }
+                    int differ = CountDiffering(whole, fromFile);
+                    Assert.AreEqual(0, differ,
+                        $"at {heading}° the PNG on disk differs from the render buffer on {differ} px. " +
+                        "SavePng is the ONE place the top-left buffer is flipped into Texture2D's " +
+                        "bottom-left frame; a pack that fails here is published inverted (or worse) " +
+                        "while every buffer-side number stays green.");
+                }
+                finally
+                {
+                    UnityEngine.Object.DestroyImmediate(tex);
+                    File.Delete(path);
+                }
             }
         }
 
@@ -399,15 +435,16 @@ namespace HiddenHarbours.Tests.RigBaking
 
             foreach (float heading in Headings)
             {
-                SavePng($"{hull.Name}-{heading:000}-closed.png", Render(hm, hm.Mesh, 0, heading), hm);
+                SavePng($"{hull.Name}-{heading:000}-closed.png", Render(hm, hm.Mesh, 0, heading), hm, hull.Committed);
                 foreach (HullMeshDef.LevelTag lvl in hm.LevelTags)
                 {
                     if (!lvl.Enclosed) continue;
                     SavePng($"{hull.Name}-{heading:000}-open-{lvl.LevelId}.png",
-                            Render(hm, hm.Mesh, lvl.Tag, heading, lvl.LidTag), hm);
+                            Render(hm, hm.Mesh, lvl.Tag, heading, lvl.LidTag), hm, hull.Committed);
                 }
             }
-            UnityEngine.Debug.Log($"[full-mesh-interiors] eyeball pack written to {ImageDir}");
+            UnityEngine.Debug.Log($"[full-mesh-interiors] {hull.Name}: eyeball pack written to " +
+                                  (hull.Committed ? ImageDir : CacheDir("full-mesh-interiors")));
         }
 
         // ============================================================================ machinery
@@ -647,9 +684,12 @@ namespace HiddenHarbours.Tests.RigBaking
         /// A rendering fixture that measures one buffer and publishes another must flip in exactly
         /// one place, and this is it.</para>
         /// </summary>
-        static void SavePng(string name, byte[] rgba, HullMeshDef hm)
+        /// <summary>Where a NON-committed hull's pack and reports go: the temporary cache, logged.</summary>
+        static string CacheDir(string leaf) => Path.Combine(Application.temporaryCachePath, leaf);
+
+        static string SavePng(string name, byte[] rgba, HullMeshDef hm, bool committed)
         {
-            string dir = Path.Combine(RepoRoot, ImageDir);
+            string dir = committed ? Path.Combine(RepoRoot, ImageDir) : CacheDir("full-mesh-interiors");
             Directory.CreateDirectory(dir);
             int w = hm.CellW, h = hm.CellH;
             var tex = new Texture2D(w, h, TextureFormat.RGBA32, false);
@@ -662,13 +702,16 @@ namespace HiddenHarbours.Tests.RigBaking
                 }
             tex.SetPixels32(px);
             tex.Apply();
-            File.WriteAllBytes(Path.Combine(dir, name), tex.EncodeToPNG());
+            string path = Path.Combine(dir, name);
+            File.WriteAllBytes(path, tex.EncodeToPNG());
             UnityEngine.Object.DestroyImmediate(tex);
+            return path;
         }
 
-        static void WriteReport(string name, string text)
+        static void WriteReport(string name, string text, bool committed)
         {
-            string dir = Path.Combine(RepoRoot, "docs", "design", "spikes");
+            string dir = committed ? Path.Combine(RepoRoot, "docs", "design", "spikes")
+                                   : CacheDir("full-mesh-interiors-reports");
             Directory.CreateDirectory(dir);
             File.WriteAllText(Path.Combine(dir, name), text);
             UnityEngine.Debug.Log("[full-mesh-interiors] " + name + "\n" + text);
