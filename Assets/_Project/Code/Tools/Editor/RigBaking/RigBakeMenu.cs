@@ -23,15 +23,33 @@ namespace HiddenHarbours.Tools.RigBaking
         public const int SmallHullRockFrames = 8;
 
         [MenuItem("Hidden Harbours/Art/Bake Lobster Boat (32 dir × 4 rock)", priority = 40)]
-        public static void BakeLobsterBoat()
-        {
-            RunBake(new BakeRequest("lobsterBoat", Facings, rockFrames: 0,
-                                    BoatArtFolder, "LobsterBoatIso"),
-                    "lobster boat — base facings");
+        public static void BakeLobsterBoat() => BakeLargeHull("lobsterBoat", "LobsterBoatIso", "lobster boat");
 
-            RunBake(new BakeRequest("lobsterBoat", Facings, LargeHullRockFrames,
-                                    BoatArtFolder, "LobsterBoatIsoRock"),
-                    "lobster boat — rock grid");
+        /// <summary>
+        /// The Cape Islander's exterior sheet — the LAST hand-exported hull sheet in the repo until
+        /// this recipe replaced it (8 cells, baked in a browser at #224 before her rig existed, pivot
+        /// recovered from pixels). Same recipe as the lobster: 32 facings, 4 rock frames across two
+        /// pages, the rig's own pivot, and the baker's clockwise contract — so her
+        /// <c>BoatVisualDef.FacingsAreCounterClockwise</c> is FALSE from here on
+        /// (<c>CapeIslanderFacingTests</c> reads her pixels and pins it).
+        /// </summary>
+        [MenuItem("Hidden Harbours/Art/Bake Cape Islander (32 dir × 4 rock)", priority = 41)]
+        public static void BakeCapeIslander() => BakeLargeHull("capeIslander", "CapeIslanderIso", "cape islander");
+
+        /// <summary>
+        /// The large-hull recipe: a 32-facing base sheet plus a 4-frame rock grid, which at a
+        /// 456×420 cell lands as <c>{base}.png</c> + <c>{base}Rock0.png</c> + <c>{base}Rock1.png</c>
+        /// (the baker splits 128 rock cells across two 8×8 pages to stay under the texture cap).
+        /// Bake + slice in one operation — see the note on the slice below for why that is
+        /// correctness, not convenience.
+        /// </summary>
+        static void BakeLargeHull(string rigKey, string baseName, string label)
+        {
+            RunBake(new BakeRequest(rigKey, Facings, rockFrames: 0, BoatArtFolder, baseName),
+                    $"{label} — base facings");
+
+            RunBake(new BakeRequest(rigKey, Facings, LargeHullRockFrames, BoatArtFolder, $"{baseName}Rock"),
+                    $"{label} — rock grid");
 
             AssetDatabase.Refresh();
 
@@ -40,9 +58,9 @@ namespace HiddenHarbours.Tools.RigBaking
             // File.WriteAllBytes behind the AssetDatabase's back.
             foreach (var p in new[]
                      {
-                         $"{BoatArtFolder}/LobsterBoatIso.png",
-                         $"{BoatArtFolder}/LobsterBoatIsoRock0.png",
-                         $"{BoatArtFolder}/LobsterBoatIsoRock1.png",
+                         $"{BoatArtFolder}/{baseName}.png",
+                         $"{BoatArtFolder}/{baseName}Rock0.png",
+                         $"{BoatArtFolder}/{baseName}Rock1.png",
                      })
                 AssetDatabase.ImportAsset(p, ImportAssetOptions.ForceUpdate);
 
@@ -119,11 +137,16 @@ namespace HiddenHarbours.Tools.RigBaking
         /// written total=0, which reads as a pass. That trap is recorded in ADR 0021 and it would
         /// quietly poison any job written that way.
         /// </summary>
-        public static void BakeLobsterBoatFromCommandLine()
+        public static void BakeLobsterBoatFromCommandLine() => RunHeadless(BakeLobsterBoat);
+
+        /// <summary>Headless twin of <see cref="BakeCapeIslander"/> — same -quit warning as above.</summary>
+        public static void BakeCapeIslanderFromCommandLine() => RunHeadless(BakeCapeIslander);
+
+        static void RunHeadless(Action bake)
         {
             try
             {
-                BakeLobsterBoat();
+                bake();
                 EditorApplication.Exit(0);
             }
             catch (Exception ex)

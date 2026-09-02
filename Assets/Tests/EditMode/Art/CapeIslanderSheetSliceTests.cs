@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
@@ -7,48 +9,54 @@ using UnityEngine;
 namespace HiddenHarbours.Tests.Art.EditMode
 {
     /// <summary>
-    /// Guards the baked slice of the Cape Islander iso kit (the ~12.9 m inshore working boat and her
-    /// 8-frame wave-rock loop). Mirrors <see cref="SkiffSheetSliceTests"/> and
-    /// <see cref="PuntSheetSliceTests"/> for the biggest hull in the project.
+    /// Guards the baked slice of the Cape Islander iso kit — the ~12.9 m inshore working boat — as it has
+    /// shipped since the full-mesh rollout's PR 2b: a <b>RigBaker output</b>, the lobster's recipe exactly
+    /// (32 facings on an 8×4 base page, 4 rock frames across two 8×8 pages, the rig's declared pivot).
+    /// Mirrors <see cref="Tests.RigBaking.LobsterBoatSheetSliceTests"/> for the biggest hull in the project.
     ///
-    /// <para><b>THE DOWNSCALE TRAP IS REAL ON THIS KIT, not theoretical.</b> Her rock sheet is
-    /// 3648×3360 — BOTH dimensions past Unity's default 2048 <c>maxTextureSize</c> — so without the
-    /// cap lift it imports at 0.56× and every source-pixel rect is refit, alpha-trimmed, and stripped
-    /// of its pivot. The punt's sheets all fit under 2048 and could never trip it; the skiffs' motor
-    /// sheets did, and the failure was silent. It is silent because <b>the sprite COUNT still comes out
-    /// right</b>: 8 and 64, exactly as expected, on a sheet that is now 2048×1886 of mush. Only
-    /// <see cref="Sheet_ImportsAtNativeRes_NotDownscaled"/> and the cell-size/pivot assertions in
-    /// <see cref="EverySlice_SharesTheBoatOriginPivot"/> can tell the difference, which is why the cell
-    /// rect is asserted explicitly here and not merely implied by the count.</para>
+    /// <para><b>THE DOWNSCALE TRAP IS REAL ON THIS KIT, not theoretical.</b> Each rock page is 3648×3360 —
+    /// BOTH dimensions past Unity's default 2048 <c>maxTextureSize</c> — so without the cap lift it imports
+    /// at 0.56× and every source-pixel rect is refit, alpha-trimmed, and stripped of its pivot. The failure is
+    /// silent because <b>the sprite COUNT still comes out right</b>: 32 and 64, exactly as expected, on a
+    /// sheet that is now mush. Only <see cref="Sheet_ImportsAtNativeRes_NotDownscaled"/> and the
+    /// cell-size/pivot assertions in <see cref="EverySlice_SharesTheBoatOriginPivot"/> can tell the
+    /// difference, which is why the cell rect is asserted explicitly here and not merely implied by the
+    /// count.</para>
     ///
-    /// <para><b>The pivot is the one MEASURED number in this kit.</b> Every other iso kit shipped a
-    /// README fixing its anchor; the Cape Islander arrived as two loose PNGs with neither README nor
-    /// rig, so hers was recovered from the pixels — see the derivation on
-    /// <c>SpriteSheetSlicer.CapeIslanderOrigin</c>, which also records the ≈±4 px (≈0.12 m) uncertainty
-    /// that recovery carries. This fixture pins what was measured so a re-slice cannot quietly move it,
-    /// and <see cref="CapeIslanderOrigin_IsHerOwn_NotBorrowedFromAnotherKit"/> stops a future tidy-up
-    /// from folding her into a neighbour's const the way the punt was nearly folded into the skiffs'.</para>
+    /// <para><b>The pivot is READ FROM HER RIG now, and this fixture proves it.</b> Her first sheet (#224)
+    /// arrived as two loose PNGs with neither README nor rig, so its pivot was RECOVERED FROM PIXELS at
+    /// (228, 263) ±4 px. The re-bake replaced that with the rig's declared (228, 258), which RigBaker
+    /// records in <c>CapeIslanderIsoAnchors.json</c>. <see cref="HerPivot_IsTheRigsDeclaredOne_NotTheRecoveredOne"/>
+    /// reads the anchors file and pins the slices to it — and pins them AWAY from the old recovered number,
+    /// so a tidy-up that "restores" 263 from a stale comment fails loudly.</para>
+    ///
+    /// <para><b>She is 32 facings, and her facings are genuinely CLOCKWISE.</b> Every hand-exported kit
+    /// carries <c>FacingsAreCounterClockwise = true</c> to correct its mirror at runtime; hers (like the
+    /// lobster's) was corrected at BAKE time. The PIXEL proof of that is <c>CapeIslanderFacingTests</c>;
+    /// this file guards the geometry only.</para>
     /// </summary>
     public class CapeIslanderSheetSliceTests
     {
         private const string Boats = "Assets/_Project/Art/Boats/";
+        private const string AnchorsJson = Boats + "CapeIslanderIsoAnchors.json";
 
-        // The measured kit geometry, as expectations: (file, cols, rows, cellW, cellH).
-        //   Hull — 8 cols × 1 ROW  → index = heading (0 N, 1 NE, 2 E, 3 SE, 4 S, 5 SW, 6 W, 7 NW as
-        //          LABELLED; the art is baked counter-clockwise — see CapeIslanderFacingTests).
-        //   Rock — 8 cols (wave frame) × 8 ROWS (heading) → index = heading×8 + frame.
-        // NOTE THE AXIS FLIP: the base sheet's columns are facings, the rock sheet's ROWS are. Every iso
-        // kit in the project does this, and row-major slicing is what turns it into the index contract.
+        // The baked kit geometry, as expectations: (file, cols, rows, cellW, cellH). 8 cols × N rows,
+        // row-major from the top-left; flat index = heading×rockFrames + frame.
         private static readonly (string File, int Cols, int Rows, int CellW, int CellH)[] Sheets =
         {
-            ("CapeIslanderIso.png",     8, 1, 456, 420),
-            ("CapeIslanderIsoRock.png", 8, 8, 456, 420),
+            ("CapeIslanderIso.png",      8, 4, 456, 420),   // 32 facings, no rock
+            ("CapeIslanderIsoRock0.png", 8, 8, 456, 420),   // headings  0–15 × 4 rock frames
+            ("CapeIslanderIsoRock1.png", 8, 8, 456, 420),   // headings 16–31 × 4 rock frames
         };
 
-        // Her boat origin (amidships, keel bottom, centreline), normalized. (228, 263) from the cell's
-        // TOP-LEFT; flipped to Unity's bottom-left origin, y = (420 − 263) = 157.
-        private const float OriginX = 0.5f;           // 228/456 — the cardinal cells are mirror-symmetric here
-        private const float OriginY = 157f / 420f;    // ≈0.373809
+        /// <summary>Her boat origin (amidships, keel bottom, centreline), normalized. The rig declares
+        /// (228, 258) from the cell's TOP-LEFT; flipped to Unity's bottom-left origin, y = 420 − 258 = 162.</summary>
+        private const float OriginX = 228f / 456f;
+        private const float OriginY = 162f / 420f;
+
+        /// <summary>The number the OLD hand export carried — recovered from pixels, ≈±4 px honest
+        /// uncertainty. Kept only so a regression back to it is named, not merely "off by 5 px".</summary>
+        private const float RecoveredOriginY_Legacy = 157f / 420f;
 
         private static IEnumerable<(string File, int Cols, int Rows, int CellW, int CellH)> AllSheets() => Sheets;
 
@@ -131,9 +139,9 @@ namespace HiddenHarbours.Tests.Art.EditMode
         public void Slices_AreNamed_StemUnderscoreIndex_ContiguousFromZero(
             (string File, int Cols, int Rows, int CellW, int CellH) s)
         {
-            // The `_N` suffix IS the index math contract (heading = index/Cols, frame = index%Cols) and is
-            // what BoatVisualLibraryBuilder.SpriteIndex parses. A gap or a rename silently mis-maps headings.
-            string stem = System.IO.Path.GetFileNameWithoutExtension(s.File);
+            // The `_N` suffix IS the index math contract (heading = index/rockFrames, frame = index%rockFrames)
+            // and is what BoatVisualLibraryBuilder.SpriteIndex parses. A gap or a rename silently mis-maps headings.
+            string stem = Path.GetFileNameWithoutExtension(s.File);
             var indices = new HashSet<int>();
             foreach (var sprite in LoadSlices(s.File))
             {
@@ -147,50 +155,84 @@ namespace HiddenHarbours.Tests.Art.EditMode
         }
 
         [Test]
-        public void HullAndRock_ShareTheSameCellAndPivot_SoTheRockNeverShiftsTheBoat()
+        public void HullAndRockPages_ShareTheSameCellAndPivot_SoTheRockNeverShiftsTheBoat()
         {
-            // The rock grid replaces the static facing frame-by-frame under the wave. If the two sheets
-            // disagreed by even a pixel the whole boat would twitch every time the wave phase crossed a
-            // frame boundary — a very visible bug for a very small cause.
+            // The rock grid replaces the static facing frame-by-frame under the wave. If the pages disagreed
+            // by even a pixel the whole boat would twitch every time the wave phase crossed a frame boundary
+            // — a very visible bug for a very small cause. BOTH pages, because the second is the one a
+            // page-split regression would drop.
             var hull = LoadSlices("CapeIslanderIso.png").First();
-            var rock = LoadSlices("CapeIslanderIsoRock.png").First();
-
-            Assert.AreEqual(hull.rect.size, rock.rect.size, "hull and rock cells must match exactly");
-            Assert.AreEqual(hull.pivot.x, rock.pivot.x, 1e-4f, "hull/rock pivot.x diverged");
-            Assert.AreEqual(hull.pivot.y, rock.pivot.y, 1e-4f, "hull/rock pivot.y diverged");
+            foreach (string page in new[] { "CapeIslanderIsoRock0.png", "CapeIslanderIsoRock1.png" })
+            {
+                var rock = LoadSlices(page).First();
+                Assert.AreEqual(hull.rect.size, rock.rect.size, $"{page}: hull and rock cells must match exactly");
+                Assert.AreEqual(hull.pivot.x, rock.pivot.x, 1e-4f, $"{page}: hull/rock pivot.x diverged");
+                Assert.AreEqual(hull.pivot.y, rock.pivot.y, 1e-4f, $"{page}: hull/rock pivot.y diverged");
+            }
         }
 
+        /// <summary>
+        /// 32 facings is the owner's decision and the reason the baker exists. If a future change quietly
+        /// re-bakes her at 8 — or restores the 8-cell hand export from history — a 13 m hull goes back to
+        /// snapping between 45° steps, which is exactly the thing ADR 0021 set out to fix.
+        /// </summary>
         [Test]
-        public void CapeIslanderOrigin_IsHerOwn_NotBorrowedFromAnotherKit()
+        public void SheDoesNotRegressBelow32Facings()
         {
-            // Same anchor *concept* (amidships, keel bottom, centreline), a very different cell — so she
-            // needs her OWN const. The dory derives 68/156 = 0.4359, the punt 74/168 = 0.4405, the skiffs
-            // 96/216 = 0.4444; hers is 157/420 ≈ 0.3738, which is not close to any of them. This test
-            // exists so a future "tidy-up" that folds the consts together fails loudly rather than
-            // quietly sinking a 13 m boat by nearly a metre.
-            foreach (var (name, y) in new[] { ("dory", 68f / 156f), ("punt", 74f / 168f), ("skiff", 96f / 216f) })
-                Assert.That(OriginY, Is.Not.EqualTo(y).Within(1e-3f),
-                            $"the Cape Islander's origin must be her own, not the {name}'s");
+            Assert.AreEqual(32, LoadSlices("CapeIslanderIso.png").Length,
+                "The Cape Islander's base sheet must carry 32 facings.");
+            Assert.AreEqual(128,
+                LoadSlices("CapeIslanderIsoRock0.png").Length + LoadSlices("CapeIslanderIsoRock1.png").Length,
+                "Her rock grid must carry 32 facings × 4 frames across two pages.");
+        }
+
+        /// <summary>
+        /// The pivot comes off the RIG, through the baker's own record, and this fixture reads that record
+        /// rather than restating the number: <c>CapeIslanderIsoAnchors.json</c> carries <c>pivotTopLeft</c>
+        /// as RigBaker read it from <c>CapeIslanderIso.pivot</c>. The slices must agree with it — and must
+        /// NOT agree with the old recovered (228, 263), which is 5 px away and was the one number in her
+        /// kit that was ever measured by eye.
+        /// </summary>
+        [Test]
+        public void HerPivot_IsTheRigsDeclaredOne_NotTheRecoveredOne()
+        {
+            Assert.IsTrue(File.Exists(AnchorsJson),
+                $"{AnchorsJson} is missing — RigBaker writes it beside the sheet on every bake; commit it.");
+            var m = Regex.Match(File.ReadAllText(AnchorsJson),
+                                "\"pivotTopLeft\"\\s*:\\s*\\{\\s*\"x\"\\s*:\\s*([0-9.]+)\\s*,\\s*\"y\"\\s*:\\s*([0-9.]+)");
+            Assert.IsTrue(m.Success, $"{AnchorsJson}: no pivotTopLeft record");
+            float rigX = float.Parse(m.Groups[1].Value, System.Globalization.CultureInfo.InvariantCulture);
+            float rigY = float.Parse(m.Groups[2].Value, System.Globalization.CultureInfo.InvariantCulture);
 
             var hull = LoadSlices("CapeIslanderIso.png").First();
+            Assert.AreEqual(rigX, hull.pivot.x, 0.01f, "slice pivot.x is not the rig's declared pivot");
+            Assert.AreEqual(hull.rect.height - rigY, hull.pivot.y, 0.01f,
+                "slice pivot.y is not the rig's declared pivot (remember the top-left → bottom-left flip)");
+
             Assert.AreEqual(OriginY, hull.pivot.y / hull.rect.height, 1e-4f,
-                            "CapeIslanderIso pivot drifted off her measured origin");
+                "the fixture's own OriginY drifted off the rig — update the const from the anchors file, not by eye");
+            Assert.That(hull.pivot.y / hull.rect.height, Is.Not.EqualTo(RecoveredOriginY_Legacy).Within(1e-3f),
+                "the slice pivot is back on the OLD pixel-recovered origin (228, 263). That number was an " +
+                "estimate with ±4 px of honest uncertainty; the rig declares 258. Do not restore it.");
         }
 
         [Test]
         public void HerCellIsTheBiggestInTheProject_AndThatIsAMemoryFact_NotAnAccident()
         {
-            // Not a style assertion — a budget one (CLAUDE.md rule 7, "mind texture memory"). Her rock
-            // sheet alone is 3648×3360 RGBA32 = ~46.8 MiB uncompressed, roughly 8× the dory's whole kit.
-            // If someone later re-exports her at a larger cell this goes red and the cost gets re-argued
-            // rather than absorbed.
-            var rock = AssetDatabase.LoadAssetAtPath<Texture2D>(Boats + "CapeIslanderIsoRock.png");
-            Assert.IsNotNull(rock);
-            double mib = (double)rock.width * rock.height * 4 / (1024 * 1024);
-            Assert.Less(mib, 50d,
-                $"CapeIslanderIsoRock is {mib:0.0} MiB uncompressed RGBA. That is already the largest single " +
-                "texture in the project; past 50 it needs an explicit decision (compression trades away the " +
-                "crisp pixel edges), not a silent import.");
+            // Not a style assertion — a budget one (CLAUDE.md rule 7, "mind texture memory"). Each rock
+            // page is 3648×3360 RGBA32 = ~46.8 MiB uncompressed, and she now ships TWO of them (the
+            // lobster's budget exactly — the same cell, the same page split). If someone later re-exports
+            // her at a larger cell this goes red and the cost gets re-argued rather than absorbed.
+            foreach (string page in new[] { "CapeIslanderIsoRock0.png", "CapeIslanderIsoRock1.png" })
+            {
+                var rock = AssetDatabase.LoadAssetAtPath<Texture2D>(Boats + page);
+                Assert.IsNotNull(rock, page);
+                double mib = (double)rock.width * rock.height * 4 / (1024 * 1024);
+                Assert.Less(mib, 50d,
+                    $"{page} is {mib:0.0} MiB uncompressed RGBA. That is already the largest single texture " +
+                    "class in the project; past 50 it needs an explicit decision (compression trades away the " +
+                    "crisp pixel edges), not a silent import.");
+            }
         }
     }
 }
