@@ -501,7 +501,8 @@ No animation frames (drift, bob, clumping, sway are runtime, driven by the share
 wake work landed the reusable pieces: pooled deposit-anywhere emitters + the ride-the-displaced-sea
 read), no heading bakes, no mirrored cells.
 
-### The wiring cheat-sheet (for the future runtime drift feature — NOT built in the import PR)
+### The wiring cheat-sheet (the runtime drift feature — built: #195 the system, #301 the art at native size, round 2 the anchors)
+Round 2 wires the anchors exactly as listed below: a drifting clump yaws so `dragTail` **trails behind** the transport (`SeaweedDef.DragAlignDegreesPerSecond`); a snag nails the **leading `snags` tip** to the line, swings the body down-transport and sways it about the tip (`SnagByFrondTip`, `SnagSwayDegrees`); the engine reach is `BuoySnagRadiusMeters` (data, per bed). The runtime reads the anchors as sprite-frame metres — cell px over `scale_px_per_m`, y flipped — not the plane-metre `m` (which a test reconciles through `y_foreshorten`). NPC lines and lying-to hulls reach the drift through Core `SnagTargets`.
 1. **SPAWN** — pick species/variant cell; draw registered at the buoy on the water surface.
 2. **DRIFT** — translate the buoy along the current; yaw slowly so dragTail trails down-drift; bob
    from the shared wave field read at the buoy.

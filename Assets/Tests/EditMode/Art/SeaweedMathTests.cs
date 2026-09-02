@@ -260,5 +260,166 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.AreEqual(SeaweedMath.StateDormant, state[1]);
             Assert.AreEqual(SeaweedMath.StateDormant, state[2]);
         }
+
+        // ==== round 2: the art's own anchors — the frond hooks the line, the tail trails the sea ========
+
+        private static float AngleBetween(Vector2 a, Vector2 b) => Vector2.Angle(a, b);
+
+        [Test]
+        public void Rotate_IsTheSameRotationTheSpriteDrawsWith()
+        {
+            // Quaternion.Euler(0,0,deg) is what the presenter hands the transform; the anchor math must
+            // agree with it to the last bit of handedness, or a tip lands mirrored across the pivot.
+            var v = new Vector2(0.813f, -0.087f);
+            foreach (float deg in new[] { 0f, 37f, 90f, 180f, 271.5f, -45f })
+            {
+                Vector2 q = Quaternion.Euler(0f, 0f, deg) * v;
+                Vector2 r = SeaweedMath.Rotate(v, deg);
+                Assert.AreEqual(q.x, r.x, 1e-5f, $"x at {deg} deg");
+                Assert.AreEqual(q.y, r.y, 1e-5f, $"y at {deg} deg");
+            }
+            Assert.AreEqual(0f, SeaweedMath.Rotate(Vector2.right, 90f).x, 1e-6f);
+            Assert.AreEqual(1f, SeaweedMath.Rotate(Vector2.right, 90f).y, 1e-6f,
+                            "+90 deg turns +x into +y (counter-clockwise, Unity's z)");
+        }
+
+        [Test]
+        public void TailAlignedRotation_KnobZero_ZeroDt_DeadBand_AndNoTail_AllHoldTheRotation()
+        {
+            var tail = new Vector2(0.8f, -0.1f);
+            var transport = new Vector2(0.3f, 0.1f);
+            Assert.AreEqual(123.4f, SeaweedMath.TailAlignedRotation(transport, 123.4f, tail, 0f, 0.1f),
+                            "rate 0 = round 1's hashed rotation stands");
+            Assert.AreEqual(123.4f, SeaweedMath.TailAlignedRotation(transport, 123.4f, tail, 25f, 0f), "no time passed");
+            Assert.AreEqual(123.4f, SeaweedMath.TailAlignedRotation(new Vector2(0.001f, 0f), 123.4f, tail, 25f, 0.1f),
+                            "a becalmed sea has no direction worth chasing");
+            Assert.AreEqual(123.4f, SeaweedMath.TailAlignedRotation(transport, 123.4f, Vector2.zero, 25f, 0.1f),
+                            "a clump without a tail never aligns");
+        }
+
+        [Test]
+        public void TailAlignedRotation_ConvergesUntilTheTailTrailsBehindTheTransport_Deterministically()
+        {
+            var tail = new Vector2(0.813f, -0.087f);          // SugarKelp v0's drag tail
+            var transport = new Vector2(0.3f, 0.1f);          // carried east-north-east
+            float rotA = 200f, rotB = 200f;
+            const float dt = 1f / 30f;
+            for (int s = 0; s < 300; s++)                     // 10 s at 25 deg/s — plenty to close 180
+            {
+                rotA = SeaweedMath.TailAlignedRotation(transport, rotA, tail, 25f, dt);
+                rotB = SeaweedMath.TailAlignedRotation(transport, rotB, tail, 25f, dt);
+            }
+            Assert.AreEqual(rotA, rotB, "the same inputs twice -> the same rotation, bit for bit");
+
+            Vector2 tailWorld = SeaweedMath.Rotate(tail, rotA);
+            Assert.Less(AngleBetween(tailWorld, -transport), 0.05f,
+                        "the tail streams out BEHIND the motion — against the transport, the way anything towed trails");
+            Assert.Greater(AngleBetween(tailWorld, transport), 179.9f);
+        }
+
+        [Test]
+        public void TailAlignedRotation_TakesTheShorterArc_AtTheRate()
+        {
+            var tail = Vector2.right;                          // target for transport +x is 180 deg
+            float rot = SeaweedMath.TailAlignedRotation(Vector2.right, 350f, tail, 30f, 1f);
+            Assert.AreEqual(320f, Mathf.Repeat(rot, 360f), 1e-3f,
+                            "30 deg/s for 1 s, DOWN toward 180 (from 350 the short arc is 170 down, not 190 up through 0)");
+        }
+
+        [Test]
+        public void PickSnagAnchor_PicksTheTipLeadingTheApproach_TiesToTheLowerIndex()
+        {
+            var snags = new[] { new Vector2(-0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 0.5f) };
+            Assert.AreEqual(1, SeaweedMath.PickSnagAnchor(snags, 3, 0f, Vector2.right),
+                            "approaching a line to the east: the east tip meets it first");
+            Assert.AreEqual(0, SeaweedMath.PickSnagAnchor(snags, 3, 180f, Vector2.right), "turned round, the other tip leads");
+            Assert.AreEqual(2, SeaweedMath.PickSnagAnchor(snags, 3, 0f, Vector2.up));
+            Assert.AreEqual(0, SeaweedMath.PickSnagAnchor(snags, 2, 0f, Vector2.up),
+                            "only the packed count is live: of the two flat tips neither leads -> lower index");
+
+            var tie = new[] { new Vector2(0.5f, 0f), new Vector2(0.5f, 0f) };
+            Assert.AreEqual(0, SeaweedMath.PickSnagAnchor(tie, 2, 0f, Vector2.right), "an exact tie is deterministic: the lower index");
+            Assert.AreEqual(-1, SeaweedMath.PickSnagAnchor(null, 0, 0f, Vector2.right), "no anchors (the greybox blob) -> none");
+            Assert.AreEqual(-1, SeaweedMath.PickSnagAnchor(snags, 0, 0f, Vector2.right));
+            Assert.GreaterOrEqual(SeaweedMath.PickSnagAnchor(snags, 3, 0f, Vector2.zero), 0,
+                                  "a degenerate approach still picks something (never -1 with anchors)");
+        }
+
+        [Test]
+        public void PivotForAnchor_PutsTheAnchorOnTheContact_ToATenthOfAMillimetre()
+        {
+            var contact = new Vector2(3.2f, -1.7f);
+            var anchor = new Vector2(-0.656f, 0.043f);         // SugarKelp v0's first snag tip
+            foreach (float rot in new[] { 0f, 33f, 90f, 200f, 359f })
+            {
+                Vector2 pivot = SeaweedMath.PivotForAnchor(contact, anchor, rot);
+                Vector2 back = pivot + SeaweedMath.Rotate(anchor, rot);
+                Assert.AreEqual(contact.x, back.x, 1e-4f, $"x at {rot} deg");
+                Assert.AreEqual(contact.y, back.y, 1e-4f, $"y at {rot} deg");
+            }
+        }
+
+        [Test]
+        public void HangRotation_LaysTheBodyDownTransportOfTheTip()
+        {
+            var anchor = new Vector2(-0.656f, 0.043f);
+            foreach (var down in new[] { Vector2.right, Vector2.up, new Vector2(-0.3f, -0.2f) })
+            {
+                float rot = SeaweedMath.HangRotation(anchor, down);
+                Vector2 body = SeaweedMath.Rotate(-anchor, rot);        // tip -> pivot, as drawn
+                Assert.Less(AngleBetween(body, down), 1e-3f, $"body streams along {down}");
+            }
+            float slack = SeaweedMath.HangRotation(anchor, Vector2.zero);
+            Assert.Less(AngleBetween(SeaweedMath.Rotate(-anchor, slack), Vector2.down), 1e-3f,
+                        "dead slack: hangs due south, never NaN");
+            Assert.AreEqual(0f, SeaweedMath.HangRotation(Vector2.zero, Vector2.right), "an anchor at the pivot has no lever arm");
+        }
+
+        [Test]
+        public void HangAlignedRotation_EasesTowardTheHang_AndHoldsAtKnobZero()
+        {
+            var anchor = new Vector2(-0.5f, 0.1f);
+            float held = SeaweedMath.HangAlignedRotation(Vector2.right, 77f, anchor, 0f, 0.1f);
+            Assert.AreEqual(77f, held, "rate 0: the hang stays where the hook put it");
+
+            float rot = 77f;
+            for (int s = 0; s < 600; s++) rot = SeaweedMath.HangAlignedRotation(Vector2.up, rot, anchor, 25f, 1f / 30f);
+            Assert.Less(AngleBetween(SeaweedMath.Rotate(-anchor, rot), Vector2.up), 0.05f,
+                        "the tide turned north — the body swung round to lie north of the tip");
+        }
+
+        [Test]
+        public void ContactPoint_ABuoyIsItsLine_AHullIsItsRim()
+        {
+            Assert.AreEqual(new Vector2(6f, 0f), SeaweedMath.ContactPoint(new Vector2(2f, 0f), new Vector2(6f, 0f), 0f),
+                            "radius 0: the line itself");
+            Vector2 rim = SeaweedMath.ContactPoint(new Vector2(2f, 0f), new Vector2(6f, 0f), 1.2f);
+            Assert.AreEqual(4.8f, rim.x, Eps, "on the hull's rim, facing the drifter");
+            Assert.AreEqual(0f, rim.y, Eps);
+            Vector2 dead = SeaweedMath.ContactPoint(new Vector2(6f, 0f), new Vector2(6f, 0f), 1.2f);
+            Assert.AreEqual(-1.2f, dead.y, Eps, "a drifter dead on the centre touches the south rim, never NaN");
+        }
+
+        [Test]
+        public void NearestWithin_WithRadii_MeasuresFromTheRim_AndMatchesTheLineOnlyRuleAtZero()
+        {
+            var points = new[] { new Vector2(5f, 0f), new Vector2(1.5f, 0f), new Vector2(0f, 4f) };
+            var zero = new float[3];
+            var radii = new[] { 4.5f, 0f, 0f };
+            Assert.AreEqual(SeaweedMath.NearestWithin(Vector2.zero, points, 3, 2f),
+                            SeaweedMath.NearestWithin(Vector2.zero, points, zero, 3, 2f), "all lines: the two rules agree");
+            Assert.AreEqual(0, SeaweedMath.NearestWithin(Vector2.zero, points, radii, 3, 2f),
+                            "the hull's rim at 0.5 m is nearer than the line at 1.5 m");
+            Assert.AreEqual(-1, SeaweedMath.NearestWithin(Vector2.zero, points, radii, 3, 0.4f), "out of reach of everything");
+        }
+
+        [Test]
+        public void BreaksFree_ZeroIsNever_OtherwiseAtTheThreshold_EitherWay()
+        {
+            Assert.IsFalse(SeaweedMath.BreaksFree(9f, 0f), "the shipped default: the swell never tears a clump off");
+            Assert.IsFalse(SeaweedMath.BreaksFree(0.29f, 0.3f));
+            Assert.IsTrue(SeaweedMath.BreaksFree(0.3f, 0.3f));
+            Assert.IsTrue(SeaweedMath.BreaksFree(-0.31f, 0.3f), "a trough pulls as hard as a crest lifts");
+        }
     }
 }

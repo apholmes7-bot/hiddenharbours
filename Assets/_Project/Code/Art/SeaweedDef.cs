@@ -73,11 +73,14 @@ namespace HiddenHarbours.Art
         [Min(0.05f)] public float MergeRadiusMeters = 0.8f;
 
         [Header("Snagging (clumps that drift onto something STICK)")]
-        [Tooltip("Distance (m) from a player trap buoy at which drifting weed fouls on its line (read " +
-                 "off the Core TrapPlaced signal — never the Fishing module).")]
+        [Tooltip("Reach (m) at which drifting weed fouls on a snag target: the player's trap buoys (read " +
+                 "off the Core TrapPlaced signal — never the Fishing module) and whatever else is in the " +
+                 "water with a line through Core SnagTargets (the NPC fleet's buoys, a hull lying-to). " +
+                 "Measured from a buoy's line, or from a hull's own rim.")]
         [Min(0f)] public float BuoySnagRadiusMeters = 0.9f;
-        [Tooltip("Where a snagged piece comes to rest: on this radius (m) around the buoy, along the " +
-                 "side it drifted in on. Keep at or under the snag radius.")]
+        [Tooltip("Round-1 rest (used when SnagByFrondTip is off, or the art has no anchors): a snagged " +
+                 "piece rests on this radius (m) around the contact, along the side it drifted in on. " +
+                 "Keep at or under the snag radius.")]
         [Min(0f)] public float BuoyRestRadiusMeters = 0.35f;
         [Tooltip("Clock seconds a snagged piece holds on before the waves break it up and wash it away " +
                  "(it recycles and respawns fresh elsewhere). 0 = it sticks until the buoy is hauled.")]
@@ -88,6 +91,29 @@ namespace HiddenHarbours.Art
         [Tooltip("Water depth (m) the returning tide must reach to REFLOAT a stranded piece. Keep it " +
                  "ABOVE the strand depth — the gap is the hysteresis that stops waterline flicker.")]
         [Min(0f)] public float RefloatDepthMeters = 0.25f;
+
+        [Header("Anchors (round 2 — the frond hooks the line, the tail trails the sea)")]
+        [Tooltip("ON: a clump that fouls on a line hangs by one of its art's own SNAG anchors (the frond " +
+                 "tip that met the line first), body streaming down-transport, swaying about that tip. " +
+                 "OFF: round 1 — the clump rests on BuoyRestRadiusMeters around the contact and rocks " +
+                 "about its own pivot. Needs a WeedArt kit that carries anchors; greybox blobs always rest.")]
+        public bool SnagByFrondTip = true;
+        [Tooltip("How fast (degrees per clock second) a DRIFTING clump turns so its drag tail trails " +
+                 "behind the transport carrying it, and a HUNG clump swings to lie down-transport of its " +
+                 "anchor when the set changes (the tide turns). 0 = never — round 1's hashed rotation " +
+                 "stands, and a becalmed sea holds whatever rotation the clump had.")]
+        [Min(0f)] public float DragAlignDegreesPerSecond = 25f;
+        [Tooltip("Max sway (degrees) of a HUNG clump about its snag anchor as the swell works it — " +
+                 "scales with the local wave height AT THE ANCHOR, 0 on dead glass. Replaces the pivot " +
+                 "wobble for hung clumps only.")]
+        [Range(0f, 45f)] public float SnagSwayDegrees = 6f;
+        [Tooltip("Wave-energy release: a hung clump lets go (back adrift where it hangs) when the swell " +
+                 "at its anchor lifts or drops the surface by this much (m). 0 = never — the timed " +
+                 "release and the haul remain the ways off a line. Deterministic from the field.")]
+        [Min(0f)] public float SnagBreakWaveMeters = 0f;
+        [Tooltip("Clock seconds a clump that broke free (wave release) is immune to fouling again, so " +
+                 "it clears the line instead of re-hooking on the next slow tick.")]
+        [Min(0f)] public float SnagBreakFreeSeconds = 20f;
 
         [Header("Riding the sea (the same shared wave field the buoys bob on)")]
         [Tooltip("Screen-vertical lift (world units) per metre of wave height under the clump. Weed " +
