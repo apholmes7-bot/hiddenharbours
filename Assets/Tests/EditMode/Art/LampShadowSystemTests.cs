@@ -405,8 +405,55 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 "a host sent back to the sprite path has no id block to cast with — the caster leaves with the renderer");
         }
 
+        /// <summary>
+        /// <b>The owner's dial is an ASSET, and the asset is the shipped numbers.</b> Rule 6: the tunables live
+        /// where the owner can edit them, and <c>Resources/LampShadowProfile.asset</c> is what
+        /// <see cref="LampShadowSystem"/> loads at <see cref="LampShadowSystem.ProfileResourcePath"/>. This
+        /// holds that asset to the code defaults value by value (the GameConfigAssetCoverage pattern), so a
+        /// stale asset — a field added to the code and never written to the file, or a value that drifted —
+        /// reddens here rather than silently shipping a different look from the one the tests describe.
+        /// </summary>
         [Test]
-        public void TheProfileDefaults_AreTheShippedNumbers()
+        public void TheShippedProfileAsset_LoadsFromResources_AndCarriesTheCodeDefaults()
+        {
+            var asset = Resources.Load<LampShadowProfile>(LampShadowSystem.ProfileResourcePath);
+            Assert.IsNotNull(asset,
+                $"Resources/{LampShadowSystem.ProfileResourcePath}.asset is missing — the owner has no dial " +
+                "for Strength or the length curve, and the system is running on the code defaults instead");
+
+            var code = LampShadowProfile.CreateDefault();
+            _spawned.Add(code);
+            Assert.AreEqual(code.Strength, asset.Strength, 1e-6f, "Strength");
+            Assert.AreEqual(code.ShadowColor, asset.ShadowColor, "ShadowColor");
+            Assert.AreEqual(code.MaxShadows, asset.MaxShadows, "MaxShadows");
+            Assert.AreEqual(code.RefreshHz, asset.RefreshHz, 1e-6f, "RefreshHz");
+            Assert.AreEqual(code.LengthAtNoon, asset.LengthAtNoon, 1e-6f, "LengthAtNoon");
+            Assert.AreEqual(code.LengthAtHorizon, asset.LengthAtHorizon, 1e-6f, "LengthAtHorizon");
+            Assert.AreEqual(code.MaxLength, asset.MaxLength, 1e-6f, "MaxLength");
+            Assert.AreEqual(code.MinLampHeightMeters, asset.MinLampHeightMeters, 1e-6f, "MinLampHeightMeters");
+            Assert.AreEqual(code.MinShearDenominator, asset.MinShearDenominator, 1e-6f, "MinShearDenominator");
+            Assert.AreEqual(code.PixelSnap, asset.PixelSnap, "PixelSnap");
+            Assert.AreEqual(code.PixelsPerUnit, asset.PixelsPerUnit, 1e-6f, "PixelsPerUnit");
+
+            // And the FILE carries every serialized field the code declares, and none the code no longer
+            // does — a key missing from the YAML deserialises to the C# default and would pass the value
+            // checks above by accident only while the two happen to agree.
+            string path = AssetDatabase.GetAssetPath(asset);
+            string yaml = System.IO.File.ReadAllText(path);
+            var declared = new List<string>();
+            foreach (var f in typeof(LampShadowProfile).GetFields(
+                         System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic))
+                if (f.GetCustomAttributes(typeof(SerializeField), true).Length > 0) declared.Add(f.Name);
+            Assert.Greater(declared.Count, 5, "the profile declares its tunables as serialized fields");
+            foreach (string name in declared)
+                StringAssert.Contains("\n  " + name + ":", yaml, $"{path} does not carry '{name}' — the asset is behind the code");
+            foreach (System.Text.RegularExpressions.Match m in
+                     System.Text.RegularExpressions.Regex.Matches(yaml, @"(?m)^  (_[A-Za-z0-9]+):"))
+                Assert.Contains(m.Groups[1].Value, declared, $"{path} carries '{m.Groups[1].Value}', which the code no longer declares");
+        }
+
+        [Test]
+        public void TheCodeDefaults_AreTheShippedNumbers()
         {
             var p = LampShadowProfile.CreateDefault();
             _spawned.Add(p);
