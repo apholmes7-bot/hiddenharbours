@@ -164,7 +164,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
         /// </summary>
         private static readonly string[] CastStates =
         {
-            "idle", "walk", "swim", "tread", "sleep", "drive",
+            "idle", "walk", "run", "swim", "tread", "sleep", "drive",
             "reach_ground", "reach_stowV", "reach_stowH",
         };
 
@@ -172,17 +172,21 @@ namespace HiddenHarbours.Tests.Art.EditMode
         /// The nine NPC presets: subfolder, sheet stem, and any state this preset has that the rest of
         /// the cast does not. <c>fisher</c> is absent because he is the player, baked at the root.
         ///
-        /// <para><b>Why a per-preset tail at all.</b> Every drop before 6.6 baked the cast as a block,
-        /// so one shared list said everything. The 6.6 drop shipped a <c>run</c> for exactly two of
-        /// them — Ginny and Skipper, the two the harbour actually sends anywhere — and the honest way
-        /// to guard that is to say which two. Folding <c>run</c> into <see cref="CastStates"/> would
-        /// demand seven sheets nobody baked; leaving it out entirely would let the two that DO exist
-        /// go unsliced and unguarded, which is how art lands and nothing picks it up.</para>
+        /// <para><b>Why a per-preset tail at all — and why it is EMPTY again as of 2026-09-02.</b>
+        /// Every drop before 6.6 baked the cast as a block, so one shared list said everything. The
+        /// 6.6 drop shipped a <c>run</c> for exactly two of them — Ginny and Skipper — and the honest
+        /// way to guard that was to say which two: folding <c>run</c> into <see cref="CastStates"/>
+        /// would have demanded seven sheets nobody had baked. Rig 6.9 is the drop that baked them.
+        /// Every one of 100 (preset × anim) cells moved between 6.6 and 6.9, so a face pass touches
+        /// every sheet, and two casts running with a 6.6 face while the rest stood with a 6.9 one was
+        /// not a tail worth keeping. <c>run</c> joined <c>CharacterRigBakeMenu.CastStates</c>, the
+        /// seven missing sheets were baked in-engine at the 64 × 92 lane, and the tail emptied itself.
+        /// The MECHANISM stays because the next asymmetry will not announce itself either.</para>
         /// </summary>
         private static readonly (string folder, string stem, string[] also)[] Cast =
         {
-            ("ginny", "Ginny", new[] { "run" }),
-            ("skipper", "Skipper", new[] { "run" }),
+            ("ginny", "Ginny", null),
+            ("skipper", "Skipper", null),
             ("nan", "Nan", null),
             ("deckboss", "DeckBoss", null),
             ("packer", "Packer", null),

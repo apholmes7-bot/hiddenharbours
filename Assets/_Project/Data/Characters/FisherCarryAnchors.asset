@@ -72,6 +72,104 @@ MonoBehaviour:
       RestOffsetMeters: {x: 0.14246869, y: 0.58028126}
       ItemFacing: 7
       Behind: 0
+    LeftRows:
+    - Hand: 2
+      Mount: 0
+      GripOffsetMeters: {x: -0.055, y: -0.0173125}
+      RestOffsetMeters: {x: -0.22600001, y: 0.48459387}
+      ItemFacing: 0
+      Behind: 0
+    - Hand: 2
+      Mount: 0
+      GripOffsetMeters: {x: -0.03534375, y: 0.0014375}
+      RestOffsetMeters: {x: -0.14565623, y: 0.5782187}
+      ItemFacing: 1
+      Behind: 0
+    - Hand: 2
+      Mount: 0
+      GripOffsetMeters: {x: -0.015, y: 0.01484375}
+      RestOffsetMeters: {x: 0, y: 0.617}
+      ItemFacing: 2
+      Behind: 1
+    - Hand: 2
+      Mount: 0
+      GripOffsetMeters: {x: 0.01415625, y: 0.0150625}
+      RestOffsetMeters: {x: 0.14565623, y: 0.5782187}
+      ItemFacing: 3
+      Behind: 0
+    - Hand: 2
+      Mount: 0
+      GripOffsetMeters: {x: 0.035, y: -0.010875}
+      RestOffsetMeters: {x: 0.20599997, y: 0.47175002}
+      ItemFacing: 4
+      Behind: 0
+    - Hand: 2
+      Mount: 0
+      GripOffsetMeters: {x: 0.03534375, y: -0.01675}
+      RestOffsetMeters: {x: 0.14565623, y: 0.3909688}
+      ItemFacing: 5
+      Behind: 0
+    - Hand: 2
+      Mount: 0
+      GripOffsetMeters: {x: 0.015, y: -0.03015625}
+      RestOffsetMeters: {x: 0, y: 0.3521874}
+      ItemFacing: 6
+      Behind: 0
+    - Hand: 2
+      Mount: 0
+      GripOffsetMeters: {x: -0.01415625, y: -0.030375}
+      RestOffsetMeters: {x: -0.14565623, y: 0.3909688}
+      ItemFacing: 7
+      Behind: 0
+    RightRows:
+    - Hand: 1
+      Mount: 0
+      GripOffsetMeters: {x: 0.055, y: -0.0173125}
+      RestOffsetMeters: {x: 0.22599995, y: 0.48749995}
+      ItemFacing: 0
+      Behind: 0
+    - Hand: 1
+      Mount: 0
+      GripOffsetMeters: {x: 0.01415625, y: -0.030375}
+      RestOffsetMeters: {x: 0.14884377, y: 0.39303136}
+      ItemFacing: 1
+      Behind: 0
+    - Hand: 1
+      Mount: 0
+      GripOffsetMeters: {x: -0.015, y: -0.03015625}
+      RestOffsetMeters: {x: 0.0045312643, y: 0.3521874}
+      ItemFacing: 2
+      Behind: 0
+    - Hand: 1
+      Mount: 0
+      GripOffsetMeters: {x: -0.03534375, y: -0.01675}
+      RestOffsetMeters: {x: -0.14246875, y: 0.38890624}
+      ItemFacing: 3
+      Behind: 0
+    - Hand: 1
+      Mount: 0
+      GripOffsetMeters: {x: -0.035, y: -0.010875}
+      RestOffsetMeters: {x: -0.20599997, y: 0.4688437}
+      ItemFacing: 4
+      Behind: 0
+    - Hand: 1
+      Mount: 0
+      GripOffsetMeters: {x: -0.01415625, y: 0.0150625}
+      RestOffsetMeters: {x: -0.14884377, y: 0.5761875}
+      ItemFacing: 5
+      Behind: 0
+    - Hand: 1
+      Mount: 0
+      GripOffsetMeters: {x: 0.015, y: 0.01484375}
+      RestOffsetMeters: {x: -0.0045312643, y: 0.617}
+      ItemFacing: 6
+      Behind: 1
+    - Hand: 1
+      Mount: 0
+      GripOffsetMeters: {x: 0.03534375, y: 0.0014375}
+      RestOffsetMeters: {x: 0.14246869, y: 0.58028126}
+      ItemFacing: 7
+      Behind: 0
   - PropKey: rodSling
     Rig: RodIso
     ItemScale: 1
@@ -79,51 +177,53 @@ MonoBehaviour:
     - Hand: 0
       Mount: 1
       GripOffsetMeters: {x: -0.055, y: -0.025375}
-      RestOffsetMeters: {x: -0.055000007, y: 0.7906562}
+      RestOffsetMeters: {x: -0.046875, y: 0.78612494}
       ItemFacing: 0
       Behind: 0
     - Hand: 0
       Mount: 1
       GripOffsetMeters: {x: -0.113125, y: 0.01940625}
-      RestOffsetMeters: {x: -0.11131251, y: 0.83493745}
+      RestOffsetMeters: {x: -0.10500002, y: 0.8309063}
       ItemFacing: 1
       Behind: 0
     - Hand: 0
       Mount: 1
       GripOffsetMeters: {x: -0.105, y: 0.0775}
-      RestOffsetMeters: {x: -0.10240626, y: 0.8918438}
+      RestOffsetMeters: {x: -0.09687501, y: 0.88900006}
       ItemFacing: 2
       Behind: 1
     - Hand: 0
       Mount: 1
       GripOffsetMeters: {x: -0.03534375, y: 0.11484375}
-      RestOffsetMeters: {x: -0.03353125, y: 0.9280312}
+      RestOffsetMeters: {x: -0.027218759, y: 0.9263438}
       ItemFacing: 3
       Behind: 1
     - Hand: 0
       Mount: 1
       GripOffsetMeters: {x: 0.055, y: 0.109625}
-      RestOffsetMeters: {x: 0.054999948, y: 0.9223125}
+      RestOffsetMeters: {x: 0.063125014, y: 0.92112505}
       ItemFacing: 4
       Behind: 1
     - Hand: 0
       Mount: 1
       GripOffsetMeters: {x: 0.113125, y: 0.06484375}
-      RestOffsetMeters: {x: 0.11131251, y: 0.87803125}
+      RestOffsetMeters: {x: 0.10500002, y: 0.8763437}
       ItemFacing: 5
       Behind: 1
     - Hand: 0
       Mount: 1
       GripOffsetMeters: {x: 0.105, y: 0.00678125}
-      RestOffsetMeters: {x: 0.10240626, y: 0.82112503}
+      RestOffsetMeters: {x: 0.09687495, y: 0.8182813}
       ItemFacing: 6
       Behind: 0
     - Hand: 0
       Mount: 1
       GripOffsetMeters: {x: 0.03534375, y: -0.03059375}
-      RestOffsetMeters: {x: 0.03353131, y: 0.7849375}
+      RestOffsetMeters: {x: 0.0272187, y: 0.7809062}
       ItemFacing: 7
       Behind: 0
+    LeftRows: []
+    RightRows: []
   - PropKey: fish
     Rig: FishIso
     ItemScale: 1
@@ -174,6 +274,104 @@ MonoBehaviour:
       Mount: 0
       GripOffsetMeters: {x: -0.03534375, y: -0.003125}
       RestOffsetMeters: {x: -0.166875, y: 0.41825008}
+      ItemFacing: 6
+      Behind: 0
+    LeftRows:
+    - Hand: 2
+      Mount: 0
+      GripOffsetMeters: {x: -0.075, y: -0.00121875}
+      RestOffsetMeters: {x: -0.24599999, y: 0.50065637}
+      ItemFacing: 2
+      Behind: 0
+    - Hand: 2
+      Mount: 0
+      GripOffsetMeters: {x: -0.0070625, y: 0.02415625}
+      RestOffsetMeters: {x: -0.117375016, y: 0.6009687}
+      ItemFacing: 2
+      Behind: 0
+    - Hand: 2
+      Mount: 0
+      GripOffsetMeters: {x: 0.03, y: 0.0051875}
+      RestOffsetMeters: {x: 0.044999957, y: 0.607375}
+      ItemFacing: 2
+      Behind: 1
+    - Hand: 2
+      Mount: 0
+      GripOffsetMeters: {x: 0.0424375, y: -0.01675}
+      RestOffsetMeters: {x: 0.17393756, y: 0.54640627}
+      ItemFacing: 4
+      Behind: 0
+    - Hand: 2
+      Mount: 0
+      GripOffsetMeters: {x: 0.02, y: -0.0269375}
+      RestOffsetMeters: {x: 0.19099998, y: 0.45568752}
+      ItemFacing: 6
+      Behind: 0
+    - Hand: 2
+      Mount: 0
+      GripOffsetMeters: {x: -0.0070625, y: -0.030375}
+      RestOffsetMeters: {x: 0.10325003, y: 0.37734365}
+      ItemFacing: 4
+      Behind: 0
+    - Hand: 2
+      Mount: 0
+      GripOffsetMeters: {x: -0.03, y: -0.02053125}
+      RestOffsetMeters: {x: -0.045000017, y: 0.3618126}
+      ItemFacing: 6
+      Behind: 0
+    - Hand: 2
+      Mount: 0
+      GripOffsetMeters: {x: -0.03534375, y: -0.003125}
+      RestOffsetMeters: {x: -0.166875, y: 0.41825008}
+      ItemFacing: 6
+      Behind: 0
+    RightRows:
+    - Hand: 1
+      Mount: 0
+      GripOffsetMeters: {x: 0.075, y: -0.00121875}
+      RestOffsetMeters: {x: 0.24600005, y: 0.50356245}
+      ItemFacing: 2
+      Behind: 0
+    - Hand: 1
+      Mount: 0
+      GripOffsetMeters: {x: 0.0495, y: -0.01221875}
+      RestOffsetMeters: {x: 0.18421876, y: 0.4111874}
+      ItemFacing: 2
+      Behind: 0
+    - Hand: 1
+      Mount: 0
+      GripOffsetMeters: {x: 0.03, y: -0.02053125}
+      RestOffsetMeters: {x: 0.04953122, y: 0.3618126}
+      ItemFacing: 2
+      Behind: 0
+    - Hand: 1
+      Mount: 0
+      GripOffsetMeters: {x: 0.01415625, y: -0.0349375}
+      RestOffsetMeters: {x: -0.09296876, y: 0.37074995}
+      ItemFacing: 4
+      Behind: 0
+    - Hand: 1
+      Mount: 0
+      GripOffsetMeters: {x: -0.02, y: -0.0269375}
+      RestOffsetMeters: {x: -0.19099998, y: 0.4527812}
+      ItemFacing: 6
+      Behind: 0
+    - Hand: 1
+      Mount: 0
+      GripOffsetMeters: {x: -0.03534375, y: -0.01221875}
+      RestOffsetMeters: {x: -0.17006248, y: 0.5489063}
+      ItemFacing: 4
+      Behind: 0
+    - Hand: 1
+      Mount: 0
+      GripOffsetMeters: {x: -0.03, y: 0.0051875}
+      RestOffsetMeters: {x: -0.04953122, y: 0.607375}
+      ItemFacing: 6
+      Behind: 1
+    - Hand: 1
+      Mount: 0
+      GripOffsetMeters: {x: -0.0070625, y: 0.0150625}
+      RestOffsetMeters: {x: 0.10003126, y: 0.5939063}
       ItemFacing: 6
       Behind: 0
   - PropKey: clam
@@ -228,6 +426,104 @@ MonoBehaviour:
       RestOffsetMeters: {x: -0.17040622, y: 0.41740632}
       ItemFacing: 7
       Behind: 0
+    LeftRows:
+    - Hand: 2
+      Mount: 0
+      GripOffsetMeters: {x: -0.06, y: -0.00890625}
+      RestOffsetMeters: {x: -0.231, y: 0.49300003}
+      ItemFacing: 0
+      Behind: 0
+    - Hand: 2
+      Mount: 0
+      GripOffsetMeters: {x: -0.00353125, y: 0.01421875}
+      RestOffsetMeters: {x: -0.11384374, y: 0.5910312}
+      ItemFacing: 1
+      Behind: 0
+    - Hand: 2
+      Mount: 0
+      GripOffsetMeters: {x: 0.04, y: -0.0056875}
+      RestOffsetMeters: {x: 0.054999948, y: 0.59650004}
+      ItemFacing: 2
+      Behind: 1
+    - Hand: 2
+      Mount: 0
+      GripOffsetMeters: {x: 0.03890625, y: -0.0266875}
+      RestOffsetMeters: {x: 0.17040622, y: 0.53646874}
+      ItemFacing: 3
+      Behind: 0
+    - Hand: 2
+      Mount: 0
+      GripOffsetMeters: {x: 0.015, y: -0.04746875}
+      RestOffsetMeters: {x: 0.18599999, y: 0.43515635}
+      ItemFacing: 4
+      Behind: 0
+    - Hand: 2
+      Mount: 0
+      GripOffsetMeters: {x: -0.0176875, y: -0.0403125}
+      RestOffsetMeters: {x: 0.09262502, y: 0.36740637}
+      ItemFacing: 5
+      Behind: 0
+    - Hand: 2
+      Mount: 0
+      GripOffsetMeters: {x: -0.04, y: -0.02496875}
+      RestOffsetMeters: {x: -0.055000007, y: 0.3573749}
+      ItemFacing: 6
+      Behind: 0
+    - Hand: 2
+      Mount: 0
+      GripOffsetMeters: {x: -0.03890625, y: -0.00396875}
+      RestOffsetMeters: {x: -0.17040622, y: 0.41740632}
+      ItemFacing: 7
+      Behind: 0
+    RightRows:
+    - Hand: 1
+      Mount: 0
+      GripOffsetMeters: {x: 0.06, y: -0.00890625}
+      RestOffsetMeters: {x: 0.23099995, y: 0.49590635}
+      ItemFacing: 0
+      Behind: 0
+    - Hand: 1
+      Mount: 0
+      GripOffsetMeters: {x: 0.04596875, y: -0.01759375}
+      RestOffsetMeters: {x: 0.18068755, y: 0.4058125}
+      ItemFacing: 1
+      Behind: 0
+    - Hand: 1
+      Mount: 0
+      GripOffsetMeters: {x: 0.04, y: -0.02496875}
+      RestOffsetMeters: {x: 0.05953121, y: 0.3573749}
+      ItemFacing: 2
+      Behind: 0
+    - Hand: 1
+      Mount: 0
+      GripOffsetMeters: {x: 0.0176875, y: -0.0403125}
+      RestOffsetMeters: {x: -0.089437485, y: 0.3653438}
+      ItemFacing: 3
+      Behind: 0
+    - Hand: 1
+      Mount: 0
+      GripOffsetMeters: {x: -0.015, y: -0.04746875}
+      RestOffsetMeters: {x: -0.18599999, y: 0.43225002}
+      ItemFacing: 4
+      Behind: 0
+    - Hand: 1
+      Mount: 0
+      GripOffsetMeters: {x: -0.03890625, y: -0.0266875}
+      RestOffsetMeters: {x: -0.17359376, y: 0.5344374}
+      ItemFacing: 5
+      Behind: 0
+    - Hand: 1
+      Mount: 0
+      GripOffsetMeters: {x: -0.04, y: -0.0056875}
+      RestOffsetMeters: {x: -0.05953127, y: 0.59650004}
+      ItemFacing: 6
+      Behind: 1
+    - Hand: 1
+      Mount: 0
+      GripOffsetMeters: {x: -0.0176875, y: 0.0096875}
+      RestOffsetMeters: {x: 0.089437485, y: 0.58853126}
+      ItemFacing: 7
+      Behind: 0
   - PropKey: knife
     Rig: 
     ItemScale: 1
@@ -280,10 +576,206 @@ MonoBehaviour:
       RestOffsetMeters: {x: -0.18103123, y: 0.43499994}
       ItemFacing: 7
       Behind: 0
+    LeftRows:
+    - Hand: 2
+      Mount: 0
+      GripOffsetMeters: {x: -0.06, y: 0.01284375}
+      RestOffsetMeters: {x: -0.231, y: 0.51475}
+      ItemFacing: 0
+      Behind: 0
+    - Hand: 2
+      Mount: 0
+      GripOffsetMeters: {x: 0.0070625, y: 0.04090625}
+      RestOffsetMeters: {x: -0.10325003, y: 0.6177187}
+      ItemFacing: 1
+      Behind: 1
+    - Hand: 2
+      Mount: 0
+      GripOffsetMeters: {x: 0.05, y: 0.01284375}
+      RestOffsetMeters: {x: 0.06500006, y: 0.61503124}
+      ItemFacing: 2
+      Behind: 1
+    - Hand: 2
+      Mount: 0
+      GripOffsetMeters: {x: 0.0495, y: -0.013625}
+      RestOffsetMeters: {x: 0.18103123, y: 0.5495312}
+      ItemFacing: 3
+      Behind: 0
+    - Hand: 2
+      Mount: 0
+      GripOffsetMeters: {x: 0.02, y: -0.032125}
+      RestOffsetMeters: {x: 0.19099998, y: 0.45046878}
+      ItemFacing: 4
+      Behind: 0
+    - Hand: 2
+      Mount: 0
+      GripOffsetMeters: {x: -0.02121875, y: -0.0318125}
+      RestOffsetMeters: {x: 0.089093804, y: 0.37590623}
+      ItemFacing: 5
+      Behind: 0
+    - Hand: 2
+      Mount: 0
+      GripOffsetMeters: {x: -0.05, y: -0.01284375}
+      RestOffsetMeters: {x: -0.065, y: 0.36949992}
+      ItemFacing: 6
+      Behind: 0
+    - Hand: 2
+      Mount: 0
+      GripOffsetMeters: {x: -0.0495, y: 0.013625}
+      RestOffsetMeters: {x: -0.18103123, y: 0.43499994}
+      ItemFacing: 7
+      Behind: 0
+    RightRows:
+    - Hand: 1
+      Mount: 0
+      GripOffsetMeters: {x: 0.06, y: 0.01284375}
+      RestOffsetMeters: {x: 0.23099995, y: 0.5176563}
+      ItemFacing: 0
+      Behind: 0
+    - Hand: 1
+      Mount: 0
+      GripOffsetMeters: {x: 0.063625, y: 0.00453125}
+      RestOffsetMeters: {x: 0.19834375, y: 0.42796874}
+      ItemFacing: 1
+      Behind: 0
+    - Hand: 1
+      Mount: 0
+      GripOffsetMeters: {x: 0.05, y: -0.01284375}
+      RestOffsetMeters: {x: 0.0695312, y: 0.36949992}
+      ItemFacing: 2
+      Behind: 0
+    - Hand: 1
+      Mount: 0
+      GripOffsetMeters: {x: 0.02121875, y: -0.0318125}
+      RestOffsetMeters: {x: -0.08590627, y: 0.37384367}
+      ItemFacing: 3
+      Behind: 0
+    - Hand: 1
+      Mount: 0
+      GripOffsetMeters: {x: -0.02, y: -0.032125}
+      RestOffsetMeters: {x: -0.19099998, y: 0.44756246}
+      ItemFacing: 4
+      Behind: 0
+    - Hand: 1
+      Mount: 0
+      GripOffsetMeters: {x: -0.0495, y: -0.013625}
+      RestOffsetMeters: {x: -0.18421876, y: 0.54746866}
+      ItemFacing: 5
+      Behind: 0
+    - Hand: 1
+      Mount: 0
+      GripOffsetMeters: {x: -0.05, y: 0.01284375}
+      RestOffsetMeters: {x: -0.06953126, y: 0.61503124}
+      ItemFacing: 6
+      Behind: 1
+    - Hand: 1
+      Mount: 0
+      GripOffsetMeters: {x: -0.02121875, y: 0.0318125}
+      RestOffsetMeters: {x: 0.08590627, y: 0.61065626}
+      ItemFacing: 7
+      Behind: 1
   - PropKey: gaff
     Rig: 
     ItemScale: 1
     Rows:
+    - Hand: 1
+      Mount: 0
+      GripOffsetMeters: {x: 0.05, y: -0.01409375}
+      RestOffsetMeters: {x: 0.22099996, y: 0.49071884}
+      ItemFacing: 0
+      Behind: 0
+    - Hand: 1
+      Mount: 0
+      GripOffsetMeters: {x: 0.01415625, y: -0.02584375}
+      RestOffsetMeters: {x: 0.14884377, y: 0.3975625}
+      ItemFacing: 1
+      Behind: 0
+    - Hand: 1
+      Mount: 0
+      GripOffsetMeters: {x: -0.01, y: -0.0269375}
+      RestOffsetMeters: {x: 0.00953126, y: 0.35540628}
+      ItemFacing: 2
+      Behind: 0
+    - Hand: 1
+      Mount: 0
+      GripOffsetMeters: {x: -0.02828125, y: -0.01675}
+      RestOffsetMeters: {x: -0.13540626, y: 0.38890624}
+      ItemFacing: 3
+      Behind: 0
+    - Hand: 1
+      Mount: 0
+      GripOffsetMeters: {x: -0.03, y: -0.01409375}
+      RestOffsetMeters: {x: -0.20099998, y: 0.46562505}
+      ItemFacing: 4
+      Behind: 0
+    - Hand: 1
+      Mount: 0
+      GripOffsetMeters: {x: -0.01415625, y: 0.01053125}
+      RestOffsetMeters: {x: -0.14884377, y: 0.571625}
+      ItemFacing: 5
+      Behind: 0
+    - Hand: 1
+      Mount: 0
+      GripOffsetMeters: {x: 0.01, y: 0.011625}
+      RestOffsetMeters: {x: -0.00953126, y: 0.61381245}
+      ItemFacing: 6
+      Behind: 1
+    - Hand: 1
+      Mount: 0
+      GripOffsetMeters: {x: 0.02828125, y: 0.0014375}
+      RestOffsetMeters: {x: 0.13540626, y: 0.58028126}
+      ItemFacing: 7
+      Behind: 0
+    LeftRows:
+    - Hand: 2
+      Mount: 0
+      GripOffsetMeters: {x: -0.05, y: -0.01409375}
+      RestOffsetMeters: {x: -0.22100002, y: 0.48781252}
+      ItemFacing: 0
+      Behind: 0
+    - Hand: 2
+      Mount: 0
+      GripOffsetMeters: {x: -0.02828125, y: 0.0014375}
+      RestOffsetMeters: {x: -0.13859373, y: 0.5782187}
+      ItemFacing: 1
+      Behind: 0
+    - Hand: 2
+      Mount: 0
+      GripOffsetMeters: {x: -0.01, y: 0.011625}
+      RestOffsetMeters: {x: 0.004999995, y: 0.61381245}
+      ItemFacing: 2
+      Behind: 1
+    - Hand: 2
+      Mount: 0
+      GripOffsetMeters: {x: 0.01415625, y: 0.01053125}
+      RestOffsetMeters: {x: 0.14565623, y: 0.57368755}
+      ItemFacing: 3
+      Behind: 0
+    - Hand: 2
+      Mount: 0
+      GripOffsetMeters: {x: 0.03, y: -0.01409375}
+      RestOffsetMeters: {x: 0.20099998, y: 0.46853113}
+      ItemFacing: 4
+      Behind: 0
+    - Hand: 2
+      Mount: 0
+      GripOffsetMeters: {x: 0.02828125, y: -0.01675}
+      RestOffsetMeters: {x: 0.1385938, y: 0.3909688}
+      ItemFacing: 5
+      Behind: 0
+    - Hand: 2
+      Mount: 0
+      GripOffsetMeters: {x: 0.01, y: -0.0269375}
+      RestOffsetMeters: {x: -0.004999995, y: 0.35540628}
+      ItemFacing: 6
+      Behind: 0
+    - Hand: 2
+      Mount: 0
+      GripOffsetMeters: {x: -0.01415625, y: -0.02584375}
+      RestOffsetMeters: {x: -0.14565623, y: 0.39549994}
+      ItemFacing: 7
+      Behind: 0
+    RightRows:
     - Hand: 1
       Mount: 0
       GripOffsetMeters: {x: 0.05, y: -0.01409375}
@@ -382,6 +874,104 @@ MonoBehaviour:
       Mount: 0
       GripOffsetMeters: {x: -0.0318125, y: -0.01375}
       RestOffsetMeters: {x: -0.16334373, y: 0.40759373}
+      ItemFacing: 7
+      Behind: 0
+    LeftRows:
+    - Hand: 2
+      Mount: 0
+      GripOffsetMeters: {x: -0.025, y: -0.01790625}
+      RestOffsetMeters: {x: -0.19599998, y: 0.48396873}
+      ItemFacing: 0
+      Behind: 0
+    - Hand: 2
+      Mount: 0
+      GripOffsetMeters: {x: -0.00353125, y: 0.00896875}
+      RestOffsetMeters: {x: -0.11384374, y: 0.58575}
+      ItemFacing: 1
+      Behind: 0
+    - Hand: 2
+      Mount: 0
+      GripOffsetMeters: {x: 0.02, y: 0.011}
+      RestOffsetMeters: {x: 0.034999967, y: 0.61318755}
+      ItemFacing: 2
+      Behind: 1
+    - Hand: 2
+      Mount: 0
+      GripOffsetMeters: {x: 0.0318125, y: -0.00921875}
+      RestOffsetMeters: {x: 0.16334379, y: 0.55393744}
+      ItemFacing: 3
+      Behind: 0
+    - Hand: 2
+      Mount: 0
+      GripOffsetMeters: {x: 0.025, y: -0.0371875}
+      RestOffsetMeters: {x: 0.19599998, y: 0.4454062}
+      ItemFacing: 4
+      Behind: 0
+    - Hand: 2
+      Mount: 0
+      GripOffsetMeters: {x: 0.00353125, y: -0.0319375}
+      RestOffsetMeters: {x: 0.1138438, y: 0.3757813}
+      ItemFacing: 5
+      Behind: 0
+    - Hand: 2
+      Mount: 0
+      GripOffsetMeters: {x: -0.02, y: -0.034}
+      RestOffsetMeters: {x: -0.035000026, y: 0.34834385}
+      ItemFacing: 6
+      Behind: 0
+    - Hand: 2
+      Mount: 0
+      GripOffsetMeters: {x: -0.0318125, y: -0.01375}
+      RestOffsetMeters: {x: -0.16334373, y: 0.40759373}
+      ItemFacing: 7
+      Behind: 0
+    RightRows:
+    - Hand: 1
+      Mount: 0
+      GripOffsetMeters: {x: 0.025, y: -0.01790625}
+      RestOffsetMeters: {x: 0.19599998, y: 0.48687506}
+      ItemFacing: 0
+      Behind: 0
+    - Hand: 1
+      Mount: 0
+      GripOffsetMeters: {x: 0.0318125, y: -0.01375}
+      RestOffsetMeters: {x: 0.1665312, y: 0.4096563}
+      ItemFacing: 1
+      Behind: 0
+    - Hand: 1
+      Mount: 0
+      GripOffsetMeters: {x: 0.02, y: -0.034}
+      RestOffsetMeters: {x: 0.03953123, y: 0.34834385}
+      ItemFacing: 2
+      Behind: 0
+    - Hand: 1
+      Mount: 0
+      GripOffsetMeters: {x: -0.00353125, y: -0.0319375}
+      RestOffsetMeters: {x: -0.11065626, y: 0.37371874}
+      ItemFacing: 3
+      Behind: 0
+    - Hand: 1
+      Mount: 0
+      GripOffsetMeters: {x: -0.025, y: -0.0371875}
+      RestOffsetMeters: {x: -0.19599998, y: 0.4425001}
+      ItemFacing: 4
+      Behind: 0
+    - Hand: 1
+      Mount: 0
+      GripOffsetMeters: {x: -0.0318125, y: -0.00921875}
+      RestOffsetMeters: {x: -0.16653126, y: 0.55190635}
+      ItemFacing: 5
+      Behind: 0
+    - Hand: 1
+      Mount: 0
+      GripOffsetMeters: {x: -0.02, y: 0.011}
+      RestOffsetMeters: {x: -0.03953123, y: 0.61318755}
+      ItemFacing: 6
+      Behind: 1
+    - Hand: 1
+      Mount: 0
+      GripOffsetMeters: {x: 0.00353125, y: 0.00896875}
+      RestOffsetMeters: {x: 0.11065626, y: 0.58781254}
       ItemFacing: 7
       Behind: 0
   Wrists:

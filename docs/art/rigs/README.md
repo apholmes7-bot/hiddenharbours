@@ -517,7 +517,7 @@ in this repo.
 
 ---
 
-## The character rig kit, pass 6 (imported 2026-08-02 · **rev 6.2 imported 2026-08-06** · **rev 6.6 imported 2026-08-26**)
+## The character rig kit, pass 6 (imported 2026-08-02 · **rev 6.2 imported 2026-08-06** · **rev 6.6 imported 2026-08-26** · **rev 6.9 imported 2026-09-02**)
 
 One procedural person: eight facings, **eighteen** animations, four carry stances, and the axes that
 make her somebody in particular. This drop replaces the pass-1 body (`characterIsoRig.js`) and splits
@@ -530,6 +530,28 @@ the head and the eyes into rigs of their own.
 > the drop's own claim and the reason this was a rig swap and not a re-derivation. `presets.json` is
 > unchanged; `options.json` grew only the four new `anims` entries. See *The three clip families*
 > below.
+
+> **Rev 6.9 (2026-09-02) is a FACE pass, and it moves every sheet in the family.** Three files changed
+> — `characterIsoRig6.js` 6.6 → 6.9, `headIsoRig3.js` (head 3.1 → 3.3, +254/−63 lines) and
+> `eyeIsoRig.js` (eye 5.1 → 5.2). The five prop rigs and `characterIsoRig6.hands.js` in the drop are
+> **byte-identical** to ours, and `presets.json` / `options.json` are semantically identical (they
+> differ only in whitespace), so nothing else landed. The contract the baker reads is untouched:
+> cell 64 × 92, pivot, `DIRS`, all 29 `ANIMS`, `CAST`, `CARRIES` and `REACH_LIFT` compare IDENTICAL.
+>
+> **Measured, and it is why the whole family was re-baked rather than the drop's sheets imported:**
+> every one of 100 (preset × anim) cells differs between 6.6 and 6.9. The delta is confined to the
+> HEAD — hairline, skull raster and eyes — at 9–21 % of a cell's opaque pixels; the body, the clothes
+> and the ground shadow are untouched. Importing part of the family would have given a character one
+> face standing and another face hauling.
+>
+> **THE DROP'S SHEETS ARE AT THE WRONG CELL FOR EVERY LOCOMOTION STATE.** He bakes all 73 at the
+> OFF-DECK 64 × 88; the engine's locomotion and deck-work lane is 64 × 92 and only swim / tread /
+> sleep / drive ship at 88 (`CharacterRigBakeMenu.PlayerAnimsBakedElsewhere` explains why the baker
+> cannot make those four). So the intake split: the **forty off-deck sheets were imported from him
+> verbatim**, and everything the baker owns was **re-baked in-engine**. The two were then checked
+> against each other — our 92-row bake cropped 2 rows top and 2 bottom per cell against his 88 —
+> and **33 of 33 comparable sheets are byte-identical**, which is what says our load order, preset
+> resolution and camera are his.
 
 ### ⚠️ LOAD ORDER IS A HARD REQUIREMENT
 
