@@ -196,6 +196,16 @@ cluster re-derived on the new east shore (mooring/dock zone `(215, 0)`, disembar
 unchanged). ⚠ The island stays an **ellipse**: 240 × 140 is not a disc at any radius — the shape
 argument holds even though a 240 m disc would now physically fit the scene.
 
+> ⚠ **The dock cluster's coordinates above are the 2026-07-30 record and are no longer current.** The
+> 2026-08-19 dredge (#582) replaced the `−1.05 m` bed with a cut channel and berth pocket, the
+> 2026-08-22 playtest moved the arrival berth *alongside* the pier's south face, and the starting
+> dory's mooring has moved twice since — north out of the fairway (#677, 2026-08-27) and then
+> **alongside the pier's NORTH face at the head pilehead (2026-09-02)**, where she also finally got a
+> *heading*: she had none before, so a 4.5 m boat lay bow-north athwart an east–west fairway. Read the
+> live numbers off `StPetersBuilder` / `StPetersWharf`, which derive them; `StPetersDoryBerthTests` and
+> `StPetersAlongsideBerthTests` hold them. ⚠ Note the dory's berth is still **provisional** — the owner
+> asked for "another small dock for now nearby" and this island has only the one pier to lie against.
+
 ### 5.1a The reef ring and the one dock — ✅ RATIFIED (owner, 2026-07-23)
 
 > *"There is one dock on the far end of the island opposite the sandbar. It's modest, but can take
