@@ -465,6 +465,26 @@ Shader "HiddenHarbours/Water"
         _ReflectionSkyTint     ("Reflection sky tint weight (use the day/night sky)", Range(0,1)) = 0.85
         _ReflectionColor       ("Reflection base sky color (cycle-off fallback)", Color) = (0.62, 0.74, 0.86, 1.0)
         _ReflectionSmear       ("Reflection vertical smear length (m, at calm)", Float) = 1.6
+
+        // ---- THE MIRROR'S FORM (owner ruling 2026-09-02: "we need reflections on water") ---------------
+        // The reflected CONTENT was never the problem — the sky colour, the clouds, the moon's disc and its
+        // glitter path, the stars, the object reflections are all what he means by reflections, and they
+        // stay. The FORM was: at calm the sheen above is a sin() of world-Y at a FIXED 1.6 m wavelength,
+        // cubed — a striped rug, and the plate diagnostic showed the stripes ARE the reflection (zeroing
+        // _ReflectionStrength took the glass sea's mean luma from 0.46 to 0.05; register row 5).
+        //
+        // A mirror does not have a wavelength. It has a SURFACE: a level facet returns the sky to the eye,
+        // a tilted one returns something else, so the mirror breaks up exactly where the water TILTS. That
+        // is what these drive it off — the shared wave field's OWN analytic slope, the same one the swell
+        // face shading and the lamp's relief read (ADR 0018: one field, one slope, one computation), at the
+        // drawn frequency scale and already pixelized in world space. A dead calm has no tilt anywhere and
+        // reads as a sheet of sky; a light air puts a slow, broad, organic shimmer on it; chop dissolves it
+        // without any need for a chop RAMP, because chop IS tilt (register row 13).
+        //
+        // _MirrorForm 0 = today's stripe, EXACTLY. col.rgb ONLY (P1, rule 5).
+        _MirrorForm      ("Mirror form (0 = the shipped 1.6 m stripe; 1 = the surface's own tilt)", Range(0,1)) = 1
+        _MirrorSheen     ("Mirror sheen (how much sky a LEVEL facet returns)", Range(0,2)) = 0.3125
+        _MirrorTiltScale ("Mirror tilt break-up (how fast a tilted facet stops returning the sky)", Range(0,40)) = 6
         _ReflectionSunStreak   ("Reflection sun streak intensity", Range(0,2)) = 0.9
         _ReflectionSunSharp    ("Reflection sun streak sharpness", Float) = 6.0
 
@@ -1385,6 +1405,11 @@ Shader "HiddenHarbours/Water"
                 float  _ReflectionSkyTint;
                 float4 _ReflectionColor;
                 float  _ReflectionSmear;
+                // The mirror's FORM (the 2026-09-02 ruling): driven off the field's own slope, not a
+                // wavelength. _MirrorForm 0 = the shipped stripe, exactly. col.rgb ONLY (P1, rule 5).
+                float  _MirrorForm;
+                float  _MirrorSheen;
+                float  _MirrorTiltScale;
                 float  _ReflectionSunStreak;
                 float  _ReflectionSunSharp;
                 // ADR 0027 #8 — object reflections (the HHReflect list, warped by the wave field).
@@ -3217,7 +3242,7 @@ Shader "HiddenHarbours/Water"
             //   swellCrest— the rolling-swell crest factor (0..1) so the mirror brightens on the lit swell faces.
             //   t         — _Time.y (the glitter twinkles).
             // Everything here is pixelized (pixel-art faithful, §3) and additive to col.rgb (P1, rule 5).
-            float3 SkyReflection(float2 worldXY, float surf, float swellCrest, float t)
+            float3 SkyReflection(float2 worldXY, float2 waveSlopeXY, float surf, float swellCrest, float t)
             {
                 float strength = ReflectionStrength();
                 if (strength <= 0.001)
@@ -3246,6 +3271,30 @@ Shader "HiddenHarbours/Water"
                 float band = 0.5 + 0.5 * sin(bandPhase * 6.2831853);                    // 0..1 vertical smear
                 // sharpen the band toward a crisp mirror streak at calm; flatten (more uniform) when smeared.
                 band = pow(saturate(band), lerp(0.4, 3.0, sharp));
+
+                // ---- THE MIRROR (owner ruling 2026-09-02) -------------------------------------------------
+                // The band above is a stripe of a FIXED wavelength; a mirror has none. What a mirror has is a
+                // SURFACE: a level facet returns the sky to the eye and a tilted one returns something else,
+                // so the sheen breaks up precisely where the water tilts — and nowhere else.
+                //
+                // The tilt is the SHARED wave field's own analytic slope (ADR 0018: one field, one slope, one
+                // computation — never a second sampler and never a re-derived phase), read at the drawn
+                // frequency scale and already pixelized on the world PPU grid, so the break-up is pixel-art by
+                // inheritance like every other layer.
+                //
+                // 1/(1 + k·|slope|): exactly _MirrorSheen on dead-flat water, falling smoothly and without a
+                // knee as the surface tilts, never negative and never clipping. Chop dissolves it for free —
+                // chop IS tilt — which is register row 13 ("the mirror fades with the wind, not with the sea
+                // under it") answered by construction rather than by another ramp over _Chop.
+                //
+                // _MirrorSheen's default is not a taste: (0.5 + 0.5·sin)³ averages 0.3125 over a period, so a
+                // level facet returning that much sky puts the SAME light on a calm sea as the stripe it
+                // replaces. The change is the form, not the exposure — the owner asked for a mirror, not a
+                // brighter sea, and a knob is there if he wants one.
+                float tilt = length(waveSlopeXY) * max(_MirrorTiltScale, 0.0);
+                float mirrorShare = 1.0 / (1.0 + tilt);          // 1 on dead-flat water, falling with tilt
+                float tiltShare = 1.0 - mirrorShare;             // …and its exact complement: the two sum to 1
+                band = lerp(band, max(_MirrorSheen, 0.0) * mirrorShare, saturate(_MirrorForm));
                 // the rolling swell's lit faces catch more sky (one body catching one sky), modest weight.
                 float skyFace = lerp(0.8, 1.2, swellCrest);
                 float3 reflectionRGB = sky * band * skyFace;
@@ -3271,7 +3320,19 @@ Shader "HiddenHarbours/Water"
                     float streak = pow(saturate(1.0 - abs(g1 - g2) * 2.0), max(_ReflectionSunSharp, 1.0));
                     // only when the sun is up (or the cycle is off, in which case _SunElevation is 0 -> treat as day).
                     float sunUp = cycleOn ? saturate(_SunElevation) : 1.0;
-                    reflectionRGB += sky * streak * _ReflectionSunStreak * sunUp;
+                    // ---- GLITTER NEEDS RIPPLES (the same ruling, the other half of the surface) -----------
+                    // A glint is a facet turned by chance to send the SUN at the eye, which is the one thing a
+                    // LEVEL facet cannot do — it is already sending the sky. So the streak rides tiltShare,
+                    // the exact complement of the mirror above: the two are one surface accounted for once.
+                    //
+                    // This is not a tidy identity, it is what the first mirror plate demanded. With the 1.6 m
+                    // stripe gone the glitter was left as the loudest thing on a dead calm — a dense field of
+                    // fine vertical glints over the whole frame, which reads as RAIN, not as a mirror. It was
+                    // always there; the rug was hiding it. A dead calm now returns the sky and almost no
+                    // glitter, a light air breaks both ways, and the path lights up as soon as there is a
+                    // ripple to light it. _MirrorForm 0 leaves the shipped all-over glitter untouched.
+                    float glitterTilt = lerp(1.0, tiltShare, saturate(_MirrorForm));
+                    reflectionRGB += sky * streak * _ReflectionSunStreak * sunUp * glitterTilt;
                 }
 
                 return reflectionRGB * strength;
@@ -4905,7 +4966,7 @@ Shader "HiddenHarbours/Water"
                 // (so whitecaps/fringe read on top of the reflection). col.rgb ONLY — it never touches depth/
                 // clip()/the deep tint/the caustic gate/_WaterLevel (P1 integrity, CLAUDE.md rule 5). The whole
                 // layer dials to nothing with _ReflectionStrength = 0 (today's look). See SkyReflection() above.
-                col.rgb += SkyReflection(worldXY, surf, swellCrest, t);
+                col.rgb += SkyReflection(worldXY, waveSlope, surf, swellCrest, t);
 
                 // ---- SKY CONTENT: drifting CLOUDS + the living MOON glitter path + faint STARS ----------------
                 // This is a ¾ top-down game, so the water's reflection is the ONLY place the sky appears. On top

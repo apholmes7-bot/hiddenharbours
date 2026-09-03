@@ -700,6 +700,216 @@ namespace HiddenHarbours.Tests.EditMode
             return sb.ToString();
         }
 
+
+        // =============================================================================================
+        //  ⭐⭐ THE MIRROR (water-fidelity PR 5) — register rows 5 + 13, the owner's 2026-09-02 ruling
+        // =============================================================================================
+        //
+        //  *"glass calm, i trust your judgement for the game, but we need reflections on water."*
+        //
+        //  The reflected CONTENT was never the complaint and does not move. The FORM did: at calm the sheen
+        //  was a sin() of world-Y at a fixed 1.6 m wavelength, cubed — the striped rug of register row 5.
+        //  It is now the SURFACE's own tilt.
+        //
+        //  Two numbers say whether that worked, and they must move in OPPOSITE directions or the change is
+        //  not what it claims: the ROW-BAND CONTRAST (the standard deviation of the per-row mean luma —
+        //  horizontal stripes and nothing else score on it) must collapse, while the MEAN LUMA must not,
+        //  because the diagnostic already proved the stripes ARE the reflection (`_ReflectionStrength = 0`
+        //  took the glass sea from 0.46 to 0.05). A change that killed the stripes AND the light would be
+        //  the reflection deleted, wearing a mirror's name — so this shoots that arm too, as the control.
+
+        /// <summary>One arm of the mirror A/B, and what it was worth.</summary>
+        struct MirrorRecord
+        {
+            public string File, Arm, Viewpoint;
+            public float MeanLumaWet, RowBandContrast, ColBandContrast;
+        }
+
+        [Test]
+        public void TheGlassCalm_IsAMirror_AndNotAStripedRug()
+        {
+            RequireAGraphicsDevice();
+            Prepare();
+
+            string dir = Path.Combine(Directory.GetCurrentDirectory(), OutRoot, "mirror");
+            Directory.CreateDirectory(dir);
+
+            var records = new List<MirrorRecord>();
+            var thumbs = new Color[3][][];
+            for (int r = 0; r < 3; r++) thumbs[r] = new Color[2][];
+
+            // Both glass viewpoints the charter names: the open-water CONTROL (nothing but sea and sky) and
+            // the sand shoal (a shore in the frame, so the mirror is judged against something).
+            var stages = new (string key, string title, Func<Stage> build)[]
+            {
+                ("ww-open", "WEST WATER - THE OPEN-WATER CONTROL", () =>
+                {
+                    Stage s = BuildWestWater();
+                    s.Name = "ww-open"; s.Aim = WestWaterPlan.RegionWorldCenter;
+                    return s;
+                }),
+                ("nmc-sand", "NINE MILE CREEK - THE SAND SHOAL", () =>
+                {
+                    Stage s = BuildNineMileCreek();
+                    s.Name = "nmc-sand"; s.Aim = AimAtTheLongestSurfRun(s);
+                    return s;
+                }),
+            };
+
+            for (int v = 0; v < stages.Length; v++)
+            {
+                Stage stage = stages[v].build();
+                BuildCamera();
+                _cam.transform.position = new Vector3(stage.Aim.x, stage.Aim.y, -100f);
+                WarmTheShaderCache(stage);
+
+                // Three arms on ONE frozen scene: the shipped stripe, the mirror, and — the control that
+                // makes the pair mean something — the reflection removed entirely.
+                var arms = new (string key, string label, float form, bool killReflection)[]
+                {
+                    ("stripe",  "MIRROR FORM 0 (the shipped stripe)", 0f, false),
+                    ("mirror",  "MIRROR FORM 1 (the surface's tilt)", 1f, false),
+                    ("norefl",  "REFLECTION OFF (the control)",       1f, true),
+                };
+                for (int a = 0; a < arms.Length; a++)
+                {
+                    string file = $"mirror-{stages[v].key}-{arms[a].key}";
+                    Color[] ldr = ShootMirror(stage, arms[a].form, arms[a].killReflection,
+                                              Path.Combine(dir, file + ".png"), out MirrorRecord rec);
+                    rec.File = file + ".png";
+                    rec.Arm = arms[a].label;
+                    rec.Viewpoint = stages[v].key;
+                    records.Add(rec);
+                    thumbs[a][v] = Thumbnail(ldr);
+                }
+            }
+
+            string sheet = Path.Combine(Directory.GetCurrentDirectory(), OutRoot, "SHEET-mirror.png");
+            ContactSheet.Write(sheet, "THE GLASS CALM - THE SHIPPED STRIPE, THE MIRROR, AND NO REFLECTION AT ALL",
+                               new[] { "WEST WATER (OPEN)", "NINE MILE CREEK (SAND)" }, new[] { "", "" },
+                               new[] { "STRIPE", "MIRROR", "NO REFL" }, thumbs, ThumbPx);
+            File.WriteAllText(Path.Combine(dir, "MIRROR.txt"), MirrorReport(records));
+            Debug.Log("[water-plates] the mirror\n" + MirrorReport(records));
+
+            Assert.IsTrue(File.Exists(sheet), "the mirror sheet must be written — the FILE is the evidence");
+
+            foreach (string key in new[] { "ww-open", "nmc-sand" })
+            {
+                MirrorRecord stripe = FindMirror(records, key, "stripe");
+                MirrorRecord mirror = FindMirror(records, key, "mirror");
+                MirrorRecord none = FindMirror(records, key, "norefl");
+
+                // ⭐ THE STRIPES GO. Row-band contrast is the standard deviation of the per-row mean luma:
+                // a rug of horizontal bands is the only thing that scores highly on it, and a sheen of sky
+                // scores near zero however bright it is.
+                Assert.Less(mirror.RowBandContrast, stripe.RowBandContrast * 0.5f,
+                    $"{key}: the 1.6 m banding must collapse — row-band contrast {mirror.RowBandContrast:F4} " +
+                    $"against the stripe's {stripe.RowBandContrast:F4}");
+
+                // ⭐ …AND THE REFLECTION STAYS. The control is what makes that assertion mean something:
+                // with the reflection removed the glass sea is nearly black, so a mirror arm that landed
+                // near the control would be the reflection deleted rather than re-formed.
+                Assert.Greater(mirror.MeanLumaWet, none.MeanLumaWet * 3f,
+                    $"{key}: the sea must still be lit by a reflection — the mirror read " +
+                    $"{mirror.MeanLumaWet:F4} against {none.MeanLumaWet:F4} with the reflection off");
+                Assert.Greater(mirror.MeanLumaWet, stripe.MeanLumaWet * 0.6f,
+                    $"{key}: …and by about as much light as the stripe put there ({mirror.MeanLumaWet:F4} " +
+                    $"against {stripe.MeanLumaWet:F4}) — this PR changes the FORM, not the exposure");
+                Assert.Less(mirror.MeanLumaWet, stripe.MeanLumaWet * 1.6f,
+                    $"{key}: …and not by dramatically more ({mirror.MeanLumaWet:F4} against " +
+                    $"{stripe.MeanLumaWet:F4}) — a blown-out calm is not a mirror either");
+
+                // Anti-vacuous: the control must actually have removed something, or every ratio above is
+                // measured against a number that was never the reflection.
+                Assert.Less(none.MeanLumaWet, stripe.MeanLumaWet * 0.5f,
+                    $"{key}: zeroing _ReflectionStrength must visibly darken the glass sea " +
+                    $"({none.MeanLumaWet:F4} against {stripe.MeanLumaWet:F4}), or this control controls nothing");
+            }
+        }
+
+        /// <summary>One mirror plate: the GLASS sea at mean tide and noon — the sacred state — with the form
+        /// dial (and, for the control arm, the reflection master) overridden on the property block after the
+        /// shipped push, exactly as the knob diagnostic does it.</summary>
+        Color[] ShootMirror(Stage stage, float form, bool killReflection, string path, out MirrorRecord rec)
+        {
+            Publish(stage, Weather.Glass, Tide.Mean, Hour.Noon, out _, out Color tint, out _, out _, out _);
+
+            var sr = stage.SeaGo.GetComponent<SpriteRenderer>();
+            Material mat = sr.sharedMaterial;
+            var block = new MaterialPropertyBlock();
+            sr.GetPropertyBlock(block);
+            Assert.IsTrue(mat.HasProperty("_MirrorForm"), "_MirrorForm must be a water-shader property");
+
+            float restoreForm = block.HasFloat("_MirrorForm") ? block.GetFloat("_MirrorForm")
+                                                              : mat.GetFloat("_MirrorForm");
+            float restoreRefl = block.HasFloat("_ReflectionStrength") ? block.GetFloat("_ReflectionStrength")
+                                                                      : mat.GetFloat("_ReflectionStrength");
+            block.SetFloat("_MirrorForm", form);
+            if (killReflection) block.SetFloat("_ReflectionStrength", 0f);
+            sr.SetPropertyBlock(block);
+
+            Color[] ldr = Capture(tint, path);
+
+            block.SetFloat("_MirrorForm", restoreForm);
+            block.SetFloat("_ReflectionStrength", restoreRefl);
+            sr.SetPropertyBlock(block);
+
+            WetStatistics(stage, _env.WaterLevel, ldr, out _, out float meanLumaWet);
+            BandContrast(ldr, out float rowStd, out float colStd);
+            rec = new MirrorRecord { MeanLumaWet = meanLumaWet, RowBandContrast = rowStd, ColBandContrast = colStd };
+            return ldr;
+        }
+
+        /// <summary>The standard deviation of the per-ROW and per-COLUMN mean luma. A rug of horizontal
+        /// bands scores on the first and almost nothing else does — which is why it, and not a brightness,
+        /// is what the mirror has to collapse.</summary>
+        static void BandContrast(Color[] px, out float rowStd, out float colStd)
+        {
+            var rowMean = new double[ShotPx];
+            var colMean = new double[ShotPx];
+            for (int y = 0; y < ShotPx; y++)
+            for (int x = 0; x < ShotPx; x++)
+            {
+                Color c = px[y * ShotPx + x];
+                double l = 0.299 * c.r + 0.587 * c.g + 0.114 * c.b;
+                rowMean[y] += l; colMean[x] += l;
+            }
+            for (int i = 0; i < ShotPx; i++) { rowMean[i] /= ShotPx; colMean[i] /= ShotPx; }
+            rowStd = (float)StdDev(rowMean);
+            colStd = (float)StdDev(colMean);
+        }
+
+        static double StdDev(double[] values)
+        {
+            double mean = 0;
+            for (int i = 0; i < values.Length; i++) mean += values[i];
+            mean /= values.Length;
+            double sq = 0;
+            for (int i = 0; i < values.Length; i++) sq += (values[i] - mean) * (values[i] - mean);
+            return System.Math.Sqrt(sq / values.Length);
+        }
+
+        static MirrorRecord FindMirror(List<MirrorRecord> records, string viewpoint, string arm)
+        {
+            foreach (MirrorRecord r in records)
+                if (r.File == $"mirror-{viewpoint}-{arm}.png") return r;
+            Assert.Fail($"no mirror plate for {viewpoint} / {arm}");
+            return default;
+        }
+
+        static string MirrorReport(List<MirrorRecord> records)
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine("# The glass calm at mean tide, noon. rowBand = std-dev of the per-row mean luma " +
+                          "(horizontal stripes, and almost nothing else, score on it); colBand = the same " +
+                          "down the columns; meanWet = how much light the reflection is putting on the sea.");
+            sb.AppendLine("plate                              meanWet  rowBand  colBand   [arm]");
+            foreach (MirrorRecord r in records)
+                sb.AppendLine($"{r.File,-34} {r.MeanLumaWet:F4}   {r.RowBandContrast:F4}   " +
+                              $"{r.ColBandContrast:F4}   [{r.Arm}]");
+            return sb.ToString();
+        }
+
         [Test]
         public void TheWeatherLadder_IsTheSimsOwnPairing_AndClimbs()
         {
