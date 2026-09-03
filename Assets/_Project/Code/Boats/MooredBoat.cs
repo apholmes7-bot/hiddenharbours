@@ -34,8 +34,49 @@ namespace HiddenHarbours.Boats
     /// draughts rather than at a shared guess.</para>
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class MooredBoat : MonoBehaviour
+    public sealed class MooredBoat : MonoBehaviour, IVesselWay
     {
+        /// <summary>
+        /// <b>How she is lying, for her lamps</b> (ADR 0016, the lamp regime) — <see cref="VesselWay.
+        /// Moored"/> for every hull a region's builder places at a berth, which is what this component
+        /// is for: sidelights, stern light and masthead together say <em>under way</em>, and a boat
+        /// made fast to a wall showing them is claiming to be moving.
+        ///
+        /// <para><b>⚠️ But this component is also a DRAWER, and that is not the same claim.</b>
+        /// <c>ArrivalOpening</c> builds the intro's Cape Islander with one — deliberately, and its own
+        /// comment says so: <i>"MooredBoat is the drawer — it skins her, stands her skipper on the deck
+        /// ... <b>She is not moored yet</b>"</i> — because it is the one place that knows how to put a
+        /// hull on the water with somebody aboard her. She is running in before dawn with her
+        /// navigation lights burning, which is the whole of the owner's 2026-08-27 ruling, and reading
+        /// "she has a MooredBoat" as "she is moored" would have put that demo out. So the way is a
+        /// STATE with a berth's default, not a constant, and whoever is driving her says otherwise.
+        /// </para>
+        /// </summary>
+        public VesselWay Way => _way;
+
+        private VesselWay _way = VesselWay.Moored;
+
+        /// <summary>
+        /// <b>Declare how she is lying</b> — under way while somebody is running her, moored once her
+        /// lines are fast. Re-throws her lamps immediately, so the change is visible in the frame it
+        /// happens rather than at the next rebuild.
+        ///
+        /// <para>Idempotent, and safe before she has been skinned: the lamps are found on her visual
+        /// child, which does not exist yet at configure time, and a hull with none simply has no lamps
+        /// to re-throw.</para>
+        /// </summary>
+        public void SetWay(VesselWay way)
+        {
+            _way = way;
+            foreach (var lamps in GetComponentsInChildren<MonoBehaviour>(true))
+            {
+                // Spelled through the Core seam rather than by type: Boats may not reference Art
+                // (rule 4), and the lamps live there. IVesselWayListener is Core's own hook for
+                // exactly this — "the boat you are hanging off has changed her mind".
+                if (lamps is IVesselWayListener listener) listener.OnVesselWayChanged(way);
+            }
+        }
+
         [Tooltip("Whose boat this is. Everything drawn here comes off this asset: her hull, her skipper, " +
                  "and (through the region's own plan) the berth she lies in.")]
         [SerializeField] private BoatOwnerDef _owner;

@@ -114,6 +114,31 @@ namespace HiddenHarbours.Art
                         intensity: 0.55f, range: 1.5f,
                         edgeSoftness: 0.92f, flickerAmount: 0.03f, originOffset: Vector2.zero);
 
+                // THE RANGE LIGHT. The second masthead a big ship carries, and it is the SAME LAMP:
+                // the rule of the road distinguishes the two by where they are hung and how high, not
+                // by what they look like. So the look is the masthead's verbatim — one lamp, two
+                // stations — and the kinds are separate only so that one hull's two mastheads cannot
+                // collapse into a single duplicated row.
+                case HullLampKind.RangeLight:
+                    goto case HullLampKind.Masthead;
+
+                // THE ANCHOR LIGHT. One all-round white, and the ONLY navigation light a hull lying
+                // still is allowed to show. Deliberately DIMMER and SMALLER than the masthead it hangs
+                // in place of: a masthead says "under power, coming through" and is the brightest lamp
+                // on the boat, while this one says only "something is here" — and a whole wharf of them
+                // at two in the morning, each as bright as a steaming light, would read as a fleet
+                // getting under way rather than a fleet asleep.
+                //
+                // Reach sits between a sidelight and the stern light. It does not have to be told apart
+                // from a neighbour (there is one per hull, and the boats lie beam to beam), so the
+                // sidelights' hard cap does not bind here; it has to read as a distinct point of light
+                // rather than a haze, which is what keeps it well under the cabin glow's 1.5 m.
+                case HullLampKind.AnchorLight:
+                    return new LightPresets.Config(
+                        SceneLight.LightShape.Radial, LampWhite,
+                        intensity: 0.8f, range: 0.75f,
+                        edgeSoftness: 0.5f, flickerAmount: 0f, originOffset: Vector2.zero);
+
                 default:
                     goto case HullLampKind.SternLight;
             }

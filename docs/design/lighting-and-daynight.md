@@ -251,6 +251,53 @@ Each becomes a small bespoke component (like `BoatSpotlight`) that configures a 
 the existing `LightPreset` extension point in `LightMenu`. Build them when the world/economy lanes need them
 (stay-in-phase, rule 8).
 
+### 6.1 The fleet's lamps, and the rule of the road — SHIPPED (ADR 0016, boat-lights PR 1 + PR 2a)
+
+A boat carries LAMPS as well as a searchlight: her port and starboard sidelights, her stern light, her
+masthead, the warm spill out of her wheelhouse, and — when she is lying still — an anchor light. All of it
+is data-driven and self-installing; no scene wires a lamp anywhere.
+
+- **`HullMeshDef.Lamps`** (Core) — per-hull rows of `{Kind, RigLocalMetres, IntensityScale}`. The KIND is
+  fixed vocabulary (`HullLampKind`, append-only); only the POSITIONS are per-hull. Red to port and green to
+  starboard is the rule of the road, not a tunable, so a hull cannot declare it the other way round.
+- **`BoatLampPresets`** (Art) — one look per kind, in one place. This is where a sidelight's red lives.
+- **`BoatLamps`** (Art) — self-installed by `IsoFacetHullPresentationService` on any mesh hull whose def
+  declares lamps, in every region. Absence is data: a hull with no lamps gets no component at all.
+- **`BoatSpotlight`** (Art) — the searchlight, on the boat ROOT (see §6 above).
+
+**Which hulls.** Twenty-seven, being every hull whose rig publishes `navMounts` — the Cape Islander, the
+lobster boat and her eighteen variants, the side dragger, both stern trawlers, the coastal packet, the
+tanker and both sport fishers. The open boats (dory, punt, console skiff, both sport skiffs, both zodiacs)
+publish no mounts and carry no lamps, because an open boat has nowhere to bolt one.
+
+**Where the numbers come from.** Not from a screenshot and not from a constant in C#: each triple is
+derived from the hull's own rig by `BoatLampAnchorProbe` and pinned by `BoatLampAnchorTests`, which pushes
+the shipped def through the runtime's projection and demands it land on the pixels the rig itself draws, at
+all eight facings. Re-run the table with **`Hidden Harbours / Rig Baking / Probe: boat lamp anchors`**; it
+prints, it never writes.
+
+**The regime (what the owner will notice).** A boat that is lying still shows **an anchor light and her
+cabin, and nothing else**; a boat under way shows **her sidelights, stern light and masthead, and no anchor
+light**. That is the rule of the road, and it is why the seven boats moored along the Nine Mile Creek wharf
+read as a fleet asleep rather than a fleet getting under way. A hull says which she is through Core's
+`IVesselWay`; **a hull that says nothing is under way**, which is what every boat did before the regime
+existed.
+
+**Whose switch is the L key.** The searchlight answers the key on **the boat the player is standing on** —
+at the wheel or on her deck — and on no other, so reaching for your own light does not flip a skipper's two
+berths down. An NPC's beam follows her way instead: lit while she is running, out at her berth.
+
+#### The tunables PR 2a added (rule 6)
+
+| Tunable | Where | Default |
+|---|---|---|
+| Anchor light colour / intensity / range | `BoatLampPresets` | white `(1, 0.96, 0.88)` / 0.8 / 0.75 m |
+| Range light (the second masthead) | `BoatLampPresets` | the masthead's look, verbatim |
+| Sidelight radius | `BoatLampPresets` | 0.28 m — **bounded** by the tightest sidelight pair in the fleet (the cape's 0.6048 m); the preset test measures that bound off the shipped defs |
+| Cabin-glow occupied boost | `BoatLamps` | 1.5x while somebody is below |
+| Per-placement trim | `HullMeshDef.Lamps[].IntensityScale` | 1 (= the preset) on every hull today |
+| Master switch for a hull's glows | `BoatLamps.LampsOn` | on |
+
 ## 7. Migration to true URP 2D lights (still open)
 
 If a future need outgrows additive sprites (e.g. real occlusion/shadow-casting lights), ADR 0013's path (2)
