@@ -317,17 +317,38 @@ namespace HiddenHarbours.Player
         /// <returns>False on an unbound walk (no boat to be relative to), with <paramref name="world"/>
         /// left at <see cref="Vector3.zero"/> — the caller falls back to its own placement.</returns>
         public bool TryDeckPointWorld(Vector2 boatRelative, bool includeWashboards, out Vector3 world)
+            => TryDeckPointWorldOn(_boatRoot, boatRelative, includeWashboards, out world);
+
+        /// <summary>
+        /// ⭐ <b>The same query about a hull this walk is NOT bound to</b> — added 2026-09-03 for the
+        /// boarding REACH gate, which has to ask "how far is she from that hull's rail?" every frame,
+        /// from on foot, about a boat nobody is standing on.
+        ///
+        /// <para><b>⚠ Why it could not just call <see cref="Bind"/> first.</b> <c>Bind</c> is not a
+        /// lookup, it is a state change: it re-points <c>_boatRoot</c>, re-resolves the hull and the
+        /// deck, throws away the cached area hint and <b>re-seeds the walker's deck-local position from
+        /// the transform</b>. Doing that from a per-frame predicate — and the interact popup asks the
+        /// reach question every frame — would have this component quietly moving the player's deck
+        /// position as a side effect of being asked a question. A predicate must not write.</para>
+        ///
+        /// <para>So this takes the hull as an argument and reads everything live off it, exactly as
+        /// <c>Bind</c> would have, but stores none of it. The bound overload above is now this one asked
+        /// about <c>_boatRoot</c>, so there is one implementation of the rail rather than two that can
+        /// drift.</para>
+        /// </summary>
+        public bool TryDeckPointWorldOn(Transform boatRoot, Vector2 boatRelative, bool includeWashboards,
+                                        out Vector3 world)
         {
             world = Vector3.zero;
-            if (_boatRoot == null) return false;
+            if (boatRoot == null) return false;
 
-            Vector3 boatPos = _boatRoot.position;
-            float heading = DrawnHeadingDegrees();
-            BoatDeckDef deck = LiveDeck();
+            Vector3 boatPos = boatRoot.position;
+            float heading = DrawnHeadingDegreesOf(boatRoot);
+            BoatDeckDef deck = DeckOf(boatRoot);
 
             if (deck != null && deck.HasWalkableDeck())
             {
-                float elevation = BakeElevationDegrees();
+                float elevation = BakeElevationDegreesOf(boatRoot);
                 int hint = -1;
                 Vector2 local = SeedDeckLocalPure(boatRelative, heading, elevation, deck,
                                                   includeWashboards, ref hint, out float height);
@@ -337,6 +358,76 @@ namespace HiddenHarbours.Player
 
             world = boatPos + (Vector3)ClampToDeckHeading(boatRelative, heading, _deckCenter, _deckHalfExtents);
             return true;
+        }
+
+        /// <summary>
+        /// ⭐ A DECK-FRAME point projected to world for a hull this walk may not be bound to —
+        /// <b>without clamping it onto the deck</b>. The clamped twin above answers "where on her may I
+        /// stand?"; this answers "where in the world is that spot beside her?", which is what a probe
+        /// looking for planks ALONGSIDE her needs: every point it cares about is outside her by
+        /// construction, and a clamp would drag each one back onto the hull.
+        /// </summary>
+        public bool TryDeckFramePointWorld(Transform boatRoot, Vector2 deckPoint, out Vector3 world)
+        {
+            world = Vector3.zero;
+            if (boatRoot == null) return false;
+            float heading = DrawnHeadingDegreesOf(boatRoot);
+            float elevation = BakeElevationDegreesOf(boatRoot);
+            world = boatRoot.position + (Vector3)DeckAreaMath.DeckToWorld(deckPoint, 0f, heading, elevation);
+            return true;
+        }
+
+        /// <summary>
+        /// The hull's walkable BOX in her own deck frame (centre + half-extents, metres) — her authored
+        /// one where she has deck data, else this walk's fallback rectangle. The coarse shape a probe
+        /// walks the sides of; the polygons are for standing on, not for asking what is beside her.
+        /// </summary>
+        public bool TryDeckBox(Transform boatRoot, out Vector2 center, out Vector2 halfExtents)
+        {
+            center = _deckCenter;
+            halfExtents = _deckHalfExtents;
+            if (boatRoot == null) return false;
+
+            BoatDeckDef deck = DeckOf(boatRoot);
+            if (deck != null && deck.HasWalkableDeck() && deck.WalkHalfExtents.sqrMagnitude > 1e-6f)
+            {
+                center = deck.WalkCenter;
+                halfExtents = deck.WalkHalfExtents;
+            }
+            return true;
+        }
+
+        /// <summary>The drawn heading of a hull this walk may not be bound to — the same read
+        /// <see cref="DrawnHeadingDegrees"/> makes, without the cached presenter.</summary>
+        private static float DrawnHeadingDegreesOf(Transform boatRoot)
+        {
+            if (boatRoot == null) return 0f;
+            var host = boatRoot.GetComponent<BoatHullPresenterHost>();
+            IBoatHullPresenter hull = host != null ? host.Presenter : null;
+            if (hull == null) hull = BoatHullPresenterHost.Resolve(boatRoot.gameObject);
+            return hull != null ? hull.DrawnHeadingDegrees()
+                                : DirectionalBoatSprite.HeadingDegreesFromBow(boatRoot.up);
+        }
+
+        /// <summary>The bake elevation of a hull this walk may not be bound to.</summary>
+        private static float BakeElevationDegreesOf(Transform boatRoot)
+        {
+            if (boatRoot == null) return DeckAreaMath.PlanViewElevationDegrees;
+            var host = boatRoot.GetComponent<BoatHullPresenterHost>();
+            IBoatHullPresenter hull = host != null ? host.Presenter : null;
+            if (hull == null) hull = BoatHullPresenterHost.Resolve(boatRoot.gameObject);
+            return hull != null ? hull.BakeElevationDegrees : DeckAreaMath.PlanViewElevationDegrees;
+        }
+
+        /// <summary>The authored deck of a hull this walk may not be bound to. Falls back to the bound
+        /// hull's deck ONLY when asked about the bound hull, so a question about another boat can never
+        /// be answered with this one's areas.</summary>
+        private BoatDeckDef DeckOf(Transform boatRoot)
+        {
+            if (boatRoot == null) return null;
+            BoatDeckDef live = BoatDeckAreas.Resolve(boatRoot.gameObject);
+            if (live != null) return live;
+            return ReferenceEquals(boatRoot, _boatRoot) ? _deck : null;
         }
 
         /// <summary>True when the hull under this walk offers washboards to step over on the way aboard.

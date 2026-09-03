@@ -4045,3 +4045,72 @@ The measurement fixture proves the colour walk now spans the visible band instea
 invisible pixels; the window tests prove the foam no longer moves relative to the water it sits in; the
 bow tests prove the mechanism is an impact rather than a speed ramp. **None of them claims the sea looks
 right.** That is the owner's next eyeball, and it is the only acceptance bar this round has.
+
+
+## 31. The mirror — a glass calm has a SURFACE, not a wavelength (owner ruling 2026-09-02)
+
+> *"glass calm, i trust your judgement for the game, but we need reflections on water."*
+
+Water-fidelity PR 5, register rows 5 + 13. **Tier A, `col.rgb` only.**
+
+### What was wrong, named by the instrument rather than by an opinion
+
+§11's sheen stamps the sky down the surface as `pow(0.5 + 0.5·sin(2π·pp.y / smearLen), 3)` at calm —
+a **1.6 m sine band in world-Y, cubed**. On a dead calm that is a rug of hard horizontal stripes, and
+the plate diagnostic proved the stripes are not *on* the reflection, they **are** it: zeroing
+`_ReflectionStrength` took the glass sea's mean luma from **0.46 to 0.05** and its row-band contrast
+from 0.165 to 0.001. Row 13 is the same defect from the side: the band fades with `_Chop` on a ramp
+rather than with the water, so at sea state 0.25 it still held three quarters of its glass contrast.
+
+### The form: 1/(1 + k·|slope|)
+
+A mirror has no wavelength. It has a **surface**: a level facet returns the sky to the eye, a tilted
+one returns something else, so the sheen breaks up exactly where the water tilts and nowhere else.
+
+The tilt is the SHARED wave field's own analytic slope — the same `waveSlope` the swell face shading
+and #691's beam relief read (ADR 0018: one field, one slope, one computation), at the drawn
+`_OceanSwellScale` frequency and already sampled at `Pixelize(worldXY)`, so the break-up is pixel-art
+by inheritance rather than by a second snap.
+
+```hlsl
+float tilt        = length(waveSlope) * _MirrorTiltScale;   // shipped 6
+float mirrorShare = 1.0 / (1.0 + tilt);                     // 1 dead-flat, falling smoothly, never clipping
+band = lerp(band, _MirrorSheen * mirrorShare, _MirrorForm);  // _MirrorForm 0 = the shipped stripe, exactly
+```
+
+**Chop dissolves it for free — chop IS tilt** — which is row 13 answered by construction instead of by
+another ramp over `_Chop`. And the light half of row 13 was never missing: the mirror reflects `sky`,
+which is `_DayNightTint`, so a night mirror is a dark mirror and the moon path still walks it (the sky
+CONTENT layer, §11's second half, is untouched).
+
+⚠️ **`_MirrorSheen`'s default 0.3125 is a derivation, not a taste.** `(0.5 + 0.5·sin)³` averages
+0.3125 over a period, so a level facet returning that much sky puts the SAME light on a calm sea as
+the stripe it replaces. **This changes the form, not the exposure.** Measured on the glass plate:
+mean wet luma 0.4618 → 0.3418 open water, 0.4886 → 0.3727 over the sand — and every bit of that drop
+is the glitter below, not the sheen.
+
+### ⭐ Glitter needs ripples — and the plate is what said so
+
+With the rug gone, the loudest thing on a dead calm was the **sun-streak glitter**: a dense field of
+fine vertical glints over the whole frame, reading as RAIN. It had always been there; the stripes were
+hiding it.
+
+It is also wrong, and for the same reason the mirror is right. A glint is a facet turned by chance to
+send the SUN at the eye — the one thing a LEVEL facet cannot do, because it is already sending the
+sky. So the streak rides `tiltShare = 1 − mirrorShare`, the mirror's exact complement: **one surface,
+accounted for once.** A dead calm returns the sky and almost no glitter; a light air breaks both ways;
+the path lights up as soon as there is a ripple to light it.
+
+### The evidence, and the passthrough
+
+`WaterFidelityPlateSweepTests.TheGlassCalm_IsAMirror_AndNotAStripedRug` shoots THREE arms on one
+frozen scene at two viewpoints — the shipped stripe, the mirror, and the reflection removed entirely —
+and requires two numbers to move in **opposite directions**: the row-band contrast (the std-dev of the
+per-row mean luma; horizontal stripes and almost nothing else score on it) must collapse, while the
+mean luma must not, because a change that killed the stripes *and* the light would be the reflection
+deleted wearing a mirror's name. Measured: row-band **0.165 → 0.063** and **0.168 → 0.064**, against a
+reflection-off control at 0.001 / 0.004.
+
+`_MirrorForm = 0` restores the shipped stripe and the shipped all-over glitter exactly — both are
+`lerp(x, y, 0)`, the float identity — and the three dials are serialized on `Water.mat` and all eight
+presets (`Apply water preset` is a wholesale copy).
