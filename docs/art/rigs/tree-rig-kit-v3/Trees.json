@@ -1,0 +1,382 @@
+{
+ "_note": "Baked by Art/_treeBake.js from Art/treeIsoRig3.js. Regenerate rather than hand-edit.",
+ "ppu": 32,
+ "scale": 0.6,
+ "keyline": false,
+ "camera": {
+  "name": "ADR-0006/0022",
+  "view": "3/4 from S",
+  "elevDeg": 40,
+  "heightScale": 0.766,
+  "depthScale": 0.6428
+ },
+ "light": {
+  "key": [
+   -0.5476772967888549,
+   -0.6572127561466258,
+   0.5178039896912809
+  ],
+  "rim": [
+   0.48055295402873055,
+   -0.2803225565167595,
+   -0.8309561496746799
+  ],
+  "note": "fixed upper-left key + back rim, screen space (art bible §1)"
+ },
+ "rules": {
+  "rimPx": 2,
+  "minBodyPx": 6,
+  "minClumpRadiusPx": 5,
+  "note": "a 2 px rim must leave 6 px of interior; nothing is emitted under a 5 px clump radius; the rim is gated on local mass thickness"
+ },
+ "channels": {
+  "albedo": "RGBA, binary alpha, no AA",
+  "mask": "R=key light, G=back rim, B=depth, A=coverage",
+  "normal": "view-space normal, R=x G=y-up B=toward camera"
+ },
+ "sheet": {
+  "cols": 4,
+  "rows": 4,
+  "colAxis": "variant",
+  "rowAxis": "sway frame",
+  "fps": "5-7"
+ },
+ "stages": {
+  "sapling": 0.22,
+  "young": 0.45,
+  "pole": 0.7,
+  "mature": 1
+ },
+ "trees": {
+  "RedSpruce/mature": {
+   "species": "RedSpruce",
+   "name": "Red Spruce",
+   "latin": "Picea rubens",
+   "form": "spire",
+   "stage": "mature",
+   "metres": 12.6,
+   "trueMetres": 21,
+   "cell": [
+    156,
+    329
+   ],
+   "pivot": [
+    77,
+    318
+   ],
+   "nearFlarePad": 10,
+   "sheet": [
+    624,
+    1316
+   ],
+   "fitsUnity2048": true,
+   "seasons": [
+    "summer"
+   ],
+   "audit": {
+    "thinPct": 0.3,
+    "bodyRatio": 89,
+    "despeckled": 103,
+    "pass": true,
+    "underFloor": false
+   }
+  },
+  "BlackSpruce/mature": {
+   "species": "BlackSpruce",
+   "name": "Black Spruce",
+   "latin": "Picea mariana",
+   "form": "spire",
+   "stage": "mature",
+   "metres": 6.6,
+   "trueMetres": 11,
+   "cell": [
+    73,
+    179
+   ],
+   "pivot": [
+    36,
+    171
+   ],
+   "nearFlarePad": 7,
+   "sheet": [
+    292,
+    716
+   ],
+   "fitsUnity2048": true,
+   "seasons": [
+    "summer"
+   ],
+   "audit": {
+    "thinPct": 0.9,
+    "bodyRatio": 64,
+    "despeckled": 50,
+    "pass": true,
+    "underFloor": false
+   }
+  },
+  "BalsamFir/mature": {
+   "species": "BalsamFir",
+   "name": "Balsam Fir",
+   "latin": "Abies balsamea",
+   "form": "spire",
+   "stage": "mature",
+   "metres": 9.6,
+   "trueMetres": 16,
+   "cell": [
+    119,
+    252
+   ],
+   "pivot": [
+    59,
+    243
+   ],
+   "nearFlarePad": 8,
+   "sheet": [
+    476,
+    1008
+   ],
+   "fitsUnity2048": true,
+   "seasons": [
+    "summer"
+   ],
+   "audit": {
+    "thinPct": 0.8,
+    "bodyRatio": 85,
+    "despeckled": 19,
+    "pass": true,
+    "underFloor": false
+   }
+  },
+  "WhitePine/mature": {
+   "species": "WhitePine",
+   "name": "E. White Pine",
+   "latin": "Pinus strobus",
+   "form": "pine",
+   "stage": "mature",
+   "metres": 16.2,
+   "trueMetres": 27,
+   "cell": [
+    269,
+    442
+   ],
+   "pivot": [
+    134,
+    429
+   ],
+   "nearFlarePad": 12,
+   "sheet": [
+    1076,
+    1768
+   ],
+   "fitsUnity2048": true,
+   "seasons": [
+    "summer"
+   ],
+   "audit": {
+    "thinPct": 0,
+    "bodyRatio": 84,
+    "despeckled": 238,
+    "pass": true,
+    "underFloor": false
+   }
+  },
+  "WhiteCedar/mature": {
+   "species": "WhiteCedar",
+   "name": "E. White Cedar",
+   "latin": "Thuja occidentalis",
+   "form": "cedar",
+   "stage": "mature",
+   "metres": 7.8,
+   "trueMetres": 13,
+   "cell": [
+    96,
+    225
+   ],
+   "pivot": [
+    47,
+    202
+   ],
+   "nearFlarePad": 22,
+   "sheet": [
+    384,
+    900
+   ],
+   "fitsUnity2048": true,
+   "seasons": [
+    "summer"
+   ],
+   "audit": {
+    "thinPct": 0.6,
+    "bodyRatio": 82,
+    "despeckled": 2,
+    "pass": true,
+    "underFloor": false
+   }
+  },
+  "Tamarack/mature": {
+   "species": "Tamarack",
+   "name": "Tamarack",
+   "latin": "Larix laricina",
+   "form": "larch",
+   "stage": "mature",
+   "metres": 10.2,
+   "trueMetres": 17,
+   "cell": [
+    111,
+    266
+   ],
+   "pivot": [
+    55,
+    257
+   ],
+   "nearFlarePad": 8,
+   "sheet": [
+    444,
+    1064
+   ],
+   "fitsUnity2048": true,
+   "seasons": [
+    "summer"
+   ],
+   "audit": {
+    "thinPct": 0.8,
+    "bodyRatio": 80,
+    "despeckled": 57,
+    "pass": true,
+    "underFloor": false
+   }
+  },
+  "WhiteBirch/mature": {
+   "species": "WhiteBirch",
+   "name": "White Birch",
+   "latin": "Betula papyrifera",
+   "form": "oval",
+   "stage": "mature",
+   "metres": 10.2,
+   "trueMetres": 17,
+   "cell": [
+    162,
+    269
+   ],
+   "pivot": [
+    81,
+    260
+   ],
+   "nearFlarePad": 8,
+   "sheet": [
+    648,
+    1076
+   ],
+   "fitsUnity2048": true,
+   "seasons": [
+    "summer"
+   ],
+   "audit": {
+    "thinPct": 0.1,
+    "bodyRatio": 85,
+    "despeckled": 15,
+    "pass": true,
+    "underFloor": false
+   }
+  },
+  "RedMaple/mature": {
+   "species": "RedMaple",
+   "name": "Red Maple",
+   "latin": "Acer rubrum",
+   "form": "round",
+   "stage": "mature",
+   "metres": 12,
+   "trueMetres": 20,
+   "cell": [
+    209,
+    320
+   ],
+   "pivot": [
+    104,
+    309
+   ],
+   "nearFlarePad": 10,
+   "sheet": [
+    836,
+    1280
+   ],
+   "fitsUnity2048": true,
+   "seasons": [
+    "summer"
+   ],
+   "audit": {
+    "thinPct": 0,
+    "bodyRatio": 91,
+    "despeckled": 6,
+    "pass": true,
+    "underFloor": false
+   }
+  },
+  "RedOak/mature": {
+   "species": "RedOak",
+   "name": "Red Oak",
+   "latin": "Quercus rubra",
+   "form": "round",
+   "stage": "mature",
+   "metres": 13.2,
+   "trueMetres": 22,
+   "cell": [
+    331,
+    347
+   ],
+   "pivot": [
+    165,
+    334
+   ],
+   "nearFlarePad": 12,
+   "sheet": [
+    1324,
+    1388
+   ],
+   "fitsUnity2048": true,
+   "seasons": [
+    "summer"
+   ],
+   "audit": {
+    "thinPct": 0,
+    "bodyRatio": 95,
+    "despeckled": 1,
+    "pass": true,
+    "underFloor": false
+   }
+  },
+  "TremblingAspen/mature": {
+   "species": "TremblingAspen",
+   "name": "Trembling Aspen",
+   "latin": "Populus tremuloides",
+   "form": "oval",
+   "stage": "mature",
+   "metres": 10.8,
+   "trueMetres": 18,
+   "cell": [
+    117,
+    271
+   ],
+   "pivot": [
+    58,
+    262
+   ],
+   "nearFlarePad": 8,
+   "sheet": [
+    468,
+    1084
+   ],
+   "fitsUnity2048": true,
+   "seasons": [
+    "summer"
+   ],
+   "audit": {
+    "thinPct": 0,
+    "bodyRatio": 77,
+    "despeckled": 2,
+    "pass": true,
+    "underFloor": false
+   }
+  }
+ }
+}
