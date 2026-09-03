@@ -352,8 +352,30 @@ namespace HiddenHarbours.Tests.Art.EditMode
 
             Color[] fixedFrame = scene.Render();
             FrameStats fixedStats = Stats(fixedFrame, c.DayNightTint);
-            Debug.Log($"[white-out] dusk_storm FIXED: {fixedStats}");
             DumpPng("whiteout_duskstorm_after", fixedFrame, c.DayNightTint);
+
+            // ---- BOTH ARMS FIRST, then judge the PAIR ------------------------------------------------
+            // ⚠️⚠️ THIS GUARD HAS NOW ROTTED THREE TIMES, and every time for the same reason: the bars
+            // were ABSOLUTE numbers measured against whatever structure the sea happened to have that
+            // month, and the sea keeps legitimately changing. 2026-08-01 recalibrated them after #382/
+            // #383/#385 made the dusk storm RICHER (and the sabotage arm started sailing over the old
+            // bars). 2026-09-03 broke them the other way: the swell-scale ruling made the drawn waves
+            // ×2.8 LONGER, so a fixed frame holds fewer crests and larger areas of similar value — the
+            // flat fraction went 28.4 % → 49.0 % against a 40 % bar with no white-out anywhere near it.
+            //
+            // The bars are now RATIOS AGAINST THE SABOTAGE ARM, rendered in this same run on this same
+            // frame. Both arms move together when the sea changes, so there is nothing left to
+            // recalibrate — which is the only version of this test that has a chance of still meaning
+            // something in six months.
+            float kneeShipped = scene.WaterMat.GetFloat("_PaletteFloorKnee");
+            scene.WaterMat.SetFloat("_PaletteFloorKnee", 0f);   // the pre-fix saturating curve
+            Color[] legacy = scene.Render();
+            FrameStats legacyStats = Stats(legacy, c.DayNightTint);
+            DumpPng("whiteout_duskstorm_before", legacy, c.DayNightTint);
+            scene.WaterMat.SetFloat("_PaletteFloorKnee", kneeShipped);   // put the sea back
+
+            Debug.Log($"[white-out] dusk_storm FIXED:    {fixedStats}\n" +
+                      $"[white-out] dusk_storm SABOTAGE: {legacyStats}");
 
             // ⚠️ RECALIBRATED 2026-08-01. The bars below were absolute constants measured on the
             // 2026-07-24 dusk-storm frame (fixed: spread 0.076, flat 94.5%; defect: 0.037, 99.7%).
@@ -378,38 +400,58 @@ namespace HiddenHarbours.Tests.Art.EditMode
             // compensation clamps the sea's low values UP to one high floor, so the dark end stops
             // being dark. That signal separates the two states by 5x (0.029 vs 0.148) where spread
             // manages only 1.7x, and it stays true no matter how rich the sea gets.
-            Assert.Greater(fixedStats.Spread, 0.23f,
-                $"the dusk-storm sea's on-screen value spread (p95−p05) is {fixedStats.Spread:F3} " +
-                "— the crest/trough/foam structure has collapsed toward the white-out sheet " +
-                "(knee-0 sabotage: 0.173; healthy: 0.288).");
-            Assert.Less(fixedStats.FlatFrac, 0.40f,
-                $"the dusk-storm sea is {fixedStats.FlatFrac:P1} flat — a near-uniform sheet. " +
-                "The owner's white-out is back (knee-0 sabotage measures 51.9%; healthy 28.4%): the " +
-                "palette floor's dusk clamp (or another whole-sea layer) is flattening the structure.");
-            Assert.Less(fixedStats.P05, 0.08f,
-                $"the dusk-storm sea's DARK end has been lifted to {fixedStats.P05:F3} — the bottom " +
-                "of the value distribution is being clamped to a floor instead of riding down with " +
-                "the scene (knee-0 sabotage: 0.148; healthy: 0.029). This is the white-out's " +
-                "mechanism, not merely its symptom: the ADR 0015 floor pre-compensation is " +
-                "saturating through dusk again.");
+            // ⭐ P05 IS THE BAR, and the 2026-08-01 note above already said so: the white-out's
+            // MECHANISM is the floor pre-compensation clamping the sea's low values UP to one high
+            // floor, so the dark end stops being dark. Spread and flatness are downstream consequences
+            // and they track how much structure the sea happens to have — which is why an ABSOLUTE bar
+            // on them keeps rotting. p05 measures the clamp itself, and it separates the arms hardest of
+            // the three: measured 2026-09-03, 0.011 fixed against 0.137 sabotage — 12x.
+            Assert.Less(fixedStats.P05, legacyStats.P05 * 0.5f,
+                $"the dusk-storm sea's DARK end has been lifted to {fixedStats.P05:F3}, against " +
+                $"{legacyStats.P05:F3} with the legacy floor curve — the bottom of the value " +
+                "distribution is being clamped to a floor instead of riding down with the scene. This " +
+                "is the white-out's mechanism, not merely its symptom: the ADR 0015 floor " +
+                "pre-compensation is saturating through dusk again.");
 
-            // ---- SABOTAGE: the legacy floor curve must trip the SAME bars -----------------
-            scene.WaterMat.SetFloat("_PaletteFloorKnee", 0f);   // the pre-fix saturating curve
-            Color[] legacy = scene.Render();
-            FrameStats legacyStats = Stats(legacy, c.DayNightTint);
-            Debug.Log($"[white-out] dusk_storm SABOTAGE (knee 0): {legacyStats}");
-            DumpPng("whiteout_duskstorm_before", legacy, c.DayNightTint);
-            // The SAME three bars the assert above uses, in the same direction — an OR, because the
-            // three Asserts are an AND, so "the assert would have gone red" is "ANY bar trips".
-            // Keep this list in lockstep with the bars above: a bar added there and forgotten here
-            // is a bar whose sabotage arm proves nothing.
-            bool sabotageTripped = legacyStats.Spread <= 0.23f
-                                || legacyStats.FlatFrac >= 0.40f
-                                || legacyStats.P05 >= 0.08f;
+            // …and the symptom, kept but as a RATIO so it cannot rot: the fixed frame must still hold
+            // materially more value range than the clamped one.
+            Assert.Greater(fixedStats.Spread, legacyStats.Spread * 1.25f,
+                $"the dusk-storm sea's on-screen value spread (p95−p05) is {fixedStats.Spread:F3} " +
+                $"against the legacy curve's {legacyStats.Spread:F3} — the crest/trough/foam structure " +
+                "has collapsed toward the white-out sheet.");
+
+            // ⭐⭐ AND THE FLAT FRACTION STAYS — which is not what this edit set out to do, and the
+            // measurement is why. The absolute 40 % bar failed at 49.0 % fixed, and the 2026-08-01 note
+            // recorded the sabotage arm at 51.9 %; on those two numbers flatness looked like a spent
+            // discriminator and the first draft of this change dropped it. Shooting BOTH arms in the
+            // same run says otherwise: **44.6 % fixed against 79.8 % sabotage.** The August 51.9 % was
+            // measured on the SHORT swell and had gone stale with everything else — the arms had not
+            // converged at all, they had both moved up together, which is exactly the failure an
+            // absolute bar has and a ratio does not.
+            //
+            // So the statistic was never the problem; anchoring it to a number was. It is a WINDOW
+            // statistic (pixels whose neighbourhood is uniform), so it rises whenever the sea's
+            // structure gets LONGER — as the swell ruling made it — and it rises for the white-out too,
+            // much harder. As a ratio it discriminates 1.8x and costs nothing to keep.
+            Assert.Less(fixedStats.FlatFrac, legacyStats.FlatFrac * 0.75f,
+                $"the dusk-storm sea is {fixedStats.FlatFrac:P1} flat against the legacy curve's " +
+                $"{legacyStats.FlatFrac:P1} — a near-uniform sheet. The owner's white-out is back: the " +
+                "palette floor's dusk clamp (or another whole-sea layer) is flattening the structure.");
+
+            // ---- SABOTAGE: the legacy curve must trip the bars the asserts above use --------------
+            // An OR, because those Asserts are an AND: "the assert would have gone red" is "any bar
+            // trips". Keep this in lockstep with the bars above — a bar added there and forgotten here
+            // is a bar whose sabotage arm proves nothing. (With the bars now RELATIVE this is
+            // near-tautological, which is itself the improvement: the arms can no longer both drift
+            // over an absolute together.)
+            bool sabotageTripped = fixedStats.P05 < legacyStats.P05 * 0.5f
+                                && fixedStats.Spread > legacyStats.Spread * 1.25f
+                                && fixedStats.FlatFrac < legacyStats.FlatFrac * 0.75f;
             Assert.IsTrue(sabotageTripped,
-                "SABOTAGE NOT DETECTED — with the legacy floor curve (knee 0) the dusk-storm " +
-                $"frame still passed the structure bars ({legacyStats}). The assert cannot see " +
-                "the white-out it exists to pin, and the green run above is worth less than it looks.");
+                "SABOTAGE NOT DETECTED — with the legacy floor curve (knee 0) the dusk-storm frame is " +
+                $"indistinguishable from the fixed one (fixed {fixedStats}, sabotage {legacyStats}). " +
+                "The assert cannot see the white-out it exists to pin, and the green run above is " +
+                "worth less than it looks.");
         }
 
         /// <summary>

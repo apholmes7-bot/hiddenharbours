@@ -160,7 +160,7 @@ Material:
     - _FbmGateLo: 0.452
     - _FbmGateHi: 1
     - _SpecBands: 3.38
-    - _OceanSwellScale: 0.07
+    - _OceanSwellScale: 0.025
     - _OceanSwellSpeed: 0.018
     - _OceanSwellStrength: 0.09
     - _OceanSwellSharpness: 6

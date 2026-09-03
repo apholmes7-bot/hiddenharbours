@@ -219,7 +219,7 @@ namespace HiddenHarbours.Tests.EditMode
             public float Chop, Roughness, Flow, PushedLevel;    // read back from the property block
             public float WaveCount;                             // _WaveFieldParams.x read back
             public float LightCount;                            // _WaterLightCount read back
-            public float WetFraction, MeanLumaWet;
+            public float WetFraction, MeanLumaWet, StdLumaWet;
         }
 
         // =============================================================================================
@@ -1182,7 +1182,8 @@ namespace HiddenHarbours.Tests.EditMode
             Vector4 outer = Shader.GetGlobalVector(Shader.PropertyToID("_BreakerOuter"));
             Vector4 depths = Shader.GetGlobalVector(Shader.PropertyToID("_BreakerDepths"));
             Vector4 fieldParams = Shader.GetGlobalVector(Shader.PropertyToID("_WaveFieldParams"));
-            WetStatistics(stage, _env.WaterLevel, ldr, out float wet, out float meanLumaWet);
+            WetStatistics(stage, _env.WaterLevel, ldr, out float wet, out float meanLumaWet,
+                          out float stdLumaWet);
 
             rec = new PlateRecord
             {
@@ -1194,7 +1195,7 @@ namespace HiddenHarbours.Tests.EditMode
                 Flow = block.GetFloat("_Flow"), PushedLevel = block.GetFloat("_WaterLevel"),
                 WaveCount = fieldParams.x,
                 LightCount = Shader.GetGlobalFloat(Shader.PropertyToID("_WaterLightCount")),
-                WetFraction = wet, MeanLumaWet = meanLumaWet,
+                WetFraction = wet, MeanLumaWet = meanLumaWet, StdLumaWet = stdLumaWet,
             };
             Assert.IsTrue(rec.Breaks == contour.Breaks,
                 "the breaker globals the shader reads must be the contour the C# solved for this plate");
@@ -1380,9 +1381,23 @@ namespace HiddenHarbours.Tests.EditMode
         /// <summary>Wet fraction of the frame from the TERRAIN under each pixel (never from the picture),
         /// and the mean luma over those wet pixels.</summary>
         void WetStatistics(Stage stage, float level, Color[] ldr, out float wetFraction, out float meanLumaWet)
+            => WetStatistics(stage, level, ldr, out wetFraction, out meanLumaWet, out _);
+
+        /// <summary>…and the STANDARD DEVIATION of that luma, which is the honest answer to "did
+        /// anything draw".
+        ///
+        /// <para>⚠️ The mean was doing that job and it is not up to it. A floor on BRIGHTNESS conflates
+        /// "the render is black" with "this sea is dark" — and the sea legitimately got darker when the
+        /// 2026-09-03 swell-scale ruling lengthened the waves ×2.8, because a fixed 40 m frame then holds
+        /// 2.8× fewer lit crests. `nmc-steep-blow-high-noon` came in at 0.0197 against a 0.02 floor: a
+        /// perfectly good picture of a dark blow at high water, failing a tripwire meant to catch a dead
+        /// render. A black frame has NO VARIANCE; a dark sea has plenty, and no amount of art direction
+        /// can take that away without the picture genuinely being gone.</para></summary>
+        void WetStatistics(Stage stage, float level, Color[] ldr, out float wetFraction,
+                           out float meanLumaWet, out float stdLumaWet)
         {
             int wet = 0, n = 0;
-            double luma = 0;
+            double luma = 0, lumaSq = 0;
             for (int py = 0; py < ShotPx; py += 4)
             for (int px = 0; px < ShotPx; px += 4)
             {
@@ -1390,10 +1405,14 @@ namespace HiddenHarbours.Tests.EditMode
                 if (level - stage.Terrain.ElevationAt(PixelToWorld(px, py)) <= 0f) continue;
                 wet++;
                 Color c = ldr[py * ShotPx + px];
-                luma += 0.299f * c.r + 0.587f * c.g + 0.114f * c.b;
+                double l = 0.299f * c.r + 0.587f * c.g + 0.114f * c.b;
+                luma += l;
+                lumaSq += l * l;
             }
             wetFraction = n > 0 ? wet / (float)n : 0f;
-            meanLumaWet = wet > 0 ? (float)(luma / wet) : 0f;
+            double mean = wet > 0 ? luma / wet : 0.0;
+            meanLumaWet = (float)mean;
+            stdLumaWet = wet > 0 ? (float)System.Math.Sqrt(System.Math.Max(0.0, lumaSq / wet - mean * mean)) : 0f;
         }
 
         /// <summary>Orthographic pixel to world, with the read-back's bottom-left origin.</summary>
@@ -1440,7 +1459,7 @@ namespace HiddenHarbours.Tests.EditMode
                           $"({WindHeading.x:F3}, {WindHeading.y:F3}); lamp = BoatSpotlight defaults x water strength " +
                           $"{Searchlight.WaterStrength} at aim + ({Searchlight.Offset.x}, {Searchlight.Offset.y}) throwing +x");
             sb.AppendLine("file | weather sea01 wind_mps | tide level_m pushed_level | hour tint sunDir sunElev | " +
-                          "breaks breakDepth outerDepth | _Chop _Roughness _Flow | trains lights | wet% lumaWet");
+                          "breaks breakDepth outerDepth | _Chop _Roughness _Flow | trains lights | wet% lumaWet stdWet");
             foreach (PlateRecord r in records)
             {
                 sb.AppendLine(
@@ -1450,7 +1469,7 @@ namespace HiddenHarbours.Tests.EditMode
                     $"({r.SunDir.x:F2},{r.SunDir.y:F2}) {r.SunElevation:F2} | " +
                     $"{(r.Breaks ? "yes" : "no")} {r.BreakDepth:F2} {r.OuterDepth:F2} | " +
                     $"{r.Chop:F3} {r.Roughness:F3} {r.Flow:F3} | {r.WaveCount:F0} {r.LightCount:F0} | " +
-                    $"{r.WetFraction:P1} {r.MeanLumaWet:F3}");
+                    $"{r.WetFraction:P1} {r.MeanLumaWet:F3} {r.StdLumaWet:F3}");
             }
             File.WriteAllText(Path.Combine(dir, "MANIFEST.txt"), sb.ToString());
         }
@@ -1500,7 +1519,20 @@ namespace HiddenHarbours.Tests.EditMode
             foreach (PlateRecord r in records)
             {
                 if (r.Hour == Hour.Noon)
-                    Assert.Greater(r.MeanLumaWet, 0.02f, $"{r.File}: the noon sea photographed black");
+                {
+                    // ⚠️ STRUCTURE, not brightness — see WetStatistics. This floor used to be
+                    // MeanLumaWet > 0.02, and the 2026-09-03 swell-scale ruling walked a real plate
+                    // under it (nmc-steep-blow-high-noon, 0.0197): 2.8× longer waves put 2.8× fewer lit
+                    // crests in a fixed frame, so a working picture of a dark blow tripped a tripwire
+                    // meant for a dead render. Variance cannot be argued with the same way.
+                    Assert.Greater(r.StdLumaWet, 0.005f,
+                        $"{r.File}: the noon sea has no STRUCTURE — a black or single-colour frame is " +
+                        "the only thing that reads this flat, so nothing drew");
+                    Assert.Greater(r.MeanLumaWet, 0.005f,
+                        $"{r.File}: the noon sea photographed black ({r.MeanLumaWet:F4} mean luma). " +
+                        "How DARK a lit sea should be is register row 6's question, not this tripwire's; " +
+                        "this floor only says a picture exists.");
+                }
             }
 
             // 4. ⭐ THE PUBLISHED FILE, not the buffer. Re-load the reference plate from disk and check its

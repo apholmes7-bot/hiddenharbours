@@ -540,3 +540,16 @@ for the same reason the spectrum did: this changes what the hulls ride.
   once the owner signs off the reworked look — its tunables then become the mapped train scales.
 - **The exact v1 exposure model** (B3): painted-height-map shoaling signal vs a distance-to-land
   falloff vs a hand-tunable per-region factor — pick when B3 is in hand; deterministic either way.
+
+## Note (2026-09-03) — the DRAWN sea now runs this field at its own wavelengths (water fidelity PR 6)
+
+The one-sea rule this ADR establishes had a caveat that lived in ADR 0023: the shader drew the field at
+`_OceanSwellScale / 0.025` — **2.8** on every shipped material — so the sea on screen was the same
+amplitude envelope at wavelengths 2.8x shorter than the field these trains describe. Consumers coped by
+threading that scale through the `DisplacedSea` seam (the ride, the watertight clamp, the foam injector,
+the lip spray, and the bore's phase since ADR 0040 rev 3).
+
+On the owner's 2026-09-02 ruling (*"a longer slower swell"*) all nine materials went to **0.025**, so the
+scale is **1** and the drawn sea IS this field — same wavelengths, same periods, same evaluation. Nothing
+in this ADR changes; the caveat simply stops applying. The seam and every scaled read stay, because the
+knob is still the owner's. See ADR 0023's 2026-09-03 amendment for the detail and the cost numbers.

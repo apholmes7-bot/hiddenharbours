@@ -142,7 +142,7 @@ Material:
     - _ObjectReflectSink: 0.35
     - _ObjectReflectStrength: 0.5
     - _ObjectReflectWarp: 0.35
-    - _OceanSwellScale: 0.07
+    - _OceanSwellScale: 0.025
     - _OceanSwellSharpness: 6
     - _OceanSwellSpeed: 0.018
     - _OceanSwellStrength: 0.12
