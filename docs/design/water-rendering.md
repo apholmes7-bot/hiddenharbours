@@ -4114,3 +4114,90 @@ reflection-off control at 0.001 / 0.004.
 `_MirrorForm = 0` restores the shipped stripe and the shipped all-over glitter exactly — both are
 `lerp(x, y, 0)`, the float identity — and the three dials are serialized on `Water.mat` and all eight
 presets (`Apply water preset` is a wholesale copy).
+
+
+## 32. The whitecaps — the field places them, and they age like every other foam (owner ruling 2026-09-02)
+
+> *"let the procedural field replace the caps."*
+
+Water-fidelity PR 7, register row 7. **Tier A, `col.rgb` only.**
+
+### The placement: one number
+
+`capField = lerp(capField, capPat, _WhitecapTexStrength)`. At the **0.865** every shipped material
+carried, that is not a blend — **painted slots PLACE, they do not decorate** (§10's standing law). The
+painted sheet is 16 mirrored copies of one mark, so it gave 1.35 % coverage in a blow where the field
+gives 9.95 % (measured 2026-08-05 on the cap field itself), and its hard mirrored silhouette is the
+"dark shards" the gale plates show cut into the foam lanes.
+
+**`_WhitecapTexStrength` → 0 on all nine materials, and the shader's own default with them**, so a
+material that does not carry the key gets the field rather than the sheet. `Whitecaps.png` is NOT deleted
+and the slot is NOT removed: both stay reachable and 1 still hands the caps back to the sheet exactly as
+before. It is the owner's art; this records which source SHIPS.
+
+⚠️ **All nine, because `_WhitecapTexStrength` is MOOD-EASED** (`WaterSurface.MoodFloatNames`): the live
+value is lerped between the preset anchors by the weather, so one preset left at 0.865 would be a sea that
+goes back to the stamp sheet whenever the weather leaned that way.
+
+### The colour: born into the one foam language (`_CapAgeStrength`)
+
+The advected wake buffer already walks the palette — `_PaletteFoam → _PaletteShallow → _PaletteMid`
+through `WakeFoamKnots` — and the whitecaps composited a single flat `_FoamColor`, so the sea had two
+whites in it. The cap's own lifecycle already knows which end of that walk a pixel is on:
+`WhitecapLifecycleWave` returns a `breakCore` (the crest tip) and a `residual` (the milky trail behind),
+and their ratio IS the age. Nothing accumulated, nothing re-derived — the decaying-quantity law: read it
+from geometry.
+
+```hlsl
+capAge01 = residualLife / max(breakCore + residualLife, 1e-4);   // 0 fresh break, 1 milky residual
+```
+
+The caps then take the **same ramp through the same knots** the wake ages on, so a cap and a wake at the
+same age are the same colour. That is all "one foam language" has to mean before row 2 can unify the rest;
+row 2 itself is NOT done here. `_CapAgeStrength 0` restores the single flat white, bit for bit.
+
+### ⚠️ …and it SHIPS AT 0, because this instrument could not show it
+
+Whitecaps sit at **0.02–0.09 luma** in the only weathers that have caps, so a colour change is invisible
+to the eye on a plate. The sweep therefore measures the **mean colour of the brightest decile of open
+water** — where the foam is at any exposure — and shoots an ageing arm beside the shipped one. In an
+ISOLATED run it read exactly as intended:
+
+| cell | ageing 0.75 | ageing off | red:blue |
+|---|---|---|---|
+| gale, open water | (0.076, 0.101, 0.122) | (0.098, 0.126, 0.147) | 0.62 vs 0.67 |
+| blow, NMC steep | (0.051, 0.147, 0.148) | (0.070, 0.166, 0.168) | 0.35 vs 0.42 |
+| glass, open water | (0.3996, 0.4550, 0.5101) | (0.3996, 0.4550, 0.5102) | inert |
+
+In the FULL SUITE the same blow comparison read **0.467 vs 0.470**. The direction survived; the magnitude
+did not. What moved between the runs is `_Time`: which crests happen to be breaking decides which pixels
+land in the decile, and that swamps a subtle colour walk on foam this dark.
+
+**A look change nobody can see is not a look change anybody should ship.** So `_CapAgeStrength` ships at
+**0** — the mechanism built, gated and off. Row 2, the foam-language unification, judges wake, surf,
+fringe and caps together against one palette; that is where a foam palette can actually be judged, and it
+inherits the code, the dial and these numbers rather than having to invent them. The arm stays in the
+sweep as a reported diagnostic. What IS asserted is that the ageing is exactly inert on a sea with no caps
+in it, at any dial setting.
+
+### What the plates can and cannot settle
+
+The A/B pair (`SHEET-caps.png`) is for the eye, and the eye is the acceptance: the sheet arm's hard
+mirrored shards against the field arm's soft wind-streaked lanes. **The coverage numbers are reported, not
+asserted**, and three drafts of the instrument are why:
+
+- a **distribution-relative** bar (p50 + half the way to p95) reported 18.65 % coverage on a **glass calm**
+  — every histogram has a bright tail;
+- an **absolute white** bar reported 0.00 % in a **gale**, where the whole frame including its foam sits
+  under 0.03 luma — foam is only white relative to the sea it is on;
+- inside the breaker contour the **surf's** own whitewater is white by design, so both arms read 65–83 %
+  there. That is the surf, not caps — the coverage now excludes the breaking water rather than pretending
+  to measure caps inside it;
+- and the blow cell's mean luma is not stationary between two shots of the same sea (0.106 and 0.145
+  across two runs), so an arm-to-arm difference at this frame size would be measuring `_Time`.
+
+The claim is asserted where it is exactly true — on the assets and the shader, in
+`WhitecapStampSheetTests.TheProceduralField_PlacesTheCaps_NotTheStampSheet`. What the plate *does* assert
+is that a **glass calm does not notice this PR at all**: zero wave amplitude is zero cap opacity by
+construction, so whichever source is placing the caps there is nothing to place, and the sacred state
+comes through untouched (both arms within 0.002 of each other).

@@ -596,7 +596,16 @@ Shader "HiddenHarbours/Water"
 
         [Toggle(_USE_WHITECAPTEX)] _UseWhitecapTex ("Use whitecap texture", Float) = 0
         [NoScaleOffset] _WhitecapTex ("Whitecap STAMP SHEET (white-on-transparent, seamless 256)", 2D) = "white" {}
-        _WhitecapTexStrength ("Whitecap tex blend (0=proc, 1=painted)", Range(0,1)) = 1.0
+        // OWNER RULING 2026-09-02: *"let the procedural field replace the caps."* This slot USED to be
+        // 0.865 on every shipped material, and at that strength it does not decorate the cap field, it
+        // REPLACES it — painted slots PLACE, they do not decorate. The sheet is 16 mirrored copies of one
+        // mark, so it gave 1.35 % coverage in a blow where the field gives 9.95 %, and its hard mirrored
+        // silhouette is the "dark shards" the gale plates show cut into the foam lanes (register row 7).
+        //
+        // ⚠️ `Whitecaps.png` is the OWNER's art and is NOT deleted; neither is this slot. Both stay
+        // reachable — the toggle, the sheet, the scale, the untiler — and 1 still hands the caps back to
+        // the sheet exactly as before. What changed is which one SHIPS.
+        _WhitecapTexStrength ("Whitecap tex blend (0=proc, 1=painted)", Range(0,1)) = 0
         // ⚠️ The whitecap slot has its OWN scale, and it is not a mood — it is what stops the caps
         // being a GRID (owner, 2026-08-05: "some of the whitecaps have a square pattern I recognize
         // from earlier builds"). At _WhitecapTexStrength 0.865 this slot, not the procedural evolving
@@ -611,6 +620,18 @@ Shader "HiddenHarbours/Water"
         // Twin: WhitecapStampSheetMath.SheetScale / .TexelsPerMetre (WhitecapStampSheetTests pins the
         // equality, so changing _PaintScale or the sheet size without the other fails headless).
         _WhitecapTexScale ("Whitecap sheet scale (tiles/unit; 0.0625 = one 16 m sheet)", Float) = 0.0625
+
+        // ---- the caps AGE like every other foam (register row 2's direction, not row 2 itself) --------
+        // The owner on foam, 2026-08-27: it should churn *"through different shades of blue, distort and
+        // fade into the ambient ocean over time."* The advected wake buffer walks that ramp already
+        // (WakeFoamAgedColor); the whitecaps composited a single flat _FoamColor, so the sea had two
+        // whites in it. The cap's own lifecycle already knows which end of the walk a pixel is on — a
+        // breaking crest tip against the milky residual behind it — so the caps now take the SAME ramp
+        // through the SAME knots the wake uses. Born into the palette, so the row-2 unification inherits
+        // them rather than having to convert them.
+        //
+        // 0 = the shipped flat white, exactly. col.rgb ONLY (P1, rule 5).
+        _CapAgeStrength ("Whitecap ageing (0 = one flat white; 1 = the wake's own colour walk)", Range(0,1)) = 0
 
         [Header(Palette guard rail (final soft grade   col.rgb only   ADR 0015))]
         // THE LAST STAGE before return: a SOFT guard-rail that keeps the composited water colour inside an
@@ -1452,6 +1473,9 @@ Shader "HiddenHarbours/Water"
                 float  _SparkleTexScale;
                 float  _WhitecapTexStrength;
                 float  _WhitecapTexScale;
+                // The caps' share of the ONE foam colour walk (row 2's direction). 0 = the shipped flat
+                // white, exactly. col.rgb ONLY (P1, rule 5).
+                float  _CapAgeStrength;
                 // Palette guard-rail (the final soft grade; col.rgb-only — ADR 0015).
                 float  _PaletteGradeStrength;
                 float  _PaletteValueFloor;
@@ -5213,6 +5237,11 @@ Shader "HiddenHarbours/Water"
                     }
 
                     float capOpacity;
+                    // 0 = a fresh break (white), 1 = milky residual (walked toward the palette's blues).
+                    // Stays 0 on the LEGACY path below: that branch is the no-trains fallback for edit
+                    // mode and bare art scenes, deliberately kept at the pre-B1 look, and it has no
+                    // lifecycle pair to read an age from.
+                    float capAge01 = 0.0;
                     if (trainsLive)
                     {
                         // ==== ADR 0018 B1 — WHITECAPS RIDE REAL CRESTS (the "foggy white soup" fix) ===========
@@ -5233,6 +5262,11 @@ Shader "HiddenHarbours/Water"
                         float breakCore;
                         float residualLife;
                         WhitecapLifecycleWave(waveCrest, wavePrimCos, capDens, breakCore, residualLife);
+                        // THE CAP'S AGE, out of the lifecycle's own two ends: where the break dominates the
+                        // foam is new and white, where only the residual is left it has been on the water a
+                        // while. Nothing accumulated and nothing re-derived — the two numbers the lifecycle
+                        // already returns ARE the age (the decaying-quantity law: read it from geometry).
+                        capAge01 = residualLife / max(breakCore + residualLife, 1e-4);
                         // sea-state coupling THROUGH THE TRAINS' AMPLITUDES: full caps by _WhitecapOnsetAmp of
                         // total amplitude, first foam from ~10% of it. Glass = zero amplitude = zero foam,
                         // automatically (and crestF is already exactly 0 on a dead-glass sea).
@@ -5330,7 +5364,23 @@ Shader "HiddenHarbours/Water"
                     float capShoreFade = lerp(1.0, ShoreFade01(depth, _ShoreFadeBand),
                                               saturate(_CapSalienceStrength));
                     capOpacity = saturate(capOpacity * clumpGate) * capShoreFade;
-                    col.rgb = lerp(col.rgb, _FoamColor.rgb, capOpacity);
+                    // ---- ONE FOAM LANGUAGE: the caps take the wake's ramp, through the wake's knots ------
+                    // Not a second palette and not a second set of dials — literally WakeFoamRamp3 over the
+                    // same _PaletteFoam -> _PaletteShallow -> _PaletteMid walk, at the same
+                    // _WakeFoamWhiteHold / _WakeFoamBlueReach / _WakeFoamDeepReach knots the advected buffer
+                    // ages on. A cap and a wake at the same age are therefore the same colour, which is the
+                    // whole of what "one foam language" has to mean before row 2 can unify the rest.
+                    // _CapAgeStrength 0 restores the single flat _FoamColor, bit for bit.
+                    float3 capColor = _FoamColor.rgb;
+                    if (_CapAgeStrength > 0.001)
+                    {
+                        float capKnot = WakeFoamKnots(capAge01, _WakeFoamWhiteHold, _WakeFoamBlueReach,
+                                                      _WakeFoamDeepReach);
+                        float3 capRamp = WakeFoamRamp3(capKnot, _PaletteFoam.rgb, _PaletteShallow.rgb,
+                                                       _PaletteMid.rgb);
+                        capColor = lerp(_FoamColor.rgb, capRamp, saturate(_CapAgeStrength));
+                    }
+                    col.rgb = lerp(col.rgb, capColor, capOpacity);
                 }
 
                 // ---- ADVECTED FOAM BUFFER (ADR 0027 #6): the wake, as a mark left on the sea ----------------

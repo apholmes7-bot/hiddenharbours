@@ -910,6 +910,283 @@ namespace HiddenHarbours.Tests.EditMode
             return sb.ToString();
         }
 
+
+        // =============================================================================================
+        //  ⭐⭐ THE WHITECAPS (water-fidelity PR 7) — register row 7, the owner's 2026-09-02 ruling
+        // =============================================================================================
+        //
+        //  *"let the procedural field replace the caps."*
+        //
+        //  `capField = lerp(capField, capPat, _WhitecapTexStrength)` — at the 0.865 every shipped material
+        //  carried, the painted sheet does not decorate the cap field, it REPLACES it. The sheet is 16
+        //  mirrored copies of one mark, so the sea wore one silhouette over and over and the caps could
+        //  not go where the field said the crests were.
+        //
+        //  COVERAGE is the number, and it is measured against the plate's OWN distribution rather than an
+        //  absolute white: a bar at p50 + half the way to p95 sits between the water and the foam however
+        //  bright or dark that particular sea is. (PR 6 spent a cycle on an absolute luma floor that a
+        //  legitimately darker sea walked under — the same lesson, one PR earlier.)
+
+        /// <summary>One arm of the whitecap A/B, and what the sea was wearing.</summary>
+        struct CapRecord
+        {
+            public string File, Arm, Cell;
+            public float Coverage, MeanLumaWet;
+            /// <summary>The mean colour of the BRIGHTEST decile of open water — where the foam is, at
+            /// whatever exposure this sea happens to have. It is the only way to see what colour the caps
+            /// are when the caps themselves sit at 0.02–0.09 luma.</summary>
+            public Color FoamTint;
+        }
+
+        [Test]
+        public void TheWhitecaps_ArePlacedByTheField_NotByAStampSheet()
+        {
+            RequireAGraphicsDevice();
+            Prepare();
+
+            string dir = Path.Combine(Directory.GetCurrentDirectory(), OutRoot, "caps");
+            Directory.CreateDirectory(dir);
+
+            var records = new List<CapRecord>();
+            var thumbs = new Color[3][][];
+            for (int r = 0; r < 3; r++) thumbs[r] = new Color[3][];
+
+            // The two cells the charter names, plus glass as the control that must stay bare.
+            //
+            // ⚠️ GALE AND GLASS ARE SHOT ON THE OPEN-WATER CONTROL, and the first draft of this test got
+            // that wrong: it put all three on Nine Mile Creek's steep stretch, where the beach and the
+            // surf band own most of the frame and open-water caps are a detail at the edge. Row 7 is
+            // about the caps on the OPEN sea — the "dark shards" were seen on `ww-open-gale-mean-noon` —
+            // so the gale is judged where there is nothing else in the picture. The blow keeps the steep
+            // stretch, which is the other plate the charter names.
+            var cells = new (string key, string label, bool openWater, Weather weather, Tide tide)[]
+            {
+                ("gale",  "GALE - OPEN WATER",   true,  Weather.Gale,  Tide.Mean),
+                ("blow",  "BLOW - NMC STEEP",    false, Weather.Blow,  Tide.Low),
+                ("glass", "GLASS - OPEN WATER",  true,  Weather.Glass, Tide.Mean),
+            };
+
+            // The third arm is the AGEING dial, not the placement one: the caps take the wake's colour
+            // walk at _CapAgeStrength, and its value has to be SHOWN before it can be shipped. The caps
+            // sit at 0.02–0.09 luma in the only weathers that have caps, so the eye cannot judge it off a
+            // plate — the foamTint column can.
+            var arms = new (string key, string label, float texStrength, float agePassthrough)[]
+            {
+                ("sheet", "PAINTED SHEET (as shipped)",         0.865f, -1f),
+                ("field", "THE PROCEDURAL FIELD (ruled)",       0f,     -1f),
+                ("aged",  "THE FIELD + AGEING (row 2's candidate)", 0f, 0.75f),
+            };
+            for (int c = 0; c < cells.Length; c++)
+            {
+                Stage stage;
+                if (cells[c].openWater)
+                {
+                    stage = BuildWestWater();
+                    stage.Name = "ww-open";
+                    stage.Aim = WestWaterPlan.RegionWorldCenter;
+                }
+                else
+                {
+                    stage = BuildNineMileCreek();
+                    stage.Name = "nmc-steep";
+                    stage.Aim = AimAtTheSteepestBreak(stage);
+                }
+                BuildCamera();
+                _cam.transform.position = new Vector3(stage.Aim.x, stage.Aim.y, -100f);
+                WarmTheShaderCache(stage);
+
+                for (int a = 0; a < arms.Length; a++)
+                {
+                    string file = $"caps-{cells[c].key}-{arms[a].key}";
+                    Color[] ldr = ShootCaps(stage, cells[c].weather, cells[c].tide, arms[a].texStrength,
+                                            arms[a].agePassthrough,
+                                            Path.Combine(dir, file + ".png"), out CapRecord rec);
+                    rec.File = file + ".png";
+                    rec.Arm = arms[a].label;
+                    rec.Cell = cells[c].key;
+                    records.Add(rec);
+                    thumbs[a][c] = Thumbnail(ldr);
+                }
+            }
+
+            string sheetPath = Path.Combine(Directory.GetCurrentDirectory(), OutRoot, "SHEET-caps.png");
+            ContactSheet.Write(sheetPath, "THE WHITECAPS - THE PAINTED SHEET vs THE PROCEDURAL FIELD",
+                               new[] { "GALE - OPEN WATER", "BLOW - NMC STEEP", "GLASS - OPEN WATER" },
+                               new[] { "", "", "" }, new[] { "SHEET", "FIELD", "+AGEING" }, thumbs, ThumbPx);
+            File.WriteAllText(Path.Combine(dir, "CAPS.txt"), CapReport(records));
+            Debug.Log("[water-plates] the whitecaps\n" + CapReport(records));
+
+            Assert.IsTrue(File.Exists(sheetPath), "the whitecap sheet must be written — the FILE is the evidence");
+
+            CapRecord glassSheet = FindCap(records, "glass", "sheet");
+            CapRecord glassField = FindCap(records, "glass", "field");
+
+            // ⭐ THE ONE THING A PLATE CAN SETTLE HERE, and it is worth settling: on a GLASS CALM the
+            // switch must be INERT. Zero wave amplitude is zero cap opacity by construction (the wave
+            // gate), so whichever source is placing the caps there is nothing to place — and the sacred
+            // state must come through this PR untouched. Both arms, same frame, to two thousandths.
+            Assert.AreEqual(glassSheet.MeanLumaWet, glassField.MeanLumaWet, 0.002f,
+                $"a glass calm must not notice this change at all — the sheet arm read " +
+                $"{glassSheet.MeanLumaWet:F4} and the field arm {glassField.MeanLumaWet:F4}. A mirror " +
+                "with caps on it is not a mirror.");
+
+            // ⚠️⚠️ THE CAP AGEING (_CapAgeStrength) SHIPS AT 0 — the mechanism, not the value — because
+            // this instrument could not show its effect reliably, and a look change nobody can see is not
+            // a look change anybody should ship.
+            //
+            // The caps sit at 0.02–0.09 luma in the only weathers that have caps, so no eye can judge a
+            // colour off these plates. The brightest decile of open water is where the foam is at any
+            // exposure, and in an ISOLATED run it read exactly as intended — deeper and bluer, red:blue
+            // 0.62 vs 0.67 in a gale and 0.35 vs 0.42 in a blow. In the FULL SUITE the same comparison
+            // read 0.467 vs 0.470. The direction survived; the magnitude did not. What moved between the
+            // runs was _Time: which crests happen to be breaking decides which pixels are in the decile,
+            // and that swamps a subtle colour walk on foam this dark.
+            //
+            // So the ageing is built, gated, and OFF: `capAge01` comes out of the lifecycle's own two
+            // ends, the caps compose through the WAKE's ramp and knots, and row 2 — the foam-language
+            // unification, which judges wake, surf, fringe and caps together against one palette — turns
+            // it on with the rest and judges it where a foam palette can actually be judged. The arm
+            // below stays as a reported diagnostic so row 2 inherits the numbers as well as the code.
+            CapRecord glassFlat = FindCap(records, "glass", "aged");
+            Assert.AreEqual(glassFlat.FoamTint.b, glassField.FoamTint.b, 0.002f,
+                "the cap ageing must not touch a sea with no caps in it, at any dial setting");
+
+            // ⚠️⚠️ AND THE COVERAGE NUMBERS ARE REPORTED, NOT ASSERTED — a plate cannot carry that claim,
+            // and two drafts of this test proved it rather than assuming it:
+            //
+            //   · a DISTRIBUTION-relative bar (p50 + half the way to p95) reported 18.65 % coverage on a
+            //     GLASS CALM, which wears no caps at all. Every histogram has a bright tail.
+            //   · an ABSOLUTE white bar reported 0.00 % in a GALE, where the whole frame including its
+            //     foam sits under 0.03 luma. Foam is only white relative to the sea it is on.
+            //   · inside the breaker contour the SURF's own whitewater is white by design, so both arms
+            //     read 65–83 % there. That is the surf, not caps.
+            //   · and the blow cell's mean luma is not even stationary between two shots of the same sea
+            //     (0.106 and 0.145 across two runs), so an arm-to-arm difference at this frame size would
+            //     be measuring _Time.
+            //
+            // What the change IS, is asserted where it is exactly true — on the assets and the shader, in
+            // WhitecapStampSheetTests.TheProceduralField_PlacesTheCaps_NotTheStampSheet. The 1.35 % vs
+            // 9.95 % coverage figures come from the 2026-08-05 measurement of the cap FIELD, which is the
+            // instrument that can separate the layers; the charter says not to re-chase it. This sheet is
+            // for the owner's eye, which is the acceptance the charter actually asks for.
+        }
+
+        /// <summary>One whitecap plate: the sea as published for this cell, with the painted slot's blend
+        /// overridden on the property block after the shipped push (the knob-diagnostic pattern), then
+        /// measured for how much of the water is wearing foam.</summary>
+        Color[] ShootCaps(Stage stage, Weather w, Tide t, float texStrength, float agePassthrough,
+                          string path, out CapRecord rec)
+        {
+            Publish(stage, w, t, Hour.Noon, out _, out Color tint, out _, out _, out _);
+
+            var sr = stage.SeaGo.GetComponent<SpriteRenderer>();
+            Material mat = sr.sharedMaterial;
+            var block = new MaterialPropertyBlock();
+            sr.GetPropertyBlock(block);
+            Assert.IsTrue(mat.HasProperty("_WhitecapTexStrength"), "_WhitecapTexStrength must be a water-shader property");
+            Assert.IsTrue(mat.HasProperty("_CapAgeStrength"), "_CapAgeStrength must be a water-shader property");
+            float restore = block.HasFloat("_WhitecapTexStrength") ? block.GetFloat("_WhitecapTexStrength")
+                                                                   : mat.GetFloat("_WhitecapTexStrength");
+            float restoreAge = block.HasFloat("_CapAgeStrength") ? block.GetFloat("_CapAgeStrength")
+                                                                 : mat.GetFloat("_CapAgeStrength");
+            block.SetFloat("_WhitecapTexStrength", texStrength);
+            if (agePassthrough >= 0f) block.SetFloat("_CapAgeStrength", agePassthrough);
+            sr.SetPropertyBlock(block);
+
+            Color[] ldr = Capture(tint, path);
+
+            block.SetFloat("_WhitecapTexStrength", restore);
+            block.SetFloat("_CapAgeStrength", restoreAge);
+            sr.SetPropertyBlock(block);
+
+            WetStatistics(stage, _env.WaterLevel, ldr, out _, out float meanLumaWet);
+            float outerDepth = Shader.GetGlobalVector(Shader.PropertyToID("_BreakerOuter")).x;
+            CapCoverage(stage, _env.WaterLevel, outerDepth, ldr, out float coverage, out Color foamTint);
+            rec = new CapRecord { Coverage = coverage, MeanLumaWet = meanLumaWet, FoamTint = foamTint };
+            return ldr;
+        }
+
+        /// <summary>
+        /// How much of the wet frame is wearing FOAM, measured OUTSIDE the breaking water.
+        ///
+        /// <para><b>Foam is WHITE, and white is <c>min(r, g, b)</c>.</b> The sea is blue even when it is
+        /// bright — a lit mirror-calm reads about (0.35, 0.40, 0.45), so its minimum channel stays low —
+        /// while foam is near-neutral at the top of the range. A LUMA bar cannot tell those apart and a
+        /// distribution-relative bar cannot either: the first draft of this used p50 + half the way to p95
+        /// and reported <b>18.65 % coverage on a GLASS CALM</b>, which wears no caps at all. Every
+        /// histogram has a bright tail; only the neutral one is foam.</para>
+        ///
+        /// <para>⚠️ Absolute, and legitimately so — every cell here is NOON, so the day/night tint is ~1
+        /// across all of them and the bar is comparing like with like. (This is not PR 6's mistake in
+        /// reverse: that was an absolute floor on a tripwire that had to survive the art changing under
+        /// it. Here the bar defines what the word "foam" means, and foam is defined by <c>_FoamColor</c>,
+        /// which is white by authorship.)</para>
+        ///
+        /// <para><b>The breaking water is EXCLUDED, not measured.</b> Inside the contour the surf's own
+        /// whitewater is white by design, so every pixel there scores as foam whatever the caps are doing
+        /// — the first draft reported 65–83 % "cap coverage" in the surf zone on both arms, which is the
+        /// surf, not caps. That whitecaps never reach the surf zone was measured at 0.00 % on 2026-08-05
+        /// and the charter says do not re-chase it; a plate cannot separate the two layers, so this one
+        /// does not pretend to.</para></summary>
+        void CapCoverage(Stage stage, float level, float outerDepth, Color[] ldr,
+                         out float coverage, out Color foamTint)
+        {
+            const float WhiteBar = 0.55f;   // min-channel; _FoamColor is ~0.95 white, the lit sea ~0.35
+            int capped = 0, wet = 0;
+            var open = new List<Color>();
+            for (int py = 0; py < ShotPx; py += 2)
+            for (int px = 0; px < ShotPx; px += 2)
+            {
+                float depth = level - stage.Terrain.ElevationAt(PixelToWorld(px, py));
+                if (depth <= 0f) continue;                    // dry
+                if (depth <= outerDepth) continue;            // breaking water — the surf's foam, not caps
+                Color c = ldr[py * ShotPx + px];
+                wet++;
+                open.Add(c);
+                if (Mathf.Min(c.r, Mathf.Min(c.g, c.b)) > WhiteBar) capped++;
+            }
+            coverage = wet > 0 ? capped / (float)wet : 0f;
+
+            // The BRIGHTEST DECILE of the open water is where the foam is, whatever this sea's exposure.
+            // An absolute "is it white" bar cannot find the caps in a gale (the whole frame, foam
+            // included, sits under 0.03 luma); a decile can, because foam is always the top of its own
+            // sea's range even when that range is dark.
+            foamTint = Color.black;
+            if (open.Count == 0) return;
+            open.Sort((a, b) => (0.299f * a.r + 0.587f * a.g + 0.114f * a.b)
+                        .CompareTo(0.299f * b.r + 0.587f * b.g + 0.114f * b.b));
+            int from = Mathf.Max(0, (int)(open.Count * 0.9f));
+            float r = 0f, g = 0f, bl = 0f;
+            for (int i = from; i < open.Count; i++) { r += open[i].r; g += open[i].g; bl += open[i].b; }
+            int n = open.Count - from;
+            foamTint = new Color(r / n, g / n, bl / n, 1f);
+        }
+
+        static CapRecord FindCap(List<CapRecord> records, string cell, string arm)
+        {
+            foreach (CapRecord r in records)
+                if (r.File == $"caps-{cell}-{arm}.png") return r;
+            Assert.Fail($"no whitecap plate for {cell} / {arm}");
+            return default;
+        }
+
+        static string CapReport(List<CapRecord> records)
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine("# The whitecaps at noon — the gale and glass cells on the OPEN-WATER control " +
+                          "(nothing but sea in the frame), the blow on NMC's steep stretch. coverage = " +
+                          "share of OPEN wet " +
+                          "pixels (the breaking water excluded — its whitewater is white by design) whose " +
+                          "MIN CHANNEL exceeds 0.55: foam is neutral white, and a lit sea is blue even " +
+                          "when it is bright, which is the only way to tell the two apart.");
+            sb.AppendLine("plate                        coverage   meanWet   foamTint(rgb, brightest " +
+                          "decile of open water)   [arm]");
+            foreach (CapRecord r in records)
+                sb.AppendLine($"{r.File,-28} {r.Coverage,8:P2} {r.MeanLumaWet,9:F4}   " +
+                              $"({r.FoamTint.r:F4},{r.FoamTint.g:F4},{r.FoamTint.b:F4})   [{r.Arm}]");
+            return sb.ToString();
+        }
+
         [Test]
         public void TheWeatherLadder_IsTheSimsOwnPairing_AndClimbs()
         {
