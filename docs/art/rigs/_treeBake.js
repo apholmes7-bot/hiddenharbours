@@ -1,5 +1,5 @@
 /* Hidden Harbours — TREE BAKE harness.  run_script recipe:
-     (0,eval)(await readFile('Art/treeIsoRig2.js'));
+     (0,eval)(await readFile('Art/treeIsoRig3.js'));
      (0,eval)(await readFile('Art/_treeBake.js'));
      await TREE_BAKE({ createCanvas, saveFile, log });
 
@@ -16,8 +16,8 @@
 
    opts: { dir, species[], stages[], seasons[], channels[], createCanvas, saveFile, log } */
 globalThis.TREE_BAKE = async function (o) {
-  const R = globalThis.TreeRig2 || globalThis.TreeRig;   // pass 2 if loaded, else pass 1
-  if (!R) throw new Error('TREE_BAKE: load treeIsoRig2.js (or treeIsoRig.js) first');
+  const R = globalThis.TreeRig3 || globalThis.TreeRig2 || globalThis.TreeRig;   // newest pass loaded wins
+  if (!R) throw new Error('TREE_BAKE: load Art/treeIsoRig3.js first');
   const createCanvas = o.createCanvas, saveFile = o.saveFile, log = o.log || (() => {});
   const dir = (o.dir || 'Art/Foliage/Trees/').replace(/\/?$/, '/');
   const species = o.species || R.SPECIES.map(s => s.key);
@@ -33,8 +33,10 @@ globalThis.TREE_BAKE = async function (o) {
   };
 
   const contract = {
-    _note: 'Baked by _treeBake.js from the loaded tree rig. Regenerate rather than hand-edit.',
+    _note: 'Baked by Art/_treeBake.js from Art/treeIsoRig3.js. Regenerate rather than hand-edit.',
     ppu: R.PPU,
+    scale: R.SCALE == null ? 1 : R.SCALE,          // bake scale against TRUE height (pass 3): metres below are BAKED metres, trueMetres are real
+    keyline: R.KEYLINE_DEFAULT == null ? true : R.KEYLINE_DEFAULT,   // ADR 0031: false = ringless bake
     camera: { name: 'ADR-0006/0022', view: '3/4 from S', elevDeg: R.ELEV, heightScale: +R.CE.toFixed(4), depthScale: +R.SE.toFixed(4) },
     light: { key: R.LIGHT.key, rim: R.LIGHT.rim, note: 'fixed upper-left key + back rim, screen space (art bible §1)' },
     rules: { rimPx: R.RIM_PX, minBodyPx: R.MIN_BODY, minClumpRadiusPx: R.MIN_R,
@@ -76,7 +78,7 @@ globalThis.TREE_BAKE = async function (o) {
         const id = key + '/' + stage;
         contract.trees[id] = contract.trees[id] || {
           species: key, name: sp.name, latin: sp.latin, form: sp.form, stage,
-          metres: spec.metres, cell: spec.cell, pivot: spec.pivot, nearFlarePad: spec.pad,
+          metres: spec.metres, trueMetres: spec.trueMetres == null ? spec.metres : spec.trueMetres, cell: spec.cell, pivot: spec.pivot, nearFlarePad: spec.pad,
           sheet: [spec.w, spec.h], fitsUnity2048: spec.fits, seasons: [],
           audit: { thinPct: worst.thinPct, bodyRatio: worst.bodyRatio, despeckled: worst.despeckled, pass: worst.pass,
             underFloor: worst.underFloor },
