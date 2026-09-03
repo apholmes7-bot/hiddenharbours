@@ -157,12 +157,25 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 "fails while the morning passes, the catch is not swinging: it is the rig's own baked " +
                 "key showing through, which is what _KeyRelight below 1 deliberately leaves some of.");
 
-            // And the swap is a real reversal, not two ties: the morning's advantage must be about the
-            // size of the evening's, mirrored.
-            Assert.AreEqual(mornR - mornL, eveL - eveR, (mornR - mornL) * 0.25f,
-                "The morning and evening swings are lopsided. The shipped sun arc is symmetric about " +
-                "solar noon, so 08:30 and 17:30 are mirror images; a lopsided pair means something " +
-                "un-mirrored (the baked key, the back rim) is carrying the swing instead of the sun.");
+            // And it is a real reversal, not two near-ties. Measured: 0.364 on the lit flank against
+            // 0.046 on the dark one — an 8x ratio, not a nudge.
+            Assert.Greater(mornR, mornL * 4f,
+                "The lit flank is less than 4x the dark one, so the crown is barely turning. The " +
+                "measured shipped ratio at 08:30 is about 8x; anything near 1 means the baked key is " +
+                "carrying the read and the live sun is not.");
+
+            // 🔴 The two hours are EXACT MIRRORS, so this is asserted at 1e-6 and not with slack.
+            // SolarX is symmetric about solar noon, so 17:30's ground direction is 08:30's negated in x
+            // exactly (float negation is exact); LightViewDirection carries x through untouched and
+            // derives y and z from the other two components alone; and the two test normals mirror in x,
+            // so every dot product is (-a)(-b) = ab — equal to the last bit. A percentage tolerance here
+            // would be slack sitting on a quantity that cannot legitimately differ, which is how a guard
+            // ends up tolerating the drift it was written to catch.
+            Assert.AreEqual(mornR, eveL, 1e-6f,
+                "The morning's lit flank and the evening's are not mirror images. Something un-mirrored " +
+                "— the rig's baked key, the back rim band — is carrying the swing instead of the sun.");
+            Assert.AreEqual(mornL, eveR, 1e-6f,
+                "The morning's dark flank and the evening's are not mirror images.");
         }
 
         /// <summary>

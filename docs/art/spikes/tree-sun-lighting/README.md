@@ -14,6 +14,8 @@ hour; the weather is whatever the deterministic sim gives that hour, and each pl
 | `04-the-wood.png` | A stand at dawn and at noon — the rake length and the stacking question. |
 | `05-ysort-walk.png` | Does the fisher draw wrongly against a trunk or a canopy? |
 | `06-the-control.png` | **The regression control.** The shared include is used by the shrubs and shore plants too. |
+| `07-the-broadleaf.png` | The second species the acceptance asks for — a red oak, crown and rake in one frame. |
+| `08-overcast-dims-both.png` | **Do the lit side and the shadow fade together under cloud?** |
 
 ## The measurements behind them
 
@@ -37,6 +39,12 @@ of the pixel they land on (3.6 LSB); 7.5 % of the frame receives more than twice
 shadow. At 13:00 they darken 26 % by 24 % (17.5 LSB) and barely stack (1.6 %). So the dawn rake is
 long (40.8 m off a red spruce, 54.8 m off a white pine) and faint; the noon shadow is the one that
 reads.
+
+**Overcast dims both together** (plate 08, at solar noon with `Time.timeScale = 0` and every shadow
+re-ticked, so only the weather term can move): the storm takes `_ShadowStrength` from 1.000 to 0.490 and
+**5.46 % of the frame goes darker** (mean 6.8 LSB — the lit sides losing the sun) while **6.53 % goes
+brighter** (mean 10.5 LSB — the shadows fading), on the same trees, in complementary regions. 88 % is
+unchanged. Before this PR only the second half happened.
 
 **A plate is not the verdict.** A silhouette on a black ground overstates a read defect and a still
 frame understates a walk — the owner's eye in the scene is the gate.
