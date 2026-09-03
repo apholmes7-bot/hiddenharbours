@@ -284,6 +284,120 @@ bounds the lit pool (deliberate: it would clamp the compensated values); it stil
 Headless twin: `LightMath.CompensateForDayNightTint` (+ `DayNightCompensationMinChannel`), pinned in
 `LightMathTests`. Full mechanism: `design/water-rendering.md` §11.6.
 
+## Amendment — the beam lights the sea's SHAPE, and many lamps can do it (wave relief, 2026-08-29)
+
+**The owner, 2026-08-28:** *"the spotlights and headlights need to put shadows, the spotlight over the water
+is just one uniform shape with a gentle gradient. The light needs to affect the environment, create shadows.
+it should highlight the water at crests and be shadowed at the valleies of waves unless the proper light angle
+exposes them."*
+
+He is describing follow-up fix 2 exactly. `BoatLightTerm` returned `radial × cone` — a shape in the ground
+plane, blind to the sea underneath it. Lit water and unlit water differed only in brightness, so the beam read
+as a decal laid over the waves rather than light falling on them. **The additive glow stays what it always
+was — the lamp's own bloom. It is no longer the illumination model.**
+
+### The decision: N·L against the shared wave field, normalized by flat water
+
+The water fragment already evaluates the ADR 0018 wave field per pixel and already has its **analytic slope**
+(`WaveFieldSample`'s `slopeXY`, which the swell FACE SHADING rides). A height field's surface normal is
+`N ∝ (-∂h/∂x, -∂h/∂y, 1)`, so the relief is available for the cost of a dot product — no second field, no
+re-derived phase, no new sampling. One quantity, one computation.
+
+```
+L      = normalize(lampWorldXYZ - pixelXYZ)         // lamp height above THIS pixel's own surface
+lz     = max(L.z, _BeamReliefMinElevation)          // floored ONCE, reused in both places below
+relief = (lz - dot(slope, L.xy)) / (lz · sqrt(1 + |slope|²))
+weight = radial · cone · lerp(1, relief, strength)  // the ADR 0016 cone, now shaped by the sea
+```
+
+**Why a lamp is not the sun.** ADR 0013's sun is a direction at infinity: one world vector for the whole sea,
+which is why the swell face shading can use a constant. A lamp is a **point at a height**, so `L` differs at
+every pixel — steep underfoot, grazing at the far end of the throw. Every clause the owner asked for is that
+one fact, with no special cases in the code:
+
+| his words | what the maths does |
+|---|---|
+| "highlight the water at crests" | a facet turned into the beam has `dot(slope, L.xy) < 0` ⇒ relief > 1 |
+| "shadowed at the valleys" | the back slope has it > 0 ⇒ relief < 1, clamped at 0 when turned away |
+| "unless the proper light angle exposes them" | small `lz` (a low lamp) divides the term up; large `lz` divides it away |
+
+**Measured** (`BeamWaveReliefTests.Measure_ReliefSpreadAgainstLampHeight`, a real sea at sea-state 0.55):
+
+| lamp height | 0.5 m | 1 m | 2.5 m | 5 m | 10 m | 60 m | 1000 m |
+|---|---|---|---|---|---|---|---|
+| relief spread | 1.140 | 1.093 | 0.571 | 0.296 | 0.159 | 0.044 | 0.028 |
+
+Two things in that table are load-bearing. A **1 m** lamp separates crest from trough **24×** harder than a
+60 m one — the angle genuinely decides what the beam exposes. And at **1000 m** the spread converges on
+**0.0279** against a computed geometric floor of **0.0273**: pushed to infinity the lamp becomes the sun, the
+whole directional term vanishes, and only the area foreshortening a tilted facet always suffers is left. A
+model that kept any angular dependence out there would not land on that number.
+
+### The glass calm is sacred, by construction rather than by tuning
+
+`N·L` is divided by the dot product a **flat** facet would have had **at the same pixel** (`lz`, floored once
+and reused in both the numerator and the divisor). Zero slope therefore cancels to **exactly 1** for any lamp
+position, height or range — so a searchlight sweeping a dead-calm sea leaves §11's mirror bit-identical. This
+is asserted bit-exactly over a sweep of geometries, including lamps below the elevation floor, which is the
+case where a naive implementation (clamping one side but not the other) silently stops cancelling.
+
+Two independent **exact passthroughs** guard the shipped look, both bit-exact: `_BeamReliefStrength = 0`, and
+a lamp that publishes no height (`pos.z == 0` — a legacy publisher, a bare material). Either one yields the
+flat ADR 0016 cone unchanged.
+
+### Many lamps: the array this ADR reserved
+
+Follow-up fix 2 said *"the clean extension to many is to publish ARRAYS + a count and loop — the single-light
+path is a count-1 case of that."* That is now built: `WaterLightBridge` (Art, self-installing on the
+`WaveFieldBridge` pattern) collects registered `IWaterLightEmitter`s, keeps the **4 nearest the camera**, and
+publishes `_WaterLight*[4]` + `_WaterLightCount`. Budget (rule 7): the beam term is bounded at four cone
+evaluations per water pixel however many lamps a scene grows, the loop is `[unroll]`ed over the fixed bound
+with the count masking inside (the shape `WaveFieldSample` uses for its eight trains), and each slot
+early-outs on intensity — so a scene with one searchlight pays for one.
+
+**The legacy `_BoatLight*` singleton is kept and still published**, because a **second lit path** reads it:
+`SpriteLitDecor.hlsl` lights trees, shrubs and shore plants from that one lamp. Two lit paths are deliberate
+architecture (ADR 0013 / the lit-sprite ruling), so this change publishes the array **alongside** the singleton
+and alters neither the singleton's contract nor the decor path. The water sums the **array** when the count is
+live and falls back to the singleton when it is 0 — never both, or the primary lamp would be counted twice.
+
+### It reaches the screen, and it is measured there too
+
+The pure tests cannot prove a lit pixel exists, so `BeamReliefRenderTests` stands the real Nine Mile Creek
+coast at pre-dawn, publishes a real sea and a real searchlight through the shipped bridge, and photographs it.
+The metric is the **relative** luminance change of the lit pool, measured on the **pre-overlay HDR** values,
+against a control of **two identical shots** — same sea, same beam, same brightness, only the clock differing.
+Three earlier metrics had to be thrown away first: an absolute delta measured after the night overlay lands
+inside 8-bit quantization (it reported one least-significant bit); an out-of-cone control under-reads the clock
+because lit water is brighter; and aiming at the deepest water put the sea rect edge in frame, so half the
+control region was black void that could never change and silently flattered every ratio.
+
+| | dial moves the lit pool | clock alone | |
+|---|---|---|---|
+| a working sea | 12.8% | 1.9% | **6.6x the clock** |
+| a gale | 15.0% | 0.7% (out of cone) | confined to the cone |
+| **no waves at all** | **1.5%** | **3.2%** | **0.49x — less than the clock, i.e. nothing** |
+
+That last row is the glass calm proved in pixels as well as in algebra. And the relief **shapes** the pool
+rather than merely brightening it: mean in-cone luminance moves 0.480 to 0.492, **+2.4%**.
+
+### Known limitation, stated rather than hidden
+
+Since #686 raised the additive lights above the sea, the lamp's **quad** also lays its flat amber cone over
+the water the shader is now lighting with relief — two illuminations stacked, the flat one washing out the
+shaped one. The quad **cannot** tell water from land: it works in quad space and has neither the seabed height
+map nor the water level (both per-material on `Water.mat`). Making it spatially water-aware means publishing
+the seabed as new globals and rewiring the LAND lighting path, which is its own slice. What ships here is the
+lever, defaulted to today's look: `BoatSpotlight._quadGlowScale` (1 = the shipped full-length quad; lower pulls
+it back to a source glow at the lamp and lets the water channel carry the throw). The eyeball pack shows the
+pair; the value is the owner's call.
+
+**Implementation:** `LightMath.WaveReliefFactor` / `.ApplyReliefStrength` (the pure twin) ·
+`HiddenHarboursWater.shader` (`BeamRelief`, `BoatLightWeight`, the summing `BoatLightTerm`, `_WaterLight*[4]`) ·
+`WaterLightBridge.cs` + `IWaterLightEmitter` · `BoatSpotlight` (lamp height, registration, quad glow scale) ·
+`Water.mat` (the three dials) · `BeamWaveReliefTests`, `WaterLightBridgeTests`, `BeamReliefRenderTests`.
+The HLSL is guarded against drifting from the C# reference by source assertions on the shader text.
+
 ## Rejected alternatives
 
 - **URP `Light2D` now.** The sprites are Sprite-Unlit and sample no 2D light (the ADR-0013 finding); this needs
@@ -300,3 +414,143 @@ Headless twin: `LightMath.CompensateForDayNightTint` (+ `DayNightCompensationMin
   camera-depth pin). The URP 2D renderer will not reliably composite an additive `MeshRenderer` over the
   full-screen **custom-shader** water `SpriteRenderer`; the water is lit **in its own fragment** instead
   (follow-up fix 2), which sidesteps ordering entirely. The land quad is kept (it works on land).
+
+## Amendment — lights PR B: the lamps cast SHADOWS (2026-09-01)
+
+**The owner, 2026-08-28:** *"the spotlights and headlights need to put shadows ... The light needs to
+affect the environment, create shadows."* PR A (#691) made the beam light the sea's shape. This is the
+other half of the sentence: a caster standing in a lamp's light now throws its silhouette AWAY from
+that lamp, by a length that grows with its distance from the lamp and shrinks with the lamp's height,
+at a strength that is the lamp's own falloff at its feet — and the shadow moves as the beam sweeps.
+
+**Implementation:** `Assets/_Project/Code/Art/LampShadowMath.cs` (the pure model), `LampShadowSystem.cs`
+(the self-installing pool), `LampShadowProfile.cs` (the owner's tunables), `HullLampShadowCaster.cs` (a
+mesh hull as a caster), `Assets/_Project/Art/Shaders/HiddenHarboursLampShadow.shader` +
+`Resources/LampShadow.mat` / `LampShadowHull.mat`; `SceneLight` gains `CastsShadows` /
+`LampHeightMeters` and registers with the system; every `SpriteShadow` (every sun caster) registers as
+a lamp caster; the presentation service fits a hull caster where it fits her lamps; the St Peters wharf's
+standing fittings (bollards, pileheads) gain a `SpriteShadow` so the pilings the searchlight rakes can
+throw. Tests: `LampShadowMathTests`, `LampShadowSystemTests`, `LampShadowRenderTests` (GPU, self-skipping
+on CI), `LampShadowPlayTests`.
+
+### The model: a MULTIPLY drawn ABOVE the glow — and why not a dark sprite under the caster
+
+The sun shadow (ADR 0013 §7, `SpriteShadow`) is a dark alpha-blended silhouette sorted one order UNDER its
+caster, and for the sun that is right: the world is what the sun lights. **A lamp's light is not in the
+world.** It is ADDED after the whole-frame multiply — this ADR's additive quad on land, the pre-compensated
+in-shader beam on water (fixes 2–3) — so a dark sprite in the world sort is crushed to black by the night
+along with everything else, and the glow is then added on top of it unchanged. At night such a shadow is
+invisible by construction (and it was measured so before this design was settled).
+
+So a lamp shadow is a THIRD thing: a quad drawn **above every glow** with `Blend Zero SrcColor`
+(`dst *= lerp(1, tint, alpha)`), which removes a fraction of whatever light is at the pixel — quad glow,
+water beam, lit decor — and leaves an unlit pixel exactly as it was. It is not a second illumination
+model: the additive quad stays the glow, the water's relief stays the water's, and the water shader, the
+foam buffer and the light bridge are untouched (the water lane's files).
+
+### The silhouette, per pixel, through the inverse shear
+
+The quad rasterised is the axis-aligned box of the caster's SHEARED image. Each fragment runs the shear
+backwards — `LampShadowMath.Unshear`, twinned verbatim in the HLSL and pinned by a source guard — to find
+which caster point it is the shadow of, and asks the caster's silhouette whether that point is opaque:
+
+| caster | silhouette source | why |
+|---|---|---|
+| a sprite (every `SpriteShadow`: trees, shrubs, shore plants, the player, the wharf's standers) | its own sheet, world → cell → texture uv (`_SpriteRectWorld` / `_SpriteRectUV`, published per renderer) | the same alpha the sun shadow shears |
+| a mesh hull (`HullLampShadowCaster`, every `IsoFacetHullRenderer`) | the feature's resolved screen texture `_HHHullScreenTex` at that point's screen pixel, filtered by her ID BLOCK — the same either-id test her overlay and reflection passes use | she has no sprite; whatever she is drawing this frame (heading, roll, an open house) is what casts, with no second silhouette pass and no bake |
+
+The charter asked whether the object-reflection target (`_HHReflectTex`, ADR 0027 #8) could serve as the
+hull's caster mask. Measured against the code: it holds every reflector MIRRORED about its own pivot, with
+no per-pixel owner, and is rendered only when reflectors are near water — a shadow read from it would carry
+a neighbouring boat's mirrored planking and vanish for a hull hauled ashore. `_HHHullScreenTex` is the
+unmirrored image, id-tagged per hull, rendered for every camera before any sprite draws. It serves; the
+mirror does not.
+
+A shadow never darkens its own caster: a fragment lying on the caster's own opaque pixels discards first
+(the sun shadow gets the same effect by sorting under its caster).
+
+### Direction, length, fade (`LampShadowMath`)
+
+- **Direction** — radially away from the lamp through the caster's feet, per (lamp, caster). A caster
+  under the lamp falls back to the beam axis (a cone) or down the screen (a round lamp).
+- **Length** — the sun's own elevation→length curve (`DayNightMath.ShadowLength`: a 0.35× stub at the
+  zenith, a 5× rake at the horizon, capped at 7×) driven by the LAMP's elevation as seen from the feet,
+  `h / sqrt(h² + d²)`. A low lamp rakes long behind a far caster; the height is floored at 0.5 m so a lamp
+  that never declared one throws a bounded rake. A shadow thrown down the screen is capped so the shear
+  stays invertible (`ClampShearFold`) — the sun never meets that case, a lamp can be anywhere.
+- **Fade** — alpha = strength × the lamp's own radial × cone falloff at the feet (`LightMath.ShapeIntensity`,
+  the additive quad's own curve) × the SAME night gate the glow uses × the lamp's intensity share (a
+  searchlight dimmed at a standstill fades its shadows). A caster in the feathered edge throws a feathered
+  shadow; outside the cone or beyond the range, none. `ShadowAlpha(0, …)` returns exactly `0f`.
+
+### The sorting law, in numbers
+
+There is no order above `short.MaxValue` (#686's clamp), so the shadow quads share the light quads' ceiling
+order and win the tie by DEPTH — the 2D renderer breaks equal orders back-to-front along the view axis:
+
+| element | order | depth pin (metres in front of the camera) |
+|---|---|---|
+| day/night overlay | 32760 | `DayNightController.OverlayNearOffset` = 0.02 |
+| lamp shadows | 32767 | `LampShadowSystem.ShadowDepthOffset` = **0.06** |
+| additive light quads | 32767 | `SceneLight.DefaultCameraDepthOffset` = 0.10 |
+
+Nearer draws later, so a shadow lands over every glow. `LampShadowMathTests.TheDepthPins_AreOrdered…`
+pins the three constants in that order.
+
+### Budget (rule 7)
+
+- **The pool:** `LampShadowProfile.MaxShadows` = **24** quads shipped, one shared unit mesh, two shared
+  materials, one property block, no per-frame allocation. Past the pool the NEAREST lamp-to-caster pairs
+  win (an insertion sort into the fixed slots, the `WaterLightBridge` shape).
+- **The scan:** O(lamps × casters) at 10 Hz (`RefreshHz`), the caster states gathered once per tick.
+  St Peters today: 6 lamps (the cape's five glows and her searchlight) against ~1,000 registered casters
+  = ~6,000 squared distances ten times a second. The POSE of the chosen shadows follows every frame.
+- **Idle cost:** a lamp gated off by day, or with no caster in range, pairs nothing and enables nothing.
+
+### Passthroughs, proved
+
+- **Strength 0 is today's frame, byte for byte** — `LampShadowRenderTests.APost_…` shoots strength 0 against
+  the system absent and compares every byte (the scene is clock-free, so two identical shots ARE identical).
+- **Sun shadows do not move** — the lamp system never writes a caster's own block; `LampShadowPlayTests.
+  TheSunShadow_IsUntouchedByALampInRange` reads the sun shadow's direction, length, alpha and pivot map with
+  and without a lamp in range.
+- **Noon is the control** — the shadow gates with its lamp (`LightMath.NightGateWithFallback`, the shader's
+  own ramp); at a bright tint nothing pairs and nothing is enabled.
+
+### The approximation, stated
+
+This is 2D iso. A lamp shadow is the caster's SKEWED SILHOUETTE — one direction per caster, parallel edges,
+screen height standing in for world height (a hull's far rail shears as if it were tall) — not a raycast.
+Known and accepted:
+
+- where two lamps overlap, one lamp's shadow also dims the other's light (a fraction of ALL light present
+  is removed, because the water and the land light by different models and the shadow cannot know how
+  much of a pixel is which lamp);
+- through twilight the multiply also dims the little ambient under the shadow, not only the lamp's share;
+- nothing self-shadows (a wheelhouse does not darken its own deck), and a rotated sprite casts its unrotated cell;
+- a hull's lamp heights are her rig's z above the KEEL (the def carries no waterline), so a sidelight's rake
+  reads a little steeper than truth;
+- shadows follow the additive quad's range; with `_quadGlowScale` pulled below 1 the water beam reaches
+  past where shadows are cast.
+
+The owner's eye is the judge; if the skew reads wrong, the lever is the profile's length curve, not a raytracer.
+
+### Tunables (rule 6)
+
+`Resources/LampShadowProfile.asset` (optional; code defaults otherwise): `Strength` 0.8 (THE dial, 0 = off),
+`ShadowColor`, `MaxShadows` 24, `RefreshHz` 10, `LengthAtNoon` 0.35 / `LengthAtHorizon` 5 / `MaxLength` 7,
+`MinLampHeightMeters` 0.5, `MinShearDenominator` 0.2, `PixelSnap` + `PixelsPerUnit` 32. Per lamp on
+`SceneLight`: `CastsShadows` (default on), `LampHeightMeters` (2.5; `BoatSpotlight` publishes its own,
+`BoatLamps` each lamp's rig z).
+
+### Rejected alternatives
+
+- **A dark sprite one order under the caster (the sun model).** Invisible at night by construction — see above.
+- **`_HHReflectTex` as the hull mask.** Mirrored, un-owned per pixel, water-gated — see above.
+- **A second silhouette render per hull (a CommandBuffer capture to a small RT).** Works, but duplicates a
+  silhouette the feature already resolves every frame with ids attached; rejected for cost and duplication.
+- **A subtractive blend removing the lamp's estimated contribution.** Exact for overlapping lamps in
+  principle, but the water's beam and the land's quad are different models, so the estimate would be wrong
+  on one surface or the other; the multiply is robust to both.
+- **Shadows into the water shader.** The water lane's file (serial PRs, one shader); the multiply above the
+  glow cuts the in-shader beam without touching it.

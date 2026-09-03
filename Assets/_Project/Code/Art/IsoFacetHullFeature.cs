@@ -408,6 +408,7 @@ namespace HiddenHarbours.Art
                 public float DecayFactor;
                 public float AgeDecayFactor;
                 public Vector4[] Segments, Shapes;
+                public Vector4 SurfDeposit;   // ADR 0040 rev 3: strength, drawn scale, dt
             }
 
             private class ResolvePassData
@@ -578,6 +579,8 @@ namespace HiddenHarbours.Art
                         passData.AgeDecayFactor = FoamBuffer.DecayFactor(FoamAgeHalfLifeSeconds, dt);
                         passData.Segments = state.Segments;
                         passData.Shapes = state.Shapes;
+                        passData.SurfDeposit = new Vector4(FoamInjectionRegistry.SurfDepositStrength,
+                                                           FoamInjectionRegistry.DrawnWaveScale, dt, 0f);
 
                         builder.UseTexture(prevTex, AccessFlags.Read);
                         builder.SetRenderAttachment(nextTex, 0);
@@ -595,6 +598,7 @@ namespace HiddenHarbours.Art
                             data.Material.SetFloat(FoamShaderIds.AgeDecay, data.AgeDecayFactor);
                             data.Material.SetVectorArray(FoamShaderIds.InjectSeg, data.Segments);
                             data.Material.SetVectorArray(FoamShaderIds.InjectShape, data.Shapes);
+                            data.Material.SetVector(FoamShaderIds.SurfDeposit, data.SurfDeposit);
                             Blitter.BlitTexture(ctx.cmd, new Vector4(1f, 1f, 0f, 0f), data.Material, 0);
                         });
                     }

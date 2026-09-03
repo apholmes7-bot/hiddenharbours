@@ -452,6 +452,20 @@ namespace HiddenHarbours.Boats
                 _heaveWeight = default;
             }
 
+            // ---- THE BORE'S LIFT (ADR 0040 revision 3) -------------------------------------------
+            // Broken water does not only shove a hull shoreward, it picks her up: the wash arrives, the
+            // level under her rises, she goes up with it and comes down as it drains. That rise is the
+            // bore's run-up level, solved on the physics tick and read here (never re-solved — see
+            // BoatController.SurfUnderHull), and it goes onto the SAME ride the displaced sea already
+            // moves her by, so her passengers get it through DrawnRideMeters without knowing it exists.
+            //
+            // AFTER the weight filter on purpose. That filter is a gravity-capped spring chase of the
+            // SWELL, engaged only in a storm; the bore is already a smooth periodic pulse with its own
+            // physical clock, and running it through a stateful smoother would hand it a second one — a
+            // smoother agrees only with itself. Gated on rideActive so the displaced-OFF side of the A/B
+            // stays byte-identical, exactly as every other term of this ride is.
+            if (rideActive) rideMeters += SurfLiftMeters();
+
             // Decomposed + smoothed BEFORE the path split: the transform path maps these onto the
             // visual as before, and the hull-owned paths now read the same smoothed slope for their
             // storm attitude/surge. The smoothing TIGHTENS with the storm blend (velvet is for calm;
@@ -510,6 +524,32 @@ namespace HiddenHarbours.Boats
             return _controller != null && _controller.Hull != null
                 ? BoatController.ResponseFor(_controller.Hull)
                 : new SeakeepingResponse(1f, 0f);
+        }
+
+        /// <summary>
+        /// The metres of lift the bore under this hull is giving her this frame (ADR 0040 revision 3) —
+        /// <see cref="SeakeepingForcesMath.SurfLiftMeters"/> on the surf state her own
+        /// <see cref="BoatController"/> solved on its last physics tick, under that controller's resolved
+        /// seakeeping policy (the owner's dials, wherever they came from — the wired GameConfig, the
+        /// shared one, or the serialized fallback; a runtime-spawned hull follows the asset since #682).
+        ///
+        /// <para>Read, never re-solved. Solving the surf again here would mean a second contour inversion
+        /// and a second 16-tap march per hull per FRAME — and, worse, a lift that could disagree with the
+        /// shove it is supposed to be the other half of.</para>
+        ///
+        /// <para>0 for a hull with no controller (the ambient fleet's decor rigs, a bare test rig): they
+        /// are not in anyone's surf, and the same neutral reading <see cref="ResolveHullCharacter"/>
+        /// gives them. Plain <c>!= null</c> against the component — the Unity fake-null rule.</para>
+        /// </summary>
+        private float SurfLiftMeters()
+        {
+            if (!_controllerResolved)
+            {
+                _controller = GetComponent<BoatController>();
+                _controllerResolved = true;
+            }
+            if (_controller == null) return 0f;
+            return SeakeepingForcesMath.SurfLiftMeters(_controller.SurfUnderHull, _controller.SeakeepingPolicy);
         }
 
         /// <summary>

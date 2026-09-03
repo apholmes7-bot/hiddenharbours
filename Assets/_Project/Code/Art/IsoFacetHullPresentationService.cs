@@ -56,8 +56,18 @@ namespace HiddenHarbours.Art
             MakeReflective(renderer);
             MakeChurn(host, def);
             MakeLit(host, def);
+            MakeShadowCasting(host);
             return renderer;
         }
+
+        /// <summary>
+        /// (ADR 0016, lights PR B) Every mesh hull THROWS a lamp shadow — the owner's 2026-08-05
+        /// ruling that boats cast, applied to the fleet the way the reflector and the churn are:
+        /// here, where a mesh hull is made, so every hull in every region carries it with no scene
+        /// wiring. The caster is a registration and an id hand-off, and costs nothing until a lamp
+        /// is in range of her (see <see cref="HullLampShadowCaster"/>).
+        /// </summary>
+        static void MakeShadowCasting(GameObject host) => HullLampShadowCaster.Fit(host);
 
         /// <summary>
         /// (ADR 0016) Give this hull the LAMPS her def says she wears.
@@ -351,6 +361,10 @@ namespace HiddenHarbours.Art
             // to the sprite path must not keep sorting as a group.
             var group = host.GetComponent<SortingGroup>();
             if (group != null) Destroy(group);
+            // And the lamp-shadow caster goes with the renderer it casts from (ADR 0016, lights PR B):
+            // a sprite-path host has no id block in the screen texture to cast with.
+            var caster = host.GetComponent<HullLampShadowCaster>();
+            if (caster != null) Destroy(caster);
         }
 
         /// <summary>
@@ -374,11 +388,26 @@ namespace HiddenHarbours.Art
                 offsets[m] = table[m].Offset;
             }
 
+            // THE INTERIOR PALETTE IS NOT REPAINTED BY AN EXTERIOR SCHEME. A paint scheme is a
+            // hull colour job (HullPaintSchemeDef.Ramps is indexed against def.Ramps); it says
+            // nothing about the cabin liner, and swapping the room's colours when the owner picks a
+            // new topside would be a change nobody asked for. Read from the def either way.
+            var interiorTable = def.InteriorRamps ?? System.Array.Empty<HullMeshDef.Ramp>();
+            var interiorRamps = new Color32[interiorTable.Length][];
+            var interiorOffsets = new int[interiorTable.Length];
+            for (int m = 0; m < interiorTable.Length; m++)
+            {
+                interiorRamps[m] = interiorTable[m].Colors;
+                interiorOffsets[m] = interiorTable[m].Offset;
+            }
+
             return new IsoFacetHullSetup
             {
                 Mesh = def.Mesh,
                 Ramps = ramps,
                 RampOffsets = offsets,
+                InteriorRamps = interiorRamps,
+                InteriorRampOffsets = interiorOffsets,
                 LightN = def.LightN,
                 Gain = def.Gain,
                 Bias = def.Bias,

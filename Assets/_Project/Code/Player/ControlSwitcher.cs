@@ -167,6 +167,15 @@ namespace HiddenHarbours.Player
                  "request, so with this off the mode is simply unreachable.")]
         [SerializeField] private bool _driveMode = true;
 
+        /// <summary>
+        /// ⭐ Where the driver's demand comes from while behind a wheel — <see cref="IDriveInputSource"/>,
+        /// the one input seam of the drive mode. Unset means the greybox keyboard
+        /// (<see cref="KeyboardDriveInputSource"/>), read exactly as this file read it inline before the
+        /// seam existed. A test hands in a <see cref="HeldDriveInput"/> so a demand survives the frame; a
+        /// gamepad hands in itself one day. Never serialized: a source is code, not scene data.
+        /// </summary>
+        private IDriveInputSource _driveInput;
+
         /// <summary>What the fisher is told when the water under the door is boat-only. A REASON, not a
         /// scolding, and it names the fix — the machine is the way out, so the answer is to drive her in.
         /// A const so tests assert the behaviour without transcribing the string (BoatAnchor's pattern).</summary>
@@ -741,6 +750,22 @@ namespace HiddenHarbours.Player
         /// what the player is sitting in.</summary>
         public IDriveSeat DrivenSeat => _seat;
 
+        /// <summary>The source the wheel is read from — the keyboard until something else is configured.
+        /// Made lazily, so a switcher that never drives never touches the input system for it.</summary>
+        public IDriveInputSource DriveInputSource
+        {
+            get
+            {
+                if (_driveInput == null) _driveInput = new KeyboardDriveInputSource();
+                return _driveInput;
+            }
+        }
+
+        /// <summary>Hand the wheel a different source — a scripted driver, tooling, a future device. Null
+        /// restores the keyboard. Takes effect on the next frame's read: nothing already handed to the
+        /// seat is recalled, and a source swapped mid-drive simply answers the next frame.</summary>
+        public void ConfigureDriveInput(IDriveInputSource source) => _driveInput = source;
+
         /// <summary>
         /// Is the seat REALLY there? Three tests, because a drive seat can be absent in three different
         /// ways and only one of them is plain null.
@@ -932,8 +957,11 @@ namespace HiddenHarbours.Player
         /// wheel's own rate and its self-centring live on the vehicle (<c>VehicleController.StepSteer</c>)
         /// and a second opinion here would be a second steering path.
         ///
-        /// <para>Public and explicit so a headless test can drive it: a PlayMode fixture cannot press keys,
-        /// so the gate is exposed and driven directly rather than through the keyboard read below.</para>
+        /// <para>Public so a fixture can hand the seat ONE frame's demand directly. ⚠️ It does not outlive
+        /// that frame: while the mode is Driving, <see cref="ReadDriveInput"/> overwrites it every Update
+        /// with whatever <see cref="DriveInputSource"/> answers — a released key IS a zero. Anything that
+        /// must hold a throttle across frames is a SOURCE (<see cref="HeldDriveInput"/>, handed in through
+        /// <see cref="ConfigureDriveInput"/>), never a caller of this.</para>
         /// </summary>
         public void DriveInput(float throttle, float steer, bool brake)
         {
@@ -949,26 +977,22 @@ namespace HiddenHarbours.Player
         }
 
         /// <summary>
-        /// The greybox keyboard read, in the same New-Input-System polling style as every other control in
-        /// this file. W/S is the throttle, A/D the wheel, Space the brake — the move axis the player already
-        /// walks with, so there is nothing new to learn, and the brake is the one control a driver expects
-        /// to be separate from a negative throttle (which is REVERSE, and stays reverse).
+        /// The frame's read of the wheel — asked of <see cref="DriveInputSource"/> and handed straight to
+        /// the seat. The keyboard mapping that used to live here (W/S throttle, A/D wheel, Space brake,
+        /// LEFT is +1) is <see cref="KeyboardDriveInputSource"/> now, byte for byte; what this keeps is
+        /// the ONE place per frame the demand crosses from a device to a machine.
         ///
-        /// <para><b>Left is +1.</b> That is the rig's own steering sense (<c>+1 = full LEFT lock</c>), so
-        /// the A key and the drawn wheels and the yaw all agree without a sign flip hidden anywhere.</para>
+        /// <para>⚠️ It runs every frame the mode is Driving, and a source answering "nothing held" lands
+        /// <c>DriveInput(0, 0, false)</c> — so a demand written by a caller of <see cref="DriveInput"/>
+        /// lasts exactly until this read. That is the keyboard's honest behaviour (a released key IS a
+        /// zero), and it is why anything that must hold a throttle across frames is a SOURCE rather than
+        /// a caller. A headless fixture that set full throttle and measured 0.00 m over thirty seconds
+        /// of physics was this read doing its job against the wrong kind of caller.</para>
         /// </summary>
         private void ReadDriveInput()
         {
-            var kb = Keyboard.current;
-            if (kb == null) { DriveInput(0f, 0f, false); return; }
-
-            float throttle = 0f, steer = 0f;
-            if (kb.wKey.isPressed || kb.upArrowKey.isPressed) throttle += 1f;
-            if (kb.sKey.isPressed || kb.downArrowKey.isPressed) throttle -= 1f;
-            if (kb.aKey.isPressed || kb.leftArrowKey.isPressed) steer += 1f;
-            if (kb.dKey.isPressed || kb.rightArrowKey.isPressed) steer -= 1f;
-
-            DriveInput(throttle, steer, kb.spaceKey.isPressed);
+            DriveDemand demand = DriveInputSource.Read();
+            DriveInput(demand.Throttle, demand.Steer, demand.Brake);
         }
 
         /// <summary>The door was worked (Core handoff — see <see cref="DriveSeatRequested"/>). A request,

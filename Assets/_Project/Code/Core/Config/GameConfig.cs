@@ -237,6 +237,25 @@ namespace HiddenHarbours.Core
                  "earned them, which is the one dial to be careful with.")]
         public BreakerSettings Breakers = BreakerSettings.Default;
 
+        [Tooltip("THE LIP SPRAY (ADR 0040 rev 3) — the torn puffs a plunging breaker throws shoreward as " +
+                 "its crest arrives, as a move away from the burst that SHIPS: 0 = exactly the shipped " +
+                 "spray, −1 = silent, +1 = twice as heavy. A burst can only be judged live (no " +
+                 "screenshot can show it), which is why it ships on and this is the dial rather than a " +
+                 "switch. " +
+                 "⚠️ Written as an OFFSET from the shipped value and not as the intensity itself, on " +
+                 "purpose: a YAML key this asset does not carry deserializes to ZERO, and for a plain " +
+                 "intensity that zero would silently switch the feature off in every older asset. As an " +
+                 "offset, zero IS the shipped spray.")]
+        [Range(-1f, 1f)] public float SurfSprayIntensityOffset;
+
+        /// <summary>
+        /// The lip spray's MASTER (0 = silent, 1 = the shipped burst, 2 = twice it) — the resolved form
+        /// of <see cref="SurfSprayIntensityOffset"/>, which is stored as a move away from the shipped 1
+        /// so that a missing YAML key (a zero) reads as "ship it as ruled" rather than as "off". A
+        /// PROPERTY, so Unity serializes nothing here and the asset-coverage test asks for no key.
+        /// </summary>
+        public float SurfSprayIntensity => Mathf.Clamp(1f + SurfSprayIntensityOffset, 0f, 2f);
+
         [Header("Market (VS-16)")]
         [Tooltip("Demand D at the home cove (Coddle Cove) in priceMult = 1/(1+e·S/D). 1 = neutral baseline.")]
         [Min(0.01f)] public float MarketDemandCove = 1f;

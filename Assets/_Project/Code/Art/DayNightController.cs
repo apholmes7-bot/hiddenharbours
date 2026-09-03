@@ -54,6 +54,14 @@ namespace HiddenHarbours.Art
         private const string OverlayMaterialPath = "DayNight";        // Resources/DayNight.mat (the multiply overlay)
         private const string OverlayShaderName   = "HiddenHarbours/DayNight";
 
+        /// <summary>
+        /// Metres in front of the camera the overlay quad sits — the nearest thing in the frame.
+        /// Named so the lamp-shadow quads (<see cref="LampShadowSystem.ShadowDepthOffset"/>) and the
+        /// light quads (<see cref="SceneLight.DefaultCameraDepthOffset"/>) can be pinned in a stated
+        /// order relative to it; the value is unchanged.
+        /// </summary>
+        public const float OverlayNearOffset = 0.02f;
+
         [Tooltip("How often (Hz) the light is recomputed + pushed. The cycle is slow, but a smooth scrub " +
                  "wants a few updates a second; ~10 Hz is plenty and cheap.")]
         [Min(1f)] [SerializeField] private float _refreshHz = 10f;
@@ -246,7 +254,7 @@ namespace HiddenHarbours.Art
             if (!_overlayRenderer.enabled && _overlayRenderer.sharedMaterial != null) _overlayRenderer.enabled = true;
 
             Transform ct = cam.transform;
-            float near = cam.nearClipPlane + 0.02f;
+            float near = cam.nearClipPlane + OverlayNearOffset;
             _overlay.position = ct.position + ct.forward * near;
             _overlay.rotation = ct.rotation;
 

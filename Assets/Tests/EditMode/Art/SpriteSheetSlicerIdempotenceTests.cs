@@ -40,7 +40,9 @@ namespace HiddenHarbours.Tests.Art.EditMode
         /// <summary>
         /// Deliberately spans the three shapes the slicer has to keep stable, and no more (each case
         /// costs two full reimports of a large texture):
-        ///   • a SheetSpec with a custom, hand-measured origin and one row (CapeIslanderIso);
+        ///   • a baker BASE page with a custom rig-derived origin, 8 × 4 rows (CapeIslanderIso — a
+        ///     RigBaker output since the full-mesh rollout's PR 2b; before that it was the one-row
+        ///     hand export this case was first written against);
         ///   • one page of a MULTI-PAGE baker sheet — the pages RigBaker emits because 32 facings × 4
         ///     rock frames would stand past the 4096 cap on a single sheet (LobsterBoatIsoRock0);
         ///   • a small, ordinary manifest sheet on a non-boat pivot (FishTray, bottom-centre).

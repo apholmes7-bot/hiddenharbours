@@ -83,3 +83,10 @@ without `lead-architect` sign-off, and this addendum records that sign-off after
 (the docs had drifted from the actual editor version). Everything else in this ADR — the
 engine choice, the reasoning, and the reconsideration triggers — is unchanged; the original
 decision text above is left as written for the historical record.
+
+## Amendment (2026-09-01, lead-architect review)
+
+The project has run on **Unity 6000.5.0f1** since the initial check-in (`ProjectSettings/ProjectVersion.txt`,
+2026-06-20); "6.3 LTS" in this ADR's title was the intended target when it was written. The editor is
+**pinned at 6000.5.0f1** — do not upgrade without `lead-architect` sign-off (CLAUDE.md §2, ADR 0005). URP is
+17.5 on the 2D Renderer; Unity's HDRP-only Water System is therefore not adoptable (ADR 0027).

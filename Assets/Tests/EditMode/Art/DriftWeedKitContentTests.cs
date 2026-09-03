@@ -228,6 +228,131 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.IsTrue(mask[System.Array.IndexOf(kit.Species, "SugarKelp")]);
         }
 
+        // ---- the anchors (round 2) — restated from the sidecar, independently of the builder --------
+
+        [System.Serializable] class SidecarAnchor { public int[] px; public float[] m; }
+        [System.Serializable] class SidecarVariant { public int cell; public SidecarAnchor buoy; public SidecarAnchor[] snags; public SidecarAnchor dragTail; }
+        [System.Serializable] class SidecarSpecies { public int cellW, cellH; public SidecarVariant[] variants; }
+        [System.Serializable] class SidecarSpeciesSet { public SidecarSpecies Bladderwrack, SugarKelp, Eelgrass, TornMat; }
+        [System.Serializable] class SidecarDoc { public SidecarSpeciesSet species; public float scale_px_per_m; public float y_foreshorten; }
+
+        static SidecarDoc LoadSidecar()
+        {
+            var doc = JsonUtility.FromJson<SidecarDoc>(File.ReadAllText(DriftWeedSheetSlicer.SidecarPath));
+            Assert.IsNotNull(doc?.species, "sidecar parsed but carries no species block");
+            Assert.Greater(doc.scale_px_per_m, 0f, "sidecar carries no scale_px_per_m");
+            Assert.Greater(doc.y_foreshorten, 0f, "sidecar carries no y_foreshorten");
+            return doc;
+        }
+
+        static SidecarVariant VariantOf(SidecarDoc doc, string species, int cell)
+        {
+            SidecarSpecies sp = species switch
+            {
+                "Bladderwrack" => doc.species.Bladderwrack,
+                "SugarKelp" => doc.species.SugarKelp,
+                "Eelgrass" => doc.species.Eelgrass,
+                "TornMat" => doc.species.TornMat,
+                _ => null,
+            };
+            Assert.IsNotNull(sp, $"sidecar has no species '{species}'");
+            var v = sp.variants.FirstOrDefault(x => x.cell == cell);
+            Assert.IsNotNull(v, $"{species} has no variant at cell {cell}");
+            return v;
+        }
+
+        [Test]
+        public void EveryClump_CarriesAtLeastOneSnagTipAndADragTail_WithinItsDrawnSize()
+        {
+            var kit = LoadKit();
+            for (int i = 0; i < kit.Count; i++)
+            {
+                var e = kit.Entries[i];
+                string who = $"entry {i} ({SpeciesOf(kit, e)} ramp {e.RampIndex} cell {e.VariantCell})";
+                Assert.IsTrue(e.HasAnchors, $"{who}: no snag anchors — the kit was built before round 2, re-run the builder");
+                Assert.LessOrEqual(e.Snags.Length, 3, $"{who}: the rig publishes at most 3 snag tips");
+                foreach (var s in e.Snags)
+                    Assert.LessOrEqual(s.magnitude, e.SizeMeters, $"{who}: a snag tip lies outside the clump's own drawn size");
+                Assert.Greater(e.DragTail.magnitude, 0.05f, $"{who}: the drag tail sits on the pivot — no lever arm to trail by");
+                Assert.LessOrEqual(e.DragTail.magnitude, e.SizeMeters, $"{who}: the drag tail lies outside the clump's own drawn size");
+            }
+        }
+
+        /// <summary>
+        /// The anchors are the sidecar's cell PIXELS over its pixels-per-metre, y flipped — the frame
+        /// the flat sprite actually draws in, so a tip placed by them sits on the pixel the art
+        /// director drew. Restated here from the raw px, not from the builder's helper.
+        /// </summary>
+        [Test]
+        public void Anchors_AreTheSidecarPixels_InTheSpriteFrame()
+        {
+            var kit = LoadKit();
+            var doc = LoadSidecar();
+            float ppm = doc.scale_px_per_m;
+            int checkedAnchors = 0;
+
+            for (int i = 0; i < kit.Count; i++)
+            {
+                var e = kit.Entries[i];
+                var v = VariantOf(doc, SpeciesOf(kit, e), e.VariantCell);
+                string who = $"{SpeciesOf(kit, e)} cell {e.VariantCell} ramp {e.RampIndex}";
+
+                Assert.AreEqual(v.snags.Length, e.Snags.Length, $"{who}: snag count differs from the sidecar");
+                for (int k = 0; k < v.snags.Length; k++)
+                {
+                    float ex = (v.snags[k].px[0] - v.buoy.px[0]) / ppm;
+                    float ey = -(v.snags[k].px[1] - v.buoy.px[1]) / ppm;
+                    Assert.AreEqual(ex, e.Snags[k].x, 1e-4f, $"{who} snag {k} x");
+                    Assert.AreEqual(ey, e.Snags[k].y, 1e-4f, $"{who} snag {k} y (cell y counts DOWN, the sprite counts UP)");
+                    checkedAnchors++;
+                }
+                Assert.AreEqual((v.dragTail.px[0] - v.buoy.px[0]) / ppm, e.DragTail.x, 1e-4f, $"{who} tail x");
+                Assert.AreEqual(-(v.dragTail.px[1] - v.buoy.px[1]) / ppm, e.DragTail.y, 1e-4f, $"{who} tail y");
+                checkedAnchors++;
+            }
+            Assert.Greater(checkedAnchors, kit.Count, "every clump checked at least a snag and a tail");
+        }
+
+        /// <summary>
+        /// The sidecar's own <c>m</c> values are WATER-PLANE metres (y ÷ y_foreshorten). The kit's
+        /// pixel-frame anchors must reconcile with them through that one factor — the two frames are
+        /// the same geometry read two ways, and this pins which way the kit chose.
+        /// </summary>
+        [Test]
+        public void Anchors_ReconcileWithTheSidecarsPlaneMetres_ThroughTheForeshorten()
+        {
+            var kit = LoadKit();
+            var doc = LoadSidecar();
+            Assert.AreEqual(doc.y_foreshorten, kit.YForeshorten, 1e-6f, "the kit records the sidecar's own foreshorten");
+
+            for (int i = 0; i < kit.Count; i++)
+            {
+                var e = kit.Entries[i];
+                var v = VariantOf(doc, SpeciesOf(kit, e), e.VariantCell);
+                string who = $"{SpeciesOf(kit, e)} cell {e.VariantCell}";
+                for (int k = 0; k < v.snags.Length; k++)
+                {
+                    Assert.AreEqual(v.snags[k].m[0], e.Snags[k].x, 1e-3f, $"{who} snag {k}: x is the same metre in both frames");
+                    Assert.AreEqual(-v.snags[k].m[1] * doc.y_foreshorten, e.Snags[k].y, 1e-3f,
+                                    $"{who} snag {k}: plane y × foreshorten = pixel y (sign flipped: the sidecar's +y is toward the camera)");
+                }
+                Assert.AreEqual(v.dragTail.m[0], e.DragTail.x, 1e-3f, $"{who} tail x");
+                Assert.AreEqual(-v.dragTail.m[1] * doc.y_foreshorten, e.DragTail.y, 1e-3f, $"{who} tail y");
+            }
+        }
+
+        [Test]
+        public void Kit_RecordsTheSidecarsPixelScale_AndEverySheetImportsAtIt()
+        {
+            var kit = LoadKit();
+            var doc = LoadSidecar();
+            Assert.AreEqual(doc.scale_px_per_m, kit.PixelsPerMeter, 1e-6f);
+            for (int i = 0; i < kit.Count; i++)
+                Assert.AreEqual(kit.PixelsPerMeter, kit.Entries[i].Sprite.pixelsPerUnit, 1e-3f,
+                    $"entry {i}: the sheet imports at a different PPU than the sidecar's scale — at scale 1 " +
+                    "neither the drawn size nor the anchors would be metres");
+        }
+
         static string SpeciesOf(DriftWeedKit kit, DriftWeedKit.Entry e) =>
             e.SpeciesIndex >= 0 && e.SpeciesIndex < kit.Species.Length
                 ? kit.Species[e.SpeciesIndex] : "?";

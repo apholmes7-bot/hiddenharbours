@@ -354,20 +354,30 @@ namespace HiddenHarbours.App.Editor
             // anchors at LengthMeters·0.5 = 6.45 m astern, so a wrong elevation would throw the plume metres
             // out rather than centimetres.
             //
-            // FacingsAreCounterClockwise = true, like every other iso kit — and MEASURED for this artwork
-            // rather than assumed from the others. CapeIslanderFacingTests reads her pixels: the un-
-            // foreshortened principal axis, disambiguated bow-from-stern by the raised forefoot, walks
-            // 0/320/278/226/180/134/82/37 across the 8 cells. That is 4.1° from the CCW sequence and 86.1°
-            // from the CW labelling — the same method reproduces the dory/punt/console to 1.5–2.9°, so the
-            // margin is not marginal. See the block comment on IsoSheetsAreCounterClockwise above.
+            // ⚠️ FacingsAreCounterClockwise = FALSE since the full-mesh rollout's PR 2b, and that is NOT a
+            // slip: her sheet is a RigBaker output now (32 facings × 8×4 grid, 4 rock frames across two
+            // pages — the lobster's recipe exactly), so the baker measured her rig's counter-clockwise
+            // turn and corrected it AT BAKE TIME. Her cells are genuinely clockwise; there is nothing left
+            // to un-mirror. Read the lobster's block below in full before touching this line — every word
+            // of it applies to her now. CapeIslanderFacingTests reads her actual pixels across all 32
+            // cells and goes red the instant this flips.
+            //
+            // Until PR 2b she was the LAST hand-exported hull sheet in the repo (8 cols × 1 row, baked in a
+            // browser at #224 before her rig was imported, pivot recovered from pixels at ±4 px, flag TRUE
+            // with the rest of the iso kits). That sheet is gone; its facts survive only in git history.
             new Sheet
             {
-                AssetName = "CapeIslanderIso", FacingsAreCounterClockwise = IsoSheetsAreCounterClockwise,
+                AssetName = "CapeIslanderIso",
+                FacingsAreCounterClockwise = false,   // ⚠️ BAKED IN-ENGINE = TRUE CLOCKWISE. See above and below.
                 Id = "visual.cape_islander_iso",
                 HullPath = $"{ArtBoats}/CapeIslanderIso.png",
-                RockPath = $"{ArtBoats}/CapeIslanderIsoRock.png",
-                HeadingCount = 8, RockFrames = 8, OarColumns = 10,
-                ArtBakeElevationDegrees = IsoBakeElevation,
+                RockPaths = new[]
+                {
+                    $"{ArtBoats}/CapeIslanderIsoRock0.png",   // headings  0–15 × 4 frames
+                    $"{ArtBoats}/CapeIslanderIsoRock1.png",   // headings 16–31 × 4 frames
+                },
+                HeadingCount = 32, RockFrames = 4, OarColumns = 10,
+                ArtBakeElevationDegrees = IsoBakeElevation,   // her rig's DEFAULT_ELEV is 40, like every other
                 SortingOrder = 1,
             },
 
@@ -377,8 +387,9 @@ namespace HiddenHarbours.App.Editor
             //
             // ⚠️⚠️ READ THIS BEFORE "FIXING" FacingsAreCounterClockwise BELOW. ⚠️⚠️
             //
-            // She is the ONLY entry in this file that does NOT use IsoSheetsAreCounterClockwise, and that
-            // is CORRECT. It is not an oversight, not a copy-paste slip, and not a bug someone half-fixed.
+            // She and the Cape Islander above are the ONLY entries in this file that do NOT use
+            // IsoSheetsAreCounterClockwise, and that is CORRECT. It is not an oversight, not a copy-paste
+            // slip, and not a bug someone half-fixed.
             //
             //   • Every OTHER iso kit here was hand-exported from a browser rig that rotates the model
             //     counter-clockwise while LABELLING the cells clockwise. Their sheets are mirrored, so
@@ -397,11 +408,12 @@ namespace HiddenHarbours.App.Editor
             // this line to make a different test pass. Do NOT change IsoSheetsAreCounterClockwise either —
             // every other boat in this file still genuinely needs it true.
             //
-            // She is also the first 32-FACING hull (11.25° steps, not 45°) and the first with a MULTI-PAGE
+            // She was also the first 32-FACING hull (11.25° steps, not 45°) and the first with a MULTI-PAGE
             // rock grid: 4 rock frames × 32 headings = 128 cells, split as headings 0–15 on page 0 and
             // 16–31 on page 1 (see TakeExactlyAcrossPages). Nothing downstream needed to learn either fact
             // — HeadingCount comes off Facings.Length and IsoFacing.HeadingToFacingIndex is general in the
-            // count — which is the payoff for those two having been written as data rather than as 8.
+            // count — which is the payoff for those two having been written as data rather than as 8. The
+            // Cape Islander followed her onto the same recipe in PR 2b.
             //
             // Inboard diesel like the Cape Islander, so NO oars and NO outboard: hull sheet + rock grid and
             // nothing else. There is no engine drawn on her because there is no engine to draw.
@@ -443,6 +455,27 @@ namespace HiddenHarbours.App.Editor
             AssetDatabase.Refresh();
             Debug.Log($"[BoatVisualLibraryBuilder] Refreshed {ok}/{Sheets.Length} boat visual def(s) in " +
                       $"{VisualsFolder}. Commit them; re-run only when the sheets are re-sliced.");
+        }
+
+        /// <summary>
+        /// Headless twin of <see cref="Build"/> for <c>-executeMethod</c> — the step that follows a
+        /// sheet re-bake whose RECT SET changed (a new facing count or a new page split mints new
+        /// sprite internalIDs, so the committed def's refs must be rewired). Exits the editor itself:
+        /// launched -quit-less like every other CLI entry here, so nothing else ever would.
+        /// ⚠️ Never pair with -runTests (the -quit/RunTests race, ADR 0021).
+        /// </summary>
+        public static void BuildFromCommandLine()
+        {
+            try
+            {
+                Build();
+                EditorApplication.Exit(0);
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogError($"[BoatVisualLibraryBuilder] headless build failed: {ex}");
+                EditorApplication.Exit(1);
+            }
         }
 
         static bool BuildOne(Sheet sheet)

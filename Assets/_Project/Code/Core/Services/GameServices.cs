@@ -486,6 +486,13 @@ namespace HiddenHarbours.Core
         public static BreakerSettings Breakers =>
             Config != null ? Config.Breakers : BreakerSettings.Default;
 
+        /// <summary>The LIP SPRAY's master (ADR 0040 rev 3) — 0 silent, 1 the shipped burst, 2 twice it.
+        /// Resolved from <see cref="GameConfig.SurfSprayIntensityOffset"/>, whose 0 is the shipped 1 (see
+        /// there for why it is stored as an offset). With no config wired the answer is the shipped 1:
+        /// the emitter is ON by ruling, and "no config" must not be a silent way to switch it off.</summary>
+        public static float SurfSprayIntensity =>
+            Config != null ? Config.SurfSprayIntensity : 1f;
+
         /// <summary>
         /// <b>How much of her own rock a boat's INTERIOR draw takes</b> — ADR 0038 proposal 1's comfort
         /// clamp, same contract as <see cref="WaveField"/> including the <c>Config != null</c> discipline

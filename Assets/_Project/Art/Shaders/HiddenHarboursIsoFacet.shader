@@ -176,6 +176,35 @@ Shader "HiddenHarbours/IsoFacet"
             // a lid that has a lid, and a level carries one lid field, so the same law holds in all
             // three places it could be broken.
             float  _HHLevelLid;
+
+            // ⭐ THE INTERIOR'S OWN PALETTE, AND WHY IT IS A SECOND TABLE RATHER THAN A WIDER ONE.
+            //
+            // A full-mesh room needs 20–21 ramps of its own (measured over every hull, level and
+            // facing of boatInteriorRig.js, counting distinct COLOUR ARRAYS rather than names).
+            // The hull's own faces already spend 10–13. One table would therefore have to hold
+            // THIRTY-THREE on the tanker — so the fleet's float4[16] cannot simply be widened to
+            // 24 or 32, and widening it to 48 would have re-opened a cap that is guarded in three
+            // places and that the road fleet's night-lamp slot-reuse ruling (#668) rests on.
+            //
+            // Measured cost of the two, on the shipped target: widening is byte-identical in the
+            // compiled program (it costs 512 B of constant buffer, not instructions) but EVERY hull
+            // pays it in every frame, converted or not. This table costs 384 B and ~148 B of extra
+            // fragment code, and it is paid PER HULL rather than fleet-wide.
+            //
+            // ⚠️ AND THE SPLIT IS NOT "while a cut is live" — that was this design's first cost
+            // story and its own PR refuted it. A hull whose MESH CARRIES A ROOM keeps
+            // HH_LEVEL_GATE on permanently, because the discard that hides her cabin lives inside
+            // this same #ifdef and nothing else hides it (measured with it off: 31-42% of her
+            // inked pixels wrong, in clusters of 11k-15k px). So: an UNCONVERTED hull pays nothing
+            // at all and compiles the shipped program byte for byte, and a CONVERTED hull pays
+            // this always. That is the price of the room being geometry, and it would have been
+            // the same price under a widened table.
+            //
+            // The two tables are separate INDEX SPACES: an interior face's matId counts from 0 in
+            // here, so the hull's 16 stay exactly the hull's and neither side can starve the other.
+            float4 _RampMetaInterior[24];
+            Texture2D<float4> _RampTexInterior;
+            Texture2D<float4> _DarkRampTexInterior;
 #endif
 
             struct Attributes
@@ -193,6 +222,10 @@ Shader "HiddenHarbours/IsoFacet"
                 // exterior silhouette, never cut). y = 1 on emitted INTERIOR geometry, 0 on
                 // the hull's own faces. Absent on every hull baked before the cutaway kit.
                 float2 levelTag   : TEXCOORD1;
+                // THE ROOM'S SURFACE. xy = generator id + period, flat per face; zw = the rig's
+                // own per-vertex uv, which paint() interpolates before calling the generator.
+                // All zero on a hull with no room, and on every hull face of a hull that has one.
+                float4 texAttr    : TEXCOORD2;
 #endif
             };
 
@@ -208,6 +241,10 @@ Shader "HiddenHarbours/IsoFacet"
                 // xy = the level tag, z = 1 when the camera is rendering this
                 // face's FRONT (decoded from the stored normal exactly as vertGuard does).
                 nointerpolation float3 lvl : TEXCOORD3;
+                // xy flat (generator + period), zw INTERPOLATED — the uv has to vary across the
+                // face or the pattern would be one flat value per facet.
+                nointerpolation float2 texKp : TEXCOORD4;
+                float2 texUv : TEXCOORD5;
 #endif
             };
 
@@ -237,6 +274,8 @@ Shader "HiddenHarbours/IsoFacet"
                 o.mat  = v.attrs.x;
 #ifdef HH_LEVEL_GATE
                 o.lvl  = float3(v.levelTag, dot(wn, UNITY_MATRIX_V[2].xyz) >= 0.0 ? 1.0 : 0.0);
+                o.texKp = v.texAttr.xy;
+                o.texUv = v.texAttr.zw;
 #endif
                 // ⚠️ TWO DEPTHS, AND THE SPLIT IS THE DESIGN (ADR 0033).
                 //
@@ -293,6 +332,58 @@ Shader "HiddenHarbours/IsoFacet"
             // per-face `db`, subtracted from clip depth in vert() above — and setting it on
             // the room to the hull's bounding-sphere diameter took the same room to 97.6%.
             // Recorded here because the next person to add the shell will meet it.
+            // ⭐ THE ROOM'S PROCEDURAL SURFACE — boatInteriorRig.js's plankTex / boardTex /
+            // quiltTex, transcribed. paint() does `if (tex && uv) fi += tex(uu, vv)`, shifting the
+            // ramp index by a small INTEGER; because the shift is an integer, adding it to `idx`
+            // after the dither is exactly equivalent to adding it to `fidx` before, and leaves the
+            // Bayer term untouched. Measured coverage: 28.6% of the lobster's wheelhouse faces and
+            // 63.4% of her cuddy carry one, so this is most of a berth space's surface, not a
+            // garnish.
+            //
+            // ⚠️⚠️ THE RIG'S PER-PLANK HASH IS DEAD CODE, AND THIS TRANSCRIBES WHAT IT DOES, NOT
+            // WHAT IT MEANT. plankTex and quiltTex both branch on `hash2(...) < 0.5`, intending a
+            // per-plank / per-cell coin flip. hash2 ends with `((h ^ (h >> 16)) >>> 0) / 4294967296`
+            // — and in JS `>>` coerces to int32 and sign-extends, so bit 31 of `h ^ (h >> 16)` is
+            // ALWAYS the sign bit xored with itself, i.e. always 0. The value can therefore never
+            // reach 0.5. Measured in the repo's own V8 over a in [-40,40] x b in [-20,20]: 3321 of
+            // 3321 samples below 0.5, max 0.49996. So the hash branch never fires, plankTex never
+            // returns -1 and quiltTex never returns +1 — in the SPRITE path too.
+            //
+            // Transcribing the intent instead would make the mesh disagree with the shipped sheets
+            // on every plank, which is the opposite of parity. If the art director fixes hash2, both
+            // paths move together and this comment is the note that says where to look. Reported
+            // upstream rather than fixed here: the sprite art is shipped and this is not our file.
+            //
+            // ⭐ WHERE EACH NUMBER BELOW CAME FROM, because nothing pixel-exact can guard this: the
+            // dith gap makes sheet-parity impossible for the fit-out by design, so the owner's eye
+            // is the only end-to-end check and it should know what it is confirming.
+            //   - The PERIOD is PROBED, per face, off the rig's own closure at bake time
+            //     (BoatInteriorGeometryExtractor.periodOf) — never scraped from a call site.
+            //   - The groove half-widths (0.022 / 0.026 / 0.030) and the shift magnitudes are
+            //     TRANSCRIBED from the rig's source, which is the only place they exist.
+            //   - The dead hash branch is PROBED, not assumed (3321/3321 samples below 0.5).
+            // InteriorTexTranscriptionTests pins all of it by evaluating the rig's own three
+            // functions over a grid and comparing against this logic, so a transcription slip is a
+            // red test rather than something only an eye could catch.
+            float HHInteriorTex(float2 kp, float2 uv)
+            {
+                int kind = (int)round(kp.x);
+                if (kind == 0) return 0.0;
+                float p = kp.y;
+                if (p <= 0.0) return 0.0;
+
+                // JS `((x % p) + p) % p` — a true positive modulo, since JS % keeps the dividend's
+                // sign and a room's uv crosses zero.
+                if (kind == 1)              // plankTex(p): a groove every p in V
+                    return (uv.y - p * floor(uv.y / p)) < 0.022 ? -2.0 : 0.0;
+                if (kind == 2)              // boardTex(p): a groove every p in U
+                    return (uv.x - p * floor(uv.x / p)) < 0.026 ? -1.0 : 0.0;
+                                            // quiltTex(): a 0.20 grid, grooves on both axes
+                float fu = uv.x - p * floor(uv.x / p);
+                float fv = uv.y - p * floor(uv.y / p);
+                return (fu < 0.030 || fv < 0.030) ? -1.0 : 0.0;
+            }
+
             bool HHLevelDiscards(float3 lvl)
             {
                 bool isInterior = lvl.y > 0.5;
@@ -326,10 +417,26 @@ Shader "HiddenHarbours/IsoFacet"
                 float bay = _Bayer[cell.x & 3][cell.y & 3];
 
                 int m    = (int)round(i.mat);
+#ifdef HH_LEVEL_GATE
+                // Which table this face reads from. lvl.y is the bake's own per-face interior
+                // flag and the fragment has already used it once, in HHLevelDiscards — this is
+                // the same bit asked a second time, not a new mechanism and not a new channel.
+                bool hhInterior = i.lvl.y > 0.5;
+                int len  = (int)(hhInterior ? _RampMetaInterior[m].x : _RampMeta[m].x);
+                int off  = (int)(hhInterior ? _RampMetaInterior[m].y : _RampMeta[m].y);
+#else
                 int len  = (int)_RampMeta[m].x;
                 int off  = (int)_RampMeta[m].y;
+#endif
                 float fbase = floor(i.fidx);
                 int idx = (int)fbase + ((i.fidx - fbase) > bay ? 1 : 0) + off;
+#ifdef HH_LEVEL_GATE
+                // Integer shift, so this is the rig's `fi += tex(u,v)` moved to the other side of
+                // the dither compare without changing it: floor(f + k) == floor(f) + k and the
+                // fractional part is untouched. Zero on every hull face — the attribute is zero
+                // there — so no hull pixel changes.
+                if (hhInterior) idx += (int)HHInteriorTex(i.texKp, i.texUv);
+#endif
                 idx = clamp(idx, 0, len - 1);
 
                 // WHICH OF THIS HULL'S IDS THIS PIXEL CARRIES. Camera looks along +Z, so a SMALLER
@@ -357,8 +464,15 @@ Shader "HiddenHarbours/IsoFacet"
                 }
 
                 FragOut o;
+#ifdef HH_LEVEL_GATE
+                o.facet = float4(hhInterior ? _RampTexInterior.Load(int3(idx, m, 0)).rgb
+                                            : _RampTex.Load(int3(idx, m, 0)).rgb, hullId);
+                o.dark  = float4(hhInterior ? _DarkRampTexInterior.Load(int3(idx, m, 0)).rgb
+                                            : _DarkRampTex.Load(int3(idx, m, 0)).rgb, 1.0);
+#else
                 o.facet = float4(_RampTex.Load(int3(idx, m, 0)).rgb, hullId);
                 o.dark  = float4(_DarkRampTex.Load(int3(idx, m, 0)).rgb, 1.0);
+#endif
                 o.key   = float4(_KeyColor.rgb, 1.0);
                 o.depth = i.wpos.z;
                 return o;

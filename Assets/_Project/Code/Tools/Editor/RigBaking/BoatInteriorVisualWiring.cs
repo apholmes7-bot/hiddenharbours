@@ -52,6 +52,8 @@ namespace HiddenHarbours.Tools.RigBaking
             public string Stem;
             public bool Wired;
             public int Cells;
+            /// <summary>ADR 0041: her room is geometry, so there was nothing to wire — not a failure.</summary>
+            public bool Converted;
             public string Problem;
         }
 
@@ -61,9 +63,10 @@ namespace HiddenHarbours.Tools.RigBaking
             var log = new StringBuilder();
             List<Result> results = Wire(log);
             int wired = results.Count(r => r.Wired);
-            int failed = results.Count(r => !r.Wired);
+            int converted = results.Count(r => r.Converted);
+            int failed = results.Count(r => !r.Wired && !r.Converted);
 
-            log.AppendLine($"{wired} wired, {failed} refused.");
+            log.AppendLine($"{wired} wired, {converted} converted (mesh rooms, nothing to wire), {failed} refused.");
             if (failed > 0) Debug.LogError(log.ToString());
             else Debug.Log(log.ToString());
         }
@@ -77,8 +80,10 @@ namespace HiddenHarbours.Tools.RigBaking
             try
             {
                 List<Result> results = Wire(log);
-                failed = results.Count(r => !r.Wired);
-                log.AppendLine($"{results.Count(r => r.Wired)} wired, {failed} refused.");
+                failed = results.Count(r => !r.Wired && !r.Converted);
+                log.AppendLine($"{results.Count(r => r.Wired)} wired, " +
+                               $"{results.Count(r => r.Converted)} converted (mesh rooms, nothing to wire), " +
+                               $"{failed} refused.");
                 Debug.Log(log.ToString());
             }
             catch (Exception e)
@@ -125,6 +130,18 @@ namespace HiddenHarbours.Tools.RigBaking
 
                 string stem = Path.GetFileNameWithoutExtension(path);
                 var r = new Result { Stem = stem };
+
+                // ADR 0041: a hull whose bake appended her room to the hull mesh ships no cells and no
+                // sheet. The predicate is the bake's own output, the same one the installer reads —
+                // never a list here — and a re-run of this menu must not resurrect a retired asset.
+                var converted = AssetDatabase.LoadAssetAtPath<BoatVisualDef>($"{VisualDefFolder}/{stem}.asset");
+                if (converted != null && converted.HullMesh != null && converted.HullMesh.HasMeshInterior())
+                {
+                    r.Converted = true;
+                    results.Add(r);
+                    log.AppendLine($"  CONVERTED {stem}: her room is geometry (ADR 0041) — no cells to wire");
+                    continue;
+                }
 
                 if (!byStem.TryGetValue(def.Id ?? "", out BoatInteriorKit.SheetEntry sheet))
                 {

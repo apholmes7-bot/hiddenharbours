@@ -78,10 +78,10 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: -1.84, y: 0.63}
-      - {x: 1.84, y: 0.63}
-      - {x: 1.84, y: 1.21}
-      - {x: -1.84, y: 1.21}
+    - - {x: -1.84, y: 0.40495616}
+      - {x: 1.84, y: 0.40495616}
+      - {x: 1.84, y: 0.77777296}
+      - {x: -1.84, y: 0.77777296}
   m_UseDelaunayMesh: 1
 --- !u!1 &1018274230131256301
 GameObject:
@@ -207,7 +207,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7620278947044550380}
-  - component: {fileID: 4202910482008140627}
+  - component: {fileID: 84998096584101246}
   m_Layer: 0
   m_Name: door_Entry_shut
   m_TagString: Untagged
@@ -230,8 +230,8 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1585636555028548916}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!61 &4202910482008140627
-BoxCollider2D:
+--- !u!60 &84998096584101246
+PolygonCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -264,7 +264,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 1.18, y: 1.7}
+  m_Offset: {x: 0, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -274,8 +274,13 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.94, y: 0.18}
-  m_EdgeRadius: 0
+  m_Points:
+    m_Paths:
+    - - {x: 0.7099999, y: 1.034888}
+      - {x: 1.65, y: 1.034888}
+      - {x: 1.65, y: 1.1505898}
+      - {x: 0.7099999, y: 1.1505898}
+  m_UseDelaunayMesh: 1
 --- !u!1 &4225279593501482124
 GameObject:
   m_ObjectHideFlags: 0
@@ -354,10 +359,10 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: -1.64, y: -1.54}
-      - {x: 1.64, y: -1.54}
-      - {x: 1.64, y: -1.2}
-      - {x: -1.64, y: -1.2}
+    - - {x: -1.64, y: -0.98989284}
+      - {x: 1.64, y: -0.98989284}
+      - {x: 1.64, y: -0.77134514}
+      - {x: -1.64, y: -0.77134514}
   m_UseDelaunayMesh: 1
 --- !u!1 &5920806168044452984
 GameObject:
@@ -368,7 +373,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3002128897148110022}
-  - component: {fileID: 8193133808396853624}
+  - component: {fileID: 3707041898454762410}
   m_Layer: 0
   m_Name: door_ServiceDoor_shut
   m_TagString: Untagged
@@ -391,8 +396,8 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1585636555028548916}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!61 &8193133808396853624
-BoxCollider2D:
+--- !u!60 &3707041898454762410
+PolygonCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -425,7 +430,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: -1.24, y: -1.7}
+  m_Offset: {x: 0, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -435,5 +440,10 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.84, y: 0.18}
-  m_EdgeRadius: 0
+  m_Points:
+    m_Paths:
+    - - {x: -1.66, y: -1.1505898}
+      - {x: -0.82000005, y: -1.1505898}
+      - {x: -0.82000005, y: -1.034888}
+      - {x: -1.66, y: -1.034888}
+  m_UseDelaunayMesh: 1

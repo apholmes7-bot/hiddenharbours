@@ -1,0 +1,43 @@
+RAMP CENSUS v2 - boatInteriorRig.js + the committed hull defs. Measured by running the rig.
+
+hull      levels                         decl  dC used  uC lvlMax hull  SUM UNION
+------------------------------------------------------------------------------------------
+cape      house/cuddy                      26  22   25  21     19    8   29    29
+dragger   bridge/house/below               26  22   25  21     18   10   31    31
+lobster   house/cuddy                      26  22   26  22     20    9   31    31
+lobvar    house/cuddy                      26  22   26  22     20    9   31    31
+packet    bridge/house/below               26  22   25  21     18   10   31    31
+sport53   house/below [kit rig]            27  19   23  15     15   10   25    25
+sport90   bridge/house/below [kit rig]     27  19   23  15     15   10   25    25
+tanker    bridge/house/below               26  22   25  21     18   11   32    32
+trawler   bridge/house/below               26  22   25  21     18   10   31    31
+trawler2  bridge/house/below               26  22   25  21     18   10   31    31
+
+dC/uC = distinct COLOUR ARRAYS (what a _RampMeta slot actually holds), not names.
+SUM   = hull ramps + interior distinct ramps = what ONE table must hold today.
+UNION = the same two sets deduped against each other by colour array.
+lvlMax= the worst SINGLE level - what a table re-uploaded per cut would need.
+
+BYTE-IDENTICAL RAMP GROUPS among the used set (free slot savings, no colour lost):
+  cape      cab=wains  daylight=glass  flame=screen  iron=panel
+  dragger   cab=wains  daylight=glass  flame=screen  iron=panel
+  lobster   cab=wains  daylight=glass  flame=screen  iron=panel
+  lobvar    cab=wains  daylight=glass  flame=screen  iron=panel
+  packet    cab=wains  daylight=glass  flame=screen  iron=panel
+  sport53   brass=work  cab=wains=wheel  ceil=liner  cush=quilt  daylight=glass  flame=screen  iron=panel
+  sport90   brass=work  cab=wains=wheel  ceil=liner  cush=quilt  daylight=glass  flame=screen  iron=panel
+  tanker    cab=wains  daylight=glass  flame=screen  iron=panel
+  trawler   cab=wains  daylight=glass  flame=screen  iron=panel
+  trawler2  cab=wains  daylight=glass  flame=screen  iron=panel
+
+USED RAMP NAMES
+  cape      (25) brass cab cavity cavityWarm ceil cush cut daylight flame frame glass glassN iron leafIn linen liner panel quilt screen slick sole steel wains wheel work
+  dragger   (25) brass cab cavityWarm ceil chart cush cut daylight flame frame glass glassN iron leafIn linen liner panel quilt screen slick sole steel wains wheel work
+  lobster   (26) brass cab cavity cavityWarm ceil chart cush cut daylight flame frame glass glassN iron leafIn linen liner panel quilt screen slick sole steel wains wheel work
+  lobvar    (26) brass cab cavity cavityWarm ceil chart cush cut daylight flame frame glass glassN iron leafIn linen liner panel quilt screen slick sole steel wains wheel work
+  packet    (25) brass cab cavityWarm ceil chart cush cut daylight flame frame glass glassN iron leafIn linen liner panel quilt screen slick sole steel wains wheel work
+  sport53   (23) brass cab cavityWarm ceil cush cut daylight flame frame glass glassN iron linen liner panel quilt rug screen sole steel wains wheel work
+  sport90   (23) brass cab cavityWarm ceil cush cut daylight flame frame glass glassN iron linen liner panel quilt rug screen sole steel wains wheel work
+  tanker    (25) brass cab cavityWarm ceil chart cush cut daylight flame frame glass glassN iron leafIn linen liner panel quilt screen slick sole steel wains wheel work
+  trawler   (25) brass cab cavityWarm ceil chart cush cut daylight flame frame glass glassN iron leafIn linen liner panel quilt screen slick sole steel wains wheel work
+  trawler2  (25) brass cab cavityWarm ceil chart cush cut daylight flame frame glass glassN iron leafIn linen liner panel quilt screen slick sole steel wains wheel work

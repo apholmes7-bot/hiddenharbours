@@ -107,15 +107,30 @@ namespace HiddenHarbours.Boats
             float elevation = BakeElevationDegrees(visual);
             bool exteriorCcw = ExteriorAzimuthCounterClockwise(visual);
 
-            // --- the room -----------------------------------------------------------------------
-            var roomGo = new GameObject(RoomChildName);
-            roomGo.transform.SetParent(transform, false);
-            var roomAnchor = roomGo.AddComponent<HullLocalAnchor>();
-            roomAnchor.Configure(transform, Vector3.zero, exteriorCcw, elevation);
+            // --- which picture (ADR 0041) -------------------------------------------------------
+            // A hull whose bake appended her room to the hull mesh already carries her cabin in the
+            // hull renderer; the cutaway reveals it. She gets NO sprite room — no child, no
+            // SpriteRenderer, no cells, ever — or she would draw her cabin twice (measured on main
+            // 2026-09-01: TWO sources below decks on both converted hulls). The predicate is the
+            // bake's own output (HullMeshDef.InteriorRamps), read through one method and never a list
+            // kept here. Everything else about the def stays exactly as it was.
+            bool roomIsGeometry = visual.HasHullMesh() && visual.HullMesh.HasMeshInterior();
 
-            var roomRenderer = roomGo.AddComponent<SpriteRenderer>();
-            roomRenderer.sortingOrder = _sortingOrderAboveHull;
-            roomRenderer.enabled = false;   // nobody is inside a boat that has just been built
+            // --- the room (sprite hulls only) -----------------------------------------------------
+            SpriteRenderer roomRenderer = null;
+            Transform roomPivot = null;
+            if (!roomIsGeometry)
+            {
+                var roomGo = new GameObject(RoomChildName);
+                roomGo.transform.SetParent(transform, false);
+                var roomAnchor = roomGo.AddComponent<HullLocalAnchor>();
+                roomAnchor.Configure(transform, Vector3.zero, exteriorCcw, elevation);
+
+                roomRenderer = roomGo.AddComponent<SpriteRenderer>();
+                roomRenderer.sortingOrder = _sortingOrderAboveHull;
+                roomRenderer.enabled = false;   // nobody is inside a boat that has just been built
+                roomPivot = roomGo.transform;
+            }
 
             Interior = gameObject.AddComponent<BoatInterior>();
             Interior.Configure(
@@ -126,7 +141,7 @@ namespace HiddenHarbours.Boats
                 exterior: null,
                 interior: roomRenderer,
                 fittings: null,
-                interiorPivot: roomGo.transform,
+                interiorPivot: roomPivot,
                 boatRoot: transform,
                 // ⚠ NO CELLS HERE, deliberately. The pixels are megabytes and this runs on every
                 // hull that spawns; handing them in would put a cabin's whole sheet set in memory for
@@ -140,7 +155,8 @@ namespace HiddenHarbours.Boats
                 deckHeavePixels: RockHeavePixels(visual),
                 deckPitchLiftMeters: PitchLiftMetres(visual),
                 // ⚠ The def's levels are NOT the sheet's rows; the map arrives with the cells.
-                cellRowForLevel: null);
+                cellRowForLevel: null,
+                roomIsGeometry: roomIsGeometry);
 
             // --- the cutaway --------------------------------------------------------------------
             // The owner's 2026-08-26 ruling: below decks, her house is CUT AWAY rather than covered

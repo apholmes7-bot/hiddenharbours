@@ -1,0 +1,11 @@
+CUT OPEN — how much of the picture the room accounts for
+Floor is 4% of the hull's own inked area: the spike's failing case sat at
+20.3% of the ROOM revealed, which still reads as a room that is not there.
+  house      tag 3 lid 0  heading    90°  changed 18350 px of 61763 inked (29.7%)
+  house      tag 3 lid 0  heading   135°  changed 20022 px of 53992 inked (37.1%)
+  house      tag 3 lid 0  heading   180°  changed 16081 px of 40764 inked (39.4%)
+  house      tag 3 lid 0  heading    45°  changed 22021 px of 57810 inked (38.1%)
+  cuddy      tag 4 lid 2  heading    90°  changed 3630 px of 61763 inked (5.9%)
+  cuddy      tag 4 lid 2  heading   135°  changed 4432 px of 53992 inked (8.2%)
+  cuddy      tag 4 lid 2  heading   180°  changed 3912 px of 40764 inked (9.6%)
+  cuddy      tag 4 lid 2  heading    45°  changed 4300 px of 57810 inked (7.4%)

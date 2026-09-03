@@ -70,6 +70,33 @@ namespace HiddenHarbours.Tools.RigBaking
         /// eye.</para>
         /// </summary>
         public bool FixedInPose;
+
+        /// <summary>
+        /// <b>True on a face that belongs to the ROOM rather than to the hull</b> — the full-mesh
+        /// interior (ADR 0038). Reaches the mesh as <c>TexCoord1.y</c>, which the facet shader reads
+        /// twice: once in <c>HHLevelDiscards</c> to decide whether this face is drawn at all, and
+        /// once to select the interior's own palette (<c>_RampMetaInterior</c>) instead of the hull's.
+        ///
+        /// <para><see cref="Mat"/> on an interior face indexes
+        /// <see cref="RigMeshData.InteriorMaterials"/>, NOT <see cref="RigMeshData.Materials"/>. The
+        /// two are deliberately separate index spaces: that is what lets the room have 24 slots
+        /// without widening the fleet's guarded 16.</para>
+        /// </summary>
+        public bool Interior;
+
+        /// <summary>The rig's procedural surface generator for this face, as
+        /// <see cref="BoatInteriorGeometryExtractor.TexKind"/>. 0 on every hull face and on any
+        /// interior face the rig left untextured.</summary>
+        public int TexKind;
+
+        /// <summary>The generator's period in rig metres, probed off the rig's own closure. 0 when
+        /// <see cref="TexKind"/> is 0.</summary>
+        public double TexPeriod;
+
+        /// <summary>Per-VERTEX texture coordinates, parallel to <see cref="V"/> — the rig's own
+        /// <c>f.uv</c>, which <c>paint()</c> interpolates barycentrically before calling the
+        /// generator. Null when the face carries no texture, which is every hull face.</summary>
+        public Vector2[] Uv;
     }
 
     /// <summary>A MATS entry: a palette ramp plus a constant index offset.</summary>
@@ -157,6 +184,19 @@ namespace HiddenHarbours.Tools.RigBaking
         /// room as. Empty alongside <see cref="LevelIds"/>.
         /// </summary>
         public IReadOnlyList<RigLevelRecord> Levels = RigLevelTables.NoLevels;
+
+        /// <summary>
+        /// The INTERIOR's own material table — a separate index space addressed by
+        /// <see cref="RigFace.Mat"/> on faces where <see cref="RigFace.Interior"/> is true.
+        ///
+        /// <para>Empty on every hull with no room extracted, which keeps every mesh baked before
+        /// full-mesh interiors byte-identical: <see cref="RigMeshBuilder"/> writes no TexCoord2
+        /// channel without it, exactly as it writes no TexCoord1 without a level vocabulary.</para>
+        /// </summary>
+        public List<RigMaterial> InteriorMaterials = new List<RigMaterial>();
+
+        /// <summary>True when a room was extracted into this hull's face list.</summary>
+        public bool CarriesInteriorGeometry => InteriorMaterials != null && InteriorMaterials.Count > 0;
 
         /// <summary>True when this rig declared a level vocabulary, so its faces carry real tags and
         /// the mesh gains a TexCoord1 channel.</summary>

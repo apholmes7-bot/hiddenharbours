@@ -14,8 +14,9 @@ namespace HiddenHarbours.UI
     /// project (WASD/arrows helm, Space brace/haul, E interact, Q mooring, T trap-drop,
     /// G grant, H haul, Y auto-yaw, L spotlight/ice, F fleet/freezer/bucket, V variant, I icebox,
     /// O displaced-water, N tide table, R anchor/rode, X dump-spoiled, Z neutral, K brow-cycle,
-    /// J/U spike rig, C/1/2/Enter/LeftShift in InputSystem_Actions). Serialized so the owner can
-    /// rebind without touching code (the TidePanelInput courtesy).</para>
+    /// J/U spike rig, Enter/Esc in the UI map of <c>HiddenHarbours.inputactions</c> — the asset that is
+    /// now the ledger of every declared key, ADR 0043). Serialized so the owner can rebind without
+    /// touching code (the TidePanelInput courtesy).</para>
     ///
     /// <para>Deaf while a text field owns the keyboard (<see cref="HelmKeyCapture"/> — "M" belongs
     /// in a waypoint name) and while the shell has the world stopped

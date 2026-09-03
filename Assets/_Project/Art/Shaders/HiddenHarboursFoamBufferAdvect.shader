@@ -40,6 +40,14 @@
 // Visual only: this target is read by the water shader's foam compose and by NOTHING else. It feeds
 // no sim and enters no save (rule 5 / ADR 0008) — it is accumulated visual state and is allowed to
 // differ run-to-run, exactly as particles are.
+//
+// ADR 0040 rev 3 (the crashing-washes look) — 4. THE BORE'S DEPOSIT. Where the water shader draws a
+// bore, this pass lays foam into the buffer AT THE FRONT: the same fetch march, breaker contour, surf
+// march, phase, pulse and birth the drawn sheet uses, as text copied VERBATIM from the water shader
+// between its TWIN markers (BreakerDepositTests fails if one byte differs — that is what makes a copy
+// safe). The residue is born under the front and then ages, drifts and dies on this buffer's own
+// clocks: what the sea leaves BEHIND a wash. Freshness is a GATE, as for a hull. It costs one compare
+// at the shipped _SurfDepositStrength 0, and it draws only through _WakeFoamStrength.
 Shader "Hidden/HiddenHarbours/FoamBufferAdvect"
 {
     SubShader
@@ -87,6 +95,469 @@ Shader "Hidden/HiddenHarbours/FoamBufferAdvect"
             float4 _HHFoamInjectSeg[FOAM_MAX_INJECTORS];     // xy = from, zw = to (world m)
             // x = radius (m), y = amount (0 = unused slot), z = vigour 0..1 (the freshness GATE)
             float4 _HHFoamInjectShape[FOAM_MAX_INJECTORS];
+
+
+            // ==== THE BORE'S DEPOSIT (ADR 0040 rev 3): the surf physics, twinned from the water shader ====
+            // The globals the twinned text reads — the same names the water shader declares; all of them
+            // published by WaveFieldBridge (the trains, the fetch, the breakers) or WaterSurface (the
+            // sea level and the seabed). Nothing here is a material property of the water.
+            float4 _WaveTrain0, _WaveTrain1, _WaveTrain2, _WaveTrain3, _WaveTrain4, _WaveTrain5, _WaveTrain6, _WaveTrain7;
+            float4 _WavePhases, _WavePhases2, _WaveFieldParams;
+            float4 _WaveFetchParams, _WaveFetchParams2;
+            float4 _BreakerDepths, _BreakerOuter, _BreakerParams, _BreakerAnatomy, _BreakerBore;
+            float4 _HHSeaLevelWorld;      // x = the drawn sea level (m); WaterSurface publishes it
+            float4 _HHSurfDeposit;        // x = strength, y = the drawn wave scale, z = dt (s), w = unused
+            TEXTURE2D(_HHSeabedTex); SAMPLER(sampler_HHSeabedTex);
+            float4 _HHSeabedRect;         // xy = world min (m), zw = world size (m)
+            float4 _HHSeabedRange;        // x = min elevation, y = max, z = shore sample step (m), w = 1 when bound
+
+            // The twinned text was written against the water material's names for these; here they are
+            // the published globals. Macros, so the text can stay byte-identical.
+            #define _WaterLevel (_HHSeaLevelWorld.x)
+            #define _ShoreSampleStep (_HHSeabedRange.z)
+            #define _USE_HEIGHTTEX 1
+
+            // Twin of the water shader's SeabedElevation, on the PUBLISHED seabed (SeabedGlobals): the
+            // same decode, lerp(min, max, r). Unbound = everywhere deep, so nothing breaks (the water
+            // shader's own no-height-map contract).
+            float SeabedElevation(float2 worldXY)
+            {
+                if (_HHSeabedRange.w < 0.5) return _HHSeabedRange.x;
+                float2 uv = (worldXY - _HHSeabedRect.xy) / max(_HHSeabedRect.zw, float2(1e-3, 1e-3));
+                float r = SAMPLE_TEXTURE2D_LOD(_HHSeabedTex, sampler_HHSeabedTex, uv, 0).r;
+                return lerp(_HHSeabedRange.x, _HHSeabedRange.y, r);
+            }
+            float SeabedElevationLod(float2 worldXY) { return SeabedElevation(worldXY); }
+
+            // Foam laid per second under a full-strength front; twin: FoamBuffer.SurfDepositRatePerSecond.
+            #define SURF_DEPOSIT_RATE 2.0
+
+            // ==== TWIN A (begin): the shore helpers, VERBATIM in HiddenHarboursFoamBufferAdvect.shader (BreakerDepositTests pins the copy) ====
+            float2 ShoreDir(float2 worldXY)
+            {
+            #if defined(_USE_HEIGHTTEX)
+                float h = max(_ShoreSampleStep, 1e-3);
+                float ex = SeabedElevation(worldXY + float2(h, 0)) - SeabedElevation(worldXY - float2(h, 0));
+                float ey = SeabedElevation(worldXY + float2(0, h)) - SeabedElevation(worldXY - float2(0, h));
+                float2 grad = float2(ex, ey);                 // points toward HIGHER (shallower) ground = shoreward
+                float g = length(grad);
+                return g > 1e-5 ? grad / g : float2(0, 0);    // flat seabed => no shore preference
+            #else
+                return float2(0, 0);                          // no height map => no shoreward bias (open water)
+            #endif
+            }
+
+            // ---- LOCAL seabed slope magnitude (m elevation per m ground) — the shore-cosmetic scale ---------
+            // The same central difference ShoreDir reads (the painted-height gradient over ±_ShoreSampleStep),
+            // kept as a MAGNITUDE: how steeply the painted beach climbs here. The fragment scales the two
+            // cosmetic DEPTH offsets (the §"organic shore fringe" wiggle and the beach swash) by this,
+            // saturated at the 1 m/m authoring reference, so their VISIBLE contour excursion equals the
+            // authored metres on any painted slope (a gentle bar no longer multiplies them into metres-wide
+            // swirl tongues — the 2026-07-23 owner defect). No height map ⇒ 0 (uniform deep has no shore to
+            // dress). READ-ONLY of the height field — never depth/clip()/_WaterLevel/the sim (P1, rule 5).
+            float SeabedSlopeMag(float2 worldXY)
+            {
+            #if defined(_USE_HEIGHTTEX)
+                float h = max(_ShoreSampleStep, 1e-3);
+                float ex = SeabedElevation(worldXY + float2(h, 0)) - SeabedElevation(worldXY - float2(h, 0));
+                float ey = SeabedElevation(worldXY + float2(0, h)) - SeabedElevation(worldXY - float2(0, h));
+                return length(float2(ex, ey)) / (2.0 * h);
+            #else
+                return 0.0;                                   // no height map => no shore, nothing to scale
+            #endif
+            }
+
+            // ==== TWIN A (end) ====
+            // ==== TWIN B (begin): the fetch march, the breaker contour, the surf march and the bore, VERBATIM in HiddenHarboursFoamBufferAdvect.shader ====
+            // ⚠️ WAVE_MAX_TRAINS is ONE HALF OF A SEAM. Its C# counterparts are
+            // WaveTrains.MaxTrains, PackedWaveField.MaxTrains and the bridge's uniform push; they
+            // move together in one commit or the hull rides a sea the shader is not drawing.
+            #define WAVE_MAX_TRAINS 8
+
+            // ==== WIND FETCH (ADR 0027 #1) — the HLSL twin of HiddenHarbours.Core.WaveFetch ==================
+            // How far the wind has blown over open water before it reaches this position: march UPWIND over the
+            // authored seabed, count how much of that reach was water, and scale the wave field's amplitude by
+            // it. Lee shores go calm, exposed shores build — visible before it is felt, and (unlike every other
+            // item on the realness pass) ALSO felt, because this envelope multiplies the field the hulls ride.
+            //
+            // ⚠️ FIXED iteration count, stated by the ADR as an implementation constraint rather than a
+            // preference: WaterShaderCompileGuardTests guards the magenta class and [unroll] over a RUNTIME
+            // bound is one of its known traps (the #96 magenta incident). The reach is tuned through the STEP
+            // LENGTH (_WaveFetchParams.y), never by marching a variable number of steps. This constant is one
+            // half of a seam — its C# counterpart is WaveFetch.MarchSteps; they move together in one commit.
+            #define FETCH_MARCH_STEPS 24
+
+            // The march's own quantization grid — ⚠️ DELIBERATELY NOT _PixelsPerUnit.
+            //
+            // Pixelize() divides by the MATERIAL property _PixelsPerUnit, which is an ART knob: the shipped
+            // Water.mat sets it 24 and the presets set 12, so the Properties-block default of 32 never ships.
+            // The C# twin cannot read a material, so if the march quantized through Pixelize the two sides
+            // would snap to grids 4-8 cm apart per step. At a hard painted coast one side's step flips
+            // wet->dry where the other's does not, the product accumulator shadows a different step count,
+            // and the DRAWN lee boundary lands on a different line than the FELT one — precisely the
+            // seen != felt split this item exists to close, reintroduced by a tuning knob.
+            //
+            // So the fetch march owns its grid, fixed at the PPU the project is actually locked to
+            // (PixelPerfectCamera.assetsPPU = 32). Tuning the art knob can no longer move the lee.
+            // This constant is one half of a seam: its C# counterpart is WaveFetch.PixelsPerUnit, pinned by
+            // MarchPixelGrid_MatchesTheShader, the FETCH_MARCH_STEPS pattern.
+            #define FETCH_MARCH_PPU 32.0
+
+            // Twin: WaveFetch.Pixelize. floor(p*ppu)/ppu on the WORLD grid, so the fetch cannot crawl under
+            // camera translation (the crawl law) and both sides march the same points.
+            float2 FetchPixelize(float2 p)
+            {
+                return floor(p * FETCH_MARCH_PPU) / FETCH_MARCH_PPU;
+            }
+
+            // Fetch -> amplitude multiplier: lerp(leeFloor, 1, fetch^exponent). Exactly the lee floor at fetch
+            // 0, exactly 1 at fetch 1 — so a fully exposed shore is untouched and the open sea stays the sea
+            // the field was tuned against. Twin: WaveFetch.Amplitude01.
+            float FetchAmplitude01(float fetch01)
+            {
+                float f = pow(max(saturate(fetch01), 1e-6), max(_WaveFetchParams.w, 0.01));
+                return lerp(saturate(_WaveFetchParams.z), 1.0, f);
+            }
+
+            // The model's own quantization (_WaveFetchParams2.y). ⚠️ DEFAULTS OFF, unlike the col.rgb layers:
+            // this envelope is not drawn, it scales GEOMETRY that already-pixelized layers draw downstream, so
+            // banding it would stair-step the surface the hull rides for no pixel-character gain. Deliberately
+            // NO dither either (unlike RippleBandValue) — a dithered amplitude would have neighbouring pixels
+            // of the sea riding different wave heights, and the C# hull twin cannot dither at all.
+            // Twin: WaveFetch.Band01.
+            float FetchBand01(float v01)
+            {
+                float bands = _WaveFetchParams2.y;
+                if (bands < 2.0) return saturate(v01);
+                float steps = bands - 1.0;
+                // ⚠️ floor(x + 0.5), NOT round(): HLSL's round() is half-away-from-zero while C#'s
+                // Mathf.Round is banker's rounding (half-to-EVEN), so an exact half-band input — which the
+                // march reaches whenever the smoothstep saturates and the fraction lands on n/24 — would
+                // pick ADJACENT bands on the two sides. Spelled identically in WaveFetch.Band01.
+                return floor(saturate(v01) * steps + 0.5) / steps;
+            }
+
+            // The finished envelope from an already-marched fetch. strength 0 returns EXACTLY 1 (the shipped
+            // passthrough); bounded to (0, 1] for any input, which is what keeps the C# watertight hull clamp
+            // a valid bound at every strength. Twin: WaveFetch.Envelope01.
+            float FetchEnvelopeFrom(float fetch01)
+            {
+                float strength = saturate(_WaveFetchParams.x);
+                if (strength <= 0.0) return 1.0;
+                return lerp(1.0, FetchAmplitude01(FetchBand01(fetch01)), strength);
+            }
+
+            // THE MARCH, written ONCE and instantiated against each stage's seabed sampler below — the same
+            // two-instantiation pattern SeabedElevation/SeabedElevationLod already uses, and for the same
+            // reason: the vertex stage has no derivatives, so it cannot call the implicit-LOD sampler.
+            //
+            // Land SHADOWS everything behind it: the accumulator is a PRODUCT of per-step wetness, not a count
+            // of wet samples, so open water on the far side of an island is not fetch for this position. That
+            // is also what keeps the loop branch-free with no early exit — the fixed [unroll] contract.
+            // The wetness gate is a smoothstep over _WaveFetchParams2.x metres of depth, not a hard cutoff, so
+            // the envelope cannot POP as the tide crosses a shoal (a discontinuity in the waves the hull rides,
+            // arriving on the tide's schedule). Sample coords go through FetchPixelize — the march's OWN grid,
+            // not the material's _PixelsPerUnit: the fetch must not crawl under camera translation (the crawl
+            // law), and the C# twin, which cannot read a material, quantizes identically so both sides march
+            // the same points regardless of how the art knob is tuned. Twin: WaveFetch.Fetch01.
+            #define FETCH_MARCH_BODY(ELEV_FN)                                                          \
+                float strength = saturate(_WaveFetchParams.x);                                         \
+                if (strength <= 0.0) return 1.0;              /* OFF: not one texture tap */           \
+                float2 upwind = _WaveFetchParams2.zw;                                                  \
+                if (dot(upwind, upwind) < 1e-8) return 1.0;   /* dead calm / unpublished */            \
+                float stepLen = max(_WaveFetchParams.y, 0.05);                                         \
+                float band    = max(_WaveFetchParams2.x, 1e-3);                                        \
+                float open = 0.0;                                                                      \
+                float blocked = 1.0;                                                                   \
+                [unroll]                                                                               \
+                for (int fi = 1; fi <= FETCH_MARCH_STEPS; fi++)   /* FIXED bound — never a variable */ \
+                {                                                                                      \
+                    float2 fp = FetchPixelize(worldXY + upwind * (stepLen * fi));                       \
+                    float fdepth = _WaterLevel - ELEV_FN(fp);                                          \
+                    blocked *= smoothstep(0.0, band, fdepth);    /* land shadows everything beyond */  \
+                    open += blocked;                                                                   \
+                }                                                                                      \
+                return FetchEnvelopeFrom(open / FETCH_MARCH_STEPS);
+
+            // FRAGMENT stage (implicit-LOD sampler).
+            float FetchEnvelope01(float2 worldXY)    { FETCH_MARCH_BODY(SeabedElevation) }
+            // VERTEX stage (explicit LOD 0 — _HeightTex has no mips, so the two read byte-identical
+            // elevations and the displaced surface rides the SAME lee the fragment draws).
+            float FetchEnvelope01Lod(float2 worldXY) { FETCH_MARCH_BODY(SeabedElevationLod) }
+
+            // ==== BREAKING WAVES (ADR 0040) — the HLSL twin ==============================================
+            // C# stays the PINNED REFERENCE (BreakerMath + BreakerContour, BreakerMathTests). Change one,
+            // change both in the same PR — the WaveMath/WaveFetch discipline. Parity is held at a visual
+            // epsilon and in ULP, never bit equality: two transcriptions of one formula cannot be made
+            // bit-identical, and pretending otherwise is how a twin test starts lying.
+            //
+            // Twin: BreakerMath.MarchSteps. FIXED, because [unroll] over a RUNTIME bound is one of the
+            // known magenta traps (WaterShaderCompileGuardTests). The reach is tuned through the STEP
+            // LENGTH (_BreakerParams.x), never by marching a variable number of steps.
+            #define SURF_MARCH_STEPS 16
+
+            // Twin: BreakerMath.DepthAtEnvelope + MidEnvelopeFor. A lee shore's smaller wave carries
+            // further in before it breaks, so the break line MOVES with the fetch envelope; the contour is
+            // solved at three envelopes and read back piecewise here. A lee floor of 1 (fetch dialled off)
+            // collapses to the single anchor, so the whole interpolation is a no-op in that case.
+            float BreakerDepthAtEnv(float3 depths, float lee, float e)
+            {
+                if (lee >= 1.0 - 1e-4) return depths.x;
+                float mid = (1.0 + lee) * 0.5;
+                if (e >= mid) return lerp(depths.y, depths.x, saturate((e - mid) / max(1.0 - mid, 1e-4)));
+                return lerp(depths.z, depths.y, saturate((e - lee) / max(mid - lee, 1e-4)));
+            }
+
+            // Twin: BreakerMath.Breaking01FromContour. The smooth break GATE — 1 where the water is
+            // shallower than the break depth, 0 out past the gate's outer edge.
+            // ⚠️ A GATE, never a scale on the whitewater age. It saturates at 1, which is correct for
+            // "is it breaking" and fatal for "how long ago did it break" — the living-wake defect, one
+            // level down. The age comes from the march below and nothing multiplies it by this.
+            float SurfBreaking01(float depth, float fetchEnv)
+            {
+                if (_BreakerOuter.w < 0.5) return 0.0;          // this sea breaks nowhere (glass, or off)
+                if (depth <= 0.0) return 0.0;                   // dry ground breaks nothing
+                float lee = _BreakerDepths.w;
+                float bd = BreakerDepthAtEnv(_BreakerDepths.xyz, lee, fetchEnv);
+                if (bd <= 0.0) return 0.0;
+                float od = max(BreakerDepthAtEnv(_BreakerOuter.xyz, lee, fetchEnv), bd + 1e-3);
+                return 1.0 - smoothstep(bd, od, depth);        // shallower = more broken
+            }
+
+            // Twin: BreakerMath.MetersSinceBreakAlong. March back UPWAVE accumulating a running PRODUCT
+            // of the gate — the WaveFetch land-shadow idiom, so the moment the march steps out of breaking
+            // water nothing beyond it counts and a shorebreak never inherits an outer bar's dead foam
+            // across a lagoon. Branch-free, which is what keeps the fixed [unroll] with no early exit.
+            //
+            // ⚠️ Linear in position with no clamp, threshold or posterize before the decay consumes it.
+            // Deep inside the surf zone every gate is exactly 1, so the sum would sit on the march grid —
+            // what supplies the sub-step fraction is the PARTIAL gate at the surf-zone boundary, which
+            // exists only because the gate is a smoothstep. Measured, not argued:
+            // BreakerWhitewaterAgeMeasurementTests holds 128 distinct ages against a sabotage arm's 29.
+            //
+            // Coords go through FetchPixelize — the march's own world grid (FETCH_MARCH_PPU), not the
+            // material's _PixelsPerUnit — so the surf cannot crawl under camera translation and the C#
+            // twin, which cannot read a material, marches the identical points.
+            // Twin: BreakerMath.MarchSinceBreakAlong (ADR 0040 rev 3). ONE loop, BOTH integrals: the metres
+            // (Σ contiguous·Δs, exactly the sum this march has always returned) and the SECONDS the bore has
+            // been running (Σ contiguous·Δs/√(g·dᵢ), the bore speed at each tap's own depth). A second march
+            // was refused; the partial gate at the surf-zone boundary supplies the sub-step fraction to both
+            // — and for the clock that is what keeps a bore front off the 2 m grid (BreakerBoreTests: worst
+            // neighbour increment 1.04x the smooth Δs/√(g·d) shipped, 4.22x under a hard gate).
+            void SurfMarch(float2 worldXY, float2 travelDir, float fetchEnv, out float ageM, out float travelS)
+            {
+                ageM = 0.0;
+                travelS = 0.0;
+                if (_BreakerOuter.w < 0.5) return;              // breaks nowhere: not one tap
+                float2 back = -travelDir;
+                if (dot(back, back) < 1e-12) return;            // no heading, no bore
+                back = normalize(back);
+                float stepLen = max(_BreakerParams.x, 0.05);
+                float g = max(_BreakerParams.z, 0.0);
+                float contiguous = 1.0;
+                float age = 0.0;
+                float seconds = 0.0;
+                [unroll]
+                for (int si = 1; si <= SURF_MARCH_STEPS; si++)  // FIXED bound — never a variable
+                {
+                    float2 sp = FetchPixelize(worldXY + back * (stepLen * si));
+                    float sdepth = _WaterLevel - SeabedElevation(sp);
+                    contiguous *= SurfBreaking01(sdepth, fetchEnv);
+                    age += contiguous;
+                    float bore = sqrt(g * max(sdepth, 0.02));   // BreakerMath.MinDepthMeters floor
+                    seconds += bore > 1e-6 ? contiguous / bore : 0.0;
+                }
+                ageM = stepLen * age;
+                travelS = stepLen * seconds;
+            }
+
+            // Twin: BreakerMath.MetersSinceBreakAlong — the metres alone, through the same loop.
+            float SurfAgeMeters(float2 worldXY, float2 travelDir, float fetchEnv)
+            {
+                float ageM, travelS;
+                SurfMarch(worldXY, travelDir, fetchEnv, ageM, travelS);
+                return ageM;
+            }
+
+            // Twin: BreakerMath.WhitewaterEnergy01. exp(-t/tau) on a REAL clock: the age is the marched
+            // DISTANCE past the break line divided by the bore's own shallow-water speed sqrt(g*d). The
+            // distance is geometry and the speed is physics, so retuning tau moves the whole streak
+            // instead of choosing which flat shade it draws in.
+            float SurfWhitewater01(float ageMeters, float depth)
+            {
+                float d = max(depth, 0.02);                     // BreakerMath.MinDepthMeters
+                float bore = sqrt(max(_BreakerParams.z, 0.0) * d);
+                if (bore <= 1e-6) return 0.0;
+                float tau = max(_BreakerParams.y, 1e-3);
+                return exp(-(max(ageMeters, 0.0) / bore) / tau);
+            }
+
+            // Twin: BreakerMath.WhitewaterByTravel01 - the whitewater by the seconds the bore has actually
+            // RUN (the march's travel integral), not by its metres over the LOCAL speed, which at the wet
+            // edge is near zero and pronounces every wash dead before the sand. The run-up rides this;
+            // the drawn sheet blends toward it only as the run-up dial comes up (today's sheet at 0).
+            float SurfWhitewaterByTravel01(float travelS)
+            {
+                float tau = max(_BreakerParams.y, 1e-3);
+                return exp(-max(travelS, 0.0) / tau);
+            }
+
+            // ==== THE BORE (ADR 0040 rev 3): one crest at a time — twins of BreakerMath's bore functions ====
+            // Nothing here is accumulated, reconstructed or saved: the bore's phase is the field's PUBLISHED
+            // phase at the break line, read FORWARD at minus the travel time the march just integrated
+            // (sampling the published trains at a negative time is legal — the animator bakes the travel
+            // into _WavePhases and the shader samples at t = 0, so t = -tau is the same field tau seconds
+            // ago). No _Time anywhere in it: the bore advances because the bridge advances the phases.
+
+            // The dominant train's angular frequency, from the packed wave number and the field's gravity:
+            // omega = k * c = k * sqrt(g/k) = sqrt(g*k) (the deep-water dispersion relation WaveTrain's
+            // constructor carries; the period is conserved through shoaling, so this is the bore's beat on
+            // every depth). Twin: 2*pi / BreakerMath.PeriodSeconds.
+            float SurfBoreOmega()
+            {
+                float4 trains[WAVE_MAX_TRAINS] = { _WaveTrain0, _WaveTrain1, _WaveTrain2, _WaveTrain3,
+                                                   _WaveTrain4, _WaveTrain5, _WaveTrain6, _WaveTrain7 };
+                int dominant = clamp((int)(_WaveFieldParams.w + 0.5), 0, WAVE_MAX_TRAINS - 1);
+                float k = max(trains[dominant].z, 1e-6);
+                return sqrt(max(_BreakerParams.z, 0.0) * k);
+            }
+
+            // Twin: BreakerMath.BorePhaseDegrees(train, breakLinePoint, travelSeconds, freqScale) — degrees
+            // in [0, 360). The published phase FALLS with time (theta = k*(d*pos) - omega*t + phi), so the
+            // phase tau seconds AGO is theta + omega*tau. 90 degrees is the crest — the bore's FRONT — because
+            // the field's profile is (1 + sin theta)/2. freqScale is the DRAWN scale (_OceanSwellScale /
+            // 0.025), applied to the position exactly as the C# does, so the bore leaves the break line with
+            // the crest the eye sees arrive there.
+            float SurfBorePhaseDeg(float2 breakLinePoint, float travelS, float freqScale)
+            {
+                float4 trains[WAVE_MAX_TRAINS] = { _WaveTrain0, _WaveTrain1, _WaveTrain2, _WaveTrain3,
+                                                   _WaveTrain4, _WaveTrain5, _WaveTrain6, _WaveTrain7 };
+                float phis[WAVE_MAX_TRAINS] = { _WavePhases.x,  _WavePhases.y,  _WavePhases.z,  _WavePhases.w,
+                                                _WavePhases2.x, _WavePhases2.y, _WavePhases2.z, _WavePhases2.w };
+                int dominant = clamp((int)(_WaveFieldParams.w + 0.5), 0, WAVE_MAX_TRAINS - 1);
+                float k = trains[dominant].z;
+                float fs = max(freqScale, 1e-3);
+                float theta = k * dot(trains[dominant].xy, breakLinePoint * fs) + phis[dominant]
+                            + SurfBoreOmega() * max(travelS, 0.0);
+                float deg = theta * 57.29577951;
+                return deg - 360.0 * floor(deg / 360.0);
+            }
+
+            // Twin: BreakerMath.BorePulse01 — a SMOOTH periodic hump peaking at the front (90 degrees),
+            // ((1 + sin theta)/2)^sharpness. sharpness <= 0 returns exactly 1: no pulse, the steady state.
+            float SurfBorePulse01(float phaseDeg, float sharpness)
+            {
+                if (sharpness <= 0.0) return 1.0;
+                float s = (sin(phaseDeg * 0.01745329252) + 1.0) * 0.5;
+                return pow(saturate(s), sharpness);
+            }
+
+            // Twin: BreakerMath.SecondsSinceTheCrest — how long ago the crest that owns this bore passed
+            // the break line, counted back from the bore's own birth: Repeat(90 - phase, 360)/360 * T.
+            float SurfSecondsSinceCrest(float phaseDeg, float periodS)
+            {
+                float d = 90.0 - phaseDeg;
+                d = d - 360.0 * floor(d / 360.0);
+                return d / 360.0 * max(periodS, 0.0);
+            }
+
+            // Twin: BreakerMath.SignedSecondsFromCrest - positive behind the front, negative ahead of it,
+            // in (-T/2, T/2]: the coordinate the travelling anatomy measures the lip, barrel and pocket on.
+            float SurfSignedSecondsFromCrest(float phaseDeg, float periodS)
+            {
+                float d = 90.0 - phaseDeg + 180.0;
+                d = d - 360.0 * floor(d / 360.0) - 180.0;
+                return d / 360.0 * max(periodS, 0.0);
+            }
+
+            // Twin: BreakerMath.BoreSheet01. The SHEET is born at the front and ages behind it on the
+            // whitewater's own seconds (_BreakerParams.y) - one decay law for "how far" and "how long ago".
+            float SurfBoreSheet01(float phaseDeg, float periodS)
+            {
+                float tau = max(_BreakerParams.y, 1e-3);
+                return exp(-SurfSecondsSinceCrest(phaseDeg, periodS) / tau);
+            }
+
+            // Twin: WaveMath.Sample(pos*fs, -timeBack, field).CrestFactor — the field's crest factor at a
+            // position TIME-SHIFTED into the past. The same eight-train unrolled loop WaveFieldSample runs
+            // (height + crest factor only, no slope), with each train's phase advanced by its own omega =
+            // sqrt(g*k) (unscaled k: the drawn scale changes the wavelength on screen, never the beat).
+            // ⚠ COST: this is a tenth train-loop call site per pixel (WaveFieldCostReport counts it), paid
+            // only where the surf is alive and _BreakerBore.y > 0.
+            float WaveFieldSampleAt(float2 worldXY, float freqScale, float fetchEnv, float timeBack)
+            {
+                float4 trains[WAVE_MAX_TRAINS] = { _WaveTrain0, _WaveTrain1, _WaveTrain2, _WaveTrain3,
+                                                   _WaveTrain4, _WaveTrain5, _WaveTrain6, _WaveTrain7 };
+                float phis[WAVE_MAX_TRAINS] = { _WavePhases.x,  _WavePhases.y,  _WavePhases.z,  _WavePhases.w,
+                                                _WavePhases2.x, _WavePhases2.y, _WavePhases2.z, _WavePhases2.w };
+                int count = (int)(_WaveFieldParams.x + 0.5);
+                float p = max(_WaveFieldParams.y, 1.0);
+                // Twin: BreakerMath.BoreBirthEnergy01 - the height at the crest's passage against the
+                // DOMINANT's own amplitude (a total-normalized crest factor can never birth a full bore
+                // in a many-train sea; measured ~0.1 on the shot sea).
+                int dominant = clamp((int)(_WaveFieldParams.w + 0.5), 0, WAVE_MAX_TRAINS - 1);
+                float dominantAmp = max(trains[dominant].w, 1e-6);
+                float fs = max(freqScale, 1e-3);
+                float g = max(_BreakerParams.z, 0.0);
+                float height = 0.0;
+                [unroll]
+                for (int i = 0; i < WAVE_MAX_TRAINS; i++)          // FIXED bound; the count masks inside
+                {
+                    float amplitude = trains[i].w;
+                    if (i < count && amplitude > 0.0)
+                    {
+                        float k = trains[i].z;
+                        float theta = k * fs * dot(trains[i].xy, worldXY) + phis[i] + sqrt(g * k) * timeBack;
+                        float s = (sin(theta) + 1.0) * 0.5;
+                        height += amplitude * (2.0 * pow(max(s, 1e-6), p) - 1.0);
+                    }
+                }
+                height *= saturate(fetchEnv);
+                return saturate(height / dominantAmp);
+            }
+
+            // Twin: BreakerMath.BoreBirthEnergy01 — how big a crest this bore was born from: the field's
+            // crest factor at the break line when THAT crest passed it (the bore's birth, minus the time
+            // since its crest), blended toward 1 by the set strength. A lone train reads exactly 1.
+            float SurfBoreBirth01(float2 breakLinePoint, float travelS, float phaseDeg, float periodS,
+                                  float freqScale, float fetchEnv)
+            {
+                float setStrength = saturate(_BreakerBore.y);
+                if (setStrength <= 0.0) return 1.0;
+                float back = max(travelS, 0.0) + SurfSecondsSinceCrest(phaseDeg, periodS);
+                float crest = saturate(WaveFieldSampleAt(breakLinePoint, freqScale, fetchEnv, back));
+                return lerp(1.0, crest, setStrength);
+            }
+
+            // Twin: BreakerMath.RunUpMeters — Hunt (1959): R = coefficient * xi * H, xi clamped at the law's
+            // measured 2.3, capped at the drawn-edge ceiling, scaled by what is left of the bore and pulsing
+            // with it. Metres of LEVEL, applied to the same local foam-only depth the swash moves.
+            float SurfRunUpMeters(float standingAtBreak, float alive, float xi, float bore)
+            {
+                float coefficient = max(_BreakerBore.z, 0.0);
+                float cap = max(_BreakerBore.w, 0.0);
+                if (coefficient <= 0.0 || cap <= 0.0) return 0.0;
+                float x = clamp(xi, 0.0, 2.3);                  // BreakerMath.HuntIribarrenLimit
+                float reach = coefficient * x * max(standingAtBreak, 0.0);
+                return min(cap, reach) * saturate(alive) * saturate(bore);
+            }
+
+            // Twin: BreakerMath.BoreFrontSlope — the derivative of the bore's own height profile
+            // H * pulse(psi) along the travel direction: d pulse/d psi = p*s^(p-1)*cos(psi)/2 with
+            // s = (1 + sin psi)/2, and the phase advances along the path at omega / sqrt(g*d) — the clock's
+            // own rate. This is the FACE the relief light and the sun's shade could not see before (register
+            // row 1: "the light cannot see a crash"). Metres of rise per metre; 0 with no pulse.
+            float SurfFrontSlope(float phaseDeg, float sharpness, float frontHeightM, float boreSpeed, float omega)
+            {
+                if (sharpness <= 0.0 || frontHeightM <= 0.0 || boreSpeed <= 1e-6) return 0.0;
+                float rad = phaseDeg * 0.01745329252;
+                float s = (sin(rad) + 1.0) * 0.5;
+                if (s <= 1e-6) return 0.0;
+                float dPulse = sharpness * pow(s, sharpness - 1.0) * cos(rad) * 0.5;
+                return frontHeightM * dPulse * (omega / boreSpeed);
+            }
+
+            // ==== TWIN B (end) ====
 
             // Distance from a point to a segment — the capsule that keeps a fast boat's trail
             // continuous instead of a row of dots.
@@ -157,6 +628,42 @@ Shader "Hidden/HiddenHarbours/FoamBufferAdvect"
                     // keeps the mark inside the band this hull actually swept.
                     float churned = step(1e-6, shape.z) * step(1e-3, falloff);
                     fresh = max(fresh, churned);
+                }
+
+
+                // ---- 4. THE BORE'S DEPOSIT (ADR 0040 rev 3) -------------------------------------------
+                // The cheapest gate first, then the depth (one seabed tap), then "deeper than any outer
+                // depth is not surf on any fetch" before the fetch march is paid for.
+                float depositStrength = _HHSurfDeposit.x;
+                if (depositStrength > 0.001 && _BreakerOuter.w > 0.5 && _HHSeabedRange.w > 0.5)
+                {
+                    float depth = _WaterLevel - SeabedElevation(worldXY);
+                    float outerMax = max(_BreakerOuter.x, max(_BreakerOuter.y, _BreakerOuter.z));
+                    if (depth > 0.0 && depth <= outerMax)
+                    {
+                        float fetchEnv = FetchEnvelope01(worldXY);
+                        float breaking = SurfBreaking01(depth, fetchEnv);
+                        float2 dir = ShoreDir(worldXY);
+                        if (breaking > 0.002 && dot(dir, dir) > 1e-6)
+                        {
+                            float ageM, travelS;
+                            SurfMarch(worldXY, dir, fetchEnv, ageM, travelS);
+                            float alive = SurfWhitewater01(ageM, depth);
+                            float fs = max(_HHSurfDeposit.y, 1e-4);
+                            float2 breakLinePt = worldXY - dir * ageM;
+                            float omega = SurfBoreOmega();
+                            float periodS = omega > 1e-6 ? 6.2831853 / omega : 0.0;
+                            float phase = SurfBorePhaseDeg(breakLinePt, travelS, fs);
+                            float birth = SurfBoreBirth01(breakLinePt, travelS, phase, periodS, fs, fetchEnv);
+                            float bore = SurfBorePulse01(phase, _BreakerBore.x) * birth;
+                            // Twin: BreakerMath.SurfAt — Breaking01 * Whitewater01 * Bore01.
+                            float front = breaking * alive * bore;
+                            foam += front * depositStrength * SURF_DEPOSIT_RATE * max(_HHSurfDeposit.z, 0.0);
+                            // The freshness GATE: the front passing NOW marks the clock, exactly as a
+                            // hull's churn does — a max, never an add.
+                            fresh = max(fresh, step(0.5, front));
+                        }
+                    }
                 }
 
                 return float4(saturate(foam), saturate(fresh), 0, 1);

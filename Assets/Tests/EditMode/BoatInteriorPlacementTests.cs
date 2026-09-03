@@ -113,6 +113,15 @@ namespace HiddenHarbours.Tests.EditMode
             => def == null ? null : AssetDatabase.LoadAssetAtPath<BoatInteriorCellsDef>(
                 $"{CellsFolder}/{BoatInteriorCellsDef.FileNameFor(def.Id)}.asset");
 
+        /// <summary>ADR 0041: is this hull's room geometry? Read through the SAME predicate the installer
+        /// reads — the bake's own output on her hull mesh def — so this suite and the runtime cannot
+        /// disagree about which hulls still ship cells.</summary>
+        private static bool RoomIsGeometry(string stem)
+        {
+            BoatVisualDef visual = Visual(stem);
+            return visual != null && visual.HullMesh != null && visual.HullMesh.HasMeshInterior();
+        }
+
         // =====================================================================================
         //  COVERAGE — every cleared hull, and only cleared hulls
         // =====================================================================================
@@ -204,6 +213,7 @@ namespace HiddenHarbours.Tests.EditMode
                 BoatVisualDef visual = Visual(stem);
                 if (visual == null || visual.Interior == null) continue;
 
+                if (RoomIsGeometry(stem)) continue;   // ADR 0041: her room is in the hull mesh; no cells exist
                 BoatInteriorCellsDef cells = Cells(def);
                 if (cells == null)
                 {
@@ -265,6 +275,7 @@ namespace HiddenHarbours.Tests.EditMode
             {
                 BoatVisualDef visual = Visual(stem);
                 if (visual == null || visual.Interior == null) continue;
+                if (RoomIsGeometry(stem)) continue;   // ADR 0041: her room is in the hull mesh; no cells exist
                 BoatInteriorCellsDef cells = Cells(def);
                 if (cells == null || cells.CellRowForLevel == null || def.Levels == null) continue;
 
@@ -343,6 +354,7 @@ namespace HiddenHarbours.Tests.EditMode
             var missing = new List<string>();
             foreach ((string stem, BoatInteriorDef def) in Interiors())
             {
+                if (RoomIsGeometry(stem)) continue;   // ADR 0041: her room is in the hull mesh; no cells exist
                 BoatInteriorCellsDef cells = Cells(def);
                 if (cells == null) { missing.Add($"{stem}: no cells asset"); continue; }
                 if (!string.Equals(cells.InteriorDefId, def.Id, StringComparison.Ordinal))
@@ -376,6 +388,7 @@ namespace HiddenHarbours.Tests.EditMode
 
             foreach ((string stem, BoatInteriorDef def) in Interiors())
             {
+                if (RoomIsGeometry(stem)) continue;   // ADR 0041: her room is in the hull mesh; no cells exist
                 BoatInteriorCellsDef cells = Cells(def);
                 if (cells == null) continue;
                 if (cells.ResidentMegabytes > worst) { worst = cells.ResidentMegabytes; worstStem = stem; }
@@ -394,6 +407,47 @@ namespace HiddenHarbours.Tests.EditMode
         // =====================================================================================
         //  THE THRESHOLD — the way in is somewhere you could actually stand
         // =====================================================================================
+
+        // =====================================================================================
+        //  ADR 0041 — RETIREMENT: a converted hull ships no sprite room at all
+        // =====================================================================================
+
+        /// <summary>
+        /// A hull whose bake appended her room to the hull mesh must ship NO cells asset and NO sheet
+        /// page, and must STILL link her def (levels, routes, the threshold, the door and the cutaway
+        /// all read it). Measured on main 2026-09-01 before this guard existed: both converted hulls
+        /// drew their cabin from two sources below decks.
+        /// </summary>
+        [Test]
+        public void AConvertedHullShipsNoCellsAndNoSheet_AndStillLinksHerDef()
+        {
+            var wrong = new List<string>();
+            int converted = 0;
+            string pages = "Assets/_Project/Art/Boats/Interiors";
+
+            foreach ((string stem, BoatInteriorDef def) in Interiors())
+            {
+                if (!RoomIsGeometry(stem)) continue;
+                converted++;
+
+                if (Cells(def) != null)
+                    wrong.Add($"{stem}: a cells asset is still under Resources — she would load it at " +
+                              "the door's cue and draw her cabin twice");
+
+                string[] onDisk = Directory.GetFiles(pages, stem + "Interior*.png");
+                if (onDisk.Length > 0)
+                    wrong.Add($"{stem}: {onDisk.Length} sheet page(s) still on disk: " +
+                              string.Join(", ", onDisk.Select(Path.GetFileName)));
+
+                BoatVisualDef visual = Visual(stem);
+                if (visual.Interior != def)
+                    wrong.Add($"{stem}: her visual no longer links her def — the walker, the door and " +
+                              "the cutaway all read it; only the PICTURE changed source");
+            }
+
+            Assert.Greater(converted, 0, "no converted hull at all — this would pass vacuously");
+            Assert.IsEmpty(wrong, string.Join("\n  ", wrong));
+        }
 
         [Test]
         public void EveryDoorSillStandsOnOneOfHerOwnLevels()

@@ -10,3 +10,11 @@ using System.Runtime.CompilerServices;
 // and flat passes wear ONE grade by rendering both sides of the A/B through the same registry
 // seam — the identical EditMode wiring the hull-waterline test uses, from the Art test assembly.
 [assembly: InternalsVisibleTo("HiddenHarbours.Tests.Art.EditMode")]
+// The drifting-seaweed fixture steps the presenter one deterministic tick at a time (an explicit
+// game-time delta and slow-tick flag instead of the wall clock) and reads its bed state back —
+// the seam a 60 s scripted A/B against round 1 needs. Tests only.
+[assembly: InternalsVisibleTo("HiddenHarbours.Tests.PlayMode")]
+// The drifting-seaweed fixture steps the presenter one deterministic tick at a time (an explicit
+// game-time delta and slow-tick flag instead of the wall clock) and reads its bed state back —
+// the seam a 60 s scripted A/B against round 1 needs. Tests only.
+[assembly: InternalsVisibleTo("HiddenHarbours.Tests.PlayMode")]

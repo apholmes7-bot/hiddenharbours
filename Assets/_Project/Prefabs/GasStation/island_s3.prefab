@@ -32,7 +32,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 643906153202376182}
-  - {fileID: 7906038421923430529}
+  - {fileID: 8553154090725213685}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &7083217000856302651
@@ -113,7 +113,7 @@ MonoBehaviour:
   _minOrder: 2
   _maxOrder: 2402
   _pivotYOffset: 0
---- !u!1 &2760898059957508539
+--- !u!1 &2000775406957083578
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -121,8 +121,8 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 7906038421923430529}
-  - component: {fileID: 2617963218885677661}
+  - component: {fileID: 8553154090725213685}
+  - component: {fileID: 923401378772824290}
   m_Layer: 0
   m_Name: blocker_bollard
   m_TagString: Untagged
@@ -130,13 +130,13 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &7906038421923430529
+--- !u!4 &8553154090725213685
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2760898059957508539}
+  m_GameObject: {fileID: 2000775406957083578}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -145,13 +145,13 @@ Transform:
   m_Children: []
   m_Father: {fileID: 5143165681746079167}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!58 &2617963218885677661
-CircleCollider2D:
+--- !u!60 &923401378772824290
+PolygonCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2760898059957508539}
+  m_GameObject: {fileID: 2000775406957083578}
   m_Enabled: 1
   serializedVersion: 3
   m_Density: 1
@@ -179,8 +179,35 @@ CircleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 5.24, y: 0}
-  m_Radius: 0.11
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Points:
+    m_Paths:
+    - - {x: 5.35, y: 0}
+      - {x: 5.3416266, y: 0.027058259}
+      - {x: 5.3177814, y: 0.04999714}
+      - {x: 5.282095, y: 0.06532441}
+      - {x: 5.24, y: 0.070706636}
+      - {x: 5.1979046, y: 0.06532441}
+      - {x: 5.162218, y: 0.04999714}
+      - {x: 5.138373, y: 0.027058247}
+      - {x: 5.1299996, y: -0.0000000061813705}
+      - {x: 5.138373, y: -0.027058257}
+      - {x: 5.162218, y: -0.049997147}
+      - {x: 5.1979046, y: -0.06532442}
+      - {x: 5.24, y: -0.070706636}
+      - {x: 5.282095, y: -0.0653244}
+      - {x: 5.3177814, y: -0.04999712}
+      - {x: 5.3416266, y: -0.027058257}
+  m_UseDelaunayMesh: 1
 --- !u!1 &3865605924693929605
 GameObject:
   m_ObjectHideFlags: 0
@@ -190,7 +217,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 643906153202376182}
-  - component: {fileID: 345623902728311745}
+  - component: {fileID: 5521029190280294957}
   m_Layer: 0
   m_Name: blocker_bollard
   m_TagString: Untagged
@@ -213,8 +240,8 @@ Transform:
   m_Children: []
   m_Father: {fileID: 5143165681746079167}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!58 &345623902728311745
-CircleCollider2D:
+--- !u!60 &5521029190280294957
+PolygonCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -247,5 +274,32 @@ CircleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: -5.24, y: 0}
-  m_Radius: 0.11
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Points:
+    m_Paths:
+    - - {x: -5.1299996, y: 0}
+      - {x: -5.138373, y: 0.027058259}
+      - {x: -5.162218, y: 0.04999714}
+      - {x: -5.1979046, y: 0.06532441}
+      - {x: -5.24, y: 0.070706636}
+      - {x: -5.282095, y: 0.06532441}
+      - {x: -5.3177814, y: 0.04999714}
+      - {x: -5.3416266, y: 0.027058247}
+      - {x: -5.35, y: -0.0000000061813705}
+      - {x: -5.3416266, y: -0.027058257}
+      - {x: -5.3177814, y: -0.049997147}
+      - {x: -5.282095, y: -0.06532442}
+      - {x: -5.24, y: -0.070706636}
+      - {x: -5.1979046, y: -0.0653244}
+      - {x: -5.162218, y: -0.04999712}
+      - {x: -5.138373, y: -0.027058257}
+  m_UseDelaunayMesh: 1

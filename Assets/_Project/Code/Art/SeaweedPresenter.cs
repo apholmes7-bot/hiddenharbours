@@ -63,12 +63,19 @@ namespace HiddenHarbours.Art
         private SeaweedLibrary _library;
         private readonly List<BedRuntime> _beds = new();
 
-        // The player's placed buoys (positions off the Core signals) — the snag target set. The exact
-        // AmbientFleetPresenter read: dictionary for identity, packed parallel buffers for the math.
+        // The snag-target set: the player's placed buoys (positions off the Core signals — the exact
+        // AmbientFleetPresenter read) merged with whatever else is in the water with a line (the Core
+        // SnagTargets registry: the NPC fleet's buoys and lying-to hulls, radius = a hull's half-beam).
+        // Dictionary for the player's identity, packed parallel buffers for the math, ids for the
+        // "is it still there?" check. Rebuilt when the player's set changes and, on the slow tick, when
+        // the registry's version moved — never per frame.
         private readonly Dictionary<string, Vector2> _playerBuoys = new();
-        private Vector2[] _buoyPositions = new Vector2[8];
-        private string[] _buoyIds = new string[8];
-        private int _buoyCount;
+        private Vector2[] _targetPositions = new Vector2[8];
+        private float[] _targetRadii = new float[8];
+        private string[] _targetIds = new string[8];
+        private int _targetCount;
+        private bool _anyTargetRadius;
+        private int _targetsSeenVersion = -1;
 
         private float _nextGateCheck;
         private float _nextSlowTick;
@@ -119,42 +126,79 @@ namespace HiddenHarbours.Art
         {
             if (string.IsNullOrEmpty(e.InstanceId)) return;
             _playerBuoys[e.InstanceId] = new Vector2(e.PosX, e.PosY);
-            RebuildBuoyBuffer();
+            RebuildTargetBuffer();
         }
 
         private void OnTrapRemoved(TrapRemoved e)
         {
             if (string.IsNullOrEmpty(e.InstanceId) || !_playerBuoys.Remove(e.InstanceId)) return;
-            RebuildBuoyBuffer();
+            RebuildTargetBuffer();
+            ReleaseSnaggedOn(e.InstanceId);
+        }
 
-            // The haul frees the wrack: anything fouled on that line goes back adrift where it lay.
+        /// <summary>The haul frees the wrack: anything fouled on that line goes back adrift where it lay
+        /// (a hooked clump from the pivot it hangs at).</summary>
+        private void ReleaseSnaggedOn(string id)
+        {
             for (int b = 0; b < _beds.Count; b++)
             {
                 var bed = _beds[b];
                 for (int i = 0; i < bed.SnagId.Length; i++)
                 {
-                    if (bed.SnagId[i] != e.InstanceId) continue;
+                    if (bed.SnagId[i] != id) continue;
                     bed.SnagId[i] = null;
+                    bed.Hooked[i] = false;
                     if (bed.State[i] == SeaweedMath.StateSnagged) bed.State[i] = SeaweedMath.StateDrifting;
                 }
             }
         }
 
-        private void RebuildBuoyBuffer()
+        /// <summary>Is the thing a piece is fouled on still in the water — the player's buoy, or an
+        /// entry the fleet still publishes?</summary>
+        private bool TargetExists(string id)
+            => id != null && (_playerBuoys.ContainsKey(id) || SnagTargets.TryGet(id, out _));
+
+        /// <summary>Repack the target buffers: the player's buoys first (radius 0 — a line), then the
+        /// Core registry's entries. Called on a player change and on a slow tick that saw the registry's
+        /// version move; never per frame.</summary>
+        private void RebuildTargetBuffer()
         {
-            if (_buoyPositions.Length < _playerBuoys.Count)
+            IReadOnlyList<SnagTarget> live = SnagTargets.Active;
+            int need = _playerBuoys.Count + live.Count;
+            if (_targetPositions.Length < need)
             {
-                int n = Mathf.NextPowerOfTwo(_playerBuoys.Count);
-                _buoyPositions = new Vector2[n];
-                _buoyIds = new string[n];
+                int n = Mathf.NextPowerOfTwo(need);
+                _targetPositions = new Vector2[n];
+                _targetRadii = new float[n];
+                _targetIds = new string[n];
             }
-            _buoyCount = 0;
+            _targetCount = 0;
+            _anyTargetRadius = false;
             foreach (var kv in _playerBuoys)
             {
-                _buoyIds[_buoyCount] = kv.Key;
-                _buoyPositions[_buoyCount++] = kv.Value;
+                _targetIds[_targetCount] = kv.Key;
+                _targetRadii[_targetCount] = 0f;
+                _targetPositions[_targetCount++] = kv.Value;
             }
+            for (int i = 0; i < live.Count; i++)
+            {
+                SnagTarget t = live[i];
+                if (_playerBuoys.ContainsKey(t.Id)) continue;      // the player's own id wins
+                _targetIds[_targetCount] = t.Id;
+                _targetRadii[_targetCount] = t.RadiusMeters;
+                _targetPositions[_targetCount++] = t.Position;
+                _anyTargetRadius |= t.RadiusMeters > 0f;
+            }
+            _targetsSeenVersion = SnagTargets.Version;
         }
+
+        /// <summary>Nearest snag target within <paramref name="reach"/> of <paramref name="pos"/>, or −1:
+        /// the round-1 squared-distance test while every target is a bare line (the byte-identical path),
+        /// the rim-aware one once a hull is in the set.</summary>
+        private int NearestTarget(Vector2 pos, float reach)
+            => _anyTargetRadius
+                ? SeaweedMath.NearestWithin(pos, _targetPositions, _targetRadii, _targetCount, reach)
+                : SeaweedMath.NearestWithin(pos, _targetPositions, _targetCount, reach);
 
         // ---- drive ---------------------------------------------------------------------------------
 
@@ -171,10 +215,7 @@ namespace HiddenHarbours.Art
             var clock = GameServices.Clock;
             var env = GameServices.Environment;
             if (clock == null || env == null) return;
-
-            bool anyActive = false;
-            for (int i = 0; i < _beds.Count; i++) anyActive |= _beds[i].Active;
-            if (!anyActive) { _hasLastTime = false; return; }
+            if (!AnyBedActive()) { _hasLastTime = false; return; }
 
             // Game-time delta (the BoatWaveMotion pattern): a paused clock freezes the sea and the weed.
             double now = clock.TotalSeconds;
@@ -183,11 +224,32 @@ namespace HiddenHarbours.Art
             _hasLastTime = true;
 
             bool slowTick = Time.unscaledTime >= _nextSlowTick;
+            if (slowTick) _nextSlowTick = Time.unscaledTime + SlowTickSeconds;
+
+            Drive(env, now, dt, slowTick);
+        }
+
+        private bool AnyBedActive()
+        {
+            for (int i = 0; i < _beds.Count; i++)
+                if (_beds[i].Active) return true;
+            return false;
+        }
+
+        /// <summary>
+        /// One drive step over every active bed: the slow-tick terrain refresh, ONE animator tick on the
+        /// shared field, then the per-bed slow tick and per-frame ride. Split from <see cref="Update"/>
+        /// so the two clocks the presenter reads — game time for the sea, wall time for the cadences —
+        /// arrive as arguments, which is what lets a fixture step it deterministically
+        /// (<see cref="StepForTests"/>) while play keeps the exact ordering it always had.
+        /// </summary>
+        private void Drive(IEnvironmentService env, double now, float dt, bool slowTick)
+        {
             if (slowTick)
             {
-                _nextSlowTick = Time.unscaledTime + SlowTickSeconds;
                 _tickTerrain = GameServices.TidalTerrain;
                 _tickWaterLevel = env.WaterLevelAt(now);
+                if (SnagTargets.Version != _targetsSeenVersion) RebuildTargetBuffer();   // the fleet moved its gear
             }
 
             EnvironmentSample sample = env.Sample();
@@ -277,6 +339,13 @@ namespace HiddenHarbours.Art
                 Renderers = new SpriteRenderer[n],
                 AbsorbedBy = new int[n],
                 ArtKey = new int[n],
+                ArtIndex = new int[n],
+                Drift = new Vector2[n],
+                Hooked = new bool[n],
+                HangRotDeg = new float[n],
+                SnagPoint = new Vector2[n],
+                SnagAnchorIndex = new int[n],
+                NoSnagUntil = new double[n],
             };
             bed.SpeciesMask = def.WeedArt != null ? def.WeedArt.ResolveSpeciesMask(def.SpeciesFilter) : null;
 
@@ -336,7 +405,7 @@ namespace HiddenHarbours.Art
 
                 float depth = waterLevel - (terrain != null ? terrain.ElevationAt(p) : float.NegativeInfinity);
                 if (terrain != null && depth < def.MinSpawnDepthMeters) continue;
-                if (SeaweedMath.NearestWithin(p, _buoyPositions, _buoyCount, def.BuoySnagRadiusMeters) >= 0) continue;
+                if (NearestTarget(p, def.BuoySnagRadiusMeters) >= 0) continue;   // snagging is for drifters
 
                 int key = (int)bed.Seed + i * 8191 + bed.SpawnCounter;
                 var palette = def.Palette != null && def.Palette.Length > 0 ? def.Palette : null;
@@ -348,6 +417,12 @@ namespace HiddenHarbours.Art
                 bed.SnagUntil[i] = 0.0;
                 bed.BaseRotDeg[i] = AmbientParticleMath.Hash01(key, 11) * 360f;
                 bed.ArtKey[i] = key;
+                bed.ArtIndex[i] = -1;
+                bed.Drift[i] = Vector2.zero;
+                bed.Hooked[i] = false;
+                bed.HangRotDeg[i] = 0f;
+                bed.SnagAnchorIndex[i] = 0;
+                bed.NoSnagUntil[i] = 0.0;
 
                 // Painted art rides WHITE — the palette is for the greybox blob and would mud the
                 // art director's own ramps. See SeaweedMath.PieceTint for why, and its tests.
@@ -377,11 +452,13 @@ namespace HiddenHarbours.Art
                         break;
 
                     case SeaweedMath.StateSnagged:
-                        // The buoy vanished while the bed was inactive / the hold timed out → the clump
-                        // breaks up and washes away (recycled), per the Def's release rule.
-                        if (bed.SnagId[i] == null || !_playerBuoys.ContainsKey(bed.SnagId[i]))
+                        // The line vanished (the buoy hauled, the fisher under way, the bed was inactive)
+                        // → back adrift; the hold timed out → the clump breaks up and washes away
+                        // (recycled), per the Def's release rule.
+                        if (!TargetExists(bed.SnagId[i]))
                         {
                             bed.SnagId[i] = null;
+                            bed.Hooked[i] = false;
                             bed.State[i] = SeaweedMath.StateDrifting;
                         }
                         else if (def.SnagReleaseSeconds > 0f && now >= bed.SnagUntil[i])
@@ -410,14 +487,8 @@ namespace HiddenHarbours.Art
                             bed.State[i] = SeaweedMath.StateStranded;   // beached until a higher tide
                             break;
                         }
-                        int hit = SeaweedMath.NearestWithin(bed.Pos[i], _buoyPositions, _buoyCount, def.BuoySnagRadiusMeters);
-                        if (hit >= 0)
-                        {
-                            bed.Pos[i] = SeaweedMath.SnagAnchor(bed.Pos[i], _buoyPositions[hit], def.BuoyRestRadiusMeters);
-                            bed.State[i] = SeaweedMath.StateSnagged;
-                            bed.SnagId[i] = _buoyIds[hit];
-                            bed.SnagUntil[i] = now + def.SnagReleaseSeconds;
-                        }
+                        int hit = NearestTarget(bed.Pos[i], def.BuoySnagRadiusMeters);
+                        if (hit >= 0 && now >= bed.NoSnagUntil[i]) Snag(bed, i, hit, now);
                         break;
                 }
             }
@@ -430,6 +501,7 @@ namespace HiddenHarbours.Art
                     if (bed.AbsorbedBy[i] >= 0)
                     {
                         bed.SnagId[i] = null;
+                        bed.Hooked[i] = false;
                         bed.RespawnAt[i] = now + def.RespawnSeconds;
                         bed.Renderers[i].gameObject.SetActive(false);
                     }
@@ -440,10 +512,84 @@ namespace HiddenHarbours.Art
                 if (bed.State[i] != SeaweedMath.StateDormant) ApplyLook(bed, i);
         }
 
+        /// <summary>
+        /// A drifter met a line. <b>Round 2 (the frond hooks the line):</b> with the Def's
+        /// <c>SnagByFrondTip</c> on and painted art that carries anchors, the frond tip leading the
+        /// approach is nailed to the contact and the body is swung to lie down-transport of it — the sea
+        /// pushed the clump past the line and it hangs off the tip that caught. <b>Round 1 (the knob-0
+        /// path, and every clump without anchors):</b> the clump rests on <c>BuoyRestRadiusMeters</c>
+        /// around the contact, on the side it drifted in from. All the geometry is the pure
+        /// <see cref="SeaweedMath"/>; this only wires it.
+        /// </summary>
+        private void Snag(BedRuntime bed, int i, int hit, double now)
+        {
+            var def = bed.Def;
+            Vector2 contact = SeaweedMath.ContactPoint(bed.Pos[i], _targetPositions[hit], _targetRadii[hit]);
+            Vector2[] snags = def.SnagByFrondTip ? HookAnchors(bed, i) : null;
+
+            if (snags != null && snags.Length > 0)
+            {
+                Vector2 approach = contact - bed.Pos[i];
+                if (approach.sqrMagnitude < 1e-10f) approach = bed.Drift[i];
+                int k = SeaweedMath.PickSnagAnchor(snags, snags.Length, bed.BaseRotDeg[i], approach);
+                // The body streams the way the sea was carrying the clump; a clump that arrived on a
+                // dead-slack sea hangs the way it approached.
+                Vector2 down = bed.Drift[i].sqrMagnitude >= SeaweedMath.TransportDeadBandMetersPerSecond *
+                                                             SeaweedMath.TransportDeadBandMetersPerSecond
+                    ? bed.Drift[i] : approach;
+                bed.HangRotDeg[i] = SeaweedMath.HangRotation(snags[k], down);
+                bed.SnagPoint[i] = contact;
+                bed.SnagAnchorIndex[i] = k;
+                bed.Hooked[i] = true;
+                bed.Pos[i] = SeaweedMath.PivotForAnchor(contact, snags[k], bed.HangRotDeg[i]);
+            }
+            else
+            {
+                bed.Hooked[i] = false;
+                bed.Pos[i] = SeaweedMath.SnagAnchor(bed.Pos[i], contact, def.BuoyRestRadiusMeters);
+            }
+
+            bed.State[i] = SeaweedMath.StateSnagged;
+            bed.SnagId[i] = _targetIds[hit];
+            bed.SnagUntil[i] = now + def.SnagReleaseSeconds;
+        }
+
+        // ---- the art's own anchors (round 2) — read off the kit entry the piece wears -------------------
+
+        /// <summary>The snag tips of the clump piece <paramref name="i"/> wears, in its sprite frame, or
+        /// null for a greybox/legacy sprite (which then rests on the radius as round 1 did).</summary>
+        private static Vector2[] HookAnchors(BedRuntime bed, int i)
+        {
+            var kit = bed.Def.WeedArt;
+            int a = bed.ArtIndex[i];
+            if (kit == null || a < 0 || a >= kit.Count) return null;
+            return kit.Entries[a].Snags;
+        }
+
+        /// <summary>The tip a hooked piece hangs by (clamped — a merge may have swapped it onto a clump
+        /// with fewer tips), or the pivot itself when the art carries none.</summary>
+        private static Vector2 HookAnchor(BedRuntime bed, int i)
+        {
+            Vector2[] snags = HookAnchors(bed, i);
+            if (snags == null || snags.Length == 0) return Vector2.zero;
+            return snags[Mathf.Clamp(bed.SnagAnchorIndex[i], 0, snags.Length - 1)];
+        }
+
+        /// <summary>The drag tail of the clump piece <paramref name="i"/> wears, or zero (no alignment)
+        /// for a sprite without one.</summary>
+        private static Vector2 DragTail(BedRuntime bed, int i)
+        {
+            var kit = bed.Def.WeedArt;
+            int a = bed.ArtIndex[i];
+            if (kit == null || a < 0 || a >= kit.Count) return Vector2.zero;
+            return kit.Entries[a].DragTail;
+        }
+
         private void Recycle(BedRuntime bed, int i, double now)
         {
             bed.State[i] = SeaweedMath.StateDormant;
             bed.SnagId[i] = null;
+            bed.Hooked[i] = false;
             bed.RespawnAt[i] = now + bed.Def.RespawnSeconds;
             bed.Renderers[i].gameObject.SetActive(false);
         }
@@ -467,22 +613,67 @@ namespace HiddenHarbours.Art
                     continue;
                 }
 
-                WaveSample wave = _animator.Sample(bed.Pos[i], fetch);
-
-                if (bed.State[i] == SeaweedMath.StateDrifting && dt > 0f)
-                    bed.Pos[i] += SeaweedMath.DriftVelocity(flow, def.FlowResponse, wind, def.WindResponse,
-                                                            wave.Slope, def.TroughSeek,
-                                                            def.MaxDriftSpeedMetersPerSecond) * dt;
-
-                // A STRANDED clump sits on the hard — bared ground doesn't heave, so no bob/wobble;
-                // drifting and snagged pieces are IN the water and ride the field.
-                bool afloat = bed.State[i] != SeaweedMath.StateStranded;
-                float bob = afloat ? SeaweedMath.BobOffset(wave.Height, def.BobPerMeter, def.MaxBobMeters) : 0f;
-                float wobble = afloat ? SeaweedMath.Wobble(wave.Height, totalAmplitude, def.WobbleMaxDegrees) : 0f;
-
                 var t = sr.transform;
+                float bob, rotation;
+
+                if (bed.State[i] == SeaweedMath.StateSnagged && bed.Hooked[i])
+                {
+                    // HUNG BY A FROND TIP (round 2): the sea is read AT THE ANCHOR — the tip is nailed
+                    // to the line and the body swings about it. The hang eases to lie down-transport
+                    // (the tide turns, the clump swings round), the sway is the wave under the tip, and
+                    // a big enough swell tears it free.
+                    Vector2 anchor = HookAnchor(bed, i);
+                    WaveSample wave = _animator.Sample(bed.SnagPoint[i], fetch);
+                    if (dt > 0f)
+                    {
+                        Vector2 transport = SeaweedMath.DriftVelocity(flow, def.FlowResponse, wind, def.WindResponse,
+                                                                      wave.Slope, def.TroughSeek,
+                                                                      def.MaxDriftSpeedMetersPerSecond);
+                        bed.Drift[i] = transport;
+                        bed.HangRotDeg[i] = SeaweedMath.HangAlignedRotation(transport, bed.HangRotDeg[i], anchor,
+                                                                            def.DragAlignDegreesPerSecond, dt);
+                    }
+                    rotation = bed.HangRotDeg[i] + SeaweedMath.Wobble(wave.Height, totalAmplitude, def.SnagSwayDegrees);
+                    bed.Pos[i] = SeaweedMath.PivotForAnchor(bed.SnagPoint[i], anchor, rotation);
+                    bob = SeaweedMath.BobOffset(wave.Height, def.BobPerMeter, def.MaxBobMeters);
+
+                    if (SeaweedMath.BreaksFree(wave.Height, def.SnagBreakWaveMeters))
+                    {
+                        // The swell tore it off the line: back adrift from where it hangs, immune for a
+                        // spell so it clears the line instead of re-hooking on the next slow tick.
+                        bed.State[i] = SeaweedMath.StateDrifting;
+                        bed.SnagId[i] = null;
+                        bed.Hooked[i] = false;
+                        bed.NoSnagUntil[i] = now + def.SnagBreakFreeSeconds;
+                    }
+                }
+                else
+                {
+                    WaveSample wave = _animator.Sample(bed.Pos[i], fetch);
+
+                    if (bed.State[i] == SeaweedMath.StateDrifting && dt > 0f)
+                    {
+                        Vector2 v = SeaweedMath.DriftVelocity(flow, def.FlowResponse, wind, def.WindResponse,
+                                                              wave.Slope, def.TroughSeek,
+                                                              def.MaxDriftSpeedMetersPerSecond);
+                        bed.Pos[i] += v * dt;
+                        bed.Drift[i] = v;
+                        // THE TAIL TRAILS THE SEA (round 2): ease toward the rotation at which the art's
+                        // drag tail streams out behind the transport. Knob 0 → the hashed rotation stands.
+                        bed.BaseRotDeg[i] = SeaweedMath.TailAlignedRotation(v, bed.BaseRotDeg[i], DragTail(bed, i),
+                                                                            def.DragAlignDegreesPerSecond, dt);
+                    }
+
+                    // A STRANDED clump sits on the hard — bared ground doesn't heave, so no bob/wobble;
+                    // drifting and (radius-rested) snagged pieces are IN the water and ride the field.
+                    bool afloat = bed.State[i] != SeaweedMath.StateStranded;
+                    bob = afloat ? SeaweedMath.BobOffset(wave.Height, def.BobPerMeter, def.MaxBobMeters) : 0f;
+                    float wobble = afloat ? SeaweedMath.Wobble(wave.Height, totalAmplitude, def.WobbleMaxDegrees) : 0f;
+                    rotation = bed.BaseRotDeg[i] + wobble;
+                }
+
                 t.position = new Vector3(bed.Pos[i].x, bed.Pos[i].y + bob, -def.CameraZOffset);
-                t.localRotation = Quaternion.Euler(0f, 0f, bed.BaseRotDeg[i] + wobble);
+                t.localRotation = Quaternion.Euler(0f, 0f, rotation);
 
                 float fade = def.FadeInSeconds > 0f
                     ? Mathf.Clamp01((float)(now - bed.BornAt[i]) / def.FadeInSeconds) : 1f;
@@ -535,12 +726,14 @@ namespace HiddenHarbours.Art
                         // Native size: the art IS the footprint. Reset in case this piece was
                         // previously drawn on the fallback path.
                         if (sr.transform.localScale != Vector3.one) sr.transform.localScale = Vector3.one;
+                        bed.ArtIndex[i] = pick;        // the anchors the piece hangs and trails by
                         return;
                     }
                 }
                 // Fall through: a kit with a hole in it still draws a blob rather than nothing.
             }
 
+            bed.ArtIndex[i] = -1;                      // no anchors: rests on the radius, never aligns
             Sprite sprite = def.TierSprites != null && tier < def.TierSprites.Length && def.TierSprites[tier] != null
                 ? def.TierSprites[tier] : _greyboxBlob;
             if (sr.sprite != sprite) sr.sprite = sprite;
@@ -596,9 +789,49 @@ namespace HiddenHarbours.Art
             return Sprite.Create(tex, new Rect(0, 0, W, H), new Vector2(0.5f, 0.5f), ppu);
         }
 
+        // ---- test seams (internal — the PlayMode fixture drives one deterministic step at a time) -------
+
+        /// <summary>
+        /// Install a presenter over <paramref name="library"/> that never runs its own
+        /// <see cref="Update"/> — the fixture calls <see cref="StepForTests"/> with an explicit game-time
+        /// delta and slow-tick flag, so a 60 s scripted run is the same 60 s on every machine (wall-clock
+        /// cadences are what make the live presenter non-reproducible frame for frame). Replaces any
+        /// self-installed host for the rest of the play session; tests only.
+        /// </summary>
+        internal static SeaweedPresenter InstallForTests(SeaweedLibrary library)
+        {
+            if (_instance != null)
+            {
+                var stale = _instance;
+                _instance = null;
+                Destroy(stale.gameObject);
+            }
+            var go = new GameObject("[SeaweedPresenter:test]");
+            var presenter = go.AddComponent<SeaweedPresenter>();
+            presenter._library = library;
+            presenter.enabled = false;          // the fixture steps it; Update never runs
+            return presenter;
+        }
+
+        /// <summary>One <see cref="Update"/> worth of work at an explicit <paramref name="dt"/> (game
+        /// seconds) with the slow tick forced on or off: the gate first, exactly as play does, then the
+        /// drive. The clock's <c>TotalSeconds</c> is still read for "now" — advance the test clock by the
+        /// same dt before each call.</summary>
+        internal void StepForTests(float dt, bool slowTick)
+        {
+            EvaluateGate();
+            var clock = GameServices.Clock;
+            var env = GameServices.Environment;
+            if (clock == null || env == null || !AnyBedActive()) return;
+            Drive(env, clock.TotalSeconds, dt, slowTick);
+        }
+
+        /// <summary>The live beds, read-only, for a fixture asserting on positions and states.</summary>
+        internal IReadOnlyList<BedRuntime> BedsForTests => _beds;
+
         // ---- runtime shape (allocated at activation only) ----------------------------------------------
 
-        private sealed class BedRuntime
+        internal sealed class BedRuntime
         {
             public SeaweedDef Def;
             public GameObject Root;
@@ -623,6 +856,27 @@ namespace HiddenHarbours.Art
             /// (and above all its ramp row) stays stable for the piece's life instead of re-rolling
             /// every time a merge re-runs ApplyLook.</summary>
             public int[] ArtKey;
+
+            /// <summary>Index into the kit's entries of the clump the piece currently wears (−1 = the
+            /// greybox blob / a legacy sprite) — where its snag tips and drag tail are read from.</summary>
+            public int[] ArtIndex;
+
+            // ---- round 2: the art's own anchors ----
+            /// <summary>Last frame's transport (m/s) — the drift a drifter moved by, or the set past a
+            /// hung clump; the direction the body hangs from a fresh hook.</summary>
+            public Vector2[] Drift;
+            /// <summary>True while a snagged piece hangs by a frond tip (round 2); false for the round-1
+            /// radius rest. Only meaningful in <see cref="SeaweedMath.StateSnagged"/>.</summary>
+            public bool[] Hooked;
+            /// <summary>A hung piece's hang rotation (degrees) before the sway — eased toward
+            /// down-transport of its anchor.</summary>
+            public float[] HangRotDeg;
+            /// <summary>The world point a hung piece's anchor is nailed to (the buoy's line, a hull's rim).</summary>
+            public Vector2[] SnagPoint;
+            /// <summary>Which of the worn clump's snag tips holds it (clamped on read — a merge may swap the art).</summary>
+            public int[] SnagAnchorIndex;
+            /// <summary>Clock time before which a piece that broke free will not foul again.</summary>
+            public double[] NoSnagUntil;
 
             /// <summary>The bed's species filter resolved against the kit ONCE at activation — null
             /// means every species. Resolving per piece would allocate on the spawn path.</summary>

@@ -6,10 +6,9 @@ namespace HiddenHarbours.Art
     /// <summary>
     /// The painted drift-weed art, as data: one flat table of every sliced clump the
     /// <see cref="SeaweedPresenter"/> may draw, each carrying <b>the size the art director actually
-    /// drew it at</b>. Built from the kit's own sidecar by <c>DriftWeedKitBuilder</c> (Hidden Harbours
-    /// ▸ Art ▸ Import (after a new drop) ▸ Build Drift Weed Kit) — never hand-maintained, so a
-    /// re-drop of the art cannot drift
-    /// away from this table.
+    /// drew it at</b> and <b>the anchors the rig declared on it</b>. Built from the kit's own sidecar by
+    /// <c>DriftWeedKitBuilder</c> (Hidden Harbours ▸ Art ▸ Import (after a new drop) ▸ Build Drift Weed
+    /// Kit) — never hand-maintained, so a re-drop of the art cannot drift away from this table.
     ///
     /// <para><b>Why the authored size is the load-bearing field.</b> Before this asset the presenter
     /// rescaled whatever sprite it was given to the Def's tier footprint
@@ -18,6 +17,17 @@ namespace HiddenHarbours.Art
     /// 0.45 m tier would be drawn at 0.22× and come apart on the pixel grid. With the drawn size
     /// recorded here the presenter can instead pick the clump nearest the tier it wants and draw it at
     /// <b>scale 1</b> — native pixels, no resampling, ever.</para>
+    ///
+    /// <para><b>The anchors (round 2).</b> Each variant publishes 2–3 <see cref="Entry.Snags"/> — the
+    /// outer frond tips that catch on a buoy line — and one <see cref="Entry.DragTail"/>, the end that
+    /// trails when it drifts. They are recorded in the <b>sprite's own frame</b>: metres from the pivot
+    /// (the variant's buoyancy centre, which the slicer stamped as the sprite pivot) at scale 1, +y up
+    /// — i.e. the sidecar's cell pixels over <see cref="PixelsPerMeter"/>, y flipped. ⚠️ The sidecar's
+    /// own <c>m</c> values are WATER-PLANE metres (its y divided by <see cref="YForeshorten"/>); they
+    /// describe the rig's geometry, not the drawn pixels. A sprite is flat on the screen and rotates in
+    /// the screen plane, so the only frame in which "this frond tip sits on that line" is exact is the
+    /// pixel frame — the same reasoning as ADR 0042: the squash is baked into the pixels and nothing
+    /// at render time un-bakes it.</para>
     ///
     /// <para><b>Shared across beds (ADR 0003).</b> The art is one table; a bed
     /// (<see cref="SeaweedDef"/>) points at it and may narrow it by species. That way St Peters and
@@ -30,7 +40,7 @@ namespace HiddenHarbours.Art
     [CreateAssetMenu(menuName = "Hidden Harbours/Drift Weed Kit", fileName = "DriftWeedKit")]
     public class DriftWeedKit : ScriptableObject
     {
-        /// <summary>One sliced clump: the sprite plus the facts needed to choose it.</summary>
+        /// <summary>One sliced clump: the sprite plus the facts needed to choose and to hang it.</summary>
         [Serializable]
         public struct Entry
         {
@@ -50,6 +60,19 @@ namespace HiddenHarbours.Art
 
             [Tooltip("The sidecar variant's own 'cell' column, kept for traceability back to the kit.")]
             public int VariantCell;
+
+            [Tooltip("SNAG anchors — the 2–3 outer frond tips that catch on a buoy line — in the " +
+                     "sprite's own frame: metres from the pivot at scale 1, +y up (cell pixels over " +
+                     "PixelsPerMeter, y flipped). From the sidecar's snags[].px. Empty = no anchors " +
+                     "(a legacy sprite); the presenter then rests the clump on a radius as round 1 did.")]
+            public Vector2[] Snags;
+
+            [Tooltip("The DRAG TAIL — the one end that trails when the clump drifts — same frame as Snags. " +
+                     "From the sidecar's dragTail.px.")]
+            public Vector2 DragTail;
+
+            /// <summary>True when the rig published anchors for this clump.</summary>
+            public bool HasAnchors => Snags != null && Snags.Length > 0;
         }
 
         [Tooltip("Species names in the kit, in sidecar order. Entry.SpeciesIndex indexes this.")]
@@ -64,6 +87,16 @@ namespace HiddenHarbours.Art
         [Tooltip("Provenance: the sidecar's derivedFromRigSha256 at build time, so a stale table is " +
                  "identifiable rather than merely wrong.")]
         public string BuiltFromRigSha256 = "";
+
+        [Tooltip("Provenance: the sidecar's scale_px_per_m — the pixels-per-metre the anchors were " +
+                 "converted at. The builder refuses a sheet whose import PPU disagrees, because then " +
+                 "neither the drawn size nor the anchors would be metre-true at scale 1.")]
+        public float PixelsPerMeter = 32f;
+
+        [Tooltip("Provenance: the sidecar's y_foreshorten — the screen-y squash the art was drawn with. " +
+                 "NOT applied to the anchors (they are pixels of a flat sprite); recorded so the " +
+                 "sidecar's own plane-metre values can be reconciled with the pixel frame.")]
+        public float YForeshorten = 0.72f;
 
         public int Count => Entries?.Length ?? 0;
 

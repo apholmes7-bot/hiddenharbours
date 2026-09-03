@@ -161,18 +161,30 @@ namespace HiddenHarbours.Art.Editor
         public static int Wrap(int facing) => ((facing % Facings) + Facings) % Facings;
 
         // =====================================================================================
-        //  PIECE-LOCAL → WORLD
+        //  PIECE-LOCAL → WORLD — rotate on the GROUND, then the art's own squash (ADR 0042)
         // =====================================================================================
 
-        /// <summary>The world direction a piece's local <b>+Y</b> points at
-        /// <paramref name="facing"/> — the measurement everything else here is built from.</summary>
+        /// <summary>
+        /// How far up the screen one metre of NORTHWARD ground travel draws — <c>sin 40°</c> at the
+        /// shared bake camera, <see cref="SpriteLightMath.GroundDepthScale"/>. Every placement in this
+        /// kit carries it (ADR 0042): the squash is baked into the PIXELS of every cell and nothing at
+        /// render time transforms anything, so geometry that has to coincide with the art — a wall
+        /// collider, a standing spot, the second machine on an island's second plate — has to be
+        /// squashed the same way or it lands beside the picture rather than on it.
+        /// </summary>
+        public static float DepthScale => SpriteLightMath.GroundDepthScale;
+
+        /// <summary>The GROUND direction a piece's local <b>+Y</b> points at
+        /// <paramref name="facing"/> — a unit compass vector, BEFORE the squash. The measurement
+        /// everything else here is built from: it is what a heading is (ADR 0034), not where a metre of
+        /// it lands on screen — that is <see cref="LocalDirToWorld"/>.</summary>
         public static Vector2 ForwardOf(int facing)
         {
             float t = HeadingOfFacing(facing) * Mathf.Deg2Rad;
             return new Vector2(Mathf.Sin(t), Mathf.Cos(t));
         }
 
-        /// <summary>…and the world direction its local <b>+X</b> points: a quarter turn to starboard of
+        /// <summary>…and the GROUND direction its local <b>+X</b> points: a quarter turn to starboard of
         /// <see cref="ForwardOf"/>, which is what the harness measured.</summary>
         public static Vector2 RightOf(int facing)
         {
@@ -180,18 +192,37 @@ namespace HiddenHarbours.Art.Editor
             return new Vector2(Mathf.Cos(t), -Mathf.Sin(t));
         }
 
-        /// <summary>A piece-local plan DIRECTION in world terms. Rotation only — no origin.</summary>
-        public static Vector2 LocalDirToWorld(Vector2 local, int facing) =>
-            RightOf(facing) * local.x + ForwardOf(facing) * local.y;
+        /// <summary>
+        /// A piece-local plan DIRECTION in world units. No origin — a rotation, and then the squash.
+        ///
+        /// <para><b>Rotate on the ground FIRST, squash SECOND</b> — the same shape as
+        /// <c>InteriorFootprint.ModelToWorld</c>, which the house and shop family have always placed
+        /// with. The other order shears the wrong way, and the two are indistinguishable by eye at the
+        /// four orthogonal facings — only the diagonals show it.</para>
+        ///
+        /// <para>⚠️ The result is NOT unit length for a unit input: a metre of local <c>+Y</c> at cell 0
+        /// is 0.643 world units. Anything that wants a ground bearing or a ground distance works in the
+        /// piece's frame and projects at the end; <see cref="WorldDirToLocal"/> is the way back.</para>
+        /// </summary>
+        public static Vector2 LocalDirToWorld(Vector2 local, int facing)
+        {
+            Vector2 ground = RightOf(facing) * local.x + ForwardOf(facing) * local.y;
+            return new Vector2(ground.x, ground.y * DepthScale);
+        }
 
         /// <summary>
-        /// A piece-local plan POINT in world terms: the sidecar's own frame (metres, origin at the ground
-        /// centre of the piece's own footprint, +z up) placed at <paramref name="origin"/> and turned to
-        /// <paramref name="facing"/>.
+        /// A piece-local plan POINT in world units: the sidecar's own frame (metres, origin at the ground
+        /// centre of the piece's own footprint, +z up) placed at <paramref name="origin"/>, turned to
+        /// <paramref name="facing"/> and squashed as the art is.
         ///
-        /// <para>⚠️ <b>Z is dropped, and that is right.</b> The world plane here IS the ground plane; the
-        /// iso squash is a RENDER transform the sprite already carries. A reach point's z is how high the
-        /// hand arrives, which the rig has already ruled on — it is not a world coordinate.</para>
+        /// <para>⚠️ <b>Z is dropped, and that is right.</b> A reach point's z is how high the hand
+        /// arrives, which the rig has already ruled on — it is not a world coordinate.</para>
+        ///
+        /// <para>⚠️ <b>And the squash is NOT a render transform the sprite carries — it is in the
+        /// pixels.</b> An earlier remark here said the opposite and placed in unsquashed ground metres,
+        /// which left every collider on the Route 91 forecourt over-hanging its own picture: the C-store's
+        /// wall ring 2.07 m past each drawn side wall, the island kerb 2.77 m too long, the bollards
+        /// 1.28 m out. It drew perfectly. ADR 0042 carries the measurements.</para>
         /// </summary>
         public static Vector2 LocalToWorld(Vector3 local, Vector2 origin, int facing) =>
             origin + LocalDirToWorld(new Vector2(local.x, local.y), facing);
@@ -201,20 +232,140 @@ namespace HiddenHarbours.Art.Editor
             origin + LocalDirToWorld(local, facing);
 
         /// <summary>
-        /// The Z rotation a piece's COLLIDER child carries so its footprint covers the ground the piece
-        /// actually stands on.
-        ///
-        /// <para><b>⚠️ The collider turns and the SPRITE DOES NOT.</b> For baked iso art the facing IS the
-        /// rotation — turning the renderer would shear a picture that already contains the camera. But
-        /// the sidecar's footprints are stated in the piece's own frame, so at any cell but 0 the ground
-        /// they describe is turned. The blocker children are therefore rotated by this and the ROOT is
-        /// left at identity — which is also what <c>PropertyBoundary</c> requires of any host it is
-        /// given, so a wall may be hung off a station piece later without this coming apart.</para>
-        ///
-        /// <para>Negative because a compass heading turns CLOCKWISE and Unity's Z rotation turns
-        /// counter-clockwise: the same sign flip <see cref="RightOf"/> carries.</para>
+        /// A world direction back in a piece's frame: UN-squash first, then un-rotate. The exact inverse
+        /// of <see cref="LocalDirToWorld"/>. The rotation half is orthonormal, so its transpose undoes
+        /// it — but only once the squash has been taken off, which is what a transpose-only inverse
+        /// forgets.
         /// </summary>
-        public static float ColliderZRotation(int facing) => -HeadingOfFacing(facing);
+        public static Vector2 WorldDirToLocal(Vector2 world, int facing)
+        {
+            var ground = new Vector2(world.x, world.y / DepthScale);
+            return new Vector2(Vector2.Dot(ground, RightOf(facing)), Vector2.Dot(ground, ForwardOf(facing)));
+        }
+
+        /// <summary>A world point back in the frame of a piece standing at <paramref name="origin"/> —
+        /// the inverse of <see cref="LocalToWorld(Vector2,Vector2,int)"/>.</summary>
+        public static Vector2 WorldToLocal(Vector2 world, Vector2 origin, int facing) =>
+            WorldDirToLocal(world - origin, facing);
+
+        // =====================================================================================
+        //  THE COLLIDERS — one enumeration, shared by the prefab builder and the placement
+        // =====================================================================================
+
+        /// <summary>
+        /// One collider a piece carries, in the piece's OWN frame (metres, unsquashed) — a polygon,
+        /// always: a circular blocker is polygonised here and a shut door leaf is its quad.
+        ///
+        /// <para><b>Why polygons only.</b> The world shape is the ground shape ROTATED and then SQUASHED
+        /// (<see cref="LocalDirToWorld"/>), and that is a shear at every facing but the four orthogonal
+        /// ones. A <c>BoxCollider2D</c> cannot express a shear, a <c>CircleCollider2D</c> cannot be an
+        /// ellipse, and a child's <c>localRotation</c> — the kit's earlier answer — turns a shape without
+        /// squashing it, which is why that answer was retired (ADR 0042). A polygon path can be any of
+        /// them, so every collider in this kit is one.</para>
+        /// </summary>
+        public readonly struct ColliderShape
+        {
+            /// <summary>The child's name: <c>blocker_&lt;kind&gt;</c>, or
+            /// <c>door_Entry_shut</c> / <c>door_ServiceDoor_shut</c>.</summary>
+            public readonly string Name;
+
+            /// <summary>The ground polygon, piece-local metres, unsquashed.</summary>
+            public readonly Vector2[] Local;
+
+            public ColliderShape(string name, Vector2[] local)
+            {
+                Name = name;
+                Local = local;
+            }
+        }
+
+        /// <summary>Segments a circular blocker is drawn with. Sixteen keeps every edge within 2 mm of a
+        /// 0.11 m bollard's true rim and within 8 mm of the 0.42 m sign base's — under the 32 px/m grid
+        /// either way.</summary>
+        public const int CirclePathSegments = 16;
+
+        /// <summary>The thinnest a shut door leaf's collider may be (m): a sill that is only step-high
+        /// is still a shut door, and a zero-thickness leaf stops nobody.</summary>
+        public const float DoorLeafMinThicknessMetres = 0.08f;
+
+        /// <summary>
+        /// Every collider this piece earns, in order: one per blocker that
+        /// <see cref="StationBlocker.Blocks"/>, in the Def's own order (<c>wall</c> and
+        /// <c>waist_block</c>; <c>step_over</c> and <c>flat</c> stop nobody), then the shut ENTRY leaf,
+        /// then the shut SERVICE-DOOR leaf, where the Def publishes them.
+        ///
+        /// <para>This is the ONE definition of "what colliders does a station piece have":
+        /// <c>StationPieceDefBuilder</c> writes the prefab from it and <c>StationForecourt</c> re-projects
+        /// each placed instance from it, matched child by child, so the two cannot drift.</para>
+        /// </summary>
+        public static List<ColliderShape> ColliderShapes(StationPieceDef def)
+        {
+            var shapes = new List<ColliderShape>();
+            if (def == null) return shapes;
+
+            foreach (StationBlocker b in def.Blockers ?? Array.Empty<StationBlocker>())
+            {
+                if (b == null || !b.Blocks) continue;
+                if (b.IsCircle)
+                    shapes.Add(new ColliderShape("blocker_" + b.Kind, CirclePolygon(b.Center, b.Radius)));
+                else if (b.Footprint != null && b.Footprint.Length >= 3)
+                    shapes.Add(new ColliderShape("blocker_" + b.Kind, (Vector2[])b.Footprint.Clone()));
+            }
+
+            AddDoorLeaf(shapes, def.Entry, "Entry");
+            AddDoorLeaf(shapes, def.ServiceDoor, "ServiceDoor");
+            return shapes;
+        }
+
+        /// <summary>
+        /// The shut door, as a shape. For the bipart slider that is the two leaves meeting at the
+        /// threshold — the collider IS the leaf, which is why the sidecar publishes <c>keep_clear: null</c>
+        /// for it and why reading that null as "no data" would leave the shop's front wall with a hole in
+        /// it. The service door is a single leaf swinging out and owns a keep-clear, but shut it is still
+        /// just its own leaf.
+        /// </summary>
+        static void AddDoorLeaf(List<ColliderShape> shapes, StationDoorway d, string name)
+        {
+            if (d == null || !d.Exists || d.ClearWidthMeters <= 0f) return;
+
+            float halfWide = d.ClearWidthMeters * 0.5f;
+            float halfDeep = Mathf.Max(DoorLeafMinThicknessMetres, d.SillStepMeters) * 0.5f;
+            float x = d.Threshold.x, y = d.Threshold.y;
+
+            shapes.Add(new ColliderShape($"door_{name}_shut", new[]
+            {
+                new Vector2(x - halfWide, y - halfDeep), new Vector2(x + halfWide, y - halfDeep),
+                new Vector2(x + halfWide, y + halfDeep), new Vector2(x - halfWide, y + halfDeep),
+            }));
+        }
+
+        /// <summary>A circle on the ground as a polygon, counter-clockwise from <c>+x</c>.</summary>
+        public static Vector2[] CirclePolygon(Vector2 centre, float radius, int segments = CirclePathSegments)
+        {
+            int n = Mathf.Max(3, segments);
+            var pts = new Vector2[n];
+            for (int i = 0; i < n; i++)
+            {
+                float a = i * (2f * Mathf.PI / n);
+                pts[i] = centre + new Vector2(Mathf.Cos(a), Mathf.Sin(a)) * radius;
+            }
+            return pts;
+        }
+
+        /// <summary>
+        /// A piece-local ground polygon as a collider PATH for a piece drawn at <paramref name="facing"/>:
+        /// every vertex through <see cref="LocalDirToWorld"/>, relative to the piece's own origin — which
+        /// is what a <c>PolygonCollider2D</c> on a child at local zero with no rotation of its own wants.
+        /// A rectangle comes out as a parallelogram at the diagonal facings, and that is correct: it is
+        /// the shape the art draws.
+        /// </summary>
+        public static Vector2[] FootprintPath(Vector2[] local, int facing)
+        {
+            if (local == null) return Array.Empty<Vector2>();
+            var path = new Vector2[local.Length];
+            for (int i = 0; i < local.Length; i++) path[i] = LocalDirToWorld(local[i], facing);
+            return path;
+        }
 
         // =====================================================================================
         //  THE PIECES

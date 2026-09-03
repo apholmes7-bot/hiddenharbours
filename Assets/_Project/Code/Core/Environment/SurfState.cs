@@ -22,6 +22,13 @@ namespace HiddenHarbours.Core
     /// and every sheltered corner where the waves never reach the criterion. The charter's requirement —
     /// "calm and sheltered water unchanged" — is met more strictly this way than by a depth ramp, and
     /// glass comes free because a glass sea has no contour at all.</para>
+    ///
+    /// <para><b>The bore (ADR 0040 revision 3).</b> <see cref="Bore01"/> is the surf's CLOCK: 1 as a
+    /// crest's bore front passes this position, falling to a quiet between crests, one pulse per wave
+    /// period, running shoreward at the bore speed. It is a read of the field's PUBLISHED phase at the
+    /// break line, carried inshore by the march's own travel time — never accumulated, never
+    /// reconstructed. Consumers that pulse with the sea (the shove, the deposit, the run-up, audio) read
+    /// it; the steady terms above are what they had before it existed. Readable by any lane.</para>
     /// </summary>
     public readonly struct SurfState
     {
@@ -52,8 +59,47 @@ namespace HiddenHarbours.Core
         /// where a boat gets slewed, so the broach torque keys on this.</summary>
         public readonly float PlungingWeight01;
 
+        /// <summary>0..1: <b>the bore's pulse</b> — 1 as a crest's bore front passes here, a quiet
+        /// between crests, one pulse per wave period, advancing shoreward at <c>√(g·d)</c>. Already
+        /// scaled by <see cref="BirthEnergy01"/>, so a set's big wave is a stronger bore. <b>1 everywhere
+        /// (steady state) when the read had no phase to consult</b> — the pre-bore surf, exactly.</summary>
+        public readonly float Bore01;
+
+        /// <summary>The bore's phase here, degrees in [0, 360): the field's PUBLISHED phase at the break
+        /// line this bore was born on, read forward at minus its travel time. 90 is the front (the
+        /// crest). Not a reconstruction — <c>atan2</c> of a sampled surface is not a phase.</summary>
+        public readonly float BorePhaseDegrees;
+
+        /// <summary>Seconds the bore has been running since it broke — the march's own integral of
+        /// <c>Δs / √(g·d)</c> over the same taps that measure the metres. Derived from geometry, never
+        /// accumulated (the decaying-quantity law).</summary>
+        public readonly float TravelSeconds;
+
+        /// <summary>0..1: how big a crest this bore was born from — the field's crest factor at the break
+        /// line at the moment it broke. The groups in the field make sets of big and small bores here.</summary>
+        public readonly float BirthEnergy01;
+
+        /// <summary>Metres of LEVEL the wash reaches above still water here — Hunt's run-up from the bore's
+        /// remaining energy over the local surf similarity, pulsing with <see cref="Bore01"/>, capped at
+        /// the drawn-edge ceiling. The renderer turns it into a contour excursion through the local slope;
+        /// the gameplay waterline never reads it.</summary>
+        public readonly float RunUpMeters;
+
+        /// <summary>The steady state — the read a consumer without a published field takes. The bore
+        /// reads 1 (no pulse) and the run-up 0, so nothing that consumed the surf before revision 3
+        /// changes.</summary>
         public SurfState(float depthMeters, Vector2 shorewardDirection, float breaking01,
                          float whitewater01, float standingHeightMeters, float plungingWeight01)
+            : this(depthMeters, shorewardDirection, breaking01, whitewater01, standingHeightMeters,
+                   plungingWeight01, bore01: 1f, borePhaseDegrees: 0f, travelSeconds: 0f,
+                   birthEnergy01: 1f, runUpMeters: 0f)
+        {
+        }
+
+        public SurfState(float depthMeters, Vector2 shorewardDirection, float breaking01,
+                         float whitewater01, float standingHeightMeters, float plungingWeight01,
+                         float bore01, float borePhaseDegrees, float travelSeconds,
+                         float birthEnergy01, float runUpMeters)
         {
             DepthMeters = depthMeters;
             ShorewardDirection = shorewardDirection;
@@ -61,6 +107,11 @@ namespace HiddenHarbours.Core
             Whitewater01 = whitewater01;
             StandingHeightMeters = standingHeightMeters;
             PlungingWeight01 = plungingWeight01;
+            Bore01 = bore01;
+            BorePhaseDegrees = borePhaseDegrees;
+            TravelSeconds = travelSeconds;
+            BirthEnergy01 = birthEnergy01;
+            RunUpMeters = runUpMeters;
         }
 
         /// <summary>True when there is live broken water here to push a hull about.</summary>
@@ -68,7 +119,8 @@ namespace HiddenHarbours.Core
                               && ShorewardDirection != Vector2.zero;
 
         /// <summary>No surf — deep water, calm water, dry ground, or a glass sea. Equivalent to
-        /// <c>default</c>, and the state that makes the force exactly zero.</summary>
+        /// <c>default</c>, and the state that makes the force exactly zero (the bore reads 0 too: no
+        /// surf, no pulse).</summary>
         public static readonly SurfState Calm = default;
     }
 }

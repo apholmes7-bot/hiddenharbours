@@ -32,8 +32,11 @@ namespace HiddenHarbours.Tools.Editor
 
         /// <summary>Fragment-side <c>WaveFieldSample()</c> call sites, counted from the shader by hand
         /// and re-counted by <see cref="CountCallSites"/> so this constant cannot rot silently:
-        /// 1 main sample + 4 caustic-curvature taps + 4 foam-convergence taps.</summary>
-        private const int ExpectedFragmentCallSites = 9;
+        /// 1 main sample + 4 caustic-curvature taps + 4 foam-convergence taps + 1 bore birth read
+        /// (<c>WaveFieldSampleAt</c>, the time-shifted crest factor at the break line — ADR 0040
+        /// revision 3; skipped at <c>BoreSetStrength 0</c>, but an unrolled train loop is paid for when
+        /// its gate is open, so it is counted).</summary>
+        private const int ExpectedFragmentCallSites = 10;
 
         [MenuItem("Hidden Harbours/Dev/Wave-field cost report", priority = 80)]
         public static void Run() => Debug.Log(BuildReport());
@@ -143,17 +146,27 @@ namespace HiddenHarbours.Tools.Editor
         }
 
         private static int CountCallSites(string source)
+            => CountCallSites(source, "WaveFieldSample(") + CountCallSites(source, "WaveFieldSampleAt(");
+
+        /// <summary>Call sites of one train-loop sampler. <c>WaveFieldSampleAt</c> (the bore's birth read,
+        /// time-shifted) unrolls the same eight trains as <c>WaveFieldSample</c> and costs the same per
+        /// call, so both spellings are counted — a sampler that escaped the count would be a cost the
+        /// report could not see.</summary>
+        private static int CountCallSites(string source, string sampler)
         {
             int count = 0, at = 0;
-            while ((at = source.IndexOf("WaveFieldSample(", at, StringComparison.Ordinal)) >= 0)
+            while ((at = source.IndexOf(sampler, at, StringComparison.Ordinal)) >= 0)
             {
                 // Skip the declaration itself and any mention inside a comment line.
                 int lineStart = source.LastIndexOf('\n', at) + 1;
                 string prefix = source.Substring(lineStart, at - lineStart).TrimStart();
-                if (!prefix.StartsWith("//", StringComparison.Ordinal) &&
-                    !prefix.StartsWith("void ", StringComparison.Ordinal))
+                // A declaration is the sampler's name directly preceded by its return type; a call inside
+                // an expression ("saturate(WaveFieldSampleAt(") is not, whatever its line starts with.
+                bool declaration = prefix.EndsWith("void ", StringComparison.Ordinal)
+                                || prefix.EndsWith("float ", StringComparison.Ordinal);
+                if (!prefix.StartsWith("//", StringComparison.Ordinal) && !declaration)
                     count++;
-                at += "WaveFieldSample(".Length;
+                at += sampler.Length;
             }
             return count;
         }

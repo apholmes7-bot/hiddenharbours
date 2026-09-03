@@ -1,6 +1,6 @@
 # ADR 0018 — One shared deterministic WAVE FIELD: sim and shader read the SAME waves (C#/HLSL twins), so the boat rocks on what you see and foam rides real crests
 
-- **Status:** **Proposed — awaiting owner sign-off.** Docs-only: this ADR ships no code. Merging this
+- **Status:** **Accepted** *(status flipped 2026-09-01 by the lead-architect review: shipped in #147/#152/#313 and the owner's spectrum feel verdict of 2026-07-31 ratified the field — original line follows)* — **Proposed — awaiting owner sign-off.** Docs-only: this ADR ships no code. Merging this
   PR = the owner's go-ahead to start the phased consumer PRs (**Arc B** below). Records the decision
   that waves become **one deterministic directional wave field** — a small sum of wave trains — that
   BOTH the simulation (seakeeping, boat rocking) and the water shader (swell displacement, whitecaps)

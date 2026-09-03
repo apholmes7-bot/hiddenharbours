@@ -78,10 +78,10 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: 3.17, y: -0.14}
-      - {x: 3.43, y: -0.14}
-      - {x: 3.43, y: 0.14}
-      - {x: 3.17, y: 0.14}
+    - - {x: -3.43, y: -0.08999026}
+      - {x: -3.17, y: -0.08999026}
+      - {x: -3.17, y: 0.08999026}
+      - {x: -3.43, y: 0.08999026}
   m_UseDelaunayMesh: 1
 --- !u!1 &1695330064990404170
 GameObject:
@@ -114,8 +114,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 6737114143778762170}
   - {fileID: 5737515369619376788}
+  - {fileID: 1041305035114344272}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &102330765147638656
@@ -196,7 +196,7 @@ MonoBehaviour:
   _minOrder: 2
   _maxOrder: 2402
   _pivotYOffset: 0
---- !u!1 &6497492957806189830
+--- !u!1 &8268985489693724288
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -204,8 +204,8 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 6737114143778762170}
-  - component: {fileID: 8090277838308231223}
+  - component: {fileID: 1041305035114344272}
+  - component: {fileID: 7555405791094873052}
   m_Layer: 0
   m_Name: blocker_post
   m_TagString: Untagged
@@ -213,13 +213,13 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &6737114143778762170
+--- !u!4 &1041305035114344272
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6497492957806189830}
+  m_GameObject: {fileID: 8268985489693724288}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -228,13 +228,13 @@ Transform:
   m_Children: []
   m_Father: {fileID: 2653357000119719815}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!60 &8090277838308231223
+--- !u!60 &7555405791094873052
 PolygonCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6497492957806189830}
+  m_GameObject: {fileID: 8268985489693724288}
   m_Enabled: 1
   serializedVersion: 3
   m_Density: 1
@@ -274,8 +274,8 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: -3.43, y: -0.14}
-      - {x: -3.17, y: -0.14}
-      - {x: -3.17, y: 0.14}
-      - {x: -3.43, y: 0.14}
+    - - {x: 3.17, y: -0.08999026}
+      - {x: 3.43, y: -0.08999026}
+      - {x: 3.43, y: 0.08999026}
+      - {x: 3.17, y: 0.08999026}
   m_UseDelaunayMesh: 1

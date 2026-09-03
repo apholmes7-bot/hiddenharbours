@@ -339,6 +339,21 @@ namespace HiddenHarbours.Tests.EditMode
                 "rather than in hers.");
             Assert.That(Vector2.Distance(facingEast, atPin),
                 Is.EqualTo(pin.CouplingPointLocal.y).Within(1e-3f));
+
+            // ⭐ AND IN WHICH DIRECTION — a distance cannot see a mirror. Her origin is BEHIND her pin:
+            // south of it facing north, WEST of it facing east. The counter-clockwise arithmetic this
+            // replaced put a trailer facing east with her origin to the EAST of her pin, nose pointing
+            // due west, and this test passed it, because 3.365 m the wrong way is still 3.365 m.
+            Assert.That(facingNorth.y, Is.LessThan(atPin.y),
+                "facing north her origin is not SOUTH of her pin.");
+            Assert.That(facingEast.x, Is.LessThan(atPin.x),
+                "facing east her origin is not WEST of her pin — the rotation runs the wrong way.");
+            Vector2 facingSouth = VehicleCouplingMath.BodyOriginFromKingpin(atPin, 180f, pin);
+            Assert.That(facingSouth.y, Is.GreaterThan(atPin.y),
+                "facing south her origin is not NORTH of her pin.");
+            Vector2 facingWest = VehicleCouplingMath.BodyOriginFromKingpin(atPin, 270f, pin);
+            Assert.That(facingWest.x, Is.GreaterThan(atPin.x),
+                "facing west her origin is not EAST of her pin.");
         }
 
         // =============================================================================================
@@ -404,32 +419,236 @@ namespace HiddenHarbours.Tests.EditMode
             finally { Object.DestroyImmediate(yard); }
         }
 
+        // =============================================================================================
+        //  6. ⭐⭐ THE FRAME — the transform is the compass, and the coupling lives in it
+        // =============================================================================================
+        //
+        // Every reader of a heading in this game is BoatKinematics.BearingDegrees(transform.up): 0 north,
+        // clockwise positive, inverse z = −bearing. The coupling's two rotations were written the OTHER
+        // way — (x·c − y·s, x·s + y·c) at +heading, a counter-clockwise turn — and agreed with the drawn
+        // trailer only where sin(heading) = 0. Every fixture above stood its tractor north, so the sweeps
+        // below are the fixture that was missing: written first, watched fail at 90° and 270° by 6.73 m,
+        // and then the arithmetic was fixed. Nothing in this section places a trailer with the code it
+        // checks — she is stood by her TRANSFORM, which is the frame the picture, the door and the plate
+        // all read (memory an-exact-boundary-passes-in-the-frame-that-built-it).
+
+        static readonly float[] FourHeadings = { 0f, 90f, 180f, 270f };
+
+        static void AssertNear(Vector2 actual, Vector2 expected, float tolerance, string why)
+        {
+            float apart = Vector2.Distance(actual, expected);
+            Assert.That(apart, Is.LessThan(tolerance),
+                $"{why} — {actual} against {expected}, {apart:0.####} m apart.");
+        }
+
+        static Vector3 PinLocal(VehicleMeshDef trailerMesh) =>
+            new Vector3(trailerMesh.Kingpin.CouplingPointLocal.x,
+                        trailerMesh.Kingpin.CouplingPointLocal.y, 0f);
+
+        /// <summary>The two frames, spelled out at the cardinals and then against a real transform at
+        /// all eight compass points: the nose is the compass direction and the curb side is a quarter
+        /// turn CLOCKWISE of it — facing east, +x is SOUTH.</summary>
+        [Test]
+        public void ALocalOffsetLandsWhereTheTransformPutsIt()
+        {
+            var nose = new Vector2(0f, 1f);
+            var curb = new Vector2(1f, 0f);
+
+            AssertNear(VehicleCouplingMath.LocalOffsetToWorld(nose, 0f), new Vector2(0f, 1f), 1e-6f,
+                "facing north her nose is not north");
+            AssertNear(VehicleCouplingMath.LocalOffsetToWorld(nose, 90f), new Vector2(1f, 0f), 1e-6f,
+                "facing east her nose is not east");
+            AssertNear(VehicleCouplingMath.LocalOffsetToWorld(nose, 180f), new Vector2(0f, -1f), 1e-6f,
+                "facing south her nose is not south");
+            AssertNear(VehicleCouplingMath.LocalOffsetToWorld(curb, 0f), new Vector2(1f, 0f), 1e-6f,
+                "facing north her curb side is not east");
+            AssertNear(VehicleCouplingMath.LocalOffsetToWorld(curb, 90f), new Vector2(0f, -1f), 1e-6f,
+                "facing east her curb side is not SOUTH — the rotation is counter-clockwise");
+            AssertNear(VehicleCouplingMath.LocalOffsetToWorld(curb, 270f), new Vector2(0f, 1f), 1e-6f,
+                "facing west her curb side is not north");
+
+            var probe = new GameObject("probe");
+            try
+            {
+                var offset = new Vector3(1.22f, 3.365f, 0f);   // a pup's nose corner: nobody can eyeball it
+                for (int i = 0; i < 8; i++)
+                {
+                    float heading = 45f * i;
+                    probe.transform.rotation = Quaternion.Euler(0f, 0f, -heading);   // z = −bearing
+                    Vector2 drawn = probe.transform.TransformPoint(offset);
+                    AssertNear(VehicleCouplingMath.LocalOffsetToWorld(offset, heading), drawn, 1e-5f,
+                        $"on {heading}° the coupling and the transform put the same local point in " +
+                        "different places");
+                }
+            }
+            finally { Object.DestroyImmediate(probe); }
+        }
+
+        /// <summary>⭐⭐ THE 90° FIXTURE. Her kingpin is reported where she is DRAWN, at four headings.
+        /// Before the fix this failed at 90° and 270° with the pin 6.73 m from the picture.</summary>
+        [Test]
+        public void HerKingpinIsReportedWhereSheIsDrawn_AtFourHeadings()
+        {
+            VehicleMeshDef mesh = Load(Pup);
+            Vector3 pinLocal = PinLocal(mesh);
+
+            foreach (float heading in FourHeadings)
+            {
+                var go = new GameObject("trailer");
+                try
+                {
+                    go.AddComponent<VehicleDoors>().Configure(mesh);
+                    var body = go.AddComponent<TowedBody>();
+                    body.Configure(mesh);
+                    body.HeadingDegrees = heading;
+                    go.transform.position = new Vector3(10f, 4f, 0f);
+
+                    Vector2 drawn = go.transform.TransformPoint(pinLocal);
+                    AssertNear(body.KingpinWorld, drawn, 1e-4f,
+                        $"on {heading}°: KingpinWorld and the picture disagree about where her pin is " +
+                        "(facing east the old arithmetic put it due WEST of her)");
+                }
+                finally { Object.DestroyImmediate(go); }
+            }
+        }
+
+        /// <summary>
+        /// ⭐⭐ A trailer drawn with her pin ON the plate is captured, coupled and released on every
+        /// heading — the whole ritual, at the four cardinals. The trailer is stood by her transform
+        /// (see <see cref="Pair"/>): a fixture that stood her with <c>BodyOriginFromKingpin</c> would
+        /// agree with <c>KingpinWorld</c> at any heading whatever frame either was written in, which is
+        /// exactly how the mirror went unmeasured.
+        /// </summary>
+        [Test]
+        public void ASquarelyBackedTractorCapturesHer_AtFourHeadings()
+        {
+            foreach (float heading in FourHeadings)
+            {
+                var yard = new GameObject("yard");
+                try
+                {
+                    (VehicleHitch hitch, TowedBody trailer, VehicleDoors doors) = Pair(yard, heading);
+                    Assert.That(hitch.HeadingDegrees, Is.EqualTo(heading).Within(1e-3f),
+                        "fixture: the tractor is not on the heading asked for.");
+                    Assert.That(trailer.HeadingDegrees, Is.EqualTo(heading).Within(1e-3f),
+                        "fixture: the trailer did not adopt her transform's heading.");
+
+                    TowedBody captured = hitch.CapturedTrailer();
+                    Assert.That(captured, Is.SameAs(trailer),
+                        $"on {heading}°: a trailer drawn with her pin on the plate was not captured — " +
+                        $"{Window(hitch, trailer)}. The coupling asks in one frame and the picture is " +
+                        "drawn in another.");
+
+                    Assert.That(hitch.Couple(trailer), Is.True, $"on {heading}°: the couple refused.");
+
+                    // …and the release ritual holds at every heading too.
+                    doors.Advance(GameServices.VehicleGearCrankSeconds);
+                    Assert.That(hitch.TryUncouple(out string refusal), Is.False,
+                        $"on {heading}°: dropped on raised legs.");
+                    StringAssert.Contains("legs", refusal);
+                    doors.SetGroupTarget("gear", 0f);
+                    doors.Advance(GameServices.VehicleGearCrankSeconds);
+                    Assert.That(hitch.TryUncouple(out _), Is.True,
+                        $"on {heading}°: legs down and she still would not go.");
+                }
+                finally { Object.DestroyImmediate(yard); }
+            }
+        }
+
+        /// <summary>
+        /// ⭐ The follow, at four headings: one pull on a heading 20° clockwise of hers swings her the
+        /// SAME amount whichever way is up, toward the tractor, and leaves her DRAWN pin on the plate.
+        /// The old arithmetic agreed with itself (KingpinWorld and BodyOriginFromKingpin were the same
+        /// wrong turn), so the picture is the oracle here, not the coupling's own report.
+        /// </summary>
+        [Test]
+        public void TheFollowKeepsHerDrawnPinOnThePlate_AtFourHeadings()
+        {
+            const float turn = 20f, travel = 1f;
+            float referenceSwing = float.NaN;
+
+            foreach (float heading in FourHeadings)
+            {
+                var yard = new GameObject("yard");
+                try
+                {
+                    (VehicleHitch hitch, TowedBody trailer, _) = Pair(yard, heading);
+                    Assert.That(hitch.Couple(trailer), Is.True, "fixture: couple");
+
+                    // The tractor moves a metre on a heading 20° clockwise of hers, plate and all.
+                    float tractorHeading = heading + turn;
+                    Vector2 plate = hitch.CouplingPointWorld
+                                    + NavMath.DirectionFromBearing(tractorHeading) * travel;
+                    trailer.FollowKingpin(plate, tractorHeading, travel, hitch.JackknifeCapDegrees);
+
+                    float swing = Mathf.DeltaAngle(heading, trailer.HeadingDegrees);
+                    Assert.That(swing, Is.GreaterThan(0f),
+                        $"on {heading}°: the tractor turned clockwise and the trailer swung the other way.");
+                    if (float.IsNaN(referenceSwing)) referenceSwing = swing;
+                    Assert.That(swing, Is.EqualTo(referenceSwing).Within(1e-4f),
+                        $"on {heading}°: the same pull swung her {swing:0.####}° here and " +
+                        $"{referenceSwing:0.####}° facing north — the follow depends on which way is up.");
+
+                    Vector2 drawn = trailer.transform.TransformPoint(PinLocal(trailer.Mesh));
+                    AssertNear(drawn, plate, 1e-4f,
+                        $"on {heading}°: after one follow step the picture draws her pin off the plate");
+                    AssertNear(trailer.KingpinWorld, plate, 1e-4f,
+                        $"on {heading}°: after one follow step KingpinWorld is off the plate");
+                }
+                finally { Object.DestroyImmediate(yard); }
+            }
+        }
+
+        /// <summary>Why a capture did or did not happen, in the tractor's own frame — so a red reports
+        /// the geometry rather than just "null".</summary>
+        static string Window(VehicleHitch hitch, TowedBody trailer)
+        {
+            VehicleFifthWheel w = hitch.FifthWheel;
+            Vector2 pinWorld = trailer.KingpinWorld;
+            Vector3 local = hitch.transform.InverseTransformPoint(new Vector3(pinWorld.x, pinWorld.y, 0f));
+            float aft = Mathf.Min(w.RampMouthY, w.SlotSeatY), fore = Mathf.Max(w.RampMouthY, w.SlotSeatY);
+            return $"pin local ({local.x:0.#####}, {local.y:0.#####}); slot x {w.CouplingPointLocal.x:0.###}" +
+                   $"±{w.SlotHalfWidthMeters:0.###}, y [{aft:0.#####} … {fore:0.#####}]; heading Δ " +
+                   $"{Mathf.DeltaAngle(hitch.HeadingDegrees, trailer.HeadingDegrees):0.###}° of " +
+                   $"{VehicleCouplingMath.CaptureHeadingToleranceDegrees(w):0.###}°";
+        }
+
         // ---- fixture ---------------------------------------------------------------------------
 
-        /// <summary>A semi with her plate and a pup with her pin, seated so the capture test passes.
-        /// Built rather than loaded from a scene so the whole ritual is exercised in EditMode.</summary>
-        static (VehicleHitch, TowedBody, VehicleDoors) Pair(GameObject yard)
+        /// <summary>
+        /// A semi with her plate and a pup with her pin, seated so the capture test passes — both on
+        /// <paramref name="headingDegrees"/>. Built rather than loaded from a scene so the whole ritual
+        /// is exercised in EditMode.
+        ///
+        /// <para>⭐ <b>The trailer is stood by her TRANSFORM, never by the coupling arithmetic.</b> Her
+        /// pin is where the picture draws it — rotation × local — and she is placed so THAT lands on the
+        /// plate. A fixture that placed her with <c>BodyOriginFromKingpin</c> would agree with
+        /// <c>KingpinWorld</c> at every heading whatever frame either was written in, which is exactly
+        /// how a counter-clockwise coupling shipped under a clockwise picture and nothing noticed.</para>
+        /// </summary>
+        static (VehicleHitch, TowedBody, VehicleDoors) Pair(GameObject yard, float headingDegrees = 0f)
         {
             VehicleMeshDef tractorMesh = Load(AeroMesh);
             VehicleMeshDef trailerMesh = Load(Pup);
 
             var tractorGo = new GameObject("tractor");
             tractorGo.transform.SetParent(yard.transform, false);
+            tractorGo.transform.rotation = Quaternion.Euler(0f, 0f, -headingDegrees);   // z = −bearing
             var hitch = tractorGo.AddComponent<VehicleHitch>();
             hitch.Configure(tractorMesh, null, "vehicle.aero_semi");
 
             var trailerGo = new GameObject("trailer");
             trailerGo.transform.SetParent(yard.transform, false);
+            trailerGo.transform.rotation = tractorGo.transform.rotation;
             var doors = trailerGo.AddComponent<VehicleDoors>();
             doors.Configure(trailerMesh);
             doors.SnapAllShut();
             var body = trailerGo.AddComponent<TowedBody>();
-            body.Configure(trailerMesh);
+            body.Configure(trailerMesh);              // adopts the transform's heading
 
-            // Stand her so her pin sits on his seat, both pointing the same way.
-            body.HeadingDegrees = hitch.HeadingDegrees;
-            Vector2 origin = VehicleCouplingMath.BodyOriginFromKingpin(
-                hitch.CouplingPointWorld, body.HeadingDegrees, trailerMesh.Kingpin);
+            // Stand her so the pin the PICTURE draws sits on his plate, both pointing the same way.
+            Vector2 drawnPinFromOrigin = trailerGo.transform.rotation * PinLocal(trailerMesh);
+            Vector2 origin = hitch.CouplingPointWorld - drawnPinFromOrigin;
             trailerGo.transform.position = new Vector3(origin.x, origin.y, 0f);
 
             return (hitch, body, doors);

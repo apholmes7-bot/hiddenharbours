@@ -25,8 +25,11 @@ namespace HiddenHarbours.Tests.EditMode
     /// <see cref="BoatVisualDef.FacingsAreCounterClockwise"/> off the real committed asset. Flip that flag on
     /// any kit and these go red.</para>
     ///
-    /// <para><b>Both conventions are pinned here on purpose.</b> The 6 iso kits are CCW; the older hand-drawn
-    /// <c>FishingBoat_*</c> compass is CW and always was correct. That disagreement is exactly why the fix
+    /// <para><b>Both conventions are pinned here on purpose.</b> The hand-exported iso kits are CCW; the older
+    /// hand-drawn <c>FishingBoat_*</c> compass is CW and always was correct. (The two hulls baked IN-ENGINE by
+    /// RigBaker — the lobster boat and, since the full-mesh rollout's PR 2b, the Cape Islander — are 32-facing
+    /// and genuinely CW, and each has her own fixture: <see cref="LobsterBoatFacingTests"/>,
+    /// <see cref="CapeIslanderFacingTests"/>.) That disagreement is exactly why the fix
     /// had to be per-artwork data rather than a blanket mirror — a global flip would have fixed the iso kits
     /// and silently broken the fishing boat and the whole ambient fleet that shares her facings. Testing only
     /// one lineage would let them diverge again in the dark, so both are asserted, together.</para>
@@ -69,8 +72,9 @@ namespace HiddenHarbours.Tests.EditMode
 
         /// <summary>
         /// Measurement-noise budget for the hull-silhouette bearing, in degrees. Sized from the WORST cell
-        /// across the three calibration kits (2.8 / 3.1 / 5.9) and the Cape Islander (8.0), with headroom —
-        /// NOT from what happens to pass. It is a noise budget and nothing more: the thing this test
+        /// across the three calibration kits (2.8 / 3.1 / 5.9) and the Cape Islander's old 8-cell hand export
+        /// (8.0; she has since moved to her own 32-facing fixture), with headroom — NOT from what happens to
+        /// pass. It is a noise budget and nothing more: the thing this test
         /// discriminates, a mirrored bake, is 90° out at the diagonals and 180° at E/W, which
         /// <see cref="TheWrongConvention_WouldBeOffByMoreThanAnyMeasurementError"/> asserts outright.
         /// </summary>
@@ -137,17 +141,19 @@ namespace HiddenHarbours.Tests.EditMode
         /// <para><b>The method is validated before it is trusted</b> — on the three kits whose convention is
         /// already established from their own OFFSET-FREE features above (dory via her oars, console and punt
         /// via their outboards). It reproduces their CCW sequence with a WORST-CELL error of 2.8°, 3.1° and
-        /// 5.9°. Only then is it pointed at the Cape Islander, where it reads 0/323/278/226/180/134/82/37
-        /// across the 8 cells — worst cell 8.0° from CCW.</para>
+        /// 5.9°. (It was first pointed at the Cape Islander's old 8-cell hand export, where it read
+        /// 0/323/278/226/180/134/82/37 across the 8 cells — worst cell 8.0° from CCW. That sheet was re-baked
+        /// in-engine at 32 facings in the full-mesh rollout's PR 2b and she now lives in
+        /// <see cref="CapeIslanderFacingTests"/>, the same method at 11.25° steps.)</para>
         ///
         /// <para><b>Why 12° is a tight tolerance here and not a loose one.</b> The question this test answers
         /// is which of two conventions the art was baked in, and those two are 90° apart at the diagonals and
         /// 180° apart at E/W. So the gap between "a few degrees of measurement noise" and "the wrong
-        /// convention" is not close: the residuals above are 3–8°, the alternative is 86.1° in the mean and
-        /// 95° at worst. <see cref="TheWrongConvention_WouldBeOffByMoreThanAnyMeasurementError"/> asserts
-        /// that separation directly, so the tolerance is never the only thing standing between this fixture
-        /// and a mirrored boat. The residual itself is real and explainable — it is symmetric about the
-        /// cardinals (+8/+8 against −8/−8 on the Cape Islander), the signature of a heavy wheelhouse pulling
+        /// convention" is not close: the residuals above are 3–8°, the alternative was 86.1° in the mean and
+        /// 95° at worst on the cape's old export. <see cref="TheWrongConvention_WouldBeOffByMoreThanAnyMeasurementError"/>
+        /// asserts that separation directly, so the tolerance is never the only thing standing between this
+        /// fixture and a mirrored boat. The residual itself is real and explainable — it was symmetric about
+        /// the cardinals (+8/+8 against −8/−8 on the Cape Islander), the signature of a heavy wheelhouse pulling
         /// the covariance axis off the keel line, not of a mislabelled cell.</para>
         ///
         /// <para><b>This asserts the ART, then the code that reads it</b>, in that order — the same discipline
@@ -157,7 +163,8 @@ namespace HiddenHarbours.Tests.EditMode
         [TestCase("DoryIso", "DoryIso.png")]           // calibration: established CCW, worst cell 2.8°
         [TestCase("PuntIsoBasic", "PuntIso.png")]      // calibration: established CCW, worst cell 3.1°
         [TestCase("ConsoleSkiff", "ConsoleIso.png")]   // calibration: established CCW, worst cell 5.9°
-        [TestCase("CapeIslanderIso", "CapeIslanderIso.png")]
+        // CapeIslanderIso left this table in the full-mesh rollout's PR 2b: her sheet is a 32-facing
+        // RigBaker output now (clockwise, flag FALSE) — see CapeIslanderFacingTests.
         public void IsoHull_CellChosenForHeading_ActuallyDepictsThatHeading_BowAndAll(
             string visualName, string hullSheet)
         {
@@ -190,18 +197,20 @@ namespace HiddenHarbours.Tests.EditMode
         /// <b>The separation, asserted — so the tolerance above is never the load-bearing number.</b>
         ///
         /// <para>A tolerance test can only ever say "close enough". This says the alternative is nowhere
-        /// near: it measures the Cape Islander's cells against the CW labelling her art does NOT use, and
-        /// requires that mismatch to be enormous. It comes out ~86° in the mean and 95° at worst, against a
-        /// worst-cell residual of 8° for CCW — better than a factor of ten. That gap is the actual evidence
-        /// the flag is right, and it is what makes the 12° budget a comfortable one rather than a fitted one.
-        /// If a future re-export ever narrows this gap, the honest response is to find a better feature to
-        /// measure, not to widen the tolerance.</para>
+        /// near: it measures the dory's cells against the CW labelling her art does NOT use, and requires
+        /// that mismatch to be enormous — the CW reading of a CCW sheet is 90° out at the diagonals and 180°
+        /// at E/W, against a worst-cell residual of 2.8° for CCW. That gap is the actual evidence the flag
+        /// is right, and it is what makes the 12° budget a comfortable one rather than a fitted one. If a
+        /// future re-export ever narrows this gap, the honest response is to find a better feature to
+        /// measure, not to widen the tolerance. (The subject used to be the Cape Islander's 8-cell hand
+        /// export — ~86° mean, 95° worst; she moved to <see cref="CapeIslanderFacingTests"/> in PR 2b, which
+        /// carries its own separation test.)</para>
         /// </summary>
         [Test]
         public void TheWrongConvention_WouldBeOffByMoreThanAnyMeasurementError()
         {
-            var visual = LoadVisual("CapeIslanderIso");
-            float[] depicted = HullBearingsPerCell($"{ArtBoats}/CapeIslanderIso.png");
+            var visual = LoadVisual("DoryIso");
+            float[] depicted = HullBearingsPerCell($"{ArtBoats}/DoryIso.png");
 
             float worstUnderTheWrongConvention = 0f;
             for (int i = 0; i < Headings; i++)
@@ -215,9 +224,9 @@ namespace HiddenHarbours.Tests.EditMode
             }
 
             Assert.Greater(worstUnderTheWrongConvention, 45f,
-                $"reading the Cape Islander clockwise is only {worstUnderTheWrongConvention:0.0}° wrong at its " +
-                "worst cell. It should be ~95°. If these two conventions have become hard to tell apart, the " +
-                "measurement has lost its power and needs a better feature — do NOT widen " +
+                $"reading the dory clockwise is only {worstUnderTheWrongConvention:0.0}° wrong at its " +
+                "worst cell. It should be far more (180° at E/W). If these two conventions have become hard " +
+                "to tell apart, the measurement has lost its power and needs a better feature — do NOT widen " +
                 nameof(HullAxisToleranceDegrees) + " to make this go away.");
 
             Assert.Greater(worstUnderTheWrongConvention, HullAxisToleranceDegrees * 4f,

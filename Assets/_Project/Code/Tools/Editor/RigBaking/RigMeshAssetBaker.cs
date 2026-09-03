@@ -149,6 +149,19 @@ namespace HiddenHarbours.Tools.RigBaking
         /// <summary>Headless entry (-executeMethod) for the same bake.</summary>
         public static void BakeLobsterBoatCli() => BakeOneCli("lobsterBoat");
 
+        /// <summary>The intro flagship: the Cape Islander. Her own item for the same reason the
+        /// lobster has one — she is the second converted hull (ADR 0041 PR 2) and gets re-baked on
+        /// her own while her room is being settled, and a whole-fleet bake would rewrite twenty-nine
+        /// defs' worth of non-deterministic YAML to move one.</summary>
+        [MenuItem(RigMeshGate.MenuRoot + "/Bake Cape Islander hull-mesh asset", priority = 220)]
+        public static void BakeCapeIslander() => BakeOne("capeIslander");
+
+        [MenuItem(RigMeshGate.MenuRoot + "/Bake Cape Islander hull-mesh asset", validate = true)]
+        static bool BakeCapeIslanderValidate() => RigMeshGate.Enabled;
+
+        /// <summary>Headless entry (-executeMethod) for the cape's bake.</summary>
+        public static void BakeCapeIslanderCli() => BakeOneCli("capeIslander");
+
         /// <summary>
         /// <b>The hull that motivated the ADR (phase 5): the side dragger.</b> 25 m of riveted steel
         /// whose sheet set would have been <b>433.1 MiB</b> at 32 facings × 4 rock frames — against
@@ -201,6 +214,9 @@ namespace HiddenHarbours.Tools.RigBaking
                     return;
                 }
                 Debug.Log($"[rig-mesh] CLI lobster-variant bake OK — {hulls.Count} hulls.");
+                // EXIT ON SUCCESS — the same omission BakeFleetCli and BakeOneCli each carried once
+                // (four phantom hours, then #690): launched -quit-less, nothing else ends the editor.
+                EditorApplication.Exit(0);
             }
             catch (Exception e)
             {
@@ -289,6 +305,13 @@ namespace HiddenHarbours.Tools.RigBaking
             {
                 BakeOne(key);
                 Debug.Log("[rig-mesh] CLI bake OK.");
+                // ⚠️ EXIT ON SUCCESS, for the same reason BakeFleetCli spells out: these entries are
+                // launched -quit-less (the -quit/RunTests race), so nothing else ever ends the
+                // editor and the search indexer's idle CPU burn reads as a bake still working. The
+                // fleet path learned that at the cost of four phantom coordinator hours; this one
+                // was still missing it, so every single-hull CLI bake — lobster and dragger
+                // included — hung forever ON SUCCESS and only failures terminated.
+                EditorApplication.Exit(0);
             }
             catch (Exception e)
             {
@@ -702,6 +725,98 @@ namespace HiddenHarbours.Tools.RigBaking
 
         /// <param name="extraction">Non-null to bake ONE VARIANT of a rig that generates several
         /// hulls. Null — every hull baked before 2026-08-13 — takes the rig's static <c>F</c>.</param>
+        const string InteriorKitFolder = "docs/art/rigs/boat-interiors-kit";
+        const string InteriorRigFileName = "boatInteriorRig.js";
+
+        /// <summary>
+        /// <b>The hulls whose room is baked as MESH.</b> Opt-in, one global name per converted hull,
+        /// because the sprite-sheet interior system keeps working for every hull NOT on this list and
+        /// the two must never both draw for the same boat.
+        ///
+        /// <para>This is the fleet rollout's only switch: a batch adds its hulls here, re-bakes, and
+        /// retires those hulls' sheets once the pictures agree. A hull added here whose sheets are
+        /// still wired would draw her cabin twice.</para>
+        /// </summary>
+        public static readonly string[] MeshInteriorHulls =
+        {
+            "LobsterBoatIso",
+            "CapeIslanderIso",
+            // The eighteen lobster VARIANTS share one rig global (LobsterVariantFleet.GlobalName) and
+            // convert as a family; each hull's own room comes from the variant triple her
+            // RigHullExtraction carries, handed to the interior rig nested under `variant`.
+            LobsterVariantFleet.GlobalName,
+        };
+
+        /// <summary>Is this hull converted — is her rig family on the switch? One predicate for
+        /// the bake, the fleet adjudicator and the fixtures.</summary>
+        public static bool IsMeshInteriorHull(string globalName)
+            => MeshInteriorHulls.Contains(globalName, StringComparer.Ordinal);
+
+        /// <summary>
+        /// Which key in the interior rig's own <c>HULLS</c> table is this hull — derived by asking
+        /// the rig, never transcribed. A table here would be a second place for the two rigs to
+        /// disagree about what boats exist.
+        /// </summary>
+        static string InteriorHullKeyFor(IRigScriptHost host, string globalName, string interiorRigPath)
+        {
+            host.Execute(BoatInteriorGeometryExtractor.WidenInteriorRig(File.ReadAllText(interiorRigPath)));
+            string matches = host.EvaluateString(
+                "(function(){var H=globalThis.BoatInterior.HULLS,o=[];" +
+                $"for(var k in H) if(H[k].sym==='{globalName}') o.push(k);" +
+                "return o.join(' ');})()");
+            string[] keys = matches.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            if (keys.Length == 1) return keys[0];
+            throw new InvalidOperationException(
+                keys.Length == 0
+                    ? $"'{globalName}' is listed in MeshInteriorHulls but the interior rig's HULLS " +
+                      "table names no hull with that sym, so there is no room to bake. Either the " +
+                      "list is wrong or the rig has not met this boat."
+                    : $"'{globalName}' matches {keys.Length} interior hulls ({matches}) — a multi-hull " +
+                      "rig needs its `pick` disambiguated before her room can be baked, or the wrong " +
+                      "boat's cabin lands in her hull.");
+        }
+
+        /// <summary>
+        /// Append this hull's ROOM to <paramref name="data"/> if she is a converted hull, and return
+        /// the bake-log report; null when she is not on <see cref="MeshInteriorHulls"/>.
+        ///
+        /// <para><b>Public, and shared with the fleet adjudicator on purpose.</b>
+        /// <c>HullMeshFleetTests.EveryCommittedHullMesh_MatchesAFreshExtractionFromItsRig</c> re-derives
+        /// every hull from her rig and compares against what is committed — so if the bake appended a
+        /// room and a fresh extraction did not, that test would report every converted hull as stale
+        /// forever, and the obvious "fix" is to teach the test a second copy of this logic. Two copies
+        /// of the rule is precisely the drift that test exists to catch. One method, two callers.</para>
+        /// </summary>
+        public static string AppendMeshInteriorIfConverted(IRigScriptHost host, string globalName,
+                                                          RigMeshData data,
+                                                          RigHullExtraction extraction = null)
+        {
+            if (!IsMeshInteriorHull(globalName)) return null;
+
+            string repo = Directory.GetParent(Application.dataPath).FullName;
+            string interiorRig = Path.Combine(repo, InteriorKitFolder, InteriorRigFileName);
+            string interiorKey = InteriorHullKeyFor(host, globalName, interiorRig);
+
+            // A generator hull's variant triple rides on her extraction (ViewOptions is the same
+            // {size,style,region} literal the interior rig wants under `variant`). Without it every
+            // variant would bake the standard/hardtop/northumberland room — a correct-looking cabin
+            // that is not hers, and nothing downstream would notice.
+            string variantLiteral = extraction != null ? extraction.ViewOptions : null;
+
+            var room = BoatInteriorGeometryExtractor.Extract(host, interiorKey, data, interiorRig,
+                                                             variantLiteral);
+            if (room.Materials.Count > HullMeshDef.InteriorRampSlots)
+                throw new InvalidOperationException(
+                    $"{globalName}'s room paints {room.Materials.Count} ramps and the facet shader's " +
+                    $"_RampMetaInterior holds {HullMeshDef.InteriorRampSlots}. Do NOT spend the hull's " +
+                    "own 16 to fix this — that cap is a fleet law. Merge ramps in the extraction, or " +
+                    "take a widening upstream with a measured cost.");
+
+            data.Faces.AddRange(room.Faces);
+            data.InteriorMaterials = room.Materials;
+            return room.Report;
+        }
+
         public static HullMeshDef Bake(string scriptPath, string globalName, string assetPath, string id,
                                        RigHullExtraction extraction = null)
         {
@@ -717,6 +832,22 @@ namespace HiddenHarbours.Tools.RigBaking
             // hand-measured HullMeshDef.WatertightDeckHeightMeters — it does for 9 of the 11 hulls,
             // which is the independent cross-check that says the classifier is right.
             byte[] interiorSides = RigMeshInteriorClassifier.ClassifySides(data);
+
+            // ---- THE ROOM, AS GEOMETRY (ADR 0038, full mesh interiors) --------------------------
+            //
+            // Appended AFTER the ADR 0023 water mask is classified, and the side-code array is then
+            // extended with zeroes rather than re-classified. Two reasons, and both are about not
+            // changing something this PR has no business changing: the classifier's per-hull counts
+            // and lowest-interior heights are a committed evidence trail, and a cabin sole is not a
+            // surface the SEA should start reasoning about. Zero is "exterior both sides", which is
+            // what every face carried before the mask existed.
+            string roomReport = AppendMeshInteriorIfConverted(host, globalName, data, extraction);
+            if (roomReport != null)
+            {
+                Array.Resize(ref interiorSides, data.Faces.Count);   // rooms are 0 = exterior both sides
+                Debug.Log(roomReport.TrimEnd());
+            }
+
             RigMeshBuild build = RigMeshBuilder.Build(data, $"{globalName}HullMesh", interiorSides);
             LogInteriorMask(globalName, data, interiorSides);
 
@@ -796,6 +927,17 @@ namespace HiddenHarbours.Tools.RigBaking
                 {
                     Colors = data.Materials[m].Ramp,
                     Offset = data.Materials[m].Off,
+                };
+
+            // The room's own table. Empty on every hull not yet converted, which is what keeps the
+            // sheet system working for them: absence of an interior palette is how a hull says she
+            // still draws her cabin as a sprite.
+            def.InteriorRamps = new HullMeshDef.Ramp[data.InteriorMaterials.Count];
+            for (int m = 0; m < data.InteriorMaterials.Count; m++)
+                def.InteriorRamps[m] = new HullMeshDef.Ramp
+                {
+                    Colors = data.InteriorMaterials[m].Ramp,
+                    Offset = data.InteriorMaterials[m].Off,
                 };
 
             def.Bayer16 = new float[16];

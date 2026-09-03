@@ -1,0 +1,1794 @@
+fileFormatVersion: 2
+guid: 6cc6c90d5f5de5a40838a882c087ce69
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -4716240148089838755
+    second: CapeIslanderIsoRock0_0
+  - first:
+      213: 8844476243904666483
+    second: CapeIslanderIsoRock0_1
+  - first:
+      213: 3312265954041161826
+    second: CapeIslanderIsoRock0_2
+  - first:
+      213: 3052329792743428193
+    second: CapeIslanderIsoRock0_3
+  - first:
+      213: -2481130223913173531
+    second: CapeIslanderIsoRock0_4
+  - first:
+      213: 7248532324553142245
+    second: CapeIslanderIsoRock0_5
+  - first:
+      213: 6383175796919137394
+    second: CapeIslanderIsoRock0_6
+  - first:
+      213: 2044525219046529922
+    second: CapeIslanderIsoRock0_7
+  - first:
+      213: -7481062021550891837
+    second: CapeIslanderIsoRock0_8
+  - first:
+      213: -9119680698566545209
+    second: CapeIslanderIsoRock0_9
+  - first:
+      213: 5118797596727154938
+    second: CapeIslanderIsoRock0_10
+  - first:
+      213: 674707238849706292
+    second: CapeIslanderIsoRock0_11
+  - first:
+      213: -3704613438087568750
+    second: CapeIslanderIsoRock0_12
+  - first:
+      213: 8121197611532166698
+    second: CapeIslanderIsoRock0_13
+  - first:
+      213: 3123972934857041607
+    second: CapeIslanderIsoRock0_14
+  - first:
+      213: -2717678309402851089
+    second: CapeIslanderIsoRock0_15
+  - first:
+      213: -3494463962352826374
+    second: CapeIslanderIsoRock0_16
+  - first:
+      213: 7878550165834929806
+    second: CapeIslanderIsoRock0_17
+  - first:
+      213: -4460476336167399501
+    second: CapeIslanderIsoRock0_18
+  - first:
+      213: 5465004933599773275
+    second: CapeIslanderIsoRock0_19
+  - first:
+      213: 1074775665161283817
+    second: CapeIslanderIsoRock0_20
+  - first:
+      213: -4368538625508676253
+    second: CapeIslanderIsoRock0_21
+  - first:
+      213: 2397917645700424529
+    second: CapeIslanderIsoRock0_22
+  - first:
+      213: 2226065809848647883
+    second: CapeIslanderIsoRock0_23
+  - first:
+      213: 6991126920400893256
+    second: CapeIslanderIsoRock0_24
+  - first:
+      213: 9203143899509620099
+    second: CapeIslanderIsoRock0_25
+  - first:
+      213: 7923181356480015414
+    second: CapeIslanderIsoRock0_26
+  - first:
+      213: 1420785045802310612
+    second: CapeIslanderIsoRock0_27
+  - first:
+      213: 5518366082346072847
+    second: CapeIslanderIsoRock0_28
+  - first:
+      213: -5646690463578834941
+    second: CapeIslanderIsoRock0_29
+  - first:
+      213: -2312759753650722046
+    second: CapeIslanderIsoRock0_30
+  - first:
+      213: -3893112269789113210
+    second: CapeIslanderIsoRock0_31
+  - first:
+      213: -3469433941294600287
+    second: CapeIslanderIsoRock0_32
+  - first:
+      213: -3361002356722086731
+    second: CapeIslanderIsoRock0_33
+  - first:
+      213: 4207757584715992643
+    second: CapeIslanderIsoRock0_34
+  - first:
+      213: 8733951585247938045
+    second: CapeIslanderIsoRock0_35
+  - first:
+      213: 5902615613066767501
+    second: CapeIslanderIsoRock0_36
+  - first:
+      213: 1286636656730174238
+    second: CapeIslanderIsoRock0_37
+  - first:
+      213: 4490141272575926319
+    second: CapeIslanderIsoRock0_38
+  - first:
+      213: -7540398406993247223
+    second: CapeIslanderIsoRock0_39
+  - first:
+      213: 5712802997746141496
+    second: CapeIslanderIsoRock0_40
+  - first:
+      213: -606891866764932051
+    second: CapeIslanderIsoRock0_41
+  - first:
+      213: 5135413238896452631
+    second: CapeIslanderIsoRock0_42
+  - first:
+      213: 5014565362475686328
+    second: CapeIslanderIsoRock0_43
+  - first:
+      213: -9158629742659638824
+    second: CapeIslanderIsoRock0_44
+  - first:
+      213: -9098876660847794781
+    second: CapeIslanderIsoRock0_45
+  - first:
+      213: -1409147880235540094
+    second: CapeIslanderIsoRock0_46
+  - first:
+      213: 514625972877698286
+    second: CapeIslanderIsoRock0_47
+  - first:
+      213: 417015202605625282
+    second: CapeIslanderIsoRock0_48
+  - first:
+      213: 1362107680081103860
+    second: CapeIslanderIsoRock0_49
+  - first:
+      213: -3320138967476405131
+    second: CapeIslanderIsoRock0_50
+  - first:
+      213: 6978965517560062822
+    second: CapeIslanderIsoRock0_51
+  - first:
+      213: 7110647592643886927
+    second: CapeIslanderIsoRock0_52
+  - first:
+      213: 82330280348470219
+    second: CapeIslanderIsoRock0_53
+  - first:
+      213: 2234639478417475263
+    second: CapeIslanderIsoRock0_54
+  - first:
+      213: -5881272780015274441
+    second: CapeIslanderIsoRock0_55
+  - first:
+      213: 3728543048345597572
+    second: CapeIslanderIsoRock0_56
+  - first:
+      213: 4208516413285296497
+    second: CapeIslanderIsoRock0_57
+  - first:
+      213: -8490148420123164840
+    second: CapeIslanderIsoRock0_58
+  - first:
+      213: 1802617674090597235
+    second: CapeIslanderIsoRock0_59
+  - first:
+      213: -3356898374753409593
+    second: CapeIslanderIsoRock0_60
+  - first:
+      213: -1514374640428370946
+    second: CapeIslanderIsoRock0_61
+  - first:
+      213: 7777299182188588831
+    second: CapeIslanderIsoRock0_62
+  - first:
+      213: 748484831072263655
+    second: CapeIslanderIsoRock0_63
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: CapeIslanderIsoRock0_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 2940
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d536ba1b29c8c8eb0800000000000000
+      internalID: -4716240148089838755
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CapeIslanderIsoRock0_1
+      rect:
+        serializedVersion: 2
+        x: 456
+        y: 2940
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 37b9156a844edba70800000000000000
+      internalID: 8844476243904666483
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CapeIslanderIsoRock0_2
+      rect:
+        serializedVersion: 2
+        x: 912
+        y: 2940
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2686e38065887fd20800000000000000
+      internalID: 3312265954041161826
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CapeIslanderIsoRock0_3
+      rect:
+        serializedVersion: 2
+        x: 1368
+        y: 2940
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 16050d946cd0c5a20800000000000000
+      internalID: 3052329792743428193
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CapeIslanderIsoRock0_4
+      rect:
+        serializedVersion: 2
+        x: 1824
+        y: 2940
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5ed7b2af431419dd0800000000000000
+      internalID: -2481130223913173531
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CapeIslanderIsoRock0_5
+      rect:
+        serializedVersion: 2
+        x: 2280
+        y: 2940
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5ef2debaeb5f79460800000000000000
+      internalID: 7248532324553142245
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CapeIslanderIsoRock0_6
+      rect:
+        serializedVersion: 2
+        x: 2736
+        y: 2940
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2747c3a5198959850800000000000000
+      internalID: 6383175796919137394
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CapeIslanderIsoRock0_7
+      rect:
+        serializedVersion: 2
+        x: 3192
+        y: 2940
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 28b9897badc9f5c10800000000000000
+      internalID: 2044525219046529922
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CapeIslanderIsoRock0_8
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 2520
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3cc1bce4abded2890800000000000000
+      internalID: -7481062021550891837
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CapeIslanderIsoRock0_9
+      rect:
+        serializedVersion: 2
+        x: 456
+        y: 2520
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7c074f809b2607180800000000000000
+      internalID: -9119680698566545209
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CapeIslanderIsoRock0_10
+      rect:
+        serializedVersion: 2
+        x: 912
+        y: 2520
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: af89b0e2b4f990740800000000000000
+      internalID: 5118797596727154938
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CapeIslanderIsoRock0_11
+      rect:
+        serializedVersion: 2
+        x: 1368
+        y: 2520
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4397503b8aa0d5900800000000000000
+      internalID: 674707238849706292
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CapeIslanderIsoRock0_12
+      rect:
+        serializedVersion: 2
+        x: 1824
+        y: 2520
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 292e6a8b4b1969cc0800000000000000
+      internalID: -3704613438087568750
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CapeIslanderIsoRock0_13
+      rect:
+        serializedVersion: 2
+        x: 2280
+        y: 2520
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a262022233a44b070800000000000000
+      internalID: 8121197611532166698
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CapeIslanderIsoRock0_14
+      rect:
+        serializedVersion: 2
+        x: 2736
+        y: 2520
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7c6a61e25d49a5b20800000000000000
+      internalID: 3123972934857041607
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CapeIslanderIsoRock0_15
+      rect:
+        serializedVersion: 2
+        x: 3192
+        y: 2520
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fe8424af9fdd84ad0800000000000000
+      internalID: -2717678309402851089
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CapeIslanderIsoRock0_16
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 2100
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: af74e8b6a8b218fc0800000000000000
+      internalID: -3494463962352826374
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CapeIslanderIsoRock0_17
+      rect:
+        serializedVersion: 2
+        x: 456
+        y: 2100
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e869fab22ab365d60800000000000000
+      internalID: 7878550165834929806
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CapeIslanderIsoRock0_18
+      rect:
+        serializedVersion: 2
+        x: 912
+        y: 2100
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3bfc4b5a7643912c0800000000000000
+      internalID: -4460476336167399501
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CapeIslanderIsoRock0_19
+      rect:
+        serializedVersion: 2
+        x: 1368
+        y: 2100
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b52c8f2480997db40800000000000000
+      internalID: 5465004933599773275
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CapeIslanderIsoRock0_20
+      rect:
+        serializedVersion: 2
+        x: 1824
+        y: 2100
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9e82c27e5ce5aee00800000000000000
+      internalID: 1074775665161283817
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CapeIslanderIsoRock0_21
+      rect:
+        serializedVersion: 2
+        x: 2280
+        y: 2100
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 36d6bfef345df53c0800000000000000
+      internalID: -4368538625508676253
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CapeIslanderIsoRock0_22
+      rect:
+        serializedVersion: 2
+        x: 2736
+        y: 2100
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1536d90e46d174120800000000000000
+      internalID: 2397917645700424529
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CapeIslanderIsoRock0_23
+      rect:
+        serializedVersion: 2
+        x: 3192
+        y: 2100
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bc0cba25f0394ee10800000000000000
+      internalID: 2226065809848647883
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CapeIslanderIsoRock0_24
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1680
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8457a2eb4e8750160800000000000000
+      internalID: 6991126920400893256
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CapeIslanderIsoRock0_25
+      rect:
+        serializedVersion: 2
+        x: 456
+        y: 1680
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 38df213cd9228bf70800000000000000
+      internalID: 9203143899509620099
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CapeIslanderIsoRock0_26
+      rect:
+        serializedVersion: 2
+        x: 912
+        y: 1680
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 63c2df3077bc4fd60800000000000000
+      internalID: 7923181356480015414
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CapeIslanderIsoRock0_27
+      rect:
+        serializedVersion: 2
+        x: 1368
+        y: 1680
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4dbdb35b874a7b310800000000000000
+      internalID: 1420785045802310612
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CapeIslanderIsoRock0_28
+      rect:
+        serializedVersion: 2
+        x: 1824
+        y: 1680
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f0b3dced6bc259c40800000000000000
+      internalID: 5518366082346072847
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CapeIslanderIsoRock0_29
+      rect:
+        serializedVersion: 2
+        x: 2280
+        y: 1680
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3083cc9d0fce2a1b0800000000000000
+      internalID: -5646690463578834941
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CapeIslanderIsoRock0_30
+      rect:
+        serializedVersion: 2
+        x: 2736
+        y: 1680
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 20b24d0f14d67efd0800000000000000
+      internalID: -2312759753650722046
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CapeIslanderIsoRock0_31
+      rect:
+        serializedVersion: 2
+        x: 3192
+        y: 1680
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 68451886403e8f9c0800000000000000
+      internalID: -3893112269789113210
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CapeIslanderIsoRock0_32
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1260
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1afa37556381adfc0800000000000000
+      internalID: -3469433941294600287
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CapeIslanderIsoRock0_33
+      rect:
+        serializedVersion: 2
+        x: 456
+        y: 1260
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5bc4456f9225b51d0800000000000000
+      internalID: -3361002356722086731
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CapeIslanderIsoRock0_34
+      rect:
+        serializedVersion: 2
+        x: 912
+        y: 1260
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 34ec3f9ca35f46a30800000000000000
+      internalID: 4207757584715992643
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CapeIslanderIsoRock0_35
+      rect:
+        serializedVersion: 2
+        x: 1368
+        y: 1260
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: df5c92c31ba353970800000000000000
+      internalID: 8733951585247938045
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CapeIslanderIsoRock0_36
+      rect:
+        serializedVersion: 2
+        x: 1824
+        y: 1260
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d8ce48e60ad4ae150800000000000000
+      internalID: 5902615613066767501
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CapeIslanderIsoRock0_37
+      rect:
+        serializedVersion: 2
+        x: 2280
+        y: 1260
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e13f56fe83d0bd110800000000000000
+      internalID: 1286636656730174238
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CapeIslanderIsoRock0_38
+      rect:
+        serializedVersion: 2
+        x: 2736
+        y: 1260
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f20653792bf205e30800000000000000
+      internalID: 4490141272575926319
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CapeIslanderIsoRock0_39
+      rect:
+        serializedVersion: 2
+        x: 3192
+        y: 1260
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9040f3e799f1b5790800000000000000
+      internalID: -7540398406993247223
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CapeIslanderIsoRock0_40
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 840
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 83902780f04f74f40800000000000000
+      internalID: 5712802997746141496
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CapeIslanderIsoRock0_41
+      rect:
+        serializedVersion: 2
+        x: 456
+        y: 840
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d2c07680013e397f0800000000000000
+      internalID: -606891866764932051
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CapeIslanderIsoRock0_42
+      rect:
+        serializedVersion: 2
+        x: 912
+        y: 840
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 714e247d127a44740800000000000000
+      internalID: 5135413238896452631
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CapeIslanderIsoRock0_43
+      rect:
+        serializedVersion: 2
+        x: 1368
+        y: 840
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8b9575df0a0579540800000000000000
+      internalID: 5014565362475686328
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CapeIslanderIsoRock0_44
+      rect:
+        serializedVersion: 2
+        x: 1824
+        y: 840
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8d9e17706c206e080800000000000000
+      internalID: -9158629742659638824
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CapeIslanderIsoRock0_45
+      rect:
+        serializedVersion: 2
+        x: 2280
+        y: 840
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3a5231782eb4ab180800000000000000
+      internalID: -9098876660847794781
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CapeIslanderIsoRock0_46
+      rect:
+        serializedVersion: 2
+        x: 2736
+        y: 840
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 281e09a0873b17ce0800000000000000
+      internalID: -1409147880235540094
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CapeIslanderIsoRock0_47
+      rect:
+        serializedVersion: 2
+        x: 3192
+        y: 840
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ee4a0918891542700800000000000000
+      internalID: 514625972877698286
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CapeIslanderIsoRock0_48
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 420
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2cfee390e1989c500800000000000000
+      internalID: 417015202605625282
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CapeIslanderIsoRock0_49
+      rect:
+        serializedVersion: 2
+        x: 456
+        y: 420
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4fbc011e7bd27e210800000000000000
+      internalID: 1362107680081103860
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CapeIslanderIsoRock0_50
+      rect:
+        serializedVersion: 2
+        x: 912
+        y: 420
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 57cf2ae233f7ce1d0800000000000000
+      internalID: -3320138967476405131
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CapeIslanderIsoRock0_51
+      rect:
+        serializedVersion: 2
+        x: 1368
+        y: 420
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6632edd79244ad060800000000000000
+      internalID: 6978965517560062822
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CapeIslanderIsoRock0_52
+      rect:
+        serializedVersion: 2
+        x: 1824
+        y: 420
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f4f768acf481ea260800000000000000
+      internalID: 7110647592643886927
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CapeIslanderIsoRock0_53
+      rect:
+        serializedVersion: 2
+        x: 2280
+        y: 420
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bcbcd6a24fe742100800000000000000
+      internalID: 82330280348470219
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CapeIslanderIsoRock0_54
+      rect:
+        serializedVersion: 2
+        x: 2736
+        y: 420
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fb6432814c8030f10800000000000000
+      internalID: 2234639478417475263
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CapeIslanderIsoRock0_55
+      rect:
+        serializedVersion: 2
+        x: 3192
+        y: 420
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 736f3002195816ea0800000000000000
+      internalID: -5881272780015274441
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CapeIslanderIsoRock0_56
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4863466d5227eb330800000000000000
+      internalID: 3728543048345597572
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CapeIslanderIsoRock0_57
+      rect:
+        serializedVersion: 2
+        x: 456
+        y: 0
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 17965455167a76a30800000000000000
+      internalID: 4208516413285296497
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CapeIslanderIsoRock0_58
+      rect:
+        serializedVersion: 2
+        x: 912
+        y: 0
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 85ff630aefeec2a80800000000000000
+      internalID: -8490148420123164840
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CapeIslanderIsoRock0_59
+      rect:
+        serializedVersion: 2
+        x: 1368
+        y: 0
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 37bc202593f240910800000000000000
+      internalID: 1802617674090597235
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CapeIslanderIsoRock0_60
+      rect:
+        serializedVersion: 2
+        x: 1824
+        y: 0
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7c5acb9b6b6e961d0800000000000000
+      internalID: -3356898374753409593
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CapeIslanderIsoRock0_61
+      rect:
+        serializedVersion: 2
+        x: 2280
+        y: 0
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ef3386cb94cdbfae0800000000000000
+      internalID: -1514374640428370946
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CapeIslanderIsoRock0_62
+      rect:
+        serializedVersion: 2
+        x: 2736
+        y: 0
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f1f694a76648eeb60800000000000000
+      internalID: 7777299182188588831
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CapeIslanderIsoRock0_63
+      rect:
+        serializedVersion: 2
+        x: 3192
+        y: 0
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7ed94dbfcf6236a00800000000000000
+      internalID: 748484831072263655
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 73537ec77847351418bab260d6b936f2
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      CapeIslanderIsoRock0_0: -4716240148089838755
+      CapeIslanderIsoRock0_1: 8844476243904666483
+      CapeIslanderIsoRock0_10: 5118797596727154938
+      CapeIslanderIsoRock0_11: 674707238849706292
+      CapeIslanderIsoRock0_12: -3704613438087568750
+      CapeIslanderIsoRock0_13: 8121197611532166698
+      CapeIslanderIsoRock0_14: 3123972934857041607
+      CapeIslanderIsoRock0_15: -2717678309402851089
+      CapeIslanderIsoRock0_16: -3494463962352826374
+      CapeIslanderIsoRock0_17: 7878550165834929806
+      CapeIslanderIsoRock0_18: -4460476336167399501
+      CapeIslanderIsoRock0_19: 5465004933599773275
+      CapeIslanderIsoRock0_2: 3312265954041161826
+      CapeIslanderIsoRock0_20: 1074775665161283817
+      CapeIslanderIsoRock0_21: -4368538625508676253
+      CapeIslanderIsoRock0_22: 2397917645700424529
+      CapeIslanderIsoRock0_23: 2226065809848647883
+      CapeIslanderIsoRock0_24: 6991126920400893256
+      CapeIslanderIsoRock0_25: 9203143899509620099
+      CapeIslanderIsoRock0_26: 7923181356480015414
+      CapeIslanderIsoRock0_27: 1420785045802310612
+      CapeIslanderIsoRock0_28: 5518366082346072847
+      CapeIslanderIsoRock0_29: -5646690463578834941
+      CapeIslanderIsoRock0_3: 3052329792743428193
+      CapeIslanderIsoRock0_30: -2312759753650722046
+      CapeIslanderIsoRock0_31: -3893112269789113210
+      CapeIslanderIsoRock0_32: -3469433941294600287
+      CapeIslanderIsoRock0_33: -3361002356722086731
+      CapeIslanderIsoRock0_34: 4207757584715992643
+      CapeIslanderIsoRock0_35: 8733951585247938045
+      CapeIslanderIsoRock0_36: 5902615613066767501
+      CapeIslanderIsoRock0_37: 1286636656730174238
+      CapeIslanderIsoRock0_38: 4490141272575926319
+      CapeIslanderIsoRock0_39: -7540398406993247223
+      CapeIslanderIsoRock0_4: -2481130223913173531
+      CapeIslanderIsoRock0_40: 5712802997746141496
+      CapeIslanderIsoRock0_41: -606891866764932051
+      CapeIslanderIsoRock0_42: 5135413238896452631
+      CapeIslanderIsoRock0_43: 5014565362475686328
+      CapeIslanderIsoRock0_44: -9158629742659638824
+      CapeIslanderIsoRock0_45: -9098876660847794781
+      CapeIslanderIsoRock0_46: -1409147880235540094
+      CapeIslanderIsoRock0_47: 514625972877698286
+      CapeIslanderIsoRock0_48: 417015202605625282
+      CapeIslanderIsoRock0_49: 1362107680081103860
+      CapeIslanderIsoRock0_5: 7248532324553142245
+      CapeIslanderIsoRock0_50: -3320138967476405131
+      CapeIslanderIsoRock0_51: 6978965517560062822
+      CapeIslanderIsoRock0_52: 7110647592643886927
+      CapeIslanderIsoRock0_53: 82330280348470219
+      CapeIslanderIsoRock0_54: 2234639478417475263
+      CapeIslanderIsoRock0_55: -5881272780015274441
+      CapeIslanderIsoRock0_56: 3728543048345597572
+      CapeIslanderIsoRock0_57: 4208516413285296497
+      CapeIslanderIsoRock0_58: -8490148420123164840
+      CapeIslanderIsoRock0_59: 1802617674090597235
+      CapeIslanderIsoRock0_6: 6383175796919137394
+      CapeIslanderIsoRock0_60: -3356898374753409593
+      CapeIslanderIsoRock0_61: -1514374640428370946
+      CapeIslanderIsoRock0_62: 7777299182188588831
+      CapeIslanderIsoRock0_63: 748484831072263655
+      CapeIslanderIsoRock0_7: 2044525219046529922
+      CapeIslanderIsoRock0_8: -7481062021550891837
+      CapeIslanderIsoRock0_9: -9119680698566545209
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

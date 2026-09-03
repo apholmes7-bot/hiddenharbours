@@ -93,7 +93,7 @@ namespace HiddenHarbours.Art
         public static float LookStrength { get; private set; }
 
         /// <summary>Everything the feature needs to decide whether to record the pass at all.</summary>
-        public static bool ShouldRun => s_Live.Count > 0 && LookStrength > 0f;
+        public static bool ShouldRun => LookStrength > 0f && (s_Live.Count > 0 || SurfDepositStrength > 0f);
 
         /// <summary>
         /// The velocity the whole buffer advects at (m/s) — the shared wind/current blend
@@ -119,6 +119,24 @@ namespace HiddenHarbours.Art
         }
 
         /// <summary>Called by <see cref="WaterSurface"/> each push — see <see cref="DriftVelocity"/>.</summary>
+        /// <summary>ADR 0040 rev 3: the bore's foam DEPOSIT dial, mirrored out of the live water material's
+        /// <c>_SurfDepositStrength</c> by <c>WaterSurface</c> — the same read-not-push contract as
+        /// <see cref="LookStrength"/>. 0 (the shipped value) = no deposit; with no hull churning either,
+        /// the pass does not run at all.</summary>
+        public static float SurfDepositStrength { get; private set; }
+
+        /// <summary>The DRAWN wave scale the bore is evaluated at (<c>_OceanSwellScale</c> over the shader's
+        /// legacy reference), published beside the deposit dial by <c>WaterSurface</c>: every C# reader of
+        /// the drawn bore (the deposit pass, the lip spray) samples the field at this scale, or it would be
+        /// reading a bore the water is not drawing.</summary>
+        public static float DrawnWaveScale { get; private set; } = 1f;
+
+        public static void PublishSurfDeposit(float strength, float drawnWaveScale)
+        {
+            SurfDepositStrength = Mathf.Max(0f, strength);
+            DrawnWaveScale = Mathf.Max(1e-4f, drawnWaveScale);
+        }
+
         public static void PublishDriftVelocity(Vector2 metresPerSecond)
         {
             DriftVelocity = metresPerSecond;
@@ -266,5 +284,7 @@ namespace HiddenHarbours.Art
         /// than the coverage channel's, so the colour walk completes while the foam is still visible).
         /// </summary>
         public static readonly int AgeDecay = Shader.PropertyToID("_HHFoamAgeDecay");
+        /// <summary>ADR 0040 rev 3: the bore's deposit — x = strength, y = the drawn wave scale, z = dt.</summary>
+        public static readonly int SurfDeposit = Shader.PropertyToID("_HHSurfDeposit");
     }
 }

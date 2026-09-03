@@ -51,6 +51,8 @@ MonoBehaviour:
     SurfEnabled: 1
     SurfShoveStrength: 260
     SurfBroachTorque: 1.2
+    SurfBorePulse01: 1
+    SurfLiftScale: 1
   Anchor:
     ReferenceAnchorMassKg: 6
     DefaultRodeMeters: 6
@@ -104,6 +106,11 @@ MonoBehaviour:
     SlopeProbeMeters: 2
     WhitewaterDecaySeconds: 3.5
     WhitewaterStepMeters: 2
+    BorePulseSharpness: 2.6
+    BoreSetStrength: 1
+    RunUpCoefficient: 1
+    RunUpCapMeters: 0.35
+  SurfSprayIntensityOffset: 0
   MarketDemandCove: 1
   MarketDemandNineMileCreek: 1.4
   MarketDemandStPetersStore: 0.7

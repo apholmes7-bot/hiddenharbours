@@ -445,6 +445,14 @@ namespace HiddenHarbours.Tools.RigBaking
         /// is the LEAF rather than a swept arc: two leaves meeting at the threshold midpoint, which
         /// is what a shut door is. The service door is a single leaf swinging out and owns a
         /// keep-clear, but shut it is still just its own leaf.</para>
+        ///
+        /// <para><b>⭐ Every collider is a polygon PATH drawn at CELL 0 — rotated by nothing and squashed
+        /// by the art's <c>sin 40°</c> (ADR 0042).</b> The prefab's own renderer shows cell 0, so a
+        /// prefab dropped into a scene by hand collides where its picture is; <c>StationForecourt</c>
+        /// re-derives the same shapes for whatever cell it places at. Paths rather than Box or Circle
+        /// colliders because the squash is a shear at the diagonals and an ellipse on a bollard, and
+        /// neither of those can express it — the list comes from
+        /// <see cref="StationCatalog.ColliderShapes"/>, the one enumeration the placement also reads.</para>
         /// </summary>
         static bool BuildPrefab(StationPieceDef def)
         {
@@ -457,15 +465,7 @@ namespace HiddenHarbours.Tools.RigBaking
                 sr.spriteSortPoint = SpriteSortPoint.Pivot;
 
                 AddYSort(go, def);
-
-                foreach (var b in def.Blockers)
-                {
-                    if (!b.Blocks) continue;
-                    AddCollider(go, b);
-                }
-
-                AddDoorLeaf(go, def.Entry, "Entry");
-                AddDoorLeaf(go, def.ServiceDoor, "ServiceDoor");
+                AddColliders(go, def);
 
                 PrefabUtility.SaveAsPrefabAsset(go, path);
                 return true;
@@ -504,48 +504,27 @@ namespace HiddenHarbours.Tools.RigBaking
             so.ApplyModifiedPropertiesWithoutUndo();
         }
 
-        static bool AddCollider(GameObject parent, StationBlocker b)
-        {
-            var child = new GameObject($"blocker_{b.Kind}");
-            child.transform.SetParent(parent.transform, worldPositionStays: false);
-
-            if (b.IsCircle)
-            {
-                var c = child.AddComponent<CircleCollider2D>();
-                c.offset = b.Center;
-                c.radius = b.Radius;
-                return true;
-            }
-
-            if (b.Footprint == null || b.Footprint.Length < 3)
-            {
-                UnityEngine.Object.DestroyImmediate(child);
-                return false;
-            }
-
-            var poly = child.AddComponent<PolygonCollider2D>();
-            poly.pathCount = 1;
-            poly.SetPath(0, b.Footprint);
-            return true;
-        }
-
         /// <summary>
-        /// The shut door, as a collider.
-        ///
-        /// <para>For the bipart slider that is the two leaves meeting at the threshold — the collider
-        /// IS the leaf, which is why the sidecar publishes <c>keep_clear: null</c> for it and why
-        /// reading that null as "no data" would leave the shop's front wall with a hole in it.</para>
+        /// The colliders, from the ONE enumeration the placement also reads
+        /// (<see cref="StationCatalog.ColliderShapes"/>): each a <see cref="PolygonCollider2D"/> on a
+        /// child at local zero with no rotation of its own, holding the shape drawn at cell 0 — the
+        /// frame the prefab's renderer shows. The child ORDER is the list's order, and
+        /// <c>StationForecourt.ProjectColliders</c> matches on it, so nothing here may reorder or skip.
         /// </summary>
-        static void AddDoorLeaf(GameObject parent, StationDoorway d, string name)
+        static int AddColliders(GameObject parent, StationPieceDef def)
         {
-            if (!d.Exists || d.ClearWidthMeters <= 0f) return;
+            int added = 0;
+            foreach (StationCatalog.ColliderShape shape in StationCatalog.ColliderShapes(def))
+            {
+                var child = new GameObject(shape.Name);
+                child.transform.SetParent(parent.transform, worldPositionStays: false);
 
-            var child = new GameObject($"door_{name}_shut");
-            child.transform.SetParent(parent.transform, worldPositionStays: false);
-
-            var box = child.AddComponent<BoxCollider2D>();
-            box.offset = new Vector2(d.Threshold.x, d.Threshold.y);
-            box.size = new Vector2(d.ClearWidthMeters, Mathf.Max(0.08f, d.SillStepMeters));
+                var poly = child.AddComponent<PolygonCollider2D>();
+                poly.pathCount = 1;
+                poly.SetPath(0, StationCatalog.FootprintPath(shape.Local, facing: 0));
+                added++;
+            }
+            return added;
         }
 
         // ---- naming ------------------------------------------------------------------------------------

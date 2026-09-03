@@ -26,10 +26,10 @@ namespace HiddenHarbours.Boats
     ///   <see cref="ControlMode.OnDeck"/>. The modes are disjoint by construction, so Q is unambiguous
     ///   in every frame without a modifier, a hold or an arbiter. (Aboard, Q does nothing at all today —
     ///   <c>ToggleMooring</c> no-ops out of mode — so this claims a genuinely dead press.)</item>
-    ///   <item><b>Q is free at the asset level too:</b> <c>InputSystem_Actions.inputactions</c> binds
-    ///   W/A/S/D, arrows, Space, E, C, 1, 2, Enter and LeftShift, and no Q. The half a code-only
-    ///   <c>= Key.</c> grep misses was checked, because that grep is exactly what went wrong last time
-    ///   (below).</item>
+    ///   <item><b>Q is declared at the asset level too:</b> <c>HiddenHarbours.inputactions</c> (ADR 0043)
+    ///   carries it as <c>Helm/Anchor</c> beside the on-foot <c>Walk/Mooring</c> — two maps, two modes,
+    ///   the same disjointness as above written down as data. The asset is the ledger the old
+    ///   code-only <c>= Key.</c> grep missed, which is exactly what went wrong last time (below).</item>
     /// </list>
     ///
     /// <para><b>Why NOT R, which this key used to be.</b> The dev binding claimed R "audited free of

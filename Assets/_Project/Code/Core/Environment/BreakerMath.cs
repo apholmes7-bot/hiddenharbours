@@ -113,6 +113,30 @@ namespace HiddenHarbours.Core
                  "the same cost but stride over a narrow bar.")]
         public float WhitewaterStepMeters;
 
+        [Header("The BORE — one crest at a time (ADR 0040 revision 3, the crashing washes)")]
+        [Tooltip("How peaked the bore's pulse is along the wave period: 1 = a broad hump filling half the " +
+                 "period, higher = a narrower front with a longer quiet between crests. Ships at the " +
+                 "field's own crest sharpening (2.6) so a bore is as pinched as the crest that made it. " +
+                 "⚠ 0 = NO PULSE — every phase reads 1 and the surf is the steady boil it was before the " +
+                 "bore existed (a stale asset is inert, not wrong).")]
+        [Range(0f, 8f)] public float BorePulseSharpness;
+
+        [Tooltip("How much the SET decides a bore's size: 1 = a bore is born with the field's crest factor " +
+                 "at the break line when its crest broke (the groups make sets of big and small bores), " +
+                 "0 = every bore is born at full energy. Ships at 1.")]
+        [Range(0f, 1f)] public float BoreSetStrength;
+
+        [Header("Run-up — how far the wash reaches up the beach (metres of LEVEL, Hunt 1959)")]
+        [Tooltip("Hunt's law: run-up R = coefficient × ξ × H — the vertical reach of the wash above still " +
+                 "water for a bore of standing height H on a bed of surf similarity ξ. 1.0 is Hunt's " +
+                 "published slope. 0 = no run-up beyond the cosmetic swash (inert).")]
+        [Range(0f, 3f)] public float RunUpCoefficient;
+
+        [Tooltip("Ceiling on the run-up, metres of LEVEL. The drawn wet edge may never move the gameplay " +
+                 "waterline; the shipped swash caps its own excursion at 0.35 m (_SwashMaxEdgeShift, the " +
+                 "SEE≠FEEL ratification, hard ceiling 1 m) and the bore's reach shares that ceiling.")]
+        [Range(0f, 1f)] public float RunUpCapMeters;
+
         /// <summary>
         /// The reference tuning: <b>the textbook physics</b>. γ = 0.78 (the solitary-wave breaker
         /// index), Battjes' 1974 surf-similarity thresholds unchanged at 0.5 / 3.3 / 5.0, a 2 m slope
@@ -133,6 +157,10 @@ namespace HiddenHarbours.Core
             SlopeProbeMeters = 2f,
             WhitewaterDecaySeconds = 3.5f,
             WhitewaterStepMeters = 2f,
+            BorePulseSharpness = 2.6f,
+            BoreSetStrength = 1f,
+            RunUpCoefficient = 1f,
+            RunUpCapMeters = 0.35f,
         };
     }
 
@@ -315,6 +343,17 @@ namespace HiddenHarbours.Core
 
         /// <summary>Floor on the whitewater decay time constant (seconds). A guard, not a tunable.</summary>
         public const float MinDecaySeconds = 1e-3f;
+
+        /// <summary>Hunt's run-up law <c>R = ξ·H</c> was measured up to ξ ≈ 2.3; past it the run-up
+        /// saturates rather than growing without bound, so the surf-similarity number is clamped here
+        /// before it multiplies the height. A guard on the law's own range, not a tunable.</summary>
+        public const float HuntIribarrenLimit = 2.3f;
+
+        /// <summary>Standard gravity, used ONLY where the march's seconds are discarded
+        /// (<see cref="MetersSinceBreakAlong"/>) or a caller has no field to take it from. Every live
+        /// consumer passes the field's own <c>GameServices.WaveField.Gravity</c>; this is not a second
+        /// source of the number, it is the inert default the steady-state paths were written against.</summary>
+        public const float StandardGravity = 9.81f;
 
         // ---- shoaling: the wave feels the bottom -------------------------------------------------
 
@@ -925,17 +964,71 @@ namespace HiddenHarbours.Core
                                                   in BreakerContour contour, float fetchEnvelope01,
                                                   in BreakerSettings settings)
         {
-            if (terrain == null || !contour.Breaks) return 0f;
+            // ONE march. The metres sum below is the same running-product sum this method has always
+            // returned, tap for tap; the seconds ride in the same loop and are simply not read here.
+            MarchSinceBreakAlong(worldPos, travelDirection, waterLevelMeters, terrain, in contour,
+                                 fetchEnvelope01, StandardGravity, in settings, out float meters, out _);
+            return meters;
+        }
+
+        // ==== THE BORE: one crest at a time (revision 3 — the crashing washes) ========================
+        //
+        // Everything above is STEADY-STATE: the surf zone is a place, its whitewater an age in metres,
+        // and nothing in it knows that crests arrive one at a time. A bore is the broken crest running
+        // shoreward, T seconds behind the last one, at √(g·d). The three things below give a position
+        // its bore's CLOCK without accumulating anything:
+        //
+        //   1. the SAME 16 taps that already measure metres past the break line also integrate the
+        //      travel time Σ Δs/√(g·dᵢ) — a second march is refused, and the partial gate at the
+        //      surf-zone boundary supplies the sub-step fraction exactly as it does for the metres;
+        //   2. the break line this bore was born on is the marched distance back along the travel
+        //      direction, and the field's PUBLISHED phase there, read FORWARD at minus the travel time,
+        //      is the bore's phase here (WaveMath.TrainPhaseDegrees — never atan2 of a surface);
+        //   3. a SMOOTH periodic pulse of that phase is the bore — no cutoff, because a hard front
+        //      would sit on the march grid (the sabotage arm of the age measurement proves what the
+        //      smooth gate buys, and the same law applies here).
+        //
+        // Sampling the published trains at a NEGATIVE time is legal, pure and deterministic: the
+        // animator bakes accumulated travel into each train's PhaseOffset and the trains are sampled
+        // at t = 0, so t = −τ is the same field τ seconds ago. It is what makes the field's groups
+        // produce sets of big and small bores for free (BoreBirthEnergy01).
+        //
+        // Twin contract (PR 2): every function here is [unroll]-shaped — fixed bounds, no Newton, no
+        // loops on a variable — and the C# side stays the pinned reference.
+
+        /// <summary>
+        /// <b>The march, both integrals at once.</b> Step back against <paramref name="travelDirection"/>
+        /// in <see cref="MarchSteps"/> FIXED steps accumulating a running product of the break gate
+        /// (<see cref="MetersSinceBreakAlong"/>'s law exactly) and return, in the same taps, both
+        /// <paramref name="metersSinceBreak"/> (Σ contiguous · Δs) and <paramref name="secondsSinceBreak"/>
+        /// (Σ contiguous · Δs / √(g·dᵢ)) — how long this bore has been running since it broke, with the
+        /// bore speed evaluated at each tap's own depth.
+        ///
+        /// <para>Linear in position with no clamp before its consumers, both of them; the partial gate at
+        /// the surf-zone boundary supplies the sub-step fraction (measured: <c>BreakerBoreTests</c> holds
+        /// the distinct-value count against the sabotage arm, as the age measurement does).</para>
+        /// </summary>
+        public static void MarchSinceBreakAlong(Vector2 worldPos, Vector2 travelDirection,
+                                                float waterLevelMeters, ITidalTerrain terrain,
+                                                in BreakerContour contour, float fetchEnvelope01,
+                                                float gravity, in BreakerSettings settings,
+                                                out float metersSinceBreak, out float secondsSinceBreak)
+        {
+            metersSinceBreak = 0f;
+            secondsSinceBreak = 0f;
+            if (terrain == null || !contour.Breaks) return;
 
             float sqrMagnitude = travelDirection.x * travelDirection.x + travelDirection.y * travelDirection.y;
-            if (sqrMagnitude < 1e-12f) return 0f;            // no heading, no bore
+            if (sqrMagnitude < 1e-12f) return;               // no heading, no bore
             float inv = 1f / Mathf.Sqrt(sqrMagnitude);
             Vector2 back = new Vector2(-travelDirection.x * inv, -travelDirection.y * inv);
 
             float step = Mathf.Max(MinStepMeters, settings.WhitewaterStepMeters);
+            float g = Mathf.Max(0f, gravity);
 
             float contiguous = 1f;
             float age = 0f;
+            float seconds = 0f;
             for (int i = 1; i <= MarchSteps; i++)            // FIXED bound — the HLSL [unroll] contract
             {
                 Vector2 p = WaveFetch.Pixelize(new Vector2(worldPos.x + back.x * (step * i),
@@ -943,9 +1036,277 @@ namespace HiddenHarbours.Core
                 float depth = waterLevelMeters - terrain.ElevationAt(p);
                 contiguous *= Breaking01FromContour(depth, in contour, fetchEnvelope01);
                 age += contiguous;
+                // The bore speed at THIS tap's depth: √(g·d), floored where the tap is dry so a
+                // shoreline tap cannot divide by zero (its gate is 0 there anyway).
+                float bore = Mathf.Sqrt(g * Mathf.Max(MinDepthMeters, depth));
+                seconds += bore > 1e-6f ? contiguous / bore : 0f;
             }
 
-            return step * age;
+            metersSinceBreak = step * age;
+            secondsSinceBreak = step * seconds;
+        }
+
+        /// <summary>The break line this bore was born on: the marched distance back along the travel
+        /// direction from <paramref name="worldPos"/>. Where the march reads 0 (the break line itself,
+        /// or no surf), it is the position itself.</summary>
+        public static Vector2 BreakLinePoint(Vector2 worldPos, Vector2 travelDirection, float metersSinceBreak)
+        {
+            float sqrMagnitude = travelDirection.x * travelDirection.x + travelDirection.y * travelDirection.y;
+            if (sqrMagnitude < 1e-12f || metersSinceBreak <= 0f) return worldPos;
+            float inv = 1f / Mathf.Sqrt(sqrMagnitude);
+            return new Vector2(worldPos.x - travelDirection.x * inv * metersSinceBreak,
+                               worldPos.y - travelDirection.y * inv * metersSinceBreak);
+        }
+
+        /// <summary>
+        /// <b>The bore's phase here, degrees in [0, 360)</b>: the train's PUBLISHED phase at the break
+        /// line, read forward at minus the travel time — the phase the crest that is now here had when it
+        /// broke. 90° is the crest (the field's profile peaks at <c>sin θ = 1</c>), so 90° is the bore
+        /// FRONT. A crest that passed the break line τ seconds ago reappears here as the same
+        /// characteristic; nothing is reconstructed and nothing is accumulated.
+        /// </summary>
+        /// <param name="train">The breaking train — the field's dominant.</param>
+        /// <param name="timeSeconds">
+        /// <b>The clock the train is read on, and it is not optional for every caller.</b> A train from
+        /// <see cref="SharedWaveField"/> / the shader bridge carries the accumulated travel inside its
+        /// own <c>PhaseOffset</c>, so 0 already means "now" — that is the default, and it is what the
+        /// renderer and the spray emitter pass. A train from <see cref="WaveMath.TrainsFrom"/> — the
+        /// PURE SIM path a hull's forces run on — carries no time at all: its phase offset is a hash of
+        /// (index, seed) and nothing else. Passing 0 there would freeze the bore in place, a pulse that
+        /// varies across the beach and never ARRIVES, which is precisely the steady-state defect this
+        /// revision exists to end. Such a caller passes game time.
+        ///
+        /// <para>The two agree by construction: with a published train the read is
+        /// <c>k·d·B + k·c·τ + φ_now</c>, and <c>φ_now = φ₀ − k·c·now</c>, which is the same
+        /// <c>k·(d·B − c·(now − τ)) + φ₀</c> a static train gives at <c>timeSeconds = now</c>.</para>
+        /// </param>
+        /// <param name="freqScale">The scale the consumer's sea runs its wavelengths at — 1 for the sim
+        /// field a hull rides, <c>DisplacedSeaState.FreqScale</c> (the material's <c>_OceanSwellScale</c>
+        /// over 0.025) for the sea the shader DRAWS, so the bore leaves the break line with the crest the
+        /// eye sees arrive there. Scaling the POSITION is the sanctioned way to sample the field at a
+        /// scale without touching <see cref="WaveMath"/>: <c>θ = k·(d·(pos·s)) + φ ≡ k·s·(d·pos) + φ</c>,
+        /// and the phase speed is untouched.</param>
+        public static float BorePhaseDegrees(in WaveTrain train, Vector2 breakLinePoint, float travelSeconds,
+                                             float freqScale = 1f, double timeSeconds = 0.0)
+        {
+            float s = Mathf.Max(1e-3f, freqScale);
+            return WaveMath.TrainPhaseDegrees(in train, new Vector2(breakLinePoint.x * s, breakLinePoint.y * s),
+                                              timeSeconds - (double)Mathf.Max(0f, travelSeconds));
+        }
+
+        /// <summary>The train's period (seconds) — conserved through shoaling, so it is the bore's beat
+        /// on every depth: <c>T = L₀ / c₀</c>.</summary>
+        public static float PeriodSeconds(in WaveTrain train)
+            => train.PhaseSpeed > 1e-6f ? train.Wavelength / train.PhaseSpeed : 0f;
+
+        /// <summary>
+        /// <b>The pulse</b>, 0..1, of a bore at <paramref name="phaseDegrees"/>: a SMOOTH periodic hump
+        /// peaking at the front (90°) and falling to a quiet between crests —
+        /// <c>((1 + sin θ)/2)^sharpness</c>, the field's own crest pinch applied to the clock.
+        ///
+        /// <para>Smooth on purpose, and that is the whole point: a hard front would be a step in the
+        /// travel time, which sits on the march grid; the sub-step fraction the partial boundary gate
+        /// supplies is what lets this pulse advance continuously inshore. <c>sharpness ≤ 0</c> returns
+        /// exactly 1 at every phase — the steady state, and what a stale settings struct reads.</para>
+        /// </summary>
+        public static float BorePulse01(float phaseDegrees, float sharpness)
+        {
+            if (sharpness <= 0f) return 1f;
+            float s = (Mathf.Sin(phaseDegrees * Mathf.Deg2Rad) + 1f) * 0.5f;   // 1 at the crest / front
+            return Mathf.Pow(Mathf.Clamp01(s), sharpness);
+        }
+
+        /// <summary>
+        /// Seconds since the crest that owns this bore passed the break line, counted back from the
+        /// bore's own moment of birth: the phase falls with time, so from <paramref name="phaseDegrees"/>
+        /// the last crest (90°) lies <c>Repeat(90 − phase, 360)/360 · T</c> seconds earlier. 0 exactly at
+        /// the front.
+        /// </summary>
+        public static float SecondsSinceTheCrest(float phaseDegrees, float periodSeconds)
+            => Mathf.Repeat(90f - phaseDegrees, 360f) / 360f * Mathf.Max(0f, periodSeconds);
+
+        /// <summary>The bore's SHEET (ADR 0040 rev 3, the look): whitewater is made at the front and ages
+        /// behind it, so the sheet is 1 where the crest is passing and decays with the seconds since it
+        /// passed, on the whitewater's own time constant - one decay law for "how far" (metres, in
+        /// <see cref="WhitewaterEnergy01"/>) and for "how long ago" (this). Ahead of the front the water
+        /// belongs to the previous crest, nearly a period old. Twin: <c>SurfBoreSheet01</c>.</summary>
+        /// <summary>Seconds from the crest's passage, SIGNED: positive behind the front (the crest has
+        /// passed), negative ahead of it (the crest is coming), in (-T/2, T/2]. The travelling anatomy
+        /// (ADR 0040 rev 3, the look) measures the lip, barrel and pocket from the FRONT with this, so
+        /// they move with the bore instead of standing a fixed distance past the break line.
+        /// Twin: <c>SurfSignedSecondsFromCrest</c>.</summary>
+        public static float SignedSecondsFromCrest(float phaseDegrees, float periodSeconds)
+            => (Mathf.Repeat(90f - phaseDegrees + 180f, 360f) - 180f) / 360f * Mathf.Max(0f, periodSeconds);
+
+        public static float BoreSheet01(float phaseDegrees, float periodSeconds, float decaySeconds)
+        {
+            float tau = Mathf.Max(decaySeconds, 1e-3f);
+            return Mathf.Exp(-SecondsSinceTheCrest(phaseDegrees, periodSeconds) / tau);
+        }
+
+        /// <summary>The whitewater's energy by the seconds the bore has actually RUN (the march's own
+        /// travel integral, ADR 0040 rev 3) rather than by its metres over the LOCAL bore speed
+        /// (<see cref="WhitewaterEnergy01"/>, the shipped sheet's law). The two agree at the break line
+        /// and part in the shallows: the local law divides the whole run by the speed at the point being
+        /// asked, which at the wet edge is near zero, so it pronounces every wash dead before it can
+        /// reach the sand. The RUN-UP rides this one — a wash that could never reach the beach is not a
+        /// run-up — and the drawn sheet blends toward it only as the owner's run-up dial comes up, so
+        /// today's sheet is untouched at 0. Twin: <c>SurfWhitewaterByTravel01</c>.</summary>
+        public static float WhitewaterByTravel01(float travelSeconds, float decaySeconds)
+        {
+            float tau = Mathf.Max(MinDecaySeconds, decaySeconds);
+            return Mathf.Exp(-Mathf.Max(0f, travelSeconds) / tau);
+        }
+
+        /// <summary>
+        /// <b>How big a crest this bore was born from</b>, 0..1: the field's crest factor at the break
+        /// line at the moment <em>that crest</em> passed it — <see cref="WaveMath.Sample"/> at minus the
+        /// travel time, minus the time since the crest (<see cref="SecondsSinceTheCrest"/>), so every
+        /// position on one bore's back reads the SAME birth, and the read is of the crest rather than of
+        /// whatever the surface was doing between crests. The spectrum's groups (ADR 0027 #5) make it
+        /// swing over a set: the set's big one breaks near 1, the small ones between sets lower. A
+        /// single-train sea reads exactly 1 at every crest. <paramref name="setStrength"/> blends it
+        /// toward 1 (0 = every bore born at full energy; a stale asset).
+        /// </summary>
+        /// <param name="timeSeconds">The clock the field is read on — 0 for a published field whose
+        /// phases already carry it, game time for the pure sim field. See
+        /// <see cref="BorePhaseDegrees"/>, which must be given the SAME clock or the birth would be
+        /// read off a different crest from the one the phase names.</param>
+        public static float BoreBirthEnergy01(in WaveTrains field, Vector2 breakLinePoint, float travelSeconds,
+                                              float phaseDegrees, float periodSeconds,
+                                              float fetchEnvelope01, float setStrength, float freqScale = 1f,
+                                              double timeSeconds = 0.0)
+        {
+            float strength = Mathf.Clamp01(setStrength);
+            if (strength <= 0f || field.Count <= 0) return 1f;
+            double birth = timeSeconds
+                         - ((double)Mathf.Max(0f, travelSeconds) + SecondsSinceTheCrest(phaseDegrees, periodSeconds));
+            float s = Mathf.Max(1e-3f, freqScale);     // the drawn scale, by the position recipe (see BorePhaseDegrees)
+            WaveSample born = WaveMath.Sample(new Vector2(breakLinePoint.x * s, breakLinePoint.y * s), birth,
+                                              in field, fetchEnvelope01);
+            // Normalized by the DOMINANT train's own amplitude, not the field's total: a lone crest in
+            // an eight-train sea reaches only its share of the total, so a total-normalized read could
+            // never birth a full bore (measured on the shot sea: ~0.1, a beat too faint to draw).
+            // Against its own amplitude the average bore is born full, a set's constructive crest
+            // saturates and a destructive one is born weak - the swing that IS the set.
+            float dominantAmplitude = Mathf.Max(field.Dominant.Amplitude, 1e-6f);
+            return Mathf.Lerp(1f, Mathf.Clamp01(born.Height / dominantAmplitude), strength);
+        }
+
+        /// <summary>
+        /// <b>The bore front's slope</b> (metres of rise per metre along the travel direction) — the
+        /// derivative of the bore's own height profile <c>H·pulse(ψ)</c>, so the relief light and the sun's
+        /// face shade can catch a breaking face the way they catch a swell face. Along the path the phase
+        /// advances at <c>dψ/ds = ω/√(g·d)</c> (the clock's own rate), and
+        /// <c>d pulse/dψ = p·s^(p−1)·cos ψ / 2</c> with <c>s = (1+sin ψ)/2</c>. Positive = rising along the
+        /// travel direction; the front (90°) is the peak, so the face ahead of it rises and the back behind
+        /// it falls. 0 wherever the pulse is flat (<c>sharpness ≤ 0</c>) — the steady state has no face.
+        /// </summary>
+        /// <param name="frontHeightMeters">The bore's height — the standing height at the break line times
+        /// its birth energy.</param>
+        /// <param name="boreSpeed">√(g·d) at the position.</param>
+        /// <param name="omega">The train's angular frequency, <c>2π / period</c>.</param>
+        public static float BoreFrontSlope(float phaseDegrees, float sharpness, float frontHeightMeters,
+                                           float boreSpeed, float omega)
+        {
+            if (sharpness <= 0f || frontHeightMeters <= 0f || boreSpeed <= 1e-6f) return 0f;
+            float rad = phaseDegrees * Mathf.Deg2Rad;
+            float s = (Mathf.Sin(rad) + 1f) * 0.5f;
+            if (s <= 1e-6f) return 0f;
+            float dPulse = sharpness * Mathf.Pow(s, sharpness - 1f) * Mathf.Cos(rad) * 0.5f;   // per radian
+            float dPhaseDs = omega / boreSpeed;                                                // radians per metre
+            return frontHeightMeters * dPulse * dPhaseDs;
+        }
+
+        /// <summary>
+        /// <b>Hunt's run-up</b> (1959): the vertical reach of the wash above still water,
+        /// <c>R = coefficient · ξ · H</c>, for a bore of standing height <paramref name="standingHeightMeters"/>
+        /// on a bed of surf similarity <paramref name="iribarren"/> (clamped at <see cref="HuntIribarrenLimit"/>,
+        /// the law's measured range), scaled by what is left of the bore (<paramref name="whitewater01"/>)
+        /// and pulsing with it (<paramref name="bore01"/>), and CAPPED at
+        /// <see cref="BreakerSettings.RunUpCapMeters"/> — the drawn-edge ceiling the swash already
+        /// honours. Metres of LEVEL: the renderer divides by the local slope for a contour excursion.
+        /// </summary>
+        public static float RunUpMeters(float standingHeightMeters, float whitewater01, float iribarren,
+                                        float bore01, in BreakerSettings settings)
+        {
+            float coefficient = Mathf.Max(0f, settings.RunUpCoefficient);
+            float cap = Mathf.Max(0f, settings.RunUpCapMeters);
+            if (coefficient <= 0f || cap <= 0f) return 0f;
+            float xi = Mathf.Clamp(iribarren, 0f, HuntIribarrenLimit);
+            float reach = coefficient * xi * Mathf.Max(0f, standingHeightMeters);
+            return Mathf.Min(cap, reach) * Mathf.Clamp01(whitewater01) * Mathf.Clamp01(bore01);
+        }
+
+        /// <summary>
+        /// <b>The whole surf state at a position, with its bore</b> — <see cref="SurfAt(Vector2, float,
+        /// ITidalTerrain, in BreakerContour, float, float, float, in BreakerSettings)"/> plus the clock:
+        /// the travel time from the same march, the break line it implies, the field's published phase
+        /// there read forward at minus that time, the pulse, the birth energy and the run-up. The
+        /// steady terms are bit-identical to the overload without a field.
+        /// </summary>
+        /// <param name="field">The PUBLISHED trains (<see cref="SharedWaveField"/> in Play, sampled at
+        /// time 0 plus the travel). Its dominant train is the breaking one.</param>
+        /// <param name="gravity">The field's gravity (<c>GameServices.WaveField.Gravity</c>).</param>
+        /// <param name="freqScale">The scale the consumer's sea runs its wavelengths at — see
+        /// <see cref="BorePhaseDegrees"/>. The shader passes its own drawn scale; a hull passes the
+        /// <c>DisplacedSea</c> seam's value (1 while the displaced sea is off), so that the bore that
+        /// shoves her is the bore the water DRAWS arriving — the standing see==feel ruling, and the same
+        /// choice the RIDE already makes. The steady terms below are scale-free: the bore's phase and
+        /// its birth energy are the only positional reads of the field in this whole function.</param>
+        /// <param name="timeSeconds">The clock the field is read on — <b>0 for a PUBLISHED field</b>
+        /// (its phases already carry the travel: the renderer, the spray emitter), <b>game time for the
+        /// pure sim field</b> (<see cref="WaveMath.TrainsFrom"/>, which a hull's forces run on and which
+        /// carries no time whatever). See <see cref="BorePhaseDegrees"/> — passing 0 with a static field
+        /// leaves the bore standing still, which is the defect, not the feature.</param>
+        public static SurfState SurfAt(Vector2 worldPos, float waterLevelMeters, ITidalTerrain terrain,
+                                       in BreakerContour contour, float fetchEnvelope01,
+                                       in WaveTrains field, float gravity, in BreakerSettings settings,
+                                       float freqScale = 1f, double timeSeconds = 0.0)
+        {
+            if (terrain == null || !contour.Breaks) return SurfState.Calm;
+            if (field.Count <= 0) return SurfState.Calm;
+            WaveTrain dominant = field.Dominant;
+            if (dominant.Amplitude <= 0f) return SurfState.Calm;             // glass is sacred
+
+            float depth = waterLevelMeters - terrain.ElevationAt(WaveFetch.Pixelize(worldPos));
+            if (depth <= 0f) return SurfState.Calm;                          // aground, not afloat in surf
+
+            float breaking = Breaking01FromContour(depth, in contour, fetchEnvelope01);
+            if (breaking <= 0f) return SurfState.Calm;                       // deeper than the break line
+
+            Vector2 shoreward = ShorewardDirection(worldPos, settings.SlopeProbeMeters, terrain);
+            if (shoreward == Vector2.zero) return SurfState.Calm;            // flat bed: no defined shove
+
+            MarchSinceBreakAlong(worldPos, shoreward, waterLevelMeters, terrain, in contour, fetchEnvelope01,
+                                 gravity, in settings, out float age, out float travel);
+            float alive = WhitewaterEnergy01(age, depth, gravity, in settings);
+
+            float slope = BedSlopeAlong(worldPos, shoreward, settings.SlopeProbeMeters, terrain);
+            float xi = Iribarren(slope, 2f * dominant.Amplitude, dominant.Wavelength);
+            float plunging = PlungingWeight01(xi, in settings);
+            float standing = Mathf.Max(0f, settings.BreakerIndex) * depth;
+
+            Vector2 breakLine = BreakLinePoint(worldPos, shoreward, age);
+            float phase = BorePhaseDegrees(in dominant, breakLine, travel, freqScale, timeSeconds);
+            float birth = BoreBirthEnergy01(in field, breakLine, travel, phase, PeriodSeconds(in dominant),
+                                            fetchEnvelope01, settings.BoreSetStrength, freqScale, timeSeconds);
+            float bore = BorePulse01(phase, settings.BorePulseSharpness) * birth;
+
+            // The run-up is Hunt's law on the height the bore was BORN with — the depth-limited height at
+            // the break line — not the height it stands at here: at the wet edge the local γ·d is 0 by
+            // definition, and a law evaluated there would say the wash never reaches the beach it is
+            // running up. (Revision 3's first cut used the local height; the shader twin, which needs the
+            // reach AT the edge, is where that showed.)
+            float breakDepth = DepthAtEnvelope(contour.BreakDepths, contour.LeeEnvelope, fetchEnvelope01);
+            float standingAtBreak = Mathf.Max(0f, settings.BreakerIndex) * Mathf.Max(0f, breakDepth);
+            // …carried by the whitewater's TRAVEL-time energy (see WhitewaterByTravel01): the local law
+            // (Whitewater01, the shove's read) is near zero at the edge by construction.
+            float aliveByTravel = WhitewaterByTravel01(travel, settings.WhitewaterDecaySeconds);
+            float runUp = RunUpMeters(standingAtBreak, aliveByTravel, xi, bore, in settings);
+
+            return new SurfState(depth, shoreward, breaking, alive, standing, plunging,
+                                 bore, phase, travel, birth, runUp);
         }
     }
 }

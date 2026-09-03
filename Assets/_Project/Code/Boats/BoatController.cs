@@ -229,6 +229,22 @@ namespace HiddenHarbours.Boats
         /// </summary>
         public SeakeepingSettings SeakeepingPolicy => _seakeeping;
 
+        // The broken water under her as of the last physics tick — solved once in ApplySeakeeping and
+        // read by BoatWaveMotion for the bore's LIFT. Calm on every tick that did not reach the solve.
+        private SurfState _surfUnderHull = SurfState.Calm;
+
+        /// <summary>
+        /// <b>The broken water under this hull as of her last physics tick</b> (ADR 0040 revision 3) —
+        /// the very <see cref="SurfState"/> the shove was assembled from, published for the presentation
+        /// side rather than re-solved there. <see cref="SurfState.Calm"/> in deep water, on glass, with
+        /// the seakeeping policy off, and on any tick that returned before the seakeeping pass.
+        ///
+        /// <para>A visual reader (LateUpdate) sees at most one fixed step of lag, which is the ordinary
+        /// physics-to-presentation lag every other read here carries. What it can never see is a
+        /// DIFFERENT surf from the one that shoved her.</para>
+        /// </summary>
+        public SurfState SurfUnderHull => _surfUnderHull;
+
         /// <summary>
         /// Set helm input. Throttle is -1..1: ahead (forward) or astern (reverse, for backing onto the
         /// dock). Called by DevBoatInput now, by the InputService later.
@@ -432,6 +448,10 @@ namespace HiddenHarbours.Boats
 
         private void StepPhysics()
         {
+            // The surf under her is re-solved from scratch every tick (rule 5 — nothing accumulates), so
+            // clear it FIRST: a tick that never reaches the seakeeping pass (no hull, no body, the policy
+            // switched off) must not leave last tick's bore lifting a boat that is no longer in it.
+            _surfUnderHull = SurfState.Calm;
             if (_hull == null) return;
             // Resolve the body lazily (the Stop()/SetHull precedent): the unmanned drift tick can run
             // through the disabled component in rigs where Awake hasn't cached it yet.
@@ -571,7 +591,8 @@ namespace HiddenHarbours.Boats
         /// march inside <c>SurfAt</c> reads it. No seabed map (open water) means nothing to break on, and
         /// the state comes back <see cref="SurfState.Calm"/>.</para>
         /// </summary>
-        private static SurfState SurfUnderTheHull(Vector2 pos, double now, in WaveTrains trains)
+        private static SurfState SurfUnderTheHull(Vector2 pos, double now, in WaveTrains trains,
+                                                  float gravity, float freqScale)
         {
             ITidalTerrain terrain = GameServices.TidalTerrain;
             if (terrain == null) return SurfState.Calm;
@@ -589,8 +610,24 @@ namespace HiddenHarbours.Boats
 
             float waterLevel = environment.WaterLevelAt(now);
             float envelope = GameServices.FetchEnvelopeAt(pos);
+            // THE BORE-AWARE READ (ADR 0040 revision 3). The overload that takes the FIELD adds the surf's
+            // clock: the published phase at the break line, read forward at minus the march's own travel
+            // time, and from it the pulse, the birth energy and the run-up. The overload without it — the
+            // one this used to call — reports Bore01 = 1 at every phase, i.e. the steady boil, which is
+            // exactly the surf this feature exists to stop being.
+            //
+            // freqScale is the DRAWN scale (the DisplacedSea seam's, 1 while the displaced sea is off).
+            // The bore's phase is a read at a POSITION on the wave, so a hull consulting the field at
+            // scale 1 while the surface draws it at 2.8 would be shoved by a crest that is not the one on
+            // her — the _OceanSwellScale incident that already cost the ride and the watertight clamp.
+            //
+            // …and `now`, which is NOT optional on this path. These trains come from WaveMath.TrainsFrom,
+            // whose phase offset is a hash of (index, seed) and carries no time at all; the published
+            // trains the renderer reads carry it inside their own PhaseOffset, which is why the parameter
+            // defaults to 0 for them. Pass 0 here and the bore stands still: a pulse that varies across
+            // the beach and never ARRIVES, which is the steady state this whole revision exists to end.
             return BreakerMath.SurfAt(pos, waterLevel, terrain, in contour, envelope,
-                                      2f * dominant.Amplitude, dominant.Wavelength, in breakers);
+                                      in trains, gravity, in breakers, freqScale, now);
         }
 
         /// <summary>
@@ -671,8 +708,13 @@ namespace HiddenHarbours.Boats
             // displaced surface's exaggerated height, and it fades to 0 at the waterline. The surf is not
             // a displaced-height read — it is a bore's momentum — so scaling it there would fade the
             // shove out exactly up the beach where a bore is at its most insistent.
-            SurfState surf = SurfUnderTheHull(pos, now, in trains);
-            SeakeepingForce surfPush = SeakeepingForcesMath.SurfShove(in surf, fwd, in response, in _seakeeping);
+            // Cached on the way past, because the LIFT reads it too: the hull's visual rides the bore
+            // through BoatWaveMotion, and a second SurfAt there would be a second solve of one quantity
+            // (and a second contour inversion every frame). One computation, two consumers — the same
+            // discipline SharedWaveField enforces one layer out.
+            _surfUnderHull = SurfUnderTheHull(pos, now, in trains, waveField.Gravity,
+                                              displacedActive ? displaced.FreqScale : 1f);
+            SeakeepingForce surfPush = SeakeepingForcesMath.SurfShove(in _surfUnderHull, fwd, in response, in _seakeeping);
             seaForce += surfPush.Force;
             seaTorque += surfPush.Torque;
 

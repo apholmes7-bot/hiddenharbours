@@ -1,0 +1,22 @@
+WHERE THE TOP STRUCTURE DRAWS — level 5 culled vs not
+The tag is DERIVED from the mesh (highest exterior geometry), not named.
+Rows are screen rows, 0 = TOP of the cell. Lower row number = higher up.
+
+  per-tag exterior height (mesh local z, m above the keel):
+    tag  5  top z    4.53  (72 verts)
+    tag  2  top z   3.226  (60 verts)
+    tag  3  top z   3.125  (252 verts)
+    tag  1  top z    2.51  (208 verts)
+
+  heading    90°  whole rows 146..287  |  without rigging 152..287  |  rigging   589 px, rows 146..184
+                self-check: changed rows inside the whole render's band? yes
+                rigging sits ABOVE the hull's top, and not below its bottom.
+  heading   135°  whole rows 108..339  |  without rigging 108..339  |  rigging   606 px, rows 179..215
+                self-check: changed rows inside the whole render's band? yes
+                rigging sits not above the hull's top, and not below its bottom.
+  heading   180°  whole rows 92..376  |  without rigging 92..376  |  rigging   362 px, rows 182..230
+                self-check: changed rows inside the whole render's band? yes
+                rigging sits not above the hull's top, and not below its bottom.
+  heading    45°  whole rows 80..364  |  without rigging 80..364  |  rigging   605 px, rows 111..182
+                self-check: changed rows inside the whole render's band? yes
+                rigging sits not above the hull's top, and not below its bottom.

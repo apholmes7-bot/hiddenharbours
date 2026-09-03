@@ -144,7 +144,28 @@ namespace HiddenHarbours.Art
                  "only its DEPTH along the view axis is camera-relative. 0 = leave the quad at world depth (the " +
                  "old behaviour). The light is depth-test-Always + additive, so this never affects the look — " +
                  "only the compositing order.")]
-        [Min(0f)] [SerializeField] private float _cameraDepthOffset = 0.1f;
+        [Min(0f)] [SerializeField] private float _cameraDepthOffset = DefaultCameraDepthOffset;
+
+        /// <summary>
+        /// The shipped depth pin of a light quad (metres in front of the camera). Named so the
+        /// lamp-shadow quads can sit strictly NEARER (<see cref="LampShadowSystem.ShadowDepthOffset"/>)
+        /// and so draw AFTER the glow at the same sorting order — the tie the 2D renderer breaks
+        /// back-to-front. A test pins the ordering of the three constants.
+        /// </summary>
+        public const float DefaultCameraDepthOffset = 0.1f;
+
+        [Header("Cast shadows (ADR 0016, lights PR B)")]
+        [Tooltip("Does this lamp throw shadows? A caster inside its range throws its silhouette AWAY " +
+                 "from the lamp, at the lamp's own falloff there. Off = the glow alone, exactly as before.")]
+        [SerializeField] private bool _castsShadows = true;
+
+        [Tooltip("How high the lamp sits above the ground (or water) its casters stand on, metres. It is " +
+                 "what makes a lamp not the sun: a low lamp throws a long rake behind a far caster, a high " +
+                 "one a stub. Only the cast shadows read it; the glow is unchanged by it.")]
+        [Min(0f)] [SerializeField] private float _lampHeightMeters = DefaultLampHeightMeters;
+
+        /// <summary>The height a lamp that never said (2.5 m — the searchlight's own shipped figure).</summary>
+        public const float DefaultLampHeightMeters = 2.5f;
 
         [Tooltip("Local offset of the light ORIGIN from this transform (metres), e.g. push a boat spotlight to " +
                  "the bow. For a cone the beam is thrown along this transform's local UP (the boat heading).")]
@@ -191,6 +212,25 @@ namespace HiddenHarbours.Art
         /// <summary>Angular (cone) edge softness, as a fraction of the half-angle (0 hard .. 1 soft).</summary>
         public float AngularSoftness { get => _angularSoftness; set => _angularSoftness = Mathf.Clamp01(value); }
 
+        // ---- what the lamp-shadow system reads (ADR 0016, lights PR B) ----
+
+        /// <summary>Does this lamp throw cast shadows (<see cref="LampShadowSystem"/>)?</summary>
+        public bool CastsShadows { get => _castsShadows; set => _castsShadows = value; }
+        /// <summary>Lamp height above its casters' ground, metres — the cast shadows' rake lever.</summary>
+        public float LampHeightMeters { get => _lampHeightMeters; set => _lampHeightMeters = Mathf.Max(0f, value); }
+        /// <summary>Night-gate darkness threshold (0..1) — read-only mirror for the shadow system.</summary>
+        public float GateThreshold => _gateThreshold;
+        /// <summary>Night-gate fade band (0..1).</summary>
+        public float GateSoftness => _gateSoftness;
+        /// <summary>What the light shows when no cycle runs (0..1).</summary>
+        public float GateFallback => _gateFallback;
+        /// <summary>The depth pin this light's quad uses (metres in front of the camera).</summary>
+        public float CameraDepthOffset => _cameraDepthOffset;
+        /// <summary>The lamp's world origin on the ground plane — this transform plus <see cref="OriginOffset"/>.</summary>
+        public Vector2 WorldOrigin => transform.TransformPoint(new Vector3(_originOffset.x, _originOffset.y, 0f));
+        /// <summary>The beam axis in world space (this transform's up — the boat heading for a spotlight).</summary>
+        public Vector2 BeamDirection => transform.up;
+
         private void Awake()
         {
             _mpb = new MaterialPropertyBlock();
@@ -206,11 +246,13 @@ namespace HiddenHarbours.Art
             _timer = 0f;
             Tick();   // correct on the first frame
             PoseQuad();
+            LampShadowSystem.RegisterLight(this);   // a lamp that is on may throw shadows (PR B)
         }
 
         private void OnDisable()
         {
             if (_quadRenderer != null) _quadRenderer.enabled = false;   // pooled, not destroyed
+            LampShadowSystem.UnregisterLight(this);   // a dark lamp throws nothing
         }
 
         private void Update()

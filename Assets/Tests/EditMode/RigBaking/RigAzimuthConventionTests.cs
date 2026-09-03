@@ -50,6 +50,34 @@ namespace HiddenHarbours.Tests.RigBaking
         }
 
         /// <summary>
+        /// The cape's convention, MEASURED TWICE and pinned against itself: the turntable's pixel
+        /// probe (what her sprite re-bake runs) and the flag her committed <c>HullMeshDef</c> carries
+        /// (what the mesh baker's anchor probe measured, #690). These are the two handedness readings
+        /// of ONE rig, so they must agree — and both must agree with the catalog's declaration, or
+        /// <c>RigBaker.Bake</c> refuses her. Her sheet's <c>FacingsAreCounterClockwise</c> is a
+        /// different question (the SHEET's handedness after the baker's correction) and is pinned by
+        /// <c>CapeIslanderFacingTests</c> from the sheet's own pixels.
+        /// </summary>
+        [Test]
+        public void CapeIslander_MeasuresAsCounterClockwise_FromPixels_AndHerMeshDefAgrees()
+        {
+            var r = Measure("capeIslander");
+            Debug.Log("[rig-baker] cape islander azimuth probe:\n" + r.Report);
+            Assert.AreEqual(AzimuthConvention.CounterClockwise, r.Convention,
+                "the cape's rig renders counter-clockwise (her mesh def and the catalog both say so). If " +
+                "this flipped, either the rig changed or the probe broke — establish which before baking.");
+            Assert.Greater(r.Elongation, 2.0);
+            Assert.AreEqual(AzimuthConvention.CounterClockwise, RigCatalog.Get("capeIslander").DeclaredConvention);
+
+            var def = UnityEditor.AssetDatabase.LoadAssetAtPath<HiddenHarbours.Core.HullMeshDef>(
+                "Assets/_Project/Data/Boats/HullMeshes/CapeIslanderIsoHullMesh.asset");
+            Assert.IsNotNull(def, "her committed hull-mesh def is missing");
+            Assert.AreEqual(r.Convention == AzimuthConvention.CounterClockwise, def.AzimuthCounterClockwise,
+                "the sprite turntable's pixel probe and the mesh bake's anchor probe disagree about which " +
+                "way her rig turns. Two measurements of one rig cannot both be right — find out which broke.");
+        }
+
+        /// <summary>
         /// THE CROSS-CHECK, and the strongest evidence available that the pixel probe is right.
         ///
         /// The punt's two tub anchors are BOTH at x:0, dead on the centreline, so the screen angle

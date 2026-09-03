@@ -181,6 +181,13 @@ namespace HiddenHarbours.Boats
                  "stage light. 0 = every hull plain.")]
         [Range(0f, 1f)] public float HullTintStrength = 0.35f;
 
+        // Appended (seaweed round 2). Fields are append-only: the shipped asset picks this default up.
+        [Header("In the water (what the drift can foul on)")]
+        [Tooltip("Half-beam (m) a fisher publishes as her snag-target radius while she lies-to at a spot " +
+                 "(Core SnagTargets — the drifting weed hooks on her planking, not at her keel). Her buoys " +
+                 "publish while shown, radius 0 (a line). Under way she is withdrawn.")]
+        [Min(0f)] public float HullSnagRadiusMeters = 1.2f;
+
         /// <summary>
         /// True when <see cref="HullFacings"/> is a COMPLETE compass (non-empty, every slot assigned) —
         /// the all-or-nothing gate the presenter renders the directional hull behind, mirroring the

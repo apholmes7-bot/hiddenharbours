@@ -107,35 +107,25 @@ namespace HiddenHarbours.Art.Editor
         // screen point. Do NOT align by the top-left corner."
         private static readonly Vector2 PuntOrigin = new Vector2(92f / 184f, 74f / 168f);
 
-        // The Cape Islander's boat origin — and THE ONE NUMBER IN HER KIT THAT WAS MEASURED, NOT DECLARED.
-        // Every other iso kit shipped a README fixing its anchor in cell pixels (dory (80,88), skiffs
-        // (122,120), punt (92,94)); the Cape Islander arrived as two loose PNGs with no README and no rig,
-        // so her (228, 263) from the 456×420 cell's TOP-LEFT was recovered from the pixels. Flipped to
-        // Unity's bottom-left origin, y = (420−263) = 157 → (228/456, 157/420) = (0.5, 0.373809…).
+        // The Cape Islander's boat origin — READ FROM HER RIG since the re-bake (full-mesh rollout
+        // PR 2b): capeIslanderIsoRig.js declares `cx = 228, cy = 258` from the cell's TOP-left, and
+        // RigBaker records the same pair in CapeIslanderIsoAnchors.json (`pivotTopLeft`). Flipped to
+        // Unity's bottom-left origin: (228/456, (420−258)/420).
         //
-        // HOW IT WAS RECOVERED (two independent estimators, each calibrated against the three kits whose
-        // true anchors ARE documented, so the method is checked before it is trusted):
-        //   x — the cardinal cells' silhouettes are mirror-symmetric about the exact cell centre
-        //       (measured 227.5 = (456−1)/2, matching the dory's 79.5 and the skiffs' 121.5). x = 0.5.
-        //   y(a) — the punt rig's projection is sy = cy − (yr·sin e + z·cos e)·32, so in the BROADSIDE
-        //       cell screen-x is the along-boat coordinate at full scale with NO foreshortening, and the
-        //       extreme left/right columns are the stem and transom ON THE CENTRELINE. The mean of the
-        //       silhouette's bottom row at those two ends reproduces the documented anchor to +2/−2/−4/+1.5
-        //       px on dory/punt/console/sport; on the Cape Islander it gives 263.
-        //   y(b) — the lowest drawn pixel of the bow-away cell sits a fixed fraction of the drawn hull
-        //       length below the anchor: 0.295/0.308/0.313/0.305 across the four known kits (sd 0.008).
-        //       At her 412 px drawn length that puts the anchor at 262.3.
-        // The two agree to 0.7 px (≈0.02 m at PPU 32); 263 is the integer they bracket. Residual scatter
-        // across the calibration kits is ≈±4 px (≈0.12 m), and THAT is the honest uncertainty on this
-        // number — it is the one thing in her kit a README would settle outright. If the owner ever gets
-        // the rig or the README from his art director, check this const first.
-        private static readonly Vector2 CapeIslanderOrigin = new Vector2(228f / 456f, 157f / 420f);
+        // HISTORY, because the old number was famous: her first sheet (#224) arrived as two loose PNGs
+        // with no README and no rig, so the origin was RECOVERED FROM PIXELS at (228, 263) ±4 px by two
+        // calibrated estimators. Her rig, imported at #227, declares 258 — inside that uncertainty and 5
+        // px higher. The re-bake replaced the recovered number with the declared one, which is exactly
+        // the win ADR 0021 was after. She shares the lobster's cell and pivot by coincidence of the
+        // fleet's 456×420 large-hull cell, not by borrowing (CapeIslanderSheetSliceTests reads the
+        // anchors JSON to prove the const is hers).
+        private static readonly Vector2 CapeIslanderOrigin = new Vector2(228f / 456f, 162f / 420f);
 
-        // The lobster boat needed none of the calibration agony above: she is baked in-engine, so
-        // her pivot is READ FROM THE RIG (LobsterBoatIso.pivot = 228,258 measured from the TOP-left)
-        // and converted once — (228/456, (420−258)/420). Exact, not inferred from drawn length.
-        // That is the quiet win of ADR 0021: the metadata survives the export instead of being
-        // re-measured by eye afterwards.
+        // The lobster boat never needed the calibration the cape once did: she was baked in-engine
+        // from the start, so her pivot is READ FROM THE RIG (LobsterBoatIso.pivot = 228,258 measured
+        // from the TOP-left) and converted once — (228/456, (420−258)/420). Exact, not inferred from
+        // drawn length. That is the quiet win of ADR 0021: the metadata survives the export instead
+        // of being re-measured by eye afterwards.
         private static readonly Vector2 LobsterBoatOrigin = new Vector2(228f / 456f, 162f / 420f);
 
         // The art director's README, as data. Cell sizes are verbatim from Art/imported-assets.md.
@@ -241,22 +231,26 @@ namespace HiddenHarbours.Art.Editor
             // ---- Cape Islander HULL: the ~12.9 m inshore working boat — the biggest hull in the kit by a
             //      wide margin (her cell is nearly 3× the dory's on a side, ~8× the area). Inboard diesel:
             //      she ships NO motor sheet and NO oar sheets, so hull + rock is her whole skin.
-            //   CapeIslanderIso: 8 cols × 1 row → 8 static hull headings; index = heading
-            //     (0 N, 1 NE, 2 E, 3 SE, 4 S, 5 SW, 6 W, 7 NW — the same CW LABELLING as every iso kit,
-            //     and, like every iso kit, baked COUNTER-CLOCKWISE: see BoatVisualLibraryBuilder).
-            //   CapeIslanderIsoRock: 8 cols (wave frame 0..7) × 8 ROWS (heading) → 64; index = heading×8 +
-            //     frame (row-major from top-left, per BuildRects). NOTE THE AXIS FLIP between the two
-            //     sheets — the base sheet's COLUMNS are facings, the rock sheet's ROWS are. That is not a
-            //     quirk of this kit: the dory, punt and skiff rock sheets all do it, and row-major indexing
-            //     is exactly what turns it into the heading×8 + frame contract above.
             //
-            // ⚠ SIZE: the rock sheet is 3648×3360 — BOTH dimensions over Unity's default 2048 cap, so it
+            // ⚠ BAKED IN-ENGINE since the full-mesh rollout's PR 2b — the same RigBaker recipe as the
+            //   lobster below, so she has the lobster's shape exactly: 32 facings on an 8×4 base page and
+            //   4 rock frames across two 8×8 pages, flat index = heading×rockFrames + frame:
+            //     CapeIslanderIso      32 cells = 8 × 4 rows → 3648×1680, index = heading
+            //     CapeIslanderIsoRock0 64 cells = 8 × 8 rows → 3648×3360, headings  0–15 × 4 frames
+            //     CapeIslanderIsoRock1 64 cells = 8 × 8 rows → 3648×3360, headings 16–31 × 4 frames
+            //   Her facings are therefore GENUINELY CLOCKWISE (the baker corrected the rig's measured
+            //   counter-clockwise turn at bake time) and her FacingsAreCounterClockwise is FALSE. She was
+            //   the last hand-exported hull sheet (8 cols × 1 row, CCW, flag TRUE) until then — do not
+            //   "restore" either.
+            //
+            // ⚠ SIZE: each rock page is 3648×3360 — BOTH dimensions over Unity's default 2048 cap, so it
             // imports DOWNSCALED to 0.56× unless the cap is lifted. SliceOne lifts it automatically (to
             // NextPowerOfTwo(3648) = 4096, which loses nothing), but the trap is worth naming here because
             // a downscale is SILENT: the sprite COUNT still comes out 64 and only the cell-size/pivot
             // asserts in CapeIslanderSheetSliceTests catch it.
-            new SheetSpec(Root + "Boats/CapeIslanderIso.png",     8, 1, 456, 420, SpriteAlignment.Custom, CapeIslanderOrigin),
-            new SheetSpec(Root + "Boats/CapeIslanderIsoRock.png", 8, 8, 456, 420, SpriteAlignment.Custom, CapeIslanderOrigin),
+            new SheetSpec(Root + "Boats/CapeIslanderIso.png",      8, 4, 456, 420, SpriteAlignment.Custom, CapeIslanderOrigin),
+            new SheetSpec(Root + "Boats/CapeIslanderIsoRock0.png", 8, 8, 456, 420, SpriteAlignment.Custom, CapeIslanderOrigin),
+            new SheetSpec(Root + "Boats/CapeIslanderIsoRock1.png", 8, 8, 456, 420, SpriteAlignment.Custom, CapeIslanderOrigin),
 
             // ---- Lobster boat: the ~12.0 m Tier 3 hull, and the FIRST sheet in this repo baked
             //      IN-ENGINE from the art director's rig rather than hand-exported from a browser

@@ -1,0 +1,48 @@
+INTERIOR PALETTE — THE COST OF THE TWO DESIGNS (full mesh interiors, PR 1)
+Both arms generated from the shipped facet shader by targeted transforms.
+Unity 6000.5.0f1 · Direct3D12 · NVIDIA GeForce RTX 4060
+
+1. UNIFORM COST — exact, not sampled. A float4[N] is 16N bytes of constant buffer.
+
+   arm      _RampMeta   interior table   ramp uniform bytes   delta vs shipped
+   --------------------------------------------------------------------------
+   BASE          16            -            256                   0
+   WIDEN        48            -            768                +512  (ALL hulls, always)
+   SCOPED off    16            -            256                   0  (byte-identical)
+   SCOPED on     16          24            640                +384  (only while a cut is live)
+
+   WIDEN is paid by every hull in every frame, because _RampMeta is outside the
+   gate's #ifdef and every hull material carries it. SCOPED's extra table lives
+   inside #ifdef HH_LEVEL_GATE, and IsoFacetHullRenderer.ApplyCutawayKeyword only
+   enables that keyword while a cut is actually live — so on a harbour of boats
+   nobody is inside, SCOPED costs literally nothing and WIDEN costs 512 B each.
+
+2. COMPILE — every arm, both keyword states, on the shipped target.
+
+   BASE    name=HiddenHarbours/IsoFacet                passes=2  errors=0  warnings=0
+   WIDEN   name=HiddenHarbours/_Spike/IsoFacetWiden    passes=2  errors=0  warnings=0
+
+3. COMPILED PROGRAM BYTES — per keyword state. The number that would show a
+   widened uniform array costing registers or instructions rather than just bytes.
+
+   arm      keywords              vertex B    fragment B   ok
+   --------------------------------------------------------------------
+   BASE    (gate off)                1362          1878   ok
+   BASE    HH_LEVEL_GATE             1610          2430   ok
+   WIDEN   (gate off)                1362          1878   ok
+   WIDEN   HH_LEVEL_GATE             1610          2430   ok
+   Recorded before the change, same machine and compiler, at 27081bc4:
+     gate off  vertex 1362  fragment 1878
+     gate on   vertex 1610  fragment 2282
+   The gate-OFF row above must still match it: that is the identity proof, and it
+   is the whole claim that a hull nobody is aboard pays nothing for this feature.
+
+4. THE SUB-MESH VARIANT OF CANDIDATE (b), for completeness.
+
+   Scoping the second table by MATERIAL SLOT instead of by the interior tag costs
+   one extra draw per hull that has interior geometry visible, and splits the hull
+   into two sub-meshes. Structural, not sampled: every committed hull mesh is
+   subMeshCount = 1 today (measured by the S0 spike, 24/24), and IsoFacetHullRenderer
+   draws one material per hull. It is strictly worse than selecting on a tag the
+   vertex data already carries, so it is reported rather than built.
+

@@ -1,6 +1,6 @@
 # ADR 0020 — World-placed object persistence: an append-only `PlacedTraps` list on `SaveData`, storing only irreducible facts
 
-- **Status:** **Proposed — awaiting lead-architect sign-off.** This PR *is* the proposal; the
+- **Status:** **Accepted** *(status flipped 2026-09-01 by the lead-architect review: merged 2026-07-06 with schema v2→3, which is the sign-off it awaited — original line follows)* — **Proposed — awaiting lead-architect sign-off.** This PR *is* the proposal; the
   coordinator's review + merge is the sign-off (`agents/coordination.md` §5.2/§8). Extends ADR 0008
   (the save schema) — schema-only: it adds fields, bumps the version, and migrates old saves. It
   ships **no trap runtime, placement, or `TrapDef`** — those are later builds of the trap-fishing arc

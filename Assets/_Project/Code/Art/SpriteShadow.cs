@@ -46,7 +46,7 @@ namespace HiddenHarbours.Art
     /// </summary>
     [DisallowMultipleComponent]
     [RequireComponent(typeof(SpriteRenderer))]
-    public sealed class SpriteShadow : MonoBehaviour
+    public sealed class SpriteShadow : MonoBehaviour, ILampShadowCaster
     {
         private const string ShadowMaterialPath = "SpriteShadow";          // Resources/SpriteShadow.mat
         private const string ShadowShaderName   = "HiddenHarbours/SpriteShadow";
@@ -207,11 +207,44 @@ namespace HiddenHarbours.Art
             if (_shadow != null) _shadow.enabled = true;
             _timer = 0f;
             Tick();   // correct on the first frame, not a stale default
+            // Every sun caster is a LAMP caster too (ADR 0016, lights PR B): the lamp-shadow system draws
+            // its own pooled quads from this caster's silhouette and touches nothing of this component's
+            // — the sun shadow above is byte-identical with or without a lamp in range.
+            LampShadowSystem.RegisterCaster(this);
         }
 
         private void OnDisable()
         {
             if (_shadow != null) _shadow.enabled = false;   // pooled, not destroyed — reused on re-enable
+            LampShadowSystem.UnregisterCaster(this);
+        }
+
+        /// <summary>
+        /// This caster as the lamp-shadow system sees it: its feet (the pivot, shifted down by the foot
+        /// offset exactly as <see cref="PoseShadow"/> anchors the sun shadow), the world rect its sprite
+        /// CELL fills, and the sheet + cell uv the shader samples the silhouette from. A disabled or
+        /// sprite-less caster has nothing to throw.
+        /// </summary>
+        public bool TryGetLampShadowCaster(out LampShadowCasterState state)
+        {
+            state = default;
+            if (_caster == null) _caster = GetComponent<SpriteRenderer>();
+            if (_caster == null || !_caster.enabled) return false;
+            Sprite sprite = _caster.sprite;
+            if (sprite == null || sprite.texture == null) return false;
+
+            Vector3 foot = transform.TransformPoint(new Vector3(0f, -_footOffset, 0f));
+            LampShadowMath.SpriteWorldRect(
+                (Vector2)transform.position, transform.lossyScale, sprite.rect, sprite.pivot,
+                sprite.pixelsPerUnit, _caster.flipX, _caster.flipY, out Vector2 min, out Vector2 max);
+
+            state.Foot = new Vector2(foot.x, foot.y);
+            state.RectMin = min;
+            state.RectMax = max;
+            state.Sheet = sprite.texture;
+            state.UvRect = LampShadowMath.SpriteUvRect(
+                sprite.rect, sprite.texture.width, sprite.texture.height, _caster.flipX, _caster.flipY);
+            return state.IsValid;
         }
 
         private void Update()

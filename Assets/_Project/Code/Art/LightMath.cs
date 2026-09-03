@@ -208,6 +208,96 @@ namespace HiddenHarbours.Art
             return Mathf.Clamp01(radial * cone);
         }
 
+        // ---- WAVE RELIEF: the beam lights the SEA'S SHAPE, not a flat disc (owner, 2026-08-28) ------------
+        //
+        // The owner's sentence: *"the spotlight over the water is just one uniform shape with a gentle
+        // gradient. The light needs to affect the environment... it should highlight the water at crests and
+        // be shadowed at the valleys of waves unless the proper light angle exposes them."*
+        //
+        // <see cref="WaterConeTerm"/> is that uniform shape — radial x cone, blind to the sea under it. The
+        // RELIEF factor below is what makes the beam land ON the water: the shared wave field's ANALYTIC
+        // slope (the same quantity the swell FACE SHADING already rides — ADR 0018, one field, one slope)
+        // tilts each facet toward or away from THIS lamp, and the cone weight is scaled by the result.
+        //
+        // Why a LAMP is not the sun. The sun is a direction at infinity, so its face shading uses ONE world
+        // vector for the whole sea. A lamp is a POINT at a HEIGHT, so the incidence direction is different at
+        // every pixel: steep directly under the lamp, grazing at the far end of the throw. The consequences
+        // the owner asked for fall out of that single fact, with no special cases:
+        //   * a crest face turned toward the lamp gains flux, a trough wall and a back slope lose it;
+        //   * a LOW/grazing lamp separates crest from trough hard and reaches INTO troughs, while a HIGH one
+        //     flattens the sea toward a disc  -- his "unless the proper light angle exposes them";
+        //   * and because the elevation to a fixed-height lamp falls off with distance, the FAR end of one
+        //     beam is automatically more raking than its near end. Nobody has to author that.
+        //
+        // EXACTLY NEUTRAL ON FLAT WATER, BY CONSTRUCTION -- this is the load-bearing property, not a tuning.
+        // The N.L is divided by the SAME dot product a FLAT facet would have had at the SAME pixel (lz), so
+        // zero slope cancels to exactly 1 for ANY lamp geometry, at every pixel, in every sea. Glass calm
+        // therefore keeps its mirror with a searchlight playing across it (the sacred calm, §11), and the
+        // property is asserted rather than eyeballed -- see WaveReliefTests.
+        //
+        // Pure / deterministic; mirrors the HLSL <c>BeamRelief</c> in HiddenHarboursWater.shader exactly (the
+        // twin, guarded against drift by a source assertion on the shader text).
+
+        /// <summary>
+        /// The per-channel floor on the lamp's normalized ELEVATION (<c>L.z</c>) used by
+        /// <see cref="WaveReliefFactor"/>. As a lamp sinks toward the water plane the true relief contrast
+        /// runs away to infinity (a facet tilted a hair toward a light at zero elevation catches everything);
+        /// this bounds the sharpening at a physically-lit-looking maximum instead. Mirrors the shader's
+        /// <c>BEAM_RELIEF_MIN_ELEVATION</c> default; the material exposes it so the owner can tune the rake.
+        /// </summary>
+        public const float BeamReliefMinElevation = 0.15f;
+
+        /// <summary>
+        /// The RELIEF factor at one water pixel: how much more (or less) light a SLOPED facet receives from a
+        /// point lamp than FLAT water would at the same pixel. <c>1</c> = lit exactly as flat water (no
+        /// change), <c>&gt;1</c> = a face tilted into the beam, <c>0</c> = turned away / self-shadowed.
+        ///
+        /// <para><b>Exactly 1 when the slope is zero</b>, for every lamp position, height and range -- the
+        /// glass-calm guarantee, and the reason a spotlight sweeping a dead-flat sea still draws the mirror
+        /// it draws today.</para>
+        ///
+        /// <para>The maths: the surface normal of a height field is <c>N ∝ (-sx, -sy, 1)</c>. With <c>L</c> the
+        /// unit direction from the pixel TO the lamp, the received flux goes as <c>N·L</c>; dividing by the
+        /// flat-water reference <c>L.z</c> at the same pixel normalizes out the cone's own falloff (which
+        /// <see cref="WaterConeTerm"/> already carries) and leaves pure relief.</para>
+        /// </summary>
+        /// <param name="slopeX">Wave-field slope dh/dx at this pixel (dimensionless), from the shared field.</param>
+        /// <param name="slopeY">Wave-field slope dh/dy at this pixel.</param>
+        /// <param name="toLampX">Lamp world X minus pixel world X (metres).</param>
+        /// <param name="toLampY">Lamp world Y minus pixel world Y (metres).</param>
+        /// <param name="toLampZ">Lamp height above THIS pixel's water surface (metres; lamp height - wave height).</param>
+        /// <param name="minElevation">Floor on the normalized elevation (see <see cref="BeamReliefMinElevation"/>).</param>
+        /// <param name="maxGain">Upper bound on the returned factor (bounds crest sparkle; >= 1).</param>
+        public static float WaveReliefFactor(float slopeX, float slopeY,
+                                             float toLampX, float toLampY, float toLampZ,
+                                             float minElevation, float maxGain)
+        {
+            float lenSq = toLampX * toLampX + toLampY * toLampY + toLampZ * toLampZ;
+            if (lenSq < 1e-10f) return 1f;                  // at the lamp itself the direction is undefined
+            float inv = 1f / Mathf.Sqrt(lenSq);
+            float lx = toLampX * inv, ly = toLampY * inv, lz = toLampZ * inv;
+
+            // Floor the elevation ONCE and use the SAME lz in both the numerator and the flat-water divisor,
+            // so the zero-slope cancellation stays EXACT even for a lamp below the floor (a grazing beam).
+            lz = Mathf.Max(lz, Mathf.Max(minElevation, 1e-4f));
+
+            float sDotL = slopeX * lx + slopeY * ly;
+            float invN = 1f / Mathf.Sqrt(1f + slopeX * slopeX + slopeY * slopeY);   // 1/|N|
+            float relief = (lz - sDotL) * invN / lz;
+
+            return Mathf.Clamp(relief, 0f, Mathf.Max(maxGain, 1f));
+        }
+
+        /// <summary>
+        /// Blend a <see cref="WaveReliefFactor"/> toward flat-water neutrality by <paramref name="strength"/>.
+        /// <paramref name="strength"/> <c>= 0</c> returns <b>exactly</b> <c>1</c> -- a bit-exact passthrough,
+        /// so the dial at zero is provably today's shipped beam (the #680 strength-dial precedent). Mirrors
+        /// the shader's <c>1.0 + (relief - 1.0) * strength</c>.
+        /// </summary>
+        public static float ApplyReliefStrength(float relief, float strength)
+            => 1f + (relief - 1f) * Mathf.Max(strength, 0f);
+
+
         // ---- DAY/NIGHT PRE-COMPENSATION (the complete-dark fix) ------------------------------------------
         //
         // The day/night overlay MULTIPLIES the whole frame by _DayNightTint after the water renders (ADR 0013).

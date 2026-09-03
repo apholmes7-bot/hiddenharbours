@@ -298,6 +298,37 @@ namespace HiddenHarbours.Tests.PlayMode
         /// mid-passage. Nothing new is published on the way back, either — a listener that re-ran its
         /// entry every boundary is the defect <c>CabinEntered</c>'s own remarks forbid.
         /// </summary>
+        /// <summary>
+        /// THE RETIREMENT MEASUREMENT ON THE INTRO (ADR 0041, fleet rollout PR 0). The cape's room has
+        /// been geometry since #690, and the intro is the one place every player sees a cabin from the
+        /// inside. Below decks in the shipped opening, how many things draw his cabin? Counted off the
+        /// live objects and logged either way, and a plate of what a camera on the hull sees is written
+        /// to the temporary cache (never into the repo) for the owner's eye.
+        /// </summary>
+        [UnityTest]
+        public IEnumerator BelowDecks_TheIntroDrawsHisCabinFromExactlyOneSource_AndWritesAPlate()
+        {
+            Assert.IsNotNull(_skipper);
+            ArrivalOpening opening = Build();
+            Assert.IsTrue(opening.TryBegin());
+            Assert.IsTrue(opening.IsBelowDecks, "the game did not open below decks. " + Where());
+            yield return null;   // the cabin's LateUpdate has shown its cell; the cutaway has re-asserted
+            yield return null;
+
+            Transform boat = opening.Boat.transform;
+            BelowDecksDrawSources.Count drawn = BelowDecksDrawSources.Measure(boat);
+            Debug.Log($"[mesh-interiors-retirement] cape (the intro), below decks: {drawn}");
+
+            // The plate first, so a red assertion still leaves the picture behind.
+            BelowDecksDrawSources.WritePlate(boat, "intro-below-decks.png", metresTall: 16f, pxPerMetre: 48);
+
+            Assert.IsTrue(drawn.MeshRoom,
+                "his house is not cut open while she is below — the mesh room is not being shown. " + drawn);
+            Assert.AreEqual(1, drawn.Total,
+                "a converted hull must draw her cabin from ONE source; two means the sprite room is still " +
+                "wired under the mesh room. " + drawn);
+        }
+
         [UnityTest]
         public IEnumerator TogglingTheRootWhileSheIsBelow_LeavesHerBelow_AndSaysNothingNew()
         {
@@ -345,6 +376,52 @@ namespace HiddenHarbours.Tests.PlayMode
 
             GameServices.Helm.SetPilotedHull(null);
             EventBus.Publish(new ControlModeChanged(ControlMode.OnDeck));
+        }
+
+        /// <summary>
+        /// ⭐ <b>THE SEAM, ON THE ARRIVAL</b> (ADR 0043, PR 0). The journey above walks her by calling
+        /// <c>WalkTheCabin</c> itself — the component API, because a keypress is undeliverable here. This
+        /// walks her the way the KEYS do: a <see cref="HeldDeckIntents"/> is handed to the arrival and
+        /// its own <c>Update</c> reads it and steps the cabin. If the seam is not consulted she does not
+        /// move, and <see cref="HeldIntents{T}.Reads"/> says whether it was asked at all.
+        /// </summary>
+        [UnityTest]
+        public IEnumerator BelowDecks_AHeldIntentWalksHer_ThroughTheArrivalsOwnUpdate()
+        {
+            Assert.IsNotNull(_skipper, "the arrival skipper Def must exist for this to mean anything");
+            ArrivalOpening opening = Build();
+            var held = new HeldDeckIntents();
+            opening.ConfigureWalkInput(held);
+
+            Assert.IsTrue(opening.TryBegin(), "a fresh save must be brought in");
+            Assert.IsTrue(opening.IsBelowDecks, "the game did not open below decks. " + Where());
+            yield return null;   // the read is in Update: the first idle frame lands nothing
+
+            Vector2 startSole = opening.CabinLocalPosition;
+            float furthestOnTheSole = 0f;
+            foreach (Vector2 dir in new[] { Vector2.up, Vector2.down, Vector2.left, Vector2.right })
+            {
+                held.Walk(dir);
+                float until = Time.realtimeSinceStartup + 0.35f;
+                while (Time.realtimeSinceStartup < until) yield return null;
+                furthestOnTheSole = Mathf.Max(furthestOnTheSole,
+                                              Vector2.Distance(opening.CabinLocalPosition, startSole));
+            }
+
+            Assert.Greater(held.Reads, 0, "the arrival never asked its source — the seam is not wired into Update.");
+            Assert.Greater(furthestOnTheSole, 0.15f,
+                $"a held intent never moved her off {startSole} in any direction (now " +
+                $"{opening.CabinLocalPosition}) — the arrival read the source but did not walk on it. " + Where());
+            Assert.IsTrue(opening.IsBelowDecks, "walking about the cabin took her out of it. " + Where());
+            AssertArmandKeepsTheHelm();
+
+            // Released, she stands: a released intent is a zero, the same as a released key.
+            held.Release();
+            yield return null;
+            Vector2 rest = opening.CabinLocalPosition;
+            for (int i = 0; i < 5; i++) yield return null;
+            Assert.AreEqual(0f, Vector2.Distance(rest, opening.CabinLocalPosition), 1e-4f,
+                "she kept walking after the intent was released. " + Where());
         }
 
         // =============================================================================================

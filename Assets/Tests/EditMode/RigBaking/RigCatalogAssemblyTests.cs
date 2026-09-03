@@ -97,6 +97,13 @@ namespace HiddenHarbours.Tests.RigBaking
             // MinDoorOffsetPx. That probe would refuse, correctly — hence CamperRigAzimuthProbe.
             new Snapshot("camper", "docs/art/rigs/camper-iso-kit/camperIsoRig.js",
                          "CamperIso", AzimuthConvention.CounterClockwise),
+            // Added by the cape exterior sheet re-bake (full-mesh rollout PR 2b, 2026-09-02). Her
+            // mesh had been baked through HullMeshFleet since #666, but the sprite turntable
+            // resolves by catalog key, so her 8-cell hand-exported sheet could never be re-baked
+            // until she had a row. Convention agrees with her committed HullMeshDef's measured
+            // AzimuthCounterClockwise (RigAzimuthConventionTests pins the two together).
+            new Snapshot("capeIslander", "docs/art/rigs/capeIslanderIsoRig.js",
+                         "CapeIslanderIso", AzimuthConvention.CounterClockwise),
             new Snapshot("catchKit", "docs/art/rigs/catchKit.js",
                          "CatchKit", AzimuthConvention.Clockwise),
             new Snapshot("character", "docs/art/rigs/characterIsoRig6.js",

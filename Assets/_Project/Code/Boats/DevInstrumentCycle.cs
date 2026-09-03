@@ -49,8 +49,9 @@ namespace HiddenHarbours.Boats
                  "K for Kit — free of every other binding in the project (F fleet/interact, V variant, " +
                  "Z neutral, X dump, N tide, R anchor/rode, T rotation/trap, Y auto-yaw, G grant, H " +
                  "haul, L spotlight/lid, O displaced water, I ice box, J/U character spike, " +
-                 "E interact, Q mooring, Space work/pull, WASD+arrows helm, C/1/2/Enter/" +
-                 "LeftShift from InputSystem_Actions, Esc close).")]
+                 "E interact, Q mooring, Space work/pull, WASD+arrows helm, Enter/Esc from the UI map " +
+                 "of HiddenHarbours.inputactions, Esc close). Declared as Helm/InstrumentCycle in that " +
+                 "asset (ADR 0043; the read moves there in the input lane's PR 1).")]
         [SerializeField] private Key _cycleKey = Key.K;
 
         private BoatController _boat;
