@@ -250,6 +250,18 @@ namespace HiddenHarbours.Tests.Art.EditMode
         /// (13 px). So the range is re-measured against the new bake and the bounds keep their
         /// original job — refuse a flare that has collapsed to nothing, and refuse one that has
         /// grown, either of which means the bake moved under the placement code.</para>
+        ///
+        /// <para><b>⚠️ RE-DERIVED AGAIN FOR THE PASS-3 RIG (2026-09-02), and again by measurement.</b>
+        /// Pass 3 gives every species its TRUE height through <c>SCALE = 0.6</c>, so cells roughly
+        /// double and the root flare is drawn at the size it would really be. Pads now run
+        /// <b>7–22 px = 0.219–0.688 m</b>, and the spread is no longer a smooth band: nine species sit
+        /// at 7–12 px and the <b>WHITE CEDAR alone is 22 px</b>. That is the dense-column form doing
+        /// what its architecture says — a fan skirt that reaches the ground all round, against the
+        /// clean poles and buttressed boles of the rest — so the outlier is the art, not a bug.</para>
+        ///
+        /// <para>⚠️ The SHALLOWEST species (black spruce, 7 px = 0.219 m) is now within a fifth of a
+        /// pixel-metre of the 0.20 m floor below. If a later pass drops it under, the floor is doing
+        /// its job and the question genuinely reopens: read the log line, do not move the floor.</para>
         /// </summary>
         [Test]
         public void BottomCentre_WouldSinkEverySpecies_ByBetweenAQuarterAndFourTenthsOfAMetre()
@@ -260,15 +272,17 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Debug.Log($"[tree-place] bottom-centre sabotage: sinks the ten species by " +
                       $"{min:F3}–{max:F3} m ({_trees.Min(p => p.Entry.nearFlarePad)}–" +
                       $"{_trees.Max(p => p.Entry.nearFlarePad)} px at PPU {Ppu}). " +
-                      "Pass 2 measured 2026-07-29: 0.250–0.406 m (8–13 px). Pass 1 was 0.406–0.719 m " +
-                      "(13–23 px) — the buttressed root flare is a narrower footprint by design.");
+                      "Pass 3 measured 2026-09-02: 0.219–0.688 m (7–22 px), the 22 being the white " +
+                      "cedar's fan skirt alone — the other nine are 7–12 px. Pass 2 was 0.250–0.406 m " +
+                      "(8–13 px); pass 1 was 0.406–0.719 m (13–23 px).");
 
             // 0.20 m = 6.4 px. Below that a bottom-centre pivot stops being a visible error and the
             // warnings this suite exists to justify would genuinely be noise.
             Assert.Greater(min, 0.20f,
                 "Even the shallowest flare must be a visible error, or this whole warning is noise.");
-            Assert.That(max, Is.InRange(0.35f, 0.5f),
-                "The worst species sinks 13 px = 0.406 m under the pass-2 rig (it was 23 px = " +
+            Assert.That(max, Is.InRange(0.6f, 0.8f),
+                "The worst species — the WHITE CEDAR, whose fan skirt reaches the ground all round — " +
+                "sinks 22 px = 0.688 m under the pass-3 rig (13 px = 0.406 m under pass 2, 23 px = " +
                 "0.719 m under pass 1). If that moved again, the bake changed — re-measure before " +
                 "touching this bound.");
         }

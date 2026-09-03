@@ -474,23 +474,34 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void TheTwoPresetsWithARunSheet_HaveARunGait_AndTheRestDoNot()
+        public void EveryCastPreset_HasARunSheet_AndARunGaitWiredToIt()
         {
-            // The 6.6 drop completed the run for exactly two of the cast. This is the assertion the
-            // handoff asked for rather than an assumption: the builder now ASKS every preset for a run
-            // sheet and lets the all-or-nothing gate answer, so "who has one" is a fact about the ART
-            // and this is where it is read. The seven without one must still come back false — a run
-            // that half-wired would index a stale cell mid-stride.
-            var withRun = new[] { "visual.ginny_iso", "visual.skipper_iso" };
-
+            // ⚠️ THIS FIXTURE USED TO BE TheTwoPresetsWithARunSheet_HaveARunGait_AndTheRestDoNot, and
+            // the rename is the finding. The 6.6 drop had completed the run for exactly two of the
+            // cast — Ginny and Skipper — so the honest assertion then was "these two and no others",
+            // read off the ART rather than assumed.
+            //
+            // Rig 6.9 (2026-09-02) closed the gap, and not by shipping seven more PNGs: it is a FACE
+            // pass in which every one of 100 measured (preset × anim) cells moved, so leaving seven
+            // casts without a run while the other two ran with a 6.6 face was no longer a tenable
+            // asymmetry. `run` joined CharacterRigBakeMenu.CastStates and the seven missing sheets
+            // were baked in-engine at the 64 × 92 locomotion lane (the drop's own run sheets are
+            // windowed at the OFF-DECK 88 and are the wrong cell for a gait).
+            //
+            // The property that MATTERS is unchanged and is the second assert: the gait is wired
+            // exactly when the sheet exists, because a run that half-wired would index a stale cell
+            // mid-stride. What changed is that the answer is now "all of them" — so this asks the
+            // ART, as before, and requires the ART to be complete.
             foreach (var (stem, folder, visualId) in Presets)
             {
                 if (visualId == "visual.fisher_iso") continue;      // the player has always had one
 
                 string sheet = SheetPath(stem, folder, "_run");
                 bool artExists = AssetDatabase.LoadAssetAtPath<Texture2D>(sheet) != null;
-                Assert.AreEqual(withRun.Contains(visualId), artExists,
-                                $"{sheet}: the drop shipped a run sheet for Ginny and Skipper only");
+                Assert.IsTrue(artExists,
+                              $"{sheet}: every cast preset has run since rig 6.9 — CastStates bakes " +
+                              "it. A missing sheet means the bake was not re-run, or a preset was " +
+                              "added to the cast without one.");
 
                 string path = $"{VisualsFolder}/{AssetNameFor(visualId)}.asset";
                 var def = AssetDatabase.LoadAssetAtPath<CharacterVisualDef>(path);

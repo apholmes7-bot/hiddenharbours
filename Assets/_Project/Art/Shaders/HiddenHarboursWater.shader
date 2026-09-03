@@ -751,6 +751,26 @@ Shader "HiddenHarbours/Water"
         _BoatLightTintAmount ("Beam warm tint (faint additive warmth inside the cone)", Range(0,2)) = 0.25
         _BoatLightGain       ("Beam cone weight gain (shapes the cone weight before the lift)", Range(0,4)) = 0.5
 
+        // ---- LIT WATER: the lamp ADDS light to the sea it finds, it does not only scale it -------------
+        // Owner ruling 2026-09-02: *"dark enough at night that the player feels the need to use radar and
+        // the lighting."* The reveal above is a MULTIPLY of the water's own colour — and the frame is
+        // multiplied AGAIN by the day/night tint downstream (ADR 0013), which at 02:00 is ~(0.016, 0.020,
+        // 0.040). A dark sea times 3.5 times 0.02 is still a dark sea: the shipped 1.5 / 9 m searchlight
+        // "lights nothing you can name" (register row 12). A lamp has to ADD.
+        //
+        // So the cone also lays the lamp's colour ON the water's own albedo — the composited sea BEFORE the
+        // palette grade, so foam, whitecaps and the surf's white keep the contrast the sea authored — and
+        // that term rides the post-grade, overlay-COMPENSATED bucket beside the moon's glitter (#143's
+        // precedent). Surf and caps therefore LIGHT UP inside the beam while the open body takes a faint
+        // sheen, and the whole thing survives the multiply instead of being crushed by it.
+        //
+        // 0 is the pre-PR look EXACTLY (the multiply-only reveal). col.rgb ONLY (P1, rule 5).
+        // MEASURED, not guessed (the plate instrument's night column, the shipped 1.5 x 0.8 / 9 m lamp on a
+        // moonless clear midnight): the term adds about 0.08 of luma inside the cone per unit of this dial,
+        // so 0.06 moved the lit pool by 9 % — still "lights nothing you can name". 1.6 carries it to roughly
+        // the luma a MOONLIT sea reads at, which is the bar the ruling sets for a lamp on a black night.
+        _BeamLitStrength     ("Beam LIT water (additive: the lamp on the sea's own albedo; 0 = the shipped multiply-only reveal)", Range(0,4)) = 1.6
+
         [Header(BEAM WAVE RELIEF (the beam lights the SEAS SHAPE   owner mandate 2026 08 28))]
         // "it should highlight the water at crests and be shadowed at the valleys of waves unless the proper
         // light angle exposes them." The cone weight above is radial x angular and blind to the sea under it;
@@ -1460,6 +1480,10 @@ Shader "HiddenHarbours/Water"
                 float  _BoatLightBrighten;
                 float  _BoatLightTintAmount;
                 float  _BoatLightGain;
+                // LIT WATER (the night ruling): the lamp ADDS its colour on the sea's own albedo, in the
+                // overlay-compensated bucket, so a black sea can be lit at all. 0 = the pre-PR multiply-only
+                // reveal, exactly. col.rgb ONLY (P1, rule 5).
+                float  _BeamLitStrength;
                 // Beam WAVE RELIEF (owner mandate 2026-08-28): how hard the wave field's own slope shapes
                 // the cone. Strength 0 = the flat shipped cone, EXACTLY. col.rgb ONLY (P1, rule 5).
                 float  _BeamReliefStrength;
@@ -3715,20 +3739,36 @@ Shader "HiddenHarbours/Water"
             // back to the ONE _BoatLight* singleton, which is EXACTLY the ADR 0016 path this file shipped with.
             // The singleton is deliberately NOT added on top of the array — it is the same primary lamp, kept
             // published for SpriteLitDecor.hlsl's sake (the other lit path), so summing both would double it.
-            float BoatLightTerm(float2 worldXY, float2 waveSlopeXY, float waveHeightM)
+            // ⚠️ It also returns the COLOUR-WEIGHTED sum, and that is not a convenience: the WEIGHT comes
+            // from the array while the singleton _BoatLightColor is published only by BoatSpotlight, so a
+            // consumer that took the weight from here and the colour from the singleton would be reading two
+            // different publishers. In a scene driven purely by the bridge (an EditMode harness, the plate
+            // sweep) the singleton is simply UNSET — the new lit-water term measured exactly zero that way
+            // before this out-parameter existed — and in a world with two lamps of different colours it
+            // would paint both of them in the first lamp's colour. Summed here, per light, once.
+            float BoatLightTerm(float2 worldXY, float2 waveSlopeXY, float waveHeightM, out float3 litColor)
             {
                 int n = (int)(_WaterLightCount + 0.5);
                 if (n <= 0)
-                    return BoatLightWeight(_BoatLightPos, _BoatLightDir, _BoatLightParams, _BoatLightParams2,
-                                           worldXY, waveSlopeXY, waveHeightM);
+                {
+                    float one = BoatLightWeight(_BoatLightPos, _BoatLightDir, _BoatLightParams, _BoatLightParams2,
+                                                worldXY, waveSlopeXY, waveHeightM);
+                    litColor = _BoatLightColor.rgb * one;
+                    return one;
+                }
 
                 float total = 0.0;
+                litColor = float3(0.0, 0.0, 0.0);
                 [unroll]
                 for (int i = 0; i < WATER_MAX_LIGHTS; i++)      // FIXED bound; the count masks inside
                 {
                     if (i < n)
-                        total += BoatLightWeight(_WaterLightPos[i], _WaterLightDir[i], _WaterLightParams[i],
-                                                 _WaterLightParams2[i], worldXY, waveSlopeXY, waveHeightM);
+                    {
+                        float w = BoatLightWeight(_WaterLightPos[i], _WaterLightDir[i], _WaterLightParams[i],
+                                                  _WaterLightParams2[i], worldXY, waveSlopeXY, waveHeightM);
+                        total += w;
+                        litColor += _WaterLightColor[i].rgb * w;
+                    }
                 }
                 return total;
             }
@@ -5287,6 +5327,16 @@ Shader "HiddenHarbours/Water"
                 float dayNightLuma = (dnSum > 1e-3)
                     ? PaletteLuma(_DayNightTint.rgb)   // cycle running: the real multiply luminance (1 day .. ~0 night)
                     : 1.0;                             // cycle off / unset: full daylight rail (no phantom dark floor)
+
+                // THE SEA'S OWN ALBEDO, kept from BEFORE the grade — what a lamp actually has to light.
+                // Pre-grade on purpose: at deep night the guard-rail's value floor saturates and pulls every
+                // pre-overlay pixel toward luma 1, lit and unlit alike, so a lit term built on the GRADED
+                // colour would light foam and open water by nearly the same amount. The un-graded composite
+                // still carries the contrast the sea authored — white surf against a dark body — which is
+                // the whole difference between a beam that reveals a break line and a beam that paints a
+                // disc. Read-only; the grade below is unchanged.
+                float3 waterAlbedo = col.rgb;
+
                 col.rgb = PaletteGrade(col.rgb, dayNightLuma);
 
                 // ---- THE BOAT SPOTLIGHT: REVEAL the water inside the cone (searchlight, not floodlamp) ----------
@@ -5302,7 +5352,8 @@ Shader "HiddenHarbours/Water"
                 // re-introduce the wash). Weight 0 (by day / outside the cone / no boat) => an EXACT passthrough.
                 // col.rgb ONLY — never depth/clip/_WaterLevel/the height read/the sim (P1 integrity, rule 5).
                 // The lamp's relief sees the bore front's face as well as the swell's (ADR 0040 rev 3).
-                float beamW = BoatLightTerm(worldXY, waveSlope + surfFrontSlope, waveHeight);
+                float3 beamLitColor;
+                float beamW = BoatLightTerm(worldXY, waveSlope + surfFrontSlope, waveHeight, beamLitColor);
                 col.rgb *= (1.0 + beamW * max(_BoatLightBrighten, 0.0));   // the REVEAL: lift the water's own colour
 
                 // ---- LIGHT CONTENT, post-grade + overlay-compensated: BEAM WARM TINT + the NIGHT SKY ------------
@@ -5340,6 +5391,18 @@ Shader "HiddenHarbours/Water"
                 // The beam's WARM TINT is the cone weight × _BoatLightColor × _BoatLightTintAmount — a faint warmth
                 // biased to the lit pool, NOT the old colour slab; the REVEAL (multiply-lift) already happened above.
                 float3 beamTint = _BoatLightColor.rgb * (beamW * max(_BoatLightTintAmount, 0.0));
+                // ---- LIT WATER (the night ruling): the lamp's colour laid ON the sea's own albedo --------
+                // The reveal above MULTIPLIES, and a multiply cannot light a black sea: the downstream
+                // day/night overlay takes ~(0.016, 0.020, 0.040) of whatever it produced. This term ADDS,
+                // in the compensated bucket below, so it survives — and because it carries waterAlbedo it
+                // is not a slab: surf, foam and whitecaps (bright in the sea's own colour) light up hard,
+                // the open body takes a faint sheen, and troughs stay dark. The 2026-07-05 floodlamp
+                // complaint is answered by that factor and not by turning the brightness down.
+                //
+                // It is strongest where the night is blackest, by construction: the compensation divides by
+                // the tint, so a moonlit night (a brighter tint) needs less lamp — which is the physics and
+                // the ruling agreeing. 0 = the pre-PR look, exactly. col.rgb ONLY (P1, rule 5).
+                float3 beamLit = beamLitColor * waterAlbedo * max(_BeamLitStrength, 0.0);
                 // ADR 0027 #8: the NIGHT-LIT share of an object reflection joins this bucket for exactly the
                 // reason the moon glitter does. A lit wheelhouse reflected in black water is LIGHT content;
                 // left in the pre-grade composite the downstream multiply would crush it to ~3% and the boat
@@ -5347,7 +5410,7 @@ Shader "HiddenHarbours/Water"
                 // (hull planking, a tree, a wharf pile) are NOT light and stay pre-grade, dimming with the
                 // sea — that split is `post` vs `pre` from ObjectReflection, and it is 0 here by day because
                 // the compensation factor is ~1 then and the whole sample lands in `pre`.
-                float3 lightContent = beamTint + skyNightRGB + objReflPost + RainRings(worldXY, dt, t);
+                float3 lightContent = beamTint + beamLit + skyNightRGB + objReflPost + RainRings(worldXY, dt, t);
                 col.rgb += (dnSum > 1e-3)
                     ? lightContent / max(_DayNightTint.rgb,
                                          float3(DN_COMP_MIN_CHANNEL, DN_COMP_MIN_CHANNEL, DN_COMP_MIN_CHANNEL))

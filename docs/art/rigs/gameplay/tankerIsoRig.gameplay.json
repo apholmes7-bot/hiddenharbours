@@ -1,6 +1,7 @@
 {
   "rig": "tankerIsoRig.js",
-  "derivedFromRigSha256": "f933bbda7a387a76e324be1492b24015192ba89bca24faafc592b1e8e97b9a39",
+  "derivedFromRigSha256": "f31207abfd71de080d4ece0c9a4cee423ed6ac82f5fb533c15211fc1c6a97217",
+  "_repin_batch5": "2026-09-02 (cutaway kit batch 5). Plumbing only. Measured in the repo's own ClearScript V8 -- 1932 -> 1932 faces, ZERO differing fields, 10/10 renders byte-identical. Convention: LF/blob, as the previous pin was.",
   "generated": "2026-07-22",
   "frame": {
     "units": "m",

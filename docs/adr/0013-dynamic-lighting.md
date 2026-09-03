@@ -214,3 +214,73 @@ tunable max so weather alone never blacks the screen out — night is the dark, 
   weather, profile)`; saving it would bloat saves and risk drift. Not saved.
 - **Building the shadows / boat-lights now.** Shadows are PR 2 (spec'd, kept small per CLAUDE.md §4);
   boat-lights are M2/M3 (rule 8 — stay in phase). This PR is the foundation only.
+
+## Revision (2026-09-02) — the NIGHT LEVEL, and the owner's lever finally exists (water fidelity PR 4)
+
+> *"It should be dark enough at night that the player feels the need to use radar and the lighting, a
+> clear calm night with moonlight should be brighter if not cloudy."* — the owner, 2026-09-02
+
+### 1. `Resources/DayNightProfile.asset` SHIPS
+
+`DayNightController` has read `Resources/DayNightProfile` since this ADR and fallen back to
+`DayNightProfile.CreateDefault()` when it found none — and it always found none, because nobody ever
+authored the asset. The single most look-defining number in the game was a constant in code, and rule 6's
+"the owner tunes it in an inspector" was simply not true of the night. The asset now ships at the code
+defaults, created by `DayNightProfileBuilder` (menu; **create-only, never a refresh** — the profile is the
+owner's tuning surface, not derived data, so a builder that re-stamped the defaults over it would discard
+his art direction). `DayNightProfileAssetTests` pins that it loads by the name the controller asks for and
+that the fallback still agrees with it — the two parting is a look that depends on which path ran.
+
+### 2. The moonlight lift: **0.05 → 0.45**, and cloud now takes ALL of it
+
+The clear full-moon midnight was "roughly twice the deep night — subtly lit, still night" (the 2026-07
+tuning). The ruling makes it a sea you can steer by: measured **×9.3 on the tint** and, in the water
+plates, **×13 the mean luma and ×14 the break-line contrast** of a moonless night.
+
+⚠️ **The moonless floor did not move at all, and that is the other half of the ruling.** Every factor of
+`MoonlightLift` multiplies, so a new moon, a set moon and full overcast each drive it to exactly 0 and the
+tint is the moonless computation bit for bit (`Moonlight_NewMoon_TintIsBitwiseIdenticalToMoonless`,
+`TheMoonlessNight_IsBitwiseUnMOVEDByTheRuling`).
+
+⭐ **…except that "full overcast" was not reachable.** `MoonlightLift` scaled by `1 − weatherDim`, and
+`WeatherDim` is capped at `WeatherDimMax` (0.6) because weather alone must never black the SCREEN out — a
+cap that belongs to the frame, not to the moon. A fully socked-in midnight therefore kept **40 %** of the
+moon's lift, invisible at 0.05 and a lit night at 0.45. The lift now reads cloud as a fraction of that
+ceiling, so it closes where the weather actually ends.
+
+The unit test that was supposed to guarantee this asserted `weatherDim = 1 → no moonlight`: true of the
+formula, and an input the model never produces. **A model whose "off" switch sits outside its own output
+range has no off**, and a test that proves the property with an unreachable input proves nothing —
+`MoonlightLift_ClosesWhereTheWEATHEREnds_NotWhereTheFormulaCould` now sweeps the reachable range instead.
+
+### 3. Light on water must ADD (`_BeamLitStrength`, water shader, `col.rgb` only)
+
+The boat spotlight REVEALS by multiplying the water's own colour inside the cone (`_BoatLightBrighten`,
+2026-07-05: a searchlight, not the floodlamp slab it replaced). But the frame is multiplied AGAIN by the
+day/night tint downstream, and at 02:00 that is ~(0.016, 0.020, 0.040): a dark sea × 3.5 × 0.02 is a dark
+sea, which is why the shipped 1.5 × 0.8 / 9 m lamp "lights nothing you can name" (water-fidelity register
+row 12). A multiply cannot light a black sea.
+
+So the cone also lays the lamp's colour **on the sea's own albedo** — the composite from BEFORE the
+palette grade, so foam, whitecaps and surf keep the contrast the sea authored — and that term rides the
+post-grade, overlay-compensated bucket beside the moon's glitter. Surf lights up hard, the open body takes
+a sheen, troughs stay dark; the floodlamp complaint is answered by the albedo factor and not by turning the
+brightness down. It is strongest where the night is blackest by construction, because the compensation
+divides by the tint. **0 is the pre-PR look exactly.** Measured on the shipped lamp at the shipped night
+tint: in-beam luma **0.051 → 0.193** at glass and **0.057 → 0.217** in a blow, with the sea outside the
+cone unmoved (0.0110 → 0.0116).
+
+⭐ **A shipped term was missing from every night plate ever taken.** `BoatLightTerm` sums its cone weight
+over the bridge's ARRAY, but the colour beside it came from the `_BoatLightColor` SINGLETON, which only
+`BoatSpotlight` publishes — so in a bridge-only scene (an EditMode harness, the plate sweep) the beam's
+warm tint was multiplied by an unset global and vanished, and with two lamps of different colours it would
+paint both in the first one's. `BoatLightTerm` now returns the colour-weighted sum from the same loop, and
+the plate fixture publishes the singleton beside the array the way `BoatSpotlight` does.
+
+### Carried, NOT fixed here (one theme per PR)
+
+**The moon's reflected disc and glitter path are not cloud-aware.** `MoonCycle` packs brightness and
+presence from the clock alone, and the water's moon content is gated by those — so a full moon behind full
+overcast still lays a glitter path on a sea whose TINT lift the cloud correctly took away. Visible in the
+new `SHEET-night-corners.png` under FULL MOON · OVERCAST, and logged in the water-fidelity register rather
+than folded in here.

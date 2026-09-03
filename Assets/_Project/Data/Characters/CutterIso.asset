@@ -134,7 +134,55 @@ MonoBehaviour:
   - {fileID: -1091759765, guid: 5d08675b19ef0db4e98b5d5d670b79f6, type: 3}
   WalkFrameCount: 8
   WalkFramesPerSecond: 10
-  RunSheet: []
+  RunSheet:
+  - {fileID: -604467229, guid: 29c23b9c7c33b72448614b74a2c7ee6f, type: 3}
+  - {fileID: -462399168, guid: 29c23b9c7c33b72448614b74a2c7ee6f, type: 3}
+  - {fileID: -976467459, guid: 29c23b9c7c33b72448614b74a2c7ee6f, type: 3}
+  - {fileID: -1762317395, guid: 29c23b9c7c33b72448614b74a2c7ee6f, type: 3}
+  - {fileID: -1025923350, guid: 29c23b9c7c33b72448614b74a2c7ee6f, type: 3}
+  - {fileID: -212510169, guid: 29c23b9c7c33b72448614b74a2c7ee6f, type: 3}
+  - {fileID: 275913194, guid: 29c23b9c7c33b72448614b74a2c7ee6f, type: 3}
+  - {fileID: 1379206091, guid: 29c23b9c7c33b72448614b74a2c7ee6f, type: 3}
+  - {fileID: 1637427548, guid: 29c23b9c7c33b72448614b74a2c7ee6f, type: 3}
+  - {fileID: 564192938, guid: 29c23b9c7c33b72448614b74a2c7ee6f, type: 3}
+  - {fileID: 1967396011, guid: 29c23b9c7c33b72448614b74a2c7ee6f, type: 3}
+  - {fileID: -1263216668, guid: 29c23b9c7c33b72448614b74a2c7ee6f, type: 3}
+  - {fileID: -1717759097, guid: 29c23b9c7c33b72448614b74a2c7ee6f, type: 3}
+  - {fileID: -792817888, guid: 29c23b9c7c33b72448614b74a2c7ee6f, type: 3}
+  - {fileID: 1859556934, guid: 29c23b9c7c33b72448614b74a2c7ee6f, type: 3}
+  - {fileID: 1818389293, guid: 29c23b9c7c33b72448614b74a2c7ee6f, type: 3}
+  - {fileID: -2104031080, guid: 29c23b9c7c33b72448614b74a2c7ee6f, type: 3}
+  - {fileID: -1615245321, guid: 29c23b9c7c33b72448614b74a2c7ee6f, type: 3}
+  - {fileID: 304868590, guid: 29c23b9c7c33b72448614b74a2c7ee6f, type: 3}
+  - {fileID: -78790333, guid: 29c23b9c7c33b72448614b74a2c7ee6f, type: 3}
+  - {fileID: -1701453772, guid: 29c23b9c7c33b72448614b74a2c7ee6f, type: 3}
+  - {fileID: 160649189, guid: 29c23b9c7c33b72448614b74a2c7ee6f, type: 3}
+  - {fileID: 412853576, guid: 29c23b9c7c33b72448614b74a2c7ee6f, type: 3}
+  - {fileID: 1863411796, guid: 29c23b9c7c33b72448614b74a2c7ee6f, type: 3}
+  - {fileID: -1343601086, guid: 29c23b9c7c33b72448614b74a2c7ee6f, type: 3}
+  - {fileID: 1529339935, guid: 29c23b9c7c33b72448614b74a2c7ee6f, type: 3}
+  - {fileID: 1579988982, guid: 29c23b9c7c33b72448614b74a2c7ee6f, type: 3}
+  - {fileID: -1730127785, guid: 29c23b9c7c33b72448614b74a2c7ee6f, type: 3}
+  - {fileID: -1456639789, guid: 29c23b9c7c33b72448614b74a2c7ee6f, type: 3}
+  - {fileID: 119396237, guid: 29c23b9c7c33b72448614b74a2c7ee6f, type: 3}
+  - {fileID: -1672970036, guid: 29c23b9c7c33b72448614b74a2c7ee6f, type: 3}
+  - {fileID: -2053416670, guid: 29c23b9c7c33b72448614b74a2c7ee6f, type: 3}
+  - {fileID: -755146840, guid: 29c23b9c7c33b72448614b74a2c7ee6f, type: 3}
+  - {fileID: -1633524807, guid: 29c23b9c7c33b72448614b74a2c7ee6f, type: 3}
+  - {fileID: 88916795, guid: 29c23b9c7c33b72448614b74a2c7ee6f, type: 3}
+  - {fileID: 1593440729, guid: 29c23b9c7c33b72448614b74a2c7ee6f, type: 3}
+  - {fileID: 1332376771, guid: 29c23b9c7c33b72448614b74a2c7ee6f, type: 3}
+  - {fileID: -1471206474, guid: 29c23b9c7c33b72448614b74a2c7ee6f, type: 3}
+  - {fileID: -797049227, guid: 29c23b9c7c33b72448614b74a2c7ee6f, type: 3}
+  - {fileID: -924279158, guid: 29c23b9c7c33b72448614b74a2c7ee6f, type: 3}
+  - {fileID: 1981811709, guid: 29c23b9c7c33b72448614b74a2c7ee6f, type: 3}
+  - {fileID: -421085011, guid: 29c23b9c7c33b72448614b74a2c7ee6f, type: 3}
+  - {fileID: 681244836, guid: 29c23b9c7c33b72448614b74a2c7ee6f, type: 3}
+  - {fileID: -1461899395, guid: 29c23b9c7c33b72448614b74a2c7ee6f, type: 3}
+  - {fileID: -1324559555, guid: 29c23b9c7c33b72448614b74a2c7ee6f, type: 3}
+  - {fileID: 1081370965, guid: 29c23b9c7c33b72448614b74a2c7ee6f, type: 3}
+  - {fileID: 2063503438, guid: 29c23b9c7c33b72448614b74a2c7ee6f, type: 3}
+  - {fileID: 2066564516, guid: 29c23b9c7c33b72448614b74a2c7ee6f, type: 3}
   RunFrameCount: 6
   RunFramesPerSecond: 12
   WalkSpeedThreshold: 0.35

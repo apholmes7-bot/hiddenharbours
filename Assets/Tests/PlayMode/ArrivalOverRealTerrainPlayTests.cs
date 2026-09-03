@@ -883,6 +883,16 @@ namespace HiddenHarbours.Tests.PlayMode
         /// against the 1.7 × 4.0 m capsule every hull actually carries. The owner is watching the art,
         /// and the art is what looked wrong; the capsule would let her pass a metre and a half closer
         /// and still be honest about the physics.</para>
+        ///
+        /// <para><b>⭐⭐ RE-MEASURED 2026-09-02 — every number this printed before that date was taken on
+        /// a boat that does not exist.</b> Both hulls were CIRCLES: the cape a 2.40 m radius about her
+        /// root, the moored dory a 0.85 m radius about hers. A 12.9 m hull is not a 4.8 m disc, and the
+        /// whole argument of this test is that her ENDS go where her centre does not — so the model
+        /// contradicted the finding it was written to guard. Both are now
+        /// <see cref="HullFootprint"/>s: the cape's outline swung on her live drawn heading, the dory's
+        /// on the heading she is moored at. Buoys stay circles, because a buoy honestly is one. The
+        /// report prints the old circle number beside the new one so the size of the correction is
+        /// visible rather than asserted.</para>
         /// </summary>
         [UnityTest]
         public IEnumerator SheClearsEveryMarkOnTheWayIn_AndTheMooredDory()
@@ -908,17 +918,57 @@ namespace HiddenHarbours.Tests.PlayMode
                 obstacles.Add((m.Id, m.At, girth));
             }
 
-            obstacles.Add(("the moored dory",
-                           new Vector2(StPetersBuilder.DoryMooredPos.x, StPetersBuilder.DoryMooredPos.y),
-                           StPetersBuilder.DoryHalfBeamMetres));
-
-            Assert.That(obstacles.Count, Is.GreaterThan(1),
+            Assert.That(obstacles.Count, Is.GreaterThan(0),
                 "the region planted no marks at all, so this test would pass by having nothing to " +
                 "measure — which is the failure mode it exists to avoid.");
 
+            // ⭐ THE MOORED DORY IS A BOAT, NOT A BOLLARD (2026-09-02). She used to be measured as a
+            // CIRCLE of her 0.85 m half-beam. She is 4.5 m long and lies on a heading, so that circle
+            // was 1.40 m short of her own ends — and lying bow-north across an east–west fairway, that
+            // was the difference between beside the channel and in it.
+            HullFootprint dory = HullFootprint.FromHeading(
+                new Vector2(StPetersBuilder.DoryMooredPos.x, StPetersBuilder.DoryMooredPos.y),
+                StPetersBuilder.DoryMooredHeadingDegrees,
+                StPetersBuilder.DoryLengthMetres, StPetersBuilder.DoryHalfBeamMetres);
+
             float halfBeam = StPetersBuilder.ArrivalHullHalfBeamMetres;
             var worst = new Dictionary<string, float>();
-            foreach ((string what, Vector2 _, float _g) in obstacles) worst[what] = float.MaxValue;
+            var asCircle = new Dictionary<string, float>();
+            foreach ((string what, Vector2 _, float _g) in obstacles)
+            {
+                worst[what] = float.MaxValue;
+                asCircle[what] = float.MaxValue;
+            }
+            worst[DoryKey] = float.MaxValue;
+            asCircle[DoryKey] = float.MaxValue;
+
+            // 📏 THE BERTHS SHE HAS HAD, against this same real track. Kept rather than deleted: the
+            // owner has now twice said she is in the way, and the only way that conversation converges
+            // is if each answer comes with the number the last one scored. All three are historical
+            // literals on purpose — they are what those builds ACTUALLY shipped, so they must not
+            // follow the constants when the constants move.
+            var candidates = new (string what, HullFootprint her)[]
+            {
+                // ⚠ What Assets/_Project/Scenes/StPeters.unity carried on main until 2026-09-02: #677
+                // moved her in the BUILDER and the scene was never re-banked, so every build made from
+                // the committed scene — CI's PlayMode fixtures included — had her HERE, on the
+                // fairway's own centre-line, lying across it. The prime suspect for what the owner saw.
+                ("the committed scene's (215.00, 0.00) athwart",
+                 HullFootprint.FromHeading(new Vector2(215f, 0f), 0f, 4.5f, 0.85f)),
+                // #677's berth as the builder authored it: moved north, still with no heading.
+                ("#677's builder berth (215.00, 3.15) athwart",
+                 HullFootprint.FromHeading(new Vector2(215f, 3.15f), 0f, 4.5f, 0.85f)),
+                // The same berth with nothing changed but her HEADING — the free half of the fix.
+                ("…that berth merely laid alongside",
+                 HullFootprint.FromHeading(new Vector2(215f, 3.15f), 270f, 4.5f, 0.85f)),
+            };
+            var candWorst = new float[candidates.Length];
+            for (int i = 0; i < candWorst.Length; i++) candWorst[i] = float.MaxValue;
+
+            // The envelope of her TRACK — how far north her outline ever reaches while she is up by the
+            // pier. This is the number a berth north of the fairway has to be chosen against.
+            float northmostByThePier = float.NegativeInfinity;
+            Vector2 northmostAt = Vector2.zero;
 
             float deadline = Time.realtimeSinceStartup + TimeoutSeconds;
             while (opening.Current != ArrivalOpening.Phase.Moored &&
@@ -926,12 +976,46 @@ namespace HiddenHarbours.Tests.PlayMode
             {
                 if (opening.Boat != null)
                 {
-                    Vector2 her = opening.Boat.transform.position;
+                    Transform t = opening.Boat.transform;
+                    Vector2 her = t.position;
+
+                    // ⚠ HER OWN OUTLINE, not her centre with a radius. A 12.9 m hull on a 17.7 m turning
+                    // circle sweeps her bow and quarter through water her ROOT never enters — which is
+                    // exactly what the owner watches, and exactly what a radius cannot express.
+                    HullFootprint cape = HullFootprint.FromBowDirection(
+                        her, new Vector2(t.up.x, t.up.y),
+                        StPetersBuilder.ArrivalHullLengthMetres, halfBeam);
+
                     foreach ((string what, Vector2 at, float girth) in obstacles)
                     {
-                        float gap = Vector2.Distance(her, at) - halfBeam - girth;
+                        float gap = cape.DistanceTo(at) - girth;
                         if (gap < worst[what]) worst[what] = gap;
+                        float circle = Vector2.Distance(her, at) - halfBeam - girth;
+                        if (circle < asCircle[what]) asCircle[what] = circle;
                     }
+
+                    float doryGap = cape.SignedGapTo(dory);
+                    if (doryGap < worst[DoryKey]) worst[DoryKey] = doryGap;
+                    float doryCircle = Vector2.Distance(her, dory.Center)
+                                       - halfBeam - StPetersBuilder.DoryHalfBeamMetres;
+                    if (doryCircle < asCircle[DoryKey]) asCircle[DoryKey] = doryCircle;
+
+                    for (int i = 0; i < candidates.Length; i++)
+                    {
+                        float g = cape.SignedGapTo(candidates[i].her);
+                        if (g < candWorst[i]) candWorst[i] = g;
+                    }
+
+                    if (her.x > 200f && her.x < 235f)
+                        for (int c = 0; c < 4; c++)
+                        {
+                            Vector2 corner = cape.Corner(c);
+                            if (corner.y > northmostByThePier)
+                            {
+                                northmostByThePier = corner.y;
+                                northmostAt = her;
+                            }
+                        }
                 }
                 yield return null;
             }
@@ -944,9 +1028,20 @@ namespace HiddenHarbours.Tests.PlayMode
             // green run that never says how close she came teaches the owner nothing.
             var ranked = new List<KeyValuePair<string, float>>(worst);
             ranked.Sort((a, b) => a.Value.CompareTo(b.Value));
-            var said = new System.Text.StringBuilder("[arrival/corridor] tightest passes:");
+            var said = new System.Text.StringBuilder("[arrival/corridor] tightest passes (hull OUTLINE):");
             for (int i = 0; i < ranked.Count && i < 3; i++)
                 said.Append($"  {ranked[i].Key} {ranked[i].Value:F2} m");
+            said.Append($"\n[arrival/corridor] the moored dory: {worst[DoryKey]:F2} m outline-to-outline, " +
+                        $"against {asCircle[DoryKey]:F2} m by the circle model this replaces " +
+                        $"(she lies {StPetersBuilder.DoryMooredHeadingDegrees:F0}°, " +
+                        $"{StPetersBuilder.DoryLengthMetres:F1} m long, at " +
+                        $"{StPetersBuilder.DoryMooredPos.x:F2}, {StPetersBuilder.DoryMooredPos.y:F2}).");
+            said.Append($"\n[arrival/corridor] her track's northmost hull corner between x 200 and 235 " +
+                        $"reaches y = {northmostByThePier:F2}, with her centre at " +
+                        $"({northmostAt.x:F2}, {northmostAt.y:F2}).");
+            said.Append("\n[arrival/corridor] the berths she has had, against this same track:");
+            for (int i = 0; i < candidates.Length; i++)
+                said.Append($"\n    {candidates[i].what,-38} {candWorst[i],7:F2} m");
             Debug.Log(said.ToString());
 
             KeyValuePair<string, float> tightest = ranked[0];
@@ -965,5 +1060,10 @@ namespace HiddenHarbours.Tests.PlayMode
         /// mark. A metre — the same figure ArrivalOpeningTests states for the plan, so the chart and
         /// the water are held to one standard.</summary>
         private const float MarkPassingClearanceMetres = 1f;
+
+        /// <summary>What the moored dory is called in the corridor report. She is keyed separately from
+        /// the marks because she is the one obstacle that is a HULL — measured outline against outline,
+        /// where a buoy is honestly a circle.</summary>
+        private const string DoryKey = "the moored dory";
     }
 }

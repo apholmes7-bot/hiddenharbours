@@ -149,10 +149,32 @@ namespace HiddenHarbours.Tools.RigBaking
         /// slice that follows is the player's. Adding them to the cast is one line here and costs
         /// <b>+6.1 MiB of RGBA32 per preset</b> (55 MiB across the nine), against 2.5 MiB for the
         /// whole Iso folder today. The day an NPC routine boards a boat, that is the line to add.</para>
+        ///
+        /// <para><b>⚠️ REACH AND RUN JOINED 2026-09-02, and reach is a CORRECTNESS entry rather than a
+        /// budget one.</b> The cast's twenty-seven <c>reach_*</c> sheets have SHIPPED since the rev-6.6
+        /// drop (#—, 2026-08-26) — but they arrived as PNGs, not through this recipe, so nothing here
+        /// knew how to remake them. Measured against rig 6.9: every one of 100 (preset × anim) cells
+        /// differs from 6.6, so a face pass moves EVERY sheet. A bake that skipped reach would have
+        /// left Ginny a 6.9 face standing and a 6.6 face reaching for a jar — the exact mixed-revision
+        /// failure the intake exists to prevent. These twenty-seven already ship, so listing them costs
+        /// NO new texture memory; it costs bake time and buys the recipe the ability to remake what the
+        /// repo already carries.</para>
+        ///
+        /// <para><c>run</c> is the budget entry beside it, and it is one line to revert. Ginny and
+        /// Skipper have shipped a <c>run</c> sheet since the 6.5 drop while the other seven never had
+        /// one, so the same mixed-face problem applied to two of them; the 6.9 drop bakes <c>run</c>
+        /// for all ten casts, which is the art director saying the whole cast should have it. Taking it
+        /// through the baker rather than importing his PNGs is what keeps the 64 × 92 cell — his sheets
+        /// are windowed at 88, the OFF-DECK cell, which is right for swim/tread/sleep/drive and wrong
+        /// for a locomotion state. Cost: <b>seven new sheets</b> (Boy, Cutter, DeckBoss, Girl, Hand,
+        /// Nan, Packer), and the bake log prints the exact RGBA32 figure.</para>
         /// </summary>
         public static readonly CharacterState[] CastStates =
         {
-            new CharacterState("idle"), new CharacterState("walk"),
+            new CharacterState("idle"), new CharacterState("walk"), new CharacterState("run"),
+            new CharacterState("reach", rest: "ground"),
+            new CharacterState("reach", rest: "stowV"),
+            new CharacterState("reach", rest: "stowH"),
         };
 
         /// <summary>
@@ -207,7 +229,7 @@ namespace HiddenHarbours.Tools.RigBaking
 
         // ---- the cast --------------------------------------------------------------------------
 
-        [MenuItem("Hidden Harbours/Art/Bake Character Sheets — the cast (9 presets × idle + walk)",
+        [MenuItem("Hidden Harbours/Art/Bake Character Sheets — the cast (9 presets × idle/walk/run + 3 reach)",
                   priority = 43)]
         public static void BakeCastSheets()
         {

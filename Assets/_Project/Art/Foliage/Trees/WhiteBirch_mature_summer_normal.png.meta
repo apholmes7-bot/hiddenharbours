@@ -127,10 +127,10 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 117
-        height: 161
+        width: 162
+        height: 269
       alignment: 9
-      pivot: {x: 0.4957265, y: 0.055900622}
+      pivot: {x: 0.5, y: 0.029739777}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -147,12 +147,12 @@ TextureImporter:
       name: WhiteBirch_mature_summer_normal_v1
       rect:
         serializedVersion: 2
-        x: 117
+        x: 162
         y: 0
-        width: 117
-        height: 161
+        width: 162
+        height: 269
       alignment: 9
-      pivot: {x: 0.4957265, y: 0.055900622}
+      pivot: {x: 0.5, y: 0.029739777}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -169,12 +169,12 @@ TextureImporter:
       name: WhiteBirch_mature_summer_normal_v2
       rect:
         serializedVersion: 2
-        x: 234
+        x: 324
         y: 0
-        width: 117
-        height: 161
+        width: 162
+        height: 269
       alignment: 9
-      pivot: {x: 0.4957265, y: 0.055900622}
+      pivot: {x: 0.5, y: 0.029739777}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -191,12 +191,12 @@ TextureImporter:
       name: WhiteBirch_mature_summer_normal_v3
       rect:
         serializedVersion: 2
-        x: 351
+        x: 486
         y: 0
-        width: 117
-        height: 161
+        width: 162
+        height: 269
       alignment: 9
-      pivot: {x: 0.4957265, y: 0.055900622}
+      pivot: {x: 0.5, y: 0.029739777}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []

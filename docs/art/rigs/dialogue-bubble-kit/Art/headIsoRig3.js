@@ -122,15 +122,23 @@
      a row under the nose mark it built a three-pixel dark cluster off to one side of an eight-pixel
      face — it read as a smudge on the cheek, not a mouth. Expressions keep their three pixels;
      those are symmetric about the anchor, so they stay centred. */
+  /* 3.2 TWO VALUES PER MOUTH. A mouth of lip pixels alone is either one dot (nothing) or a bar (a
+     moustache); the second value is skin -1 — the shadow a lip throws — and it goes IN the row, at
+     the ends or under the lifted part, never on the row below, which the chin highlight owns on
+     half the builds (the two are 1.5 rows apart and round differently per head size). skinL is a
+     tooth; the stamp swaps it for shadow on skins lighter than bronze, where it is invisible.
+     `cheek` asks the eye layer for the smile squint (only drawable at q >= 2, see eyeIsoRig). */
   const EXPR = {
-    neutral:{ m:[[0,0,'lip']],                                                     brow: 0, lid:0.00, raise:0 },
-    smile:  { m:[[-1,-1,'lip'],[0,0,'lip'],[1,-1,'lip']],                          brow: 0, lid:0.16, raise:0 },
-    grin:   { m:[[-1,-1,'lip'],[0,-1,'lip'],[1,-1,'lip'],[0,0,'skinL']],           brow: 0, lid:0.28, raise:0 },
-    frown:  { m:[[-1,0,'lip'],[0,-1,'lip'],[1,0,'lip']],                           brow: 1, lid:0.00, raise:0 },
-    worry:  { m:[[-1,-1,'lip'],[0,0,'lip'],[1,0,'lip']],                           brow:-1, lid:0.00, raise:1 },
-    oh:     { m:[[0,-1,'lip'],[0,0,'lip'],[-1,-1,'skinD']],                        brow:-1, lid:0.00, raise:1 },
-    grit:   { m:[[-1,-1,'lip'],[0,-1,'lip'],[1,-1,'lip'],[-1,0,'lip'],[1,0,'lip']],brow: 1, lid:0.26, raise:0 },
-    weary:  { m:[[-1,0,'lip'],[0,0,'lip'],[1,0,'skinD']],                          brow:-1, lid:0.44, raise:0 },
+    neutral:{ m:[[0,0,'lip'],[-1,0,'skinD'],[1,0,'skinD']],                            brow: 0, lid:0.00, raise:0 },
+    smile:  { m:[[-1,-1,'lip'],[0,0,'lip'],[1,-1,'lip'],[-1,0,'skinD'],[1,0,'skinD']],  brow: 0, lid:0.16, raise:0, cheek:1 },
+    grin:   { m:[[-1,-1,'lip'],[0,-1,'lip'],[1,-1,'lip'],[0,0,'skinL']],               brow: 0, lid:0.28, raise:0, cheek:1 },
+    frown:  { m:[[-1,0,'lip'],[0,-1,'lip'],[1,0,'lip'],[0,0,'skinD']],                 brow: 1, lid:0.00, raise:0 },
+    worry:  { m:[[-1,-1,'lip'],[0,0,'lip'],[1,0,'lip'],[-1,0,'skinD']],                brow:-1, lid:0.00, raise:1 },
+    oh:     { m:[[0,-1,'lip'],[0,0,'lip'],[-1,0,'skinD'],[1,0,'skinD']],               brow:-1, lid:0.00, raise:1 },
+    /* 3.1: grit was five pixels — wider than the eye span — and on a stubbled build it read as a
+       moustache in every run frame. Three, one row up, plus the lid and brow, is the effort read. */
+    grit:   { m:[[-1,-1,'lip'],[0,-1,'lip'],[1,-1,'lip'],[-1,0,'skinD'],[1,0,'skinD']], brow: 1, lid:0.26, raise:0 },
+    weary:  { m:[[-1,0,'lip'],[0,0,'lip'],[1,0,'skinD']],                              brow:-1, lid:0.44, raise:0 },
   };
 
   /* Face geometry constants. Under a 40deg camera the FACE (front surface, chin to hairline)
@@ -270,22 +278,33 @@
     // stubble reads as a DITHERED SKIN SHADOW on the jaw, not as hair -- that is what stubble is
     stubble:   { arc:0.74, top: 0.004, bot:-0.206, base:0.005, clump:0.34, mat:'stub',
                  vt:[0.9,1.0,1.0,1.0,0.9,0.7] },
-    // one row under the nose, and WIDE: at this scale a narrow moustache is a nose shadow
-    moustache: { arc:0.30, top:-0.052, bot:-0.124, base:0.024, clump:0.14, mat:'beard',
-                 vt:[0.8,1.0,1.10,1.10,0.95,0.7] },
-    // traces the jaw EDGE and leaves the chin front bare — the outline gains a hard rim
-    chinstrap: { arc:0.94, top:-0.056, bot:-0.212, base:0.015, clump:0.18, mat:'beard',
-                 vt:[1.25,1.15,1.00,0.90,0.85,0.85] },
-    // a spike BELOW the chin: the only style that adds height to the silhouette
-    goatee:    { arc:0.26, top:-0.044, bot:-0.286, base:0.026, clump:0.30, mat:'beard',
+    /* 3.3 (T5): three of the eight were re-authored as MASKS THAT LEAVE SKIN. arc is HALF-TURNS of
+       the shell (0.5 = ear to ear), not the ear-to-ear fraction the old comment claimed, so the
+       chinstrap's 0.94 wrapped the nape.
+       moustache: one row, BETWEEN the nose mark and the mouth row, so the lip stays skin-coloured
+       under it. It was centred on the mouth (-0.088) and the ink lip sat inside a 5 px bar. Still
+       wide: at this scale a 3 px moustache is a nose shadow. */
+    moustache: { arc:0.30, top:-0.004, bot:-0.070, base:0.022, clump:0.10, mat:'beard',
+                 vt:[0.9,1.0,1.05,1.05,1.0,0.9] },
+    // one row along the jaw EDGE, ear to ear, chin front bare: the face gains a dark bottom rim.
+    // It ran from the nose line to the chin and read as a thin full beard.
+    chinstrap: { arc:0.56, top:-0.138, bot:-0.214, base:0.016, clump:0.12, mat:'beard',
+                 vt:[1.15,1.10,1.05,1.00,1.00,1.00] },
+    // CHIN ONLY, plus the spike below it: the only style that adds height to the silhouette. The
+    // top now sits under the mouth row (it started at the nose line and swallowed the lip).
+    goatee:    { arc:0.26, top:-0.116, bot:-0.286, base:0.026, clump:0.30, mat:'beard',
                  vt:[1.85,1.55,1.20,1.00,0.95,0.95] },
     // flares at the TEMPLES and stops short of the chin — widens the head, not the jaw
-    mutton:    { arc:0.80, top: 0.058, bot:-0.150, base:0.024, clump:0.40, mat:'beard',
+    /* 3.1: the beard shells started ABOVE the mouth (top 0.014–0.058 is the cheek / eye-socket
+       height) and the arc reached round to the face front, so full / long closed over the mouth row
+       and left a slit for the eyes: a grey helmet. The tops now sit at the nose line and the front
+       arc stops short of the mouth (the stamp keeps the mouth for full and long, see below). */
+    mutton:    { arc:0.80, top: 0.010, bot:-0.150, base:0.024, clump:0.40, mat:'beard',
                  vt:[1.00,1.15,1.35,1.45,1.30,1.00] },
-    full:      { arc:0.66, top: 0.020, bot:-0.264, base:0.024, clump:0.36, mat:'beard',
+    full:      { arc:0.66, top:-0.040, bot:-0.264, base:0.024, clump:0.36, mat:'beard',
                  vt:[1.30,1.25,1.15,1.05,0.95,0.85] },
     // hangs onto the chest: unmistakable at any resolution
-    long:      { arc:0.58, top: 0.014, bot:-0.408, base:0.026, clump:0.26, mat:'beard',
+    long:      { arc:0.58, top:-0.046, bot:-0.408, base:0.026, clump:0.26, mat:'beard',
                  vt:[1.05,1.35,1.35,1.15,1.00,0.85] },
   };
 
@@ -328,14 +347,19 @@
   const HAT = {
     // knit, no brim: a fat dark roll BULGING past a soft tall dome. The only hat whose widest point
     // is the band, and the only one taller than the hair it replaces.
+    /* 3.1 FACE RESERVE. Every band or peak that used to sit 0.6–1.1 rows above the eye row put its
+       dark edge on the row directly above the lash: hat edge + lash = a two-row bar, and the figure
+       was blindfolded at S/SE/SW. Bands and peaks now clear the eye by ~1.6–1.9 rows, which leaves
+       ONE row of skin (the brow row) between hat and lash, and the brim shade only exists where it
+       cannot reach that row (see hatFaces). The hats ride one row higher; the silhouettes keep. */
     watchcap: { label:'watch cap',
-      band:{ rows:1.0, h:0.044, thick:0.030, back:1.10 },
+      band:{ rows:1.9, h:0.044, thick:0.030, back:1.10 },
       crown:{ top:0.256, hl:[ 0.004, 0.002,-0.006,-0.016,-0.024,-0.028,-0.030], th:[1.00,1.02,1.06,1.12,1.16,1.18,1.18], base:0.026, clump:0.16 },
       shade:1 },
     // oilskin rain hat: small crown, and a CAPE flaring wide across the back-top — the one shape the
     // projection hands you for free, and the one nothing else in the set has.
     souwester:{ label:"sou'wester",
-      band:{ rows:1.1, h:0.030, thick:0.016, back:1.06 },
+      band:{ rows:1.9, h:0.030, thick:0.016, back:1.06 },
       crown:{ top:0.222, hl:[ 0.004, 0.002,-0.008,-0.022,-0.032,-0.038,-0.040], th:[1.00,1.00,1.02,1.04,1.06,1.06,1.06], base:0.016, clump:0.03 },
       cape:{ turn0:0.16, turn1:0.84, z:-0.005, h:0.028, reach:0.135, rxK:1.00, xK:0.60 },
       shade:1 },
@@ -344,27 +368,30 @@
     ballcap:  { label:'ball cap',
       band:{ rows:1.7, h:0.026, thick:0.014, back:0.92 },
       crown:{ top:0.234, hl:[ 0.004, 0.002,-0.004,-0.014,-0.022,-0.026,-0.028], th:[1.00,1.00,1.00,1.02,1.04,1.04,1.04], base:0.022, clump:0.03 },
-      peak:{ turn:0.150, rows:0.7, reach:0.062, h:0.018, rxK:1.00, xK:0.34 },
+      peak:{ turn:0.150, rows:1.6, reach:0.062, h:0.018, rxK:1.00, xK:0.34 },
       shade:1 },
     // LOW and peaked: nothing else is both. A longer, wider peak than the ball cap's, and a crown
     // that slumps over the occiput, so the silhouette is a wedge rather than a dome.
     flatcap:  { label:'flat cap',
       band:{ rows:1.6, h:0.022, thick:0.014, back:1.06 },
       crown:{ top:0.200, hl:[ 0.002, 0.000,-0.006,-0.014,-0.026,-0.036,-0.044], th:[1.14,1.12,1.06,1.02,1.10,1.22,1.32], base:0.019, clump:0.05 },
-      peak:{ turn:0.225, rows:0.6, reach:0.086, h:0.016, rxK:1.02, xK:0.40 },
+      peak:{ turn:0.225, rows:1.6, reach:0.086, h:0.016, rxK:1.02, xK:0.40 },
       shade:1 },
     // the SMALLEST silhouette of the six — smaller than the bare hair it replaces, which IS the read.
     // Cloth down over the ears and nape, and a knot at the back.
     kerchief: { label:'kerchief',
-      band:{ rows:1.0, h:0.020, thick:0.010, back:0.86 },
-      crown:{ top:0.192, hl:[ 0.002,-0.014,-0.120,-0.212,-0.250,-0.266,-0.270], th:[0.90,0.90,0.96,1.02,1.06,1.06,1.06], base:0.013, clump:0.07 },
-      knot:{ z:-0.040, r:0.042 }, shade:1 },
+      band:{ rows:1.9, h:0.020, thick:0.010, back:0.86 },
+      /* 3.2: back thickness 1.06 -> 1.14. At 1.06 the cloth sat within a millimetre of the bun's hair
+         shell at the nape and lost the depth test on scattered pixels: hair speckle through the cloth
+         at N/NE/NW on Nan and the Packer. +0.2 px of silhouette. */
+      crown:{ top:0.192, hl:[ 0.002,-0.014,-0.120,-0.212,-0.250,-0.266,-0.270], th:[0.90,0.90,0.98,1.08,1.14,1.16,1.16], base:0.013, clump:0.07 },
+      knot:{ z:-0.064, r:0.038 }, shade:1 },
     // the BIGGEST: an oilskin hood swallows the head, opens 1.6 rows above the eye and frames the
     // face in two rows of shadow. Cloth all the way down past the jaw at the sides.
     hood:     { label:'oilskin hood',
       band:{ rows:1.7, h:0.046, thick:0.040, back:1.20 },
       crown:{ top:0.266, hl:[ 0.004,-0.014,-0.116,-0.208,-0.254,-0.276,-0.284], th:[1.06,1.10,1.20,1.28,1.34,1.36,1.36], base:0.038, clump:0.06 },
-      shade:2 },
+      shade:1 },
   };
   const HATDB = 0.028;
   // the solved hatline: shared by hatFaces (geometry) and facesOf (where to cut the hair)
@@ -554,9 +581,14 @@
       /* BRIM SHADOW — the row of skin the front edge darkens. One row is 0.041 m of z here, and the
          z span is what has to be small: h falls at cos(elev) per metre going down, so 0.08 would
          reach the eyes and blind the figure just as surely as a badly placed brim. */
-      if(S2.shade)
-        add(sweep(hc, prof, -T2R(0.185), T2R(0.185), z0 - 0.038*m*S2.shade, z0, 0.004*m, 1.0, 0.4,
-          'skinD', -1.30, 0.012));
+      /* 3.1: the shade may darken the brow row but never the lash row. Its lower edge is clamped to
+         ~1.2 rows above the eye row; a band low enough that nothing is left above that gets no shade. */
+      if(S2.shade){
+        const zLo = Math.max(z0 - 0.038*m*S2.shade, zRows(prof, 1.2, 0.004*m, m, wS));
+        if(zLo < z0 - 0.004*m)
+          add(sweep(hc, prof, -T2R(0.185), T2R(0.185), zLo, z0, 0.004*m, 1.0, 0.4,
+            'skinD', -1.30, 0.012));
+      }
     }
     if(S2.crown){
       // scaleOpt returns the SOURCE object when m === 1, so this MUST copy: writing cr.hl in place
@@ -576,7 +608,9 @@
     }
     if(S2.knot){
       const P = S2.knot;
-      add(ball([hc[0], hc[1]-profR(prof,P.z*m,2)-P.r*m*0.72, hc[2]+P.z*m], P.r*m, 'hatD', -0.15, HATDB));
+      /* 3.2: lower (nape, under the tied edge) and proud of the cloth by ~1 px, so it reads as a node on
+         the cloth at E/W/N rather than a dark pixel inside the bun it used to share a centre with. */
+      add(ball([hc[0], hc[1]-profR(prof,P.z*m,2)-P.r*m*0.80, hc[2]+P.z*m], P.r*m, 'hatD', -0.15, HATDB));
     }
     return F;
   }
@@ -602,32 +636,47 @@
       bacc+=gap+dur+(dbl?0.09+dur*0.8:0); j++;
     }
     const base = expr || 'neutral';
-    // talk: flip between the expression and an open mouth on a ~7 Hz jittered cadence
-    const mouth = talk ? ((hash(Math.floor(t*7.2))>0.42) ? 'oh' : base) : base;
-    const E = EXPR[mouth] || EXPR.neutral;
+    /* talk: flip between the expression and an open mouth, ~4.5 Hz jittered. 3.1: the BROWS, LID and
+       RAISE come from the base expression, not from the mouth frame — 'oh' carries brow -1 / raise 1,
+       and taking them from the mouth frame lifted the brows on every flap, a 7 Hz face twitch. */
+    const mouth = talk ? ((hash(Math.floor(t*4.5))>0.42) ? 'oh' : base) : base;
+    const E = EXPR[base] || EXPR.neutral;
     return { gaze:[gx,gy], lid:Math.max(lid, E.lid||0), mouth,
-             brow:E.brow + (hash(i*23.1)>0.90 ? 1 : 0), raise:E.raise||0 };
+             brow:E.brow + (hash(i*23.1)>0.90 ? 1 : 0), raise:E.raise||0, cheek:E.cheek||0 };
   }
-  function loopLook(anim, u, expr, talk){
+  /* 3.2 BLINK CADENCE. A baked idle loop blinks once per cycle: at 6 f × 170 ms that is a blink every
+     1.02 s, twice a resting person's rate, and on a wharf of ten it is a flicker. The blink is gated
+     on the LOOP index: blink loops step through a 2-or-3 schedule (hash-picked, `seed` shifts it per
+     figure), so a figure blinks every 2nd–3rd loop. No loop given = the old once-per-loop. A sheet
+     bakes TWO idle rows — loop 0 (blinks) and loop 1 (still) — and the engine picks the row per loop
+     with blinks(k, seed). Free-running callers (opts.t) keep the ~3.4 s clock. */
+  function blinks(loop, seed){
+    if(loop==null || !isFinite(loop)) return true;
+    const k = Math.floor(loop), s = (seed||0)*3.17;
+    let acc=0, n=0;
+    while(acc<k && n<4096){ acc += hash(n*7.31+s)>0.5 ? 3 : 2; n++; }
+    return acc===k;
+  }
+  function loopLook(anim, u, expr, talk, loop, seed){
     // loop-safe: returns to centre + open at u=1 so a baked sheet cycles seamlessly
     const calm = anim==='idle' || anim==='hold' || anim==='balance' || anim==='bite' || anim==='portrait';
     // three-stage blink inside the window, so even a 6-frame bake catches a half-lid frame
     let lid = 0;
-    if(calm){ lid = u<0.60||u>=0.80 ? 0 : (u<0.645||u>=0.755 ? 0.45 : 1); }
+    if(calm && blinks(loop, seed)){ lid = u<0.60||u>=0.80 ? 0 : (u<0.645||u>=0.755 ? 0.45 : 1); }
     let gx = 0;
     if(calm){ gx = u<0.20 ? 0 : u<0.42 ? 1 : u<0.58 ? 0 : u<0.86 ? -1 : 0; }
     // exertion states carry their own expression unless one was asked for explicitly
     const auto = {strike:'grit', reel:'grit', stagger:'oh', run:'grit', land:'grin', dig:'grit'}[anim];
     const base = expr || auto || 'neutral';
     const mouth = talk ? ((u%0.5)<0.25 ? 'oh' : base) : base;
-    const E = EXPR[mouth] || EXPR.neutral;
-    return { gaze:[gx,0], lid:Math.max(lid, E.lid||0), mouth, brow:E.brow, raise:E.raise||0 };
+    const E = EXPR[base] || EXPR.neutral;   // 3.1: brows/lid from the expression, never the talk frame
+    return { gaze:[gx,0], lid:Math.max(lid, E.lid||0), mouth, brow:E.brow, raise:E.raise||0, cheek:E.cheek||0 };
   }
   function look(opts){
     opts = opts || {};
     const expr = opts.expr, talk = !!opts.talk;
     const base = opts.t!=null ? freeLook(opts.t, expr, talk)
-                              : loopLook(opts.anim||'idle', opts.u!=null?opts.u:0, expr, talk);
+                              : loopLook(opts.anim||'idle', opts.u!=null?opts.u:0, expr, talk, opts.loop, opts.seed);
     return opts.look ? Object.assign(base, opts.look) : base;
   }
 
@@ -650,7 +699,7 @@
       /* Cutting AT the hatline leaves 2 rows of hair round the temples, which on a blond head reads
          as gold earmuffs under the hat. Cut below it and thin it: a rim, not a band. */
       if(hatOn) ho = Object.assign({}, ho,
-        { cut: bandZOf(prof, b.hat, m, wS) - 0.048*m, base: ho.base*0.74 });
+        { cut: bandZOf(prof, b.hat, m, wS) - 0.080*m, base: ho.base*0.74 });   // 3.1: bands ride ~1 row higher, cut follows
       add(shell(hc, prof, ho, 16, 'hair', 0.18, true));
     }
     if(style==='bald')
@@ -660,7 +709,14 @@
     // a bun sits UNDER a hat, so it moves to the nape rather than pushing through the crown
     if(style==='bun'){
       const bz = hatOn ? -0.010*m : 0.136*m;
-      add(ball([hc[0], hc[1]-profR(prof,bz,2)-(hatOn?0.030:0.038)*m, hc[2]+bz], (hatOn?0.048:0.056)*wS*m, 'hair', 0.14, 0.014));
+      // 3.1: 1 cm further back — at 0.038 the lit lobes peeked past the temples at S as two bright
+      // pixels at eye height (earrings on Nan)
+      /* 3.2: under a KERCHIEF the bun is not drawn — the cloth is tied over it. Drawn in hair it
+         z-fought the cloth shell it poked through (white speckle across the nape at N/NE/NW on Nan,
+         the knot sitting on hair instead of cloth at E/W); drawn in cloth it speckled dark. The
+         kerchief silhouette is the smallest of the set on purpose, and the knot marks the nape. */
+      if(!(hatOn && b.hat==='kerchief'))
+        add(ball([hc[0], hc[1]-profR(prof,bz,2)-(hatOn?0.030:0.048)*m, hc[2]+bz], (hatOn?0.048:0.056)*wS*m, 'hair', 0.14, 0.014));
     }
     /* PONYTAIL. A tube out of the nape, dropping behind the shoulder. It is drawn even in the front
        facing (it peeks past the neck), which is deliberate: the tail is the whole read. */
@@ -702,11 +758,32 @@
   }
   /* px = { col, dep, zbuf, W, H } — the very buffers the body rig's _paint already holds.
      Every feature is placed from a PROJECTED, ROUNDED anchor, so it is pixel-exact per facing. */
-  function stamp(px, hc, b, lk, B, MATS, cx, cy, m){
+  function stamp(px, hc, b, lk, B, MATS0, cx, cy, m){
     m = m || 1;
     const wS = b.weight || 1, prof = skullProf(wS, m, b.jaw), W = px.W, H = px.H;
     const face = b.face || 'dash';
     const ex = EYE_X*wS*m;
+    /* 3.1 SKIN-RELATIVE FACE PALETTE. The body rig hands over one fixed set of face materials (lip =
+       skin step 0, chin = step 5, sclera = step 5) and they were wrong at both ends: step 0 on
+       porcelain is a maroon blob bigger than the eyes, and on umber it is the skin. Every mark is now
+       chosen against the skin's own value. dark = bronze and below. */
+    const skinR = (MATS0.skin && MATS0.skin.ramp) || [];
+    const lumOf=(hex)=>{ if(!hex||hex.length<7) return 1; const r=parseInt(hex.slice(1,3),16)/255, g=parseInt(hex.slice(3,5),16)/255, bb=parseInt(hex.slice(5,7),16)/255; return 0.2126*r+0.7152*g+0.0722*bb; };
+    const dark = lumOf(skinR[3]) < 0.40;      // sRGB-weighted: umber .37, deep .34, ebony .31 | bronze .45
+    const hairR = (MATS0.hair && MATS0.hair.ramp) || [];
+    const darkOnDark = dark && Math.abs(lumOf(hairR[2]) - lumOf(skinR[3])) < 0.10;
+    /* 3.2: on a YELLOW-hued ramp (olive: hue ~43°; every other skin sits under 32°) the lit steps read
+       as bone, and a 3 px bar of it under the mouth paired with the two sclera pixels as teeth or a
+       third eye (Cutter). The chin plane stays unlit there — the lathe shading carries the jaw. */
+    const hueOf=(hex)=>{ if(!hex||hex.length<7) return 0; const r=parseInt(hex.slice(1,3),16), g=parseInt(hex.slice(3,5),16), bb=parseInt(hex.slice(5,7),16);
+      const mx=Math.max(r,g,bb), mn=Math.min(r,g,bb); if(mx===mn) return 0;
+      const h = mx===r ? (g-bb)/(mx-mn) : mx===g ? 2+(bb-r)/(mx-mn) : 4+(r-g)/(mx-mn); return (h*60+360)%360; };
+    const boneSkin = !dark && hueOf(skinR[4]) > 38;
+    const MATS = Object.assign({}, MATS0, {
+      lip:    dark ? { ramp:['#243036'], off:0, idx:0 } : { ramp:skinR, off:0, idx:1 },
+      chinL:  { ramp:skinR, off:0, idx: dark ? 5 : (boneSkin ? 3 : 4) },
+      sclera: { ramp:['#cfd4cc'], off:0, idx:0 },       // fleet shirt ramp step 3: the one eye-white (step 4 read as startled)
+      hairline:{ ramp:skinR, off:0, idx:5 } });
     const put=(x,y,mat,depth)=>{
       const M = MATS[mat]; if(!M) return;
       const c = M.ramp[Math.max(0,Math.min(M.ramp.length-1, M.idx==null?2:M.idx))];
@@ -720,13 +797,67 @@
     // is this pixel bare skin? used to keep the brow OFF the hair on short foreheads
     const skinSet = {}; (MATS.skin.ramp||[]).forEach(c=>{ skinSet[c]=1; });
     const onSkin=(x,y)=>{ if(x<0||x>=W||y<0||y>=H) return false; return !!skinSet[px.col[y*W+x]]; };
-    /* Snap to the nearest pixel that is actually ON the head. In the E/W profiles the eye anchor
-       lands right on the silhouette edge, where the rounded pixel is often just outside the mesh
-       and the eye would be dropped entirely — a walk cycle with eyeless profile frames. Probing
-       the immediate neighbourhood recovers it without loosening the depth test that correctly
-       hides the far eye. */
-    const visible=(sx,sy,d)=>{
-      const x0=Math.round(sx-0.5), y0=Math.round(sy-0.5);
+    const hairSet = {}; hairR.forEach(c=>{ hairSet[c]=1; });
+    const onHair=(x,y)=>{ if(x<0||x>=W||y<0||y>=H) return false; return !!hairSet[px.col[y*W+x]]; };
+    /* 3.1 ONE ROUNDING PER HEAD. Every anchor used to round on its own, so as the head slid by a
+       fraction of a pixel (walk sway is a half-pixel term) the eyes stepped a column while the
+       hair did not: a sideways twitch inside the head on three frames of eight. The head centre is
+       rounded once and every feature is an integer offset from it. */
+    const hcP = projWith(hc, B, cx, cy);
+    const hx0 = Math.round(hcP.sx-0.5), hy0 = Math.round(hcP.sy-0.5);
+    /* rz: sub-pixel head yaw in the walk (about half a pixel at S) used to round to a one-column
+       step on three frames of eight — a twitch inside a head whose silhouette had not moved. Offsets
+       under three quarters of a pixel snap to zero; real offsets (the SE/SW face shift) round. */
+    const rz=(v)=>Math.abs(v)<0.75 ? 0 : Math.round(v);
+    const snap=(v)=>[hx0 + rz(v.sx-hcP.sx), hy0 + Math.round(v.sy-hcP.sy)];
+    /* 3.2 DESPECKLE. An 18-segment lathe at ~10 px across hands one facet a normal that faces the key
+       light and nothing around it does — a lone top-step pixel in a brim, a two-steps-darker pit in a
+       clumped crown or a fringe. Cloth, hair and skin have no 1-px marks at this scale, so any pixel
+       two or more ramp steps away from EVERY same-ramp pixel it touches (4-neighbourhood, three or
+       more of them) is pulled to one step off the nearest: texture keeps its 1-step marks, islands
+       go. Runs before the face marks are stamped, so the nose, lips and hairline are never touched;
+       ink and sclera are not ramp colours and are never candidates. Same-ramp only: a skin pixel is
+       judged against skin, never against the hair or hat beside it. */
+    {
+      const ramps = [MATS.skin && MATS.skin.ramp, hairR, (b.hat && b.hat!=='none' && MATS.hat) ? MATS.hat.ramp : null].filter(r=>r&&r.length);
+      const R = 12*q, fixes = [];
+      for(const rp of ramps){
+        const idx = {}; rp.forEach((c,i)=>{ idx[c]=i; });
+        for(let y=Math.max(0,hy0-R); y<Math.min(H,hy0+R); y++) for(let x=Math.max(0,hx0-R); x<Math.min(W,hx0+R); x++){
+          const i=y*W+x, me=idx[px.col[i]]; if(me==null) continue;
+          let n=0, mx=-1, mn=99;
+          for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
+            const X=x+dx, Y=y+dy; if(X<0||X>=W||Y<0||Y>=H) continue;
+            const j=idx[px.col[Y*W+X]]; if(j==null) continue; n++; if(j>mx) mx=j; if(j<mn) mn=j;
+          }
+          if(n<3) continue;
+          if(me>=mx+2) fixes.push([i, rp[mx+1]]);
+          else if(me<=mn-2) fixes.push([i, rp[mn-1]]);
+        }
+      }
+      for(const [i,c] of fixes) px.col[i]=c;
+    }
+    /* CONTACT SHADOW. A lit (top two steps) skin pixel touching hat on two or more sides is under
+       the hat's edge and cannot be lit: the sou'wester's cape and band met around one top-step
+       temple pixel at E/W, on the eye row where the brim shade is forbidden, and it read as a glint
+       in the brim. It drops to the skin's mid step. Ink, sclera and lips are not skin and are never
+       touched. */
+    if(b.hat && b.hat!=='none' && MATS.hat && MATS.hat.ramp){
+      const hidx = {}; MATS.hat.ramp.forEach((c,i)=>{ hidx[c]=i; });
+      const R = 12*q, fixes = [];
+      const sr = MATS.skin.ramp||[], sidx = {}; sr.forEach((c,i)=>{ sidx[c]=i; });
+      for(let y=Math.max(0,hy0-R); y<Math.min(H,hy0+R); y++) for(let x=Math.max(0,hx0-R); x<Math.min(W,hx0+R); x++){
+        const i=y*W+x, me=sidx[px.col[i]]; if(me==null || me<4) continue;
+        let n=0; for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){ const X=x+dx, Y=y+dy; if(X<0||X>=W||Y<0||Y>=H) continue; if(hidx[px.col[Y*W+X]]!=null) n++; }
+        if(n>=2) fixes.push([i, sr[3]]);
+      }
+      for(const [i,c] of fixes) px.col[i]=c;
+    }
+    /* Snap to the nearest pixel that is actually ON the head and not behind something. 3.1 adds a
+       second pass: if nothing within a pixel passes the depth test, take the nearest SKIN pixel
+       within two — a feature is never dropped. In the E/W profiles the anchor lands on the
+       silhouette edge under a fringe, and the eye used to vanish for five frames of the walk. */
+    const visible=(x0,y0,d)=>{
       for(const [dx,dy] of [[0,0],[-1,0],[1,0],[0,1],[0,-1],[-1,1],[1,1]]){
         const x=x0+dx, y=y0+dy;
         if(x<0||x>=W||y<0||y>=H) continue;
@@ -734,9 +865,44 @@
         if(px.zbuf[i] < d - 0.045) continue;        // something (hair, far side) is in front
         return [x,y];
       }
+      for(const [dx,dy] of [[0,0],[-1,0],[1,0],[0,1],[-1,1],[1,1],[-2,0],[2,0],[0,-1],[-2,1],[2,1],[0,2],[-1,2],[1,2]]){
+        if(onSkin(x0+dx, y0+dy)) return [x0+dx, y0+dy];
+      }
       return null;
     };
     const gx = (lk.gaze&&lk.gaze[0])|0, gy = (lk.gaze&&lk.gaze[1])|0, lid = lk.lid||0;
+    const dir = dirOfBasis(B), frontal = dir>=3 && dir<=5;
+
+    /* 3.1 HAIRLINE. Black hair on a deep skin is one mass at every facing: the fringe edge and the
+       forehead are within a few L* of each other. On the front facings the first skin row under the
+       hair is lifted to the skin's top step across the face — the lit forehead a real hairline has. */
+    if(darkOnDark && frontal){
+      const ov0 = snap(projWith(surfaceAt(hc, prof, 0, EYE_Z*m, 0.010), B, cx, cy));
+      for(let x=ov0[0]-4*q; x<=ov0[0]+4*q; x++){
+        for(let y=ov0[1]-7*q; y<ov0[1]-q; y++){
+          if(onSkin(x,y) && onHair(x,y-1)){ put(x, y, 'hairline', null); break; }
+        }
+      }
+    }
+
+    /* 3.3 PROFILE HAIRLINE (T2, the E / W / NE / NW half). Same builds, side facings: the temple and
+       sideburn edge is where hair meets face, and on black-over-deep it is one mass, so the head is a
+       blob with an eye. The plan said "hair +2 along the silhouette", but black's top step (L .09)
+       is still level with deep skin's mid step (L .11): lightening the hair buys nothing. The SKIN
+       side of the boundary is lifted instead, as at S — every skin pixel touching hair from beside
+       or above, brow row to nose row, goes to the skin's top step (the lit temple). Rows below the
+       nose are left alone so a beard edge is never lit, N is skipped (no face), and a lifted pixel
+       with no lifted 4-neighbour is dropped so the gate's island rule never sees a lone pixel. */
+    if(darkOnDark && !frontal && dir!==0){
+      const ov0 = snap(projWith(surfaceAt(hc, prof, 0, EYE_Z*m, 0.010), B, cx, cy));
+      const cand = [], set = {};
+      for(let y=ov0[1]-4*q; y<=ov0[1]+2*q; y++) for(let x=hx0-8*q; x<=hx0+8*q; x++){
+        if(onSkin(x,y) && (onHair(x-1,y) || onHair(x+1,y) || onHair(x,y-1))){ cand.push([x,y]); set[x+','+y]=1; }
+      }
+      for(const [x,y] of cand){
+        if(set[(x-1)+','+y] || set[(x+1)+','+y] || set[x+','+(y-1)] || set[x+','+(y+1)]) put(x, y, 'hairline', null);
+      }
+    }
 
     /* --- eyes + brows: DELEGATED to Art/eyeIsoRig.js ---
        Placement used to be pure projection, and at ~10 px across that collapses: at E and W both
@@ -747,27 +913,50 @@
        own gaze/blink clock, so the eyes can be animated without involving the head at all. */
     const EI = root.EyeIso;
     const eyes = [];
+    let op = null;
     if(EI){
       const ov = projWith(surfaceAt(hc, prof, 0, EYE_Z*m, 0.010), B, cx, cy);
-      const op = visible(ov.sx, ov.sy, ov.d);
-      if(op) for(const e of EI.draw(px, {x:op[0], y:op[1], d:ov.d}, dirOfBasis(B), b, lk, MATS)) eyes.push(e);
+      const os = snap(ov); op = visible(os[0], os[1], ov.d);
+      if(op) for(const e of EI.draw(px, {x:op[0], y:op[1], d:ov.d}, dir, b, lk, MATS)) eyes.push(e);
     }
 
     // --- nose / mouth / chin, hung off the centre-front anchor so they track the facing ---
     const cf = (dz,out)=>projWith(surfaceAt(hc, prof, 0, dz*m, out), B, cx, cy);
-    const nv = cf(NOSE_Z, 0.006), np = visible(nv.sx, nv.sy, nv.d);
+    const at = (v)=>{ const s=snap(v); return visible(s[0], s[1], v.d); };
+    const nv = cf(NOSE_Z, 0.006), np = at(nv);
     if(np) put(np[0], np[1]+q, 'skinD', nv.d);
     const bd = b.beard && b.beard!=='none' ? b.beard : null;
-    if(!bd || bd==='stubble' || bd==='mutton' || bd==='chinstrap'){
-      const mv = cf(MOUTH_Z, 0.006), mp = visible(mv.sx, mv.sy, mv.d);
-      const pat = (EXPR[lk.mouth] || EXPR[b.expr] || EXPR.neutral).m;
-      if(mp) for(const [dx,dy,mat] of pat) put(mp[0]+dx*q, mp[1]+q+dy*q, mat, mv.d);
+    let mp=null;
+    /* 3.1: the mouth is drawn on EVERY beard. On goatee / full / long it lands on beard pixels and
+       the ink lip is the parting in the beard — which is what a bearded mouth is. Only the depth
+       test decides. */
+    let msh = 0;
+    {
+      const mv = cf(MOUTH_Z, 0.006); mp = at(mv);
+      const E = EXPR[lk.mouth] || EXPR[b.expr] || EXPR.neutral;
+      /* 3.2 SE/SW: the pattern is centred on the projected FRONT anchor, and in a three-quarter view
+         that anchor sits at the far edge of the visible face — the far pixel of every wide pattern
+         fell off the silhouette or onto the far cheek's shade. The whole pattern steps one pixel
+         toward the near cheek (the side the head centre is on). Constant per facing, so the 3.1
+         frame-to-frame lock holds. */
+      msh = (mp && (dir===3||dir===5)) ? (mp[0]<hx0 ? 1 : mp[0]>hx0 ? -1 : 0) : 0;
+      // 3.3: only full and long cover the mouth row now, so only they take the ink parting
+      const bearded = bd==='full' || bd==='long';
+      if(mp) for(const [dx,dy,mat0] of E.m){
+        let mat = mat0;
+        if(mat==='skinL' && !dark) mat = 'skinD';   // 3.2: a tooth reads only against a dark lip; on light skins the opening is shadow
+        const X = mp[0]+(dx+msh)*q, Y = mp[1]+q+dy*q;
+        if(mat==='lip'){ put(X, Y, bearded ? 'lash2' : 'lip', mv.d); continue; }
+        if(bd && mat0==='skinL') continue;           // no tooth in a beard
+        if(onSkin(X, Y)) put(X, Y, mat, mv.d);       // the second value goes on bare skin only — never onto beard or hair
+      }
     }
     // chin: a lit plane one row under the mouth — this is what makes the jaw read
-    const kv = cf(CHIN_Z, 0.006), kp = visible(kv.sx, kv.sy, kv.d);
-    if(kp && !(bd && bd!=='moustache' && bd!=='mutton')){
-      for(let dx=-1;dx<=1;dx++) put(kp[0]+dx*q, kp[1]+q, 'skinL', kv.d);
+    const kv = cf(CHIN_Z, 0.006), kp = at(kv);
+    if(kp && !(bd && bd!=='moustache' && bd!=='mutton' && bd!=='chinstrap')){   // 3.3: the chinstrap leaves the chin front bare
+      for(let dx=-1;dx<=1;dx++) put(kp[0]+dx*q, kp[1]+q, 'chinL', kv.d);
     }
+    if(root.HeadIso && root.HeadIso._dbg) root.HeadIso._dbg.last = { dir, hx0, hy0, op, np, mp, kp, msh, mouth:lk.mouth, dark, darkOnDark };
     // (no cheek catchlight: at 8 px across it lands on the eye row and eats the inner lash pixel.
     //  The lathe shading already lifts the cheek plane, which is enough.)
     return eyes;
@@ -798,7 +987,7 @@
                 ginger:['#5e2013','#7d301c','#9c4327','#b85835','#d07048'],
                 salt: ['#2a2f31','#40474a','#5c656a','#7d878b','#a3adaf'],
                 grey: ['#6f7a78','#878b85','#a2a7a0','#bcc2ba','#cfd4cc'],
-                white:['#8a908c','#a3a8a3','#bcc0ba','#d3d6cf','#e8eae3'] };
+                white:['#8a908c','#a3a8a3','#bcc0ba','#d3d6cf','#dfe1db'] };
   const HATCOLS={ oil:['#946218','#b07d1f','#cf9d24','#e0b13a','#f2cf6a'],
                   navy:['#0e1526','#172644','#223764','#2f4c88','#4166ac'],
                   rust:['#4a100e','#7c1a15','#a8241b','#cf3626','#e2573c'],
@@ -973,10 +1162,10 @@
     get BROWS(){ return (root.EyeIso||{}).BROWS || BROWS; },
     get eyes(){ return root.EyeIso || null; },
     SKINS, HAIRS, HATCOLS, EYES, KEY,
-    skullProf, profR, facesOf, stamp, look, freeLook, loopLook, makeMats, render, anchors,
+    skullProf, profR, facesOf, stamp, look, freeLook, loopLook, blinks, makeMats, render, anchors,
     hatFaces, capLathe, sweep, shell, scaleOpt, BEARD, HAIR, HAT,
     zRows, hEyeRow, hAt, rowsAbove, bandZOf, PXM, ROW,
-    GAIN, BIAS, LN, BAYER, pass:7 };
+    GAIN, BIAS, LN, BAYER, pass:7, rev:'3.3' };
   root.HeadIso3 = API;
   root.HeadIso2 = API;
   root.HeadIso  = API;   // pass 7 is a superset: every pass-3/6 call signature still resolves

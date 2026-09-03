@@ -1,6 +1,7 @@
 {
   "rig": "lobsterBoatIsoRig.js",
-  "derivedFromRigSha256": "958e82e7f17ef8eb1d599790d44f730efe1fd680d2cf1ea656850889ff757590",
+  "derivedFromRigSha256": "60d7ab29b333b9f66bd5ae8aa5cb5ab08feb17d5b236ffbeded1bd011e6f1cdd",
+  "_repin_batch5": "2026-09-02 (cutaway kit batch 5). Plumbing only, and upstream has now adopted OUR paint kit into their copy, so this is no longer a three-way merge: root and the drop differ by the same seven lines every other hull got. Measured in the repo's own ClearScript V8 -- 684 -> 684 faces with ZERO differing fields, 10/10 renders byte-identical, and all TWELVE paint schemes byte-identical old-vs-new AND distinct from one another (so the merge's paint half is provably still applying, not silently defaulting). WARNING: this pin is the WORKING-TREE (CRLF) hash; the LF/blob hash is 98f5cff508232371... Do not cross them.",
   "generated": "2026-07-22",
   "frame": {
     "units": "m",

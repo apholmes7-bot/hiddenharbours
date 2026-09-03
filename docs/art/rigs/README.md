@@ -142,6 +142,23 @@ has no heading, so its sheet axes are **variant × sway frame**, not direction.
 > This rig is also the **first to ship a complete public API** (`render` · `packMask` · `normalView` ·
 > `sheetSpec` · `cellOf` + its constants, all on `root.TreeRig`). It needs **no symbol shim** — the
 > thing ADR 0022 open question 4 has been asking of every other rig.
+>
+> ⚠️⚠️ **PASS 3 (2026-09-02) CHANGES THE WORLD SIZE OF EVERY TREE, and that is a ruling rather than a
+> refresh.** Each species now carries its TRUE mature height, mapped through the rig's own
+> `SCALE = 0.6`, so relative scale is real instead of compressed toward a common height. Measured
+> mature/summer, pass 2 → pass 3: black spruce 5.6 → 6.6 m (×1.18), white cedar 4.8 → 7.8 (×1.63),
+> white birch 5.7 → 10.2 (×1.79), balsam fir 5.0 → 9.6 (×1.92), tamarack 5.3 → 10.2 (×1.92), aspen
+> 5.6 → 10.8 (×1.93), red maple 5.6 → 12.0 (×2.14), red spruce 5.7 → 12.6 (×2.21), white pine
+> 6.9 → 16.2 (×2.35), red oak 5.3 → 13.2 (×2.49). Cells go from 79×141 … 165×191 to 73×179 … 331×347.
+> **`_TrunkAnchor` moves on every species with the cell** (red spruce 0.0629 → 0.0304) — it is the wind
+> shader's pivot height as a fraction of the cell, and it comes out of the bake, never out of a number
+> written down. `SCALE` is a rig constant: change it and re-bake, and every cell and pivot re-measures.
+>
+> ⚠️ **Two silent fallbacks live in this rig's API**, both of which return a plausible picture rather
+> than throwing. `SPECIES` is a list of OBJECTS, not of keys — handing an entry straight to `render()`
+> draws the DEFAULT tree. `sheetSpec(key, size)` takes the stage FACTOR (`STAGES.mature` = 1), not the
+> stage NAME — passing `'mature'` yields a degenerate 24×9 cell with `metres: null`. Both produce ten
+> identical rows across ten species, which is the only tell; assert the ten cells are DISTINCT first.
 
 **NOT A RIG AT ALL — the building lifecycle PASS (2026-08-19)** —
 `building-lifecycle-kit/buildingLifecycleRig.js` (`BuildingLifecycle`). The only entry in the catalog that
@@ -309,6 +326,64 @@ No baked sheets exist for these — they can only ship once the baker does:
 `sternTrawlerIsoRig` · `sternTrawlerMk2IsoRig` · `tankerIsoRig`
 
 Most are M2/M3 fleet content — importing the source is **not** a licence to wire them (CLAUDE.md rule 8).
+
+---
+
+## The boat cutaway kit — four drops, and which copy of a hull rig is which
+
+The cutaway kit is the SECTION composite: per-face level tags (`lv`), a `geometry()` publishing each
+walkable level's sole, ceiling and **lid**, and a guarded `render(dir, {cutaway})`. Four drops so far,
+each landed verbatim in its own folder and then merged into root canon:
+
+| drop | folder | hulls |
+|---|---|---|
+| batch 1 (2026-08-26) | `boat-cutaway-kit/` | lobster · stern trawler · coastal packet |
+| batch 2 (2026-08-26) | `boat-cutaway-kit-2/` | side dragger · trawler Mk II · tanker · lobster variants ×18 |
+| pass 4 (2026-08-28) | (folded into the interiors intake) | cape islander |
+| **batch 5 (2026-09-02)** | **`boat-cutaway-kit-5/`** | **all nine, complete — plus `boatCutawayRig.js`, the section-composite reference** |
+
+Batch 5's own content is small: seven hulls take a three-line `rgba.dep` plumbing change and a guarded
+`cutaway` hook and render **byte-identical** without `opts.cutaway`; the **side dragger** gains a plated
+boat-deck bulwark (+3 faces — the pipe rail let sea through on S/SW/E/NE); the **sport fishers** jump two
+passes at once, because root was still at pass 1 while the interiors kit had shipped their pass 2 since
+#589.
+
+### ⚠️ THREE COPIES OF EVERY HULL RIG EXIST, AND THEY ARE NOT THE SAME FILE
+
+This is the one thing to know before touching any of them.
+
+| copy | who reads it | when it moves |
+|---|---|---|
+| `docs/art/rigs/<stem>.js` — **ROOT** | `RigCatalog.Fleet` → the hull MESH bake, the exterior sheets, and `docs/art/rigs/gameplay/*.gameplay.json` | every drop; it is the live canon |
+| `boat-interiors-kit/hull-rigs/<stem>.js` | `BoatInteriorDefBuilder` · `BoatInteriorRigHost` · `BoatInteriorSheetBaker` → the interior extraction | **only when the interior extraction must change** — every `hullRigSha256` in the kit's 27 sidecars resolves against the copy shipped BESIDE it (`EveryStampedHullPinResolvesToTheBundledRigItNames`) |
+| `boat-cutaway-kit*/hull-rigs/<stem>.js` | nothing at runtime; `cutaway-intake.mjs` reads it as the drop-as-it-arrived baseline | never — it is the receipt |
+
+`TheRepositorysCopyOfAHullRigIsNotWhatTheSidecarsPin` exists to hold the first two APART, and says so
+in its own message: *"If this ever starts passing, the repository has adopted a bundled rig and the
+builder's two hash arms have become the same question. Update it deliberately, never by accident."*
+Batch 2 moved both together because that batch was cut from exactly the loft the interiors kit had
+pinned. **Batch 5 was not**: #678 (`ceiling.lid`) and the lobster paint merge had already moved root
+on, so the two copies now sit 61–176 lines apart per hull, and batch 5 lands at ROOT only. Adopting
+the drop's `boatInteriorRig.js` v18 (raked-front side walls + sole) into `boat-interiors-kit/` is a
+separate change with its own blast radius — 27 `derivedFromRigSha256` re-stamps and a full interior
+re-bake — and belongs to the mesh-interiors lane, not to a rig intake. The v18 file is landed in
+`boat-cutaway-kit-5/` and waiting.
+
+### The pins a root-rig drop moves, and the flavour trap
+
+Every `docs/art/rigs/gameplay/*.gameplay.json` pins the ROOT rig it was cut from. **The digest
+FLAVOUR is per file and must never be crossed** — under `core.autocrlf=true` a `.js` has two honest
+sha256s, the LF/blob one and the working-tree CRLF one, and the wrong choice goes green locally and
+red on the next pull. Today: cape · packet · lobster · stern trawler pin **CRLF**; dragger · variants
+· sport fisher · Mk II · tanker pin **LF**. Derive each pin's flavour from the value it already holds,
+never from a rule.
+
+### Batch 5's two open taste calls (the owner's, not ours)
+
+The kit ships `BoatCutaway.DEFAULTS` at their current values and exposes both as toggles in
+`Boat Visual QA.dc.html`: the **sill** height (0.60 m — how tall the knee-wall stub of the dollhouse
+cut stands) and whether **rigging** drops with the roof it stood on (`'cull'`) or stays as deck gear
+(`'keep'`). Neither is settled; change `DEFAULTS` when the call is made.
 
 ---
 
@@ -517,7 +592,7 @@ in this repo.
 
 ---
 
-## The character rig kit, pass 6 (imported 2026-08-02 · **rev 6.2 imported 2026-08-06** · **rev 6.6 imported 2026-08-26**)
+## The character rig kit, pass 6 (imported 2026-08-02 · **rev 6.2 imported 2026-08-06** · **rev 6.6 imported 2026-08-26** · **rev 6.9 imported 2026-09-02**)
 
 One procedural person: eight facings, **eighteen** animations, four carry stances, and the axes that
 make her somebody in particular. This drop replaces the pass-1 body (`characterIsoRig.js`) and splits
@@ -530,6 +605,28 @@ the head and the eyes into rigs of their own.
 > the drop's own claim and the reason this was a rig swap and not a re-derivation. `presets.json` is
 > unchanged; `options.json` grew only the four new `anims` entries. See *The three clip families*
 > below.
+
+> **Rev 6.9 (2026-09-02) is a FACE pass, and it moves every sheet in the family.** Three files changed
+> — `characterIsoRig6.js` 6.6 → 6.9, `headIsoRig3.js` (head 3.1 → 3.3, +254/−63 lines) and
+> `eyeIsoRig.js` (eye 5.1 → 5.2). The five prop rigs and `characterIsoRig6.hands.js` in the drop are
+> **byte-identical** to ours, and `presets.json` / `options.json` are semantically identical (they
+> differ only in whitespace), so nothing else landed. The contract the baker reads is untouched:
+> cell 64 × 92, pivot, `DIRS`, all 29 `ANIMS`, `CAST`, `CARRIES` and `REACH_LIFT` compare IDENTICAL.
+>
+> **Measured, and it is why the whole family was re-baked rather than the drop's sheets imported:**
+> every one of 100 (preset × anim) cells differs between 6.6 and 6.9. The delta is confined to the
+> HEAD — hairline, skull raster and eyes — at 9–21 % of a cell's opaque pixels; the body, the clothes
+> and the ground shadow are untouched. Importing part of the family would have given a character one
+> face standing and another face hauling.
+>
+> **THE DROP'S SHEETS ARE AT THE WRONG CELL FOR EVERY LOCOMOTION STATE.** He bakes all 73 at the
+> OFF-DECK 64 × 88; the engine's locomotion and deck-work lane is 64 × 92 and only swim / tread /
+> sleep / drive ship at 88 (`CharacterRigBakeMenu.PlayerAnimsBakedElsewhere` explains why the baker
+> cannot make those four). So the intake split: the **forty off-deck sheets were imported from him
+> verbatim**, and everything the baker owns was **re-baked in-engine**. The two were then checked
+> against each other — our 92-row bake cropped 2 rows top and 2 bottom per cell against his 88 —
+> and **33 of 33 comparable sheets are byte-identical**, which is what says our load order, preset
+> resolution and camera are his.
 
 ### ⚠️ LOAD ORDER IS A HARD REQUIREMENT
 

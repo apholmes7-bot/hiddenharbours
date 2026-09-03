@@ -7,7 +7,8 @@
     "label": "53′ CONVERTIBLE",
     "loa": "16.2 m · 53′"
   },
-  "derivedFromRigSha256": "152eb5f3cf1f4f38fba781161e86320cd7e06f0d0cdc98a82b14d6973e3b4061",
+  "derivedFromRigSha256": "521eb6c29153117dc15e8b8bc160cc3f00822010d33168ddee9d2c64780bf9a6",
+  "_repin_batch5": "2026-09-02 (cutaway kit batch 5). \u26a0 THIS RIG JUMPS TWO PASSES AT ONCE. Root was at PASS 1; the drop brings pass 2 (the salon slider, the published DOOR/HOUSE/loft the interiors were measured against) AND pass 3 (per-face lv tags, geometry(), the cutaway hook). The pass-2 half is what makes the numbers below re-derivable at all -- and it is not new art, it is the vintage boat-interiors-kit/hull-rigs/ has shipped since #589; root simply never caught up. Measured in the repo's own ClearScript V8: pass 2 vs pass 3 is 20/20 renders BYTE-IDENTICAL on both hulls, and faceCount is unchanged at 3239/3824 -- pass 3 added data and moved nothing. Against root's pass 1 her pixels DO move (13 of 16 facings), which is the salon slider arriving. Convention: LF/blob, as the previous pin was.",
   "units": "metres",
   "frame": {
     "origin": "amidships / keel-bottom / centreline",

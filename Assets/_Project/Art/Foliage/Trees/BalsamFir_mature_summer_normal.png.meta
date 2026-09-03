@@ -127,10 +127,10 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 125
-        height: 142
+        width: 119
+        height: 252
       alignment: 9
-      pivot: {x: 0.496, y: 0.06338028}
+      pivot: {x: 0.49579832, y: 0.031746034}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -147,12 +147,12 @@ TextureImporter:
       name: BalsamFir_mature_summer_normal_v1
       rect:
         serializedVersion: 2
-        x: 125
+        x: 119
         y: 0
-        width: 125
-        height: 142
+        width: 119
+        height: 252
       alignment: 9
-      pivot: {x: 0.496, y: 0.06338028}
+      pivot: {x: 0.49579832, y: 0.031746034}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -169,12 +169,12 @@ TextureImporter:
       name: BalsamFir_mature_summer_normal_v2
       rect:
         serializedVersion: 2
-        x: 250
+        x: 238
         y: 0
-        width: 125
-        height: 142
+        width: 119
+        height: 252
       alignment: 9
-      pivot: {x: 0.496, y: 0.06338028}
+      pivot: {x: 0.49579832, y: 0.031746034}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -191,12 +191,12 @@ TextureImporter:
       name: BalsamFir_mature_summer_normal_v3
       rect:
         serializedVersion: 2
-        x: 375
+        x: 357
         y: 0
-        width: 125
-        height: 142
+        width: 119
+        height: 252
       alignment: 9
-      pivot: {x: 0.496, y: 0.06338028}
+      pivot: {x: 0.49579832, y: 0.031746034}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []

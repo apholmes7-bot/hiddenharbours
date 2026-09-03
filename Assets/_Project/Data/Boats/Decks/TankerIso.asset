@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: deck.tanker_iso
   SourceSidecar: docs/art/rigs/gameplay/tankerIsoRig.gameplay.json
   SourceRig: docs/art/rigs/tankerIsoRig.js
-  DerivedFromRigSha256: f933bbda7a387a76e324be1492b24015192ba89bca24faafc592b1e8e97b9a39
+  DerivedFromRigSha256: f31207abfd71de080d4ece0c9a4cee423ed6ac82f5fb533c15211fc1c6a97217
   LoaMeters: 110
   Areas:
   - Id: poop_aft

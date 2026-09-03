@@ -35,11 +35,19 @@ namespace HiddenHarbours.Tests.EditMode
         private GameObject _go;
         private TidalTerrain _terrain;
 
-        /// <summary>The nine species the pass-2 kit ships. Named here ONLY as the expectation to check the
-        /// contract against — the planter never reads a list like this.</summary>
-        static readonly string[] NineSpecies =
+        /// <summary>The ten species the pass-3 kit ships. Named here ONLY as the expectation to check the
+        /// contract against — the planter never reads a list like this.
+        ///
+        /// <para><b>TEN since 2026-09-02.</b> It was nine from #334 until pass 3: the TAMARACK was held
+        /// back because the pass-2 rig failed its own rule-1 gate on her (thinPct 5.4% against a 4%
+        /// ceiling, bodyRatio 80 → 66 — the larch has the thinnest needle grain in the rig and pass 2's
+        /// cell partition subdivided an already-wispy tuft below the clump floor). Pass 3 clears it:
+        /// measured in the repo's own V8 across 4 variants × summer/winter at mature, her worst thinPct
+        /// is <b>0.8%</b>, and the worst in the whole set is 0.9%. So she is back in the contract, back
+        /// in the placeable set, and re-baked at pass 3 rather than left at pass-1 pixels.</para></summary>
+        static readonly string[] TenSpecies =
         {
-            "RedSpruce", "BlackSpruce", "BalsamFir", "WhitePine", "WhiteCedar",
+            "RedSpruce", "BlackSpruce", "BalsamFir", "WhitePine", "WhiteCedar", "Tamarack",
             "WhiteBirch", "RedMaple", "RedOak", "TremblingAspen",
         };
 
@@ -57,32 +65,39 @@ namespace HiddenHarbours.Tests.EditMode
             if (_go != null) Object.DestroyImmediate(_go);
         }
 
-        static List<string> Available() => NineSpecies.ToList();
+        static List<string> Available() => TenSpecies.ToList();
 
         List<StPetersWoods.TreeSite> Trees() =>
             StPetersWoods.ScatterTrees(_terrain, Available(), _ => 4);
 
         // =================================================================================
-        //  TAMARACK IS HELD BACK
+        //  THE KIT'S PLACEABLE SET — and the tamarack, who was held back and came back
         // =================================================================================
 
         [Test]
-        public void TheKitClaimsNineSpecies_AndTamarackIsNotOneOfThem()
+        public void TheKitClaimsTenSpecies_AndTheTamarackIsOneOfThemAgain()
         {
+            // ⚠️ THIS FIXTURE ASSERTED NINE, AND EXCLUDED THE TAMARACK BY NAME. Its own message said
+            // what to do if it ever read ten: "that ruling changed and the held-back species needs a
+            // DECISION, not a silent inclusion." This is the decision, and it was measured before it
+            // was taken — the numbers are on TenSpecies above, and TreeKitCatalog.HeldBackSpecies is
+            // now empty and says why.
+            //
+            // The property this fixture actually guards is unchanged: the planter plants what the
+            // CONTRACT claims, not what happens to be in the folder. That is why the count and the
+            // set are read off Trees.json and never off a directory scan — a species' PNG can sit on
+            // disk while the contract does not offer it, which is exactly the state she was in.
             var contract = TreeKitCatalog.Load();
             Assert.IsNotNull(contract?.trees,
                 "the committed tree contract must be readable — the planter plants what it claims");
 
             var species = contract.trees.Select(t => t.species).ToArray();
-            Assert.AreEqual(9, species.Length,
-                "the pass-2 kit ships NINE placeable species (#334). Tamarack is held back by ruling so the " +
-                "sprite-light gate stays unconditional; if this becomes 10, that ruling changed and the " +
-                "held-back species needs a decision, not a silent inclusion.");
-            CollectionAssert.DoesNotContain(species, "Tamarack",
-                "Tamarack is HELD BACK. Its PNG is on disk, which is exactly why this is asserted against " +
-                "the CONTRACT and not against the folder.");
-            CollectionAssert.AreEquivalent(NineSpecies, species,
-                "the nine are the nine — a re-bake that swaps one out should fail here, where the message " +
+            Assert.AreEqual(10, species.Length,
+                "the pass-3 kit ships TEN placeable species. If this drops back to nine, a species was " +
+                "held back again — check TreeKitCatalog.HeldBackSpecies, which should then name it and " +
+                "say which gate it failed, rather than the count changing silently.");
+            CollectionAssert.AreEquivalent(TenSpecies, species,
+                "the ten are the ten — a re-bake that swaps one out should fail here, where the message " +
                 "says what the habitat model is choosing between");
         }
 

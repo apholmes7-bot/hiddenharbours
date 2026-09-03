@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: deck.lobster_boat_iso
   SourceSidecar: docs/art/rigs/gameplay/lobsterBoatIsoRig.gameplay.json
   SourceRig: docs/art/rigs/lobsterBoatIsoRig.js
-  DerivedFromRigSha256: 958e82e7f17ef8eb1d599790d44f730efe1fd680d2cf1ea656850889ff757590
+  DerivedFromRigSha256: 60d7ab29b333b9f66bd5ae8aa5cb5ab08feb17d5b236ffbeded1bd011e6f1cdd
   LoaMeters: 12
   Areas:
   - Id: cockpit_sole

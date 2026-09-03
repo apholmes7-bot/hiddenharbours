@@ -153,7 +153,7 @@
     ginger:['#5e2013','#7d301c','#9c4327','#b85835','#d07048'],
     salt:  ['#2a2f31','#40474a','#5c656a','#7d878b','#a3adaf'],
     grey:  ['#6f7a78','#878b85','#a2a7a0','#bcc2ba','#cfd4cc'],
-    white: ['#8a908c','#a3a8a3','#bcc0ba','#d3d6cf','#e8eae3'],
+    white: ['#8a908c','#a3a8a3','#bcc0ba','#d3d6cf','#dfe1db'],   // 6.7: top step softened; #e8eae3 lit single edge facets to near-white (Nan's 'earrings')
   };
   const OUTFITS = {
     teal: ['#0d3f3c','#14554e','#1c7367','#2ba39a','#49b8aa'],
@@ -405,7 +405,11 @@
                    browHair:{ramp:hair,off:0,idx:0},
                    iris:{ramp:[eye],off:0,idx:0}, skinD:{ramp:skin,off:0,idx:2},
                    skinL:{ramp:skin,off:0,idx:5},
-                   beard:M(hair,'hair',-1), beardD:M(hair,'hair',-2),
+                   /* 6.7: beard ramp is the hair ramp warmed a fifth of the way toward the skin's mid
+                      step. Straight off the hair ramp it was the same grey as the crop and the hat
+                      brim on Skipper and the same black as the fringe on Deck boss: the whole lower
+                      face read as hair. */
+                   beard:M(hair.map(c=>_mix(c, skin[2], 0.22)),'hair',-1), beardD:M(hair.map(c=>_mix(c, skin[2], 0.22)),'hair',-2),
                    stub:Object.assign(M(skin,'skin',-1),{dith:(S>=48?1:0)}) };
     const RINDEX = {};
     [skin,hair,over,shirt,BOOT,hatC,apron,LEATHER,BRASS].forEach(r=>r.forEach((c,i)=>{ RINDEX[c]={r,i}; }));
@@ -1314,11 +1318,19 @@
     const headLean = stoopR
       ? chain(pitchX(stoopR*1.30, spineZ), pitchX(lean*hF, hipZ))
       : pitchX(lean*hF, hipZ);
-    P.headC = (headListR||ID)(headLean([swayX*0.5, 0.005, headZ + breathe]));
+    /* 6.7: the head's share of the walk sway is snapped to whole cell pixels. At 0.19 px it never
+       moved the skull raster, but it moved the face stamp's rounded anchor across a column boundary
+       on three frames of eight — the eyes twitched inside a still head. */
+    const swayH = Math.round(swayX*0.5*S)/S;
+    P.headC = (headListR||ID)(headLean([swayH, 0.005, headZ + breathe]));
     P.headC = [P.headC[0], P.headC[1]+yOff - (slp?0.020:0), P.headC[2] + (slp?slp.pillow:0)];
-    P.eyesClosed = slp ? true : (calm && u>0.60 && u<0.78);
-    P.look = root.HeadIso
-      ? root.HeadIso.look({ anim, u, t:(rock&&rock.t), expr:(b.expr||(rock&&rock.expr)), talk:(rock&&rock.talk) })
+    /* 6.8: opts.loop (integer idle-loop index) gates the blink — HeadIso.blinks() picks every 2nd–3rd
+       loop; opts.seed shifts the schedule per figure. Unset = every loop, as the sheets have always baked. */
+    const HL = root.HeadIso, lp = rock ? rock.loop : null, sd = rock ? rock.seed : null;
+    const blinkLoop = !(HL && HL.blinks) || HL.blinks(lp, sd);
+    P.eyesClosed = slp ? true : (calm && blinkLoop && u>0.60 && u<0.78);
+    P.look = HL
+      ? HL.look({ anim, u, loop:lp, seed:sd, t:(rock&&rock.t), expr:(b.expr||(rock&&rock.expr)), talk:(rock&&rock.talk) })
       : { gaze:[0,0], lid:(P.eyesClosed?1:0), brow:0, mouth:'neutral' };
     /* chop mounts its knife on the SAME call the rod and the spade use, so P.tool is filled from
        the work curve when that curve carries a blade angle. tool() needs no new branch. */
@@ -1737,10 +1749,24 @@
     const carry = (['buckets','tray','helm','oars','pot'].indexOf(opts.carry)>=0) ? opts.carry : null;
     return { o:Object.assign({},opts,{dir}), b, anim, u, power, carry };
   }
+  /* 6.8 HEAD ON THE GRID. The head centre is nudged (≤ half a pixel, ≤ 1.6 cm of world) so that it
+     projects to a pixel CENTRE. The skull mesh hangs off that point and the projection is linear, so
+     the head raster is now identical in every frame of a clip that only translates the head (idle
+     breathe, walk/run bob) — and the face stamp's rounded anchor can no longer disagree with the
+     raster by a row. Before this, the stamp's depth probe failed on one frame in six at E/W/NE/NW
+     (idle f4 on eight of the cast) and slid the eye and mouth a pixel: a twitch inside a still head.
+     6.7's swayH snap is a special case of this and stays. */
+  function gridHead(P, o){
+    const B=camBasis(o), h=P.headC, v=projVert(h[0],h[1],h[2],B);
+    const tx=Math.round(v.sx-0.5)+0.5, ty=Math.round(v.sy-0.5)+0.5;
+    const dxr=(tx-v.sx)/S, dz=-(ty-v.sy)/(B.ce*S);
+    P.headC=[h[0]+dxr*B.ct, h[1]-dxr*B.stt, h[2]+dz];
+    return P;
+  }
   function render(dir, opts){
     const {o,b,anim,u,power,carry}=resolveOpts(dir,opts);
     const {MATS,RINDEX}=makeMats(b);
-    const P=pose(anim,u,b,power,carry,o);
+    const P=gridHead(pose(anim,u,b,power,carry,o), o);
     const HI=root.HeadIso;
     const hb = Object.assign({}, b, { jaw:P.PR.jawK, neck:P.PR.neckK });
     const post = HI ? (px,B)=>HI.stamp(px, P.headC, hb, P.look, B, MATS, cx, cy, P.PR.headK) : null;
@@ -1773,7 +1799,7 @@
   }
   function anchors(dir, opts){
     const {o,b,anim,u,power,carry}=resolveOpts(dir,opts);
-    const P=pose(anim,u,b,power,carry,o), B=camBasis(o);
+    const P=gridHead(pose(anim,u,b,power,carry,o), o), B=camBasis(o);
     const pt=(p)=>{ const v=projVert(p[0],p[1],p[2],B); return {x:v.sx, y:v.sy}; };
     return { handL:pt(P.arms.L.wrist), handR:pt(P.arms.R.wrist),
              head:pt([P.headC[0],P.headC[1],P.headC[2]+0.17*P.PR.headK]),
@@ -1785,7 +1811,16 @@
     if(!P.tool) return null;
     const B=camBasis(o), w=P.arms.R.wrist;
     const v=projVert(w[0]+0.005, w[1]+0.010, w[2]+0.012, B);
-    return { grip:{x:v.sx, y:v.sy}, wrist:[w[0],w[1],w[2]], pitch:P.tool.pitch, yaw:P.tool.yaw, bend:P.tool.bend };
+    let pitch=P.tool.pitch, yaw=P.tool.yaw;
+    /* 6.7: a TWO-HANDED tool takes its attitude from the two hands that hold it. The dig curve laid
+       the left hand 0.26 m back along the nominal shaft in the sagittal plane, but the pose hangs the
+       two wrists off two shoulders 0.3 m apart, so the drawn shovel ran through one hand only and
+       the other floated beside it at every facing. The shaft is now the wrist-to-wrist line. */
+    if(anim==='dig' && P.arms.L){
+      const wl=P.arms.L.wrist, D=[w[0]-wl[0], w[1]-wl[1], w[2]-wl[2]], L=Math.hypot(D[0],D[1],D[2])||1;
+      pitch=Math.asin(Math.max(-1,Math.min(1,D[2]/L))); yaw=Math.atan2(D[0],D[1]);
+    }
+    return { grip:{x:v.sx, y:v.sy}, wrist:[w[0],w[1],w[2]], pitch, yaw, bend:P.tool.bend };
   }
   function carry(dir, opts){
     const {o,b,anim,u,power,carry:c}=resolveOpts(dir,Object.assign({carry:'buckets'},opts));
@@ -2028,7 +2063,7 @@
     reachOf, gripRiseOf, reachCurve, reachMount,
     GROUPS, CAST_W1, CAST_S1, DEFAULT_BUILD,
     render, anchors, tool, carry, counter:counterLean, projectLocal, metrics, propsOf,
-    facesOf, pose, makeMats, lathe, arcLathe, limb, torsoProf, GAIN, BIAS, LN, BAYER, pass:6, revision:'6.6',
+    facesOf, pose, makeMats, lathe, arcLathe, limb, torsoProf, GAIN, BIAS, LN, BAYER, pass:6, revision:'6.9',   // 6.9: head 3.3 only (T2 profile hairline, T5 beard masks); body unchanged
     get head(){ return root.HeadIso || null; } };
   root.CharacterIso6 = API;
   if(!root.CharacterIso5) root.CharacterIso5 = API;   // drop-in when pass 5 is not loaded

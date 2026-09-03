@@ -65,6 +65,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _BeamLitStrength: 1.6
     - _AbsorptionBands: 6
     - _BeamReliefMaxGain: 2.5
     - _BeamReliefMinElevation: 0.15

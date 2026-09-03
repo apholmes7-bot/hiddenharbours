@@ -149,7 +149,7 @@ namespace HiddenHarbours.Art
             float sunElevation = SunElevation(hour, profile.SunriseHour, profile.SunsetHour);
             float weatherDim = WeatherDim(visibility, seaState01, profile);
             float lift = MoonlightLift(sunElevation, moonIllumination, moonElevation, weatherDim,
-                                       profile.MoonlightLiftMax);
+                                       profile.MoonlightLiftMax, profile.WeatherDimMax);
             if (lift <= 0f) return baseTint;   // no moon / daytime / feature off → EXACTLY the moonless tint
 
             Color outCol = Color.Lerp(baseTint, profile.MoonlightTint, lift);
@@ -168,22 +168,35 @@ namespace HiddenHarbours.Art
         ///   strength with no pop at the horizons;</item>
         /// <item><b>moon illumination</b> (0 new .. 1 full) — a NEW moon contributes exactly 0;</item>
         /// <item><b>moon elevation</b> (0 down .. 1 peak) — a moon below the horizon contributes exactly 0;</item>
-        /// <item><b>clear sky</b> — <c>1 − weatherDim</c>, the SAME weather factor that dims the rest of the
-        ///   light (overcast hides the moon);</item>
+        /// <item><b>clear sky</b> — the weather dim as a FRACTION OF ITS OWN CEILING, so full overcast
+        ///   leaves exactly 0. ⚠️ It is deliberately NOT <c>1 − weatherDim</c>: that number is capped at
+        ///   <see cref="DayNightProfile.WeatherDimMax"/> (0.6) because weather alone must never black the
+        ///   SCREEN out — a cap that belongs to the frame and not to the moon. Borrowing it left a full moon
+        ///   lifting a fully overcast midnight by 40 % of its strength, which was invisible while the lift
+        ///   was 0.05 and is a lit night at the ruled 0.45. The owner's words are "brighter <em>if not
+        ///   cloudy</em>", so cloud takes all of it;</item>
         /// <item><b>the owner's strength</b> — <see cref="DayNightProfile.MoonlightLiftMax"/>; 0 = feature off.</item>
         /// </list>
         /// Any zero factor returns exactly 0 (so the caller can skip the blend and keep the tint bitwise
         /// stable). Pure / deterministic / monotonic in every factor.
         /// </summary>
+        /// <param name="weatherDimMax">The ceiling <paramref name="weatherDim"/> was capped at
+        /// (<see cref="DayNightProfile.WeatherDimMax"/>) — what makes the cloud factor reach 0. Pass 0 (or
+        /// less) to keep the pre-2026-09-02 reading, <c>1 − weatherDim</c>, which never fully closed.</param>
         public static float MoonlightLift(float sunElevation, float moonIllumination, float moonElevation,
-                                          float weatherDim, float liftMax)
+                                          float weatherDim, float liftMax, float weatherDimMax)
         {
             float nightDepth = Mathf.Clamp01(-sunElevation);   // 0 while the sun is up → daytime unaffected
             if (nightDepth <= 0f) return 0f;
+            // CLOUD, as a fraction of the dimming that was available — 0 clear, 1 fully overcast. See the
+            // list above for why this is not 1 − weatherDim.
+            float ceiling = Mathf.Clamp01(weatherDimMax);
+            float cloud = ceiling > 0f ? Mathf.Clamp01(Mathf.Clamp01(weatherDim) / ceiling)
+                                       : Mathf.Clamp01(weatherDim);
             float lift = nightDepth
                        * Mathf.Clamp01(moonIllumination)
                        * Mathf.Clamp01(moonElevation)
-                       * (1f - Mathf.Clamp01(weatherDim))
+                       * (1f - cloud)
                        * Mathf.Clamp01(liftMax);
             return Mathf.Clamp01(lift);
         }

@@ -369,9 +369,12 @@ namespace HiddenHarbours.App.Editor
         /// Shoreward end of the dredged approach — the head of the berth pocket.
         ///
         /// <para>⚠ 206 is MEASURED against two things, not chosen. (a) The arrival hull is 12.9 m long
-        /// and lies at <see cref="DoryMooredPos"/> (215, 0), so her bow reaches 208.6 — the pocket's
+        /// and lies at <see cref="DockZonePos"/>, so her bow reaches 208.6 — the pocket's
         /// flat bottom runs 4 m past this end (the cut is a capsule, not a segment), so it holds her
-        /// whole length with room over. (b) The far side: the cut's shoulder dies out 8 m west of here,
+        /// whole length with room over. (⚠ This read "<c>DoryMooredPos</c> (215, 0)" until 2026-09-02,
+        /// which was stale twice over: the arrival lies at her own berth, not at the dory's, and the
+        /// dory has not been at (215, 0) since #677. The x it produced is unchanged.)
+        /// (b) The far side: the cut's shoulder dies out 8 m west of here,
         /// at x = 198, which is 15 m clear of <see cref="StPetersWharf.RootCellX"/> — so the pier root's
         /// MEASURED +5.35 m deck elevation, and the dry ground the pier launches from, do not move by a
         /// millimetre. Both are asserted, not trusted.</para>
@@ -819,17 +822,50 @@ namespace HiddenHarbours.App.Editor
         // 1.20 m. So the quantity to preserve across this move is not a drying fraction. It is that she
         // stays IN the pocket, and she does: her bed is −4.00 m before and after.
         //
-        // ⚠ WHICH IS WHY THE NEW BERTH IS DERIVED RATHER THAN NUDGED. North of the centre-line the
-        // dredged flat ends at <see cref="ApproachThalwegHalfWidth"/> and the shoulder climbs away fast
-        // (−2.52 m by y = 6). Her berth is that edge less her own half-beam, so her outboard RAIL is
-        // what lies on it and every part of her floats over dredged ground. One metre further out and
-        // the worst bed under her is −3.65 m; at y = 4.25 it is −3.45 m and climbing. The x does not
-        // move: she stays off the pier HEAD, which StPetersVillageTests holds in as many words ("a
-        // mooring under the planks is a mooring you cannot see").
+        // ================================================================================================
+        //  ⭐⭐ SHE LIES ALONGSIDE THE NORTH FACE, AT THE PILEHEAD (owner playtest, 2026-09-02)
+        // ================================================================================================
+        // The owner watched the opening again — after the 2026-08-27 move above — and said the same
+        // thing again: "move the demo dory from the starting dock, place it nearby so its accesible but
+        // [not] in the way of the docking intro boat".
         //
-        // ⚠ PROVISIONAL, and the owner said so — "another small dock for now nearby". This is the
-        // nearest water that is dredged, off the head, and clear of the track. It is a BERTH, not a
-        // second dock: there is no other pier on this island to build her one against yet.
+        // ⚠⚠ AND THE MEASUREMENT SAYS THE SAILING LINE WAS NEVER THE PROBLEM. Measured over the real
+        // passage, every frame, hull OUTLINE against hull OUTLINE (ArrivalOverRealTerrainPlayTests):
+        // at the 2026-08-27 berth the cape passed her with 4.97 m of clear water, and her track's
+        // northmost hull corner anywhere near this pier reaches only y = −1.76 against a dory whose
+        // stern lay at y = +0.90. She was 2.7 m outside the widest the arrival ever swings. So the
+        // berth was NOT in the way, and moving it further out is not what fixes what he saw. The two
+        // candidates that are: (a) the COMMITTED SCENE still had her at (215, 0) — the 2026-08-27 move
+        // happened in this builder and StPeters.unity was never re-banked, so every build made from the
+        // committed scene had her on the centre-line, where the same probe measures the cape passing
+        // 1.87 m off her: not a collision, but the second-tightest thing on the whole passage and close
+        // enough to read as a near miss; (b) the drawn hull, which nobody has measured against her
+        // 4.5 m def length. Both are named in the PR; neither is settled by a coordinate.
+        //
+        // ⭐⭐ WHAT WAS ACTUALLY WRONG HERE: SHE HAD NO HEADING. PersistentCoreBuilder set her position
+        // and never her rotation, so she took the identity — bow due NORTH — and a 4.5 m boat lay
+        // ATHWART an east–west fairway with her stern in it. Nothing had ever caught that because
+        // nothing modelled her as having ends: every clearance in this region was measured against a
+        // CIRCLE of her 0.85 m half-beam, which is 1.40 m short of her own stern. See
+        // <see cref="DoryMooredHeadingDegrees"/> and <see cref="HiddenHarbours.Core.HullFootprint"/>.
+        // Simply laying her on the pier's axis buys 4.97 → 6.07 m without moving her a metre.
+        //
+        // ⚠ AND THE OLD DERIVATION'S OWN NUMBERS WERE WRONG. The note that used to sit here read "at
+        // y = 4.25 it is −3.45 m and climbing". Measured under her whole OUTLINE at that berth, the
+        // worst bed is −3.97 m. It was a centre-point reading presented as a hull's clearance — the
+        // same circle-for-a-boat mistake, in the seabed instead of the fairway.
+        //
+        // ⭐ SO THE BERTH IS NOW THE PIER'S OWN NORTH FACE, at the one fitting that face carries: the
+        // head pilehead. Three terms, the same three and in the same order as the cape's berth against
+        // the south face — face, fendering gap, her own half-beam. She lies 0.40 m off the planks (step
+        // straight aboard: the owner asked for ACCESSIBLE), parallel to them, on 1.24 m of water at the
+        // lowest water of the biggest spring tide, and 6.84 m from the arrival's real track — up from
+        // 4.97. She is still east of HeadCellX, so StPetersVillageTests' "a mooring under the planks is
+        // a mooring you cannot see" holds unchanged; StPetersDoryBerthTests adds the honest version of
+        // that pin, which is that her OUTLINE clears the deck.
+        //
+        // ⚠ STILL PROVISIONAL, and the owner still said so — "another small dock for now nearby". This
+        // is a BERTH, not a second dock: there is no other pier on this island to build her one against.
         public const float DockZoneRadius = 3.5f;                                  // ControlSwitcher's default _zoneRadius
 
         /// <summary>
@@ -841,21 +877,56 @@ namespace HiddenHarbours.App.Editor
         /// </summary>
         public const float DoryHalfBeamMetres = 0.85f;
 
-        /// <summary>Where along the channel she lies. Unchanged by the 2026-08-27 move: east of
-        /// <see cref="StPetersWharf.HeadCellX"/>, so she is off the pier head and not under its planks.
-        /// (Its own derivation — beach ends 140 m from the island centre → 70 + 145 — is history now that
-        /// the dredge owns this water, but the number it produced is still the right one.)</summary>
-        public const float DoryMooredX = 215f;
+        /// <summary>
+        /// The starting dory's LENGTH, in metres. ⚠ A MIRROR of <c>Dory.asset</c>'s <c>LengthMeters</c>,
+        /// for the same reason her half-beam is one, and held equal to it by StPetersDoryBerthTests.
+        ///
+        /// <para><b>⭐ Why a length was needed at all (2026-09-02).</b> Because until this date nothing
+        /// in this region knew she had one. Every clearance ever measured against her — the corridor
+        /// probe included — modelled her as a CIRCLE of her half-beam, 0.85 m, when she is a 4.5 m boat:
+        /// her ends reach 2.25 m from her centre, which is 1.40 m more water than the circle ever
+        /// admitted she occupied. Lying bow-north across an east–west fairway, as she did from #677
+        /// until now, that was the whole difference between "beside the channel" and "in it".
+        /// <see cref="HiddenHarbours.Core.HullFootprint"/> is what reads this.</para>
+        /// </summary>
+        public const float DoryLengthMetres = 4.5f;
 
         /// <summary>
-        /// How far NORTH of the fairway's centre-line she lies: the dredged flat's own north edge, less
-        /// her own half-beam. Her rail sits on the edge; her whole hull floats over the cut. Derived, so
-        /// a re-dredge that narrows the flat brings her in with it rather than leaving her on a shoulder.
+        /// ⭐ <b>The heading she LIES ON at her mooring</b> — along the pier's own axis, which is what a
+        /// boat tied up to a pier does.
+        ///
+        /// <para><b>⚠ This did not exist before 2026-09-02, and its absence was half the bug.</b>
+        /// <c>PersistentCoreBuilder</c> set her position and never her rotation, so she took the
+        /// identity — bow due NORTH — and a 4.5 m boat lay athwart the one fairway into this harbour
+        /// with her stern 0.90 m off its centre-line. Nothing caught it because nothing modelled her as
+        /// having ends. A moored heading is not decoration: it is half of where a boat is.</para>
+        ///
+        /// <para>Read off <see cref="StPetersWharf.AxisInward"/> — the same source
+        /// <c>StPetersArrivalOpening.BerthHeadingDegrees</c> reads for the cape — so the two boats at
+        /// this pier lie parallel because they are laid on ONE axis, not because two literals happen to
+        /// agree today.</para>
         /// </summary>
-        public const float DoryMooredY = ApproachThalwegHalfWidth - DoryHalfBeamMetres;
+        public static float DoryMooredHeadingDegrees =>
+            Mathf.Atan2(StPetersWharf.AxisInward().x, StPetersWharf.AxisInward().y) * Mathf.Rad2Deg;
 
-        /// <summary>The starting dory's berth — north of the fairway, off the pier head, in the cut.</summary>
-        public static readonly Vector3 DoryMooredPos = new Vector3(DoryMooredX, DoryMooredY, 0f);
+        /// <summary>
+        /// Where along the pier she lies — <b>abreast of the head's north pilehead</b>
+        /// (<c>StPetersWharf.Fittings</c> stands one at <c>HeadCellX + 0.5</c>, <c>MaxCellY + 0.5</c>).
+        /// The north face carries exactly one fitting and this is it, so a small boat tied up there is
+        /// tied to something rather than parked beside nothing.
+        /// </summary>
+        public const float DoryMooredX = StPetersWharf.HeadCellX + 0.5f;
+
+        /// <summary>
+        /// How far north she lies: the pier's NORTH face, plus the fendering gap, plus her own
+        /// half-beam — the same three terms, in the same order, that put the cape against the south
+        /// face (<see cref="AlongsideBerthY"/>). She lies against the pier; she is not parked near it.
+        /// </summary>
+        public static float DoryMooredY =>
+            StPetersWharf.NorthFaceY + AlongsideFenderGapMetres + DoryHalfBeamMetres;
+
+        /// <summary>The starting dory's berth — alongside the pier's north face, at the pilehead.</summary>
+        public static Vector3 DoryMooredPos => new Vector3(DoryMooredX, DoryMooredY, 0f);
 
         // ================================================================================================
         //  ⭐ SHE LIES ALONGSIDE (owner playtest, 2026-08-22)
@@ -1297,6 +1368,7 @@ namespace HiddenHarbours.App.Editor
                 CameraBackground = new Color(0.07f, 0.14f, 0.18f),   // St Peters' cool dawn water
                 PlayerStartPos   = StartSpawnPos,
                 BoatMooredPos    = DoryMooredPos,
+                BoatMooredHeadingDegrees = DoryMooredHeadingDegrees,   // she lies ALONGSIDE, not athwart
                 TideGatedWalk    = true,
                 CurrentSceneName = SceneName,
                 TideMean         = TideMean,        // St Peters' BIG tide (±2.2 m) so the bar bares + floods

@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: deck.lobster_inshore_hardtop_northumberland_iso
   SourceSidecar: docs/art/rigs/gameplay/lobsterInshoreHardtopNorthumberlandIso.gameplay.json
   SourceRig: docs/art/rigs/lobsterBoatVariantsIsoRig.js
-  DerivedFromRigSha256: 69eb8cec03260fbc7c6e9f698b3fa4556c53a40f3d5d2cef1d5b498f26ae152e
+  DerivedFromRigSha256: ed8d0e7a43c9e8ee68f4dfc0d48919e1e162b749252a86d193d86cdaa4772795
   LoaMeters: 8.6
   Areas:
   - Id: cockpit

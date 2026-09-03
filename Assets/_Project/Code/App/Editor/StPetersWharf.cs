@@ -216,6 +216,18 @@ namespace HiddenHarbours.App.Editor
         public static float MooringFaceY => DeckFootprint().yMin;
 
         /// <summary>
+        /// The deck's other lip — the <b>NORTH</b> one, the back of the pier.
+        ///
+        /// <para>⚠ <b>Not a second mooring face, and it must not become one by accident.</b> Every
+        /// fitting is on the south edge for the reasons <see cref="MooringFaceY"/> gives, and a working
+        /// hull belongs where the bollards are. The one thing this pier carries on its north side is the
+        /// head <c>pilehead</c> (see <see cref="Fittings"/>), and that is exactly as much as the north
+        /// face is good for: something small, tied up out of the way of the berth. That is what the
+        /// starting dory uses it for (<c>StPetersBuilder.DoryMooredPos</c>, 2026-09-02).</para>
+        /// </summary>
+        public static float NorthFaceY => DeckFootprint().yMax;
+
+        /// <summary>
         /// Where the ladder hangs, read out of <see cref="Fittings"/> rather than re-derived — the one
         /// fitting on this pier whose whole job is getting a person between a boat and the planks, and
         /// therefore the point a hull lying alongside is berthed abreast of.

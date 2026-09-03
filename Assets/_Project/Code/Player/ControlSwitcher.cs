@@ -184,6 +184,36 @@ namespace HiddenHarbours.Player
         private ControlMode _mode = ControlMode.OnFoot;
 
         /// <summary>
+        /// 🔴 <b>Somebody else is carrying her.</b> True between <c>CarriedAboardChanged(true)</c> and
+        /// its <c>false</c> — today that is <c>ArrivalOpening</c>, which rides the player in on the
+        /// skipper's deck; tomorrow a ferry or a tow would say exactly the same thing.
+        ///
+        /// <para><b>Why this component has to care, when for five weeks it did not.</b> The arrival
+        /// carries her by POSITION and never touches <see cref="Mode"/> — so for the whole passage this
+        /// switcher believes she is <see cref="ControlMode.OnFoot"/>, standing whever her transform has
+        /// been put, with her own moored dory as <c>Boat</c>. And on foot the switcher boards FIRST,
+        /// before the interact registry, on nothing but a 3.5 m radius to that dory's root. St Peters
+        /// moors her 2.42 m from the ratified disembark point, so the press meant for the cabin door —
+        /// or for the step ashore — was answered by BOARDING, mid-passage. The switcher then moved the
+        /// player onto the dory while the arrival went on seating her every LateUpdate, and nothing
+        /// published <c>CabinLeft</c>, so <c>DeckRiderVisual</c> kept drawing her below decks. That is
+        /// the owner's 2026-09-02 report in order: <i>"doesnt always use the door … would telport to the
+        /// dory while the sprite stayed locked in the iso cabin"</i>.</para>
+        ///
+        /// <para><b>The rule this expresses:</b> a passenger's transform is not a place she walked to,
+        /// so no proximity question asked of it has a meaningful answer. While it is set,
+        /// <see cref="WithinBoardReach"/> and <see cref="CanStepAshore"/> are both false and the arrival
+        /// owns every verb that moves her.</para>
+        ///
+        /// <para>⚠ <b>A refusal, so it fails OPEN.</b> Cleared in <c>OnDisable</c> as well as by the
+        /// signal: a latched refusal that outlives its listener would leave the player standing beside
+        /// their own boat unable to board it for the rest of the save, which is a worse bug than the one
+        /// it fixes. The arrival's own <c>ReleaseThePlayer</c> publishes <c>false</c> from its
+        /// <c>OnDisable</c> too, so a mid-passage region unload hands her back rather than stranding her.</para>
+        /// </summary>
+        private bool _carriedAboard;
+
+        /// <summary>
         /// Which station the player is at. <b>Every write also publishes who holds the helm</b> — the
         /// one place it is declared, so no transition can forget to (there are seven of them, plus the
         /// region-hop re-assert, and a helm left declared after stepping ashore is a wheel drawn for
@@ -274,9 +304,14 @@ namespace HiddenHarbours.Player
         /// <summary>
         /// True when the on-foot player is close enough to the boat to BOARD it — board from anywhere within
         /// reach, not only at a dock zone (the relaxed board gate). Pure proximity to the boat.
+        ///
+        /// <para>🔴 <b>…unless somebody else is carrying her</b> (2026-09-02). See
+        /// <see cref="_carriedAboard"/>: while she is a PASSENGER, her transform is not a place she
+        /// walked to, and a proximity test on it answers a question nobody asked.</para>
         /// </summary>
         public bool WithinBoardReach()
-            => Player != null && Boat != null
+            => !_carriedAboard
+               && Player != null && Boat != null
                && Vector2.Distance(Player.position, Boat.position) <= _boardReach;
 
         /// <summary>The helm station's world position — the boat's position plus the tunable world-axis
@@ -380,8 +415,13 @@ namespace HiddenHarbours.Player
 
         /// <summary>Is there a standable step-off from the deck right now — the authored dock/wharf, or
         /// land under the boat? Named because three places must agree on it: the prompt, the transition,
-        /// and the boarding move re-reading the rule at the far end of its arc.</summary>
-        public bool CanStepAshore() => InDockZone() || OnLand();
+        /// and the boarding move re-reading the rule at the far end of its arc.
+        ///
+        /// <para>🔴 <b>Never while she is being carried</b> (2026-09-02) — the arrival owns getting her
+        /// off the boat it put her on, and it has its own landing, its own <c>!IsBelowDecks</c> rule and
+        /// its own step-ashore move. Two components both entitled to put her ashore is how she ends up
+        /// somewhere neither of them meant.</para></summary>
+        public bool CanStepAshore() => !_carriedAboard && (InDockZone() || OnLand());
 
         /// <summary>Attempt the contextual INTERACT transition for the current mode (board the deck /
         /// take the helm / step back / disembark). Returns true if a transition happened.</summary>
@@ -998,6 +1038,11 @@ namespace HiddenHarbours.Player
         /// <summary>The door was worked (Core handoff — see <see cref="DriveSeatRequested"/>). A request,
         /// not a permission: every gate is re-read in <see cref="TryEnterDriving"/>.</summary>
         private void OnDriveSeatRequested(DriveSeatRequested e) => TryEnterDriving(e.Seat);
+
+        /// <summary>Somebody has taken her aboard, or handed her back — see <see cref="_carriedAboard"/>.
+        /// One field, one assignment: the whole of the fix is that this component is now IN the
+        /// conversation the arrival was already having with the camera.</summary>
+        private void OnCarriedAboardChanged(CarriedAboardChanged e) => _carriedAboard = e.Carried;
 
         // ---- the boarding MOVE (the owner's ask: climb aboard, don't teleport) ----------------
         //
@@ -1896,8 +1941,19 @@ namespace HiddenHarbours.Player
         /// <summary>Listen for a worked driver's door (ADR 0035). The Vehicles lane publishes; this
         /// answers. An EventBus subscription, NOT a Core service registration — the region-travel law about
         /// never relinquishing a service in OnDisable is about <see cref="GameServices"/> slots, and this
-        /// is the ordinary subscribe/unsubscribe pair <c>CameraFollow</c> uses on the same bus.</summary>
-        private void OnEnable() => EventBus.Subscribe<DriveSeatRequested>(OnDriveSeatRequested);
+        /// is the ordinary subscribe/unsubscribe pair <c>CameraFollow</c> uses on the same bus.
+        ///
+        /// <para>🔴 …and, since 2026-09-02, for somebody else CARRYING her — see
+        /// <see cref="_carriedAboard"/>. Subscribed HERE rather than lazily on the first press because
+        /// <c>ArrivalOpening</c> publishes the signal inside its own <c>TryBegin</c>, long before the
+        /// player touches a key: a listener that installs itself later never hears the one that
+        /// matters. <c>BoardingWhileCarriedPlayTests.TheSwitcherIsAlreadyListening_WhenTheArrivalSeatsHer</c>
+        /// asserts that rather than trusting this note.</para></summary>
+        private void OnEnable()
+        {
+            EventBus.Subscribe<DriveSeatRequested>(OnDriveSeatRequested);
+            EventBus.Subscribe<CarriedAboardChanged>(OnCarriedAboardChanged);
+        }
 
         /// <summary>Torn down mid-move (scene teardown, a disabled rig): call the move off so it can hand
         /// back the interact key. A held <see cref="InteractionGate"/> outliving its holder is the one way
@@ -1915,6 +1971,13 @@ namespace HiddenHarbours.Player
         private void OnDisable()
         {
             EventBus.Unsubscribe<DriveSeatRequested>(OnDriveSeatRequested);
+            EventBus.Unsubscribe<CarriedAboardChanged>(OnCarriedAboardChanged);
+            // ⚠ And FORGET that she was being carried. The flag is a refusal, and a refusal that
+            // survives its own listener is worse than the bug it fixes: a switcher re-enabled while the
+            // arrival has already published `true` would come back deaf AND blocked, leaving the player
+            // permanently unable to board her own boat. Cleared here so the only way back into the
+            // refusing state is a live subscription hearing a live signal.
+            _carriedAboard = false;
             CancelBoardingMove(restorePosition: true);
             if (Mode == ControlMode.Driving) { ReleaseDriveInput(); AbandonDriving(); }
             InteractVerb.ClearCandidate();

@@ -37,40 +37,63 @@ namespace HiddenHarbours.Art.Editor
         /// The rig this kit is baked from. Read-only reference for us — it is the art-director
         /// role's file (<c>docs/art/rigs/**</c>).
         ///
-        /// <para><b>PASS 2 since 2026-07-29.</b> <c>treeIsoRig2.js</c> supersedes
-        /// <c>treeIsoRig.js</c>, which stays committed as the previous generation (the same way
+        /// <para><b>PASS 3 since 2026-09-02.</b> <c>treeIsoRig3.js</c> supersedes
+        /// <c>treeIsoRig2.js</c>, which stays committed as the previous generation (the same way
         /// <c>shoreIsoKitRig2.js</c> sits beside <c>shoreIsoKitRig.js</c>). Pass 1 built real volume
-        /// and lit it correctly, but every crown came out of one soft-ellipsoid cloud with per-pixel
-        /// value noise on top, so the family read as artichokes. Pass 2 builds crowns as identified
-        /// leaf MASSES with hard edges where two meet, partitions the surface into per-species Worley
-        /// leaf CELLS shaded flat, serrates the outline with a tooth wave, and draws visible
-        /// branches.</para>
+        /// and lit it correctly, but every crown came out of one soft-ellipsoid cloud, so the family
+        /// read as artichokes; pass 2 rebuilt crowns as identified leaf MASSES with a Worley cell
+        /// partition and visible branches. <b>Pass 3 builds the SKELETON first</b> — fork height,
+        /// primary count, the curve a limb takes to its target, per-species conifer tiering — and
+        /// hangs authored 4–9 px leaf STAMPS off the limb tips, so the crown silhouette is a
+        /// consequence of the wood and winter is the same skeleton with twig fans.
         ///
         /// <para>⚠️ <b>Nothing about the CONTRACT changed</b>, which is why the swap is two constants
         /// and a re-bake rather than a pipeline rewrite: PPU, camera (ELEV/CE/SE), LIGHT, the three
-        /// rules (RIM_PX/MIN_BODY/MIN_R), SEASONS, STAGES, VARIANTS, SWAY and all ten species keys
-        /// are IDENTICAL between the two passes — verified constant by constant at import. What
-        /// changed is the pixels, and with them every species' measured cell and pivot, which is
-        /// exactly what this contract exists to carry from the rig rather than restate.</para>
+        /// rules (RIM_PX/MIN_BODY/MIN_R), SEASONS, STAGES, VARIANTS, SWAY, KEYLINE_DEFAULT and all
+        /// ten species keys are IDENTICAL across all three passes — verified constant by constant at
+        /// import, in the repo's own V8. Pass 3 drops <c>LEAF_W</c>/<c>LEAF_H</c> (nothing here read
+        /// them) and adds <c>SCALE</c>, <c>M2PX</c>, <c>woodView</c> and <c>STENCILS</c>.</para>
+        ///
+        /// <para>⚠️⚠️ <b>WHAT PASS 3 DOES CHANGE IS THE WORLD SIZE OF EVERY TREE, and that is a
+        /// ruling, not a refresh.</b> Pass 3 carries each species' TRUE mature height and maps it
+        /// through <c>SCALE = 0.6</c>, so relative scale becomes real rather than compressed toward a
+        /// common height. Measured mature/summer, pass 2 → pass 3: black spruce 5.6 → 6.6 m (×1.18),
+        /// red oak 5.3 → 13.2 (×2.49), white pine 6.9 → 16.2 (×2.35). Cells go from 79×141…165×191 to
+        /// 73×179…331×347. Everything downstream that was tuned against a 5–7 m tree — the woodland
+        /// planter's spacing, the Y-sort band, texture memory — meets a 7–16 m one. SCALE is a rig
+        /// constant: raising or lowering it and re-baking re-measures every cell and pivot.</para>
         /// </summary>
-        public const string RigScriptPath = "docs/art/rigs/treeIsoRig2.js";
+        public const string RigScriptPath = "docs/art/rigs/treeIsoRig3.js";
 
-        /// <summary>⚠️ <c>TreeRig2</c>, not <c>TreeRig</c>. Pass 2 installs its own global and
-        /// exposes the same surface, so a consumer swaps ONE identifier — but a stale <c>TreeRig</c>
-        /// here would silently bake pass-1 pixels against a pass-2 contract if both files were ever
-        /// loaded into one host. Everything reads this constant; nothing hardcodes the name.</summary>
-        public const string RigGlobalName = "TreeRig2";
+        /// <summary>⚠️ <c>TreeRig3</c>, not <c>TreeRig2</c> and not <c>TreeRig</c>. Each pass installs
+        /// its OWN global and exposes the same surface, so a consumer swaps ONE identifier — but a
+        /// stale name here would silently bake a previous pass's pixels against this pass's contract
+        /// if two files were ever loaded into one host, and at pass 3 that would be a tree at HALF
+        /// its world height. Everything reads this constant; nothing hardcodes the name.</summary>
+        public const string RigGlobalName = "TreeRig3";
 
-        /// <summary>The superseded pass-1 rig, kept committed for provenance and for the
-        /// constants-are-identical proof in <c>TreeRigBakeTests</c>. Nothing bakes from it.</summary>
-        public const string PreviousRigScriptPath = "docs/art/rigs/treeIsoRig.js";
+        /// <summary>The superseded PREVIOUS-pass rig, kept committed for provenance and for the
+        /// constants-are-identical proof in <c>TreeRigBakeTests</c>. Nothing bakes from it.
+        /// <c>treeIsoRig.js</c> (pass 1) also stays committed, one generation further back.</summary>
+        public const string PreviousRigScriptPath = "docs/art/rigs/treeIsoRig2.js";
 
-        public const string PreviousRigGlobalName = "TreeRig";
+        public const string PreviousRigGlobalName = "TreeRig2";
 
         /// <summary>
-        /// 🔴 <b>SPECIES HELD BACK FROM THE CURRENT PASS — their committed sheets are PASS-1 PIXELS.</b>
+        /// ✅ <b>EMPTY SINCE PASS 3 (2026-09-02) — the tamarack came back.</b> The list stays, and so
+        /// does every consumer of it, because the next drop can hold a species back for the same
+        /// reason this one did.
         ///
-        /// <para><b>Tamarack</b> fails the pass-2 rig's OWN rule-1 gate
+        /// <para><b>Measured before emptying it</b>, in the repo's own V8 and against the gate's own
+        /// terms (<c>audit.pass &amp;&amp; thinPct &lt;= 4%</c>), every species × 4 variants ×
+        /// summer/winter at mature: the worst thinPct in the whole set is <b>0.9%</b>, and the
+        /// tamarack's own worst is <b>0.8%</b> against the 5.4% that held her back. Ten of ten
+        /// species clear it, so the entry's own instruction below applies.</para>
+        ///
+        /// <para>What follows is the 2026-07-29 record, kept because it is the reason the mechanism
+        /// exists:</para>
+        ///
+        /// <para><b>Tamarack</b> failed the pass-2 rig's OWN rule-1 gate
         /// (<c>audit.pass &amp;&amp; thinPct &lt;= 4%</c>): it measures <b>5.4%</b>, a 35% overshoot,
         /// against 1.1% under pass 1, and its <c>bodyRatio</c> fell 80 → 66. The other nine species
         /// improved. It is the larch — the thinnest needle grain in the rig's <c>GRAINS</c> — so pass
@@ -92,7 +115,7 @@ namespace HiddenHarbours.Art.Editor
         /// <para>Delete the entry — do not edit around it — the day the rig clears its own gate and the
         /// species re-enters the bake.</para>
         /// </summary>
-        public static readonly string[] HeldBackSpecies = { "Tamarack" };
+        public static readonly string[] HeldBackSpecies = System.Array.Empty<string>();
 
         /// <summary>Whether a species is held back at a previous pass — see
         /// <see cref="HeldBackSpecies"/>.</summary>
