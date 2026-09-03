@@ -1,6 +1,7 @@
 {
   "rig": "sternTrawlerIsoRig.js",
-  "derivedFromRigSha256": "0f48e416176c1e3d3e24b8a5a4fb2ab393eeb9c257c7d43bd1af82ae18378178",
+  "derivedFromRigSha256": "285cf70f7d3951b43c5a008b95229fb5aad7b558f41302ef1d242b036254dd6f",
+  "_repin_batch5": "2026-09-02 (cutaway kit batch 5). Plumbing only. Measured in the repo's own ClearScript V8 -- 842 -> 842 faces, ZERO differing fields, 10/10 renders byte-identical. WARNING: this pin is the WORKING-TREE (CRLF) hash; the LF/blob hash is a1deec112f97675a... Do not cross them.",
   "generated": "2026-07-22",
   "frame": {
     "units": "m",

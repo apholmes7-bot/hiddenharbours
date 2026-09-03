@@ -681,7 +681,41 @@ namespace HiddenHarbours.Tools.RigBaking
                 // MEASURED (repo's own V8 host, 2026-08-15, both widenings applied): the widened
                 // `faceList('stowed').length` equals the rig's OWN published `faceCount` on both
                 // hulls — 3200 and 3770 — which is an independent check that this expression reaches
-                // the list the rig means, not merely a list.
+                // the list the rig means, not merely a list. Re-measured 2026-09-02 against cutaway
+                // batch 5's pass-2+3 rig: 3239 and 3824, still equal to her own `faceCount`.
+                //
+                // ---- and her pass-2 SLIDING salon door, ×2 (cutaway kit batch 5, 2026-09-02) ------
+                // ⚠️ THE POSED DOOR LEAF, third family running. Batch 2 caught the three ships and
+                // the eighteen lobster variants; batch 5 brings pass 2 AND pass 3 to the sport
+                // fishers in one landing, and it is pass 2 — not the cutaway pass — that gives them
+                // a door. Her salon aft glass is a two-panel slider built PER RENDER so `doorOpen`
+                // can pose it, which is exactly why it is in neither `F` nor `RIGF`: her render()
+                // draws `faceList(riggers).concat(doorFacesFn(opts.doorOpen))`.
+                //
+                // Measured in the repo's own V8 at doorOpen 0, before this changed: convertible
+                // 3239 static + 13 leaf, skybridge 3824 static + 24 leaf. Without the concat both
+                // meshes bake with a hole where the salon door is, and nothing else notices — the
+                // mesh is still the right SIZE, still the right hull, still passes every count.
+                //
+                // Composition is the SHIPS' shape, not the generator's: `doorFaces(opts)` here takes
+                // an opts bag off the hull object (`(opts)=>doorFacesFn(opts && opts.doorOpen)`),
+                // and the hull is already bound by the loop above, so there is no second resolve to
+                // get wrong.
+                //
+                // ⚠️ The leaf is taken WHEN OFFERED, not demanded — and that is not laxness, it is
+                // which FILE is being read. This table is keyed by file name, and two vintages of
+                // sportFisherIsoRig2.js live in this repo on purpose: root is batch 5's pass 3 and
+                // publishes doorFaces on each hull; docs/art/rigs/boat-interiors-kit/hull-rigs/
+                // still holds the PASS-2 loft the 27 interior sidecars pin, where the leaf builder
+                // is private (`doorFacesFn`) and there is nothing to concat. Demanding it threw on
+                // the kit copy and took BoatInteriorDefShapeTests
+                // .TheCoamingsOutlineIsBuiltFromVerticesTheRigActuallyEmits down with it — a rig
+                // being refused for not having a door it never had.
+                //
+                // The guard against a SILENT loss lives where it can see the right boat:
+                // TheDoorLeaf_IsTaggedWithTheRoomItCloses asserts `leaf > 0` against the ROOT rig,
+                // which is the one the mesh bakes from. A root rig that stopped publishing
+                // doorFaces goes red there, loudly, on the hull it matters for.
                 ["sportFisherIsoRig2.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
                 {
                     ["variantFaces"] =
@@ -689,7 +723,9 @@ namespace HiddenHarbours.Tools.RigBaking
                         "if(HULLS[i].id===id)h=HULLS[i];" +
                         "if(!h)throw new Error('sportFisherIsoRig2.js: no hull \"'+id+'\". " +
                         "byId() would have returned the DEFAULT hull silently.');" +
-                        "return h.faceList('stowed');}",
+                        "var fl=h.faceList('stowed');" +
+                        "return typeof h.doorFaces==='function' " +
+                        "? fl.concat(h.doorFaces({doorOpen:0})) : fl;}",
                     // Her paint is an axis, like the lobster's and the small craft's, and
                     // `defaultPaint` is 'gelcoat' on both hulls — so this reads the table the rig
                     // itself would use rather than transcribing one. Her twelve entries are
@@ -982,14 +1018,31 @@ namespace HiddenHarbours.Tools.RigBaking
                 {
                     new InnerWidening
                     {
-                        // `return {` followed by makeRig's own first property. Deliberately NOT a
-                        // bare `return {`: this rig has several (proj's `{x,y}`, DOORS, NAV), and an
-                        // anchor that matched one of those would expose nothing and fail far away.
-                        AnchorPattern = @"return\s*\{\s*\n\s*id:spec\.id,",
+                        // makeRig's own first property. Deliberately NOT a bare literal opener: this
+                        // rig has several (proj's `{x,y}`, DOORS, NAV), and an anchor that matched
+                        // one of those would expose nothing and fail far away.
+                        //
+                        // ⚠️ WIDENED TO TWO SHAPES 2026-09-02 (cutaway batch 5), and it has to
+                        // recognise BOTH for as long as both vintages are in the tree.
+                        //
+                        // Pass 2 gave makeRig a NAMED return — `const RIG = {…}; … return RIG;` —
+                        // because her render() now hands the object to BoatCutaway.filter and needs
+                        // a name for it. The old anchor was `return\s*\{\s*\n\s*id:spec\.id,`, which
+                        // matched exactly once on the pass-1 rig and ZERO times on batch 5's. That
+                        // is the good failure mode — the shim refuses rather than widening the wrong
+                        // literal — but re-aiming it at the new form alone then broke the OTHER
+                        // copy: this table is keyed by FILE NAME, and TWO vintages of
+                        // sportFisherIsoRig2.js live in this repo on purpose. Root is batch 5's pass
+                        // 3; docs/art/rigs/boat-interiors-kit/hull-rigs/ still holds the pass-2 loft
+                        // the 27 interior sidecars pin, and BoatInteriorDefShapeTests extracts from
+                        // THAT one. Measured on all three committed copies — root, the interiors
+                        // kit, and boat-cutaway-kit-5 — this union matches EXACTLY ONCE in each,
+                        // and neither branch of it matches anything in the other's file.
+                        AnchorPattern = @"(?:return|const\s+RIG\s*=)\s*\{\s*\n\s*id:spec\.id,",
                         Insert = " faceList, F, RIGF,",
                         Why = "makeRig() keeps this hull's face list in its own closure; the mesh " +
-                              "bake reads faceList('stowed'), which is exactly what her render() " +
-                              "draws (F.concat(RIGF.stowed)).",
+                              "bake reads faceList('stowed') and concats the posed salon leaf, " +
+                              "which is exactly what her render() draws.",
                     },
                 },
             };
@@ -1435,7 +1488,17 @@ namespace HiddenHarbours.Tools.RigBaking
             // BEFORE the faces, and it has to be: the packer resolves each face's `lv` string against
             // this table inside JavaScript, so the vocabulary must exist by the time the blob is
             // built. A rig without geometry() leaves it empty and every face comes back Untagged.
-            ReadLevels(host, g, data);
+            //
+            // ⚠️ THE HULL SCOPE, not the global — same reason the CELL is read from it, and the same
+            // failure shape. A REGISTRY rig publishes geometry() per hull, because a 16.2 m boat and
+            // a 27.4 m boat have different decks at different heights; SportFisherIso2 itself has no
+            // geometry() at all. Reading the global's found nothing, HasSymbol returned false, and
+            // the vocabulary came back EMPTY — which is not an error on this path, it is exactly what
+            // a pre-cutaway rig looks like. So the sport fishers would have baked untagged and
+            // uncuttable while every count still looked right. Every non-registry rig has
+            // hullScope == g, so nothing else moves. (Generators keep reading geometry() with no
+            // argument: their vocabulary is the family's, not the variant's.)
+            ReadLevels(host, hullScope, data);
 
             // Three arms, and the LAST is the one every hull baked before 2026-08-13 takes — passing
             // neither extraction leaves this method on the identical code path it has always had.

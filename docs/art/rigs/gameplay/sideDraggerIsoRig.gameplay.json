@@ -1,6 +1,7 @@
 {
   "rig": "sideDraggerIsoRig.js",
-  "derivedFromRigSha256": "587141fe8b6ded9ae6b18410a8141894cb7d08f3927ea98e474994a30b8dae84",
+  "derivedFromRigSha256": "4ca48880a8427fdbc72439d36766cc2f205d9edf6b9b6297a082b12b254650f9",
+  "_repin_batch5": "2026-09-02 (cutaway kit batch 5). \u26a0 THE ONE HULL WHOSE PIXELS MOVE. Her boat-deck pipe rail around the aft roof is now a plated bulwark -- an aft plate and two side plates in `cream`, z from HZ1l+0.03 to rz-0.03 -- because the pipe rail let sea through between the wheelhouse roof line and the cap rail. Face stream 833 -> 836 (+3, the three plates). Measured in the repo's own ClearScript V8 at all 8 facings: 1220-2966 px change per facing, every change inside the aft-roof box, and opaque->transparent is ZERO everywhere -- the plating only adds silhouette (up to 600 px at S) and re-shades within the existing shape. Nothing in THIS file derives from the boat-deck rail. Convention: LF/blob, as the previous pin was.",
   "generated": "2026-07-22",
   "frame": {
     "units": "m",
