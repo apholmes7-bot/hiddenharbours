@@ -257,10 +257,21 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 "count 0 must fall back to the legacy singleton path");
             // The primary lamp is published to BOTH the array (for the water) and the singleton (for the
             // decor path). If the water ever summed them together it would count that lamp twice.
-            int arrayAdds = CountOccurrences(src, "total += BoatLightWeight(_WaterLightPos[i]");
-            int singletonReturns = CountOccurrences(src, "return BoatLightWeight(_BoatLightPos");
-            Assert.AreEqual(1, arrayAdds, "exactly one array accumulation");
-            Assert.AreEqual(1, singletonReturns, "exactly one singleton fallback, and it RETURNS (never adds)");
+            //
+            // ⚠️ Pinned on the CALLS, not on the statements around them. The 2026-09-02 night PR gave
+            // BoatLightTerm a second output (the colour-weighted sum, so the lit-water term takes its
+            // colour from the same publisher its weight comes from), which split the array line into a
+            // local plus an accumulate and turned the singleton's `return BoatLightWeight(...)` into a
+            // local plus a `return`. Neither touched the property this test exists for — so the property
+            // is asserted as "each source is evaluated exactly once, and the singleton is never ADDED".
+            int arrayEvaluations = CountOccurrences(src, "BoatLightWeight(_WaterLightPos[i]");
+            int singletonEvaluations = CountOccurrences(src, "BoatLightWeight(_BoatLightPos");
+            Assert.AreEqual(1, arrayEvaluations, "exactly one array accumulation");
+            Assert.AreEqual(1, singletonEvaluations, "exactly one singleton fallback");
+            Assert.AreEqual(0, CountOccurrences(src, "total += BoatLightWeight(_BoatLightPos"),
+                "the singleton must never be ADDED to the array's total — that is the same lamp twice");
+            Assert.AreEqual(0, CountOccurrences(src, "litColor += _BoatLightColor"),
+                "…and its COLOUR must not be added on top of the array's either");
         }
 
         // ------------------------------------------------------------------------------------------------

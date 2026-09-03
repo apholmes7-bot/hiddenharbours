@@ -10,11 +10,18 @@ namespace HiddenHarbours.Art
     /// <c>Resources/DayNightProfile</c> if present, otherwise a built-in default — see
     /// <see cref="CreateDefault"/>) and pushes the result to the shaders.
     ///
-    /// <para><b>How to tune (owner).</b> Create one via <c>Assets ▸ Create ▸ Hidden Harbours ▸ Lighting ▸
-    /// Day-Night Profile</c>, save it at <c>Assets/_Project/Resources/DayNightProfile.asset</c> (the name
-    /// matters — that is the path the controller loads), then edit the <see cref="SkyTint"/> gradient and
-    /// <see cref="Intensity"/> curve to art-direct the day. Everything is live: scrub the clock and watch
-    /// the look change. No code, no scene wiring.</para>
+    /// <para><b>How to tune (owner).</b> The asset now SHIPS at
+    /// <c>Assets/_Project/Resources/DayNightProfile.asset</c> — open it and edit the <see cref="SkyTint"/>
+    /// gradient, the <see cref="Intensity"/> curve, or the moonlight below. Everything is live: scrub the
+    /// clock and watch the look change. No code, no scene wiring.</para>
+    ///
+    /// <para>⚠️ <b>The asset is the authority, and it was ABSENT until 2026-09-02.</b> Before that the
+    /// controller always fell through to <see cref="CreateDefault"/>, so the night was a code constant and
+    /// the owner had no lever at all — the <c>GameConfig</c>-is-behind-the-code family, one layer over.
+    /// The shipped asset and <see cref="ApplyDefaults"/> are pinned EQUAL by
+    /// <c>DayNightProfileAssetTests</c>: the fallback must keep producing the shipped look for a scene
+    /// that somehow loads without it, and a value that lives in only one of the two is a look that
+    /// depends on which path ran.</para>
     ///
     /// <para><b>Determinism (rule 5).</b> This holds only authored constants/curves; the cycle is a pure
     /// function of <c>(clock hour, weather)</c> evaluated against it (see <see cref="DayNightMath"/>) and
@@ -75,10 +82,13 @@ namespace HiddenHarbours.Art
 
         [Tooltip("The MOST moonlight may lift the night tint toward the colour above (0 = feature OFF, " +
                  "nights are moon-blind). Reached only by a FULL moon at the PEAK of its arc under a CLEAR " +
-                 "sky; a new moon or a set moon adds exactly nothing, and overcast suppresses it like the " +
-                 "rest of the light. The default 0.05 makes a clear full-moon midnight read roughly TWICE " +
-                 "as bright as a new-moon one — subtly lit, still night.")]
-        [Range(0f, 1f)] [SerializeField] private float _moonlightLiftMax = 0.05f;
+                 "sky; a new moon, a set moon, or cloud adds exactly nothing — those nights stay as black " +
+                 "as they have always been, and that is the half of the ruling that makes the radar and " +
+                 "the lamp matter.\n\n" +
+                 "OWNER RULING 2026-09-02: \"a clear calm night with moonlight should be brighter if not " +
+                 "cloudy.\" The shipped 0.45 makes a full moon at peak a legible silver-blue sea you can " +
+                 "steer by; the 0.05 it replaces was a lift you had to be told about.")]
+        [Range(0f, 1f)] [SerializeField] private float _moonlightLiftMax = 0.45f;
 
         // ---- read-only accessors (the controller + DayNightMath read these) ----
         public Gradient SkyTint => _skyTint;
@@ -148,7 +158,12 @@ namespace HiddenHarbours.Art
             _overcastTint = new Color(0.5f, 0.55f, 0.62f, 1f);
             _overcastFadesShadow = 0.85f;
             _moonlightTint = new Color(0.62f, 0.70f, 0.90f, 1f);
-            _moonlightLiftMax = 0.05f;
+            // OWNER RULING 2026-09-02 (water-fidelity register row 12). A MOONLESS or overcast night is
+            // unchanged — every one of those factors multiplies this to exactly 0, so the black night the
+            // radar and the lamp exist for is byte-identical. What moves is the CLEAR full-moon night,
+            // which used to lift the 02:00 tint by 5 % and now lifts it by 45 %: a silver-blue sea whose
+            // crests and shore you can steer by.
+            _moonlightLiftMax = 0.45f;
         }
 
         /// <summary>
