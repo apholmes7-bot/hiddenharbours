@@ -242,7 +242,16 @@ namespace HiddenHarbours.Player
         public ControlMode Mode
         {
             get => _mode;
-            private set { _mode = value; PublishBoatOwnership(); }
+            // ⚠ Leaving the deck leaves the RAIL too. _onWashboard is a place on one particular hull's
+            // gunwale; carrying it across a mode change would have her step ashore, walk off, board
+            // again — and find the next press already meaning "go over the side".
+            private set
+            {
+                _mode = value;
+                _onWashboard = false;
+                if (_deckWalk != null) _deckWalk.OnWashboard = false;
+                PublishBoatOwnership();
+            }
         }
 
         // Was: a screen-space "E: Board" label this component built and parked over the world. Retired by
@@ -470,7 +479,8 @@ namespace HiddenHarbours.Player
         /// its own step-ashore move. Two components both entitled to put her ashore is how she ends up
         /// somewhere neither of them meant.</para></summary>
         public bool CanStepAshore() =>
-            !_carriedAboard && (InDockZone() || PlanksWithinReach(out _) || OnLand());
+            !_carriedAboard && !BelowDecksOnTheActiveHull()
+            && (InDockZone() || PlanksWithinReach(out _) || OnLand());
 
         /// <summary>
         /// ⭐ <b>Are there PLANKS alongside — a built deck close enough to her rail to step onto?</b>
@@ -658,6 +668,12 @@ namespace HiddenHarbours.Player
             // predicates it is, so neither can be reached ahead of it.
             if (onDeckAwayFromTheHelm && CanStepAshore()
                 && BeginBoardingMove(BoardingMoveKind.Disembarking)) return true;
+
+            // ⭐ …AND THEN THE RAIL (2026-09-02). The 08-25 deck ladder — helm → registry → step ashore —
+            // grows one rung on the end: helm → registry → step ashore → WASHBOARD. Last on purpose. At a
+            // wharf the press must still put her on the planks; going over the side is what E means only
+            // when there is nowhere to step and nothing to work.
+            if (onDeckAwayFromTheHelm && TryWashboardPress()) return true;
 
             if (TryInteract()) return true;
 
@@ -1196,6 +1212,176 @@ namespace HiddenHarbours.Player
         /// One field, one assignment: the whole of the fix is that this component is now IN the
         /// conversation the arrival was already having with the camera.</summary>
         private void OnCarriedAboardChanged(CarriedAboardChanged e) => _carriedAboard = e.Carried;
+
+        // ---- over the side (the owner's two-press exit, 2026-09-02) ---------------------------
+
+        /// <summary>
+        /// ⭐ True while she is out on the RAIL rather than in the boat — a place on the deck, not a
+        /// <see cref="ControlMode"/>. She is still <see cref="ControlMode.OnDeck"/>; what has changed is
+        /// where she is standing and what the next press means.
+        /// </summary>
+        public bool OnWashboard => _onWashboard;
+        private bool _onWashboard;
+
+        /// <summary>Which way is off the boat where she stands — deck frame, cached from the last
+        /// successful <see cref="TryWashboardPress"/> so the popup and the press agree within a frame.</summary>
+        private Vector2 _washboardOutward;
+
+        /// <summary>
+        /// ⭐ <b>The owner's two-press exit.</b> <i>"one button to get on the washboard and then it
+        /// depends which way you face when you place the next button, either in the boat or in the water
+        /// if facing each."</i>
+        ///
+        /// <para><b>Press one</b> puts her out on the rail. <b>Press two</b> reads the way she is
+        /// FACING: outboard goes into the water, inboard steps her back into the boat. Ties — facing
+        /// along the rail — come back inboard, because the sea here is 4 m deep and nobody should swim by
+        /// accident (<see cref="OverTheSideMath"/>).</para>
+        ///
+        /// <para><b>⚠ On an open boat there is no first press.</b> Only the cape islander and the lobster
+        /// family author washboards; the starter dory, the punt and the skiffs have none, and a derived
+        /// gunwale band stands in for them (<c>GameConfig.WashboardWidthMetres</c>) so the verb works on
+        /// every hull the owner can own. See the PR: whether an open boat should get the same two presses
+        /// or step straight over her gunwale is a ruling, not a coin toss, and this ships the two-press
+        /// form everywhere because it is the one that cannot drop somebody in the sea by surprise.</para>
+        /// </summary>
+        private bool TryWashboardPress()
+        {
+            var walk = DeckWalk;
+            if (walk == null || Boat == null) return false;
+            if (BelowDecksOnTheActiveHull()) return false;   // you leave a cabin by its door
+
+            Vector2 here = walk.DeckLocalPosition;
+            if (!walk.TryWashboardStand(Boat, here, WashboardWidthMetres,
+                                        out Vector2 stand, out Vector2 outward, out bool _))
+                return false;
+
+            if (!_onWashboard)
+            {
+                // ⚠ Order matters: tell the WALK she is on the rail before putting her there, or the
+                // tick between the two clamps her back onto the deck polygons and the press reads as
+                // having done nothing.
+                walk.WashboardSlowFactor = WashboardSlowFactor;
+                walk.OnWashboard = true;
+                walk.SnapToDeckLocal(stand);
+                _onWashboard = true;
+                _washboardOutward = outward;
+                return true;
+            }
+
+            _washboardOutward = outward;
+            if (FacingOutboard(outward)) { GoOverTheSide(); return true; }
+
+            // Inboard (and every tie): back into the boat, off the rail.
+            walk.OnWashboard = false;
+            walk.SnapToDeckLocal(Vector2.zero);
+            _onWashboard = false;
+            return true;
+        }
+
+        /// <summary>Is there a rail to step onto from here, and which way is off her there? The popup's
+        /// read of the same geometry <see cref="TryWashboardPress"/> acts on — asked, never acted on.</summary>
+        private bool CanReachTheWashboard(out Vector2 outward)
+        {
+            outward = Vector2.zero;
+            var walk = DeckWalk;
+            if (walk == null || Boat == null || BelowDecksOnTheActiveHull()) return false;
+            return walk.TryWashboardStand(Boat, walk.DeckLocalPosition, WashboardWidthMetres,
+                                          out _, out outward, out bool _);
+        }
+
+        /// <summary>
+        /// Hand the washboard verb a different source for the rider's DECK BEARING — a scripted journey,
+        /// a test. Null restores <see cref="DeckRiderVisual"/>'s own published facing.
+        ///
+        /// <para>⚠ The seam exists for the reason <see cref="ConfigureDriveInput"/>'s does: a virtual
+        /// keypress is undeliverable to headless input, so the only way to ask "and what if she were
+        /// facing the sea?" is to be able to say so. It is the FACING that is injectable, never the
+        /// decision — <see cref="OverTheSideMath"/> still rules on it.</para>
+        /// </summary>
+        public void ConfigureDeckFacing(System.Func<float> deckBearingDegrees)
+            => _deckFacing = deckBearingDegrees;
+        private System.Func<float> _deckFacing;
+
+        /// <summary>Is she facing off the boat? Read through the rider's own published deck bearing —
+        /// the drawn facing, in the hull's frame, which is the frame the rail is in.</summary>
+        private bool FacingOutboard(Vector2 outwardNormal)
+        {
+            float bearing;
+            if (_deckFacing != null) bearing = _deckFacing();
+            else
+            {
+                var rider = _playerWalk != null ? _playerWalk.GetComponent<DeckRiderVisual>() : null;
+                if (rider == null) return false;            // no drawn facing ⇒ no decision ⇒ stay aboard
+                bearing = rider.DeckBearingDegrees;
+            }
+            return OverTheSideMath.GoesOverTheSide(
+                OverTheSideMath.FacingFromDeckBearing(bearing), outwardNormal);
+        }
+
+        /// <summary>
+        /// Over she goes. Hands her to the on-foot walker at the rail plus a body's width outboard, and
+        /// lets the water model say what that means: <b>no special case for swimming</b>. Over the
+        /// dredged pocket she is in 4 m and swims; over a bared flat at low water she wades. One model,
+        /// two outcomes, decided by the depth that is actually there.
+        /// </summary>
+        private void GoOverTheSide()
+        {
+            var walk = DeckWalk;
+            _onWashboard = false;
+            if (walk != null) walk.OnWashboard = false;
+
+            if (walk != null && Player != null && Boat != null
+                && walk.TryDeckFramePointWorld(
+                       Boat, walk.DeckLocalPosition + _washboardOutward * OverTheSideBodyWidthMetres,
+                       out Vector3 inTheWater))
+                Player.position = inTheWater;
+
+            ApplyPlayerFor(ControlMode.OnFoot);
+            Mode = ControlMode.OnFoot;
+            if (_boatController != null) _boatController.Stop();
+            EventBus.Publish(new ControlModeChanged(ControlMode.OnFoot));
+        }
+
+        /// <summary>How far outboard of the rail she lands — one body's width, so she is in the water
+        /// beside the hull rather than inside her own boat's footprint. The owner's number, like the two
+        /// washboard tunables beside it: a distance you can only settle by watching somebody go in.</summary>
+        private float OverTheSideBodyWidthMetres =>
+            GameServices.Config != null ? GameServices.Config.OverTheSideBodyWidthMetres : 0.7f;
+
+        /// <summary>The gunwale band's width for a hull with no authored washboards — the owner's number.</summary>
+        private float WashboardWidthMetres =>
+            GameServices.Config != null ? GameServices.Config.WashboardWidthMetres : 0.45f;
+
+        /// <summary>How much the rail slows her — the owner's number.</summary>
+        private float WashboardSlowFactor =>
+            GameServices.Config != null ? GameServices.Config.WashboardSlowFactor : 0.5f;
+
+        /// <summary>
+        /// 🔴 <b>Is she below decks in the hull this switcher is steering?</b> Deferred from PR 1 of this
+        /// arc and landed here, where the step-ashore ladder was being rewritten anyway.
+        ///
+        /// <para><b>⚠ Read off <c>BoatInterior.IsInside</c>, deliberately NOT off
+        /// <c>CabinEntered</c>/<c>CabinLeft</c>.</b> Those signals' own contract forbids this use in as
+        /// many words — <i>"Presentation only. Nothing that writes a save, moves the clock or decides
+        /// where the player may stand reads this"</i> — and deciding where she may stand is exactly what
+        /// the caller does. <c>BoatInterior</c> is the state; the signals are the announcement.</para>
+        ///
+        /// <para>Resolved lazily and re-resolved while null, because <c>BoatInteriorInstaller</c> grows
+        /// the component at runtime and a null cached at wake would be sticky.</para>
+        /// </summary>
+        private bool BelowDecksOnTheActiveHull()
+        {
+            if (_boatController == null) return false;
+            if (_interior == null || !ReferenceEquals(_interiorOwner, _boatController))
+            {
+                _interiorOwner = _boatController;
+                _interior = _boatController.GetComponent<BoatInterior>();
+            }
+            return _interior != null && _interior.IsInside;
+        }
+
+        private BoatController _interiorOwner;
+        private BoatInterior _interior;
 
         // ---- the boarding MOVE (the owner's ask: climb aboard, don't teleport) ----------------
         //
@@ -2398,6 +2584,24 @@ namespace HiddenHarbours.Player
                         // the probe that spots a wharf deck alongside a berth nobody marked (2026-09-03).
                         label = InDockZone() || PlanksWithinReach(out _)
                             ? ControlStrings.Dock : ControlStrings.StepAshore;
+                    }
+                    // ⭐ …and the rail, last, exactly as BeginInteract ranks it (2026-09-02). Out on the
+                    // washboard the offer names what the FACING will do, so the player reads the decision
+                    // before making it rather than discovering it in the water.
+                    else if (!AFixtureWouldTakeThePress && CanReachTheWashboard(out Vector2 outward))
+                    {
+                        if (!_onWashboard)
+                        {
+                            id = ControlStrings.IdWashboard; label = ControlStrings.StepOntoWashboard;
+                        }
+                        else if (FacingOutboard(outward))
+                        {
+                            id = ControlStrings.IdOverTheSide; label = ControlStrings.GoOverTheSide;
+                        }
+                        else
+                        {
+                            id = ControlStrings.IdBackOnDeck; label = ControlStrings.BackOnDeck;
+                        }
                     }
                     break;
 

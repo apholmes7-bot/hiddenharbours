@@ -40,6 +40,9 @@ MonoBehaviour:
   SwimSlowFactor: 0.25
   BoardReachMetres: 3.5
   StepAshoreReachMetres: 1.5
+  WashboardWidthMetres: 0.45
+  WashboardSlowFactor: 0.5
+  OverTheSideBodyWidthMetres: 0.7
   Seakeeping:
     Enabled: 1
     Strength: 220

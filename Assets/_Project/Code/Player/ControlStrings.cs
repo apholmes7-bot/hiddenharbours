@@ -44,6 +44,19 @@ namespace HiddenHarbours.Player
         /// <summary>Behind the wheel of a road vehicle.</summary>
         public const string GetOut = "Get out";
 
+        // ---- over the side (the owner's two-press exit, 2026-09-02) ---------------------------
+
+        /// <summary>On deck, with nothing else claiming the press: climb out onto the rail.</summary>
+        public const string StepOntoWashboard = "Step onto the washboard";
+
+        /// <summary>Out on the rail, facing the sea. ⚠ Deliberately a decision rather than a direction:
+        /// this press puts you in the water.</summary>
+        public const string GoOverTheSide = "Go over the side";
+
+        /// <summary>Out on the rail, facing inboard — the other half of the same press, and the one a
+        /// TIE resolves to, so nobody swims by accident.</summary>
+        public const string BackOnDeck = "Back on deck";
+
         // ---- the transit ids (what a listener matches on) ------------------------------------
         //
         // A transit offer is not a registered IInteractable, so it has no IInteractable.Id to borrow. These
@@ -55,6 +68,9 @@ namespace HiddenHarbours.Player
         public const string IdLeaveHelm  = "transit.leave_helm";
         public const string IdStepAshore = "transit.step_ashore";
         public const string IdGetOut     = "transit.get_out";
+        public const string IdWashboard  = "transit.washboard";
+        public const string IdOverTheSide = "transit.over_the_side";
+        public const string IdBackOnDeck = "transit.back_on_deck";
 
         // ---- refusals -----------------------------------------------------------------------
 
