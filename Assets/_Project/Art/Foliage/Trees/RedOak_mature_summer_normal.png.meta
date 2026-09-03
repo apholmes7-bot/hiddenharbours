@@ -127,10 +127,10 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 165
-        height: 145
+        width: 331
+        height: 347
       alignment: 9
-      pivot: {x: 0.4969697, y: 0.089655176}
+      pivot: {x: 0.49848944, y: 0.034582134}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -147,12 +147,12 @@ TextureImporter:
       name: RedOak_mature_summer_normal_v1
       rect:
         serializedVersion: 2
-        x: 165
+        x: 331
         y: 0
-        width: 165
-        height: 145
+        width: 331
+        height: 347
       alignment: 9
-      pivot: {x: 0.4969697, y: 0.089655176}
+      pivot: {x: 0.49848944, y: 0.034582134}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -169,12 +169,12 @@ TextureImporter:
       name: RedOak_mature_summer_normal_v2
       rect:
         serializedVersion: 2
-        x: 330
+        x: 662
         y: 0
-        width: 165
-        height: 145
+        width: 331
+        height: 347
       alignment: 9
-      pivot: {x: 0.4969697, y: 0.089655176}
+      pivot: {x: 0.49848944, y: 0.034582134}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -191,12 +191,12 @@ TextureImporter:
       name: RedOak_mature_summer_normal_v3
       rect:
         serializedVersion: 2
-        x: 495
+        x: 993
         y: 0
-        width: 165
-        height: 145
+        width: 331
+        height: 347
       alignment: 9
-      pivot: {x: 0.4969697, y: 0.089655176}
+      pivot: {x: 0.49848944, y: 0.034582134}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []

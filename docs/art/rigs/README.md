@@ -142,6 +142,23 @@ has no heading, so its sheet axes are **variant × sway frame**, not direction.
 > This rig is also the **first to ship a complete public API** (`render` · `packMask` · `normalView` ·
 > `sheetSpec` · `cellOf` + its constants, all on `root.TreeRig`). It needs **no symbol shim** — the
 > thing ADR 0022 open question 4 has been asking of every other rig.
+>
+> ⚠️⚠️ **PASS 3 (2026-09-02) CHANGES THE WORLD SIZE OF EVERY TREE, and that is a ruling rather than a
+> refresh.** Each species now carries its TRUE mature height, mapped through the rig's own
+> `SCALE = 0.6`, so relative scale is real instead of compressed toward a common height. Measured
+> mature/summer, pass 2 → pass 3: black spruce 5.6 → 6.6 m (×1.18), white cedar 4.8 → 7.8 (×1.63),
+> white birch 5.7 → 10.2 (×1.79), balsam fir 5.0 → 9.6 (×1.92), tamarack 5.3 → 10.2 (×1.92), aspen
+> 5.6 → 10.8 (×1.93), red maple 5.6 → 12.0 (×2.14), red spruce 5.7 → 12.6 (×2.21), white pine
+> 6.9 → 16.2 (×2.35), red oak 5.3 → 13.2 (×2.49). Cells go from 79×141 … 165×191 to 73×179 … 331×347.
+> **`_TrunkAnchor` moves on every species with the cell** (red spruce 0.0629 → 0.0304) — it is the wind
+> shader's pivot height as a fraction of the cell, and it comes out of the bake, never out of a number
+> written down. `SCALE` is a rig constant: change it and re-bake, and every cell and pivot re-measures.
+>
+> ⚠️ **Two silent fallbacks live in this rig's API**, both of which return a plausible picture rather
+> than throwing. `SPECIES` is a list of OBJECTS, not of keys — handing an entry straight to `render()`
+> draws the DEFAULT tree. `sheetSpec(key, size)` takes the stage FACTOR (`STAGES.mature` = 1), not the
+> stage NAME — passing `'mature'` yields a degenerate 24×9 cell with `metres: null`. Both produce ten
+> identical rows across ten species, which is the only tell; assert the ten cells are DISTINCT first.
 
 **NOT A RIG AT ALL — the building lifecycle PASS (2026-08-19)** —
 `building-lifecycle-kit/buildingLifecycleRig.js` (`BuildingLifecycle`). The only entry in the catalog that
