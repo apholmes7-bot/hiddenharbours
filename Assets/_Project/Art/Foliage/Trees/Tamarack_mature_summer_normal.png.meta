@@ -127,10 +127,10 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 104
-        height: 149
+        width: 111
+        height: 266
       alignment: 9
-      pivot: {x: 0.4903846, y: 0.10738255}
+      pivot: {x: 0.4954955, y: 0.030075189}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -147,12 +147,12 @@ TextureImporter:
       name: Tamarack_mature_summer_normal_v1
       rect:
         serializedVersion: 2
-        x: 104
+        x: 111
         y: 0
-        width: 104
-        height: 149
+        width: 111
+        height: 266
       alignment: 9
-      pivot: {x: 0.4903846, y: 0.10738255}
+      pivot: {x: 0.4954955, y: 0.030075189}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -169,12 +169,12 @@ TextureImporter:
       name: Tamarack_mature_summer_normal_v2
       rect:
         serializedVersion: 2
-        x: 208
+        x: 222
         y: 0
-        width: 104
-        height: 149
+        width: 111
+        height: 266
       alignment: 9
-      pivot: {x: 0.4903846, y: 0.10738255}
+      pivot: {x: 0.4954955, y: 0.030075189}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -191,12 +191,12 @@ TextureImporter:
       name: Tamarack_mature_summer_normal_v3
       rect:
         serializedVersion: 2
-        x: 312
+        x: 333
         y: 0
-        width: 104
-        height: 149
+        width: 111
+        height: 266
       alignment: 9
-      pivot: {x: 0.4903846, y: 0.10738255}
+      pivot: {x: 0.4954955, y: 0.030075189}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []

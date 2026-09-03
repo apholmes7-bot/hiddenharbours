@@ -127,10 +127,10 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 86
-        height: 155
+        width: 73
+        height: 179
       alignment: 9
-      pivot: {x: 0.5116279, y: 0.058064517}
+      pivot: {x: 0.49315068, y: 0.039106146}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -147,12 +147,12 @@ TextureImporter:
       name: BlackSpruce_mature_summer_normal_v1
       rect:
         serializedVersion: 2
-        x: 86
+        x: 73
         y: 0
-        width: 86
-        height: 155
+        width: 73
+        height: 179
       alignment: 9
-      pivot: {x: 0.5116279, y: 0.058064517}
+      pivot: {x: 0.49315068, y: 0.039106146}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -169,12 +169,12 @@ TextureImporter:
       name: BlackSpruce_mature_summer_normal_v2
       rect:
         serializedVersion: 2
-        x: 172
+        x: 146
         y: 0
-        width: 86
-        height: 155
+        width: 73
+        height: 179
       alignment: 9
-      pivot: {x: 0.5116279, y: 0.058064517}
+      pivot: {x: 0.49315068, y: 0.039106146}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -191,12 +191,12 @@ TextureImporter:
       name: BlackSpruce_mature_summer_normal_v3
       rect:
         serializedVersion: 2
-        x: 258
+        x: 219
         y: 0
-        width: 86
-        height: 155
+        width: 73
+        height: 179
       alignment: 9
-      pivot: {x: 0.5116279, y: 0.058064517}
+      pivot: {x: 0.49315068, y: 0.039106146}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
