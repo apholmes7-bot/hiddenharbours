@@ -1,0 +1,278 @@
+BOAT LAMP ANCHORS — derived from each hull's own rig (ADR 0016, PR 2).
+Rig metres: +x starboard, +y toward the bow, +z up from the keel.
+
+── capeIslander   (CapeIslanderIsoHullMesh.asset)
+     PortSidelight       (   -0.3024,     5.7520,     3.2240)   navMounts().port  [residual 4.64E-006 px]
+     StarboardSidelight  (    0.3024,     5.7520,     3.2240)   navMounts().star  [residual 4.64E-006 px]
+     SternLight          (    0.0000,    -6.3500,     1.4900)   navMounts().stern  [residual 5.12E-006 px]
+     Masthead            (    0.0000,     2.3600,     4.4600)   navMounts().mast  [residual 1.90E-006 px]
+     CabinGlow           (    0.0000,     1.5200,     2.2100)   HOUSE wheelhouse box centre, at her glass band
+     AnchorLight         (    0.0000,     2.3600,     4.4600)   navMounts().mast (hoisted there)
+     Spotlight           (    0.0000,     2.4000,     3.1000)   front of the wheelhouse roof
+     sidelight separation 0.6048 m · stem y 6.400 · beam clearance +5.000 m
+
+── lobsterBoat   (LobsterBoatIsoHullMesh.asset)
+     PortSidelight       (   -0.4520,     5.6785,     2.7320)   navMounts().port  [residual 4.58E-006 px]
+     StarboardSidelight  (    0.4520,     5.6785,     2.7320)   navMounts().star  [residual 4.58E-006 px]
+     SternLight          (    0.0000,    -5.9500,     1.2900)   navMounts().stern  [residual 4.80E-006 px]
+     Masthead            (    0.0000,     1.8500,     3.9200)   navMounts().mast  [residual 1.49E-006 px]
+     CabinGlow           (    0.0000,     2.0750,     2.4000)   HOUSE wheelhouse box centre, at her glass band
+     AnchorLight         (    0.0000,     1.8500,     3.9200)   navMounts().mast (hoisted there)
+     Spotlight           (    0.0000,     3.4600,     3.0400)   front of the wheelhouse roof
+     sidelight separation 0.9040 m · stem y 6.000 · beam clearance +6.460 m
+
+── sideDragger   (SideDraggerIsoHullMesh.asset)
+     PortSidelight       (   -2.1200,    -5.0000,     6.3000)   navMounts().port  [residual 4.03E-006 px]
+     StarboardSidelight  (    2.1200,    -5.0000,     6.3000)   navMounts().star  [residual 4.03E-006 px]
+     SternLight          (    0.0000,   -12.3500,     3.3000)   navMounts().stern  [residual 9.96E-006 px]
+     Masthead            (    0.0000,     3.1600,    11.2000)   navMounts().mast  [residual 2.55E-006 px]
+     CabinGlow           (    0.0000,    -7.6000,     3.4500)   HOUSE accommodation box centre, at her glass band
+     AnchorLight         (    0.0000,     3.1600,    11.2000)   navMounts().mast (hoisted there)
+     sidelight separation 4.2400 m · stem y 12.500 · beam clearance -8.140 m
+     NO SEARCHLIGHT — she is conned from y -4.64 and her stem is at y 12.50, so the shipped 9.0 m beam ends 8.14 m SHORT of her own bow — it would rake her deck, not the sea. A per-hull throw would unblock her; that is a preset change, not a measurement.
+
+── sternTrawler   (SternTrawlerIsoHullMesh.asset)
+     PortSidelight       (   -2.9500,     6.4000,     8.6000)   navMounts().port  [residual 5.16E-006 px]
+     StarboardSidelight  (    2.9500,     6.4000,     8.6000)   navMounts().star  [residual 5.16E-006 px]
+     SternLight          (    0.0000,   -14.4000,     8.0000)   navMounts().stern  [residual 1.16E-005 px]
+     Masthead            (    0.0000,     5.3000,    12.0000)   navMounts().mast  [residual 4.27E-006 px]
+     CabinGlow           (    0.0000,     5.5250,     4.9500)   HOUSE accommodation box centre, at her glass band
+     AnchorLight         (    0.0000,     5.3000,    12.0000)   navMounts().mast (hoisted there)
+     sidelight separation 5.9000 m · stem y 19.000 · beam clearance -0.940 m
+     NO SEARCHLIGHT — she is conned from y 9.06 and her stem is at y 19.00, so the shipped 9.0 m beam ends 0.94 m SHORT of her own bow — it would rake her deck, not the sea. A per-hull throw would unblock her; that is a preset change, not a measurement.
+
+── sternTrawlerMk2   (SternTrawlerMk2IsoHullMesh.asset)
+     PortSidelight       (   -3.1800,     6.4000,     8.6000)   navMounts().port  [residual 5.16E-006 px]
+     StarboardSidelight  (    3.1800,     6.4000,     8.6000)   navMounts().star  [residual 5.16E-006 px]
+     SternLight          (    0.0000,   -14.4000,     9.2500)   navMounts().stern  [residual 1.16E-005 px]
+     Masthead            (    0.0000,     5.3000,    12.0000)   navMounts().mast  [residual 4.27E-006 px]
+     CabinGlow           (    0.0000,     5.5250,     4.9500)   HOUSE accommodation box centre, at her glass band
+     AnchorLight         (    0.0000,     5.3000,    12.0000)   navMounts().mast (hoisted there)
+     sidelight separation 6.3600 m · stem y 19.000 · beam clearance -1.320 m
+     NO SEARCHLIGHT — she is conned from y 8.68 and her stem is at y 19.00, so the shipped 9.0 m beam ends 1.32 m SHORT of her own bow — it would rake her deck, not the sea. A per-hull throw would unblock her; that is a preset change, not a measurement.
+
+── coastalPacket   (CoastalPacketIsoHullMesh.asset)
+     PortSidelight       (   -5.0500,   -20.6000,    11.1000)   navMounts().port  [residual 1.66E-005 px]
+     StarboardSidelight  (    5.0500,   -20.6000,    11.1000)   navMounts().star  [residual 1.66E-005 px]
+     SternLight          (    0.0000,   -29.5500,     5.7500)   navMounts().stern  [residual 2.38E-005 px]
+     Masthead            (    0.0000,    19.3000,    19.1500)   navMounts().mast  [residual 1.56E-005 px]
+     CabinGlow           (    0.0000,   -23.2000,     6.2500)   HOUSE accommodation box centre, at her glass band
+     AnchorLight         (    0.0000,    19.3000,    19.1500)   navMounts().mast (hoisted there)
+     sidelight separation 10.1000 m · stem y 30.000 · beam clearance -40.940 m
+     NO SEARCHLIGHT — she is conned from y -19.94 and her stem is at y 30.00, so the shipped 9.0 m beam ends 40.94 m SHORT of her own bow — it would rake her deck, not the sea. A per-hull throw would unblock her; that is a preset change, not a measurement.
+
+── tanker   (TankerIsoHullMesh.asset)
+     PortSidelight       (   -8.5000,   -34.5000,    21.1500)   navMounts().port  [residual 1.39E-005 px]
+     StarboardSidelight  (    8.5000,   -34.5000,    21.1500)   navMounts().star  [residual 1.39E-005 px]
+     SternLight          (    0.0000,   -54.4500,    12.8500)   navMounts().stern  [residual 2.20E-005 px]
+     Masthead            (    0.0000,    37.0000,    27.1500)   navMounts().mast  [residual 1.49E-005 px]
+     RangeLight          (    0.0000,   -37.5000,    30.8500)   navMounts().range  [residual 1.51E-005 px]
+     CabinGlow           (    0.0000,   -43.3000,    12.8500)   HOUSE accommodation box centre, at her glass band
+     AnchorLight         (    0.0000,    37.0000,    27.1500)   navMounts().mast (hoisted there)
+     sidelight separation 17.0000 m · stem y 55.000 · beam clearance -79.440 m
+     NO SEARCHLIGHT — she is conned from y -33.44 and her stem is at y 55.00, so the shipped 9.0 m beam ends 79.44 m SHORT of her own bow — it would rake her deck, not the sea. A per-hull throw would unblock her; that is a preset change, not a measurement.
+
+── lobsterInshoreOpenNorthumberland   (LobsterInshoreOpenNorthumberlandIsoHullMesh.asset)
+     PortSidelight       (   -0.3416,     3.8124,     2.4114)   navMounts().port  [residual 3.08E-006 px]
+     StarboardSidelight  (    0.3416,     3.8124,     2.4114)   navMounts().star  [residual 3.08E-006 px]
+     SternLight          (    0.0000,    -4.2500,     1.1472)   navMounts().stern  [residual 3.43E-006 px]
+     Masthead            (    0.0000,     0.5177,     3.6772)   navMounts().mast  [residual 4.18E-007 px]
+     CabinGlow           (    0.0000,     1.6125,     2.2435)   HOUSE wheelhouse box centre, at her glass band
+     AnchorLight         (    0.0000,     0.5177,     3.6772)   navMounts().mast (hoisted there)
+     Spotlight           (    0.0000,     2.9130,     2.8650)   front of the wheelhouse roof
+     sidelight separation 0.6832 m · stem y 4.300 · beam clearance +7.613 m
+
+── lobsterInshoreOpenFundy   (LobsterInshoreOpenFundyIsoHullMesh.asset)
+     PortSidelight       (   -0.3960,     3.7678,     2.4958)   navMounts().port  [residual 3.04E-006 px]
+     StarboardSidelight  (    0.3960,     3.7678,     2.4958)   navMounts().star  [residual 3.04E-006 px]
+     SternLight          (    0.0000,    -4.2500,     1.3496)   navMounts().stern  [residual 3.43E-006 px]
+     Masthead            (    0.0000,     1.0750,     5.0281)   navMounts().mast  [residual 8.67E-007 px]
+     CabinGlow           (    0.0000,     1.9350,     2.2990)   HOUSE wheelhouse box centre, at her glass band
+     AnchorLight         (    0.0000,     1.0750,     5.0281)   navMounts().mast (hoisted there)
+     Spotlight           (    0.0000,     2.6120,     2.9340)   front of the wheelhouse roof
+     sidelight separation 0.7920 m · stem y 4.300 · beam clearance +7.312 m
+
+── lobsterInshoreOpenNewfoundland   (LobsterInshoreOpenNewfoundlandIsoHullMesh.asset)
+     PortSidelight       (   -0.4024,     3.7404,     2.2600)   navMounts().port  [residual 3.02E-006 px]
+     StarboardSidelight  (    0.4024,     3.7404,     2.2600)   navMounts().star  [residual 3.02E-006 px]
+     SternLight          (    0.0000,    -4.2500,     1.2440)   navMounts().stern  [residual 3.43E-006 px]
+     Masthead            (   -0.4853,     0.8428,     3.5474)   navMounts().mast  [residual 6.80E-007 px]
+     CabinGlow           (    0.0000,     1.7415,     2.1920)   HOUSE wheelhouse box centre, at her glass band
+     AnchorLight         (   -0.4853,     0.8428,     3.5474)   navMounts().mast (hoisted there)
+     Spotlight           (    0.0000,     2.7840,     2.7790)   front of the wheelhouse roof
+     sidelight separation 0.8048 m · stem y 4.300 · beam clearance +7.484 m
+
+── lobsterInshoreHardtopNorthumberland   (LobsterInshoreHardtopNorthumberlandIsoHullMesh.asset)
+     PortSidelight       (   -0.3416,     3.8124,     2.4114)   navMounts().port  [residual 3.08E-006 px]
+     StarboardSidelight  (    0.3416,     3.8124,     2.4114)   navMounts().star  [residual 3.08E-006 px]
+     SternLight          (    0.0000,    -4.2500,     1.1472)   navMounts().stern  [residual 3.43E-006 px]
+     Masthead            (    0.0000,     1.4185,     3.7300)   navMounts().mast  [residual 1.14E-006 px]
+     CabinGlow           (    0.0000,     1.6125,     2.2435)   HOUSE wheelhouse box centre, at her glass band
+     AnchorLight         (    0.0000,     1.4185,     3.7300)   navMounts().mast (hoisted there)
+     Spotlight           (    0.0000,     2.9130,     2.8650)   front of the wheelhouse roof
+     sidelight separation 0.6832 m · stem y 4.300 · beam clearance +7.613 m
+
+── lobsterInshoreHardtopFundy   (LobsterInshoreHardtopFundyIsoHullMesh.asset)
+     PortSidelight       (   -0.3960,     3.7678,     2.4958)   navMounts().port  [residual 3.04E-006 px]
+     StarboardSidelight  (    0.3960,     3.7678,     2.4958)   navMounts().star  [residual 3.04E-006 px]
+     SternLight          (    0.0000,    -4.2500,     1.3496)   navMounts().stern  [residual 3.43E-006 px]
+     Masthead            (    0.0000,     1.0750,     5.0281)   navMounts().mast  [residual 8.67E-007 px]
+     CabinGlow           (    0.0000,     1.9350,     2.2990)   HOUSE wheelhouse box centre, at her glass band
+     AnchorLight         (    0.0000,     1.0750,     5.0281)   navMounts().mast (hoisted there)
+     Spotlight           (    0.0000,     2.6120,     2.9340)   front of the wheelhouse roof
+     sidelight separation 0.7920 m · stem y 4.300 · beam clearance +7.312 m
+
+── lobsterInshoreHardtopNewfoundland   (LobsterInshoreHardtopNewfoundlandIsoHullMesh.asset)
+     PortSidelight       (   -0.4024,     3.7404,     2.2600)   navMounts().port  [residual 3.02E-006 px]
+     StarboardSidelight  (    0.4024,     3.7404,     2.2600)   navMounts().star  [residual 3.02E-006 px]
+     SternLight          (    0.0000,    -4.2500,     1.2440)   navMounts().stern  [residual 3.43E-006 px]
+     Masthead            (    0.0000,     1.5733,     3.6442)   navMounts().mast  [residual 1.27E-006 px]
+     CabinGlow           (    0.0000,     1.7415,     2.1920)   HOUSE wheelhouse box centre, at her glass band
+     AnchorLight         (    0.0000,     1.5733,     3.6442)   navMounts().mast (hoisted there)
+     Spotlight           (    0.0000,     2.7840,     2.7790)   front of the wheelhouse roof
+     sidelight separation 0.8048 m · stem y 4.300 · beam clearance +7.484 m
+
+── lobsterStandardOpenNorthumberland   (LobsterStandardOpenNorthumberlandIsoHullMesh.asset)
+     PortSidelight       (   -0.4520,     5.3196,     2.7320)   navMounts().port  [residual 4.29E-006 px]
+     StarboardSidelight  (    0.4520,     5.3196,     2.7320)   navMounts().star  [residual 4.29E-006 px]
+     SternLight          (    0.0000,    -5.9500,     1.2900)   navMounts().stern  [residual 4.80E-006 px]
+     Masthead            (    0.0000,     0.7224,     4.1704)   navMounts().mast  [residual 5.83E-007 px]
+     CabinGlow           (    0.0000,     2.2500,     2.5670)   HOUSE wheelhouse box centre, at her glass band
+     AnchorLight         (    0.0000,     0.7224,     4.1704)   navMounts().mast (hoisted there)
+     Spotlight           (    0.0000,     4.1200,     3.2500)   front of the wheelhouse roof
+     sidelight separation 0.9040 m · stem y 6.000 · beam clearance +7.120 m
+
+── lobsterStandardOpenFundy   (LobsterStandardOpenFundyIsoHullMesh.asset)
+     PortSidelight       (   -0.5200,     5.2574,     2.8280)   navMounts().port  [residual 4.24E-006 px]
+     StarboardSidelight  (    0.5200,     5.2574,     2.8280)   navMounts().star  [residual 4.24E-006 px]
+     SternLight          (    0.0000,    -5.9500,     1.5200)   navMounts().stern  [residual 4.80E-006 px]
+     Masthead            (    0.0000,     1.5000,     5.6988)   navMounts().mast  [residual 1.21E-006 px]
+     CabinGlow           (    0.0000,     2.7000,     2.6250)   HOUSE wheelhouse box centre, at her glass band
+     AnchorLight         (    0.0000,     1.5000,     5.6988)   navMounts().mast (hoisted there)
+     Spotlight           (    0.0000,     3.7000,     3.3290)   front of the wheelhouse roof
+     sidelight separation 1.0400 m · stem y 6.000 · beam clearance +6.700 m
+
+── lobsterStandardOpenNewfoundland   (LobsterStandardOpenNewfoundlandIsoHullMesh.asset)
+     PortSidelight       (   -0.5280,     5.2191,     2.5600)   navMounts().port  [residual 4.21E-006 px]
+     StarboardSidelight  (    0.5280,     5.2191,     2.5600)   navMounts().star  [residual 4.21E-006 px]
+     SternLight          (    0.0000,    -5.9500,     1.4000)   navMounts().stern  [residual 4.80E-006 px]
+     Masthead            (   -0.6116,     1.1760,     4.0673)   navMounts().mast  [residual 9.49E-007 px]
+     CabinGlow           (    0.0000,     2.4300,     2.5130)   HOUSE wheelhouse box centre, at her glass band
+     AnchorLight         (   -0.6116,     1.1760,     4.0673)   navMounts().mast (hoisted there)
+     Spotlight           (    0.0000,     3.9400,     3.1970)   front of the wheelhouse roof
+     sidelight separation 1.0560 m · stem y 6.000 · beam clearance +6.940 m
+
+── lobsterStandardHardtopNorthumberland   (LobsterStandardHardtopNorthumberlandIsoHullMesh.asset)
+     PortSidelight       (   -0.4520,     5.3196,     2.7320)   navMounts().port  [residual 4.29E-006 px]
+     StarboardSidelight  (    0.4520,     5.3196,     2.7320)   navMounts().star  [residual 4.29E-006 px]
+     SternLight          (    0.0000,    -5.9500,     1.2900)   navMounts().stern  [residual 4.80E-006 px]
+     Masthead            (    0.0000,     1.9990,     4.2304)   navMounts().mast  [residual 1.61E-006 px]
+     CabinGlow           (    0.0000,     2.2500,     2.5670)   HOUSE wheelhouse box centre, at her glass band
+     AnchorLight         (    0.0000,     1.9990,     4.2304)   navMounts().mast (hoisted there)
+     Spotlight           (    0.0000,     4.1200,     3.2500)   front of the wheelhouse roof
+     sidelight separation 0.9040 m · stem y 6.000 · beam clearance +7.120 m
+
+── lobsterStandardHardtopFundy   (LobsterStandardHardtopFundyIsoHullMesh.asset)
+     PortSidelight       (   -0.5200,     5.2574,     2.8280)   navMounts().port  [residual 4.24E-006 px]
+     StarboardSidelight  (    0.5200,     5.2574,     2.8280)   navMounts().star  [residual 4.24E-006 px]
+     SternLight          (    0.0000,    -5.9500,     1.5200)   navMounts().stern  [residual 4.80E-006 px]
+     Masthead            (    0.0000,     1.5000,     5.6988)   navMounts().mast  [residual 1.21E-006 px]
+     CabinGlow           (    0.0000,     2.7000,     2.6250)   HOUSE wheelhouse box centre, at her glass band
+     AnchorLight         (    0.0000,     1.5000,     5.6988)   navMounts().mast (hoisted there)
+     Spotlight           (    0.0000,     3.7000,     3.3290)   front of the wheelhouse roof
+     sidelight separation 1.0400 m · stem y 6.000 · beam clearance +6.700 m
+
+── lobsterStandardHardtopNewfoundland   (LobsterStandardHardtopNewfoundlandIsoHullMesh.asset)
+     PortSidelight       (   -0.5280,     5.2191,     2.5600)   navMounts().port  [residual 4.21E-006 px]
+     StarboardSidelight  (    0.5280,     5.2191,     2.5600)   navMounts().star  [residual 4.21E-006 px]
+     SternLight          (    0.0000,    -5.9500,     1.4000)   navMounts().stern  [residual 4.80E-006 px]
+     Masthead            (    0.0000,     2.2150,     4.1773)   navMounts().mast  [residual 1.79E-006 px]
+     CabinGlow           (    0.0000,     2.4300,     2.5130)   HOUSE wheelhouse box centre, at her glass band
+     AnchorLight         (    0.0000,     2.2150,     4.1773)   navMounts().mast (hoisted there)
+     Spotlight           (    0.0000,     3.9400,     3.1970)   front of the wheelhouse roof
+     sidelight separation 1.0560 m · stem y 6.000 · beam clearance +6.940 m
+
+── lobsterOffshoreOpenNorthumberland   (LobsterOffshoreOpenNorthumberlandIsoHullMesh.asset)
+     PortSidelight       (   -0.5293,     6.4722,     2.9992)   navMounts().port  [residual 5.22E-006 px]
+     StarboardSidelight  (    0.5293,     6.4722,     2.9992)   navMounts().star  [residual 5.22E-006 px]
+     SternLight          (    0.0000,    -7.2500,     1.4090)   navMounts().stern  [residual 5.85E-006 px]
+     Masthead            (    0.0000,     0.8789,     4.5814)   navMounts().mast  [residual 7.09E-007 px]
+     CabinGlow           (    0.0000,     2.7375,     2.8600)   HOUSE wheelhouse box centre, at her glass band
+     AnchorLight         (    0.0000,     0.8789,     4.5814)   navMounts().mast (hoisted there)
+     Spotlight           (    0.0000,     5.0430,     3.5710)   front of the wheelhouse roof
+     sidelight separation 1.0586 m · stem y 7.300 · beam clearance +6.743 m
+
+── lobsterOffshoreOpenFundy   (LobsterOffshoreOpenFundyIsoHullMesh.asset)
+     PortSidelight       (   -0.6068,     6.3965,     3.1048)   navMounts().port  [residual 5.16E-006 px]
+     StarboardSidelight  (    0.6068,     6.3965,     3.1048)   navMounts().star  [residual 5.16E-006 px]
+     SternLight          (    0.0000,    -7.2500,     1.6620)   navMounts().stern  [residual 5.85E-006 px]
+     Masthead            (    0.0000,     1.8250,     6.2577)   navMounts().mast  [residual 1.47E-006 px]
+     CabinGlow           (    0.0000,     3.2850,     2.9170)   HOUSE wheelhouse box centre, at her glass band
+     AnchorLight         (    0.0000,     1.8250,     6.2577)   navMounts().mast (hoisted there)
+     Spotlight           (    0.0000,     4.5320,     3.6580)   front of the wheelhouse roof
+     sidelight separation 1.2136 m · stem y 7.300 · beam clearance +6.232 m
+
+── lobsterOffshoreOpenNewfoundland   (LobsterOffshoreOpenNewfoundlandIsoHullMesh.asset)
+     PortSidelight       (   -0.6159,     6.3500,     2.8100)   navMounts().port  [residual 5.12E-006 px]
+     StarboardSidelight  (    0.6159,     6.3500,     2.8100)   navMounts().star  [residual 5.12E-006 px]
+     SternLight          (    0.0000,    -7.2500,     1.5300)   navMounts().stern  [residual 5.85E-006 px]
+     Masthead            (   -0.7000,     1.4308,     4.7152)   navMounts().mast  [residual 1.15E-006 px]
+     CabinGlow           (    0.0000,     2.9565,     2.8135)   HOUSE wheelhouse box centre, at her glass band
+     AnchorLight         (   -0.7000,     1.4308,     4.7152)   navMounts().mast (hoisted there)
+     Spotlight           (    0.0000,     4.8240,     3.7600)   front of the wheelhouse roof
+     sidelight separation 1.2318 m · stem y 7.300 · beam clearance +6.524 m
+
+── lobsterOffshoreHardtopNorthumberland   (LobsterOffshoreHardtopNorthumberlandIsoHullMesh.asset)
+     PortSidelight       (   -0.5293,     6.4722,     2.9992)   navMounts().port  [residual 5.22E-006 px]
+     StarboardSidelight  (    0.5293,     6.4722,     2.9992)   navMounts().star  [residual 5.22E-006 px]
+     SternLight          (    0.0000,    -7.2500,     1.4090)   navMounts().stern  [residual 5.85E-006 px]
+     Masthead            (    0.0000,     2.4430,     4.6474)   navMounts().mast  [residual 1.97E-006 px]
+     CabinGlow           (    0.0000,     2.7375,     2.8600)   HOUSE wheelhouse box centre, at her glass band
+     AnchorLight         (    0.0000,     2.4430,     4.6474)   navMounts().mast (hoisted there)
+     Spotlight           (    0.0000,     5.0430,     3.5710)   front of the wheelhouse roof
+     sidelight separation 1.0586 m · stem y 7.300 · beam clearance +6.743 m
+
+── lobsterOffshoreHardtopFundy   (LobsterOffshoreHardtopFundyIsoHullMesh.asset)
+     PortSidelight       (   -0.6068,     6.3965,     3.1048)   navMounts().port  [residual 5.16E-006 px]
+     StarboardSidelight  (    0.6068,     6.3965,     3.1048)   navMounts().star  [residual 5.16E-006 px]
+     SternLight          (    0.0000,    -7.2500,     1.6620)   navMounts().stern  [residual 5.85E-006 px]
+     Masthead            (    0.0000,     1.8250,     6.2577)   navMounts().mast  [residual 1.47E-006 px]
+     CabinGlow           (    0.0000,     3.2850,     2.9170)   HOUSE wheelhouse box centre, at her glass band
+     AnchorLight         (    0.0000,     1.8250,     6.2577)   navMounts().mast (hoisted there)
+     Spotlight           (    0.0000,     4.5320,     3.6580)   front of the wheelhouse roof
+     sidelight separation 1.2136 m · stem y 7.300 · beam clearance +6.232 m
+
+── lobsterOffshoreHardtopNewfoundland   (LobsterOffshoreHardtopNewfoundlandIsoHullMesh.asset)
+     PortSidelight       (   -0.6159,     6.3500,     2.8100)   navMounts().port  [residual 5.12E-006 px]
+     StarboardSidelight  (    0.6159,     6.3500,     2.8100)   navMounts().star  [residual 5.12E-006 px]
+     SternLight          (    0.0000,    -7.2500,     1.5300)   navMounts().stern  [residual 5.85E-006 px]
+     Masthead            (    0.0000,     2.7058,     4.8362)   navMounts().mast  [residual 2.18E-006 px]
+     CabinGlow           (    0.0000,     2.9565,     2.8135)   HOUSE wheelhouse box centre, at her glass band
+     AnchorLight         (    0.0000,     2.7058,     4.8362)   navMounts().mast (hoisted there)
+     Spotlight           (    0.0000,     4.8240,     3.7600)   front of the wheelhouse roof
+     sidelight separation 1.2318 m · stem y 7.300 · beam clearance +6.524 m
+
+── sportFisherConvertible   (SportFisherConvertibleIsoHullMesh.asset)
+     PortSidelight       (   -1.5884,     6.9728,     4.0975)   navMounts().port  [residual 5.62E-006 px]
+     StarboardSidelight  (    1.5884,     6.9728,     4.0975)   navMounts().star  [residual 5.62E-006 px]
+     SternLight          (    0.0000,    -7.9300,     2.4400)   navMounts().stern  [residual 6.40E-006 px]
+     Masthead            (    0.0000,    -2.9250,     9.5000)   navMounts().mast  [residual 2.36E-006 px]
+     CabinGlow           (    0.0000,    -1.8150,     3.9400)   HOUSE accommodation box centre, at her glass band
+     AnchorLight         (    0.0000,    -2.9250,     9.5000)   navMounts().mast (hoisted there)
+     Spotlight           (    0.0000,     1.4100,     4.5000)   front of the salon (open flybridge above) roof
+     sidelight separation 3.1768 m · stem y 8.100 · beam clearance +2.310 m
+
+── sportFisherSkybridge   (SportFisherSkybridgeIsoHullMesh.asset)
+     PortSidelight       (   -2.4418,    11.7176,     5.6982)   navMounts().port  [residual 9.45E-006 px]
+     StarboardSidelight  (    2.4418,    11.7176,     5.6982)   navMounts().star  [residual 9.45E-006 px]
+     SternLight          (    0.0000,   -13.4900,     3.2900)   navMounts().stern  [residual 1.09E-005 px]
+     Masthead            (    0.0000,    -5.1000,    11.9500)   navMounts().mast  [residual 4.11E-006 px]
+     CabinGlow           (    0.0000,    -4.4250,     6.2900)   HOUSE accommodation box centre, at her glass band
+     AnchorLight         (    0.0000,    -5.1000,    11.9500)   navMounts().mast (hoisted there)
+     sidelight separation 4.8837 m · stem y 13.700 · beam clearance -4.790 m
+     NO SEARCHLIGHT — she is conned from y -0.09 and her stem is at y 13.70, so the shipped 9.0 m beam ends 4.79 m SHORT of her own bow — it would rake her deck, not the sea. A per-hull throw would unblock her; that is a preset change, not a measurement.
+
+── the two numbers the presets are bounded by ──
+  tightest sidelight pair in the fleet: 0.6048 m (capeIslander) — the radius must stay under half of it (0.3024 m) or red and green overlap into yellow.
+  worst inversion residual anywhere: 2.383E-005 px (limit 1E-002).
+  hulls carrying a searchlight: 21 (shipped beam 9.0 m).
