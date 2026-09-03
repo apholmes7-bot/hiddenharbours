@@ -60,6 +60,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _CapAgeStrength: 0
     - _MirrorForm: 1
     - _MirrorSheen: 0.3125
     - _MirrorTiltScale: 6
@@ -222,7 +223,7 @@ Material:
     - _WhitecapOnsetAmp: 0.5
     - _WhitecapPeakDensity: 0.5
     - _WhitecapTexScale: 0.0625
-    - _WhitecapTexStrength: 0.55
+    - _WhitecapTexStrength: 0
     - _WindChop: 0.07
     - _WindChopScale: 0.7
     - _WindChopSpeed: 0.09

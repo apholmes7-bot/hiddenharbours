@@ -142,6 +142,57 @@ namespace HiddenHarbours.Tests.Art.EditMode
         // ==== the art: the slot that PLACES caps may not be a lattice ==============================
 
         [Test]
+        public void TheProceduralField_PlacesTheCaps_NotTheStampSheet()
+        {
+            // ⭐⭐ THE OWNER'S 2026-09-02 RULING: *"let the procedural field replace the caps."*
+            //
+            // The whole of it is one number. `capField = lerp(capField, capPat, _WhitecapTexStrength)`,
+            // and at the 0.865 every shipped material carried, that is not a blend — painted slots PLACE,
+            // they do not decorate. The class doc above is this file's own account of what that cost: one
+            // mark alone in a repeat cell IS a lattice, and no amount of untiling can rescue a tile whose
+            // entire content is one dot. The sheet was rebuilt to many scattered marks (the tests below);
+            // the ruling goes further and hands the placement back to the field that knows where the
+            // crests actually are.
+            //
+            // ⚠️ ALL NINE materials, and not for tidiness: _WhitecapTexStrength is MOOD-EASED
+            // (WaterSurface.MoodFloatNames), so the live value is lerped between the PRESET anchors by the
+            // weather. One preset left at 0.865 would not be a stale key — it would be a sea that goes
+            // back to the stamp sheet whenever the weather leaned that way, and `Apply water preset` would
+            // stamp it over the hero material besides.
+            //
+            // ⚠️ Whitecaps.png is NOT deleted and the slot is NOT removed. Both stay reachable, and 1
+            // still hands the caps back to the sheet exactly as before: it is the owner's art, and this
+            // records which source SHIPS, not which one exists.
+            var offenders = new List<string>();
+            foreach (string path in AllWaterMaterials())
+            {
+                var mat = UnityEditor.AssetDatabase.LoadAssetAtPath<Material>(path);
+                Assert.IsNotNull(mat, $"{path} must exist");
+                float strength = mat.GetFloat("_WhitecapTexStrength");
+                if (strength > 1e-4f)
+                    offenders.Add($"{Path.GetFileName(path)}: _WhitecapTexStrength {strength}");
+            }
+            Assert.IsEmpty(offenders,
+                "the procedural field must place the caps on every water material — these still hand the " +
+                "placement to the painted sheet, so the sea they draw wears one mark repeated:\n  " +
+                string.Join("\n  ", offenders));
+
+            // …and the SHADER's own default goes with them, so a material that does not carry the key at
+            // all gets the field rather than the sheet.
+            string src = File.ReadAllText(ShaderPath);
+            StringAssert.IsMatch(@"_WhitecapTexStrength\s*\(""[^""]*""\s*,\s*Range\(0,1\)\)\s*=\s*0\b", src,
+                "the shader's _WhitecapTexStrength default must be 0 — the field, not the sheet");
+        }
+
+        /// <summary>Every water material the game ships, hero first.</summary>
+        private static IEnumerable<string> AllWaterMaterials()
+        {
+            yield return LiveWaterMatPath;
+            foreach (string name in PresetNames)
+                yield return $"{PresetsFolder}/{name}.mat";
+        }
+
+        [Test]
         public void TheShippedSheet_CarriesManyScatteredMarks_NotOne()
         {
             // THE defect, stated as art rather than as a number: a placement texture with ONE mark in

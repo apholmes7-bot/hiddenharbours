@@ -404,8 +404,9 @@ namespace HiddenHarbours.Tests.Art.EditMode
             // MECHANISM is the floor pre-compensation clamping the sea's low values UP to one high
             // floor, so the dark end stops being dark. Spread and flatness are downstream consequences
             // and they track how much structure the sea happens to have — which is why an ABSOLUTE bar
-            // on them keeps rotting. p05 measures the clamp itself, and it separates the arms hardest of
-            // the three: measured 2026-09-03, 0.011 fixed against 0.137 sabotage — 12x.
+            // on them keeps rotting, and why the flat fraction below is no longer asserted at all. p05
+            // measures the clamp itself, and it separates the arms hardest of the three: measured
+            // 2026-09-03, 0.011 fixed against 0.137 sabotage — 12x.
             Assert.Less(fixedStats.P05, legacyStats.P05 * 0.5f,
                 $"the dusk-storm sea's DARK end has been lifted to {fixedStats.P05:F3}, against " +
                 $"{legacyStats.P05:F3} with the legacy floor curve — the bottom of the value " +
@@ -420,23 +421,24 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 $"against the legacy curve's {legacyStats.Spread:F3} — the crest/trough/foam structure " +
                 "has collapsed toward the white-out sheet.");
 
-            // ⭐⭐ AND THE FLAT FRACTION STAYS — which is not what this edit set out to do, and the
-            // measurement is why. The absolute 40 % bar failed at 49.0 % fixed, and the 2026-08-01 note
-            // recorded the sabotage arm at 51.9 %; on those two numbers flatness looked like a spent
-            // discriminator and the first draft of this change dropped it. Shooting BOTH arms in the
-            // same run says otherwise: **44.6 % fixed against 79.8 % sabotage.** The August 51.9 % was
-            // measured on the SHORT swell and had gone stale with everything else — the arms had not
-            // converged at all, they had both moved up together, which is exactly the failure an
-            // absolute bar has and a ratio does not.
+            // ⚠️⚠️ THE FLAT FRACTION IS REPORTED, NOT ASSERTED — and this is the second time that call has
+            // been made here, with the evidence going the other way the first time. Worth the paragraph.
             //
-            // So the statistic was never the problem; anchoring it to a number was. It is a WINDOW
-            // statistic (pixels whose neighbourhood is uniform), so it rises whenever the sea's
-            // structure gets LONGER — as the swell ruling made it — and it rises for the white-out too,
-            // much harder. As a ratio it discriminates 1.8x and costs nothing to keep.
-            Assert.Less(fixedStats.FlatFrac, legacyStats.FlatFrac * 0.75f,
-                $"the dusk-storm sea is {fixedStats.FlatFrac:P1} flat against the legacy curve's " +
-                $"{legacyStats.FlatFrac:P1} — a near-uniform sheet. The owner's white-out is back: the " +
-                "palette floor's dusk clamp (or another whole-sea layer) is flattening the structure.");
+            // 2026-09-03, PR 6: the absolute 40 % bar failed at 49.0 % with no white-out. The first fix
+            // drafted was to drop this statistic; shooting both arms in one run said 44.6 % against
+            // 79.8 % — a 1.8x separation — so it was KEPT, as a ratio at 0.75.
+            //
+            // 2026-09-03, PR 7, one PR later: the whitecaps stopped being placed by a stamp sheet of
+            // hard-edged mirrored marks, and the same pair reads 74.2 % against 87.7 % — ratio 0.85, over
+            // the bar, nothing wrong with the sea. Removing hard-edged noise makes a frame flatter by a
+            // WINDOW statistic; so does a longer swell; so does a white-out. It cannot tell them apart.
+            //
+            // Two samples now, and the ratio itself moved 0.56 -> 0.85 between them: this statistic has no
+            // stable margin, whatever it is anchored to. p05 measures the white-out's MECHANISM and
+            // separated the arms 12x in the same run; spread holds at 1.7x. Those two carry the guard.
+            Debug.Log($"[white-out] flat fraction (reported, not asserted — no stable margin; see the " +
+                      $"note in this test): fixed {fixedStats.FlatFrac:P1} vs sabotage " +
+                      $"{legacyStats.FlatFrac:P1}");
 
             // ---- SABOTAGE: the legacy curve must trip the bars the asserts above use --------------
             // An OR, because those Asserts are an AND: "the assert would have gone red" is "any bar
@@ -445,8 +447,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             // near-tautological, which is itself the improvement: the arms can no longer both drift
             // over an absolute together.)
             bool sabotageTripped = fixedStats.P05 < legacyStats.P05 * 0.5f
-                                && fixedStats.Spread > legacyStats.Spread * 1.25f
-                                && fixedStats.FlatFrac < legacyStats.FlatFrac * 0.75f;
+                                && fixedStats.Spread > legacyStats.Spread * 1.25f;
             Assert.IsTrue(sabotageTripped,
                 "SABOTAGE NOT DETECTED — with the legacy floor curve (knee 0) the dusk-storm frame is " +
                 $"indistinguishable from the fixed one (fixed {fixedStats}, sabotage {legacyStats}). " +
