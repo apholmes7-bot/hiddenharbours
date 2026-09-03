@@ -396,7 +396,10 @@ namespace HiddenHarbours.Tests.EditMode
                 "the run-up blends from the previous edge, so blend 0 is that edge exactly");
             StringAssert.Contains("clamp(-dot(waveSlope + surfFrontSlope, shadeLd) * 2.0, -1.0, 1.0)", src,
                 "the sun's face shade must see the bore front only as an ADDED slope (0 at the dial's 0)");
-            StringAssert.Contains("BoatLightTerm(worldXY, waveSlope + surfFrontSlope, waveHeight)", src,
+            // Pinned WITHOUT the closing bracket: the night PR (2026-09-02) added an out-parameter for the
+            // beam's colour-weighted sum, and the property this guards is which SLOPE the lamp's relief
+            // reads — not how many things the call returns.
+            StringAssert.Contains("BoatLightTerm(worldXY, waveSlope + surfFrontSlope, waveHeight", src,
                 "the lamp's relief must see the same added slope");
             StringAssert.Contains("float2 surfFrontSlope = float2(0.0, 0.0);", src,
                 "the front slope must be declared zero before any gate can leave it unset");

@@ -60,6 +60,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _BeamLitStrength: 1.6
     - _CausticDayGate: 1
     - _CausticAmount: 0.3
     - _CausticDepth: 1.2

@@ -365,11 +365,18 @@ namespace HiddenHarbours.Tests.Art.EditMode
             float fullMoon = Brightness(DayNightMath.DayNightTint(SolarMidnight, p, 1f, SeaGlass, 1f, 1f));
             Assert.Greater(fullMoon, newMoon, "a clear full-moon midnight is brighter than a new-moon one");
 
-            // The default strength is tuned "subtle": a clear full moon at peak roughly DOUBLES the
-            // deep-night brightness — visibly lit, still genuinely night (P1/P5: dark nights stay dark).
+            // ⚠️ THE OWNER RULED THIS UP on 2026-09-02: *"a clear calm night with moonlight should be
+            // brighter if not cloudy."* The old bound here was "subtle — roughly DOUBLE the deep night",
+            // which was the 2026-07 tuning (lift 0.05); at the ruled 0.45 a clear full moon at peak is a
+            // sea you can steer by, about NINE times the moonless night. The upper bound stays, because
+            // the other half of the ruling is that the night is still a night: a moonlit midnight must not
+            // approach daylight, and the moonless one it is measured against has not moved at all
+            // (Moonlight_NewMoon_TintIsBitwiseIdenticalToMoonless, next).
             float ratio = fullMoon / newMoon;
-            Assert.Greater(ratio, 1.4f, "the default lift should be clearly visible (~2x the deep night)");
-            Assert.Less(ratio, 3.0f, "the default lift must stay SUBTLE — moonlight, not daylight");
+            Assert.Greater(ratio, 4f,
+                $"a clear full moon must be a night you can STEER by (measured x{ratio:F1}) — under 4 means " +
+                "MoonlightLiftMax has drifted back toward the superseded 0.05");
+            Assert.Less(ratio, 15f, "…and still a night, not daylight");
         }
 
         [Test]
@@ -407,12 +414,33 @@ namespace HiddenHarbours.Tests.Art.EditMode
         public void Moonlight_DaytimeIsCompletelyUnaffected()
         {
             var p = MakeProfile();
-            // Sweep the whole lit day, horizon to horizon inclusive, under a (hypothetical) full high moon.
+            // Sweep the whole lit day under a (hypothetical) full high moon. BITWISE while the sun is
+            // genuinely up; at the horizon itself, within a float hair — and that distinction is real
+            // rather than a hedge.
+            //
+            // ⚠️ SunElevation is cos(x·π/2) and SolarX is exactly ±1 at sunrise/sunset, so the elevation
+            // there is float cos(π/2) = -4.4e-8: a night depth of forty billionths, not zero. The lift is
+            // therefore not identically zero at the horizon sample, and at the 2026-09-02 ruled strength
+            // (0.45, nine times the old 0.05) that product finally moves the blue channel by ONE ULP.
+            // This test used to assert bitwise equality there and passed only because the old lift was
+            // small enough to be swallowed by the float epsilon — it was pinning a coincidence, not the
+            // property. The property is asserted where it means something, and the horizon is asserted for
+            // what it actually is.
             for (float h = p.SunriseHour; h <= p.SunsetHour; h += 0.5f)
             {
                 Color moonless = DayNightMath.DayNightTint(h, p, 1f, SeaGlass);
                 Color fullMoon = DayNightMath.DayNightTint(h, p, 1f, SeaGlass, 1f, 1f);
-                Assert.AreEqual(moonless, fullMoon, $"sun up at hour {h} -> moonlight must add NOTHING");
+                bool sunIsUp = DayNightMath.SunElevation(h, p.SunriseHour, p.SunsetHour) > 1e-6f;
+                if (sunIsUp)
+                {
+                    Assert.AreEqual(moonless, fullMoon, $"sun up at hour {h} -> moonlight must add NOTHING");
+                }
+                else
+                {
+                    Assert.AreEqual(moonless.r, fullMoon.r, 1e-6f, $"at the horizon (hour {h}) -> nothing you can see (r)");
+                    Assert.AreEqual(moonless.g, fullMoon.g, 1e-6f, $"at the horizon (hour {h}) -> nothing you can see (g)");
+                    Assert.AreEqual(moonless.b, fullMoon.b, 1e-6f, $"at the horizon (hour {h}) -> nothing you can see (b)");
+                }
             }
         }
 
@@ -436,32 +464,66 @@ namespace HiddenHarbours.Tests.Art.EditMode
         [Test]
         public void MoonlightLift_OvercastSuppressesIt()
         {
-            // Full moon at peak on a deep night: clear sky gives the full lift, cloud shrinks it with the
-            // SAME weather factor the rest of the light dims by, and total overcast erases it entirely.
-            float clear = DayNightMath.MoonlightLift(-1f, 1f, 1f, 0f, 0.05f);
-            float cloudy = DayNightMath.MoonlightLift(-1f, 1f, 1f, 0.6f, 0.05f);
-            float socked = DayNightMath.MoonlightLift(-1f, 1f, 1f, 1f, 0.05f);
+            // Full moon at peak on a deep night: clear sky gives the full lift, cloud shrinks it, and the
+            // heaviest overcast the model can actually PRODUCE erases it entirely.
+            //
+            // ⚠️ That last clause is the 2026-09-02 fix, and the old version of this test is why it was
+            // needed. It asserted "weatherDim = 1 -> no moonlight", which was true of the formula and
+            // unreachable in the game: WeatherDim() caps its output at WeatherDimMax (0.6), so the input
+            // this test used to prove the property with is one the model never hands over. A full moon
+            // therefore went on lifting a fully socked-in midnight by 40 % of its strength — invisible
+            // while the lift was 0.05, a lit night at the ruled 0.45. The lift now reads cloud as a
+            // FRACTION OF THAT CEILING, so the erasure happens where the weather actually ends.
+            float max = DayNightProfile.CreateDefault().WeatherDimMax;
+            float clear = DayNightMath.MoonlightLift(-1f, 1f, 1f, 0f, 0.05f, max);
+            float cloudy = DayNightMath.MoonlightLift(-1f, 1f, 1f, max * 0.5f, 0.05f, max);
+            float socked = DayNightMath.MoonlightLift(-1f, 1f, 1f, max, 0.05f, max);
             Assert.Greater(clear, cloudy, "cloud hides the moon");
             Assert.Greater(cloudy, 0f, "partial cloud still lets some moonlight through");
-            Assert.AreEqual(0f, socked, "full weather-dim -> no moonlight at all");
+            Assert.AreEqual(0f, socked,
+                "the heaviest overcast the model can PRODUCE must leave no moonlight at all — not the " +
+                "heaviest one the formula can be handed");
+        }
+
+        [Test]
+        public void MoonlightLift_ClosesWhereTheWEATHEREnds_NotWhereTheFormulaCould()
+        {
+            // The reachable-input law, stated on its own so it cannot be lost in the test above: sweep the
+            // dim over the range WeatherDim() can actually return and require the lift to reach zero inside
+            // it, monotonically. A model whose "off" switch sits outside its own output range has no off.
+            float max = DayNightProfile.CreateDefault().WeatherDimMax;
+            float previous = float.MaxValue;
+            float atCeiling = -1f;
+            for (int i = 0; i <= 12; i++)
+            {
+                float dim = max * i / 12f;
+                float lift = DayNightMath.MoonlightLift(-1f, 1f, 1f, dim, 0.45f, max);
+                Assert.LessOrEqual(lift, previous + 1e-6f, $"the lift must fall as cloud thickens (dim {dim:F3})");
+                previous = lift;
+                if (i == 12) atCeiling = lift;
+            }
+            Assert.AreEqual(0f, atCeiling, "at the weather's own ceiling the moon is gone");
         }
 
         [Test]
         public void MoonlightLift_AnyZeroFactorIsExactlyZero()
         {
-            Assert.AreEqual(0f, DayNightMath.MoonlightLift(1f, 1f, 1f, 0f, 0.05f), "sun UP -> zero");
-            Assert.AreEqual(0f, DayNightMath.MoonlightLift(0f, 1f, 1f, 0f, 0.05f), "sun ON the horizon -> zero");
-            Assert.AreEqual(0f, DayNightMath.MoonlightLift(-1f, 0f, 1f, 0f, 0.05f), "new moon -> zero");
-            Assert.AreEqual(0f, DayNightMath.MoonlightLift(-1f, 1f, 0f, 0f, 0.05f), "moon below horizon -> zero");
-            Assert.AreEqual(0f, DayNightMath.MoonlightLift(-1f, 1f, 1f, 0f, 0f), "strength 0 -> zero");
+            float max = DayNightProfile.CreateDefault().WeatherDimMax;
+            Assert.AreEqual(0f, DayNightMath.MoonlightLift(1f, 1f, 1f, 0f, 0.05f, max), "sun UP -> zero");
+            Assert.AreEqual(0f, DayNightMath.MoonlightLift(0f, 1f, 1f, 0f, 0.05f, max), "sun ON the horizon -> zero");
+            Assert.AreEqual(0f, DayNightMath.MoonlightLift(-1f, 0f, 1f, 0f, 0.05f, max), "new moon -> zero");
+            Assert.AreEqual(0f, DayNightMath.MoonlightLift(-1f, 1f, 0f, 0f, 0.05f, max), "moon below horizon -> zero");
+            Assert.AreEqual(0f, DayNightMath.MoonlightLift(-1f, 1f, 1f, 0f, 0f, max), "strength 0 -> zero");
+            Assert.AreEqual(0f, DayNightMath.MoonlightLift(-1f, 1f, 1f, max, 0.05f, max), "full overcast -> zero");
         }
 
         [Test]
         public void MoonlightLift_ScalesWithPhaseAndElevation()
         {
-            float full = DayNightMath.MoonlightLift(-1f, 1f, 1f, 0f, 0.05f);
-            float half = DayNightMath.MoonlightLift(-1f, 0.5f, 1f, 0f, 0.05f);
-            float low = DayNightMath.MoonlightLift(-1f, 1f, 0.3f, 0f, 0.05f);
+            float max = DayNightProfile.CreateDefault().WeatherDimMax;
+            float full = DayNightMath.MoonlightLift(-1f, 1f, 1f, 0f, 0.05f, max);
+            float half = DayNightMath.MoonlightLift(-1f, 0.5f, 1f, 0f, 0.05f, max);
+            float low = DayNightMath.MoonlightLift(-1f, 1f, 0.3f, 0f, 0.05f, max);
             Assert.Greater(full, half, "a fuller moon lifts more");
             Assert.Greater(full, low, "a higher moon lifts more");
             Assert.Greater(half, 0f);

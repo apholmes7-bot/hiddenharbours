@@ -184,7 +184,12 @@ namespace HiddenHarbours.Tests.EditMode
             public float TideHeightAt(double totalSeconds) => WaterLevel;
         }
 
-        /// <summary>The searchlight, published through the SHIPPED bridge (the #691 pattern).</summary>
+        /// <summary>The searchlight, published through the SHIPPED bridge (the #691 pattern) — and, beside
+        /// it, the SINGLETON globals <c>BoatSpotlight</c> publishes for the same lamp. Both, because that is
+        /// what the shipped component does: the bridge fills the array the water sums its cone weight from,
+        /// and the singleton is what <c>SpriteLitDecor</c> reads. A fixture that published only the array
+        /// left <c>_BoatLightColor</c> unset, and every night plate this file has ever taken was therefore
+        /// missing the beam's warm tint — a shipped term, absent from the evidence.</summary>
         sealed class FakeLamp : IWaterLightEmitter
         {
             public WaterLightState State;
@@ -231,6 +236,7 @@ namespace HiddenHarbours.Tests.EditMode
         PlateEnvironment _env;
         FakeLamp _lamp;
         DayNightProfile _profile;
+        bool _profileIsOurs;          // false when _profile is the SHIPPED asset — never destroy that
         Texture2D _reflectFallback;
 
         static readonly MethodInfo PushUniformsSnap = typeof(WaterSurface).GetMethod(
@@ -254,7 +260,8 @@ namespace HiddenHarbours.Tests.EditMode
             _built.Clear();
             if (_camGo != null) Object.DestroyImmediate(_camGo);
             _camGo = null; _cam = null;
-            if (_profile != null) { Object.DestroyImmediate(_profile); _profile = null; }
+            if (_profile != null && _profileIsOurs) Object.DestroyImmediate(_profile);
+            _profile = null; _profileIsOurs = false;
             if (_reflectFallback != null) { Object.DestroyImmediate(_reflectFallback); _reflectFallback = null; }
 
             GameServices.TidalTerrain = _previousTerrain;
@@ -266,6 +273,8 @@ namespace HiddenHarbours.Tests.EditMode
             WaveFieldBridge.PublishFetchOff();
             WaveFieldBridge.PublishBreakersOff();
             Shader.SetGlobalFloat(Shader.PropertyToID("_WaterLightCount"), 0f);
+            Shader.SetGlobalColor(Shader.PropertyToID("_BoatLightColor"), Color.clear);
+            Shader.SetGlobalVector(Shader.PropertyToID("_BoatLightParams"), Vector4.zero);
             Shader.SetGlobalColor(Shader.PropertyToID("_DayNightTint"), Color.white);
             Shader.SetGlobalVector(Shader.PropertyToID("_SunDir"), Vector4.zero);
             Shader.SetGlobalFloat(Shader.PropertyToID("_SunElevation"), 0f);
@@ -341,6 +350,356 @@ namespace HiddenHarbours.Tests.EditMode
         //  Headless guards on the instrument itself (run on CI too)
         // =============================================================================================
 
+
+        // =============================================================================================
+        //  ⭐⭐ THE NIGHT (water-fidelity PR 4) — the owner's 2026-09-02 ruling, measured
+        // =============================================================================================
+        //
+        //  *"It should be dark enough at night that the player feels the need to use radar and the
+        //   lighting, a clear calm night with moonlight should be brighter if not cloudy."*
+        //
+        //  Two instruments, because the ruling has two halves that pull opposite ways. The MOON half is
+        //  judged with no lamp in the frame (a lamp would light the very thing being measured); the LAMP
+        //  half is judged on the blackest corner the moon half produced, which is where a searchlight is
+        //  for. Both report the same two numbers per plate: the mean luma of wet pixels (how dark the sea
+        //  photographs) and the SURF CONTRAST — the mean luma inside the breaker contour minus the mean
+        //  outside it, which is "can you see the break line?" written as a number.
+
+        /// <summary>One corner of the night: what the moon is doing, and whether there is cloud in the way.
+        /// DECLARED rather than looked up off a clock — a corner is a controlled experiment, and the plate's
+        /// own label says which corner it is. The same numbers drive the tint's moonlight lift and the moon
+        /// state the shader draws its disc and glitter from, so the sky and the light agree.</summary>
+        readonly struct NightCorner
+        {
+            public readonly string Key, Label;
+            public readonly float Illumination, Elevation, Visibility;
+            public NightCorner(string key, string label, float illum, float elev, float visibility)
+            { Key = key; Label = label; Illumination = illum; Elevation = elev; Visibility = visibility; }
+        }
+
+        /// <summary>Visibility below the profile's <c>FogVisibilityForFullDim</c> (0.15), so the overcast
+        /// corners carry the FULL weather dim — which is what "cloudy" means to <c>DayNightMath</c> for
+        /// M1: there is no cloud-cover axis in <c>EnvironmentSample</c> and this PR does not invent one.</summary>
+        const float OvercastVisibility = 0.10f;
+
+        static readonly NightCorner[] NightCorners =
+        {
+            new NightCorner("newmoon-clear",  "NEW MOON - CLEAR",     0f, 0f, 1f),
+            new NightCorner("fullmoon-clear", "FULL MOON - CLEAR",    1f, 1f, 1f),
+            new NightCorner("fullmoon-cloud", "FULL MOON - OVERCAST", 1f, 1f, OvercastVisibility),
+            new NightCorner("newmoon-cloud",  "NEW MOON - OVERCAST",  0f, 0f, OvercastVisibility),
+        };
+
+        /// <summary>What one night plate is worth: how dark it photographed, and whether the break line
+        /// survived.</summary>
+        struct NightRecord
+        {
+            public string File, Corner, Weather;
+            public Color Tint;
+            public float MeanLumaWet, SurfLuma, BodyLuma, SurfContrast;
+            public float InBeamLuma, OutBeamLuma;
+        }
+
+        [Test]
+        public void TheNight_IsDarkUnlessTheMoonIsUpAndTheSkyIsClear()
+        {
+            // ⭐ The MOON half of the ruling, with no lamp in the frame. Four corners x {glass, blow} at
+            // 02:00 spring low over the sand shoal, which is the viewpoint register row 12 cites.
+            RequireAGraphicsDevice();
+            Prepare();
+            Stage stage = BuildNineMileCreek();
+            stage.Name = "night-corners";
+            stage.Title = "THE NIGHT, NO LAMP - MOON x CLOUD AT 02:00, SPRING LOW";
+            stage.Aim = AimAtTheLongestSurfRun(stage);
+
+            string dir = Path.Combine(Directory.GetCurrentDirectory(), OutRoot, "night");
+            Directory.CreateDirectory(dir);
+            BuildCamera();
+            _cam.transform.position = new Vector3(stage.Aim.x, stage.Aim.y, -100f);
+            WarmTheShaderCache(stage);
+
+            var records = new List<NightRecord>();
+            var thumbs = new Color[2][][];
+            for (int r = 0; r < 2; r++) thumbs[r] = new Color[NightCorners.Length][];
+
+            var weathers = new[] { Weather.Glass, Weather.Blow };
+            for (int r = 0; r < weathers.Length; r++)
+            for (int c = 0; c < NightCorners.Length; c++)
+            {
+                NightCorner corner = NightCorners[c];
+                string file = $"night-{corner.Key}-{WeatherName[(int)weathers[r]]}";
+                Color[] ldr = ShootNight(stage, weathers[r], corner, lamp: false, beamLit: null,
+                                         Path.Combine(dir, file + ".png"), out NightRecord rec);
+                rec.File = file + ".png";
+                records.Add(rec);
+                thumbs[r][c] = Thumbnail(ldr);
+            }
+
+            var top = new string[NightCorners.Length];
+            var bottom = new string[NightCorners.Length];
+            for (int c = 0; c < NightCorners.Length; c++) { top[c] = NightCorners[c].Label; bottom[c] = ""; }
+            string sheet = Path.Combine(Directory.GetCurrentDirectory(), OutRoot, "SHEET-night-corners.png");
+            ContactSheet.Write(sheet, stage.Title, top, bottom, new[] { "GLASS", "BLOW" }, thumbs, ThumbPx);
+            File.WriteAllText(Path.Combine(dir, "NIGHT.txt"), NightReport(records));
+            Debug.Log("[water-plates] night corners\n" + NightReport(records));
+
+            Assert.IsTrue(File.Exists(sheet), "the night sheet must be written — the FILE is the evidence");
+
+            // ⚠️ The TINT comparisons take the glass column (the tint is the sky, not the sea), but every
+            // SURF number must come from the BLOW column: at glass the contour does not break at all, so
+            // there are no pixels inside it and "surf luma" is a mean of nothing. The first run of this
+            // test asserted on the glass column and was comparing 0.0000 against 0.0000.
+            NightRecord newClear = Find(records, "newmoon-clear", "blow");
+            NightRecord fullClear = Find(records, "fullmoon-clear", "blow");
+            NightRecord fullCloud = Find(records, "fullmoon-cloud", "glass");
+            NightRecord newCloud = Find(records, "newmoon-cloud", "glass");
+
+            // ⭐ "if not cloudy" — CLOUD HIDES THE MOON EXACTLY. Every factor of the lift multiplies, and
+            // (1 - weatherDim) is one of them, so at full overcast a full moon and a new moon are not
+            // merely similar: they are the same computation. Pinned as an equality, because an
+            // approximately-equal here would let the lift leak back in through a later edit.
+            Assert.AreEqual(fullCloud.Tint.r, newCloud.Tint.r, 1e-6f, "cloud must hide the moon (r)");
+            Assert.AreEqual(fullCloud.Tint.g, newCloud.Tint.g, 1e-6f, "cloud must hide the moon (g)");
+            Assert.AreEqual(fullCloud.Tint.b, newCloud.Tint.b, 1e-6f, "cloud must hide the moon (b)");
+
+            // ⭐ "dark enough that the player feels the need to use radar and the lighting" — on a moonless
+            // night the break line must not be readable by eye. Judged as CONTRAST, not brightness: a sea
+            // you cannot navigate is one where the surf does not stand out from the water beside it.
+            Assert.Less(newClear.SurfContrast, 0.03f,
+                $"a moonless night must not show you the break line — the surf stood {newClear.SurfContrast:F4} " +
+                "of luma clear of the body, which is a sea you could steer by without the radar");
+
+            // ⭐ "a clear calm night with moonlight should be brighter" — and by enough to matter.
+            Assert.Greater(fullClear.MeanLumaWet, newClear.MeanLumaWet * 3f,
+                $"a clear full-moon night must READ as lit: {fullClear.MeanLumaWet:F4} against the moonless " +
+                $"{newClear.MeanLumaWet:F4}. If these are close, MoonlightLiftMax is back at its old 0.05.");
+            Assert.Greater(fullClear.SurfContrast, newClear.SurfContrast * 4f,
+                $"…and the break line must come back with it ({fullClear.SurfContrast:F4} against " +
+                $"{newClear.SurfContrast:F4}) — brightness alone is not navigability");
+
+            // …and the moonless floor must not have been raised to buy any of it (the ruling's other half).
+            Assert.Less(newClear.MeanLumaWet, 0.06f,
+                $"the moonless night must stay dark — it photographed {newClear.MeanLumaWet:F4}");
+        }
+
+        [Test]
+        public void TheLamp_LIGHTS_TheWater_WhereAMultiplyCouldNot()
+        {
+            // ⭐ The LAMP half, on the blackest corner the moon half produced — a moonless clear night,
+            // which is exactly the water register row 12 says the shipped searchlight "lights nothing you
+            // can name" on. The A/B is one dial: _BeamLitStrength 0 is the shipped multiply-only reveal.
+            RequireAGraphicsDevice();
+            Prepare();
+            Stage stage = BuildNineMileCreek();
+            stage.Name = "night-lamp";
+            stage.Title = "THE SHIPPED SEARCHLIGHT ON A MOONLESS NIGHT - LIT WATER OFF vs ON";
+            stage.Aim = AimAtTheLongestSurfRun(stage);
+
+            string dir = Path.Combine(Directory.GetCurrentDirectory(), OutRoot, "night");
+            Directory.CreateDirectory(dir);
+            BuildCamera();
+            _cam.transform.position = new Vector3(stage.Aim.x, stage.Aim.y, -100f);
+            WarmTheShaderCache(stage);
+
+            NightCorner blackest = NightCorners[0];   // new moon, clear
+            var records = new List<NightRecord>();
+            var thumbs = new Color[2][][];
+            for (int r = 0; r < 2; r++) thumbs[r] = new Color[2][];
+
+            var weathers = new[] { Weather.Glass, Weather.Blow };
+            float shipped = ShippedBeamLitStrength(stage);
+            for (int r = 0; r < weathers.Length; r++)
+            {
+                for (int c = 0; c < 2; c++)
+                {
+                    float lit = c == 0 ? 0f : shipped;
+                    string file = $"lamp-{WeatherName[(int)weathers[r]]}-lit{(c == 0 ? "0" : "on")}";
+                    Color[] ldr = ShootNight(stage, weathers[r], blackest, lamp: true, beamLit: lit,
+                                             Path.Combine(dir, file + ".png"), out NightRecord rec);
+                    rec.File = file + ".png";
+                    rec.Corner = c == 0 ? "lit 0 (as shipped)" : $"lit {shipped:F3} (ruled)";
+                    records.Add(rec);
+                    thumbs[r][c] = Thumbnail(ldr);
+                }
+            }
+
+            string sheet = Path.Combine(Directory.GetCurrentDirectory(), OutRoot, "SHEET-night-lamp.png");
+            ContactSheet.Write(sheet, stage.Title, new[] { "LIT WATER 0", "LIT WATER ON" }, new[] { "", "" },
+                               new[] { "GLASS", "BLOW" }, thumbs, ThumbPx);
+            File.WriteAllText(Path.Combine(dir, "LAMP.txt"), NightReport(records));
+            Debug.Log("[water-plates] the lamp\n" + NightReport(records));
+
+            Assert.IsTrue(File.Exists(sheet), "the lamp sheet must be written — the FILE is the evidence");
+            Assert.Greater(shipped, 0f, "the shipped _BeamLitStrength must be non-zero, or this PR ships nothing");
+
+            NightRecord off = records[0], on = records[1];          // glass, the sacred state
+            NightRecord offBlow = records[2], onBlow = records[3];
+
+            // ⭐ THE POINT. The shipped reveal MULTIPLIES the water inside the cone, and the frame is
+            // multiplied again by a ~(0.016, 0.020, 0.040) night tint downstream: a dark sea times 3.5
+            // times 0.02 is a dark sea. The lit term ADDS in the compensated bucket, so the pool of light
+            // is a pool of light.
+            Assert.Greater(on.InBeamLuma, off.InBeamLuma * 1.5f,
+                $"the lamp must LIGHT the water it is pointed at — inside the cone the sea read " +
+                $"{on.InBeamLuma:F4} with the term on against {off.InBeamLuma:F4} with it off. If these " +
+                "are close, the additive term is not reaching the compensated bucket.");
+            Assert.Greater(onBlow.InBeamLuma, offBlow.InBeamLuma * 1.5f,
+                $"…in a blow as well ({onBlow.InBeamLuma:F4} against {offBlow.InBeamLuma:F4})");
+
+            // …and ONLY the water it is pointed at: the term carries the cone weight, so outside the cone
+            // nothing moves. This is the floodlamp complaint (owner, 2026-07-05) answered by construction.
+            Assert.AreEqual(off.OutBeamLuma, on.OutBeamLuma, 0.002f,
+                $"outside the cone the sea must be untouched ({off.OutBeamLuma:F4} vs {on.OutBeamLuma:F4}) — " +
+                "a lamp that lifts the whole frame is the flood the reveal was built to stop being");
+        }
+
+        /// <summary>The <c>_BeamLitStrength</c> the sea actually ships with — the property block's where the
+        /// push wrote one, else the material's, which is the precedence the GPU applies. Read, never typed:
+        /// the plate must be of the shipped tuning.</summary>
+        float ShippedBeamLitStrength(Stage stage)
+        {
+            var sr = stage.SeaGo.GetComponent<SpriteRenderer>();
+            var block = new MaterialPropertyBlock();
+            sr.GetPropertyBlock(block);
+            Material mat = sr.sharedMaterial;
+            Assert.IsTrue(mat.HasProperty("_BeamLitStrength"), "_BeamLitStrength must be a water-shader property");
+            return block.HasFloat("_BeamLitStrength") ? block.GetFloat("_BeamLitStrength")
+                                                      : mat.GetFloat("_BeamLitStrength");
+        }
+
+        /// <summary>One night plate: publish the sea for this weather at 02:00 spring low, then OVERRIDE the
+        /// hour's moonless tint and moon state with the corner's declared moon, put the lamp in or take it
+        /// out, optionally override the lit-water dial, shoot, and measure.</summary>
+        Color[] ShootNight(Stage stage, Weather w, NightCorner corner, bool lamp, float? beamLit,
+                           string path, out NightRecord rec)
+        {
+            _env.Visibility = corner.Visibility;   // read by the push AND by the tint below
+            Publish(stage, w, Tide.Low, Hour.Night, out _, out _, out _, out _, out float hourOfDay);
+
+            // The tint, recomputed with the corner's moon through the SHIPPED six-argument overload — the
+            // same call DayNightController makes in Play. Every corner therefore differs only by what it
+            // declares about the sky.
+            Color tint = DayNightMath.DayNightTint(hourOfDay, _profile, corner.Visibility, _env.SeaState01,
+                                                   corner.Illumination, corner.Elevation);
+            Shader.SetGlobalColor(Shader.PropertyToID("_DayNightTint"), tint);
+            PublishTheMoon(corner);
+            RepublishTheLamp(stage, lamp);
+
+            var sr = stage.SeaGo.GetComponent<SpriteRenderer>();
+            var block = new MaterialPropertyBlock();
+            sr.GetPropertyBlock(block);
+            float restore = ShippedBeamLitStrength(stage);
+            if (beamLit.HasValue) { block.SetFloat("_BeamLitStrength", beamLit.Value); sr.SetPropertyBlock(block); }
+
+            Color[] ldr = Capture(tint, path);
+
+            if (beamLit.HasValue) { block.SetFloat("_BeamLitStrength", restore); sr.SetPropertyBlock(block); }
+
+            WetStatistics(stage, _env.WaterLevel, ldr, out _, out float meanLumaWet);
+            float outerDepth = Shader.GetGlobalVector(Shader.PropertyToID("_BreakerOuter")).x;
+            SurfContrast(stage, _env.WaterLevel, outerDepth, ldr, out float surfLuma, out float bodyLuma);
+            BeamStatistics(stage, _env.WaterLevel, ldr, out float inBeam, out float outBeam);
+
+            rec = new NightRecord
+            {
+                Corner = corner.Label, Weather = WeatherName[(int)w], Tint = tint,
+                MeanLumaWet = meanLumaWet, SurfLuma = surfLuma, BodyLuma = bodyLuma,
+                SurfContrast = surfLuma - bodyLuma, InBeamLuma = inBeam, OutBeamLuma = outBeam,
+            };
+            return ldr;
+        }
+
+        /// <summary>Publish the corner's moon the way <c>MoonCycle</c> packs it (x = phase, y = signed
+        /// terminator, z = brightness, w = above-horizon presence). ⚠ An UNSET <c>_MoonPhaseState</c> is a
+        /// FULL moon to this shader — its fallback for a scene with no cycle — so both ends are published
+        /// explicitly and neither is left to a default.</summary>
+        static void PublishTheMoon(NightCorner corner)
+        {
+            bool up = corner.Illumination > 0f && corner.Elevation > 0f;
+            Shader.SetGlobalVector(Shader.PropertyToID("_MoonDir"),
+                up ? new Vector4(-0.6f, 0.8f, 0f, 0f) : Vector4.zero);
+            Shader.SetGlobalVector(Shader.PropertyToID("_MoonPhaseState"),
+                up ? new Vector4(0.5f, 0f, corner.Illumination * corner.Elevation, corner.Elevation)
+                   : new Vector4(0.02f, -1f, 0f, 0f));
+        }
+
+        /// <summary>Put the searchlight in the frame or take it out, through the SHIPPED bridge — the same
+        /// publish <see cref="Publish"/> makes, re-run because the corner may want the sea unlit.</summary>
+        void RepublishTheLamp(Stage stage, bool on) => PublishTheLamp(stage, on);
+
+        /// <summary>"Can you see the break line?" as a number: the mean luma of wet pixels INSIDE the
+        /// breaker contour (shallower than its outer depth — where the sea is breaking) against the mean
+        /// outside it. A sea whose surf does not stand clear of the water beside it is one you cannot
+        /// navigate by eye, whatever its average brightness.</summary>
+        void SurfContrast(Stage stage, float level, float outerDepth, Color[] ldr,
+                          out float surfLuma, out float bodyLuma)
+        {
+            double inSum = 0, outSum = 0;
+            int inN = 0, outN = 0;
+            for (int py = 0; py < ShotPx; py += 2)
+            for (int px = 0; px < ShotPx; px += 2)
+            {
+                float depth = level - stage.Terrain.ElevationAt(PixelToWorld(px, py));
+                if (depth <= 0f) continue;
+                Color c = ldr[py * ShotPx + px];
+                double l = 0.299 * c.r + 0.587 * c.g + 0.114 * c.b;
+                if (depth <= outerDepth) { inSum += l; inN++; } else { outSum += l; outN++; }
+            }
+            surfLuma = inN > 0 ? (float)(inSum / inN) : 0f;
+            bodyLuma = outN > 0 ? (float)(outSum / outN) : 0f;
+        }
+
+        /// <summary>The sea INSIDE the searchlight's cone against the sea outside it — the two numbers that
+        /// say whether a lamp lights the water or merely lifts the frame. The cone is the shipped lamp's own
+        /// geometry (range, half-angle) evaluated in world space, not a guess at where the pool looks like
+        /// it is.</summary>
+        void BeamStatistics(Stage stage, float level, Color[] ldr, out float inBeam, out float outBeam)
+        {
+            Vector2 lamp = stage.Aim + Searchlight.Offset;
+            float cosHalf = Mathf.Cos(Searchlight.ConeHalfDeg * Mathf.Deg2Rad);
+            double inSum = 0, outSum = 0;
+            int inN = 0, outN = 0;
+            for (int py = 0; py < ShotPx; py += 2)
+            for (int px = 0; px < ShotPx; px += 2)
+            {
+                Vector2 world = PixelToWorld(px, py);
+                if (level - stage.Terrain.ElevationAt(world) <= 0f) continue;
+                Color c = ldr[py * ShotPx + px];
+                double l = 0.299 * c.r + 0.587 * c.g + 0.114 * c.b;
+                Vector2 d = world - lamp;
+                float dist = d.magnitude;
+                bool lit = dist > 0.05f && dist <= Searchlight.Range
+                        && Vector2.Dot(d / dist, Searchlight.BeamDir.normalized) >= cosHalf;
+                if (lit) { inSum += l; inN++; } else { outSum += l; outN++; }
+            }
+            inBeam = inN > 0 ? (float)(inSum / inN) : 0f;
+            outBeam = outN > 0 ? (float)(outSum / outN) : 0f;
+        }
+
+        static NightRecord Find(List<NightRecord> records, string cornerKey, string weather)
+        {
+            foreach (NightRecord r in records)
+                if (r.File.StartsWith($"night-{cornerKey}-{weather}", StringComparison.Ordinal)) return r;
+            Assert.Fail($"no night plate for {cornerKey} / {weather}");
+            return default;
+        }
+
+        static string NightReport(List<NightRecord> records)
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine("# The night, measured. tint = the day/night MULTIPLY the frame is graded by; " +
+                          "meanLumaWet = how dark the sea photographed; surf/body = mean luma inside vs " +
+                          "outside the breaker contour, and their difference is 'can you see the break " +
+                          "line?'; inBeam/outBeam = the sea inside vs outside the searchlight's cone.");
+            sb.AppendLine("plate                              tint(rgb)              meanWet  surf   body   " +
+                          "contrast  inBeam  outBeam");
+            foreach (NightRecord r in records)
+                sb.AppendLine($"{r.File,-34} {r.Tint.r:F3},{r.Tint.g:F3},{r.Tint.b:F3}   " +
+                              $"{r.MeanLumaWet:F4}  {r.SurfLuma:F4} {r.BodyLuma:F4} {r.SurfContrast,8:F4}  " +
+                              $"{r.InBeamLuma:F4}  {r.OutBeamLuma:F4}   [{r.Corner}]");
+            return sb.ToString();
+        }
+
         [Test]
         public void TheWeatherLadder_IsTheSimsOwnPairing_AndClimbs()
         {
@@ -398,8 +757,13 @@ namespace HiddenHarbours.Tests.EditMode
 
             // The shipped day/night profile: Resources/DayNightProfile.asset when it exists, else the same
             // CreateDefault() the controller falls back to in the game.
+            // ⚠️ The profile is a SHIPPED ASSET as of water-fidelity PR 4, and an asset must not be
+            // destroyed in TearDown ("Destroying assets is not permitted to avoid data loss" — an editor
+            // ERROR, which the test framework turns into a failure on EVERY test in this file). Only the
+            // in-memory fallback is ours to clean up, so remember which one we got.
             _profile = Resources.Load<DayNightProfile>("DayNightProfile");
-            if (_profile == null) _profile = DayNightProfile.CreateDefault();
+            _profileIsOurs = _profile == null;
+            if (_profileIsOurs) _profile = DayNightProfile.CreateDefault();
 
             _lamp = new FakeLamp();
             WaterLightBridge.Register(_lamp);
@@ -537,11 +901,8 @@ namespace HiddenHarbours.Tests.EditMode
             Shader.SetGlobalVector(Shader.PropertyToID("_SunDir"), new Vector4(sunDir.x, sunDir.y, 0f, 0f));
             Shader.SetGlobalFloat(Shader.PropertyToID("_SunElevation"), sunElevation);
 
-            // The searchlight, on at night only, through the shipped bridge.
-            _lamp.State = h == Hour.Night ? LampState(stage) : default;
-            var host = new GameObject("PlateLightBridge") { hideFlags = HideFlags.HideAndDontSave };
-            try { host.AddComponent<WaterLightBridge>().PublishFromRegistry(); }
-            finally { Object.DestroyImmediate(host); }
+            // The searchlight, on at night only, through the shipped bridge AND the singleton beside it.
+            PublishTheLamp(stage, h == Hour.Night);
 
             // The push. The shipped component reads the fake environment and writes every sim-driven
             // uniform, the mood blend and the palette seam onto its own property block — a zero-dt push
@@ -549,6 +910,30 @@ namespace HiddenHarbours.Tests.EditMode
             var surface = stage.SeaGo.GetComponent<WaterSurface>();
             Assert.IsNotNull(surface, "the stage's Sea must carry the shipped WaterSurface");
             PushUniformsSnap.Invoke(surface, null);
+        }
+
+        /// <summary>Put the searchlight in the frame or take it out, the way <c>BoatSpotlight</c> does it:
+        /// the bridge's ARRAY (which the water sums its cone weight from) and the SINGLETON globals beside
+        /// it (which carry the lamp's colour to every other lit path). Publishing only one of the two is how
+        /// a shipped term goes missing from a plate.</summary>
+        void PublishTheLamp(Stage stage, bool on)
+        {
+            WaterLightState state = on ? LampState(stage) : default;
+            _lamp.State = state;
+            var host = new GameObject("PlateLightBridge") { hideFlags = HideFlags.HideAndDontSave };
+            try { host.AddComponent<WaterLightBridge>().PublishFromRegistry(); }
+            finally { Object.DestroyImmediate(host); }
+
+            Shader.SetGlobalVector(Shader.PropertyToID("_BoatLightPos"),
+                new Vector4(state.LampWorld.x, state.LampWorld.y, on ? state.LampHeightMeters : 0f, 0f));
+            Shader.SetGlobalVector(Shader.PropertyToID("_BoatLightDir"),
+                new Vector4(state.BeamDir.x, state.BeamDir.y, 0f, 0f));
+            Shader.SetGlobalColor(Shader.PropertyToID("_BoatLightColor"), on ? state.Color : Color.clear);
+            Shader.SetGlobalVector(Shader.PropertyToID("_BoatLightParams"),
+                new Vector4(Mathf.Max(0f, state.Intensity), Mathf.Max(0.01f, state.Range),
+                            state.CosHalfAngle, state.CosInnerAngle));
+            Shader.SetGlobalVector(Shader.PropertyToID("_BoatLightParams2"),
+                new Vector4(state.EdgeSoftness, state.GateThreshold, state.GateSoftness, state.GateFallback));
         }
 
         WaterLightState LampState(Stage stage) => new WaterLightState
