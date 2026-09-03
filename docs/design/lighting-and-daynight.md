@@ -174,6 +174,57 @@ as `Resources/LampShadowProfile.asset` — `Strength` is THE dial (0 = today's f
 `SpriteShadow` model with a point in place of the sun, not a raycast. The full statement, the sorting law and
 the rejected alternatives are the PR B amendment to ADR 0016.
 
+### 5.3 The sun on the foliage — SHIPPED (owner ruling 2026-09-03)
+
+> *"tree lighting is my concern, this should be noticable in day too with the changing sun, and shadows,
+> not jsut night lighting."*
+
+A shadow told the time of day; the thing casting it did not. The shared lit-decor response
+(`Shaders/Include/SpriteLitDecor.hlsl`, §6's other half) has lit the shrubs and shoreline plants off
+`_SunDir`/`_SunElevation` since #428, but **`Tree.mat` shipped at `_LightResponse 0`** — deliberately, as the
+owner's call to make — so a planted forest was flat at every hour. He made the call. The dial is now **1**
+and the woods read the sun.
+
+**What that buys, measured on the pass-3 sheets.** The catch is per texel against a view-space normal, so
+the crown turns as a volume rather than merely brightening: the lit region's centroid sweeps **15 px of a
+269 px white pine and 30 px of a 331 px red oak** between dawn and dusk, and a crown texel facing screen-left
+and one facing screen-right swap which is brighter between morning and evening. Overall catch peaks at
+**10:00 and 16:00** rather than at noon — the normal sheet at work, since a mid-morning sun points nearly
+along the view axis while a noon sun points up-screen.
+
+**No canopy-special dials, and this was measured rather than assumed.** The sun catch as a fraction of a
+texel's own albedo luminance at 13:00: shore plants 0.35–0.71, shrubs 0.23–0.56 (both families already
+shipped at `_LightResponse 1` and accepted), trees at the same dials **0.54–0.69**. A crown is not a big
+shrub to a per-texel response — it is more texels of the same shrub. Raising the strength for the canopy
+would have made the woods the brightest foliage in the game. `Tree.mat`, `LitShrub.mat` and
+`LitShorePlant.mat` therefore carry **identical** sun dials, pinned equal by `TreeSunLightingTests`.
+
+**⭐ The lit side and the shadow now agree about the weather.** They already agreed about DIRECTION (one
+`_SunDir`; the shadow is its exact negation). They did not agree about STRENGTH: the shadow faded under
+cloud off `_ShadowStrength` while the sun catch was gated on `saturate(elevation)` alone — under the shipped
+profile's heaviest storm, a lit side at **1.00** over a shadow at **0.49**. The catch now spends the same
+published `_ShadowStrength`, which *is* `saturate(elevation)` with the weather folded in
+(`DayNightMath.ShadowStrength`), so it is one number and not two readings of the sim.
+
+> **A clear day is bit-identical.** `weatherDim 0` makes the weather factor exactly `1f`, so
+> `_ShadowStrength` is `saturate(elevation)` to the last bit — the shrubs and shoreline plants that share the
+> include render unchanged on a clear day and gain the same agreement under cloud. Asserted with `==` on raw
+> floats across the whole day, not with a tolerance.
+
+**Two things measured and left alone, for whoever picks them up:**
+
+- **The back rim is inert on a tree.** Mask G averages 0.010–0.029 across the ten species, so
+  `_SunRimStrength` contributes **0–2.3 %** of the catch and 0 % at noon. The grazing dawn/dusk rim the
+  front band was tuned to buy has no baked band to steer. That is an upstream rig question (the rig bakes G
+  against a fixed back light), not a material one — the dial is left at the shared value so a future rig
+  pass that bakes a real rim band works with no material change.
+- **`SpriteShadow._maxLength` (7) is a dead clamp.** It caps the length MULTIPLIER, and the multiplier is
+  `lerp(lengthAtHorizon 5, lengthAtNoon 0.35, elevation)`, which never exceeds 5. No caster in the game
+  reaches it. So a white pine's rake is unclamped: **54.8 m at 07:00, 61.9 m at 06:30, 4.8 m at noon**
+  (drawn height 13.81 world units at PPU 32). Long, but drawn at the same faint `_ShadowStrength` — 0.22 at
+  07:00 — that the low sun implies. Where a stand's rakes overlap the alphas stack and the wood darkens
+  inside; a shared shadow buffer would fix that and is its own PR.
+
 ## 6. Night lights — additive 2D lights + the boat spotlight — SHIPPED (ADR 0016)
 
 The multiply overlay darkens uniformly; it cannot by itself let a lantern/boat-light punch a bright hole in

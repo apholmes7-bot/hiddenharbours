@@ -199,9 +199,12 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 "The midday sun put almost no catch on the sprite. The whole read of this feature is a " +
                 "lit decor field at noon.");
             Assert.AreEqual(0f, night, 1e-6f,
-                "The sun still lit the sprite at 01:00. The catch rides `sunAmount = saturate(elevation)` " +
-                "so it goes to nothing under the horizon — at night the MOON reaches this decor through " +
-                "the day/night tint's own moonlight lift, not as a directional term here.");
+                "The sun still lit the sprite at 01:00. The catch rides an amount whose ELEVATION half " +
+                "is saturate(elevation), so it goes to nothing under the horizon — at night the MOON " +
+                "reaches this decor through the day/night tint's own moonlight lift, not as a " +
+                "directional term here. (The amount also folds the WEATHER off _ShadowStrength; this " +
+                "measures the clear-sky case, where the two readings are bit-identical — see " +
+                "TreeSunLightingTests.)");
 
             // Dusk sits BETWEEN the two rather than snapping: the grazing hour is the look this buys.
             float dusk = SunCatch(DayNightMath.SunElevation(19.5f, sunrise, sunset));
@@ -210,7 +213,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
         }
 
         /// <summary>The sun's key term at one elevation, mask-only (the plant and shrub case), folded with
-        /// the elevation gate exactly as <c>SpriteLitDecorResponse</c> folds it.</summary>
+        /// the elevation gate exactly as <c>SpriteLitDecorResponse</c> folds it under a CLEAR sky — where
+        /// the weather fold (<see cref="SpriteLightMath.SunAmount"/>) is bit-identical to this.</summary>
         static float SunCatch(float elevation)
         {
             Vector2 ground = DayNightMath.SunDirection(

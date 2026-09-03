@@ -84,6 +84,13 @@ float4 _SunDir;
 float  _SunElevation;
 float4 _DayNightTint;
 
+// How firmly a CAST SHADOW reads right now, 0..1 — saturate(sun elevation) folded with the live
+// weather (DayNightMath.ShadowStrength, published by the same controller on the same tick). SpriteShadow
+// already spends it on its alpha; the sun catch below spends it too, so a tree's lit side and the shadow
+// it throws fade together under cloud instead of disagreeing. See SpriteLightSunAmount for why taking
+// this number is not the same as reading the weather twice.
+float  _ShadowStrength;
+
 // The boat spotlight (BoatSpotlight, ADR 0016) — the one LOCAL light this project publishes as globals,
 // so a sprite reads it with no per-light coupling. Params: x intensity, y range, z cos(half angle),
 // w cos(inner angle). Params2: x edge softness, y gate threshold, z gate softness, w gate fallback when
@@ -196,13 +203,17 @@ float3 SpriteLitDecorResponse(float2 uv, float2 rootWS, SpriteLitDecorParams p)
 
     // ---- the sun: PRE grade, so it dims with the world -------------------------------------------
     // Deliberate (ADR 0013): a sunlit sprite MUST go dark when the sun goes down. Gated on elevation so
-    // the catch fades out at dusk rather than switching off. At night the MOON reaches these sprites
-    // through the day/night tint's own moonlight lift (DayNightController), not as a third term here.
+    // the catch fades out at dusk rather than switching off, AND on the live weather, so a lit side
+    // never outlives the shadow under it — both off the one published _ShadowStrength (see
+    // SpriteLightSunAmount; clear weather is bit-identical to the elevation-only reading it replaces).
+    // At night the MOON reaches these sprites through the day/night tint's own moonlight lift
+    // (DayNightController), not as a third term here.
     float sunUp;
     float3 sunL = SpriteLightSunDirection(_SunDir.xy, _SunElevation, sunUp);
+    float sunAmount = SpriteLightSunAmount(_SunDir.xy, sunUp, _ShadowStrength);
     float sunKey = SpriteLightKey(mask, n, sunL, p.keyRelight, p.frontBand, p.depthBias);
     float sunRim = SpriteLightRim(mask, n, sunL, p.rimSteer, p.frontBand, p.depthBias) * rimAllow;
-    float3 sunAdd = p.sunKeyColor * sunUp
+    float3 sunAdd = p.sunKeyColor * sunAmount
                   * (sunKey * p.sunKeyStrength + sunRim * p.sunRimStrength);
 
     // ---- the boat lamp: POST grade compensated, so it SURVIVES the night --------------------------
