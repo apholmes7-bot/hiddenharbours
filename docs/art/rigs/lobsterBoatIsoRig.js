@@ -525,7 +525,7 @@
         }
       }
     }
-    const out=new Array(PW*PH).fill(null);
+    const out=new Array(PW*PH).fill(null); out.dep=dep;   // depth rides along for the cutaway composite (boatCutawayRig.js)
     for(let i=0;i<PW*PH;i++) out[i]=col[i];
     if(doEdge){
       for(let y=0;y<PH;y++) for(let x=0;x<PW;x++){
@@ -547,13 +547,13 @@
         const nx=x+dx, ny=y+dy;
         if(nx>=0&&nx<PW&&ny>=0&&ny<PH&&col[ny*PW+nx]){ touch=true; break; }
       }
-      if(touch) out[i]=KEY;
+      if(touch){ out[i]=KEY; dep[i]=Infinity; }
     }
     return out;
   }
   function _toRGBA(out, PW, PH){
     PW=PW||W; PH=PH||H;
-    const rgba=new Uint8ClampedArray(PW*PH*4);
+    const rgba=new Uint8ClampedArray(PW*PH*4); if(out.dep) rgba.dep=out.dep;
     for(let i=0;i<PW*PH;i++){
       const c=out[i]; if(!c){ rgba[i*4+3]=0; continue; }
       rgba[i*4]=parseInt(c.slice(1,3),16); rgba[i*4+1]=parseInt(c.slice(3,5),16);
@@ -580,6 +580,7 @@
     opts = (typeof opts==='number') ? {elev:opts} : (opts||{});
     let fl = F.concat(doorFaces(opts));
     if(opts.cullLevels && opts.cullLevels.length){ const cut=new Set(opts.cullLevels); fl=fl.filter(f=>!cut.has(f.lv)); }   // pass-3 reference cut; absent → byte-identical
+    if(opts.cutaway && root.BoatCutaway) fl=root.BoatCutaway.filter(fl, root.LobsterBoatIso, Object.assign({}, opts, {dir}));   // the depth-correct section — boatCutawayRig.js owns the rule set; absent → byte-identical
     return _toRGBA(_paint(fl, Object.assign({}, opts, {dir}), true, null, matsFor(opts.paint)));
   }
 

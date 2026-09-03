@@ -784,7 +784,7 @@
         }
       }
     }
-    const out=col.slice();
+    const out=col.slice(); out.dep=dep;   // depth rides along for the cutaway composite (boatCutawayRig.js)
     for(let y=0;y<H;y++) for(let x=0;x<W;x++){
       const i=y*W+x; if(!col[i]) continue;
       for(const [dx,dy] of [[1,0],[0,1]]){
@@ -803,12 +803,12 @@
         const nx=x+dx, ny=y+dy;
         if(nx>=0&&nx<W&&ny>=0&&ny<H&&col[ny*W+nx]){ touch=true; break; }
       }
-      if(touch) out[i]=KEY;
+      if(touch){ out[i]=KEY; dep[i]=Infinity; }
     }
     return out;
   }
   function _toRGBA(out){
-    const rgba=new Uint8ClampedArray(W*H*4);
+    const rgba=new Uint8ClampedArray(W*H*4); if(out.dep) rgba.dep=out.dep;
     for(let i=0;i<W*H;i++){
       const c=out[i]; if(!c){ rgba[i*4+3]=0; continue; }
       rgba[i*4]=parseInt(c.slice(1,3),16); rgba[i*4+1]=parseInt(c.slice(3,5),16);
@@ -822,6 +822,8 @@
     const t = Math.max(0,Math.min(1, opts.doorOpen!=null ? +opts.doorOpen : 0));
     let fl = built.F.concat(doorFaces(V,t));
     if(opts.cullLevels && opts.cullLevels.length){ const cut=new Set(opts.cullLevels); fl=fl.filter(f=>!cut.has(f.lv)); }   // pass-5 reference cut; absent → byte-identical
+    if(opts.cutaway && root.BoatCutaway){ const Lf=loftOf(opts);   // the depth-correct section — boatCutawayRig.js owns the rule set; absent → byte-identical
+      fl=root.BoatCutaway.filter(fl, { HOUSE:houseOf(opts), geometry:()=>geometry(opts), capMat:'cream', KEY, loft:Object.assign({}, Lf, { halfAtZ:(y,z)=>Lf.halfAtZ(y,z)+TH }) }, Object.assign({}, opts, {dir})); }
     return _toRGBA(_paint(fl, Object.assign({}, opts, {dir}), matsFor(V.paint)));
   }
   // ---- the sliding aft door — built per render so opts.doorOpen (0..1) can pose it ----

@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: deck.sport_fisher_skybridge_iso
   SourceSidecar: docs/art/rigs/gameplay/sportFisherSkybridgeIso.gameplay.json
   SourceRig: docs/art/rigs/sportFisherIsoRig2.js
-  DerivedFromRigSha256: 152eb5f3cf1f4f38fba781161e86320cd7e06f0d0cdc98a82b14d6973e3b4061
+  DerivedFromRigSha256: 521eb6c29153117dc15e8b8bc160cc3f00822010d33168ddee9d2c64780bf9a6
   LoaMeters: 27.4
   Areas:
   - Id: cockpit

@@ -1,6 +1,7 @@
 {
   "rig": "sternTrawlerMk2IsoRig.js",
-  "derivedFromRigSha256": "d725ee49ab61dac39c5c24af7e39c3405f8d063a572147012c5e6c49ec2bfc47",
+  "derivedFromRigSha256": "0b6db2293ef96ddb007f4d786512f22bf22c8e715de14cdfce477a044bc96929",
+  "_repin_batch5": "2026-09-02 (cutaway kit batch 5). Plumbing only. Measured in the repo's own ClearScript V8 -- 1259 -> 1259 faces, ZERO differing fields, 10/10 renders byte-identical. Convention: LF/blob, as the previous pin was.",
   "generated": "2026-07-22",
   "frame": {
     "units": "m",

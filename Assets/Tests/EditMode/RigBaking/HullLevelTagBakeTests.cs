@@ -51,9 +51,18 @@ namespace HiddenHarbours.Tests.RigBaking
         /// below her decks — every fixture in this file was vacuous on the flagship until her rig
         /// published a vocabulary, and the join rule below in particular had nothing to join.</para>
         ///
+        /// <para><b>Batch 5, 2026-09-02: the two SPORT FISHERS</b> — and they arrive two passes at
+        /// once, because root's <c>sportFisherIsoRig2.js</c> was still at pass 1 while the interiors
+        /// kit had shipped her pass 2 since #589. The landing brings root level with the kit AND adds
+        /// pass 3, so this is the first family to join these fixtures with a published door in the
+        /// same change that publishes her levels.</para>
+        ///
         /// <para>The eighteen come off <see cref="LobsterVariantFleet"/> rather than being spelled
         /// out, for the reason <c>HullMeshFleet</c> gives where it does the same: eighteen hand-typed
-        /// rows are exactly the number where one mismatch survives review. The six one-hull rigs stay
+        /// rows are exactly the number where one mismatch survives review. The two sport fishers come
+        /// off <see cref="SportFisherFleet"/> for a different reason: their keys are DERIVED
+        /// (<c>SportFisherHull.Key</c> composes <c>sportFisher</c> + the Pascal-cased hull id), so a
+        /// literal here would be a second spelling of a computed name. The six one-hull rigs stay
         /// literal, because there a rename SHOULD fail
         /// <see cref="TheCutawayKitsHulls_AreAllInTheFleetTable"/> loudly rather than quietly
         /// shrinking the set.</para>
@@ -63,6 +72,7 @@ namespace HiddenHarbours.Tests.RigBaking
                     "sideDragger", "sternTrawlerMk2", "tanker",
                     "capeIslander" }
                 .Concat(LobsterVariantFleet.All.Select(v => v.Key))
+                .Concat(SportFisherFleet.All.Select(h => h.Key))
                 .ToArray();
 
         private static IEnumerable<FleetHull> Pass3Hulls =>
@@ -89,10 +99,12 @@ namespace HiddenHarbours.Tests.RigBaking
                 "Every test in this file selects by them, so a rename does not fail here — it makes " +
                 "them all vacuous.");
 
-            Assert.AreEqual(25, Pass3Keys.Length,
-                "Batch 1 is three hulls, batch 2 is twenty-one (three ships + eighteen variants), and " +
-                "pass 4 added the cape islander. A different total means a rig was added to the kit " +
-                "without this file being told, or LobsterVariantFleet stopped enumerating eighteen.");
+            Assert.AreEqual(27, Pass3Keys.Length,
+                "Batch 1 is three hulls, batch 2 is twenty-one (three ships + eighteen variants), " +
+                "pass 4 added the cape islander, and batch 5 added the two sport fishers. A different " +
+                "total means a rig was added to the kit without this file being told, or " +
+                "LobsterVariantFleet stopped enumerating eighteen, or SportFisherFleet stopped " +
+                "enumerating two.");
         }
 
         /// <summary>
@@ -184,11 +196,17 @@ namespace HiddenHarbours.Tests.RigBaking
         /// <b>The door leaf cuts WITH the room.</b> Pass 3 made every hull's aft door a posed leaf
         /// composed by the rig's own <c>render()</c> as <c>F.concat(doorFaces(opts))</c>, and #660
         /// widened extraction to take it — a bare <c>F</c> left 490 px of leaf undrawn on the
-        /// lobster. The leaf is house ENCLOSURE, so a cutaway that took the room and left the door
+        /// lobster. The leaf is room ENCLOSURE, so a cutaway that took the room and left the door
         /// hanging in the air would be worse than no cutaway at all.
         ///
         /// <para>The leaf is identified structurally — the faces the widened list has that
         /// <c>faces()</c> (the static tagged mesh) does not — rather than by counting from the end.</para>
+        ///
+        /// <para><b>Batch 5 widened the law to the one this fixture was always named for.</b> It
+        /// used to assert the literal level <c>house</c>, which held while every door in the fleet
+        /// closed a wheelhouse. The 90′ skybridge closes two rooms on two decks, so the property is
+        /// now that a leaf face names an ENCLOSED level of that hull — which still refuses <c>hull</c>,
+        /// <c>rigging</c> and every open deck, and is what "the room it closes" means.</para>
         /// </summary>
         [Test]
         public void TheDoorLeaf_IsTaggedWithTheRoomItCloses()
@@ -207,19 +225,58 @@ namespace HiddenHarbours.Tests.RigBaking
                                   && !string.IsNullOrEmpty(hull.Extraction.ViewOptions)
                         ? hull.Extraction.ViewOptions
                         : "";
-                    int staticCount = (int)host.EvaluateNumber($"{hull.GlobalName}.faces({opts}).length");
+                    // ⚠️ AND ASK IT WHERE THE RIG PUBLISHES IT. A REGISTRY rig
+                    // (sportFisherIsoRig2.js) puts faces() on each HULL, not on the global — the
+                    // global carries only the paint table and the two hulls. Asking the global threw
+                    // "SportFisherIso2.faces is not a function", which at least fails loudly; the
+                    // scope rule is written once in RigHullExtraction.ScopeOr and this is the same
+                    // rule the extractor itself used to build `data`.
+                    string scope = hull.Extraction != null
+                        ? hull.Extraction.ScopeOr(hull.GlobalName)
+                        : hull.GlobalName;
+
+                    // ⚠️ AND ASK FOR THE WHOLE STATIC BOAT, not just her hull list. On every hull
+                    // before batch 5 the extraction was `F` (+ the leaf) and `faces()` returned that
+                    // same `F`, so the subtraction was the leaf exactly. The sport fisher stows
+                    // OUTRIGGERS: her extraction is `faceList('stowed')` (+ the leaf), her `faces()`
+                    // returns `F` alone, and the difference silently grew by RIGF.stowed's sixteen
+                    // spars — which are correctly tagged `rigging` and are not a door. Measured: the
+                    // fixture saw a 29-face "leaf" on a 13-face door and reported the first rigging
+                    // face as a mis-tagged leaf. `faceList` is on the scope for exactly the rig that
+                    // needs it (RigMeshSymbols.InnerWidenings widened her makeRig return), so ask
+                    // for it where it exists and fall back to faces() where it does not.
+                    bool hasFaceList = host.EvaluateBool($"typeof {scope}.faceList === 'function'");
+                    string staticExpr = hasFaceList
+                        ? $"{scope}.faceList('stowed').length"
+                        : $"{scope}.faces({opts}).length";
+                    int staticCount = (int)host.EvaluateNumber(staticExpr);
                     int leaf = data.Faces.Count - staticCount;
                     Assert.Greater(leaf, 0,
                         $"{hull.Key}: the extracted face list is no longer LONGER than her static " +
                         "faces(), so the posed door leaf is not being taken. That is the #660 " +
                         "regression: her picture draws geometry her mesh has not got.");
 
+                    // ⚠️ "THE ROOM IT CLOSES", not "the house" — the fixture's own name, and until
+                    // batch 5 the two were the same sentence because every door in the fleet closed
+                    // a wheelhouse. The 90′ SKYBRIDGE is the first hull with TWO doors on two
+                    // levels: her salon slider (13 faces, `house`) and her skylounge slider (11
+                    // faces, `bridge`). Asserting the literal "house" would have refused a correct
+                    // hull, and loosening it to "any level" would have thrown away the teeth. The
+                    // load-bearing property is ENCLOSURE: a leaf must cut with a room that HAS a
+                    // room — never with `hull` (it would eat the boat), never with `rigging`, and
+                    // never with an open deck, where it would hang in the air over nothing.
+                    var enclosed = new HashSet<string>(
+                        data.Levels.Where(l => l.Enclosed).Select(l => l.Id), System.StringComparer.Ordinal);
+                    Assert.IsNotEmpty(enclosed, $"{hull.Key}: no enclosed level at all, so no door " +
+                                                "leaf could be tagged with the room it closes.");
+
                     for (int i = staticCount; i < data.Faces.Count; i++)
-                        Assert.AreEqual("house", data.Faces[i].LevelName,
+                        Assert.Contains(data.Faces[i].LevelName, enclosed.ToArray(),
                             $"{hull.Key}: door-leaf face {i - staticCount} of {leaf} is tagged " +
-                            $"'{data.Faces[i].LevelName}', not 'house'. The leaf is house enclosure " +
-                            "and must cut with the room; left on 'hull' it would hang in the air " +
-                            "over an opened wheelhouse.");
+                            $"'{data.Faces[i].LevelName}', which is not one of this hull's ENCLOSED " +
+                            $"levels ({string.Join(", ", enclosed.OrderBy(s => s, System.StringComparer.Ordinal))}). " +
+                            "A leaf must cut with the room it closes; left on 'hull' or on an open " +
+                            "deck it would hang in the air over an opened wheelhouse.");
                 }
             }
         }
@@ -606,6 +663,15 @@ namespace HiddenHarbours.Tests.RigBaking
             // The eighteen variants come off LobsterVariantFleet rather than being spelled out —
             // they are one generator rig, which declares the cuddy's lid once for all eighteen,
             // and so they are one line here.
+            //
+            // ⚠️ BATCH 5 ADDS THE ONE CASE THAT IS NEITHER OF THOSE TWO SHAPES. Both sport fishers'
+            // `below` is roofed by the FOREDECK (150 faces each), not by a main deck — she has no
+            // main deck forward to be roofed by. Her cockpit sole aft of the salon is `main_deck`
+            // and it is OPEN SKY, so it cannot lid anything; the only structure over her below-flat
+            // is the raised foredeck the anchor gear stands on. Measured, not assumed: the rig
+            // declares `ceiling:{ kind:'hard', lid:'foredeck', z:2.45 }` on the 53 and 2.58 on the
+            // 90. Both hulls are the same 150 because one `makeRig` builds both foredecks from the
+            // same station loft.
             CollectionAssert.AreEquivalent(
                 new[]
                 {
@@ -616,6 +682,8 @@ namespace HiddenHarbours.Tests.RigBaking
                     "sideDragger.below -> main_deck (119 faces)",
                     "sternTrawlerMk2.below -> main_deck (142 faces)",
                     "tanker.below -> poop_deck (56 faces)",
+                    "sportFisherConvertible.below -> foredeck (150 faces)",
+                    "sportFisherSkybridge.below -> foredeck (150 faces)",
                 }
                 .Concat(LobsterVariantFleet.All.Select(v => $"{v.Key}.cuddy -> foredeck (15 faces)"))
                 .ToArray(),
@@ -679,12 +747,14 @@ namespace HiddenHarbours.Tests.RigBaking
                 }
             }
 
-            Assert.AreEqual(25, lids,
+            Assert.AreEqual(27, lids,
                 "Batch 1 declares three lids (lobster cuddy, both ships' below), batch 2 declares " +
                 "twenty-one (three ships' below — the TANKER's onto poop_deck, not main_deck — and " +
-                "the eighteen variants' cuddy), and pass 4 adds the CAPE's cuddy onto her " +
-                "whaleback foredeck. A different count means every property above was checked " +
-                "against a different set of rigs than the one this fixture was written for.");
+                "the eighteen variants' cuddy), pass 4 adds the CAPE's cuddy onto her whaleback " +
+                "foredeck, and batch 5 adds ONE PER SPORT FISHER: each hull's `below` flat is lidded " +
+                "by her FOREDECK, not by her main deck — the cockpit sole aft of the house is open " +
+                "sky and cannot roof anything. A different count means every property above was " +
+                "checked against a different set of rigs than the one this fixture was written for.");
         }
 
         /// <summary>
@@ -749,9 +819,11 @@ namespace HiddenHarbours.Tests.RigBaking
                 "ceiling.lid — a level id, or null for the per-level veto — and nothing else may " +
                 "answer for it:\n  " + string.Join("\n  ", notFromTheRig));
 
-            // The same twenty-four relationships the fixtures above check, asserted here as
+            // The same twenty-six relationships the fixtures above check, asserted here as
             // PROVENANCE: they are now the rigs' own words rather than this repo's. The eighteen
-            // variant rows come off LobsterVariantFleet because one generator rig makes them all.
+            // variant rows come off LobsterVariantFleet because one generator rig makes them all,
+            // and the two sport-fisher rows off SportFisherFleet for the same reason — one rig, two
+            // hulls, and her keys are composed rather than spelled.
             string[] expected = new[]
                 {
                     "capeIslander.cuddy -> foredeck",
@@ -763,6 +835,7 @@ namespace HiddenHarbours.Tests.RigBaking
                     "tanker.below -> poop_deck",
                 }
                 .Concat(LobsterVariantFleet.All.Select(v => $"{v.Key}.cuddy -> foredeck"))
+                .Concat(SportFisherFleet.All.Select(h => $"{h.Key}.below -> foredeck"))
                 .ToArray();
 
             CollectionAssert.AreEquivalent(expected, named,

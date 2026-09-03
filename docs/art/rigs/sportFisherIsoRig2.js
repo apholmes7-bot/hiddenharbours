@@ -35,7 +35,25 @@
    doorMounts{transom,tuna}, tubMounts[], navMounts{port,star,stern,mast}.
 
    Exposes globalThis.SportFisherIso2 = { CONVERTIBLE, SKYBRIDGE, HULLS, byId(id), PAINTS, paintRamps,
-     PX, DIRS, order, TEAK,DECKF,GRIP,GLAS,STEEL,IRON,KEY,HULL,BOOT,CREAM,BLUE }. */
+     PX, DIRS, order, TEAK,DECKF,GRIP,GLAS,STEEL,IRON,KEY,HULL,BOOT,CREAM,BLUE }.
+
+   PASS 2 — THE SALON SLIDER AND THE PUBLISHED LOFT (tranche 4 of the interiors program). The salon
+   aft glass is now a REAL two-panel slider: a fixed starboard pane and a glass leaf that
+   opts.doorOpen 0..1 rides to starboard along its track, parking over the fixed pane (0 = closed,
+   fleet default; no swept arc — the collider is the leaf itself, riding the raked aft wall). The
+   sill sits at mezzanine height, so a character walks in level off the mezzanine deck.
+   doorMount(dir,opts) -> threshold + leading edge + clear state. Each hull publishes DOOR + HOUSE
+   (salon + below levels; the open flybridge — and the 90's skylounge — stay the EXTRACTOR's
+   surfaces: decks.bridge is external) + loft so boatInteriorRig.js builds the rooms from these
+   exact numbers. The extractor shim anchors (return block head, export line) are untouched.
+
+   PASS 3 — CUTAWAY DATA (the fleet's batch-2 mechanism, brought to the sport fishers). Every face
+   DECLARES its level in `lv` (an authoring cursor per build section: hull / main_deck / house /
+   bridge / below / foredeck / rigging); geometry() publishes soleZ + ceilingZ (or an explicit open
+   ceiling) per level plus the 53's flybridge PLAN so the section knows it stands over the salon;
+   the below flat's lid is the FOREDECK. render(dir,{cullLevels}) is the reference cut and
+   render(dir,{cutaway}) the depth-correct section (boatCutawayRig.js owns the rule set); rgba.dep
+   rides out of _paint. Outside those fields the mesh and pixels are byte-identical to pass 2. */
 (function (root) {
   const PX = 32, S = 32;
   const DEG = Math.PI / 180;
@@ -259,12 +277,13 @@
         const nx=x+dx, ny=y+dy;
         if(nx>=0&&nx<PW&&ny>=0&&ny<PH&&col[ny*PW+nx]){ touch=true; break; }
       }
-      if(touch) out[i]=KEY;
+      if(touch){ out[i]=KEY; dep[i]=Infinity; }
     }
+    out.dep=dep;   // depth rides along for the cutaway composite (boatCutawayRig.js); outline pixels sit behind everything
     return out;
   }
   function _toRGBA(out, PW, PH){
-    const rgba=new Uint8ClampedArray(PW*PH*4);
+    const rgba=new Uint8ClampedArray(PW*PH*4); if(out.dep) rgba.dep=out.dep;
     for(let i=0;i<PW*PH;i++){
       const c=out[i]; if(!c){ rgba[i*4+3]=0; continue; }
       rgba[i*4]=parseInt(c.slice(1,3),16); rgba[i*4+1]=parseInt(c.slice(3,5),16);
@@ -310,6 +329,12 @@
       return st.wb+(st.ws-st.wb)*Math.pow(frac,fFlare(u)) - TH - spec.capW - 0.04; };
 
     const F=[], RIGF={ stowed:[], out:[] };
+    /* PASS 3 — every face DECLARES its level (the fleet's ASK B). LV is an authoring cursor: each build
+       section states its level before emitting; the stamp rides push, so every emission path carries it. */
+    let LV='hull';
+    const lv=(id)=>{ LV=id; };
+    const tagged=(arr)=>{ arr.push=function(){ for(let i=0;i<arguments.length;i++) arguments[i].lv=LV; return Array.prototype.push.apply(this,arguments); }; return arr; };
+    tagged(F); tagged(RIGF.stowed); tagged(RIGF.out);
     let TARGET=F;
     const face=(v,mat,b,db)=>TARGET.push({v,mat:mat||'hull',b:b||0,db:db||0});
     const pushO=(v,outw,mat,b,db)=>TARGET.push(faceO(v,outw,mat,b,db));
@@ -512,6 +537,7 @@
 
     let VOLS={};
     (function build(){
+      lv('hull');                                   // shell, liner, bottom, covering board, transom, topside fittings
       // ---- hull shell, cockpit liner, bottom ----
       for(const side of [-1,1]){
         for(let i=0;i<NSEG;i++){
@@ -549,6 +575,7 @@
         for(let k=0;k+1<A.length;k++)
           pushO([A[k],A[k+1],B[k+1],B[k]],[side*(1-k/CAPN)*0.62,0,1],CAPMAT,-0.80-0.22*(k/CAPN),0.03);
       }
+      lv('main_deck');                              // the cockpit: sole, planks, hatches, chair, mezzanine, stern fittings
       // ---- cockpit sole + teak planks ----
       const SOLE_U=uOf(spec.cockpitTo);
       const DSEG=18, BORD=spec.capW*0.9;
@@ -589,6 +616,7 @@
 
       // ---- house volumes ----
       spec.volumes.forEach(vs=>{
+        lv(vs.id==='salon' ? 'house' : 'bridge');   // the salon (roof included) is house; skylounge + open coaming are the bridge deck
         const o=Object.assign({}, vs, { clamp: vs.clampHull!==false ? clampHW : null, mat:'cream' });
         const V=volume(o);
         VOLS[vs.id]=V;
@@ -597,6 +625,7 @@
       });
       const SAL=VOLS.salon;
 
+      lv('hull');                                   // the side-deck margin rides the shell — the section bites it with the topsides
       // ---- deck margin: washboards + the strip alongside the house down to the covering board ----
       const MSEG=26, mU0=uOf(spec.foredeckTo+0.10);
       for(const side of [-1,1]) for(let i=0;i<MSEG;i++){
@@ -648,6 +677,7 @@
         }
       });
 
+      lv('foredeck');                               // the below flat's LID — clipped to the flat's footprint by the section; rail, pulpit, nav housings ride it
       // ---- cambered foredeck, edge landing on the covering board ----
       const FSEG=12, FCAP=0.988;
       const fzE=(u)=>sheerZ(u)-spec.drop;
@@ -686,6 +716,7 @@
         const u=spec.navU, st=station(u);
         boxF([s*(st.ws-TH-spec.capW*0.6), fyr(u), fzE(u)+0.09],[0.07,0.10,0.09],'iron',0.1,-0.02);
       }
+      lv('main_deck');
       boxF([0, station(0).y+spec.capW*0.5, sheerZ(0)+0.08],[0.06,0.05,0.08],'iron',0.1,-0.02);
       for(const s of [-1,1]) boxF([s*(station(0).ws-spec.capW), station(0).y+spec.capW*1.4,
         sheerZ(0)+0.05],[0.055,0.10,0.055],'iron',0.15,-0.02);
@@ -700,6 +731,7 @@
         boxF([0,MZ.y1-0.10, z+MZ.seat+MZ.back/2],[hw*0.64,0.07,MZ.back/2],'cream',0.45,-0.02);
       })();
 
+      lv('house');                                  // the aft deck is the salon roof carried aft — it lifts with the salon
       // ---- aft deck at upper level (90: behind the skylounge, over the mezzanine) ----
       if(spec.aftDeck){
         const AD=spec.aftDeck, rr=Math.min(0.62,(AD.yf-AD.ya)*0.34), N=8;
@@ -720,6 +752,7 @@
           tubeF([-rx(ya),ya,AD.z+RH*f],[rx(ya),ya,AD.z+RH*f],f>0.9?0.032:0.026,'steel',0.26); }
       }
 
+      lv('bridge');                                 // helm pod + seats stand on the bridge deck
       // ---- bridge furniture (helm console + seats on the open bridge / in nothing visible when enclosed) ----
       if(spec.helmPod){
         const HP=spec.helmPod;
@@ -731,6 +764,7 @@
         (HP.seats||[]).forEach(st=>boxF([st[0],st[1],HP.z+0.30],[0.28,0.24,0.30],'cream',0.1,-0.02));
       }
 
+      lv('rigging');                                // DEDICATED class — the tower stands on the salon roof; the section drops it with that roof
       // ---- TUNA TOWER (optional — the 90 gets height for free and carries an open coaming instead) ----
       if(spec.tower)(function(){ const TW=spec.tower;
         // pads + near-vertical legs
@@ -778,11 +812,22 @@
         // ladders
         (TW.lads||[]).forEach(Ld=>ladder(Ld[0],Ld[1],Ld[2],Ld[3],Ld[4],Ld[5],Ld[6],TW.r));
       })();
+      lv('bridge');                                 // the coaming ladder climbs the skylounge — bridge deck
       (spec.lads||[]).forEach(Ld=>ladder(Ld[0],Ld[1],Ld[2],Ld[3],Ld[4],Ld[5],Ld[6],0.05));
+      lv('house');                                  // the exterior ladders hang on the salon aft wall
+      // off-centre exterior ladders (pass 2): the routes UP to the helms
+      (spec.extLadders||[]).forEach(Ld=>{
+        const a=[Ld.cx-Ld.hw,Ld.y0,Ld.z0], b=[Ld.cx-Ld.hw,Ld.y1,Ld.z1], c=[Ld.cx+Ld.hw,Ld.y0,Ld.z0], d=[Ld.cx+Ld.hw,Ld.y1,Ld.z1];
+        tubeF(a,b,0.032,'steel',0.2); tubeF(c,d,0.032,'steel',-0.3);
+        for(let k=1;k<Ld.rungs;k++){ const tt=k/Ld.rungs;
+          tubeF([a[0],lerp(a[1],b[1],tt),lerp(a[2],b[2],tt)],[c[0],lerp(c[1],d[1],tt),lerp(c[2],d[2],tt)],0.022,'steel',0.3); }
+      });
+      lv('rigging');                                // whips + radome mast
       (spec.whips||[]).forEach(w=>taperF(w[0],w[1],w[2],w[3],'steel',0.3));
       if(spec.radome){ const RD=spec.radome;
         tubeF([RD.x||0,RD.y,RD.z],[RD.x||0,RD.y,RD.z+RD.h],0.055,'steel',0.1);
         tubeF([RD.x||0,RD.y,RD.z+RD.h],[RD.x||0,RD.y,RD.z+RD.h+0.30],0.26,'cream',0.2); }
+      lv('bridge');                                 // the hardtop stands on the coaming — bridge deck
       // ---- sleek hardtop over the top station ----
       if(spec.hardtop){ const HT=spec.hardtop;
         crownSlab({ya:HT.ya, yf:HT.yf, hx:HT.x, z:HT.z, th:0.10, cam:HT.cam==null?0.10:HT.cam,
@@ -790,6 +835,7 @@
         (HT.posts||[]).forEach(p=>{ for(const s of [-1,1])
           tubeF([s*p[0],p[1],p[2]],[s*p[0]*0.96,p[1],HT.z],0.042,'steel',0.12); });
       }
+      lv('rigging');
       // ---- electronics: open-array radar + satellite radomes ----
       (spec.domes||[]).forEach(D=>{
         const z0=D.z, r=D.r||0.26, h=D.h||0.40;
@@ -807,17 +853,20 @@
       // ---- rocket launcher + covering-board rod holders ----
       (function(){
         const RL=spec.rocket;
+        lv(spec.aftDeck && RL.y < spec.aftDeck.yf ? 'house' : 'bridge');   // 53: on the flybridge coaming rim · 90: on the salon-roof aft deck
         boxF([RL.cx||0,RL.y,RL.z],[RL.x+0.08,0.07,0.07],'steel',-0.6,-0.02);
         for(let k=0;k<RL.n;k++){
           const x=(RL.cx||0)-RL.x + 2*RL.x*(RL.n===1?0.5:k/(RL.n-1));
           tubeF([x,RL.y,RL.z],[x*1.10, RL.y-0.28, RL.z+0.44],0.052,'iron',0.1);
         }
+        lv('main_deck');                            // covering-board rod holders are cockpit fittings
         for(const s of [-1,1]) spec.capRods.forEach(y=>{
           const st=station(uOf(y)), z=st.sheer;
           tubeF([s*(st.ws-TH-spec.capW*0.55), y, z-0.02],[s*(st.ws-TH-spec.capW*0.18), y, z+0.30],0.042,'steel',-1.4);
         });
       })();
 
+      lv('rigging');                                // outriggers stand on the roof — they drop with it
       // ---- outriggers: one cell, two states ----
       (function(){ const OR=spec.rig;
         for(const s of [-1,1]){
@@ -845,9 +894,64 @@
       const k=RIGF[riggers]?riggers:'stowed';
       return _fl[k] || (_fl[k]=F.concat(RIGF[k]));
     }
+    // ---- the salon slider — built per render so opts.doorOpen (0..1) can pose it ----
+    const DS=spec.door||null;
+    let DOOR=null, HOUSE=null, DOOR2=null;
+    if(DS){
+      const wD=DS.x1-DS.x0, mid=+(DS.x0+wD*0.5).toFixed(3);
+      DOOR={ kind:'slide', face:'aft', y:DS.y, x0:DS.x0, x1:mid, z0:DS.z0, z1:DS.z1,
+             travel:+(wD*0.5).toFixed(3), clearAt:0.55, sillZ:spec.interior.soleZ,
+             leaf:{ x0:DS.x0, x1:mid } };
+      if(spec.door2){ const d2=spec.door2, w2=d2.x1-d2.x0;
+        DOOR2={ kind:'slide', face:'aft', y:d2.y, x0:d2.x0, x1:d2.x1, z0:d2.z0, z1:d2.z1,
+                travel:+(w2*0.98).toFixed(3), clearAt:0.60, sillZ:d2.sill,
+                leaf:{ x0:d2.x0, x1:d2.x1 } }; }
+      const IT=spec.interior;
+      HOUSE={ kind:'sport', soleZ:IT.soleZ, door:DOOR, door2:DOOR2||undefined,
+        levels:IT.bridge?['bridge','house','below']:['house','below'],
+        decks:{ house:Object.assign({ soleZ:IT.soleZ }, IT.house, { hxAt:(z)=>IT.house.hx }),
+                bridge:IT.bridge ? Object.assign({}, IT.bridge, { hxAt:(z)=>IT.bridge.hx })
+                                 : { soleZ:IT.bridgeSole, external:true },
+                below:Object.assign({}, IT.below) },
+        block:{ hx:IT.house.hx, y0:IT.house.y0, y1:IT.house.y1, topZ:IT.house.ceilZ },
+        helms:IT.helms||[], ladders:IT.ladders||[],
+        mainDeckExternal:true, excluded:IT.excluded||{} };
+    }
+    function doorFacesFn(t){
+      if(!DS) return [];
+      t=Math.max(0,Math.min(1, t!=null ? +t : 0));
+      const out=[];
+      const one=(ds, V, twoPanel)=>{
+        const q=(x0,x1,z0,z1,off,mat,b,db)=>out.push(faceO(
+          [[x0,V.fA(z0)-off,z0],[x1,V.fA(z0)-off,z0],[x1,V.fA(z1)-off,z1],[x0,V.fA(z1)-off,z1]],
+          [0,-1,0.10], mat, b, db==null?DBP+0.02:db));
+        q(ds.x0,ds.x1,ds.z0,ds.z1,-0.16,'dark',-1.3,-0.02);                         // through the opening: dim room
+        let lx0, lx1;
+        if(twoPanel){ const mid=ds.x0+(ds.x1-ds.x0)*0.5;
+          q(mid,ds.x1,ds.z0,ds.z1,0.02,'iron',-0.20,DBP+0.02);                      // fixed pane frame
+          q(mid+0.05,ds.x1-0.05,ds.z0+0.06,ds.z1-0.06,0.045,'glas',-0.55,DBP+0.03); // fixed pane
+          const sft=t*(mid-ds.x0); lx0=ds.x0+sft; lx1=mid+sft;
+        } else { const sft=t*(ds.x1-ds.x0)*0.98; lx0=ds.x0+sft; lx1=ds.x1+sft; }
+        q(lx0,lx1,ds.z0,ds.z1,0.085,'iron',-0.05,DBP+0.03);                         // leaf frame
+        q(lx0+0.05,lx1-0.05,ds.z0+0.06,ds.z1-0.06,0.11,'glas',-0.45,DBP+0.04);      // leaf glass
+        const zt=ds.z1+0.05, zm=(ds.z0+ds.z1)/2, trkEnd=twoPanel?ds.x1:ds.x1+(ds.x1-ds.x0);
+        out.push.apply(out,tube([ds.x0-0.06,V.fA(zt)-0.10,zt],[trkEnd+0.06,V.fA(zt)-0.10,zt],0.028,'steel',0.25));   // track
+        out.push.apply(out,tube([lx1-0.09,V.fA(zm)-0.13,ds.z0+0.70],[lx1-0.09,V.fA(zm)-0.13,ds.z0+1.12],0.020,'steel',0.35)); // pull
+      };
+      one(spec.door, VOLS.salon, true);
+      for(const f of out) f.lv='house';                                    // the salon leaf is house enclosure — it cuts with the room
+      const n1=out.length;
+      if(spec.door2 && VOLS.sky) one(spec.door2, VOLS.sky, false);
+      for(let i=n1;i<out.length;i++) out[i].lv='bridge';                   // the skylounge slider cuts with the bridge deck
+      return out;
+    }
     function render(dir, opts){
       opts=(typeof opts==='number')?{elev:opts}:(opts||{});
-      return _toRGBA(_paint(faceList(opts.riggers||'stowed'), Object.assign({},opts,{dir}), G, matsFor(opts.paint)), G.W, G.H);
+      const fl=faceList(opts.riggers||'stowed');
+      let faces = DS ? fl.concat(doorFacesFn(opts.doorOpen)) : fl;
+      if(opts.cullLevels && opts.cullLevels.length){ const cut=new Set(opts.cullLevels); faces=faces.filter(f=>!cut.has(f.lv)); }   // pass-3 reference cut; absent → byte-identical
+      if(opts.cutaway && root.BoatCutaway) faces=root.BoatCutaway.filter(faces, RIG, Object.assign({}, opts, {dir}));            // the depth-correct section — boatCutawayRig.js owns the rule set
+      return _toRGBA(_paint(faces, Object.assign({},opts,{dir}), G, matsFor(opts.paint)), G.W, G.H);
     }
     const ROCK=spec.ROCK;
     function rockMotion(i, frames){
@@ -884,9 +988,62 @@
                  : {x:0, y:(spec.tower.ty[0]+spec.tower.ty[1])/2, z:spec.tower.antZ-0.10} }; })();
     const MEZZ={x:0, y:(spec.mezz.y0+spec.mezz.y1)/2+spec.mezz.bench, z:DECK+spec.mezz.z+spec.mezz.seat};
     const CHAIR={x:0, y:spec.chair.y, z:DECK+0.20};
+    // door threshold anchor + open-state report for the enter cue
+    function doorMount(dir, opts){
+      if(!DOOR) return null;
+      const o=norm(opts); o.dir=dir;
+      const B=camBasis(o), t=Math.max(0,Math.min(1, o.doorOpen!=null ? +o.doorOpen : 0));
+      const q=projVert((DOOR.x0+DOOR.x1)/2, DOOR.y, DOOR.sillZ, B, G);
+      const le=projVert(DOOR.leaf.x1+t*DOOR.travel, DOOR.y, DOOR.sillZ, B, G);
+      return { x:q.sx, y:q.sy, lead:{x:le.sx,y:le.sy}, open:t, clear:t>=DOOR.clearAt };
+    }
+    // hull half-width at (y, z) — the flare law included — and sheer height at y (metres in/out)
+    function halfAtZ(y, z){ const u=clamp01(uOf(y)), st=station(u);
+      const fr=clamp01((z-st.kz)/st.dep); return hbOf(u,fr)-TH; }
+    const loft = DS ? { station, skin, bowRake, halfAtZ, sheerZ:(y)=>sheerZ(clamp01(uOf(y))),
+      L, TH, DECK, SOLE_U:uOf(spec.cockpitTo), NSEG, house:HOUSE,
+      shade:{ GAIN, BIAS, LN, BAYER, KEY, EDGE:0.30 }, cell:{ W:G.W, H:G.H, cx:G.cx, cy:G.cy, S } } : null;
 
-    return {
+    /* PASS 3 — the cutaway data (the fleet's ASK A): soleZ + ceilingZ (or an EXPLICIT open-above) per
+       level, from the constants the mesh is built from. The salon roof is tagged house and goes with
+       the room; the below flat's lid is the FOREDECK (the section clips it to the flat's footprint).
+       The 53's flybridge is the extractor's open coaming — a level here so cullAbove lifts it with
+       the salon roof it stands on. */
+    const LEVEL_IDS = { hull:0, main_deck:1, house:2, bridge:3, below:4, rigging:5, foredeck:6 };
+    function geometry(){
+      if(!HOUSE) return null;
+      const D=HOUSE.decks, IT=spec.interior, fdZ=+zdl((D.below.y0+D.below.y1)/2).toFixed(3);
+      const bridge = IT.bridge
+        ? { id:'bridge', deck:'bridge_sole', soleZ:D.bridge.soleZ, ceilingZ:D.bridge.ceilZ,
+            ceiling:{ kind:'hard', lid:null, z:D.bridge.ceilZ, of:'skylounge deckhead (HOUSE.decks.bridge.ceilZ) — the coaming, hardtop and helm pod above are tagged bridge: they stand on this roof' } }
+        : (function(){ const BV=spec.volumes.filter(v=>v.id==='bridge')[0];
+            return { id:'bridge', deck:'bridge_sole', soleZ:D.bridge.soleZ, ceilingZ:null, external:true,
+              y0:+Math.min.apply(null, BV.aft.map(p=>p[1])).toFixed(3), y1:+Math.max.apply(null, BV.nose.map(p=>p[1])).toFixed(3),   // the coaming's plan: it is OVER the salon, not over the flat
+              ceiling:{ kind:'open', lid:null, note:'the open flybridge coaming is sky — the tower over it is rigging' } }; })();
+      return {
+        schema:'hidden-harbours/hull-geometry@1', hull:'sportFisherIsoRig2.'+spec.id, units:'m',
+        frame:'+x stbd, +y bow, +z up; origin amidships, keel bottom, centreline',
+        ids:Object.assign({}, LEVEL_IDS),
+        riggingClass:'rigging — tuna tower, outriggers, whips, radar + domes: tagged by CLASS; the section drops what stood on a lifted roof',
+        levels:[
+          { id:'house', deck:'house_sole', soleZ:D.house.soleZ, ceilingZ:D.house.ceilZ,
+            ceiling:{ kind:'hard', lid:null, z:D.house.ceilZ, of:'salon overhead (HOUSE.decks.house.ceilZ) — the crowned roof is tagged house and goes with the room' } },
+          bridge,
+          { id:'below', deck:'below_sole', soleZ:D.below.soleZ, ceilingZ:D.below.ceilZ,
+            ceiling:{ kind:'hard', lid:'foredeck', z:D.below.ceilZ, of:'foredeck underside (HOUSE.decks.below.ceilZ) — the foredeck lifts over the flat only' } },
+          { id:'main_deck', deck:'cockpit', soleZ:DECK, ceilingZ:null,
+            ceiling:{ kind:'open', lid:null, note:'the cockpit and mezzanine are sky' } },
+          { id:'foredeck', deck:'foredeck', soleZ:fdZ, ceilingZ:null,
+            ceiling:{ kind:'open', lid:null, note:'the foredeck is sky; soleZ is the deck line over the below flat' } },
+        ],
+      };
+    }
+    function faces(){ return F; }                                  // the static TAGGED mesh (+ RIGF per rigger state); the posed leaves are doorFaces(opts)
+    const doorFaces=(opts)=>doorFacesFn(opts && opts.doorOpen);
+
+    const RIG = {
       id:spec.id, label:spec.label, note:spec.note, loa:spec.loa, L, DECK,
+      doorMount, DOOR, HOUSE, loft, geometry, faces, doorFaces, LEVEL_IDS, KEY, capMat:'cream',
       W:G.W, H:G.H, PX, DIRS:8, pivot:{x:G.cx,y:G.cy}, defaultElev:DEFAULT_ELEV,
       order:['N','NE','E','SE','S','SW','W','NW'],
       RIGGERS:['stowed','out'], PAINTS, paintRamps, defaultPaint:'gelcoat',
@@ -902,6 +1059,7 @@
       NAV, navMounts:(d,o)=>({port:proj(NAV.port,d,o), star:proj(NAV.star,d,o),
                               stern:proj(NAV.stern,d,o), mast:proj(NAV.mast,d,o)}),
     };
+    return RIG;
   }
 
   // flare exponent: 1.0 amidships-aft, rising to ~1.7 at the stem
@@ -935,7 +1093,7 @@
         bands:[ { yEnd:-3.30, ease:1.0, zRef:4.05,
                   lo:[[-3.5,4.02],[-1.5,3.76],[1.6,3.52]],
                   hi:[[-3.5,4.34],[1.6,4.40]] } ],
-        aftGlass:[[-0.85,0.75,2.30,3.30]] },
+        aftGlass:[] },
       // open flybridge: a low coaming ring with a venturi screen, sunk sole, its own raked front
       { id:'bridge', z0:4.63, z1:5.42, ns:20, nz:4, nr:0.75, ar:0.60, aw:0.65, inset:0.06, cam:0,
         clampHull:false, open:{rim:0.15, sole:4.86},
@@ -944,6 +1102,25 @@
         hw:  [[-0.3,1.35],[-1.5,1.75],[-3.0,1.85],[-4.95,1.62]] },
     ],
     helmPod:{ x:0, y:-1.85, z:4.86, hx:0.68, seats:[[-0.6,-4.2],[0.6,-4.2]] },
+    // the salon slider (pass 2): sill at mezzanine height — walk in level off the mezz deck
+    door:{ x0:-0.85, x1:0.75, y:-5.26, z0:1.80, z1:3.55 },
+    extLadders:[ { cx:1.30, hw:0.22, y0:-5.52, z0:1.82, y1:-4.98, z1:4.72, rungs:9 } ],
+    interior:{ soleZ:1.78, bridgeSole:4.86,
+      ladders:[ { id:'flybridge_ladder', face:'aft', x:1.30, y:-5.30, z0:1.78, z1:4.86,
+                  connects:['mezzanine','bridge_sole'],
+                  note:'Mezzanine to the flybridge, salon aft wall stbd of the slider — the EXTERIOR route to the upper helm (the interior companionway is the other).' } ],
+      helms:[
+        { id:'helm_bridge', deck:'bridge_sole', pos:[0,-1.85,4.86], reach:[0,-2.50,4.86],
+          note:'flybridge helm pod — the boat is worked from here; reached by the interior companionway (STAIRS.house_to_bridge)' },
+        { id:'helm_tower', deck:'tower_platform', pos:[0,-2.95,7.10], reach:[0,-3.55,7.00],
+          note:'tuna tower control head — reached by the tower ladder (extractor tower_platform._notes.tower_ladder)' } ],
+      house:{ ceilZ:4.42, hx:1.95, y0:-5.18, y1:1.55,
+              portholes:{ ys:[-2.6,-1.5,-0.4,0.7], z0:3.62, z1:4.26 } },
+      below:{ soleZ:0.55, ceilZ:2.45, y0:0.45, y1:4.50, hxCap:1.85 },
+      excluded:{
+        bridge_route_closed:'THE FINDING CLOSED: the interior companionway salon→bridge_sole is modelled (STAIRS.house_to_bridge) — the flybridge is reachable without a game-side teleport',
+        foredeck_route:'no exterior route cockpit→foredeck — the extractor finding stands (no washboards by design)',
+        below_aft:'the below flat’s aft end tucks under the raised salon — full headroom holds only forward of the trunk (authored abstraction, flagged)' } },
     aftDeck:{ ya:-5.62, yf:-4.78, hx:1.94, z:4.66, th:0.12, railH:0 },
     tower:{ feet:[[1.82,-1.35,4.70],[1.82,-4.30,4.68]], top:[[0.85,-2.05],[0.85,-3.85]],
             tx:0.95, ty:[-4.00,-1.85], z:7.00, r:0.048, railH:0.58, consoleW:0.36, antZ:9.60,
@@ -992,7 +1169,7 @@
         bands:[ { yEnd:-6.30, ease:1.3, zRef:6.40,
                   lo:[[-6.6,6.45],[-4,6.10],[-1,5.85],[2.4,5.62]],
                   hi:[[-6.6,6.92],[2.4,6.98]] } ],
-        aftGlass:[[-1.30,1.50,2.95,4.35],[-2.35,-1.55,3.30,4.35]] },
+        aftGlass:[[-2.35,-1.55,3.30,4.35]] },
       // SKYLOUNGE — set well back on the salon roof, steeper rake, its own ribbon, raked aft wall
       { id:'sky', z0:7.22, z1:9.55, ns:22, nz:8, nr:1.15, ar:0.80, aw:0.62, inset:0.14, cam:0.15,
         clampHull:false,
@@ -1002,7 +1179,7 @@
         bands:[ { yEnd:-7.30, ease:1.1, zRef:8.90,
                   lo:[[-7.5,8.80],[-4,8.45],[0.2,8.15]],
                   hi:[[-7.5,9.22],[0.2,9.30]] } ],
-        aftGlass:[[0.35,1.30,7.45,9.10]] },
+        aftGlass:[] },
       // open control coaming ON the skylounge roof — the 53's upper station verbatim; this IS the tower
       { id:'bridge', z0:9.53, z1:10.36, ns:20, nz:4, nr:0.80, ar:0.60, aw:0.65, inset:0.06, cam:0,
         clampHull:false, open:{rim:0.16, sole:9.74},
@@ -1013,6 +1190,33 @@
     // open aft deck at skylounge level over the mezzanine — floats past the tucked-forward wall below
     aftDeck:{ ya:-11.55, yf:-9.45, hx:2.55, z:7.28, th:0.15, railH:0.66 },
     helmPod:{ x:0, y:-3.30, z:9.74, hx:0.70, seats:[[-0.62,-5.9],[0.62,-5.9]] },
+    // the salon slider (pass 2): sill at mezzanine height
+    door:{ x0:-1.30, x1:1.50, y:-10.24, z0:2.90, z1:4.65 },
+    // second-level skylounge slider onto the aft deck (pass 2) — replaces the fixed sky aft pane
+    door2:{ x0:0.35, x1:1.30, y:-9.36, z0:7.45, z1:9.10, sill:7.28 },
+    extLadders:[ { cx:2.05, hw:0.24, y0:-11.30, z0:2.90, y1:-10.85, z1:7.24, rungs:13 } ],
+    interior:{ soleZ:2.83, bridgeSole:9.74,
+      // the FULL DECK dedicated to the helm: the skylounge, baked as a real interior level
+      bridge:{ deckId:'bridge_sole', soleZ:7.30, ceilZ:9.35, hx:2.28, y0:-9.50,
+               front:{ yBot:0.05, yTop:-0.50 },
+               frontGlass:{ z0:8.20, z1:9.18, panes:[[-1.45,-0.10],[0.10,1.45]] },
+               sideGlass:{ z0:8.45, z1:9.15, runs:[[-7.2,-5.8],[-5.4,-4.0],[-3.6,-2.2]] },
+               aftGlass:{ z0:7.62, z1:8.88, panes:[[-2.05,-0.45]] } },
+      ladders:[ { id:'aft_deck_ladder', face:'aft', x:2.05, y:-11.00, z0:2.83, z1:7.28,
+                  connects:['mezzanine','aft_deck'],
+                  note:'Mezzanine to the skylounge aft deck, starboard quarter — first leg of the exterior route up.' },
+                { id:'bridge_ladder', face:'aft', x:0, y:-9.40, z0:7.32, z1:9.55,
+                  connects:['aft_deck','bridge_sole'],
+                  note:'Aft deck to the open coaming — the rig’s own raked ladder, declared as a route (second leg to the upper helm).' } ],
+      helms:[
+        { id:'helm_bridge', deck:'bridge_sole', pos:[0,-3.30,9.74], reach:[0,-3.95,9.74],
+          note:'open control coaming helm pod — reached by the aft-deck ladder (extractor bridge_sole._notes.bridge_ladder)' } ],
+      house:{ ceilZ:7.00, hx:3.02, y0:-10.05, y1:1.20,
+              portholes:{ ys:[-5.4,-4.0,-2.6,-1.2,0.2], z0:5.72, z1:6.86 } },
+      below:{ soleZ:0.60, ceilZ:2.58, y0:0.20, y1:6.80, hxCap:2.60 },
+      excluded:{
+        foredeck_route:'no exterior route cockpit→foredeck — the extractor finding stands',
+        below_aft:'the below flat’s aft end tucks under the raised salon — full headroom holds only forward of the trunk (authored abstraction, flagged)' } },
     lads:[[0.45,-9.70,7.32, 0.40,-9.08,9.55, 6]],
     whips:[[[1.02,-7.95,11.18],[1.42,-9.15,14.20],0.038,0.010],
            [[-1.02,-7.95,11.18],[-1.42,-9.15,14.20],0.038,0.010]],

@@ -312,6 +312,64 @@ Most are M2/M3 fleet content — importing the source is **not** a licence to wi
 
 ---
 
+## The boat cutaway kit — four drops, and which copy of a hull rig is which
+
+The cutaway kit is the SECTION composite: per-face level tags (`lv`), a `geometry()` publishing each
+walkable level's sole, ceiling and **lid**, and a guarded `render(dir, {cutaway})`. Four drops so far,
+each landed verbatim in its own folder and then merged into root canon:
+
+| drop | folder | hulls |
+|---|---|---|
+| batch 1 (2026-08-26) | `boat-cutaway-kit/` | lobster · stern trawler · coastal packet |
+| batch 2 (2026-08-26) | `boat-cutaway-kit-2/` | side dragger · trawler Mk II · tanker · lobster variants ×18 |
+| pass 4 (2026-08-28) | (folded into the interiors intake) | cape islander |
+| **batch 5 (2026-09-02)** | **`boat-cutaway-kit-5/`** | **all nine, complete — plus `boatCutawayRig.js`, the section-composite reference** |
+
+Batch 5's own content is small: seven hulls take a three-line `rgba.dep` plumbing change and a guarded
+`cutaway` hook and render **byte-identical** without `opts.cutaway`; the **side dragger** gains a plated
+boat-deck bulwark (+3 faces — the pipe rail let sea through on S/SW/E/NE); the **sport fishers** jump two
+passes at once, because root was still at pass 1 while the interiors kit had shipped their pass 2 since
+#589.
+
+### ⚠️ THREE COPIES OF EVERY HULL RIG EXIST, AND THEY ARE NOT THE SAME FILE
+
+This is the one thing to know before touching any of them.
+
+| copy | who reads it | when it moves |
+|---|---|---|
+| `docs/art/rigs/<stem>.js` — **ROOT** | `RigCatalog.Fleet` → the hull MESH bake, the exterior sheets, and `docs/art/rigs/gameplay/*.gameplay.json` | every drop; it is the live canon |
+| `boat-interiors-kit/hull-rigs/<stem>.js` | `BoatInteriorDefBuilder` · `BoatInteriorRigHost` · `BoatInteriorSheetBaker` → the interior extraction | **only when the interior extraction must change** — every `hullRigSha256` in the kit's 27 sidecars resolves against the copy shipped BESIDE it (`EveryStampedHullPinResolvesToTheBundledRigItNames`) |
+| `boat-cutaway-kit*/hull-rigs/<stem>.js` | nothing at runtime; `cutaway-intake.mjs` reads it as the drop-as-it-arrived baseline | never — it is the receipt |
+
+`TheRepositorysCopyOfAHullRigIsNotWhatTheSidecarsPin` exists to hold the first two APART, and says so
+in its own message: *"If this ever starts passing, the repository has adopted a bundled rig and the
+builder's two hash arms have become the same question. Update it deliberately, never by accident."*
+Batch 2 moved both together because that batch was cut from exactly the loft the interiors kit had
+pinned. **Batch 5 was not**: #678 (`ceiling.lid`) and the lobster paint merge had already moved root
+on, so the two copies now sit 61–176 lines apart per hull, and batch 5 lands at ROOT only. Adopting
+the drop's `boatInteriorRig.js` v18 (raked-front side walls + sole) into `boat-interiors-kit/` is a
+separate change with its own blast radius — 27 `derivedFromRigSha256` re-stamps and a full interior
+re-bake — and belongs to the mesh-interiors lane, not to a rig intake. The v18 file is landed in
+`boat-cutaway-kit-5/` and waiting.
+
+### The pins a root-rig drop moves, and the flavour trap
+
+Every `docs/art/rigs/gameplay/*.gameplay.json` pins the ROOT rig it was cut from. **The digest
+FLAVOUR is per file and must never be crossed** — under `core.autocrlf=true` a `.js` has two honest
+sha256s, the LF/blob one and the working-tree CRLF one, and the wrong choice goes green locally and
+red on the next pull. Today: cape · packet · lobster · stern trawler pin **CRLF**; dragger · variants
+· sport fisher · Mk II · tanker pin **LF**. Derive each pin's flavour from the value it already holds,
+never from a rule.
+
+### Batch 5's two open taste calls (the owner's, not ours)
+
+The kit ships `BoatCutaway.DEFAULTS` at their current values and exposes both as toggles in
+`Boat Visual QA.dc.html`: the **sill** height (0.60 m — how tall the knee-wall stub of the dollhouse
+cut stands) and whether **rigging** drops with the roof it stood on (`'cull'`) or stays as deck gear
+(`'keep'`). Neither is settled; change `DEFAULTS` when the call is made.
+
+---
+
 ## The fishing rig kit (imported 2026-07-22)
 
 One drop of every rig behind the fishing loop: the character that casts, the rod and its runtime FX,

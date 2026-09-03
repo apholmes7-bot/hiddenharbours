@@ -1,6 +1,7 @@
 {
   "rig": "coastalPacketIsoRig.js",
-  "derivedFromRigSha256": "e1d6f43f4746375d19c4fa0015c7d327c787b6bf3da72b7147fd93402054c1ba",
+  "derivedFromRigSha256": "285f756c863cbbbf0bcaf627561fa440ba683e078f0ba26362229ac968308e99",
+  "_repin_batch5": "2026-09-02 (cutaway kit batch 5). Plumbing only: rgba.dep out of render(), dep[i]=Infinity on the keyline touch, and one guarded cutaway hook. Measured in the repo's own ClearScript V8 -- 1299 -> 1299 faces, ZERO differing fields, 10/10 renders byte-identical. WARNING: this pin is the WORKING-TREE (CRLF) hash; the LF/blob hash is 0bcb68c4e26fbdc4... Do not cross them.",
   "generated": "2026-07-22",
   "frame": {
     "units": "m",
