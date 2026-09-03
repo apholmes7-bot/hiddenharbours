@@ -1343,8 +1343,10 @@ namespace HiddenHarbours.Player
         }
 
         /// <summary>How far outboard of the rail she lands — one body's width, so she is in the water
-        /// beside the hull rather than inside her own boat's footprint.</summary>
-        private const float OverTheSideBodyWidthMetres = 0.7f;
+        /// beside the hull rather than inside her own boat's footprint. The owner's number, like the two
+        /// washboard tunables beside it: a distance you can only settle by watching somebody go in.</summary>
+        private float OverTheSideBodyWidthMetres =>
+            GameServices.Config != null ? GameServices.Config.OverTheSideBodyWidthMetres : 0.7f;
 
         /// <summary>The gunwale band's width for a hull with no authored washboards — the owner's number.</summary>
         private float WashboardWidthMetres =>

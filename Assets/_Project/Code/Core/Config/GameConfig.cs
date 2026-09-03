@@ -193,6 +193,11 @@ namespace HiddenHarbours.Core
                  "gunwale over open water: it should feel like somewhere you pick your way along, not " +
                  "somewhere you stroll.")]
         [Range(0.05f, 1f)] public float WashboardSlowFactor = 0.5f;
+        [Tooltip("How far outboard of the rail she lands when she goes over the side, in metres — one " +
+                 "body's width, so she is in the water BESIDE the hull rather than inside her own boat's " +
+                 "footprint. Too small and she surfaces on top of the boat she just left; too large and " +
+                 "she is flung clear of a hull she is supposed to be able to climb straight back onto.")]
+        [Min(0.1f)] public float OverTheSideBodyWidthMetres = 0.7f;
 
         [Header("Seakeeping forces (ADR 0018 B3 — the sea pushes the boat)")]
         [Tooltip("World-wide seakeeping FORCE policy (the sea fighting back): the master switch + bite " +
