@@ -38,6 +38,8 @@ MonoBehaviour:
   SwimLimit: 2
   WadeSlowFactor: 0.6
   SwimSlowFactor: 0.25
+  BoardReachMetres: 3.5
+  StepAshoreReachMetres: 1.5
   Seakeeping:
     Enabled: 1
     Strength: 220
