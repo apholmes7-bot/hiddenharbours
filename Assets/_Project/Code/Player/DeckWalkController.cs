@@ -296,6 +296,49 @@ namespace HiddenHarbours.Player
         }
 
         /// <summary>
+        /// ⭐ Put her at a <b>DECK-FRAME</b> point, <b>unclamped</b> — the washboard verb's placement.
+        ///
+        /// <para><b>⚠ Why it must not clamp.</b> <see cref="SnapTo"/> pulls its argument onto the
+        /// walkable areas, and a washboard is deliberately NOT one of them (<c>Accepts</c> takes
+        /// <c>Deck</c> only unless a caller asks for side decks). Put the rail through that clamp and she
+        /// is dragged straight back inboard — the verb would look like it fired and do nothing. The
+        /// caller has already chosen a point on the rail via <see cref="TryWashboardStand"/>; this
+        /// places her there and believes it.</para>
+        /// </summary>
+        /// <summary>
+        /// ⭐ Is the walker out on the RAIL? Owned by <c>ControlSwitcher</c>'s washboard verb — this
+        /// component does not decide it, it obeys it: while set, the walk clamps to the hull's box
+        /// instead of her deck polygons and moves at <see cref="WashboardSlowFactor"/>.
+        /// </summary>
+        public bool OnWashboard
+        {
+            get => _onWashboard;
+            set => _onWashboard = value;
+        }
+        private bool _onWashboard;
+
+        /// <summary>Move-speed multiplier out on the rail (<c>GameConfig.WashboardSlowFactor</c>, set by
+        /// the switcher). You are on the gunwale over open water; it is not somewhere you stroll.</summary>
+        public float WashboardSlowFactor
+        {
+            get => _washboardSlowFactor;
+            set => _washboardSlowFactor = Mathf.Clamp(value, 0.05f, 1f);
+        }
+        private float _washboardSlowFactor = 0.5f;
+
+        public void SnapToDeckLocal(Vector2 deckLocal)
+        {
+            if (_boatRoot == null) return;
+            float heading = DrawnHeadingDegrees();
+            float elevation = BakeElevationDegrees();
+            _deckLocal = deckLocal;
+            _deckArea = -1;                                    // off the walkable areas: no hint to keep
+            transform.position = _boatRoot.position
+                               + (Vector3)DeckAreaMath.DeckToWorld(deckLocal, _deckHeight,
+                                                                   heading, elevation);
+        }
+
+        /// <summary>
         /// <b>Where a boat-relative WORLD-axis spot actually LANDS on this hull</b> — the world position
         /// <see cref="SnapTo"/> would put the player at, worked out without moving anybody and without
         /// touching a field. The boarding move's whole geometry comes from here: the RAIL is this query
@@ -397,6 +440,85 @@ namespace HiddenHarbours.Player
             return true;
         }
 
+        /// <summary>
+        /// ⭐ <b>Where the washboard is, and which way is off her</b> — the geometry behind the owner's
+        /// two-press exit (2026-09-02).
+        ///
+        /// <para><b>⚠ Only two hull families actually HAVE washboards.</b> The cape islander and the
+        /// lobster boats author <see cref="DeckAreaKind.Washboard"/> areas; the starter dory, the punt
+        /// and the skiffs author none, and that is data rather than an omission — an open boat has no
+        /// side deck to climb onto, you step over her gunwale from where you sit. So this answers in
+        /// two ways and says which: <b>authored</b> washboard areas where they exist, and otherwise a
+        /// <b>derived gunwale band</b> <paramref name="derivedBandWidth"/> wide just inside her walkable
+        /// edge. Both are somewhere to stand at the rail; only the first is a place the rig drew.</para>
+        ///
+        /// <para><b>Outboard is measured off her walkable BOX, not off the washboard's own polygon.</b>
+        /// A washboard strip is narrow and has two long edges — the rail and the inboard lip — so the
+        /// nearest EDGE to somebody standing on it is a coin toss between "the sea" and "the cockpit",
+        /// and half the time the predicate would send her the wrong way. Away from the hull's centreline
+        /// is unambiguous, and it is also what a person means by outboard.</para>
+        /// </summary>
+        /// <param name="fromDeckPoint">Where she stands now, deck frame.</param>
+        /// <param name="derivedBandWidth">Gunwale-band width for a hull with no authored washboards
+        /// (<c>GameConfig.WashboardWidthMetres</c>). Clamped to half the walkable half-width, or on a
+        /// narrow hull the "band" would be her whole deck.</param>
+        /// <param name="standDeck">Deck-frame point out on the rail to stand at.</param>
+        /// <param name="outwardNormal">Deck-frame unit vector pointing off her, there.</param>
+        /// <param name="authored">True when this hull's rig drew real washboard areas.</param>
+        public bool TryWashboardStand(Transform boatRoot, Vector2 fromDeckPoint, float derivedBandWidth,
+                                      out Vector2 standDeck, out Vector2 outwardNormal, out bool authored)
+        {
+            standDeck = fromDeckPoint;
+            outwardNormal = Vector2.zero;
+            authored = false;
+            if (boatRoot == null) return false;
+            if (!TryDeckBox(boatRoot, out Vector2 centre, out Vector2 half)) return false;
+            if (half.sqrMagnitude <= 1e-6f) return false;          // no walkable area ⇒ no rail
+
+            BoatDeckDef deck = DeckOf(boatRoot);
+            if (deck != null && deck.HasWashboards())
+            {
+                authored = true;
+                if (!TryNearestWashboardPoint(deck, fromDeckPoint, out standDeck)) return false;
+            }
+            else
+            {
+                // The derived band: out to her edge, then back in by half the band's width so she is
+                // standing ON the gunwale rather than balanced on its outer lip.
+                float band = Mathf.Clamp(derivedBandWidth, 0.01f,
+                                         Mathf.Max(0.02f, Mathf.Min(half.x, half.y) * 0.5f));
+                Vector2 d = fromDeckPoint - centre;
+                Vector2 onEdge = centre + new Vector2(
+                    Mathf.Clamp(d.x, -half.x, half.x), Mathf.Clamp(d.y, -half.y, half.y));
+                Vector2 n = OverTheSideMath.OutwardNormalOnBox(centre, half, onEdge);
+                // Push out to the boundary along the normal first (a point amidships clamps to itself),
+                // then back in by half a band.
+                float outToEdge = Mathf.Abs(n.x) > Mathf.Abs(n.y)
+                    ? half.x - Mathf.Abs(d.x) : half.y - Mathf.Abs(d.y);
+                standDeck = onEdge + n * Mathf.Max(0f, outToEdge) - n * (band * 0.5f);
+            }
+
+            outwardNormal = OverTheSideMath.OutwardNormalOnBox(centre, half, standDeck);
+            return outwardNormal.sqrMagnitude > 1e-6f;
+        }
+
+        /// <summary>The nearest point inside any authored <see cref="DeckAreaKind.Washboard"/> area.</summary>
+        private static bool TryNearestWashboardPoint(BoatDeckDef deck, Vector2 deckPoint, out Vector2 onIt)
+        {
+            onIt = deckPoint;
+            float best = float.MaxValue;
+            bool found = false;
+            for (int i = 0; i < deck.Areas.Length; i++)
+            {
+                DeckArea a = deck.Areas[i];
+                if (a == null || a.Kind != DeckAreaKind.Washboard || !a.IsUsable()) continue;
+                if (DeckAreaMath.Contains(a.Outline, deckPoint)) { onIt = deckPoint; return true; }
+                Vector2 p = DeckAreaMath.ClosestPointOnOutline(a.Outline, deckPoint, out float sqr);
+                if (sqr < best) { best = sqr; onIt = p; found = true; }
+            }
+            return found;
+        }
+
         /// <summary>The drawn heading of a hull this walk may not be bound to — the same read
         /// <see cref="DrawnHeadingDegrees"/> makes, without the cached presenter.</summary>
         private static float DrawnHeadingDegreesOf(Transform boatRoot)
@@ -469,7 +591,24 @@ namespace HiddenHarbours.Player
 
             Vector2 relative, stanceCenter, stanceHalfExtents;
 
-            if (deck != null && deck.HasWalkableDeck())
+            // ⭐ OUT ON THE RAIL, the walkable shape is her BOX, not her polygons (2026-09-02).
+            //
+            // ⚠ Without this the washboard verb looks like it fires and does nothing. The polygon clamp
+            // takes Deck areas only — a washboard is deliberately not one — so the switcher would place
+            // her on the gunwale and the very next tick would drag her straight back inboard. Her
+            // walkable box is the honest envelope out there: it reaches the rail (which the polygons by
+            // definition stop short of) and it still cannot put her in the sea.
+            if (_onWashboard && TryDeckBox(_boatRoot, out Vector2 railCentre, out Vector2 railHalf))
+            {
+                relative = (Vector2)transform.position - boatPos;
+                relative = StepOnDeck(relative, input, _moveSpeed * WashboardSlowFactor, Time.deltaTime,
+                                      drawnHeading, railCentre, railHalf);
+                _deckLocal = WorldToDeckFrame(relative, drawnHeading);
+                _deckArea = -1;
+                stanceCenter = railCentre;
+                stanceHalfExtents = railHalf;
+            }
+            else if (deck != null && deck.HasWalkableDeck())
             {
                 // THE MEASURED PATH: step and clamp in the hull's own metres, then project the one
                 // resulting point onto the drawn hull. The polygon never moves, so a heading change
