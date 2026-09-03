@@ -186,6 +186,36 @@ namespace HiddenHarbours.Art
         }
 
         /// <summary>
+        /// THE WEATHER, taken from the ONE global that already carries it — the headless twin of the
+        /// shader's <c>SpriteLightSunAmount</c>.
+        ///
+        /// <para>The <paramref name="sunAmount"/> that <see cref="SunDirection"/> hands back is
+        /// <c>saturate(elevation)</c>: it takes the catch out at dusk, and that is all it knows. The
+        /// CAST SHADOW knows more. <see cref="DayNightController"/> publishes <c>_ShadowStrength</c> =
+        /// <see cref="DayNightMath.ShadowStrength"/> = <c>saturate(elevation) × (1 − weatherDim ×
+        /// overcastFadesShadow)</c> — the SAME <c>saturate(elevation)</c> with the live weather folded
+        /// in. So the published global already IS "how much sun there is, cloud included", and the sun
+        /// catch reads the weather by TAKING that number rather than deriving one of its own: one
+        /// publisher, one value, and no way for a lit side to disagree with the shadow beneath it.</para>
+        ///
+        /// <para>🔴 <b>Clear weather is BIT-identical</b> to the elevation-only reading this replaces:
+        /// <c>weatherDim 0</c> makes the weather factor exactly <c>1f</c>, and <c>x * 1f</c> is the
+        /// IEEE 754 multiplicative identity. Off the cycle nothing has published either global and
+        /// <c>_ShadowStrength</c> reads 0, which would kill the catch the fallback sun exists to give —
+        /// so an unset direction returns <paramref name="sunAmount"/> untouched, testing the SAME
+        /// global <see cref="SunDirection"/> tests so the pair can never disagree about whether the
+        /// cycle is running.</para>
+        /// </summary>
+        /// <param name="sunDirGround">What <c>_SunDir.xy</c> carries — zero when nothing has published.</param>
+        /// <param name="sunAmount">The elevation-only amount out of <see cref="SunDirection"/>.</param>
+        /// <param name="shadowStrength">What <c>_ShadowStrength</c> carries this tick.</param>
+        public static float SunAmount(Vector2 sunDirGround, float sunAmount, float shadowStrength)
+        {
+            bool unset = sunDirGround.sqrMagnitude < 1e-6f;
+            return unset ? sunAmount : Mathf.Clamp01(shadowStrength);
+        }
+
+        /// <summary>
         /// The same transform for a POINT light: the view-space direction from a sprite standing at
         /// <paramref name="spriteWorldXY"/> toward a lamp at <paramref name="lampWorldXY"/>, given the
         /// lamp's elevation above the horizon as seen from the sprite. Used for the boat spotlight —

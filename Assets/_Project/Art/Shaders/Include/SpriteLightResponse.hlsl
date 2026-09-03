@@ -146,6 +146,35 @@ float3 SpriteLightSunDirection(float2 sunDirGround, float sunElevation, out floa
     return SpriteLightViewDirection(g, e);
 }
 
+// THE WEATHER, taken from the ONE global that already carries it — never computed a second time.
+//
+// `sunAmount` above is saturate(elevation): it takes the catch out at dusk, and that is ALL it knows.
+// The CAST SHADOW knows more. DayNightController publishes _ShadowStrength =
+// DayNightMath.ShadowStrength(hour, ...) = saturate(elevation) * (1 - weatherDim * overcastFadesShadow)
+// — the SAME saturate(elevation) with the live weather folded in, computed once per tick where the real
+// sim is. So the published global IS "sunAmount with the cloud in it", and the sun catch reads the
+// weather by TAKING that number rather than by deriving one of its own: one publisher, one value, and
+// no way for a lit side to disagree with the shadow beneath it about how overcast it is.
+//
+// ⚠️ MEASURED on the shipped profile (WeatherDimMax 0.6, OvercastFadesShadow 0.85): under a storm the
+// shadow fades to 0.49 while an elevation-only catch holds at 1.00 — a full lit side under a
+// half-faded shadow. That mismatch is what this replaces.
+//
+// 🔴 CLEAR WEATHER IS BIT-IDENTICAL, not merely close. weatherDim 0 makes the weather factor exactly
+// 1.0f and x * 1.0f is the IEEE 754 multiplicative identity, so _ShadowStrength IS saturate(elevation)
+// to the last bit. Every family sharing this include renders unchanged on a clear day and gains the
+// same agreement under cloud. Twinned by SpriteLightMath.SunAmount.
+//
+// Off the cycle nothing has published either global and _ShadowStrength reads 0 — which would kill the
+// catch that the fallback sun exists to give in edit mode and in bare art scenes. The `unset` test is
+// the SAME test on the SAME global that SpriteLightSunDirection makes, so the pair can never disagree
+// about whether the cycle is running.
+float SpriteLightSunAmount(float2 sunDirGround, float sunAmount, float shadowStrength)
+{
+    bool unset = dot(sunDirGround, sunDirGround) < 1e-6;
+    return unset ? sunAmount : saturate(shadowStrength);
+}
+
 // The KEY term for a live light: the RIG'S OWN Lambert function, evaluated for a different direction.
 // Pass SPRITE_LIGHT_RIG_KEY and this reproduces the baked mask R.
 float SpriteLightKeyTerm(float3 n, float3 l)
