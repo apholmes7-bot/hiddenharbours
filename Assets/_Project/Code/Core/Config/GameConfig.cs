@@ -169,6 +169,20 @@ namespace HiddenHarbours.Core
                  "slow + exposed.")]
         [Range(0f, 1f)] public float SwimSlowFactor = 0.25f;
 
+        [Header("Getting aboard and ashore")]
+        [Tooltip("How close you must be to a hull to climb aboard, in metres — measured to her OUTLINE, " +
+                 "not to her root, so a long hull is boardable from her own stern. Ships at the 3.5 m " +
+                 "the switcher carried as a serialized field until 2026-09-03.")]
+        [Min(0.1f)] public float BoardReachMetres = 3.5f;
+        [Tooltip("How far a registered standing surface (a wharf deck) may be from the hull's WALKABLE " +
+                 "deck edge and still be somewhere you can step ashore onto, in metres. ⚠ It must span " +
+                 "more than the fendering gap: a hull's walkable strip is set in from her rail, so the " +
+                 "reach covers (hull half-beam − walkable half-beam) + the fender gap. On the starter " +
+                 "dory alongside St Peters that is 0.625 + 0.40 = 1.03 m, so 1.5 leaves margin for a " +
+                 "boat lying a little off her lines — while staying small enough that it never invents " +
+                 "a step across open water to a pier you are not actually alongside.")]
+        [Min(0.1f)] public float StepAshoreReachMetres = 1.5f;
+
         [Header("Seakeeping forces (ADR 0018 B3 — the sea pushes the boat)")]
         [Tooltip("World-wide seakeeping FORCE policy (the sea fighting back): the master switch + bite " +
                  "strength, how the bite grows with sea state, how exposure falls off with depth (open water " +
