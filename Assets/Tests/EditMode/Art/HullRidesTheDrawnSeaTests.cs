@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
 using HiddenHarbours.Core;
@@ -24,9 +25,53 @@ namespace HiddenHarbours.Tests.Art.EditMode
     /// </summary>
     public class HullRidesTheDrawnSeaTests
     {
-        /// <summary>The owner's shipped water materials: _OceanSwellScale 0.07 over the 0.025
-        /// reference. Not a hypothetical — this is what every preset carries.</summary>
-        private const float OwnerFreqScale = 0.07f / 0.025f;   // 2.8
+        /// <summary>The shader's own normalisation reference (<c>WAVE_LEGACY_SCALE_REF</c>): the
+        /// <c>_OceanSwellScale</c> at which the drawn sea runs the field's TRUE wavelengths.</summary>
+        private const float LegacyScaleRef = 0.025f;
+
+        /// <summary>Every water material the game ships, hero first. Read, never assumed — see
+        /// <see cref="ShippedFreqScale"/>.</summary>
+        private static readonly string[] WaterMaterials =
+        {
+            "Assets/_Project/Art/Materials/Water.mat",
+            "Assets/_Project/Art/Materials/WaterPresets/Water_DeepBlue.mat",
+            "Assets/_Project/Art/Materials/WaterPresets/Water_FoggySmother.mat",
+            "Assets/_Project/Art/Materials/WaterPresets/Water_GlassyCalm.mat",
+            "Assets/_Project/Art/Materials/WaterPresets/Water_NorthAtlantic.mat",
+            "Assets/_Project/Art/Materials/WaterPresets/Water_StirredBrown.mat",
+            "Assets/_Project/Art/Materials/WaterPresets/Water_StormGrey.mat",
+            "Assets/_Project/Art/Materials/WaterPresets/Water_Tropical.mat",
+            "Assets/_Project/Art/Materials/WaterPresets/Water_WarmShelter.mat",
+        };
+
+        /// <summary>
+        /// The frequency scale the game actually DRAWS at, READ from the hero material rather than
+        /// typed here.
+        ///
+        /// <para>⚠️ It used to be typed — <c>0.07f / 0.025f</c>, with a comment saying "not a
+        /// hypothetical, this is what every preset carries". It was true when it was written and it
+        /// stopped being true the day the owner ruled the swell longer (2026-09-02), which is exactly
+        /// the failure mode a typed constant has: the test goes on passing while the sentence next to
+        /// it becomes false. Reading the asset cannot go stale.</para>
+        ///
+        /// <para>⚠️⚠️ And it must come from the PRESETS' family, not from a code default:
+        /// <c>_OceanSwellScale</c> is in <c>WaterSurface.MoodFloatNames</c>, so the live value is
+        /// eased between the preset anchors and <c>Water.mat</c> is not authoritative on its own.
+        /// <see cref="EveryWaterMaterial_DrawsTheFieldsTrueWavelengths"/> is what makes reading one of
+        /// them sound: it requires all nine to agree.</para>
+        /// </summary>
+        private static float ShippedFreqScale()
+        {
+            var hero = UnityEditor.AssetDatabase.LoadAssetAtPath<Material>(WaterMaterials[0]);
+            Assert.IsNotNull(hero, $"{WaterMaterials[0]} must exist — it is the sea the game draws");
+            Assert.IsTrue(hero.HasProperty("_OceanSwellScale"), "_OceanSwellScale must be a water-shader property");
+            return Mathf.Max(hero.GetFloat("_OceanSwellScale"), 1e-4f) / LegacyScaleRef;
+        }
+
+        /// <summary>The scale the sea was DRAWN at before the 2026-09-02 ruling — kept as a literal on
+        /// purpose. The sabotage arm below is about a defect that HAPPENED, and history does not get to
+        /// be re-read off today's assets.</summary>
+        private const float HistoricFreqScale = 0.07f / 0.025f;   // 2.8, the pre-ruling drawn scale
 
         private static readonly Vector2 Wind = new Vector2(8f, 0f);
         private const float Sea = 0.7f;
@@ -55,19 +100,72 @@ namespace HiddenHarbours.Tests.Art.EditMode
         // ===== the fix ====================================================================================
 
         [Test]
-        public void TheRide_MatchesTheDrawnSurface_AtTheOwnersFrequencyScale()
+        public void TheRide_MatchesTheDrawnSurface_AtTheShippedFrequencyScale()
         {
             // The claim, stated as the one that matters: at every probe the hull's ride height equals
-            // the height the shader lifts its vertices to. Same sea, same wave, same crest.
+            // the height the shader lifts its vertices to. Same sea, same wave, same crest — at
+            // whatever scale the shipped materials are drawing at today.
             Field(out WaveTrains trains, out PackedWaveField packed);
+            float shipped = ShippedFreqScale();
 
             foreach (Vector2 p in Probes)
             {
-                float drawn = WaveFieldBridge.ShaderTwinSample(p, in packed, OwnerFreqScale).Height;
-                float ride = RideSample(p, in trains, OwnerFreqScale).Height;
+                float drawn = WaveFieldBridge.ShaderTwinSample(p, in packed, shipped).Height;
+                float ride = RideSample(p, in trains, shipped).Height;
                 Assert.AreEqual(drawn, ride, 1e-3f,
                     $"at {p} the hull must ride the height the surface DRAWS ({drawn:F4} m), " +
                     $"not {ride:F4} m — that gap is the water climbing the hull");
+            }
+        }
+
+        [Test]
+        public void EveryWaterMaterial_DrawsTheFieldsTrueWavelengths()
+        {
+            // ⭐⭐ THE 2026-09-02 RULING, as the one number it comes down to: *"swell scale you can make
+            // the changes for a longer slower swell, thats fine."* One sea at the field's TRUE
+            // wavelengths means _OceanSwellScale sits exactly on the shader's own normalisation
+            // reference, so the frequency scale threaded through the DisplacedSea seam is 1 — and the
+            // drawn sea stops being a different WAVE from the one the rock was tuned on.
+            //
+            // ⚠️ ALL NINE, and that is not belt-and-braces: _OceanSwellScale is MOOD-EASED (it is in
+            // WaterSurface.MoodFloatNames), so the live value is lerped between the preset anchors by
+            // the weather. One preset left behind would not be a stale key — it would be a sea whose
+            // wavelength changes with the weather for no physical reason, and `Apply water preset`
+            // would stamp it over the hero material besides.
+            var offenders = new List<string>();
+            foreach (string path in WaterMaterials)
+            {
+                var mat = UnityEditor.AssetDatabase.LoadAssetAtPath<Material>(path);
+                Assert.IsNotNull(mat, $"{path} must exist");
+                float scale = mat.GetFloat("_OceanSwellScale");
+                if (Mathf.Abs(scale / LegacyScaleRef - 1f) > 1e-4f)
+                    offenders.Add($"{System.IO.Path.GetFileName(path)}: _OceanSwellScale {scale} " +
+                                  $"(freq scale {scale / LegacyScaleRef:F2})");
+            }
+            Assert.IsEmpty(offenders,
+                "every water material must draw the field's TRUE wavelengths (_OceanSwellScale = " +
+                $"{LegacyScaleRef}, frequency scale 1) — these do not, so the sea they draw is not the " +
+                "sea the hulls ride:\n  " + string.Join("\n  ", offenders));
+        }
+
+        [Test]
+        public void AtTheShippedScale_TheDrawnSeaAndTheSIMSeaAreOneFunction()
+        {
+            // What the ruling buys, said as strongly as it can be: the drawn height is no longer merely
+            // AGREEING with the sim's — at scale 1 the two are the same evaluation, bit for bit, with no
+            // scaling of the position and no chain-rule factor on the slope. The one-sea rule stops
+            // needing a seam to hold it together.
+            Field(out WaveTrains trains, out _);
+            float shipped = ShippedFreqScale();
+            Assert.AreEqual(1f, shipped, 1e-4f, "the shipped materials must draw at the field's own scale");
+
+            foreach (Vector2 p in Probes)
+            {
+                WaveSample sim = WaveMath.Sample(p, 0.0, in trains);
+                WaveSample drawn = RideSample(p, in trains, shipped);
+                Assert.AreEqual(sim.Height, drawn.Height, 0f, $"height at {p}");
+                Assert.AreEqual(sim.Slope.x, drawn.Slope.x, 0f, $"slope.x at {p}");
+                Assert.AreEqual(sim.Slope.y, drawn.Slope.y, 0f, $"slope.y at {p}");
             }
         }
 
@@ -83,8 +181,11 @@ namespace HiddenHarbours.Tests.Art.EditMode
             float worst = 0f;
             foreach (Vector2 p in Probes)
             {
-                float drawn = WaveFieldBridge.ShaderTwinSample(p, in packed, OwnerFreqScale).Height;
-                float oldRide = RideSample(p, in trains, 1f).Height;      // the shipped behaviour
+                // HistoricFreqScale, not the shipped one: this arm is about the defect that HAPPENED,
+                // and since 2026-09-02 the shipped scale IS 1 — reading it here would compare the sea
+                // with itself and quietly assert nothing.
+                float drawn = WaveFieldBridge.ShaderTwinSample(p, in packed, HistoricFreqScale).Height;
+                float oldRide = RideSample(p, in trains, 1f).Height;      // the pre-#331 behaviour
                 worst = Mathf.Max(worst, Mathf.Abs(drawn - oldRide));
             }
 
@@ -98,9 +199,10 @@ namespace HiddenHarbours.Tests.Art.EditMode
         [Test]
         public void AtScaleOne_TheRideIsUnchanged_TheABContract()
         {
-            // A surface at the shipped default scale (or no displaced sea at all) publishes 1, and
-            // then the fix must be exactly inert — the flat-water/A-B contract every ADR 0023 change
-            // has kept.
+            // A surface with no displaced sea at all publishes 1, and then the scaling must be exactly
+            // inert — the flat-water/A-B contract every ADR 0023 change has kept. Since the 2026-09-02
+            // ruling this is also the SHIPPED path rather than only the fallback one, which is why the
+            // test above asserts the same identity against the assets.
             Field(out WaveTrains trains, out _);
             foreach (Vector2 p in Probes)
             {
@@ -122,8 +224,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
 
             foreach (Vector2 p in Probes)
             {
-                Vector2 drawn = WaveFieldBridge.ShaderTwinSample(p, in packed, OwnerFreqScale).Slope;
-                Vector2 ride = RideSample(p, in trains, OwnerFreqScale).Slope;
+                Vector2 drawn = WaveFieldBridge.ShaderTwinSample(p, in packed, HistoricFreqScale).Slope;
+                Vector2 ride = RideSample(p, in trains, HistoricFreqScale).Slope;
                 Assert.AreEqual(drawn.x, ride.x, 1e-2f, $"slope.x at {p}");
                 Assert.AreEqual(drawn.y, ride.y, 1e-2f, $"slope.y at {p}");
             }
@@ -137,8 +239,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
             // The ride's ONLY route to this number is the Core seam — FreqScale lives on
             // WaterIsoDepthFrame in Art, which Boats cannot reference (rule 4). That is precisely why
             // the clamp got fixed and the ride did not.
-            var published = new DisplacedSeaState(1.5f, 2f, OwnerFreqScale);
-            Assert.AreEqual(OwnerFreqScale, published.FreqScale, 1e-6f);
+            var published = new DisplacedSeaState(1.5f, 2f, HistoricFreqScale);
+            Assert.AreEqual(HistoricFreqScale, published.FreqScale, 1e-6f);
 
             var legacy = new DisplacedSeaState(1.5f, 2f);
             Assert.AreEqual(1f, legacy.FreqScale, 1e-6f,
