@@ -169,6 +169,15 @@
     const onHair=(x,y)=>{ if(x<0||x>=W||y<0||y>=H) return false; return !!hairSet[px.col[y*W+x]]; };
 
     const gx=(st.gaze&&st.gaze[0])|0, gy=(st.gaze&&st.gaze[1])|0, lid=st.lid||0;
+    /* PASS 5.1 — SKIN-RELATIVE EYE. Ink carried the eye at every skin, and from bronze down the ink
+       sits within a few L* of the face: deckboss / packer / girl had no eyes at any facing. On a dark
+       skin the eye is carried by the SCLERA pixel (a true eye-white, MATS.sclera, supplied by the head
+       stamp) with the ink pupil beside it; on a light skin the ink dash carries it and the sclera stays
+       the skin's own lit step, exactly as before. */
+    const lum=(hex)=>{ if(!hex||hex.length<7) return 1; const r=parseInt(hex.slice(1,3),16)/255, g=parseInt(hex.slice(3,5),16)/255, b2=parseInt(hex.slice(5,7),16)/255; return 0.2126*r+0.7152*g+0.0722*b2; };
+    const skinRamp = (MATS.skin && MATS.skin.ramp) || [];
+    const dark = lum(skinRamp[3]) < 0.40;     // same cut as the head stamp: umber, deep, ebony
+    const SCL = (dark && MATS.sclera) ? 'sclera' : 'skinL';
     const drawn=[];
     for(const s of socks){
       const w = s.w, out = s.out;
@@ -188,21 +197,30 @@
         const baseLift = bshape==='flat' ? 0 : (bshape==='raised' ? 2 : 1);
         const lift = (idle ? baseLift : Bw.lift + (st.raise|0))*q;
         let by = yTop - q - lift;
-        if(by < yTop-q && !onSkin(x0, by) && !onSkin(x0+(w-1)*q, by)) by = yTop-q;
+        /* 5.1: under a fringe the brow is NOT drawn. Dropping it onto the lash made a two-row bar
+           (sunglasses), and painting it in the hair's darkest step made a slab on black hair and
+           nothing on white hair. A brow that is covered by hair is covered by hair. */
+        if(by < yTop-q && !onSkin(x0, by) && !onSkin(x0+(w-1)*q, by)) by = -1;
         // thickness in REAL pixels, not q-blocks: a 3 px-deep brow over a 6 px eye is a scowl
         const bt = Bw.thick ? Math.max(2, Math.round(q*0.8)) : Math.max(1, Math.round(q*0.45));
         const bw = (w>=2) ? w+1 : w;                       // one pixel wider than the eye, outboard
-        for(let i=0;i<bw;i++){                             // i = 0 is the INNER end, toward the nose
+        /* 5.2 TWO-PIXEL TILT. An expression used to move the inner brow pixel alone: a bar with a
+           notch, and frown / worry / grit were told apart by the mouth. On a 3 px brow the inner end
+           now goes one way and the OUTER end the other — a true diagonal across the brow (angry:
+           inner down, outer up; worried: inner up, outer down) — without adding a pixel next to the
+           lash. The 1 px far-eye brow keeps its whole-pixel step. */
+        const tilt = st.brow>0 ? 1 : st.brow<0 ? -1 : 0;
+        for(let i=0;i<bw && by>=0;i++){                    // i = 0 is the INNER end, toward the nose
           const cxp = out<0 ? x0+(w-1-i)*q : x0+i*q;
           let dy = Bw.dy[Math.min(i, Bw.dy.length-1)];
-          if(i===0) dy += (st.brow>0 ? 1 : st.brow<0 ? -1 : 0);
+          if(tilt){ if(i===0) dy += tilt; else if(bw>=3 && i===bw-1) dy -= tilt; }
           const ty = Math.min(by+dy*q, yTop-q);
           /* INK ON SKIN, HAIR'S DARKEST STEP ON HAIR. The body rig used to hand this layer a brow
              material taken from the MIDDLE of the hair ramp and stamp it onto the fringe — a brow
              painted in hair, on hair, invisible on every build in the sheet. Full ink on a fringe is
              the opposite failure: a hard bar floating on the hairline. The hair's own darkest step
              reads as the shadow under the fringe, which is where a brow lives anyway. */
-          const mat = onSkin(cxp, ty) ? 'brow' : (onHair(cxp, ty) ? 'browHair' : null);
+          const mat = onSkin(cxp, ty) ? 'brow' : null;   // 5.1: never on hair (see above)
           if(!mat) continue;
           for(let k=0;k<bt;k++) for(let j=0;j<q;j++) put1(cxp+j, ty+q-1-k, mat);
         }
@@ -213,16 +231,22 @@
          Only the pupil slides with gaze; the lash staying put is what makes it read as the eye
          looking around. At rest the pupil sits inboard so the pair converge on the viewer. */
       if(q===1){
-        if(lid>=0.5){                                     // closed: the lash drops onto the cheek
-          for(let i=0;i<w;i++){ put1(x0+i, yTop, 'skinL'); put1(x0+i, yMid, 'lash2'); }
+        if(lid>=0.5){
+          /* closed: ONE soft ink row where the lash was, and the row above is left as the mesh shaded
+             it. Pass 5 put a lit pixel over the ink row, which is the open-eye pattern (sclera over
+             pupil) and read as an eye looking down, on every blink and all through the sleep clip. */
+          for(let i=0;i<w;i++) put1(x0+i, yMid, 'lash2');
           continue;
         }
         for(let i=0;i<w;i++) put1(x0+i, yTop, 'lash');
-        if(s.far || w===1){ put1(x0, yMid, 'lash2'); continue; }   // compressed far eye: no pupil
+        if(s.far || w===1){ put1(x0, yMid, dark ? SCL : 'lash2'); continue; }   // compressed far eye
+        /* 5.2: no smile squint at q === 1. The eye is two rows, and the only lower-lid pixel is the
+           sclera; lifting it is invisible on a light skin (sclera == skin +2) and blinds a dark one.
+           The smile is carried by the mouth's second value at this scale. */
         const inIdx = out<0 ? w-1 : 0;
         let ii = inIdx;
         if(gx<0) ii = 0; else if(gx>0) ii = w-1;
-        for(let i=0;i<w;i++) put1(x0+i, yMid, (i===ii) ? 'lash2' : 'skinL');
+        for(let i=0;i<w;i++) put1(x0+i, yMid, (i===ii) ? 'lash2' : SCL);
         const oI = out<0 ? 0 : w-1;
         if(shape==='narrow' && ii!==oI) put1(x0+oI, yMid, 'lash');
         if(shape==='droop') put1(x0+oI, yMid+1, 'lash2');
@@ -241,8 +265,8 @@
       for(let i=0;i<cw;i++) put1(x0+i, yTop, 'lash');                   // 1 px upper lash
       // the OPENING is q rows, not 2q: the lower half of the authored cell stays cheek, so the eye
       // white cannot spread into a flat bright patch the way a full-cell fill does
-      for(let y=1;y<=q;y++) for(let i=0;i<cw;i++) put1(x0+i, yTop+y, 'skinL');
-      if(s.far || w===1){ for(let y=1;y<=q;y++) for(let i=0;i<cw;i++) put1(x0+i, yTop+y, 'lash2'); continue; }
+      for(let y=1;y<=q;y++) for(let i=0;i<cw;i++) put1(x0+i, yTop+y, SCL);
+      if(s.far || w===1){ for(let y=1;y<=q;y++) for(let i=0;i<cw;i++) put1(x0+i, yTop+y, dark ? SCL : 'lash2'); continue; }
 
       /* pupil — only THIS block moves with gaze; the lash staying put is what makes it read as the
          eye looking rather than the head twitching. At rest it sits inboard so the pair converge
@@ -252,6 +276,9 @@
       if(gx<0) pxx = x0; else if(gx>0) pxx = x0+cw-q;
       for(let y=1;y<=q;y++) for(let i=0;i<q;i++) put1(pxx+i, yTop+y, 'lash2');
       const oX = out<0 ? x0 : x0+cw-1;
+      /* 5.2 SMILE SQUINT (q >= 2 only): the outer half of the bottom opening row lifts to skin — the
+         lower lid pushed up by the cheek. The pupil block sits inboard, so it is never covered. */
+      if(st.cheek) for(let i=0;i<Math.floor(cw/2);i++) put1(oX+(out<0?i:-i), yTop+q, 'skinD');
       if(shape==='narrow') for(let i=0;i<cw;i++) put1(x0+i, yTop+q, 'lash');
       if(shape==='droop')  for(let i=0;i<q;i++) put1(oX+(out<0?i:-i), yTop+q+1, 'lash2');
       if(shape==='sharp')  for(let i=1;i<=q;i++) put1(oX+(out<0?-i:i), yTop, 'lash');
@@ -260,5 +287,5 @@
   }
 
   root.EyeIso = { SOCKETS, EYESHAPES, BROWSHAPES, BROWS, socketsFor, draw, state, gaze, blink, setScale,
-    get scale(){ return q; }, pass:5 };
+    get scale(){ return q; }, pass:5, revision:'5.2' };
 })(typeof globalThis!=='undefined'?globalThis:window);
