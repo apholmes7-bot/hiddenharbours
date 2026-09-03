@@ -29,7 +29,11 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _GroundContact: 0
     - _ShadowLen: 0
+    - _StencilComp: 6
+    - _StencilPass: 2
+    - _StencilRef: 1
     - _EdgeSoftness: 0
     m_Colors:
     - _ShadowColor: {r: 0.04, g: 0.05, b: 0.1, a: 0.45}
