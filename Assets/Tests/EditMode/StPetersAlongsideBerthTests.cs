@@ -438,9 +438,15 @@ namespace HiddenHarbours.Tests.EditMode
 
         /// <summary>
         /// The same argument for the DORY's half-beam, which is a mirror for the same reason and
-        /// carries the same risk. Her berth is the dredged flat's north edge less this number
-        /// (<see cref="StPetersBuilder.DoryMooredY"/>), so a re-lofted hull that forgets it hangs her
-        /// outboard rail over the shoulder — quietly, since the centre of her would still float.
+        /// carries the same risk. Her berth is the pier's north face plus the fendering gap plus this
+        /// number (<see cref="StPetersBuilder.DoryMooredY"/>), so a re-lofted hull that forgets it lays
+        /// her rail through the planks — quietly, since the centre of her would still be in clear water.
+        ///
+        /// <para>⚠ RE-POINTED 2026-09-02. This used to check the OTHER derivation — that her outboard
+        /// rail landed exactly on the dredged flat's north edge, back when she lay out in the fairway
+        /// with nothing to tie to. She now lies alongside the pier's north face at the pilehead, so the
+        /// term that has to add up is the face and the fendering gap, not the flat's edge. The mirror
+        /// being guarded is the same one.</para>
         /// </summary>
         [Test]
         public void TheDorysHalfBeamMirrorStillMatchesHerSidecar()
@@ -450,16 +456,18 @@ namespace HiddenHarbours.Tests.EditMode
             var mesh = AssetDatabase.LoadAssetAtPath<HullMeshDef>(meshPath);
             Assert.IsNotNull(mesh, $"the starting dory's mesh sidecar must exist at {meshPath}");
             Assert.AreEqual(mesh.WatertightHalfBeamMeters, StPetersBuilder.DoryHalfBeamMetres, 1e-4f,
-                $"the region berths her {StPetersBuilder.DoryHalfBeamMetres:F2} m inside the dredged " +
-                $"flat's edge but her sidecar reports a {mesh.WatertightHalfBeamMeters:F2} m " +
+                $"the region lies her {StPetersBuilder.DoryHalfBeamMetres:F2} m off the pier's north " +
+                $"face but her sidecar reports a {mesh.WatertightHalfBeamMeters:F2} m " +
                 "half-beam. Update StPetersBuilder.DoryHalfBeamMetres.");
 
-            // And the derivation it feeds: her rail lands ON the flat's edge, never past it.
-            Assert.AreEqual(StPetersBuilder.ApproachThalwegHalfWidth,
-                            StPetersBuilder.DoryMooredY + StPetersBuilder.DoryHalfBeamMetres, 1e-4f,
-                "her berth is supposed to be the flat's north edge less her own half-beam, so that " +
-                "her outboard rail sits on the edge. It no longer adds up, which means somebody " +
-                "typed a berth instead of deriving one.");
+            // And the derivation it feeds: face + fendering gap + her own half-beam, exactly the three
+            // terms in the same order that lay the cape against the south face.
+            Assert.AreEqual(StPetersWharf.NorthFaceY + StPetersBuilder.AlongsideFenderGapMetres
+                                                     + StPetersBuilder.DoryHalfBeamMetres,
+                            StPetersBuilder.DoryMooredY, 1e-4f,
+                "her berth is supposed to be the pier's north face, the fendering gap and her own " +
+                "half-beam. It no longer adds up, which means somebody typed a berth instead of " +
+                "deriving one.");
         }
 
         // =============================================================================================
