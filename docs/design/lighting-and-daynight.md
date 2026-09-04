@@ -97,10 +97,12 @@ weather) — with **no new wiring** to the controller and no per-caster sim read
   caster's feet, sorts it just under the caster, **pixel-snaps** the anchor (toggleable), and follows the
   caster every frame with the light recompute on a throttled tick (no per-frame allocation).
 
-**Tunables (per component, rule 6):** max alpha / darkness colour, length-at-noon vs length-at-horizon, a
-length clamp, edge softness, sorting offset, pixel-snap + PPU, foot offset, and a fallback daylight hour for
-scenes with no clock. The shadow **arc** (south-bias / noon-lift / overcast-fade / sunrise-sunset) is read
-from the same `DayNightProfile` the controller uses.
+**Tunables (rule 6):** the LOOK is one shipped asset — `Resources/SpriteShadowProfile.asset` (max alpha,
+darkness colour, length-at-noon vs length-at-horizon, the length cap, edge softness, and the ground-contact
+pool). What stays on the component is per-caster MACHINERY: sorting offset, pixel-snap + PPU, foot offset,
+refresh rate, and a fallback daylight hour for scenes with no clock. The shadow **arc** (south-bias /
+noon-lift / overcast-fade / sunrise-sunset) is read from the same `DayNightProfile` the controller uses.
+See §5.3 for why the look moved off the component.
 
 **How to see it / add it (owner):**
 - **`Hidden Harbours ▸ Dev ▸ Build Shadow Test`** — drops a ground plane + a post, a tree, and a standing figure
@@ -174,7 +176,56 @@ as `Resources/LampShadowProfile.asset` — `Strength` is THE dial (0 = today's f
 `SpriteShadow` model with a point in place of the sun, not a raycast. The full statement, the sorting law and
 the rejected alternatives are the PR B amendment to ADR 0016.
 
-### 5.3 The sun on the foliage — SHIPPED (owner ruling 2026-09-03)
+### 5.3 The wood's shade — SHIPPED (tree shading PR 2)
+
+#715 (§5.4) turned the trees' sun response on; its plates then measured what the SHADOWS were doing, and
+this is that list fixed. Four things, and the last three are proposals the owner rules on from the PR's plates —
+each is one field in `Resources/SpriteShadowProfile.asset`, and the **code defaults are main's numbers**, so
+a project with no asset renders the pre-PR frame exactly.
+
+**1 · The dials became reachable.** Every look number used to be a `[SerializeField]` on a component that
+`AcadianTreeCatalog.Configure` attaches with **no per-tree dials** — so the length of a dawn rake was a
+constant in a C# file, and re-tuning it meant a code change and a re-plant. They are now one asset (the
+`LampShadowProfile` pattern, guard test included).
+
+**2 · Shadows stopped stacking.** Two crossing rakes used to darken the ground twice — measured, 7.5 % of a
+wooded frame at 07:00 carried more than twice a single shadow's darkening, which is what made a stand's
+floor read as a patchwork of blots rather than as shade. The shader now writes and tests the **stencil**:
+the first shadow at a pixel claims it, later ones are discarded. One shade, per-caster sorting untouched, no
+new pass and no buffer.
+
+> ⚠️ **It is render STATE, so it could never have been a per-renderer dial.** A `MaterialPropertyBlock`
+> feeds shader uniforms only; state comes from the material. The stencil therefore ships ON in
+> `SpriteShadow.mat`, and the three `[HideInInspector]` `_Stencil*` properties are the escape hatch — a
+> second material with `_StencilComp = Always` reproduces the old stacking, which is what the PR's
+> before/after plate is rendered with. **Nothing else in the project uses the stencil** (asserted by a
+> test, because the next feature to reach for one would break shadows silently).
+
+**3 · A crown stopped wearing its neighbour's shadow.** A rake runs north; north is up-screen and therefore
+BEHIND; and a shadow sorted at its caster's feet is drawn *after* every sprite between it and its tip — so a
+neighbouring canopy wore a tree-shaped blot. `SortByFarEnd` sorts the shadow by its TIP instead, dropping it
+`shadowDir.y × length × SortingBands.OrdersPerMetre` orders so it slides under everything it crosses; a tree
+standing in a shadow then simply draws over it.
+
+> This is a **trade, not a shading model**. Neither cut is right: one paints a blot on a canopy, the other
+> lets a grass tuft standing in a shadow draw over it un-shaded. The honest fix is a receiver that knows it
+> is in shade (a screen-space shade buffer, the `LampShadowSystem` pattern), which is its own PR. The trade
+> swaps a large visible error for a small one, and the plate is the argument.
+
+**4 · There is shade UNDER a crown.** At noon the shear is short and runs north, so the trunk foot — the one
+place you are certainly under the tree — was in full sun. A **ground-contact pool** now draws at the feet: a
+circle in the quad's own uv, scaled by the component into an ellipse (`2r × casterWidth` wide, squashed by
+`SpriteLightMath.GroundDepthScale` — taken from the lit path rather than restated, so the shade and the
+light cannot disagree about what the ground plane is). It rides the same `_ShadowStrength`, so it fades
+under cloud and vanishes at night with everything else, and it writes the same stencil, so a crown's pool
+and its own rake meet without doubling. It is the runtime half of the pass-4 "root AO" upstream ask.
+
+**⚠️ `_maxLength` was a dead clamp and now binds.** It caps the length MULTIPLIER, whose own ceiling is
+`LengthAtHorizon` (5) — so the shipped 7 never clamped a caster in this game, and a mature white pine threw
+**54.8 m at 07:00 and 61.9 m at 06:30**. The asset ships **3** (≈41 m for that pine); the code default stays
+7. Which the game keeps is the owner's call off the rake plate.
+
+### 5.4 The sun on the foliage — SHIPPED (owner ruling 2026-09-03)
 
 > *"tree lighting is my concern, this should be noticable in day too with the changing sun, and shadows,
 > not jsut night lighting."*
