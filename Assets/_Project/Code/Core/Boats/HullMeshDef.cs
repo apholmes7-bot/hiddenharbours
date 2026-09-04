@@ -258,6 +258,19 @@ namespace HiddenHarbours.Core
                  "have the baker write it.")]
         public HullLamp[] Lamps = Array.Empty<HullLamp>();
 
+        [Tooltip("THE WINDOWS OF THE ROOM HER CABIN GLOW LIGHTS (owner's ruling, 2026-09-03: a " +
+                 "glow is confined to its space, and an interior's reaches the outside only " +
+                 "THROUGH THE WINDOWS) — one rectangle per pane of glass, in her OWN rig metres " +
+                 "(+x starboard, +y bow, +z up from the keel), read off the rig's own published " +
+                 "HOUSE glazing. EMPTY = this hull has no lit windows, which is the right and " +
+                 "shipped answer for every open boat in the fleet: ABSENCE IS DATA, not a defect.\n\n" +
+                 "GAME-SIDE like Lamps — the mesh baker never writes this, so it survives a " +
+                 "re-bake — but UNLIKE Lamps it is not hand-authored. There are 236 panes across " +
+                 "the fleet, which is well past what anybody can type correctly, so the probe " +
+                 "DERIVES them from each rig and writes them, and the pane tests re-derive every " +
+                 "one and go red if a def has drifted from the rig it came from.")]
+        public HullPane[] Panes = Array.Empty<HullPane>();
+
         /// <summary>
         /// True when this def can actually be drawn: a mesh, at least one non-empty ramp (≤ the
         /// shader's 16), a full 4×4 dither matrix and sane cell geometry. The skinner gates the mesh

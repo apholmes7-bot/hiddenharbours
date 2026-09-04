@@ -684,3 +684,60 @@ MonoBehaviour:
   - Kind: 6
     RigLocalMetres: {x: 0, y: 2.44295, z: 4.64744}
     IntensityScale: 1
+  Panes:
+  - Wall: 0
+    CentreMetres: {x: -0.872, y: 5.053415, z: 2.984}
+    HalfAcrossMetres: {x: 0.363, y: 0, z: 0}
+    HalfUpMetres: {x: 0, y: -0.12958537, z: 0.23099996}
+  - Wall: 0
+    CentreMetres: {x: 0, y: 5.053415, z: 2.984}
+    HalfAcrossMetres: {x: 0.363, y: 0, z: 0}
+    HalfUpMetres: {x: 0, y: -0.12958537, z: 0.23099996}
+  - Wall: 0
+    CentreMetres: {x: 0.872, y: 5.053415, z: 2.984}
+    HalfAcrossMetres: {x: 0.363, y: 0, z: 0}
+    HalfUpMetres: {x: 0, y: -0.12958537, z: 0.23099996}
+  - Wall: 2
+    CentreMetres: {x: 1.488736, y: 0.769, z: 2.8600001}
+    HalfAcrossMetres: {x: 0, y: -0.30699998, z: 0}
+    HalfUpMetres: {x: 0, y: 0, z: 0.3449999}
+  - Wall: 1
+    CentreMetres: {x: -1.488736, y: 0.769, z: 2.8600001}
+    HalfAcrossMetres: {x: 0, y: 0.30699998, z: 0}
+    HalfUpMetres: {x: 0, y: 0, z: 0.3449999}
+  - Wall: 2
+    CentreMetres: {x: 1.488736, y: 1.5645001, z: 2.8600001}
+    HalfAcrossMetres: {x: 0, y: -0.30650002, z: 0}
+    HalfUpMetres: {x: 0, y: 0, z: 0.3449999}
+  - Wall: 1
+    CentreMetres: {x: -1.488736, y: 1.5645001, z: 2.8600001}
+    HalfAcrossMetres: {x: 0, y: 0.30650002, z: 0}
+    HalfUpMetres: {x: 0, y: 0, z: 0.3449999}
+  - Wall: 2
+    CentreMetres: {x: 1.488736, y: 2.3604999, z: 2.8600001}
+    HalfAcrossMetres: {x: 0, y: -0.30650008, z: 0}
+    HalfUpMetres: {x: 0, y: 0, z: 0.3449999}
+  - Wall: 1
+    CentreMetres: {x: -1.488736, y: 2.3604999, z: 2.8600001}
+    HalfAcrossMetres: {x: 0, y: 0.30650008, z: 0}
+    HalfUpMetres: {x: 0, y: 0, z: 0.3449999}
+  - Wall: 2
+    CentreMetres: {x: 1.488736, y: 3.1560001, z: 2.8600001}
+    HalfAcrossMetres: {x: 0, y: -0.30700004, z: 0}
+    HalfUpMetres: {x: 0, y: 0, z: 0.3449999}
+  - Wall: 1
+    CentreMetres: {x: -1.488736, y: 3.1560001, z: 2.8600001}
+    HalfAcrossMetres: {x: 0, y: 0.30700004, z: 0}
+    HalfUpMetres: {x: 0, y: 0, z: 0.3449999}
+  - Wall: 2
+    CentreMetres: {x: 1.488736, y: 3.9515, z: 2.8600001}
+    HalfAcrossMetres: {x: 0, y: -0.30649996, z: 0}
+    HalfUpMetres: {x: 0, y: 0, z: 0.3449999}
+  - Wall: 1
+    CentreMetres: {x: -1.488736, y: 3.9515, z: 2.8600001}
+    HalfAcrossMetres: {x: 0, y: 0.30649996, z: 0}
+    HalfUpMetres: {x: 0, y: 0, z: 0.3449999}
+  - Wall: 3
+    CentreMetres: {x: 0.9835, y: 0.292, z: 2.8600001}
+    HalfAcrossMetres: {x: -0.41050002, y: 0, z: 0}
+    HalfUpMetres: {x: 0, y: 0, z: 0.3449999}

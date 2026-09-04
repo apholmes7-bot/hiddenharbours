@@ -212,6 +212,17 @@ namespace HiddenHarbours.Art
         /// <summary>Angular (cone) edge softness, as a fraction of the half-angle (0 hard .. 1 soft).</summary>
         public float AngularSoftness { get => _angularSoftness; set => _angularSoftness = Mathf.Clamp01(value); }
 
+        /// <summary>
+        /// The bright CORE — a small extra punch right at the lamp so the source reads as a hot point
+        /// rather than as a haze (0 = none, the shipped default 1 = the fitting glows).
+        ///
+        /// <para>Settable since the boat glows were confined (owner's ruling 2026-09-03): a navigation
+        /// lamp that shrank to the size of its own fitting needs the core to carry what the radius gave
+        /// up, and a window SPILL needs it at zero — the spill's job is a wash on the deck, and a hot
+        /// point at the wall would put back the blob the ruling took away.</para>
+        /// </summary>
+        public float CoreBoost { get => _coreBoost; set => _coreBoost = Mathf.Clamp(value, 0f, 4f); }
+
         // ---- what the lamp-shadow system reads (ADR 0016, lights PR B) ----
 
         /// <summary>Does this lamp throw cast shadows (<see cref="LampShadowSystem"/>)?</summary>
@@ -306,20 +317,39 @@ namespace HiddenHarbours.Art
             _sortingGroup.sortingOrder = SafeSortingOrder;
             _sortingGroup.sortAtRoot = true;   // "Sort as 2D": sort the group as one 2D element by its sorting order
 
-            Material mat = Resources.Load<Material>(LightMaterialPath);
-            if (mat == null)
-            {
-                if (_sharedFallbackMaterial == null)
-                {
-                    var shader = Shader.Find(LightShaderName);
-                    if (shader != null)
-                        _sharedFallbackMaterial = new Material(shader) { name = "AdditiveLight (runtime shared)" };
-                }
-                mat = _sharedFallbackMaterial;
-            }
+            Material mat = SharedLightMaterial();
             if (mat != null) _quadRenderer.sharedMaterial = mat;
             else _quadRenderer.enabled = false;   // no shader/material yet -> no light (harmless)
         }
+
+        /// <summary>
+        /// <b>The one additive-light material every glow in the project draws with</b> — the shipped
+        /// <c>Resources/AdditiveLight.mat</c> (which is also what force-compiles the shader, so a break
+        /// fails CI RED rather than shipping magenta), with a runtime-built shared instance as the
+        /// fallback for a scene that has no Resources folder. Null when the shader itself is missing,
+        /// which every caller must treat as "draw nothing" rather than as an error.
+        ///
+        /// <para>Public because <see cref="BoatWindowGlow"/> draws lit window panes with the very same
+        /// material and MUST NOT reach for it by a second copy of this path and this fallback: two
+        /// copies is how one of them ends up loading a material the other does not.</para>
+        /// </summary>
+        public static Material SharedLightMaterial()
+        {
+            Material mat = Resources.Load<Material>(LightMaterialPath);
+            if (mat != null) return mat;
+            if (_sharedFallbackMaterial == null)
+            {
+                var shader = Shader.Find(LightShaderName);
+                if (shader != null)
+                    _sharedFallbackMaterial = new Material(shader) { name = "AdditiveLight (runtime shared)" };
+            }
+            return _sharedFallbackMaterial;
+        }
+
+        /// <summary>The active camera (MainCamera, else the first enabled one). Public so the window
+        /// glow pins its pane mesh to the SAME camera this light pins its quad to — two answers to
+        /// "which camera" is two depths, and the pair would composite in the wrong order.</summary>
+        public static Camera ActiveCamera() => ResolveCamera();
 
         /// <summary>Push the (throttled) shape/colour/intensity/gate/flicker tunables to the shared material via the MPB.</summary>
         private void Tick()

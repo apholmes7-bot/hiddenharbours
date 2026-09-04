@@ -89,6 +89,8 @@ namespace HiddenHarbours.Art
         /// </summary>
         static void MakeLit(GameObject host, HullMeshDef def)
         {
+            MakeWindowed(host, def);
+
             bool wantsLamps = def.Lamps != null && def.Lamps.Length > 0;
             var lamps = host.GetComponent<BoatLamps>();
 
@@ -100,6 +102,35 @@ namespace HiddenHarbours.Art
             if (lamps == null) host.AddComponent<BoatLamps>();
 
             MakeSearchlit(host, def);
+        }
+
+        /// <summary>
+        /// (Owner's ruling, 2026-09-03) Give this hull the WINDOWS her def says her lit room has —
+        /// what the cabin glow became when it stopped being a disc over the roof.
+        ///
+        /// <para><b>Installed BEFORE the lamps, and that ordering is load-bearing.</b>
+        /// <see cref="BoatLamps"/> pushes the cabin's state to this component the moment it enables,
+        /// and a listener that does not exist yet hears nothing. The window glow also pulls the state
+        /// back for itself on enable — belt and braces, because a hull re-skinned in either order
+        /// must end up lit the same way — but installing the listener first is what makes the common
+        /// path need no second chance.</para>
+        ///
+        /// <para><b>Absence is data here too.</b> A def with no panes gets no component: the five open
+        /// boats in the fleet have no room to light, and that is the answer rather than a gap. A hull
+        /// re-skinned onto one that has none has hers removed, for the same reason a lost lamp table
+        /// takes its lights with it.</para>
+        /// </summary>
+        static void MakeWindowed(GameObject host, HullMeshDef def)
+        {
+            bool wantsWindows = def.Panes != null && def.Panes.Length > 0;
+            var windows = host.GetComponent<BoatWindowGlow>();
+
+            if (!wantsWindows)
+            {
+                if (windows != null) Destroy(windows);
+                return;
+            }
+            if (windows == null) host.AddComponent<BoatWindowGlow>();
         }
 
         /// <summary>
@@ -444,6 +475,7 @@ namespace HiddenHarbours.Art
                 WatertightDeckHeightMeters = def.WatertightDeckHeightMeters,
                 WatertightHalfBeamMeters = def.WatertightHalfBeamMeters,
                 Lamps = def.Lamps,
+                Panes = def.Panes,
             };
         }
 

@@ -105,18 +105,32 @@ namespace HiddenHarbours.Tests.Art.EditMode
         }
 
         [Test]
-        public void EveryLampIsARadialGlow()
+        public void EveryNavigationLampIsARadialGlow()
         {
-            // The searchlight is the only cone on a boat, and it is BoatSpotlight's, not a preset
-            // here. A lamp that became a cone would need an orientation nothing feeds it, and would
-            // point along whatever axis its node happened to carry.
+            // A NAVIGATION lamp that became a cone would need an orientation nothing feeds it, and
+            // would point along whatever axis its node happened to carry. At this camera a sidelight
+            // is a handful of pixels anyway: the COLOUR is the signal, not the sector.
             foreach (HullLampKind k in new[]
                      {
                          HullLampKind.PortSidelight, HullLampKind.StarboardSidelight,
-                         HullLampKind.SternLight, HullLampKind.Masthead, HullLampKind.CabinGlow,
+                         HullLampKind.SternLight, HullLampKind.Masthead,
+                         HullLampKind.AnchorLight, HullLampKind.RangeLight,
                      })
                 Assert.AreEqual(SceneLight.LightShape.Radial, BoatLampPresets.For(k).Shape,
                                 $"{k} is a radial glow");
+        }
+
+        [Test]
+        public void TheCabinGlowIsTheOneConeBecauseItLeavesAWall()
+        {
+            // Owner's ruling, 2026-09-03: "the glows should be constrained to their space, if its
+            // interior it should be confined to the cabin with the glow only coming through the
+            // windows." What is left of the cabin glow is the WASH that leaves a glazed wall, and a
+            // wash off a wall is directional by construction — the wall behind it is what makes it
+            // so. It is the one lamp on a boat that pays for an orientation, and BoatWindowGlow is
+            // what feeds it one (that wall's outward direction, through the hull's own posed frame).
+            Assert.AreEqual(SceneLight.LightShape.Cone, Cabin.Shape,
+                            "the cabin glow is a wall wash now, not a disc over the roof");
         }
 
         // ---- sizes that have to hold ------------------------------------------------------------------
@@ -216,10 +230,16 @@ namespace HiddenHarbours.Tests.Art.EditMode
         }
 
         [Test]
-        public void TheCabinGlowIsTheBigSoftOneAndTheLampsAreNot()
+        public void TheCabinWashReachesFurtherAndSofterThanAnySingleLamp()
         {
-            Assert.Greater(Cabin.Range, Mast.Range,
-                           "a lit room spills further than any single lamp aboard");
+            // ⚠️ Against a REAL wash, not against the preset's Range — that field carries the FLOOR a
+            // wall with almost no glazing gets, and the floor is a backstop nothing in the fleet
+            // reaches. Comparing it to a lamp says nothing about the boats we actually draw. The
+            // narrowest window in the whole fleet is the tanker's 0.42 m inscribed porthole; even she
+            // washes further than the masthead's bloom, and that is the claim worth holding.
+            Assert.Greater(BoatLampPresets.WallSpillThrow(0.42f), Mast.Range,
+                           "a lit room washes further than any single lamp aboard — the smallest " +
+                           "porthole in the fleet still reaches past a masthead's bloom");
             Assert.Greater(Cabin.EdgeSoftness, Stern.EdgeSoftness,
                            "and reads as a spill rather than as a source you look at");
             Assert.Greater(Cabin.Color.r, Cabin.Color.b, "warm, not cold — it is a lit room");
@@ -230,6 +250,163 @@ namespace HiddenHarbours.Tests.Art.EditMode
         {
             Assert.Greater(Mast.Range, Stern.Range);
             Assert.Greater(Mast.Range, Port.Range, "it is mounted highest and seen furthest");
+        }
+
+        // ---- the 2026-09-03 shrink, and what it was not allowed to change -----------------------------
+
+        [Test]
+        public void EveryRoundLampIsTheSizeOfItsOwnFittingNotAPoolOnTheDeck()
+        {
+            // The ruling's other half — "the glows should be constrained to their space" — applied to
+            // the lamps that are not a cabin. Half a metre is already generous for a fitting you
+            // could hold in one hand; the point of the bound is that NONE of them may go back to
+            // being a pool of light on the deck, which is what 1.0 m and 1.35 m read as at the zoom
+            // the owner plays at.
+            foreach (HullLampKind k in new[]
+                     {
+                         HullLampKind.PortSidelight, HullLampKind.StarboardSidelight,
+                         HullLampKind.SternLight, HullLampKind.Masthead,
+                         HullLampKind.AnchorLight, HullLampKind.RangeLight,
+                     })
+                Assert.LessOrEqual(BoatLampPresets.For(k).Range, 0.5f,
+                                   $"{k} is a lamp, not a pool — it may not be bigger than its own " +
+                                   "fitting (owner's ruling, 2026-09-03)");
+        }
+
+        [Test]
+        public void TheShrinkKeptEveryLampInItsOldOrder()
+        {
+            // ⚠️ THE ORDER IS THE MEANING, AND IT IS THE THING THE SHRINK COULD HAVE BROKEN SILENTLY.
+            // A masthead says "under power, coming through" and must stay the brightest and biggest
+            // white; an anchor light says only "something is here" and must stay the dimmest and
+            // smallest, or a wharf of sleeping boats reads as a fleet getting under way. All three
+            // moved together, so all three comparisons that held before must still hold.
+            foreach (HullLampKind k in new[] { HullLampKind.SternLight, HullLampKind.AnchorLight })
+            {
+                Assert.Less(BoatLampPresets.For(k).Range, Mast.Range,
+                            $"the masthead still reaches further than the {k}");
+                Assert.Less(BoatLampPresets.For(k).Intensity, Mast.Intensity,
+                            $"and still burns brighter than the {k}");
+            }
+            Assert.Less(Anchor.Range, Stern.Range, "and the anchor light is the smallest white");
+
+            // And the same in the arm the owner can flip back to, from the numbers that shipped.
+            foreach (HullLampKind k in new[] { HullLampKind.SternLight, HullLampKind.AnchorLight })
+                Assert.Less(BoatLampPresets.Legacy(k).Range, BoatLampPresets.Legacy(HullLampKind.Masthead).Range,
+                            $"the passthrough holds the same order for the {k}");
+        }
+
+        [Test]
+        public void TheLampsThatDidNotNeedToShrinkDidNotMove()
+        {
+            // The sidelights were ALREADY bounded, by the gap between them rather than by taste (see
+            // TheTwoSidelightGlowsNeverOverlap) — a harder constraint than the ruling's, and already
+            // being met. So they are the same object in both arms, and a future edit that quietly
+            // retunes them under cover of this ruling has to answer this test.
+            foreach (HullLampKind k in new[] { HullLampKind.PortSidelight, HullLampKind.StarboardSidelight })
+            {
+                LightPresets.Config now = BoatLampPresets.For(k), then = BoatLampPresets.Legacy(k);
+                Assert.AreEqual(then.Range, now.Range, 1e-6f, $"{k} reach");
+                Assert.AreEqual(then.Intensity, now.Intensity, 1e-6f, $"{k} intensity");
+                Assert.AreEqual(then.Color, now.Color, $"{k} colour");
+            }
+        }
+
+        // ---- the passthrough: yesterday's picture, exactly ---------------------------------------------
+
+        [Test]
+        public void ThePassthroughIsYesterdaysNumbers()
+        {
+            // ⚠️ PINNED AGAINST THE LITERALS THAT SHIPPED, not against For(). An A/B whose "before"
+            // arm drifts with the "after" one is not an A/B at all — it is two copies of today — and
+            // the drift would be invisible, because both arms would still look self-consistent.
+            LightPresets.Config cabin = BoatLampPresets.Legacy(HullLampKind.CabinGlow);
+            Assert.AreEqual(SceneLight.LightShape.Radial, cabin.Shape, "yesterday's cabin was a DISC");
+            Assert.AreEqual(1.5f, cabin.Range, 1e-6f);
+            Assert.AreEqual(0.55f, cabin.Intensity, 1e-6f);
+            Assert.AreEqual(0.92f, cabin.EdgeSoftness, 1e-6f);
+            Assert.AreEqual(0.03f, cabin.FlickerAmount, 1e-6f);
+
+            LightPresets.Config stern = BoatLampPresets.Legacy(HullLampKind.SternLight);
+            Assert.AreEqual(1.0f, stern.Range, 1e-6f);
+            Assert.AreEqual(1.1f, stern.Intensity, 1e-6f);
+
+            LightPresets.Config mast = BoatLampPresets.Legacy(HullLampKind.Masthead);
+            Assert.AreEqual(1.35f, mast.Range, 1e-6f);
+            Assert.AreEqual(1.25f, mast.Intensity, 1e-6f);
+
+            LightPresets.Config anchor = BoatLampPresets.Legacy(HullLampKind.AnchorLight);
+            Assert.AreEqual(0.75f, anchor.Range, 1e-6f);
+            Assert.AreEqual(0.8f, anchor.Intensity, 1e-6f);
+
+            // The range light was, and remains, the masthead's own look — one lamp, two stations.
+            Assert.AreEqual(mast.Range, BoatLampPresets.Legacy(HullLampKind.RangeLight).Range, 1e-6f);
+        }
+
+        [Test]
+        public void ThePassthroughIsActuallyDifferentFromToday()
+        {
+            // The negative control on the test above: if somebody "fixed" Legacy by making it call
+            // For(), every assertion up there would still pass and the A/B would be dead. This is
+            // the one that would go red.
+            foreach (HullLampKind k in new[]
+                     {
+                         HullLampKind.CabinGlow, HullLampKind.SternLight,
+                         HullLampKind.Masthead, HullLampKind.AnchorLight,
+                     })
+                Assert.AreNotEqual(BoatLampPresets.Legacy(k).Range, BoatLampPresets.For(k).Range,
+                                   $"the {k} is the same in both arms — the A/B has collapsed");
+        }
+
+        // ---- the wall wash ------------------------------------------------------------------------------
+
+        [Test]
+        public void AWallWashIsAimedSoftAndCored()
+        {
+            var go = new GameObject("spill");
+            try
+            {
+                var light = go.AddComponent<SceneLight>();
+                BoatLampPresets.ApplyWallSpill(light, windowWidthMetres: 0.66f);
+
+                Assert.AreEqual(SceneLight.LightShape.Cone, light.Shape);
+                Assert.AreEqual(BoatLampPresets.WallSpillHalfAngleDeg, light.ConeHalfAngle, 1e-6f);
+                Assert.AreEqual(0.924f, light.Range, 1e-4f,
+                                "the throw is twice that WINDOW's own width, from the data");
+
+                // ⭐ ZERO CORE, AND THIS IS THE ASSERTION THE WHOLE RULING TURNS ON. Every other lamp
+                // in the library wants a hot point at its origin because every other lamp IS a point.
+                // A spill's origin is a WALL; the bright thing there is the glass, drawn as a real
+                // rectangle by BoatWindowGlow. A core boost here would put a round blob back at the
+                // wall, which is exactly the picture the owner refused.
+                Assert.AreEqual(0f, light.CoreBoost, 1e-6f, "a wall wash has no hot point");
+            }
+            finally { Object.DestroyImmediate(go); }
+        }
+
+        [Test]
+        public void AWashIsScaledOffAWindowAndNotOffTheWall()
+        {
+            // ⭐ THE NUMBER THE RULING TURNS ON, tested at the two ends of the fleet's real range.
+            //
+            // The tanker's accommodation carries FIVE portholes strung over 6.8 m of side. Scaled off
+            // that SPAN her wash would be a seven-metre floodlight — the very thing this lane retired,
+            // put back on the biggest hull in the game. Scaled off one of her windows (0.42 m of
+            // inscribed glass) it is 0.84 m: a lit room seen through portholes, which is what she is.
+            Assert.AreEqual(0.588f, BoatLampPresets.WallSpillThrow(0.42f), 1e-4f,
+                            "a porthole washes twice its own width, however many neighbours it has");
+
+            // And the cape's 0.66 m side light reaches further than the tanker's porthole does —
+            // from the data, not from a dial, and in the right direction.
+            Assert.Greater(BoatLampPresets.WallSpillThrow(0.66f), BoatLampPresets.WallSpillThrow(0.42f),
+                           "a bigger window throws further");
+
+            // The clamps are backstops, not working numbers: nothing in the fleet reaches either.
+            Assert.AreEqual(BoatLampPresets.MaxWallSpillMetres, BoatLampPresets.WallSpillThrow(9f), 1e-6f);
+            Assert.AreEqual(BoatLampPresets.MinWallSpillMetres, BoatLampPresets.WallSpillThrow(0.05f), 1e-6f);
+            Assert.Less(BoatLampPresets.MaxWallSpillMetres,
+                        BoatLampPresets.Legacy(HullLampKind.CabinGlow).Range * 2f,
+                        "even the backstop must stay under the diameter of the disc this replaced");
         }
 
         // ---- stamping ---------------------------------------------------------------------------------

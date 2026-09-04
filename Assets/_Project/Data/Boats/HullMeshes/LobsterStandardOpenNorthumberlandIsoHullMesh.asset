@@ -684,3 +684,52 @@ MonoBehaviour:
   - Kind: 6
     RigLocalMetres: {x: 0, y: 0.7224, z: 4.1704}
     IntensityScale: 1
+  Panes:
+  - Wall: 0
+    CentreMetres: {x: -0.7615, y: 4.153114, z: 2.712}
+    HalfAcrossMetres: {x: 0.32050002, y: 0, z: 0}
+    HalfUpMetres: {x: 0, y: -0.10688624, z: 0.20999992}
+  - Wall: 0
+    CentreMetres: {x: 0, y: 4.153114, z: 2.712}
+    HalfAcrossMetres: {x: 0.321, y: 0, z: 0}
+    HalfUpMetres: {x: 0, y: -0.10688624, z: 0.20999992}
+  - Wall: 0
+    CentreMetres: {x: 0.7615, y: 4.153114, z: 2.712}
+    HalfAcrossMetres: {x: 0.32050002, y: 0, z: 0}
+    HalfUpMetres: {x: 0, y: -0.10688624, z: 0.20999992}
+  - Wall: 2
+    CentreMetres: {x: 1.2924, y: 0.7135, z: 2.567}
+    HalfAcrossMetres: {x: 0, y: -0.33350003, z: 0}
+    HalfUpMetres: {x: 0, y: 0, z: 0.27999997}
+  - Wall: 1
+    CentreMetres: {x: -1.2924, y: 0.7135, z: 2.567}
+    HalfAcrossMetres: {x: 0, y: 0.33350003, z: 0}
+    HalfUpMetres: {x: 0, y: 0, z: 0.27999997}
+  - Wall: 2
+    CentreMetres: {x: 1.2924, y: 1.5315, z: 2.567}
+    HalfAcrossMetres: {x: 0, y: -0.33350003, z: 0}
+    HalfUpMetres: {x: 0, y: 0, z: 0.27999997}
+  - Wall: 1
+    CentreMetres: {x: -1.2924, y: 1.5315, z: 2.567}
+    HalfAcrossMetres: {x: 0, y: 0.33350003, z: 0}
+    HalfUpMetres: {x: 0, y: 0, z: 0.27999997}
+  - Wall: 2
+    CentreMetres: {x: 1.2924, y: 2.349, z: 2.567}
+    HalfAcrossMetres: {x: 0, y: -0.334, z: 0}
+    HalfUpMetres: {x: 0, y: 0, z: 0.27999997}
+  - Wall: 1
+    CentreMetres: {x: -1.2924, y: 2.349, z: 2.567}
+    HalfAcrossMetres: {x: 0, y: 0.334, z: 0}
+    HalfUpMetres: {x: 0, y: 0, z: 0.27999997}
+  - Wall: 2
+    CentreMetres: {x: 1.2924, y: 3.1665, z: 2.567}
+    HalfAcrossMetres: {x: 0, y: -0.33350003, z: 0}
+    HalfUpMetres: {x: 0, y: 0, z: 0.27999997}
+  - Wall: 1
+    CentreMetres: {x: -1.2924, y: 3.1665, z: 2.567}
+    HalfAcrossMetres: {x: 0, y: 0.33350003, z: 0}
+    HalfUpMetres: {x: 0, y: 0, z: 0.27999997}
+  - Wall: 3
+    CentreMetres: {x: 0.8585, y: 0.24, z: 2.567}
+    HalfAcrossMetres: {x: -0.3585, y: 0, z: 0}
+    HalfUpMetres: {x: 0, y: 0, z: 0.27999997}

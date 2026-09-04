@@ -714,6 +714,20 @@ namespace HiddenHarbours.Core
         public static bool HullKeylineFlood =>
             Config != null ? Config.HullKeylineFlood : GameConfig.DefaultHullKeylineFlood;
 
+        /// <summary>The boat-glow passthrough (owner's ruling, 2026-09-03 — "the glows should be
+        /// constrained to their space, if its interior it should be confined to the cabin with the glow
+        /// only coming through the windows"): does the fleet still wear yesterday's discs? Same contract
+        /// as <see cref="WaveField"/>, including the <c>Config != null</c> discipline (never
+        /// <c>?.</c>/<c>??</c> on a <c>UnityEngine.Object</c> — Unity's fake-null defeats both). Falls
+        /// back to <see cref="GameConfig.DefaultBoatLegacyCabinGlow"/> — <b>OFF, the confined look</b>
+        /// — so an unwired scene ships the ruling, never the picture it replaced. Read by
+        /// <c>BoatLamps</c> and <c>BoatWindowGlow</c> when they build; the A/B plates force it ON
+        /// through this same dial, so the "yesterday, exactly" arm is the shipped code path rather than
+        /// a fork of it.
+        /// FLAG lead-architect: new Core contract (the boat-glow confinement seam).</summary>
+        public static bool BoatLegacyCabinGlow =>
+            Config != null ? Config.BoatLegacyCabinGlow : GameConfig.DefaultBoatLegacyCabinGlow;
+
         /// <summary>Is the RENDERED position of the camera and of every mesh vehicle rounded onto the
         /// current framing's whole-pixel grid (owner playtest 2026-08-23)? Same contract as
         /// <see cref="WaveField"/>, including the <c>Config != null</c> discipline (never

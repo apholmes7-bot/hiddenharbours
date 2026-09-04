@@ -452,3 +452,4 @@ MonoBehaviour:
   - Kind: 6
     RigLocalMetres: {x: 0, y: -2.925, z: 9.5}
     IntensityScale: 1
+  Panes: []

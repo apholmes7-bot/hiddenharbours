@@ -682,3 +682,147 @@ SIBLING INDEX — the trap that cost #702 five false reds. A row inserted before
 its flicker and move her shipped pixels; appended last, every earlier lamp keeps the index it had, and the
 anchor light is disabled while she is under way anyway. She needs one at all because one of the seven boats
 moored at Nine Mile Creek is a Cape Islander, and she would otherwise be the one dark hull on the wall.
+
+## Amendment — boat-lights PR 2c: a glow stays in its space, and a lit room is drawn as its WINDOWS (owner's ruling, 2026-09-03)
+
+**The ruling, verbatim**, given at #716's merge in answer to "the masthead and cabin glows read large and
+blobby at that zoom":
+
+> The glows should be constrained to their space, if its interior it should be confined to the cabin with
+> the glow only coming through the windows.
+
+It is about every glow a boat carries, and the cabin's is its sharpest case.
+
+### Why no radius could have fixed the cabin disc
+
+Two passes had already tried. The first made it 2.6 m and the pre-dawn shot showed a cape that looked on
+fire — one amber blob wider than her own beam. The second bounded it to the wheelhouse at 1.5 m, which was
+the right instinct and still read as a blob at the zoom the owner plays at.
+
+The reason is not the size. **A round pool centred on a room is not a lit room seen from outside; it is a
+lamp parked on a roof, and shrinking it only makes a smaller lamp.** What a lit room actually looks like
+from outside is its WINDOWS: a few bright rectangles in a dark box, with a wash of light on the deck under
+each of them. So the disc is retired and the glow is drawn as the two things it actually is.
+
+### What replaces it
+
+**The glass, as glass.** `BoatWindowGlow` builds ONE additive mesh per hull — four projected corners of
+each published pane, two triangles each — so a window is the right SHAPE at every heading and foreshortens
+correctly as she turns. The panes come from `HullMeshDef.Panes`, derived by `BoatWindowProbe` from the
+glazing every rig with a house already publishes (`front.glass`, `sideGlass`, `aftGlass`, `portholes`).
+
+**The wash, as a cone.** One `SceneLight` cone per glazed WALL, mounted at the middle of that wall's lit
+glass and aimed along its outward direction through the hull's own posed transform. Not one per pane: three
+windscreen panes 0.16 m apart throw one wedge of light onto the foredeck, not three.
+
+**And its throw comes off a WINDOW, not off the wall.** `WallSpillWindowMultiple` is 1.4 — just under half again the
+mean width of a window in that wall. Scaled off the wall's glazed SPAN instead, the tanker's five portholes
+strung over 6.8 m of accommodation would have thrown a seven-metre floodlight: the very thing this
+amendment retires, put back on the largest hull in the game. Light through a window is a property of the
+window, and cannot grow because a wall has more of them.
+
+### ⭐ Why the glass is drawn ABOVE the night overlay and not made emissive in the facet pass
+
+The obvious cut — a per-material night-emissive term in `HiddenHarboursIsoFacet`, lifting the `glas` ramp
+toward a lit-glass colour — **cannot produce a lit window, and the reason is the compositing order.**
+
+The day/night cycle is a whole-frame MULTIPLY at sorting order ~32760 (ADR 0013 decision (b)), and a mesh
+hull is drawn well below it: her facet pass writes an offscreen MRT, the resolve pass writes
+`_HHHullScreenTex`, and the in-scene overlay quads composite at her own world sorting order. So **nothing
+drawn into a hull's own pass can read as lit at 02:00**: the very brightest pre-multiply colour a pane
+could take — pure white — comes out as the night tint itself, luminance ≈ 0.17 at the shipped exposure. An
+emissive `glas` would have produced a slightly paler dark-blue rectangle.
+
+These quads sit ABOVE the overlay with the lamps, blended One-One, and gate on the same published
+`_DayNightTint` in-shader. Nothing in the facet shader changed, and no new shader or material was added at
+all: the panes are drawn with the shipped `HiddenHarbours/AdditiveLight` material, told to FILL a quad
+rather than halo it (lamp at the quad centre, no cone, no core, `_Throw` 4 so the falloff across one pane
+is a gentle bias instead of a blob).
+
+### ⭐ The far side of the house culls itself
+
+A window is drawn from its four PROJECTED corners, so a wall turning away from the camera foreshortens to a
+sliver, reaches exactly zero area edge-on, and then shows the viewer its inside. Drawing that far side
+would throw a wedge of amber across her own roof.
+
+`BoatWindowGlow.FacesCamera` drops it — and because it drops it at the instant the projected area is nought,
+**there is nothing to fade and nothing to pop.** The test is the DEPTH of the pane's outward direction
+through the hull's posed transform (nearer is smaller z, the same axis the facet shader sorts deck
+occupants by), taken with `TransformVector` rather than reasoned about, because that transform carries the
+rig-to-world MIRROR (`IsoFacetMath.HullScale` is `(1,1,-1)`) and a mirror flips the sense of a normal.
+
+The sign is pinned twice, from two independent rows of the same projection: the depth row
+(`world.z = rY·cos e − rZ·sin e`) and the screen-up row (`world.y = rY·sin e + rZ·cos e`, a wall facing the
+viewer throwing its light DOWN-screen).
+
+### The navigation lamps are the size of their own fittings now
+
+The other half of the ruling. Reach only; no colour, no meaning, and no regime changed.
+
+| lamp | was | now |
+|---|---|---|
+| masthead / range | 1.35 m @ 1.25 | **0.50 m @ 1.60** |
+| stern | 1.00 m @ 1.10 | **0.40 m @ 1.35** |
+| anchor | 0.75 m @ 0.80 | **0.34 m @ 1.00** |
+| sidelights | 0.28 m @ 1.40 | **unchanged** |
+
+The intensity carries what the radius gave up: a small hot dot reads as a lamp at this camera far better
+than a broad haze, and a haze is not what a lamp looks like anyway. That is the trade the SIDELIGHTS
+already made — they were bounded by the 0.6048 m gap between them, a harder constraint than this ruling's
+and already met — now applied to the three that had not made it. **All three moved together so their ORDER
+is exactly preserved**: the masthead is still the brightest and biggest white, the anchor light still the
+dimmest and smallest, and a wharf of sleeping boats still reads as a fleet asleep.
+
+### The passthrough
+
+`GameConfig.BoatLegacyCabinGlow` (ship default OFF) restores yesterday's picture exactly — the 1.5 m disc
+and the old pool radii — and draws no windows at all. The old numbers live in `BoatLampPresets.Legacy` as
+literals, pinned by a test against what actually shipped, with a negative control that fails if anybody
+"simplifies" `Legacy` into a call to `For`. An A/B whose other arm is "check out the parent commit" is an
+A/B nobody runs, and a plate pair shot from two working trees has two builds in it.
+
+### ⚠️ Two hulls are REFUSED, and they keep their disc rather than going dark
+
+The probe validates every derived pane against the hull's own baked mesh and drops the ones that do not
+land on her. Twenty-five hulls place every corner within **0.203 m** of a real vertex — the rounded corners
+the rigs cut (0.05) plus the proud offset a glazed panel is drawn at (0.065) account for all of it. **The
+two sport fishers do not**: their accommodation publishes a FLAT `hx` for a side that curves in plan (her
+portholes are drawn on `V.P(t,z)`, a profile the record does not carry), so panes placed at ±hx float
+**0.32–0.51 m** outboard of her actual side — worst at her ends, least amidships, which is the shape of the
+taper.
+
+A lit window hanging off the boat is worse than no window, so their room falls back to the glow it already
+has (`BoatLamps.HasWindows`). That is the same rule the presentation service states for an unusable def:
+degrade to the SHIPPED look, never to an invisible boat. **UPSTREAM ASK:** publish a per-station half-width
+beside `hx`, the way the wheelhouse family's `hxAt(y)` already tapers.
+
+The tolerance is 0.30 m and it is a measurement, not a taste: it clears the worst honest corner (0.203 m,
+the lobster boat) and refuses the best dishonest one (0.453 m) with room on both sides, and a test goes red if either edge creeps toward it.
+
+### ⚠️ And `hxAt` means two different things
+
+The wheelhouse rigs' `hxAt` takes **y**; the ship and sport rigs' takes **z**. Handing one the other's
+argument does not throw — it returns a plausible half-width for the wrong reason and floats every side
+window slightly off her wall. Likewise `aftGlass` ships under one name with two schemas: a wheelhouse's is
+a single strip `{x0,x1,z0,z1}`, a bridge's a pane list `{z0,z1,panes:[[x0,x1]…]}`, and reading either with
+the other's keys yields `undefined` → NaN → a pane at the origin. Both are decoded down separate paths and
+an unrecognised shape is refused with a message.
+
+### Budget (rule 7)
+
+**218 panes over 25 hulls cost 25 MESHES, not 218 quads.** Per lit hull the cabin goes from 1 disc quad to
+1 pane mesh plus at most 2 wall washes — a box shows a viewer at most two of its sides, and the fixture
+asserts it. Everything else is unchanged.
+
+**A moored fleet costs exactly what it did.** At a berth the cabin glow is off unless somebody is aboard,
+so a wharf of sleeping boats draws no pane mesh and no wash at all.
+
+Per frame per lit hull: one `TransformVector` and one `TransformPoint` per pane, four more for each pane
+that faces the camera, and one `SetVertices` of a pooled, `MarkDynamic` mesh. Allocation-free — the vertex
+buffer and the four per-wall accumulators are built once and rewritten in place.
+
+### What did NOT change
+
+The night gate, the day/night curve, the water shader, the searchlight (its beam is already bounded by its
+own cone and relief), the regime (`ShowsWhen`), the rule of the road, and the sidelights. `HullMeshDef.Panes`
+is GAME-SIDE like `Lamps`: the mesh baker never writes it, so it survives a re-bake.

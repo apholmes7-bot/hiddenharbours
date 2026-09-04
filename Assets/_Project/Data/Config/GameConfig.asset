@@ -278,6 +278,7 @@ MonoBehaviour:
     EnvelopeBandStrength: 0.35
     DefaultOn: 1
   HullKeylineFlood: 0
+  BoatLegacyCabinGlow: 0
   PixelGridSnap: 1
   FoliageSilhouette: 1
   FoliageSilhouetteTint: {r: 0.94, g: 0.9, b: 0.82, a: 1}
