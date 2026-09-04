@@ -22,4 +22,5 @@ MonoBehaviour:
   _groundContactMinHeight: 3
   _groundContactSoftness: 0.55
   _sortByFarEnd: 1
+  _screenSpaceShade: 0
   _edgeSoftness: 0
