@@ -106,13 +106,29 @@ namespace HiddenHarbours.Art
                 // window spill, steadier (an electric/gas street lamp barely flickers). Offset so the glow sits
                 // at the ground under the lamp HEAD (the post decor mounts the head ~2.2 m up; the pool falls
                 // just below it).
+                //
+                // ⭐ RETUNED 2026-09-04 from 1.15 / 4.6 m / 0.78, off 02:00 plates of the St Peters pier at
+                // the game's own on-foot framing (9 m of world height). At 4.6 m the pool is HALF THE
+                // SCREEN and, added on top of ADR 0013's night multiply, saturates to a flat cream disc
+                // that hides the planks it is meant to light — the deck, the bollards and the post itself
+                // all vanish inside it. A sweep at 4.6 / 3.5 / 2.5 m put the read squarely at the short
+                // end. These are the FIRST measured values this preset has ever carried; the shipped
+                // numbers were a stub, placed nowhere in the game.
+                //
+                // ⚠ The physical answer and the rendered one disagree, and it is worth saying why. A lamp
+                // lights a circle of roughly twice its head height, so a 4.48 m streetLamp really should
+                // pool ~4.5 m. It cannot here, because ADR 0016's additive quad is the SOURCE'S OWN BLOOM
+                // and not illumination — it adds light to the frame rather than modulating what the ground
+                // returns. Making a lamp light the ground the way the sun lights a tree (the lit-decor
+                // path, #715) is the real fix and is its own PR; until then the pool is deliberately
+                // smaller than physics so that it reads.
                 case Kind.Lightpost:
                     return new Config(
                         SceneLight.LightShape.Radial,
                         new Color(1f, 0.88f, 0.62f, 1f),   // warm sodium-ish lamp
-                        intensity: 1.15f,
-                        range: 4.6f,
-                        edgeSoftness: 0.78f,
+                        intensity: 0.9f,
+                        range: 3.6f,
+                        edgeSoftness: 0.88f,               // softer: the hard edge is what read as a disc
                         flickerAmount: 0.02f,              // a barely-there electric hum
                         originOffset: new Vector2(0f, -0.2f));
 
@@ -141,9 +157,9 @@ namespace HiddenHarbours.Art
                     return new Config(
                         SceneLight.LightShape.Radial,
                         new Color(0.96f, 0.97f, 1f, 1f),   // cool mercury/LED flood
-                        intensity: 1.5f,
-                        range: 9.5f,
-                        edgeSoftness: 0.6f,                // harder-edged than a lamp pool: it is higher up
+                        intensity: 1.1f,
+                        range: 7f,                         // see Lightpost's note: sized to READ, not to physics
+                        edgeSoftness: 0.72f,               // harder-edged than a lamp pool: it is higher up
                         flickerAmount: 0f,                 // steady electric flood
                         originOffset: Vector2.zero);
 

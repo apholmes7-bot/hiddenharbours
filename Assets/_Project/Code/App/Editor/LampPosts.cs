@@ -250,11 +250,10 @@ namespace HiddenHarbours.App.Editor
         /// Give an already-placed object the preconfigured lamp for a kit key: the night-gated glow, the
         /// preset's look, and the lamp head height the PACK publishes.
         ///
-        /// <para>Public and separate from <see cref="Place"/> so a builder that already draws the piece for
-        /// its own reasons can light it without the sprite being placed twice — which is exactly Nine Mile
-        /// Creek's case, where the yard light at the wharf entrance has stood there since #462 as a decor
-        /// prop described as <i>"the only lit thing out here at night"</i> and has never emitted a photon.
-        /// </para>
+        /// <para>Public and separate from <see cref="Place"/> so a builder that already draws a piece for
+        /// its own reasons can light it in place, without the sprite being placed a second time. (Nine Mile
+        /// Creek's unlit yard light took the other road — it MOVED into the lamp table, because the honest
+        /// fix for a decor prop that should always have been a lamp is to stop calling it decor.)</para>
         ///
         /// <para>⚠ The preset is stamped onto the <see cref="SceneLight"/> HERE as well as being set on the
         /// <see cref="PreconfiguredLight"/>. <see cref="PreconfiguredLight"/> stamps in <c>Awake</c>, which

@@ -131,6 +131,22 @@ namespace HiddenHarbours.App.Editor
         /// a working deck.</summary>
         public static float BackRowY => GearBandMaxY;
 
+        /// <summary>
+        /// The row the LAMP POSTS stand on: the FRONT of the gear band, half a metre in — the closest to
+        /// the mooring edge that anything standing is allowed to get.
+        ///
+        /// <para>⭐ Not <see cref="BackRowY"/>, and a 02:00 plate is why. This quay is ten metres deep and
+        /// a <see cref="LightPresets.Kind.Lightpost"/> pool is 3.6 m, so a lamp against the yard lights the
+        /// gear and leaves the berths — the one place a crew steps off a boat in the dark — entirely
+        /// unlit. There is no row on a 10 m quay that reaches both, so the lamp takes the working edge and
+        /// the gear behind it keeps the dark it has always had.</para>
+        ///
+        /// <para><see cref="WorkingStripMetres"/> is what stops it going further: the strip is where fish
+        /// are landed and lines are handled, and a post in it is a post in the way of the one thing the
+        /// wharf is for. So the lamp stands at the strip's back edge and reaches across it.</para>
+        /// </summary>
+        public static float LampRowY => GearBandMinY + 0.5f;
+
         /// <summary>Where the safety gear stands: in from the lip far enough to be out of the way of a
         /// line, close enough to be at the edge where somebody goes in.</summary>
         public static float LipRowY => Quay.yMin + FittingClearanceMetres;
@@ -444,10 +460,10 @@ namespace HiddenHarbours.App.Editor
         /// so the lamps take 4 and 9, which are clear and spread the light along the wall the moored fleet
         /// lies against.</para>
         /// </summary>
-        public static IReadOnlyList<LampPosts.Site> Lamps()
+        public static IReadOnlyList<LampPosts.Site> Lamps(ITidalTerrain terrain)
         {
             Vector2[] road = NineMileCreekMainland.WharfRoad;
-            float back = BackRowY, sea = SeawardHeading;
+            float lampRow = LampRowY, sea = SeawardHeading;
             Rect yard = NineMileCreekLaydown.ApronArea();
             Rect forecourt = NineMileCreekStation.Route91ApronArea();
 
@@ -455,11 +471,11 @@ namespace HiddenHarbours.App.Editor
             {
                 // --- the wall the fleet lies against ------------------------------------------------
                 LampPosts.OnGround(LampPosts.UtilityFamily, LampPosts.StreetLamp,
-                    new Vector2(AtBerth(4), back), sea,
-                    "the west end of the mooring wall — a warm post against the yard, out of the working " +
-                    "middle, where a crew comes off a boat in the dark"),
+                    new Vector2(AtBerth(4), lampRow), sea,
+                    "the west end of the mooring wall — at the front of the gear band, as near the berths " +
+                    "as anything may stand, where a crew comes off a boat in the dark"),
                 LampPosts.OnGround(LampPosts.UtilityFamily, LampPosts.StreetLamp,
-                    new Vector2(AtBerth(9), back), sea,
+                    new Vector2(AtBerth(9), lampRow), sea,
                     "the east end of the same wall, five berths along: two lit stretches with a dark one " +
                     "between them, which is what a working quay looks like at night"),
 
@@ -470,12 +486,12 @@ namespace HiddenHarbours.App.Editor
                     "the yard rather than on the working deck — #462's site, now actually lit"),
 
                 // --- Wharf Road, on the pole line ---------------------------------------------------
-                OnThePoleLine(road, 0, LampPosts.StreetLamp,
+                OnThePoleLine(road, 0, LampPosts.StreetLamp, terrain,
                     "the town end, where Wharf Road leaves the through-road — the junction you turn at " +
                     "in the dark"),
-                OnThePoleLine(road, 4, LampPosts.StreetLamp,
-                    "the neck, where the road steps off the fields onto the spit between the barachois " +
-                    "and the marsh pool"),
+                OnThePoleLine(road, 4, LampPosts.StreetLamp, terrain,
+                    "the approach across the spit — anchored where the road leaves the fields, walked " +
+                    "forward to the first site that is dry"),
 
                 // --- the working yards ---------------------------------------------------------------
                 LampPosts.OnGround(LampPosts.UtilityFamily, LampPosts.FloodMast,
@@ -499,21 +515,59 @@ namespace HiddenHarbours.App.Editor
         /// <para><b>⚠ Snapped to the MIDPOINT between two poles, and it has to be.</b> <see cref="Poles"/>
         /// stands one every <c>UtilityPoleSpacingMetres</c> from along = 0, so a lamp placed at node 0 —
         /// which is exactly what the first draft did — lands inside pole 0. Snapping to the nearest
-        /// half-spacing puts every lamp exactly twenty metres from its two neighbouring poles, which is
-        /// both collision-free by construction and how a road is really strung: the lamps go in the gaps.
-        /// </para>
+        /// half-spacing puts a lamp twenty metres from its two neighbouring poles, which is both
+        /// collision-free by construction and how a road is really strung: the lamps go in the gaps.</para>
+        ///
+        /// <para><b>⭐⭐ And then it WALKS FORWARD until the ground is dry, which is not a nicety.</b> The
+        /// second draft anchored at node 4 and snapped to along = 220 m, where the pole line's own 5 m north
+        /// offset puts a post at <b>−0.16 m</b> — the road crosses the neck between the barachois and the
+        /// marsh pool, and five metres north of the centre-line there is water. Measured along the whole
+        /// line, every half-spacing site is 6.00 m of dry field except that one, and 3.60 m out on the spit
+        /// beyond it.
+        ///
+        /// <para>⚠ <b>The existing pole line steps over that hole by luck.</b> The poles at 200 m (5.71 m)
+        /// and 240 m (5.04 m) straddle the notch, so nothing has ever stood in it — a pole at 220 m would be
+        /// in the water exactly as this lamp was. Worth knowing before anyone changes
+        /// <c>UtilityPoleSpacingMetres</c>.</para>
+        ///
+        /// <para>Walking forward rather than hand-picking a dry number keeps the site DERIVED: the anchor
+        /// still names a place the road goes, and a terrain edit that floods or drains the neck moves the
+        /// lamp instead of silently leaving it paddling. A null terrain takes the anchor unchecked, and
+        /// <see cref="LampPosts.Place"/>'s own guard is the backstop.</para>
         /// </summary>
-        static LampPosts.Site OnThePoleLine(Vector2[] route, int nodeIndex, string key, string reason)
+        static LampPosts.Site OnThePoleLine(Vector2[] route, int nodeIndex, string key, ITidalTerrain terrain,
+                                            string reason)
         {
             float spacing = NineMileCreekMainland.UtilityPoleSpacingMetres;
-            float along = (Mathf.Floor(AlongAtNode(route, nodeIndex) / spacing) + 0.5f) * spacing;
+            float length = NineMileCreekMainland.RouteLength(route);
+            float anchor = (Mathf.Floor(AlongAtNode(route, nodeIndex) / spacing) + 0.5f) * spacing;
+
+            for (float along = anchor; along < length; along += spacing)
+            {
+                Vector2 at = PoleLinePoint(route, along, out float heading);
+                if (terrain != null && terrain.ElevationAt(at) <= NineMileCreekMainland.SpringHighWater)
+                    continue;
+                string where = along > anchor
+                    ? $"{reason} (anchored at {anchor:0} m, walked to {along:0} m: the ground at the anchor " +
+                      "is at or below spring high water)"
+                    : reason;
+                return LampPosts.OnGround(LampPosts.UtilityFamily, key, at, heading, where);
+            }
+
+            // Nowhere dry ahead: take the anchor and let Place()'s guard say so out loud.
+            Vector2 fallback = PoleLinePoint(route, anchor, out float fallbackHeading);
+            return LampPosts.OnGround(LampPosts.UtilityFamily, key, fallback, fallbackHeading, reason);
+        }
+
+        /// <summary>A point on the pole line at <paramref name="along"/>, with the heading a LAMP takes
+        /// there. A lamp looks ACROSS the road — unlike a pole, whose crossarm must lie ALONG the wires it
+        /// carries — so from the north side it looks south, at the gravel it lights.</summary>
+        static Vector2 PoleLinePoint(Vector2[] route, float along, out float heading)
+        {
             Vector2 on = MainlandCoast.PositionAt(route, along);
             Vector2 north = NorthNormalAt(route, along);
-            // A lamp looks ACROSS the road (unlike a pole, whose crossarm must lie ALONG the wires it
-            // carries) — so from the north side it looks south, at the gravel it lights.
-            float heading = IsoPackSprites.HeadingOf(-north);
-            return LampPosts.OnGround(LampPosts.UtilityFamily, key,
-                on + north * NineMileCreekMainland.UtilityPoleOffsetMetres, heading, reason);
+            heading = IsoPackSprites.HeadingOf(-north);
+            return on + north * NineMileCreekMainland.UtilityPoleOffsetMetres;
         }
 
         /// <summary>How far along a route its <paramref name="index"/>th NODE lies. The road's nodes are
@@ -1087,7 +1141,7 @@ namespace HiddenHarbours.App.Editor
             // THE LAMPS, on their own root so the owner can toggle every light in the region at once.
             var lampRoot = new GameObject(LampsRootName);
             lampRoot.transform.SetParent(root.transform, worldPositionStays: false);
-            int lamps = LampPosts.Place(lampRoot.transform, Lamps(), terrain,
+            int lamps = LampPosts.Place(lampRoot.transform, Lamps(terrain), terrain,
                                         NineMileCreekMainland.SpringHighWater,
                                         "[NineMileCreekDressing]");
 

@@ -146,24 +146,30 @@ namespace HiddenHarbours.Tests.Art.EditMode
         }
 
         /// <summary>
-        /// The three shipped presets are UNMOVED by the Floodlight's arrival. Adding a fourth kind is a
-        /// cheap change; quietly retuning a lamp the owner has already looked at is not, and Ginny's
-        /// cottage is lit by <see cref="LightPresets.Kind.WindowGlow"/>.
+        /// <b>The presets that have been LOOKED AT are unmoved; the stub that never had been is retuned.</b>
+        /// <see cref="LightPresets.Kind.WindowGlow"/> lights Aunt Ginny's cottage and the owner has seen it,
+        /// so it does not move. <see cref="LightPresets.Kind.Worklight"/> is placed nowhere and is left
+        /// exactly as shipped. <see cref="LightPresets.Kind.Lightpost"/> WAS also placed nowhere, and its
+        /// stub values (1.15 / 4.6 m / 0.78) turned out to fill half the screen with a flat cream disc the
+        /// first time anything carried them — so they are now the measured ones, pinned here so the next
+        /// change to them is deliberate.
         /// </summary>
         [Test]
-        public void TheThreeOriginalPresets_AreUnchanged()
+        public void ThePresetsThatShipped_AreUnchanged_AndTheLampPostIsPinnedAtItsMeasuredValues()
         {
             var window = LightPresets.For(LightPresets.Kind.WindowGlow);
-            Assert.AreEqual(0.95f, window.Intensity, 1e-6f);
+            Assert.AreEqual(0.95f, window.Intensity, 1e-6f, "Ginny's cottage does not move");
             Assert.AreEqual(3.4f, window.Range, 1e-6f);
 
-            var lamp = LightPresets.For(LightPresets.Kind.Lightpost);
-            Assert.AreEqual(1.15f, lamp.Intensity, 1e-6f);
-            Assert.AreEqual(4.6f, lamp.Range, 1e-6f);
-
             var work = LightPresets.For(LightPresets.Kind.Worklight);
-            Assert.AreEqual(1.35f, work.Intensity, 1e-6f);
+            Assert.AreEqual(1.35f, work.Intensity, 1e-6f, "a lamp on a wall, placed nowhere, untouched");
             Assert.AreEqual(5.2f, work.Range, 1e-6f);
+
+            var lamp = LightPresets.For(LightPresets.Kind.Lightpost);
+            Assert.AreEqual(0.9f, lamp.Intensity, 1e-6f, "measured off the 02:00 pier plates");
+            Assert.AreEqual(3.6f, lamp.Range, 1e-6f);
+            Assert.Less(lamp.Range, 4.6f,
+                "the stub value blew the pool out to half the screen — a regression to it must redden");
         }
 
     }

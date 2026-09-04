@@ -5,7 +5,9 @@ using NUnit.Framework;
 using UnityEngine;
 using HiddenHarbours.App.Editor;
 using HiddenHarbours.Art;
-using HiddenHarbours.World;               // MainlandCoast — the route the pole line and the lamps share
+using Object = UnityEngine.Object;
+using HiddenHarbours.Core;                // ITidalTerrain
+using HiddenHarbours.World;               // MainlandCoast, MainlandTidalTerrain — the route the pole line and the lamps share
 
 namespace HiddenHarbours.Tests.EditMode
 {
@@ -21,6 +23,30 @@ namespace HiddenHarbours.Tests.EditMode
     /// </summary>
     public class LampPostsTests
     {
+        private GameObject _terrainHost;
+
+        [TearDown]
+        public void TearDown()
+        {
+            if (_terrainHost != null) Object.DestroyImmediate(_terrainHost);
+            _terrainHost = null;
+        }
+
+        /// <summary>Nine Mile Creek's own authored terrain — the same one the dressing tests measure
+        /// against, and the one the lamp siting walks along looking for dry ground.</summary>
+        private ITidalTerrain CreekTerrain()
+        {
+            if (_terrainHost == null)
+                _terrainHost = new GameObject("lampTerrain") { hideFlags = HideFlags.HideAndDontSave };
+            var t = _terrainHost.GetComponent<MainlandTidalTerrain>();
+            if (t == null)
+            {
+                t = _terrainHost.AddComponent<MainlandTidalTerrain>();
+                NineMileCreekBuilder.ConfigureNineMileCreekTerrain(t);
+            }
+            return t;
+        }
+
         // The four pieces LampPosts knows how to light, and the heights their own rig contracts publish.
         // Pinned rather than read so a re-bake that silently changes a lamp's height reddens here: the
         // height is not decoration, it is what sets every cast shadow's length off this lamp.
@@ -126,14 +152,58 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.IsTrue(lamp.StandsOnDeck, "a pier lamp is checked against the planks");
                 Assert.IsTrue(deck.Contains(lamp.Position),
                     $"{lamp.Key} at {lamp.Position} must be on the deck, not beside it");
-                Assert.AreEqual(StPetersWharf.MaxCellY + 0.5f, lamp.Position.y, 1e-4f,
-                    "the north row: the working edge is the south one");
+                Assert.AreEqual(StPetersWharf.LampRowY, lamp.Position.y, 1e-4f,
+                    "the row the pool's reach allows — back from the working edge, but not so far back " +
+                    "that it stops covering it");
+                Assert.Greater(lamp.Position.y, 0f,
+                    "and still on the NORTH half: the mooring gear is all on the south lip");
 
+                // 1.5 m is twice the deepest footprint either kit publishes for a piece this size
+                // (lanternPost is 0.46 x 0.73 m), so it is a bar on CO-SITING, not on neighbourliness:
+                // the head lamp really does stand 2.0 m from the corner pilehead and that is fine.
                 foreach (var fitting in StPetersWharf.Fittings())
-                    Assert.Greater(Vector2.Distance(lamp.Position, fitting.Position), 2f,
+                    Assert.Greater(Vector2.Distance(lamp.Position, fitting.Position), 1.5f,
                         $"{lamp.Key} stands {Vector2.Distance(lamp.Position, fitting.Position):0.0} m from " +
                         $"the {fitting.Name} — a post needs room round the gear it shares a deck with");
             }
+        }
+
+        /// <summary>
+        /// <b>⭐ The lamps actually reach the gear they are for.</b> This is the assertion the first draft
+        /// failed: on the back row at y = 2.5 the pool fell 0.4 m short of the bollards at y = −2.5, so the
+        /// pier's 02:00 plate had two pools of light and not one lamp shadow off a fitting. A lamp that
+        /// lights only the planks it stands on is a lamp in the wrong row.
+        /// </summary>
+        [Test]
+        public void EachStPetersLamp_ReachesTheNearestMooringFitting()
+        {
+            float reach = LightPresets.For(LightPresets.Kind.Lightpost).Range;
+
+            foreach (var lamp in StPetersWharf.LampPostSites())
+            {
+                float nearest = StPetersWharf.MooringFittings()
+                    .Min(f => Vector2.Distance(lamp.Position, f.Position));
+                Assert.Less(nearest, reach,
+                    $"the nearest tie-off is {nearest:0.00} m from this lamp, which reaches {reach:0.00} m " +
+                    "— the mooring edge is the one place a rope is worked in the dark");
+            }
+        }
+
+        /// <summary>
+        /// And the row is DERIVED from that reach, not typed: widen the preset and the lamps must step
+        /// further back, because the whole point of the row is to be as far out of the working edge as the
+        /// pool can afford. A hard-coded row would silently stop tracking.
+        /// </summary>
+        [Test]
+        public void TheLampRow_FollowsThePresetsReach_RatherThanBeingChosen()
+        {
+            float reach = LightPresets.For(LightPresets.Kind.Lightpost).Range;
+            float fittingRow = StPetersWharf.MinCellY + 0.5f;
+
+            Assert.LessOrEqual(StPetersWharf.LampRowY, fittingRow + reach,
+                "the row must be inside the pool's reach of the fitting row");
+            Assert.Greater(StPetersWharf.LampRowY + 1f, fittingRow + reach,
+                "and it must be the FURTHEST BACK row that is — one row further north would be outside");
         }
 
         /// <summary>
@@ -173,7 +243,7 @@ namespace HiddenHarbours.Tests.EditMode
                 "the unlit decor copy is gone");
 
             var entrance = NineMileCreekDressing.WharfEntrance() + new Vector2(0f, 2f);
-            var lit = NineMileCreekDressing.Lamps().Where(l => l.Key == LampPosts.YardLight).ToList();
+            var lit = NineMileCreekDressing.Lamps(CreekTerrain()).Where(l => l.Key == LampPosts.YardLight).ToList();
 
             Assert.AreEqual(2, lit.Count, "the wharf entrance and the Route 91 forecourt");
             Assert.AreEqual(1, lit.Count(l => Vector2.Distance(l.Position, entrance) < 1e-3f),
@@ -188,22 +258,34 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void TheQuayLamps_AreOnTheBackRow_ClearOfWhatIsAlreadyOnIt()
         {
-            var onTheBack = NineMileCreekDressing.QuayGear()
+            var onTheQuay = NineMileCreekDressing.QuayGear()
                 .Concat(NineMileCreekDressing.Services())
-                .Where(p => Mathf.Abs(p.Position.y - NineMileCreekDressing.BackRowY) < 0.5f)
                 .ToList();
+            Assert.IsNotEmpty(onTheQuay, "the quay really does carry gear — otherwise this proves nothing");
 
-            Assert.IsNotEmpty(onTheBack, "the back row really does carry gear — otherwise this proves nothing");
-
-            var quayLamps = NineMileCreekDressing.Lamps()
-                .Where(l => Mathf.Abs(l.Position.y - NineMileCreekDressing.BackRowY) < 0.5f)
+            var quayLamps = NineMileCreekDressing.Lamps(CreekTerrain())
+                .Where(l => Mathf.Abs(l.Position.y - NineMileCreekDressing.LampRowY) < 0.5f)
                 .ToList();
             Assert.AreEqual(2, quayLamps.Count, "two along eighty-four metres of wall");
 
             foreach (var lamp in quayLamps)
-                foreach (var prop in onTheBack)
-                    Assert.Greater(Vector2.Distance(lamp.Position, prop.Position), 4f,
-                        $"a lamp at {lamp.Position.x:0.#} is on top of the {prop.Key}");
+            {
+                // Out of the working strip, which is what the strip is for.
+                Assert.GreaterOrEqual(lamp.Position.y, NineMileCreekDressing.GearBandMinY,
+                    "a post in the working strip is a post in the way of a landing");
+
+                // ⭐ And its pool actually reaches the mooring edge — the reason it is at the FRONT of the
+                // gear band and not against the yard. On a ten-metre quay a 3.6 m pool cannot do both.
+                float reach = LightPresets.For(LightPresets.Kind.Lightpost).Range;
+                float toLip = lamp.Position.y - NineMileCreekWharf.DeckFootprint().yMin;
+                Assert.Less(toLip, reach,
+                    $"the berths are {toLip:0.00} m from this lamp, which reaches {reach:0.00} m — a wharf " +
+                    "lamp that does not light the berth lights the wrong thing");
+
+                foreach (var prop in onTheQuay)
+                    Assert.Greater(Vector2.Distance(lamp.Position, prop.Position), 2f,
+                        $"a lamp at {lamp.Position.x:0.#},{lamp.Position.y:0.#} is on top of the {prop.Key}");
+            }
         }
 
         /// <summary>
@@ -220,7 +302,7 @@ namespace HiddenHarbours.Tests.EditMode
             float offset = NineMileCreekMainland.UtilityPoleOffsetMetres;
 
             var poles = NineMileCreekDressing.Poles().Select(p => p.Position).ToList();
-            var roadLamps = NineMileCreekDressing.Lamps()
+            var roadLamps = NineMileCreekDressing.Lamps(CreekTerrain())
                 .Where(l => l.Key == LampPosts.StreetLamp
                             && Mathf.Abs(l.Position.y - NineMileCreekDressing.BackRowY) > 0.5f)
                 .ToList();
@@ -270,7 +352,7 @@ namespace HiddenHarbours.Tests.EditMode
         public void TheFloodMast_StandsOffTheLaydownPavement()
         {
             Rect apron = NineMileCreekLaydown.ApronArea();
-            var mast = NineMileCreekDressing.Lamps().Single(l => l.Key == LampPosts.FloodMast);
+            var mast = NineMileCreekDressing.Lamps(CreekTerrain()).Single(l => l.Key == LampPosts.FloodMast);
 
             Assert.IsFalse(apron.Contains(mast.Position),
                 $"the mast at {mast.Position} is standing on the yard it is meant to light from the edge of");
@@ -295,11 +377,70 @@ namespace HiddenHarbours.Tests.EditMode
             var known = new[]
                 { LampPosts.LanternPost, LampPosts.StreetLamp, LampPosts.YardLight, LampPosts.FloodMast };
 
-            foreach (var lamp in NineMileCreekDressing.Lamps().Concat(StPetersWharf.LampPostSites()))
+            foreach (var lamp in NineMileCreekDressing.Lamps(CreekTerrain()).Concat(StPetersWharf.LampPostSites()))
             {
                 CollectionAssert.Contains(known, lamp.Key, $"unknown lamp piece '{lamp.Key}'");
                 Assert.IsNotEmpty(lamp.Reason, $"{lamp.Key} must say what it is for");
             }
+        }
+
+        /// <summary>
+        /// <b>⭐ Every ground lamp stands on ground that is dry at every tide.</b> The builder already refuses
+        /// a wet site loudly, but a console error on a rebuild is not a gate — this is, and it is the test
+        /// that caught the first draft: the second road lamp was anchored at Wharf Road's node 4, <i>"stepping
+        /// onto the spit"</i>, which snapped to a point five metres north of the centre-line where the ground
+        /// is <b>−0.16 m</b>. The road crosses the neck between the barachois and the marsh pool, and beside
+        /// it there is water.
+        ///
+        /// <para>Measured against the region's OWN authored terrain, so a terrain edit that floods a lamp
+        /// reddens here instead of shipping a post standing in a marsh.</para>
+        /// </summary>
+        [Test]
+        public void EveryGroundLamp_StandsOnGroundDryAtEveryTide()
+        {
+            ITidalTerrain terrain = CreekTerrain();
+            float springHigh = NineMileCreekMainland.SpringHighWater;
+
+            foreach (var lamp in NineMileCreekDressing.Lamps(terrain))
+            {
+                if (lamp.StandsOnDeck) continue;   // planks are checked against the deck, not the seabed
+                float ground = terrain.ElevationAt(lamp.Position);
+                Assert.Greater(ground, springHigh,
+                    $"'{lamp.Key}' at {lamp.Position} stands on {ground:0.00} m, at or under spring high " +
+                    $"water ({springHigh:0.0} m). {lamp.Reason}");
+            }
+        }
+
+        /// <summary>
+        /// <b>And the walk really is the terrain's doing, not a coordinate that happens to be dry.</b> Handed
+        /// NO terrain the second road lamp takes its raw anchor — along = 220 m, the wet notch at the neck —
+        /// so the site that ships is demonstrably the one the ground chose. Without this the dryness test
+        /// above would pass just as well against a hard-coded number.
+        /// </summary>
+        [Test]
+        public void TheRoadLampsSite_IsChosenByTheGround_NotByACoordinate()
+        {
+            var unchecked_ = NineMileCreekDressing.Lamps(null)
+                .Where(l => l.Key == LampPosts.StreetLamp
+                            && Mathf.Abs(l.Position.y - NineMileCreekDressing.BackRowY) > 0.5f)
+                .ToList();
+            var walked = NineMileCreekDressing.Lamps(CreekTerrain())
+                .Where(l => l.Key == LampPosts.StreetLamp
+                            && Mathf.Abs(l.Position.y - NineMileCreekDressing.BackRowY) > 0.5f)
+                .ToList();
+
+            Assert.AreEqual(2, unchecked_.Count);
+            Assert.AreEqual(2, walked.Count);
+            Assert.AreEqual(unchecked_[0].Position, walked[0].Position,
+                "the town-end lamp's anchor is already dry, so the terrain moves it nowhere");
+            Assert.AreNotEqual(unchecked_[1].Position, walked[1].Position,
+                "the spit lamp's anchor is UNDER water, so the terrain must have moved it");
+
+            var terrain = CreekTerrain();
+            Assert.LessOrEqual(terrain.ElevationAt(unchecked_[1].Position),
+                               NineMileCreekMainland.SpringHighWater,
+                               "the unwalked anchor really is wet — otherwise this proves nothing");
+            Assert.Greater(terrain.ElevationAt(walked[1].Position), NineMileCreekMainland.SpringHighWater);
         }
 
         /// <summary>
@@ -310,7 +451,7 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void TheWholeGameGetsNineLamps()
         {
-            Assert.AreEqual(7, NineMileCreekDressing.Lamps().Count);
+            Assert.AreEqual(7, NineMileCreekDressing.Lamps(CreekTerrain()).Count);
             Assert.AreEqual(2, StPetersWharf.LampPostSites().Count);
         }
     }

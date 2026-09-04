@@ -300,9 +300,15 @@ namespace HiddenHarbours.App.Editor
         /// <para>Every fitting this pier carries is on the south lip because that is the mooring face
         /// (<see cref="MooringFaceY"/>), and a post standing among the bollards is a post in the way of a
         /// line. <see cref="NorthFaceY"/> already says what the back of the pier is good for — <i>something
-        /// small, out of the way of the berth</i> — and a lamp is exactly that. From the north row a 4.6 m
-        /// <see cref="LightPresets.Kind.Lightpost"/> pool still reaches across all six metres of deck to the
-        /// working edge, so nothing is traded for the clearance.</para>
+        /// small, out of the way of the berth</i> — and a lamp is exactly that.</para>
+        ///
+        /// <para><b>⭐ But NOT the northernmost row, and the pool's own reach is what says so.</b> The first
+        /// draft put them on the back row at y = 2.5. The bollards stand at y = −2.5, which is <b>5.0 m</b>
+        /// away, and <see cref="LightPresets.Kind.Lightpost"/> reaches <b>4.6 m</b> — so the lamps lit the
+        /// planks they stood on and left the mooring edge, the one place a rope is worked in the dark,
+        /// four tenths of a metre outside the pool. Measured on a 02:00 plate: the whole pier, and not one
+        /// lamp shadow off a bollard. <see cref="LampRowY"/> now derives the row from the reach instead of
+        /// choosing it, so the lamps sit as far back as they can while still covering the working edge.</para>
         ///
         /// <para><b>Two, not a run.</b> The pier is 31 m and each pool is 4.6 m, so the middle stays dark —
         /// deliberately. <c>docs/design/municipal-infrastructure.md</c> §3.4's acceptance test is NEGATIVE:
@@ -314,21 +320,44 @@ namespace HiddenHarbours.App.Editor
         /// (<see cref="LadderPosition"/>) and, straight across the planks, the north pilehead the starting
         /// dory lies against (<c>StPetersBuilder.DoryMooredPos</c>). Re-site either and the lamp follows.</para>
         /// </summary>
+        /// <summary>
+        /// The deck row the lamp posts stand on: <b>as far back as the pool can afford</b>.
+        ///
+        /// <para>Derived, not chosen. A lamp must reach the fitting row on the mooring lip — that is what
+        /// a wharf lamp is FOR — so its row can be no further north than <c>(fitting row + the preset's
+        /// range)</c>. Of the deck rows that satisfy that, it takes the northernmost, which is the one
+        /// furthest out of the way of the working edge. Widen the <see cref="LightPresets.Kind.Lightpost"/>
+        /// pool and the lamps step back on their own; narrow it and they come forward.</para>
+        /// </summary>
+        public static float LampRowY
+        {
+            get
+            {
+                float fittingRow = MinCellY + 0.5f;                       // where the bollards stand
+                float reach = LightPresets.For(LightPresets.Kind.Lightpost).Range;
+                float furthestNorth = fittingRow + reach;
+                // Deck rows are cell centres; take the northernmost that is still within reach.
+                float row = MaxCellY + 0.5f;
+                while (row > furthestNorth && row > MinCellY + 0.5f) row -= 1f;
+                return row;
+            }
+        }
+
         public static IReadOnlyList<LampPosts.Site> LampPostSites()
         {
             Rect deck = DeckFootprint();
-            float northRow = MaxCellY + 0.5f;
+            float row = LampRowY;
             const float LooksAtTheDeck = 180f;   // south, across the planks it lights
 
             return new[]
             {
                 LampPosts.OnDeck(LampPosts.DecorFamily, LampPosts.LanternPost,
-                    new Vector2(LadderPosition().x, northRow), LooksAtTheDeck, deck,
-                    "the head: it lights the ladder you climb at low water and, across the planks, the " +
-                    "pilehead the dory lies against"),
+                    new Vector2(LadderPosition().x, row), LooksAtTheDeck, deck,
+                    "the head: it lights the ladder you climb at low water, the bollards abreast of it, " +
+                    "and across the planks the pilehead the dory lies against"),
 
                 LampPosts.OnDeck(LampPosts.DecorFamily, LampPosts.LanternPost,
-                    new Vector2(RootCellX + 1.5f, northRow), LooksAtTheDeck, deck,
+                    new Vector2(RootCellX + 1.5f, row), LooksAtTheDeck, deck,
                     "the root: where the planks meet the shore, so the pier can be found from the beach " +
                     "in the dark"),
             };
