@@ -349,6 +349,55 @@ berths down. An NPC's beam follows her way instead: lit while she is running, ou
 | Per-placement trim | `HullMeshDef.Lamps[].IntensityScale` | 1 (= the preset) on every hull today |
 | Master switch for a hull's glows | `BoatLamps.LampsOn` | on |
 
+### 6.2 A lit cabin is drawn as its WINDOWS — SHIPPED (ADR 0016, boat-lights PR 2c; owner ruling 2026-09-03)
+
+> The glows should be constrained to their space, if its interior it should be confined to the cabin with
+> the glow only coming through the windows.
+
+The cabin glow used to be a 1.5 m amber disc laid over the deck around the house. It is now two things, and
+the disc is gone:
+
+- **her glass, lit** — one additive mesh per hull, a quad per pane of glass her own rig publishes, drawn
+  from the four PROJECTED corners so a window is the right shape at every heading;
+- **a wash off each glazed wall** — one soft cone per wall, aimed outward through the hull's posed frame,
+  reaching **1.4x the width of one of that wall's windows** (not of the wall: five portholes over 6.8 m of
+  a tanker's accommodation must not add up to a floodlight).
+
+**The far side of the house culls itself.** A wall turning away foreshortens to nothing, hits zero area
+edge-on and then shows the viewer its inside — so the panes on it are dropped exactly there. Nothing to
+fade, nothing to pop, and no amber crossing her own roof.
+
+**Where the light is drawn matters.** These quads sit ABOVE the day/night multiply with the lamps. That is
+not a preference: the multiply is a whole-frame operation at sorting order ~32760 and a mesh hull draws well
+below it, so the brightest colour anything in her own pass could take comes out as the night tint itself
+(luminance ≈ 0.17 at 02:00). Making her `glas` emissive would have produced a paler dark-blue rectangle, not
+a lit window.
+
+**The navigation lamps came down to the size of their own fittings** in the same ruling — masthead 1.35 →
+0.50 m, stern 1.00 → 0.40 m, anchor 0.75 → 0.34 m, with the intensity carrying what the radius gave up. The
+sidelights did not move: they were already bounded by the gap between them. Their ORDER is unchanged, which
+is the part that carries meaning.
+
+**Two hulls keep the disc**, and it is named rather than hidden: the sport fishers' rigs publish a flat
+half-width for a side that curves in plan, so their portholes cannot be placed on the boat from the record
+alone. The probe refuses them, and `BoatLamps` falls them back to the glow they already had — degrade to
+the shipped look, never to an invisible boat. The fix is upstream.
+
+#### The tunables PR 2c added (rule 6)
+
+| Tunable | Where | Default |
+|---|---|---|
+| Restore yesterday's glows (the A/B, and the way back) | `GameConfig.BoatLegacyCabinGlow` | **off** — the confined look ships |
+| Lit-pane brightness | `BoatWindowGlow.PaneIntensity` | 0.72, over a night frame of ≈0.17 luminance |
+| How far a wall washes | `BoatLampPresets.WallSpillWindowMultiple` | 1.4 x one window's width, clamped to 0.50–1.60 m |
+| Wash cone half-angle / edge | `BoatLampPresets` | 45 degrees, 0.85 angular softness, **zero core** |
+| A hull's windows | `HullMeshDef.Panes` | derived by `BoatWindowProbe` from her rig; game-side, survives a re-bake |
+| When a pane is too far off her hull to place | `BoatWindowProbe.OnHullToleranceMetres` | 0.30 m (worst kept 0.203, best refused 0.453) |
+
+**How the owner sees it:** `Hidden Harbours/Rig Baking/Probe: boat windows (print the table)` prints every
+window in the fleet with its position, size and the way it faces; the writer beside it puts them into the
+defs. Flip `BoatLegacyCabinGlow` on the `GameConfig` asset to see yesterday's picture in the same build.
+
 ## 7. Migration to true URP 2D lights (still open)
 
 If a future need outgrows additive sprites (e.g. real occlusion/shadow-casting lights), ADR 0013's path (2)

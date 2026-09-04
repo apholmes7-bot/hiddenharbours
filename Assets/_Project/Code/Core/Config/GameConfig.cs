@@ -504,6 +504,22 @@ namespace HiddenHarbours.Core
                  "families are naturally redone; that mixed period is accepted (ADR 0031, Half B skipped).")]
         public bool HullKeylineFlood = DefaultHullKeylineFlood;
 
+        /// <summary>The cabin-glow passthrough's ship default — <b>OFF</b>, which is the owner's ruling
+        /// of 2026-09-03: a glow is confined to its space, and an interior's reaches the outside only
+        /// through the windows. A const for exactly the reason the keyline's is: a consumer with no
+        /// config wired must resolve the SHIPPED look, and <c>GameConfig.asset</c> lags the code.</summary>
+        public const bool DefaultBoatLegacyCabinGlow = false;
+
+        [Tooltip("Restore YESTERDAY'S boat glows for an A/B (owner's ruling, 2026-09-03)? OFF is the " +
+                 "shipped look: a lit wheelhouse is drawn as its own WINDOWS, with a wash of spill " +
+                 "leaving each glazed wall, and the navigation lamps are blooms the size of their own " +
+                 "fittings. ON restores the old picture — the 1.5 m amber disc laid over the deck " +
+                 "around the house, and the masthead, stern and anchor lamps at their old pool radii " +
+                 "— and draws no windows at all. It is the honest arm of the A/B and the way back if " +
+                 "the new look is refused. It changes no navigation MEANING: which lamps a hull may " +
+                 "show, and in what colour, is the rule of the road and is not on this dial.")]
+        public bool BoatLegacyCabinGlow = DefaultBoatLegacyCabinGlow;
+
         // -----------------------------------------------------------------------------------------
         //  The pixel grid (owner playtest 2026-08-23 — "the running fisher and the Otter go soft")
         // -----------------------------------------------------------------------------------------
