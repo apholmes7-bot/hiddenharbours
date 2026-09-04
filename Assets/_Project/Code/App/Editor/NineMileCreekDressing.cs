@@ -444,7 +444,7 @@ namespace HiddenHarbours.App.Editor
         /// it and the plan was right) and finally carries the light the note always claimed.</para>
         ///
         /// <para><b>Sited on things that already exist, never on a coordinate.</b> The quay lamps take the
-        /// wharf's own berth rhythm and its back row; the road lamps take Wharf Road's published route and
+        /// wharf's own berth rhythm and <see cref="LampRowY"/>; the road lamps take Wharf Road's route and
         /// the SAME 5 m north offset the pole line uses — because a lamp goes where the wire is, and
         /// <c>NineMileCreekMainland</c> §12 already decided which side of the road that is. Move the road or
         /// the wharf and every lamp follows.</para>
@@ -455,10 +455,19 @@ namespace HiddenHarbours.App.Editor
         /// through-road by, and the neck where it steps onto the spit), and dark gravel in between; the 84 m
         /// quay gets two warm posts and the one cool flood at its entrance, not a run.</para>
         ///
-        /// <para>The back row is where the tall things go (<see cref="BackRowY"/>), and berths 2, 6, 7 and 11
-        /// are already taken along it by the wood stack, the standpipe, the net frame and the winter stack —
-        /// so the lamps take 4 and 9, which are clear and spread the light along the wall the moored fleet
-        /// lies against.</para>
+        /// <para>Berths 2, 6, 7 and 11 already carry the wood stack, the standpipe, the net frame and the
+        /// winter stack, so the lamps take <b>4 and 9</b> — clear of all of them, and spread along the wall
+        /// the moored fleet lies against.</para>
+        ///
+        /// <para>⚠ <b>They stand at the FRONT of the gear band, not against the yard.</b> See
+        /// <see cref="LampRowY"/>: on a ten-metre quay a 3.6 m pool cannot reach both the berths and the
+        /// back, and the berths are where somebody steps off a boat in the dark.</para>
+        ///
+        /// <para>⚠ <b>Nothing on this quay throws a lamp shadow, and that is not this table's doing.</b>
+        /// Unlike <c>StPetersWharf</c> — whose <c>IsStandingFitting</c> gives its bollards and pileheads a
+        /// <c>SpriteShadow</c> — no Nine Mile Creek builder makes any quay fitting a caster at all, so there
+        /// is nothing here for a lamp to throw and nothing that casts by day either. Giving them shadows is
+        /// a change to this region's daylight as much as its night, and belongs to a PR that says so.</para>
         /// </summary>
         public static IReadOnlyList<LampPosts.Site> Lamps(ITidalTerrain terrain)
         {

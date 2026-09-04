@@ -153,12 +153,14 @@ namespace HiddenHarbours.Art
                 // FLOODLIGHT — what a 7 m pole is FOR. The two tall utility pieces (`yardLight` 7.26 m,
                 // `floodMast` 7.8 m) exist to flood an open working area — a laydown yard, a forecourt —
                 // and the Worklight above is sized for a lamp on a wall: 5.2 m of reach under a pole
-                // taller than its own pool is wide reads as a torch on a mast. A lamp lights a circle of
-                // roughly twice its head height, which is the rule the other three already satisfy
-                // (lanternPost 2.46 m and streetLamp 4.48 m both sit under Lightpost's 4.6 m), so the two
-                // tall pieces get their own preset at 9.5 m rather than a per-placement multiplier — which
-                // is the magic number rule 6 forbids. Cooler and steadier than a lamp post: this is
-                // electric light over a place where work gets done in the dark.
+                // taller than its own pool is wide reads as a torch on a mast. So the two tall pieces get
+                // their own preset rather than a per-placement multiplier, which is the magic number rule 6
+                // forbids. Cooler and steadier than a lamp post: this is electric light over a place where
+                // work gets done in the dark.
+                //
+                // ⚠ 7 m, not the 9.5 m this shipped at for one commit. Sized to READ, the same way and for
+                // the same reason as Lightpost above — see its note. It stays comfortably wider than a lamp
+                // post's 3.6 m, which is the ordering that matters.
                 case Kind.Floodlight:
                     return new Config(
                         SceneLight.LightShape.Radial,

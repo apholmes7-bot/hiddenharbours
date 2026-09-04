@@ -81,12 +81,18 @@ namespace HiddenHarbours.App.Editor
         /// Which <see cref="LightPresets.Kind"/> a kit key carries. The mapping lives HERE and only here, so
         /// every <c>streetLamp</c> in the game reads as the same lamp — the whole point of a preset library.
         ///
-        /// <para>The split is by HEAD HEIGHT, because that is what a lamp's job follows: a lamp lights a
-        /// circle of roughly twice its height. The two low POSTS (<c>lanternPost</c> 2.46 m, <c>streetLamp</c>
-        /// 4.48 m) are warm domestic <see cref="LightPresets.Kind.Lightpost"/> pools at 4.6 m; the two TALL
-        /// poles (<c>yardLight</c> 7.26 m, <c>floodMast</c> 7.8 m) stand over open working ground and take
-        /// <see cref="LightPresets.Kind.Floodlight"/> at 9.5 m. <see cref="LightPresets.Kind.Worklight"/>
-        /// (5.2 m, a lamp on a wall) fits none of these four and is left exactly as shipped.</para>
+        /// <para>The split is by HEAD HEIGHT: the two low POSTS (<c>lanternPost</c> 2.46 m,
+        /// <c>streetLamp</c> 4.48 m) are warm domestic <see cref="LightPresets.Kind.Lightpost"/> pools at
+        /// <b>3.6 m</b>; the two TALL poles (<c>yardLight</c> 7.26 m, <c>floodMast</c> 7.8 m) stand over open
+        /// working ground and take <see cref="LightPresets.Kind.Floodlight"/> at <b>7 m</b>.
+        /// <see cref="LightPresets.Kind.Worklight"/> (5.2 m, a lamp on a wall) fits none of these four and is
+        /// left exactly as shipped.</para>
+        ///
+        /// <para>⚠ Both pools are deliberately SMALLER than the physical rule (a lamp lights a circle of
+        /// roughly twice its head height, so a 4.48 m street lamp should pool ~4.5 m). ADR 0016's additive
+        /// quad is the source's own BLOOM rather than illumination, and at the physical size it saturates
+        /// to a flat disc that hides what it is lighting — measured on the 02:00 plates in
+        /// <c>docs/art/spikes/land-lamp-posts/</c>. See <see cref="LightPresets"/>'s own note.</para>
         /// </summary>
         public static LightPresets.Kind PresetFor(string key)
         {

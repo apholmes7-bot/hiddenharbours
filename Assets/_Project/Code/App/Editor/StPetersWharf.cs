@@ -295,32 +295,6 @@ namespace HiddenHarbours.App.Editor
         // --- THE LAMPS ---------------------------------------------------------------------------------
 
         /// <summary>
-        /// The pier's lamp posts — <b>on the NORTH row, and that is the whole siting argument.</b>
-        ///
-        /// <para>Every fitting this pier carries is on the south lip because that is the mooring face
-        /// (<see cref="MooringFaceY"/>), and a post standing among the bollards is a post in the way of a
-        /// line. <see cref="NorthFaceY"/> already says what the back of the pier is good for — <i>something
-        /// small, out of the way of the berth</i> — and a lamp is exactly that.</para>
-        ///
-        /// <para><b>⭐ But NOT the northernmost row, and the pool's own reach is what says so.</b> The first
-        /// draft put them on the back row at y = 2.5. The bollards stand at y = −2.5, which is <b>5.0 m</b>
-        /// away, and <see cref="LightPresets.Kind.Lightpost"/> reaches <b>4.6 m</b> — so the lamps lit the
-        /// planks they stood on and left the mooring edge, the one place a rope is worked in the dark,
-        /// four tenths of a metre outside the pool. Measured on a 02:00 plate: the whole pier, and not one
-        /// lamp shadow off a bollard. <see cref="LampRowY"/> now derives the row from the reach instead of
-        /// choosing it, so the lamps sit as far back as they can while still covering the working edge.</para>
-        ///
-        /// <para><b>Two, not a run.</b> The pier is 31 m and each pool is 4.6 m, so the middle stays dark —
-        /// deliberately. <c>docs/design/municipal-infrastructure.md</c> §3.4's acceptance test is NEGATIVE:
-        /// <i>if the island reads REGULAR at night the slice is wrong</i>. Two lit ends and a dark middle is
-        /// a community wharf; a lamp every nine metres is a container terminal.</para>
-        ///
-        /// <para>The head lamp takes the <b>ladder's own x</b> rather than a chosen one, so the lit patch
-        /// covers the two places a person is actually in the dark here: the ladder she climbs
-        /// (<see cref="LadderPosition"/>) and, straight across the planks, the north pilehead the starting
-        /// dory lies against (<c>StPetersBuilder.DoryMooredPos</c>). Re-site either and the lamp follows.</para>
-        /// </summary>
-        /// <summary>
         /// The deck row the lamp posts stand on: <b>as far back as the pool can afford</b>.
         ///
         /// <para>Derived, not chosen. A lamp must reach the fitting row on the mooring lip — that is what
@@ -343,6 +317,34 @@ namespace HiddenHarbours.App.Editor
             }
         }
 
+        /// <summary>
+        /// The pier's lamp posts — <b>on the north half, and the pool's own reach is what says which row.</b>
+        ///
+        /// <para>Every fitting this pier carries is on the south lip because that is the mooring face
+        /// (<see cref="MooringFaceY"/>), and a post standing among the bollards is a post in the way of a
+        /// line. <see cref="NorthFaceY"/> already says what the back of the pier is good for — <i>something
+        /// small, out of the way of the berth</i> — and a lamp is exactly that.</para>
+        ///
+        /// <para><b>⭐ But NOT the northernmost row.</b> The first draft put them on the back row at
+        /// y = 2.5. The bollards stand at y = −2.5, five metres away, and the pool did not reach them — so
+        /// the lamps lit the planks they stood on and left the mooring edge, the one place a rope is worked
+        /// in the dark, outside the light. Measured on a 02:00 plate: the whole pier lit, and not one lamp
+        /// shadow off a bollard. <see cref="LampRowY"/> derives the row from the reach instead of choosing
+        /// it, so the lamps sit as far back as they can while still covering the working edge.</para>
+        ///
+        /// <para><b>Two, not a run.</b> The pier is 31 m and a pool is 3.6 m across its radius, so the
+        /// middle stays dark — deliberately. <c>docs/design/municipal-infrastructure.md</c> §3.4's
+        /// acceptance test is NEGATIVE: <i>if the island reads REGULAR at night the slice is wrong</i>. Two
+        /// lit ends and a dark middle is a community wharf; a lamp every nine metres is a container
+        /// terminal.</para>
+        ///
+        /// <para>The head lamp takes the <b>ladder's own x</b> rather than a chosen one, so the lit patch
+        /// covers the place a person is actually in the dark here: the ladder she climbs
+        /// (<see cref="LadderPosition"/>) and the bollards abreast of it. Re-site the ladder and the lamp
+        /// follows. ⚠ It does NOT reach the dory on the north face (4.25 m off a 3.6 m pool) — a lamp far
+        /// enough north to cover her is one that no longer covers the mooring edge, and she carries her own
+        /// anchor light.</para>
+        /// </summary>
         public static IReadOnlyList<LampPosts.Site> LampPostSites()
         {
             Rect deck = DeckFootprint();
