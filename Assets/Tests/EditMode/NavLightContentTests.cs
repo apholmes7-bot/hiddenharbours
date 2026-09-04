@@ -195,6 +195,38 @@ namespace HiddenHarbours.Tests.EditMode
                         $"{markType} shows {c.Colour}, and IALA Region B says {want}.");
         }
 
+        /// <summary>
+        /// ⭐ <b>The one prefab every mark in the game wears carries a lamp.</b>
+        ///
+        /// <para>This is the wiring that makes the feature reach the water at all: twenty-five marks
+        /// are already standing in the two scenes as instances of this prefab, and a component added
+        /// to the asset reaches every one of them without a rebuild. It is asserted because the
+        /// component block was added to the prefab's YAML by hand — a clean import proves the file
+        /// parses, not that the lamp is on it — and because a future re-run of
+        /// <c>NavBuoyDefBuilder.BuildPrefab</c> that dropped the line would leave every mark in both
+        /// harbours dark with nothing else going red.</para>
+        /// </summary>
+        [Test]
+        public void TheNavBuoyPrefabCarriesALamp()
+        {
+            var prefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(
+                NineMileCreekNavMarks.PrefabPath);
+
+            Assert.That(prefab, Is.Not.Null,
+                        $"no nav-buoy prefab at {NineMileCreekNavMarks.PrefabPath} — run " +
+                        "'Hidden Harbours ▸ Art ▸ Build Nav Buoy Prefab'.");
+            Assert.That(prefab.GetComponent<NavBuoyVisual>(), Is.Not.Null,
+                        "the prefab carries no NavBuoyVisual");
+            Assert.That(prefab.GetComponent<NavLight>(), Is.Not.Null,
+                        "the prefab carries no NavLight — every mark placed from it would be dark, " +
+                        "and nothing else in the suite would notice.");
+
+            // She must also be able to ANSWER the lamp: the seam is what joins the two.
+            Assert.That(prefab.GetComponent<INavLightSource>(), Is.Not.Null,
+                        "nothing on the prefab answers INavLightSource, so the lamp has no character " +
+                        "to show");
+        }
+
         /// <summary>A mooring buoy carries no light, and must therefore cost no lamp at all.</summary>
         [Test]
         public void TheMooringBuoyIsUnlitAndCostsNothing()
