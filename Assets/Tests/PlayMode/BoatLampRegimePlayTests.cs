@@ -106,6 +106,16 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.IsNotNull(lights, "the lamps must have been built");
             for (int i = 0; i < rows.Length && i < lights.Length; i++)
                 if (lights[i] != null && lights[i].enabled) on.Add(rows[i].Kind);
+
+            // ⭐ AND HER CABIN, WHEREVER IT IS DRAWN. Since the owner's 2026-09-03 ruling a lit
+            // wheelhouse is her WINDOWS (BoatWindowGlow), not a disc among these quads — so a walk of
+            // the lamp table alone would report every cabin in the fleet as dark, and this file's four
+            // assertions about a lit or unlit wheelhouse would have gone TWO red and TWO silently
+            // true. The question these tests ask is "is her cabin lit", which is a fact about the boat
+            // and not about which component draws it, so it is asked of both. A hull refused her
+            // windows still burns the disc, and the loop above still finds her.
+            var windows = lamps.GetComponent<BoatWindowGlow>();
+            if (windows != null && windows.Lit) on.Add(HullLampKind.CabinGlow);
             return on;
         }
 
