@@ -222,3 +222,48 @@ own placement use it; `VehicleCouplingTests` sweeps capture, follow and release 
 against the TRANSFORM as the oracle, and `NineMileCreekLaydownTests` spins the pair through eight. The
 yard's heading is layout now, not a constraint. Law, restated: a fixture at the one heading where a
 mirror vanishes proves nothing about the mirror — the 90° fixture was written first and watched fail.
+
+## Amendment 2026-09-04 — a driver who is not the player (road fleet PR 5)
+
+Owner's ask: *"i want npcs to be able to enter and drive vehicles, lets set up some basic routes."*
+Three additions, none of which change anything that was already true of the module.
+
+### The route-following maths is Core's, and there is one copy of it
+
+`RouteFollowMath` (Core, beside `IDriveSeat`) is the driver `RoadFleetJourneyPlayTests` measured in
+PR 0: a waypoint is passed when she crosses its perpendicular, not when she touches it (a turning circle
+wider than the reach otherwise orbits an overshot point for ever); a leg on a road ends only when she is
+far enough along AND inside the carriageway's half-width; and she steers at a lookahead point re-derived
+every step, so she converges onto a road rather than crossing it once. Its feel lives on `VehicleDef`
+(rule 6) and is filled in from the measured driver for any def baked before the fields existed. The
+journey fixture's private copy is deleted and it calls these functions, so the game and the fixture
+cannot disagree about how a machine follows a road. `RouteDriver` (Vehicles) is the live
+`IDriveInputSource` built on it — the socket the amendment above described, with a device in it at last.
+
+### A scheduled trip is POSED from the clock, not integrated
+
+`VehicleTripPlan.SampleAt(hour)` is pure, allocation-free and total: eight blocks (rest · board · drive ·
+alight, at each end), of which **two hours are authored on a `VehicleTripDef` asset and six are derived**
+from how long each leg takes at its own speed. Nothing is ticked or saved (rule 5): a save taken mid-trip
+carries no trip state and a region loaded at 06:12 draws the truck where 06:12 puts her.
+
+Chosen over a live `RouteDriver` on a real `VehicleController` because a truck is kinematic by design
+(above), because the sea fleet already settled the half of the argument that matters
+(`AmbientFleetSchedule` is pure and its presenter's join rule is *recompute, don't replay*), and
+decisively because **a truck's route is a ROAD**: a body posed on the centre-line cannot wander off the
+carriageway, and PR 0 measured live integrators ending 3–16 m off the line. The live driver still exists
+for the fixture and for a future cruise control, and shares the maths.
+
+⚠️ **A posed body cannot reverse**, and there is one road into a truck park — so the way she arrives is
+the reverse of the way she leaves. She turns on the spot across the boarding block instead, while her
+driver crosses the gravel to her. That is a pivot, not the three-point turn the park is sized for; an
+astern flag on a leg is the honest fix and is a follow-up.
+
+### Occupancy is a registry, not a flag
+
+`DriveSeats` (Core) answers *is somebody other than the player at this wheel?* — the shape `HelmSlot`
+took when the intro skipper needed a boat's wheel without going through the player's switcher. A truck
+on a trip is claimed from the moment her driver sets off for the door until he is back on his feet at the
+far end; `VehicleDoor.IsAvailable` goes false (a refusal by silence, the same one scenery gets) and
+`ControlSwitcher.TryEnterDriving` re-reads the same gate. The player is deliberately NOT a claimant — the
+switcher already owns "the player is driving", and storing it twice is how two answers start disagreeing.

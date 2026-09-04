@@ -994,8 +994,10 @@ namespace HiddenHarbours.Player
         ///
         /// <para>The gates: the mode switched off, a player who is not on their feet (you get into a truck
         /// from the ground, not off a boat's deck), a boarding move already in flight, a modal dialogue
-        /// holding the interact key, a seat that has died between the press and here, and a machine that is
-        /// not drivable (scenery, or a def with no usable mesh). <see cref="InteractionGate"/> is re-read
+        /// holding the interact key, a seat that has died between the press and here, a machine that is
+        /// not drivable (scenery, or a def with no usable mesh), and a wheel somebody else already has
+        /// (<see cref="DriveSeats"/> — a truck on a scheduled trip is her driver's for the whole of it,
+        /// walk to the door included). <see cref="InteractionGate"/> is re-read
         /// even though <see cref="InteractVerb.TryPerform"/> has already refused a blocked press — this is
         /// public and tests drive it directly, and a gate that only holds on one of two paths is not a
         /// gate.</para>
@@ -1008,6 +1010,10 @@ namespace HiddenHarbours.Player
             if (InteractionGate.IsBlocked) return false;
             if (seat == null || !seat.IsAlive || seat.Root == null) return false;
             if (!seat.IsDrivable) return false;
+            // Somebody else's wheel. VehicleDoor already refuses to be OFFERED while a scheduled trip
+            // holds her (IsAvailable), but this is public and tests drive it directly — and a gate that
+            // only holds on one of two paths is not a gate.
+            if (DriveSeats.IsOccupied(seat)) return false;
 
             _seat = seat;
             seat.TakeControls();
