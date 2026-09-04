@@ -476,13 +476,46 @@ Four things worth writing down:
   with the hull. The visible consequence is that she stands where she came out, at the threshold,
   rather than at a point somebody typed. On a hull with no measured interior nothing above runs and
   the authored offset stands, so the arrival is byte-for-byte the one that shipped.
+  *(§8.4: the deck WALK is seeded at the same moment and by the same rule, in its own frame — two
+  seats, one law, so whichever of them places her the doorway still moves nobody. Her cabin facing
+  crosses with her.)*
 - **⚠ `CanStepAshore` gained "and she is not below."** You do not step onto a wharf from inside a
   cabin, and the step is an arc from where she is standing. Nothing is taken away: the offer is not
   on a clock (Q1's ruling), so it is simply waiting the moment she comes up.
 
 **Still the owner's:** her resting look — the surround is drawn at every `doorOpen`, so the aft face
 changes whichever pose ships, and this lane ships the kit default (`doorOpen 0`, closed) unchanged.
-And whether she may walk the DECK as well as the cabin, which the 08-22 playtest left open.
+
+### 8.4 ⭐ …and she walks the DECK too (gameplay-systems, 2026-09-04)
+
+§8.3 left one thing open — *"whether she may walk the DECK as well as the cabin"* — and the owner
+answered it by playing the opening: *"the player is unable to walk on the boat deck in the new intro,
+**going outside locks them in place**."* She may.
+
+It was a design gap rather than a regression. The opening was built as *walk the cabin → come up →
+ride in → step ashore*, so `ArrivalOpening` ran a walk BELOW and none ABOVE: `_passengerDeckOffset`
+was written twice — its serialized default and the threshold seed below — and thereafter only read.
+
+**`ArrivalDeckWalk` is `ArrivalCabinWalk` one deck up, and it adds no second mechanism either.** It is
+bookkeeping: it holds a hull-local point and never writes her transform, and the arrival's one
+`LateUpdate` still places her. Every quantity in it is computed by the component that already owns it
+— the step and the clamp are `DeckWalkController.StepOnDeckPolygon` over this hull's authored
+polygons, the projection onto the drawn picture is `DeckAreaMath.DeckToWorld`, the world→hull join is
+`DeckWalkController.SeedDeckLocalPure` (made public for this third caller rather than restated), and
+her facing is `DeckRiderFacingMath`'s composition of a deck bearing with the hull's drawn heading. One
+quantity, one computation: a second clamp is the shape this project has already paid for.
+
+Three consequences worth writing down:
+
+- **The composed facing means a standing passenger turns WITH the hull**, and a walking one faces the
+  way she is walking. At a deck bearing of zero it reduces to the shipped `HoldHeading(drawn)` exactly,
+  so her picture is unchanged until she presses a key. Her gait is metres of DECK per second, so the
+  hull's own five knots still contribute nothing — the walk-in-place defect stays fixed.
+- **She does not own a `DeckWalkController` of her own, deliberately.** The `ControlSwitcher` owns
+  those and enables them by MODE, and the arrival never sets a mode (she is not aboard *her* boat).
+  A controller the switcher believed it had disabled would be a second writer of her position.
+- **The open door was never the gate.** `BoatCabinDoor` runs its cue and calls `TryEnter`/`TryExit`;
+  it does not touch her transform. The missing deck walk was the whole of it, so no door changed.
 
 ---
 
