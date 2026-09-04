@@ -334,7 +334,7 @@ namespace HiddenHarbours.Tests.RigBaking
                 "the cape is the hull the intro's arrival is run on, and the owner's ruling names all " +
                 "three of cabin light, navigation lights and spotlight — so those six declarations have " +
                 "to be on her def or the demo is short one of the things it promises. The seventh is " +
-                "PR 2's anchor light, which she needs because one of the seven boats moored at Nine " +
+                "PR 2's anchor light, which she needs because one of the boats moored at Nine " +
                 "Mile Creek is a Cape Islander and she would otherwise be the one dark hull on the wall.");
 
             // A duplicate would build two lights at one point and read as one brighter lamp — quiet,
