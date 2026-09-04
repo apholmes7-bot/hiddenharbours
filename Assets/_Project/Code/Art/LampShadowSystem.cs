@@ -146,6 +146,12 @@ namespace HiddenHarbours.Art
         private Slot[] _slots = System.Array.Empty<Slot>();
         private Pair[] _chosen = System.Array.Empty<Pair>();
         private LampShadowCasterState[] _casterScratch = System.Array.Empty<LampShadowCasterState>();
+
+        /// <summary>
+        /// Each scratch caster's own <see cref="Transform"/>, gathered in the same pass — the CARRIER rule
+        /// in <see cref="Select"/> needs it, and an interface reference does not carry one.
+        /// </summary>
+        private Transform[] _casterCarrier = System.Array.Empty<Transform>();
         private int _active;
         private MaterialPropertyBlock _mpb;
         private Material _spriteMaterial, _hullMaterial;
@@ -288,7 +294,10 @@ namespace HiddenHarbours.Art
             // caster — a thousand casters against six lamps must not cost six thousand bounds reads.
             int casterCount = Casters.Count;
             if (_casterScratch.Length < casterCount)
+            {
                 _casterScratch = new LampShadowCasterState[Mathf.NextPowerOfTwo(casterCount)];
+                _casterCarrier = new Transform[_casterScratch.Length];
+            }
             for (int i = 0; i < casterCount; i++)
             {
                 ILampShadowCaster caster = Casters[i];
@@ -297,6 +306,7 @@ namespace HiddenHarbours.Art
                     !caster.TryGetLampShadowCaster(out LampShadowCasterState state))
                     state = default;
                 _casterScratch[i] = state;
+                _casterCarrier[i] = caster is Component c ? c.transform : null;
             }
 
             Color tint = Shader.GetGlobalColor(IdDayNightTint);
@@ -309,12 +319,30 @@ namespace HiddenHarbours.Art
                 SceneLight light = Lights[li];
                 if (!LightIsLive(light, luma, cycleActive, out _)) continue;
                 Vector2 lamp = light.WorldOrigin;
+                // ⭐ THE CARRIER: a lamp never throws the silhouette of a caster it is MOUNTED ON.
+                //
+                // Until the land lamp posts (LampPosts) there was no such caster — every lamp in the game
+                // was somewhere else from every caster, so the case could not arise. A lamp POST carries
+                // both a SceneLight and a SpriteShadow on ONE GameObject, and its lamp-to-feet distance is
+                // therefore just the light's own origin offset: ~0.2 m, the smallest distance anywhere in
+                // the scene. Insert() keeps the nearest pairs GLOBALLY, so without this rule every post
+                // sorts to the very front of the pool and spends one of the profile's MaxShadows slots
+                // throwing a stub of itself at its own foot — nine posts would take nine of twenty-four
+                // slots away from the bollards and hulls the lamps were placed to reveal.
+                //
+                // The test is deliberately EXACT — the same GameObject, one reference compare in the inner
+                // loop — because that is the mounting this PR creates and it has no false positives.
+                // ⚠ A light on a CHILD of its carrier (a walker's headlamp, where the beam hangs off the
+                // player and her SpriteShadow is on the root) is NOT covered: that wants an ancestor walk,
+                // and it belongs to the PR that introduces the mounting.
+                Transform carrier = light.transform;
                 float r = Mathf.Max(light.Range, 1e-4f);
                 float r2 = r * r;
                 for (int ci = 0; ci < casterCount; ci++)
                 {
                     ref LampShadowCasterState s = ref _casterScratch[ci];
                     if (!s.IsValid) continue;
+                    if (ReferenceEquals(_casterCarrier[ci], carrier)) continue;
                     float d2 = (s.Foot - lamp).sqrMagnitude;
                     if (d2 >= r2) continue;
                     count = Insert(light, Casters[ci], d2, count);

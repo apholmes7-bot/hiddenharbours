@@ -292,6 +292,79 @@ namespace HiddenHarbours.App.Editor
             return list;
         }
 
+        // --- THE LAMPS ---------------------------------------------------------------------------------
+
+        /// <summary>
+        /// The deck row the lamp posts stand on: <b>as far back as the pool can afford</b>.
+        ///
+        /// <para>Derived, not chosen. A lamp must reach the fitting row on the mooring lip — that is what
+        /// a wharf lamp is FOR — so its row can be no further north than <c>(fitting row + the preset's
+        /// range)</c>. Of the deck rows that satisfy that, it takes the northernmost, which is the one
+        /// furthest out of the way of the working edge. Widen the <see cref="LightPresets.Kind.Lightpost"/>
+        /// pool and the lamps step back on their own; narrow it and they come forward.</para>
+        /// </summary>
+        public static float LampRowY
+        {
+            get
+            {
+                float fittingRow = MinCellY + 0.5f;                       // where the bollards stand
+                float reach = LightPresets.For(LightPresets.Kind.Lightpost).Range;
+                float furthestNorth = fittingRow + reach;
+                // Deck rows are cell centres; take the northernmost that is still within reach.
+                float row = MaxCellY + 0.5f;
+                while (row > furthestNorth && row > MinCellY + 0.5f) row -= 1f;
+                return row;
+            }
+        }
+
+        /// <summary>
+        /// The pier's lamp posts — <b>on the north half, and the pool's own reach is what says which row.</b>
+        ///
+        /// <para>Every fitting this pier carries is on the south lip because that is the mooring face
+        /// (<see cref="MooringFaceY"/>), and a post standing among the bollards is a post in the way of a
+        /// line. <see cref="NorthFaceY"/> already says what the back of the pier is good for — <i>something
+        /// small, out of the way of the berth</i> — and a lamp is exactly that.</para>
+        ///
+        /// <para><b>⭐ But NOT the northernmost row.</b> The first draft put them on the back row at
+        /// y = 2.5. The bollards stand at y = −2.5, five metres away, and the pool did not reach them — so
+        /// the lamps lit the planks they stood on and left the mooring edge, the one place a rope is worked
+        /// in the dark, outside the light. Measured on a 02:00 plate: the whole pier lit, and not one lamp
+        /// shadow off a bollard. <see cref="LampRowY"/> derives the row from the reach instead of choosing
+        /// it, so the lamps sit as far back as they can while still covering the working edge.</para>
+        ///
+        /// <para><b>Two, not a run.</b> The pier is 31 m and a pool is 3.6 m across its radius, so the
+        /// middle stays dark — deliberately. <c>docs/design/municipal-infrastructure.md</c> §3.4's
+        /// acceptance test is NEGATIVE: <i>if the island reads REGULAR at night the slice is wrong</i>. Two
+        /// lit ends and a dark middle is a community wharf; a lamp every nine metres is a container
+        /// terminal.</para>
+        ///
+        /// <para>The head lamp takes the <b>ladder's own x</b> rather than a chosen one, so the lit patch
+        /// covers the place a person is actually in the dark here: the ladder she climbs
+        /// (<see cref="LadderPosition"/>) and the bollards abreast of it. Re-site the ladder and the lamp
+        /// follows. ⚠ It does NOT reach the dory on the north face (4.25 m off a 3.6 m pool) — a lamp far
+        /// enough north to cover her is one that no longer covers the mooring edge, and she carries her own
+        /// anchor light.</para>
+        /// </summary>
+        public static IReadOnlyList<LampPosts.Site> LampPostSites()
+        {
+            Rect deck = DeckFootprint();
+            float row = LampRowY;
+            const float LooksAtTheDeck = 180f;   // south, across the planks it lights
+
+            return new[]
+            {
+                LampPosts.OnDeck(LampPosts.DecorFamily, LampPosts.LanternPost,
+                    new Vector2(LadderPosition().x, row), LooksAtTheDeck, deck,
+                    "the head: it lights the ladder you climb at low water, the bollards abreast of it, " +
+                    "and across the planks the pilehead the dory lies against"),
+
+                LampPosts.OnDeck(LampPosts.DecorFamily, LampPosts.LanternPost,
+                    new Vector2(RootCellX + 1.5f, row), LooksAtTheDeck, deck,
+                    "the root: where the planks meet the shore, so the pier can be found from the beach " +
+                    "in the dark"),
+            };
+        }
+
         /// <summary>
         /// The fittings on this pier that are <b>TIE-OFFS</b> — the kit decides which, not this file
         /// (<see cref="WharfKitCatalog.IsMooringFitting"/>: a tyre is a fender and a ladder is a way
@@ -392,12 +465,23 @@ namespace HiddenHarbours.App.Editor
             // art has been imported.
             int cleats = PlaceMooringCleats(root, deckElevation);
 
+            // THE LAMPS. Deck posts, so they are checked against the PLANKS and not against the terrain —
+            // the slip beneath this pier is dredged to -1.0 m and a dryness check would reject a perfectly
+            // good lamp for standing in water it is six metres above.
+            var lampRoot = new GameObject("Lamps");
+            lampRoot.transform.SetParent(root.transform, worldPositionStays: false);
+            int lamps = LampPosts.Place(lampRoot.transform, LampPostSites(), terrain,
+                                        StPetersBuilder.TideMean + StPetersBuilder.TideAmplitude,
+                                        "[StPetersWharf]");
+
             Debug.Log($"[StPetersWharf] Built the one dock: {placed} '{DeckMaterial}' deck tiles over " +
                       $"{LengthCells} x {WidthCells} m at the ratified berth, drawn back to front, plus " +
                       $"{Fittings().Count} fittings ({cleats} of them mooring cleats). The deck is FLOOR: " +
                       $"registered as standable surface '{SurfaceId}' with its deck measured at " +
                       $"{deckElevation:0.00} m above datum, so the on-foot sim stands on the planks and " +
-                      "not in the -1.0 m slip beneath them.");
+                      $"not in the -1.0 m slip beneath them. {lamps} lamp post(s) on the north row: the " +
+                      "pier is lit at both ends and dark in the middle, which is what a community wharf " +
+                      "looks like at two in the morning.");
             return placed;
         }
 

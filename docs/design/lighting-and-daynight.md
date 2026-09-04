@@ -336,22 +336,84 @@ owner's M2/M3 night-lighting vision.
   Scrubber / DevFastTide / raise the clock `TimeScale`), and watch the beam + halo **cut through the dark**.
   Delete the spawned `LightTest` object to fully revert.
 - **`Hidden Harbours ▸ Lighting ▸ Add Light to Selection ▸ Spotlight (boat)`** — adds a `BoatSpotlight` to the
-  selected object(s) (drop it on the boat). The other sub-menu entries (Worklight / Window Glow / Lightpost) are
-  radial **stubs** (a generic radial `SceneLight`) — the **follow-up** light types are structured for, not built
-  bespoke yet.
+  selected object(s) (drop it on the boat). The other sub-menu entries (Worklight / Window Glow / Lightpost)
+  attach a `PreconfiguredLight` carrying the matching `LightPresets.Kind`.
 
-### How the follow-up light types extend this
+### The placed lights (built)
 
-The same `SceneLight` (set to **Radial**) is the spine for all of them — only the tunables differ:
+The follow-up types are no longer stubs. `PreconfiguredLight` + the `LightPresets` library are the owner's
+2026-07-05 principle in code: *lighting is AUTOMATIC; the exception is a light SOURCE, and some objects come
+PRECONFIGURED with one.* Drop the component on a prefab, pick a `Kind`, and the object carries its own
+night-gated pool with no wiring — the gate is in the shader, off the published `_DayNightTint`, so nothing
+reads the clock.
 
-- **Worklight** — a cool-white radial halo on a dock/deck object (a wide, soft, steady glow).
-- **Window Glow** — a warm radial spill at a window, coordinating with `CottageDayNight`'s lit/unlit pane swap
-  (the pane art lights up; this adds the *spill* onto the ground/water).
-- **Lightpost** — a static warm radial on a quay lamp (a gentle pool of light, a faint flicker).
+| Kind | Look | Reach | Placed on |
+|---|---|---|---|
+| **WindowGlow** | warm amber spill, faint hearth flicker | 3.4 m | Aunt Ginny's cottage |
+| **Lightpost** | warm sodium pool, barely-there hum | 3.6 m | `lanternPost` (2.46 m), `streetLamp` (4.48 m) |
+| **Worklight** | near-white, rock steady | 5.2 m | — (a lamp on a wall; nothing yet) |
+| **Floodlight** | cool electric flood, steady | 7 m | `yardLight` (7.26 m), `floodMast` (7.8 m) |
 
-Each becomes a small bespoke component (like `BoatSpotlight`) that configures a `SceneLight` and routes through
-the existing `LightPreset` extension point in `LightMenu`. Build them when the world/economy lanes need them
-(stay-in-phase, rule 8).
+**The split is by HEAD HEIGHT**: the two low posts pool warmly, the two tall poles flood. A piece's height is
+not a taste call — it is read from the ISO pack's published `heightM` and written to
+`SceneLight.LampHeightMeters`, because the lamp's height is what sets the length of every shadow it casts
+(§6.3). Left at the 2.5 m default a 7.8 m flood mast lights a yard like a mast and shadows it like a bollard.
+
+⚠️ **Both pools are deliberately smaller than the physical rule.** A lamp lights a circle of roughly twice its
+head height, so a 4.48 m street lamp should pool ~4.5 m — and at that size ADR 0016's additive quad, which is
+the source's own *bloom* rather than illumination, saturates to a flat disc that hides the very ground it is
+lighting (measured, `docs/art/spikes/land-lamp-posts/`, plates 05–07). The sizes above are what READ. Making a
+lamp light the ground the way §5 makes the sun light a tree is the standing follow-up.
+
+### Lamps on the land (`LampPosts`)
+
+**A hand-placed light is undone by the next Build.** The regions are rebuilt from their builder scripts, so a
+lamp that is not in a builder is a lamp that exists until somebody presses the button. `LampPosts`
+(`Code/App/Editor/`) is the one place a lamp post becomes a GameObject — sprite + `YSortSprite` +
+`PreconfiguredLight` + `SpriteShadow` — and the region files own the POSITIONS, beside the geometry they are
+derived from.
+
+- **St Peters** — two `lanternPost`s on the pier's north half, on the row `StPetersWharf.LampRowY` DERIVES
+  from the preset's reach: as far back from the working edge as the pool can afford while still covering it
+  (the mooring gear is all on the south lip, and a post among it is a post in the way of a line). The head
+  lamp takes the ladder's own x. It does not reach the moored dory, which carries her own anchor light.
+- **Nine Mile Creek** — two `streetLamp`s at the FRONT of the quay's gear band (`LampRowY`), the closest to
+  the mooring edge that `WorkingStripMetres` lets anything stand: on a 10 m quay no row reaches both the
+  berths and the yard, so the lamp takes the berths. Two more in the GAPS of Wharf Road's
+  pole line (half a pole-spacing from their neighbours: a lamp goes where the wire is, never *on* a pole), a
+  `floodMast` off the laydown pavement, a `yardLight` at the Route 91 forecourt, and #462's yard light at the
+  wharf entrance — which had described itself as *"the only lit thing out here at night"* since it was placed
+  and emitted nothing at all.
+
+**Varied, not regular.** `municipal-infrastructure.md` §3.4's acceptance test is negative: *if the island reads
+REGULAR at night the slice is wrong.* So 322 m of Wharf Road gets two lamps and 84 m of quay gets three, with
+dark between them.
+
+**Off the water bridge by construction.** `WaterLightBridge` takes the four nearest `IWaterLightEmitter`s and
+only `BoatSpotlight` implements it, so a wharf's posts can never evict the searchlight from the water's four
+slots. There is no opt-out to remember because there is no opt-in.
+
+**⚠️ What a placed lamp does NOT yet do: throw a shadow off the wharf's gear at Nine Mile Creek.** The
+2026-09-03 charter's acceptance asked for *"the moored boats and bollards throwing shadows from them"*, and at
+NMC that is **not delivered** — measured 0 of 24 pooled shadows at 02:00. The reason is structural and has
+nothing to do with the lamps: `StPetersWharf.IsStandingFitting` gives that pier's bollards and pileheads a
+`SpriteShadow`, and **no Nine Mile Creek builder makes any quay fitting a caster at all**, so there is nothing
+on that quay for a lamp to throw — nor anything casting a sun shadow by day. The moored fleet's hulls lie
+further from a lamp than the pool reaches. Making NMC's gear cast is a change to that region's daylight as
+much as its night and belongs to its own PR.
+
+**⭐ The carrier rule.** A lamp post is the first object in the game to carry a light and a shadow CASTER on one
+GameObject, so its lamp-to-feet distance is just the light's origin offset — the smallest in the scene.
+`LampShadowSystem` keeps the nearest pairs globally, so without a rule every post would sort to the front of
+the pool and spend one of its 24 slots throwing a stub of itself at its own foot. A lamp therefore never throws
+the silhouette of a caster on its own GameObject. (A light on a CHILD of its carrier — a walker's headlamp —
+is not covered and wants an ancestor walk from the PR that introduces it.)
+
+**⚠ And a lamp post takes no ground-contact pool.** `SpriteShadowProfile`'s pool is gated on the caster's drawn
+HEIGHT (3 m), which stands in for *has mass overhead* — true of the trees it was measured on, false of a thin
+pole that clears the gate with no crown. Three of the four pieces clear it, so `SpriteShadow.CastsGroundContact`
+(per-caster, default on) is off for lamp posts: a shade disc under a lamp is a shade disc on the one patch of
+ground the lamp is there to light.
 
 ### 6.1 The fleet's lamps, and the rule of the road — SHIPPED (ADR 0016, boat-lights PR 1 + PR 2a)
 
