@@ -237,6 +237,18 @@ namespace HiddenHarbours.Boats
 
             StripTheTieOffs();
             StandTheSkipper();
+
+            // ⭐ AND SHE IS SOMETHING YOU CAN SWIM UP TO (the owner, 2026-09-02: "a player should be able
+            // to swim up to a hull and climb aboard anywhere"). Her outline goes into HullPresences, and
+            // the wading model's boat-only wall steps aside within GameConfig.SwimBoardReachMetres of it —
+            // which is what lets a swimmer reach the cape lying alongside St Peters over a dredged −4 m
+            // berth she is otherwise walled out of. Unlike the tie-offs above this is NOT stripped: a
+            // stranger's boat is not something you may make fast to, but she is unquestionably something
+            // you can swim up against, and the registry says nothing about whose she is.
+            //
+            // A REVIEW hull has no owner and therefore no def to be measured by, so she is not registered
+            // — the moorage exists to look at hulls, and there is nobody in that scene to swim.
+            if (_owner != null) HullPresence.Install(gameObject, _owner.Boat, Visual);
         }
 
         /// <summary>

@@ -198,6 +198,15 @@ namespace HiddenHarbours.Core
                  "footprint. Too small and she surfaces on top of the boat she just left; too large and " +
                  "she is flung clear of a hull she is supposed to be able to climb straight back onto.")]
         [Min(0.1f)] public float OverTheSideBodyWidthMetres = 0.7f;
+        [Tooltip("How close a swimmer must be to a HULL OUTLINE, in metres, for the boat-only soft " +
+                 "wall to step aside and let her into deep water — the owner's 2026-09-02 ask ('a " +
+                 "player should be able to swim up to a hull and climb aboard anywhere'). ⚠ This is " +
+                 "the ONE relaxation of the ratified water-travel model (water travel is boats only): " +
+                 "everywhere further out than this the wall still stands, so raising it widens how much " +
+                 "open sea a person may swim in. Ships at 6.0 — comfortably more than a boat's length " +
+                 "off her rail, so you can miss your grab and try again, and far less than the gap " +
+                 "between two berths, so it never joins one boat's water to the next one's.")]
+        [Min(0f)] public float SwimBoardReachMetres = 6.0f;
 
         [Header("Seakeeping forces (ADR 0018 B3 — the sea pushes the boat)")]
         [Tooltip("World-wide seakeeping FORCE policy (the sea fighting back): the master switch + bite " +
