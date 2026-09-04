@@ -166,7 +166,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.AreEqual(5.2f, work.Range, 1e-6f);
 
             var lamp = LightPresets.For(LightPresets.Kind.Lightpost);
-            Assert.AreEqual(0.9f, lamp.Intensity, 1e-6f, "measured off the 02:00 pier plates");
+            Assert.AreEqual(1f, lamp.Intensity, 1e-6f,
+                "the sweep's 0.9, lifted to 1.0 to stay above WindowGlow — the RANGE is what was retuned");
             Assert.AreEqual(3.6f, lamp.Range, 1e-6f);
             Assert.Less(lamp.Range, 4.6f,
                 "the stub value blew the pool out to half the screen — a regression to it must redden");

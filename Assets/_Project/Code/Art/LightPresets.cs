@@ -122,11 +122,17 @@ namespace HiddenHarbours.Art
                 // returns. Making a lamp light the ground the way the sun lights a tree (the lit-decor
                 // path, #715) is the real fix and is its own PR; until then the pool is deliberately
                 // smaller than physics so that it reads.
+                //
+                // ⚠ The RANGE did the work, not the intensity. Area goes as r², so 4.6 -> 3.6 m is a 39 %
+                // smaller pool on its own. Intensity lands at 1.0 rather than the 0.9 the sweep was shot at
+                // because a lamp pool must stay brighter than a WINDOW SPILL (WindowGlow 0.95) -- an
+                // ordering the preset library has asserted since it was written, and one that is obviously
+                // right: you can see a street lamp from further away than you can see somebody's window.
                 case Kind.Lightpost:
                     return new Config(
                         SceneLight.LightShape.Radial,
                         new Color(1f, 0.88f, 0.62f, 1f),   // warm sodium-ish lamp
-                        intensity: 0.9f,
+                        intensity: 1f,                     // see the note: just ABOVE WindowGlow's 0.95
                         range: 3.6f,
                         edgeSoftness: 0.88f,               // softer: the hard edge is what read as a disc
                         flickerAmount: 0.02f,              // a barely-there electric hum

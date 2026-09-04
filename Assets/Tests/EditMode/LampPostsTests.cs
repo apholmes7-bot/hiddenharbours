@@ -134,13 +134,12 @@ namespace HiddenHarbours.Tests.EditMode
         // =============================================================================================
 
         /// <summary>
-        /// Both lamps stand ON the pier, on its NORTH row, and clear of every fitting on the mooring face.
-        /// The south lip is where the bollards, the fenders and the ladder are, and a post among them is a
-        /// post in the way of a line — which is what <see cref="StPetersWharf.NorthFaceY"/> already says the
-        /// back of the pier is for.
+        /// Both lamps stand ON the pier, on the row <see cref="StPetersWharf.LampRowY"/> derives, on the
+        /// NORTH half, and clear of every fitting on the mooring face. The south lip is where the bollards,
+        /// the fenders and the ladder are, and a post among them is a post in the way of a line.
         /// </summary>
         [Test]
-        public void TheStPetersLamps_StandOnThePlanks_OnTheBackRow_ClearOfTheGear()
+        public void TheStPetersLamps_StandOnThePlanks_OnTheDerivedRow_ClearOfTheGear()
         {
             Rect deck = StPetersWharf.DeckFootprint();
             IReadOnlyList<LampPosts.Site> lamps = StPetersWharf.LampPostSites();
@@ -207,10 +206,15 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         /// <summary>
-        /// The head lamp takes the LADDER's own x rather than a chosen one, so it lights the two places a
-        /// person is in the dark at this end: the ladder she climbs, and — straight across six metres of
-        /// planks — the north pilehead the starting dory lies against. Re-site the ladder and the lamp
-        /// follows it; a typed coordinate would not.
+        /// The head lamp takes the LADDER's own x rather than a chosen one, so it lights the place a person
+        /// is actually in the dark at this end: the ladder she climbs at low water, and the bollards abreast
+        /// of it. Re-site the ladder and the lamp follows; a typed coordinate would not.
+        ///
+        /// <para>⚠ It does NOT reach the dory on the north face, and that is a deliberate trade rather than
+        /// an oversight. She lies 4.25 m off the deck's centre line and the pool is 3.6 m; a lamp far enough
+        /// north to cover her is one that no longer covers the mooring edge, which is the working side. She
+        /// carries her own anchor light (boat-lights PR 2a), so the berth is not dark — the wharf's lamp does
+        /// the wharf's job.</para>
         /// </summary>
         [Test]
         public void TheHeadLamp_IsDerivedFromTheLadder_NotTyped()
@@ -218,12 +222,11 @@ namespace HiddenHarbours.Tests.EditMode
             var head = StPetersWharf.LampPostSites()[0];
             Assert.AreEqual(StPetersWharf.LadderPosition().x, head.Position.x, 1e-4f);
 
-            // And its pool actually crosses the deck to the dory's berth.
             float reach = LightPresets.For(LampPosts.PresetFor(head.Key)).Range;
-            float toDory = Vector2.Distance(head.Position,
-                new Vector2(StPetersBuilder.DoryMooredX, StPetersBuilder.DoryMooredY));
-            Assert.Less(toDory, reach,
-                $"the dory lies {toDory:0.0} m off a lamp that reaches {reach:0.0} m — she should be lit");
+            float toLadder = Vector2.Distance(head.Position, StPetersWharf.LadderPosition());
+            Assert.Less(toLadder, reach,
+                $"the ladder is {toLadder:0.00} m from a lamp that reaches {reach:0.00} m — the one fitting " +
+                "whose whole job is getting a person between a boat and the planks in the dark");
         }
 
         // =============================================================================================
@@ -256,7 +259,7 @@ namespace HiddenHarbours.Tests.EditMode
         /// winter stack; a lamp on top of any of them is two objects on one metre of deck.
         /// </summary>
         [Test]
-        public void TheQuayLamps_AreOnTheBackRow_ClearOfWhatIsAlreadyOnIt()
+        public void TheQuayLamps_AreAtTheWorkingEdge_ClearOfWhatIsAlreadyOnTheQuay()
         {
             var onTheQuay = NineMileCreekDressing.QuayGear()
                 .Concat(NineMileCreekDressing.Services())
@@ -302,9 +305,11 @@ namespace HiddenHarbours.Tests.EditMode
             float offset = NineMileCreekMainland.UtilityPoleOffsetMetres;
 
             var poles = NineMileCreekDressing.Poles().Select(p => p.Position).ToList();
+            // ⚠ The quay lamps are streetLamps too, so "a streetLamp" is not the filter — "a streetLamp
+            // that is not on the quay's own lamp row" is.
             var roadLamps = NineMileCreekDressing.Lamps(CreekTerrain())
                 .Where(l => l.Key == LampPosts.StreetLamp
-                            && Mathf.Abs(l.Position.y - NineMileCreekDressing.BackRowY) > 0.5f)
+                            && Mathf.Abs(l.Position.y - NineMileCreekDressing.LampRowY) > 0.5f)
                 .ToList();
 
             Assert.AreEqual(2, roadLamps.Count, "two lamps on 322 m of gravel — varied, not regular");
@@ -422,11 +427,11 @@ namespace HiddenHarbours.Tests.EditMode
         {
             var unchecked_ = NineMileCreekDressing.Lamps(null)
                 .Where(l => l.Key == LampPosts.StreetLamp
-                            && Mathf.Abs(l.Position.y - NineMileCreekDressing.BackRowY) > 0.5f)
+                            && Mathf.Abs(l.Position.y - NineMileCreekDressing.LampRowY) > 0.5f)
                 .ToList();
             var walked = NineMileCreekDressing.Lamps(CreekTerrain())
                 .Where(l => l.Key == LampPosts.StreetLamp
-                            && Mathf.Abs(l.Position.y - NineMileCreekDressing.BackRowY) > 0.5f)
+                            && Mathf.Abs(l.Position.y - NineMileCreekDressing.LampRowY) > 0.5f)
                 .ToList();
 
             Assert.AreEqual(2, unchecked_.Count);
