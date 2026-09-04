@@ -826,3 +826,121 @@ buffer and the four per-wall accumulators are built once and rewritten in place.
 The night gate, the day/night curve, the water shader, the searchlight (its beam is already bounded by its
 own cone and relief), the regime (`ShowsWhen`), the rule of the road, and the sidelights. `HullMeshDef.Panes`
 is GAME-SIDE like `Lamps`: the mesh baker never writes it, so it survives a re-bake.
+
+## Amendment — boat-lights PR 2b: the marks flash their characters (2026-09-04)
+
+The other half of the 08-28 charter. PR 1 (#686) lit the arrival's hull, PR 2a (#716) lit the fleet;
+this lights the **channel furniture**. Ten `NavBuoyDef` assets have carried `LightCharacter` and
+`LightText` since the kit landed in August under the note *"DATA ONLY — nothing flashes yet; that is
+its own feature"*. This is that feature, and it adds no new light primitive: a mark's lantern is the
+same additive `SceneLight` radial this ADR has always described, switched on and off by a rhythm.
+
+### The rhythm lives in Core and is a pure function of the clock
+
+`NavLightCharacter` (Core) parses a chart abbreviation once and thereafter answers
+`IsOn(totalSeconds, phaseSeconds)` — no accumulator, no `Time.time`, no saved state, no RNG (rule 5).
+It is Core because the DATA is a Boats type and the LIGHT is drawn by Art, and those two assemblies do
+not reference each other (rule 4); `INavLightSource` is the seam, exactly as `IVesselWay` was for the
+fleet's regime.
+
+**The schedule model is one rule: every rhythm is a flash inside a cycle, and a group of N is N cycles
+laid end to end from the top of the period, dark thereafter.** That reproduces all six of the kit's
+characters with no special cases — the composite `Q(6) + LFl 15s` included, which is simply six quick
+cycles followed by one long-flash cycle. The four constants (quick 0.5 s in 1.0 s, very quick 0.25 s
+in 0.5 s, flash 1.0 s in 2.0 s, long flash 2.0 s in 3.0 s) are the IALA round numbers and they live in
+one place (rule 6).
+
+**The seconds are REAL seconds, and that is worth writing down.** `GameClock` advances
+`_t += Time.deltaTime * TimeScale` with `TimeScale = 1`, so `IGameClock.TotalSeconds` ticks once per
+wall-clock second even though a game DAY is only 1800 of them. A mark published as `Fl G 4s` therefore
+flashes every four seconds by the player's own watch, which is what the chart means. Nothing about the
+day length can change that; only a change to how the clock itself advances could.
+
+### ⚠️ It parses `LightText`, not `LightCharacter` — the charter's instruction could not be followed
+
+The lane was chartered to parse the `LightCharacter` id. **That id cannot be parsed, and the reason is
+not stylistic.** `Q3` is the east cardinal and her period is ten seconds; `Q9` is the west and hers is
+fifteen. Neither number appears in the id at all. The id is also ambiguous where it does carry two
+digits — in `Fl2W5` the 2 is a group count and the 5 a period, and only the colour letter between them
+distinguishes them. Recovering the missing periods would have meant writing "an east cardinal flashes
+on ten seconds" into C#, which is content-as-code and forbidden (rule 2).
+
+`LightText` is the international chart abbreviation, it is complete, it is already authored on all ten
+defs, and it is what a skipper reads. So the id stays an id and the text is the source of truth.
+`TheIdAndTheTextNameTheSameLight` holds the two together — same rhythm token, same colour letter, same
+group count — so a def cannot be catalogued as one light and drawn as another.
+
+### The phase: a plan, not a hash — and the measurement that forced it
+
+Real marks are unsynchronised, and two green cans winking together read as one light in the wrong
+place. The charter prescribed *"a hash of the plan's mark id / position, never sibling index or spawn
+order"*. **The first implementation did exactly that, and it was measured and found wanting.** Hashing
+each id independently spreads marks UNIFORMLY, and a uniform spread of a handful of points has small
+gaps in it by the birthday problem: on the twenty-five marks actually placed, it put
+`channel.nmc_entrance.p0` and `channel.nmc_bar_gut.p1` — two port-hand cans **in one harbour**, both
+`Fl G 4s` — **0.021 s apart on a four-second period**. That is unison to any eye, in one frame.
+
+`NavLightPhasePlan.Spread` (Core, pure) replaces it: marks wearing one character are sorted by chart id
+and given **a slot each**, so `k` marks are at worst `period/k` apart instead of however close chance
+put them. A hash still runs, but only to JITTER each mark inside her own slot by at most ±20% of it —
+because a perfectly even round-robin of six green flashes reads as a marquee — and the jitter is bounded
+so the guarantee survives: `(1 − 2·0.2)/k` of the period, asserted at every group size from 2 to 16.
+
+**The discipline the charter was really protecting is kept.** Slots are handed out in *sorted-id* order,
+so the marks may be placed in any sequence whatever and every one gets the same phase back; the shuffle
+arm proves it. What is *not* promised, stated plainly: adding a mark re-slots her whole character group.
+That is accepted rather than hidden — a phase is recomputed from the chart every time a region is built
+and is never saved or compared across versions (rule 5), so per-mark stability across an edited chart
+buys nothing, while order independence is what stops a picture changing for a reason nobody can see.
+
+**Per region, not per game.** Compared across the whole game the closest pair of one character is 0.019 s
+apart — the north cardinals of Nine Mile Creek and St Peters, two harbours the player is never in at
+once. Marks that can never share a frame do not need telling apart, so the spread and its test are both
+scoped to a region.
+
+### The flash is an ENABLE, not an intensity ramp
+
+`SceneLight` pushes its material block on a throttled tick (20 Hz shipped). Driving `Intensity` between
+0 and full would quantise every edge of a half-second quick flash to the nearest 50 ms — a ±10 % wobble
+on the very thing a skipper counts. Toggling the component's own `enabled` instead lands the edge on the
+frame the character asks for, because `SceneLight.OnEnable` ticks immediately and `OnDisable` drops the
+quad the same frame. **No change to `SceneLight` was needed**, and the "intensity dirty → push now" path
+the charter offered as an alternative was not built, because the enable path is exact rather than merely
+finer-grained. It is also cheaper: a dark mark costs **no quad at all**.
+
+The state is written only when it CHANGES — twice a period, not sixty times a second — so a lit mark
+costs one bool compare per frame and nothing else. `APortHandIsLitAQuarterOfHerPeriod` counts the frames
+the quad is actually enabled across a whole period and gets **exactly 20 of 80**;
+`TheSouthCardinalShowsSixQuicksAndThenALongFlash` counts **7 bursts with a 40-frame tail**, which is the
+two-second long flash and the feature that tells her from the west cardinal's nine.
+
+### Budget (rule 7)
+
+Twenty-five lit marks across the two harbours, at most one quad each, pooled by `SceneLight` and shared
+through one material. At an eighth duty the average is about three quads; the peak is twenty-five, and
+only if every character happened to align. **`CastsShadows` is off on every lantern**, which is a
+measurement rather than a preference: a buoy stands in open water with nothing inside her 1.6 m to cast
+anything, so every pair she added to the 10 Hz lamp/caster scan would provably yield no shadow — and a
+flashing mark would add and remove them twice a second. Nav lanterns stay off the four-slot water bridge
+for the same reason the fleet's nav lamps do: only `BoatSpotlight` lights the sea, and twenty-five
+flashing marks would evict the beam the player is steering by.
+
+### What did NOT change
+
+No new light primitive, no shader change, no change to the day/night curve, the water shader or the
+beam relief. The gate is the shipped in-shader night gate, so a lantern is invisible by day and full at
+night with no per-light coupling to the cycle — a buoy light that burns unseen through the afternoon is
+correct, and it is what the real one does. Unlit marks (the mooring buoy) get the component and **no
+`SceneLight` at all**: absence is data, exactly as it is for a hull with no lamps.
+
+### Tunables (rule 6)
+
+| Tunable | Where | Default |
+|---|---|---|
+| Lantern colour, per mark colour | `NavLightPresets` | green `(0.10, 1, 0.34)` · red `(1, 0.10, 0.09)` · white `(1, 0.96, 0.88)` · amber `(1, 0.82, 0.20)` |
+| Lantern reach | `NavLightPresets.LanternRangeMetres` | 1.6 m — bounded by the closest two marks in either harbour (8.29 m apart), so a pair clears by 5.09 m |
+| Lantern brightness | `NavLightPresets.LanternIntensity` | 1.7 (a sidelight is 1.4; a mark is meant to be picked up first) |
+| The four rhythms | `NavLightCharacter` constants | quick 0.5/1.0 s · very quick 0.25/0.5 s · flash 1.0/2.0 s · long flash 2.0/3.0 s |
+| Phase jitter inside a slot | `NavLightPhasePlan.JitterFractionOfSlot` | 0.2 (±20 % of a slot) |
+| Master switch for one mark's lamp | `NavLight._lampOn` | on |
+| Which character a mark shows | `NavBuoyDef.LightText` (data, ADR 0003) | per mark type |

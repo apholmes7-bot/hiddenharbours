@@ -222,6 +222,12 @@ namespace HiddenHarbours.Tools.RigBaking
 
                 var mark = root.AddComponent<NavBuoyVisual>();
 
+                // Her lamp. It reads the mark beside it through the Core seam and draws nothing at
+                // all for an unlit type, so it is safe on the ONE prefab every mark wears — the
+                // mooring buoy included. Added BEFORE Configure so a rebuild of this prefab lays
+                // the components down in the same order every time.
+                root.AddComponent<HiddenHarbours.Art.NavLight>();
+
                 // Dress it with the working-default port hand so the prefab is not a blank in the
                 // project browser; a placement retargets it.
                 var def = AssetDatabase.LoadAssetAtPath<NavBuoyDef>($"{DefFolder}/PortCan.asset");

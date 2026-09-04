@@ -510,6 +510,67 @@ the shipped look, never to an invisible boat. The fix is upstream.
 **How the owner sees it:** `Hidden Harbours/Rig Baking/Probe: boat windows (print the table)` prints every
 window in the fleet with its position, size and the way it faces; the writer beside it puts them into the
 defs. Flip `BoatLegacyCabinGlow` on the `GameConfig` asset to see yesterday's picture in the same build.
+### 6.3 The marks flash — nav light characters — SHIPPED (ADR 0016, boat-lights PR 2b)
+
+The buoys have carried their light characters as data since the kit landed (`NavBuoyDef.LightCharacter`
+/ `LightText`, ten mark types) under a note saying nothing flashed yet. They flash now. **Twenty-five
+lit marks stand in the two harbours** and each shows the rhythm the chart publishes for her.
+
+| Mark | Character | What she does |
+|---|---|---|
+| North cardinal | `Q` | quick, continuously — 60 a minute, never a pause |
+| East cardinal | `Q(3) 10s` | three quick flashes, then dark to ten seconds |
+| South cardinal | `Q(6) + LFl 15s` | six quick flashes **and then a long one** — the long flash is what tells her from the west |
+| West cardinal | `Q(9) 15s` | nine quick flashes, then dark to fifteen |
+| Isolated danger | `Fl(2) W 5s` | two white flashes, then dark to five |
+| Port hand (can, lit) | `Fl G 4s` | one **green** flash every four seconds |
+| Starboard hand (nun, lit) | `Fl R 4s` | one **red** flash every four seconds |
+| Mooring | *(none)* | unlit — and costs no light at all |
+
+**The colours are the other way round from a boat, and that is correct.** A vessel shows red to port and
+green to starboard. A lateral MARK in IALA Region B — the Canadian Coast Guard's convention, the one the
+kit is baked to — shows GREEN on the port hand and RED on the starboard. A test pins a buoy's green equal
+to the fleet's *starboard* sidelight and a buoy's red equal to the fleet's *port* one, so anybody
+"tidying" the two libraries to agree name-for-name turns every channel in the game inside out and finds
+out immediately.
+
+**The seconds are real seconds.** The master clock ticks once per wall-clock second (`TimeScale = 1`),
+so `Fl G 4s` is a flash every four seconds by the player's own watch — what the chart means.
+
+#### What the owner can change (no code)
+
+| Want | Change |
+|---|---|
+| A mark to show a different character | Her `NavBuoyDef.LightText` — `Fl G 4s`, `Q(3) 10s`, `Fl(2) W 5s`, `Q(6) + LFl 15s`… (data, ADR 0003) |
+| A mark to go dark | Clear her `LightText` **and** `LightCharacter`; she then costs no light quad at all |
+| The lanterns brighter, or to reach further | `NavLightPresets.LanternIntensity` / `LanternRangeMetres` — one place for all of them |
+| A different green (or red, or white) | `NavLightPresets` — one place, and the sidelight test will tell you if you have split the two libraries |
+| One mark switched off in a scene | `NavLight.Lamp On` on that instance |
+
+The grammar the text accepts is `F`, `Fl`, `LFl`, `Q`, `VQ`, an optional group `(N)`, an optional colour
+letter `W`/`G`/`R`/`Y`, an optional period `Ns`, and `+` between segments for a composite. **Anything it
+does not fully understand is refused with a reason** rather than drawn as a dark mark — a light that
+never lights looks exactly like a lamp that has failed, and this is channel furniture.
+
+#### Where the timing comes from (for reviewers)
+
+- **`NavLightCharacter`** (Core) — parses the chart abbreviation once; answers
+  `IsOn(totalSeconds, phaseSeconds)` as a pure function of the master clock. No accumulator, no
+  `Time.time`, nothing saved (rule 5). ⚠️ It parses `LightText`, **not** the `LightCharacter` id: the id
+  is lossy (`Q3` is the east cardinal but her ten-second period appears nowhere in it) and recovering it
+  would mean hard-coding IALA cardinal conventions into C#.
+- **`NavLightPhasePlan`** (Core) — shares each period out among the marks of that character **in one
+  region**, so no two wink together. Slots are handed out in sorted-id order, so placement order cannot
+  move a mark.
+- **`INavLightSource`** (Core) — the seam. A `NavBuoyDef` is a Boats type and a `SceneLight` is Art, and
+  those two do not reference each other (rule 4).
+- **`NavLightPresets`** (Art) — the look, one entry per colour.
+- **`NavLight`** (Art) — on the nav-buoy prefab. Mints one pooled `SceneLight` at the lantern (the top of
+  the mark's painted structure, derived from the bake, riding the bob) and switches it.
+
+**The flash is an enable, not a fade.** `SceneLight` pushes to the GPU on a throttled 20 Hz tick, so
+driving intensity would quantise a half-second quick flash by ±10 %. Toggling `enabled` lands the edge
+on the frame the character asks for and costs no quad while dark.
 
 ## 7. Migration to true URP 2D lights (still open)
 
