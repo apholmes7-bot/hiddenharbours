@@ -445,7 +445,7 @@ namespace HiddenHarbours.Tests.EditMode
                 "_SurfThreshold", "_SurfThresholdSoft", "_SurfBands", "_SurfBandDither", "_SurfSupersedeFringe",
                 "_SurfPlungeStrength", "_SurfLipThrow", "_SurfLipWidth", "_SurfBarrelShade", "_SurfPocketWidth",
                 "_SurfPocketBoost", "_SurfBeatStrength", "_SurfRunUpStrength", "_SurfFrontSlope",
-                "_SurfDepositStrength",
+                "_SurfDepositStrength", "_SurfAgeStrength",
             };
             string[] colours = { "_SurfColor", "_SurfLipColor", "_SurfBarrelColor" };
             string[] files =
@@ -469,7 +469,9 @@ namespace HiddenHarbours.Tests.EditMode
                     if (!yaml.Contains($"- {key}: ")) missing.Add($"{Path.GetFileName(file)}: {key}");
                 foreach (string key in colours)
                     if (!yaml.Contains($"- {key}: {{")) missing.Add($"{Path.GetFileName(file)}: {key}");
-                // The three new dials ship at today's look on every material.
+                // The BORE's look dials ship at today's look on every material - the owner's dials-ON
+                // call is still owed. _SurfAgeStrength is deliberately NOT among them: it is row 2's, it
+                // ships ON, and OneFoamLanguageTests holds its value with the caps' and the wake's.
                 foreach (string key in new[] { "_SurfBeatStrength", "_SurfRunUpStrength", "_SurfFrontSlope", "_SurfDepositStrength" })
                     if (!yaml.Contains($"- {key}: 0\n") && !yaml.Contains($"- {key}: 0\r\n"))
                         missing.Add($"{Path.GetFileName(file)}: {key} is not serialized at 0");
@@ -580,6 +582,13 @@ namespace HiddenHarbours.Tests.EditMode
             block.SetFloat("_SurfStrength", 1f);
             block.SetColor("_SurfColor", d.Surf ?? _shippedSurfColor);
             block.SetColor("_SurfLipColor", d.Surf ?? _shippedLipColor);
+            // ⚠ ROW 2: the surf's whitewater now WALKS the sea's foam ramp (_SurfAgeStrength), and the
+            // walk REPLACES the colour it is given with a convex combination of the palette anchors. A
+            // debug colour composed through it is no longer a debug colour — the cover map would score
+            // the palette. So the measurement arms pin the walk to its passthrough, which is exactly what
+            // that 0 exists for, and the LOOK shots keep the shipped value so the check-in strips show
+            // the sea the owner will actually see.
+            block.SetFloat("_SurfAgeStrength", d.Surf.HasValue ? 0f : ShippedFloat("_SurfAgeStrength"));
             block.SetFloat("_SurfBeatStrength", d.Beat);
             block.SetFloat("_SurfRunUpStrength", d.RunUp);
             block.SetFloat("_SurfFrontSlope", d.FrontSlope);
