@@ -97,8 +97,8 @@ namespace HiddenHarbours.Art
         /// <para><b>⭐ <c>CastsShadows</c> is OFF, and that is a measurement, not a preference.</b>
         /// The shadow system rescans every lamp against every caster on a 10 Hz tick; the fleet's own
         /// lamps already cost it 25×592 pairs a scan at the Nine Mile Creek wharf. A buoy lantern
-        /// stands in open water with nothing inside its 1.6 m to cast anything, so every pair it adds
-        /// is work that provably yields no shadow — and 23 marks flashing would add them and take
+        /// stands in open water with nothing inside its 1.1 m to cast anything, so every pair it adds
+        /// is work that provably yields no shadow — and 25 marks flashing would add them and take
         /// them away twice a second. Off, deliberately, with the reason written down.</para>
         /// </summary>
         public static void Apply(SceneLight light, NavLightColour colour, float lanternHeightMetres)

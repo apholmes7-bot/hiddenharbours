@@ -85,7 +85,7 @@ namespace HiddenHarbours.Tests.EditMode
         /// <summary>
         /// ⭐ <c>Apply</c> turns cast shadows OFF and takes the lantern height from the mark. The
         /// shadow system rescans every registered lamp against every caster on a 10 Hz tick; a buoy
-        /// stands in open water with nothing inside her 1.6 m, so every pair she adds is work that
+        /// stands in open water with nothing inside her 1.1 m, so every pair she adds is work that
         /// provably yields no shadow — and a flashing mark would add and remove them twice a second.
         /// </summary>
         [Test]
@@ -100,7 +100,7 @@ namespace HiddenHarbours.Tests.EditMode
                 NavLightPresets.Apply(light, NavLightColour.Red, 1.8125f);
 
                 Assert.That(light.CastsShadows, Is.False,
-                            "a buoy lantern registered as a shadow caster — 23 marks flashing would " +
+                            "a buoy lantern registered as a shadow caster — 25 marks flashing would " +
                             "churn the 10 Hz lamp/caster scan for no shadow at all");
                 Assert.That(light.LampHeightMeters, Is.EqualTo(1.8125f).Within(1e-4f));
                 Assert.That(light.Color, Is.EqualTo(NavLightPresets.For(NavLightColour.Red).Color));
