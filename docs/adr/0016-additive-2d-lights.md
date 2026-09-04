@@ -554,3 +554,131 @@ The owner's eye is the judge; if the skew reads wrong, the lever is the profile'
   on one surface or the other; the multiply is robust to both.
 - **Shadows into the water shader.** The water lane's file (serial PRs, one shader); the multiply above the
   glow cuts the in-shader beam without touching it.
+
+## Amendment — boat-lights PR 2a: the whole fleet wears her lamps, and a MOORED boat may not show them (2026-09-03)
+
+**The owner, 2026-08-27:** *"it would be cool to arrive in the morning so long as the boats lights are
+working ... cabin light on, navigation lights on, spotlight working."* PR 1 (#686) lit the one hull the
+intro's arrival is run on. This is the second half: **every hull whose rig says where her lamps are now
+declares them**, and — the design work of the PR — **a boat lying still is no longer allowed to burn the
+lights that say she is under way**.
+
+### The lamp tables: 27 hulls, measured, not eyeballed
+
+Nine rigs publish `navMounts(dir)` and they dress twenty-seven hulls between them (the lobster generator
+alone makes eighteen). `HullMeshDef.Lamps` gains a row set on each. The open boats — the dory, the punt,
+the console skiff, both sport skiffs, both zodiacs — publish no mounts and carry no lamps: **absence is
+data**, and it stays so.
+
+**The measurement.** A rig publishes `navMounts` as SCREEN points, one answer per facing, because that is
+what a sprite bake needs; a mesh hull needs the boat-local triple behind the projection. At rest (no roll,
+no pitch, no heave) that projection is AFFINE in `(x, y, z)`, so eight facings are sixteen linear equations
+in three unknowns: `BoatLampAnchorProbe` solves them in the least-squares sense against the RUNTIME's own
+`IsoFacetMath.RigToWorld`, and the residual is not a fitting error but floating noise — **worst 2.3e-13 px
+across all twenty-seven hulls**. Two independent checks say the inversion is right rather than merely
+self-consistent:
+
+- `sportFisherIsoRig2` is the one rig that has answered #686's upstream ask and publishes a boat-local
+  `NAV` table directly. The inversion reproduces it to **3.6e-15 m**.
+- The Cape Islander's six rows were measured by another lane, by another method, four days earlier. The
+  inversion reproduces them to **1.8e-15 m** — and her def is not re-derived from it: PR 2 leaves her
+  shipped numbers alone and pins them value by value.
+
+The probe **prints; it does not write.** That is this ADR's own rule and it still holds: the mesh baker
+must not author `Lamps` until the export contract grows a boat-local `NAV` table beside `navMounts` on
+every rig. Until then the def is hand-authored and the probe is the instrument that says what it should
+contain — `Hidden Harbours / Rig Baking / Probe: boat lamp anchors`.
+
+**The two lamps no rig projects.** A cabin glow goes at the centre of the room the rig publishes, at the
+centre of that room's own glass band — which reproduces the cape's shipped `(0, 1.52, 2.21)` exactly: her
+house-box centre and her side-glass centre. A searchlight goes on the front of the roof of the room she is
+conned from, 0.14 m aft of its face and 0.08 m above it — which reproduces her shipped `(0, 2.4, 3.1)`
+exactly. Both constants are calibrated on her and on nothing else. The three published HOUSE shapes
+(`wheelhouse`, `ship` with a `decks.bridge`, `sport` with an open flybridge) are read as they are written.
+
+### Two new kinds (append-only)
+
+| kind | why it is not one of the existing five |
+|---|---|
+| `AnchorLight = 6` | The other half of the rule of the road, and the reason a regime exists at all. Hoisted at the masthead — the highest point every one of these rigs names. Dimmer and shorter than the masthead it hangs in place of: a wharf of seven anchor lights each as bright as a steaming light reads as a fleet getting under way. |
+| `RangeLight = 7` | The second masthead a vessel of fifty metres or more carries. Only the tanker has one, and her rig publishes it under its own name (`range`). Its LOOK is the masthead's verbatim; it is a separate KIND so that "one lamp of each kind" stays an exact guard rather than a hull with two mastheads collapsing into one duplicated row. |
+
+### The regime — and what it is worth
+
+`IVesselWay` (Core) on the boat root answers `UnderWay` or `Moored`; `MooredBoat` answers *moored*, and
+**a hull that answers nothing is UNDER WAY**. That default is load-bearing: it is exactly what every
+lamp-bearing hull did before the regime existed, the arrival's Cape Islander among them, so absence means
+"no change" and never "dark". `BoatLamps.ShowsWhen(kind, way)` is the whole rule, pure and pinned headless.
+
+- **Under way** — sidelights, stern, masthead, range. Not the anchor light: a boat making way is not at
+  anchor, and showing both says both.
+- **Moored** — the anchor light only. Showing sidelights while lying still is the one lie a navigation
+  light can tell, and it is refused here rather than dimmed somewhere downstream.
+- **The cabin glow is not a navigation light** and burns in both. Nobody takes a bearing off a lit window.
+
+Two states, not three. A seaman separates "made fast alongside" (strictly, no lights at all) from "at
+anchor" (one all-round white); both are collapsed into `Moored` and both show the anchor light. That is a
+PICTURE decision made on purpose — a wharf of seven working boats showing nothing whatever is a black hole
+in the middle of the harbour at two in the morning — and the lie it tells is the opposite of the dangerous
+one.
+
+**What it prevents, concretely.** Nine Mile Creek moors seven owned boats against the wharf wall and the
+review anchorage holds every hull that has art. Without the regime, `MakeLit`/`MakeSearchlit` as written
+would have lit every one of them with sidelights, mastheads and a burning searchlight, all night.
+
+### The searchlight's owner — asked of the helm slot, answered by the BOAT
+
+`MakeSearchlit`'s own documentation owed PR 2 this: *"when the player is given a hull that declares a
+searchlight, 'is this the boat whose wheel the player is holding' becomes a real question."* It is now
+asked properly, every frame, of `HelmSlot` — **and the honest predicate is `IsPlayersBoat`, not
+`IsPlayerHelm`.** `IsPlayerHelm` carries `HasHelm`, which is the ENGINE question, and the boat the player
+owns at the opening is a ROWED DORY that has carried a switchable searchlight since the builder first
+bolted one on. Gating on the helm would have looked right, passed a fixture written against a powered
+hull, and killed the L key on the starting boat. A searchlight is a boat's TACKLE, like her anchor: at the
+wheel or on her deck, it is hers. (This is #642's own lesson, applied: an INSTRUMENT belongs to a helm; a
+boat's tackle does not.)
+
+Art holds a `Transform` and the slot arbitrates on an opaque `BoatController` token, so `HelmSlot` gains
+an `IsPlayersBoat(GameObject)` overload that resolves both sides to the GameObject they live on — the one
+comparison that can be made honestly across that seam.
+
+Three consequences fall out:
+
+- The old rule "a def-minted beam is deaf to the key" is retired. It was a blunt instrument for "not the
+  player's", and it also meant a hull the player BOUGHT could never work her own searchlight. Every beam
+  is now key-capable; ownership decides.
+- `MakeSearchlit`'s destroy discriminator moves off `KeyTogglesBeam` (now true everywhere) onto
+  `BoatSpotlight.MintedFromDef` — what it always actually meant.
+- A def-minted beam nobody is aboard follows her way: lit under way, out at her berth. It acts **on the
+  transition**, not every frame — re-asserting sixty times a second would silently stomp anything that set
+  the beam by hand. A builder-bolted beam (the player's) is never driven by the regime at all, or walking
+  up the wharf would light her dory behind her.
+
+### Which hulls carry a searchlight — a measurement, not a size class
+
+The shipped beam throws `BoatSpotlight.DefaultRangeMetres` = 9 m forward **from its mount**. A hull conned
+from far aft would therefore rake her own foredeck rather than the sea. So the probe measures, per hull,
+whether the beam clears her own stem, and declines to declare a mount she cannot use:
+
+- **21 carry one** — the cape, the lobster boat, her eighteen variants, and the sport fisher convertible.
+- **6 do not** — the side dragger, both stern trawlers, the coastal packet, the tanker, and the sport
+  fisher skybridge.
+
+The fleet separates cleanly: every hull that clears does so by **2.3 m or more**, every hull that does not
+falls short by **0.9 m or more**, so nothing is balanced on the line. Unblocking the six is a per-hull
+throw — a preset/data change — and is not this PR.
+
+### What did NOT change
+
+The sidelight preset's 0.28 m radius stands: the tightest pair in the whole fleet is still the cape's
+0.6048 m, and the preset test now MEASURES that off the shipped defs instead of restating it, so the day a
+narrower hull is imported the bound moves with her. Nav lamps and anchor lights stay off the four-slot
+water bridge — only `BoatSpotlight` lights the sea, and a moored fleet must not evict the beam the player
+is steering by. Nothing about the day/night curve, the water shader or the beam relief is touched.
+
+**The cape's anchor light is appended LAST on her def, and that is not cosmetic.** `BoatLamps` builds one
+child light per lamp in array order and `SceneLight`'s deterministic flicker is seeded from the child's
+SIBLING INDEX — the trap that cost #702 five false reds. A row inserted before her cabin glow would re-seed
+its flicker and move her shipped pixels; appended last, every earlier lamp keeps the index it had, and the
+anchor light is disabled while she is under way anyway. She needs one at all because one of the seven boats
+moored at Nine Mile Creek is a Cape Islander, and she would otherwise be the one dark hull on the wall.

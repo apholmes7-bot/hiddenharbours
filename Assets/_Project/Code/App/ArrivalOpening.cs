@@ -622,7 +622,17 @@ namespace HiddenHarbours.App
             // it returns EARLY when the hull art has not baked — and where she points is not a
             // drawing decision. A boat pointed north because a mesh was missing runs out to sea.
             go.transform.rotation = Quaternion.Euler(0f, 0f, -inbound);
-            go.AddComponent<MooredBoat>().Configure(_skipper, inbound);
+            var drawer = go.AddComponent<MooredBoat>();
+            drawer.Configure(_skipper, inbound);
+
+            // ⭐ AND SHE IS UNDER WAY, which MooredBoat cannot know on its own (ADR 0016, the lamp
+            // regime). It is her DRAWER here, not a claim about her state — the comment above says so
+            // in as many words — but its default is a berth's, because that is what it is for
+            // everywhere else. Left at that default she would run in before dawn showing an anchor
+            // light and no navigation lights at all, which is precisely the demo the owner's
+            // 2026-08-27 ruling asked for: "cabin light on, navigation lights on, spotlight working."
+            // She is told, here, at the one moment the answer is unambiguous.
+            drawer.SetWay(VesselWay.UnderWay);
 
             go.SetActive(true);
             _boatRoot = go.transform;
@@ -1083,6 +1093,13 @@ namespace HiddenHarbours.App
 
             MakeTheLinesFast();
             _pilotage.Moor(_helm);
+
+            // Her lines are fast, so her lamps stop saying she is making way (ADR 0016). This is the
+            // regime's only live transition in the shipped game, and it is the right one to have: she
+            // comes in under her navigation lights and her searchlight, and the moment she is secured
+            // they go out and an anchor light comes on.
+            var drawer = _boat != null ? _boat.GetComponent<MooredBoat>() : null;
+            if (drawer != null) drawer.SetWay(VesselWay.Moored);
 
             _tiedUpHonestly = honest;
             _phase = Phase.Moored;

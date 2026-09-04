@@ -259,9 +259,11 @@ namespace HiddenHarbours.Art.Editor
             if (anchor == null) anchor = go.AddComponent<TreeTrunkAnchor>();
             anchor.Anchor = placement.Entry.trunkAnchor;
 
-            // This species' baked lighting channels, on the SAME property block as the anchor. They
-            // are inert until the owner raises Tree.mat's _LightResponse off 0 — binding them costs
-            // nothing and means turning the response on is one slider, not a re-place of the forest.
+            // This species' baked lighting channels, on the SAME property block as the anchor.
+            // ⭐ The promise this comment used to make came true: they were bound while Tree.mat's
+            // _LightResponse still shipped at 0, so the owner's 2026-09-03 ruling that the woods must
+            // read the sun WAS one slider and not a re-place of the forest. Every tree already standing
+            // in a banked scene lit up on the next load. Keep binding them here for the same reason.
             var (mask, normal) = LoadLightSheets(placement);
             anchor.SetLightSheets(mask, normal);
 

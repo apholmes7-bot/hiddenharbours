@@ -4045,3 +4045,159 @@ The measurement fixture proves the colour walk now spans the visible band instea
 invisible pixels; the window tests prove the foam no longer moves relative to the water it sits in; the
 bow tests prove the mechanism is an impact rather than a speed ramp. **None of them claims the sea looks
 right.** That is the owner's next eyeball, and it is the only acceptance bar this round has.
+
+
+## 31. The mirror — a glass calm has a SURFACE, not a wavelength (owner ruling 2026-09-02)
+
+> *"glass calm, i trust your judgement for the game, but we need reflections on water."*
+
+Water-fidelity PR 5, register rows 5 + 13. **Tier A, `col.rgb` only.**
+
+### What was wrong, named by the instrument rather than by an opinion
+
+§11's sheen stamps the sky down the surface as `pow(0.5 + 0.5·sin(2π·pp.y / smearLen), 3)` at calm —
+a **1.6 m sine band in world-Y, cubed**. On a dead calm that is a rug of hard horizontal stripes, and
+the plate diagnostic proved the stripes are not *on* the reflection, they **are** it: zeroing
+`_ReflectionStrength` took the glass sea's mean luma from **0.46 to 0.05** and its row-band contrast
+from 0.165 to 0.001. Row 13 is the same defect from the side: the band fades with `_Chop` on a ramp
+rather than with the water, so at sea state 0.25 it still held three quarters of its glass contrast.
+
+### The form: 1/(1 + k·|slope|)
+
+A mirror has no wavelength. It has a **surface**: a level facet returns the sky to the eye, a tilted
+one returns something else, so the sheen breaks up exactly where the water tilts and nowhere else.
+
+The tilt is the SHARED wave field's own analytic slope — the same `waveSlope` the swell face shading
+and #691's beam relief read (ADR 0018: one field, one slope, one computation), at the drawn
+`_OceanSwellScale` frequency and already sampled at `Pixelize(worldXY)`, so the break-up is pixel-art
+by inheritance rather than by a second snap.
+
+```hlsl
+float tilt        = length(waveSlope) * _MirrorTiltScale;   // shipped 6
+float mirrorShare = 1.0 / (1.0 + tilt);                     // 1 dead-flat, falling smoothly, never clipping
+band = lerp(band, _MirrorSheen * mirrorShare, _MirrorForm);  // _MirrorForm 0 = the shipped stripe, exactly
+```
+
+**Chop dissolves it for free — chop IS tilt** — which is row 13 answered by construction instead of by
+another ramp over `_Chop`. And the light half of row 13 was never missing: the mirror reflects `sky`,
+which is `_DayNightTint`, so a night mirror is a dark mirror and the moon path still walks it (the sky
+CONTENT layer, §11's second half, is untouched).
+
+⚠️ **`_MirrorSheen`'s default 0.3125 is a derivation, not a taste.** `(0.5 + 0.5·sin)³` averages
+0.3125 over a period, so a level facet returning that much sky puts the SAME light on a calm sea as
+the stripe it replaces. **This changes the form, not the exposure.** Measured on the glass plate:
+mean wet luma 0.4618 → 0.3418 open water, 0.4886 → 0.3727 over the sand — and every bit of that drop
+is the glitter below, not the sheen.
+
+### ⭐ Glitter needs ripples — and the plate is what said so
+
+With the rug gone, the loudest thing on a dead calm was the **sun-streak glitter**: a dense field of
+fine vertical glints over the whole frame, reading as RAIN. It had always been there; the stripes were
+hiding it.
+
+It is also wrong, and for the same reason the mirror is right. A glint is a facet turned by chance to
+send the SUN at the eye — the one thing a LEVEL facet cannot do, because it is already sending the
+sky. So the streak rides `tiltShare = 1 − mirrorShare`, the mirror's exact complement: **one surface,
+accounted for once.** A dead calm returns the sky and almost no glitter; a light air breaks both ways;
+the path lights up as soon as there is a ripple to light it.
+
+### The evidence, and the passthrough
+
+`WaterFidelityPlateSweepTests.TheGlassCalm_IsAMirror_AndNotAStripedRug` shoots THREE arms on one
+frozen scene at two viewpoints — the shipped stripe, the mirror, and the reflection removed entirely —
+and requires two numbers to move in **opposite directions**: the row-band contrast (the std-dev of the
+per-row mean luma; horizontal stripes and almost nothing else score on it) must collapse, while the
+mean luma must not, because a change that killed the stripes *and* the light would be the reflection
+deleted wearing a mirror's name. Measured: row-band **0.165 → 0.063** and **0.168 → 0.064**, against a
+reflection-off control at 0.001 / 0.004.
+
+`_MirrorForm = 0` restores the shipped stripe and the shipped all-over glitter exactly — both are
+`lerp(x, y, 0)`, the float identity — and the three dials are serialized on `Water.mat` and all eight
+presets (`Apply water preset` is a wholesale copy).
+
+
+## 32. The whitecaps — the field places them, and they age like every other foam (owner ruling 2026-09-02)
+
+> *"let the procedural field replace the caps."*
+
+Water-fidelity PR 7, register row 7. **Tier A, `col.rgb` only.**
+
+### The placement: one number
+
+`capField = lerp(capField, capPat, _WhitecapTexStrength)`. At the **0.865** every shipped material
+carried, that is not a blend — **painted slots PLACE, they do not decorate** (§10's standing law). The
+painted sheet is 16 mirrored copies of one mark, so it gave 1.35 % coverage in a blow where the field
+gives 9.95 % (measured 2026-08-05 on the cap field itself), and its hard mirrored silhouette is the
+"dark shards" the gale plates show cut into the foam lanes.
+
+**`_WhitecapTexStrength` → 0 on all nine materials, and the shader's own default with them**, so a
+material that does not carry the key gets the field rather than the sheet. `Whitecaps.png` is NOT deleted
+and the slot is NOT removed: both stay reachable and 1 still hands the caps back to the sheet exactly as
+before. It is the owner's art; this records which source SHIPS.
+
+⚠️ **All nine, because `_WhitecapTexStrength` is MOOD-EASED** (`WaterSurface.MoodFloatNames`): the live
+value is lerped between the preset anchors by the weather, so one preset left at 0.865 would be a sea that
+goes back to the stamp sheet whenever the weather leaned that way.
+
+### The colour: born into the one foam language (`_CapAgeStrength`)
+
+The advected wake buffer already walks the palette — `_PaletteFoam → _PaletteShallow → _PaletteMid`
+through `WakeFoamKnots` — and the whitecaps composited a single flat `_FoamColor`, so the sea had two
+whites in it. The cap's own lifecycle already knows which end of that walk a pixel is on:
+`WhitecapLifecycleWave` returns a `breakCore` (the crest tip) and a `residual` (the milky trail behind),
+and their ratio IS the age. Nothing accumulated, nothing re-derived — the decaying-quantity law: read it
+from geometry.
+
+```hlsl
+capAge01 = residualLife / max(breakCore + residualLife, 1e-4);   // 0 fresh break, 1 milky residual
+```
+
+The caps then take the **same ramp through the same knots** the wake ages on, so a cap and a wake at the
+same age are the same colour. That is all "one foam language" has to mean before row 2 can unify the rest;
+row 2 itself is NOT done here. `_CapAgeStrength 0` restores the single flat white, bit for bit.
+
+### ⚠️ …and it SHIPS AT 0, because this instrument could not show it
+
+Whitecaps sit at **0.02–0.09 luma** in the only weathers that have caps, so a colour change is invisible
+to the eye on a plate. The sweep therefore measures the **mean colour of the brightest decile of open
+water** — where the foam is at any exposure — and shoots an ageing arm beside the shipped one. In an
+ISOLATED run it read exactly as intended:
+
+| cell | ageing 0.75 | ageing off | red:blue |
+|---|---|---|---|
+| gale, open water | (0.076, 0.101, 0.122) | (0.098, 0.126, 0.147) | 0.62 vs 0.67 |
+| blow, NMC steep | (0.051, 0.147, 0.148) | (0.070, 0.166, 0.168) | 0.35 vs 0.42 |
+| glass, open water | (0.3996, 0.4550, 0.5101) | (0.3996, 0.4550, 0.5102) | inert |
+
+In the FULL SUITE the same blow comparison read **0.467 vs 0.470**. The direction survived; the magnitude
+did not. What moved between the runs is `_Time`: which crests happen to be breaking decides which pixels
+land in the decile, and that swamps a subtle colour walk on foam this dark.
+
+**A look change nobody can see is not a look change anybody should ship.** So `_CapAgeStrength` ships at
+**0** — the mechanism built, gated and off. Row 2, the foam-language unification, judges wake, surf,
+fringe and caps together against one palette; that is where a foam palette can actually be judged, and it
+inherits the code, the dial and these numbers rather than having to invent them. The arm stays in the
+sweep as a reported diagnostic. What IS asserted is that the ageing is exactly inert on a sea with no caps
+in it, at any dial setting.
+
+### What the plates can and cannot settle
+
+The A/B pair (`SHEET-caps.png`) is for the eye, and the eye is the acceptance: the sheet arm's hard
+mirrored shards against the field arm's soft wind-streaked lanes. **The coverage numbers are reported, not
+asserted**, and three drafts of the instrument are why:
+
+- a **distribution-relative** bar (p50 + half the way to p95) reported 18.65 % coverage on a **glass calm**
+  — every histogram has a bright tail;
+- an **absolute white** bar reported 0.00 % in a **gale**, where the whole frame including its foam sits
+  under 0.03 luma — foam is only white relative to the sea it is on;
+- inside the breaker contour the **surf's** own whitewater is white by design, so both arms read 65–83 %
+  there. That is the surf, not caps — the coverage now excludes the breaking water rather than pretending
+  to measure caps inside it;
+- and the blow cell's mean luma is not stationary between two shots of the same sea (0.106 and 0.145
+  across two runs), so an arm-to-arm difference at this frame size would be measuring `_Time`.
+
+The claim is asserted where it is exactly true — on the assets and the shader, in
+`WhitecapStampSheetTests.TheProceduralField_PlacesTheCaps_NotTheStampSheet`. What the plate *does* assert
+is that a **glass calm does not notice this PR at all**: zero wave amplitude is zero cap opacity by
+construction, so whichever source is placing the caps there is nothing to place, and the sacred state
+comes through untouched (both arms within 0.002 of each other).

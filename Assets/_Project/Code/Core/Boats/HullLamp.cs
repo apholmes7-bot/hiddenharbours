@@ -44,6 +44,38 @@ namespace HiddenHarbours.Core
         /// above the keel changes nothing about where the pool of light falls.
         /// </summary>
         Spotlight = 5,
+
+        /// <summary>
+        /// The ANCHOR light — one all-round white, shown by a vessel that is NOT under way.
+        ///
+        /// <para><b>It is the other half of the rule of the road, and the reason a regime exists at
+        /// all.</b> Sidelights, stern light and masthead together say <em>under way</em>: they tell a
+        /// lookout your aspect and that you are moving. A vessel lying still must not show them — she
+        /// would be claiming to be under way, which is the one lie a navigation light can tell. What
+        /// she shows instead is this: a single white light, visible from every direction, that says
+        /// only "something is here, and it is not going anywhere".
+        /// </para>
+        ///
+        /// <para><b>Where it is hoisted is per-hull DATA, like every other lamp</b> — the masthead's
+        /// own point, because that is the highest place she has and an anchor light wants to be seen
+        /// over her own deckhouse. Declared, never derived: her rig knows where her mast is and this
+        /// file does not.</para>
+        /// </summary>
+        AnchorLight = 6,
+
+        /// <summary>
+        /// The RANGE light — the SECOND masthead light, carried abaft of and above the first by a
+        /// power-driven vessel of fifty metres or more, so that a lookout can read her heading off
+        /// the line the two of them make.
+        ///
+        /// <para><b>Why this is its own kind and not a second <see cref="Masthead"/> row.</b> One
+        /// lamp of each kind per hull is a real guard — a duplicated row builds two lights at one
+        /// point and reads as one brighter lamp, quietly — and the only hull in the fleet that
+        /// carries two masthead lights is the tanker, whose rig publishes the second one under a name
+        /// of its own (<c>range</c>). Giving it a kind keeps that uniqueness guard exact and keeps
+        /// the rig's own vocabulary intact. The LOOK is the masthead's: it is the same lamp.</para>
+        /// </summary>
+        RangeLight = 7,
     }
 
     /// <summary>

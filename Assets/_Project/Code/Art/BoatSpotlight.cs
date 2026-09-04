@@ -35,7 +35,8 @@ namespace HiddenHarbours.Art
     /// drives no sim, saves nothing (rule 5). Pooled, no per-frame alloc (rule 7).</para>
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class BoatSpotlight : MonoBehaviour, IWaterLightEmitter
+    public sealed class BoatSpotlight : MonoBehaviour, IWaterLightEmitter,
+                                        HiddenHarbours.Core.IVesselWayListener
     {
         [Header("The switch (the owner asked for a BUTTON, not a per-hull field)")]
         [Tooltip("Is the beam lit when the boat wakes? OFF by default — the owner's call: a spotlight is " +
@@ -53,8 +54,15 @@ namespace HiddenHarbours.Art
         [SerializeField] private Key _toggleKey = Key.L;
 
         [Tooltip("Let the toggle key work at all. Off = the beam is driven only through code/the Inspector " +
-                 "(SetBeam), e.g. on an NPC boat that should never answer the player's light switch.")]
+                 "(SetBeam). Note this is no longer what keeps an NPC's beam from answering the player's " +
+                 "key — Core's helm slot is (see PlayerSwitchesThisBeam); this is just the master wire.")]
         [SerializeField] private bool _keyTogglesBeam = true;
+
+        [Tooltip("Set by the hull-presentation service on a beam it minted from a HullMeshDef's Lamps. " +
+                 "A def-minted beam belongs to the hull: she follows the rule of the road while nobody " +
+                 "is aboard her (lit under way, out at her berth). A beam the builder bolted on belongs " +
+                 "to the player and is switch-only, forever.")]
+        [SerializeField] private bool _mintedFromDef = false;
 
         [Header("Bow anchor")]
         [Tooltip("How far FORWARD of the boat origin (along the bow / transform.up, metres) the spotlight sits — " +
@@ -81,8 +89,17 @@ namespace HiddenHarbours.Art
         [Tooltip("Beam brightness (master intensity, before the night-gate + flicker).")]
         [Min(0f)] [SerializeField] private float _intensity = 1.5f;
 
+        /// <summary>
+        /// The shipped throw, in metres. Named because it is not only a look: it is what decides which
+        /// hulls in the fleet are given a searchlight at all. A beam mounted on the bridge of a sixty-
+        /// metre packet, thirty metres abaft her stem, would end on her own foredeck — so
+        /// <c>BoatLampAnchorProbe</c> measures the reach against each hull's stem and declines to
+        /// declare a mount she cannot use. Retune here and the verdict moves with it.
+        /// </summary>
+        public const float DefaultRangeMetres = 9f;
+
         [Tooltip("How far the beam throws ahead of the bow (metres).")]
-        [Min(0.5f)] [SerializeField] private float _range = 9f;
+        [Min(0.5f)] [SerializeField] private float _range = DefaultRangeMetres;
 
         [Tooltip("How far the beam's additive QUAD throws, as a fraction of Range. The quad is what lights " +
                  "LAND; the WATER is lit from inside the water shader, which keeps the full Range regardless " +
@@ -229,6 +246,64 @@ namespace HiddenHarbours.Art
         // expose for the editor menu / tests to read the configured light
         public SceneLight Light => _light;
 
+        // How the hull this beam is bolted to is lying (Core's IVesselWay, on this same root). Resolved
+        // on wake beside every other cached reference (_rollSource, _hullVisualCached) and cleared the
+        // same way, so a hull re-skinned or re-parented while disabled is re-asked rather than
+        // remembered.
+        private HiddenHarbours.Core.IVesselWay _waySource;
+
+        // The way she was lying when the regime last acted, so it acts on the EDGE. Seeded at wake from
+        // the same answer that seeded the beam, which is why waking never moves a switch.
+        private HiddenHarbours.Core.VesselWay _lastWay;
+
+        /// <summary>
+        /// How she is lying — <see cref="HiddenHarbours.Core.VesselWay.UnderWay"/> when nothing on this
+        /// root answers, which is what every hull in the game did before the regime existed and is
+        /// therefore what "no opinion" has to mean.
+        /// </summary>
+        private HiddenHarbours.Core.VesselWay Way() =>
+            WaySourceAlive ? _waySource.Way : HiddenHarbours.Core.VesselWay.UnderWay;
+
+        /// <summary>
+        /// Is the thing that answers for her still there?
+        ///
+        /// <para><b>⚠️ AN INTERFACE REFERENCE DOES NOT GET UNITY'S FAKE-NULL OPERATOR, and this cost a
+        /// live plate.</b> <c>_waySource</c> is typed <see cref="HiddenHarbours.Core.IVesselWay"/>, so
+        /// <c>_waySource != null</c> is a plain C# reference comparison: a destroyed MonoBehaviour is
+        /// still a perfectly good managed reference through an interface, and it keeps answering with
+        /// whatever it last held. Measured at Nine Mile Creek — twenty-five hulls let go, every set of
+        /// lamps flipped to under way (they re-resolve through <c>GetComponent</c>, which does honour
+        /// the operator), and every searchlight stayed out, because each beam was still asking a
+        /// component that no longer existed and being told "moored".</para>
+        ///
+        /// <para>So the question is put to the <c>UnityEngine.Object</c> side where there is one, and
+        /// left as an ordinary null check where there is not — a way-source need not be a component.</para>
+        /// </summary>
+        private bool WaySourceAlive
+        {
+            get
+            {
+                if (_waySource == null) return false;
+                if (_waySource is Object unityObject) return unityObject != null;
+                return true;
+            }
+        }
+
+        /// <summary>
+        /// The push half of the seam. The Update loop already acts on the EDGE, so this only has to
+        /// make sure the edge is not missed: a hull that is let go and made fast again between two of
+        /// this component's frames would otherwise look like no change at all.
+        ///
+        /// <para>A beam the PLAYER is switching is left alone, exactly as in Update — she is aboard,
+        /// and the lamp is hers.</para>
+        /// </summary>
+        public void OnVesselWayChanged(HiddenHarbours.Core.VesselWay way)
+        {
+            _lastWay = way;
+            if (!_mintedFromDef || PlayerSwitchesThisBeam) return;
+            SetBeam(way == HiddenHarbours.Core.VesselWay.UnderWay);
+        }
+
         // The switch state. Seeded ONCE from _startOn (in Awake) and then owned by the player: a re-enable —
         // stepping back aboard, a region hop, the boat picker re-skinning the hull under you — must NOT relight
         // a beam the player deliberately switched off, nor douse one they switched on. Hence the latch: OnEnable
@@ -247,20 +322,59 @@ namespace HiddenHarbours.Art
         public Key ToggleKey => _toggleKey;
 
         /// <summary>
-        /// <b>Does the toggle key reach THIS lamp?</b> True on the boat the player switches by hand.
+        /// <b>Is this lamp wired to the switch at all?</b> The authoring flag — leave it on for any
+        /// beam a person could ever reach, off for one that must be driven only from code.
         ///
-        /// <para>It has to be settable, because the key read is unconditional: every live
-        /// <see cref="BoatSpotlight"/> in the scene sees the same keyboard, so a second one aboard an
-        /// NPC boat would flip HER searchlight every time the player reached for their own. A hull
-        /// that carries a searchlight because her DEF says she does is somebody else's boat being
-        /// worked by somebody else, and she is switched off her own declaration, not off the player's
-        /// keyboard. Nothing else about the beam changes.</para>
+        /// <para><b>⭐ It is no longer the whole answer, and that is PR 2's fix.</b> The key read used
+        /// to be unconditional: every live <see cref="BoatSpotlight"/> in the scene sees the same
+        /// keyboard, so a second beam aboard an NPC boat would flip HER searchlight every time the
+        /// player reached for their own — and this flag was the blunt instrument that stopped it, at
+        /// the price that a hull the PLAYER stepped aboard could never answer her either. The honest
+        /// question was always "is this the boat the player is on", and Core's helm slot has known the
+        /// answer since #642. This flag now means only what it says; ownership is asked separately,
+        /// every frame, of <see cref="HiddenHarbours.Core.HelmSlot.IsPlayersBoat(GameObject)"/> — see
+        /// <see cref="PlayerSwitchesThisBeam"/>.</para>
         /// </summary>
         public bool KeyTogglesBeam
         {
             get => _keyTogglesBeam;
             set => _keyTogglesBeam = value;
         }
+
+        /// <summary>
+        /// <b>Was this beam minted from a hull DEF</b> (the presentation service, off
+        /// <c>HullMeshDef.Lamps</c>), rather than bolted on by the builder?
+        ///
+        /// <para><b>Two things hang off the distinction, and neither can be inferred any other way.</b>
+        /// A def-minted beam belongs to the HULL: it goes with her when she is re-skinned away, and
+        /// while nobody is aboard it follows the rule of the road rather than a switch — lit when she
+        /// is under way, out when she is lying still. A builder-bolted beam belongs to the PLAYER:
+        /// it is hers to switch, it survives every re-skin, and it must never light itself because she
+        /// happened to walk up the wharf and stop being aboard.</para>
+        ///
+        /// <para>This used to be read off <see cref="KeyTogglesBeam"/> — "does it answer the key" as a
+        /// proxy for "is it the player's" — which stopped being sound the moment a boarded hull was
+        /// allowed to answer her too.</para>
+        /// </summary>
+        public bool MintedFromDef
+        {
+            get => _mintedFromDef;
+            set => _mintedFromDef = value;
+        }
+
+        /// <summary>
+        /// <b>Is the player standing on the boat this beam is bolted to?</b> — and therefore, is this
+        /// the lamp her switch reaches.
+        ///
+        /// <para><b>Her BOAT, not her HELM, and the difference is the boat she starts the game in.</b>
+        /// <c>IsPlayerHelm</c> carries <c>HasHelm</c>, which is the ENGINE question — and the dory is
+        /// ROWED. Gating the switch on the helm would have looked right, passed a fixture written
+        /// against a powered hull, and killed the L key on the one boat the player owns at the
+        /// opening. A searchlight is a boat's TACKLE, like her anchor, so it takes the wider
+        /// declaration: at the wheel or on her deck, it is hers.</para>
+        /// </summary>
+        public bool PlayerSwitchesThisBeam =>
+            _keyTogglesBeam && HiddenHarbours.Core.GameServices.Helm.IsPlayersBoat(gameObject);
 
         /// <summary>
         /// Where the lamp is mounted, in the boat's own plane: x to starboard, y toward the bow, in
@@ -340,6 +454,15 @@ namespace HiddenHarbours.Art
             _hullVisualCached = null;
             _rollSource = null;
             _restCaptured = false;
+            // How she is lying (ADR 0016, the lamp regime). Re-asked on every wake for the same reason
+            // as the two above: she may have been re-skinned or re-parented while she was dark.
+            //
+            // Latched WITHOUT applying, deliberately. Waking is not a change of way, and the beam's own
+            // latch a few lines above exists precisely so a re-enable — stepping back aboard, a region
+            // hop, the picker re-skinning the hull underneath her — re-applies the switch the player
+            // left rather than re-seeding it. Applying the regime here would undo that every time.
+            _waySource = GetComponent<HiddenHarbours.Core.IVesselWay>();
+            _lastWay = Way();
         }
 
         private void OnDisable()
@@ -377,13 +500,35 @@ namespace HiddenHarbours.Art
         {
             if (_light == null) return;
 
+            // --- WHOSE BEAM IS THIS, THIS FRAME? The answer changes underfoot — the player steps aboard a
+            // working boat and her searchlight becomes hers; she steps back onto the wharf and it is the
+            // skipper's again — so it is asked every frame rather than latched at install. Two cheap reads and
+            // no allocation: a reference compare in the helm slot, and a property on a cached interface. ---
+            bool playersBeam = PlayerSwitchesThisBeam;
+
             // --- THE SWITCH. New Input System only (Keyboard.current): legacy UnityEngine.Input compiles in this
             // project and then THROWS at runtime. Read BEFORE the off-gate below, or the key that turns the beam
             // back ON would itself be gated off by the beam being off. ---
-            if (_keyTogglesBeam)
+            if (playersBeam)
             {
                 var kb = Keyboard.current;
                 if (kb != null && kb[_toggleKey].wasPressedThisFrame) ToggleBeam();
+            }
+            else if (_mintedFromDef && Way() != _lastWay)
+            {
+                // --- THE RULE OF THE ROAD, for a boat nobody is aboard. A searchlight is a working lamp:
+                // her skipper has it going while he is running, and it is out while she lies at her berth.
+                // Only for a beam this hull's own DEF declares — the player's own boat is never driven from
+                // here, or walking up the wharf would light her dory behind her.
+                //
+                // ⚠️ ON THE TRANSITION, not every frame. The regime is a STATE and this is the edge, which
+                // is both what the seam promises ("read on enable and on change, never polled") and what
+                // keeps it from being a bully: re-asserting sixty times a second would stomp anything that
+                // set the beam by hand — a laid-up boat, a fixture measuring her with the beam off — and
+                // the stomp would be invisible, one frame later. Her state at wake is seeded where she is
+                // minted, from this same answer. ---
+                _lastWay = Way();
+                SetBeam(_lastWay == HiddenHarbours.Core.VesselWay.UnderWay);
             }
 
             // Beam off = nothing to drive. The land quad is already disabled and the water globals already read

@@ -294,3 +294,48 @@ Each phase independently shippable, `main` green throughout:
   `Assets/_Project/Code/Tools/Editor/ShoreSeamProof/` (+ `Evidence~/proof-log.txt`).
 - The integration pattern: ADR 0022 § Open questions (1) — the MRT + overlay + private depth
   architecture, and `IsoFacetHullFeature`'s conventions.
+
+## Amendment (2026-09-03) — the drawn sea goes to the field's TRUE wavelengths (water fidelity PR 6)
+
+> *"swell scale you can make the changes for a longer slower swell, thats fine."* — the owner, 2026-09-02
+
+**One number: `_OceanSwellScale` 0.07 → 0.025 on all nine water materials**, which is the shader's own
+`WAVE_LEGACY_SCALE_REF`. The frequency scale threaded through the `DisplacedSea` seam therefore goes
+**2.8 → 1**, and the visible swell lengthens ×2.8 and slows to the field's own periods (dispersion: the
+periods were always the field's; the drawn sea simply refused to show them).
+
+### Why this is an amendment and not a tuning
+
+`_OceanSwellScale` began life as `col.rgb`-only DRESSING — a visual wavelength knob. ADR 0023 phase 3
+made it structural: the displaced vertex stage lifts geometry at that scale, and the seam publishes it so
+hulls RIDE it (#331). It has since been threaded into the watertight clamp's scan, the foam injector, the
+lip-spray probes and — since ADR 0040 revision 3, PR 3 (#706) — the bore's own phase. Changing it changes
+what hulls ride, which is Tier B under ADR 0027's law.
+
+**What it buys is that the seam stops having anything to carry.** At scale 1 the drawn height is not
+merely *agreeing* with the sim's — the two are the same evaluation, with no scaled position and no
+chain-rule factor on the slope. The one-sea rule stops needing a mechanism to hold it together
+(`AtTheShippedScale_TheDrawnSeaAndTheSIMSeaAreOneFunction`).
+
+⚠️ **The seam and every consumer STAY.** The knob is still live and still per-material; nothing here
+assumes it is 1 forever, and every scaled read keeps working if the owner moves it. What is now pinned is
+that all nine materials agree — `EveryWaterMaterial_DrawsTheFieldsTrueWavelengths` — because
+`_OceanSwellScale` is **mood-eased** (`WaterSurface.MoodFloatNames`): the live value is lerped between the
+preset anchors by the weather, so one preset left behind would be a sea whose wavelength changes with the
+weather for no physical reason, and `Apply water preset` would stamp it over the hero material besides.
+
+⚠️ **`Water_StormGrey` carried 0.04, not 0.07** — the owner had hand-tuned a storm's swell longer than a
+calm's. That distinction is not lost, it is *inherited from the physics*: the field's own spectrum
+lengthens with wind, so a storm still draws longer waves than a calm — it now gets that from the sea
+instead of from a preset knob.
+
+### Cost (rule 7)
+
+`WaveFieldCostReport.RunHeadless`, before and after: **15 `WaveFieldSample` call sites (10
+fragment-reachable + 1 vertex), 320 transcendentals per pixel, 373 780 B of compiled fragment bytecode**
+— identical on both sides, because a material float adds no work and no branch.
+
+### Owed
+
+The owner's FEEL verdict at the helm. He ruled the direction; whether a ×2.8 longer swell reads right
+under the boat is his to confirm in Play, and no plate can stand in for it.

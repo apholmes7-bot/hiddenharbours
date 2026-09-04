@@ -97,10 +97,12 @@ weather) — with **no new wiring** to the controller and no per-caster sim read
   caster's feet, sorts it just under the caster, **pixel-snaps** the anchor (toggleable), and follows the
   caster every frame with the light recompute on a throttled tick (no per-frame allocation).
 
-**Tunables (per component, rule 6):** max alpha / darkness colour, length-at-noon vs length-at-horizon, a
-length clamp, edge softness, sorting offset, pixel-snap + PPU, foot offset, and a fallback daylight hour for
-scenes with no clock. The shadow **arc** (south-bias / noon-lift / overcast-fade / sunrise-sunset) is read
-from the same `DayNightProfile` the controller uses.
+**Tunables (rule 6):** the LOOK is one shipped asset — `Resources/SpriteShadowProfile.asset` (max alpha,
+darkness colour, length-at-noon vs length-at-horizon, the length cap, edge softness, and the ground-contact
+pool). What stays on the component is per-caster MACHINERY: sorting offset, pixel-snap + PPU, foot offset,
+refresh rate, and a fallback daylight hour for scenes with no clock. The shadow **arc** (south-bias /
+noon-lift / overcast-fade / sunrise-sunset) is read from the same `DayNightProfile` the controller uses.
+See §5.3 for why the look moved off the component.
 
 **How to see it / add it (owner):**
 - **`Hidden Harbours ▸ Dev ▸ Build Shadow Test`** — drops a ground plane + a post, a tree, and a standing figure
@@ -173,6 +175,106 @@ as `Resources/LampShadowProfile.asset` — `Strength` is THE dial (0 = today's f
 **The approximation:** a skewed silhouette, one direction per caster, screen height for world height — the
 `SpriteShadow` model with a point in place of the sun, not a raycast. The full statement, the sorting law and
 the rejected alternatives are the PR B amendment to ADR 0016.
+
+### 5.3 The wood's shade — SHIPPED (tree shading PR 2)
+
+#715 (§5.4) turned the trees' sun response on; its plates then measured what the SHADOWS were doing, and
+this is that list fixed. Four things, and the last three are proposals the owner rules on from the PR's plates —
+each is one field in `Resources/SpriteShadowProfile.asset`, and the **code defaults are main's numbers**, so
+a project with no asset renders the pre-PR frame exactly.
+
+**1 · The dials became reachable.** Every look number used to be a `[SerializeField]` on a component that
+`AcadianTreeCatalog.Configure` attaches with **no per-tree dials** — so the length of a dawn rake was a
+constant in a C# file, and re-tuning it meant a code change and a re-plant. They are now one asset (the
+`LampShadowProfile` pattern, guard test included).
+
+**2 · Shadows stopped stacking.** Two crossing rakes used to darken the ground twice — measured, 7.5 % of a
+wooded frame at 07:00 carried more than twice a single shadow's darkening, which is what made a stand's
+floor read as a patchwork of blots rather than as shade. The shader now writes and tests the **stencil**:
+the first shadow at a pixel claims it, later ones are discarded. One shade, per-caster sorting untouched, no
+new pass and no buffer.
+
+> ⚠️ **It is render STATE, so it could never have been a per-renderer dial.** A `MaterialPropertyBlock`
+> feeds shader uniforms only; state comes from the material. The stencil therefore ships ON in
+> `SpriteShadow.mat`, and the three `[HideInInspector]` `_Stencil*` properties are the escape hatch — a
+> second material with `_StencilComp = Always` reproduces the old stacking, which is what the PR's
+> before/after plate is rendered with. **Nothing else in the project uses the stencil** (asserted by a
+> test, because the next feature to reach for one would break shadows silently).
+
+**3 · A crown stopped wearing its neighbour's shadow.** A rake runs north; north is up-screen and therefore
+BEHIND; and a shadow sorted at its caster's feet is drawn *after* every sprite between it and its tip — so a
+neighbouring canopy wore a tree-shaped blot. `SortByFarEnd` sorts the shadow by its TIP instead, dropping it
+`shadowDir.y × length × SortingBands.OrdersPerMetre` orders so it slides under everything it crosses; a tree
+standing in a shadow then simply draws over it.
+
+> This is a **trade, not a shading model**. Neither cut is right: one paints a blot on a canopy, the other
+> lets a grass tuft standing in a shadow draw over it un-shaded. The honest fix is a receiver that knows it
+> is in shade (a screen-space shade buffer, the `LampShadowSystem` pattern), which is its own PR. The trade
+> swaps a large visible error for a small one, and the plate is the argument.
+
+**4 · There is shade UNDER a crown.** At noon the shear is short and runs north, so the trunk foot — the one
+place you are certainly under the tree — was in full sun. A **ground-contact pool** now draws at the feet: a
+circle in the quad's own uv, scaled by the component into an ellipse (`2r × casterWidth` wide, squashed by
+`SpriteLightMath.GroundDepthScale` — taken from the lit path rather than restated, so the shade and the
+light cannot disagree about what the ground plane is). It rides the same `_ShadowStrength`, so it fades
+under cloud and vanishes at night with everything else, and it writes the same stencil, so a crown's pool
+and its own rake meet without doubling. It is the runtime half of the pass-4 "root AO" upstream ask.
+
+**⚠️ `_maxLength` was a dead clamp and now binds.** It caps the length MULTIPLIER, whose own ceiling is
+`LengthAtHorizon` (5) — so the shipped 7 never clamped a caster in this game, and a mature white pine threw
+**54.8 m at 07:00 and 61.9 m at 06:30**. The asset ships **3** (≈41 m for that pine); the code default stays
+7. Which the game keeps is the owner's call off the rake plate.
+
+### 5.4 The sun on the foliage — SHIPPED (owner ruling 2026-09-03)
+
+> *"tree lighting is my concern, this should be noticable in day too with the changing sun, and shadows,
+> not jsut night lighting."*
+
+A shadow told the time of day; the thing casting it did not. The shared lit-decor response
+(`Shaders/Include/SpriteLitDecor.hlsl`, §6's other half) has lit the shrubs and shoreline plants off
+`_SunDir`/`_SunElevation` since #428, but **`Tree.mat` shipped at `_LightResponse 0`** — deliberately, as the
+owner's call to make — so a planted forest was flat at every hour. He made the call. The dial is now **1**
+and the woods read the sun.
+
+**What that buys, measured on the pass-3 sheets.** The catch is per texel against a view-space normal, so
+the crown turns as a volume rather than merely brightening: the lit region's centroid sweeps **15 px of a
+269 px white pine and 30 px of a 331 px red oak** between dawn and dusk, and a crown texel facing screen-left
+and one facing screen-right swap which is brighter between morning and evening. Overall catch peaks at
+**10:00 and 16:00** rather than at noon — the normal sheet at work, since a mid-morning sun points nearly
+along the view axis while a noon sun points up-screen.
+
+**No canopy-special dials, and this was measured rather than assumed.** The sun catch as a fraction of a
+texel's own albedo luminance at 13:00: shore plants 0.35–0.71, shrubs 0.23–0.56 (both families already
+shipped at `_LightResponse 1` and accepted), trees at the same dials **0.54–0.69**. A crown is not a big
+shrub to a per-texel response — it is more texels of the same shrub. Raising the strength for the canopy
+would have made the woods the brightest foliage in the game. `Tree.mat`, `LitShrub.mat` and
+`LitShorePlant.mat` therefore carry **identical** sun dials, pinned equal by `TreeSunLightingTests`.
+
+**⭐ The lit side and the shadow now agree about the weather.** They already agreed about DIRECTION (one
+`_SunDir`; the shadow is its exact negation). They did not agree about STRENGTH: the shadow faded under
+cloud off `_ShadowStrength` while the sun catch was gated on `saturate(elevation)` alone — under the shipped
+profile's heaviest storm, a lit side at **1.00** over a shadow at **0.49**. The catch now spends the same
+published `_ShadowStrength`, which *is* `saturate(elevation)` with the weather folded in
+(`DayNightMath.ShadowStrength`), so it is one number and not two readings of the sim.
+
+> **A clear day is bit-identical.** `weatherDim 0` makes the weather factor exactly `1f`, so
+> `_ShadowStrength` is `saturate(elevation)` to the last bit — the shrubs and shoreline plants that share the
+> include render unchanged on a clear day and gain the same agreement under cloud. Asserted with `==` on raw
+> floats across the whole day, not with a tolerance.
+
+**Two things measured and left alone, for whoever picks them up:**
+
+- **The back rim is inert on a tree.** Mask G averages 0.010–0.029 across the ten species, so
+  `_SunRimStrength` contributes **0–2.3 %** of the catch and 0 % at noon. The grazing dawn/dusk rim the
+  front band was tuned to buy has no baked band to steer. That is an upstream rig question (the rig bakes G
+  against a fixed back light), not a material one — the dial is left at the shared value so a future rig
+  pass that bakes a real rim band works with no material change.
+- **`SpriteShadow._maxLength` (7) is a dead clamp.** It caps the length MULTIPLIER, and the multiplier is
+  `lerp(lengthAtHorizon 5, lengthAtNoon 0.35, elevation)`, which never exceeds 5. No caster in the game
+  reaches it. So a white pine's rake is unclamped: **54.8 m at 07:00, 61.9 m at 06:30, 4.8 m at noon**
+  (drawn height 13.81 world units at PPU 32). Long, but drawn at the same faint `_ShadowStrength` — 0.22 at
+  07:00 — that the low sun implies. Where a stand's rakes overlap the alphas stack and the wood darkens
+  inside; a shared shadow buffer would fix that and is its own PR.
 
 ## 6. Night lights — additive 2D lights + the boat spotlight — SHIPPED (ADR 0016)
 
@@ -250,6 +352,53 @@ The same `SceneLight` (set to **Radial**) is the spine for all of them — only 
 Each becomes a small bespoke component (like `BoatSpotlight`) that configures a `SceneLight` and routes through
 the existing `LightPreset` extension point in `LightMenu`. Build them when the world/economy lanes need them
 (stay-in-phase, rule 8).
+
+### 6.1 The fleet's lamps, and the rule of the road — SHIPPED (ADR 0016, boat-lights PR 1 + PR 2a)
+
+A boat carries LAMPS as well as a searchlight: her port and starboard sidelights, her stern light, her
+masthead, the warm spill out of her wheelhouse, and — when she is lying still — an anchor light. All of it
+is data-driven and self-installing; no scene wires a lamp anywhere.
+
+- **`HullMeshDef.Lamps`** (Core) — per-hull rows of `{Kind, RigLocalMetres, IntensityScale}`. The KIND is
+  fixed vocabulary (`HullLampKind`, append-only); only the POSITIONS are per-hull. Red to port and green to
+  starboard is the rule of the road, not a tunable, so a hull cannot declare it the other way round.
+- **`BoatLampPresets`** (Art) — one look per kind, in one place. This is where a sidelight's red lives.
+- **`BoatLamps`** (Art) — self-installed by `IsoFacetHullPresentationService` on any mesh hull whose def
+  declares lamps, in every region. Absence is data: a hull with no lamps gets no component at all.
+- **`BoatSpotlight`** (Art) — the searchlight, on the boat ROOT (see §6 above).
+
+**Which hulls.** Twenty-seven, being every hull whose rig publishes `navMounts` — the Cape Islander, the
+lobster boat and her eighteen variants, the side dragger, both stern trawlers, the coastal packet, the
+tanker and both sport fishers. The open boats (dory, punt, console skiff, both sport skiffs, both zodiacs)
+publish no mounts and carry no lamps, because an open boat has nowhere to bolt one.
+
+**Where the numbers come from.** Not from a screenshot and not from a constant in C#: each triple is
+derived from the hull's own rig by `BoatLampAnchorProbe` and pinned by `BoatLampAnchorTests`, which pushes
+the shipped def through the runtime's projection and demands it land on the pixels the rig itself draws, at
+all eight facings. Re-run the table with **`Hidden Harbours / Rig Baking / Probe: boat lamp anchors`**; it
+prints, it never writes.
+
+**The regime (what the owner will notice).** A boat that is lying still shows **an anchor light and her
+cabin, and nothing else**; a boat under way shows **her sidelights, stern light and masthead, and no anchor
+light**. That is the rule of the road, and it is why the seven boats moored along the Nine Mile Creek wharf
+read as a fleet asleep rather than a fleet getting under way. A hull says which she is through Core's
+`IVesselWay`; **a hull that says nothing is under way**, which is what every boat did before the regime
+existed.
+
+**Whose switch is the L key.** The searchlight answers the key on **the boat the player is standing on** —
+at the wheel or on her deck — and on no other, so reaching for your own light does not flip a skipper's two
+berths down. An NPC's beam follows her way instead: lit while she is running, out at her berth.
+
+#### The tunables PR 2a added (rule 6)
+
+| Tunable | Where | Default |
+|---|---|---|
+| Anchor light colour / intensity / range | `BoatLampPresets` | white `(1, 0.96, 0.88)` / 0.8 / 0.75 m |
+| Range light (the second masthead) | `BoatLampPresets` | the masthead's look, verbatim |
+| Sidelight radius | `BoatLampPresets` | 0.28 m — **bounded** by the tightest sidelight pair in the fleet (the cape's 0.6048 m); the preset test measures that bound off the shipped defs |
+| Cabin-glow occupied boost | `BoatLamps` | 1.5x while somebody is below |
+| Per-placement trim | `HullMeshDef.Lamps[].IntensityScale` | 1 (= the preset) on every hull today |
+| Master switch for a hull's glows | `BoatLamps.LampsOn` | on |
 
 ## 7. Migration to true URP 2D lights (still open)
 

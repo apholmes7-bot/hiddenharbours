@@ -1,4 +1,5 @@
 using UnityEngine;
+using HiddenHarbours.Core;   // SortingBands — the ONE place the sorting axis is partitioned
 
 namespace HiddenHarbours.Art
 {
@@ -57,6 +58,7 @@ namespace HiddenHarbours.Art
         private static readonly int IdShadowLen    = Shader.PropertyToID("_ShadowLen");
         private static readonly int IdShadowUV     = Shader.PropertyToID("_ShadowUV");
         private static readonly int IdEdgeSoftness = Shader.PropertyToID("_EdgeSoftness");
+        private static readonly int IdGroundContact = Shader.PropertyToID("_GroundContact");
         private static readonly int IdSunDir        = Shader.PropertyToID("_SunDir");
         private static readonly int IdSunElevation  = Shader.PropertyToID("_SunElevation");
         private static readonly int IdShadowStrength = Shader.PropertyToID("_ShadowStrength");
@@ -66,33 +68,75 @@ namespace HiddenHarbours.Art
         // leak one material per caster and break the shared-material GPU batching this component relies on.
         private static Material _sharedFallbackMaterial;
 
-        [Header("Darkness")]
-        [Tooltip("The darkest the shadow ever gets (its alpha at a firm clear noon). Scaled DOWN by the sun " +
-                 "being low and by overcast — so this is the cap, not the constant. 0 = invisible, 1 = solid.")]
-        [Range(0f, 1f)] [SerializeField] private float _maxAlpha = 0.45f;
+        /// <summary>Resources/SpriteShadowProfile.asset — the owner's look dials (optional; defaults otherwise).</summary>
+        public const string ProfileResourcePath = "SpriteShadowProfile";
 
-        [Tooltip("The flat shadow colour (RGB). Near-black with a hint of the cool sky reads best on the " +
-                 "North-Atlantic palette; pure black is harsher.")]
-        [SerializeField] private Color _shadowColor = new Color(0.04f, 0.05f, 0.10f, 1f);
+        // ONE profile across every caster in the game — a shadow's look is a property of the WORLD's sun,
+        // not of the thing standing in it, and 438 casters resolving their own would be 438 Resources
+        // lookups for one answer.
+        private static SpriteShadowProfile _sharedShadowProfile;
 
-        [Header("Length (× the caster's height)")]
-        [Tooltip("Shadow length at NOON (sun overhead), as a multiple of the caster's height — a short stub " +
-                 "under the feet. 0.3..0.5 reads well.")]
-        [Min(0f)] [SerializeField] private float _lengthAtNoon = 0.35f;
+        /// <summary>
+        /// The look profile in force for every caster: <c>Resources/SpriteShadowProfile</c> if the owner has
+        /// shipped one, otherwise the built-in default — which carries the component's own historical
+        /// numbers, so a project with no asset renders exactly the pre-PR frame.
+        ///
+        /// <para>Settable so a test can drive a dial without an asset on disk. ⚠️ It is STATIC and therefore
+        /// leaks between tests: set it back to <c>null</c> in TearDown to fall back to the shipped asset.</para>
+        /// </summary>
+        public static SpriteShadowProfile SharedProfile
+        {
+            get
+            {
+                if (_sharedShadowProfile == null)
+                    _sharedShadowProfile = Resources.Load<SpriteShadowProfile>(ProfileResourcePath);
+                if (_sharedShadowProfile == null)
+                    _sharedShadowProfile = SpriteShadowProfile.CreateDefault();
+                return _sharedShadowProfile;
+            }
+            set => _sharedShadowProfile = value;
+        }
 
-        [Tooltip("Shadow length at a LOW sun (near the horizon), as a multiple of the caster's height — a " +
-                 "long dawn/dusk rake. Bigger = more dramatic raking shadows.")]
-        [Min(0f)] [SerializeField] private float _lengthAtHorizon = 5f;
+        // The GROUND-CONTACT pool's quad: ONE 1x1-world-unit sprite shared by every caster, scaled into an
+        // ellipse per caster by the transform. Its texels are never read — the shader draws a radial
+        // falloff from the quad's uv in pool mode — so a 4 px white square is the whole texture.
+        private static Sprite _sharedPoolSprite;
 
-        [Tooltip("Hard CAP on the shadow length (× height) so a near-horizon sun can't shoot the silhouette " +
-                 "off-screen toward infinity. Keeps dawn/dusk shadows long-but-bounded.")]
-        [Min(0f)] [SerializeField] private float _maxLength = 7f;
+        private static Sprite PoolSprite()
+        {
+            if (_sharedPoolSprite != null) return _sharedPoolSprite;
+            var tex = new Texture2D(4, 4, TextureFormat.RGBA32, false)
+            {
+                name = "SpriteShadowPool",
+                hideFlags = HideFlags.DontSave,
+                filterMode = FilterMode.Bilinear,
+                wrapMode = TextureWrapMode.Clamp,
+            };
+            var px = new Color32[16];
+            for (int i = 0; i < px.Length; i++) px[i] = new Color32(255, 255, 255, 255);
+            tex.SetPixels32(px);
+            tex.Apply();
+            // 4 px at 4 PPU = exactly one world unit, pivoted at its centre: the transform's scale then IS
+            // the pool's diameter, which is what makes the ellipse one multiply instead of a mesh.
+            _sharedPoolSprite = Sprite.Create(tex, new Rect(0f, 0f, 4f, 4f), new Vector2(0.5f, 0.5f), 4f);
+            _sharedPoolSprite.name = "SpriteShadowPool";
+            _sharedPoolSprite.hideFlags = HideFlags.DontSave;
+            return _sharedPoolSprite;
+        }
 
-        [Header("Look")]
-        [Tooltip("Edge feather of the silhouette (0 = crisp pixel cutout — the pixel-art default; up to 1 = " +
-                 "soft-edged). The shape is always the caster's own sprite alpha.")]
-        [Range(0f, 1f)] [SerializeField] private float _edgeSoftness = 0f;
+        // 🔴 THE LOOK LIVES ON THE PROFILE, NOT HERE (tree shading PR 2). Darkness, colour, the length
+        // curve, the cap and the edge feather used to be [SerializeField]s on this component — and
+        // AcadianTreeCatalog attaches it with NO per-tree dials, so the length of a dawn rake was a
+        // constant in a C# file that the owner could not reach without a code change and a re-plant.
+        // They are now Resources/SpriteShadowProfile.asset, read through SharedProfile below. What stays
+        // here is per-caster MACHINERY: where this caster's feet are, what it does with no clock, how
+        // often it recomputes, the pixel grid it snaps to, and where it sorts.
+        //
+        // ⚠️ Every SpriteShadow in the project was at the code defaults when they moved (verified across
+        // every scene and prefab), so nothing lost a hand-tuned value. Stale keys left in scene YAML are
+        // ignored by Unity and cost a re-save nobody needs to make.
 
+        [Header("Sorting")]
         [Tooltip("How far UNDER the caster the shadow sorts (sorting-order offset, negative = behind). The " +
                  "shadow must draw beneath its caster and beneath things in front.")]
         [SerializeField] private int _sortingOffset = -1;
@@ -123,6 +167,7 @@ namespace HiddenHarbours.Art
 
         private SpriteRenderer _caster;
         private SpriteRenderer _shadow;          // the pooled child renderer (created once)
+        private SpriteRenderer _pool;            // the pooled GROUND-CONTACT child (created once, may stay off)
         private MaterialPropertyBlock _mpb;
         private DayNightProfile _resolvedProfile;
         private float _timer;
@@ -191,6 +236,51 @@ namespace HiddenHarbours.Art
                                  sprite.pixelsPerUnit, sprite.bounds.size.y);
         }
 
+        /// <summary>
+        /// <b>The ground-contact pool's ellipse, as a pure function.</b> Returns the quad's WORLD size
+        /// <c>(width, height)</c> for a caster of <paramref name="casterWorldWidth"/> at a profile
+        /// <paramref name="radius"/>: the width is the pool's diameter, and the height is that diameter
+        /// squashed to the GROUND PLANE.
+        ///
+        /// <para>The squash is <see cref="SpriteLightMath.GroundDepthScale"/> — <c>sin(40°)</c>, the same
+        /// factor the lit-sprite path carries and the reason a circle lying flat on the ground reads as an
+        /// ellipse under this camera. Taking it from there rather than restating 0.6428 is what stops the
+        /// shade and the light disagreeing about what the ground plane is if the camera is ever re-pitched.</para>
+        ///
+        /// <para>Sizing from the caster's own drawn WIDTH is what lets one dial serve a 4.9 m spruce and a
+        /// 0.4 m shore plant with no per-species table: a crown's footprint is about as wide as the crown.
+        /// A radius of 0 returns <see cref="Vector2.zero"/> — no pool, which is the built-in default and the
+        /// pre-PR frame.</para>
+        /// </summary>
+        public static Vector2 GroundContactSize(float casterWorldWidth, float radius)
+        {
+            if (!(radius > 0f) || !(casterWorldWidth > 0f)) return Vector2.zero;
+            float diameter = 2f * radius * casterWorldWidth;
+            return new Vector2(diameter, diameter * SpriteLightMath.GroundDepthScale);
+        }
+
+        /// <summary>
+        /// <b>How many sorting orders a shadow drops when it is sorted by its FAR END, as a pure function.</b>
+        ///
+        /// <para>A shadow is a flat thing lying on the ground from the caster's feet to a tip
+        /// <c>shadowDirY x worldLength</c> metres NORTH. Y-sort gives a sprite
+        /// <see cref="SortingBands.OrdersPerMetre"/> more order per metre SOUTH, so a point that far north
+        /// belongs that many orders LOWER — and this returns the (negative) difference.</para>
+        ///
+        /// <para><b>Why it is worth doing.</b> Sorted at the caster's own feet, a rake is drawn AFTER every
+        /// sprite it crosses on its way north, so a neighbouring tree wears the caster's crown as a
+        /// tree-shaped blot across its own canopy. Sorted by the tip it slides UNDER them all, and a tree
+        /// standing in a shadow simply draws over it. Neither is a real shading model — the honest one is a
+        /// receiver that knows it is in shade — but one puts a blot on a canopy and the other does not, and
+        /// this one costs an integer.</para>
+        ///
+        /// <para>⚠️ It uses <see cref="SortingBands.OrdersPerMetre"/> rather than a number of its own,
+        /// because a shadow that dropped by a different metre-to-order rate than the Y-sort it is competing
+        /// with would slide past the wrong neighbours as the sun swung.</para>
+        /// </summary>
+        public static int FarEndSortingDelta(float shadowDirY, float worldLength, float ordersPerMetre)
+            => -Mathf.RoundToInt(shadowDirY * worldLength * ordersPerMetre);
+
         private void Reset() => _caster = GetComponent<SpriteRenderer>();
 
         private void Awake()
@@ -205,6 +295,8 @@ namespace HiddenHarbours.Art
         private void OnEnable()
         {
             if (_shadow != null) _shadow.enabled = true;
+            // NOT switched on here: TickPool decides, and the profile may want no pool at all.
+            
             _timer = 0f;
             Tick();   // correct on the first frame, not a stale default
             // Every sun caster is a LAMP caster too (ADR 0016, lights PR B): the lamp-shadow system draws
@@ -216,6 +308,7 @@ namespace HiddenHarbours.Art
         private void OnDisable()
         {
             if (_shadow != null) _shadow.enabled = false;   // pooled, not destroyed — reused on re-enable
+            if (_pool != null) _pool.enabled = false;
             LampShadowSystem.UnregisterCaster(this);
         }
 
@@ -327,6 +420,18 @@ namespace HiddenHarbours.Art
             }
             if (mat != null) _shadow.sharedMaterial = mat;
             else _shadow.enabled = false;   // no shader/material yet -> no shadow (still harmless)
+
+            // The GROUND-CONTACT pool: a second pooled child on the SAME material (so the two batch
+            // together) carrying the shared unit quad. Minted whether or not the profile currently asks
+            // for one — creating a disabled renderer once is cheaper than deciding per tick whether to
+            // create it, and the owner turning the radius up must not require a re-plant.
+            var poolGo = new GameObject("SpriteShadowPool") { hideFlags = HideFlags.DontSave };
+            poolGo.transform.SetParent(transform, worldPositionStays: false);
+            _pool = poolGo.AddComponent<SpriteRenderer>();
+            _pool.sortingLayerID = _shadow.sortingLayerID;
+            _pool.sprite = PoolSprite();
+            _pool.enabled = false;          // TickPool turns it on if the profile asks for a pool
+            if (mat != null) _pool.sharedMaterial = mat;
         }
 
         /// <summary>Read the sun + shadow-strength globals (or the fallback hour) and push the projection to the shadow material.</summary>
@@ -375,10 +480,14 @@ namespace HiddenHarbours.Art
             float strength = cycleRunning
                 ? Mathf.Clamp01(Shader.GetGlobalFloat(IdShadowStrength))
                 : DayNightMath.ShadowStrength(_fallbackHour, sunrise, sunset, 0f, overcastFades);
-            float alpha = DayNightMath.ShadowAlpha(_maxAlpha, strength);
+            SpriteShadowProfile look = SharedProfile;
+            float alpha = DayNightMath.ShadowAlpha(look.MaxAlpha, strength);
 
             // Length multiplier (× height) from the elevation, clamped so dawn/dusk don't shoot to infinity.
-            float lenMul = DayNightMath.ShadowLength(elevation, _lengthAtNoon, _lengthAtHorizon, _maxLength);
+            // ⚠️ The cap is on the MULTIPLIER, and the multiplier's own ceiling is LengthAtHorizon — so a cap
+            // above that never binds. The component's historical 7 never once clamped a caster in this game;
+            // the shipped asset carries 3, which does. See SpriteShadowProfile.
+            float lenMul = DayNightMath.ShadowLength(elevation, look.LengthAtNoon, look.LengthAtHorizon, look.MaxLength);
 
             // Convert the world shear length into the shadow sprite's LOCAL-Y units (the shader shears in
             // object space, scaled by uv.y feet->head). worldHeight = caster height; localHeight = the sprite
@@ -388,7 +497,8 @@ namespace HiddenHarbours.Art
             float worldLen = lenMul * worldHeight;
             float localLen = WorldToLocalShearLength(worldLen);
 
-            var color = new Color(_shadowColor.r, _shadowColor.g, _shadowColor.b, alpha);
+            Color tint = look.ShadowColor;
+            var color = new Color(tint.r, tint.g, tint.b, alpha);
 
             _shadow.GetPropertyBlock(_mpb);
             if (_caster.sprite != null && _caster.sprite.texture != null)
@@ -400,13 +510,84 @@ namespace HiddenHarbours.Art
             // seeds a caster which never changes sprite (all of the decor), so the anchor is right from the
             // first frame without depending on a silhouette swap ever happening.
             _mpb.SetVector(IdShadowUV, _shearMap);
-            _mpb.SetFloat(IdEdgeSoftness, _edgeSoftness);
+            _mpb.SetFloat(IdEdgeSoftness, look.EdgeSoftness);
+            // 0 = draw this caster's sheared SILHOUETTE. Published explicitly rather than left to the
+            // material's default, because a MaterialPropertyBlock is STICKY: the pool below sets this on
+            // ITS block, and a block that once carried pool mode would keep it forever.
+            _mpb.SetFloat(IdGroundContact, 0f);
             _shadow.SetPropertyBlock(_mpb);
 
-            // Sort just UNDER the caster.
+            // Sort just UNDER the caster — and, when the profile asks, under everything the rake crosses
+            // as well (see FarEndSortingDelta). The `off` branch is the exact pre-PR expression, unclamped,
+            // so a project with no profile asset sorts byte-for-byte as it always did.
             _shadow.sortingLayerID = _caster.sortingLayerID;
-            _shadow.sortingOrder = _caster.sortingOrder + _sortingOffset;
+            if (look.SortByFarEnd)
+            {
+                int order = _caster.sortingOrder + _sortingOffset
+                          + FarEndSortingDelta(shadowDir.y, worldLen, SortingBands.OrdersPerMetre);
+                _shadow.sortingOrder = Mathf.Clamp(order, SortingBands.DecorFloor, SortingBands.DecorCeiling);
+            }
+            else
+            {
+                _shadow.sortingOrder = _caster.sortingOrder + _sortingOffset;
+            }
             _shadow.enabled = _caster.enabled && alpha > 0f && _shadow.sharedMaterial != null;
+
+            TickPool(look, color, alpha);
+        }
+
+        /// <summary>
+        /// The GROUND-CONTACT pool: the shade a crown throws STRAIGHT DOWN, which the sheared silhouette
+        /// cannot draw. At noon the shear is short and runs north, so the trunk foot — the one place you are
+        /// certainly under the tree — was left in full sun; standing at a trunk read as standing in a field.
+        ///
+        /// <para>It rides the SAME <c>_ShadowStrength</c> as the cast shadow (it is handed that shadow's own
+        /// alpha), so it fades under cloud and vanishes at night with everything else, and it writes the same
+        /// stencil, so a crown's pool and its own rake meet without doubling.</para>
+        ///
+        /// <para><b>Off is free and exact.</b> At <see cref="SpriteShadowProfile.GroundContactRadius"/> 0 —
+        /// the built-in default — the renderer is simply disabled, which is the pre-PR frame with no pool
+        /// drawn and nothing else changed.</para>
+        /// </summary>
+        private void TickPool(SpriteShadowProfile look, Color color, float castAlpha)
+        {
+            if (_pool == null) return;
+
+            float radius = look.GroundContactRadius;
+            float poolAlpha = castAlpha * look.GroundContactAlpha;
+            // ⚠️ HEIGHT GATE, and it is a cost decision as much as a look one. A short caster does not need
+            // a pool — its own noon shadow is LengthAtNoon x its height, so for anything under a couple of
+            // metres the sheared silhouette already lands on its own footprint and a pool would be a second
+            // quad drawing the same shade. Measured on St Peters: ungated, 439 pool quads cost 4.5 ms a
+            // frame at 900x900; gated at 3 m only the 259 trees draw one, and the 148 shrubs and 384 shore
+            // plants are left bit-identical.
+            bool tallEnough = CasterWorldHeight() >= look.GroundContactMinHeight;
+            bool on = radius > 0f && poolAlpha > 0f && tallEnough && _caster.enabled
+                   && _caster.sprite != null && _pool.sharedMaterial != null;
+            _pool.enabled = on;
+            if (!on) return;
+
+            float worldWidth = _caster.sprite.bounds.size.x * Mathf.Abs(transform.lossyScale.x);
+            Vector2 size = GroundContactSize(worldWidth, radius);
+
+            float parentX = Mathf.Abs(transform.lossyScale.x); if (parentX < 1e-5f) parentX = 1f;
+            float parentY = Mathf.Abs(transform.lossyScale.y); if (parentY < 1e-5f) parentY = 1f;
+            _pool.transform.localScale = new Vector3(size.x / parentX, size.y / parentY, 1f);
+
+            _pool.GetPropertyBlock(_mpb);
+            _mpb.SetColor(IdShadowColor, new Color(color.r, color.g, color.b, poolAlpha));
+            // ⚠️ ONE float carries BOTH "this is a pool" and "this is its softness", and the shader's mode
+            // test is `> 0`. So a hard-edged pool (softness 0) must still publish something positive or it
+            // would fall back to silhouette mode and draw the caster's sprite flat on the ground.
+            _mpb.SetFloat(IdGroundContact, Mathf.Max(look.GroundContactSoftness, 1e-3f));
+            _mpb.SetFloat(IdShadowLen, 0f);
+            _pool.SetPropertyBlock(_mpb);
+
+            // One order UNDER the cast shadow, so with a lowered GroundContactAlpha the pool is the
+            // deterministic winner of the stencil where the two overlap (at the default 1 they are the same
+            // shade and the question does not arise).
+            _pool.sortingLayerID = _caster.sortingLayerID;
+            _pool.sortingOrder = _caster.sortingOrder + _sortingOffset - 1;
         }
 
         /// <summary>Pose the pooled shadow child at the caster's feet (every frame; cheap, no alloc).</summary>
@@ -430,6 +611,14 @@ namespace HiddenHarbours.Art
             _shadow.transform.position = footWorld;
             _shadow.transform.rotation = Quaternion.identity;
             _shadow.transform.localScale = Vector3.one;
+
+            // The pool sits on the SAME feet and lies just as flat. Its localScale is the ellipse and is
+            // owned by TickPool, so it is deliberately not touched here.
+            if (_pool != null)
+            {
+                _pool.transform.position = footWorld;
+                _pool.transform.rotation = Quaternion.identity;
+            }
         }
 
         /// <summary>The caster's on-screen height in world units (sprite bounds × lossy Y scale).</summary>

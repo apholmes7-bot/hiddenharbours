@@ -79,13 +79,21 @@ namespace HiddenHarbours.Tests.Art.EditMode
         }
 
         /// <summary>
-        /// The material must actually EXPOSE the light response, and it must ship OFF. Both halves
-        /// matter: a shader that compiles but whose properties were renamed leaves every placed tree
-        /// binding sheets nothing reads, and a response that shipped ON would change the look of an
-        /// already-approved forest without anyone deciding to.
+        /// The material must actually EXPOSE the light response, and — since the owner's 2026-09-03
+        /// ruling — it must ship ON. A shader that compiles but whose properties were renamed leaves
+        /// every placed tree binding sheets nothing reads.
+        ///
+        /// <para>⭐ This test used to end <c>_AndShipsItOff</c> and asserted 0, on the stated grounds
+        /// that the flat look was the one the owner had already placed a forest against and that
+        /// raising the dial was HIS call, not the feature's. He made the call — <i>"tree lighting is my
+        /// concern, this should be noticable in day too with the changing sun, and shadows"</i> — so the
+        /// guard moves with him rather than guarding a preference he no longer holds. The value itself
+        /// and everything that follows from it now live in
+        /// <see cref="TreeSunLightingTests"/>; what stays here is the compile-guard's own interest: the
+        /// properties exist and the shipped variant compiles with the response live.</para>
         /// </summary>
         [Test]
-        public void TreeMaterial_ExposesTheLightResponse_AndShipsItOff()
+        public void TreeMaterial_ExposesTheLightResponse_AndShipsItOn()
         {
             var mat = AssetDatabase.LoadAssetAtPath<Material>(TreeMaterialPath);
             Assert.IsNotNull(mat, $"The tree material ('{TreeMaterialPath}') was not found.");
@@ -106,11 +114,13 @@ namespace HiddenHarbours.Tests.Art.EditMode
                                          "_LampKeyStrength", "_LampRimStrength", "_LampElevation" })
                 Assert.IsTrue(mat.HasFloat(p), $"{p} is gone from the shader.");
 
-            Assert.AreEqual(0f, mat.GetFloat("_LightResponse"), 1e-6f,
-                "🔴 The light response must SHIP AT 0. Tree.mat's flat look is the look the owner has " +
-                "already seen and placed a forest against; turning the response on is HIS call, one " +
-                "slider away. Everything under it is tuned for _LightResponse 1, so raising it is a " +
-                "single move — but raising it here is not this feature's decision to make.");
+            Assert.Greater(mat.GetFloat("_LightResponse"), 0f,
+                "🔴 The light response has gone back to 0, which compiles the shader's entire light " +
+                "block past with two scalar compares and leaves a planted forest flat at every hour of " +
+                "the day. The owner ruled on 2026-09-03 that the trees must read the sun. The exact " +
+                "value is pinned by TreeSunLightingTests; this guard only insists the shipped variant " +
+                "compiles with the response LIVE — a shader that compiles at 0 and errors at 1 is the " +
+                "magenta class, arriving on the day someone turns the dial.");
             // The changeover width is a LOOK decision measured against the sun's actual daylight arc,
             // so the headless twin names it and the material must agree — otherwise the shipped rim
             // and the tested rim are two different rims.

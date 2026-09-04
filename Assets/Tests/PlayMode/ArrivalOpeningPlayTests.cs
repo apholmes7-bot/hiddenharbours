@@ -316,6 +316,39 @@ namespace HiddenHarbours.Tests.PlayMode
         /// timeout that says only "stuck".</para>
         /// </summary>
         [UnityTest]
+        public IEnumerator SheRunsInUnderHerNavigationLights_AndDousesThemWhenHerLinesGoFast()
+        {
+            // ⭐⭐ THE REGRESSION THIS EXISTS FOR (boat-lights PR 2a, ADR 0016). Her hull is built with a
+            // MooredBoat — deliberately, because that component is the game's DRAWER: it skins her,
+            // stands her skipper on the deck and puts her on the published sea. It is NOT a claim that
+            // she is moored, and ArrivalOpening's own comment says so ("She is not moored yet"). But its
+            // default is a berth's, because that is what it is for everywhere else — so a lamp regime
+            // that read "she has a MooredBoat" as "she is lying still" would put the intro's whole light
+            // show out and show an anchor light instead. That is exactly what the owner's 2026-08-27
+            // ruling asked for and exactly what would have shipped: measured live at 06:13 before this
+            // was pinned, she was showing a cabin glow and an anchor light, with her beam dark.
+            var opening = Build(hasRestAnchor: false, alreadyArrived: false);
+            Assert.IsTrue(opening.TryBegin(), "a fresh save must be brought in");
+            yield return new WaitForFixedUpdate();
+
+            var boat = opening.Boat;
+            Assert.IsNotNull(boat, "precondition: there is a hull under her");
+            var drawer = boat.GetComponent<MooredBoat>();
+            Assert.IsNotNull(drawer, "precondition: her drawer is a MooredBoat — that is the point");
+
+            Assert.AreEqual(VesselWay.UnderWay, drawer.Way,
+                "she is running in before dawn: her sidelights, stern light and masthead say so, and " +
+                "her searchlight is working the water ahead. Anything else and the intro's light show " +
+                "— the thing the ruling is about — does not happen.");
+
+            yield return Until(() => opening.Current == ArrivalOpening.Phase.Moored, "her lines to go fast");
+
+            Assert.AreEqual(VesselWay.Moored, drawer.Way,
+                "and the moment she is secured they go out, and an anchor light comes on. This is the " +
+                "regime's only live transition in the shipped game, and it is the one worth having.");
+        }
+
+        [UnityTest]
         public IEnumerator SheTurnsLikeTheBoatThePlayerIsAboutToBeHanded()
         {
             var opening = Build(hasRestAnchor: false, alreadyArrived: false);

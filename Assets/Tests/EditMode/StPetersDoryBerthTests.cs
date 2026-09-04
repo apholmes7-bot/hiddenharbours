@@ -27,13 +27,28 @@ namespace HiddenHarbours.Tests.EditMode
         private TidalTerrain _terrain;
         private GameObject _go;
 
+        private const string GameConfigAssetPath = "Assets/_Project/Data/Config/GameConfig.asset";
+
         /// <summary>
-        /// ⚠ A MIRROR of <c>ControlSwitcher._boardReach</c>, which is a serialized private field rather
-        /// than a <c>GameConfig</c> key — so this is the only way a test can state it today. The
-        /// boarding lane's PR 2 moves the real one to <c>GameConfig.BoardReachMetres</c>; when it does,
-        /// this constant is deleted and this test reads the config instead.
+        /// ⭐ The owner's boarding reach, read from the <b>shipped asset</b>.
+        ///
+        /// <para>⚠ This was a hard-coded <c>3.5f</c> mirror until 2026-09-03, and it had to be: the real
+        /// number was <c>ControlSwitcher._boardReach</c>, a serialized <i>private</i> field, so there was
+        /// nothing a test could name. PR 2 made it <see cref="GameConfig.BoardReachMetres"/> — and
+        /// reading the asset is the entire point of having done that. A mirror left behind would go on
+        /// asserting 3.5 the moment the owner tuned the reach to anything else, and this test would
+        /// report the berth as accessible on a number the game no longer uses.</para>
         /// </summary>
-        private const float BoardReachTodayMetres = 3.5f;
+        private static float BoardReachMetres
+        {
+            get
+            {
+                var config = UnityEditor.AssetDatabase.LoadAssetAtPath<GameConfig>(GameConfigAssetPath);
+                Assert.IsNotNull(config, $"the shipped {GameConfigAssetPath} must exist — this berth's " +
+                                         "accessibility is measured against the owner's own reach");
+                return config.BoardReachMetres;
+            }
+        }
 
         [SetUp]
         public void SetUp()
@@ -167,13 +182,13 @@ namespace HiddenHarbours.Tests.EditMode
                 if (d < best) { best = d; from = p; }
             }
 
-            Assert.Less(best, BoardReachTodayMetres,
+            Assert.Less(best, BoardReachMetres,
                 $"the nearest deck cell ({from.x:F1}, {from.y:F1}) is {best:F2} m from her outline, " +
-                $"against a {BoardReachTodayMetres:F2} m boarding reach. The owner asked for her to be " +
+                $"against a {BoardReachMetres:F2} m boarding reach. The owner asked for her to be " +
                 "ACCESSIBLE; a berth you cannot step onto is not that.");
 
             Debug.Log($"[dory-berth] nearest deck cell ({from.x:F1}, {from.y:F1}) is {best:F2} m off " +
-                      $"her outline (reach {BoardReachTodayMetres:F2} m); deck is x " +
+                      $"her outline (reach {BoardReachMetres:F2} m); deck is x " +
                       $"{deck.xMin}..{deck.xMax}, y {deck.yMin}..{deck.yMax}.");
         }
 

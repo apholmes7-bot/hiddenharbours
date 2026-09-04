@@ -53,7 +53,7 @@ Material:
     - _LightChannels: 0
     - _LightDepthBias: 0.45
     - _LightFrontBand: 0.6
-    - _LightResponse: 0
+    - _LightResponse: 1
     - _PhaseScale: 0.12
     - _PixelsPerUnit: 32
     - _RimSteerAmount: 0.8

@@ -39,7 +39,7 @@ namespace HiddenHarbours.Art
     /// </summary>
     [DisallowMultipleComponent]
     [DefaultExecutionOrder(-105)]   // after the hull poses herself (-110), before SceneLight's own LateUpdate
-    public sealed class BoatLamps : MonoBehaviour
+    public sealed class BoatLamps : MonoBehaviour, IVesselWayListener
     {
         [Tooltip("How much brighter the CABIN glow burns while somebody is actually below on this " +
                  "hull, over the preset it shows when the room is merely lit (1 = no change). The " +
@@ -59,9 +59,45 @@ namespace HiddenHarbours.Art
         private SceneLight[] _lights;
         private bool _subscribed;
         private bool _cabinOccupied;
+        private VesselWay _way = VesselWay.UnderWay;
 
         /// <summary>The lamps this hull is currently showing — empty until she has been skinned.</summary>
         public HullLamp[] Lamps => _lamps ?? System.Array.Empty<HullLamp>();
+
+        /// <summary>
+        /// How she is lying, as the lamps understand it — read off the boat ROOT's
+        /// <see cref="IVesselWay"/>, and <see cref="VesselWay.UnderWay"/> when nothing answers.
+        /// Public so a test can read the regime the lamps are actually in rather than inferring it
+        /// back out of which quads happen to be enabled.
+        /// </summary>
+        public VesselWay Way => _way;
+
+        /// <summary>
+        /// <b>Which lamps this regime lets a hull show</b> — the rule of the road, in one place, as a
+        /// pure function so it can be pinned headless with no scene at all.
+        ///
+        /// <para><b>Under way</b>: everything but the anchor light. Sidelights, stern and masthead are
+        /// exactly the set that says "I am making way, and this is my aspect" — and the anchor light
+        /// is the one that contradicts them, so it is the one that goes out.</para>
+        ///
+        /// <para><b>Moored</b>: the anchor light. Showing sidelights while lying still is the one lie in
+        /// this feature that could actually mislead somebody about what a boat is doing, so it is
+        /// refused here rather than dimmed somewhere downstream.</para>
+        ///
+        /// <para><b>The cabin glow is not a navigation light</b> — nobody takes a bearing off a lit
+        /// window — so the regime does not govern it; OCCUPANCY does. A boat under way has somebody at
+        /// her wheel by definition, so her wheelhouse is lit. A boat at her berth is lit only if
+        /// somebody is actually aboard her, which is what makes a wharf at midnight read as a place
+        /// where a couple of people are still working rather than a row of identical lanterns. The
+        /// skipper standing on deck at Nine Mile Creek is not below, and his boat is dark inside — as
+        /// she should be.</para>
+        /// </summary>
+        public static bool ShowsWhen(HullLampKind kind, VesselWay way, bool cabinOccupied)
+        {
+            if (kind == HullLampKind.CabinGlow) return way == VesselWay.UnderWay || cabinOccupied;
+            if (kind == HullLampKind.AnchorLight) return way == VesselWay.Moored;
+            return way == VesselWay.UnderWay;
+        }
 
         /// <summary>The built lights, in the same order as <see cref="Lamps"/>. Null before the first
         /// build; a slot is null for a lamp whose light could not be made.</summary>
@@ -103,6 +139,35 @@ namespace HiddenHarbours.Art
             set { _lampsOn = value; ApplyEnabled(); }
         }
 
+        /// <summary>
+        /// <b>Re-read how she is lying and re-throw the lamps to match.</b> Call it when a hull's way
+        /// actually changes — she is let go and gets under way, or she is made fast.
+        ///
+        /// <para><b>Why this is a call and not a poll.</b> The regime is a STATE, and the only thing
+        /// in the game that declares one today is a hull built moored, whose answer is fixed before
+        /// she wakes; asking her again sixty times a second would buy nothing. So it is read on enable
+        /// and whenever her way is rebuilt, and this is the door for the day a boat casts off. Cheap
+        /// and idempotent — one <c>GetComponent</c> and a pass over the lamps.</para>
+        /// </summary>
+        /// <summary>The push half of the seam: the hull we hang off has declared a new way. Same work
+        /// as <see cref="RefreshWay"/>, which re-reads it — either door reaches the same lamps.</summary>
+        public void OnVesselWayChanged(VesselWay way)
+        {
+            _way = way;
+            ApplyEnabled();
+        }
+
+        public void RefreshWay()
+        {
+            Transform root = BoatRootOf(transform);
+            var source = root != null ? root.GetComponent<IVesselWay>() : null;
+            // ⚠️ A hull that answers NOTHING is UNDER WAY, and that default is load-bearing: it is
+            // what every lamp-bearing hull did before the regime existed, the arrival's Cape Islander
+            // among them. Absence must mean "no change", never "dark".
+            _way = source != null ? source.Way : VesselWay.UnderWay;
+            ApplyEnabled();
+        }
+
         private void OnEnable()
         {
             // A hop or a hull swap may have replaced the renderer under us, so nothing is cached
@@ -111,6 +176,7 @@ namespace HiddenHarbours.Art
             _posed = null;
             Subscribe();
             Rebuild();
+            RefreshWay();
         }
 
         private void OnDisable()
@@ -208,7 +274,10 @@ namespace HiddenHarbours.Art
             }
 
             ApplyCabinBoost();
-            ApplyEnabled();
+            // RefreshWay rather than ApplyEnabled: a rebuild is also how a hull RE-SKINNED onto
+            // another boat's lamp table gets her lights, and her new root may lie differently from the
+            // one she came off. Reading the regime here means the two can never disagree.
+            RefreshWay();
         }
 
         private void DestroyLights()
@@ -226,15 +295,22 @@ namespace HiddenHarbours.Art
 
         private void OnDestroy() => DestroyLights();
 
-        /// <summary>Every lamp follows the master switch and this component's own enabled state. The
-        /// lights are DISABLED rather than destroyed — SceneLight pools its quad across an enable
-        /// cycle, so a boat that goes dark and lights up again allocates nothing.</summary>
+        /// <summary>Every lamp follows the master switch, this component's own enabled state, and the
+        /// REGIME (<see cref="ShowsWhen"/>) — a moored boat may not show the lights that say she is
+        /// under way. The lights are DISABLED rather than destroyed — SceneLight pools its quad across
+        /// an enable cycle, so a boat that goes dark and lights up again allocates nothing, and a lamp
+        /// the regime forbids costs no quad at all rather than a dark one.</summary>
         private void ApplyEnabled()
         {
             if (_lights == null) return;
             bool on = _lampsOn && isActiveAndEnabled;
             for (int i = 0; i < _lights.Length; i++)
-                if (_lights[i] != null) _lights[i].enabled = on;
+            {
+                if (_lights[i] == null) continue;
+                bool allowed = _lamps != null && i < _lamps.Length
+                             && ShowsWhen(_lamps[i].Kind, _way, _cabinOccupied);
+                _lights[i].enabled = on && allowed;
+            }
         }
 
         // -------------------------------------------------------------------------------------------
@@ -307,6 +383,11 @@ namespace HiddenHarbours.Art
                 BoatLampPresets.Apply(_lights[i], HullLampKind.CabinGlow,
                                       _lamps[i].SafeIntensityScale * boost);
             }
+
+            // ⚠️ And re-throw the switch, not just the brightness. At a berth the glow is OFF until
+            // somebody is aboard, so going below has to ENABLE the light — re-stamping a preset onto a
+            // disabled quad would set exactly the right intensity on a lamp nobody can see.
+            ApplyEnabled();
         }
     }
 }

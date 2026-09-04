@@ -60,6 +60,10 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _CapAgeStrength: 0
+    - _MirrorForm: 1
+    - _MirrorSheen: 0.3125
+    - _MirrorTiltScale: 6
     - _BeamLitStrength: 1.6
     - _CausticDayGate: 1
     - _CausticAmount: 0.62
@@ -143,7 +147,7 @@ Material:
     - _WakeFoamWhiteHold: 0.12
     - _WaterLevel: 0
     - _WhitecapTexScale: 0.0625
-    - _WhitecapTexStrength: 0.6
+    - _WhitecapTexStrength: 0
     - _WindChop: 0.07
     - _WindChopScale: 0.7
     - _WindChopSpeed: 0.09
@@ -157,7 +161,7 @@ Material:
     - _FbmGateLo: 0.452
     - _FbmGateHi: 1
     - _SpecBands: 3.38
-    - _OceanSwellScale: 0.07
+    - _OceanSwellScale: 0.025
     - _OceanSwellSpeed: 0.014
     - _OceanSwellStrength: 0.06
     - _OceanSwellSharpness: 3

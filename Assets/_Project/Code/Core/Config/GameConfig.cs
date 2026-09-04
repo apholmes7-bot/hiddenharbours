@@ -169,6 +169,36 @@ namespace HiddenHarbours.Core
                  "slow + exposed.")]
         [Range(0f, 1f)] public float SwimSlowFactor = 0.25f;
 
+        [Header("Getting aboard and ashore")]
+        [Tooltip("How close you must be to a hull to climb aboard, in metres — measured to her OUTLINE, " +
+                 "not to her root, so a long hull is boardable from her own stern. Ships at the 3.5 m " +
+                 "the switcher carried as a serialized field until 2026-09-03.")]
+        [Min(0.1f)] public float BoardReachMetres = 3.5f;
+        [Tooltip("How far a registered standing surface (a wharf deck) may be from the hull's WALKABLE " +
+                 "deck edge and still be somewhere you can step ashore onto, in metres. ⚠ It must span " +
+                 "more than the fendering gap: a hull's walkable strip is set in from her rail, so the " +
+                 "reach covers (hull half-beam − walkable half-beam) + the fender gap. On the starter " +
+                 "dory alongside St Peters that is 0.625 + 0.40 = 1.03 m, so 1.5 leaves margin for a " +
+                 "boat lying a little off her lines — while staying small enough that it never invents " +
+                 "a step across open water to a pier you are not actually alongside.")]
+        [Min(0.1f)] public float StepAshoreReachMetres = 1.5f;
+        [Tooltip("Width of the gunwale band on a hull with NO authored washboard areas, in metres — the " +
+                 "strip just inside her walkable edge that the two-press exit treats as the rail. ⚠ Only " +
+                 "the cape islander and the lobster family carry real washboards; an open boat (the " +
+                 "starter dory, the punt, the skiffs) has none, and absence is data — this is the band " +
+                 "she gets instead. Clamped so it can never exceed half the walkable half-width, or on a " +
+                 "narrow hull the 'band' would be the whole deck.")]
+        [Min(0.05f)] public float WashboardWidthMetres = 0.45f;
+        [Tooltip("Move-speed multiplier while standing out on the washboard (0..1). You are on the " +
+                 "gunwale over open water: it should feel like somewhere you pick your way along, not " +
+                 "somewhere you stroll.")]
+        [Range(0.05f, 1f)] public float WashboardSlowFactor = 0.5f;
+        [Tooltip("How far outboard of the rail she lands when she goes over the side, in metres — one " +
+                 "body's width, so she is in the water BESIDE the hull rather than inside her own boat's " +
+                 "footprint. Too small and she surfaces on top of the boat she just left; too large and " +
+                 "she is flung clear of a hull she is supposed to be able to climb straight back onto.")]
+        [Min(0.1f)] public float OverTheSideBodyWidthMetres = 0.7f;
+
         [Header("Seakeeping forces (ADR 0018 B3 — the sea pushes the boat)")]
         [Tooltip("World-wide seakeeping FORCE policy (the sea fighting back): the master switch + bite " +
                  "strength, how the bite grows with sea state, how exposure falls off with depth (open water " +

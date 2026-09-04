@@ -107,14 +107,22 @@ namespace HiddenHarbours.Art
         /// rather than a glow, and so is drawn by the bespoke <see cref="BoatSpotlight"/> the ADR
         /// already ships rather than by <see cref="BoatLamps"/>.
         ///
-        /// <para><b>ON, and deaf to the toggle key — both deliberate.</b> A hull whose DEF carries a
-        /// searchlight is a working boat being worked by somebody else: her skipper has the lamp
-        /// going before dawn because that is his job, so she is lit from her own declaration and the
-        /// night-gate decides whether it reads. And she must NOT answer the player's switch — the key
-        /// read in <see cref="BoatSpotlight"/> is unconditional, so every spotlight in the scene sees
-        /// the same keyboard, and an NPC boat left listening would flip her beam every time the
-        /// player reached for their own. The player's own dory gets hers from
-        /// <c>PersistentCoreBuilder</c> instead, off by default and on her key.</para>
+        /// <para><b>Lit by the RULE OF THE ROAD, not by a flag — PR 2's change.</b> A hull whose DEF
+        /// carries a searchlight is a working boat being worked by somebody else: her skipper has the
+        /// lamp going while he is running, and it is out while she lies at her berth. So the beam is
+        /// marked <see cref="BoatSpotlight.MintedFromDef"/> and follows her
+        /// <see cref="HiddenHarbours.Core.IVesselWay"/> — which is also what stops seven moored boats
+        /// at Nine Mile Creek and a whole review anchorage burning searchlights all night, the thing
+        /// this method did before the regime existed.</para>
+        ///
+        /// <para><b>And she DOES answer the switch once the player is aboard her.</b> The old rule was
+        /// "def-minted beams are deaf to the key", because the key read was unconditional and an NPC
+        /// boat left listening would flip her beam every time the player reached for their own. That
+        /// blunt instrument also meant a hull the player BOUGHT could never work her own searchlight.
+        /// The question is now asked properly, of Core's helm slot, every frame
+        /// (<see cref="BoatSpotlight.PlayerSwitchesThisBeam"/>): the key reaches the boat the player is
+        /// standing on and no other. The player's own dory still gets hers from
+        /// <c>PersistentCoreBuilder</c>, off by default and switch-only forever.</para>
         ///
         /// <para><b>What this does to a spotlight that is ALREADY there</b> (the player's, if she ever
         /// steps aboard a hull that declares one): it moves the MOUNT to where this hull wears her
@@ -146,13 +154,16 @@ namespace HiddenHarbours.Art
             if (at < 0)
             {
                 // Re-skinned onto a hull that declares none, so the beam goes with the hull it came
-                // with — but ONLY if it is OURS. A spotlight that still answers the toggle key is the
-                // player's own, put there by the builder and switched by hand; destroying it because
-                // she stepped aboard a hull whose def says nothing about searchlights would take her
-                // light away for good, with no way to get it back. "Does it answer the key" is exactly
-                // the mark this method stamps below, so it is a sound discriminator rather than a
-                // guess.
-                if (beam != null && !beam.KeyTogglesBeam) Destroy(beam);
+                // with — but ONLY if it is OURS. A spotlight the BUILDER bolted on is the player's own,
+                // switched by hand; destroying it because she stepped aboard a hull whose def says
+                // nothing about searchlights would take her light away for good, with no way to get it
+                // back.
+                //
+                // ⚠️ The mark used to be "does it answer the toggle key", which stopped being a sound
+                // discriminator the moment a boarded hull was allowed to answer her too — every beam
+                // in the game is now key-capable and ownership is a question asked of Core. So the
+                // mark is now what it always meant: did THIS method make it.
+                if (beam != null && beam.MintedFromDef) Destroy(beam);
                 return;
             }
 
@@ -162,13 +173,25 @@ namespace HiddenHarbours.Art
             HullLamp lamp = def.Lamps[at];
             beam.MountOffsetMetres = new Vector2(lamp.RigLocalMetres.x, lamp.RigLocalMetres.y);
 
-            // Only for a beam this method MINTED. A spotlight that was already on the host is the
+            // Only for a beam this method MINTED. A spotlight that was already on the root is the
             // player's own — the builder puts one on the dory, off and on her key — and re-skinning
-            // her must not take her switch away or light her up without her asking.
+            // her must not take her switch away, light her up without her asking, or hand her over to
+            // a regime that would relight her every time she stepped ashore.
             if (minted)
             {
-                beam.KeyTogglesBeam = false;
-                beam.SetBeam(true);
+                beam.MintedFromDef = true;
+                // Lit or dark is the REGIME's call from here (BoatSpotlight.Update reads her way): a
+                // hull under way burns her searchlight, a hull at her berth does not. Seeding her ON
+                // unconditionally is what would light the whole moored fleet for the one frame before
+                // the regime's first tick, and a wharf that flashes on and off at wake is worse than
+                // one that never lit.
+                //
+                // Asked HERE rather than through the beam's own cached source: that cache is filled in
+                // OnEnable, and EditMode never runs one — a builder or a fixture that installs a hull
+                // would seed every beam from an unresolved reference and get "under way" for a boat
+                // tied to a wall.
+                var way = root.GetComponent<HiddenHarbours.Core.IVesselWay>();
+                beam.SetBeam(way == null || way.Way == HiddenHarbours.Core.VesselWay.UnderWay);
             }
         }
 

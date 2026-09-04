@@ -662,4 +662,25 @@ MonoBehaviour:
   RestingDraftMeters: 0.55
   WatertightDeckHeightMeters: 0.55
   WatertightHalfBeamMeters: 2.9
-  Lamps: []
+  Lamps:
+  - Kind: 0
+    RigLocalMetres: {x: -0.61592, y: 6.3499546, z: 2.81}
+    IntensityScale: 1
+  - Kind: 1
+    RigLocalMetres: {x: 0.61592, y: 6.3499546, z: 2.81}
+    IntensityScale: 1
+  - Kind: 2
+    RigLocalMetres: {x: 0, y: -7.25, z: 1.53}
+    IntensityScale: 1
+  - Kind: 3
+    RigLocalMetres: {x: 0, y: 2.70575, z: 4.8362}
+    IntensityScale: 1
+  - Kind: 4
+    RigLocalMetres: {x: 0, y: 2.9565, z: 2.8135}
+    IntensityScale: 1
+  - Kind: 5
+    RigLocalMetres: {x: 0, y: 4.824, z: 3.76}
+    IntensityScale: 1
+  - Kind: 6
+    RigLocalMetres: {x: 0, y: 2.70575, z: 4.8362}
+    IntensityScale: 1

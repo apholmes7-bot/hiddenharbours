@@ -199,6 +199,44 @@ namespace HiddenHarbours.Core
         }
 
         /// <summary>
+        /// <b>The same question asked with a GAME OBJECT</b> — for a reader that holds the boat's
+        /// ROOT rather than the controller token the Boats lane registered.
+        ///
+        /// <para><b>Why the overload exists.</b> The token this slot arbitrates on is deliberately an
+        /// opaque <c>object</c> that Core never dereferences, and the Boats lane registers its
+        /// <c>BoatController</c>. A lane that may not reference Boats — the Art lane, where the lamps
+        /// live — has no way to name that instance: all it holds is the transform it is hanging off.
+        /// Comparing a <c>Transform</c> to a <c>BoatController</c> by reference is simply false, and
+        /// false in the quiet way, so the searchlight on the player's own boat would stop answering
+        /// her switch with nothing anywhere to say why. Resolving both sides to the GameObject they
+        /// live on is the one comparison that can be made honestly across that seam.</para>
+        ///
+        /// <para>Destroyed on either side is not the player's boat, for the same reason
+        /// <see cref="Alive"/> exists at all: to Unity's <c>==</c> every destroyed object equals null
+        /// and therefore equals every other destroyed object.</para>
+        /// </summary>
+        public bool IsPlayersBoat(UnityEngine.GameObject boatRoot)
+        {
+            if (boatRoot == null || _playersBoat == null) return false;
+            if (!Alive(_playersBoat)) return false;
+
+            // ⚠️ NOT `as GameObject ?? (as Component)?.gameObject`. `??` tests for a REAL null and a
+            // destroyed UnityEngine.Object is not one — it is a live reference that merely compares
+            // equal to null — so the coalesce would hand back the destroyed object instead of falling
+            // through. Alive() above already refuses that case; spelling the branch out keeps the two
+            // facts independent rather than relying on the guard to cover a hole in the expression.
+            UnityEngine.GameObject mine = _playersBoat as UnityEngine.GameObject;
+            if (mine == null)
+            {
+                var component = _playersBoat as UnityEngine.Component;
+                if (component == null) return false;
+                mine = component.gameObject;
+            }
+            if (mine == null) return false;
+            return ReferenceEquals(mine, boatRoot);
+        }
+
+        /// <summary>
         /// <b>The player is aboard THIS boat</b> — at the helm or on her deck. Published by the Player
         /// lane alongside <see cref="SetPilotedHull"/>; null when she is ashore or driving.
         /// </summary>
