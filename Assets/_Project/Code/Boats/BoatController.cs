@@ -184,6 +184,15 @@ namespace HiddenHarbours.Boats
             if (Application.isPlaying && GetComponent<BoatInteriorInstaller>() == null)
                 gameObject.AddComponent<BoatInteriorInstaller>();
 
+            // ⭐ SHE IS A HULL YOU CAN SWIM UP TO (the owner, 2026-09-02). Puts her outline in
+            // HullPresences so the wading model's boat-only wall steps aside within
+            // GameConfig.SwimBoardReachMetres of her rail — without which the player's own dory floats in
+            // water her owner is not allowed to enter, and "climb aboard anywhere" is unreachable from
+            // the water. Same runtime-spawn reasoning as the components above (no builder re-run, no
+            // prefab churn), and play mode only for the same reason — an EditMode rig that wants to be
+            // in the registry installs HullPresence itself, which is also how a test says so on purpose.
+            InstallHullPresence();
+
             _rb = GetComponent<Rigidbody2D>();
             _rb.gravityScale = 0f;
             _rb.linearDamping = 0.2f;
@@ -411,6 +420,21 @@ namespace HiddenHarbours.Boats
             if (_hull == null) return;
             var rb = _rb != null ? _rb : GetComponent<Rigidbody2D>();
             if (rb != null) rb.mass = Mathf.Max(1f, _hull.MassKg / 100f);
+            // Buying up the ladder changes how big she is, and the swimmer's reach to her rail is
+            // measured off that — a 12.9 m cape left wearing a 4.5 m dory's outline would refuse a
+            // swimmer holding on to her own quarter.
+            InstallHullPresence();
+        }
+
+        /// <summary>
+        /// Put (or re-size) this hull's <see cref="HullPresence"/> — the registration that lets a swimmer
+        /// get alongside her. Play mode only, and silently nothing on a hull with no def yet: she is
+        /// registered by <see cref="SetHull"/> the moment she has one.
+        /// </summary>
+        private void InstallHullPresence()
+        {
+            if (!Application.isPlaying || _hull == null) return;
+            HullPresence.Install(gameObject, _hull);
         }
 
         /// <summary>

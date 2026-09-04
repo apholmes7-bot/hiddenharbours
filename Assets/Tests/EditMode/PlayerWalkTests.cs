@@ -172,6 +172,86 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(SwimF, v.magnitude / new Vector2(-3f, 2f).magnitude, 1e-4f, "and it moves at the slow-swim crawl");
         }
 
+
+        // ---- ⭐ Alongside a boat the wall steps aside (the swim-to-a-hull relaxation, 2026-09-04) ----
+
+        // A shore with a CLIFF at x = 5: dry-ish (0.3 m) on the shelf, boat-only deep (3.0 m) past it.
+        // The one shape that makes the boat-only wall fire, reused from the wall's own test above.
+        static float DepthCliff(Vector2 p) => p.x >= 5f ? 0.3f : 3.0f;
+
+        [Test]
+        public void WaterEdge_AlongsideAHull_TheBoatOnlyWallStepsAside()
+        {
+            var atCliff = new Vector2(5f, 0f);   // in the wade band, one step from boat-only water
+
+            var walled = PlayerWalkController.ApplyWaterEdge(new Vector2(-3f, 0f), atCliff,
+                             DepthCliff, 1f, Wade, Swim, WadeF, SwimF);
+            Assert.AreEqual(0f, walled.x, 1e-5f,
+                "the control: with no boat there, stepping into boat-only water is refused as it always was");
+
+            var alongside = PlayerWalkController.ApplyWaterEdge(new Vector2(-3f, 0f), atCliff,
+                                DepthCliff, 1f, Wade, Swim, WadeF, SwimF,
+                                alongsideHullAt: _ => true);
+            Assert.Less(alongside.x, 0f,
+                "⭐ alongside a hull she may go in — the owner's 'swim up to a hull and climb aboard " +
+                "anywhere'. Without this the player's own dory floats in water her owner cannot enter");
+        }
+
+        [Test]
+        public void WaterEdge_OutOfReachOfEveryHull_IsBitIdenticalToNoSeamAtAll()
+        {
+            // Every band, both axes, against a probe that says "no boat here" — the whole point of the
+            // relaxation being the narrowest one: out of reach of a hull NOTHING changed.
+            float[] depths = { -1f, 0f, 0.3f, Wade, 1.5f, Swim, 3f };
+            foreach (float d in depths)
+            {
+                System.Func<Vector2, float> shelf = p => p.x >= 5f ? d : 3.0f;
+                var origin = new Vector2(5f, 0f);
+                var before = PlayerWalkController.ApplyWaterEdge(new Vector2(-3f, 2f), origin,
+                                 shelf, 1f, Wade, Swim, WadeF, SwimF);
+                var after = PlayerWalkController.ApplyWaterEdge(new Vector2(-3f, 2f), origin,
+                                shelf, 1f, Wade, Swim, WadeF, SwimF, alongsideHullAt: _ => false);
+                Assert.AreEqual(before, after,
+                    $"at {d:0.0#} m underfoot the no-hull answer must be the pre-seam answer, exactly");
+            }
+        }
+
+        /// <summary>
+        /// ⭐ <b>SABOTAGE ARM.</b> The lift opens the WALL and nothing else. An implementation that
+        /// returned the raw desired velocity — the obvious way to write "the wall does not apply here" —
+        /// would hand a swimmer alongside a boat her full dry-land speed, and the slow-swim crawl that
+        /// makes swimming an escape rather than a travel mode would silently stop applying next to every
+        /// hull in the game.
+        /// </summary>
+        [Test]
+        public void WaterEdge_TheLiftOpensTheWall_ItDoesNotHandHerTheDryLandSpeed()
+        {
+            var inTheSwimBand = new Vector2(2f, 0f);           // DepthShore: 3.0 m — boat-only water
+            var desired = new Vector2(-3f, 2f);
+
+            var v = PlayerWalkController.ApplyWaterEdge(desired, inTheSwimBand, DepthShore, 1f,
+                        Wade, Swim, WadeF, SwimF, alongsideHullAt: _ => true);
+
+            Assert.AreEqual(SwimF, v.magnitude / desired.magnitude, 1e-4f,
+                "she is still swimming, at the slow-swim crawl — alongside a boat is not a speedboat");
+        }
+
+        /// <summary>
+        /// The permission is a fact about where SHE is, not about where the step lands: "I am alongside a
+        /// boat" is what the owner described, and asking it of the probe instead would let a step reach
+        /// out of a hull's water into water nobody is alongside.
+        /// </summary>
+        [Test]
+        public void WaterEdge_TheLiftIsAskedOfWhereSheStands_NotOfWhereSheIsStepping()
+        {
+            var atCliff = new Vector2(5f, 0f);
+            Vector2? asked = null;
+            PlayerWalkController.ApplyWaterEdge(new Vector2(-3f, 0f), atCliff, DepthCliff, 1f,
+                Wade, Swim, WadeF, SwimF, alongsideHullAt: p => { asked = p; return false; });
+
+            Assert.AreEqual(atCliff, asked.Value, "the probe is asked about the fisher's own position");
+        }
+
         [Test]
         public void WaterEdge_NullProbe_PassesThrough()
         {

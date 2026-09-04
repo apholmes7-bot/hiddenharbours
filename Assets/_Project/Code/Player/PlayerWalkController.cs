@@ -70,6 +70,9 @@ namespace HiddenHarbours.Player
         [SerializeField, Range(0f, 1f)] private float _wadeSlowFactor = 0.6f;
         [Tooltip("Move-speed multiplier in the slow-swim band (0..1). Fallback for _config.SwimSlowFactor.")]
         [SerializeField, Range(0f, 1f)] private float _swimSlowFactor = 0.25f;
+        [Tooltip("How close (m) to a HULL OUTLINE the boat-only soft wall steps aside, so a swimmer " +
+                 "can get alongside a boat and climb aboard. Fallback for _config.SwimBoardReachMetres.")]
+        [SerializeField, Min(0f)] private float _swimBoardReach = 6.0f;
 
         /// <summary>The RESOLVED wade threshold (m) this walker is actually using — the shared
         /// <see cref="GameConfig"/>'s value once <see cref="Awake"/> has read it, else the serialized
@@ -81,6 +84,24 @@ namespace HiddenHarbours.Player
         /// <summary>The RESOLVED boat-only threshold (m) this walker is using — see
         /// <see cref="WadeDepth"/> for why it is read from here rather than from the config again.</summary>
         public float SwimLimit => _swimLimit;
+
+        /// <summary>
+        /// The RESOLVED hull reach (m) at which this walker lets the boat-only wall step aside.
+        ///
+        /// <para>⚠ <b>Resolved LIVE off <see cref="GameServices.Config"/>, not cached in
+        /// <see cref="Awake"/> like its four wade siblings above — and that is deliberate.</b>
+        /// <c>PersistentCoreBuilder</c> never wires this component's <c>_config</c> reference (it sets
+        /// <c>_tideGatedWalk</c> and the sheets and nothing else), so on the SHIPPED player the cached read
+        /// finds null and every wade tunable falls back to its serialized mirror. Those four mirror the
+        /// asset's values today, so nothing is visibly wrong — but a NEW key resolved that way would be a
+        /// dial the owner can turn in <c>GameConfig.asset</c> with no effect whatsoever, which is exactly
+        /// the trap rule 6 exists to prevent. This reads the live service the way
+        /// <c>ControlSwitcher.BoardReachMetres</c> does, so the owner's number lands with no scene re-bank
+        /// and no Awake-order assumption. (The four siblings are left alone on purpose: changing how a
+        /// shipped tunable resolves is a behaviour change, and this PR is not the place for it.)</para>
+        /// </summary>
+        public float SwimBoardReach =>
+            GameServices.Config != null ? GameServices.Config.SwimBoardReachMetres : _swimBoardReach;
 
         [Tooltip("Seconds per animation frame (~230 ms — a gentle, readable walk).")]
         [SerializeField] private float _frameSeconds = 0.23f;
@@ -316,6 +337,13 @@ namespace HiddenHarbours.Player
         /// wade + swim (depth ≤ swimLimit), and (b) scale the whole velocity by the depth at the fisher's
         /// feet via <see cref="TidalExposure.MoveScaleForDepth"/> (full on dry, heavier as it deepens).
         ///
+        /// <para><b>⭐ Alongside a boat, the wall steps aside (2026-09-04).</b> A registered hull within
+        /// <c>GameConfig.SwimBoardReachMetres</c> of where the fisher stands opens the boat-only band, so
+        /// she can get into the water beside a boat and climb aboard — the owner's "swim up to a hull and
+        /// climb aboard anywhere". It is the narrowest relaxation of the boats-only rule that satisfies
+        /// that sentence: out of reach of every hull the wall is exactly as it was, and a world with no
+        /// hulls registered behaves bit-identically to one that never had the seam.</para>
+        ///
         /// <para><b>Never trapped (P5).</b> If the fisher's ORIGIN is already deeper than the wade band
         /// (swim or deep — caught by a rising tide, or just disembarked), the boat-only wall is lifted for
         /// this tick so they can always move OUT toward shallower ground (they just move at the slow-swim
@@ -332,10 +360,15 @@ namespace HiddenHarbours.Player
         /// <param name="swimLimit">Deepest on-foot water (m) — beyond is boat-only.</param>
         /// <param name="wadeSlowFactor">Speed multiplier at the deep edge of the wade band (0..1).</param>
         /// <param name="swimSlowFactor">Speed multiplier in the slow-swim band (0..1).</param>
+        /// <param name="alongsideHullAt">Optional probe: is this world position within
+        /// <c>GameConfig.SwimBoardReachMetres</c> of a registered hull's outline? Where it answers true
+        /// the boat-only wall does not apply. Null (the default) is "there are no boats in this world",
+        /// under which the model is exactly what it was before <see cref="HullPresences"/> existed.</param>
         public static Vector2 ApplyWaterEdge(Vector2 desiredVelocity, Vector2 origin,
                                              System.Func<Vector2, float> depthAt, float probeDistance,
                                              float wadeDepth, float swimLimit,
-                                             float wadeSlowFactor, float swimSlowFactor)
+                                             float wadeSlowFactor, float swimSlowFactor,
+                                             System.Func<Vector2, bool> alongsideHullAt = null)
         {
             if (depthAt == null) return desiredVelocity;
 
@@ -343,6 +376,20 @@ namespace HiddenHarbours.Player
             // Scale the whole move by how deep the fisher is standing (feel curve; full on dry ground).
             float scale = TidalExposure.MoveScaleForDepth(originDepth, wadeDepth, swimLimit, wadeSlowFactor, swimSlowFactor);
             Vector2 v = desiredVelocity * scale;
+
+            // ⭐ ALONGSIDE A BOAT THE WALL STEPS ASIDE (the owner, 2026-09-02: "a player should be able to
+            // swim up to a hull and climb aboard anywhere"). A hull LIES in boat-only water, so the wall
+            // that keeps a person out of it was also the thing standing between her and the gunwale she is
+            // meant to be able to reach — and off the plank edge at St Peters both the dory and the cape
+            // float over a dredged −4 m pocket. Asked of the fisher's OWN position, not of the probe: the
+            // permission is "I am alongside a boat", which is a fact about where SHE is, and asking it per
+            // axis would let a step reach into water she is not herself alongside.
+            //
+            // ⚠ This is the single narrowest relaxation of the ratified water-travel model (water travel
+            // is boats only — memory `wading-and-water-travel-model`). Everywhere out of reach of a hull
+            // the wall below is untouched, and with no hull registered this whole function is bit-identical
+            // to what it was before the seam existed.
+            if (alongsideHullAt != null && alongsideHullAt(origin)) return v;
 
             // If the fisher is ALREADY beyond the wade band (swim/deep), never trap them: lift the wall so
             // any direction is allowed — they swim OUT (at the slow-swim crawl already applied above).
@@ -397,7 +444,13 @@ namespace HiddenHarbours.Player
                 _swimLimit = _config.SwimLimit;
                 _wadeSlowFactor = _config.WadeSlowFactor;
                 _swimSlowFactor = _config.SwimSlowFactor;
+                _swimBoardReach = _config.SwimBoardReachMetres;   // the fallback, kept in step where wired
             }
+
+            // Built ONCE, not per tick: this closure is handed to ApplyWaterEdge every FixedUpdate, and a
+            // fresh lambda each time would be a per-frame allocation on the player's hot path (rule 7).
+            // It reads the resolved field rather than capturing its value, so a runtime re-tune lands.
+            _alongsideHull = p => HullPresences.WithinReachNow(p, SwimBoardReach);
 
             ApplyFrame(_facing, 0);
         }
@@ -432,6 +485,10 @@ namespace HiddenHarbours.Player
             ApplyFrame(_facing, column);
         }
 
+        // The cached "am I alongside a boat?" probe (see Awake). Null until Awake runs, which is exactly
+        // the pure function's "no boats in this world" case — so an unawakened rig behaves as before.
+        private System.Func<Vector2, bool> _alongsideHull;
+
         [Tooltip("Wading-edge look-ahead (m): how far ahead of the fisher the tide gate probes for exposed " +
                  "ground, so movement stops just before stepping into the water. A little more than one " +
                  "tick of travel keeps the stop clean without feeling sticky.")]
@@ -457,7 +514,8 @@ namespace HiddenHarbours.Player
             if (_tideGatedWalk)
             {
                 desired = ApplyWaterEdge(desired, _rb.position, TidalWalkability.DepthNow, _wadeProbeDistance,
-                                         _wadeDepth, _swimLimit, _wadeSlowFactor, _swimSlowFactor);
+                                         _wadeDepth, _swimLimit, _wadeSlowFactor, _swimSlowFactor,
+                                         _alongsideHull);
                 UpdateWaterState(depthAtFeet);
             }
 

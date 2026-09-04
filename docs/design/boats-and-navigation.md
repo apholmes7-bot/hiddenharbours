@@ -737,6 +737,29 @@ The on-foot ⇄ aboard control loop is the `ControlSwitcher` (Player lane); seve
 - **Board from anywhere** within reach of the boat (`WithinBoardReach()` — a pure proximity radius), not only
   at a dock zone (owner playtest). So you can step aboard a boat nudged up to a beach, not just one at the
   wharf. (The damaged-dory repair gate still applies on top, P5.)
+- **Swim up to a hull and climb aboard** (owner, 2026-09-02). The boarding gate above was never the thing
+  stopping you doing this from the water — `WithinBoardReach()` is pure proximity with no swim check — the
+  **boat-only soft wall** was: a hull lies in exactly the water a person may not enter, so the rule that
+  keeps you out of open water also kept you off the gunwale you are supposed to be able to reach. Off St
+  Peters' pier both boats float over the dredged **−4 m** pocket, so the water beside your own dory read
+  **3.97 m at mean tide and 6.17 m at spring high** — refused, on your own doorstep. (At **spring low** it
+  reads **1.77 m**, inside the slow-swim band, and was never refused: the defect was real for most of the
+  tide, not all of it.) Hulls now publish their outline through the Core `IHullPresence` / `HullPresences`
+  registry — the `StandableSurfaces` / `BoardingLadders` shape — and the wading model's wall **steps aside
+  within `GameConfig.SwimBoardReachMetres` (6.0 m) of a hull's OUTLINE**, measured the way the boarding gate
+  measures (never to her root: a 12.9 m cape read from her origin is "6 m away" from a swimmer holding her
+  quarter). ⚠️ **This is the ONE relaxation of the ratified boats-only rule** (`time-tides-weather.md` §3.5,
+  the 2026-07-05 model) and it is deliberately the narrowest sentence that satisfies his: out of reach of
+  every hull the wall is untouched, and with no hull registered the walk model is bit-identical to what it
+  was. **Open-water swimming remains unruled** — if the owner wants it, that is a separate ruling, not a
+  wider reach.
+  > ⚠️ **Still open, and older than this change.** The never-trap clause lifts the wall *entirely* once the
+  > fisher is already past the wade band (the bullet above says so in passing: *"never blocked — the
+  > never-trap rule lifts the wall once you are already deep"*). So a person who is in the water — by a
+  > rising tide, or by going over the side (PR 3) — can already swim anywhere, hull or no hull. Nothing in
+  > this change touches that, and closing it would mean making the escape valve directional, which costs the
+  > absolute "you can never be trapped" promise on a bar surrounded by deep water. **An owner ruling, not a
+  > lane decision.**
 - **Hold / root the mooring line** — the **rope / mooring mechanic** (`BoatMooring`, Boats lane; P1 + P5).
   This *replaces* the earlier auto-tie-on-disembark with the owner's refinement:
   - **On disembark the player HOLDS the rope** (`Hold(player)`): the line is made fast to the **player's own
