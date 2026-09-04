@@ -919,7 +919,7 @@ two-second long flash and the feature that tells her from the west cardinal's ni
 Twenty-five lit marks across the two harbours, at most one quad each, pooled by `SceneLight` and shared
 through one material. At an eighth duty the average is about three quads; the peak is twenty-five, and
 only if every character happened to align. **`CastsShadows` is off on every lantern**, which is a
-measurement rather than a preference: a buoy stands in open water with nothing inside her 1.6 m to cast
+measurement rather than a preference: a buoy stands in open water with nothing inside her 1.1 m to cast
 anything, so every pair she added to the 10 Hz lamp/caster scan would provably yield no shadow — and a
 flashing mark would add and remove them twice a second. Nav lanterns stay off the four-slot water bridge
 for the same reason the fleet's nav lamps do: only `BoatSpotlight` lights the sea, and twenty-five
@@ -938,7 +938,7 @@ correct, and it is what the real one does. Unlit marks (the mooring buoy) get th
 | Tunable | Where | Default |
 |---|---|---|
 | Lantern colour, per mark colour | `NavLightPresets` | green `(0.10, 1, 0.34)` · red `(1, 0.10, 0.09)` · white `(1, 0.96, 0.88)` · amber `(1, 0.82, 0.20)` |
-| Lantern reach | `NavLightPresets.LanternRangeMetres` | 1.6 m — bounded by the closest two marks in either harbour (8.29 m apart), so a pair clears by 5.09 m |
+| Lantern reach | `NavLightPresets.LanternRangeMetres` | **1.1 m** — set by photographing it (1.6 m swallowed the can, and a mark's SHAPE is part of her signal); upper bound measured: the closest two marks are 8.29 m apart, so a pair clears by 6.09 m |
 | Lantern brightness | `NavLightPresets.LanternIntensity` | 1.7 (a sidelight is 1.4; a mark is meant to be picked up first) |
 | The four rhythms | `NavLightCharacter` constants | quick 0.5/1.0 s · very quick 0.25/0.5 s · flash 1.0/2.0 s · long flash 2.0/3.0 s |
 | Phase jitter inside a slot | `NavLightPhasePlan.JitterFractionOfSlot` | 0.2 (±20 % of a slot) |

@@ -44,15 +44,21 @@ namespace HiddenHarbours.Art
         /// <summary>
         /// How far a lantern throws, metres.
         ///
-        /// <para>Sized against the mark, not by eye: the working default is a 1.75 m can whose
-        /// painted height is about 2.8 m, so a 1.6 m halo reads as a lantern lighting its own
-        /// structure and a little of the water round it — bigger than the buoy's girth, smaller
-        /// than the gap to her neighbour. The nearest two marks anywhere in the two harbours are a
-        /// channel's port and starboard pair, and a test holds this radius below half that gap for
-        /// exactly the reason the sidelights have one: where red and green overlap additively the
-        /// answer is yellow, and a channel whose two sides merge into one colour marks nothing.</para>
+        /// <para><b>⭐ Set by photographing it, and the comparison is committed.</b> A first pass used
+        /// 1.6 m, reasoned from the buoy's own size — a 1.75 m can with 2.8 m of painted structure —
+        /// on the principle that the halo should be a little bigger than her girth. Shot at the
+        /// shipped 02:00 exposure it was too big: the glow swallowed the can. **A mark's SHAPE is
+        /// itself part of what she signals** — her own gloss says so, <i>"the SHAPE is the mark"</i> —
+        /// so a cardinal whose topmark you cannot see at night has lost half her meaning. At 1.1 m
+        /// the lantern sits ON the mark: the light reads as a light and the hull under it stays
+        /// legible. Three-way plate: <c>docs/art/spikes/nav-light-characters/reach-ab.png</c>.</para>
+        ///
+        /// <para>The upper bound is a separate question and a measured one: the nearest two marks
+        /// anywhere in the two harbours are 8.29 m apart, and a test holds twice this radius below
+        /// that gap for the reason the sidelights have one — where two colours overlap additively
+        /// the answer is neither of them, and a channel whose hands merge marks nothing.</para>
         /// </summary>
-        public const float LanternRangeMetres = 1.6f;
+        public const float LanternRangeMetres = 1.1f;
 
         /// <summary>
         /// The lantern's brightness. Brighter than a sidelight (1.4) because it is the thing you are
