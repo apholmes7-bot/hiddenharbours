@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: SpriteShadow
+  m_Name: SpriteShadowShade
   m_Shader: {fileID: 4800000, guid: 2e29ab3ed108418898cfc4b8530f1df8, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -35,9 +35,9 @@ Material:
     - _StencilPass: 2
     - _StencilRef: 1
     - _EdgeSoftness: 0
-    - _ScreenShade: 0
-    - _SrcBlend: 5
-    - _DstBlend: 10
+    - _ScreenShade: 1
+    - _SrcBlend: 0
+    - _DstBlend: 3
     m_Colors:
     - _ShadowColor: {r: 0.04, g: 0.05, b: 0.1, a: 0.45}
     - _ShadowDir: {r: -1, g: 0, b: 0, a: 0}

@@ -22,6 +22,12 @@ namespace HiddenHarbours.Art
     /// Profile</c>, saved at <c>Assets/_Project/Resources/SpriteShadowProfile.asset</c> (the name matters —
     /// that is the path the component loads).</para>
     ///
+    /// <para><b>⚠️ <see cref="ScreenSpaceShade"/> is the one dial here that is not a look NUMBER but a
+    /// MECHANISM.</b> Every other field tunes a shade that darkens the ground; that one decides whether
+    /// the shade darkens what stands in it at all. It ships OFF in both the code default and the asset,
+    /// so this profile alone cannot change the frame — the owner turns it on once he has judged the
+    /// trade it carries (see its own remark).</para>
+    ///
     /// <para><b>⚠️ THREE values deliberately differ between the code default and the shipped asset</b>, and
     /// each is a proposal this PR puts in front of the owner on a plate: <see cref="MaxLength"/> (below),
     /// <see cref="GroundContactRadius"/> (0 in code — no pool at all — against the asset's 0.42) and
@@ -99,6 +105,17 @@ namespace HiddenHarbours.Art
                  "between its caster and its tip.")]
         [SerializeField] private bool _sortByFarEnd = true;
 
+        [Tooltip("THE SHADE ARM. Off (shipped) = a sun shadow is a dark sprite sorted UNDER its caster, so " +
+                 "the ground reads shaded and anything STANDING in the shade draws over it at full " +
+                 "brightness — a fisher in a tree's shadow is not darkened, by construction. On = the " +
+                 "shade is composited over the assembled frame as one multiply, above every world sprite " +
+                 "and below the lamps' glow, so whatever occupies the pixel loses the same fraction: the " +
+                 "ground, the fisher on it, a mesh hull moored in it. The cost of ON is that something " +
+                 "ABOVE the shade in the world — a boat's upper works, a roof edge — is darkened too, " +
+                 "because a screen-space multiply cannot tell the two apart. Both are wrong in some " +
+                 "frame; this switch is which one the game is wrong in.")]
+        [SerializeField] private bool _screenSpaceShade = false;
+
         [Header("Look")]
         [Tooltip("Edge feather of the silhouette (0 = crisp pixel cutout — the pixel-art default; up to " +
                  "1 = soft-edged). The shape is always the caster's own sprite alpha.")]
@@ -114,6 +131,26 @@ namespace HiddenHarbours.Art
         public float GroundContactMinHeight { get => _groundContactMinHeight; set => _groundContactMinHeight = Mathf.Max(0f, value); }
         public float GroundContactSoftness { get => _groundContactSoftness; set => _groundContactSoftness = Mathf.Clamp01(value); }
         public bool SortByFarEnd { get => _sortByFarEnd; set => _sortByFarEnd = value; }
+
+        /// <summary>
+        /// <b>Does the sun's shade darken what STANDS in it?</b> Off — the shipped default and every
+        /// frame this project has ever rendered — a sun shadow is a dark sprite sorted one order under
+        /// its caster, so it darkens the ground and nothing else: a sprite standing in it draws over it
+        /// at full brightness. On, the shade is composited over the assembled frame as a multiply in the
+        /// <c>SortingBands.SunShade</c> band (the rung <c>LampShadowSystem</c> proved for the lamps), and
+        /// every pixel under it loses the same fraction whoever drew it.
+        ///
+        /// <para>⚠️ Not a free improvement, which is why it is a switch and not a fix. A screen-space
+        /// multiply darkens whatever occupies the pixel, including something that is ABOVE the shade in
+        /// the world rather than standing in it. Today's cost is that nothing standing in a sun shadow is
+        /// ever shaded; this cost is that something passing over one sometimes is. The owner picks.</para>
+        ///
+        /// <para>When it is on, <see cref="SortByFarEnd"/> stops mattering — the shade no longer competes
+        /// with the decor band at all, and spends two fixed sorting orders instead of
+        /// <c>shadowDir.y × length × OrdersPerMetre</c> per caster inside a band that is already tight
+        /// (ADR 0032).</para>
+        /// </summary>
+        public bool ScreenSpaceShade { get => _screenSpaceShade; set => _screenSpaceShade = value; }
         public float EdgeSoftness { get => _edgeSoftness; set => _edgeSoftness = Mathf.Clamp01(value); }
 
         /// <summary>
@@ -135,6 +172,7 @@ namespace HiddenHarbours.Art
             p._maxLength = 7f;              // the dead clamp the component always carried
             p._groundContactRadius = 0f;    // no ground pool: the pre-PR frame
             p._sortByFarEnd = false;        // shadows paint over what they cross, as they always did
+            p._screenSpaceShade = false;    // the shade sorts under its caster: nothing standing in it is darkened
             return p;
         }
     }
