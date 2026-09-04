@@ -123,5 +123,55 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.DoesNotThrow(() => LightPresets.Apply(null, LightPresets.Kind.WindowGlow),
                 "applying to a null light must be a harmless no-op");
         }
+
+        /// <summary>
+        /// <b>The tall poles' preset reaches further than the posts'.</b> A lamp lights a circle of roughly
+        /// twice its head height, and the four pieces <c>LampPosts</c> places split cleanly on that:
+        /// <c>lanternPost</c> 2.46 m and <c>streetLamp</c> 4.48 m under <see cref="LightPresets.Kind.Lightpost"/>,
+        /// <c>yardLight</c> 7.26 m and <c>floodMast</c> 7.8 m under <see cref="LightPresets.Kind.Floodlight"/>.
+        /// A Floodlight that did not out-reach a Lightpost would leave a 7.8 m mast lighting a smaller
+        /// circle than the lamp on the road below it.
+        /// </summary>
+        [Test]
+        public void Floodlight_ReachesFurtherAndIsCoolerThanALampPost()
+        {
+            var lamp = LightPresets.For(LightPresets.Kind.Lightpost);
+            var flood = LightPresets.For(LightPresets.Kind.Floodlight);
+
+            Assert.Greater(flood.Range, lamp.Range * 1.5f,
+                "a 7-8 m mast must throw a materially bigger pool than a 2-4 m post");
+            Assert.Greater(flood.Color.b, lamp.Color.b,
+                "electric flood is cooler (bluer) than a warm sodium lamp post");
+            Assert.AreEqual(0f, flood.FlickerAmount, 1e-6f, "a flood mast is rock steady");
+        }
+
+        /// <summary>
+        /// <b>The presets that have been LOOKED AT are unmoved; the stub that never had been is retuned.</b>
+        /// <see cref="LightPresets.Kind.WindowGlow"/> lights Aunt Ginny's cottage and the owner has seen it,
+        /// so it does not move. <see cref="LightPresets.Kind.Worklight"/> is placed nowhere and is left
+        /// exactly as shipped. <see cref="LightPresets.Kind.Lightpost"/> WAS also placed nowhere, and its
+        /// stub values (1.15 / 4.6 m / 0.78) turned out to fill half the screen with a flat cream disc the
+        /// first time anything carried them — so they are now the measured ones, pinned here so the next
+        /// change to them is deliberate.
+        /// </summary>
+        [Test]
+        public void ThePresetsThatShipped_AreUnchanged_AndTheLampPostIsPinnedAtItsMeasuredValues()
+        {
+            var window = LightPresets.For(LightPresets.Kind.WindowGlow);
+            Assert.AreEqual(0.95f, window.Intensity, 1e-6f, "Ginny's cottage does not move");
+            Assert.AreEqual(3.4f, window.Range, 1e-6f);
+
+            var work = LightPresets.For(LightPresets.Kind.Worklight);
+            Assert.AreEqual(1.35f, work.Intensity, 1e-6f, "a lamp on a wall, placed nowhere, untouched");
+            Assert.AreEqual(5.2f, work.Range, 1e-6f);
+
+            var lamp = LightPresets.For(LightPresets.Kind.Lightpost);
+            Assert.AreEqual(1f, lamp.Intensity, 1e-6f,
+                "the sweep's 0.9, lifted to 1.0 to stay above WindowGlow — the RANGE is what was retuned");
+            Assert.AreEqual(3.6f, lamp.Range, 1e-6f);
+            Assert.Less(lamp.Range, 4.6f,
+                "the stub value blew the pool out to half the screen — a regression to it must redden");
+        }
+
     }
 }

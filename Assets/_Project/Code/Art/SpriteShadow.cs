@@ -149,6 +149,22 @@ namespace HiddenHarbours.Art
         [Min(1f)] [SerializeField] private float _pixelsPerUnit = 32f;
 
         [Header("Caster")]
+        [Tooltip("Does this caster get a GROUND-CONTACT pool at its feet (when the profile's radius and " +
+                 "height gate would give it one)? On for the things the pool was built for — a tree, a " +
+                 "shrub, anything with mass overhead. OFF for a tall THIN caster: a lamp post is over " +
+                 "three metres and has no crown, so the profile's height gate would put a shade disc " +
+                 "under it, and under a lamp post is the one patch of ground that is not in shade.")]
+        [SerializeField] private bool _castsGroundContact = true;
+
+        /// <summary>Whether this caster draws the profile's ground-contact pool. See the tooltip: the
+        /// profile's gate is a HEIGHT, which is a proxy for mass overhead, and a lamp post is the case
+        /// where the proxy misfires.</summary>
+        public bool CastsGroundContact
+        {
+            get => _castsGroundContact;
+            set => _castsGroundContact = value;
+        }
+
         [Tooltip("World-Y of the caster's FEET below its transform origin (metres). 0 = the transform sits at " +
                  "the feet. Used to anchor the shadow at the ground and to measure the caster's height.")]
         [SerializeField] private float _footOffset = 0f;
@@ -561,8 +577,14 @@ namespace HiddenHarbours.Art
             // quad drawing the same shade. Measured on St Peters: ungated, 439 pool quads cost 4.5 ms a
             // frame at 900x900; gated at 3 m only the 259 trees draw one, and the 148 shrubs and 384 shore
             // plants are left bit-identical.
+            // ⚠️ AND THE GATE IS A PROXY. "Tall" stands in for "has mass overhead", which is true of every
+            // caster the pool was measured on (trees, and the shrubs it deliberately excludes) and FALSE of
+            // a lamp post: 4.5 m of thin pole with a lamp on top, which clears the 3 m gate and has no crown
+            // to throw anything straight down. Worse, a post's feet are the brightest ground in the frame at
+            // night, so the pool would land a dark ellipse in the middle of its own light. Per-caster,
+            // default ON, so nothing that had a pool before loses one.
             bool tallEnough = CasterWorldHeight() >= look.GroundContactMinHeight;
-            bool on = radius > 0f && poolAlpha > 0f && tallEnough && _caster.enabled
+            bool on = radius > 0f && poolAlpha > 0f && tallEnough && _castsGroundContact && _caster.enabled
                    && _caster.sprite != null && _pool.sharedMaterial != null;
             _pool.enabled = on;
             if (!on) return;
