@@ -4201,3 +4201,192 @@ The claim is asserted where it is exactly true — on the assets and the shader,
 is that a **glass calm does not notice this PR at all**: zero wave amplitude is zero cap opacity by
 construction, so whichever source is placing the caps there is nothing to place, and the sacred state
 comes through untouched (both arms within 0.002 of each other).
+
+---
+
+## 33. One foam language — the surf and the caps walk the sea's own blues (register row 2, owner ranking 2026-09-04)
+
+**The owner, 2026-08-27:** foam should churn *"through different shades of blue, distort and fade into the
+ambient ocean over time."* **His ranking, 2026-09-04:** of the register's remaining look rows, **row 2 —
+the foam language — is next.**
+
+### The defect, in one line of YAML
+
+`_SurfColor` is **(1, 1, 1) on all nine water materials, and no preset has ever moved it.** Meanwhile
+`_FoamColor` — the white the shore fringe draws, the white the caps were born at, the white the wake
+buffer starts its walk from — is the preset's own: (0.92, 0.97, 1) on the hero material, **(0.86, 0.84,
+0.74)** in `Water_StirredBrown`, **(0.86, 0.88, 0.89)** in `Water_FoggySmother`, (0.95, 0.99, 0.98) in
+`Water_Tropical`. So a silt-brown estuary and a fogbound grey harbour both drew a **neutral** surf, and it
+stayed that neutral white from the break line out to its dying edge while every other foam in the frame
+walked down the sea's ramp. Two foam languages meeting at a seam — the register's row 2, and what its
+plates show.
+
+| layer | its white, before | did it age, before |
+|---|---|---|
+| advected wake buffer | `_FoamColor` (the preset's) | **yes** — `WakeFoamKnots` → `WakeFoamRamp3`, since #665 |
+| whitecaps | `_FoamColor` (the preset's) | built #719, **shipped at 0** |
+| shore fringe | `_FoamColor` (the preset's) | no — and correctly: the wet edge is renewed continuously |
+| **the surf's whitewater** | **`_SurfColor` (1,1,1), its own** | **no** |
+| **the surf's lip** | **`_SurfLipColor` (1,1,1), its own** | **no** |
+
+### The fix is one function, not three agreements
+
+The walk was lifted out of `WakeFoamAgedColor` into a shared entry point, and every layer with an age now
+composes through it:
+
+```hlsl
+float3 FoamAgedColor(float age01, float3 legacy, float strength)
+{
+    float s = saturate(strength);
+    if (s <= 0.001) return legacy;                 // the A/B, bit-exact, for every layer at once
+    float  t    = WakeFoamKnots(age01, _WakeFoamWhiteHold, _WakeFoamBlueReach, _WakeFoamDeepReach);
+    float3 ramp = WakeFoamRamp3(t, _PaletteFoam.rgb, _PaletteShallow.rgb, _PaletteMid.rgb);
+    return lerp(legacy, ramp, s);
+}
+```
+
+`WakeFoamAgedColor` became a two-line adapter onto it (the wake's freshness clock, `_FoamColor`,
+`_WakeFoamAgeStrength`); the caps pass `capAge01` and `_CapAgeStrength`; the surf passes its own age and
+`_SurfAgeStrength`. **Two layers at the same age are now the same colour because there is one function** —
+not because three transcriptions of one ramp happen to agree this week, which is exactly how they came
+apart in the first place. `OneFoamLanguageTests` counts the calls: `WakeFoamKnots` and `WakeFoamRamp3` are
+each reached from `FoamAgedColor` and from nowhere else.
+
+### The surf's age: the energy, read before anything compresses it
+
+```hlsl
+float surfAge01 = saturate(1.0 - surfAlive);
+```
+
+`surfAlive` is `exp(-(marched metres / √(g·d)) / τ)` — a smooth, strictly decreasing function of the
+march's own geometry, and the *same* functional shape as the wake buffer's own age proxy
+(`1 − freshness/freshFloor` over an exponential clock). **What matters is not that it is smooth but WHERE
+it is read:** before the density lift, before the metaball threshold, before the posterize that
+`surfCover` goes through. That ordering is the whole of the decaying-quantity law (§29, #665) —
+saturation destroys ordering, thresholding destroys range, quantization destroys resolution — and none of
+the three is upstream of this read. The guard is written as *"the age must not be taken from
+`surfCover`"* rather than as a rule about smoothness, because that is the mistake that was actually made.
+
+The **lip** composes at age **0** deliberately: it is the crest that has this instant pitched forward, the
+newest water in the frame. So it stops being its own pure white and becomes the sea's own foam anchor —
+still the brightest thing in the surf, but the brightest thing in *this* sea. The **barrel** is untouched:
+a hollow in the water is a shadow, not churn, it has no age to walk, and its darkness is the whole reason
+a tube reads as a tube.
+
+### One strength, not three fractions
+
+`_SurfAgeStrength`, `_CapAgeStrength` and `_WakeFoamAgeStrength` all ship at **1** on all nine materials.
+That is arithmetic rather than taste: at 1 every layer is the *pure* ramp and its legacy colour has been
+lerped entirely away, so the surf's (1,1,1) and the sea's `_FoamColor` converge on the same value at the
+same age. At any fraction below 1 each layer keeps a different share of a different white and the sea has
+two foams again, merely closer together — `TheSurfAndTheWake_AtTheSameAge_AreTheSameColour` is that
+argument as a test. Each dial's **0 is still the exact passthrough**, per layer, which is the A/B a
+reviewer takes.
+
+The one thing this did *not* have to change, and could most easily lose: the fringe is already born where
+the walk starts, because `_FoamColor` == `_PaletteFoam` on every material today. Nothing in the shader
+couples them, so a retune that moved one and not the other would put a second white back in the sea
+without touching a line of code — `TheSeaHasOneWhite_TheFringeIsBornWhereTheWalkStarts` holds them
+together.
+
+### What the band actually does now, measured (not asserted from memory)
+
+`BreakerWhitewaterAgeMeasurementTests` runs the production chain — `BreakerMath`'s march and energy, then
+`WakeFoamAgeing.Shade` itself, at the knots and palette anchors read out of `Water.mat`'s YAML — down the
+drawn surf band of a 1:25 shoal:
+
+| | as shipped before | one foam language |
+|---|---|---|
+| distinct colours across the drawn band | **1** | **61** |
+| that one colour | `_SurfColor` (1.00, 1.00, 1.00) | — |
+| born at the break line | (1.00, 1.00, 1.00) | **(0.92, 0.97, 1.00)** = `_PaletteFoam`, exactly |
+| dying at the outer edge | (1.00, 1.00, 1.00) | **(0.08, 0.26, 0.50)** = `_PaletteMid`, exactly |
+| distance travelled down the palette | 0.000 | **1.208 of the ramp's 1.208** — the whole walk |
+
+⚠️ **A metric has to name what it counts, and this one nearly did not.** The first draft asserted the
+#665 bar — *no single colour may own more than 10 % of the band* — and read **31.7 %**. That is not the
+defect coming back: a three-knot ramp has two DELIBERATE flat runs, the white HOLD at the break line (the
+churn itself) and the terminal anchor past `_WakeFoamDeepReach` (the tail, dissolved into the ambient blue
+at vanishing coverage), and counting those scores the ramp's own design as the fault it was built to cure.
+So the resolution claim is made over **the walk** — the samples strictly between the first and the last
+knot, the stretch that used to be flat white — where **all 59 samples are 59 distinct colours**; and the
+band-wide claim became *the commonest colour must be one of the ramp's own end-stops, never a value the
+walk stalled on*. It is `_PaletteMid`, the tail's ambient blue, at 30.7 %.
+
+### …and what it does on the plates (`SHEET-foam.png`)
+
+Both arms of each cell, scored over the water pixels the dial moved:
+
+| cell | floor | moved | of the water | mean of those pixels: as shipped → one language | b − r |
+|---|---|---|---|---|---|
+| NMC sand shoal, blow, spring low | **0 px** | 194 500 | 25.2 % | (0.778, 0.828, 0.833) → (0.507, 0.609, 0.637) | 0.055 → **0.130** |
+| NMC steep, blow, spring low | **0 px** | 76 809 | 13.9 % | (0.487, 0.513, 0.523) → (0.431, 0.479, 0.501) | 0.036 → **0.071** |
+| open water, gale, mean | **0 px** | 381 867 | 41.4 % | (0.031, 0.048, 0.063) → (0.002, 0.005, 0.011) | 0.031 → **0.010** |
+| open water, **glass**, mean | **0 px** | **0** | 0.00 % | — | — |
+
+The surf cells are the row, delivered: a quarter of the sand shoal's water changes, and the foam the walk
+touched ends up darker and **2.4× bluer**. Glass is untouched, exactly.
+
+⚠️ **The gale cell is the one line on this sheet that wants the owner's eye, and it is the CAPS, not the
+surf.** Those 381 867 pixels are cap pixels, and they lose almost all of their contribution: (0.031 →
+0.002 mean, on a frozen arm where the caps are nearly the only content). The mechanism is in
+`WhitecapLifecycleWave`: `capAge01 = residual / (breakCore + residual)`, and behind the crest `breakCore`
+is 0 while `residual` is not — so a cap's age is graded *across* the crest and then pinned at 1 over the
+whole back face. The caps therefore JUMP to the ramp's far end (`_PaletteMid`, (0.18, 0.24, 0.28) in
+`Water_StormGrey`) instead of walking to it, and in a gale the milky residual all but disappears. That is
+one dial — `_CapAgeStrength` — and it can be dialled back on its own without touching the surf.
+**Logged as a register observation for the next pass rather than fixed here: giving the caps a graded age
+is a new mechanism, and the ranking asked for a dial-and-blend.**
+
+### The instrument: the arms shot on a stopped sea, over water, with the floor stated
+
+#719 could not settle the cap ageing on a plate. Its proxy was the mean colour of the brightest decile of
+open water, and it moved because `_Time` decides which crests are breaking and therefore which pixels land
+in the decile: an isolated run read red:blue 0.62 vs 0.67 in a gale, the full suite read 0.467 vs 0.470.
+The direction survived; the magnitude did not. **The fix was not a better bar — it was to get `_Time` out
+of the comparison.** Two drafts were needed, and both failures are worth keeping:
+
+1. **"Both renders in one call" does not hold in EDIT mode.** The tree-lighting lane reached a 0-px floor
+   by shooting both arms inside one main-thread body, on the reasoning that no frame passes so `Time.time`
+   cannot advance. In play mode that is true. In edit mode the shader clock follows *real* time, and each
+   shot encodes a 1.6 MB PNG on the way past: the floor came back at **458 937 px of 921 600** — half the
+   frame, from a boiling churn and a drifting sky. So the measurement arms are shot with every
+   `_Time`-driven layer zeroed (`BreakerBoreLookTests.FrozenLayers`, which reaches 0 px on this same sea,
+   plus the surf's own two clocks — `_SurfEvolveSpeed` and `_Flow` — which that fixture sets separately).
+   The two LOOK columns of the sheet stay LIVE: the owner judges the sea he will actually see.
+2. **…and the steep stretch still read ~1 270 px, which turned out to be this test keeping four stages
+   alive at once.** Every other test in the sweep builds ONE stage and gets a full TearDown; this one walks
+   four cells inside a single test, so four seas and two terrains were live together and a shot was of
+   whichever of them published last. Tearing each stage down before the next is built takes every cell's
+   floor to **0** — and it also fixed three sweep tests that were failing their orientation check with the
+   island drawn as open water, because NUnit orders a fixture's tests alphabetically and `TheFoam…` runs
+   before `ThePlateSweep…`. The metric also counts **wet pixels only**: foam is never on land, and land is
+   where the layers no water dial can freeze live.
+
+What is scored is the set of water pixels the dial MOVED — a set the metric can name — and the mean colour
+of exactly those pixels on each arm. The null case is the glass calm: no waves, no cap opacity, no surf,
+so the moved count must be **exactly zero**, and glass calm stays sacred by measurement rather than by
+argument. `SHEET-foam.png` carries the live pair plus a ×6 difference column, because on dark water a real
+colour change is a couple of LSBs and the eye needs it amplified before it can judge *where* it landed.
+
+### Out of scope, and why
+
+- **`_SurfDepositStrength` stays at 0.** The deposit (the surf marking the advected buffer, §28, built in
+  #699) fires on the **bore's pulse** — one front per crest — and the drawn surf has no front until
+  `_SurfBeatStrength` comes up, which is the owner's still-owed dials-ON call. Turning the deposit on
+  alone would put beat-timed marks on a sea whose drawn surf is a standing band: a *third* language, not
+  one. It goes up with the beat, in the same nod.
+- **The shore fringe keeps its flat white.** It has no age — the wet edge is renewed continuously, which
+  is `WakeFoamAgeing.ShadeFresh`'s doctrine — and it is already born at the anchor the walk starts from.
+- **The barrel keeps `_SurfBarrelColor`.** A hollow in the water is a shadow, not foam.
+
+### ⚠️ A debug colour composed through the walk is not a debug colour
+
+`BreakerSurfRenderTests` and `BreakerBoreLookTests` measure the surf by painting it a colour nothing else
+in the frame draws and subtracting a surf-off twin. At `_SurfAgeStrength` 1 the walk *replaces* whatever
+colour it is handed with a convex combination of the palette anchors, so the estimator would score the
+palette instead of the surf. Both fixtures now pin the walk to its passthrough on their debug arms and
+keep the shipped value on their LOOK shots. ⚠️ **Either** colour, not just the sheet's:
+`ThePlungingAnatomy_DrawsOnlyWhereTheSlopeEarnsIt` paints the **lip alone**, and keying the pin on the
+sheet's colour left the walk live over a red lip — the lip came back as the palette's foam anchor and the
+test read *"no lip was drawn"*.
