@@ -61,6 +61,7 @@ namespace HiddenHarbours.Tests.EditMode
         readonly List<GameObject> _built = new List<GameObject>();
         Color _shippedSurfColor = Color.white;
         Color _shippedLipColor = Color.white;
+        float _shippedSurfAge;
 
         [SetUp]
         public void SetUp() => _previousTerrain = GameServices.TidalTerrain;
@@ -488,6 +489,8 @@ namespace HiddenHarbours.Tests.EditMode
                 ? waterMat.GetColor("_SurfColor") : Color.white;
             _shippedLipColor = waterMat.HasProperty("_SurfLipColor")
                 ? waterMat.GetColor("_SurfLipColor") : Color.white;
+            _shippedSurfAge = waterMat.HasProperty("_SurfAgeStrength")
+                ? waterMat.GetFloat("_SurfAgeStrength") : 0f;
 
             _seaGo = new GameObject("Sea");
             _seaGo.SetActive(false);
@@ -580,6 +583,16 @@ namespace HiddenHarbours.Tests.EditMode
             // whatever the last one wanted.
             block.SetColor("_SurfColor", surfColor ?? _shippedSurfColor);
             block.SetColor("_SurfLipColor", lipColor ?? _shippedLipColor);
+            // ⚠ ROW 2 (one foam language): the whitewater now WALKS the sea's foam ramp, and the walk
+            // REPLACES the colour it is handed with a convex combination of the palette anchors — so a
+            // debug colour composed through it stops being a debug colour and the measurement scores the
+            // palette instead of the surf. The debug arms therefore pin the walk to its passthrough (the
+            // A/B zero it ships with); the LOOK shots keep the shipped value.
+            //
+            // ⚠ EITHER colour, not just the sheet's: ThePlungingAnatomy_DrawsOnlyWhereTheSlopeEarnsIt
+            // paints the LIP alone, and keying this on surfColor left the walk live over a red lip — the
+            // lip came back as the palette's foam anchor and the test read "no lip was drawn".
+            block.SetFloat("_SurfAgeStrength", (surfColor.HasValue || lipColor.HasValue) ? 0f : _shippedSurfAge);
             sr.SetPropertyBlock(block);
         }
 

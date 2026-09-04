@@ -60,7 +60,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _CapAgeStrength: 0
+    - _CapAgeStrength: 1
     - _MirrorForm: 1
     - _MirrorSheen: 0.3125
     - _MirrorTiltScale: 6
@@ -99,6 +99,7 @@ Material:
     - _SpecSharpness: 14
     - _SparkleTexScale: 0.5
     - _SparkleTexStrength: 0.6
+    - _SurfAgeStrength: 1
     - _SurfBandDither: 0.7
     - _SurfBands: 4
     - _SurfBarrelShade: 0.55

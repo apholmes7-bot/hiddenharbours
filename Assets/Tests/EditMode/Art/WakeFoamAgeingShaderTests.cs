@@ -162,30 +162,46 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 "old foam opaque and fresh churn invisible.");
         }
 
+        /// <summary>
+        /// ⚠️ <b>Both of the guards below used to read <c>WakeFoamAgedColor</c>'s own body, and row 2
+        /// moved what they guard.</b> The whitecaps and the surf's whitewater now walk the same ramp, so
+        /// the walk itself was lifted into ONE entry point — <c>FoamAgedColor(age01, legacy, strength)</c>
+        /// — and <c>WakeFoamAgedColor</c> became the wake's two-line adapter onto it. The properties
+        /// asserted here did not change; the function that owns them did, and a guard that goes red on
+        /// its own fix has to follow it rather than be deleted. Both halves are checked: the shared walk
+        /// keeps the passthrough and the anchors, and the wake's adapter still hands it the wake's own
+        /// legacy colour and the wake's own dial.
+        /// </summary>
         [Test]
         public void TheAgeRamp_HasAnExactPassthroughAtZero()
         {
-            string body = Body(Read(ShaderPath), "float3 WakeFoamAgedColor(float freshness)");
+            string src = Read(ShaderPath);
+            string walk = Body(src, "float3 FoamAgedColor(float age01, float3 legacy, float strength)");
+            string wake = Body(src, "float3 WakeFoamAgedColor(float freshness)");
 
             // Every visual layer in this shader ships with a knob whose 0 is the previous look, bit-exact.
             // It is how the owner A/Bs a change and how a bad call gets reverted without a revert.
-            Assert.IsTrue(Regex.IsMatch(body, @"_WakeFoamAgeStrength[\s\S]*?return\s+_FoamColor\.rgb\s*;"),
-                "WakeFoamAgedColor must return _FoamColor.rgb unchanged at strength 0. Without that the " +
-                "age ramp cannot be switched off, and a look the owner dislikes becomes a code change " +
-                "instead of a slider.");
+            Assert.IsTrue(Regex.IsMatch(walk, @"saturate\s*\(\s*strength\s*\)[\s\S]*?return\s+legacy\s*;"),
+                "FoamAgedColor must return the caller's legacy colour unchanged at strength 0. Without " +
+                "that the walk cannot be switched off, for any layer, and a look the owner dislikes " +
+                "becomes a code change instead of a slider.");
+            Assert.IsTrue(Regex.IsMatch(wake, @"_FoamColor\.rgb\s*,\s*_WakeFoamAgeStrength"),
+                "…and the wake must be the layer passing _FoamColor.rgb as that legacy colour, at its " +
+                "own dial: _WakeFoamAgeStrength 0 is still the single-white compose it always was.");
         }
 
         [Test]
         public void TheRamp_ReadsTheSeasOwnPaletteAnchors()
         {
-            string body = Body(Read(ShaderPath), "float3 WakeFoamAgedColor(float freshness)");
+            string body = Body(Read(ShaderPath), "float3 FoamAgedColor(float age01, float3 legacy, float strength)");
 
             // ADR 0015: the "different shades of blue" must come from the water's own bounded ramp, so a
             // preset swap moves them. A hand-picked blue here would look right in North Atlantic and
-            // wrong in every other preset, and nothing would fail.
+            // wrong in every other preset, and nothing would fail. Since row 2 this binds the caps and
+            // the surf as well: there is one walk, so there is one place this can go wrong.
             foreach (string anchor in new[] { "_PaletteFoam", "_PaletteShallow", "_PaletteMid" })
                 Assert.IsTrue(body.Contains(anchor),
-                    $"The wake's age ramp no longer reads {anchor}. ADR 0015's palette anchors are where " +
+                    $"The sea's age ramp no longer reads {anchor}. ADR 0015's palette anchors are where " +
                     "the sea's blues live; anything else is an invented hex that a preset swap will " +
                     "leave behind.");
         }
