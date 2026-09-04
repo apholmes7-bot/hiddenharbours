@@ -38,6 +38,8 @@ namespace HiddenHarbours.Art
             Lightpost,
             /// <summary>A brighter, cooler, steady work lamp (a wharf worklight / a floodlit workspace).</summary>
             Worklight,
+            /// <summary>A TALL mast's wide, cool pool over a working yard — a yard light or a flood mast.</summary>
+            Floodlight,
         }
 
         /// <summary>
@@ -124,6 +126,25 @@ namespace HiddenHarbours.Art
                         range: 5.2f,
                         edgeSoftness: 0.7f,
                         flickerAmount: 0f,                 // steady electric work light
+                        originOffset: Vector2.zero);
+
+                // FLOODLIGHT — what a 7 m pole is FOR. The two tall utility pieces (`yardLight` 7.26 m,
+                // `floodMast` 7.8 m) exist to flood an open working area — a laydown yard, a forecourt —
+                // and the Worklight above is sized for a lamp on a wall: 5.2 m of reach under a pole
+                // taller than its own pool is wide reads as a torch on a mast. A lamp lights a circle of
+                // roughly twice its head height, which is the rule the other three already satisfy
+                // (lanternPost 2.46 m and streetLamp 4.48 m both sit under Lightpost's 4.6 m), so the two
+                // tall pieces get their own preset at 9.5 m rather than a per-placement multiplier — which
+                // is the magic number rule 6 forbids. Cooler and steadier than a lamp post: this is
+                // electric light over a place where work gets done in the dark.
+                case Kind.Floodlight:
+                    return new Config(
+                        SceneLight.LightShape.Radial,
+                        new Color(0.96f, 0.97f, 1f, 1f),   // cool mercury/LED flood
+                        intensity: 1.5f,
+                        range: 9.5f,
+                        edgeSoftness: 0.6f,                // harder-edged than a lamp pool: it is higher up
+                        flickerAmount: 0f,                 // steady electric flood
                         originOffset: Vector2.zero);
 
                 default:

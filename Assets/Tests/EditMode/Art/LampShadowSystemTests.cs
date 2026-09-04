@@ -467,5 +467,77 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.IsTrue(p.PixelSnap);
             Assert.AreEqual(32f, p.PixelsPerUnit, 1e-6f);
         }
+
+        /// <summary>
+        /// <b>⭐ THE CARRIER RULE.</b> A lamp POST carries its light and its own sun-shadow caster on ONE
+        /// GameObject, which no other object in the game does — so its lamp-to-feet distance is just the
+        /// light's origin offset, the smallest anywhere, and <see cref="LampShadowSystem"/> would sort it
+        /// to the very front of the nearest-N pool. Every post would then spend a pooled quad throwing a
+        /// stub of itself at its own foot, and the bollard four metres away — the thing the lamp was put
+        /// there to reveal — would be crowded out of the budget.
+        ///
+        /// <para>Driven at a pool of ONE so the crowding is the assertion, not a detail: with the rule the
+        /// single slot goes to the bollard, and the post's self-pair never enters the sort at all.</para>
+        /// </summary>
+        [Test]
+        public void ALampNeverThrowsTheSilhouetteOfTheCasterItIsMountedOn_TheCarrierRule()
+        {
+            _system.Profile.MaxShadows = 1;   // the pool is sized inside PublishFrame
+
+            // The post: one GameObject carrying BOTH the lamp and the caster, the way LampPosts builds it.
+            var tex = new Texture2D(16, 96, TextureFormat.RGBA32, false);
+            _spawned.Add(tex);
+            var sprite = Sprite.Create(tex, new Rect(0f, 0f, 16f, 96f), new Vector2(0.5f, 0f), 32f);
+            _spawned.Add(sprite);
+
+            var post = new GameObject("lampPost");
+            _spawned.Add(post);
+            post.transform.position = Vector3.zero;
+            post.AddComponent<SpriteRenderer>().sprite = sprite;
+            var light = post.AddComponent<SceneLight>();
+            light.Shape = SceneLight.LightShape.Radial;
+            light.ConeHalfAngle = 180f;
+            light.Range = 9f;
+            light.Intensity = 1.5f;
+            light.OriginOffset = new Vector2(0f, -0.2f);      // the Lightpost preset's own offset
+            LampShadowSystem.RegisterLight(light);
+            var self = post.AddComponent<SpriteShadow>();
+            LampShadowSystem.RegisterCaster(self);
+
+            // What the lamp is FOR: something else, four metres away and therefore much further from the
+            // lamp than the post is from itself.
+            FakeCaster bollard = Caster(new Vector2(4f, 0f));
+
+            Assert.IsTrue(self.TryGetLampShadowCaster(out LampShadowCasterState mine),
+                "the post really is a valid caster — the rule has to exclude it, not rely on it failing");
+            Assert.Less((mine.Foot - light.WorldOrigin).sqrMagnitude, 1f,
+                "and it really is the nearest thing to its own lamp, which is why it would win the sort");
+
+            _system.PublishFrame(_cam);
+
+            Assert.AreEqual(1, _system.ActiveShadowCount, "the one slot is spent");
+            Assert.AreSame(bollard, _system.SlotCaster(0),
+                "and it is spent on the bollard, not on the post throwing a stub of itself at its own foot");
+        }
+
+        /// <summary>
+        /// The rule is about the CARRIER, not about being close: a caster standing right beside a lamp on
+        /// its own GameObject still throws. Without this the "fix" could have been a minimum-distance
+        /// cutoff, which would have silently stopped a crate against a post from casting at all.
+        /// </summary>
+        [Test]
+        public void ACasterBesideALampButNotOnIt_StillThrows()
+        {
+            SceneLight lamp = Lamp(Vector2.zero, range: 9f);
+            FakeCaster hardUpAgainstIt = Caster(new Vector2(0.2f, 0f));
+
+            _system.PublishFrame(_cam);
+
+            Assert.AreEqual(1, _system.ActiveShadowCount);
+            Assert.AreSame(hardUpAgainstIt, _system.SlotCaster(0),
+                "proximity is not the rule; sharing a GameObject with the lamp is");
+            Assert.NotNull(lamp);
+        }
+
     }
 }

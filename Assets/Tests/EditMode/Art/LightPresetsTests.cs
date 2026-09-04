@@ -123,5 +123,48 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.DoesNotThrow(() => LightPresets.Apply(null, LightPresets.Kind.WindowGlow),
                 "applying to a null light must be a harmless no-op");
         }
+
+        /// <summary>
+        /// <b>The tall poles' preset reaches further than the posts'.</b> A lamp lights a circle of roughly
+        /// twice its head height, and the four pieces <c>LampPosts</c> places split cleanly on that:
+        /// <c>lanternPost</c> 2.46 m and <c>streetLamp</c> 4.48 m under <see cref="LightPresets.Kind.Lightpost"/>,
+        /// <c>yardLight</c> 7.26 m and <c>floodMast</c> 7.8 m under <see cref="LightPresets.Kind.Floodlight"/>.
+        /// A Floodlight that did not out-reach a Lightpost would leave a 7.8 m mast lighting a smaller
+        /// circle than the lamp on the road below it.
+        /// </summary>
+        [Test]
+        public void Floodlight_ReachesFurtherAndIsCoolerThanALampPost()
+        {
+            var lamp = LightPresets.For(LightPresets.Kind.Lightpost);
+            var flood = LightPresets.For(LightPresets.Kind.Floodlight);
+
+            Assert.Greater(flood.Range, lamp.Range * 1.5f,
+                "a 7-8 m mast must throw a materially bigger pool than a 2-4 m post");
+            Assert.Greater(flood.Color.b, lamp.Color.b,
+                "electric flood is cooler (bluer) than a warm sodium lamp post");
+            Assert.AreEqual(0f, flood.FlickerAmount, 1e-6f, "a flood mast is rock steady");
+        }
+
+        /// <summary>
+        /// The three shipped presets are UNMOVED by the Floodlight's arrival. Adding a fourth kind is a
+        /// cheap change; quietly retuning a lamp the owner has already looked at is not, and Ginny's
+        /// cottage is lit by <see cref="LightPresets.Kind.WindowGlow"/>.
+        /// </summary>
+        [Test]
+        public void TheThreeOriginalPresets_AreUnchanged()
+        {
+            var window = LightPresets.For(LightPresets.Kind.WindowGlow);
+            Assert.AreEqual(0.95f, window.Intensity, 1e-6f);
+            Assert.AreEqual(3.4f, window.Range, 1e-6f);
+
+            var lamp = LightPresets.For(LightPresets.Kind.Lightpost);
+            Assert.AreEqual(1.15f, lamp.Intensity, 1e-6f);
+            Assert.AreEqual(4.6f, lamp.Range, 1e-6f);
+
+            var work = LightPresets.For(LightPresets.Kind.Worklight);
+            Assert.AreEqual(1.35f, work.Intensity, 1e-6f);
+            Assert.AreEqual(5.2f, work.Range, 1e-6f);
+        }
+
     }
 }

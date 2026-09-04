@@ -69,6 +69,9 @@ namespace HiddenHarbours.App.Editor
         public const string ApronRootName = "ApronGear";
         public const string YardRootName = "YardGear";
         public const string UtilityRootName = "Services";
+
+        /// <summary>The lamp posts' own root — every light in the region under one object.</summary>
+        public const string LampsRootName = "Lamps";
         public const string FindsRootName = "ShoreFinds";
 
         /// <summary>The pack families this file draws from, by <c>IsoPackContract</c> key.</summary>
@@ -416,6 +419,116 @@ namespace HiddenHarbours.App.Editor
         }
 
         /// <summary>
+        /// <b>THE LAMPS</b> — the owner's 2026-09-03 ruling, <i>"yes i want lights on land"</i>, as seven
+        /// places on this region's ground.
+        ///
+        /// <para><b>What was here before: one unlit sprite.</b> The yard light at the wharf entrance has
+        /// stood since #462 carrying the note <i>"the only lit thing out here at night"</i> — and it was a
+        /// picture of a lamp. Nothing in Nine Mile Creek emitted a photon. It keeps its site (the plan chose
+        /// it and the plan was right) and finally carries the light the note always claimed.</para>
+        ///
+        /// <para><b>Sited on things that already exist, never on a coordinate.</b> The quay lamps take the
+        /// wharf's own berth rhythm and its back row; the road lamps take Wharf Road's published route and
+        /// the SAME 5 m north offset the pole line uses — because a lamp goes where the wire is, and
+        /// <c>NineMileCreekMainland</c> §12 already decided which side of the road that is. Move the road or
+        /// the wharf and every lamp follows.</para>
+        ///
+        /// <para><b>Varied, not regular.</b> <c>docs/design/municipal-infrastructure.md</c> §3.4's
+        /// acceptance test is NEGATIVE — <i>if the island reads REGULAR at night the slice is wrong</i>. So
+        /// 322 m of Wharf Road gets TWO lamps, at the two places a person stops (the junction it leaves the
+        /// through-road by, and the neck where it steps onto the spit), and dark gravel in between; the 84 m
+        /// quay gets two warm posts and the one cool flood at its entrance, not a run.</para>
+        ///
+        /// <para>The back row is where the tall things go (<see cref="BackRowY"/>), and berths 2, 6, 7 and 11
+        /// are already taken along it by the wood stack, the standpipe, the net frame and the winter stack —
+        /// so the lamps take 4 and 9, which are clear and spread the light along the wall the moored fleet
+        /// lies against.</para>
+        /// </summary>
+        public static IReadOnlyList<LampPosts.Site> Lamps()
+        {
+            Vector2[] road = NineMileCreekMainland.WharfRoad;
+            float back = BackRowY, sea = SeawardHeading;
+            Rect yard = NineMileCreekLaydown.ApronArea();
+            Rect forecourt = NineMileCreekStation.Route91ApronArea();
+
+            return new[]
+            {
+                // --- the wall the fleet lies against ------------------------------------------------
+                LampPosts.OnGround(LampPosts.UtilityFamily, LampPosts.StreetLamp,
+                    new Vector2(AtBerth(4), back), sea,
+                    "the west end of the mooring wall — a warm post against the yard, out of the working " +
+                    "middle, where a crew comes off a boat in the dark"),
+                LampPosts.OnGround(LampPosts.UtilityFamily, LampPosts.StreetLamp,
+                    new Vector2(AtBerth(9), back), sea,
+                    "the east end of the same wall, five berths along: two lit stretches with a dark one " +
+                    "between them, which is what a working quay looks like at night"),
+
+                // --- where the road arrives ----------------------------------------------------------
+                LampPosts.OnGround(LampPosts.UtilityFamily, LampPosts.YardLight,
+                    WharfEntrance() + new Vector2(0f, 2f), sea,
+                    "where the pole line ends: the only lit thing out here at night, and it stands in " +
+                    "the yard rather than on the working deck — #462's site, now actually lit"),
+
+                // --- Wharf Road, on the pole line ---------------------------------------------------
+                OnThePoleLine(road, 0, LampPosts.StreetLamp,
+                    "the town end, where Wharf Road leaves the through-road — the junction you turn at " +
+                    "in the dark"),
+                OnThePoleLine(road, 4, LampPosts.StreetLamp,
+                    "the neck, where the road steps off the fields onto the spit between the barachois " +
+                    "and the marsh pool"),
+
+                // --- the working yards ---------------------------------------------------------------
+                LampPosts.OnGround(LampPosts.UtilityFamily, LampPosts.FloodMast,
+                    new Vector2(yard.center.x, yard.yMin - 1.5f), 0f,
+                    "the laydown yard's lane mouth — OFF the pavement, because a mast in a bay is a mast " +
+                    "a machine backs into; it lights the lane the nine are driven along"),
+                LampPosts.OnGround(LampPosts.UtilityFamily, LampPosts.YardLight,
+                    new Vector2(forecourt.xMax + 1.5f, forecourt.yMax + 1.5f),
+                    NineMileCreekStation.Route91RoadHeadingDegrees,
+                    "the Route 91 forecourt, at its corner clear of the paving and the canopy — a fuel " +
+                    "stop on a trunk road is lit or it is closed"),
+            };
+        }
+
+        /// <summary>
+        /// A lamp on Wharf Road's pole line, anchored at the route's <paramref name="nodeIndex"/>th NODE:
+        /// the route's own position, pushed onto the north side by the SAME
+        /// <c>NineMileCreekMainland.UtilityPoleOffsetMetres</c> the poles use, facing across the road it
+        /// lights. Derived rather than typed, so a lamp cannot end up on the far side from the wire.
+        ///
+        /// <para><b>⚠ Snapped to the MIDPOINT between two poles, and it has to be.</b> <see cref="Poles"/>
+        /// stands one every <c>UtilityPoleSpacingMetres</c> from along = 0, so a lamp placed at node 0 —
+        /// which is exactly what the first draft did — lands inside pole 0. Snapping to the nearest
+        /// half-spacing puts every lamp exactly twenty metres from its two neighbouring poles, which is
+        /// both collision-free by construction and how a road is really strung: the lamps go in the gaps.
+        /// </para>
+        /// </summary>
+        static LampPosts.Site OnThePoleLine(Vector2[] route, int nodeIndex, string key, string reason)
+        {
+            float spacing = NineMileCreekMainland.UtilityPoleSpacingMetres;
+            float along = (Mathf.Floor(AlongAtNode(route, nodeIndex) / spacing) + 0.5f) * spacing;
+            Vector2 on = MainlandCoast.PositionAt(route, along);
+            Vector2 north = NorthNormalAt(route, along);
+            // A lamp looks ACROSS the road (unlike a pole, whose crossarm must lie ALONG the wires it
+            // carries) — so from the north side it looks south, at the gravel it lights.
+            float heading = IsoPackSprites.HeadingOf(-north);
+            return LampPosts.OnGround(LampPosts.UtilityFamily, key,
+                on + north * NineMileCreekMainland.UtilityPoleOffsetMetres, heading, reason);
+        }
+
+        /// <summary>How far along a route its <paramref name="index"/>th NODE lies. The road's nodes are
+        /// authored PLACES with names of their own ("the neck between the barachois and the marsh pool"),
+        /// so siting a lamp at one is siting it at something — where a fraction of the route length would
+        /// be a number somebody chose.</summary>
+        public static float AlongAtNode(Vector2[] route, int index)
+        {
+            float along = 0f;
+            int last = Mathf.Clamp(index, 0, route.Length - 1);
+            for (int i = 0; i < last; i++) along += Vector2.Distance(route[i], route[i + 1]);
+            return along;
+        }
+
+        /// <summary>
         /// The rest of the services — what a working wharf has that is not gear. Deliberately short: this
         /// is a community wharf, not a port, and the plan is explicit that the yard light is <i>the only
         /// lit thing out there at night</i>.
@@ -427,9 +540,10 @@ namespace HiddenHarbours.App.Editor
 
             return new[]
             {
-                new Prop(UtilityFamily, "yardLight", entrance + new Vector2(0f, 2f), sea,
-                    "where the pole line ends: the only lit thing out here at night, and it stands in " +
-                    "the yard rather than on the working deck"),
+                // ⭐ THE YARD LIGHT IS NOT HERE ANY MORE — it moved to Lamps() and became a light. It
+                // stood at this entrance from #462 described as "the only lit thing out here at night" and
+                // emitted nothing whatever: a picture of a lamp on a pole. Placing it in both tables would
+                // draw two poles, so it is placed ONCE, by the file that knows how to light one.
 
                 // ⚠️ ON THE APRON, not on the quay's west end — which is where they were first sited,
                 // and where the fuel pump came within 0.28 m of the line from where the player steps
@@ -970,6 +1084,13 @@ namespace HiddenHarbours.App.Editor
             services.AddRange(Services());
             props += PlaceProps(root, UtilityRootName, services, terrain);
 
+            // THE LAMPS, on their own root so the owner can toggle every light in the region at once.
+            var lampRoot = new GameObject(LampsRootName);
+            lampRoot.transform.SetParent(root.transform, worldPositionStays: false);
+            int lamps = LampPosts.Place(lampRoot.transform, Lamps(), terrain,
+                                        NineMileCreekMainland.SpringHighWater,
+                                        "[NineMileCreekDressing]");
+
             int finds = PlaceFinds(root, terrain);
 
             // ⭐ THE STATE OF THE QUAY, said out loud on every rebuild rather than left in a merged PR
@@ -981,7 +1102,8 @@ namespace HiddenHarbours.App.Editor
             Debug.Log(
                 $"[NineMileCreekDressing] Dressed Nine Mile Creek: {face} course(s) of quay face across " +
                 $"the mooring wall, the apron and the breakwater, {props} prop(s) from the wharf-decor " +
-                $"and utility packs and {finds} shore find(s) on the foreshore, all in the Y-sort decor " +
+                $"and utility packs, {lamps} lamp post(s) that actually emit, and {finds} shore " +
+                $"find(s) on the foreshore, all in the Y-sort decor " +
                 $"band. The face is anchored on its LIP and the gear is laid out on the BERTH LINE, with " +
                 $"the poles on Wharf Road's own published route, so all three follow the wharf if it " +
                 $"moves. NOT built, and deliberately: the ~16 moored lobster boats and the mussel-boat " +
