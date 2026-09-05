@@ -384,6 +384,20 @@ namespace HiddenHarbours.Tests.EditMode
         /// breaks nowhere, the scan finds nothing and the test says so instead of quietly shooting a
         /// field.</para>
         /// </summary>
+        /// <summary>
+        /// Sheltered water: inside the harbour shoal's own footprint and landward of the breakwater
+        /// crest. Derived from the region's own fills rather than boxed by hand, so re-siting the arm or
+        /// the shoal re-cuts what counts as sheltered.
+        /// </summary>
+        internal static bool InsideTheHarbour(Vector2 p)
+        {
+            var shoal = NineMileCreekMainland.HarbourShoalFill;
+            bool inShoalX = Mathf.Abs(p.x - shoal.Center.x) <= shoal.HalfSize.x + shoal.Falloff;
+            var arm = NineMileCreekMainland.BreakwaterFill;
+            bool landwardOfTheArm = p.y > arm.Center.y + arm.HalfSize.y;
+            return inShoalX && landwardOfTheArm;
+        }
+
         internal static Vector2 FindTheSurfZone(ITidalTerrain terrain, float waterLevel, float breakDepth)
         {
             Vector2 centre = NineMileCreekBuilder.NineMileCreekSeaCenter;
@@ -399,6 +413,20 @@ namespace HiddenHarbours.Tests.EditMode
             {
                 var p = new Vector2(centre.x + size.x * (ix / (float)steps - 0.5f),
                                     centre.y + size.y * (iy / (float)steps - 0.5f));
+
+                // ⭐⭐ NOT INSIDE THE BREAKWATER. Surf is what the open sea does to a shelving coast, and
+                // the whole point of a breakwatered basin is that it does not happen there — so a frame
+                // shot inside the bullpen is measuring the wrong subject however good its score is.
+                //
+                // This was latent until 2026-09-05. The scoring below picks the candidate with the
+                // LONGEST shoreward run of breaking water, and the berth trench cut for the owner's
+                // wet-wall ruling handed it a better one than the coast had: a bank climbing 2.6 m from
+                // the trench to the wall, entirely inside the harbour. The fixture aimed at
+                // (124.7, 74.4) — ten metres off the quay — and then reported 15.8 % of the surf standing
+                // in water deeper than the break gate, which is exactly what a depth band drawn across a
+                // dredged pocket looks like. The terrain moved and the fixture followed it.
+                if (InsideTheHarbour(p)) continue;
+
                 float depth = waterLevel - terrain.ElevationAt(p);
                 if (depth <= 0f) continue;
                 wet++;

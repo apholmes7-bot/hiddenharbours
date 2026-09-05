@@ -2683,6 +2683,12 @@ namespace HiddenHarbours.Tests.EditMode
                 var at = new Vector2(centre.x + size.x * (ix / (float)steps - 0.5f),
                                      centre.y + size.y * (iy / (float)steps - 0.5f));
                 if (!FrameInsideTheSea(at, centre, size)) continue;
+                // ⭐⭐ NOT INSIDE THE BREAKWATER — see BreakerSurfRenderTests.InsideTheHarbour for the
+                // measurement. A sheltered basin is where surf does NOT happen, and the berth trench cut
+                // for the 2026-09-04 wet-wall ruling gives this scan the steepest bed in the region: a
+                // bank climbing 2.6 m from the pocket to the quay wall. Aiming there photographs a
+                // dredged berth and calls it a coast.
+                if (BreakerSurfRenderTests.InsideTheHarbour(at)) continue;
                 float depth = level - stage.Terrain.ElevationAt(at);
                 if (depth <= 0f || Mathf.Abs(depth - contour.BreakDepths.x) > 0.08f) continue;
                 float sx = BreakerMath.BedSlopeAlong(at, Vector2.right, settings.SlopeProbeMeters, stage.Terrain);
@@ -2718,6 +2724,11 @@ namespace HiddenHarbours.Tests.EditMode
                 var p = new Vector2(centre.x + size.x * (ix / (float)steps - 0.5f),
                                     centre.y + size.y * (iy / (float)steps - 0.5f));
                 if (!FrameInsideTheSea(p, centre, size)) continue;
+                // ⭐⭐ NOT INSIDE THE BREAKWATER — the same drift AimAtTheSteepestBreak above guards, and
+                // for the same reason. Scoring by the longest shoreward RUN of breaking water, the berth
+                // trench's bank beats the coast outright: it climbs 2.6 m to a quay wall, so the run
+                // never ends. See BreakerSurfRenderTests.InsideTheHarbour.
+                if (BreakerSurfRenderTests.InsideTheHarbour(p)) continue;
                 float depth = level - stage.Terrain.ElevationAt(p);
                 if (depth <= 0f || Mathf.Abs(depth - contour.BreakDepths.x) > 0.06f) continue;
                 atBreakDepth++;
