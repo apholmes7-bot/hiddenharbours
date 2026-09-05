@@ -369,9 +369,10 @@ namespace HiddenHarbours.Art
                 //
                 // ⭐ The lesson is the general one: when a number stops meaning what it meant, the bug is
                 // not where you changed it — it is in every OTHER reader of the old meaning. Grep them.
-                // <see cref="LampPoolSystem"/> reads the reach for the same reason: a lamp throws a shadow
-                // of whatever stands in the ground it lights, so the two are the same question again, now
-                // asked of the right number.
+                // A lamp throws a shadow of whatever stands in the ground it LIGHTS, so the reach is the
+                // right number and always was — it simply did not exist under its own name until #733.
+                // <see cref="LampPoolSystem"/> reads it for the same reason, which is what makes a
+                // lamp's shadow and its pool two halves of one picture rather than two pictures.
                 float r = Mathf.Max(ShadowReachOf(light), 1e-4f);
                 float r2 = r * r;
                 for (int ci = 0; ci < casterCount; ci++)
