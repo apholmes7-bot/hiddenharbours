@@ -336,7 +336,23 @@ namespace HiddenHarbours.Art
                 // player and her SpriteShadow is on the root) is NOT covered: that wants an ancestor walk,
                 // and it belongs to the PR that introduces the mounting.
                 Transform carrier = light.transform;
-                float r = Mathf.Max(light.Range, 1e-4f);
+                // ⚠️⚠️ PAIRED BY THE LAMP'S REACH, NOT BY ITS BLOOM — and reading the wrong one of those
+                // two silently switched every lamp shadow in the game OFF.
+                //
+                // This line read `light.Range` until 2026-09-04. Range then WAS the pool a lamp lights, so
+                // "is this caster inside the light" and "how big is the glow" were the same question and
+                // the same number. #733 split them on the owner's ruling: Range became the BLOOM, the size
+                // of the lit fitting, and a lantern post's dropped from 3.6 m to 0.14 m. A bollard three
+                // and a half metres away is not within fourteen centimetres of anything, so the pairing
+                // loop stopped finding it — no error, no warning, and every plate simply came back with no
+                // lamp shadows in it. Measured on the St Peters pier: 0 shadow pixels where there had been
+                // a bollard's rake.
+                //
+                // ⭐ The lesson is the general one: when a number stops meaning what it meant, the bug is
+                // not where you changed it — it is in every OTHER reader of the old meaning. Grep them.
+                // A lamp throws a shadow of whatever stands in the ground it LIGHTS, so the reach is the
+                // right number and always was — it simply did not exist under its own name until #733.
+                float r = Mathf.Max(ShadowReachOf(light), 1e-4f);
                 float r2 = r * r;
                 for (int ci = 0; ci < casterCount; ci++)
                 {
@@ -378,6 +394,16 @@ namespace HiddenHarbours.Art
         /// gate — the SAME gate the additive shader applies (<see cref="LightMath.NightGateWithFallback"/>),
         /// so the shadow and its glow fade together at dawn and are both absent at noon.
         /// </summary>
+        /// <summary>
+        /// How far this lamp throws shadows: its <see cref="SceneLight.ReachMetres"/> — the ground it
+        /// lights — falling back to <see cref="SceneLight.Range"/> for a light that has never published a
+        /// reach. The fallback is what keeps a bare hand-placed <c>SceneLight</c> behaving exactly as it did
+        /// before the split, and it is safe because a light with no reach has no pool either: for such a
+        /// light the two numbers still mean the one thing they always meant.
+        /// </summary>
+        internal static float ShadowReachOf(SceneLight light) =>
+            light == null ? 0f : (light.ReachMetres > 0f ? light.ReachMetres : light.Range);
+
         private static bool LightIsLive(SceneLight light, float tintLuminance, bool cycleActive, out float gate)
         {
             gate = 0f;

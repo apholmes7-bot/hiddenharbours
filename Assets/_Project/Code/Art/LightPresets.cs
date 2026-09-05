@@ -322,7 +322,16 @@ namespace HiddenHarbours.Art
         /// Sets only the shape/colour/size/softness/flicker/origin; the night-gate is the shader's job (every
         /// light gates off the same published <c>_DayNightTint</c>, ADR 0016), so a preset never touches it.
         /// </summary>
-        public static void Apply(SceneLight light, Kind kind) => Stamp(light, For(kind));
+        public static void Apply(SceneLight light, Kind kind)
+        {
+            Stamp(light, For(kind));
+            // ⭐ AND THE REACH GOES WITH IT. Stamp writes the Config, and a Config carries the BLOOM only —
+            // deliberately, because BoatLampPresets shares that struct and a boat's sidelight has no pool.
+            // The reach is per-KIND, so it can only be attached here, where the kind is known. Without this
+            // line the split would exist in the library and never reach the runtime, and the thing that
+            // draws a pool is handed a SceneLight, not a preset kind.
+            if (light != null) light.ReachMetres = ReachMetres(kind);
+        }
 
         /// <summary>
         /// Write ONE <see cref="Config"/> onto a <see cref="SceneLight"/> — the single place a preset

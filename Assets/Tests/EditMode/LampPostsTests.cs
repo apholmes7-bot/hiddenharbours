@@ -184,6 +184,54 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         /// <summary>
+        /// <b>⚠️⚠️ SHRINKING THE BLOOM MUST NOT SWITCH THE LAMP SHADOWS OFF — and before this test it did.</b>
+        ///
+        /// <para><c>LampShadowSystem</c> pairs a lamp with the casters inside it by a RADIUS, and until
+        /// 2026-09-04 that radius was <c>light.Range</c> — correctly, because Range then WAS the pool a lamp
+        /// lights. This PR split the two: Range became the BLOOM and a lantern post's fell from 3.6 m to
+        /// 0.14 m. A bollard three and a half metres away is not within fourteen centimetres of anything, so
+        /// the pairing loop silently stopped finding it. No error, no warning: every 02:00 plate simply came
+        /// back with no lamp shadows in it, and the whole of #698 was off.</para>
+        ///
+        /// <para>⭐ <b>The lesson is the reusable part: when a number stops meaning what it meant, the bug is
+        /// not where you changed it — it is in every OTHER reader of the old meaning.</b> Grep the readers
+        /// before shipping the split. This one was found by a plate, three PRs later, and only because
+        /// something else needed the same number.</para>
+        ///
+        /// <para>The assertion is on the pairing REACH rather than on a rendered shadow, because that is
+        /// where the defect lived and it needs no GPU: the pier's bollards must be inside the radius the
+        /// shadow system pairs its lamps by.</para>
+        /// </summary>
+        [Test]
+        public void ALampPostStillThrowsShadowsOffTheBollards_AfterTheBloomShrank()
+        {
+            var go = new GameObject("shadowReach") { hideFlags = HideFlags.HideAndDontSave };
+            try
+            {
+                SceneLight light = LampPosts.Light(go, LampPosts.DecorFamily, LampPosts.LanternPost);
+
+                Assert.AreEqual(0.14f, light.Range, 1e-4f,
+                    "the bloom is the lantern — that is this PR");
+                Assert.AreEqual(LightPresets.ReachMetres(LightPresets.Kind.Lightpost), light.ReachMetres, 1e-4f,
+                    "and the REACH rides on the light, or nothing downstream can tell the two apart");
+
+                // The distance the shadow system actually pairs by must still cover the working edge.
+                float nearest = float.MaxValue;
+                float row = StPetersWharf.LampRowY;
+                foreach (var f in StPetersWharf.MooringFittings())
+                    nearest = Mathf.Min(nearest, Mathf.Abs(f.Position.y - row));
+
+                Assert.Less(nearest, light.ReachMetres,
+                    $"the nearest mooring fitting is {nearest:0.00} m off the lamp row and the lamp reaches " +
+                    $"{light.ReachMetres:0.00} m — this is the pairing that puts a bollard's rake on the planks");
+                Assert.Greater(nearest, light.Range,
+                    $"and it is COMFORTABLY outside the {light.Range:0.00} m bloom, which is exactly why " +
+                    "pairing by the bloom found nothing at all");
+            }
+            finally { Object.DestroyImmediate(go); }
+        }
+
+        /// <summary>
         /// <b>A lamp's head height comes from the PACK, not from this repo's opinion.</b> Left at
         /// <see cref="SceneLight.DefaultLampHeightMeters"/> every one of these would cast as a 2.5 m lamp —
         /// so a 7.8 m flood mast would light a yard like a mast and shadow it like a bollard.
