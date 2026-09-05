@@ -59,6 +59,11 @@ namespace HiddenHarbours.Tests.PlayMode
         /// committed visual and interior def but no BoatHullDef, so the journey wraps her visual in one.</summary>
         private const string VariantVisualPath = "Assets/_Project/Data/Boats/Visuals/LobsterStandardHardtopFundyIso.asset";
 
+        /// <summary>One of the four working ships (ADR 0041 rollout PR 2). She is the batch's journey
+        /// because every one of the four declares an OPEN main deck at her house sole's height and her
+        /// door's threshold sits there too — the tie a converted hull has no cells to break.</summary>
+        private const string ShipVisualPath = "Assets/_Project/Data/Boats/Visuals/SternTrawlerIso.asset";
+
         /// <summary>The shader property the hull's occluding id block is written into. Named here because
         /// the test reads back what reached the RENDERER, which is the only thing the GPU would see.</summary>
         private const string OccluderIdProperty = "_HHDeckOccluderId";
@@ -278,6 +283,89 @@ namespace HiddenHarbours.Tests.PlayMode
 
             BelowDecksDrawSources.Count drawn = BelowDecksDrawSources.Measure(boatGo.transform);
             Debug.Log($"[mesh-interiors-rollout] {visual.name}, below decks: {drawn}");
+            Assert.IsTrue(drawn.MeshRoom, "her house is cut open: the mesh room is what is drawn. " + drawn);
+            Assert.AreEqual(1, drawn.Total, "exactly one source draws below decks. " + drawn);
+            Assert.AreEqual(0, BoatInteriorCells.ResidentSets, "no sheet was loaded for her");
+        }
+
+        /// <summary>
+        /// <b>ADR 0041 rollout PR 2 — a WORKING SHIP goes below, and lands in her house rather than on
+        /// her deck.</b> The stern trawler has no <c>BoatHullDef</c> either, so her committed visual is
+        /// wrapped in one exactly as the variant journey does.
+        ///
+        /// <para><b>Why a ship is the journey this batch owes.</b> All four working ships declare an
+        /// OPEN <c>main_deck</c> at the exact height of their <c>house_sole</c>, and their cabin door's
+        /// threshold sits at that height too — so "the nearest sole to the sill" names two levels and one
+        /// of them is outdoors. On a sprite hull the cells' row map breaks the tie; a converted hull has
+        /// no cells, so <see cref="BoatInterior.LevelIndexAtHeight"/> asks her mesh instead
+        /// (<see cref="HullMeshDef.CutawayForDeck"/> refuses an open level). Get that wrong and the
+        /// press still works, the cue still runs and she is still "inside" — she is just standing on an
+        /// outdoor deck whose roof cannot be taken off, and the room never appears. So this asserts the
+        /// LEVEL and the CUT, not only that one source draws.</para>
+        /// </summary>
+        [UnityTest]
+        public IEnumerator AWorkingShipOfTheBatch_GoesBelowIntoHerHouse_NotOntoHerMainDeck()
+        {
+            var visual = LoadCommitted<BoatVisualDef>(ShipVisualPath);
+            if (visual == null) yield break;
+            BoatInteriorDef def = visual.Interior;
+            Assert.IsNotNull(def, "the trawler's visual must link her interior def");
+            Assert.IsTrue(visual.HasHullMesh() && visual.HullMesh.HasMeshInterior(),
+                          "her committed hull mesh must carry her room (re-bake her)");
+
+            // The premise, on her shipped data: two levels equally near the sill, one of them open.
+            float sill = def.Door.ThresholdPoint.z;
+            var equidistant = new List<BoatInteriorLevel>();
+            foreach (BoatInteriorLevel l in def.Levels)
+                if (l != null && l.IsUsable() && Mathf.Abs(l.SoleZMeters - sill) < 1e-4f) equidistant.Add(l);
+            Assert.GreaterOrEqual(equidistant.Count, 2,
+                $"the trawler's sill at z {sill:0.###} is meant to be equidistant from her main deck and " +
+                "her house sole — if it is not any more, this journey has stopped testing the tie.");
+
+            var hullDef = ScriptableObject.CreateInstance<BoatHullDef>();
+            hullDef.Visual = visual;
+            _spawned.Add(hullDef);
+
+            var boatGo = Spawn("SternTrawler");
+            var boat = boatGo.AddComponent<BoatController>();
+            boatGo.AddComponent<DevBoatInput>().enabled = false;
+            boat.SetHull(hullDef);
+            BoatHullSkinner.Rig skin = BoatHullSkinner.Apply(
+                boatGo, visual, boat, new BoatHullSkinner.Options { SkipWaveMotion = true });
+            Assert.IsTrue(skin.Skinned, "the trawler must skin — she is a MESH hull");
+
+            var installer = boatGo.GetComponent<BoatInteriorInstaller>();
+            installer.Build();
+            Assert.IsTrue(installer.Built, "a measured ship grows her cabin on load");
+            Assert.IsTrue(installer.Interior.RoomIsGeometry, "…and it is geometry, off the bake's own output");
+            Assert.IsNull(boatGo.transform.Find(BoatInteriorInstaller.RoomChildName), "no sprite room child");
+            Assert.IsNull(Resources.Load<BoatInteriorCellsDef>(BoatInteriorCellsDef.PathFor(def.Id)),
+                          "her cells asset is RETIRED");
+            yield return null;
+
+            BoatCabinDoor door = installer.Door;
+            Assert.IsNotNull(door, "…and a door at her measured threshold");
+            Assert.IsTrue(door.TryUse(), "her door offers, so the press is taken");
+            yield return WaitForCue(door);
+            Assert.IsTrue(installer.Interior.IsInside, "the swap lands at the end of the cue");
+            yield return null;
+
+            // WHERE she landed. The def is the authority on the id; the mesh is the authority on whether
+            // it is a room.
+            string landed = def.Levels[installer.Interior.Level].Id;
+            Assert.IsTrue(visual.HullMesh.CutawayForDeck(landed).Opens,
+                $"she walked in onto '{landed}', which her hull mesh will not cut open — an OPEN working " +
+                "deck at her house sole's height. LevelIndexAtHeight must ask the mesh on a converted hull.");
+            Assert.AreEqual("house_sole", landed,
+                "and on this ship the room behind that door is her house");
+
+            Assert.IsNotNull(installer.Cutaway, "a mesh hull carries a cutaway");
+            Assert.IsTrue(installer.Cutaway.RequestedCut.Opens,
+                "…and with her occupant below it is actually open — a cut that answers None is a roof " +
+                "that stayed on");
+
+            BelowDecksDrawSources.Count drawn = BelowDecksDrawSources.Measure(boatGo.transform);
+            Debug.Log($"[mesh-interiors-rollout] {visual.name}, below decks on '{landed}': {drawn}");
             Assert.IsTrue(drawn.MeshRoom, "her house is cut open: the mesh room is what is drawn. " + drawn);
             Assert.AreEqual(1, drawn.Total, "exactly one source draws below decks. " + drawn);
             Assert.AreEqual(0, BoatInteriorCells.ResidentSets, "no sheet was loaded for her");
