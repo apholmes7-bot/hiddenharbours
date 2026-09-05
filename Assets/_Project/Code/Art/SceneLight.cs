@@ -161,8 +161,16 @@ namespace HiddenHarbours.Art
 
         [Tooltip("How high the lamp sits above the ground (or water) its casters stand on, metres. It is " +
                  "what makes a lamp not the sun: a low lamp throws a long rake behind a far caster, a high " +
-                 "one a stub. Only the cast shadows read it; the glow is unchanged by it.")]
+                 "one a stub. The cast shadows read it, and so does the ground POOL — it is what shapes a " +
+                 "pool instead of stamping a disc. The bloom is unchanged by it.")]
         [Min(0f)] [SerializeField] private float _lampHeightMeters = DefaultLampHeightMeters;
+
+        [Tooltip("How far this lamp LIGHTS the ground, metres — its pool, which is NOT the same as Range. " +
+                 "Range is the BLOOM: how big the lit fitting looks. This is the patch of ground the lamp " +
+                 "makes brighter, drawn by LampPoolSystem. 0 = this lamp casts no pool (a boat's sidelight " +
+                 "is a signal, not a floodlight). LightPresets.Apply sets it from ReachMetres; the " +
+                 "searchlight sets it from its own throw.")]
+        [Min(0f)] [SerializeField] private float _reachMetres;
 
         /// <summary>The height a lamp that never said (2.5 m — the searchlight's own shipped figure).</summary>
         public const float DefaultLampHeightMeters = 2.5f;
@@ -227,8 +235,25 @@ namespace HiddenHarbours.Art
 
         /// <summary>Does this lamp throw cast shadows (<see cref="LampShadowSystem"/>)?</summary>
         public bool CastsShadows { get => _castsShadows; set => _castsShadows = value; }
-        /// <summary>Lamp height above its casters' ground, metres — the cast shadows' rake lever.</summary>
+        /// <summary>Lamp height above its casters' ground, metres — the cast shadows' rake lever, and what
+        /// gives the ground pool its shape.</summary>
         public float LampHeightMeters { get => _lampHeightMeters; set => _lampHeightMeters = Mathf.Max(0f, value); }
+
+        /// <summary>
+        /// <b>How far this lamp LIGHTS the ground</b>, metres — its POOL, and not to be confused with
+        /// <see cref="Range"/>, which since 2026-09-04 is the BLOOM: the size of the lit fitting.
+        ///
+        /// <para>The split was made in the preset library (<c>LightPresets.ReachMetres</c>) where the
+        /// SITING could read it, and this is the other half — the runtime needs it too, because the thing
+        /// that draws a pool is handed a <see cref="SceneLight"/> and not a preset kind. Set by
+        /// <c>LightPresets.Apply</c> for a placed lamp and by <c>BoatSpotlight</c> for the searchlight.</para>
+        ///
+        /// <para><b>0 means this lamp casts no pool, and that is a real answer rather than a missing one.</b>
+        /// A boat's sidelight is a SIGNAL — a coloured point another skipper reads your aspect from — and
+        /// lighting the sea under it would be a lie about what it is for. Every boat lamp therefore leaves
+        /// this at zero by default, and only the searchlight, which is aimed at the world, sets it.</para>
+        /// </summary>
+        public float ReachMetres { get => _reachMetres; set => _reachMetres = Mathf.Max(0f, value); }
         /// <summary>Night-gate darkness threshold (0..1) — read-only mirror for the shadow system.</summary>
         public float GateThreshold => _gateThreshold;
         /// <summary>Night-gate fade band (0..1).</summary>
