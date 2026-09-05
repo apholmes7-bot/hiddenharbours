@@ -277,9 +277,10 @@ namespace HiddenHarbours.Art
         public const float MinBloomRadiusMetres = 0.10f;
 
         /// <summary>The largest, metres — a backstop rather than a working number. The widest lit fitting
-        /// in the kit is `floodMast`'s three-lamp array at 1.49 m, so nothing placed today comes near it;
-        /// it exists so that a caller handing in a whole BUILDING as a "fitting" gets a lamp rather than
-        /// the disc this ruling retired.</summary>
+        /// in the kit is `floodMast`'s three-lamp array at 1.49 m, which this only just clears; it exists so
+        /// that a caller handing in a whole BUILDING as a "fitting" gets a lamp rather than the disc this
+        /// ruling retired. ⚠ A kit piece wider than a flood mast's head bar is a piece that should be asking
+        /// for more than one light, not for a bigger one.</summary>
         public const float MaxBloomRadiusMetres = 1.60f;
 
         /// <summary>

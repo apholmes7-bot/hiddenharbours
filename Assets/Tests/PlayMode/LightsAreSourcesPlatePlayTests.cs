@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 using HiddenHarbours.App;
@@ -114,9 +115,12 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return FrameOn(sites[0].Position + new Vector2(0f, -1f));
 
             // DARK: the same frame with the lamps off, so "lit" is measured against this pier and not
-            // against an assumption about how dark 02:00 is. Twice, a couple of frames apart, because the
-            // difference between two IDENTICAL states is this scene's own noise floor — the sea does not
-            // stop moving because the clock is frozen.
+            // against an assumption about how dark 02:00 is.
+            //
+            // ⚠ AND TWICE, a couple of frames apart, because the difference between two IDENTICAL states is
+            // this scene's own NOISE FLOOR, and that is a measurement rather than an assumption: "how many
+            // pixels did the lamp change" means nothing until you know how many change when nothing does.
+            // It reads zero here only because FrameOn stopped engine time; before that it read 639,757.
             SetLampsEnabled(lamps, false);
             yield return null; yield return null;
             byte[] dark = Capture();
@@ -140,9 +144,8 @@ namespace HiddenHarbours.Tests.PlayMode
             int litPool = Footprint(dark, pool);
             int px = _w * _h;
 
-            // ⚠ THE NOISE FLOOR IS ITS OWN MEASUREMENT, not an assumption. The sea moves between two
-            // frames whatever the lamps are doing, so "how many pixels did the lamp change" is only a
-            // number once you know how many change when nothing does.
+            // Judge BOTH arms on the SAME pixels: the ones the disc used to cover, which are the ones the
+            // owner was looking at when he called it a round glow.
             bool[] poolMask = LitMask(dark, pool, out int _);
             float detailPool = RelativeLocalContrast(pool, poolMask);
             float detailFitting = RelativeLocalContrast(fitting, poolMask);
@@ -193,12 +196,19 @@ namespace HiddenHarbours.Tests.PlayMode
         /// shader and reads the published tint (ADR 0016), and no preset may touch it — so shrinking a
         /// bloom must be exactly invisible by day.
         ///
-        /// <para><b>⚠ Against this scene's OWN noise floor, not against zero.</b> A first pass asserted a
-        /// bit-identical frame and came back with 614,705 changed pixels — not a lamp burning at noon, but
-        /// the sea, which keeps moving between two frames however hard the clock is frozen, and which by
-        /// day is bright enough for that motion to clear any threshold. So the control measures the same
-        /// scene twice with the lamps OFF, and requires the lamps ON to change no more than that. A control
-        /// that cannot state its own noise floor is not a control.</para>
+        /// <para><b>⚠ The strict assertion is ARM TO ARM, not against darkness.</b> The claim this PR has
+        /// to make by day is that shrinking a bloom changes nothing, and that is exactly what the two arms
+        /// answer — immune to the one thing this fixture cannot pin tightly, which is the precise tint the
+        /// controller has eased to by the time it is frozen (the game's noon under this day's weather is
+        /// not a pure white). Whether a lamp emits AT ALL by day is the gate's question, and the gate's
+        /// arithmetic is pinned bit-exactly in <c>LightMathTests</c>; here it is bounded and reported
+        /// rather than asserted at zero.</para>
+        ///
+        /// <para>Both are measured against this scene's own NOISE FLOOR — two frames of the same state —
+        /// because a first pass asserted a bit-identical frame and came back with 614,705 changed pixels.
+        /// That was not a lamp burning at noon: it was the sea, which keeps moving between two frames
+        /// however hard the game clock is frozen, and which by day is bright enough for that motion to
+        /// clear any threshold. A control that cannot state its own noise floor is not a control.</para>
         /// </summary>
         [UnityTest]
         public IEnumerator AtNoon_NeitherArmEmits_AndTheFrameIsUnchanged()
@@ -327,8 +337,23 @@ namespace HiddenHarbours.Tests.PlayMode
         //  scaffolding
         // =============================================================================================
 
+        /// <summary>
+        /// ⚠️ <b>CI runs on the Null device and this fixture PHOTOGRAPHS things.</b> Every assertion here
+        /// counts pixels, so without a GPU there is nothing to count and the numbers would be a confident
+        /// zero — which would redden CI while proving nothing. Skips loudly, the way every other render
+        /// fixture in this repo does.
+        /// </summary>
+        static void RequireAGraphicsDevice()
+        {
+            if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null)
+                Assert.Ignore("SKIPPED, NOT VERIFIED — no graphics device (Null Device), so nothing rendered " +
+                              "and nothing was proved. Expected on CI; a plate of a lamp needs a GPU.");
+        }
+
         IEnumerator LoadTheWharf()
         {
+            RequireAGraphicsDevice();
+
             // The region logs decor-import complaints that have nothing to do with lights.
             LogAssert.ignoreFailingMessages = true;
             yield return SceneManager.LoadSceneAsync(SceneName, LoadSceneMode.Single);
