@@ -1,7 +1,7 @@
 #if UNITY_EDITOR
 using System.Collections.Generic;
 using UnityEngine;
-using HiddenHarbours.Art;                 // YSortSprite — dressing joins the decor band, never a fixed order
+using HiddenHarbours.Art;                 // YSortSprite — the GEAR joins the decor band; the FACE does not
 using HiddenHarbours.Core;                // ITidalTerrain, SortingBands
 using HiddenHarbours.Tools.RigBaking;     // IsoPackSprites — the read side of the ISO rig pack
 using HiddenHarbours.World;               // MainlandCoast, CoastPlan, MainlandZone
@@ -199,8 +199,13 @@ namespace HiddenHarbours.App.Editor
         public static float SeawardHeading => NineMileCreekWharf.MooringFaceHeadingDegrees;
 
         /// <summary>The heading the apron's working face looks along: its water side is EAST, which
-        /// <c>NineMileCreekMainland</c> states and the fill's own shape confirms.</summary>
+        /// <c>NineMileCreekMainland</c> states and the fill's own shape confirms. Also the heading the
+        /// WHARF HEAD looks along — the quay's east end faces the same bay.</summary>
         public const float ApronSeawardHeading = 90f;
+
+        /// <summary>…and the heading its OUTER face looks along: the reciprocal, out over the shoal.
+        /// Derived from the working face rather than typed, so turning the apron turns both.</summary>
+        public static float ApronWestSeawardHeading => (ApronSeawardHeading + 180f) % 360f;
 
         // =============================================================================================
         //  3. THE QUAY — 84 m of working deck
@@ -668,6 +673,28 @@ namespace HiddenHarbours.App.Editor
         public static int FacingFor(FacePiece piece) =>
             IsoPackSprites.FacingForHeading(WharfFamily, piece.Heading);
 
+        /// <summary>
+        /// ⭐ How far the piece's COMMITTED PICTURE reaches above and below its own pivot, in world
+        /// units — read off the sprite the placer will actually hand the renderer, not derived from the
+        /// footprint. False if the sheet has not sliced (the pack bakes to order; a caller decides
+        /// whether that is a skip or a failure).
+        ///
+        /// <para>The cell is the pack's own <b>pivot-aligned union of the returned buffer extents across
+        /// all eight facings</b> (its contract's <c>cellRule</c>), so this is an upper bound on the ink
+        /// of any one facing and a safe thing to assert a sort line against. It exists because
+        /// <c>NineMileCreekQuayFace.DrawnTopRiseFromPivot</c> is <i>not</i> such a bound — the crib's
+        /// header logs stand proud of the footprint the geometry knows about.</para>
+        /// </summary>
+        public static bool DrawnExtent(FacePiece piece, out float abovePivot, out float belowPivot)
+        {
+            abovePivot = belowPivot = 0f;
+            Sprite sprite = IsoPackSprites.Facing(WharfFamily, piece.Key, FacingFor(piece));
+            if (sprite == null) return false;
+            abovePivot = sprite.bounds.max.y;
+            belowPivot = -sprite.bounds.min.y;
+            return true;
+        }
+
         /// <summary>Every distinct <c>zone</c> the finds contract declares — what
         /// <see cref="Bands"/> has to cover, or a find is baked and never placed.</summary>
         public static IReadOnlyList<string> DeclaredFindZones()
@@ -737,6 +764,53 @@ namespace HiddenHarbours.App.Editor
         /// <summary>…to where it disappears under the north wall's deck.</summary>
         public static Vector2 ApronFaceNorth => new Vector2(Apron.xMax, Mathf.Min(Apron.yMax, Quay.yMin));
 
+        // --- ⭐ THE THREE EDGES THAT WERE NEVER FACED (owner playtest 2026-09-04: "theres gaps between
+        // sections"). A-1 drew the two working faces and the arm and stopped there. But the wharf is a
+        // FILL: every edge of it stands 4.60 m above the harbour shoal (deck +3.00, shoal −1.60,
+        // measured on the built terrain), so every edge with water outside it is a wall, and three of
+        // them had nothing drawn on them at all — the ground simply fell away over the fill's 1.2 m of
+        // falloff and the bay lapped against a raw cut. Walked as a perimeter, the wharf's edges are:
+        //
+        //     quay  SOUTH  x 92.3…170.0   77.7 m   drawn  (NorthWallRun)
+        //     quay  EAST   y  87.0… 93.8   6.8 m   NOT DRAWN → QuayHeadRun
+        //     quay  NORTH  —                       no wall: the spit stands behind it
+        //     apron EAST   y  44.0… 86.0  42.0 m   drawn  (WestWallRun)
+        //     apron WEST   y  44.0… 92.0  48.0 m   NOT DRAWN → ApronWestRun   ← the big one
+        //     apron SOUTH  x  82.0… 92.0  10.0 m   NOT DRAWN → ApronSouthRun
+        //     apron NORTH  —                       no wall: the spit's bank runs onto it
+        //
+        // Each new run takes its ends from the SAME fills the drawn ones do, so re-siting a wall re-cuts
+        // all six together. (The one stretch still bare is a 1.5 m sliver of the quay's WEST side where
+        // the apron stops short of it at y = 92 — shorter than a piece is drawn, so a run there would
+        // stand 10.9 m of crib across the wharf to cover 1.5 m of notch. Named, not drawn.)
+
+        /// <summary>The apron's OUTER face — its west side, over the shoal the creek drains across. The
+        /// longest undrawn edge on the wharf and the one a player walking down from the road sees first.</summary>
+        public static Vector2 ApronWestFaceSouth => new Vector2(Apron.xMin, Apron.yMin);
+
+        /// <inheritdoc cref="ApronWestFaceSouth"/>
+        public static Vector2 ApronWestFaceNorth => new Vector2(Apron.xMin, Apron.yMax);
+
+        /// <summary>The apron's SOUTH end — the seaward end of the west wall, where the float run leaves
+        /// it. Ten metres, one corner of the wharf, and the whole of it stands over water.</summary>
+        public static Vector2 ApronSouthFaceWest => new Vector2(Apron.xMin, Apron.yMin);
+
+        /// <inheritdoc cref="ApronSouthFaceWest"/>
+        public static Vector2 ApronSouthFaceEast => new Vector2(Apron.xMax, Apron.yMin);
+
+        /// <summary>The WHARF HEAD — the quay's east end, which <see cref="NorthFaceEast"/> already
+        /// calls "a real corner" and then turns away from. It runs north from the mooring lip until the
+        /// spit's own ground stands behind it (<c>SpitFill</c>), so the head never draws a wall into the
+        /// bank.</summary>
+        public static Vector2 QuayHeadFaceSouth => new Vector2(Quay.xMax, Quay.yMin);
+
+        /// <inheritdoc cref="QuayHeadFaceSouth"/>
+        public static Vector2 QuayHeadFaceNorth =>
+            new Vector2(Quay.xMax,
+                        Mathf.Min(Quay.yMax,
+                                  NineMileCreekMainland.SpitFill.Center.y -
+                                  NineMileCreekMainland.SpitFill.HalfSize.y));
+
         /// <summary>The breakwater is drawn on its CREST LINE, not on its south edge — the same line
         /// #462 lays its collision on (<c>NineMileCreekWharf.BreakwaterPoints</c>) and the same one the
         /// retired tile kit hung its armour from. An arm is a symmetric box of stone-filled cribs, so its
@@ -787,10 +861,16 @@ namespace HiddenHarbours.App.Editor
                 Heading = heading; Wall = wall; Reason = reason;
             }
 
-            /// <summary>How far UP-SCREEN this piece's lip sits above its own transform — what
-            /// <c>YSortSprite.SortPivotYOffset</c> takes, so the wall layers on the line it looks like it
-            /// stands on instead of on a pivot out in the basin.</summary>
-            public float SortYOffset => Lip.y - Position.y;
+            /// <summary>How far UP-SCREEN this piece's lip sits above its own transform. This used to
+            /// be the piece's SORT LINE (<c>YSortSprite.SortPivotYOffset</c>); it is kept because
+            /// <c>NineMileCreekDressingTests</c> measures the drawn picture against it to prove that
+            /// sorting there could never have worked — see <see cref="SortingOrder"/>.</summary>
+            public float LipRiseFromPivot => Lip.y - Position.y;
+
+            /// <summary>The order this piece draws at — a FIXED rung of the wharf-deck band, not a
+            /// Y-sorted one. <see cref="NineMileCreekDressing.FaceSortingOrder"/> is the rule and the
+            /// reason it is not the decor band any more.</summary>
+            public int SortingOrder => FaceSortingOrder(Wall);
         }
 
         /// <summary>
@@ -833,6 +913,96 @@ namespace HiddenHarbours.App.Editor
         public const string WestWallRun = "WestWall";
         /// <inheritdoc cref="NorthWallRun"/>
         public const string BreakwaterRun = "Breakwater";
+        /// <inheritdoc cref="NorthWallRun"/>
+        public const string ApronWestRun = "ApronWest";
+        /// <inheritdoc cref="NorthWallRun"/>
+        public const string ApronSouthRun = "ApronSouth";
+        /// <inheritdoc cref="NorthWallRun"/>
+        public const string QuayHeadRun = "QuayHead";
+
+        /// <summary>Every run, in the order they are drawn — so a sweep names them all and a new run
+        /// cannot be added without this list noticing.</summary>
+        public static readonly string[] FaceRuns =
+        {
+            NorthWallRun, WestWallRun, ApronWestRun, ApronSouthRun, QuayHeadRun, BreakwaterRun,
+        };
+
+        // =============================================================================================
+        //  ⭐⭐ WHAT THE QUAY FACE SORTS AGAINST — and why it left the decor band (owner playtest
+        //  2026-09-04: "the wharfs need layering work as you can disappear under them")
+        // =============================================================================================
+        //
+        // It used to be a Y-sorted decor sprite anchored on its LIP. Both halves of that were wrong, and
+        // the second one could not be fixed by moving the sort line:
+        //
+        // 1. THE PIECE IS NOT A FACE — IT IS A FACE PLUS ITS OWN DECK TOP. `logCrib` is a 9.6 × 5.0 m
+        //    crib, and at the mooring face's facing its committed sheet draws ink from 2.63 units BELOW
+        //    its pivot to 5.56 units ABOVE it, while the lip sits only 2.38 above. So 3.19 units of
+        //    drawn deck stand UP-SCREEN of the sort line, and anything Y-sorted standing in that band —
+        //    the player 1 m in from the edge, and the quay's own bollards at lip + 0.5 m (order 852
+        //    against the face's 854) — sorted BEHIND the piece and was overdrawn by it. That is the
+        //    owner's "you can disappear under them", and it is 3.19 m deep along the whole wall. The
+        //    apron's facing measures 3.20. (The painted ground already IS the deck, so those pixels
+        //    were a duplicate of terrain that cost the player her body.)
+        //
+        // 2. A MOORED HULL CANNOT BE Y-SORTED AGAINST AT ALL. Every `BoatVisualDef` ships
+        //    `SortingOrder 1` and `BoatHullSkinner` hands it straight to the hull's composite overlay —
+        //    BELOW `SortingBands.DecorFloor`. A face anywhere in the decor band (this wall drew at 854)
+        //    therefore beat every boat at the wall at every position, and at Nine Mile Creek that meant
+        //    the five moored boats were drawn INSIDE the wall and invisible. No sort-line offset can
+        //    reach that: the whole decor band is above them. [[hull-sorts-below-the-decor-floor]]
+        //
+        // So the face is not decor. A quay face is the EDGE OF THE LAND, and that has a property no
+        // other sprite in this region has: NOTHING IS EVER BEHIND IT. Everything that can overlap it is
+        // either standing on the deck it holds up (draw over) or floating in the water in front of it
+        // (draw over); the only things behind it are the sea and the seabed. So it belongs on a FIXED
+        // rung of the band #462 kept open for exactly this — `SortingBands.WharfDeckMin…Max`, "a pier
+        // stands over water, so the whole deck is above Sea and below DecorFloor" — under the hull's
+        // rung at the top of it, and over the sea at −5.
+        //
+        // (#462's objection to that band — "six orders cannot resolve an 84 m wall" — was about
+        // resolving the wall against ITSELF, which it never has to do: every piece of a run shares one
+        // lip line and overlapping pieces of a run are the same picture at the same height. What the six
+        // orders must resolve is the six RUNS against each other, and only five pairs of them overlap.)
+
+        /// <summary>
+        /// The rung of the wharf-deck band a run draws on — a ladder, nearest the camera first, because
+        /// where two runs overlap the nearer one has to cover the further one:
+        /// <list type="bullet">
+        /// <item><description><b>0</b> — the apron's SOUTH end (the seaward corner of the whole wharf,
+        /// and the run every other one at the apron passes behind) and the BREAKWATER arm, which
+        /// overlaps nothing and so may share the top rung.</description></item>
+        /// <item><description><b>−1</b> — the apron's EAST face: the working face the basin sees, over
+        /// the west one and over the mooring wall it crosses at the L.</description></item>
+        /// <item><description><b>−3</b> — the quay's MOORING face and the apron's WEST face. The two
+        /// never meet each other (they are 10 m and a whole wall apart), so they share; the apron's
+        /// west face has to sit under its east one because the two overlap down the middle of a 10 m
+        /// apron — each course is 5 m deep, so together they cover it.</description></item>
+        /// <item><description><b>−4</b> — the WHARF HEAD, which the mooring face's last piece
+        /// crosses at the corner. <c>WharfDeckMin</c>, the floor of the band.</description></item>
+        /// </list>
+        /// <para><b>−2 is skipped on purpose:</b> <c>SeaMistEmitter</c> draws its haze there, and a run
+        /// sharing that rung would be in front of or behind a drifting wisp by renderer order rather
+        /// than by rule. Below it the mist passes over the wall, which is what mist does.</para>
+        /// <para>Every rung is inside <c>WharfDeckMin…Max</c>, strictly below the top of it (where a
+        /// hull composites) and strictly above <c>SortingBands.Sea</c>, so the face keeps every
+        /// relationship it had with the water and the seabed and loses only the two that were
+        /// wrong.</para>
+        /// </summary>
+        public static int FaceSortingOrder(string wall)
+        {
+            const int near = SortingBands.WharfDeckMax - 1;      // 0 — the top rung under the hull
+            switch (wall)
+            {
+                case ApronSouthRun:
+                case BreakwaterRun: return near;                 //  0
+                case WestWallRun:   return near - 1;             // -1
+                case NorthWallRun:
+                case ApronWestRun:  return near - 3;             // -3, clear of the sea mist at -2
+                case QuayHeadRun:   return SortingBands.WharfDeckMin;   // -4
+                default:            return SortingBands.WharfDeckMin;
+            }
+        }
 
         /// <summary>
         /// The whole drawn quay: the mooring face, the apron's face and the breakwater arm.
@@ -856,6 +1026,23 @@ namespace HiddenHarbours.App.Editor
                 "the apron's east face — a curb-only edge in the retired kit, which is the whole reason " +
                 "the plan wanted the winch to be a tall legible object. It is a drawn wall now, and it " +
                 "stops where it goes under the north wall's deck"));
+
+            list.AddRange(FaceRun(ApronWestRun, ApronWestFaceSouth, ApronWestFaceNorth,
+                ApronWestSeawardHeading,
+                "the apron's OUTER face — 48 m of wall over the shoal the creek drains across, and the " +
+                "longest edge of this wharf that was never drawn at all. It runs the whole west side: " +
+                "the spit's bank stands behind the apron's north end, so nothing needs a face there"));
+
+            list.AddRange(FaceRun(ApronSouthRun, ApronSouthFaceWest, ApronSouthFaceEast,
+                SeawardHeading,
+                "the apron's south end — the seaward corner of the wharf, where the float run leaves " +
+                "the wall. Ten metres, all of it standing over water, and undrawn until #724"));
+
+            list.AddRange(FaceRun(QuayHeadRun, QuayHeadFaceSouth, QuayHeadFaceNorth,
+                ApronSeawardHeading,
+                "the WHARF HEAD — the quay's east end, which NorthFaceEast has called 'a real corner' " +
+                "since #462 and then turned away from. Without it the mooring face stopped dead at " +
+                "x = 170 and the bay lapped against a raw cut in the ground"));
 
             list.AddRange(FaceRun(BreakwaterRun, BreakwaterCrestWest, BreakwaterCrestEast,
                 BreakwaterSeawardHeading,
@@ -1164,10 +1351,12 @@ namespace HiddenHarbours.App.Editor
 
             Debug.Log(
                 $"[NineMileCreekDressing] Dressed Nine Mile Creek: {face} course(s) of quay face across " +
-                $"the mooring wall, the apron and the breakwater, {props} prop(s) from the wharf-decor " +
-                $"and utility packs, {lamps} lamp post(s) that actually emit, and {finds} shore " +
-                $"find(s) on the foreshore, all in the Y-sort decor " +
-                $"band. The face is anchored on its LIP and the gear is laid out on the BERTH LINE, with " +
+                $"every water-facing edge of the wharf and the breakwater, {props} prop(s) from the " +
+                $"wharf-decor and utility packs, {lamps} lamp post(s) that actually emit, and {finds} " +
+                $"shore find(s) on the foreshore. The gear is in the Y-sort decor band; the FACE is on a " +
+                $"fixed rung of the wharf-deck band, under the boats and under everything on the deck " +
+                $"(NineMileCreekDressing.FaceSortingOrder). " +
+                $"The face is anchored on its LIP and the gear is laid out on the BERTH LINE, with " +
                 $"the poles on Wharf Road's own published route, so all three follow the wharf if it " +
                 $"moves. NOT built, and deliberately: the ~16 moored lobster boats and the mussel-boat " +
                 $"class are owner vision and phase-gated, and the dory yard is left clear because a " +
@@ -1179,18 +1368,12 @@ namespace HiddenHarbours.App.Editor
         /// <summary>
         /// Draw the quay. One sprite per course, anchored so its deck lip lands on the wall's lip.
         ///
-        /// <para><b>⭐ IT SORTS BY ITS LIP, NOT BY ITS TRANSFORM.</b> The wharf pack pivots at chart
-        /// datum, so a face piece's transform sits several metres down-screen of the wall — out where the
-        /// boats are. Sorted from there it would draw IN FRONT of anything moored against it, which is
-        /// the one thing a quay must never do and is invisible until there is a boat at the berth to be
-        /// hidden. <see cref="YSortSprite.SortPivotYOffset"/> moves the sort point back up to the lip;
-        /// the band is still the decor band, and the order is still computed from world Y (ADR 0032).</para>
-        ///
-        /// <para><b>Not the wharf-deck band</b> (<c>SortingBands.WharfDeckMin</c>…<c>Max</c>), even
-        /// though #462 kept that band open for "the ISO quay Phase B draws". Six orders cannot resolve an
-        /// 84 m wall — that is #462's own argument against the retired tile kit's per-row scheme, and it
-        /// applies unchanged to the piece it was written about. The face joins the fittings in the decor
-        /// band for the same reason they did.</para>
+        /// <para><b>⭐ IT DRAWS ON A FIXED RUNG OF THE WHARF-DECK BAND, NOT IN THE DECOR BAND.</b> The
+        /// piece is a face PLUS its own deck top, so no Y-sort line inside it is right for both halves;
+        /// and a moored hull composites below <c>SortingBands.DecorFloor</c>, so no decor-band order can
+        /// lose to a boat at the berth. <see cref="FaceSortingOrder"/> carries the whole argument and
+        /// the measurements behind it. The placement — pivot at chart datum, lip on the wall's own lip —
+        /// is unchanged, and is still the only line this file guarantees.</para>
         /// </summary>
         static int PlaceFace(GameObject root, IReadOnlyList<FacePiece> pieces)
         {
@@ -1220,7 +1403,9 @@ namespace HiddenHarbours.App.Editor
 
                 var sr = go.AddComponent<SpriteRenderer>();
                 sr.sprite = sprite;
-                go.AddComponent<YSortSprite>().SortPivotYOffset = piece.SortYOffset;
+                // ⚠️ NO YSortSprite. The face is structure at the water's edge, and nothing is ever
+                // behind it — see FaceSortingOrder for the two defects a Y-sorted face shipped.
+                sr.sortingOrder = piece.SortingOrder;
 
                 placed++;
             }

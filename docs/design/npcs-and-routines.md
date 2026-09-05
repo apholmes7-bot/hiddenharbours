@@ -344,6 +344,26 @@ tree, no `RoutineDef` asset. The creek's cast is anchored, and a scheduled trip 
 that reads the clock at all. Standing the routine engine up on the mainland is still its own
 world-content lane.
 
+**The three runs the creek ships** (`NineMileCreekTrips`, all geometry derived, all hours on assets):
+
+| who | machine | from | to | out | home |
+|---|---|---|---|---|---|
+| Wendell Arsenault, the fish buyer | Dually 3500 | the truck park | the buyers' gravel | 04:45 | 20:30 |
+| Claudette Boudreau, the chandler | Hightop Van | her verge on Route 19 | the Route 91 pumps | 09:12 | 10:30 |
+| Hector Bernard, the outboard man | Cabover Box | Wharf Road's verge by the dory yard | the Route 91 pumps | 14:18 | 16:06 |
+
+**Three, and no more, on purpose** — `municipal-infrastructure.md` §3.4's negative test applies to roads
+as much as to lamp posts: a road that reads as TRAFFIC is worse than one that reads as empty, and three
+staggered departures from two ends of a village is what "used" looks like.
+
+⚠️ **A village with no car park parks on the verge.** Nine Mile Creek authors vehicle ground only at its
+two ends (the truck park, the laydown apron, the buyers' gravel), so the chandlery and the dory yard get
+a derived pull-off instead: onto the grass on the driver's side, then a truck's length along it. The
+offset is measured against passing traffic — half a carriageway, half a truck, half a metre of air —
+because one run's road is another's front step. ⭐ And the leg out of a pull-off must run ALONG the verge
+before it merges: aiming it at the road's nearest point parks the machine PERPENDICULAR to the road, with
+her 6.7 m length lying across the carriageway and her tail a metre from the centre-line.
+
 ---
 
 ## 3. The handcrafted core cast

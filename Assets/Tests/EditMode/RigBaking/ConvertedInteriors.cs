@@ -116,6 +116,62 @@ namespace HiddenHarbours.Tests.RigBaking
             return stem;
         }
 
+        /// <summary>
+        /// <b>The same mesh with every room-flagged face removed.</b> Built by filtering TexCoord1.y,
+        /// the flag the bake writes, so it removes exactly what the shader's discard would have hidden
+        /// and nothing else.
+        ///
+        /// <para>Two callers, two different needs, one rule. <c>FullMeshInteriorRenderTests</c> wants it
+        /// as the CONTROL ARM — the same hull with no room, so "closed up the room costs nothing" is
+        /// measured rather than remembered. The acceptance fixtures want it as the ORACLE'S SUBJECT: the
+        /// CPU reference rasterizer is a transcription of the rig's exterior renderer and has no level
+        /// gate, so on a converted hull it would draw the cabin through the topsides while the GPU (gate
+        /// on, nothing cut) correctly hides it.</para>
+        /// </summary>
+        public static Mesh MeshWithoutTheRoom(Mesh src, out int roomVerts, out int hullVerts)
+        {
+            var tags = new System.Collections.Generic.List<Vector2>();
+            src.GetUVs(1, tags);
+            var uv0 = new System.Collections.Generic.List<Vector4>();
+            src.GetUVs(0, uv0);
+            Vector3[] v = src.vertices, n = src.normals;
+            int[] tri = src.triangles;
+
+            var keepV = new System.Collections.Generic.List<Vector3>();
+            var keepN = new System.Collections.Generic.List<Vector3>();
+            var keepA = new System.Collections.Generic.List<Vector4>();
+            var keepL = new System.Collections.Generic.List<Vector2>();
+            var keepT = new System.Collections.Generic.List<int>();
+            var remap = new int[v.Length];
+            for (int i = 0; i < remap.Length; i++) remap[i] = -1;
+
+            roomVerts = 0;
+            for (int i = 0; i < v.Length; i++) if (tags[i].y > 0.5f) roomVerts++;
+            hullVerts = v.Length - roomVerts;
+
+            for (int t = 0; t + 2 < tri.Length; t += 3)
+            {
+                if (tags[tri[t]].y > 0.5f) continue;          // flat per face, so one vertex decides
+                for (int k = 0; k < 3; k++)
+                {
+                    int src_i = tri[t + k];
+                    if (remap[src_i] < 0)
+                    {
+                        remap[src_i] = keepV.Count;
+                        keepV.Add(v[src_i]); keepN.Add(n[src_i]);
+                        keepA.Add(uv0[src_i]); keepL.Add(tags[src_i]);
+                    }
+                    keepT.Add(remap[src_i]);
+                }
+            }
+
+            var m = new Mesh { name = src.name + "_HullOnly", indexFormat = src.indexFormat };
+            m.SetVertices(keepV); m.SetNormals(keepN);
+            m.SetUVs(0, keepA); m.SetUVs(1, keepL);
+            m.SetTriangles(keepT, 0, true);
+            return m;
+        }
+
         public static HashSet<string> DefIds() =>
             new HashSet<string>(All().Select(c => c.DefId), StringComparer.Ordinal);
 
