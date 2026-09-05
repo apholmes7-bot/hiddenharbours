@@ -164,6 +164,25 @@ namespace HiddenHarbours.Art
         public static LampShadowSystem Instance => s_Instance;
         /// <summary>How many lamps are registered right now. Diagnostics and tests.</summary>
         public static int LiveLightCount => Lights.Count;
+
+        /// <summary>
+        /// <b>Every registered lamp, as the ONE registry the lamp systems share.</b> A lamp registers here
+        /// from <see cref="SceneLight.OnEnable"/> and leaves from its <c>OnDisable</c>, so this list is
+        /// already the answer to "which lamps are live" — and <see cref="LampPoolSystem"/> reads it rather
+        /// than keeping a second one.
+        ///
+        /// <para><b>⚠ Why not a second registry.</b> Two lists mean two registration points, and the second
+        /// one is the one somebody forgets to unregister from: a lamp that goes dark in the shadow system
+        /// and stays lit in the pool system is a bug nobody would look for. It also means the SHADOW a lamp
+        /// throws and the POOL it throws can never disagree about which lamps exist — which matters here
+        /// more than usual, because the two are halves of one picture (a shadow is the ABSENCE of the pool).
+        /// </para>
+        ///
+        /// <para>Read-only by contract: registration goes through <see cref="RegisterLight"/>. Exposed as
+        /// the concrete list rather than copied, because this is read every frame by the pooling loop and
+        /// rule 7 does not allow an allocation there.</para>
+        /// </summary>
+        public static IReadOnlyList<SceneLight> LiveLights => Lights;
         /// <summary>How many casters are registered right now. Diagnostics and tests.</summary>
         public static int LiveCasterCount => Casters.Count;
 
@@ -336,7 +355,24 @@ namespace HiddenHarbours.Art
                 // player and her SpriteShadow is on the root) is NOT covered: that wants an ancestor walk,
                 // and it belongs to the PR that introduces the mounting.
                 Transform carrier = light.transform;
-                float r = Mathf.Max(light.Range, 1e-4f);
+                // ⚠️⚠️ PAIRED BY THE LAMP'S REACH, NOT BY ITS BLOOM — and reading the wrong one of those
+                // two silently switched every lamp shadow in the game OFF.
+                //
+                // This line read `light.Range` until 2026-09-04. Range then WAS the pool a lamp lights, so
+                // "is this caster inside the light" and "how big is the glow" were the same question and
+                // the same number. #733 split them on the owner's ruling: Range became the BLOOM, the size
+                // of the lit fitting, and a lantern post's dropped from 3.6 m to 0.14 m. A bollard three
+                // and a half metres away is not within fourteen centimetres of anything, so the pairing
+                // loop stopped finding it — no error, no warning, and every plate simply came back with no
+                // lamp shadows in it. Measured on the St Peters pier: 0 shadow pixels where there had been
+                // a bollard's rake.
+                //
+                // ⭐ The lesson is the general one: when a number stops meaning what it meant, the bug is
+                // not where you changed it — it is in every OTHER reader of the old meaning. Grep them.
+                // <see cref="LampPoolSystem"/> reads the reach for the same reason: a lamp throws a shadow
+                // of whatever stands in the ground it lights, so the two are the same question again, now
+                // asked of the right number.
+                float r = Mathf.Max(ShadowReachOf(light), 1e-4f);
                 float r2 = r * r;
                 for (int ci = 0; ci < casterCount; ci++)
                 {
@@ -378,6 +414,16 @@ namespace HiddenHarbours.Art
         /// gate — the SAME gate the additive shader applies (<see cref="LightMath.NightGateWithFallback"/>),
         /// so the shadow and its glow fade together at dawn and are both absent at noon.
         /// </summary>
+        /// <summary>
+        /// How far this lamp throws shadows: its <see cref="SceneLight.ReachMetres"/> — the ground it
+        /// lights — falling back to <see cref="SceneLight.Range"/> for a light that has never published a
+        /// reach. The fallback is what keeps a bare hand-placed <c>SceneLight</c> behaving exactly as it did
+        /// before the split, and it is safe because a light with no reach has no pool either: for such a
+        /// light the two numbers still mean the one thing they always meant.
+        /// </summary>
+        internal static float ShadowReachOf(SceneLight light) =>
+            light == null ? 0f : (light.ReachMetres > 0f ? light.ReachMetres : light.Range);
+
         private static bool LightIsLive(SceneLight light, float tintLuminance, bool cycleActive, out float gate)
         {
             gate = 0f;

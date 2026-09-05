@@ -517,6 +517,12 @@ namespace HiddenHarbours.Art
             // The searchlight's height reaches the LAND lamp too, so the shadows it throws (ADR 0016,
             // lights PR B) rake by the same 2.5 m the water's wave relief already lights it from.
             _light.LampHeightMeters = _lampHeightMeters;
+            // ⭐ AND THE BEAM LIGHTS THE GROUND IT SWEEPS, at its FULL throw. This is the one place the
+            // reach is not the bloom by a long way: the quad is pulled back to 0.3 of Range so it reads as
+            // a source (#733), while the light itself still reaches nine metres — which is what the water's
+            // own relief term has always used, and now what the ground pool uses too. Set from _range
+            // rather than from _light.Range for exactly that reason: Range has the quad scale in it.
+            _light.ReachMetres = _range;
             // The bow anchor: forward along the boat heading (transform.up) plus any side offset. SceneLight
             // throws the cone along this transform's up, so the beam already points along the bow.
             _light.OriginOffset = new Vector2(_sideOffset, _bowOffset);
