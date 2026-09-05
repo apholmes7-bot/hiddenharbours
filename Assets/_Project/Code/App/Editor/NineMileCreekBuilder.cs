@@ -992,6 +992,12 @@ namespace HiddenHarbours.App.Editor
             // the run with them. Places and does NOT drive: the component reads the clock at play.
             NineMileCreekTrips.Place(buyersTruck, creekPeople);
 
+            // …and the other two runs: the chandler down to the Route 91 pumps mid-morning, the outboard
+            // man up from the wharf in the afternoon. Their machines are PLACED here, on the verge beside
+            // the two who drive them, because the village authors vehicle ground only at its two ends and
+            // a trip owns its driver's spot all day — see NineMileCreekTrips.PlaceTownRuns.
+            NineMileCreekTrips.PlaceTownRuns(creekPeople);
+
             // --- DEV BOOTSTRAP (owner iteration: press Play IN NINE MILE CREEK and walk/fish immediately) ------
             // Nine Mile Creek is a region scene: the real player arrives with the persistent core from St Peters,
             // so playing this scene directly used to give "no character loads" (the owner's report). The
