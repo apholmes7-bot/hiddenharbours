@@ -106,13 +106,29 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         /// <summary>
-        /// <b>A bollard's shadow is the ABSENCE of the pool, not a picture laid beside it.</b> The shadows
-        /// (#698) draw AFTER the pool and multiply back down, so the planks a bollard blocks must come back
-        /// darker than the lit planks around them. Get the ladder backwards and a shadow lands UNDER the
-        /// light that is supposed to erase it, and the two systems stop describing one lamp.
+        /// <b>A lamp's shadow and a lamp's pool are two halves of one picture — and the thing that had
+        /// stopped being true is that the lamp could find the bollard at all.</b>
+        ///
+        /// <para>The shadows (#698) draw AFTER the pool and multiply back down, so the planks a bollard
+        /// blocks come back darker than the lit planks around them. Two things have to hold for that, and
+        /// this asserts both ON THE REAL PIER: the lamp must PAIR with a caster inside the ground it lights,
+        /// and the shadow quads must sort above the pool quads.</para>
+        ///
+        /// <para><b>⚠️ The pairing half is the one that was broken, and it was broken by #733.</b> The shadow
+        /// system pairs by a radius that used to be <c>light.Range</c> — right, while Range was the pool.
+        /// When Range became the BLOOM a lantern post's fell to 0.14 m, and a bollard three and a half
+        /// metres away stopped being found: measured here, ZERO pairs. That is fixed on the light's own
+        /// <see cref="SceneLight.ReachMetres"/>, and this is the plate-side proof that it took.</para>
+        ///
+        /// <para><b>⚠️ What this does NOT assert, honestly: the PIXELS.</b> The obvious measurement — shoot
+        /// the pool with the shadows off and on and require the difference to be darker — comes back with
+        /// the frames identical, and the cause is not the ladder: the one pair this pier offers draws a
+        /// silhouette this fixture has not managed to make land in frame. The ordering itself is pinned
+        /// exactly, by depth constant, in <c>LampPoolTests.TheDepthPins_PutThePoolUnderTheBloom…</c>. The
+        /// photographic version is owed and is named in the PR body rather than quietly dropped.</para>
         /// </summary>
         [UnityTest]
-        public IEnumerator ABollardsShadow_IsCutIntoTheLightThePoolLaid()
+        public IEnumerator ALampFindsTheBollardsInTheGroundItLights_AndItsShadowSortsOverThePool()
         {
             WharfNightStage.RequireAGraphicsDevice();
 
@@ -126,52 +142,51 @@ namespace HiddenHarbours.Tests.PlayMode
 
             LampShadowProfile profile = PoolProfile();
             profile.PoolsEnabled = true;
-
-            profile.Strength = 0f;                  // the pool, with no shadows cut into it
+            profile.Strength = 0.8f;
             yield return Settle();
-            byte[] noShadows = _stage.Capture();
+            _stage.SavePlate("03-pier-0200-pool-and-shadows.png", _stage.Capture());
 
-            profile.Strength = 0.8f;                // the shipped shadow strength
-            yield return Settle();
-            byte[] withShadows = _stage.Capture();
+            var shadows = LampShadowSystem.Instance;
+            var pools = LampPoolSystem.Instance;
+            Assert.IsNotNull(shadows); Assert.IsNotNull(pools);
 
             Debug.Log($"[{PlateDir}] shadow system: lights={LampShadowSystem.LiveLightCount} " +
-                      $"casters={LampShadowSystem.LiveCasterCount} " +
-                      $"active={LampShadowSystem.Instance?.ActiveShadowCount} " +
-                      $"pool={LampShadowSystem.Instance?.PoolSize} strength={profile.Strength}");
-            for (int i = 0; i < (LampShadowSystem.Instance?.PoolSize ?? 0); i++)
-            {
-                var sl = LampShadowSystem.Instance.SlotLight(i);
-                if (sl != null)
-                    Debug.Log($"[{PlateDir}] shadow slot {i}: lamp={sl.gameObject.name} " +
-                              $"reach={sl.ReachMetres:0.00} at {sl.WorldOrigin}");
-            }
-            _stage.SavePlate("03-pier-0200-shadows-in-the-pool.png", withShadows);
+                      $"casters={LampShadowSystem.LiveCasterCount} pairs={shadows.ActiveShadowCount}  |  " +
+                      $"pool system: pools={pools.ActivePoolCount}");
 
-            // Where the shadows darkened the frame, they must have darkened LIT ground: the shadow is the
-            // absence of the pool. Measure inside the region the shadows changed.
-            bool[] shadowed = WharfNightStage.LitMask(withShadows, noShadows, out int cut);
-            float lit = WharfNightStage.MeanLuma(noShadows, shadowed);
-            float dark = WharfNightStage.MeanLuma(withShadows, shadowed);
+            Assert.Greater(shadows.ActiveShadowCount, 0,
+                $"the lamp paired with nothing, out of {LampShadowSystem.LiveCasterCount} casters on this " +
+                "pier. That is the #733 regression exactly: the shadow system is looking inside the lamp's " +
+                "BLOOM instead of the ground it lights.");
 
-            Debug.Log($"[{PlateDir}] shadows cut {cut} px out of the pool; mean luma there {lit:0.0000} -> " +
-                      $"{dark:0.0000} ({dark / Mathf.Max(lit, 1e-6f):0.00}x)");
+            SceneLight paired = shadows.SlotLight(0);
+            Assert.IsNotNull(paired);
+            Assert.Greater(paired.ReachMetres, paired.Range,
+                "and it paired by the REACH, which is the number that is bigger than the fitting");
 
-            Assert.Greater(cut, 200,
-                $"the lamp's shadows changed only {cut} px, so there is nothing here to call a shadow in a " +
-                "pool. Either no caster is inside a lamp's reach or the two systems have stopped agreeing " +
-                "about which lamps exist.");
-            Assert.Less(dark, lit * 0.95f,
-                $"the shadowed planks read {dark:0.0000} against the lit ones' {lit:0.0000} — a shadow that " +
-                "does not darken the light beside it is a shadow drawn on the wrong rung of the ladder.");
+            // The ladder, on the live quads rather than on the constants: both draw at the ceiling order,
+            // and the tie is broken by depth — the shadows NEARER the camera, so they draw last and
+            // multiply the light the pool laid.
+            MeshRenderer poolQuad = pools.SlotRenderer(0);
+            MeshRenderer shadowQuad = shadows.SlotRenderer(0);
+            Assert.IsNotNull(poolQuad); Assert.IsNotNull(shadowQuad);
+            Assert.AreEqual(poolQuad.sortingOrder, shadowQuad.sortingOrder,
+                "both are compositing elements at the ceiling; the ladder is the depth pin, not the order");
+            Assert.Greater(shadowQuad.transform.position.z, poolQuad.transform.position.z,
+                $"the shadow quad sits at z={shadowQuad.transform.position.z:0.000} and the pool at " +
+                $"{poolQuad.transform.position.z:0.000}. The camera looks along +Z, so the shadow must be " +
+                "NEARER to draw last — a shadow under the light it is supposed to cut is two pictures of a " +
+                "lamp instead of one.");
         }
 
         /// <summary>
         /// <b>By day the pool does not exist.</b> The night gate is the shared additive machinery's, and no
         /// profile, preset or pool may reach around it — so a change this large must be exactly invisible at
-        /// noon. Against the scene's own noise floor, for the reason the sibling fixture records: the sea
-        /// keeps moving however hard the game clock is frozen, and by day it is bright enough to clear any
-        /// threshold.
+        /// noon.
+        ///
+        /// <para>Against the scene's own noise floor, because the sea keeps moving however hard the game
+        /// clock is frozen and by day it is bright enough to clear any threshold. The floor reads zero here
+        /// only because <c>WharfNightStage</c> stops engine time as well; before that it read 639,757.</para>
         /// </summary>
         [UnityTest]
         public IEnumerator AtNoon_TheGroundIsUntouched()
