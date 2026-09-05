@@ -147,19 +147,28 @@ namespace HiddenHarbours.Tests.EditMode
         // =============================================================================================
 
         [Test]
-        public void EveryBerth_IsWaterOnTheRuledGate_NotDryLandAndNotTheOpenBay()
+        public void EveryBerth_IsWaterTheFleetCanLieIn_NotDryLandAndNotTheOpenBay()
         {
+            // ⚠ OWNER RULING 2026-09-04, and it moved this assertion: *"the bullpen should always have water at low tide so all the lobster boats can park on the wall."* The −1.6 m shoal is still the gate everywhere else in the basin — it is what the flats, the crossing and the guts are measured against — but along the berth line the trench (NineMileCreekMainland §8b¾) has cut it to the depth the fleet lies in. What used to be "exactly the gate" is now "deeper than the gate, by the trench's own arithmetic".
+            //
+            // ⚠ The GATE has not gone: what admits a hull to this harbour was never the berth, it is the
+            // FAIRWAY that leads to it (NineMileCreekChannelTests names that finding). The trench is cut
+            // for the same deepest resident the fairway is, so nothing new is admitted by it.
             var terrain = MakeCreekTerrain();
+            float needed = NineMileCreekMainland.BerthDepthNeededMetres;
 
             for (int i = 0; i < NineMileCreekWharf.BerthCount; i++)
             {
                 Vector2 berth = NineMileCreekWharf.BerthPos(i);
                 float bed = terrain.ElevationAt(berth);
 
-                Assert.That(bed, Is.EqualTo(NineMileCreekMainland.BasinBedElevation).Within(0.01f),
-                    $"berth {i} at {berth} lies over {bed:0.00} m. The harbour shoal IS the gate " +
-                    "(plan §6): a berth deeper than it would admit hulls the region is meant to " +
-                    "exclude, and one shallower would strand the fleet it is built for");
+                Assert.That(NineMileCreekMainland.SpringLowWater - bed,
+                    Is.GreaterThanOrEqualTo(needed - 1e-3f),
+                    $"berth {i} at {berth} lies over {bed:0.00} m and carries " +
+                    $"{NineMileCreekMainland.SpringLowWater - bed:0.00} m at spring low, against the " +
+                    $"{needed:0.00} m the deepest resident needs to lie there");
+                Assert.That(bed, Is.GreaterThan(NineMileCreekMainland.BayFloorElevation),
+                    $"berth {i} has been cut to the open bay's floor");
             }
         }
 
@@ -186,22 +195,34 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void TheGateIsEMERGENT_TheFleetFloatsOnTheFloodAndTakesTheGroundOnTheEbb()
+        public void TheGateIsEMERGENT_AndItIsTheBASINThatBares_NotTheBerths()
         {
-            // ⭐ THE REGION'S WHOLE TEETH, as arithmetic. Gating here is not a rule anybody wrote: it is
-            // waterLevel − bed > draught against a −1.6 m shoal under a ±2.2 m swing. A working wharf on a
-            // big-tide coast SHOULD dry out under its fleet at spring low — the ladders and tyre fenders
-            // in the owner's photograph exist for exactly that — and the old region, a dredged −6 m basin,
-            // could not do it at any state of the tide.
+            // ⭐ THE REGION'S WHOLE TEETH, as arithmetic, and — since 2026-09-04 — measured one wharf's
+            // width further out. Gating here is not a rule anybody wrote: it is waterLevel − bed > draught
+            // against a −1.6 m shoal under a ±2.2 m swing, and a working wharf on a big-tide coast SHOULD
+            // dry out at spring low — the ladders and tyre fenders in the owner's photograph exist for
+            // exactly that.
+            //
+            // ⚠ OWNER RULING 2026-09-04, and it moved this assertion: *"the bullpen should always have water at low tide so all the lobster boats can park on the wall."* The −1.6 m shoal is still the gate everywhere else in the basin — it is what the flats, the crossing and the guts are measured against — but along the berth line the trench (NineMileCreekMainland §8b¾) has cut it to the depth the fleet lies in. What used to be "exactly the gate" is now "deeper than the gate, by the trench's own arithmetic".
+            // So the drying is asserted where it still happens — the FLATS — and the berth is asserted to
+            // float, which is what the ruling bought. The ladders keep their job: the deck stands 3.00 m
+            // over a berth that now carries 2.01 m at dead low water, so you still climb 5 m of wall.
             var terrain = MakeCreekTerrain();
-            float bed = terrain.ElevationAt(NineMileCreekWharf.BerthPos(0));
+            float berth = terrain.ElevationAt(NineMileCreekWharf.BerthPos(0));
+            float flat = terrain.ElevationAt(new Vector2(120f, 56f));
 
             const float LobsterBoatDraught = 1.30f;
-            Assert.That(TidalExposure.WaterDepth(SpringHigh, bed), Is.GreaterThan(LobsterBoatDraught),
+            Assert.That(TidalExposure.WaterDepth(SpringHigh, berth), Is.GreaterThan(LobsterBoatDraught),
                 "the lobster boat this berth exists for must float at high water, or the wharf is a wall");
-            Assert.That(TidalExposure.WaterDepth(SpringLow, bed), Is.LessThanOrEqualTo(0f),
-                "…and the basin must BARE at spring low. If it never dries the shoal has stopped being a " +
-                "gate and Nine Mile Creek has quietly become the dredged harbour Port Greywick is");
+            Assert.That(TidalExposure.WaterDepth(SpringLow, berth),
+                Is.GreaterThanOrEqualTo(NineMileCreekMainland.BerthDepthNeededMetres - 1e-3f),
+                "…and she must still float at dead low spring, which is the ruling");
+
+            Assert.That(TidalExposure.WaterDepth(SpringLow, flat), Is.LessThanOrEqualTo(0f),
+                "the harbour FLATS must still bare at spring low. If nothing dries, the shoal has stopped " +
+                "being a gate and Nine Mile Creek has quietly become the dredged harbour Port Greywick is");
+            Assert.That(TidalExposure.WaterDepth(SpringHigh, flat), Is.GreaterThan(0f),
+                "…and flood again at spring high, or it is not a flat but a field");
         }
 
         [Test]

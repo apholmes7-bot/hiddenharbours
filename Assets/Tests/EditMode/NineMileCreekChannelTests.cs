@@ -282,22 +282,46 @@ namespace HiddenHarbours.Tests.EditMode
         // =============================================================================================
 
         /// <summary>
-        /// ⚠⚠ <b>THE RULED GATE IS UNTOUCHED, AND IT HAS TO BE.</b> Nine Mile Creek's teeth are the
-        /// −1.6 m shoal under the berths: the fleet floats on the flood and takes the ground on the ebb,
-        /// which is the middle rung of the owner's three-harbour ladder (St Peters ~0.6, here ~1.6,
-        /// Greywick 6 m dredged). Deepening the berths would retune that ladder — a much larger ruling
-        /// than the one made — so the channel is routed to leave them EXACTLY alone, and this measures it
-        /// to a tolerance far tighter than the four committed tests that also hold it.
+        /// ⭐⭐ <b>THE BERTHS HOLD WATER AT SPRING LOW — the owner's 2026-09-04 reversal, measured.</b>
+        /// *"the bullpen should always have water at low tide so all the lobster boats can park on the
+        /// wall."* This test was the opposite of itself until then: it asserted every berth still lay on
+        /// the −1.6 m gate to a tolerance of 1e-4, because the 08-19 pass read the ruling as the channel
+        /// only. It now asserts the ruling that replaced it, and the dock zone and the arrival park come
+        /// with the berths — they sit ON the berth line (y = 84.5, half a metre off it), which is why
+        /// arriving by boat at dead low water used to put you down on mud.
+        ///
+        /// <para><b>Two depths, because a hull is not a point.</b> On the berth mark the trench carries
+        /// the fairway's own standard; at the outboard edge of the widest hull's footprint it carries
+        /// what she needs to float. The second is the one the bed was solved for and the one a
+        /// flat-bottomed reading of the cut would have missed by 0.26 m.</para>
         /// </summary>
         [Test]
-        public void TheRuledGateIsExactlyUntouched_Berths_Dock_AndArrival()
+        public void EveryBerthHoldsWaterAtSpringLow_AndSoDoTheDockZoneAndTheArrival()
         {
+            float onTheMark = NineMileCreekMainland.DeepestResidentDraughtMetres
+                            + NineMileCreekMainland.ChannelKeelClearanceMetres
+                            + NineMileCreekMainland.ChannelDredgeMarginMetres;
+            float underTheHull = NineMileCreekMainland.BerthDepthNeededMetres;
+            float foot = NineMileCreekMainland.BerthFootprintHalfWidthMetres;
+
             for (int i = 0; i < NineMileCreekMainland.BerthCount; i++)
             {
                 Vector2 berth = NineMileCreekMainland.BerthPos(i);
-                Assert.That(Elev(berth), Is.EqualTo(Shoal).Within(1e-4f),
-                    $"berth {i} at {berth} now lies on {Elev(berth):0.000} m. The channel has cut into " +
-                    "the RULED GATE — the region's whole teeth — which the ruling did not ask for.");
+                Assert.That(SpringLow - Elev(berth), Is.GreaterThanOrEqualTo(onTheMark - 1e-3f),
+                    $"berth {i} at {berth} carries {SpringLow - Elev(berth):0.00} m at spring low against " +
+                    $"the {onTheMark:0.00} m the fairway that leads to it is cut for. The boats cannot " +
+                    "park on the wall, which is the whole of the ruling.");
+
+                // …and out to the far side of the widest hull that lies here. SEAWARD only: the wall's
+                // own fill stands up on the other side and a channel may not cut a wharf away.
+                for (float dy = 0f; dy <= foot + 1e-4f; dy += 0.25f)
+                {
+                    Vector2 p = new Vector2(berth.x, berth.y - dy);
+                    Assert.That(SpringLow - Elev(p), Is.GreaterThanOrEqualTo(underTheHull - 1e-3f),
+                        $"berth {i} carries only {SpringLow - Elev(p):0.00} m at {dy:0.00} m outboard of " +
+                        $"its mark, against the {underTheHull:0.00} m the widest resident needs. A hull " +
+                        "is not a point and a smoothstep cut is shallowest at the edge of her.");
+                }
             }
 
             foreach (var (what, p) in new (string, Vector3)[]
@@ -306,9 +330,84 @@ namespace HiddenHarbours.Tests.EditMode
                          ("the arrival park", NineMileCreekMainland.ArrivalPos),
                      })
             {
-                Assert.That(Elev(new Vector2(p.x, p.y)), Is.EqualTo(Shoal).Within(1e-4f),
-                    $"{what} at {p} is no longer on the gate — the channel strayed into it");
+                Assert.That(SpringLow - Elev(new Vector2(p.x, p.y)),
+                    Is.GreaterThanOrEqualTo(underTheHull - 1e-3f),
+                    $"{what} at {p} carries {SpringLow - Elev(new Vector2(p.x, p.y)):0.00} m at spring " +
+                    "low — you would arrive by boat onto mud");
             }
+        }
+
+        /// <summary>
+        /// ⚠⚠ <b>THE JOURNEY, NOT THE TRENCH — the law this region earned the first time (#583).</b> A
+        /// lane can be wet at every station of its own line and still go nowhere. Walked from berth 1 and
+        /// from berth 14 all the way to the entrance's own seaward waypoint, every metre must carry the
+        /// fairway's depth at spring low.
+        ///
+        /// <para><b>Sampled off both arrays on purpose.</b> The stations below are struck every metre
+        /// ALONG the polylines rather than taken from their vertices, so the fixture cannot be satisfied
+        /// by the very points the geometry was authored from — the blind spot that hid #583's original
+        /// 7 m sill. Measured before this test existed: without the trench's junction leg the worst
+        /// station on this walk is <b>0.53 m</b>.</para>
+        /// </summary>
+        [Test]
+        public void EveryBerthCanLeaveOnAnyTide_TheWholeWayToTheBay()
+        {
+            float needed = NineMileCreekMainland.DeepestResidentDraughtMetres
+                         + NineMileCreekMainland.ChannelKeelClearanceMetres
+                         + NineMileCreekMainland.ChannelDredgeMarginMetres;
+
+            foreach (int berth in new[] { 0, NineMileCreekMainland.BerthCount - 1 })
+            {
+                var route = new List<Vector2> { NineMileCreekMainland.BerthPos(berth) };
+                // west along the trench to its junction (the trench is authored seaward -> harbour, so
+                // walking it backwards is walking OUT), then the meander, likewise backwards, to the bay.
+                var trench = NineMileCreekMainland.BerthTrenchWaypoints;
+                for (int i = trench.Length - 2; i >= 0; i--) route.Add(trench[i]);
+                var lane = NineMileCreekMainland.ChannelWaypoints;
+                for (int i = lane.Length - 2; i >= 0; i--) route.Add(lane[i]);
+
+                float worst = float.MaxValue;
+                Vector2 worstAt = route[0];
+                for (int i = 0; i < route.Count - 1; i++)
+                {
+                    float run = Vector2.Distance(route[i], route[i + 1]);
+                    int steps = Mathf.Max(1, Mathf.CeilToInt(run));
+                    for (int s = 0; s < steps; s++)
+                    {
+                        // half-step offsets: never a vertex of either array
+                        Vector2 p = Vector2.Lerp(route[i], route[i + 1], (s + 0.5f) / steps);
+                        float depth = SpringLow - Elev(p);
+                        if (depth < worst) { worst = depth; worstAt = p; }
+                    }
+                }
+
+                Assert.That(worst, Is.GreaterThanOrEqualTo(needed - 1e-3f),
+                    $"leaving berth {berth} at dead low spring, the shallowest metre of the way out is " +
+                    $"{worst:0.00} m at {worstAt} against the {needed:0.00} m the deepest resident needs. " +
+                    "A berth pocket that does not reach the fairway is a pond.");
+            }
+        }
+
+        /// <summary>
+        /// ⚠ <b>THE WALL ITSELF IS STILL THERE.</b> The one thing the trench must not do is dredge the
+        /// wharf it lies against: <c>MainlandChannel.CuttableCeiling</c> is what stops it, and this is the
+        /// test that would notice if it were ever raised. The deck, the apron and the yard all stand
+        /// exactly where they stood.
+        /// </summary>
+        [Test]
+        public void TheTrenchDidNotDredgeTheWharfItLiesAgainst()
+        {
+            foreach (var (what, p) in new (string, Vector2)[]
+                     {
+                         ("the quay deck", new Vector2(128f, 92f)),
+                         ("the quay's south lip", new Vector2(128f, 87.5f)),
+                         ("the apron", new Vector2(87f, 68f)),
+                         ("the breakwater crest", new Vector2(140f, 38f)),
+                         ("the spit yard", new Vector2(119f, 118f)),
+                     })
+                Assert.That(Elev(p), Is.GreaterThan(SpringHigh),
+                    $"{what} at {p} now stands at {Elev(p):0.00} m — the trench has cut into structure. " +
+                    "Its CuttableCeiling is the guard, and something has moved it.");
         }
 
         /// <summary>
@@ -319,14 +418,19 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void TheHarbourFlatsStillBareAtSpringLow()
         {
-            // Inside the shoal, clear of the lane: the ground the ebb uncovers.
+            // Inside the shoal, clear of both lanes: the ground the ebb uncovers.
+            //
+            // ⚠ TWO PROBES MOVED ON 2026-09-05, and the move is the reversal rather than a fudge. This
+            // list used to open with (120, 82) and (150, 84) — "between the lane and the north wall" —
+            // and that strip is now the BERTH TRENCH, by the owner's own ruling. What is left either
+            // side is the south half of the basin, which is where the meander's flats always were.
             var flats = new[]
             {
-                new Vector2(120f, 82f),   // between the lane and the north wall (south of its deck)
-                new Vector2(150f, 84f),
+                new Vector2(120f, 56f),   // between the lane and the breakwater, west
+                new Vector2(150f, 52f),   // …and east
                 new Vector2(126f, 48f),   // south of the lane, toward the breakwater
                 new Vector2(160f, 46f),
-                new Vector2(180f, 80f),   // the basin's north-east corner
+                new Vector2(180f, 80f),   // the basin's north-east corner, past both lanes' ends
             };
 
             foreach (Vector2 p in flats)
@@ -381,32 +485,65 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         /// <summary>
-        /// ⭐ <b>THE ART FLOOR, and it is the constraint that shaped the route.</b> The committed quay
-        /// face is drawn in ONE course from the deck lip down to the rig's own mud line — rig z −1.4 m,
-        /// which on this coast is −3.60 m of game elevation. Cut the bed below that anywhere a wall
-        /// stands and the wall stops reaching the seabed: a strip of nothing under a working wharf.
+        /// ⭐⭐ <b>THE ART FLOOR — and the 2026-09-05 finding that it never guarded a VISIBLE defect.</b>
         ///
-        /// <para>⚠ THIS IS ALSO THE FLAG THE OWNER OWES A RULING ON. Floating the working fleet at its
-        /// WALL berths at spring low would need −3.70 m (the 1.30 m lobster boat) or −3.80 m (the 1.40 m
-        /// Cape Islander) — 0.10 to 0.20 m past what the art draws. That is an art re-bake, not a terrain
-        /// edit, which is why this pass cut a lane instead of deepening the basin.</para>
+        /// <para>This test used to read: the committed quay face is drawn in one course from the deck lip
+        /// down to the rig's mud line (rig z −1.4 m = −3.60 m of game elevation), so cutting the bed below
+        /// that anywhere a wall stands leaves <i>"a strip of nothing under a working wharf"</i>. It named
+        /// itself "the constraint that shaped the route", and it carried the flag that floating the fleet
+        /// at the WALL would need 0.10–0.20 m past what the art draws — <b>an art re-bake, not a terrain
+        /// edit</b>. The owner gave that ruling on 2026-09-04, so the berth trench was cut and this test
+        /// went red at (95.00, 86.25) by 0.14 m. It was then measured rather than obeyed.</para>
+        ///
+        /// <para><b>The strip is under water, at every state of tide, and always was.</b> The face's foot
+        /// is at <c>springLow + mudZ</c>, and <c>mudZ</c> is NEGATIVE — the rig draws down past its own
+        /// chart datum — so the foot is 1.40 m below the lowest water this coast ever has. Any bed the
+        /// face fails to reach is by definition below the foot, hence lower still, hence never uncovered.
+        /// What fills the gap is the sea, which is what a dredged berth looks like. Plated at dead low
+        /// spring: <c>docs/art/spikes/nmc-wet-wall/</c>.</para>
+        ///
+        /// <para>So the guard is restated as the disjunction it always was, with both arms asserted. It
+        /// keeps its teeth for the case that would make it bite: a re-bake that lifted <c>mudZ</c> to or
+        /// above the rig's datum would put the drawn foot at or above the lowest water, and a bed under a
+        /// wall could then be exposed and short at the same time.</para>
         /// </summary>
         [Test]
-        public void TheCommittedQuayFaceArtStillReachesTheBedEverywhereAWallStands()
+        public void TheQuayFacesFootIsNeverLeftSTANDINGShortOfGroundThatBARES()
         {
             // rig z = 0 is the LOWEST water, so the drawn face's foot in game elevation is simply
             // spring low plus the rig's mud line. Derived from the quay-face plan, never re-typed.
             float artFloor = SpringLow + NineMileCreekQuayFace.BakedRigMudZ;
             Assert.That(artFloor, Is.EqualTo(-3.60f).Within(0.01f), "−2.20 m of spring low, −1.40 m of mud");
+            Assert.That(artFloor, Is.LessThan(SpringLow),
+                "the drawn foot has come up to or above the lowest water. Every shortfall under this " +
+                "wharf can now be SEEN, and the first arm below is the one that matters again");
 
             Rect deck = NineMileCreekWharf.DeckFootprint();
             Rect apron = NineMileCreekWharf.ApronFootprint();
 
+            float deepest = float.MaxValue;
             foreach (Rect wall in new[] { deck, apron })
                 foreach (Vector2 p in AroundTheFace(wall))
-                    Assert.That(Elev(p), Is.GreaterThanOrEqualTo(artFloor),
-                        $"the bed at {p} is {Elev(p):0.00} m, below the {artFloor:0.00} m the committed " +
-                        "one-course quay face is drawn down to. The wall would stop short of the mud.");
+                {
+                    float bed = Elev(p);
+                    deepest = Mathf.Min(deepest, bed);
+                    bool reaches = bed >= artFloor;
+                    bool drowned = bed <= SpringLow;
+                    Assert.That(reaches || drowned, Is.True,
+                        $"the bed at {p} is {bed:0.00} m: the face is drawn only to {artFloor:0.00} m and " +
+                        $"the lowest water is {SpringLow:0.00} m, so the shortfall would be UNCOVERED. " +
+                        "A wall must either reach the mud or stand in water.");
+                }
+
+            // On the record, so the next reader has the number rather than the argument: how far the
+            // trench takes the bed past what the art draws, everywhere a wall stands.
+            Assert.That(deepest, Is.LessThan(artFloor),
+                "no wall on this wharf now stands in water deeper than its own drawn face. If that is " +
+                "true again the berth trench has been filled in and the owner's ruling has been undone");
+            TestContext.WriteLine(
+                $"[wet-wall] deepest bed against a wall {deepest:0.00} m, the drawn face reaches " +
+                $"{artFloor:0.00} m, lowest water {SpringLow:0.00} m — the shortfall of " +
+                $"{artFloor - deepest:0.00} m lies {SpringLow - artFloor:0.00} m under the surface.");
         }
 
         // =============================================================================================
