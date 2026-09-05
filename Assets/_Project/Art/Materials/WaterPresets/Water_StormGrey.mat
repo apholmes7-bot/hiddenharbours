@@ -60,7 +60,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _CapAgeStrength: 0
+    - _CapAgeStrength: 1
     - _MirrorForm: 1
     - _MirrorSheen: 0.3125
     - _MirrorTiltScale: 6
@@ -99,22 +99,24 @@ Material:
     - _SpecSharpness: 14
     - _SparkleTexScale: 0.5
     - _SparkleTexStrength: 0.6
+    - _SunSideStrength: 1.7
+    - _SurfAgeStrength: 1
     - _SurfBandDither: 0.7
     - _SurfBands: 4
     - _SurfBarrelShade: 0.55
-    - _SurfBeatStrength: 0
+    - _SurfBeatStrength: 1
     - _SurfCrestBoost: 1.6
     - _SurfCrestWidth: 3
-    - _SurfDepositStrength: 0
+    - _SurfDepositStrength: 1
     - _SurfEvolveSpeed: 0.5
-    - _SurfFrontSlope: 0
+    - _SurfFrontSlope: 1
     - _SurfLipThrow: 1.1
     - _SurfLipWidth: 1.2
     - _SurfNoiseScale: 0.9
     - _SurfPlungeStrength: 1
     - _SurfPocketBoost: 1.7
     - _SurfPocketWidth: 4
-    - _SurfRunUpStrength: 0
+    - _SurfRunUpStrength: 1
     - _SurfStrength: 1
     - _SurfSupersedeFringe: 1
     - _SurfThreshold: 0.42

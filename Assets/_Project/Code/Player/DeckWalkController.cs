@@ -700,10 +700,18 @@ namespace HiddenHarbours.Player
         /// <summary>The seeding iteration itself, with nothing of this component's state in it — so the
         /// walk's own seating (<see cref="SeedDeckLocal"/>) and the boarding move's read-only question
         /// (<see cref="TryDeckPointWorld"/>) are the SAME maths and cannot drift into disagreeing about
-        /// where the deck is. Pure + static + allocation-free.</summary>
-        private static Vector2 SeedDeckLocalPure(Vector2 worldRelative, float heading, float elevation,
-                                                 BoatDeckDef deck, bool includeWashboards,
-                                                 ref int areaHint, out float heightMeters)
+        /// where the deck is. Pure + static + allocation-free.
+        ///
+        /// <para><b>⭐ PUBLIC because there is a THIRD caller now</b> (2026-09-04): the arrival's passenger
+        /// walk (<c>ArrivalDeckWalk</c>), which rides somebody else's hull and so cannot own one of these
+        /// components at all — the <c>ControlSwitcher</c> owns those and enables them by MODE, and an
+        /// arrival deliberately never sets a mode (she is not aboard HER boat). It joins the deck the same
+        /// way the aft door joins the sole: by reading a world point back into the hull frame. Handing it
+        /// this iteration rather than letting it write a second one is the whole of why the two cannot
+        /// drift into disagreeing about where the planking is.</para></summary>
+        public static Vector2 SeedDeckLocalPure(Vector2 worldRelative, float heading, float elevation,
+                                                BoatDeckDef deck, bool includeWashboards,
+                                                ref int areaHint, out float heightMeters)
         {
             float height = 0f;
             Vector2 seated = Vector2.zero;

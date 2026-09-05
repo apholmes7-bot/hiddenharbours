@@ -420,6 +420,7 @@ MonoBehaviour:
     Enclosed: 0
     SoleZMeters: 11.6
     CeilingZMeters: 0
+  InteriorRamps: []
   AzimuthCounterClockwise: 1
   RockRollDegrees: 0.85
   RockPitchDegrees: 0.4
@@ -449,3 +450,44 @@ MonoBehaviour:
   - Kind: 6
     RigLocalMetres: {x: 0, y: 37, z: 27.15}
     IntensityScale: 1
+  Panes:
+  - Wall: 2
+    CentreMetres: {x: 7.8, y: -45.2, z: 12.85}
+    HalfAcrossMetres: {x: 0, y: -0.21213183, z: 0}
+    HalfUpMetres: {x: 0, y: 0, z: 0.21213183}
+  - Wall: 1
+    CentreMetres: {x: -7.8, y: -45.2, z: 12.85}
+    HalfAcrossMetres: {x: 0, y: 0.21213183, z: 0}
+    HalfUpMetres: {x: 0, y: 0, z: 0.21213183}
+  - Wall: 2
+    CentreMetres: {x: 7.8, y: -43.5, z: 12.85}
+    HalfAcrossMetres: {x: 0, y: -0.21213183, z: 0}
+    HalfUpMetres: {x: 0, y: 0, z: 0.21213183}
+  - Wall: 1
+    CentreMetres: {x: -7.8, y: -43.5, z: 12.85}
+    HalfAcrossMetres: {x: 0, y: 0.21213183, z: 0}
+    HalfUpMetres: {x: 0, y: 0, z: 0.21213183}
+  - Wall: 2
+    CentreMetres: {x: 7.8, y: -41.8, z: 12.85}
+    HalfAcrossMetres: {x: 0, y: -0.21213183, z: 0}
+    HalfUpMetres: {x: 0, y: 0, z: 0.21213183}
+  - Wall: 1
+    CentreMetres: {x: -7.8, y: -41.8, z: 12.85}
+    HalfAcrossMetres: {x: 0, y: 0.21213183, z: 0}
+    HalfUpMetres: {x: 0, y: 0, z: 0.21213183}
+  - Wall: 2
+    CentreMetres: {x: 7.8, y: -40.1, z: 12.85}
+    HalfAcrossMetres: {x: 0, y: -0.21213183, z: 0}
+    HalfUpMetres: {x: 0, y: 0, z: 0.21213183}
+  - Wall: 1
+    CentreMetres: {x: -7.8, y: -40.1, z: 12.85}
+    HalfAcrossMetres: {x: 0, y: 0.21213183, z: 0}
+    HalfUpMetres: {x: 0, y: 0, z: 0.21213183}
+  - Wall: 2
+    CentreMetres: {x: 7.8, y: -38.4, z: 12.85}
+    HalfAcrossMetres: {x: 0, y: -0.21213183, z: 0}
+    HalfUpMetres: {x: 0, y: 0, z: 0.21213183}
+  - Wall: 1
+    CentreMetres: {x: -7.8, y: -38.4, z: 12.85}
+    HalfAcrossMetres: {x: 0, y: 0.21213183, z: 0}
+    HalfUpMetres: {x: 0, y: 0, z: 0.21213183}

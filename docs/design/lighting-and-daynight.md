@@ -209,8 +209,8 @@ standing in a shadow then simply draws over it.
 
 > This is a **trade, not a shading model**. Neither cut is right: one paints a blot on a canopy, the other
 > lets a grass tuft standing in a shadow draw over it un-shaded. The honest fix is a receiver that knows it
-> is in shade (a screen-space shade buffer, the `LampShadowSystem` pattern), which is its own PR. The trade
-> swaps a large visible error for a small one, and the plate is the argument.
+> is in shade — **§5.5, and it is built**, behind a switch that ships off. The trade swaps a large visible
+> error for a small one, and the plate is the argument.
 
 **4 · There is shade UNDER a crown.** At noon the shear is short and runs north, so the trunk foot — the one
 place you are certainly under the tree — was in full sun. A **ground-contact pool** now draws at the feet: a
@@ -275,6 +275,77 @@ published `_ShadowStrength`, which *is* `saturate(elevation)` with the weather f
   (drawn height 13.81 world units at PPU 32). Long, but drawn at the same faint `_ShadowStrength` — 0.22 at
   07:00 — that the low sun implies. Where a stand's rakes overlap the alphas stack and the wood darkens
   inside; a shared shadow buffer would fix that and is its own PR.
+
+### 5.5 A receiver reads shaded — the shade arm (OWNER-GATED, ships OFF)
+
+**The defect this closes.** Two systems in this project are called "shadows" and their receiver
+semantics are opposite:
+
+| | `LampShadowSystem` (§5.2, lamps) | `SpriteShadow` (the sun — trees, posts, the player) |
+|---|---|---|
+| what it draws | pooled quads at the compositing ceiling, `Blend Zero SrcColor` | a sheared copy of the caster's own sprite, `Blend SrcAlpha OneMinusSrcAlpha` |
+| where it sorts | **above everything**, ties broken by depth | **below its caster** (`caster.sortingOrder − 1`, and `SortByFarEnd` drops it further) |
+| a sprite standing in it | **is darkened** | **is NOT** — it draws over the shade at full brightness |
+
+So a lamp shadow darkens you and a sun shadow cannot, *by construction*. That is why §5.3 could ship
+"the ground under a crown is 6.1 % darker" and nothing else: a fisher standing at that trunk foot was
+never going to be shaded by a dark sprite sorted underneath her.
+
+**The fix, in one line.** `SpriteShadowProfile.ScreenSpaceShade` moves the SAME silhouettes — same
+casters, same shear, same stencil, same draw count — one rung up the compositing ladder: out of the
+decor band and into `SortingBands.SunShade` / `SunShadePool`, drawn with `Blend Zero SrcColor` so the
+fragment multiplies the assembled frame instead of hiding under it. Every pixel under the shade then
+loses the same fraction whoever drew it — the ground, the fisher standing on it, a mesh hull moored in
+it. It is `LampShadowSystem`'s rung applied to the sun.
+
+**The ladder, and why the sun's shade sits where it does** (pinned by one test, in
+`LampShadowMathTests.TheDepthPins_AreOrdered_OverlayThenShadowsThenGlow`):
+
+| rung | order | what it does |
+|---|---|---|
+| the world | ≤ `SortingBands.AboveDecor` | everything the player sees |
+| day/night tint | `SortingBands.WorldTint` (32760) | ADR 0013's whole-frame multiply |
+| **the sun's ground pool** | `SortingBands.SunShadePool` (32762) | multiply |
+| **the sun's cast shade** | `SortingBands.SunShade` (32763) | multiply |
+| the lamps' glow | `SceneLight.MaxSortingOrder` (32767), depth 0.10 | **additive** |
+| the lamps' shadows | same order, depth 0.06 (nearer ⇒ later) | multiply |
+
+Above the day/night tint is harmless (two multiplies commute). **Below the lamps' glow is not**: a lamp's
+light is ADDED, and a tree's shadow must not dim a lantern at dusk. Sorting order alone settles that, so
+the sun's shade needs no depth pin of its own — and it spends **two fixed orders and none in the decor
+band**, where the legacy arm spends `shadowDir.y × length × OrdersPerMetre` per caster inside a band that
+is already tight (ADR 0032).
+
+> ⚠️ **The cost, stated rather than bounded away.** A screen-space multiply darkens whatever occupies the
+> pixel, **including something that is above the shade in the world** rather than standing in it — a
+> boat's upper works, a roof edge, a gull. The lamp system already accepts exactly this cost. Both arms
+> are wrong in some frame: today nothing standing in a sun shadow is ever shaded; with the arm on,
+> something passing over one sometimes is. **The owner picks**, which is why this ships off.
+
+> ⚠️ **A caster is never darkened by its own cast silhouette.** Sorted under its caster the legacy arm got
+> that for free; at the ceiling a tree would otherwise wear its own crown at noon. The shade arm discards
+> on the caster's own opaque pixels — the same rule the lamp shader states — found in uv space through
+> the vertex shear (`_ShadowUVPerUnit`, the inverse of the sprite's own texture mapping). The
+> **ground-contact pool takes no such exclusion, deliberately**: it is shade lying flat on the ground at
+> the feet, and the trunk foot standing in it is the one place that is certainly under the crown.
+
+> ⚠️ **The arm is material STATE, not a keyword and not a property-block value** — blend mode is render
+> state, the same wall the stencil hit in §5.3. It is two shipped materials on one shader:
+> `Resources/SpriteShadow.mat` (alpha over, the shipped look) and `Resources/SpriteShadowShade.mat`
+> (multiply), with `Blend [_SrcBlend] [_DstBlend]` read per material. Material floats rather than a
+> shader keyword also means there is no variant for the stripper to drop out of a player build.
+
+**What the owner can change (no code)** — one field in `Resources/SpriteShadowProfile.asset`:
+
+| Want | Change |
+|---|---|
+| A receiver to read shaded at all | `Screen Space Shade` → on (ships **off**) |
+| How dark a receiver reads | `Max Alpha` (0.45) — it is now the SAME number for the ground and for what stands on it |
+| Nothing standing in a shadow to be shaded, as today | leave `Screen Space Shade` off |
+
+**Night is untouched either way.** The sun's shade rides `_ShadowStrength` (`saturate(elevation) ×
+weather`), so at sunset the alpha reaches 0, the renderer is disabled, and both arms are the same frame.
+The lamps and their shadows are not touched by any of this.
 
 ## 6. Night lights — additive 2D lights + the boat spotlight — SHIPPED (ADR 0016)
 
@@ -461,6 +532,116 @@ berths down. An NPC's beam follows her way instead: lit while she is running, ou
 | Cabin-glow occupied boost | `BoatLamps` | 1.5x while somebody is below |
 | Per-placement trim | `HullMeshDef.Lamps[].IntensityScale` | 1 (= the preset) on every hull today |
 | Master switch for a hull's glows | `BoatLamps.LampsOn` | on |
+
+### 6.2 A lit cabin is drawn as its WINDOWS — SHIPPED (ADR 0016, boat-lights PR 2c; owner ruling 2026-09-03)
+
+> The glows should be constrained to their space, if its interior it should be confined to the cabin with
+> the glow only coming through the windows.
+
+The cabin glow used to be a 1.5 m amber disc laid over the deck around the house. It is now two things, and
+the disc is gone:
+
+- **her glass, lit** — one additive mesh per hull, a quad per pane of glass her own rig publishes, drawn
+  from the four PROJECTED corners so a window is the right shape at every heading;
+- **a wash off each glazed wall** — one soft cone per wall, aimed outward through the hull's posed frame,
+  reaching **1.4x the width of one of that wall's windows** (not of the wall: five portholes over 6.8 m of
+  a tanker's accommodation must not add up to a floodlight).
+
+**The far side of the house culls itself.** A wall turning away foreshortens to nothing, hits zero area
+edge-on and then shows the viewer its inside — so the panes on it are dropped exactly there. Nothing to
+fade, nothing to pop, and no amber crossing her own roof.
+
+**Where the light is drawn matters.** These quads sit ABOVE the day/night multiply with the lamps. That is
+not a preference: the multiply is a whole-frame operation at sorting order ~32760 and a mesh hull draws well
+below it, so the brightest colour anything in her own pass could take comes out as the night tint itself
+(luminance ≈ 0.17 at 02:00). Making her `glas` emissive would have produced a paler dark-blue rectangle, not
+a lit window.
+
+**The navigation lamps came down to the size of their own fittings** in the same ruling — masthead 1.35 →
+0.50 m, stern 1.00 → 0.40 m, anchor 0.75 → 0.34 m, with the intensity carrying what the radius gave up. The
+sidelights did not move: they were already bounded by the gap between them. Their ORDER is unchanged, which
+is the part that carries meaning.
+
+**Two hulls keep the disc**, and it is named rather than hidden: the sport fishers' rigs publish a flat
+half-width for a side that curves in plan, so their portholes cannot be placed on the boat from the record
+alone. The probe refuses them, and `BoatLamps` falls them back to the glow they already had — degrade to
+the shipped look, never to an invisible boat. The fix is upstream.
+
+#### The tunables PR 2c added (rule 6)
+
+| Tunable | Where | Default |
+|---|---|---|
+| Restore yesterday's glows (the A/B, and the way back) | `GameConfig.BoatLegacyCabinGlow` | **off** — the confined look ships |
+| Lit-pane brightness | `BoatWindowGlow.PaneIntensity` | 0.72, over a night frame of ≈0.17 luminance |
+| How far a wall washes | `BoatLampPresets.WallSpillWindowMultiple` | 1.4 x one window's width, clamped to 0.50–1.60 m |
+| Wash cone half-angle / edge | `BoatLampPresets` | 45 degrees, 0.85 angular softness, **zero core** |
+| A hull's windows | `HullMeshDef.Panes` | derived by `BoatWindowProbe` from her rig; game-side, survives a re-bake |
+| When a pane is too far off her hull to place | `BoatWindowProbe.OnHullToleranceMetres` | 0.30 m (worst kept 0.203, best refused 0.453) |
+
+**How the owner sees it:** `Hidden Harbours/Rig Baking/Probe: boat windows (print the table)` prints every
+window in the fleet with its position, size and the way it faces; the writer beside it puts them into the
+defs. Flip `BoatLegacyCabinGlow` on the `GameConfig` asset to see yesterday's picture in the same build.
+### 6.3 The marks flash — nav light characters — SHIPPED (ADR 0016, boat-lights PR 2b)
+
+The buoys have carried their light characters as data since the kit landed (`NavBuoyDef.LightCharacter`
+/ `LightText`, ten mark types) under a note saying nothing flashed yet. They flash now. **Twenty-five
+lit marks stand in the two harbours** and each shows the rhythm the chart publishes for her.
+
+| Mark | Character | What she does |
+|---|---|---|
+| North cardinal | `Q` | quick, continuously — 60 a minute, never a pause |
+| East cardinal | `Q(3) 10s` | three quick flashes, then dark to ten seconds |
+| South cardinal | `Q(6) + LFl 15s` | six quick flashes **and then a long one** — the long flash is what tells her from the west |
+| West cardinal | `Q(9) 15s` | nine quick flashes, then dark to fifteen |
+| Isolated danger | `Fl(2) W 5s` | two white flashes, then dark to five |
+| Port hand (can, lit) | `Fl G 4s` | one **green** flash every four seconds |
+| Starboard hand (nun, lit) | `Fl R 4s` | one **red** flash every four seconds |
+| Mooring | *(none)* | unlit — and costs no light at all |
+
+**The colours are the other way round from a boat, and that is correct.** A vessel shows red to port and
+green to starboard. A lateral MARK in IALA Region B — the Canadian Coast Guard's convention, the one the
+kit is baked to — shows GREEN on the port hand and RED on the starboard. A test pins a buoy's green equal
+to the fleet's *starboard* sidelight and a buoy's red equal to the fleet's *port* one, so anybody
+"tidying" the two libraries to agree name-for-name turns every channel in the game inside out and finds
+out immediately.
+
+**The seconds are real seconds.** The master clock ticks once per wall-clock second (`TimeScale = 1`),
+so `Fl G 4s` is a flash every four seconds by the player's own watch — what the chart means.
+
+#### What the owner can change (no code)
+
+| Want | Change |
+|---|---|
+| A mark to show a different character | Her `NavBuoyDef.LightText` — `Fl G 4s`, `Q(3) 10s`, `Fl(2) W 5s`, `Q(6) + LFl 15s`… (data, ADR 0003) |
+| A mark to go dark | Clear her `LightText` **and** `LightCharacter`; she then costs no light quad at all |
+| The lanterns brighter, or to reach further | `NavLightPresets.LanternIntensity` / `LanternRangeMetres` — one place for all of them |
+| A different green (or red, or white) | `NavLightPresets` — one place, and the sidelight test will tell you if you have split the two libraries |
+| One mark switched off in a scene | `NavLight.Lamp On` on that instance |
+
+The grammar the text accepts is `F`, `Fl`, `LFl`, `Q`, `VQ`, an optional group `(N)`, an optional colour
+letter `W`/`G`/`R`/`Y`, an optional period `Ns`, and `+` between segments for a composite. **Anything it
+does not fully understand is refused with a reason** rather than drawn as a dark mark — a light that
+never lights looks exactly like a lamp that has failed, and this is channel furniture.
+
+#### Where the timing comes from (for reviewers)
+
+- **`NavLightCharacter`** (Core) — parses the chart abbreviation once; answers
+  `IsOn(totalSeconds, phaseSeconds)` as a pure function of the master clock. No accumulator, no
+  `Time.time`, nothing saved (rule 5). ⚠️ It parses `LightText`, **not** the `LightCharacter` id: the id
+  is lossy (`Q3` is the east cardinal but her ten-second period appears nowhere in it) and recovering it
+  would mean hard-coding IALA cardinal conventions into C#.
+- **`NavLightPhasePlan`** (Core) — shares each period out among the marks of that character **in one
+  region**, so no two wink together. Slots are handed out in sorted-id order, so placement order cannot
+  move a mark.
+- **`INavLightSource`** (Core) — the seam. A `NavBuoyDef` is a Boats type and a `SceneLight` is Art, and
+  those two do not reference each other (rule 4).
+- **`NavLightPresets`** (Art) — the look, one entry per colour.
+- **`NavLight`** (Art) — on the nav-buoy prefab. Mints one pooled `SceneLight` at the lantern (the top of
+  the mark's painted structure, derived from the bake, riding the bob) and switches it.
+
+**The flash is an enable, not a fade.** `SceneLight` pushes to the GPU on a throttled 20 Hz tick, so
+driving intensity would quantise a half-second quick flash by ±10 %. Toggling `enabled` lands the edge
+on the frame the character asks for and costs no quad while dark.
 
 ## 7. Migration to true URP 2D lights (still open)
 

@@ -34,6 +34,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
     {
         const string ShaderPath = "Assets/_Project/Art/Shaders/HiddenHarboursSpriteShadow.shader";
         const string MaterialPath = "Assets/_Project/Resources/SpriteShadow.mat";
+        const string ShadeMaterialPath = "Assets/_Project/Resources/SpriteShadowShade.mat";
 
         readonly List<Object> _spawned = new List<Object>();
 
@@ -84,6 +85,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.AreEqual(code.GroundContactAlpha, asset.GroundContactAlpha, 1e-6f, "GroundContactAlpha");
             Assert.AreEqual(code.GroundContactSoftness, asset.GroundContactSoftness, 1e-6f, "GroundContactSoftness");
             Assert.AreEqual(code.EdgeSoftness, asset.EdgeSoftness, 1e-6f, "EdgeSoftness");
+            Assert.AreEqual(code.ScreenSpaceShade, asset.ScreenSpaceShade, "ScreenSpaceShade");
 
             // The two proposals.
             Assert.AreEqual(3f, asset.MaxLength, 1e-6f,
@@ -126,6 +128,10 @@ namespace HiddenHarbours.Tests.Art.EditMode
         {
             var p = Default();
             Assert.AreEqual(0.45f, p.MaxAlpha, 1e-6f, "_maxAlpha was 0.45 on the component");
+            Assert.IsFalse(p.ScreenSpaceShade,
+                "_screenSpaceShade must default OFF: with it on, every sun shadow in the game stops sorting " +
+                "under its caster and starts multiplying the assembled frame. That is a look change with the " +
+                "widest blast radius on the board and it is the OWNER's to make, not a default's.");
             Assert.AreEqual(new Color(0.04f, 0.05f, 0.10f, 1f), p.ShadowColor, "_shadowColor");
             Assert.AreEqual(0.35f, p.LengthAtNoon, 1e-6f, "_lengthAtNoon was 0.35");
             Assert.AreEqual(5f, p.LengthAtHorizon, 1e-6f, "_lengthAtHorizon was 5");
@@ -372,6 +378,155 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 StringAssert.Contains("- " + kv.Item1 + ": " + kv.Item2, yaml,
                     $"'{MaterialPath}' does not carry {kv.Item1}: {kv.Item2} under m_Floats, so the shipped " +
                     "material is relying on the shader's default rather than stating its own state.");
+        }
+
+        // =========================================================================================
+        //  5. THE SHADE ARM — does a RECEIVER read shaded, and does the passthrough hold?
+        // =========================================================================================
+
+        /// <summary>
+        /// 🔴 <b>THE ARM SHIPS OFF, IN BOTH THE CODE AND THE ASSET — this PR is a no-op until the owner
+        /// rules.</b> Every other dial on the profile tunes a shade that darkens the ground; this one
+        /// decides whether the shade darkens what STANDS in it, by moving every sun shadow in the game out
+        /// of the decor band and onto the compositing ladder. It carries a real cost of its own (a
+        /// screen-space multiply cannot tell "standing in the shade" from "passing over it"), so it is the
+        /// owner's call off the plates and neither default may make it for him.
+        /// </summary>
+        [Test]
+        public void TheShadeArm_ShipsOff_InBothTheCodeDefaultAndTheAsset()
+        {
+            Assert.IsFalse(Default().ScreenSpaceShade, "the built-in default");
+            var asset = Resources.Load<SpriteShadowProfile>(SpriteShadow.ProfileResourcePath);
+            Assert.IsNotNull(asset);
+            Assert.IsFalse(asset.ScreenSpaceShade, "the shipped asset");
+        }
+
+        /// <summary>
+        /// <b>The two arms are two shipped MATERIALS on one shader, and each states its own blend.</b>
+        ///
+        /// <para>⚠️ It has to be materials rather than a property-block value, because the arms differ in
+        /// BLEND STATE — the same wall the stencil hit: a <see cref="MaterialPropertyBlock"/> feeds shader
+        /// uniforms and cannot change render state. One shader with two materials keeps the shear maths in
+        /// exactly one transcription.</para>
+        ///
+        /// <para>⚠️ And every value is read off the FILE as well as off the object. Unity serializes a
+        /// ShaderLab <c>Float</c>/<c>Int</c> property into <c>m_Floats</c>, never <c>m_Ints</c>, and
+        /// <c>GetFloat</c> on a material that carries neither falls through to the SHADER's declared
+        /// default — which here is the legacy arm, so an object-only assert on the SHADE material would
+        /// pass with the file saying nothing at all.</para>
+        /// </summary>
+        [Test]
+        public void TheTwoArms_AreTwoMaterialsOnOneShader_EachStatingItsOwnBlend()
+        {
+            var legacy = Resources.Load<Material>("SpriteShadow");
+            var shade = Resources.Load<Material>(SpriteShadow.ShadeMaterialPath);
+            Assert.IsNotNull(legacy, "Resources/SpriteShadow.mat is missing");
+            Assert.IsNotNull(shade,
+                $"Resources/{SpriteShadow.ShadeMaterialPath}.mat is missing — the shade arm would fall back " +
+                "to a runtime-minted material and the owner would have no asset to look at.");
+            Assert.AreEqual(legacy.shader, shade.shader,
+                "both arms must be the same shader, or the shear maths has two transcriptions to keep in step");
+
+            // Blend enum values, spelled out: Zero 0, SrcColor 3, SrcAlpha 5, OneMinusSrcAlpha 10.
+            Assert.AreEqual(0f, legacy.GetFloat("_ScreenShade"), 1e-6f, "the legacy arm draws a dark sprite");
+            Assert.AreEqual((float)UnityEngine.Rendering.BlendMode.SrcAlpha, legacy.GetFloat("_SrcBlend"), 1e-6f);
+            Assert.AreEqual((float)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha, legacy.GetFloat("_DstBlend"), 1e-6f);
+
+            Assert.AreEqual(1f, shade.GetFloat("_ScreenShade"), 1e-6f, "the shade arm multiplies the frame");
+            Assert.AreEqual((float)UnityEngine.Rendering.BlendMode.Zero, shade.GetFloat("_SrcBlend"), 1e-6f,
+                "Blend Zero SrcColor is the multiply — the same blend LampShadow.mat uses, and the reason a " +
+                "receiver is darkened at all");
+            Assert.AreEqual((float)UnityEngine.Rendering.BlendMode.SrcColor, shade.GetFloat("_DstBlend"), 1e-6f);
+
+            // The stencil rides across unchanged: one shade per pixel is a property of the sun, not of the arm.
+            foreach (var kv in new[] { ("_StencilComp", 6), ("_StencilRef", 1), ("_StencilPass", 2) })
+                Assert.AreEqual(kv.Item2, shade.GetInt(kv.Item1),
+                    $"the shade arm must claim each pixel once too, or two crossing shades multiply twice ({kv.Item1})");
+
+            foreach (var pair in new[]
+                     {
+                         (MaterialPath, new[] { ("_ScreenShade", "0"), ("_SrcBlend", "5"), ("_DstBlend", "10") }),
+                         (ShadeMaterialPath, new[] { ("_ScreenShade", "1"), ("_SrcBlend", "0"), ("_DstBlend", "3") }),
+                     })
+            {
+                string yaml = File.ReadAllText(pair.Item1);
+                StringAssert.Contains("m_Ints: []", yaml,
+                    $"'{pair.Item1}' has values under m_Ints, which Unity ignores for shader scalars");
+                foreach (var kv in pair.Item2)
+                    StringAssert.Contains("- " + kv.Item1 + ": " + kv.Item2, yaml,
+                        $"'{pair.Item1}' does not carry {kv.Item1}: {kv.Item2} under m_Floats, so it is relying " +
+                        "on the shader's default rather than stating its own arm.");
+            }
+        }
+
+        /// <summary>
+        /// <b>The shader takes its blend from the material, and every line the shade arm adds is dead when
+        /// the arm is off.</b> That is what makes the passthrough exact rather than merely untested: the
+        /// legacy arm's fragment path is the pre-PR one, gated behind <c>_ScreenShade &gt; 0</c>, and the
+        /// blend it draws with is the shader's own declared default.
+        /// </summary>
+        [Test]
+        public void TheShader_TakesItsBlendFromTheMaterial_AndGatesEveryShadeLineBehindTheArm()
+        {
+            string src = File.ReadAllText(ShaderPath);
+            StringAssert.Contains("Blend [_SrcBlend] [_DstBlend]", src,
+                $"'{ShaderPath}' no longer takes its blend from the material, so the two arms cannot differ");
+            StringAssert.Contains("_SrcBlend (\"Src blend (5 = SrcAlpha, 0 = Zero)\", Float) = 5", src,
+                "the shader's declared default must stay the LEGACY blend, so a material that states nothing " +
+                "renders exactly as this shader always has");
+            StringAssert.Contains("_DstBlend (\"Dst blend (10 = OneMinusSrcAlpha, 3 = SrcColor)\", Float) = 10", src);
+            StringAssert.Contains("_ScreenShade (\"Screen-space shade arm (0 = under the caster, 1 = over the frame)\", Float) = 0", src,
+                "and the arm itself must default OFF in the shader");
+
+            StringAssert.Contains("lerp(half3(1.0, 1.0, 1.0), _ShadowColor.rgb, a)", src,
+                "the shade arm must output lerp(1, tint, alpha) — under Blend Zero SrcColor that is what " +
+                "multiplies the frame down by a constant FRACTION, which is what darkens a receiver");
+            StringAssert.Contains("if (_ScreenShade > 0.0 && _GroundContact <= 0.0)", src,
+                "the self-exclusion must be gated on the ARM (the legacy arm gets it from sorting under its " +
+                "caster) and on the CAST path (the ground pool takes no exclusion, deliberately)");
+
+            // Every occurrence of the new output has to sit under the arm gate; a stray one would change
+            // the legacy frame.
+            Assert.AreEqual(src.IndexOf("if (_ScreenShade > 0.0)"), src.LastIndexOf("if (_ScreenShade > 0.0)"),
+                "there must be exactly one un-compounded arm gate in the fragment, or the legacy path has " +
+                "grown a second branch that could change today's frame");
+        }
+
+        /// <summary>
+        /// <b>The pure function the shade arm's self-exclusion rests on.</b> A shade fragment carries its
+        /// OWN texel while sitting at the screen point of a different one — the texel its caster draws
+        /// there — and the offset between them is the vertex shear converted into uv. That conversion is
+        /// <c>ppu / textureSize</c>, the inverse of the sprite's own texture mapping, and it is exact for a
+        /// FullRect and a Tight mesh alike because it never touches the mesh.
+        ///
+        /// <para>Verified by round trip rather than by restating the formula: shear a point by a known
+        /// number of OBJECT units, convert, and land on the texel the maths says.</para>
+        /// </summary>
+        [Test]
+        public void UvPerObjectUnit_InvertsTheSpritesOwnTextureMapping()
+        {
+            Assert.AreEqual(Vector2.one, SpriteShadow.UvPerObjectUnit(null),
+                "a caster with no sprite shears nothing away");
+
+            // A 4-row sheet, sliced: the cell is a strip of a much taller texture, which is the production
+            // case and the one raw uv gets wrong.
+            var tex = new Texture2D(64, 256, TextureFormat.RGBA32, false);
+            _spawned.Add(tex);
+            var sprite = Sprite.Create(tex, new Rect(0f, 128f, 64f, 64f), new Vector2(0.5f, 0f), 32f);
+            _spawned.Add(sprite);
+
+            Vector2 perUnit = SpriteShadow.UvPerObjectUnit(sprite);
+            Assert.AreEqual(32f / 64f, perUnit.x, 1e-6f, "ppu over texture WIDTH");
+            Assert.AreEqual(32f / 256f, perUnit.y, 1e-6f, "ppu over texture HEIGHT — not the cell's height");
+
+            // The round trip. One object unit up the sprite is 32 px of a 256 px sheet, i.e. an eighth of uv.
+            const float shearObjectUnits = 2f;
+            float shearUv = shearObjectUnits * perUnit.y;
+            Assert.AreEqual(0.25f, shearUv, 1e-6f,
+                "2 object units at 32 ppu is 64 px, and 64 of 256 is a quarter of the sheet");
+            // And the same in x. The cell is 64 px wide, which at 32 ppu is TWO object units, and it fills
+            // the texture's width — so two object units must span the whole of uv.x.
+            Assert.AreEqual(1f, (64f / 32f) * perUnit.x, 1e-6f, "the cell spans the whole width of the sheet");
         }
 
         /// <summary>

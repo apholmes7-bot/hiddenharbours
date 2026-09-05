@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using NUnit.Framework;
@@ -927,6 +928,593 @@ namespace HiddenHarbours.Tests.EditMode
         //  bright or dark that particular sea is. (PR 6 spent a cycle on an absolute luma floor that a
         //  legitimately darker sea walked under — the same lesson, one PR earlier.)
 
+        // =============================================================================================
+        //  ONE FOAM LANGUAGE (register row 2) — the A/B, with the noise floor removed rather than tolerated
+        // =============================================================================================
+
+        /// <summary>The layers that move on <c>_Time</c>, zeroed for the MEASUREMENT arms only.
+        ///
+        /// <para>⚠️ The first draft of this test did not freeze anything: it shot both arms inside one test
+        /// body on the reasoning that no frame passes, so <c>_Time</c> cannot advance. In PLAY mode that is
+        /// true and it is how the tree-lighting lane got a 0-px floor. In EDIT mode it is not — the shader
+        /// clock follows real time, and each shot writes a 1.6 MB PNG on the way past. The floor came back
+        /// at <b>458 937 px of 921 600</b>: half the frame, from a boiling churn and a drifting sky, and
+        /// every colour number would have been measuring that. The list is
+        /// <c>BreakerBoreLookTests.FrozenLayers</c> (which reaches 0 px on the same sea) plus the surf's
+        /// own two clocks, which that fixture sets separately.</para></summary>
+        static readonly string[] FoamFrozenLayers =
+        {
+            "_WindChopSpeed", "_CrossSwellSpeed", "_OceanSwellSpeed", "_FbmDriftSpeed", "_FoamEvolveSpeed",
+            "_SwashSpeed", "_ReflectionStrength", "_SkyReflectionStrength", "_SpecAmount", "_CausticAmount",
+            "_RainRingStrength", "_DriftLineStrength", "_StormFoamLaneStrength", "_DispersionScale",
+            "_RippleSpeed", "_WhitecapCollapseRate", "_RippleStrength", "_WakeFoamStrength",
+            // the surf's own two: its churn boil and the shoreward drift it rides on.
+            "_SurfEvolveSpeed", "_Flow",
+        };
+
+        /// <summary>One cell of the foam A/B, and what moved between its two arms.</summary>
+        struct FoamRecord
+        {
+            public string File, Cell;
+            public int Moved;              // pixels the walk changed at all
+            public float MovedShare;       // …as a share of the frame
+            public Color MeanFlat;         // the mean colour of those pixels, as shipped before this PR
+            public Color MeanWalked;       // …and after
+            public int NoiseFloorPx;       // water px the same-arm re-shoot could not repeat, and so EXCLUDED
+        }
+
+        [Test]
+        public void TheFoam_IsOneLanguage_TheSurfAndTheCapsWalkTheSeasOwnBlues()
+        {
+            RequireAGraphicsDevice();
+            Prepare();
+
+            string dir = Path.Combine(Directory.GetCurrentDirectory(), OutRoot, "foam");
+            Directory.CreateDirectory(dir);
+
+            // The shipped dials, read off the hero material rather than typed in here — the arm this PR
+            // ships IS whatever Water.mat carries, and a retune must move the plate with it.
+            var heroMat = AssetDatabase.LoadAssetAtPath<Material>("Assets/_Project/Art/Materials/Water.mat");
+            Assert.IsNotNull(heroMat, "Water.mat must exist");
+            float shippedSurfAge = heroMat.GetFloat("_SurfAgeStrength");
+            float shippedCapAge = heroMat.GetFloat("_CapAgeStrength");
+            Assert.Greater(shippedSurfAge + shippedCapAge, 0f,
+                "with both dials at 0 this plate pair has nothing in it — row 2 ships them up");
+
+            // The cells row 2 cites, plus the open-water control that must not notice the PR at all.
+            var cells = new (string key, string label, bool openWater, Weather weather, Tide tide)[]
+            {
+                ("nmc-sand",  "SAND-BLOW-LOW",  false, Weather.Blow,  Tide.Low),
+                ("nmc-steep", "STEEP-BLOW-LOW", false, Weather.Blow,  Tide.Low),
+                ("ww-gale",   "OPEN-GALE",      true,  Weather.Gale,  Tide.Mean),
+                ("ww-glass",  "OPEN-GLASS",     true,  Weather.Glass, Tide.Mean),
+            };
+
+            var records = new List<FoamRecord>();
+            // ⚠ ContactSheet indexes thumbs[ROW][COLUMN]: the rows are the cells and the columns are the
+            // arms, matching rowLabels/columnTop below. (Built the other way round the first time; a 3x3
+            // sheet would have hidden it, a 4x3 one throws.)
+            var thumbs = new Color[cells.Length][][];
+            for (int c = 0; c < cells.Length; c++) thumbs[c] = new Color[3][];
+
+            for (int i = 0; i < cells.Length; i++)
+            {
+                // ⚠️⚠️ ONE STAGE AT A TIME, and this cost three runs to find. Every other test in this
+                // file builds exactly ONE stage and gets a full TearDown before the next one; this test
+                // walks four cells inside a single test, so without the sweep below it leaves four seas
+                // and two terrains alive at once and hands the NEXT test whatever the LAST of them
+                // published. NUnit orders a fixture's tests alphabetically, so "TheFoam…" runs BEFORE
+                // "ThePlateSweep…", and the symptom was three sweeps failing their orientation check with
+                // the island drawn as open water — a stale/unset seabed binding, not an upside-down file.
+                // The correlation was exact across five runs: whenever this test reached its West Water
+                // cells the sweeps went red, and whenever it failed before them they stayed green. The
+                // same stacking was also the last ~1 200 px of this cell's own noise floor.
+                int builtBefore = _built.Count;
+
+                Stage stage;
+                if (cells[i].openWater)
+                {
+                    stage = BuildWestWater();
+                    stage.Name = "ww-open";
+                    stage.Aim = WestWaterPlan.RegionWorldCenter;
+                }
+                else
+                {
+                    stage = BuildNineMileCreek();
+                    stage.Name = cells[i].key;
+                    stage.Aim = cells[i].key == "nmc-steep" ? AimAtTheSteepestBreak(stage)
+                                                            : AimAtTheLongestSurfRun(stage);
+                }
+                BuildCamera();
+                _cam.transform.position = new Vector3(stage.Aim.x, stage.Aim.y, -100f);
+                WarmTheShaderCache(stage);
+
+                // ---- THE LOOK: both arms LIVE, the sea as the owner will see it ----------------------
+                Color[] liveFlat = ShootFoam(stage, cells[i].weather, cells[i].tide, 0f, 0f, false,
+                                             Path.Combine(dir, cells[i].key + "-flat.png"));
+                Color[] liveWalked = ShootFoam(stage, cells[i].weather, cells[i].tide,
+                                               shippedSurfAge, shippedCapAge, false,
+                                               Path.Combine(dir, cells[i].key + "-one-language.png"));
+
+                // ---- THE MEASUREMENT: the same two arms on a sea whose clocks are stopped -------------
+                // …and the floor STATED, not assumed: the same arm shot twice must come back byte-identical
+                // or every number below is measuring _Time. (BreakerBoreLookTests.RequireAStaticSea, whose
+                // list this borrows, makes exactly this check for exactly this reason.)
+                Color[] frozenFlat = ShootFoam(stage, cells[i].weather, cells[i].tide, 0f, 0f, true,
+                                               Path.Combine(dir, cells[i].key + "-frozen-flat.png"));
+                Color[] frozenAgain = ShootFoam(stage, cells[i].weather, cells[i].tide, 0f, 0f, true,
+                                                Path.Combine(dir, cells[i].key + "-frozen-flat-again.png"));
+                Color[] frozenWalked = ShootFoam(stage, cells[i].weather, cells[i].tide,
+                                                 shippedSurfAge, shippedCapAge, true,
+                                                 Path.Combine(dir, cells[i].key + "-frozen-one-language.png"));
+
+                // ⚠️ WATER ONLY: foam is only ever on water, so a foam metric has no business counting
+                // land, and land carries layers no water dial can freeze (grass wind). A metric has to
+                // name what it counts; this one counts WET pixels that the foam walk moved.
+                bool[] wet = WetMask(stage, _env.WaterLevel);
+
+                // ⭐ AND ANY UNSTABLE PIXEL IS REMOVED, NOT TOLERATED. With the clocks stopped and the
+                // stages torn down between cells this reads 0 on every cell — but "0 today" is not a
+                // guarantee, and the alternative to a guarantee is a tolerance sitting on the number it
+                // tolerates. So a pixel that two shots of the SAME arm cannot reproduce is excluded from
+                // the comparison BY MEASUREMENT: whatever it is, nothing can be concluded from it. What
+                // remains repeats exactly, so the floor over the scored set is 0 by construction.
+                bool[] unstable = DiffMask(frozenFlat, frozenAgain, wet);
+                int unstablePx = CountTrue(unstable);
+                bool[] scored = new bool[wet.Length];
+                for (int p = 0; p < wet.Length; p++) scored[p] = wet[p] && !unstable[p];
+
+                Assert.Less(unstablePx / (float)CountTrue(wet), 0.02f,
+                    $"{cells[i].key}: {unstablePx} px of water are not repeatable between two shots of the " +
+                    "same arm. A couple of tenths of a percent can be excluded; this much means a live " +
+                    "time-driven layer is carrying the frame and the exclusion would be hiding the result.");
+                Assert.AreEqual(0, MovedPixels(frozenFlat, frozenAgain, scored, out _, out _),
+                    "the scored set must be repeatable by construction");
+
+                int floorPx = unstablePx;
+                int moved = MovedPixels(frozenFlat, frozenWalked, scored, out Color meanFlat, out Color meanWalked);
+                records.Add(new FoamRecord
+                {
+                    File = cells[i].key + "-one-language.png",
+                    Cell = cells[i].key,
+                    Moved = moved,
+                    MovedShare = moved / (float)CountTrue(scored),
+                    MeanFlat = meanFlat,
+                    MeanWalked = meanWalked,
+                    NoiseFloorPx = floorPx,
+                });
+
+                thumbs[i][0] = Thumbnail(liveFlat);
+                thumbs[i][1] = Thumbnail(liveWalked);
+                thumbs[i][2] = Thumbnail(Difference(frozenFlat, frozenWalked, scored, 6f));
+
+                // …and the stage goes away before the next one is built, so this test hands the world on
+                // in the state every other test in this file hands it on in. Destroying a WaterSurface is
+                // what publishes the seabed UNSET (WaterSurface.OnDisable), which is exactly the handover
+                // the fixture's own TearDown assumes.
+                for (int b = _built.Count - 1; b >= builtBefore; b--)
+                {
+                    if (_built[b] != null) Object.DestroyImmediate(_built[b]);
+                    _built.RemoveAt(b);
+                }
+            }
+
+            string sheetPath = Path.Combine(Directory.GetCurrentDirectory(), OutRoot, "SHEET-foam.png");
+            ContactSheet.Write(sheetPath, "ONE FOAM LANGUAGE - THE SURF AND THE CAPS TAKE THE SEAS OWN WALK",
+                               new[] { "AS SHIPPED", "ONE LANGUAGE", "WHAT MOVED" },
+                               new[] { "FLAT WHITE", "SURF+CAPS AGED", "X6 - CLOCKS STOPPED" },
+                               cells.Select(c => c.label).ToArray(), thumbs, ThumbPx);
+            File.WriteAllText(Path.Combine(dir, "FOAM.txt"), FoamReport(records));
+            Debug.Log("[water-plates] one foam language\n" + FoamReport(records));
+
+            Assert.IsTrue(File.Exists(sheetPath), "the foam sheet must be written — the FILE is the evidence");
+
+            FoamRecord glass = records.First(r => r.Cell == "ww-glass");
+            FoamRecord sand = records.First(r => r.Cell == "nmc-sand");
+
+            // ⭐ THE NULL CASE, WHICH IS WHAT SAYS WHAT THIS METRIC COUNTS. A glass calm has no surf and no
+            // caps: the wave gate is 0, so there is no foam anywhere for a foam walk to touch. The count
+            // must therefore be EXACTLY zero — not small. If it is not, the metric is counting something
+            // other than foam and every number beside it is worth nothing.
+            Assert.AreEqual(0, glass.Moved,
+                $"a glass calm has no foam in it and must not notice this PR at all ({glass.Moved} px " +
+                "moved). Glass calm is sacred — and this is also the null case that says what the count counts.");
+
+            // …and where there IS foam it must move, and move the way the owner asked: down the sea's
+            // blues. A DIRECTION, not an absolute bar — an absolute bar rots the moment the art improves.
+            Assert.Greater(sand.Moved, 0,
+                "the sand shoal's surf band must actually change colour — that is the row");
+            float flatBlueLift = sand.MeanFlat.b - sand.MeanFlat.r;
+            float walkedBlueLift = sand.MeanWalked.b - sand.MeanWalked.r;
+            Assert.Greater(walkedBlueLift, flatBlueLift,
+                $"the foam the walk touched must end up BLUER than the white it replaced " +
+                $"(b-r went {flatBlueLift:F4} -> {walkedBlueLift:F4})");
+            Assert.Less(Luma(sand.MeanWalked), Luma(sand.MeanFlat),
+                "…and darker: 'fades into the ambient ocean' is a walk DOWN the ramp, never up it");
+        }
+
+        /// <summary>Which plate pixels are WATER at this tide, from the shipped terrain — the same read
+        /// <see cref="WetStatistics"/> makes, kept per-pixel so a difference can be masked with it.</summary>
+        bool[] WetMask(Stage stage, float level)
+        {
+            var wet = new bool[ShotPx * ShotPx];
+            for (int py = 0; py < ShotPx; py++)
+            for (int px = 0; px < ShotPx; px++)
+                wet[py * ShotPx + px] = level - stage.Terrain.ElevationAt(PixelToWorld(px, py)) > 0f;
+            return wet;
+        }
+
+        /// <summary>How many WATER pixels differ between two shots of the same sea, and the mean colour of
+        /// those pixels in each. One LSB of 8-bit is the floor: the plates are written as PNGs and anything
+        /// finer than that is not in the picture the owner looks at.</summary>
+        static int MovedPixels(Color[] a, Color[] b, bool[] wet, out Color meanA, out Color meanB)
+        {
+            const float lsb = 1f / 255f;
+            double ar = 0, ag = 0, ab = 0, br = 0, bg = 0, bb = 0;
+            int n = 0;
+            for (int i = 0; i < a.Length; i++)
+            {
+                if (!wet[i]) continue;
+                if (Mathf.Abs(a[i].r - b[i].r) <= lsb &&
+                    Mathf.Abs(a[i].g - b[i].g) <= lsb &&
+                    Mathf.Abs(a[i].b - b[i].b) <= lsb) continue;
+                n++;
+                ar += a[i].r; ag += a[i].g; ab += a[i].b;
+                br += b[i].r; bg += b[i].g; bb += b[i].b;
+            }
+            meanA = n > 0 ? new Color((float)(ar / n), (float)(ag / n), (float)(ab / n), 1f) : Color.black;
+            meanB = n > 0 ? new Color((float)(br / n), (float)(bg / n), (float)(bb / n), 1f) : Color.black;
+            return n;
+        }
+
+        /// <summary>|a − b| lifted by a gain, over the water only, so the owner can SEE where the walk
+        /// reached. This is the column a still can carry that the two arms cannot: on dark water a real
+        /// colour change is a couple of LSBs, and the eye needs it amplified before it can judge WHERE it
+        /// landed. Land is blacked out for the same reason it is not counted — a foam walk cannot reach
+        /// it, and moving grass in the corner of the frame would read as if it had.</summary>
+        static Color[] Difference(Color[] a, Color[] b, bool[] wet, float gain)
+        {
+            var d = new Color[a.Length];
+            for (int i = 0; i < a.Length; i++)
+                d[i] = wet[i]
+                    ? new Color(Mathf.Clamp01(Mathf.Abs(a[i].r - b[i].r) * gain),
+                                Mathf.Clamp01(Mathf.Abs(a[i].g - b[i].g) * gain),
+                                Mathf.Clamp01(Mathf.Abs(a[i].b - b[i].b) * gain), 1f)
+                    : Color.black;
+            return d;
+        }
+
+        /// <summary>One foam plate: the sea as published for this cell, with the two ageing dials — and,
+        /// for a measurement arm, every time-driven layer — overridden on the property block AFTER the
+        /// shipped push (the knob-diagnostic pattern), then restored, because a block is STICKY and a
+        /// value left behind by the last shot is how a check-in pair once came out scarlet.</summary>
+        Color[] ShootFoam(Stage stage, Weather w, Tide t, float surfAge, float capAge, bool freezeTheClocks,
+                          string path)
+        {
+            Publish(stage, w, t, Hour.Noon, out _, out Color tint, out _, out _, out _);
+
+            var sr = stage.SeaGo.GetComponent<SpriteRenderer>();
+            Material mat = sr.sharedMaterial;
+            var block = new MaterialPropertyBlock();
+            sr.GetPropertyBlock(block);
+            Assert.IsTrue(mat.HasProperty("_SurfAgeStrength"), "_SurfAgeStrength must be a water-shader property");
+            Assert.IsTrue(mat.HasProperty("_CapAgeStrength"), "_CapAgeStrength must be a water-shader property");
+
+            var restore = new Dictionary<string, float>();
+            void Override(string key, float value)
+            {
+                restore[key] = block.HasFloat(key) ? block.GetFloat(key)
+                                                   : (mat.HasProperty(key) ? mat.GetFloat(key) : 0f);
+                block.SetFloat(key, value);
+            }
+
+            Override("_SurfAgeStrength", surfAge);
+            Override("_CapAgeStrength", capAge);
+            if (freezeTheClocks)
+                foreach (string key in FoamFrozenLayers) Override(key, 0f);
+            sr.SetPropertyBlock(block);
+
+            Color[] ldr = Capture(tint, path);
+
+            foreach (KeyValuePair<string, float> kv in restore) block.SetFloat(kv.Key, kv.Value);
+            sr.SetPropertyBlock(block);
+            return ldr;
+        }
+
+        /// <summary>Which pixels of <paramref name="within"/> differ between two shots — the same
+        /// 1-LSB comparison <see cref="MovedPixels"/> counts, kept as a mask so an UNSTABLE set can be
+        /// excluded from a later comparison instead of tolerated inside it.</summary>
+        static bool[] DiffMask(Color[] a, Color[] b, bool[] within)
+        {
+            const float lsb = 1f / 255f;
+            var d = new bool[a.Length];
+            for (int i = 0; i < a.Length; i++)
+                d[i] = within[i] && (Mathf.Abs(a[i].r - b[i].r) > lsb ||
+                                     Mathf.Abs(a[i].g - b[i].g) > lsb ||
+                                     Mathf.Abs(a[i].b - b[i].b) > lsb);
+            return d;
+        }
+
+        static int CountTrue(bool[] mask)
+        {
+            int n = 0;
+            foreach (bool b in mask) if (b) n++;
+            return n;
+        }
+
+        static string FoamReport(List<FoamRecord> records)
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine("ONE FOAM LANGUAGE (water-fidelity register row 2) - the surf and the caps take the sea's own walk");
+            sb.AppendLine("Scored on the arms with every _Time-driven layer stopped; the few px a repeat shot could not reproduce are EXCLUDED,");
+            sb.AppendLine("so the scored set repeats exactly and whatever differs between the arms is the dial. SHEET-foam.png's two LOOK columns are LIVE.");
+            sb.AppendLine();
+            sb.AppendLine("cell        unstable   moved px  of water   mean of the moved px: AS SHIPPED -> ONE LANGUAGE          b-r");
+            foreach (FoamRecord r in records)
+                sb.AppendLine($"{r.Cell,-11} {r.NoiseFloorPx,8}   {r.Moved,8}   {r.MovedShare,6:P2}   " +
+                              $"({r.MeanFlat.r:F3},{r.MeanFlat.g:F3},{r.MeanFlat.b:F3}) -> " +
+                              $"({r.MeanWalked.r:F3},{r.MeanWalked.g:F3},{r.MeanWalked.b:F3})   " +
+                              $"{r.MeanFlat.b - r.MeanFlat.r:F4} -> {r.MeanWalked.b - r.MeanWalked.r:F4}");
+            return sb.ToString();
+        }
+
+        /// <summary>One cell of the sun-side A/B, and what moved between its two arms.</summary>
+        struct SunSideRecord
+        {
+            public string Cell, Label;
+            public float Hour, SunElevation;
+            public Color Tint;
+            public int Moved;
+            public float MovedShare;
+            public Color MeanOff, MeanOn;
+            public int NoiseFloorPx;
+        }
+
+        /// <summary>One sun-side plate: the sea as published for this cell and hour, with
+        /// <c>_SunSideStrength</c> — and, for a measurement arm, every time-driven layer — overridden on
+        /// the property block AFTER the shipped push (the knob-diagnostic pattern), then restored, because
+        /// a block is STICKY.</summary>
+        Color[] ShootSunSide(Stage stage, Weather w, Tide t, Hour h, float sunSide, bool freezeTheClocks,
+                             string path, out float sunElevation, out Color tintOut)
+        {
+            Publish(stage, w, t, h, out _, out Color tint, out _, out float elev, out _);
+            sunElevation = elev;
+            tintOut = tint;
+
+            var sr = stage.SeaGo.GetComponent<SpriteRenderer>();
+            Material mat = sr.sharedMaterial;
+            var block = new MaterialPropertyBlock();
+            sr.GetPropertyBlock(block);
+            Assert.IsTrue(mat.HasProperty("_SunSideStrength"),
+                          "_SunSideStrength must be a water-shader property");
+
+            var restore = new Dictionary<string, float>();
+            void Override(string key, float value)
+            {
+                restore[key] = block.HasFloat(key) ? block.GetFloat(key)
+                                                   : (mat.HasProperty(key) ? mat.GetFloat(key) : 0f);
+                block.SetFloat(key, value);
+            }
+
+            Override("_SunSideStrength", sunSide);
+            if (freezeTheClocks)
+                foreach (string key in FoamFrozenLayers) Override(key, 0f);
+            sr.SetPropertyBlock(block);
+
+            Color[] ldr = Capture(tint, path);
+
+            foreach (KeyValuePair<string, float> kv in restore) block.SetFloat(kv.Key, kv.Value);
+            sr.SetPropertyBlock(block);
+            return ldr;
+        }
+
+        /// <summary>
+        /// <b>THE SEA GETS A SUN SIDE</b> — register row 11, the owner's <i>"the light needs to affect the
+        /// environment."</i>
+        ///
+        /// <para>Four cells, three columns. The two LOOK columns are LIVE — the sea as the owner will see
+        /// it, mirror and all. The third is the MEASUREMENT, with the clocks stopped, so what it shows is
+        /// the dial and nothing else.</para>
+        ///
+        /// <para><b>Why the measurement column has no mirror in it, and why that is not a dodge.</b>
+        /// <c>FoamFrozenLayers</c> zeroes <c>_ReflectionStrength</c>, so the frozen arms draw no sky
+        /// reflection. That is deliberate: the diff has to isolate THIS dial. The question the register
+        /// actually asks — is the sun side legible against row 5's stripes? — is answered as a NUMBER
+        /// rather than a picture, in <c>SunSideMeasurementTests</c>: the warm/cool split the term adds is
+        /// 1.00x the mirror's own published row-band contrast (0.063 after PR 5) and 12.3x the incidental
+        /// warm/cool that the existing grey <c>_SwellFaceShade</c> already gets for free from ADR 0013's
+        /// tint multiply. Comparing what this term ADDS against what the mirror ADDS is the comparison; it
+        /// does not need both in one frame.</para>
+        ///
+        /// <para><b>The two null cells are the point of the sheet as much as the two live ones.</b> NOON
+        /// must show nothing at all (the sin^4 elevation gate is 0.0025 there against 0.374 at golden
+        /// hour), and a GLASS CALM must show nothing at all either — the term shares the modelled swell's
+        /// calm gate, so a dead calm has no faces to light and the sacred mirror of row 5 is untouched.
+        /// A sheet whose control columns are blank is what says the effect is the sun and not a
+        /// brightening.</para>
+        /// </summary>
+        [Test]
+        public void TheSea_HasASunSide_AtGoldenHour_AndNoneAtNoonOrOnGlass()
+        {
+            RequireAGraphicsDevice();
+            Prepare();
+
+            string dir = Path.Combine(Directory.GetCurrentDirectory(), OutRoot, "sunside");
+            Directory.CreateDirectory(dir);
+
+            // The shipped dial, read off the hero material rather than typed here — the arm this PR ships
+            // IS whatever Water.mat carries, and a retune must move the plate with it.
+            var heroMat = AssetDatabase.LoadAssetAtPath<Material>("Assets/_Project/Art/Materials/Water.mat");
+            Assert.IsNotNull(heroMat, "Water.mat must exist");
+            float shipped = heroMat.GetFloat("_SunSideStrength");
+            Assert.Greater(shipped, 0f, "with the dial at 0 this plate pair has nothing in it");
+
+            var cells = new (string key, string label, bool openWater, Weather weather, Tide tide,
+                             Hour hour, bool expectMovement)[]
+            {
+                ("sand-golden",  "SAND GOLDEN",  false, Weather.Blow,  Tide.Low,  Hour.Golden, true),
+                ("sand-noon",    "SAND NOON",    false, Weather.Blow,  Tide.Low,  Hour.Noon,   false),
+                ("open-golden",  "OPEN GOLDEN",      true,  Weather.Blow,  Tide.Mean, Hour.Golden, true),
+                ("glass-golden", "GLASS GOLDEN",     true,  Weather.Glass, Tide.Mean, Hour.Golden, false),
+            };
+
+            var records = new List<SunSideRecord>();
+            // ⚠ ContactSheet indexes thumbs[ROW][COLUMN]: rows are the cells, columns the arms.
+            var thumbs = new Color[cells.Length][][];
+            for (int c = 0; c < cells.Length; c++) thumbs[c] = new Color[3][];
+
+            for (int i = 0; i < cells.Length; i++)
+            {
+                // ⚠️⚠️ ONE STAGE AT A TIME, and torn down before the next — the foam test's hard-won
+                // lesson: four seas alive at once hands the NEXT test whatever the last of them published.
+                int builtBefore = _built.Count;
+
+                Stage stage;
+                if (cells[i].openWater)
+                {
+                    stage = BuildWestWater();
+                    stage.Name = "ww-open";
+                    stage.Aim = WestWaterPlan.RegionWorldCenter;
+                }
+                else
+                {
+                    stage = BuildNineMileCreek();
+                    stage.Name = "nmc-sand";
+                    stage.Aim = AimAtTheLongestSurfRun(stage);
+                }
+                BuildCamera();
+                _cam.transform.position = new Vector3(stage.Aim.x, stage.Aim.y, -100f);
+                WarmTheShaderCache(stage);
+
+                // ---- THE LOOK: both arms LIVE, the sea as the owner will see it ----------------------
+                Color[] liveOff = ShootSunSide(stage, cells[i].weather, cells[i].tide, cells[i].hour,
+                                               0f, false, Path.Combine(dir, cells[i].key + "-off.png"),
+                                               out float elev, out Color tint);
+                Color[] liveOn = ShootSunSide(stage, cells[i].weather, cells[i].tide, cells[i].hour,
+                                              shipped, false, Path.Combine(dir, cells[i].key + "-on.png"),
+                                              out _, out _);
+
+                // ---- THE MEASUREMENT: the same two arms on a sea whose clocks are stopped -------------
+                Color[] frozenOff = ShootSunSide(stage, cells[i].weather, cells[i].tide, cells[i].hour,
+                                                 0f, true, Path.Combine(dir, cells[i].key + "-frozen-off.png"),
+                                                 out _, out _);
+                Color[] frozenAgain = ShootSunSide(stage, cells[i].weather, cells[i].tide, cells[i].hour,
+                                                   0f, true, Path.Combine(dir, cells[i].key + "-frozen-off-again.png"),
+                                                   out _, out _);
+                Color[] frozenOn = ShootSunSide(stage, cells[i].weather, cells[i].tide, cells[i].hour,
+                                                shipped, true, Path.Combine(dir, cells[i].key + "-frozen-on.png"),
+                                                out _, out _);
+
+                // ⚠️ WATER ONLY: the sun side is a term of the water fragment, so a metric for it has no
+                // business counting land — and land carries layers no water dial can freeze (grass wind).
+                bool[] wet = WetMask(stage, _env.WaterLevel);
+
+                // ⭐ Any pixel two shots of the SAME arm cannot reproduce is EXCLUDED, not tolerated, so
+                // the floor over the scored set is 0 by construction rather than a tolerance sitting on
+                // the number it tolerates.
+                bool[] unstable = DiffMask(frozenOff, frozenAgain, wet);
+                int unstablePx = CountTrue(unstable);
+                var scored = new bool[wet.Length];
+                for (int p = 0; p < wet.Length; p++) scored[p] = wet[p] && !unstable[p];
+
+                Assert.Less(unstablePx / (float)CountTrue(wet), 0.02f,
+                    $"{cells[i].key}: {unstablePx} px of water are not repeatable between two shots of the " +
+                    "same arm — a live time-driven layer is carrying the frame and every number below " +
+                    "would be measuring it");
+                Assert.AreEqual(0, MovedPixels(frozenOff, frozenAgain, scored, out _, out _),
+                    "the scored set must be repeatable by construction");
+
+                int moved = MovedPixels(frozenOff, frozenOn, scored, out Color meanOff, out Color meanOn);
+                records.Add(new SunSideRecord
+                {
+                    Cell = cells[i].key,
+                    Label = cells[i].label,
+                    Hour = HourFor(cells[i].hour, _profile),
+                    SunElevation = elev,
+                    Tint = tint,
+                    Moved = moved,
+                    MovedShare = moved / (float)CountTrue(scored),
+                    MeanOff = meanOff,
+                    MeanOn = meanOn,
+                    NoiseFloorPx = unstablePx,
+                });
+
+                thumbs[i][0] = Thumbnail(liveOff);
+                thumbs[i][1] = Thumbnail(liveOn);
+                thumbs[i][2] = Thumbnail(Difference(frozenOff, frozenOn, scored, 24f));
+
+                for (int b = _built.Count - 1; b >= builtBefore; b--)
+                {
+                    if (_built[b] != null) Object.DestroyImmediate(_built[b]);
+                    _built.RemoveAt(b);
+                }
+            }
+
+            string sheetPath = Path.Combine(Directory.GetCurrentDirectory(), OutRoot, "SHEET-sunside.png");
+            ContactSheet.Write(sheetPath, "THE SEA GETS A SUN SIDE - WARM TOWARD THE LOW SUN AND COOL AWAY",
+                               new[] { "AS SHIPPED", "SUN SIDE", "WHAT MOVED" },
+                               new[] { "NO SIDE", $"STRENGTH {shipped}", "X24 - CLOCKS STOPPED" },
+                               cells.Select(c => c.label).ToArray(), thumbs, ThumbPx);
+            File.WriteAllText(Path.Combine(dir, "SUNSIDE.txt"), SunSideReport(records));
+            Debug.Log("[water-plates] the sun side\n" + SunSideReport(records));
+
+            Assert.IsTrue(File.Exists(sheetPath), "the sun-side sheet must be written — the FILE is the evidence");
+
+            SunSideRecord sandGolden = records.First(r => r.Cell == "sand-golden");
+            SunSideRecord sandNoon = records.First(r => r.Cell == "sand-noon");
+            SunSideRecord openGolden = records.First(r => r.Cell == "open-golden");
+            SunSideRecord glassGolden = records.First(r => r.Cell == "glass-golden");
+
+            // ---- the effect ---------------------------------------------------------------------
+            // ⚠️ THE TWO GOLDEN CELLS MOVE BY VERY DIFFERENT AMOUNTS, AND THE REASON IS COMPOSITE
+            // ORDER, not a weak dial. This term composes into col.rgb well before the SURF band does
+            // (the sun side ~line 4863; the surf lerps over it at ~5233-5273), so wherever whitewater
+            // covers the water it covers the sun side with it. nmc-sand at spring low aimed down the
+            // longest surf run is mostly surf band and drying beach; West Water is open swell with no
+            // surf at all. Measured: 1.05 % of the wet frame over the shoal against 8.70 % on the open
+            // sea. Both bars below are HALF what was measured, so a retune has room to move without
+            // reddening this, and neither is a round number somebody guessed.
+            Assert.Greater(sandGolden.MovedShare, 0.005f,
+                $"golden hour over the sand shoal moved only {sandGolden.MovedShare:P2} of the water " +
+                "(1.05 % when this bar was set) — the register's complaint is that the sea has no sun " +
+                "side, and this would not fix it");
+            Assert.Greater(openGolden.MovedShare, 0.04f,
+                $"the open-water control moved only {openGolden.MovedShare:P2} (8.70 % when this bar was " +
+                "set) — whatever the shore does, the open SEA is supposed to take a side");
+
+            // ---- the two controls, which are what say the effect is the SUN ----------------------
+            // ⭐ Ratioed against the live arm, never an absolute bar: if the term is retuned up, the bar
+            // moves with it and the control still has to stay silent.
+            // Both measured EXACTLY 0 px on a 0-px noise floor, which is as strong as this claim gets.
+            // Asserted as a RATIO of the live arm rather than as == 0, so the guard survives a single
+            // stray pixel from a future retune while still being unsatisfiable by anything visible.
+            Assert.That(sandNoon.MovedShare, Is.LessThan(sandGolden.MovedShare * 0.01f),
+                $"NOON moved {sandNoon.MovedShare:P3} of the water against golden hour's " +
+                $"{sandGolden.MovedShare:P2} — a high sun is supposed to have no side (the sin^4 gate is " +
+                "0.0025 at 12:00 against 0.374 at 17:00), and the noon column of the sheet is supposed " +
+                "to be blank");
+            Assert.That(glassGolden.MovedShare, Is.LessThan(sandGolden.MovedShare * 0.01f),
+                $"a GLASS CALM moved {glassGolden.MovedShare:P3} of the water — the term shares the " +
+                "modelled swell's calm gate precisely so that row 5's sacred mirror is untouched");
+        }
+
+        static string SunSideReport(List<SunSideRecord> rows)
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine("# THE SUN SIDE (register row 11) - _SunSideStrength 0 vs the shipped value.");
+            sb.AppendLine("# The two LOOK columns of SHEET-sunside.png are LIVE; these numbers are the FROZEN arms,");
+            sb.AppendLine("# scored over WET pixels only, with every pixel two shots of the same arm could not repeat");
+            sb.AppendLine("# EXCLUDED rather than tolerated - so the noise floor over the scored set is 0 by construction.");
+            sb.AppendLine("cell | hour sunElev tint | moved px (share) | mean OFF -> mean ON | excluded px");
+            foreach (SunSideRecord r in rows)
+                sb.AppendLine(
+                    $"{r.Label} | {r.Hour:F2} elev {r.SunElevation:F3} " +
+                    $"({r.Tint.r:F3},{r.Tint.g:F3},{r.Tint.b:F3}) | {r.Moved} ({r.MovedShare:P2}) | " +
+                    $"({r.MeanOff.r:F4},{r.MeanOff.g:F4},{r.MeanOff.b:F4}) -> " +
+                    $"({r.MeanOn.r:F4},{r.MeanOn.g:F4},{r.MeanOn.b:F4}) | {r.NoiseFloorPx}");
+            return sb.ToString();
+        }
+
         /// <summary>One arm of the whitecap A/B, and what the sea was wearing.</summary>
         struct CapRecord
         {
@@ -966,15 +1554,19 @@ namespace HiddenHarbours.Tests.EditMode
                 ("glass", "GLASS - OPEN WATER",  true,  Weather.Glass, Tide.Mean),
             };
 
-            // The third arm is the AGEING dial, not the placement one: the caps take the wake's colour
-            // walk at _CapAgeStrength, and its value has to be SHOWN before it can be shipped. The caps
-            // sit at 0.02–0.09 luma in the only weathers that have caps, so the eye cannot judge it off a
-            // plate — the foamTint column can.
+            // The third arm is the AGEING dial, not the placement one. ⚠️ Row 2 SHIPPED it (the caps walk
+            // the sea's own ramp at _CapAgeStrength 1, with the surf and the wake), so the first two arms
+            // now pin it to its passthrough — otherwise this sheet would be comparing two whitecap
+            // SOURCES while their colour moved underneath, and neither column would mean what its label
+            // says. The third arm is the shipped sea. The caps sit at 0.02–0.09 luma in the only weathers
+            // that have caps, so the eye cannot judge the colour off these plates and the foamTint column
+            // below is reported, never asserted — see the note at the end of this test, and SHEET-foam.png
+            // for the instrument that CAN judge it.
             var arms = new (string key, string label, float texStrength, float agePassthrough)[]
             {
-                ("sheet", "PAINTED SHEET (as shipped)",         0.865f, -1f),
-                ("field", "THE PROCEDURAL FIELD (ruled)",       0f,     -1f),
-                ("aged",  "THE FIELD + AGEING (row 2's candidate)", 0f, 0.75f),
+                ("sheet", "PAINTED SHEET (pre-ruling)",       0.865f, 0f),
+                ("field", "THE PROCEDURAL FIELD (ruled)",     0f,     0f),
+                ("aged",  "THE FIELD + AGEING (as shipped)",  0f,     -1f),
             };
             for (int c = 0; c < cells.Length; c++)
             {
@@ -1030,23 +1622,26 @@ namespace HiddenHarbours.Tests.EditMode
                 $"{glassSheet.MeanLumaWet:F4} and the field arm {glassField.MeanLumaWet:F4}. A mirror " +
                 "with caps on it is not a mirror.");
 
-            // ⚠️⚠️ THE CAP AGEING (_CapAgeStrength) SHIPS AT 0 — the mechanism, not the value — because
-            // this instrument could not show its effect reliably, and a look change nobody can see is not
-            // a look change anybody should ship.
+            // ⚠️⚠️ THE CAP AGEING SHIPPED AT 0 HERE (#719) AND ROW 2 TURNED IT UP — and the reason it
+            // could not be settled on THIS sheet is worth keeping, because it is a lesson about the
+            // instrument rather than about the caps.
             //
             // The caps sit at 0.02–0.09 luma in the only weathers that have caps, so no eye can judge a
             // colour off these plates. The brightest decile of open water is where the foam is at any
             // exposure, and in an ISOLATED run it read exactly as intended — deeper and bluer, red:blue
             // 0.62 vs 0.67 in a gale and 0.35 vs 0.42 in a blow. In the FULL SUITE the same comparison
             // read 0.467 vs 0.470. The direction survived; the magnitude did not. What moved between the
-            // runs was _Time: which crests happen to be breaking decides which pixels are in the decile,
+            // runs was _Time: which crests happen to be breaking decides which pixels land in the decile,
             // and that swamps a subtle colour walk on foam this dark.
             //
-            // So the ageing is built, gated, and OFF: `capAge01` comes out of the lifecycle's own two
-            // ends, the caps compose through the WAKE's ramp and knots, and row 2 — the foam-language
-            // unification, which judges wake, surf, fringe and caps together against one palette — turns
-            // it on with the rest and judges it where a foam palette can actually be judged. The arm
-            // below stays as a reported diagnostic so row 2 inherits the numbers as well as the code.
+            // ⭐ The fix was not a better bar on the decile — it was to stop letting _Time into the
+            // comparison at all. TheFoam_IsOneLanguage_… above shoots BOTH arms inside ONE call, so no
+            // frame passes and every _Time-driven term is bit-identical; whatever differs is the dial.
+            // It then scores only the pixels that MOVED, which is a set the metric can name, and it
+            // states its own noise floor by re-shooting one arm against itself and requiring 0. That is
+            // the instrument that judged the caps, the surf and the wake against one palette, and
+            // SHEET-foam.png is the pair the owner looks at. The foamTint column here stays a REPORTED
+            // diagnostic, for the reasons the note below sets out.
             CapRecord glassFlat = FindCap(records, "glass", "aged");
             Assert.AreEqual(glassFlat.FoamTint.b, glassField.FoamTint.b, 0.002f,
                 "the cap ageing must not touch a sea with no caps in it, at any dial setting");

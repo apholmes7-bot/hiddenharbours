@@ -506,6 +506,39 @@ MonoBehaviour:
   - Kind: 6
     RigLocalMetres: {x: 0, y: 2.215, z: 4.1773334}
     IntensityScale: 1
+  Panes:
+  - Wall: 0
+    CentreMetres: {x: -0.884, y: 4.0371013, z: 2.5895}
+    HalfAcrossMetres: {x: 0.38200003, y: 0, z: 0}
+    HalfUpMetres: {x: 0, y: -0.04289885, z: 0.29349995}
+  - Wall: 0
+    CentreMetres: {x: 0, y: 4.0371013, z: 2.5895}
+    HalfAcrossMetres: {x: 0.382, y: 0, z: 0}
+    HalfUpMetres: {x: 0, y: -0.04289885, z: 0.29349995}
+  - Wall: 0
+    CentreMetres: {x: 0.884, y: 4.0371013, z: 2.5895}
+    HalfAcrossMetres: {x: 0.38200003, y: 0, z: 0}
+    HalfUpMetres: {x: 0, y: -0.04289885, z: 0.29349995}
+  - Wall: 2
+    CentreMetres: {x: 1.4689333, y: 1.45, z: 2.513}
+    HalfAcrossMetres: {x: 0, y: -0.55, z: 0}
+    HalfUpMetres: {x: 0, y: 0, z: 0.37}
+  - Wall: 1
+    CentreMetres: {x: -1.4689333, y: 1.45, z: 2.513}
+    HalfAcrossMetres: {x: 0, y: 0.55, z: 0}
+    HalfUpMetres: {x: 0, y: 0, z: 0.37}
+  - Wall: 2
+    CentreMetres: {x: 1.4689333, y: 2.85, z: 2.513}
+    HalfAcrossMetres: {x: 0, y: -0.5500001, z: 0}
+    HalfUpMetres: {x: 0, y: 0, z: 0.37}
+  - Wall: 1
+    CentreMetres: {x: -1.4689333, y: 2.85, z: 2.513}
+    HalfAcrossMetres: {x: 0, y: 0.5500001, z: 0}
+    HalfUpMetres: {x: 0, y: 0, z: 0.37}
+  - Wall: 3
+    CentreMetres: {x: 0.971, y: 0.78, z: 2.513}
+    HalfAcrossMetres: {x: -0.40500003, y: 0, z: 0}
+    HalfUpMetres: {x: 0, y: 0, z: 0.37}
 --- !u!43 &7828395886734819789
 Mesh:
   m_ObjectHideFlags: 0

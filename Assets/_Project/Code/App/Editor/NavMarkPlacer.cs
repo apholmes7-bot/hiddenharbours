@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEditor;
 using UnityEngine;
+using HiddenHarbours.Core;    // NavLightPhasePlan — the light phases, shared out per region
 using HiddenHarbours.Boats;   // NavBuoyDef / NavBuoyVisual
 using HiddenHarbours.World;   // NavMarkPlanResult
 
@@ -59,6 +60,13 @@ namespace HiddenHarbours.App.Editor
                 return 0;
             }
 
+            // ⭐ SHARE OUT THE PERIODS BEFORE PLACING ANYTHING. Every mark of one character in THIS
+            // region gets a slot, so two green cans in one harbour cannot wink together. It is done
+            // over the whole plan up front rather than per mark because that is the only point at
+            // which the answer is knowable — and it is a pure function of the chart, so placing the
+            // marks in another order gives every one of them the same phase back.
+            Dictionary<string, float> phases = NavLightPhasePlan.Spread(CharactersOf(plan, defs));
+
             var root = new GameObject(rootName);
             int placed = 0;
             var missingTypes = new HashSet<string>();
@@ -102,7 +110,23 @@ namespace HiddenHarbours.App.Editor
 
                 // ⚠️ The facing is a PLACEMENT choice the plan derived, and the kit is CLOCKWISE
                 // (cell i = heading +45°·i). Do not "correct" it against the fleet's sheets.
-                visual.Configure(def, mark.SizeId, mark.Facing);
+                //
+                // ⭐ AND HER CHART ID GOES IN WITH IT. It is what phases her light: two port-hand
+                // cans of one character must not wink in unison, and the only honest thing to tell
+                // them apart by is a fact about the chart. Anything derived from the scene instead —
+                // a sibling index, a spawn order — re-phases every neighbour the day one more mark
+                // is placed, which is the trap the cabin-glow flicker fell into.
+                visual.Configure(def, mark.SizeId, mark.Facing, mark.Id,
+                                 phases.TryGetValue(mark.Id, out float phase) ? phase : -1f);
+
+                // Her lamp, if she has one. Added here as well as on the prefab for the same reason
+                // the mooring is: a mark already standing in a scene from an older build carries an
+                // older prefab, and the next Build click is what promotes her. NavLight itself is
+                // the thing that decides whether she is lit — an unlit mark gets the component and
+                // no light, which costs a branch and nothing else.
+                if (go.GetComponent<HiddenHarbours.Art.NavLight>() == null)
+                    go.AddComponent<HiddenHarbours.Art.NavLight>();
+
                 placed++;
             }
 
@@ -116,6 +140,21 @@ namespace HiddenHarbours.App.Editor
 
             Debug.Log(Report(tag, plan, placed, springLowWater));
             return placed;
+        }
+
+        /// <summary>
+        /// Each planned mark paired with the light character she will show, for
+        /// <see cref="NavLightPhasePlan.Spread"/>. Unlit marks and marks with no def come back with
+        /// an empty character and are simply not given a slot.
+        /// </summary>
+        private static IEnumerable<(string Id, string Character)> CharactersOf(
+            NavMarkPlanResult plan, Dictionary<string, NavBuoyDef> defs)
+        {
+            foreach (PlannedNavMark mark in plan.Marks)
+            {
+                defs.TryGetValue(mark.MarkType, out NavBuoyDef def);
+                yield return (mark.Id, def != null ? def.LightText : null);
+            }
         }
 
         /// <summary>Every <see cref="NavBuoyDef"/> in the folder, keyed by its kit type. Ordinal — these
