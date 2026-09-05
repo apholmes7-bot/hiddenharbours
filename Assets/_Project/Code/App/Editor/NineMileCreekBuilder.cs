@@ -698,7 +698,7 @@ namespace HiddenHarbours.App.Editor
             // dev-picker path only", and there is no picker). Places and does NOT draw, per the
             // moorage law above; the site is still the owner's PROPOSAL and she derives from its one
             // constant, so the walk verdict moves her with the park. See NineMileCreekTruckPark.
-            NineMileCreekTruckPark.Place();
+            GameObject buyersTruck = NineMileCreekTruckPark.Place();
 
             // ⭐ THE LAYDOWN — one of each of the road fleet, stood off the park spur. The owner's ask
             // after the nine baked: the truck park (three 6.7 m bays) cannot hold a 16.43 m trailer, let
@@ -983,6 +983,14 @@ namespace HiddenHarbours.App.Editor
 
             // --- THE TWO PEOPLE (anchored, unscheduled — §7.1's rule) ------------------------------------
             var creekPeople = NineMileCreekPeople.Place(waterSprite);
+
+            // --- THE FISH BUYER'S RUN (the creek's first scheduled trip) -------------------------------
+            // ⭐ The owner's 2026-09-04 ask: "i want npcs to be able to enter and drive vehicles". The
+            // buyer walks to the truck the park already stands, drives Wharf Road down to the buyers'
+            // gravel, and works his stall from there. Every point of it derives from the region's own
+            // constants and the timetable is an asset, so moving the park or re-cutting the road moves
+            // the run with them. Places and does NOT drive: the component reads the clock at play.
+            NineMileCreekTrips.Place(buyersTruck, creekPeople);
 
             // --- DEV BOOTSTRAP (owner iteration: press Play IN NINE MILE CREEK and walk/fish immediately) ------
             // Nine Mile Creek is a region scene: the real player arrives with the persistent core from St Peters,

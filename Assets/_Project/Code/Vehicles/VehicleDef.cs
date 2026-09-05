@@ -128,6 +128,32 @@ namespace HiddenHarbours.Vehicles
                  "and is not the owner's; this band is.")]
         [Min(0f)] public float SwimHysteresisMeters = 0.06f;
 
+        [Header("Following a road (how a driver who is not the player drives her — RouteFollowMath)")]
+        [Tooltip("How close (m) to a waypoint counts as arrived, BEFORE the perpendicular rule. Small on " +
+                 "its own, and widening it is not the fix for an overshot waypoint: passing its " +
+                 "perpendicular is, and that is geometry rather than a tunable.")]
+        [Min(0f)] public float RouteWaypointReachMeters = 3f;
+
+        [Tooltip("How far ahead (m) along the road she aims. Too short and she saws down a straight; too " +
+                 "long and she cuts every corner. 12 m is a little under two truck lengths.")]
+        [Min(0f)] public float RouteLookaheadMeters = 12f;
+
+        [Tooltip("Throttle fraction on the straight, 0–1 of her own ceiling.")]
+        [Range(0f, 1f)] public float RouteCruiseThrottle = 0.6f;
+
+        [Tooltip("Throttle fraction through a turn, 0–1. Well under cruise: speed-sensitive steering " +
+                 "widens every machine's circle, so a driver hunting a waypoint at full throttle orbits " +
+                 "it rather than reaching it.")]
+        [Range(0f, 1f)] public float RouteTurnThrottle = 0.15f;
+
+        [Tooltip("How far off (degrees) her nose has to be from where she is aiming before she comes off " +
+                 "cruise — the 'brake for the turn ahead' knob. An ANGLE, not a radius: a driver aiming " +
+                 "at a lookahead point has a heading error already in hand and no radius at all.")]
+        [Min(0f)] public float RouteSlowForTurnDegrees = 12f;
+
+        [Tooltip("Degrees of heading error that mean full lock. Smaller is twitchier.")]
+        [Min(0f)] public float RouteSteerGainDegrees = 20f;
+
         [Header("Camera")]
         [Tooltip("How much world the camera shows while driving her, in metres of height. Wider than " +
                  "a boat's default: she covers ground faster than anything else the player controls.")]
@@ -148,6 +174,18 @@ namespace HiddenHarbours.Vehicles
         /// </summary>
         public VehicleKind Kind =>
             VehicleKinds.TryFromToken(KindToken, out VehicleKind kind) ? kind : VehicleKind.RoadVehicle;
+
+        /// <summary>
+        /// Her route-following feel, as the one struct <see cref="RouteFollowMath"/> reads.
+        ///
+        /// <para>⚠️ Raw, deliberately — call <c>.Sane()</c> before driving on it. A def baked before these
+        /// fields existed deserializes them all to zero, and a zero lookahead is a driver aiming at her
+        /// own bumper; filling in belongs at the point of USE so a content test can still see the honest
+        /// zeros and say so.</para>
+        /// </summary>
+        public RouteFollowMath.RouteFollowTuning RouteFollow => new(
+            RouteWaypointReachMeters, RouteLookaheadMeters, RouteCruiseThrottle,
+            RouteTurnThrottle, RouteSlowForTurnDegrees, RouteSteerGainDegrees);
 
         /// <summary>Her drive envelope on the ground — what the pedals mean on gravel.</summary>
         public DriveEnvelope LandEnvelope => new(
