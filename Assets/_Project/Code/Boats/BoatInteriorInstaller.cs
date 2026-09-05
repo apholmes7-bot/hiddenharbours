@@ -156,7 +156,9 @@ namespace HiddenHarbours.Boats
                 deckPitchLiftMeters: PitchLiftMetres(visual),
                 // ⚠ The def's levels are NOT the sheet's rows; the map arrives with the cells.
                 cellRowForLevel: null,
-                roomIsGeometry: roomIsGeometry);
+                // The mesh itself, not a flag off it: the cabin re-asks it which levels are rooms
+                // (LevelIndexAtHeight), which a bool could not answer.
+                meshRoom: roomIsGeometry ? visual.HullMesh : null);
 
             // --- the cutaway --------------------------------------------------------------------
             // The owner's 2026-08-26 ruling: below decks, her house is CUT AWAY rather than covered

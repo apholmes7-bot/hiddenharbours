@@ -175,24 +175,28 @@ it, so a batch that adds a hull without its evidence reddens.
 |---|---|---|---|---|---|---|---|---|
 | lobster | #688 | 2026-08-29 | 467 | **19** | 1428 + 1014 = 2442 | +71.0% | 0 px vs room-stripped control, 4 headings | house 34–53%, cuddy 10–14.5% vs 4% floor |
 | cape | #690 | 2026-09-01 | 450 | **18** | 1126 + 980 = 2106 | +87.0% | 0 px vs room-stripped control, 4 headings | 19.6–28.5% vs 4% floor |
-| lobster variant inshore-hardtop-fundy | #702 | pending | 396 | **19** | 1332 + 872 = 2204 | +65.5% | 0 px vs room-stripped control, 4 headings | house 26.0–42.1%, cuddy 7.5–12.9% vs 4% floor |
-| lobster variant inshore-hardtop-newfoundland | #702 | pending | 396 | **19** | 1316 + 872 = 2188 | +66.3% | 0 px vs room-stripped control, 4 headings | house 34.1–50.6%, cuddy 5.7–11.9% vs 4% floor |
-| lobster variant inshore-hardtop-northumberland | #702 | pending | 444 | **19** | 1364 + 968 = 2332 | +71.0% | 0 px vs room-stripped control, 4 headings | house 36.5–51.1%, cuddy 5.8–11.1% vs 4% floor |
-| lobster variant inshore-open-fundy | #702 | pending | 396 | **19** | 1256 + 872 = 2128 | +69.4% | 0 px vs room-stripped control, 4 headings | house 22.9–37.6%, cuddy 7.7–12.9% vs 4% floor |
-| lobster variant inshore-open-newfoundland | #702 | pending | 396 | **19** | 1260 + 872 = 2132 | +69.2% | 0 px vs room-stripped control, 4 headings | house 30.4–45.3%, cuddy 5.8–11.9% vs 4% floor |
-| lobster variant inshore-open-northumberland | #702 | pending | 444 | **19** | 1308 + 968 = 2276 | +74.0% | 0 px vs room-stripped control, 4 headings | house 33.3–45.4%, cuddy 6.0–11.1% vs 4% floor |
-| lobster variant offshore-hardtop-fundy | #702 | pending | 425 | **19** | 1742 + 930 = 2672 | +53.4% | 0 px vs room-stripped control, 4 headings | house 23.4–33.7%, cuddy 7.4–10.9% vs 4% floor |
-| lobster variant offshore-hardtop-newfoundland | #702 | pending | 457 | **19** | 1746 + 994 = 2740 | +56.9% | 0 px vs room-stripped control, 4 headings | house 33.7–46.6%, cuddy 5.7–9.6% vs 4% floor |
-| lobster variant offshore-hardtop-northumberland | #702 | pending | 505 | **19** | 1774 + 1090 = 2864 | +61.4% | 0 px vs room-stripped control, 4 headings | house 36.5–45.5%, cuddy 6.3–9.9% vs 4% floor |
-| lobster variant offshore-open-fundy | #702 | pending | 425 | **19** | 1526 + 930 = 2456 | +60.9% | 0 px vs room-stripped control, 4 headings | house 19.7–28.3%, cuddy 7.6–10.9% vs 4% floor |
-| lobster variant offshore-open-newfoundland | #702 | pending | 457 | **19** | 1550 + 994 = 2544 | +64.1% | 0 px vs room-stripped control, 4 headings | house 29.7–39.4%, cuddy 5.9–9.6% vs 4% floor |
-| lobster variant offshore-open-northumberland | #702 | pending | 505 | **19** | 1578 + 1090 = 2668 | +69.1% | 0 px vs room-stripped control, 4 headings | house 32.7–39.6%, cuddy 6.5–9.9% vs 4% floor |
-| lobster variant standard-hardtop-fundy | #702 | pending | 425 | **19** | 1414 + 930 = 2344 | +65.8% | 0 px vs room-stripped control, 4 headings | house 24.3–36.1%, cuddy 7.5–11.5% vs 4% floor |
-| lobster variant standard-hardtop-newfoundland | #702 | pending | 433 | **19** | 1410 + 946 = 2356 | +67.1% | 0 px vs room-stripped control, 4 headings | house 33.1–46.9%, cuddy 5.7–10.3% vs 4% floor |
-| lobster variant standard-hardtop-northumberland | #702 | pending | 481 | **19** | 1454 + 1042 = 2496 | +71.7% | 0 px vs room-stripped control, 4 headings | house 36.9–47.0%, cuddy 5.8–9.6% vs 4% floor |
-| lobster variant standard-open-fundy | #702 | pending | 425 | **19** | 1318 + 930 = 2248 | +70.6% | 0 px vs room-stripped control, 4 headings | house 20.9–31.0%, cuddy 7.7–11.5% vs 4% floor |
-| lobster variant standard-open-newfoundland | #702 | pending | 433 | **19** | 1334 + 946 = 2280 | +70.9% | 0 px vs room-stripped control, 4 headings | house 29.3–40.1%, cuddy 5.9–10.3% vs 4% floor |
-| lobster variant standard-open-northumberland | #702 | pending | 481 | **19** | 1378 + 1042 = 2420 | +75.6% | 0 px vs room-stripped control, 4 headings | house 33.4–40.9%, cuddy 6.0–9.6% vs 4% floor |
+| lobster variant inshore-hardtop-fundy | #702 | 2026-09-02 | 396 | **19** | 1332 + 872 = 2204 | +65.5% | 0 px vs room-stripped control, 4 headings | house 26.0–42.1%, cuddy 7.5–12.9% vs 4% floor |
+| lobster variant inshore-hardtop-newfoundland | #702 | 2026-09-02 | 396 | **19** | 1316 + 872 = 2188 | +66.3% | 0 px vs room-stripped control, 4 headings | house 34.1–50.6%, cuddy 5.7–11.9% vs 4% floor |
+| lobster variant inshore-hardtop-northumberland | #702 | 2026-09-02 | 444 | **19** | 1364 + 968 = 2332 | +71.0% | 0 px vs room-stripped control, 4 headings | house 36.5–51.1%, cuddy 5.8–11.1% vs 4% floor |
+| lobster variant inshore-open-fundy | #702 | 2026-09-02 | 396 | **19** | 1256 + 872 = 2128 | +69.4% | 0 px vs room-stripped control, 4 headings | house 22.9–37.6%, cuddy 7.7–12.9% vs 4% floor |
+| lobster variant inshore-open-newfoundland | #702 | 2026-09-02 | 396 | **19** | 1260 + 872 = 2132 | +69.2% | 0 px vs room-stripped control, 4 headings | house 30.4–45.3%, cuddy 5.8–11.9% vs 4% floor |
+| lobster variant inshore-open-northumberland | #702 | 2026-09-02 | 444 | **19** | 1308 + 968 = 2276 | +74.0% | 0 px vs room-stripped control, 4 headings | house 33.3–45.4%, cuddy 6.0–11.1% vs 4% floor |
+| lobster variant offshore-hardtop-fundy | #702 | 2026-09-02 | 425 | **19** | 1742 + 930 = 2672 | +53.4% | 0 px vs room-stripped control, 4 headings | house 23.4–33.7%, cuddy 7.4–10.9% vs 4% floor |
+| lobster variant offshore-hardtop-newfoundland | #702 | 2026-09-02 | 457 | **19** | 1746 + 994 = 2740 | +56.9% | 0 px vs room-stripped control, 4 headings | house 33.7–46.6%, cuddy 5.7–9.6% vs 4% floor |
+| lobster variant offshore-hardtop-northumberland | #702 | 2026-09-02 | 505 | **19** | 1774 + 1090 = 2864 | +61.4% | 0 px vs room-stripped control, 4 headings | house 36.5–45.5%, cuddy 6.3–9.9% vs 4% floor |
+| lobster variant offshore-open-fundy | #702 | 2026-09-02 | 425 | **19** | 1526 + 930 = 2456 | +60.9% | 0 px vs room-stripped control, 4 headings | house 19.7–28.3%, cuddy 7.6–10.9% vs 4% floor |
+| lobster variant offshore-open-newfoundland | #702 | 2026-09-02 | 457 | **19** | 1550 + 994 = 2544 | +64.1% | 0 px vs room-stripped control, 4 headings | house 29.7–39.4%, cuddy 5.9–9.6% vs 4% floor |
+| lobster variant offshore-open-northumberland | #702 | 2026-09-02 | 505 | **19** | 1578 + 1090 = 2668 | +69.1% | 0 px vs room-stripped control, 4 headings | house 32.7–39.6%, cuddy 6.5–9.9% vs 4% floor |
+| lobster variant standard-hardtop-fundy | #702 | 2026-09-02 | 425 | **19** | 1414 + 930 = 2344 | +65.8% | 0 px vs room-stripped control, 4 headings | house 24.3–36.1%, cuddy 7.5–11.5% vs 4% floor |
+| lobster variant standard-hardtop-newfoundland | #702 | 2026-09-02 | 433 | **19** | 1410 + 946 = 2356 | +67.1% | 0 px vs room-stripped control, 4 headings | house 33.1–46.9%, cuddy 5.7–10.3% vs 4% floor |
+| lobster variant standard-hardtop-northumberland | #702 | 2026-09-02 | 481 | **19** | 1454 + 1042 = 2496 | +71.7% | 0 px vs room-stripped control, 4 headings | house 36.9–47.0%, cuddy 5.8–9.6% vs 4% floor |
+| lobster variant standard-open-fundy | #702 | 2026-09-02 | 425 | **19** | 1318 + 930 = 2248 | +70.6% | 0 px vs room-stripped control, 4 headings | house 20.9–31.0%, cuddy 7.7–11.5% vs 4% floor |
+| lobster variant standard-open-newfoundland | #702 | 2026-09-02 | 433 | **19** | 1334 + 946 = 2280 | +70.9% | 0 px vs room-stripped control, 4 headings | house 29.3–40.1%, cuddy 5.9–10.3% vs 4% floor |
+| lobster variant standard-open-northumberland | #702 | 2026-09-02 | 481 | **19** | 1378 + 1042 = 2420 | +75.6% | 0 px vs room-stripped control, 4 headings | house 33.4–40.9%, cuddy 6.0–9.6% vs 4% floor |
+| side dragger | #731 | pending | 571 | **18** | 1744 + 1222 = 2966 | +70.1% | 0 px vs room-stripped control, 4 headings | house 19.2–30.1%, bridge 9.5–15.8%, below 31.6–51.4% vs 4% floor |
+| stern trawler | #731 | pending | 668 | **18** | 1762 + 1412 = 3174 | +80.1% | 0 px vs room-stripped control, 4 headings | house 16.5–26.8%, bridge 9.7–17.9%, below 33.7–55.1% vs 4% floor |
+| stern trawler Mk2 | #731 | pending | 668 | **18** | 2596 + 1412 = 4008 | +54.4% | 0 px vs room-stripped control, 4 headings | house 15.9–25.9%, bridge 10.6–17.7%, below 31.3–51.8% vs 4% floor |
+| coastal packet | #731 | pending | 664 | **18** | 2638 + 1408 = 4046 | +53.4% | 0 px vs room-stripped control, 4 headings | house 13.0–19.2%, bridge 8.2–13.5%, below 42.5–65.5% vs 4% floor |
 
 **Census correction (both hulls).** The palette census above projected 22 distinct interior ramps
 for the lobster and 21 for the cape; their baked rooms paint **19** and **18**. The decision the
@@ -290,6 +294,71 @@ sample (committed packs): `lobvar-inshore-hardtop-fundy`, `lobvar-offshore-open-
 `lobvar-standard-hardtop-northumberland`; the other fifteen packs and reports are written to the
 temporary cache by the same fixture. The variants bake CLI now exits on success (the third member of
 that family to need it).
+### The four working ships (fleet rollout PR 2, #731)
+
+Side dragger, stern trawler, stern trawler Mk2, coastal packet: four rig files, four boats, three
+enclosed levels each (house / bridge / below) where every hull before them had two. **18 interior
+ramps on all four** against the census's 21 — the third over-projection in a row, and the scoped
+24-slot table still has headroom on the largest hull in the batch. k ∈ {5, 8} with **81 section lips
+dropped on every one**, so the extraction premise held unchanged at four times the lobster's length.
+Rooms are 571–668 faces; the depth shift is the hull's own bounding-sphere diameter and reaches
+**65.3 m** on the packet against the lobster's 14.5, which is the number the ¾-view plates were
+checked against at every heading. The two stern trawlers share a room to the face (668 / 18 / 81 /
+274 procedural) while their hulls differ by 834 tris — two rig files, one interior layout.
+
+**The charter's two open questions, answered in the bake rather than assumed.**
+
+*Which level did the room's faces go to?* All four declare an OPEN `main_deck` at exactly their
+`house_sole`'s height, so "nearest sole" cannot separate them. Read back off the committed meshes
+(TexCoord1: y is the room flag, x the level tag), every room vertex is tagged to an ENCLOSED level —
+dragger house 952 / bridge 968 / below 444, trawler and Mk2 1192 / 1120 / 436, packet 1168 / 1120 /
+448 — and `main_deck` carries **none**. Guarded now by
+`ConvertedHullEntryLevelTests.EveryRoomFace_IsTaggedToALevelThatIsARoom`, in both directions: a room
+face on an open deck's tag can never be hidden (the gate only discards the level being cut), and an
+enclosed level with no room geometry is a cut that opens onto nothing.
+
+*The stern trawler's shell that never closed.* The interior spike reported
+`⚠ WHOLE-HULL CONVEX TEST UNAVAILABLE (hull is not closed …)` for her, which blocked its containment
+check on an EXTRUDED shell room. Under full-mesh extraction there is no shell and no extrusion — the
+room is the rig's own faces in the rig's own frame — so there is nothing to contain and nothing to
+close. Moot, as expected, and stated rather than assumed: her 668 room faces came out of
+`build()` exactly as the lobster's did.
+
+**And the tie the ships brought with them was a live defect in the runtime.** `BoatInterior.
+LevelIndexAtHeight` picks the sole nearest a door's threshold, and on a sprite hull it skips levels
+the sheets never baked — the cells' row map, `-1` for every open deck. A converted hull has no cells
+and never loads any, so that map is empty forever. Every one of these four ships has her cabin
+door's threshold at the exact height of BOTH her `main_deck` and her `house_sole` (dragger 2.05 m,
+both trawlers 3.5 m, packet 5.0 m), so on the mesh path the answer would have been decided by the
+def's ordering — and `main_deck` is first in all four. The player would have pressed the door,
+watched the cue, been "inside", and stood on an outdoor deck whose roof `CutawayForDeck` refuses to
+take off. The mesh path's equivalent of the row map is the hull mesh's own level table, asked
+through that same gate: `BoatInterior` now holds her `HullMeshDef` (rather than a bool derived from
+it) and `LevelIsDrawn` asks `CutawayForDeck(levelId).Opens`. One derivation, no second list of
+enclosed levels anywhere.
+
+**Retired in the same change:** 20 pages (5.3 MiB on disk), 4 cells assets, 4 contract rows — the
+kit goes 7 → 3 (tanker and the two sport fishers). Worst-case resident sheet memory retired:
+65.0 + 159.5 + 159.5 + 340.3 = **724.2 MB**, of which the packet's 340.3 MB is the largest single
+saving the rollout will ever make. `BoatInteriorSheetTests.SheetCells_AreTheRigsOwnPixels` — the
+only assertion in the kit that opens a PNG — had been re-pointed by hand at named hulls twice in two
+batches and is now derived from the contract itself: one cell per page of every sheet still shipped,
+each page's FIRST cell, because a page boundary falling mid-level is exactly where a paging bug hides.
+
+**The dragger was the first converted hull with an acceptance fixture of her own, and it had to
+learn about the room.** `IsoFacetSideDraggerAcceptanceTests` compares her committed mesh against
+`RigMeshReferenceRasterizer`, a CPU transcription of the rig's own renderer — which has no level
+gate. So the CPU arm drew her cabin through her topsides (23.7–34.3% of inked px, clusters of
+21k–44k, at all eight headings) while the GPU arm correctly hid it, and her staleness check compared
+5812 committed vertices against a 3448-vertex exterior-only extraction and reported a stale bake on
+a bake that was current. Both halves are the same lesson as `AppendMeshInteriorIfConverted` itself:
+the re-derivation must go through the bake's own path, and the oracle's subject must be what the
+shader actually draws. Her extraction now appends the room; her oracle renders a room-stripped copy
+(`ConvertedInteriors.MeshWithoutTheRoom`, one implementation shared with the parity fixture's
+control arm). **Her acceptance numbers came back unmoved** — cardinal clusters 262 / 505 / 323 / 378
+and fractional 103 / 36 / 254 / 103, identical to the floors measured for her on 2026-07-22 — which
+is the evidence that the conversion changed nothing about her exterior.
+
 **Lamps over a mesh interior, corrected (PR 1).** PR 0's table reported the lit closed-up pair
 agreeing "within 2 LSB" on a few hundred pixels; PR 1 found the cause (the cabin glow's flicker seed
 is its sibling index, the re-install re-seeds it, and the light ticks before the fixture's freeze)

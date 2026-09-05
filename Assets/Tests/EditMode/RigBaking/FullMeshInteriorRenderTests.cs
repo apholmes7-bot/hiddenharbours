@@ -78,6 +78,11 @@ namespace HiddenHarbours.Tests.RigBaking
             {
                 ["lobsterBoat"] = "lobster",
                 ["capeIslander"] = "cape",
+                // The four working ships (rollout PR 2) — the interior rig's own keys for them.
+                ["sideDragger"] = "dragger",
+                ["sternTrawler"] = "trawler",
+                ["sternTrawlerMk2"] = "trawler2",
+                ["coastalPacket"] = "packet",
             };
             foreach (LobsterVariant v in LobsterVariantFleet.All)
                 names[v.Key] = $"lobvar-{v.Size}-{v.Style}-{v.Region}";
@@ -98,6 +103,13 @@ namespace HiddenHarbours.Tests.RigBaking
             "lobsterInshoreHardtopFundy",            // hardtop, Fundy
             "lobsterOffshoreOpenNewfoundland",       // open, Newfoundland
             "lobsterStandardHardtopNorthumberland",  // hardtop, Northumberland
+            // The four working ships: all four, because unlike the eighteen they are four SEPARATE
+            // rig files making four different boats, so there is no family for a sample to stand in
+            // for — and each is the first hull of her size the room has ever been cut out of.
+            "sideDragger",
+            "sternTrawler",
+            "sternTrawlerMk2",
+            "coastalPacket",
         };
 
         /// <summary>
@@ -504,53 +516,13 @@ namespace HiddenHarbours.Tests.RigBaking
         }
 
         /// <summary>
-        /// The same mesh with every room-flagged face removed — the control arm. Built by filtering
-        /// TexCoord1.y, the flag the bake writes, so it removes exactly what the shader's discard
-        /// would have hidden and nothing else.
+        /// The same mesh with every room-flagged face removed — the control arm. One implementation,
+        /// shared with the acceptance fixtures that photograph a converted hull's EXTERIOR (see
+        /// <see cref="ConvertedInteriors.MeshWithoutTheRoom"/>): two copies of "which faces are the
+        /// room" is the drift this arc factors out everywhere else.
         /// </summary>
         static Mesh MeshWithoutTheRoom(Mesh src, out int roomVerts, out int hullVerts)
-        {
-            var tags = new System.Collections.Generic.List<Vector2>();
-            src.GetUVs(1, tags);
-            var uv0 = new System.Collections.Generic.List<Vector4>();
-            src.GetUVs(0, uv0);
-            Vector3[] v = src.vertices, n = src.normals;
-            int[] tri = src.triangles;
-
-            var keepV = new System.Collections.Generic.List<Vector3>();
-            var keepN = new System.Collections.Generic.List<Vector3>();
-            var keepA = new System.Collections.Generic.List<Vector4>();
-            var keepL = new System.Collections.Generic.List<Vector2>();
-            var keepT = new System.Collections.Generic.List<int>();
-            var remap = new int[v.Length];
-            for (int i = 0; i < remap.Length; i++) remap[i] = -1;
-
-            roomVerts = 0;
-            for (int i = 0; i < v.Length; i++) if (tags[i].y > 0.5f) roomVerts++;
-            hullVerts = v.Length - roomVerts;
-
-            for (int t = 0; t + 2 < tri.Length; t += 3)
-            {
-                if (tags[tri[t]].y > 0.5f) continue;          // flat per face, so one vertex decides
-                for (int k = 0; k < 3; k++)
-                {
-                    int src_i = tri[t + k];
-                    if (remap[src_i] < 0)
-                    {
-                        remap[src_i] = keepV.Count;
-                        keepV.Add(v[src_i]); keepN.Add(n[src_i]);
-                        keepA.Add(uv0[src_i]); keepL.Add(tags[src_i]);
-                    }
-                    keepT.Add(remap[src_i]);
-                }
-            }
-
-            var m = new Mesh { name = src.name + "_HullOnly", indexFormat = src.indexFormat };
-            m.SetVertices(keepV); m.SetNormals(keepN);
-            m.SetUVs(0, keepA); m.SetUVs(1, keepL);
-            m.SetTriangles(keepT, 0, true);
-            return m;
-        }
+            => ConvertedInteriors.MeshWithoutTheRoom(src, out roomVerts, out hullVerts);
 
         static byte[] Render(HullMeshDef def, Mesh mesh, int cut, float heading, int lid = 0)
         {

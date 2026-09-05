@@ -226,6 +226,65 @@ namespace HiddenHarbours.Tools.RigBaking
         }
 
         /// <summary>
+        /// <b>The four WORKING SHIPS, and nothing else</b> — side dragger, stern trawler, stern
+        /// trawler Mk2, coastal packet: ADR 0041's rollout PR 2.
+        ///
+        /// <para>Its own entry point for exactly the reason the eighteen have one. A whole-fleet bake
+        /// rewrites every def, and Unity's serialisation is not byte-deterministic — sub-asset fileIDs
+        /// are regenerated and the YAML is reshuffled — so re-baking the thirty hulls this batch does
+        /// not touch produces hundreds of lines of churn on assets nobody changed. Baking exactly
+        /// these four is what keeps the diff reviewable.</para>
+        /// </summary>
+        public static IReadOnlyList<FleetHull> WorkingShipHulls
+        {
+            get
+            {
+                string[] keys = { "sideDragger", "sternTrawler", "sternTrawlerMk2", "coastalPacket" };
+                var hulls = new List<FleetHull>(keys.Length);
+                foreach (string k in keys) hulls.Add(HullMeshFleet.Get(k));
+                return hulls;
+            }
+        }
+
+        [MenuItem(RigMeshGate.MenuRoot + "/Bake the 4 working-ship hull meshes", priority = 224)]
+        public static void BakeWorkingShips() => BakeFleetInternal(WorkingShipHulls);
+
+        [MenuItem(RigMeshGate.MenuRoot + "/Bake the 4 working-ship hull meshes", validate = true)]
+        static bool BakeWorkingShipsValidate() => RigMeshGate.Enabled;
+
+        /// <summary>Headless entry (-executeMethod) for the four.</summary>
+        public static void BakeWorkingShipsCli()
+        {
+            try
+            {
+                var hulls = WorkingShipHulls;
+                if (hulls.Count != 4)
+                    throw new InvalidOperationException(
+                        $"Expected 4 working-ship hulls, found {hulls.Count}. This bake will not run " +
+                        "on a list it does not recognise — a short list here is a silently partial " +
+                        "bake, and the hull that went missing keeps whatever def she had.");
+
+                int failed = BakeFleetInternal(hulls);
+                if (failed > 0)
+                {
+                    Debug.LogError($"[rig-mesh] CLI working-ship bake FAILED: {failed} of " +
+                                   $"{hulls.Count} hull(s) did not bake.");
+                    EditorApplication.Exit(1);
+                    return;
+                }
+                Debug.Log($"[rig-mesh] CLI working-ship bake OK — {hulls.Count} hulls.");
+                // EXIT ON SUCCESS — the omission that cost a coordinator four phantom hours; these
+                // entries are launched -quit-less, so nothing else ever ends the editor.
+                EditorApplication.Exit(0);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[rig-mesh] CLI working-ship bake FAILED: {e}");
+                EditorApplication.Exit(1);
+            }
+        }
+
+        /// <summary>
         /// <b>The five hulls the fleet pack's last three rigs make, and nothing else</b> — the
         /// zodiac's two builds, the reshaped sport skiff, and the two battlewagons.
         ///
@@ -745,6 +804,14 @@ namespace HiddenHarbours.Tools.RigBaking
             // convert as a family; each hull's own room comes from the variant triple her
             // RigHullExtraction carries, handed to the interior rig nested under `variant`.
             LobsterVariantFleet.GlobalName,
+            // The four WORKING SHIPS (ADR 0041 rollout PR 2). Each is one hull from one rig, so each
+            // is one global — and each declares an OPEN main deck at the very height of her house
+            // sole, which is why this batch also had to give the mesh path its own answer to "is this
+            // level somewhere you can be" (BoatInterior.LevelIndexAtHeight).
+            "SideDraggerIso",
+            "SternTrawlerIso",
+            "SternTrawlerMk2Iso",
+            "CoastalPacketIso",
         };
 
         /// <summary>Is this hull converted — is her rig family on the switch? One predicate for

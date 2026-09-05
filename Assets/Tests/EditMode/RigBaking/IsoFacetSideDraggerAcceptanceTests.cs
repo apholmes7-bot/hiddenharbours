@@ -117,12 +117,49 @@ namespace HiddenHarbours.Tests.RigBaking
             }
         }
 
+        /// <summary>
+        /// A fresh extraction of her rig, <b>through the baker's own path</b> — including
+        /// <see cref="RigMeshAssetBaker.AppendMeshInteriorIfConverted"/>, which appends her ROOM.
+        ///
+        /// <para>She is a converted hull (ADR 0041 rollout PR 2). Extracting the exterior alone here
+        /// would make "the committed bake is not stale" compare 5812 committed vertices against 3448
+        /// fresh ones and report a stale bake on a bake that is exactly current — and the obvious fix,
+        /// re-baking, would not move it. One method decides what a hull's mesh contains, and both the
+        /// bake and every re-derivation call it; <c>HullMeshFleetTests</c> is factored the same way for
+        /// the same reason.</para>
+        /// </summary>
         static RigMeshData Rig()
         {
             if (s_Rig != null) return s_Rig;
             using var host = RigScriptHostFactory.Create();
-            s_Rig = RigMeshExtractor.ExtractFrom(host, RigPath, RigGlobal);
+            RigMeshData data = RigMeshExtractor.ExtractFrom(host, RigPath, RigGlobal);
+            RigMeshAssetBaker.AppendMeshInteriorIfConverted(host, RigGlobal, data);
+            s_Rig = data;
             return s_Rig;
+        }
+
+        /// <summary>
+        /// <b>The oracle's subject: her mesh with the ROOM stripped out.</b>
+        ///
+        /// <para><see cref="RigMeshReferenceRasterizer"/> is a transcription of the rig's own
+        /// z-buffered flat-facet pipeline, and the rig draws no interior — it has no level gate and no
+        /// concept of one. The GPU arm, meanwhile, keeps <c>HH_LEVEL_GATE</c> on for a converted hull
+        /// and discards every room face while nothing is cut
+        /// (<c>IsoFacetHullRenderer.ApplyCutawayKeyword</c>). Handing the CPU side the whole mesh makes
+        /// it draw her cabin through her own topsides: measured at 23.7–34.3% of inked pixels, clusters
+        /// of 21k–44k, at every one of the eight headings. So the two arms are made comparable by
+        /// removing from the oracle exactly what the shader removes from the picture — no floors moved,
+        /// no keyword forced, and her EXTERIOR is still the whole subject, which is what this fixture
+        /// has always been about.</para>
+        /// </summary>
+        static Mesh ExteriorOnly(HullMeshDef def)
+        {
+            Mesh stripped = ConvertedInteriors.MeshWithoutTheRoom(def.Mesh, out int roomVerts, out _);
+            Assert.Greater(roomVerts, 0,
+                "the dragger's committed mesh carries no room-flagged vertices — she is on " +
+                "RigMeshAssetBaker.MeshInteriorHulls, so either she was not re-baked or the room flag " +
+                "stopped being written, and this fixture would be comparing the same mesh twice.");
+            return stripped;
         }
 
         static HullMeshDef LoadDef()
@@ -235,6 +272,7 @@ namespace HiddenHarbours.Tests.RigBaking
             RequireAGraphicsDevice();
             var def = LoadDef();
             RigMeshData rig = Rig();
+            Mesh exterior = ExteriorOnly(def);
 
             // Compass headings, mapped to rig dir by the PRODUCTION mapping — cardinals plus
             // deliberate fractionals no facing grid could ever have drawn.
@@ -252,7 +290,7 @@ namespace HiddenHarbours.Tests.RigBaking
                 var view = new RigViewOptions(dir, def.ElevationDeg);
 
                 byte[] gpu = RenderMesh(def, heading, def.AzimuthCounterClockwise);
-                byte[] oracle = RigMeshReferenceRasterizer.RenderFromMesh(rig, def.Mesh, view);
+                byte[] oracle = RigMeshReferenceRasterizer.RenderFromMesh(rig, exterior, view);
                 var diff = RigMeshReferenceRasterizer.Compare(oracle, gpu, def.CellW, def.CellH);
 
                 report.AppendLine($"  heading {heading:0.##}° (dir {dir:0.###}, " +
@@ -263,6 +301,7 @@ namespace HiddenHarbours.Tests.RigBaking
                 worstPercent = Math.Max(worstPercent, diff.PercentDiffering);
             }
 
+            Object.DestroyImmediate(exterior);
             Debug.Log($"[dragger] worst cardinal cluster {worstCardinal}, worst fractional " +
                       $"{worstFractional}, worst percent {worstPercent:0.###}%");
             Assert.LessOrEqual(worstCardinal, MaxCardinalNoiseCluster,
@@ -286,8 +325,10 @@ namespace HiddenHarbours.Tests.RigBaking
 
             const float heading = 90f;    // East — where the mirror is a full 180° of drawn heading
             float trueDir = HullMeshMath.HeadingToDirUnits(heading, 0f, def.AzimuthCounterClockwise);
+            Mesh exterior = ExteriorOnly(def);
             byte[] oracle = RigMeshReferenceRasterizer.RenderFromMesh(
-                rig, def.Mesh, new RigViewOptions(trueDir, def.ElevationDeg));
+                rig, exterior, new RigViewOptions(trueDir, def.ElevationDeg));
+            Object.DestroyImmediate(exterior);
 
             // The GPU draws her through the WRONG convention — the exact mistake "tidying up the
             // minus sign", or trusting the rig's declared order over the measurement, would ship.
