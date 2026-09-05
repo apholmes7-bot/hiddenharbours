@@ -311,6 +311,39 @@ out of her own front door.
 **Not shipped:** the talk-bounce / emote animation while speaking (§5 Q1 of the dialogue doc) — that
 is an art-lane rig ask, and until it lands she simply stands and faces you.
 
+### 2.8 ⭐ A VILLAGER AT A WHEEL — scheduled trips (road fleet PR 5, 2026-09-04)
+
+Owner's ask: *"i want npcs to be able to enter and drive vehicles, lets set up some basic routes."*
+
+**A trip is NOT a routine, and that separation is deliberate.** `RoutineActivity.Drive` is appended to
+the tag vocabulary (append-only, index 4) and — like the other four — **nothing branches on it**: where a
+machine goes and when is decided by `Vehicles.ScheduledTrip` off its own `VehicleTripDef` timetable.
+Making the routine engine drive would give "where is she?" two answers that can disagree, which is
+exactly what §2.2's tag rule exists to prevent.
+
+**The engine is the same shape as this one, one body along.** `VehicleTripPlan.SampleAt(hour)` is a pure,
+allocation-free function of the clock, like `RoutinePlan.SampleAt`; a block carries a DEPARTURE and no end
+hour, like a `RoutineEntry`; the polyline walkers and the day maths both bodies read are now the same
+code, moved down to Core (`Polyline`, `DaySchedule`) with this module delegating. A trip differs in
+carrying TWO bodies on ONE timetable — the machine on her road and her driver on his few metres of gravel
+— and in deriving six of its eight hours from how long each leg takes, so a road the owner lengthens
+arrives later rather than teleporting to keep an authored arrival.
+
+⭐ **A machine's heading and a walker's are different conventions**, and the shared primitive hands back a
+raw DIRECTION so each caller states its own: a vehicle's is world-XY (`transform.up` is her nose,
+the fleet's one convention) and a walker's is a GROUND bearing (the iso squash un-done, §2.6's own law).
+They differ by up to 12.5°, and a body posed in the other one's is visibly crabbed.
+
+⚠️ **A trip OWNS its driver's position for the whole day** — his two posts cover the ~22 hours he is not
+travelling. So a driver's origin post has to be somewhere he can plausibly stand all day, which is a real
+constraint on which villager can drive what: a machine parked beyond walking distance of every post
+strands whoever is given it.
+
+⚠️ **Nine Mile Creek still has no routine engine** (§2.6 is St Peters-only): no station table, no lane
+tree, no `RoutineDef` asset. The creek's cast is anchored, and a scheduled trip is the first thing there
+that reads the clock at all. Standing the routine engine up on the mainland is still its own
+world-content lane.
+
 ---
 
 ## 3. The handcrafted core cast
