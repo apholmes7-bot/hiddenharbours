@@ -98,6 +98,7 @@ Material:
     - _SpecSharpness: 18
     - _SparkleTexScale: 0.5
     - _SparkleTexStrength: 0.932
+    - _SunSideStrength: 1.7
     - _SurfAgeStrength: 1
     - _SurfBandDither: 0.7
     - _SurfBands: 4

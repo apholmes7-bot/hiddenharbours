@@ -1258,6 +1258,263 @@ namespace HiddenHarbours.Tests.EditMode
             return sb.ToString();
         }
 
+        /// <summary>One cell of the sun-side A/B, and what moved between its two arms.</summary>
+        struct SunSideRecord
+        {
+            public string Cell, Label;
+            public float Hour, SunElevation;
+            public Color Tint;
+            public int Moved;
+            public float MovedShare;
+            public Color MeanOff, MeanOn;
+            public int NoiseFloorPx;
+        }
+
+        /// <summary>One sun-side plate: the sea as published for this cell and hour, with
+        /// <c>_SunSideStrength</c> — and, for a measurement arm, every time-driven layer — overridden on
+        /// the property block AFTER the shipped push (the knob-diagnostic pattern), then restored, because
+        /// a block is STICKY.</summary>
+        Color[] ShootSunSide(Stage stage, Weather w, Tide t, Hour h, float sunSide, bool freezeTheClocks,
+                             string path, out float sunElevation, out Color tintOut)
+        {
+            Publish(stage, w, t, h, out _, out Color tint, out _, out float elev, out _);
+            sunElevation = elev;
+            tintOut = tint;
+
+            var sr = stage.SeaGo.GetComponent<SpriteRenderer>();
+            Material mat = sr.sharedMaterial;
+            var block = new MaterialPropertyBlock();
+            sr.GetPropertyBlock(block);
+            Assert.IsTrue(mat.HasProperty("_SunSideStrength"),
+                          "_SunSideStrength must be a water-shader property");
+
+            var restore = new Dictionary<string, float>();
+            void Override(string key, float value)
+            {
+                restore[key] = block.HasFloat(key) ? block.GetFloat(key)
+                                                   : (mat.HasProperty(key) ? mat.GetFloat(key) : 0f);
+                block.SetFloat(key, value);
+            }
+
+            Override("_SunSideStrength", sunSide);
+            if (freezeTheClocks)
+                foreach (string key in FoamFrozenLayers) Override(key, 0f);
+            sr.SetPropertyBlock(block);
+
+            Color[] ldr = Capture(tint, path);
+
+            foreach (KeyValuePair<string, float> kv in restore) block.SetFloat(kv.Key, kv.Value);
+            sr.SetPropertyBlock(block);
+            return ldr;
+        }
+
+        /// <summary>
+        /// <b>THE SEA GETS A SUN SIDE</b> — register row 11, the owner's <i>"the light needs to affect the
+        /// environment."</i>
+        ///
+        /// <para>Four cells, three columns. The two LOOK columns are LIVE — the sea as the owner will see
+        /// it, mirror and all. The third is the MEASUREMENT, with the clocks stopped, so what it shows is
+        /// the dial and nothing else.</para>
+        ///
+        /// <para><b>Why the measurement column has no mirror in it, and why that is not a dodge.</b>
+        /// <c>FoamFrozenLayers</c> zeroes <c>_ReflectionStrength</c>, so the frozen arms draw no sky
+        /// reflection. That is deliberate: the diff has to isolate THIS dial. The question the register
+        /// actually asks — is the sun side legible against row 5's stripes? — is answered as a NUMBER
+        /// rather than a picture, in <c>SunSideMeasurementTests</c>: the warm/cool split the term adds is
+        /// 1.00x the mirror's own published row-band contrast (0.063 after PR 5) and 12.3x the incidental
+        /// warm/cool that the existing grey <c>_SwellFaceShade</c> already gets for free from ADR 0013's
+        /// tint multiply. Comparing what this term ADDS against what the mirror ADDS is the comparison; it
+        /// does not need both in one frame.</para>
+        ///
+        /// <para><b>The two null cells are the point of the sheet as much as the two live ones.</b> NOON
+        /// must show nothing at all (the sin^4 elevation gate is 0.0025 there against 0.374 at golden
+        /// hour), and a GLASS CALM must show nothing at all either — the term shares the modelled swell's
+        /// calm gate, so a dead calm has no faces to light and the sacred mirror of row 5 is untouched.
+        /// A sheet whose control columns are blank is what says the effect is the sun and not a
+        /// brightening.</para>
+        /// </summary>
+        [Test]
+        public void TheSea_HasASunSide_AtGoldenHour_AndNoneAtNoonOrOnGlass()
+        {
+            RequireAGraphicsDevice();
+            Prepare();
+
+            string dir = Path.Combine(Directory.GetCurrentDirectory(), OutRoot, "sunside");
+            Directory.CreateDirectory(dir);
+
+            // The shipped dial, read off the hero material rather than typed here — the arm this PR ships
+            // IS whatever Water.mat carries, and a retune must move the plate with it.
+            var heroMat = AssetDatabase.LoadAssetAtPath<Material>("Assets/_Project/Art/Materials/Water.mat");
+            Assert.IsNotNull(heroMat, "Water.mat must exist");
+            float shipped = heroMat.GetFloat("_SunSideStrength");
+            Assert.Greater(shipped, 0f, "with the dial at 0 this plate pair has nothing in it");
+
+            var cells = new (string key, string label, bool openWater, Weather weather, Tide tide,
+                             Hour hour, bool expectMovement)[]
+            {
+                ("sand-golden",  "SAND GOLDEN",  false, Weather.Blow,  Tide.Low,  Hour.Golden, true),
+                ("sand-noon",    "SAND NOON",    false, Weather.Blow,  Tide.Low,  Hour.Noon,   false),
+                ("open-golden",  "OPEN GOLDEN",      true,  Weather.Blow,  Tide.Mean, Hour.Golden, true),
+                ("glass-golden", "GLASS GOLDEN",     true,  Weather.Glass, Tide.Mean, Hour.Golden, false),
+            };
+
+            var records = new List<SunSideRecord>();
+            // ⚠ ContactSheet indexes thumbs[ROW][COLUMN]: rows are the cells, columns the arms.
+            var thumbs = new Color[cells.Length][][];
+            for (int c = 0; c < cells.Length; c++) thumbs[c] = new Color[3][];
+
+            for (int i = 0; i < cells.Length; i++)
+            {
+                // ⚠️⚠️ ONE STAGE AT A TIME, and torn down before the next — the foam test's hard-won
+                // lesson: four seas alive at once hands the NEXT test whatever the last of them published.
+                int builtBefore = _built.Count;
+
+                Stage stage;
+                if (cells[i].openWater)
+                {
+                    stage = BuildWestWater();
+                    stage.Name = "ww-open";
+                    stage.Aim = WestWaterPlan.RegionWorldCenter;
+                }
+                else
+                {
+                    stage = BuildNineMileCreek();
+                    stage.Name = "nmc-sand";
+                    stage.Aim = AimAtTheLongestSurfRun(stage);
+                }
+                BuildCamera();
+                _cam.transform.position = new Vector3(stage.Aim.x, stage.Aim.y, -100f);
+                WarmTheShaderCache(stage);
+
+                // ---- THE LOOK: both arms LIVE, the sea as the owner will see it ----------------------
+                Color[] liveOff = ShootSunSide(stage, cells[i].weather, cells[i].tide, cells[i].hour,
+                                               0f, false, Path.Combine(dir, cells[i].key + "-off.png"),
+                                               out float elev, out Color tint);
+                Color[] liveOn = ShootSunSide(stage, cells[i].weather, cells[i].tide, cells[i].hour,
+                                              shipped, false, Path.Combine(dir, cells[i].key + "-on.png"),
+                                              out _, out _);
+
+                // ---- THE MEASUREMENT: the same two arms on a sea whose clocks are stopped -------------
+                Color[] frozenOff = ShootSunSide(stage, cells[i].weather, cells[i].tide, cells[i].hour,
+                                                 0f, true, Path.Combine(dir, cells[i].key + "-frozen-off.png"),
+                                                 out _, out _);
+                Color[] frozenAgain = ShootSunSide(stage, cells[i].weather, cells[i].tide, cells[i].hour,
+                                                   0f, true, Path.Combine(dir, cells[i].key + "-frozen-off-again.png"),
+                                                   out _, out _);
+                Color[] frozenOn = ShootSunSide(stage, cells[i].weather, cells[i].tide, cells[i].hour,
+                                                shipped, true, Path.Combine(dir, cells[i].key + "-frozen-on.png"),
+                                                out _, out _);
+
+                // ⚠️ WATER ONLY: the sun side is a term of the water fragment, so a metric for it has no
+                // business counting land — and land carries layers no water dial can freeze (grass wind).
+                bool[] wet = WetMask(stage, _env.WaterLevel);
+
+                // ⭐ Any pixel two shots of the SAME arm cannot reproduce is EXCLUDED, not tolerated, so
+                // the floor over the scored set is 0 by construction rather than a tolerance sitting on
+                // the number it tolerates.
+                bool[] unstable = DiffMask(frozenOff, frozenAgain, wet);
+                int unstablePx = CountTrue(unstable);
+                var scored = new bool[wet.Length];
+                for (int p = 0; p < wet.Length; p++) scored[p] = wet[p] && !unstable[p];
+
+                Assert.Less(unstablePx / (float)CountTrue(wet), 0.02f,
+                    $"{cells[i].key}: {unstablePx} px of water are not repeatable between two shots of the " +
+                    "same arm — a live time-driven layer is carrying the frame and every number below " +
+                    "would be measuring it");
+                Assert.AreEqual(0, MovedPixels(frozenOff, frozenAgain, scored, out _, out _),
+                    "the scored set must be repeatable by construction");
+
+                int moved = MovedPixels(frozenOff, frozenOn, scored, out Color meanOff, out Color meanOn);
+                records.Add(new SunSideRecord
+                {
+                    Cell = cells[i].key,
+                    Label = cells[i].label,
+                    Hour = HourFor(cells[i].hour, _profile),
+                    SunElevation = elev,
+                    Tint = tint,
+                    Moved = moved,
+                    MovedShare = moved / (float)CountTrue(scored),
+                    MeanOff = meanOff,
+                    MeanOn = meanOn,
+                    NoiseFloorPx = unstablePx,
+                });
+
+                thumbs[i][0] = Thumbnail(liveOff);
+                thumbs[i][1] = Thumbnail(liveOn);
+                thumbs[i][2] = Thumbnail(Difference(frozenOff, frozenOn, scored, 24f));
+
+                for (int b = _built.Count - 1; b >= builtBefore; b--)
+                {
+                    if (_built[b] != null) Object.DestroyImmediate(_built[b]);
+                    _built.RemoveAt(b);
+                }
+            }
+
+            string sheetPath = Path.Combine(Directory.GetCurrentDirectory(), OutRoot, "SHEET-sunside.png");
+            ContactSheet.Write(sheetPath, "THE SEA GETS A SUN SIDE - WARM TOWARD THE LOW SUN AND COOL AWAY",
+                               new[] { "AS SHIPPED", "SUN SIDE", "WHAT MOVED" },
+                               new[] { "NO SIDE", $"STRENGTH {shipped}", "X24 - CLOCKS STOPPED" },
+                               cells.Select(c => c.label).ToArray(), thumbs, ThumbPx);
+            File.WriteAllText(Path.Combine(dir, "SUNSIDE.txt"), SunSideReport(records));
+            Debug.Log("[water-plates] the sun side\n" + SunSideReport(records));
+
+            Assert.IsTrue(File.Exists(sheetPath), "the sun-side sheet must be written — the FILE is the evidence");
+
+            SunSideRecord sandGolden = records.First(r => r.Cell == "sand-golden");
+            SunSideRecord sandNoon = records.First(r => r.Cell == "sand-noon");
+            SunSideRecord openGolden = records.First(r => r.Cell == "open-golden");
+            SunSideRecord glassGolden = records.First(r => r.Cell == "glass-golden");
+
+            // ---- the effect ---------------------------------------------------------------------
+            // ⚠️ THE TWO GOLDEN CELLS MOVE BY VERY DIFFERENT AMOUNTS, AND THE REASON IS COMPOSITE
+            // ORDER, not a weak dial. This term composes into col.rgb well before the SURF band does
+            // (the sun side ~line 4863; the surf lerps over it at ~5233-5273), so wherever whitewater
+            // covers the water it covers the sun side with it. nmc-sand at spring low aimed down the
+            // longest surf run is mostly surf band and drying beach; West Water is open swell with no
+            // surf at all. Measured: 1.05 % of the wet frame over the shoal against 8.70 % on the open
+            // sea. Both bars below are HALF what was measured, so a retune has room to move without
+            // reddening this, and neither is a round number somebody guessed.
+            Assert.Greater(sandGolden.MovedShare, 0.005f,
+                $"golden hour over the sand shoal moved only {sandGolden.MovedShare:P2} of the water " +
+                "(1.05 % when this bar was set) — the register's complaint is that the sea has no sun " +
+                "side, and this would not fix it");
+            Assert.Greater(openGolden.MovedShare, 0.04f,
+                $"the open-water control moved only {openGolden.MovedShare:P2} (8.70 % when this bar was " +
+                "set) — whatever the shore does, the open SEA is supposed to take a side");
+
+            // ---- the two controls, which are what say the effect is the SUN ----------------------
+            // ⭐ Ratioed against the live arm, never an absolute bar: if the term is retuned up, the bar
+            // moves with it and the control still has to stay silent.
+            // Both measured EXACTLY 0 px on a 0-px noise floor, which is as strong as this claim gets.
+            // Asserted as a RATIO of the live arm rather than as == 0, so the guard survives a single
+            // stray pixel from a future retune while still being unsatisfiable by anything visible.
+            Assert.That(sandNoon.MovedShare, Is.LessThan(sandGolden.MovedShare * 0.01f),
+                $"NOON moved {sandNoon.MovedShare:P3} of the water against golden hour's " +
+                $"{sandGolden.MovedShare:P2} — a high sun is supposed to have no side (the sin^4 gate is " +
+                "0.0025 at 12:00 against 0.374 at 17:00), and the noon column of the sheet is supposed " +
+                "to be blank");
+            Assert.That(glassGolden.MovedShare, Is.LessThan(sandGolden.MovedShare * 0.01f),
+                $"a GLASS CALM moved {glassGolden.MovedShare:P3} of the water — the term shares the " +
+                "modelled swell's calm gate precisely so that row 5's sacred mirror is untouched");
+        }
+
+        static string SunSideReport(List<SunSideRecord> rows)
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine("# THE SUN SIDE (register row 11) - _SunSideStrength 0 vs the shipped value.");
+            sb.AppendLine("# The two LOOK columns of SHEET-sunside.png are LIVE; these numbers are the FROZEN arms,");
+            sb.AppendLine("# scored over WET pixels only, with every pixel two shots of the same arm could not repeat");
+            sb.AppendLine("# EXCLUDED rather than tolerated - so the noise floor over the scored set is 0 by construction.");
+            sb.AppendLine("cell | hour sunElev tint | moved px (share) | mean OFF -> mean ON | excluded px");
+            foreach (SunSideRecord r in rows)
+                sb.AppendLine(
+                    $"{r.Label} | {r.Hour:F2} elev {r.SunElevation:F3} " +
+                    $"({r.Tint.r:F3},{r.Tint.g:F3},{r.Tint.b:F3}) | {r.Moved} ({r.MovedShare:P2}) | " +
+                    $"({r.MeanOff.r:F4},{r.MeanOff.g:F4},{r.MeanOff.b:F4}) -> " +
+                    $"({r.MeanOn.r:F4},{r.MeanOn.g:F4},{r.MeanOn.b:F4}) | {r.NoiseFloorPx}");
+            return sb.ToString();
+        }
+
         /// <summary>One arm of the whitecap A/B, and what the sea was wearing.</summary>
         struct CapRecord
         {
