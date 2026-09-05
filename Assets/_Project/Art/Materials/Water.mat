@@ -196,6 +196,7 @@ Material:
     - _StormFoamLaneStrength: 0.75
     - _StormFoamLaneStretch: 6
     - _SunGlitterStrength: 0.6
+    - _SunSideStrength: 1.7
     - _SurfAgeStrength: 1
     - _SurfBandDither: 0.7
     - _SurfBands: 4
