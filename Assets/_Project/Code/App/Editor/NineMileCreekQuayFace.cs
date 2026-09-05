@@ -497,6 +497,37 @@ namespace HiddenHarbours.App.Editor
         public static Vector2 PivotForLip(Vector2 lip, Vector2 seaward) => lip - LipRiseFromPivot(seaward);
 
         /// <summary>
+        /// ⭐ How far UP-SCREEN the piece's own picture reaches above its pivot — the top corner of the
+        /// FOOTPRINT at deck height, which is the far side of a piece that looks at the camera and the
+        /// far END of one that looks across it.
+        ///
+        /// <para><b>This is why the lip is not a sorting line.</b> A course is a face plus its own deck
+        /// top: 5 m of crib drawn foreshortened, so on the mooring face the picture stands
+        /// <c>FaceCourseWidthMetres × GroundDepthScale</c> = 3.21 units above the lip, and on the apron
+        /// (whose length runs up-screen instead) <c>FaceCourseRunMetres/2 × GroundDepthScale</c> = 3.09.
+        /// Anything Y-sorted standing in that band sorted BEHIND the piece and was drawn over by it —
+        /// the owner's "you can disappear under them", 2026-09-04.</para>
+        ///
+        /// <para>⚠️ It is <b>not</b> a bound on the ink, and must never be used as one. Measured against
+        /// the committed sheet the two disagree in both directions: facing 4 draws to 5.5625 against
+        /// this 5.590 (the deck's corner is chamfered in), facing 6 draws to 7.1875 against this 7.069
+        /// (the crib's header logs stand proud of the footprint by 0.10 m plus their own radius). A
+        /// shipped piece is not a rectangle. Sorting is settled by leaving the decor band altogether —
+        /// <c>NineMileCreekDressing.FaceSortingOrder</c> — and this number is kept because it is the
+        /// measurement that says why.</para>
+        /// </summary>
+        /// <param name="seaward">Unit plan direction from the deck out over the water.</param>
+        public static float DrawnTopRiseFromPivot(Vector2 seaward)
+        {
+            Vector2 s = seaward.sqrMagnitude < 1e-12f ? Vector2.down : seaward.normalized;
+            Vector2 along = new Vector2(-s.y, s.x);              // the run, across the working face
+            float planRise = Mathf.Abs(s.y) * FaceCourseWidthMetres * 0.5f +
+                             Mathf.Abs(along.y) * FaceCourseRunMetres * 0.5f;
+            return BakedDeckZMetres * SpriteLightMath.HeightScale +
+                   planRise * SpriteLightMath.GroundDepthScale;
+        }
+
+        /// <summary>
         /// How far the drawn face reaches below its own lip, in world units: <b>≈ 5.06 units for a 6.6 m
         /// structure</b> — <c>(deckZ − mudZ)</c> of HEIGHT, at 0.766 a metre.
         ///
