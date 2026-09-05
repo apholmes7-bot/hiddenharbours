@@ -222,6 +222,68 @@ namespace HiddenHarbours.App.Editor
         /// <b>2.4 m</b> across, which is what a chained run of float modules measures.</summary>
         public const float BakedRigFloatWidthMetres = 2.4f;
 
+        /// <summary>The rig's default float LENGTH — <c>bays 2 × bayLen 3.0</c>
+        /// (<c>FAMILIES.float.dims</c> = bays [1,5,<b>2</b>], bayLen [2.4,3.6,<b>3.0</b>]) = <b>6.0 m</b>,
+        /// and therefore the pitch a run of them is laid at. <c>floatSet</c> pins the same 2 bays
+        /// explicitly, so the bay that carries the brow is the same length as the seven that do
+        /// not.</summary>
+        public const float BakedRigFloatRunMetres = 6f;
+
+        /// <summary>
+        /// The fraction of the tidal range the rig bakes its WATER LEVEL at (<c>resolve():
+        /// s.tide = s.tideRange * 0.55</c>). Not a look: it is where the waterline, the wet mask and —
+        /// for a float, which rides — the whole structure were drawn.
+        /// </summary>
+        public const float BakedRigTideFraction = 0.55f;
+
+        /// <summary>The water level the pack was baked at, in metres above chart datum — <b>2.42 m</b>,
+        /// which is what the contract records as <c>tide.baked</c>. Derived from the range rather than
+        /// copied, so a re-bake at another coast moves it.</summary>
+        public static float BakedRigWaterLevelMetres => BakedRigTideRange * BakedRigTideFraction;
+
+        /// <summary>
+        /// ⭐ <b>THE HEIGHT THE DRAWN FLOAT'S DECK STANDS AT — 2.82 m above chart datum.</b> The rig's own
+        /// rule (<c>s.floatDeckZ = s.tide + s.freeboard</c>) at the water level it baked. This is the ONE
+        /// number a drawn float has to carry into the game, because the sim drives her deck from the LIVE
+        /// tide and the picture was drawn at a fixed one: the difference, times the camera's height scale,
+        /// is where the sprite belongs (<c>HiddenHarbours.World.FloatingPlatformVisual.ScreenRise</c>).
+        /// </summary>
+        public static float BakedRigFloatDeckZMetres =>
+            BakedRigWaterLevelMetres + BakedRigFloatFreeboard;
+
+        // --- WHICH CELL DRAWS THE FLOAT RUN -----------------------------------------------------------
+        // One preset, and the choice is the whole of the tide argument.
+        //
+        // ⚠⚠ THE BROW IS NOT DRAWN, AND `floatSet` IS WHY IT CANNOT BE YET. The pack bakes no standalone
+        // gangway cell (17 presets; the rig HAS a `gangway` family and none of the 17 is it). The only
+        // drawn ramp it owns is the one `floatSet` hangs off a float's −X end — same 2-bay raft, plus a
+        // ramp onto a concrete abutment — and at facing 0 that ramp runs WEST, which is exactly where this
+        // wharf's apron is. It was built, plated at three states of tide, and REFUSED, because the ramp
+        // rides with the raft it is baked into and its hinge is a fixed structure:
+        //
+        //     drawn hinge height = deck + 2.38 m      (the rig hinges at tideRange + clearance = 5.20 m,
+        //                                              carried down by the float's own ride)
+        //     this wharf's apron  = +3.00 m
+        //     ⇒ exact at deck 0.62 m (water ≈ mean), 2.0 m ABOVE the apron at spring high,
+        //       2.3 m below it at spring low.
+        //
+        // At spring high the brow visibly hangs in the air off the end of the wharf. Half of every tide
+        // is wrong at the one end of a gangway that is not supposed to move at all, so the ramp stays out
+        // until it can be its own object: a `gangway` cell baked at THIS wharf's abutment (abutZ 3.00,
+        // not the rig's auto 5.20) and either a slope axis in the sheet or a runtime-solved ramp. The
+        // walkable GangwayPlatform is unaffected — it has always been there and you can still cross it.
+
+        /// <summary>The float bay — every one of the run's eight. <c>timberFloat</c> is the rig's plain
+        /// 2-bay timber raft: 6.0 × 2.4 m of planked deck with cleats, a ladder, a tyre and a foam fender,
+        /// guide piles and a mooring chain.</summary>
+        public const string FloatCourseKey = "timberFloat";
+
+        /// <summary>
+        /// The compass heading a float bay is drawn at: <b>0</b> — the facing whose length runs east-west
+        /// along the run, with the raft's cleat side turned NORTH into the basin the small craft lie in.
+        /// </summary>
+        public const float FloatCourseHeadingDegrees = 0f;
+
         // --- the growth bands: the half no stack could ever have fixed --------------------------------
         // The rig pins growth to the tidal FRAME as fractions of the range (frame(): barnTop = R×0.80,
         // barnBot = R×0.40, weedTop = R×0.40, weedBot = R×0.06), never to the water level. So the ONE
