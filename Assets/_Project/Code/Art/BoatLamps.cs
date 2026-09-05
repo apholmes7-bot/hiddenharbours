@@ -57,6 +57,7 @@ namespace HiddenHarbours.Art
         private Transform _posed;
         private HullLamp[] _lamps;
         private SceneLight[] _lights;
+        private BoatWindowGlow _windows;
         private bool _subscribed;
         private bool _cabinOccupied;
         private VesselWay _way = VesselWay.UnderWay;
@@ -106,6 +107,47 @@ namespace HiddenHarbours.Art
         /// <summary>Is somebody below on this hull right now (what drives the cabin-glow boost)? Public
         /// so a test can read the state the bus put the lamps in without a second source of truth.</summary>
         public bool CabinOccupied => _cabinOccupied;
+
+        /// <summary>
+        /// <b>How brightly this hull's cabin is burning</b> — her own per-placement trim times the
+        /// occupancy boost, as one number.
+        ///
+        /// <para>Public because the cabin glow is now drawn in two places: the WINDOWS
+        /// (<see cref="BoatWindowGlow"/>, since the owner's 2026-09-03 ruling) and, when the
+        /// passthrough dial is thrown, the old disc here. Both must burn at the same brightness and
+        /// brighten by the same step when somebody goes below, so the number is computed once, here,
+        /// where the occupancy bus already lives — never twice from two readings of the same bus.</para>
+        /// </summary>
+        public float CabinGlowScale
+        {
+            get
+            {
+                float boost = _cabinOccupied ? Mathf.Max(0f, _cabinOccupiedBoost) : 1f;
+                return CabinTrim * boost;
+            }
+        }
+
+        /// <summary>
+        /// Does this hull have WINDOWS to carry her cabin glow, or must it stay the disc? Read off the
+        /// renderer's own pane table, for the same reason the lamps are: it is the one thing that knows
+        /// which hull is currently skinned onto this root. False is an ordinary answer — see the note
+        /// in <see cref="Build"/>.
+        /// </summary>
+        public bool HasWindows => _hull != null && _hull.Panes.Length > 0;
+
+        /// <summary>This hull's own trim on her cabin glow, from her lamp table; 1 when she declares
+        /// no cabin row at all (a hull whose windows are lit by data her lamp table never mentioned
+        /// is not dimmed to nothing for it).</summary>
+        private float CabinTrim
+        {
+            get
+            {
+                if (_lamps == null) return 1f;
+                for (int i = 0; i < _lamps.Length; i++)
+                    if (_lamps[i].Kind == HullLampKind.CabinGlow) return _lamps[i].SafeIntensityScale;
+                return 1f;
+            }
+        }
 
         /// <summary>
         /// <b>The boat ROOT that a node somewhere on a hull belongs to.</b>
@@ -174,6 +216,7 @@ namespace HiddenHarbours.Art
             // across an enable — the same reason HullLocalAnchor clears its own resolution here.
             _hull = null;
             _posed = null;
+            _windows = null;
             Subscribe();
             Rebuild();
             RefreshWay();
@@ -260,11 +303,36 @@ namespace HiddenHarbours.Art
                 // null and the pose loop skips it, which is why that loop tests for null at all.
                 if (lamp.Kind == HullLampKind.Spotlight) continue;
 
+                // ⭐ NOR IS THE CABIN GLOW, SINCE THE OWNER'S 2026-09-03 RULING. A disc over the
+                // wheelhouse is not a lit room; her WINDOWS are, and BoatWindowGlow draws them from
+                // the glass her own rig publishes. The row is kept in the table — it is still where
+                // the room is, and it still carries this hull's trim on how brightly that room burns
+                // (CabinGlowScale) — but it builds no quad here.
+                //
+                // TWO cases still get the disc, and neither is an oversight:
+                //   · the PASSTHROUGH (GameServices.BoatLegacyCabinGlow), which restores yesterday's
+                //     picture exactly — the other arm of the owner's A/B, and the way back; and
+                //   · a hull with NO WINDOWS IN HER DEF. The probe refuses to place a pane it cannot
+                //     land on the boat (today: the two sport fishers, whose record publishes a flat
+                //     half-width for a side that curves in plan), and a room that cannot be drawn as
+                //     windows must degrade to the glow it already had — never to darkness. Same rule
+                //     the presentation service states for an unusable def: fall back to the SHIPPED
+                //     look, never to an invisible boat.
+                bool discInstead = GameServices.BoatLegacyCabinGlow || !HasWindows;
+                if (lamp.Kind == HullLampKind.CabinGlow && !discInstead) continue;
+
                 var go = new GameObject("Lamp_" + lamp.Kind) { hideFlags = HideFlags.DontSave };
                 go.transform.SetParent(transform, worldPositionStays: false);
 
                 var light = go.AddComponent<SceneLight>();
-                BoatLampPresets.Apply(light, lamp.Kind, lamp.SafeIntensityScale);
+                // The CABIN disc is yesterday's by definition — it IS the thing being fallen back to.
+                // Every OTHER lamp follows the dial alone: the 2026-09-03 shrink applies to a hull
+                // whose windows could not be placed exactly as it does to one whose could, because
+                // "a lamp is the size of its own fitting" has nothing to do with her glazing.
+                if (GameServices.BoatLegacyCabinGlow || lamp.Kind == HullLampKind.CabinGlow)
+                    BoatLampPresets.ApplyLegacy(light, lamp.Kind, lamp.SafeIntensityScale);
+                else
+                    BoatLampPresets.Apply(light, lamp.Kind, lamp.SafeIntensityScale);
                 // The lamp's HEIGHT for the shadows it throws (ADR 0016, lights PR B): her rig's own z,
                 // metres up from the KEEL. The keel is the nearest thing her data offers to the plane
                 // her casters stand on — she floats about a metre above it, so a sidelight's rake is
@@ -302,8 +370,15 @@ namespace HiddenHarbours.Art
         /// the regime forbids costs no quad at all rather than a dark one.</summary>
         private void ApplyEnabled()
         {
-            if (_lights == null) return;
             bool on = _lampsOn && isActiveAndEnabled;
+
+            // ⚠️ THE WINDOWS FIRST, AND UNCONDITIONALLY. They are told even when this hull built no
+            // lights at all — a hull whose only cabin row is the glow now builds NO quad for it, so
+            // `_lights == null` is an ordinary state for a lit boat and an early return here would
+            // leave her windows dark with nothing to say why.
+            PushWindows(on);
+
+            if (_lights == null) return;
             for (int i = 0; i < _lights.Length; i++)
             {
                 if (_lights[i] == null) continue;
@@ -311,6 +386,20 @@ namespace HiddenHarbours.Art
                              && ShowsWhen(_lamps[i].Kind, _way, _cabinOccupied);
                 _lights[i].enabled = on && allowed;
             }
+        }
+
+        /// <summary>
+        /// Hand the cabin's state to the component that draws her windows. One owner (this one, which
+        /// holds the way and the occupancy bus), one rule (<see cref="ShowsWhen"/>), one brightness
+        /// (<see cref="CabinGlowScale"/>) — the window glow computes none of them for itself, so the
+        /// two can never disagree about whether a room is lit.
+        /// </summary>
+        private void PushWindows(bool lampsOn)
+        {
+            if (_windows == null) _windows = GetComponent<BoatWindowGlow>();
+            if (_windows == null) return;
+            _windows.SetLit(lampsOn && ShowsWhen(HullLampKind.CabinGlow, _way, _cabinOccupied),
+                            CabinGlowScale);
         }
 
         // -------------------------------------------------------------------------------------------
@@ -375,13 +464,15 @@ namespace HiddenHarbours.Art
         /// </summary>
         private void ApplyCabinBoost()
         {
-            if (_lights == null || _lamps == null) return;
-            for (int i = 0; i < _lights.Length && i < _lamps.Length; i++)
+            // The disc only exists in the passthrough arm now; in the shipped one this loop finds
+            // nothing and the brightness reaches the WINDOWS through ApplyEnabled -> PushWindows.
+            if (_lights != null && _lamps != null)
             {
-                if (_lamps[i].Kind != HullLampKind.CabinGlow || _lights[i] == null) continue;
-                float boost = _cabinOccupied ? Mathf.Max(0f, _cabinOccupiedBoost) : 1f;
-                BoatLampPresets.Apply(_lights[i], HullLampKind.CabinGlow,
-                                      _lamps[i].SafeIntensityScale * boost);
+                for (int i = 0; i < _lights.Length && i < _lamps.Length; i++)
+                {
+                    if (_lamps[i].Kind != HullLampKind.CabinGlow || _lights[i] == null) continue;
+                    BoatLampPresets.ApplyLegacy(_lights[i], HullLampKind.CabinGlow, CabinGlowScale);
+                }
             }
 
             // ⚠️ And re-throw the switch, not just the brightness. At a berth the glow is OFF until

@@ -1,5 +1,9 @@
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
 using NUnit.Framework;
 using UnityEngine;
 using HiddenHarbours.Core;
@@ -262,6 +266,219 @@ namespace HiddenHarbours.Tests.EditMode
         private sealed class AlwaysShallow : ITidalTerrain
         {
             public float ElevationAt(Vector2 worldPos) => -0.4f;   // 40 cm of water everywhere
+        }
+
+        // =========================================================================================
+        //  ONE FOAM LANGUAGE (water-fidelity register row 2): what the walk does to the drawn band
+        //
+        //  The tests above measure the AGE. These measure the COLOUR that age now buys, on the same
+        //  chain, at the LIVE tuning — the knots, the palette anchors and the dial are read out of
+        //  Water.mat's serialized YAML, so a retune re-runs the measurement instead of quietly
+        //  measuring a sea that no longer exists (the WakeFoamAgeingMeasurementTests discipline).
+        //
+        //  ⚠️ THE COLOUR IS NOT TRANSCRIBED HERE. WakeFoamAgeing.Shade IS the production entry point,
+        //  and with scatter and jitter at 0 it is exactly what the shader's FoamAgedColor computes:
+        //  lerp(legacy, Ramp3(Knots(age)), strength). A test that re-implemented the walk would agree
+        //  with itself and nothing else.
+        // =========================================================================================
+
+        private const string LiveWaterMatPath = "Assets/_Project/Art/Materials/Water.mat";
+
+        private static float MatFloat(string key)
+        {
+            var m = Regex.Match(File.ReadAllText(LiveWaterMatPath, Encoding.UTF8),
+                                "-\\s" + Regex.Escape(key) + ":\\s*(-?[\\d.eE+]+)");
+            Assert.IsTrue(m.Success, LiveWaterMatPath + " does not serialize " + key);
+            return float.Parse(m.Groups[1].Value, CultureInfo.InvariantCulture);
+        }
+
+        private static Color MatColor(string key)
+        {
+            var m = Regex.Match(File.ReadAllText(LiveWaterMatPath, Encoding.UTF8),
+                                "-\\s" + Regex.Escape(key) +
+                                ":\\s*\\{r:\\s*(-?[\\d.eE+]+),\\s*g:\\s*(-?[\\d.eE+]+),\\s*b:\\s*(-?[\\d.eE+]+)");
+            Assert.IsTrue(m.Success, LiveWaterMatPath + " does not serialize " + key + " as a colour");
+            return new Color(float.Parse(m.Groups[1].Value, CultureInfo.InvariantCulture),
+                             float.Parse(m.Groups[2].Value, CultureInfo.InvariantCulture),
+                             float.Parse(m.Groups[3].Value, CultureInfo.InvariantCulture));
+        }
+
+        /// <summary>The sea's live palette anchors, straight off the hero material (ADR 0015).</summary>
+        private static SeaPaletteState LivePalette()
+            => new SeaPaletteState(MatColor("_PaletteDeep"), MatColor("_PaletteMid"),
+                                   MatColor("_PaletteShallow"), MatColor("_PaletteFoam"));
+
+        /// <summary>The shared walk at the live knots and a given strength. Scatter and jitter are 0
+        /// because the shader has no per-particle seed — the field halves of this twin are
+        /// <see cref="WakeFoamAgeing.Knots"/> and <see cref="WakeFoamAgeing.Ramp3"/>, and this is the
+        /// ramp that reaches them.</summary>
+        private static WakeAgeRamp LiveRamp(float strength) => new WakeAgeRamp
+        {
+            Strength    = strength,
+            WhiteHold   = MatFloat("_WakeFoamWhiteHold"),
+            BlueReach   = MatFloat("_WakeFoamBlueReach"),
+            DeepReach   = MatFloat("_WakeFoamDeepReach"),
+            AgeScatter  = 0f,
+            ShadeJitter = 0f,
+        };
+
+        /// <summary>A colour, bucketed for counting. THREE decimals, not two: at two the walk's own
+        /// neighbouring samples collide in the BUCKET rather than in the shader (52 distinct of 59 on the
+        /// first run), and a metric that quantizes harder than the thing it measures is measuring itself.
+        /// The palette anchors still land on exact keys at this width, which is what the end-stop identity
+        /// check below needs.</summary>
+        private static string Key(Color c)
+            => $"{c.r:F3},{c.g:F3},{c.b:F3}";
+
+        /// <summary>The drawn band's whitewater energies — the sibling test's visibility floor, so this
+        /// is the foam an eye can see rather than the dead tail behind it.</summary>
+        private static List<float> TheDrawnBandsEnergies()
+        {
+            const float visible = 0.02f;
+            var (_, energies) = SweepTheSurfZone(BreakerSettings.Default);
+            return energies.Where(e => e >= visible).ToList();
+        }
+
+        /// <summary>What the surf's whitewater is drawn at, sample by sample down that band, at a given
+        /// dial setting.</summary>
+        private static List<Color> TheDrawnBandsColours(float ageStrength)
+        {
+            Color surf = MatColor("_SurfColor");
+            SeaPaletteState palette = LivePalette();
+            WakeAgeRamp ramp = LiveRamp(ageStrength);
+
+            return TheDrawnBandsEnergies()
+                   .Select(e => WakeFoamAgeing.Shade(surf, 1f - e, 0f, in ramp, in palette))
+                   .ToList();
+        }
+
+        [Test]
+        public void TheDrawnSurfBand_WalksTheSeasBlues_InsteadOfHoldingOneWhite()
+        {
+            // ⭐ THE ROW-2 CLAIM, AS A NUMBER. The register's row 2 reads: "the surf is flat white and
+            // stays white to its outer edge; the wake's blue walk cannot reach it." Flat white is a
+            // measurable thing — it is ONE colour over the whole band — and so is the fix.
+            float shipped = MatFloat("_SurfAgeStrength");
+            Assert.Greater(shipped, 0f,
+                "_SurfAgeStrength is the shipped dial for row 2; at 0 this measurement has nothing to " +
+                "measure and the surf is back to one flat white");
+
+            List<Color> walked = TheDrawnBandsColours(shipped);
+            List<Color> flat = TheDrawnBandsColours(0f);
+
+            Assert.Greater(walked.Count, 60, "the sweep must actually cover a drawn band");
+
+            // THE NULL CASE FIRST — a coverage metric must name what it counts, and the way to find out
+            // what this one counts is to run it on the arm that must score zero. At the dial's 0 the
+            // whole band is _SurfColor, bit for bit: one colour, no walk.
+            Color surf = MatColor("_SurfColor");
+            Assert.AreEqual(1, flat.Select(Key).Distinct().Count(),
+                "at _SurfAgeStrength 0 the drawn band must be ONE colour — that is the defect this row " +
+                "names, and it is also this metric's null case");
+            foreach (Color c in flat)
+                Assert.IsTrue((Vector4)c == (Vector4)surf,
+                    "…and that colour must be _SurfColor, unchanged bit for bit: the A/B revert");
+
+            int distinct = walked.Select(Key).Distinct().Count();
+            var byColour = walked.Select(Key).GroupBy(k => k).OrderByDescending(g => g.Count()).ToList();
+            string commonest = byColour[0].Key;
+            float topShare = byColour[0].Count() / (float)walked.Count;
+
+            // The two ends of the drawn band, and the distance between them in the sea's own colours.
+            Color born = walked[0];
+            Color dying = walked[walked.Count - 1];
+            SeaPaletteState palette = LivePalette();
+            float travel = Vector3.Distance(new Vector3(born.r, born.g, born.b),
+                                            new Vector3(dying.r, dying.g, dying.b));
+            float wholeRamp = Vector3.Distance(
+                new Vector3(palette.Foam.r, palette.Foam.g, palette.Foam.b),
+                new Vector3(palette.Mid.r, palette.Mid.g, palette.Mid.b));
+
+            // ⭐ WHERE THE #665 METRIC DISCRIMINATES, AND WHY IT IS NOT THE WHOLE BAND. A three-knot ramp
+            // has two DELIBERATE flat runs: the white HOLD at the break line (the churn itself, the first
+            // _WakeFoamWhiteHold of its life) and the terminal anchor past _WakeFoamDeepReach (the tail,
+            // dissolved into the ambient blue at vanishing coverage). Scoring those as "one colour
+            // dominating" would count the ramp's own design as the defect it was built to cure — a metric
+            // has to name what it counts. So the resolution claim is made over the WALK: the samples
+            // strictly between the first and the last knot, which is the stretch that used to be flat
+            // white and is the whole of what row 2 is about.
+            WakeAgeRamp ramp = LiveRamp(shipped);
+            List<Color> onTheWalk = TheDrawnBandsEnergies()
+                .Select(e => 1f - e)
+                .Where(age => age > ramp.WhiteHold && age < ramp.DeepReach)
+                .Select(age => WakeFoamAgeing.Shade(surf, age, 0f, in ramp, in palette))
+                .ToList();
+            int walkDistinct = onTheWalk.Select(Key).Distinct().Count();
+
+            Debug.Log($"[row 2] the drawn surf band at _SurfAgeStrength {shipped:F2}: {walked.Count} samples, " +
+                      $"{distinct} distinct colours; commonest {commonest} at {topShare:P1}; born {born}, " +
+                      $"dying {dying}; travelled {travel:F3} of the palette's {wholeRamp:F3} foam->mid " +
+                      $"span. On the WALK between the knots: {onTheWalk.Count} samples, {walkDistinct} " +
+                      $"distinct. At the dial's 0: {flat.Select(Key).Distinct().Count()} colour ({surf}).");
+
+            Assert.GreaterOrEqual(distinct, 40,
+                $"the band must read as a walk, not as three shades ({distinct} distinct)");
+            Assert.Greater(onTheWalk.Count, 20, "the walk must occupy a real stretch of the drawn band");
+            Assert.GreaterOrEqual(walkDistinct / (float)onTheWalk.Count, 0.9f,
+                $"between the knots essentially every sample must be its own colour ({walkDistinct} " +
+                $"distinct of {onTheWalk.Count}) — 72-81 % of a band at ONE value is what the #665 defect " +
+                "looked like, and this is the stretch where that could still happen");
+
+            // …and the one colour that DOES repeat must be an ANCHOR, never a value part-way down the
+            // walk. A dominant mid-ramp colour would be resolution lost in transit, which is the failure
+            // this whole file exists to catch.
+            var anchors = new[] { Key(palette.Foam), Key(palette.Shallow), Key(palette.Mid) };
+            Assert.Contains(commonest, anchors,
+                $"the commonest colour in the band ({commonest} at {topShare:P1}) must be one of the " +
+                "ramp's own end-stops — the churn's white hold, or the tail's ambient blue — and not a " +
+                "value the walk stalled on");
+            Assert.Less(topShare, 0.50f,
+                $"…and no end-stop may own the band ({commonest} at {topShare:P1})");
+
+            // It must START at the sea's own white — the fringe's white, the wake's white, the cap's
+            // white — rather than at the surf's private (1,1,1).
+            Assert.That(Vector3.Distance(new Vector3(born.r, born.g, born.b),
+                                         new Vector3(palette.Foam.r, palette.Foam.g, palette.Foam.b)),
+                        Is.LessThan(0.02f),
+                        "freshly broken water is born at the sea's OWN foam anchor, not at a white of " +
+                        "the surf's own");
+
+            // …and it must actually GO somewhere: at least a third of the way down the palette, and
+            // monotonically DARKER, which is what "fades into the ambient ocean" is on a luma axis.
+            Assert.Greater(travel, wholeRamp / 3f,
+                $"the band must travel a real distance down the sea's ramp (travelled {travel:F3} of " +
+                $"{wholeRamp:F3})");
+            Assert.Less(WakeFoamAgeing.Luminance(dying), WakeFoamAgeing.Luminance(born),
+                "foam never brightens as it ages — measured on the sea's own Rec.601 scale");
+        }
+
+        [Test]
+        public void TheSurfAndTheWake_AtTheSameAge_AreTheSameColour()
+        {
+            // ⭐ WHY ONE STRENGTH AND NOT THREE. "One foam language" is a claim about two layers meeting,
+            // and it is only true at the top of the dial: at strength 1 both layers are the pure ramp and
+            // their legacy colours — the surf's (1,1,1) and the sea's _FoamColor — have been lerped
+            // entirely away. At any fraction below 1 each layer keeps a different share of a different
+            // white, and the sea has two foams again, merely closer together. That is the whole argument
+            // for shipping the caps, the surf and the wake at the SAME 1 rather than at three tuned
+            // values, and it is arithmetic rather than taste.
+            SeaPaletteState palette = LivePalette();
+            WakeAgeRamp ramp = LiveRamp(1f);
+            Color surf = MatColor("_SurfColor");
+            Color foam = MatColor("_FoamColor");
+
+            Assert.IsFalse((Vector4)surf == (Vector4)foam,
+                "this test proves the two legacy whites converge; if they were already equal it would " +
+                "be proving nothing");
+
+            for (float age = 0f; age <= 1.001f; age += 0.05f)
+            {
+                Color fromSurf = WakeFoamAgeing.Shade(surf, age, 0f, in ramp, in palette);
+                Color fromWake = WakeFoamAgeing.Shade(foam, age, 0f, in ramp, in palette);
+                Assert.AreEqual(fromSurf.r, fromWake.r, 1e-6f, $"red disagrees at age {age:F2}");
+                Assert.AreEqual(fromSurf.g, fromWake.g, 1e-6f, $"green disagrees at age {age:F2}");
+                Assert.AreEqual(fromSurf.b, fromWake.b, 1e-6f, $"blue disagrees at age {age:F2}");
+            }
         }
 
         [Test]

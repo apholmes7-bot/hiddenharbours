@@ -158,6 +158,21 @@ Shader "HiddenHarbours/Water"
         // rule 5). _SwellFaceShade = 0 is an EXACT passthrough.
         _SwellFaceShade ("Swell face shading (0 = off / flat bands)", Range(0,1)) = 0.22
 
+        [Header(Sun SIDE (the low sun colours the faces it rakes))]
+        // Water-fidelity register row 11 — the owner: "the light needs to affect the environment".
+        // Golden hour multiplied the WHOLE frame orange (ADR 0013) over a sea whose only sun terms were
+        // _SwellFaceShade and the glitter: surf band, mirror stripes and beach all took the same orange,
+        // so there was no warm/cool split and no face turned to the low sun. This term is that split, and
+        // it is a COLOUR where _SwellFaceShade above is a VALUE — the two compose on the SAME signed
+        // facing (one field slope, one normal, computed once): the shading models the wave, this paints
+        // the light on it. Its two colours are not authored — they are the published _DayNightTint's own
+        // deviation from grey and that deviation NEGATED, so the sunward face takes the light's hue and
+        // the lee face takes its complement (warm sun / cool shadow, the physics of a low sun) with NO new
+        // palette constant a preset could forget, and a colourless light self-cancels to nothing.
+        // Gated by _SunElevation: a high sun has no side. col.rgb ONLY — never depth/clip()/_WaterLevel/
+        // the sim field (P1 integrity, CLAUDE.md rule 5). _SunSideStrength = 0 is an EXACT passthrough.
+        _SunSideStrength ("Sun side warm/cool split (0 = off)", Range(0,2)) = 1.7
+
         [Header(Modelled swell CALM gate (glassy calm shows no read))]
         // Owner playtest (2026-07-08): "i can definitely notice the swells now better. although i still do
         // see them at calm." The wave field's own amplitude gate (swellLive) fully engages at ~0.025 m, so a
@@ -339,6 +354,15 @@ Shader "HiddenHarbours/Water"
         // one thing this arc exists not to do.
         _SurfStrength      ("Surf strength (0 = OFF, the exact passthrough)", Range(0,1)) = 1
         _SurfColor         ("Surf / whitewater colour", Color) = (1,1,1,1)
+        // ---- ONE FOAM LANGUAGE (water-fidelity register row 2) ---------------------------------
+        // _SurfColor is (1,1,1) on all nine water materials and no preset has ever moved it, so the
+        // surf drew a NEUTRAL white on a sea whose own foam is (0.86,0.84,0.74) in StirredBrown and
+        // (0.86,0.88,0.89) in FoggySmother — a second white, and one that never aged. At 1 the surf's
+        // whitewater is born at the sea's OWN foam anchor and walks the sea's OWN blues as the bore
+        // ages, through FoamAgedColor: the same function, the same _WakeFoam* knots and the same
+        // palette anchors the wake buffer and the whitecaps use. 0 is the exact passthrough — the
+        // flat _SurfColor, bit for bit — and is the A/B a reviewer takes. col.rgb ONLY (P1, rule 5).
+        _SurfAgeStrength   ("Surf ageing (0 = one flat white; 1 = the sea's own foam walk)", Range(0,1)) = 1
         // The break line itself is denser than the whitewater trailing off it — a spilling crest
         // crumbles white at the top and thins as the bore runs in. 1 = flat (no crest emphasis).
         _SurfCrestBoost    ("Break-line density boost (1 = flat band)", Range(1,3)) = 1.6
@@ -630,8 +654,12 @@ Shader "HiddenHarbours/Water"
         // through the SAME knots the wake uses. Born into the palette, so the row-2 unification inherits
         // them rather than having to convert them.
         //
-        // 0 = the shipped flat white, exactly. col.rgb ONLY (P1, rule 5).
-        _CapAgeStrength ("Whitecap ageing (0 = one flat white; 1 = the wake's own colour walk)", Range(0,1)) = 0
+        // ⭐ SHIPPED AT 0 by #719 (the mechanism, not the value: that instrument could not show a
+        // colour walk on foam sitting at 0.02–0.09 luma) and turned UP by row 2, which judges wake,
+        // surf, fringe and caps against ONE palette and can. Deliberately the SAME strength as the
+        // surf's and the wake's: one language means one walk at one strength, not three tuned
+        // fractions of it. 0 = the shipped flat white, exactly. col.rgb ONLY (P1, rule 5).
+        _CapAgeStrength ("Whitecap ageing (0 = one flat white; 1 = the sea's own foam walk)", Range(0,1)) = 1
 
         [Header(Palette guard rail (final soft grade   col.rgb only   ADR 0015))]
         // THE LAST STAGE before return: a SOFT guard-rail that keeps the composited water colour inside an
@@ -1328,6 +1356,7 @@ Shader "HiddenHarbours/Water"
                 float  _SwellReadBands;
                 // Swell FACE shading (lit face / shaded back off the wave field's analytic slope).
                 float  _SwellFaceShade;
+                float  _SunSideStrength;
                 // Modelled-swell CALM gate (shared by the read band + the face shade; keys _Chop).
                 float  _SwellReadSeaStateLo;
                 float  _SwellReadSeaStateHi;
@@ -1383,6 +1412,7 @@ Shader "HiddenHarbours/Water"
                 // in this block can move the break line, and that is the point.
                 float  _SurfStrength;
                 float4 _SurfColor;
+                float  _SurfAgeStrength;   // the surf's share of the ONE foam walk (row 2)
                 float  _SurfCrestBoost;
                 float  _SurfCrestWidth;
                 float  _SurfNoiseScale;
@@ -3228,8 +3258,29 @@ Shader "HiddenHarbours/Water"
                 return saturate(1.0 - freshness / fresh);
             }
 
+            // ---- ONE FOAM LANGUAGE (water-fidelity register row 2) ------------------------------------
+            // THE one place a foam colour is chosen, for every layer that has an age: the wake buffer,
+            // the whitecaps and the surf's own whitewater. Owner, 2026-08-27: foam should churn
+            // *"through different shades of blue, distort and fade into the ambient ocean over time"*.
+            // Three layers each transcribing that walk is three languages waiting to drift apart, so
+            // there is one walk: WakeFoamKnots over the sea's OWN anchors, at the SAME _WakeFoam*
+            // knots. Two layers at the same age are therefore the same colour, by construction rather
+            // than by tuning — which is the whole of what "one foam language" can mean.
+            //
+            // `legacy` is what that layer drew before the walk existed and `strength` 0 returns it
+            // BIT-EXACTLY (the A/B every knob in this shader ships under). col.rgb ONLY (P1, rule 5).
+            float3 FoamAgedColor(float age01, float3 legacy, float strength)
+            {
+                float s = saturate(strength);
+                if (s <= 0.001) return legacy;
+
+                float t     = WakeFoamKnots(age01, _WakeFoamWhiteHold, _WakeFoamBlueReach, _WakeFoamDeepReach);
+                float3 ramp = WakeFoamRamp3(t, _PaletteFoam.rgb, _PaletteShallow.rgb, _PaletteMid.rgb);
+                return lerp(legacy, ramp, s);
+            }
+
             // The colour this patch of wake foam should be composed toward, given how recently it was
-            // churned.
+            // churned — the wake's adapter onto the shared walk above.
             //
             // THE AGE COMES FROM THE FRESHNESS CHANNEL, NOT THE COVERAGE. #665 used the coverage on the
             // reasoning that a decaying buffer's surviving coverage is its age. Measured, that cannot
@@ -3246,13 +3297,8 @@ Shader "HiddenHarbours/Water"
             // bit-exact.
             float3 WakeFoamAgedColor(float freshness)
             {
-                float strength = saturate(_WakeFoamAgeStrength);
-                if (strength <= 0.001) return _FoamColor.rgb;
-
-                float age   = WakeFoamAge01(freshness, _WakeFoamFreshFloor);
-                float t     = WakeFoamKnots(age, _WakeFoamWhiteHold, _WakeFoamBlueReach, _WakeFoamDeepReach);
-                float3 ramp = WakeFoamRamp3(t, _PaletteFoam.rgb, _PaletteShallow.rgb, _PaletteMid.rgb);
-                return lerp(_FoamColor.rgb, ramp, strength);
+                return FoamAgedColor(WakeFoamAge01(freshness, _WakeFoamFreshFloor),
+                                     _FoamColor.rgb, _WakeFoamAgeStrength);
             }
 
             // ---- the FAKED sky reflection (single-pass, in-shader; col.rgb dressing ONLY) --------------------
@@ -4745,18 +4791,76 @@ Shader "HiddenHarbours/Water"
                 // there). col.rgb ONLY — never depth/clip()/the deep tint/_WaterLevel/the sim wave field
                 // (P1 integrity, CLAUDE.md rule 5). _SwellFaceShade = 0 is an EXACT passthrough. Shares the
                 // calm gate with the read band above — one modelled swell melts away as one on a glassy calm.
-                if (_SwellFaceShade > 0.001 && swellReadGate > 0.001)
+                // ONE signed facing, shared by BOTH face terms below (the VALUE shading and the row-11
+                // sun-side COLOUR). Hoisted out of the shading block so neither dial can switch the other
+                // off and so the sea can never grow a second normal: there is one field slope and this is
+                // the only place it is turned into a facing. With _SwellFaceShade up this is the identical
+                // expression, in the identical order, that shipped before — the shading is bit-unchanged.
+                float faceSigned = 0.0;
+                if ((_SwellFaceShade > 0.001 || _SunSideStrength > 0.001) && swellReadGate > 0.001)
                 {
                     float2 shadeSunXY = dot(_SunDir.xy, _SunDir.xy) > 1e-6 ? _SunDir.xy : _LightDir.xy;
                     float2 shadeLd = normalize(shadeSunXY + float2(1e-4, 0));
                     // x2 normalizes the field's small physical slopes (amp x k, ~0.1..0.8 in a real sea,
                     // already carrying the _OceanSwellScale visual-frequency factor) to a legible -1..1
-                    // signal; the clamp bounds a heavy sea. 0.15 is the add ceiling (the swell-read idiom):
-                    // at the 0.22 default the swing is +/-0.033 — shading, not glare — and the §13 palette
-                    // rail bounds the extremes like every other layer.
+                    // signal; the clamp bounds a heavy sea.
                     // + the bore front's own face (ADR 0040 rev 3; zero unless _SurfFrontSlope is up).
-                    float faceSigned = clamp(-dot(waveSlope + surfFrontSlope, shadeLd) * 2.0, -1.0, 1.0);
+                    faceSigned = clamp(-dot(waveSlope + surfFrontSlope, shadeLd) * 2.0, -1.0, 1.0);
+                }
+                if (_SwellFaceShade > 0.001 && swellReadGate > 0.001)
+                {
+                    // 0.15 is the add ceiling (the swell-read idiom): at the 0.22 default the swing is
+                    // +/-0.033 — shading, not glare — and the §13 palette rail bounds the extremes like
+                    // every other layer.
                     col.rgb += faceSigned * saturate(_SwellFaceShade) * swellReadGate * 0.15;
+                }
+
+                // ---- SUN SIDE (register row 11: "the light needs to affect the environment") ------------
+                // The frame was multiplied orange and the SEA had no side to turn to the sun. This adds the
+                // one thing that a multiply cannot: a SPLIT. On the shared facing above, the sunward face
+                // takes the light's own hue and the lee face takes its complement.
+                //
+                // (1) THE COLOUR IS NOT AUTHORED. _DayNightTint is the sun’s colour this hour, already
+                //     published on every material by the shipped day/night maths. Its deviation from its
+                //     OWN grey is what "warm" means at this hour and nothing else: at the register’s 17:00
+                //     the tint is (0.866, 0.529, 0.356), grey 0.584, so the deviation is
+                //     (+0.282, -0.055, -0.228) — orange, derived, never typed. The lee face takes MINUS
+                //     that, which is the complement the sky throws into a shadow (warm sun / cool shade,
+                //     the actual physics of a low sun), so there is no second colour to author either.
+                //     ⛔ Deliberately NOT a new palette constant: a wholesale preset that forgot to carry
+                //     one would draw a sun side in another sea's colours (the §13 preset trap). And it is
+                //     deliberately NOT normalized — a colourless light has a zero deviation and the term
+                //     self-cancels to nothing, with no divide, no epsilon and no guard.
+                //
+                // (2) THE GATE IS THE SUN’S HEIGHT. _SunElevation is cos(solarX * pi/2), so (1 - e*e) is
+                //     sin^2 of the solar arc angle and this gate is sin^4: exactly 0 at solar noon, 1 at
+                //     the horizon, and — the number that matters — 0.0025 at the plates’ 12:00 (e = 0.975,
+                //     solar noon being 13:00) against 0.374 at the 17:00 golden hour. That 152x separation
+                //     is what makes the noon control byte-identical rather than merely faint: at the
+                //     shipped strength the largest noon channel moves 0.000008 (MEASURED, on the drawn
+                //     swell at the blow reference sea) -- two thousandths of one 8-bit code, because the
+                //     noon light is very nearly colourless (0.980, 1.000, 1.000) as well as high.
+                //     ⚠ sin^4 alone is NOT enough — it is symmetric about the horizon and reads 0.151 at
+                //     02:00 (e = -0.78), i.e. a sun side at night. The smoothstep is what puts a sun below
+                //     the horizon out of the term, and it fades in over the first sliver of elevation so
+                //     nothing pops at sunrise.
+                //
+                // Shares the swell CALM gate with the two terms above — one modelled swell, and a glassy
+                // calm keeps the §11 mirror untouched. col.rgb ONLY — never depth/clip()/the deep tint/
+                // _WaterLevel/the sim wave field (P1 integrity, CLAUDE.md rule 5).
+                // _SunSideStrength = 0 is an EXACT passthrough. ~25 scalar ops, no new texture read.
+                if (_SunSideStrength > 0.001 && swellReadGate > 0.001)
+                {
+                    float3 tintRGB   = _DayNightTint.rgb;
+                    float  tintGrey  = (tintRGB.r + tintRGB.g + tintRGB.b) * (1.0 / 3.0);
+                    float3 sunChroma = tintRGB - tintGrey;
+
+                    float  e        = _SunElevation;
+                    float  sinSq    = 1.0 - e * e;
+                    float  elevGate = smoothstep(0.0, 0.12, e) * sinSq * sinSq;
+
+                    float  amt = faceSigned * max(_SunSideStrength, 0.0) * elevGate * swellReadGate;
+                    col.rgb += sunChroma * amt;
                 }
 
                 // ---- ENVELOPE VALUE BANDS (ADR 0023 §(4) — the big wave is marked by SHADE as well as foam)
@@ -5132,6 +5236,32 @@ Shader "HiddenHarbours/Water"
                 {
                     float strength = saturate(_SurfStrength);
 
+                    // ---- ONE FOAM LANGUAGE (register row 2) ---------------------------------------
+                    // Owner, 2026-08-27: foam should churn *"through different shades of blue, distort
+                    // and fade into the ambient ocean over time."* The wake buffer has walked that ramp
+                    // since #665 and the caps since #719; the surf composited a flat _SurfColor — (1,1,1)
+                    // on all nine materials, a NEUTRAL white no preset has ever moved — and stayed that
+                    // white out to its dying edge. Two foam languages meeting at a seam, which is exactly
+                    // what the register's row 2 says the plates show.
+                    //
+                    // THE AGE IS THE ENERGY, READ BEFORE ANYTHING CONSUMES IT. surfAlive is
+                    // exp(-(marched metres / sqrt(g*d)) / tau) — a smooth, strictly decreasing function of
+                    // the march's own geometry, taken here BEFORE the density lift, the metaball threshold
+                    // and the posterize that the coverage goes through. That ordering is the whole of the
+                    // decaying-quantity law (#665): saturation destroys ordering, thresholding destroys
+                    // range, quantization destroys resolution — and none of the three is upstream of this
+                    // read. BreakerWhitewaterAgeMeasurementTests measures what the band actually spans
+                    // rather than asserting that it must.
+                    //
+                    // The LIP is composed at age 0 on purpose: it is the crest that has this instant
+                    // pitched forward, the newest water in the frame. So it stops being its own pure white
+                    // and becomes the sea's own foam anchor — the brightest thing in the surf still, but
+                    // the brightest thing in THIS sea. The BARREL is untouched: it is a hollow, a shadow
+                    // in the water, not foam, and it has no age to walk.
+                    float surfAge01 = saturate(1.0 - surfAlive);
+                    float3 surfFoam = FoamAgedColor(surfAge01, _SurfColor.rgb,    _SurfAgeStrength);
+                    float3 lipFoam  = FoamAgedColor(0.0,       _SurfLipColor.rgb, _SurfAgeStrength);
+
                     // THE BARREL FIRST, under everything: it is a hollow in the water, so it shades the
                     // sea itself before any foam is laid on top. Drawn as a colour rather than a
                     // brightness scale so it stays inside the ADR 0015 water grade like every other
@@ -5141,13 +5271,13 @@ Shader "HiddenHarbours/Water"
 
                     // THE WHITEWATER: the sheet, pocket-boosted where it is young and violent.
                     float cover = SurfBandValue(surfCover, bay) * strength;
-                    col.rgb = lerp(col.rgb, _SurfColor.rgb, cover * _SurfColor.a);
+                    col.rgb = lerp(col.rgb, surfFoam, cover * _SurfColor.a);
                     col.a   = max(col.a, cover * _SurfColor.a);
 
                     // THE LIP LAST, over the hollow it is throwing across — the brightest thing in the
                     // surf, and the thing that reads as the wave pitching forward.
                     float lip = SurfBandValue(saturate(surfLip), bay) * strength;
-                    col.rgb = lerp(col.rgb, _SurfLipColor.rgb, lip * _SurfLipColor.a);
+                    col.rgb = lerp(col.rgb, lipFoam, lip * _SurfLipColor.a);
                     col.a   = max(col.a, lip * _SurfLipColor.a);
                 }
 
@@ -5364,23 +5494,16 @@ Shader "HiddenHarbours/Water"
                     float capShoreFade = lerp(1.0, ShoreFade01(depth, _ShoreFadeBand),
                                               saturate(_CapSalienceStrength));
                     capOpacity = saturate(capOpacity * clumpGate) * capShoreFade;
-                    // ---- ONE FOAM LANGUAGE: the caps take the wake's ramp, through the wake's knots ------
-                    // Not a second palette and not a second set of dials — literally WakeFoamRamp3 over the
-                    // same _PaletteFoam -> _PaletteShallow -> _PaletteMid walk, at the same
-                    // _WakeFoamWhiteHold / _WakeFoamBlueReach / _WakeFoamDeepReach knots the advected buffer
-                    // ages on. A cap and a wake at the same age are therefore the same colour, which is the
-                    // whole of what "one foam language" has to mean before row 2 can unify the rest.
+                    // ---- ONE FOAM LANGUAGE (row 2): the caps take the shared walk, at their own age ------
+                    // Not a second palette, not a second set of dials and — since row 2 — not a second
+                    // transcription either: FoamAgedColor is the ONE function the wake buffer and the
+                    // surf's whitewater also compose through. A cap and a wake at the same age are the
+                    // same colour because there is one walk, not because two copies of it currently
+                    // agree. capAge01 comes from the cap's own lifecycle (the breaking core against the
+                    // milky residual behind it), which is geometry, not an accumulated clock.
                     // _CapAgeStrength 0 restores the single flat _FoamColor, bit for bit.
-                    float3 capColor = _FoamColor.rgb;
-                    if (_CapAgeStrength > 0.001)
-                    {
-                        float capKnot = WakeFoamKnots(capAge01, _WakeFoamWhiteHold, _WakeFoamBlueReach,
-                                                      _WakeFoamDeepReach);
-                        float3 capRamp = WakeFoamRamp3(capKnot, _PaletteFoam.rgb, _PaletteShallow.rgb,
-                                                       _PaletteMid.rgb);
-                        capColor = lerp(_FoamColor.rgb, capRamp, saturate(_CapAgeStrength));
-                    }
-                    col.rgb = lerp(col.rgb, capColor, capOpacity);
+                    col.rgb = lerp(col.rgb, FoamAgedColor(capAge01, _FoamColor.rgb, _CapAgeStrength),
+                                   capOpacity);
                 }
 
                 // ---- ADVECTED FOAM BUFFER (ADR 0027 #6): the wake, as a mark left on the sea ----------------

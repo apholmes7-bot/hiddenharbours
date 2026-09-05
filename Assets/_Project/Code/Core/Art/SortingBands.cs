@@ -106,6 +106,43 @@ namespace HiddenHarbours.Core
         /// top of the short <c>sortingOrder</c> is stored in; 32767 is the true maximum.</summary>
         public const int WorldTint = 32760;
 
+        // --- THE COMPOSITING LADDER (above the world, below the HUD) -----------------------------------
+        //
+        // Four rungs, and their ORDER is the whole design. Every one of them multiplies or adds onto the
+        // frame the world has already drawn, so what matters is which lands on which:
+        //
+        //   WorldTint      32760   ADR 0013's whole-frame day/night MULTIPLY
+        //   SunShadePool   32762   the sun's shade, the pool a crown throws straight down   (MULTIPLY)
+        //   SunShade       32763   the sun's shade, the cast silhouette                      (MULTIPLY)
+        //   SceneLight.MaxSortingOrder 32767  the lamps' additive GLOW, then the lamp-shadow MULTIPLY on
+        //                                     top of it (those two split the tie by camera DEPTH — see
+        //                                     LampShadowSystem.ShadowDepthOffset)
+        //
+        // The sun's shade sits ABOVE the day/night tint (harmless — two multiplies commute) and BELOW the
+        // lamps' glow (NOT harmless: a lamp's light is ADDED, and a sun shadow must not dim a lamp. Order
+        // alone settles it, so the sun shade needs no depth pin of its own).
+
+        /// <summary>
+        /// <b>The sun's cast shade, composited over the assembled frame</b> — the rung that makes a
+        /// receiver read shaded (<c>SpriteShadowProfile.ScreenSpaceShade</c> — Art owns the switch; this
+        /// file owns only the number). Sorted here
+        /// rather than one order under its caster, a sun shadow MULTIPLIES whatever occupies the pixel,
+        /// so a fisher standing in a tree's shadow goes dark with the ground she stands on.
+        ///
+        /// <para><b>It costs exactly two fixed orders and none in the decor band.</b> The legacy arm
+        /// spends <c>shadowDir.y × length × <see cref="OrdersPerMetre"/></c> orders per caster inside a
+        /// band that is already tight (ADR 0032, <see cref="DecorHalfExtentMetres"/>); this spends the
+        /// same two whatever the sun does.</para>
+        /// </summary>
+        public const int SunShade = 32763;
+
+        /// <summary>
+        /// The sun's GROUND-CONTACT pool, one order under <see cref="SunShade"/> so that where a crown's
+        /// pool and its own rake overlap the pool is the deterministic winner of the shadow stencil —
+        /// exactly the relationship the two carry in the legacy arm, lifted to this band unchanged.
+        /// </summary>
+        public const int SunShadePool = SunShade - 1;
+
         /// <summary>
         /// Whether the decor band RESOLVES this world Y, or saturates on it. False means two sprites at
         /// this height tie and interleave by draw order rather than by position — the 2026-08-05 defect.

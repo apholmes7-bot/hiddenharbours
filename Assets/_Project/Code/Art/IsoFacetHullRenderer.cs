@@ -52,6 +52,10 @@ namespace HiddenHarbours.Art
         /// (<see cref="HiddenHarbours.Core.HullMeshDef.Lamps"/>). Null or empty = no lamps, which is
         /// the shipped answer for every hull whose rig has not been measured: absence is data.</summary>
         public HiddenHarbours.Core.HullLamp[] Lamps;
+        /// <summary>The windows of the room her cabin glow lights, in her own rig metres
+        /// (<see cref="HiddenHarbours.Core.HullMeshDef.Panes"/>). Null or empty = no lit windows,
+        /// which is the shipped answer for every open boat: absence is data.</summary>
+        public HiddenHarbours.Core.HullPane[] Panes;
     }
 
     /// <summary>
@@ -414,6 +418,18 @@ namespace HiddenHarbours.Art
             _setup != null && _setup.Lamps != null
                 ? _setup.Lamps
                 : System.Array.Empty<HiddenHarbours.Core.HullLamp>();
+
+        /// <summary>
+        /// The windows of the room her cabin glow lights, in her own rig metres — the def's table,
+        /// handed straight through, and empty for every hull with no room to light (absence is data).
+        /// <see cref="BoatWindowGlow"/> reads this rather than the def, for the same reason
+        /// <see cref="BoatLamps"/> reads <see cref="Lamps"/> here: the renderer is the one thing that
+        /// knows WHICH hull is currently skinned onto this root.
+        /// </summary>
+        public HiddenHarbours.Core.HullPane[] Panes =>
+            _setup != null && _setup.Panes != null
+                ? _setup.Panes
+                : System.Array.Empty<HiddenHarbours.Core.HullPane>();
 
         public bool IsConfigured => _setup != null;
 

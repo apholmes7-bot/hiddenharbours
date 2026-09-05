@@ -445,7 +445,7 @@ namespace HiddenHarbours.Tests.EditMode
                 "_SurfThreshold", "_SurfThresholdSoft", "_SurfBands", "_SurfBandDither", "_SurfSupersedeFringe",
                 "_SurfPlungeStrength", "_SurfLipThrow", "_SurfLipWidth", "_SurfBarrelShade", "_SurfPocketWidth",
                 "_SurfPocketBoost", "_SurfBeatStrength", "_SurfRunUpStrength", "_SurfFrontSlope",
-                "_SurfDepositStrength",
+                "_SurfDepositStrength", "_SurfAgeStrength",
             };
             string[] colours = { "_SurfColor", "_SurfLipColor", "_SurfBarrelColor" };
             string[] files =
@@ -469,10 +469,28 @@ namespace HiddenHarbours.Tests.EditMode
                     if (!yaml.Contains($"- {key}: ")) missing.Add($"{Path.GetFileName(file)}: {key}");
                 foreach (string key in colours)
                     if (!yaml.Contains($"- {key}: {{")) missing.Add($"{Path.GetFileName(file)}: {key}");
-                // The three new dials ship at today's look on every material.
-                foreach (string key in new[] { "_SurfBeatStrength", "_SurfRunUpStrength", "_SurfFrontSlope", "_SurfDepositStrength" })
-                    if (!yaml.Contains($"- {key}: 0\n") && !yaml.Contains($"- {key}: 0\r\n"))
-                        missing.Add($"{Path.GetFileName(file)}: {key} is not serialized at 0");
+                // The BORE's look dials are ON, on every material -- the owner's dials-ON call, ruled
+                // 2026-09-04 ("turn on the water dials"). They had shipped at 0 since #699 pending
+                // exactly that nod; the shader Properties DEFAULT stays 0, which is still the exact
+                // passthrough and is guarded separately above. The values are #699's own ON-arm: the
+                // owner's check-in shot (CheckIn_TheSpillingBeachInBeats_AndThePlungingLedgeAsAnEvent)
+                // draws the sea at Beat 1, RunUp 1, FrontSlope 1. _SurfDepositStrength has no ON arm in
+                // any fixture -- it ships at 1.0 of its 0..2 because row 2 held it back only until the
+                // BEAT came up (the deposit fires on the bore's pulse, and until the beat there was no
+                // front to fire on), and the beat is now up. This guard is the wholesale-preset trap's:
+                // 'Apply water preset' copies every key, so a preset left at 0 would silently stamp the
+                // surf back off. _SurfAgeStrength is deliberately NOT among them: it is row 2's, and
+                // OneFoamLanguageTests holds its value with the caps' and the wake's.
+                var boreLookDials = new Dictionary<string, string>
+                {
+                    { "_SurfBeatStrength", "1" }, { "_SurfRunUpStrength", "1" },
+                    { "_SurfFrontSlope", "1" }, { "_SurfDepositStrength", "1" },
+                };
+                foreach (var dial in boreLookDials)
+                    if (!yaml.Contains($"- {dial.Key}: {dial.Value}\n") &&
+                        !yaml.Contains($"- {dial.Key}: {dial.Value}\r\n"))
+                        missing.Add($"{Path.GetFileName(file)}: {dial.Key} is not serialized at {dial.Value} " +
+                                    "(the owner's dials-ON ruling, 2026-09-04)");
             }
             Assert.That(missing, Is.Empty, "surf dials missing from a water material:\n" + string.Join("\n", missing));
         }
@@ -580,6 +598,13 @@ namespace HiddenHarbours.Tests.EditMode
             block.SetFloat("_SurfStrength", 1f);
             block.SetColor("_SurfColor", d.Surf ?? _shippedSurfColor);
             block.SetColor("_SurfLipColor", d.Surf ?? _shippedLipColor);
+            // ⚠ ROW 2: the surf's whitewater now WALKS the sea's foam ramp (_SurfAgeStrength), and the
+            // walk REPLACES the colour it is given with a convex combination of the palette anchors. A
+            // debug colour composed through it is no longer a debug colour — the cover map would score
+            // the palette. So the measurement arms pin the walk to its passthrough, which is exactly what
+            // that 0 exists for, and the LOOK shots keep the shipped value so the check-in strips show
+            // the sea the owner will actually see.
+            block.SetFloat("_SurfAgeStrength", d.Surf.HasValue ? 0f : ShippedFloat("_SurfAgeStrength"));
             block.SetFloat("_SurfBeatStrength", d.Beat);
             block.SetFloat("_SurfRunUpStrength", d.RunUp);
             block.SetFloat("_SurfFrontSlope", d.FrontSlope);

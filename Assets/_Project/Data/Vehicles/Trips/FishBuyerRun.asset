@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 04af251002fb429ea7c359005ada140f, type: 3}
+  m_Name: FishBuyerRun
+  m_EditorClassIdentifier: HiddenHarbours.Vehicles::HiddenHarbours.Vehicles.VehicleTripDef
+  Id: trip.nmc_fish_buyer_run
+  DisplayName: The Fish Buyer's Run
+  Why: 'The first fish buyers arrive in trucks (design/nine-mile-creek-wharf.md).
+    Wendell has stood beside a truck that was not there since the day he was placed;
+    this is the truck. She rests in the village park overnight and comes down Wharf
+    Road before dawn.'
+  OutboundDepartureHour: 4.75
+  ReturnDepartureHour: 20.5
+  CruiseMetresPerSecond: 7
+  WalkMetresPerSecond: 1.4

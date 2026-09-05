@@ -139,10 +139,22 @@ namespace HiddenHarbours.App
         [SerializeField] private BerthPilot.Settings _alongside = BerthPilot.Settings.Default;
 
         [Header("Riding in")]
-        [Tooltip("Where the player stands on his deck while he brings her in, in metres from the hull's " +
-                 "own centre, in HER frame (x across, y along, bow positive). Forward of amidships and " +
-                 "off to one side, so she is not standing in the skipper's lap.")]
+        [Tooltip("Where the player STARTS on his deck, in metres from the hull's own centre, in HER " +
+                 "frame (x across, y along, bow positive) — the deck frame the walkable polygons live " +
+                 "in. Forward of amidships and off to one side, so she is not standing in the skipper's " +
+                 "lap. ⭐ It is a SEED and no longer a pin: on a hull with measured planking she walks " +
+                 "off it from here (ArrivalDeckWalk), and it is clamped onto that planking first so an " +
+                 "offset tuned for one hull cannot stand her in the sea on another. On a hull the rigs " +
+                 "have never measured it is still exactly what it was — the one place she stands for " +
+                 "the whole passage.")]
         [SerializeField] private Vector2 _passengerDeckOffset = new Vector2(-1.2f, 1.0f);
+
+        [Tooltip("How fast she moves about his DECK, in metres of DECK per second. The deck walk's own " +
+                 "number (DeckWalkController._moveSpeed): she is stepping over the same gear on the same " +
+                 "planking as the skipper of any other boat, and a passenger who crossed a deck faster " +
+                 "than her own would read as a glitch. Its twin is _cabinWalkSpeed below, which is " +
+                 "slower for the reason stated there.")]
+        [Min(0f)] [SerializeField] private float _deckWalkSpeed = 2.5f;
 
         [Tooltip("How long she rides the tied-up boat before the step ashore is OFFERED (real seconds). " +
                  "Short: a beat while the lines come up taut and she settles, not a cutscene. ⚠ It is no " +
@@ -282,6 +294,9 @@ namespace HiddenHarbours.App
         private bool _tiedUpHonestly;          // did the HULL get herself there, or the stopwatch?
         private bool _scopeEased;
 
+        // --- on deck ----------------------------------------------------------------------------------
+        private ArrivalDeckWalk _deckWalk;
+
         // --- below decks ------------------------------------------------------------------------------
         private ArrivalCabinWalk _cabin;
         private CabinDoorOffer _cabinOffer;
@@ -385,6 +400,38 @@ namespace HiddenHarbours.App
             if (!IsBelowDecks || _boatRoot == null) return false;
             _cabin.Step(moveInput, deltaSeconds, DrawnHeadingDegrees());
             return true;
+        }
+
+        // ---- on deck ---------------------------------------------------------------------------------
+
+        /// <summary>⭐ <b>Is there measured planking under her to walk?</b> Live — her deck arrives with
+        /// her SKIN, and the skinner runs after the spawn. False on a hull the rigs have never measured,
+        /// and then the arrival keeps the shipped seat: absence is data.</summary>
+        public bool CanWalkTheDeck => _deckWalk != null && _deckWalk.CanWalk;
+
+        /// <summary>Where she is standing on his deck, in the hull's own metres (x abeam, y toward the
+        /// bow). The deck twin of <see cref="CabinLocalPosition"/>, and the read a fixture asserts the
+        /// walk by — a world position also carries the boat's own travel.</summary>
+        public Vector2 DeckLocalPosition => _deckWalk != null ? _deckWalk.LocalPosition : Vector2.zero;
+
+        /// <summary>
+        /// ⭐ <b>Walk her about his deck</b> — the twin of <see cref="WalkTheCabin"/>, public for the same
+        /// reason it is: a PlayMode test cannot deliver a virtual keypress to the New Input System in this
+        /// project, so the component API IS the way in, and <see cref="Update"/> is a one-line caller that
+        /// hands it the real keys.
+        ///
+        /// <para>It states an INTENT and writes no transform. <see cref="SeatThePlayer"/> still places
+        /// her, in the one <c>LateUpdate</c> that owns her position for the whole arrival — inputs early,
+        /// picture late, the rule <c>DeckRiderVisual</c> learned on a turning hull.</para>
+        ///
+        /// <para>Returns false when she is below, when there is no boat, or when this hull has no measured
+        /// deck to walk.</para>
+        /// </summary>
+        public bool WalkTheDeck(Vector2 moveInput, float deltaSeconds)
+        {
+            if (IsBelowDecks || _deckWalk == null || _boatRoot == null) return false;
+            return _deckWalk.Step(moveInput, deltaSeconds, DrawnHeadingDegrees(),
+                                  BakeElevationDegrees());
         }
 
         /// <summary>
@@ -637,6 +684,11 @@ namespace HiddenHarbours.App
             go.SetActive(true);
             _boatRoot = go.transform;
 
+            // ⭐ THE DECK SHE WILL WALK. Opened here, unconditionally and for every hull, because its own
+            // gate is a LIVE read of her deck data — which arrives with the skin, and MooredBoat skins her
+            // in its Start. A gate taken now would answer "no deck" for every hull in the fleet.
+            _deckWalk = new ArrivalDeckWalk(go, _deckWalkSpeed);
+
             // ⭐ THE PILOTAGE LAYER (design/npc-pilotage.md §2). The berth is a POSE, and every part of it
             // is DERIVED rather than authored twice: the region's berth and heading, the hull's own
             // length, and — the one that used to be missing — which side the WATER is on, read off the
@@ -764,6 +816,16 @@ namespace HiddenHarbours.App
             Vector3 relative = _player.position - _boatRoot.position;
             Vector3 local = Quaternion.Inverse(_boatRoot.rotation) * relative;
             _passengerDeckOffset = new Vector2(local.x, local.y);
+
+            // ⭐ AND THE WALK IS SEEDED THE SAME WAY, in its own frame. Two seats, one rule: whichever of
+            // them places her, the very next frame reproduces the world point she is already standing on,
+            // so the doorway moves nobody. The walk's inversion is the iterative one (the projection folds
+            // height and along-hull distance onto the same screen axis), and it carries her CABIN facing
+            // across as well — she steps out looking where she was looking, not spun to face the bow.
+            if (_deckWalk != null && _deckWalk.CanWalk)
+                _deckWalk.SeedFromWorld(_boatRoot, _player.position,
+                                        _cabin != null ? _cabin.HeadingDegrees : DrawnHeadingDegrees(),
+                                        DrawnHeadingDegrees(), BakeElevationDegrees());
         }
 
         /// <summary>
@@ -966,7 +1028,15 @@ namespace HiddenHarbours.App
             // ⭐ HER OWN STEP, and it is the one thing about the passage she is in charge of. In Update
             // beside the pose and not in LateUpdate with the seating, for the same reason the pose is:
             // this is an INPUT, and the picture is downstream of it.
-            if (IsBelowDecks) WalkTheCabin(CabinInputSource.Read().Move, Time.deltaTime);
+            //
+            // ⭐ BOTH DECKS, off ONE read of ONE source (ADR 0043 §2: the one read per frame). The keys that
+            // walk her about his cabin are the keys that walk her about his deck — they are the same walk
+            // with a different floor under it, which is what the owner expected when he came up through
+            // the door and pressed them (playtest 2026-09-04). Below the arrival ran a walk and above it
+            // ran none, and that asymmetry was the whole of "going outside locks them in place".
+            Vector2 move = CabinInputSource.Read().Move;
+            if (IsBelowDecks) WalkTheCabin(move, Time.deltaTime);
+            else              WalkTheDeck(move, Time.deltaTime);
 
             // ⭐ THE POSE IS STATED HERE, in Update, and NOT beside the seating in LateUpdate. The split
             // is not tidiness: IsoCharacterSprite consumes the holds in its own LateUpdate at execution
@@ -1589,6 +1659,19 @@ namespace HiddenHarbours.App
                 return;
             }
 
+            // ⭐ ON DECK THE SAME LAW GIVES A THIRD ANSWER, because she can walk out here now too. Her
+            // facing is COMPOSED and not measured (DeckRiderFacingMath): a deck bearing only her own
+            // walking changes, plus the hull's drawn heading. A passenger standing still therefore turns
+            // WITH the boat — which is what the shipped pin did, and it falls out of the composition at a
+            // bearing of zero rather than being asserted — and a walking one faces the way she is walking.
+            // Her gait is metres of DECK per second, so the hull's own five knots still contribute nothing.
+            if (_deckWalk != null && _deckWalk.CanWalk && _deckWalk.IsSeated)
+            {
+                _skin.HoldHeading(_deckWalk.HeadingDegrees(DrawnHeadingDegrees()));
+                _skin.HoldSpeed(_deckWalk.SpeedMetresPerSecond);
+                return;
+            }
+
             _skin.HoldHeading(DrawnHeadingDegrees());
             _skin.HoldSpeed(0f);
         }
@@ -1632,6 +1715,25 @@ namespace HiddenHarbours.App
         }
 
         /// <summary>
+        /// The bake elevation of the hull PICTURE she is standing on — this artwork's own foreshortening,
+        /// per artwork and never a global (40° for every iso rig; a plan view for art no camera baked).
+        ///
+        /// <para>Resolved through the same presenter host as <see cref="DrawnHeadingDegrees"/> and
+        /// deliberately so: the deck walk clamps her onto the deck of the hull drawn at that heading and
+        /// projects the result by this squash, and a second, differently sourced pair would put her on one
+        /// hull and standing by another's geometry. It is <c>DeckWalkController.BakeElevationDegrees</c>'s
+        /// read, for a hull that component does not own.</para>
+        /// </summary>
+        private float BakeElevationDegrees()
+        {
+            if (_presenterHost == null && _boatRoot != null)
+                _presenterHost = _boatRoot.GetComponent<BoatHullPresenterHost>();
+
+            IBoatHullPresenter hull = _presenterHost != null ? _presenterHost.Presenter : null;
+            return hull != null ? hull.BakeElevationDegrees : DeckAreaMath.PlanViewElevationDegrees;
+        }
+
+        /// <summary>
         /// Put her where she is standing this frame — on the sole while she is below, at the passenger's
         /// place on deck otherwise.
         ///
@@ -1653,11 +1755,45 @@ namespace HiddenHarbours.App
                 return;
             }
 
+            _player.position = TheDeckSeat();
+        }
+
+        /// <summary>
+        /// ⭐ <b>Where she is standing on deck this frame</b>, and which of the two answers is honest for
+        /// this hull.
+        ///
+        /// <para><b>With measured planking</b> it is <see cref="ArrivalDeckWalk"/>'s: a hull-local point
+        /// her own keys move, clamped to the authored areas and projected onto the drawn hull through the
+        /// artwork's own foreshortening — the transform <c>DeckWalkController</c> places the player by on
+        /// her OWN boat. That squash is why the spot she walks to is the spot the picture shows.</para>
+        ///
+        /// <para><b>Without it</b>, the arrival's shipped seat, untouched: the hull's yaw applied to an
+        /// authored offset. Absence is data, and a hull nobody has measured has no deck to walk.</para>
+        ///
+        /// <para><b>⚠ The first seat SEEDS the walk rather than the other way round.</b> Her deck arrives
+        /// with her skin, so the frame it turns up is the frame the walk can first be seated — from the
+        /// AUTHORED offset when she has never been below (there is no earlier position of hers to read,
+        /// and the author's intent is the honest seed), and from the threshold when she has
+        /// (<see cref="SeedTheDeckSeatFromWhereSheStands"/>). Seeding, not overruling: the same law
+        /// <c>DeckWalkController.SeedDeckLocalFromTransform</c> keeps.</para>
+        /// </summary>
+        private Vector3 TheDeckSeat()
+        {
+            float heading = DrawnHeadingDegrees();
+
+            if (_deckWalk != null && _deckWalk.CanWalk)
+            {
+                float elevation = BakeElevationDegrees();
+                if (!_deckWalk.IsSeated)
+                    _deckWalk.SeedFromDeckPoint(_passengerDeckOffset, heading, heading);
+                return _deckWalk.WorldPosition(_boatRoot, heading, elevation, _player.position.z);
+            }
+
             Vector3 offset = _boatRoot.rotation *
                              new Vector3(_passengerDeckOffset.x, _passengerDeckOffset.y, 0f);
-            _player.position = new Vector3(_boatRoot.position.x + offset.x,
-                                           _boatRoot.position.y + offset.y,
-                                           _player.position.z);
+            return new Vector3(_boatRoot.position.x + offset.x,
+                               _boatRoot.position.y + offset.y,
+                               _player.position.z);
         }
     }
 

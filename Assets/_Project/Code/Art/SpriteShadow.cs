@@ -37,6 +37,16 @@ namespace HiddenHarbours.Art
     /// on a multi-row sheet. A caster whose pivot IS its cell-bottom-centre and whose sprite fills its texture
     /// gets <see cref="IdentityShearMap"/> and draws exactly as it always did.</para>
     ///
+    /// <para><b>⚠️ WHERE THE SHADE LANDS IS A SWITCH, NOT A CONSTANT</b>
+    /// (<see cref="SpriteShadowProfile.ScreenSpaceShade"/>). By default — and in every frame this project
+    /// has rendered — the shadow is a dark sprite sorted ONE ORDER UNDER its caster, which darkens the
+    /// GROUND and nothing else: a fisher standing in a tree's shadow draws over it at full brightness, by
+    /// construction rather than by tuning. Turn the arm on and the same silhouettes are composited over
+    /// the assembled frame as a MULTIPLY in the <see cref="SortingBands.SunShade"/> band — above every
+    /// world sprite, below the lamps' additive glow — so whatever occupies the pixel loses the same
+    /// fraction: the ground, the fisher on it, a mesh hull moored in it. Same casters, same silhouettes,
+    /// same draw count; one rung up the compositing ladder. See the shader header for the trade.</para>
+    ///
     /// <para><b>Determinism (rule 5).</b> The shadow is a pure function of <c>(hour, weather, profile, caster
     /// height)</c> — nothing is saved or randomised. <b>Performance (rule 7):</b> the child shadow renderer is
     /// created ONCE and POOLED (reused every frame), updated on a throttled tick with NO per-frame allocation;
@@ -52,11 +62,18 @@ namespace HiddenHarbours.Art
         private const string ShadowMaterialPath = "SpriteShadow";          // Resources/SpriteShadow.mat
         private const string ShadowShaderName   = "HiddenHarbours/SpriteShadow";
 
+        /// <summary>Resources/SpriteShadowShade.mat — the SCREEN-SPACE SHADE arm of the same shader
+        /// (<c>Blend Zero SrcColor</c>, <c>_ScreenShade 1</c>). Selected by
+        /// <see cref="SpriteShadowProfile.ScreenSpaceShade"/>; the two materials differ only in that
+        /// blend state and that flag, which is why the arm cannot be a property-block value.</summary>
+        public const string ShadeMaterialPath = "SpriteShadowShade";
+
         private static readonly int IdMainTex      = Shader.PropertyToID("_MainTex");
         private static readonly int IdShadowColor  = Shader.PropertyToID("_ShadowColor");
         private static readonly int IdShadowDir    = Shader.PropertyToID("_ShadowDir");
         private static readonly int IdShadowLen    = Shader.PropertyToID("_ShadowLen");
         private static readonly int IdShadowUV     = Shader.PropertyToID("_ShadowUV");
+        private static readonly int IdShadowUVPerUnit = Shader.PropertyToID("_ShadowUVPerUnit");
         private static readonly int IdEdgeSoftness = Shader.PropertyToID("_EdgeSoftness");
         private static readonly int IdGroundContact = Shader.PropertyToID("_GroundContact");
         private static readonly int IdSunDir        = Shader.PropertyToID("_SunDir");
@@ -66,7 +83,62 @@ namespace HiddenHarbours.Art
         // ONE shared fallback material for the missing-Resources path, minted at most once across ALL
         // casters (the normal path loads Resources/SpriteShadow.mat). A per-instance Material here would
         // leak one material per caster and break the shared-material GPU batching this component relies on.
-        private static Material _sharedFallbackMaterial;
+        private static Material _sharedFallbackMaterial, _sharedFallbackShadeMaterial;
+
+        // The two SHIPPED arms, resolved once for every caster in the game (the SharedProfile reasoning:
+        // 438 casters must not run 438 Resources lookups for one answer). Null until first asked for.
+        private static Material _legacyArmMaterial, _shadeArmMaterial;
+
+        /// <summary>
+        /// The material for the arm the profile asks for: <c>Resources/SpriteShadow.mat</c> (a dark sprite
+        /// laid over the world) or <c>Resources/SpriteShadowShade.mat</c> (a multiply laid over the frame).
+        ///
+        /// <para>⚠️ It has to be a MATERIAL and not a property-block value, because the two arms differ in
+        /// BLEND STATE — the same wall the stencil hit in tree shading PR 2: a
+        /// <see cref="MaterialPropertyBlock"/> feeds shader uniforms and cannot change render state. It is
+        /// two materials on ONE shader rather than two shaders, so the shear maths has exactly one
+        /// transcription.</para>
+        ///
+        /// <para>A missing Resources material mints ONE shared runtime fallback per arm, never one per
+        /// caster (that would leak a material each and break the shared-material batching). The fallback
+        /// carries the arm as material FLOATS, which is also why the arm is not a shader keyword: a
+        /// runtime-built material's <c>shader_feature</c> variant is stripped out of a player build and
+        /// the feature then works in the editor and never in the game.</para>
+        /// </summary>
+        public static Material ArmMaterial(bool screenSpaceShade)
+        {
+            if (!screenSpaceShade)
+            {
+                if (_legacyArmMaterial == null) _legacyArmMaterial = Resources.Load<Material>(ShadowMaterialPath);
+                if (_legacyArmMaterial != null) return _legacyArmMaterial;
+                // ⚠️ NOT ??=. The null-coalescing operators use the CLR null, not Unity fake null, so a
+                // destroyed material would be handed back instead of re-minted.
+                if (_sharedFallbackMaterial == null) _sharedFallbackMaterial = MintFallback("SpriteShadow (runtime shared)", 0f);
+                return _sharedFallbackMaterial;
+            }
+
+            if (_shadeArmMaterial == null) _shadeArmMaterial = Resources.Load<Material>(ShadeMaterialPath);
+            if (_shadeArmMaterial != null) return _shadeArmMaterial;
+            if (_sharedFallbackShadeMaterial == null) _sharedFallbackShadeMaterial = MintFallback("SpriteShadowShade (runtime shared)", 1f);
+            return _sharedFallbackShadeMaterial;
+        }
+
+        /// <summary>One shared runtime material for an arm whose shipped asset is missing. Null if the
+        /// shader itself is gone, in which case the caster simply draws no shadow.</summary>
+        private static Material MintFallback(string name, float screenShade)
+        {
+            var shader = Shader.Find(ShadowShaderName);
+            if (shader == null) return null;
+            var mat = new Material(shader) { name = name };
+            // Zero / SrcColor for the shade arm, SrcAlpha / OneMinusSrcAlpha for the legacy one — the
+            // shader's own declared defaults are the legacy pair, so only the shade arm has to state them.
+            mat.SetFloat("_ScreenShade", screenShade);
+            mat.SetFloat("_SrcBlend", screenShade > 0f ? (float)UnityEngine.Rendering.BlendMode.Zero
+                                                       : (float)UnityEngine.Rendering.BlendMode.SrcAlpha);
+            mat.SetFloat("_DstBlend", screenShade > 0f ? (float)UnityEngine.Rendering.BlendMode.SrcColor
+                                                       : (float)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+            return mat;
+        }
 
         /// <summary>Resources/SpriteShadowProfile.asset — the owner's look dials (optional; defaults otherwise).</summary>
         public const string ProfileResourcePath = "SpriteShadowProfile";
@@ -194,6 +266,10 @@ namespace HiddenHarbours.Art
         // is IDENTICAL across the frames of one animation row, so a walking fisher recomputes it once per
         // turn rather than once per step. Identity until a sprite arrives.
         private Vector2 _shearMap = IdentityShearMap;
+        // uv per OBJECT unit for the current cell — (ppu / texWidth, ppu / texHeight). The shade arm needs
+        // it to convert the vertex shear back into texture space and find the caster's own texel under a
+        // shade fragment; see UvPerObjectUnit. Cached and republished exactly like _shearMap.
+        private Vector2 _uvPerUnit = Vector2.one;
 
         /// <summary>
         /// The map for a caster whose pivot IS its cell-bottom-centre and whose sprite fills its whole texture:
@@ -250,6 +326,30 @@ namespace HiddenHarbours.Art
             // textureRectOffset instead; this project ships none, and adding one is an ADR-level change.)
             return PivotShearMap(sprite.texture.height, sprite.rect.y, sprite.pivot.y,
                                  sprite.pixelsPerUnit, sprite.bounds.size.y);
+        }
+
+        /// <summary>
+        /// <b>How much uv one OBJECT unit of the caster's quad spans, as a pure function</b> — the inverse
+        /// of the sprite's own <c>pos = (uv × textureSize − offset) / ppu</c> mapping, so it is exactly
+        /// <c>ppu / textureSize</c> on each axis.
+        ///
+        /// <para>The shade arm shears in the VERTEX stage, which leaves a fragment carrying its own texel
+        /// (<c>uv</c>) while sitting at the screen point of a DIFFERENT texel — the one the caster itself
+        /// draws there, at <c>uv + shear × this</c>. That is what lets the shade refuse to darken its own
+        /// caster, the rule the lamp shader states as "a shadow never darkens ITS OWN CASTER".</para>
+        ///
+        /// <para>It is exact for FullRect AND Tight sprite meshes for the same reason
+        /// <see cref="PivotShearMap(Sprite)"/> is: it inverts only the texture mapping, which both share,
+        /// and never touches the mesh's own bounds. A null / textureless sprite or a nonsense PPU returns
+        /// <see cref="Vector2.one"/>, which is the unit-square case and shears nothing away.</para>
+        /// </summary>
+        public static Vector2 UvPerObjectUnit(Sprite sprite)
+        {
+            if (sprite == null || sprite.texture == null) return Vector2.one;
+            float ppu = sprite.pixelsPerUnit;
+            int w = sprite.texture.width, h = sprite.texture.height;
+            if (!(ppu > 1e-6f) || w <= 0 || h <= 0) return Vector2.one;
+            return new Vector2(ppu / w, ppu / h);
         }
 
         /// <summary>
@@ -398,6 +498,11 @@ namespace HiddenHarbours.Art
             bool mapMoved = map != _shearMap;
             _shearMap = map;
 
+            // The uv-per-unit travels with the SHEET, not the cell, but it is derived here for the same
+            // reason and at the same cadence — one compare, and static decor never reaches this line.
+            Vector2 perUnit = UvPerObjectUnit(sprite);
+            if (perUnit != _uvPerUnit) { _uvPerUnit = perUnit; mapMoved = true; }
+
             // Only when the SHEET changes (a walk skin handing over to a fight skin) is the texture worth
             // rewriting — frames from one sheet all share a texture, and the block already points at it.
             Texture tex = sprite != null ? sprite.texture : null;
@@ -407,7 +512,11 @@ namespace HiddenHarbours.Art
             if (!mapMoved && !texMoved) return;
             _shadow.GetPropertyBlock(_mpb);
             if (texMoved) _mpb.SetTexture(IdMainTex, tex);
-            if (mapMoved) _mpb.SetVector(IdShadowUV, _shearMap);
+            if (mapMoved)
+            {
+                _mpb.SetVector(IdShadowUV, _shearMap);
+                _mpb.SetVector(IdShadowUVPerUnit, new Vector4(_uvPerUnit.x, _uvPerUnit.y, 0f, 0f));
+            }
             _shadow.SetPropertyBlock(_mpb);
         }
 
@@ -421,19 +530,9 @@ namespace HiddenHarbours.Art
             _shadow = go.AddComponent<SpriteRenderer>();
             _shadow.sortingLayerID = _caster != null ? _caster.sortingLayerID : 0;
 
-            Material mat = Resources.Load<Material>(ShadowMaterialPath);
-            if (mat == null)
-            {
-                // Missing Resources material: mint ONE shared fallback for all casters (not per-instance —
-                // that would leak + break batching). Reused on every subsequent caster.
-                if (_sharedFallbackMaterial == null)
-                {
-                    var shader = Shader.Find(ShadowShaderName);
-                    if (shader != null)
-                        _sharedFallbackMaterial = new Material(shader) { name = "SpriteShadow (runtime shared)" };
-                }
-                mat = _sharedFallbackMaterial;
-            }
+            // The arm in force right now; Tick re-checks it every tick, so the owner flipping the profile
+            // switch moves every caster without a re-plant or a domain reload.
+            Material mat = ArmMaterial(SharedProfile.ScreenSpaceShade);
             if (mat != null) _shadow.sharedMaterial = mat;
             else _shadow.enabled = false;   // no shader/material yet -> no shadow (still harmless)
 
@@ -526,6 +625,7 @@ namespace HiddenHarbours.Art
             // seeds a caster which never changes sprite (all of the decor), so the anchor is right from the
             // first frame without depending on a silhouette swap ever happening.
             _mpb.SetVector(IdShadowUV, _shearMap);
+            _mpb.SetVector(IdShadowUVPerUnit, new Vector4(_uvPerUnit.x, _uvPerUnit.y, 0f, 0f));
             _mpb.SetFloat(IdEdgeSoftness, look.EdgeSoftness);
             // 0 = draw this caster's sheared SILHOUETTE. Published explicitly rather than left to the
             // material's default, because a MaterialPropertyBlock is STICKY: the pool below sets this on
@@ -533,19 +633,43 @@ namespace HiddenHarbours.Art
             _mpb.SetFloat(IdGroundContact, 0f);
             _shadow.SetPropertyBlock(_mpb);
 
-            // Sort just UNDER the caster — and, when the profile asks, under everything the rake crosses
-            // as well (see FarEndSortingDelta). The `off` branch is the exact pre-PR expression, unclamped,
-            // so a project with no profile asset sorts byte-for-byte as it always did.
-            _shadow.sortingLayerID = _caster.sortingLayerID;
-            if (look.SortByFarEnd)
+            // THE ARM. Re-read every tick and applied by reference compare, so flipping the profile switch
+            // in the inspector moves every caster in the scene at the next tick.
+            bool shade = look.ScreenSpaceShade;
+            Material arm = ArmMaterial(shade);
+            if (arm != null && _shadow.sharedMaterial != arm) _shadow.sharedMaterial = arm;
+
+            if (shade)
             {
-                int order = _caster.sortingOrder + _sortingOffset
-                          + FarEndSortingDelta(shadowDir.y, worldLen, SortingBands.OrdersPerMetre);
-                _shadow.sortingOrder = Mathf.Clamp(order, SortingBands.DecorFloor, SortingBands.DecorCeiling);
+                // OVER the assembled frame, in the compositing band the lamps already occupy — so the shade
+                // multiplies whatever is at the pixel instead of hiding under it. It spends two FIXED
+                // orders and none in the decor band, which is the point: SortByFarEnd spends
+                // shadowDir.y x length x OrdersPerMetre per caster inside a band that is already tight
+                // (ADR 0032), and this spends the same two whatever the sun does.
+                //
+                // Layer 0 ("Default") explicitly, not the caster's: a sorting LAYER outranks a sorting
+                // order, and the rest of this band (the day/night overlay, the lamp quads, the lamp
+                // shadows) is on the default layer. The project ships exactly one sorting layer today, so
+                // this is a no-op now and a refusal to break silently if a second one is ever added.
+                _shadow.sortingLayerID = 0;
+                _shadow.sortingOrder = SortingBands.SunShade;
             }
             else
             {
-                _shadow.sortingOrder = _caster.sortingOrder + _sortingOffset;
+                // Sort just UNDER the caster — and, when the profile asks, under everything the rake crosses
+                // as well (see FarEndSortingDelta). The `off` branch is the exact pre-PR expression, unclamped,
+                // so a project with no profile asset sorts byte-for-byte as it always did.
+                _shadow.sortingLayerID = _caster.sortingLayerID;
+                if (look.SortByFarEnd)
+                {
+                    int order = _caster.sortingOrder + _sortingOffset
+                              + FarEndSortingDelta(shadowDir.y, worldLen, SortingBands.OrdersPerMetre);
+                    _shadow.sortingOrder = Mathf.Clamp(order, SortingBands.DecorFloor, SortingBands.DecorCeiling);
+                }
+                else
+                {
+                    _shadow.sortingOrder = _caster.sortingOrder + _sortingOffset;
+                }
             }
             _shadow.enabled = _caster.enabled && alpha > 0f && _shadow.sharedMaterial != null;
 
@@ -584,6 +708,10 @@ namespace HiddenHarbours.Art
             // night, so the pool would land a dark ellipse in the middle of its own light. Per-caster,
             // default ON, so nothing that had a pool before loses one.
             bool tallEnough = CasterWorldHeight() >= look.GroundContactMinHeight;
+            // The pool draws on the SAME arm as the cast shade — they are one crown's shade and must not
+            // composite two different ways.
+            Material arm = ArmMaterial(look.ScreenSpaceShade);
+            if (arm != null && _pool.sharedMaterial != arm) _pool.sharedMaterial = arm;
             bool on = radius > 0f && poolAlpha > 0f && tallEnough && _castsGroundContact && _caster.enabled
                    && _caster.sprite != null && _pool.sharedMaterial != null;
             _pool.enabled = on;
@@ -605,11 +733,20 @@ namespace HiddenHarbours.Art
             _mpb.SetFloat(IdShadowLen, 0f);
             _pool.SetPropertyBlock(_mpb);
 
-            // One order UNDER the cast shadow, so with a lowered GroundContactAlpha the pool is the
-            // deterministic winner of the stencil where the two overlap (at the default 1 they are the same
-            // shade and the question does not arise).
-            _pool.sortingLayerID = _caster.sortingLayerID;
-            _pool.sortingOrder = _caster.sortingOrder + _sortingOffset - 1;
+            // One order UNDER the cast shadow either way, so with a lowered GroundContactAlpha the pool is
+            // the deterministic winner of the stencil where the two overlap (at the default 1 they are the
+            // same shade and the question does not arise). The relationship is what matters, so it is the
+            // same relationship in both bands.
+            if (look.ScreenSpaceShade)
+            {
+                _pool.sortingLayerID = 0;
+                _pool.sortingOrder = SortingBands.SunShadePool;
+            }
+            else
+            {
+                _pool.sortingLayerID = _caster.sortingLayerID;
+                _pool.sortingOrder = _caster.sortingOrder + _sortingOffset - 1;
+            }
         }
 
         /// <summary>Pose the pooled shadow child at the caster's feet (every frame; cheap, no alloc).</summary>

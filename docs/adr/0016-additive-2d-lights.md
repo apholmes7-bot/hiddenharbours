@@ -682,3 +682,265 @@ SIBLING INDEX — the trap that cost #702 five false reds. A row inserted before
 its flicker and move her shipped pixels; appended last, every earlier lamp keeps the index it had, and the
 anchor light is disabled while she is under way anyway. She needs one at all because one of the seven boats
 moored at Nine Mile Creek is a Cape Islander, and she would otherwise be the one dark hull on the wall.
+
+## Amendment — boat-lights PR 2c: a glow stays in its space, and a lit room is drawn as its WINDOWS (owner's ruling, 2026-09-03)
+
+**The ruling, verbatim**, given at #716's merge in answer to "the masthead and cabin glows read large and
+blobby at that zoom":
+
+> The glows should be constrained to their space, if its interior it should be confined to the cabin with
+> the glow only coming through the windows.
+
+It is about every glow a boat carries, and the cabin's is its sharpest case.
+
+### Why no radius could have fixed the cabin disc
+
+Two passes had already tried. The first made it 2.6 m and the pre-dawn shot showed a cape that looked on
+fire — one amber blob wider than her own beam. The second bounded it to the wheelhouse at 1.5 m, which was
+the right instinct and still read as a blob at the zoom the owner plays at.
+
+The reason is not the size. **A round pool centred on a room is not a lit room seen from outside; it is a
+lamp parked on a roof, and shrinking it only makes a smaller lamp.** What a lit room actually looks like
+from outside is its WINDOWS: a few bright rectangles in a dark box, with a wash of light on the deck under
+each of them. So the disc is retired and the glow is drawn as the two things it actually is.
+
+### What replaces it
+
+**The glass, as glass.** `BoatWindowGlow` builds ONE additive mesh per hull — four projected corners of
+each published pane, two triangles each — so a window is the right SHAPE at every heading and foreshortens
+correctly as she turns. The panes come from `HullMeshDef.Panes`, derived by `BoatWindowProbe` from the
+glazing every rig with a house already publishes (`front.glass`, `sideGlass`, `aftGlass`, `portholes`).
+
+**The wash, as a cone.** One `SceneLight` cone per glazed WALL, mounted at the middle of that wall's lit
+glass and aimed along its outward direction through the hull's own posed transform. Not one per pane: three
+windscreen panes 0.16 m apart throw one wedge of light onto the foredeck, not three.
+
+**And its throw comes off a WINDOW, not off the wall.** `WallSpillWindowMultiple` is 1.4 — just under half again the
+mean width of a window in that wall. Scaled off the wall's glazed SPAN instead, the tanker's five portholes
+strung over 6.8 m of accommodation would have thrown a seven-metre floodlight: the very thing this
+amendment retires, put back on the largest hull in the game. Light through a window is a property of the
+window, and cannot grow because a wall has more of them.
+
+### ⭐ Why the glass is drawn ABOVE the night overlay and not made emissive in the facet pass
+
+The obvious cut — a per-material night-emissive term in `HiddenHarboursIsoFacet`, lifting the `glas` ramp
+toward a lit-glass colour — **cannot produce a lit window, and the reason is the compositing order.**
+
+The day/night cycle is a whole-frame MULTIPLY at sorting order ~32760 (ADR 0013 decision (b)), and a mesh
+hull is drawn well below it: her facet pass writes an offscreen MRT, the resolve pass writes
+`_HHHullScreenTex`, and the in-scene overlay quads composite at her own world sorting order. So **nothing
+drawn into a hull's own pass can read as lit at 02:00**: the very brightest pre-multiply colour a pane
+could take — pure white — comes out as the night tint itself, luminance ≈ 0.17 at the shipped exposure. An
+emissive `glas` would have produced a slightly paler dark-blue rectangle.
+
+These quads sit ABOVE the overlay with the lamps, blended One-One, and gate on the same published
+`_DayNightTint` in-shader. Nothing in the facet shader changed, and no new shader or material was added at
+all: the panes are drawn with the shipped `HiddenHarbours/AdditiveLight` material, told to FILL a quad
+rather than halo it (lamp at the quad centre, no cone, no core, `_Throw` 4 so the falloff across one pane
+is a gentle bias instead of a blob).
+
+### ⭐ The far side of the house culls itself
+
+A window is drawn from its four PROJECTED corners, so a wall turning away from the camera foreshortens to a
+sliver, reaches exactly zero area edge-on, and then shows the viewer its inside. Drawing that far side
+would throw a wedge of amber across her own roof.
+
+`BoatWindowGlow.FacesCamera` drops it — and because it drops it at the instant the projected area is nought,
+**there is nothing to fade and nothing to pop.** The test is the DEPTH of the pane's outward direction
+through the hull's posed transform (nearer is smaller z, the same axis the facet shader sorts deck
+occupants by), taken with `TransformVector` rather than reasoned about, because that transform carries the
+rig-to-world MIRROR (`IsoFacetMath.HullScale` is `(1,1,-1)`) and a mirror flips the sense of a normal.
+
+The sign is pinned twice, from two independent rows of the same projection: the depth row
+(`world.z = rY·cos e − rZ·sin e`) and the screen-up row (`world.y = rY·sin e + rZ·cos e`, a wall facing the
+viewer throwing its light DOWN-screen).
+
+### The navigation lamps are the size of their own fittings now
+
+The other half of the ruling. Reach only; no colour, no meaning, and no regime changed.
+
+| lamp | was | now |
+|---|---|---|
+| masthead / range | 1.35 m @ 1.25 | **0.50 m @ 1.60** |
+| stern | 1.00 m @ 1.10 | **0.40 m @ 1.35** |
+| anchor | 0.75 m @ 0.80 | **0.34 m @ 1.00** |
+| sidelights | 0.28 m @ 1.40 | **unchanged** |
+
+The intensity carries what the radius gave up: a small hot dot reads as a lamp at this camera far better
+than a broad haze, and a haze is not what a lamp looks like anyway. That is the trade the SIDELIGHTS
+already made — they were bounded by the 0.6048 m gap between them, a harder constraint than this ruling's
+and already met — now applied to the three that had not made it. **All three moved together so their ORDER
+is exactly preserved**: the masthead is still the brightest and biggest white, the anchor light still the
+dimmest and smallest, and a wharf of sleeping boats still reads as a fleet asleep.
+
+### The passthrough
+
+`GameConfig.BoatLegacyCabinGlow` (ship default OFF) restores yesterday's picture exactly — the 1.5 m disc
+and the old pool radii — and draws no windows at all. The old numbers live in `BoatLampPresets.Legacy` as
+literals, pinned by a test against what actually shipped, with a negative control that fails if anybody
+"simplifies" `Legacy` into a call to `For`. An A/B whose other arm is "check out the parent commit" is an
+A/B nobody runs, and a plate pair shot from two working trees has two builds in it.
+
+### ⚠️ Two hulls are REFUSED, and they keep their disc rather than going dark
+
+The probe validates every derived pane against the hull's own baked mesh and drops the ones that do not
+land on her. Twenty-five hulls place every corner within **0.203 m** of a real vertex — the rounded corners
+the rigs cut (0.05) plus the proud offset a glazed panel is drawn at (0.065) account for all of it. **The
+two sport fishers do not**: their accommodation publishes a FLAT `hx` for a side that curves in plan (her
+portholes are drawn on `V.P(t,z)`, a profile the record does not carry), so panes placed at ±hx float
+**0.32–0.51 m** outboard of her actual side — worst at her ends, least amidships, which is the shape of the
+taper.
+
+A lit window hanging off the boat is worse than no window, so their room falls back to the glow it already
+has (`BoatLamps.HasWindows`). That is the same rule the presentation service states for an unusable def:
+degrade to the SHIPPED look, never to an invisible boat. **UPSTREAM ASK:** publish a per-station half-width
+beside `hx`, the way the wheelhouse family's `hxAt(y)` already tapers.
+
+The tolerance is 0.30 m and it is a measurement, not a taste: it clears the worst honest corner (0.203 m,
+the lobster boat) and refuses the best dishonest one (0.453 m) with room on both sides, and a test goes red if either edge creeps toward it.
+
+### ⚠️ And `hxAt` means two different things
+
+The wheelhouse rigs' `hxAt` takes **y**; the ship and sport rigs' takes **z**. Handing one the other's
+argument does not throw — it returns a plausible half-width for the wrong reason and floats every side
+window slightly off her wall. Likewise `aftGlass` ships under one name with two schemas: a wheelhouse's is
+a single strip `{x0,x1,z0,z1}`, a bridge's a pane list `{z0,z1,panes:[[x0,x1]…]}`, and reading either with
+the other's keys yields `undefined` → NaN → a pane at the origin. Both are decoded down separate paths and
+an unrecognised shape is refused with a message.
+
+### Budget (rule 7)
+
+**218 panes over 25 hulls cost 25 MESHES, not 218 quads.** Per lit hull the cabin goes from 1 disc quad to
+1 pane mesh plus at most 2 wall washes — a box shows a viewer at most two of its sides, and the fixture
+asserts it. Everything else is unchanged.
+
+**A moored fleet costs exactly what it did.** At a berth the cabin glow is off unless somebody is aboard,
+so a wharf of sleeping boats draws no pane mesh and no wash at all.
+
+Per frame per lit hull: one `TransformVector` and one `TransformPoint` per pane, four more for each pane
+that faces the camera, and one `SetVertices` of a pooled, `MarkDynamic` mesh. Allocation-free — the vertex
+buffer and the four per-wall accumulators are built once and rewritten in place.
+
+### What did NOT change
+
+The night gate, the day/night curve, the water shader, the searchlight (its beam is already bounded by its
+own cone and relief), the regime (`ShowsWhen`), the rule of the road, and the sidelights. `HullMeshDef.Panes`
+is GAME-SIDE like `Lamps`: the mesh baker never writes it, so it survives a re-bake.
+
+## Amendment — boat-lights PR 2b: the marks flash their characters (2026-09-04)
+
+The other half of the 08-28 charter. PR 1 (#686) lit the arrival's hull, PR 2a (#716) lit the fleet;
+this lights the **channel furniture**. Ten `NavBuoyDef` assets have carried `LightCharacter` and
+`LightText` since the kit landed in August under the note *"DATA ONLY — nothing flashes yet; that is
+its own feature"*. This is that feature, and it adds no new light primitive: a mark's lantern is the
+same additive `SceneLight` radial this ADR has always described, switched on and off by a rhythm.
+
+### The rhythm lives in Core and is a pure function of the clock
+
+`NavLightCharacter` (Core) parses a chart abbreviation once and thereafter answers
+`IsOn(totalSeconds, phaseSeconds)` — no accumulator, no `Time.time`, no saved state, no RNG (rule 5).
+It is Core because the DATA is a Boats type and the LIGHT is drawn by Art, and those two assemblies do
+not reference each other (rule 4); `INavLightSource` is the seam, exactly as `IVesselWay` was for the
+fleet's regime.
+
+**The schedule model is one rule: every rhythm is a flash inside a cycle, and a group of N is N cycles
+laid end to end from the top of the period, dark thereafter.** That reproduces all six of the kit's
+characters with no special cases — the composite `Q(6) + LFl 15s` included, which is simply six quick
+cycles followed by one long-flash cycle. The four constants (quick 0.5 s in 1.0 s, very quick 0.25 s
+in 0.5 s, flash 1.0 s in 2.0 s, long flash 2.0 s in 3.0 s) are the IALA round numbers and they live in
+one place (rule 6).
+
+**The seconds are REAL seconds, and that is worth writing down.** `GameClock` advances
+`_t += Time.deltaTime * TimeScale` with `TimeScale = 1`, so `IGameClock.TotalSeconds` ticks once per
+wall-clock second even though a game DAY is only 1800 of them. A mark published as `Fl G 4s` therefore
+flashes every four seconds by the player's own watch, which is what the chart means. Nothing about the
+day length can change that; only a change to how the clock itself advances could.
+
+### ⚠️ It parses `LightText`, not `LightCharacter` — the charter's instruction could not be followed
+
+The lane was chartered to parse the `LightCharacter` id. **That id cannot be parsed, and the reason is
+not stylistic.** `Q3` is the east cardinal and her period is ten seconds; `Q9` is the west and hers is
+fifteen. Neither number appears in the id at all. The id is also ambiguous where it does carry two
+digits — in `Fl2W5` the 2 is a group count and the 5 a period, and only the colour letter between them
+distinguishes them. Recovering the missing periods would have meant writing "an east cardinal flashes
+on ten seconds" into C#, which is content-as-code and forbidden (rule 2).
+
+`LightText` is the international chart abbreviation, it is complete, it is already authored on all ten
+defs, and it is what a skipper reads. So the id stays an id and the text is the source of truth.
+`TheIdAndTheTextNameTheSameLight` holds the two together — same rhythm token, same colour letter, same
+group count — so a def cannot be catalogued as one light and drawn as another.
+
+### The phase: a plan, not a hash — and the measurement that forced it
+
+Real marks are unsynchronised, and two green cans winking together read as one light in the wrong
+place. The charter prescribed *"a hash of the plan's mark id / position, never sibling index or spawn
+order"*. **The first implementation did exactly that, and it was measured and found wanting.** Hashing
+each id independently spreads marks UNIFORMLY, and a uniform spread of a handful of points has small
+gaps in it by the birthday problem: on the twenty-five marks actually placed, it put
+`channel.nmc_entrance.p0` and `channel.nmc_bar_gut.p1` — two port-hand cans **in one harbour**, both
+`Fl G 4s` — **0.021 s apart on a four-second period**. That is unison to any eye, in one frame.
+
+`NavLightPhasePlan.Spread` (Core, pure) replaces it: marks wearing one character are sorted by chart id
+and given **a slot each**, so `k` marks are at worst `period/k` apart instead of however close chance
+put them. A hash still runs, but only to JITTER each mark inside her own slot by at most ±20% of it —
+because a perfectly even round-robin of six green flashes reads as a marquee — and the jitter is bounded
+so the guarantee survives: `(1 − 2·0.2)/k` of the period, asserted at every group size from 2 to 16.
+
+**The discipline the charter was really protecting is kept.** Slots are handed out in *sorted-id* order,
+so the marks may be placed in any sequence whatever and every one gets the same phase back; the shuffle
+arm proves it. What is *not* promised, stated plainly: adding a mark re-slots her whole character group.
+That is accepted rather than hidden — a phase is recomputed from the chart every time a region is built
+and is never saved or compared across versions (rule 5), so per-mark stability across an edited chart
+buys nothing, while order independence is what stops a picture changing for a reason nobody can see.
+
+**Per region, not per game.** Compared across the whole game the closest pair of one character is 0.019 s
+apart — the north cardinals of Nine Mile Creek and St Peters, two harbours the player is never in at
+once. Marks that can never share a frame do not need telling apart, so the spread and its test are both
+scoped to a region.
+
+### The flash is an ENABLE, not an intensity ramp
+
+`SceneLight` pushes its material block on a throttled tick (20 Hz shipped). Driving `Intensity` between
+0 and full would quantise every edge of a half-second quick flash to the nearest 50 ms — a ±10 % wobble
+on the very thing a skipper counts. Toggling the component's own `enabled` instead lands the edge on the
+frame the character asks for, because `SceneLight.OnEnable` ticks immediately and `OnDisable` drops the
+quad the same frame. **No change to `SceneLight` was needed**, and the "intensity dirty → push now" path
+the charter offered as an alternative was not built, because the enable path is exact rather than merely
+finer-grained. It is also cheaper: a dark mark costs **no quad at all**.
+
+The state is written only when it CHANGES — twice a period, not sixty times a second — so a lit mark
+costs one bool compare per frame and nothing else. `APortHandIsLitAQuarterOfHerPeriod` counts the frames
+the quad is actually enabled across a whole period and gets **exactly 20 of 80**;
+`TheSouthCardinalShowsSixQuicksAndThenALongFlash` counts **7 bursts with a 40-frame tail**, which is the
+two-second long flash and the feature that tells her from the west cardinal's nine.
+
+### Budget (rule 7)
+
+Twenty-five lit marks across the two harbours, at most one quad each, pooled by `SceneLight` and shared
+through one material. At an eighth duty the average is about three quads; the peak is twenty-five, and
+only if every character happened to align. **`CastsShadows` is off on every lantern**, which is a
+measurement rather than a preference: a buoy stands in open water with nothing inside her 1.1 m to cast
+anything, so every pair she added to the 10 Hz lamp/caster scan would provably yield no shadow — and a
+flashing mark would add and remove them twice a second. Nav lanterns stay off the four-slot water bridge
+for the same reason the fleet's nav lamps do: only `BoatSpotlight` lights the sea, and twenty-five
+flashing marks would evict the beam the player is steering by.
+
+### What did NOT change
+
+No new light primitive, no shader change, no change to the day/night curve, the water shader or the
+beam relief. The gate is the shipped in-shader night gate, so a lantern is invisible by day and full at
+night with no per-light coupling to the cycle — a buoy light that burns unseen through the afternoon is
+correct, and it is what the real one does. Unlit marks (the mooring buoy) get the component and **no
+`SceneLight` at all**: absence is data, exactly as it is for a hull with no lamps.
+
+### Tunables (rule 6)
+
+| Tunable | Where | Default |
+|---|---|---|
+| Lantern colour, per mark colour | `NavLightPresets` | green `(0.10, 1, 0.34)` · red `(1, 0.10, 0.09)` · white `(1, 0.96, 0.88)` · amber `(1, 0.82, 0.20)` |
+| Lantern reach | `NavLightPresets.LanternRangeMetres` | **1.1 m** — set by photographing it (1.6 m swallowed the can, and a mark's SHAPE is part of her signal); upper bound measured: the closest two marks are 8.29 m apart, so a pair clears by 6.09 m |
+| Lantern brightness | `NavLightPresets.LanternIntensity` | 1.7 (a sidelight is 1.4; a mark is meant to be picked up first) |
+| The four rhythms | `NavLightCharacter` constants | quick 0.5/1.0 s · very quick 0.25/0.5 s · flash 1.0/2.0 s · long flash 2.0/3.0 s |
+| Phase jitter inside a slot | `NavLightPhasePlan.JitterFractionOfSlot` | 0.2 (±20 % of a slot) |
+| Master switch for one mark's lamp | `NavLight._lampOn` | on |
+| Which character a mark shows | `NavBuoyDef.LightText` (data, ADR 0003) | per mark type |

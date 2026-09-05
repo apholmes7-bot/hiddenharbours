@@ -271,6 +271,7 @@ MonoBehaviour:
   - Kind: 6
     RigLocalMetres: {x: 0, y: -5.1, z: 11.95}
     IntensityScale: 1
+  Panes: []
 --- !u!43 &2277931060174282311
 Mesh:
   m_ObjectHideFlags: 0
