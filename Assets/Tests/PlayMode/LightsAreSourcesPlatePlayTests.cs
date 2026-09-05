@@ -43,6 +43,11 @@ namespace HiddenHarbours.Tests.PlayMode
         const string SceneName = "StPeters";
         const string PlateDir = "lights-are-sources";
 
+        /// <summary>The empty scene the teardown parks the player loop on, so St Peters can be unloaded.
+        /// Named because the teardown has to LOOK IT UP before making it — see <see cref="TearDownRegion"/>.
+        /// </summary>
+        const string CleanupSceneName = "LightsAreSourcesCleanup";
+
         /// <summary>Plate height in pixels. The WIDTH is derived from the camera's own aspect and never
         /// chosen: <c>DayNightController</c> fits its whole-frame multiply to
         /// <c>orthographicSize × aspect</c>, so a plate shot at any other aspect comes back with the night
@@ -78,8 +83,18 @@ namespace HiddenHarbours.Tests.PlayMode
 
             // ⚠️ PUT THE WORLD BACK. A PlayMode run shares one player loop, and leaving St Peters resident
             // hands every test that follows a wharf, a tide and a seabed it never asked for.
-            var clean = SceneManager.CreateScene("LightsAreSourcesCleanup");
-            SceneManager.SetActiveScene(clean);
+            //
+            // ⚠️⚠️ AND LOOK THE CLEANUP SCENE UP BEFORE CREATING IT. `CreateScene` THROWS on a name that
+            // already exists, and this teardown runs after every case — including a case that SKIPPED
+            // before loading the region, which leaves the cleanup scene resident because no
+            // LoadSceneMode.Single ever came along to sweep it. On CI (Null device) that is every case:
+            // the first test skipped, made the scene, and every later teardown threw
+            // `Scene with name "LightsAreSourcesCleanup" already exists` — so NUnit recorded two cases as
+            // FAILED with the skip text attached, and a fixture that should have cost CI nothing turned
+            // the PR red. A teardown that can throw is a teardown that can only ever make things worse.
+            Scene clean = SceneManager.GetSceneByName(CleanupSceneName);
+            if (!clean.IsValid() || !clean.isLoaded) clean = SceneManager.CreateScene(CleanupSceneName);
+            if (clean.IsValid()) SceneManager.SetActiveScene(clean);
             for (int i = SceneManager.sceneCount - 1; i >= 0; i--)
             {
                 Scene s = SceneManager.GetSceneAt(i);
@@ -107,6 +122,8 @@ namespace HiddenHarbours.Tests.PlayMode
         [UnityTest]
         public IEnumerator ThePierLantern_GlowsAtItsFitting_AndGivesThePlanksBack()
         {
+            RequireAGraphicsDevice();   // FIRST, before any yield — see its own note
+
             yield return LoadTheWharf();
             yield return SetNight(2f);
 
@@ -213,6 +230,8 @@ namespace HiddenHarbours.Tests.PlayMode
         [UnityTest]
         public IEnumerator AtNoon_NeitherArmEmits_AndTheFrameIsUnchanged()
         {
+            RequireAGraphicsDevice();   // FIRST, before any yield — see its own note
+
             yield return LoadTheWharf();
             yield return SetNight(12f);
 
@@ -279,6 +298,8 @@ namespace HiddenHarbours.Tests.PlayMode
         [UnityTest]
         public IEnumerator TheBeamOverWater_ReadsTheWavesInsteadOfWashingThemFlat()
         {
+            RequireAGraphicsDevice();   // FIRST, before any yield — see its own note
+
             yield return LoadTheWharf();
             yield return SetNight(2f);
 
@@ -342,6 +363,14 @@ namespace HiddenHarbours.Tests.PlayMode
         /// counts pixels, so without a GPU there is nothing to count and the numbers would be a confident
         /// zero — which would redden CI while proving nothing. Skips loudly, the way every other render
         /// fixture in this repo does.
+        ///
+        /// <para><b>⚠️⚠️ CALL IT AS THE FIRST STATEMENT OF THE TEST, BEFORE ANY <c>yield</c>.</b> An
+        /// <c>Assert.Ignore</c> raised from inside a nested coroutine that has already yielded is not the
+        /// clean skip it looks like: the runner unwinds through the enumerator, the teardown still runs,
+        /// and if anything there throws the case is recorded as FAILED with the skip message attached —
+        /// which is exactly how this fixture turned CI red while reporting its own "no graphics device"
+        /// text. Guard first, then start the machine. It is the shape <c>BoatWindowGlowPlayTests</c> uses,
+        /// which is why that one skips cleanly.</para>
         /// </summary>
         static void RequireAGraphicsDevice()
         {
@@ -352,8 +381,6 @@ namespace HiddenHarbours.Tests.PlayMode
 
         IEnumerator LoadTheWharf()
         {
-            RequireAGraphicsDevice();
-
             // The region logs decor-import complaints that have nothing to do with lights.
             LogAssert.ignoreFailingMessages = true;
             yield return SceneManager.LoadSceneAsync(SceneName, LoadSceneMode.Single);
