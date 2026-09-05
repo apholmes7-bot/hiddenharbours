@@ -381,6 +381,18 @@ owner's M2/M3 night-lighting vision.
   = its own `transform.up`, the bow anchor = a local forward offset, the way-gate = its own measured speed) — no
   reference to the Boats module (rule 4).
 
+  ⭐⭐ **Its additive quad is the lamp's own bloom, not the beam** — `_quadGlowScale`, shipped at **0.3** since
+  2026-09-04, so a 9 m beam wears a 2.7 m glow at the lamp. The owner ruled on what 1 looks like, playing the
+  arrival at 06:13: *"spotlight doesnt read on water or enviroement its just a flat white."* That is a
+  description of the mechanism. §5.1 builds the honest illumination — the water shader lights each pixel by
+  N·L against the wave field's own normal, so crests catch the beam and troughs fall into shadow — and a
+  full-length quad then lays a flat amber cone over the top of it: the same light added twice, and the flat
+  copy is the brighter one, so the sea under the beam goes featureless. The **water range is unchanged at
+  9 m** (it is published to the shader independently of the quad), and the four `_BeamRelief*` dials on
+  `Water.mat` ship exactly as they are. ⚠️ The quad cannot tell water from land, so the LAND under the beam is
+  darker for this until a lamp lights the ground; and a scene that already serialized the field keeps its own
+  value — `StPeters.unity` carries `_quadGlowScale: 1` until the owner's next St Peters Build.
+
 ### The tunable set (rule 6) + defaults
 
 | Tunable | Where | Default |
@@ -389,6 +401,7 @@ owner's M2/M3 night-lighting vision.
 | Colour | SceneLight / BoatSpotlight | warm amber `(1, 0.88, 0.62)` |
 | Intensity | SceneLight / BoatSpotlight | 1.5 (spotlight) |
 | Range (throw, m) | SceneLight / BoatSpotlight | 9 (spotlight) |
+| Quad glow scale (bloom ÷ throw) | BoatSpotlight | **0.3** — the quad is the lamp's own bloom; the water carries the throw |
 | Cone half-angle (deg; 180 = radial) | SceneLight / BoatSpotlight | 26 (spotlight) |
 | Edge softness (radial fade) | SceneLight / BoatSpotlight | 0.6 |
 | Angular softness (cone edge) | SceneLight / BoatSpotlight | 0.45 |
@@ -418,23 +431,62 @@ PRECONFIGURED with one.* Drop the component on a prefab, pick a `Kind`, and the 
 night-gated pool with no wiring — the gate is in the shader, off the published `_DayNightTint`, so nothing
 reads the clock.
 
-| Kind | Look | Reach | Placed on |
+#### ⭐⭐ A lamp has two sizes, and only one of them is drawn
+
+Until 2026-09-04 a preset carried one number, `Config.Range`, and it was doing two incompatible jobs. The
+owner ended that, playing the St Peters arrival: *"dock lights are just a round glow, it should glow from
+within the lamp reasilitcally."*
+
+| | what it is | who reads it | drawn? |
 |---|---|---|---|
-| **WindowGlow** | warm amber spill, faint hearth flicker | 3.4 m | Aunt Ginny's cottage |
-| **Lightpost** | warm sodium pool, barely-there hum | 3.6 m | `lanternPost` (2.46 m), `streetLamp` (4.48 m) |
-| **Worklight** | near-white, rock steady | 5.2 m | — (a lamp on a wall; nothing yet) |
-| **Floodlight** | cool electric flood, steady | 7 m | `yardLight` (7.26 m), `floodMast` (7.8 m) |
+| **Bloom** (`Config.Range`) | how big the SOURCE looks — the halo around a lit fitting | ADR 0016's additive quad | **yes** |
+| **Reach** (`ReachMetres`) | how far the lamp LIGHTS — the pool on the ground | the builders' siting (`StPetersWharf.LampRowY`); the illumination PR | **not yet** |
+
+A lamp post has no 3.6 m glowing part. It has a 0.40 m lantern and a 3.6 m patch of ground the lantern makes
+brighter, and drawing the second as though it were the first is exactly how you get a flat cream disc with the
+planks, the bollards and the post itself hidden inside it. So the bloom came down to the FITTING — the same
+ruling `BoatLampPresets` took a day earlier for every lamp the fleet carries — while the reach kept its
+plate-tuned number under its own name. **Not one lamp post moved on that change**, and a test pins the row to
+prove it.
+
+| Kind | Look | Bloom (drawn) | Reach (lights) | Placed on |
+|---|---|---|---|---|
+| **WindowGlow** | warm amber spill, faint hearth flicker | 3.4 m ⚠️ | 3.4 m | Aunt Ginny's cottage |
+| **Lightpost** | warm sodium lantern, barely-there hum | 0.40 m | 3.6 m | `lanternPost` (2.46 m), `streetLamp` (4.48 m) |
+| **Worklight** | near-white, rock steady | 0.50 m | 5.2 m | — (a lamp on a wall; nothing yet) |
+| **Floodlight** | cool electric flood, steady | 0.58 m | 7 m | `yardLight` (7.26 m), `floodMast` (7.8 m) |
+
+⚠️ **WindowGlow is the exception, on the owner's own preference.** It is the one land light he has seen and
+liked, so the fitting ruling left it alone: it is still drawn at its whole 3.4 m pool. The asymmetry is pinned
+by a test rather than left to be tidied away.
+
+**Each PLACED piece overrides the bloom with its own measured fitting** (`LampPosts.FittingWidthMetres`,
+stamped through `LightPresets.ApplyFitting`), because a wharf lantern is a smaller lamp than a road lamp:
+
+| piece | lit fitting | width | read from |
+|---|---|---|---|
+| `lanternPost` | glazed lantern box | 0.14 m | `wharfDecorRig.js:993` |
+| `streetLamp` | pendant-lantern lens | 0.40 m | `utilityIsoRig.js:361` |
+| `yardLight` | cobra-head lens slab | 0.58 m | `utilityIsoRig.js:339` |
+| `floodMast` | three flood cans on a bar | 1.49 m | `utilityIsoRig.js:373-376` |
+
+The pack contract cannot answer this — it publishes `footprintW`/`footprintD`/`heightM`, and none of the three
+is the head (`streetLamp`'s `footprintW` of 1.08 m is the swan neck's *reach*) — so the widths are read off the
+rig source and each carries the line it came from. None of them depends on the height run: all four pieces bake
+at the rig's default `len = 0.4`, which is where the published heights come from, and the run raises the head
+without widening it.
 
 **The split is by HEAD HEIGHT**: the two low posts pool warmly, the two tall poles flood. A piece's height is
 not a taste call — it is read from the ISO pack's published `heightM` and written to
 `SceneLight.LampHeightMeters`, because the lamp's height is what sets the length of every shadow it casts
 (§6.3). Left at the 2.5 m default a 7.8 m flood mast lights a yard like a mast and shadows it like a bollard.
 
-⚠️ **Both pools are deliberately smaller than the physical rule.** A lamp lights a circle of roughly twice its
-head height, so a 4.48 m street lamp should pool ~4.5 m — and at that size ADR 0016's additive quad, which is
-the source's own *bloom* rather than illumination, saturates to a flat disc that hides the very ground it is
-lighting (measured, `docs/art/spikes/land-lamp-posts/`, plates 05–07). The sizes above are what READ. Making a
-lamp light the ground the way §5 makes the sun light a tree is the standing follow-up.
+⚠️ **So a lamp post glows and the planks under it stay dark, and that is the honest half-picture.** The reach
+is deliberately *smaller* than the physical rule too (a lamp lights a circle of roughly twice its head height,
+so a 4.48 m street lamp should pool ~4.5 m) because it was tuned as a bloom on the 02:00 plates
+(`docs/art/spikes/land-lamp-posts/`, plates 05–07). Making a lamp light the ground the way §5 makes the sun
+light a tree — the lit-decor path, with the reach as its falloff — is the standing follow-up, and it is where
+the reach stops being a number nothing draws.
 
 ### Lamps on the land (`LampPosts`)
 

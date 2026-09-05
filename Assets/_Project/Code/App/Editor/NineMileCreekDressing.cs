@@ -136,7 +136,7 @@ namespace HiddenHarbours.App.Editor
         /// the mooring edge that anything standing is allowed to get.
         ///
         /// <para>⭐ Not <see cref="BackRowY"/>, and a 02:00 plate is why. This quay is ten metres deep and
-        /// a <see cref="LightPresets.Kind.Lightpost"/> pool is 3.6 m, so a lamp against the yard lights the
+        /// a <see cref="LightPresets.Kind.Lightpost"/> reaches 3.6 m, so a lamp against the yard lights the
         /// gear and leaves the berths — the one place a crew steps off a boat in the dark — entirely
         /// unlit. There is no row on a 10 m quay that reaches both, so the lamp takes the working edge and
         /// the gear behind it keeps the dark it has always had.</para>

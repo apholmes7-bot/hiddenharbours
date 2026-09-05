@@ -39,6 +39,12 @@ namespace HiddenHarbours.Art
                  "small window, a stronger one on a big lamp. The night-gate + flicker still scale it.")]
         [Min(0f)] [SerializeField] private float _intensityScale = 1f;
 
+        [Tooltip("How wide THIS placement's lit fitting is, metres — its lantern, its lens, its glazed head. " +
+                 "The glow blooms to that size, so a wharf lantern and a road lamp on the same preset do not " +
+                 "glow the same size. 0 = use the preset's own archetype. Read off the kit's rig, never guessed: " +
+                 "LampPosts.FittingWidthMetres is where the measured widths live.")]
+        [Min(0f)] [SerializeField] private float _fittingWidthMetres;
+
         // The carried glow (added on wake if absent, like BoatSpotlight adds its SceneLight). Exposed so the
         // editor menu / tests can read the configured light.
         private SceneLight _light;
@@ -51,6 +57,24 @@ namespace HiddenHarbours.Art
         {
             get => _preset;
             set { _preset = value; ConfigureLight(); }
+        }
+
+        /// <summary>
+        /// This placement's own lit-fitting width, metres (0 = the preset's archetype) — the size the glow
+        /// blooms to, per <see cref="LightPresets.ApplyFitting"/>.
+        ///
+        /// <para><b>⚠ It has to be CARRIED, not just stamped, and that is the whole reason this field
+        /// exists.</b> <see cref="ConfigureLight"/> runs on every <c>Awake</c> and <c>OnEnable</c>, so a
+        /// builder that stamped a measured bloom straight onto the <see cref="SceneLight"/> at build time
+        /// would watch this component overwrite it with the preset's the first time the object woke: the
+        /// scene would look right in the editor and wrong in play, which is the worst of the two. The
+        /// placement's own width therefore rides HERE, beside the intensity scale it mirrors, and every
+        /// re-stamp reapplies it.</para>
+        /// </summary>
+        public float FittingWidthMetres
+        {
+            get => _fittingWidthMetres;
+            set { _fittingWidthMetres = Mathf.Max(0f, value); ConfigureLight(); }
         }
 
         private void Awake()
@@ -66,11 +90,14 @@ namespace HiddenHarbours.Art
             ConfigureLight();
         }
 
-        /// <summary>Stamp the chosen preset (and this placement's intensity scale) onto the carried light.</summary>
+        /// <summary>Stamp the chosen preset (plus this placement's own fitting size and intensity scale) onto
+        /// the carried light.</summary>
         private void ConfigureLight()
         {
             if (_light == null) return;
-            LightPresets.Apply(_light, _preset);
+            // ApplyFitting is Apply plus this placement's own bloom radius; a zero width falls back to the
+            // preset's archetype, so a light that never measured its fitting behaves exactly as before.
+            LightPresets.ApplyFitting(_light, _preset, _fittingWidthMetres);
             // Layer this placement's own intensity scale over the preset's base intensity (the preset set it just
             // above; multiply so the owner can trim ONE placement without editing the shared preset).
             _light.Intensity = LightPresets.For(_preset).Intensity * Mathf.Max(0f, _intensityScale);

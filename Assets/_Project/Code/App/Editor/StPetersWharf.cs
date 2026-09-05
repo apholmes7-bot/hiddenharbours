@@ -298,17 +298,24 @@ namespace HiddenHarbours.App.Editor
         /// The deck row the lamp posts stand on: <b>as far back as the pool can afford</b>.
         ///
         /// <para>Derived, not chosen. A lamp must reach the fitting row on the mooring lip — that is what
-        /// a wharf lamp is FOR — so its row can be no further north than <c>(fitting row + the preset's
-        /// range)</c>. Of the deck rows that satisfy that, it takes the northernmost, which is the one
+        /// a wharf lamp is FOR — so its row can be no further north than <c>(fitting row + the lamp's
+        /// reach)</c>. Of the deck rows that satisfy that, it takes the northernmost, which is the one
         /// furthest out of the way of the working edge. Widen the <see cref="LightPresets.Kind.Lightpost"/>
         /// pool and the lamps step back on their own; narrow it and they come forward.</para>
+        ///
+        /// <para><b>⚠ REACH, not the bloom radius — and on 2026-09-04 those stopped being the same
+        /// number.</b> This used to read <c>For(Lightpost).Range</c>, which was then the pool. Since the
+        /// bloom came down to the size of the lit lantern, <c>Range</c> is 0.40 m and reading it here would
+        /// march both lamps onto the mooring lip, among the bollards, to chase a glow that was never the
+        /// light. <see cref="LightPresets.ReachMetres"/> still says 3.6 m — the plate-tuned pool — so this
+        /// row is bit-for-bit the row that shipped, and a test pins it.</para>
         /// </summary>
         public static float LampRowY
         {
             get
             {
                 float fittingRow = MinCellY + 0.5f;                       // where the bollards stand
-                float reach = LightPresets.For(LightPresets.Kind.Lightpost).Range;
+                float reach = LightPresets.ReachMetres(LightPresets.Kind.Lightpost);
                 float furthestNorth = fittingRow + reach;
                 // Deck rows are cell centres; take the northernmost that is still within reach.
                 float row = MaxCellY + 0.5f;
