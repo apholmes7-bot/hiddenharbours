@@ -12,6 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 43a8bbbd04db4a65ab066e723d7112ac, type: 3}
   m_Name: LampShadowProfile
   m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.LampShadowProfile
+  _poolsEnabled: 1
+  _poolStrength: 0.6
+  _poolEdgeSoftness: 0.55
+  _maxPools: 8
   _strength: 0.8
   _shadowColor: {r: 0.04, g: 0.05, b: 0.1, a: 1}
   _maxShadows: 24
