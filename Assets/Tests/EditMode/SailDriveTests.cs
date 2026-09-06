@@ -281,31 +281,90 @@ namespace HiddenHarbours.Tests.EditMode
         // =========================================================================================
 
         /// <summary>
-        /// ⭐ <b>The thrust law is the hull's own terminal-speed identity, not a tuned number.</b>
-        /// <c>BoatController</c> scales thrust and drag by the same <c>ForceFeelScale</c>, so terminal
-        /// speed is exactly <c>F / ForwardDrag</c> m/s. Asking for <c>target × ForwardDrag</c> therefore
-        /// settles at the target — with no ramp, which is the whole point (a ramp would be a second lag
-        /// in series with the hull's own ~20 s time constant).
+        /// ⭐ <b>The thrust law is the hull's own terminal-speed identity, not a tuned number.</b> Ask
+        /// for <c>target × (everything that resists her)</c> and she settles at the target — with no
+        /// ramp, which is the whole point (a ramp would be a second lag in series with the hull's own
+        /// time constant).
+        ///
+        /// <para><b>⚠️ This test used to be a tautology and it hid a real bug.</b> It asserted
+        /// <c>ThrustFor(t, d) / d == t</c>, which only inverts the function's own multiply: it passes
+        /// for ANY resistance you hand in, including the wrong one. What it could not see is that the
+        /// resistance was wrong — <c>ForwardDrag</c> alone, while the body also carries
+        /// <c>linearDamping</c>. The identity below is therefore stated against the CONTROLLER's real
+        /// constants, and <see cref="TheDampingTermIsNotOptional_AndIsTheLargerOneOnASloop"/> is the arm
+        /// that fails if the second term is dropped again.</para>
         /// </summary>
         [Test]
         public void TheThrustAskedForIsTheThrustThatSettlesAtTheTarget()
         {
-            foreach (float drag in new[] { 40f, 240f, 300f })
+            // (ForwardDrag, MassKg) of hulls that actually ship — a punt, a working boat, both sloops.
+            foreach (var hull in new[] { (140f, 700f), (300f, 6000f), (200f, 4875f), (900f, 89190f) })
                 foreach (float targetKn in new[] { 1.5f, 4.97f, 9.15f, 12.6f })
                 {
                     float targetMs = SailDrive.ToMetresPerSecond(targetKn);
-                    float thrust = SailDrive.ThrustFor(targetMs, drag);
-                    Assert.AreEqual(targetMs, thrust / drag, 1e-4f,
-                        $"terminal speed is thrust/ForwardDrag; at drag {drag} the ask must settle at " +
-                        $"{targetKn} kn.");
+                    float resistance = SailDrive.LinearResistance(
+                        hull.Item1, hull.Item2 / 100f, BoatController.HullLinearDamping, BoatController.ForceFeelScale);
+                    float thrust = SailDrive.ThrustFor(targetMs, resistance);
+
+                    // The controller's own equilibrium, written out: thrust × scale balances
+                    // (ForwardDrag × scale)·v  +  (damping × mass)·v.
+                    float mass = hull.Item2 / 100f;
+                    float settled = thrust * BoatController.ForceFeelScale /
+                                    (hull.Item1 * BoatController.ForceFeelScale + BoatController.HullLinearDamping * mass);
+                    Assert.AreEqual(targetMs, settled, 1e-3f,
+                        $"a hull of {hull.Item2} kg at drag {hull.Item1} must SETTLE at {targetKn} kn.");
                 }
 
             Assert.AreEqual(0f, SailDrive.ThrustFor(0f, 300f), 1e-6f, "no target, no push.");
             Assert.AreEqual(0f, SailDrive.ThrustFor(5f, 0f), 1e-6f,
-                "a hull with no forward drag has no terminal speed to solve for — refuse rather than " +
+                "a hull that nothing resists has no terminal speed to solve for — refuse rather than " +
                 "divide by zero downstream.");
             Assert.AreEqual(0f, SailDrive.ThrustFor(-5f, 300f), 1e-6f,
                 "a sail cannot push a boat backwards; astern is the auxiliary's job.");
+        }
+
+        /// <summary>
+        /// ⭐⭐ <b>The term that gets forgotten is the BIGGER one, and forgetting it does not cost a few
+        /// per cent.</b>
+        ///
+        /// <para><c>ForwardDrag</c> is a hull field, so it is the resistance anyone writing a drive
+        /// reaches for. <c>Rigidbody2D.linearDamping</c> is set once in <c>BoatController.Awake</c> and
+        /// is invisible from the def — but it acts on a mass of <c>MassKg/100</c>, and a sailing hull is
+        /// heavy, so on the sloop 30 it is roughly FIVE TIMES the hull drag. A drive that balances only
+        /// the hull drag sails her at <c>ForwardDrag / (ForwardDrag + damping·MassKg)</c> of her polar —
+        /// 17 %, which is 0.8 kn on a broad reach her own polar puts at 4.7, and reads in play as a boat
+        /// that is becalmed in a working breeze rather than as an arithmetic slip.</para>
+        ///
+        /// <para>This is the arm that fails if the damping is dropped again, and it is stated as a RATIO
+        /// so it survives every retune of either number.</para>
+        /// </summary>
+        [Test]
+        public void TheDampingTermIsNotOptional_AndIsTheLargerOneOnASloop()
+        {
+            const float sloop30Drag = 200f, sloop30MassKg = 4875f;
+            float mass = sloop30MassKg / 100f;
+
+            float total = SailDrive.LinearResistance(sloop30Drag, mass, BoatController.HullLinearDamping,
+                                                     BoatController.ForceFeelScale);
+            float damping = total - sloop30Drag;
+
+            Assert.Greater(damping, sloop30Drag * 2f,
+                $"the body's damping ({damping:0.#}) must dominate the hull drag ({sloop30Drag}) on a " +
+                "hull this heavy — if it no longer does, the mass rule or the damping constant changed " +
+                "and the numbers quoted throughout this drive need re-measuring.");
+
+            float naiveFraction = sloop30Drag / total;
+            Assert.Less(naiveFraction, 0.25f,
+                $"balancing ForwardDrag alone would sail her at {naiveFraction:P0} of her polar. The " +
+                "guard exists because that is a silent, plausible-looking slowness, not a crash.");
+
+            // And the composition itself, against the controller's constants rather than a transcription.
+            Assert.AreEqual(sloop30Drag + BoatController.HullLinearDamping * mass / BoatController.ForceFeelScale, total, 1e-3f,
+                "LinearResistance must put the body's newtons and the hull's design units on one footing.");
+
+            Assert.AreEqual(sloop30Drag, SailDrive.LinearResistance(sloop30Drag, mass, 0f,
+                            BoatController.ForceFeelScale), 1e-3f,
+                "a body with no damping is resisted by the hull alone.");
         }
 
         /// <summary>AUTO_TRIM reproduces the builder pages' law at the seven points of sail — the sheet

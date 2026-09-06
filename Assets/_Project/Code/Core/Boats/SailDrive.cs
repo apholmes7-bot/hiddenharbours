@@ -123,18 +123,46 @@ namespace HiddenHarbours.Core
         /// <summary>
         /// <b>The thrust that holds a target speed — and the reason there is no ramp anywhere here.</b>
         ///
-        /// <para><c>BoatController</c> applies hull drag as <c>ForwardDrag × ForceFeelScale × v</c> and
-        /// thrust as <c>F × ForceFeelScale</c>, so the scales cancel and terminal speed is exactly
-        /// <c>F / ForwardDrag</c> in m/s. Ask for the force that balances drag at the target and the
-        /// hull arrives there on ITS OWN time constant (τ = m/k ≈ 20 s for a working hull) — which is
-        /// what a sailing boat gathering way actually feels like.</para>
-        ///
-        /// <para>A ramp on top of that would be a second lag in series with a lag the hull already has,
+        /// <para>Ask for the force that balances the hull's resistance AT the target and she arrives
+        /// there on HER OWN time constant (τ = m/k) — which is what a boat gathering way actually feels
+        /// like. A ramp on top of that would be a second lag in series with a lag the hull already has,
         /// and this project has already paid for that lesson once: 190 m of glide that no tuning fixes
         /// (<c>boat-hull-time-constant-forbids-throttle-ramps</c>). Set the target; let her settle.</para>
+        ///
+        /// <para><b>⚠️⚠️ <paramref name="linearResistance"/> is the TOTAL, not <c>ForwardDrag</c>.</b>
+        /// A hull is slowed by two velocity-proportional terms, not one: the hull drag
+        /// <c>BoatController</c> applies itself (<c>ForwardDrag × ForceFeelScale × v</c>) AND the
+        /// <c>Rigidbody2D.linearDamping</c> the body carries (0.2, against a mass of
+        /// <c>MassKg / 100</c>). Only the first is a hull field, which is exactly why the second gets
+        /// forgotten — and forgetting it does not scale a boat's speed a little, it scales it by
+        /// <c>ForwardDrag / (ForwardDrag + 0.2·MassKg)</c>, which for the sloop 30 is <b>17 %</b>. She
+        /// would make 0.8 kn on a broad reach her own polar puts at 4.7 and read as becalmed in a
+        /// working breeze. Use <see cref="LinearResistance"/> and let the caller read the body it
+        /// actually has, rather than re-deriving Unity's damping here.</para>
         /// </summary>
-        public static float ThrustFor(float targetSpeedMs, float forwardDrag)
-            => targetSpeedMs <= 0f || forwardDrag <= 0f ? 0f : targetSpeedMs * forwardDrag;
+        public static float ThrustFor(float targetSpeedMs, float linearResistance)
+            => targetSpeedMs <= 0f || linearResistance <= 0f ? 0f : targetSpeedMs * linearResistance;
+
+        /// <summary>
+        /// <b>Everything that resists her, as one coefficient in the hull's own design units</b> — what
+        /// <see cref="ThrustFor"/> must be given.
+        ///
+        /// <para>The body's damping is a force <c>damping × mass × v</c> in NEWTONS, while
+        /// <paramref name="forwardDrag"/> is a design-unit number the controller multiplies by
+        /// <paramref name="forceFeelScale"/> before applying. Dividing the first by that scale puts both
+        /// on one footing, so the sum is the number the thrust ask is stated in.</para>
+        ///
+        /// <para>Read <paramref name="bodyMass"/> and <paramref name="linearDamping"/> off the live
+        /// <c>Rigidbody2D</c> rather than recomputing them from the def: the mass rule
+        /// (<c>MassKg / 100</c>) and the damping constant live in the controller, and a drive that
+        /// re-derives them silently disagrees with the boat the moment either is tuned.</para>
+        /// </summary>
+        public static float LinearResistance(float forwardDrag, float bodyMass, float linearDamping,
+                                             float forceFeelScale)
+        {
+            if (forceFeelScale <= 0f) return Mathf.Max(0f, forwardDrag);
+            return Mathf.Max(0f, forwardDrag) + Mathf.Max(0f, linearDamping * bodyMass) / forceFeelScale;
+        }
 
         /// <summary>
         /// <b>AUTO_TRIM — the builder pages' law, verbatim.</b> The sheets that hold 18° of attack on

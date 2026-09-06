@@ -34,6 +34,18 @@ namespace HiddenHarbours.Boats
         public const float ForceFeelScale = 0.01f;
 
         /// <summary>
+        /// ⭐ <b>The body's own velocity drag</b>, handed to <c>Rigidbody2D.linearDamping</c> in
+        /// <c>Awake</c> — a SECOND velocity-proportional resistance beside the hull's
+        /// <see cref="BoatHullDef.ForwardDrag"/>, acting on a mass of <c>MassKg / 100</c>.
+        ///
+        /// <para>Public and named because it is invisible from the def and therefore the term a drive
+        /// forgets. <see cref="SailDrive"/> must balance BOTH to make a hull settle at a stated speed,
+        /// and on a hull as heavy as a sloop this is the LARGER of the two; a test that wants the real
+        /// number must read it here rather than transcribe 0.2 and quietly stop tracking it.</para>
+        /// </summary>
+        public const float HullLinearDamping = 0.2f;
+
+        /// <summary>
         /// Greybox feel-scale for the engine RUDDER torque. Matched to <see cref="ForceFeelScale"/> so the
         /// outboard's speed-scaled rudder has turning authority comparable to the Dory's differential-oar
         /// yaw on the same hull — i.e. the Punt actually answers the helm while making way (the §2 outboard
@@ -222,7 +234,7 @@ namespace HiddenHarbours.Boats
 
             _rb = GetComponent<Rigidbody2D>();
             _rb.gravityScale = 0f;
-            _rb.linearDamping = 0.2f;
+            _rb.linearDamping = HullLinearDamping;
             _rb.angularDamping = 2.5f;
             // Don't tunnel the thin shore-edge / dock colliders when nudging up to the dock.
             _rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
@@ -633,12 +645,16 @@ namespace HiddenHarbours.Boats
         /// angle she is sailing decide her speed, off her own polar, and the rudder is the only thing
         /// the helm holds.
         ///
-        /// <para><b>Why there is no ramp.</b> Drag here is <c>ForwardDrag × ForceFeelScale × v</c> and
-        /// thrust is <c>F × ForceFeelScale</c>, so terminal speed is exactly <c>F / ForwardDrag</c>.
-        /// <see cref="SailDrive.ThrustFor"/> asks for the force that balances drag AT the polar's
-        /// target and lets the hull arrive on its own time constant (τ ≈ 20 s) — which is what a boat
-        /// gathering way feels like, and what stops this becoming a second lag in series with a lag
-        /// the hull already has.</para>
+        /// <para><b>Why there is no ramp.</b> <see cref="SailDrive.ThrustFor"/> asks for the force that
+        /// balances her resistance AT the polar's target and lets the hull arrive on its own time
+        /// constant (τ = m/k) — which is what a boat gathering way feels like, and what stops this
+        /// becoming a second lag in series with a lag the hull already has.</para>
+        ///
+        /// <para><b>⚠️ Her resistance is TWO terms.</b> The hull drag applied below
+        /// (<c>ForwardDrag × ForceFeelScale × v</c>) and the body's own <c>linearDamping</c> against a
+        /// mass of <c>MassKg/100</c>. Only the first is a hull field, so the second is the one that gets
+        /// forgotten — and on a hull as heavy as a sloop it is several times the larger of the two.
+        /// Balancing the hull drag alone would sail the 30 at 17 % of her polar.</para>
         ///
         /// <para><b>⚠️ NO LEEWAY, deliberately and recorded.</b> The art rig has no crab angle — the
         /// heading IS the facing (<c>_excluded.leeway_current</c> in the sailing sidecar) — so a real
@@ -662,7 +678,13 @@ namespace HiddenHarbours.Boats
                                                      _hull.NoGoTrueWindDeg);
             LastSailTargetKn = targetKn;
 
-            float thrust = SailDrive.ThrustFor(SailDrive.ToMetresPerSecond(targetKn), _hull.ForwardDrag);
+            // ⚠️ EVERYTHING that resists her, not just ForwardDrag: this body also carries
+            // linearDamping (set in Awake), acting on a mass of MassKg/100, and for a hull as heavy as
+            // a sloop that term is SEVERAL TIMES the hull drag. Read both off the LIVE body so the
+            // drive follows the mass rule and the damping constant rather than transcribing them.
+            float resistance = SailDrive.LinearResistance(_hull.ForwardDrag, _rb.mass, _rb.linearDamping,
+                                                          ForceFeelScale);
+            float thrust = SailDrive.ThrustFor(SailDrive.ToMetresPerSecond(targetKn), resistance);
             if (thrust > 0f) _rb.AddForce(fwd * (thrust * ForceFeelScale), ForceMode2D.Force);
 
             // The sheets a player who never touches one is sailing at. Held state, so a player who DOES
