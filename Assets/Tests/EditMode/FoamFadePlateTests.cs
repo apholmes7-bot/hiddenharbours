@@ -97,6 +97,10 @@ namespace HiddenHarbours.Tests.EditMode
 
             var seg = new Vector4[FoamBuffer.MaxInjectors];
             var shape = new Vector4[FoamBuffer.MaxInjectors];
+            // 11b's dispersal edge, explicitly SILENT. Its gain is 0 in an unused slot, so the block
+            // costs nothing — but "an unset shader array" is an assumption and this is a measurement,
+            // so the zeros are written rather than relied upon. This fixture is about the STORE.
+            var zeroSlots = new Vector4[FoamBuffer.MaxInjectors];
             List<(Vector2 pos, Vector2 bow)> path = Track(steps);
             Vector2 previous = FoamBuffer.SternWorld(path[0].pos, path[0].bow, SternOffset, ElevDeg);
 
@@ -129,6 +133,10 @@ namespace HiddenHarbours.Tests.EditMode
                 mat.SetFloat(FoamShaderIds.AgeDecay, FoamBuffer.DecayFactor(FreshHalfLife, Dt));
                 mat.SetVectorArray(FoamShaderIds.InjectSeg, seg);
                 mat.SetVectorArray(FoamShaderIds.InjectShape, shape);
+                mat.SetVectorArray(FoamShaderIds.DispersalTrackA, zeroSlots);
+                mat.SetVectorArray(FoamShaderIds.DispersalTrackB, zeroSlots);
+                mat.SetVectorArray(FoamShaderIds.DispersalTrackC, zeroSlots);
+                mat.SetVectorArray(FoamShaderIds.DispersalShape, zeroSlots);
                 mat.SetVector(FoamShaderIds.SurfDeposit, Vector4.zero);   // no surf — this is the wake
                 mat.SetVector("_BlitScaleBias", new Vector4(1f, 1f, 0f, 0f));
 
