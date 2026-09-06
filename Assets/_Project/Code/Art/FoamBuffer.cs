@@ -659,5 +659,157 @@ namespace HiddenHarbours.Art
             if (ageHalfLifeSeconds <= 0f) return 0f;
             return Mathf.Pow(0.5f, ageSeconds / ageHalfLifeSeconds);
         }
+
+        // ---- THE STORE: what the buffer can actually hold (register row 28) ----------------------
+
+        /// <summary>
+        /// 🔴 <b>THE FORMATS THE BUFFER MAY BE ALLOCATED IN, BEST FIRST.</b> The buffer is not a
+        /// float: everything above is computed at full precision and then <b>written into a render
+        /// target</b>, and the target's own rounding is the last word on whether a term happened.
+        ///
+        /// <para><b>Why this list exists.</b> The shipped target was <c>RG16</c> — 8 bits per
+        /// channel. The advect pass multiplies the stored value by a decay factor and writes it back,
+        /// so a per-frame change under HALF A CODE rounds to where it started and is lost. A decay is
+        /// a multiply, so its change is largest at full white, and at 60 fps even that is 0.491 codes
+        /// for the coverage channel: <b>the wake did not fade at all at the PC-first baseline</b>, and
+        /// the freshness clock stopped a third of the way down #724's colour walk. It hid because the
+        /// foam still left the 96 m window and the compose's lace still tore at the edge — every
+        /// "fade" anyone had seen was the WINDOW, not the decay.</para>
+        ///
+        /// <para><b>Why 16-bit UNORM and not half float.</b> Both are 4 bytes a texel and both make
+        /// the decay run. <c>RGHalf</c>'s mantissa grid is fixed within an octave while the decay's
+        /// change is proportional to the value, so round-to-nearest lands off by up to a whole ULP
+        /// either way and the decay carries a frame-rate-dependent BIAS: measured, a texel at 1.0
+        /// reads 0.5073 after one 6 s half-life at 60 fps and 0.5347 at 144 fps, against
+        /// <c>RG32</c>'s 0.50001. Uniform codes are the right grid for a quantity that lives in
+        /// [0,1], so the UNORM goes first and the float is the fallback for a device that cannot
+        /// render to it (GLES3 makes RG16_UNorm optional and RG16F core, which is exactly the mobile
+        /// case rule 7 asks us not to paint into a corner).</para>
+        ///
+        /// <para>⚠️ The last rung is the SHIPPED format, and on it the decay does not run. It is here
+        /// so a device that supports neither 16-bit format still draws foam rather than none — named,
+        /// not silent.</para>
+        /// </summary>
+        public static readonly RenderTextureFormat[] FormatPreference =
+        {
+            RenderTextureFormat.RG32,      // 16-bit UNORM per channel: 65 535 codes
+            RenderTextureFormat.RGHalf,    // 16-bit float per channel: never stalls, slightly biased
+            RenderTextureFormat.RG16,      // 8-bit UNORM per channel: THE SHIPPED STALL (row 28)
+        };
+
+        /// <summary>
+        /// The best format <paramref name="supports"/> will give us, from
+        /// <see cref="FormatPreference"/>. Production passes
+        /// <c>SystemInfo.SupportsRenderTextureFormat</c>; a test passes its own predicate, because
+        /// <c>SystemInfo</c> on a null graphics device answers for no device at all and a policy
+        /// pinned against that is pinned against nothing.
+        ///
+        /// <para>A null predicate, or one that refuses everything, returns the last rung — the buffer
+        /// must always be allocatable.</para>
+        /// </summary>
+        public static RenderTextureFormat SelectFormat(System.Func<RenderTextureFormat, bool> supports)
+        {
+            if (supports != null)
+                foreach (RenderTextureFormat candidate in FormatPreference)
+                    if (supports(candidate))
+                        return candidate;
+            return FormatPreference[FormatPreference.Length - 1];
+        }
+
+        /// <summary>Bytes one texel of <paramref name="format"/> costs — the buffer's whole budget is
+        /// this times the resolution squared times two (the ping-pong). An unrecognised format answers
+        /// 4, the cost of the widest thing <see cref="FormatPreference"/> can pick, so a budget
+        /// statement can never be flattered by a format it does not know.</summary>
+        public static int BytesPerTexel(RenderTextureFormat format)
+        {
+            switch (format)
+            {
+                case RenderTextureFormat.RG16:   return 2;
+                case RenderTextureFormat.RG32:   return 4;
+                case RenderTextureFormat.RGHalf: return 4;
+                default:                         return 4;
+            }
+        }
+
+        /// <summary>Codes per channel of a UNORM format, or 0 for a format that is not one.</summary>
+        static int UnormCodes(RenderTextureFormat format)
+        {
+            switch (format)
+            {
+                case RenderTextureFormat.RG16: return 255;
+                case RenderTextureFormat.RG32: return 65535;
+                default:                       return 0;
+            }
+        }
+
+        /// <summary>
+        /// 🔴 <b>ONE WRITE INTO THE BUFFER.</b> Round-trip <paramref name="value"/> through
+        /// <paramref name="format"/>'s own storage exactly as the hardware does — saturate, then round
+        /// to nearest representable. This is the step every term in this class is ultimately judged by,
+        /// and modelling it is what turned row 28 from an eyeball complaint into arithmetic.
+        ///
+        /// <para><c>RGHalf</c> is snapped onto the binary16 GRID (see <see cref="HalfGrid"/>) rather
+        /// than pushed through <c>Mathf.FloatToHalf</c>: that pair is a native ECall, and this class's
+        /// whole claim is that its arithmetic runs with no editor under it.</para>
+        /// </summary>
+        public static float Store(float value, RenderTextureFormat format)
+        {
+            float v = Mathf.Clamp01(value);
+            // ⚠️ The snap is taken in DOUBLE. The hardware converts exactly; doing it with a float
+            // divide instead disagrees with IEEE binary16 by a whole ULP on values that land on an
+            // exact midpoint (measured: 1 in 4000 uniform samples before this line said double).
+            if (format == RenderTextureFormat.RGHalf)
+            {
+                double grid = HalfGrid(v);
+                return (float)(System.Math.Round(v / grid, System.MidpointRounding.ToEven) * grid);
+            }
+            int codes = UnormCodes(format);
+            if (codes <= 0) return v;                       // a format we do not model: no rounding
+            return (float)(System.Math.Round((double)v * codes, System.MidpointRounding.ToEven) / codes);
+        }
+
+        /// <summary>
+        /// The spacing of the IEEE binary16 grid at <paramref name="v"/>, for v in [0,1] — a 10-bit
+        /// mantissa, so 2^(e−10) inside the octave [2^e, 2^(e+1)), floored at the subnormal step 2^−24.
+        ///
+        /// <para>This is the whole reason the half float is the FALLBACK and not the choice: the grid
+        /// is CONSTANT across an octave while the decay's per-frame change is PROPORTIONAL to the
+        /// stored value, so round-to-nearest over-steps at the top of each octave and under-steps at
+        /// the bottom, and the decay carries a bias that changes with the frame rate. A UNORM's grid
+        /// is uniform, which is what a quantity living in [0,1] wants.</para>
+        /// </summary>
+        static float HalfGrid(float v)
+        {
+            float spacing = Mathf.Pow(2f, -24f);            // the subnormal step
+            for (int e = -14; e < 0; e++)
+                if (v >= Mathf.Pow(2f, e)) spacing = Mathf.Pow(2f, e - 10);
+            return spacing;
+        }
+
+        /// <summary>
+        /// 🔴 <b>WHERE THE DECAY STOPS.</b> Step a texel written at <paramref name="from"/> through
+        /// nothing but decay and storage until the stored value stops moving, and answer where it
+        /// stuck. That value is the row-28 defect stated as a number: on the shipped 8-bit target it is
+        /// <b>1.000</b> for the coverage channel at 60 fps — the wake never fades at all — and 0.680
+        /// for the freshness clock; on a 16-bit target it is under 0.004, below anything the compose's
+        /// 0.12 threshold can draw.
+        ///
+        /// <para>Bounded: it gives up after <paramref name="maxFrames"/> and returns what it reached,
+        /// so a format that genuinely decays to zero cannot spin here.</para>
+        /// </summary>
+        public static float DecayFloor(float halfLifeSeconds, float dt, RenderTextureFormat format,
+                                       float from = 1f, int maxFrames = 100000)
+        {
+            float factor = DecayFactor(halfLifeSeconds, dt);
+            float v = Store(from, format);
+            for (int i = 0; i < maxFrames; i++)
+            {
+                float next = Store(v * factor, format);
+                if (next >= v) return v;                    // it has stopped moving down
+                if (next <= 0f) return 0f;
+                v = next;
+            }
+            return v;
+        }
     }
 }
