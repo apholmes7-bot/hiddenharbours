@@ -62,14 +62,19 @@ namespace HiddenHarbours.Fishing
         private float _loopReach01 = 0.8f;
 
         [Header("Budget")]
-        [SerializeField, Range(1, 12), Tooltip("Most swimmers drawn for ONE school. The school's own " +
-                                               "MarkCount is the truth and is never exceeded — this only " +
-                                               "caps a school the owner has tuned very dense.")]
-        private int _maxSwimmersPerSchool = 8;
+        [SerializeField, Range(1, 48), Tooltip("PERFORMANCE ceiling only — the most sprites one school " +
+                                               "may cost. Density is the SPECIES' business now " +
+                                               "(FishSpeciesDef.Min/MaxSchoolMarks, owner ruling " +
+                                               "2026-09-06) and MarkCount always wins when it is smaller; " +
+                                               "this exists so a mis-authored range cannot blow the frame " +
+                                               "budget. Keep it above the largest authored school " +
+                                               "(herring, 30) or shoals will be silently clipped.")]
+        private int _maxSwimmersPerSchool = 32;
 
-        /// <summary>Most swimmers one school may draw — the presentation cap, never a claim about the
-        /// school's density (that is <c>FishSchool.MarkCount</c>, and it always wins when it is
-        /// smaller).</summary>
+        /// <summary>The frame-budget ceiling on one school's sprites — <b>never</b> a statement about how
+        /// many fish are there. Density is per-species data on the Def
+        /// (<c>FishSpeciesDef.MinSchoolMarks</c>/<c>MaxSchoolMarks</c>), resolved once in the model, and
+        /// <c>FishSchool.MarkCount</c> always wins when it is smaller.</summary>
         public int MaxSwimmersPerSchool => Mathf.Max(1, _maxSwimmersPerSchool);
 
         /// <summary>Sorting order the swimmers draw at — read by the guard test that pins them under the

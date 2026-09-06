@@ -295,9 +295,42 @@ namespace HiddenHarbours.Fishing
             // Only a school the query actually keeps pays for its species list.
             List<string> ids = _species[_foundCount];
             FillSpecies(key, school.DepthMetres, q.RegionId, q.Season, in q.Settings, ids);
+
+            // ⚠ DENSITY IS RESOLVED AFTER THE SPECIES, and only here (owner's ruling 2026-09-06: a
+            // herring shoal is not a flounder). TryBuild's count is provisional and never escapes — it
+            // cannot know which fish it holds. This is the ONE place FishSchool.MarkCount is decided,
+            // which is what keeps the number the glass draws, the number the water swims and the number
+            // the bite rate uses the SAME number.
+            int marks = MarkCountForSpecies(key, ids, in q.Settings);
+
             _found[_foundCount++] = new FishSchool(school.Centre, school.RadiusMetres,
-                                                   school.DepthMetres, school.MarkCount, ids,
+                                                   school.DepthMetres, marks, ids,
                                                    school.StartSeconds, school.EndSeconds);
+        }
+
+        /// <summary>
+        /// The school's density, from its PRIMARY species' own authored range — the first stated id,
+        /// which is also the one the water draws the school as, so the count and the picture can never
+        /// come from two different fish.
+        ///
+        /// <para>Falls back to the owner's global range when the school states no species, or when that
+        /// species leaves its range unstated — so a region with nothing authored behaves exactly as it
+        /// did before the field existed.</para>
+        /// </summary>
+        private int MarkCountForSpecies(uint key, List<string> ids, in FishSchoolSettings s)
+        {
+            if (ids == null || ids.Count == 0 || _pool == null)
+                return FishSchoolMath.MarkCountFor(key, in s);
+
+            string primary = ids[0];
+            for (int i = 0; i < _pool.Count; i++)
+            {
+                FishSpeciesDef f = _pool[i];
+                if (f == null || !string.Equals(f.Id, primary, System.StringComparison.Ordinal)) continue;
+                return FishSchoolMath.MarkCountFor(key, f.MinSchoolMarks, f.MaxSchoolMarks, in s);
+            }
+
+            return FishSchoolMath.MarkCountFor(key, in s);
         }
 
         /// <summary>Does the school's disc touch the rect? Closest-point test — a school whose centre is

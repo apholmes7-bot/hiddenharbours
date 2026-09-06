@@ -1590,6 +1590,12 @@ MonoBehaviour:
     Kind: pollock
   - SpeciesId: fish.mackerel
     Kind: mackerel
+  - SpeciesId: fish.striped_bass
+    Kind: bass
+  - SpeciesId: fish.atlantic_herring
+    Kind: herring
+  - SpeciesId: fish.winter_flounder
+    Kind: flounder
   _lengths:
   - Kind: cod
     LengthMetres: 0.7

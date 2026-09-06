@@ -426,6 +426,66 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(n, into.Count, "the count and the filled list disagree");
         }
 
+        // ---- density is per SPECIES (owner ruling 2026-09-06) -------------------------------------
+
+        /// <summary>
+        /// A species that states its own school size rolls inside ITS range, not the global one — the
+        /// owner's ruling that a herring shoal is not a flounder.
+        /// </summary>
+        [Test]
+        public void AStatedSpeciesRangeReplacesTheGlobalOne()
+        {
+            FishSchoolSettings s = Settings();          // global 1..5
+            bool sawAboveGlobal = false;
+
+            for (uint k = 1; k < 400; k++)
+            {
+                int herring = FishSchoolMath.MarkCountFor(k, 12, 30, in s);
+                Assert.IsTrue(herring >= 12 && herring <= 30, $"herring rolled {herring}, outside 12..30");
+                if (herring > s.MaxMarks) sawAboveGlobal = true;
+
+                int flounder = FishSchoolMath.MarkCountFor(k, 1, 2, in s);
+                Assert.IsTrue(flounder >= 1 && flounder <= 2, $"flounder rolled {flounder}, outside 1..2");
+            }
+
+            Assert.IsTrue(sawAboveGlobal,
+                          "no herring school exceeded the global MaxMarks — the range was not applied");
+        }
+
+        /// <summary>An unstated species falls back to the owner's global range, bit-for-bit what it rolled
+        /// before the field existed — so adding the field re-rolls nothing in an existing save.</summary>
+        [Test]
+        public void AnUnstatedSpeciesRollsExactlyTheGlobalRange()
+        {
+            FishSchoolSettings s = Settings();
+            for (uint k = 1; k < 400; k++)
+            {
+                int global = FishSchoolMath.MarkCountFor(k, in s);
+                Assert.AreEqual(global, FishSchoolMath.MarkCountFor(k, 0, 0, in s), "0/0 must fall back");
+                Assert.AreEqual(global, FishSchoolMath.MarkCountFor(k, 0, 9, in s), "a half-stated range too");
+                Assert.AreEqual(global, FishSchoolMath.MarkCountFor(k, 9, 0, in s));
+            }
+        }
+
+        /// <summary>
+        /// ⭐ The property that makes generous density SAFE: the bite-rate multiplier is capped, so past
+        /// about six marks a bigger shoal reads bigger without fishing faster. If this ever reddens,
+        /// per-species density has silently become a balance lever.
+        /// </summary>
+        [Test]
+        public void DensityBeyondTheCapIsVisualOnly()
+        {
+            FishSchoolSettings s = Settings();
+            float atSix = FishSchoolMath.BiteRateMultiplier(6f, in s);
+            float atThirty = FishSchoolMath.BiteRateMultiplier(30f, in s);
+
+            Assert.AreEqual(s.MaxBiteRateMultiplier, atThirty, 1e-4f, "a 30-fish shoal must sit at the cap");
+            Assert.AreEqual(atSix, atThirty, 1e-4f,
+                            "six marks and thirty must fish the same — density past the cap is look, not bite");
+            Assert.Less(FishSchoolMath.BiteRateMultiplier(2f, in s), atSix,
+                        "the cap must not be so low that density never matters at all");
+        }
+
         /// <summary>The owner's off switch empties the water as well as the glass.</summary>
         [Test]
         public void TheOwnersOffSwitchEmptiesTheWater()

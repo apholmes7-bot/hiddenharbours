@@ -15,3 +15,11 @@ MonoBehaviour:
   Species:
   - {fileID: 11400000, guid: b7c75f54b7f1eb143a8b5148ca596ec3, type: 2}
   - {fileID: 11400000, guid: 2b89391d2479432f9cbf492ada00e9c7, type: 2}
+  - {fileID: 11400000, guid: fb6307e1beba81b489d45e74a83f1eb9, type: 2}
+  - {fileID: 11400000, guid: 26b4dbb937e3fa445abac5461ae2fef4, type: 2}
+  - {fileID: 11400000, guid: 2dda7f6271e3f744c959bcafa2cf0bdb, type: 2}
+  - {fileID: 11400000, guid: d7296757a95e4d6d88d887d0c91430b2, type: 2}
+  - {fileID: 11400000, guid: fb3de12624eb47f1aecc24169744a00e, type: 2}
+  - {fileID: 11400000, guid: 9a7de760fbccebfc45dfa1b4963e1a19, type: 2}
+  - {fileID: 11400000, guid: c703d19040e15547a1f2408f365094bd, type: 2}
+  - {fileID: 11400000, guid: da1674da10da1dd0b8fa162464a32258, type: 2}

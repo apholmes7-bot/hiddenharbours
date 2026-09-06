@@ -46,6 +46,22 @@ namespace HiddenHarbours.Fishing
                  "spot). Other canon flags are appended to the enum as later systems wire them.")]
         public FishFlags BehaviorFlags = FishFlags.None;
 
+        [Header("School size (owner ruling 2026-09-06: density is per SPECIES, not one global number)")]
+        [Tooltip("Fewest fish a school of this species shows. A herring shoal is not a flounder: the " +
+                 "owner's ruling is that how many fish are together is a fact about the SPECIES, not one " +
+                 "global MaxMarks. Leave 0 = unstated, and the school falls back to GameConfig's global " +
+                 "range exactly as every species behaved before this field existed.")]
+        [Min(0)] public int MinSchoolMarks = 0;
+
+        [Tooltip("Most fish a school of this species shows. See MinSchoolMarks. NOTE this is ONE number " +
+                 "with two jobs (FishSchool.MarkCount): how many swimmers the water draws AND the bite " +
+                 "rate. Past ~6 the bite-rate multiplier saturates at its cap, so a big shoal reads " +
+                 "bigger without fishing faster.")]
+        [Min(0)] public int MaxSchoolMarks = 0;
+
+        /// <summary>Does this species state its own school size, or fall back to the global range?</summary>
+        public bool StatesSchoolSize => MinSchoolMarks > 0 && MaxSchoolMarks > 0;
+
         [Header("What tempts it (a WEIGHT on the roll, never a wall)")]
         [Tooltip("Which lure PRESENTATIONS this species chases. A mackerel hits feathers and flash; a " +
                  "pollock chases anything worked; a haddock is fussy and wants real bait, so leave its " +
