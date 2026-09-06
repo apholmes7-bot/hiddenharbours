@@ -380,6 +380,69 @@ namespace HiddenHarbours.Tests.EditMode
                     RegisterUniqueId(seen, bait.Id, AssetDatabase.GetAssetPath(bait), "Def");
         }
 
+        /// <summary>
+        /// ⭐ NO SHIPPED DEF MAY AUTHOR A RETIRED ID. The uniqueness rule above catches two LIVE assets
+        /// claiming one id; it cannot catch a NEW asset claiming an id that a DELETED one used to hold,
+        /// because the old asset is not there to collide with.
+        ///
+        /// <para>That gap matters because ids outlive assets. The savegame stores them —
+        /// <c>SaveData.ActiveHullId</c>, the owned-boat list, the per-hull fuel rows, the instrument
+        /// locker — so a save written before a retirement still names the withdrawn id. Re-using it for
+        /// different content would make those saves silently resolve to the wrong thing: "she keeps the
+        /// small skiff" would come back as whatever boat had inherited the name. An id that resolves to
+        /// NOTHING is handled and harmless (<c>OwnedFleet.ApplyHull</c> no-ops on an unknown id); an id
+        /// that resolves to the WRONG THING is not.</para>
+        ///
+        /// <para>The ledger is <see cref="RetiredContentIds"/> in Core, beside the save code it protects.
+        /// Adding to it is a retirement, not a cleanup: the owner rules the content out and the assets go.
+        /// This is the rule that makes the ledger binding rather than advisory.</para>
+        /// </summary>
+        [Test]
+        public void NoShippedDef_AuthorsARetiredId()
+        {
+            void Check(Object def, string id)
+            {
+                if (string.IsNullOrWhiteSpace(id) || !RetiredContentIds.IsRetired(id)) return;
+                Assert.Fail(
+                    $"{AssetDatabase.GetAssetPath(def)} authors '{id}', which is a RETIRED content id. " +
+                    "Ids are append-only: a withdrawn id may be orphaned forever but never re-used, " +
+                    "because saves on disk still name it. Mint a new id — see Core RetiredContentIds " +
+                    "for what was retired and why.");
+            }
+
+            foreach (var f in LoadAll<FishSpeciesDef>()) Check(f, f.Id);
+            foreach (var b in LoadAll<BoatHullDef>()) Check(b, b.Id);
+            foreach (var r in LoadAll<RegionDef>()) Check(r, r.Id);
+            foreach (var t in LoadAll<TrapDef>()) Check(t, t.Id);
+            foreach (var bait in LoadAll<BaitDef>()) Check(bait, bait.Id);
+        }
+
+        /// <summary>
+        /// The other half of the ledger's contract: the ledger itself must be WELL-FORMED. A blank or
+        /// duplicated entry would read as "nothing is retired" and the rule above would pass over it in
+        /// silence — the same shape of hole it exists to close.
+        /// </summary>
+        [Test]
+        public void TheRetiredIdsLedger_IsWellFormed()
+        {
+            Assert.IsNotNull(RetiredContentIds.All, "the ledger array must exist even when empty");
+
+            var seen = new HashSet<string>();
+            foreach (string id in RetiredContentIds.All)
+            {
+                Assert.IsFalse(string.IsNullOrWhiteSpace(id),
+                    "a blank entry in the retired-ids ledger retires nothing and hides the next one");
+                Assert.IsTrue(seen.Add(id), $"'{id}' is listed twice in the retired-ids ledger");
+                Assert.IsTrue(RetiredContentIds.IsRetired(id), $"'{id}' is listed but IsRetired says no");
+            }
+
+            Assert.IsFalse(RetiredContentIds.IsRetired("boat.dory"),
+                "boat.dory is the player's starting hull — if the lookup answers yes to a LIVE id it is " +
+                "matching loosely, and the validator above would condemn the whole fleet");
+            Assert.IsFalse(RetiredContentIds.IsRetired(null), "a null id is not a retired id");
+            Assert.IsFalse(RetiredContentIds.IsRetired("   "), "a blank id is not a retired id");
+        }
+
         // ---- the ASSET FILES themselves, not the objects they load into ----------------------
 
         /// <summary>

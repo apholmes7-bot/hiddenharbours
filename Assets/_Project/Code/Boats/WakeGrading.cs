@@ -144,8 +144,8 @@ namespace HiddenHarbours.Boats
         /// top-down anchor sits 1.6 m past a drawn transom at N and lands right on it at E.</para>
         ///
         /// <para><b>90° = a plan view = no foreshortening = today's behaviour</b>, and that is the deliberate
-        /// answer for artwork that is NOT a rig bake (the hand-drawn <c>FishingBoat_*</c> compass, which the
-        /// ambient fleet also wears — foreshortening it would be inventing a camera it never had). Anything
+        /// answer for artwork that is NOT a rig bake — foreshortening it would be inventing a camera it
+        /// never had. Anything
         /// non-positive or ≥ 90 collapses to 1, so a half-authored visual degrades to the old placement rather
         /// than to a wake stapled to the boat's middle. Pure + static.</para>
         /// </summary>

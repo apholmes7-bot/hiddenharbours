@@ -170,8 +170,7 @@ namespace HiddenHarbours.Boats
         /// Skin a boat root for a HULL: the data-driven entry point. Chooses the directional skin when the
         /// hull's <see cref="BoatHullDef.Visual"/> binds a full compass, and otherwise falls back to the
         /// plain rotating <see cref="BoatHullDef.Sprite"/> on <paramref name="baseRenderer"/> — the
-        /// pre-skin behaviour, preserved so hulls with no facings (the Punt, the FishingSkiff) are never
-        /// stranded picture-less.
+        /// pre-skin behaviour, preserved so a hull with no facings is never stranded picture-less.
         ///
         /// <para>Because it handles BOTH directions, this is safe to call on every hull swap: skinned →
         /// unskinned removes the compass child and brings the base renderer back with the new hull's
@@ -274,10 +273,12 @@ namespace HiddenHarbours.Boats
                 zeroHeadingDegrees: visual.ZeroHeadingDegrees,   // element 0 is the North-facing sprite
                 smoothModeSprite: visual.Facings[0],             // unused in Snap; same art if toggled
                 mode: DirectionalBoatSprite.RotationMode.SnapDirectional,
-                // Per-ARTWORK, never global: the iso sheets are baked CCW; the FishingBoat compass is CW.
+                // Per-ARTWORK, never global: the hand-exported iso sheets are baked CCW, while the
+                // RigBaker outputs (cape, lobster) are genuinely CW.
                 facingsAreCounterClockwise: visual.FacingsAreCounterClockwise,
-                // Also per-artwork, and for the same reason: the iso kits were baked by a 40° camera, the
-                // hand-drawn compass by nobody's. Everything anchored to a point ON the hull picture reads it
+                // Also per-artwork, and for the same reason: the iso kits were baked by a 40° camera, and
+                // art baked by no camera at all is a plain plan view at 90°. Everything anchored to a
+                // point ON the hull picture reads it
                 // off here — this component is where an artwork's own facts live.
                 bakeElevationDegrees: visual.ArtBakeElevationDegrees,
                 // …and her flotation datum, the third per-artwork fact of the same family: how far up

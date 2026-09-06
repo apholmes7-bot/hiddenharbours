@@ -606,9 +606,8 @@ on a swap at all (see the swap gap below).
   sheets).
 - **All-or-nothing, per block** (`HasFullCompass()` / `HasRockGrid()` / `HasOarSheets()`): a partial set
   never half-ships — one missing facing snaps the boat into a stale picture mid-turn — so an incomplete
-  block falls back to the block below it, ending at the plain rotating `BoatHullDef.Sprite`. Hulls with no
-  facings (the Punt, the `FishingSkiff`) are never stranded: they keep the one-picture-on-a-rotating-root
-  rendering exactly as before.
+  block falls back to the block below it, ending at the plain rotating `BoatHullDef.Sprite`. A hull with no
+  facings is never stranded: it keeps the one-picture-on-a-rotating-root rendering exactly as before.
 - **The three consumers converge on the skinner:** `PersistentCoreBuilder.ApplyHullSkin` (the player's
   boat — renamed from `ApplyDirectionalFishingBoatVisual`, a misnomer once the dory rowed again: it
   applies no fishing-boat skin and no fishing-boat hull), `OwnedFleet.ApplyHull` (a purchase or a

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.BoatOwnerDef
   Id: owner.bernard_celeste
   DisplayName: Celeste Bernard
-  Boat: {fileID: 11400000, guid: a8c40dd2a5c54e4b9cd4096747fa151c, type: 2}
+  Boat: {fileID: 11400000, guid: 3f1c86b0d5a24e14ab97e2f0c4d81b63, type: 2}
   BuoyScheme: Tanker
   Prosperity: 1
   ShedFootprintMetres: 6.0

@@ -88,13 +88,13 @@ namespace HiddenHarbours.App.Editor
         // the one place that installs the rig. To take the skin off, clear the hull asset's Visual ref and
         // re-run — no code edit, no flag.
         //
-        // HISTORY (read before touching): #93/#94/#97 also swapped the hull to the Engine
-        // boat.fishing_skiff so the CONTROLS matched a POWERBOAT picture ("a power boat skin, not a
-        // rowboat" — the facings were M2 fleet art). The owner has since decided the dory ROWS again: the
-        // art is a rowboat (#202 iso dory) and the independent oars landed (#204), so the engine-helm swap
-        // is GONE and boat.dory stands. The FishingBoat_* placeholder compass this builder used to fall
-        // back to is likewise gone: it was never reachable once the iso art landed, and a compass is now
-        // authorable as a BoatVisualDef asset if one is ever wanted again.
+        // HISTORY (read before touching): #93/#94/#97 also swapped the hull to an ENGINE boat so the
+        // CONTROLS matched a POWERBOAT picture ("a power boat skin, not a rowboat" — the facings were M2
+        // fleet art). The owner has since decided the dory ROWS again: the art is a rowboat (#202 iso
+        // dory) and the independent oars landed (#204), so the engine-helm swap is GONE and boat.dory
+        // stands. The hand-drawn placeholder compass this builder used to fall back to is likewise gone —
+        // never reachable once the iso art landed, and retired outright on 2026-09-06 (Core
+        // RetiredContentIds). A compass is authorable as a BoatVisualDef asset if one is wanted again.
 
         // (The TensionGauge / LineHook / FishOnSilhouette UI art went with the fight's HUD bars — owner's
         // ruling 2026-07-23: the fight has no UI. The art stays in the repo for a future non-fight screen.)
@@ -726,8 +726,8 @@ namespace HiddenHarbours.App.Editor
         /// <para><b>VISUAL ONLY — the dory ROWS.</b> Nothing here re-points <c>_hull</c>: the boat drives
         /// on the rowed <c>boat.dory</c> (Propulsion = Oars → per-oar strokes,
         /// <c>BoatController.ApplyOarDrive</c>) the caller already serialized. #93/#94/#97 used to swap it
-        /// to the Engine <c>boat.fishing_skiff</c> so the helm matched a POWERBOAT picture ("a power boat
-        /// skin, not a rowboat") — that swap is gone, and the fleet registry / save-restore see the plain
+        /// to an Engine hull so the helm matched a POWERBOAT picture ("a power boat skin, not a
+        /// rowboat") — that swap is gone, and the fleet registry / save-restore see the plain
         /// <c>boat.dory</c> they were always keyed to.</para>
         ///
         /// <para>Null-safe: a hull with no <see cref="BoatHullDef.Visual"/> — or one whose sheets are

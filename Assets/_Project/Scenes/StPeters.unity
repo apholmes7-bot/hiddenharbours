@@ -94284,7 +94284,6 @@ MonoBehaviour:
   _roster:
   - {fileID: 11400000, guid: 0a2bd7c6d85101b489fd6647b1aab278, type: 2}
   - {fileID: 11400000, guid: 3f1c86b0d5a24e14ab97e2f0c4d81b63, type: 2}
-  - {fileID: 11400000, guid: a8c40dd2a5c54e4b9cd4096747fa151c, type: 2}
   - {fileID: 11400000, guid: 56763855233000b49ba3a133ea0de86f, type: 2}
   - {fileID: 11400000, guid: 66058f1703a59044ca34a2ef2624b023, type: 2}
   - {fileID: 11400000, guid: 6dbe891864248f64592244825fe3fa02, type: 2}

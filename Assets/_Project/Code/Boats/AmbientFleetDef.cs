@@ -168,12 +168,32 @@ namespace HiddenHarbours.Boats
 
         // Appended after the seamanship/passing blocks (owner ask 2026-07-12 — "the fleet wears my
         // boat"). Fields are append-only: shipped assets pick these defaults up without an edit.
-        [Header("Hull art (the owner's 8-way fishing boat — the same compass the player sails)")]
-        [Tooltip("The pre-drawn hull facings in CLOCKWISE order from North (N, NE, E, SE, S, SW, W, NW) — " +
-                 "the same eight pictures the player's boat snaps through. ALL-OR-NOTHING, like the " +
-                 "player-boat builder guard: leave it empty (or any slot unassigned) and the fleet renders " +
-                 "exactly as before (HullSprite, or the greybox wedge, rotating smoothly with the bow) — " +
-                 "never a partial compass that snaps into a stale picture mid-turn.")]
+        [Header("Hull art (the fleet wears a hull off the fleet — the same compass the player sails)")]
+        [Tooltip("THE HULL THIS FLEET WEARS, as a whole shipped visual rather than a loose pile of " +
+                 "sprites. PREFERRED over HullFacings below, and the reason it exists: a facing compass " +
+                 "is not just its pictures, it is the pictures PLUS the two art facts that say how to " +
+                 "read them — the sheet's handedness and the elevation it was baked at. Point at the " +
+                 "asset and both arrive with the art; hand-copy the sprites and they do not, and the " +
+                 "fleet ships MIRRORED at every heading except north and south.\n\n" +
+                 "Only the compass is taken (BoatVisualDef.CreateRuntimeFrom): this is DECOR TIER, so " +
+                 "the hull's rock grid, oars and outboard are deliberately left behind, and the copy is " +
+                 "drawn as a SPRITE even when the source ships a mesh. A mesh fisher is owed but not " +
+                 "free — each fisher's hull carries her own identity colour (HullTintStrength below), " +
+                 "and a tint is a SpriteRenderer colour, while a mesh hull's paint is a ramp table " +
+                 "chosen per hull. Wiring the mesh means giving the fleet paint SCHEMES, not a colour.\n\n" +
+                 "Null = fall back to HullFacings below, exactly as before this field existed.")]
+        public BoatVisualDef HullVisual = null;
+
+        [Tooltip("LEGACY, and superseded by HullVisual above: the pre-drawn hull facings authored " +
+                 "directly, in CLOCKWISE order from North (N, NE, E, SE, S, SW, W, NW). Kept because " +
+                 "the field is append-only and a fleet may still author its own art. ALL-OR-NOTHING, " +
+                 "like the player-boat builder guard: leave it empty (or any slot unassigned) and the " +
+                 "fleet renders exactly as before (HullSprite, or the greybox wedge, rotating smoothly " +
+                 "with the bow) — never a partial compass that snaps into a stale picture mid-turn.\n\n" +
+                 "⚠ Sprites authored HERE carry no handedness and no bake elevation, so they are read as " +
+                 "CLOCKWISE PLAN-VIEW art. That was true of the hand-drawn compass this field was built " +
+                 "for; it is FALSE of every iso sheet in this repo. If the art you are reaching for " +
+                 "belongs to a hull, point HullVisual at her visual instead.")]
         public Sprite[] HullFacings = System.Array.Empty<Sprite>();
         [Tooltip("How strongly each fisher's identity colour (their BuoyPalette colour — hull matches " +
                  "gear, whose-boat-is-whose at a glance) tints their hull, 0..1. The tint multiplies the " +
@@ -189,18 +209,28 @@ namespace HiddenHarbours.Boats
         [Min(0f)] public float HullSnagRadiusMeters = 1.2f;
 
         /// <summary>
-        /// True when <see cref="HullFacings"/> is a COMPLETE compass (non-empty, every slot assigned) —
-        /// the all-or-nothing gate the presenter renders the directional hull behind, mirroring the
+        /// True when this fleet has a COMPLETE compass to wear — either the shared
+        /// <see cref="HullVisual"/>'s (preferred) or its own <see cref="HullFacings"/>. This is the
+        /// all-or-nothing gate the presenter renders the directional hull behind, mirroring the
         /// player-boat builder's guard. A partial set never half-ships: one missing facing would snap
         /// into a stale picture mid-turn, so anything short of the full set falls back to exactly the
         /// pre-compass rendering (<see cref="HullSprite"/> or the greybox wedge on a rotating root).
         /// </summary>
         public bool HasFullHullCompass()
         {
+            if (WearsSharedVisual()) return true;
             if (HullFacings == null || HullFacings.Length == 0) return false;
             for (int i = 0; i < HullFacings.Length; i++)
                 if (HullFacings[i] == null) return false;
             return true;
         }
+
+        /// <summary>
+        /// True when <see cref="HullVisual"/> is wired AND carries a complete compass of its own — the
+        /// one condition under which the fleet wears a shipped hull's art rather than its own
+        /// <see cref="HullFacings"/>. A visual wired but incomplete falls through to the local field
+        /// rather than half-shipping, the same all-or-nothing rule applied one level up.
+        /// </summary>
+        public bool WearsSharedVisual() => HullVisual != null && HullVisual.HasFullCompass();
     }
 }

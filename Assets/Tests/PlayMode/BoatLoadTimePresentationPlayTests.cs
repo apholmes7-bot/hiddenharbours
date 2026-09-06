@@ -30,9 +30,16 @@ namespace HiddenHarbours.Tests.PlayMode
     ///
     /// <para><b>And why they assert against the ASSET, not against "Mesh".</b> Content is data (rule 2):
     /// the guard is <c>presented variant == visual.Variant</c>, so it holds if the owner re-authors a hull
-    /// either way. <c>SpriteAuthoredHull_LoadsAsSprite</c> is the other half of that — a real committed
-    /// hull whose visual carries no <c>Variant</c> key at all must still load sprite, which a fix that
-    /// simply forced Mesh would break.</para>
+    /// either way. <c>SpriteAuthoredHull_LoadsAsSprite</c> is the other half of that — a hull whose visual
+    /// asks for Sprite must still load sprite, which a fix that simply forced Mesh would break.</para>
+    ///
+    /// <para><b>⚠ That half is now built IN MEMORY, and the reason matters.</b> It used to load the
+    /// committed fishing skiff, the one hull in the fleet whose visual carried no <c>Variant</c> key and no
+    /// mesh. The owner retired her on 2026-09-06 (Core RetiredContentIds) and EVERY shipped visual is a
+    /// mesh now — so there is no committed hull left that can stand for the sprite branch. Deleting the
+    /// test with the asset would have quietly removed the guard the moment nothing exercised it, which is
+    /// precisely when a forced-Mesh regression stops being caught. The branch is still live code, so it is
+    /// still tested; the fixture builds the sprite-authored visual it can no longer find on disk.</para>
     ///
     /// <para>Headless-safe by construction, exactly as <c>MeshHullPlayTests</c> is: no camera is created,
     /// so nothing renders (CI has no graphics device and a render there CRASHES the editor). These prove
@@ -72,6 +79,20 @@ namespace HiddenHarbours.Tests.PlayMode
             return asset;
 #else
             Assert.Ignore("Needs the AssetDatabase: these assert the REAL committed hulls, not a mirror.");
+            return null;
+#endif
+        }
+
+        /// <summary>A committed boat visual, for a fixture that needs REAL art but authors its own hull.</summary>
+        static BoatVisualDef LoadVisual(string file)
+        {
+#if UNITY_EDITOR
+            var asset = AssetDatabase.LoadAssetAtPath<BoatVisualDef>($"{DataBoats}/Visuals/{file}.asset");
+            Assert.IsNotNull(asset, $"{DataBoats}/Visuals/{file}.asset is missing — run Hidden Harbours " +
+                                    "▸ Art ▸ Build Boat Visual Defs.");
+            return asset;
+#else
+            Assert.Ignore("Needs the AssetDatabase: this uses the REAL committed art, not a mirror.");
             return null;
 #endif
         }
@@ -158,18 +179,36 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         /// <summary>
-        /// The other half of "the data wins": <c>boat.fishing_skiff</c> wears <c>visual.fishing_boat</c>, the
-        /// legacy hand-drawn compass, whose asset carries NO <c>Variant</c> key and no hull mesh. She must
-        /// still load as a sprite. A fix that just forced Mesh at load would turn her invisible.
+        /// The other half of "the data wins": a hull whose visual asks for the SPRITE compass must load as
+        /// a sprite. A fix that just forced Mesh at load would turn her invisible.
+        ///
+        /// <para>The hull is built here rather than loaded — see the class summary. Its compass is a real
+        /// shipped one (reduced by <see cref="BoatVisualDef.CreateRuntimeFrom"/>, which is also how the
+        /// ambient fleet gets its skin), so the art is genuine even though the AUTHORING is the fixture's.
+        /// What is under test is the load-time pass reading <c>Variant</c>, and that reads the same off an
+        /// in-memory visual as off a committed one.</para>
         /// </summary>
         [UnityTest]
         public IEnumerator SpriteAuthoredHull_LoadsAsSprite()
         {
-            var hull = LoadHull("FishingSkiff");
-            var visual = hull.Visual;
-            Assert.IsNotNull(visual, "boat.fishing_skiff must bind a visual");
+            var donor = LoadVisual("PuntIsoBasic");
+            var visual = BoatVisualDef.CreateRuntimeFrom(donor);
+            visual.hideFlags = HideFlags.DontSave;
+            _spawned.Add(visual);
+
+            var hull = ScriptableObject.CreateInstance<BoatHullDef>();
+            hull.hideFlags = HideFlags.DontSave;
+            hull.Id = "boat.sprite_authored_fixture";
+            hull.DisplayName = "Sprite-authored fixture hull";
+            hull.LengthMeters = 5.2f;
+            hull.Visual = visual;
+            _spawned.Add(hull);
+
             Assert.AreEqual(BoatHullVariant.Sprite, visual.Variant,
-                "fixture assumption: visual.fishing_boat is authored SPRITE (no Variant key at all)");
+                "fixture assumption: CreateRuntimeFrom yields a SPRITE-authored visual — a decor copy must " +
+                "never inherit the donor's mesh, or this test is measuring the mesh branch twice");
+            Assert.IsNull(visual.HullMesh, "…and carries no mesh to fall into");
+            Assert.IsTrue(visual.HasFullCompass(), "…but does carry a complete compass to draw");
 
             var (go, _) = NewBoatAsASceneSerialisesHer(hull);
 
@@ -192,8 +231,8 @@ namespace HiddenHarbours.Tests.PlayMode
         [UnityTest]
         public IEnumerator LoadTimePass_PresentsTheWornHull_NotTheSceneDefault()
         {
-            var scenic = LoadHull("FishingSkiff");     // what the scene banked: the sprite compass
-            var restored = LoadHull("Dory");           // what a save-restore swaps her to: the mesh dory
+            var scenic = LoadHull("PuntUpgraded");     // what the scene banked
+            var restored = LoadHull("Dory");           // what a save-restore swaps her to
 
             var (go, _) = NewBoatAsASceneSerialisesHer(scenic);
             var fleet = go.GetComponent<OwnedFleet>();

@@ -107,7 +107,7 @@ namespace HiddenHarbours.Tests.EditMode
             // fuel you — and WHICH boats those are is what decides when that day arrives.
             string[] gas =
             {
-                "boat.dory_outboard", "boat.fishing_skiff", "boat.punt", "boat.punt_upgraded",
+                "boat.dory_outboard", "boat.punt", "boat.punt_upgraded",
                 "boat.console_skiff", "boat.sport_skiff", "boat.sport_skiff_mk2", "boat.sport_skiff_twin",
                 "boat.zodiac_frc", "boat.zodiac_hurricane",
             };

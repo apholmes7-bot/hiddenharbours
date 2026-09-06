@@ -32,8 +32,8 @@ namespace HiddenHarbours.Boats
     public static class DeckAreaMath
     {
         /// <summary>The plan-view elevation: 90° = no foreshortening at all. The right answer for
-        /// artwork that was never baked by a camera (the hand-drawn <c>FishingBoat_*</c> compass), and
-        /// the default everywhere so an unmeasured hull keeps exactly the placement it has today.</summary>
+        /// artwork that was never baked by a camera, and the default everywhere so an unmeasured hull
+        /// keeps exactly the placement it has today.</summary>
         public const float PlanViewElevationDegrees = 90f;
 
         // ---- the deck-frame ↔ screen transform ----------------------------------------------------

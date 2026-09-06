@@ -55,13 +55,14 @@ namespace HiddenHarbours.Boats
 
         [Tooltip("Tick ONLY for art baked COUNTER-CLOCKWISE — cell i depicts −45°·i, not +45°·i. The iso " +
                  "rigs (dory/punt/skiffs) rotate the model CCW but label the cells CW, so their sheets are " +
-                 "mirrored; the older FishingBoat_* compass is CW and correct. Per-artwork, never global. " +
+                 "mirrored; the RigBaker outputs (cape, lobster) are CW and correct, corrected at bake " +
+                 "time. Per-artwork, never global. " +
                  "Set from BoatVisualDef.FacingsAreCounterClockwise; default false = today's CW convention.")]
         [SerializeField] private bool _facingsAreCounterClockwise = false;
 
         [Tooltip("Elevation (degrees above the horizon) of the camera this artwork was baked at — 40 for every " +
-                 "iso rig, 90 (= a plan view, so no foreshortening at all) for art that is not a rig bake, such " +
-                 "as the hand-drawn FishingBoat_* compass. Set from BoatVisualDef.ArtBakeElevationDegrees; " +
+                 "iso rig, 90 (= a plan view, so no foreshortening at all) for art that is not a rig bake. " +
+                 "Set from BoatVisualDef.ArtBakeElevationDegrees; " +
                  "default 90 so an unskinned or half-wired boat is placed exactly as it always was.")]
         [Range(0f, 90f)] [SerializeField] private float _bakeElevationDegrees = 90f;
 
