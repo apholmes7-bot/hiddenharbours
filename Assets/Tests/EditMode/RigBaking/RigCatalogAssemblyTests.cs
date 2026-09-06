@@ -207,6 +207,22 @@ namespace HiddenHarbours.Tests.RigBaking
                          "buildingLifecycle", "shopInterior"),
             new Snapshot("shoreFinds", "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
                          "ShoreFinds", AzimuthConvention.CounterClockwise),
+            // Added by the SAIL RIG KIT (drop 2026-09-06) — the first sails in the fleet, and the
+            // first hull rigs that do not sit at the top of docs/art/rigs/. Standalone: each is a
+            // self-contained IIFE, no isoSolid and no prerequisites.
+            //
+            // Convention MEASURED two ways rather than inherited from the neighbours, in the repo's
+            // own V8: the bearing of each rig's OWN +X, taken between anchors at equal y AND equal z
+            // (winchPort/winchStbd on the 30, helmPort/helmStbd on the 88), steps −45.0000° seven
+            // times; and bowRoller projects 147.84 px (30) / 448.00 px (88) WEST at cell 2, which
+            // their own `order` array labels 'E'. ⚠️ A bearing off the bow roller ALONE is
+            // incoherent — it sits 2.044 m up, and un-squashing that height by sin(elev) gives steps
+            // summing to 330° over seven instead of 315°. See RigCatalog.SailKit and
+            // docs/art/spikes/sail-rig-kit/probe-record.md.
+            new Snapshot("sloop30", "docs/art/rigs/sail-rig-kit/sloop-30/sloopIsoRig.js",
+                         "SloopIso", AzimuthConvention.CounterClockwise),
+            new Snapshot("sloop88", "docs/art/rigs/sail-rig-kit/sloop-88/sloop88IsoRig.js",
+                         "Sloop88Iso", AzimuthConvention.CounterClockwise),
             // Added by the gas station kit (2026-08-20). The sales floor inside the storefront. Its
             // ONE prerequisite is the shell, whose own prerequisites bring the grade table and the
             // turntable up in front of it — so installing this key alone stands the whole kit up in

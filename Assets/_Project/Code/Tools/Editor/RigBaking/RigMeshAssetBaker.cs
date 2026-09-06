@@ -348,6 +348,89 @@ namespace HiddenHarbours.Tools.RigBaking
             }
         }
 
+        /// <summary>
+        /// <b>The sail rig kit's two sloops, and nothing else</b> (owner drop 2026-09-06).
+        ///
+        /// <para>Its own entry point for the reason every batch since the eighteen has had one: a
+        /// whole-fleet bake would rewrite thirty-six defs, Unity's serialisation is not
+        /// byte-deterministic, and the thirty-four this change does not touch would come back with
+        /// regenerated sub-asset fileIDs for no change at all. Baking exactly the new hulls is what
+        /// keeps the diff readable.</para>
+        ///
+        /// <para>⚠️ What this bakes is each hull's static body — the sails are not in the rig's `F`
+        /// at all. See the sloop rows in <see cref="HullMeshFleet.OneHullPerRig"/>.</para>
+        /// </summary>
+        public static IReadOnlyList<FleetHull> SloopHulls
+        {
+            get
+            {
+                string[] keys = { "sloop30", "sloop88" };
+                var hulls = new List<FleetHull>(keys.Length);
+                foreach (string k in keys)
+                {
+                    if (!HullMeshFleet.TryGet(k, out FleetHull hull))
+                        throw new InvalidOperationException(BlockedReport(k));
+                    hulls.Add(hull);
+                }
+                return hulls;
+            }
+        }
+
+        /// <summary>
+        /// Why there is no sloop to bake — read off <see cref="HullMeshFleet.BakeBlocked"/> so the
+        /// person who clicked the menu item gets the measured upstream ask instead of a
+        /// <c>KeyNotFoundException</c> naming a key they have never heard of.
+        /// </summary>
+        static string BlockedReport(string key)
+        {
+            var sb = new StringBuilder(
+                $"'{key}' is not in HullMeshFleet.Hulls: the sail rig kit's hulls are landed and " +
+                "registered, but their mesh bake is BLOCKED UPSTREAM and the block is measured, not " +
+                "assumed.\n\n");
+            foreach (var kv in HullMeshFleet.BakeBlocked) sb.Append($"  · {kv.Key}\n      {kv.Value}\n");
+            sb.Append("\nThe fix is in docs/art/rigs/** (the art director's lane) — do not default the " +
+                      "untagged faces to 'hull' here, and do not patch the rig. When the rigs land " +
+                      "stamped, delete their BakeBlocked entries and this entry point works unchanged.");
+            return sb.ToString();
+        }
+
+        [MenuItem(RigMeshGate.MenuRoot + "/Bake the 2 sloop hull meshes", priority = 225)]
+        public static void BakeSloops() => BakeFleetInternal(SloopHulls);
+
+        [MenuItem(RigMeshGate.MenuRoot + "/Bake the 2 sloop hull meshes", validate = true)]
+        static bool BakeSloopsValidate() => RigMeshGate.Enabled;
+
+        /// <summary>Headless entry (-executeMethod) for the two.</summary>
+        public static void BakeSloopsCli()
+        {
+            try
+            {
+                var hulls = SloopHulls;
+                if (hulls.Count != 2)
+                    throw new InvalidOperationException(
+                        $"Expected 2 sloop hulls, found {hulls.Count}. This bake will not run on a " +
+                        "list it does not recognise — a short list here is a silently partial bake, " +
+                        "and the hull that went missing keeps whatever def she had.");
+
+                int failed = BakeFleetInternal(hulls);
+                if (failed > 0)
+                {
+                    Debug.LogError($"[rig-mesh] CLI sloop bake FAILED: {failed} of " +
+                                   $"{hulls.Count} hull(s) did not bake.");
+                    EditorApplication.Exit(1);
+                    return;
+                }
+                Debug.Log($"[rig-mesh] CLI sloop bake OK — {hulls.Count} hulls.");
+                // EXIT ON SUCCESS — launched -quit-less, so nothing else ever ends the editor.
+                EditorApplication.Exit(0);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[rig-mesh] CLI sloop bake FAILED: {e}");
+                EditorApplication.Exit(1);
+            }
+        }
+
         /// <summary>Bake one catalog hull by key, and wire whatever visuals it owns.</summary>
         public static HullMeshDef BakeOne(string key)
         {
