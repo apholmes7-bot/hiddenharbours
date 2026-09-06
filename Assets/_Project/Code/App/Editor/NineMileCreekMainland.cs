@@ -704,14 +704,59 @@ namespace HiddenHarbours.App.Editor
         /// piers and the mooring hardware on this line; Phase A only promises the water is there.</summary>
         public const int BerthCount = 14;
         public const float BerthSpacingMetres = 5.5f;
-        /// <summary>The first berth's centre — 2 m off the wall's face (y = 87), and east of the west
-        /// wall's own deck so no boat is moored on dry land. The line runs x = 98 → 169.5, inside the
-        /// north wall's 86 → 170.</summary>
-        public static readonly Vector2 FirstBerthPos = new Vector2(98f, 85f);
+        /// <summary>The west end of the berth line — east of the west wall's own deck so no boat is
+        /// moored on dry land. The line runs x = 98 → 169.5, inside the north wall's 86 → 170.</summary>
+        public const float FirstBerthX = 98f;
 
-        /// <summary>Centre of berth <paramref name="index"/> (0-based), along the north wall's face.</summary>
-        public static Vector2 BerthPos(int index) =>
-            FirstBerthPos + new Vector2(BerthSpacingMetres * Mathf.Clamp(index, 0, BerthCount - 1), 0f);
+        /// <summary>
+        /// ⭐ <b>THE WALL'S OWN FACE (y = 87) — taken from the wall rather than typed beside it.</b>
+        /// <see cref="NineMileCreekWharf.MooringEdgeY"/> is this same number reached through the wharf's
+        /// footprint helper; the berth line needs it one layer below the wharf, so it comes off
+        /// <see cref="NorthWallFill"/> directly and the two cannot drift apart.
+        /// </summary>
+        public static float MooringFaceY => NorthWallFill.Center.y - NorthWallFill.HalfSize.y;
+
+        /// <summary>
+        /// ⭐⭐ <b>S1b — HOW FAR OFF THE TIMBER A HULL OF THIS BEAM LIES: her own half-beam plus a
+        /// fender.</b>
+        ///
+        /// <para>The berth line used to be one number — a uniform 2.0 m — and
+        /// <c>docs/design/npc-pilotage.md</c> §3 measured what that cost: the widest hull on this
+        /// register carries a 2.50 m half-beam, so she was authored <b>half a metre inside the
+        /// timber</b>. Invisible while the fleet is merely <i>placed</i>, and an illegal destination the
+        /// moment a boat has to come alongside under a pilot that promises not to reach the wall.</para>
+        ///
+        /// <para><b>This is the region's own principle — "gate the hull where the hull is" — which the
+        /// float berths already follow.</b> A beam of zero means "unknown", never "no width": a
+        /// sprite-only hull and an <b>unowned</b> berth both fall back to
+        /// <see cref="WidestResidentBeamMetres"/>, so a transient berth (§5.3 — visitors, and the
+        /// player) is never cut narrower than the worst case the wharf already holds.</para>
+        /// </summary>
+        public static float BerthStandoffFor(float halfBeamMetres) =>
+            (halfBeamMetres > 0f ? halfBeamMetres : WidestResidentBeamMetres * 0.5f) + BerthFenderMetres;
+
+        /// <summary>Centre of berth <paramref name="index"/> (0-based) for a hull of the given half-beam.
+        /// The x is the line; the y is <i>her</i> standoff.</summary>
+        public static Vector2 BerthPos(int index, float halfBeamMetres) =>
+            new Vector2(FirstBerthX + BerthSpacingMetres * Mathf.Clamp(index, 0, BerthCount - 1),
+                        MooringFaceY - BerthStandoffFor(halfBeamMetres));
+
+        /// <summary>
+        /// Centre of berth <paramref name="index"/> on the <b>authored</b> line — the widest resident's
+        /// standoff.
+        ///
+        /// <para>⚠️⚠️ <b>This overload is what the TRENCH is cut along</b>
+        /// (<see cref="BerthTrenchWaypoints"/>), and it is deliberately the widest case rather than any
+        /// one boat's: a cut solved for the narrowest hull on the wall would leave a wider neighbour
+        /// touching on her outboard bilge. Every hull's own lie is inboard of it, so every hull's
+        /// outboard edge stays inside <see cref="BerthFootprintHalfWidthMetres"/> of the centreline —
+        /// asserted by <c>NineMileCreekBerthLineTests.NoHullOverhangsTheTrenchTheBedWasSolvedFor</c>.</para>
+        /// </summary>
+        public static Vector2 BerthPos(int index) => BerthPos(index, 0f);
+
+        /// <summary>The first berth's centre on the authored line. Derived rather than stored, so the
+        /// standoff has exactly one definition.</summary>
+        public static Vector2 FirstBerthPos => BerthPos(0);
 
         // Where the working things stand. Phase A places greybox markers; Phase B swaps in the kit.
         public static readonly Vector3 WinchPos          = new Vector3( 87f,  84f, 0f);  // west wall, by the apron

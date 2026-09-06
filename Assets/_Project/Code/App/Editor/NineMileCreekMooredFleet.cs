@@ -256,9 +256,13 @@ namespace HiddenHarbours.App.Editor
 
                 taken[owner.BerthIndex] = owner;
 
+                // S1b: at the WALL she lies off the timber by her OWN beam plus a fender, the same way
+                // the float already lies her off the finger's centre-line by hers. A zero — the
+                // sprite-only case — falls back to the widest resident inside the derivation, which is
+                // the safe direction for a clearance.
                 Vector2 at = atFloat
                     ? NineMileCreekWharf.FloatBerthPos(owner.BerthIndex, terrain)
-                    : NineMileCreekMainland.BerthPos(owner.BerthIndex);
+                    : NineMileCreekMainland.BerthPos(owner.BerthIndex, HalfBeamOf(owner));
 
                 var go = new GameObject($"Moored_{owner.Id}");
                 go.transform.SetParent(root.transform, worldPositionStays: false);
