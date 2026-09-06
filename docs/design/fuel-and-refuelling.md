@@ -676,13 +676,17 @@ that is P1 taught by the fuel gauge instead of a tutorial.
 columns 5–7 are *derived* from them and are the reason the numbers are what they are.
 
 *Cruise* = throttle 0.7, half hold, Moderate sea, no slip (the reference duty, multiplier **0.726**).
+† `boat.dory_outboard`'s Range is STALE: it was computed at her old 1.69 m/s top speed, and she was
+re-tuned to 2.17 on 2026-09-06 (§9.7). Tank and burn did not change, so her Endurance, Days/tank and
+Fill are still right — only the distance is. See §9.7.
+
 *Range* is at that duty. *Days/tank* is against a **reference working day of 12 minutes of engine
 running** — about 40% of the 30-minute game day under power, the rest fishing, hauling or ashore.
 
 | Hull id(s) | Grade | Tank (L) | `R` (L/h) | Cruise (L/h) | Endurance | Range | Days/tank | Fill @ R91 |
 |---|---|---|---|---|---|---|---|---|
 | `boat.dory` | *(none — she rows)* | **0** | — | — | — | — | — | — |
-| `boat.dory_outboard` | gas | **10** | **23** | 16.7 | 36 min | 2.6 km | 3.0 | 16 ₲ |
+| `boat.dory_outboard` | gas | **10** | **23** | 16.7 | 36 min | ⚠ 2.6 km † | 3.0 | 16 ₲ |
 | `boat.punt` | gas | **25** | 49 | 35.6 | 42 min | 4.1 km | 3.5 | 39 ₲ |
 | `boat.punt_upgraded` | gas | 25 | 49 | 35.6 | 42 min | 5.1 km | 3.5 | 39 ₲ |
 | `boat.console_skiff` | gas | 45 | 78 | 56.6 | 48 min | 7.8 km | 4.0 | 70 ₲ |
@@ -729,7 +733,15 @@ will show it immediately.
 
 ### 9.7 Worked example — the dory outboard
 
-`boat.dory_outboard` · tank **10 L** · `R` = **23 L/h** · top speed ≈ **1.69 m/s**. Ned's motor.
+`boat.dory_outboard` · tank **10 L** · `R` = **23 L/h** · top speed ≈ **2.17 m/s**. Ned's motor.
+
+> ⚠️ **The Speed column below, and this section's Range in §9.6.2, were computed when she made
+> 1.69 m/s** — her `EnginePower` was raised 500 → 640 on 2026-09-06 (PR #754) because at 1.69 the boat
+> you BUY was slower than the rowed dory you already own (measured 1.66 against 2.00), which broke the
+> owner's rule that the dory is the slowest boat afloat. Tank and burn are UNCHANGED, so endurance and
+> Days/tank still stand; only the distances move. **economy-sim: re-derive the Speed column and the
+> Range cell at 2.17 m/s** — I have not scaled them here, because throttle, hold, slip and sea state all
+> fold into those figures and a linear rescale would be a guess dressed as a measurement.
 
 | # | What she is doing | thr | hold | slip | sea | L/h | Over an hour | Speed |
 |---|---|---|---|---|---|---|---|---|

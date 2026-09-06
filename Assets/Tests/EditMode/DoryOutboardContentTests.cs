@@ -55,7 +55,7 @@ namespace HiddenHarbours.Tests.EditMode
         // ---- the hull variant (D8) ----------------------------------------------------------
 
         [Test]
-        public void TheOutboardDory_IsTheRowedDory_WithExactlyOneFieldFlipped()
+        public void TheOutboardDory_IsTheRowedDory_WithExactlyTwoFieldsFlipped()
         {
             var rowed = Load<BoatHullDef>($"{DataBoats}/Dory.asset");
             var powered = Load<BoatHullDef>($"{DataBoats}/DoryOutboard.asset");
@@ -66,6 +66,23 @@ namespace HiddenHarbours.Tests.EditMode
                 "the whole of D8's M1 answer: a second hull asset whose Propulsion is Engine, which " +
                 "the purchase swaps the active hull to.");
 
+            // ⭐ THE SECOND FIELD, AND WHY IT HAD TO BECOME ONE (2026-09-06). Until then she carried the
+            // rowed dory's EnginePower, copied, and this test asserted they were EQUAL. That made the
+            // boat you BUY slower than the boat you own — 1.66 m/s measured against 2.00 rowing flat
+            // out — which collides head-on with the owner's rule that the dory is the SLOWEST BOAT
+            // AFLOAT (PilotableFleetPlayTests.TheDory_IsTheSlowestBoatAfloat, quoting him). Nothing
+            // caught it for as long as she was absent from that ladder.
+            //
+            // So the D8 contract is now "the rowed dory with TWO fields flipped", and the second one is
+            // asserted as a DIFFERENCE rather than quietly dropped from the equality list — an omitted
+            // assertion looks identical to an assertion nobody wrote.
+            Assert.Greater(powered.EnginePower, rowed.EnginePower,
+                "the outboard must MAKE more than the oars do, or buying her is a downgrade and the " +
+                "owner's slowest-boat rule goes red. She is 640 against the dory's 500: on this hull " +
+                "v = EnginePower/295 and the harness stops 0.035 m/s short, so 640 measures 2.134 — " +
+                "clear of the rowed dory's 2.00 and under the punt's 2.26. If you are re-tuning her, " +
+                "the band that keeps the ladder monotonic is EnginePower 600–677.");
+
             // D8's stated cost is "two assets to keep in sync". The builder pays it by COPYING the
             // dory rather than restating her, so these can never drift — and this is the assertion
             // that finds out if someone hand-edits one of them.
@@ -75,8 +92,9 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(rowed.LengthMeters, powered.LengthMeters, 1e-4f);
             Assert.AreEqual(rowed.MassKg, powered.MassKg, 1e-4f);
             Assert.AreEqual(rowed.HoldUnits, powered.HoldUnits, "an outboard is not a bigger hold.");
-            Assert.AreEqual(rowed.ForwardDrag, powered.ForwardDrag, 1e-4f);
-            Assert.AreEqual(rowed.EnginePower, powered.EnginePower, 1e-4f);
+            Assert.AreEqual(rowed.ForwardDrag, powered.ForwardDrag, 1e-4f,
+                "same hull, same water: an engine does not reshape her. This is what keeps the speed " +
+                "difference honest — it comes from the POWER alone.");
             Assert.AreEqual(rowed.CameraWorldHeightMeters, powered.CameraWorldHeightMeters, 1e-4f);
             Assert.AreSame(rowed.DeckContainer, powered.DeckContainer);
         }

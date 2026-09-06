@@ -221,7 +221,11 @@ namespace HiddenHarbours.Tests.EditMode
         {
             // The bottom rung is the dory with her kicker on (D8). It used to be the 4 m fishing skiff,
             // retired 2026-09-06 (Core RetiredContentIds) — she was the only hull in the fleet whose art
-            // was hand-drawn rather than baked from a rig.
+            // was hand-drawn rather than baked from a rig. Putting the kicker on that rung is what first
+            // measured her against her neighbours, and she failed: at EnginePower 500 she made 1.69
+            // derived / 1.66 measured, UNDER the rowed dory's 2.00 and under the spray sheet's floor.
+            // She is 640 now (GreyboxBuilder, and the asset is the authority) and sits where the ladder
+            // needs her. See DoryOutboardContentTests for the band and the derivation.
             float kicker = TerminalSpeed(Hull("DoryOutboard"));
             float console = TerminalSpeed(Hull("ConsoleSkiff"));
             float sport = TerminalSpeed(Hull("SportSkiff"));
@@ -235,18 +239,13 @@ namespace HiddenHarbours.Tests.EditMode
             // sheet; these hulls are the reason that art was drawn, so they must live inside the frame —
             // over it and the spray would just clip flat at max.
             //
-            // ⚠ THE KICKER IS DELIBERATELY NOT IN THIS LOOP, and the reason is a MEASUREMENT rather than a
-            // convenience. The bottom rung used to be the 4 m fishing skiff at 2.50 m/s, comfortably inside
-            // the frame. Her replacement, the dory with a used kicker on her transom, runs to 1.6949 m/s —
-            // 0.005 m/s UNDER the sheet's own floor, so she throws no bow spray at full throttle. That is
-            // consistent with what she is (the slowest powered rung, and the boat canon promises can always
-            // get you home) and it is not a regression this PR introduced: she has always run at that speed
-            // and was simply never in this list. She stays in the monotonic ladder above, which is the claim
-            // the rung exists to make.
-            //
-            // If the owner wants the first motor to throw spray, that is an EnginePower tune on
-            // DoryOutboard, and it belongs to gameplay-systems rather than to a retirement.
-            foreach (var (name, v) in new[] { ("console", console), ("sport", sport), ("twin", twin) })
+            // ⚠ THE KICKER WAS BRIEFLY OUT OF THIS LOOP, and the reason she is back is the fix, not a
+            // widened tolerance. At EnginePower 500 she derived 1.6949 — 0.005 m/s UNDER the sheet's own
+            // floor, so the player's first motor threw no bow spray at all. That was never a deliberate
+            // choice; she had simply never been measured against this frame, because the hull that used
+            // to hold this rung (the retired fishing skiff, 2.50 m/s) sat comfortably inside it. She is
+            // 640 now and derives 2.17, so the frame holds for every powered hull again.
+            foreach (var (name, v) in new[] { ("kicker", kicker), ("console", console), ("sport", sport), ("twin", twin) })
             {
                 Assert.Greater(v, 1.7f, $"{name}: below the spray sheet's floor — it would never throw spray");
                 Assert.LessOrEqual(v, 6f, $"{name}: past the spray sheet's 6 m/s ceiling — the spray would " +

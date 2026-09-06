@@ -655,17 +655,34 @@ namespace HiddenHarbours.App.Editor
             // (component swaps at the shipwright) is the item that splits Hull/Engine/Hold properly,
             // with a save migration, when there are enough upgrades to pay for it.
             //
-            // She is the rowed dory with ONE FIELD FLIPPED. Everything else — mass, drag, hold,
+            // She is the rowed dory with TWO FIELDS FLIPPED (Propulsion, and — since 2026-09-06 —
+            // EnginePower; see the block below). Everything else — mass, drag, hold,
             // camera, and her Visual (they share visual.dory_iso; the skinner draws the engine only
             // on the hull whose Propulsion says she has one) — is copied from the dory herself rather
             // than restated, because "two assets to keep in sync" is D8's stated cost and a copy is
             // how you stop paying it by hand. The two boats therefore CANNOT drift apart on a stat.
             //
-            // Her speed is the dory's own authored EnginePower (500) through the same force model as
-            // every other hull: ~1.7 m/s against ~2.0 rowing flat out — SLOWER than a hard pull, and
-            // that is not a bug to tune out here. What a kicker buys is that she holds it all day,
-            // into wind and chop, with your hands free; the rower cannot. Tuning is the owner's, in
-            // the Def (rule 6). No ShipwrightOffer is authored HERE: what she costs and who sells her
+            // ⭐ HER ENGINE POWER IS HER OWN, AND IT USED TO BE THE DORY'S. This block used to say her
+            // speed was "the dory's own authored EnginePower (500) … ~1.7 m/s against ~2.0 rowing flat
+            // out — SLOWER than a hard pull, and that is not a bug to tune out here", on the argument
+            // that what a kicker buys is holding it all day with your hands free. That argument is
+            // still true about FEEL. It was overturned on 2026-09-06 because it collides with an OWNER
+            // RULE it was never measured against: "yes the dory should be the slowest boat"
+            // (PilotableFleetPlayTests.TheDory_IsTheSlowestBoatAfloat, quoting him). At 500 the outboard
+            // measured 1.66 against the rowed dory's 2.00 — the boat you BUY was slower than the boat
+            // you own, and the ladder only said so once the retirement put her on its bottom rung.
+            //
+            // 640 is DERIVED, not dialled. v = EnginePower/295 on this hull, and the harness stops
+            // 0.025·τ = 0.035 m/s short of true terminal, so the band that clears the rowed dory (2.00
+            // measured) and stays under the punt (2.26 measured) is EnginePower 600–677. 640 is the
+            // round number at its centre: 2.134 measured, ~0.13 of daylight either side.
+            //
+            // ⚠ SO SHE IS NO LONGER "THE DORY WITH ONE FIELD FLIPPED", and the CopySerialized below
+            // must not take her power back. It is snapshotted with the fuel row for exactly that
+            // reason. Tuning is still the owner's, in the Def (rule 6) — the ASSET is the authority and
+            // this only keeps the copy from eating it.
+            //
+            // No ShipwrightOffer is authored HERE: what she costs and who sells her
             // was the Nine Mile Creek purchase beat, and it has landed there — Data/Shipwright/
             // DoryOutboardOffer.asset, on Hector's barrel (NineMileCreekBuilder).
             var doryOutboard = LoadOrCreate<BoatHullDef>(DataBoats + "/DoryOutboard.asset");
@@ -686,6 +703,10 @@ namespace HiddenHarbours.App.Editor
                 float fuelCapacity = doryOutboard.FuelCapacityLitres;
                 string fuelGrade = doryOutboard.FuelGrade;
                 float fuelBurn = doryOutboard.FullThrottleLitresPerHour;
+                // …and her ENGINE, which stopped being the rowed dory's on 2026-09-06 (see above).
+                // Left in the copy she reverts to 500 on the next builder run and the owner's
+                // slowest-boat rule goes red again, from a run nobody connected to the edit.
+                float enginePower = doryOutboard.EnginePower;
 
                 EditorUtility.CopySerialized(dory, doryOutboard);
                 // CopySerialized copies m_Name too, and an asset whose object name disagrees with its
@@ -695,6 +716,7 @@ namespace HiddenHarbours.App.Editor
                 doryOutboard.DisplayName = "The Dory (outboard)";
                 doryOutboard.Propulsion = PropulsionType.Engine;   // the one difference in HANDLING
 
+                doryOutboard.EnginePower = enginePower;            // …the one in what she MAKES
                 doryOutboard.FuelCapacityLitres = fuelCapacity;    // …and the one in what she DRINKS
                 doryOutboard.FuelGrade = fuelGrade;
                 doryOutboard.FullThrottleLitresPerHour = fuelBurn;
