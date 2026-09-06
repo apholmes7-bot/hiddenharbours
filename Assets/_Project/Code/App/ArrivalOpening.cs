@@ -184,6 +184,14 @@ namespace HiddenHarbours.App
                  "for open planking crosses it in a second and spends that second against a wall.")]
         [Min(0f)] [SerializeField] private float _cabinWalkSpeed = 1.4f;
 
+        [Tooltip("Armand's aft door is standing OPEN as she comes in — his own boat, fair weather, and " +
+                 "him at the wheel, which is the picture the owner's 2026-08-28 door ruling paints in " +
+                 "as many words. It is what makes the passage a WALK: she wanders out on deck and back " +
+                 "below with no press and no cue. Untick and the opening begins with it shut, and she " +
+                 "must work the door before she can go anywhere — the pre-ruling behaviour, kept as a " +
+                 "knob because the door STATE is now a real thing an author can set.")]
+        [SerializeField] private bool _aftDoorOpenOnArrival = true;
+
         [Header("Stepping ashore — the owner's Q1 ruling (2026-08-26)")]
         [Tooltip("How long the step off her rail onto the planks takes, real seconds. The shape and the " +
                  "number are ControlSwitcher's own disembark vault, because this IS that move — a hull " +
@@ -399,6 +407,21 @@ namespace HiddenHarbours.App
         {
             if (!IsBelowDecks || _boatRoot == null) return false;
             _cabin.Step(moveInput, deltaSeconds, DrawnHeadingDegrees());
+
+            // ⭐ AND THE DOORWAY IS ASKED, on the sole's own hull-local point. Armand's aft door stands
+            // open while he is aboard, so walking into it walks her out on deck — no press, no cue. The
+            // door owns every part of that decision, including the latch the two floors share.
+            //
+            // ⚠ The CONCRETE door here, not Core's ICabinThreshold — App is the composition ROOT and
+            // already holds this hull's BoatCabinDoor outright (CabinDoor, WorkTheCabinDoor, the offer it
+            // registers). The seam exists for the PLAYER lane, which may not name a Boats type;
+            // DeckWalkController takes it. Routing App through an interface it composes on the next line
+            // would be ceremony, not a boundary.
+            //
+            // ⚠ `!= null`, never `?.`: the operator that reports a destroyed component as null lives on
+            // UnityEngine.Object and the null-propagating operators never reach it.
+            BoatCabinDoor door = _cabin.Door;
+            if (door != null) door.TryWalkThrough(_cabin.LocalPosition);
             return true;
         }
 
@@ -430,15 +453,27 @@ namespace HiddenHarbours.App
         public bool WalkTheDeck(Vector2 moveInput, float deltaSeconds)
         {
             if (IsBelowDecks || _deckWalk == null || _boatRoot == null) return false;
-            return _deckWalk.Step(moveInput, deltaSeconds, DrawnHeadingDegrees(),
-                                  BakeElevationDegrees());
+            if (!_deckWalk.Step(moveInput, deltaSeconds, DrawnHeadingDegrees(), BakeElevationDegrees()))
+                return false;
+
+            // ⭐ The other half of the same doorway, on the deck's own hull-local point — the SAME frame
+            // the sole's is in, which is why one band answers both (BoatCabinThreshold). Walking back
+            // into his open door puts her below again with no press. (`!= null`, never `?.` — see
+            // WalkTheCabin.)
+            BoatCabinDoor door = _cabin != null ? _cabin.Door : null;
+            if (door != null) door.TryWalkThrough(_deckWalk.LocalPosition);
+            return true;
         }
 
         /// <summary>
         /// ⭐ <b>Work the aft door</b> — the same call <see cref="CabinDoorOffer.Interact"/> makes when the
         /// player presses the one interact verb on it, and the same call the hull's own
-        /// <see cref="BoatCabinDoor"/> would take from the deck. The cue then runs on its own clock and the
-        /// swap lands at the end of it; nothing here shortcuts that.
+        /// <see cref="BoatCabinDoor"/> would take from the deck. The cue then runs on its own clock and
+        /// the LEAF lands at the end of it; nothing here shortcuts that.
+        ///
+        /// <para>⚠ Since the 2026-08-28 ruling this OPENS or SHUTS the door — it does not carry her
+        /// through it. The passage is a walk (<see cref="WalkTheCabin"/> / <see cref="WalkTheDeck"/> ask
+        /// the doorway every tick), and pressing his door while it stands open closes it behind her.</para>
         /// </summary>
         public bool WorkTheCabinDoor() => _cabin?.Door != null && _cabin.Door.TryUse();
 
@@ -747,21 +782,33 @@ namespace HiddenHarbours.App
             }
 
             _wasBelow = true;
+
+            // ⭐ AND HIS AFT DOOR IS STANDING OPEN. The owner's 2026-08-28 door ruling paints exactly this
+            // picture in its own words — "they might leave the door open when they are aboard and the
+            // weathers nice" — and Armand is aboard, at his wheel, on a fair dawn. It is what makes the
+            // passage a WALK: with it shut the player would have to press her way out of a stranger's
+            // cabin in the first minute of a new game, which is the seam the 2026-09-04 playtest caught.
+            // Set with no cue because this is how the door is FOUND, not how it is worked.
+            if (_cabin.Door != null) _cabin.Door.SetOpen(_aftDoorOpenOnArrival);
+
             _cabinOffer = new CabinDoorOffer(this);
             Interactables.Register(_cabinOffer);
             PoseTheSkipperAtHisWheel();
 
             Debug.Log($"[ArrivalOpening] the game opens BELOW — '{_cabin.Cabin.Def.Id}' level " +
                       $"{_cabin.LevelIndex} ('{_cabin.Cabin.Def.Levels[_cabin.LevelIndex].Id}'), " +
-                      $"the way out is aft. The cut this hull is being asked for: " +
-                      $"{DescribeTheCut()}.");
+                      $"the way out is aft and his door is " +
+                      $"{(_aftDoorOpenOnArrival ? "OPEN" : "shut")}. The cut this hull is being asked " +
+                      $"for: {DescribeTheCut()}.");
         }
 
         /// <summary>
-        /// ⭐ <b>Follow the CABIN rather than command it.</b> The door owns the transition — it runs its
-        /// own cue on its own clock and calls <c>TryEnter</c>/<c>TryExit</c> at the end of it — so this
-        /// component finds out that she moved the same way any other listener would: by looking. Cheap,
-        /// idempotent, and called from both <see cref="Update"/> and <see cref="LateUpdate"/> so that the
+        /// ⭐ <b>Follow the CABIN rather than command it.</b> The door owns the transition — she walks
+        /// across its threshold band and it calls <c>TryEnter</c>/<c>TryExit</c> for her, or, on a hull
+        /// with no measured opening, its cue does — so this component finds out that she moved the same
+        /// way any other listener would: by looking. Cheap, idempotent, and called from
+        /// <see cref="Update"/> (twice: once before her step and once after it, because her step is now
+        /// one of the things that can move her) and again from <see cref="LateUpdate"/>, so that the
         /// frame she crosses the threshold is posed and seated in the same state whichever of the two
         /// undefined-order <c>Update</c>s ran first.
         ///
@@ -1037,6 +1084,12 @@ namespace HiddenHarbours.App
             Vector2 move = CabinInputSource.Read().Move;
             if (IsBelowDecks) WalkTheCabin(move, Time.deltaTime);
             else              WalkTheDeck(move, Time.deltaTime);
+
+            // ⭐ …AND ASKED AGAIN, because that step may have carried her through the open aft door. The
+            // seed at the doorway is what makes the crossing costless, and it has to land BEFORE the pose
+            // below or she is posed for one frame in the floor she has just left. Idempotent, so asking
+            // twice a frame is free (see the method's own remarks).
+            FollowTheCabin();
 
             // ⭐ THE POSE IS STATED HERE, in Update, and NOT beside the seating in LateUpdate. The split
             // is not tidiness: IsoCharacterSprite consumes the holds in its own LateUpdate at execution

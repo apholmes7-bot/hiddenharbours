@@ -115,7 +115,7 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.IsTrue(InteractOffer.Current.Has, "the door should be the standing offer");
             Assert.AreEqual(InteractOfferSource.Fixture, InteractOffer.Current.Source);
             Assert.AreEqual(_door.Id, InteractOffer.Current.Id);
-            Assert.AreEqual("Go below", InteractOffer.Current.Label);
+            Assert.AreEqual("Open the door", InteractOffer.Current.Label);
             Assert.IsNotEmpty(_offers, "…and the change is published, which is what the popup rides");
 
             // Walk away: the offer must go, or the popup names a doorway the player has left.
@@ -156,14 +156,18 @@ namespace HiddenHarbours.Tests.PlayMode
 
             yield return WaitForCue();
 
+            Assert.IsTrue(_door.IsOpen, "the press left her door STANDING open");
+            Assert.IsFalse(_interior.IsInside, "…and opening a door is not walking through it");
+
+            WalkThroughTheDoorway();
+
             Assert.IsTrue(_interior.IsInside);
             Assert.IsFalse(_exterior.enabled, "off, not sorted behind");
             Assert.IsTrue(_room.enabled);
             Assert.IsTrue(_interior.ExactlyOneLayerOn, "the two are never co-visible");
-            Assert.AreEqual("Come out", _door.VerbLabel);
+            Assert.AreEqual("Close the door", _door.VerbLabel);
 
-            Assert.IsTrue(_door.TryUse());
-            yield return WaitForCue();
+            WalkThroughTheDoorway();
 
             Assert.IsFalse(_interior.IsInside);
             Assert.IsTrue(_exterior.enabled);
@@ -184,8 +188,7 @@ namespace HiddenHarbours.Tests.PlayMode
             // boundary they crossed while below — which is exactly what ADR 0038 proposal 4 rules out.
             yield return null;
 
-            _door.TryUse();
-            yield return WaitForCue();
+            yield return GoBelow();
             Assert.IsTrue(_interior.IsInside);
 
             _boat.SetActive(false);
@@ -227,8 +230,7 @@ namespace HiddenHarbours.Tests.PlayMode
             _hullSprite.VisualTiltDegrees = tilt;
             _hullSprite.DrawnRideMeters = ride;
 
-            _door.TryUse();
-            yield return WaitForCue();
+            yield return GoBelow();
             yield return null;   // one LateUpdate with the room on and the hull leaning
 
             float scale = GameServices.InteriorRockScale;
@@ -255,8 +257,7 @@ namespace HiddenHarbours.Tests.PlayMode
             _hullSprite.VisualTiltDegrees = tilt;
             _hullSprite.DrawnRideMeters = ride;
 
-            _door.TryUse();
-            yield return WaitForCue();
+            yield return GoBelow();
             yield return null;
 
             Assert.AreEqual(0f, RoomLeanDegrees(), 1e-4f, "0 is DEAD flat, not very nearly level");
@@ -273,12 +274,10 @@ namespace HiddenHarbours.Tests.PlayMode
             _hullSprite.VisualTiltDegrees = 8f;
             _hullSprite.DrawnRideMeters = 0.5f;
 
-            _door.TryUse();
-            yield return WaitForCue();
+            yield return GoBelow();
             yield return null;
 
-            _door.TryUse();
-            yield return WaitForCue();
+            WalkThroughTheDoorway();
             yield return null;
 
             Assert.AreEqual(0f, RoomLeanDegrees(), 1e-4f);
@@ -289,6 +288,30 @@ namespace HiddenHarbours.Tests.PlayMode
         // =====================================================================================
         //  the fixture
         // =====================================================================================
+
+        /// <summary>Open her door and walk in — the two acts the 2026-08-28 ruling separated, said
+        /// once for every test that only wants the player below decks.</summary>
+        private IEnumerator GoBelow()
+        {
+            Assert.IsTrue(_door.TryUse());
+            yield return WaitForCue();
+            Assert.IsTrue(_door.IsOpen);
+            WalkThroughTheDoorway();
+        }
+
+        /// <summary>Cross the open threshold: one tick measurably clear of the doorway to arm the
+        /// approach, one standing in it to spend it. Both points are DERIVED from the door's own measured
+        /// opening, so a re-measured doorway needs no edit here.</summary>
+        private void WalkThroughTheDoorway()
+        {
+            BoatInteriorDoor door = _door.Door;
+            Vector2 doorway = BoatCabinThreshold.PointOf(door);
+            Vector2 clear = doorway + Vector2.right *
+                            (BoatCabinThreshold.ReleaseRadiusMetres(door) + 1f);
+
+            _door.TryWalkThrough(clear);
+            Assert.IsTrue(_door.TryWalkThrough(doorway), "she walks through her own open door");
+        }
 
         /// <summary>
         /// Wait out the door's cue on the CLOCK the cue is driven by. Frames are not time in batchmode —
@@ -370,7 +393,7 @@ namespace HiddenHarbours.Tests.PlayMode
             doorGo.transform.SetParent(_boat.transform, false);
             _door = doorGo.AddComponent<BoatCabinDoor>();
             _door.Configure(_interior, "fixture.boat.play_test.cabin_door", -1, 1.2f,
-                            "Go below", "Come out");
+                            "Open the door", "Close the door");
         }
 
         /// <summary>Throwaway cells so the cabin has a picture without reaching Resources — the

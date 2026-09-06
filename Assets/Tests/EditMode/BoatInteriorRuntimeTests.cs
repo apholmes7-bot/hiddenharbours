@@ -380,20 +380,27 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void TheLeafMovesBeforeTheRoomAppears()
+        public void TheLeafMovesAndLandsOpen_AndTheRoomArrivesWhenSheWalksIn()
         {
+            // ⭐ Since the owner's 2026-08-28 ruling the press moves the LEAF and nothing else; the room
+            // arrives when she crosses the threshold, which costs no press and no cue. The two halves are
+            // asserted here in one place because it is their SPLIT that the 09-04 playtest was missing.
             Rig rig = NewRig(Levels(("house_sole", 1.78f)));
 
             Assert.IsTrue(rig.Door.TryUse());
             Assert.IsTrue(rig.Door.IsCueing);
-            Assert.IsFalse(rig.Interior.IsInside, "the swap lands at the END of the cue, not under the hand");
+            Assert.IsFalse(rig.Door.IsOpen, "the state lands at the END of the cue, not under the hand");
 
             rig.Door.Tick(0.3f);
             Assert.IsTrue(rig.Door.IsCueing);
-            Assert.IsFalse(rig.Interior.IsInside);
+            Assert.IsFalse(rig.Door.IsOpen);
 
             rig.Door.Tick(0.3f);
             Assert.IsFalse(rig.Door.IsCueing);
+            Assert.IsTrue(rig.Door.IsOpen);
+            Assert.IsFalse(rig.Interior.IsInside, "…and she has not moved: an open door is not a crossing");
+
+            WalkThroughTheDoorway(rig);
             Assert.IsTrue(rig.Interior.IsInside);
             Assert.IsTrue(rig.Interior.InteriorDrawn);
         }
@@ -417,7 +424,7 @@ namespace HiddenHarbours.Tests.EditMode
             rig.Door.Tick(0.1f);
             int opening = rig.Door.CueFrame;
             rig.Door.Tick(1f);
-            Assert.IsTrue(rig.Interior.IsInside);
+            Assert.IsTrue(rig.Door.IsOpen);
 
             rig.Door.TryUse();
             rig.Door.Tick(0.1f);
@@ -436,17 +443,17 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void AnUnmeasuredThresholdOpensAtOnce()
+        public void AnUnmeasuredCueOpensAtOnce()
         {
-            // A door whose def states no cue is a threshold nobody has measured. "Press to enter" must
-            // still be true — the feature cannot wait on art that may never come.
+            // A door whose def states no cue is a leaf nobody has animated. The STATE must still land —
+            // the feature cannot wait on art that may never come.
             Rig rig = NewRig(Levels(("house_sole", 1.78f)));
             rig.Def.Door.CueFrames = 0;
 
             Assert.AreEqual(0f, rig.Door.CueSeconds);
             Assert.IsTrue(rig.Door.TryUse());
             Assert.IsFalse(rig.Door.IsCueing);
-            Assert.IsTrue(rig.Interior.IsInside);
+            Assert.IsTrue(rig.Door.IsOpen);
         }
 
         [Test]
@@ -454,15 +461,15 @@ namespace HiddenHarbours.Tests.EditMode
         {
             Rig rig = NewRig(Levels(("house_sole", 1.78f)));
 
-            Assert.IsTrue(rig.Door.WouldEnter);
-            Assert.AreEqual("Go below", rig.Door.VerbLabel);
+            Assert.IsTrue(rig.Door.WouldOpen);
+            Assert.AreEqual("Open the door", rig.Door.VerbLabel);
 
             rig.Door.TryUse();
             rig.Door.Tick(1f);
 
-            Assert.IsFalse(rig.Door.WouldEnter);
-            Assert.AreEqual("Come out", rig.Door.VerbLabel,
-                            "the words are derived from the state, so they cannot drift from the action");
+            Assert.IsFalse(rig.Door.WouldOpen);
+            Assert.AreEqual("Close the door", rig.Door.VerbLabel,
+                            "the words are derived from the LEAF, so they cannot drift from the action");
         }
 
         [Test]
@@ -505,6 +512,20 @@ namespace HiddenHarbours.Tests.EditMode
         // =====================================================================================
         //  the fixture
         // =====================================================================================
+
+        /// <summary>Walk her across the open threshold, the way a walker does: one tick measurably clear
+        /// of the doorway to arm the approach, one standing in it to spend it. Both points are DERIVED
+        /// from the door's own measured opening, so a re-measured doorway needs no edit here.</summary>
+        private static void WalkThroughTheDoorway(Rig rig)
+        {
+            BoatInteriorDoor door = rig.Door.Door;
+            Vector2 doorway = BoatCabinThreshold.PointOf(door);
+            Vector2 clear = doorway + Vector2.right *
+                            (BoatCabinThreshold.ReleaseRadiusMetres(door) + 1f);
+
+            rig.Door.TryWalkThrough(clear);
+            Assert.IsTrue(rig.Door.TryWalkThrough(doorway), "she walks through her own open door");
+        }
 
         private struct Rig
         {
@@ -599,7 +620,8 @@ namespace HiddenHarbours.Tests.EditMode
 
             var door = new GameObject("CabinDoor").AddComponent<BoatCabinDoor>();
             door.transform.SetParent(root.transform, false);
-            door.Configure(interior, "fixture.boat.test.cabin_door", -1, 1.2f, "Go below", "Come out");
+            door.Configure(interior, "fixture.boat.test.cabin_door", -1, 1.2f,
+                           "Open the door", "Close the door");
 
             return new Rig
             {
