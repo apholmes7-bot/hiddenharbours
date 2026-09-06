@@ -1,0 +1,3 @@
+figure | centroid shift, origin-laid -> transom-laid (m)
+90 deg turn    |  1.19
+straight 8 kn  |  2.11

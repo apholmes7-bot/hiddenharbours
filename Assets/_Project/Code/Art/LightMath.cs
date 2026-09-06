@@ -461,6 +461,118 @@ namespace HiddenHarbours.Art
             return t * t * (3f - 2f * t);
         }
 
+        // ---- the GROUND POOL: what a lamp does to the ground, not to the frame ---------------------------
+        //
+        // ⭐⭐ THE POOL AND THE BLOOM ARE DIFFERENT PICTURES OF THE SAME LAMP, and #733 separated them. The
+        // BLOOM is the fitting glowing (an additive quad the size of the lantern); the POOL is the patch of
+        // ground the lantern makes brighter, and it is what these three functions shape. They mirror
+        // HiddenHarboursLampPool.shader line for line — the LightMath/shader contract every other light term
+        // in this project keeps — so the look can be reasoned about and pinned headless.
+
+        /// <summary>
+        /// <b>How squarely a lamp at <paramref name="lampHeightMetres"/> strikes the ground
+        /// <paramref name="groundDistanceMetres"/> away from its foot</b> — <c>h / sqrt(h² + d²)</c>, the
+        /// cosine between the lamp's incident ray and the ground's own normal. 1 directly underneath, falling
+        /// toward 0 out at the rim.
+        ///
+        /// <para><b>⭐ It is the whole difference between a lamp and the sun, and it is why a pool cannot be a
+        /// disc.</b> The sun is a direction at infinity, so every pixel of ground receives it at the same
+        /// angle and a flat sheet is the honest answer. A lamp is a POINT at a HEIGHT: the ground under it is
+        /// lit square-on and the ground at the rim is grazed, so the pool has a shape before any falloff is
+        /// applied. A 7.8 m flood mast pools broad and even; a 2.46 m lantern post pools tight and drops away
+        /// fast. Neither is tuned — both fall out of this one line, which is the same
+        /// <c>h/√(h²+d²)</c> the water's beam relief (#691) and the cast shadows' rake (#698) already take
+        /// their lamp geometry from.</para>
+        ///
+        /// <para>A lamp with no published height (0) returns 0: a light that will not say how high it is
+        /// cannot claim to shape the ground, and drawing it as a flat disc is exactly the bug this replaces.
+        /// </para>
+        /// </summary>
+        public static float GroundIncidence(float lampHeightMetres, float groundDistanceMetres)
+        {
+            float h = Mathf.Max(lampHeightMetres, 0f);
+            if (h <= 0f) return 0f;
+            float d = Mathf.Max(groundDistanceMetres, 0f);
+            return h / Mathf.Sqrt(h * h + d * d);
+        }
+
+        /// <summary>
+        /// The pool's edge: 1 out to <c>reach × (1 − softness)</c>, smoothly to 0 at <paramref name="reachMetres"/>.
+        /// A lamp's light does not stop at a line, and a hard rim is the tell of a decal.
+        /// </summary>
+        public static float PoolFalloff(float groundDistanceMetres, float reachMetres, float edgeSoftness)
+        {
+            float reach = Mathf.Max(reachMetres, 1e-4f);
+            float inner = reach * (1f - Mathf.Clamp01(edgeSoftness));
+            return 1f - SmoothStep01(inner, reach, Mathf.Max(groundDistanceMetres, 0f));
+        }
+
+        /// <summary>
+        /// <b>The pool's gain BEFORE the ground's own geometry — the part that is per-lamp, per-frame, and
+        /// therefore computed once on the CPU rather than a million times in the fragment.</b>
+        ///
+        /// <para><b>⚠⚠ THE DIVISION BY THE TINT IS THE WHOLE OF THIS FUNCTION, and leaving it out produced a
+        /// pool that was working and invisible.</b> A multiply is bounded by what it multiplies. ADR 0013's
+        /// whole-frame tint has already crushed the pier to a mean luminance of about 0.04 by the time this
+        /// pass runs, so <c>dst × 1.6</c> lifts a plank by 0.02 — six values in a 0..255 read-back, under
+        /// any threshold worth setting. Measured, on the real pier, before this line existed: <b>zero</b>
+        /// pixels changed.</para>
+        ///
+        /// <para>Dividing by the night's own luminance is not a fudge to get a number up; it is what makes
+        /// the picture physically right. The ground's radiance is <c>albedo × (ambient + lamp)</c>, and the
+        /// frame is holding <c>albedo × ambient</c> — so the factor that reconstructs it is exactly
+        /// <c>1 + lamp/ambient</c>. The darker the night, the larger the multiplier, and the result lands in
+        /// the same place either way. It is the same compensation <c>SpriteLightCompensateForDayNight</c>
+        /// makes for the lit-decor path and the water's moon glitter, for the same reason, and
+        /// [[a-pre-multiply-lift-cannot-make-a-lit-window]] is the general law: <i>check what your pixel is
+        /// multiplied by before designing a lift into it.</i></para>
+        ///
+        /// <para><paramref name="strength"/> reads as <i>how close to fully lit the ground under this lamp
+        /// comes back</i>: 1 means the ground returns roughly what it would in open light, 0 means no pool.
+        /// </para>
+        /// </summary>
+        public static float PoolBaseGain(float strength, float intensity, float nightGate,
+                                         float tintLuminance, float maxGain = MaxPoolGain)
+        {
+            float ambient = Mathf.Max(tintLuminance, MinPoolAmbientLuminance);
+            float gain = Mathf.Max(strength, 0f) * Mathf.Max(intensity, 0f) * Mathf.Clamp01(nightGate) / ambient;
+            return Mathf.Clamp(gain, 0f, Mathf.Max(maxGain, 0f));
+        }
+
+        /// <summary>
+        /// <b>What the ground returns, as a multiple of what it already returns.</b> The whole pool term at a
+        /// point: <see cref="PoolBaseGain"/> shaped by the ground's own geometry — incidence × falloff.
+        ///
+        /// <para><b>⚠ IT IS A MULTIPLIER, NOT AN ADDITION, and that is the answer to the owner's complaint.</b>
+        /// ADR 0016's additive quad ADDS a sheet of cream to the frame — so at any strength that reads, it
+        /// saturates, and the planks, the bollards and the post inside it stop existing. The pool instead
+        /// SCALES what is already on the screen (<c>dst × (1 + gain)</c>, the shader's <c>Blend DstColor
+        /// One</c>): a plank stays a plank and a dark gap stays dark, because a uniform scale leaves relative
+        /// contrast untouched — provably, since contrast is a ratio and both its terms scale together. That
+        /// is what "modulating what the ground returns" means, and it is the one thing an additive quad can
+        /// never do. It is also the exact mirror of the sun's shade arm (#727), which multiplies DOWN by
+        /// <c>Blend Zero SrcColor</c>: shade darkens what is there, a lamp brightens it.</para>
+        /// </summary>
+        public static float PoolGain(float baseGain, float lampHeightMetres, float groundDistanceMetres,
+                                     float reachMetres, float edgeSoftness)
+        {
+            return Mathf.Max(baseGain, 0f)
+                 * GroundIncidence(lampHeightMetres, groundDistanceMetres)
+                 * PoolFalloff(groundDistanceMetres, reachMetres, edgeSoftness);
+        }
+
+        /// <summary>
+        /// The ceiling on a pool's gain — how many times over the crushed night frame a lamp may lift the
+        /// ground. It exists because the tint division is a DIVISION: a moonless 02:00 (luminance 0.02) with
+        /// a bright lamp would otherwise ask for a factor of fifty and clip the ground to white, which is the
+        /// flattening the additive disc was refused for arriving through the other door.
+        /// </summary>
+        public const float MaxPoolGain = 8f;
+
+        /// <summary>The floor under the night's ambient luminance in <see cref="PoolBaseGain"/>. A tint of
+        /// zero is a frame with no cycle running, not an infinitely dark one.</summary>
+        public const float MinPoolAmbientLuminance = 0.02f;
+
         /// <summary>
         /// A stable, reproducible hash of an int to <c>[0,1)</c> (no <see cref="System.Random"/>). Used only
         /// to give each light a constant flicker phase offset. Pure / deterministic.

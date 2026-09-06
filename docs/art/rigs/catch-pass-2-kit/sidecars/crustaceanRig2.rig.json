@@ -1,0 +1,189 @@
+{
+ "schema": "hidden-harbours/rig-sidecar@1",
+ "rig": "Art/crustaceanRig2.js",
+ "exportSymbol": "Crustacean2",
+ "derivedFromRigSha256": "40975234acf2515b7175b5468212af893f28f4535b49ef85af8ecf2473fd2901",
+ "generated": {
+  "date": "2026-09-06T00:14:50.676Z",
+  "by": "Art/_catchSidecars.js",
+  "harness": "CATCH_SIDECARS",
+  "isoSolidSha256": "f7fc9db510b0346dea568c43dc7378f1a12fd71ee8f5a7653e78377812b792bd"
+ },
+ "note": "Lobster + rock crab, catch pass 2 — lofted solids on IsoSolid's turntable. Cells, pivots, poses, motion and sizes read from Crustacean2 at generation; the pose remaps were verified by rendering.",
+ "camera": {
+  "ppu": 32,
+  "view": "3/4 from the south, orthographic",
+  "elevDeg": 40,
+  "headings": ["N", "NE", "E", "SE", "S", "SW", "W", "NW"],
+  "headingStepDeg": 45,
+  "turn": "CW",
+  "dirIndex": "dir 0..7 = headings[dir]",
+  "key": "upper-left",
+  "dither": "ordered 4x4 Bayer",
+  "antialias": false,
+  "source": "M2 bake recipe, ADR-0006"
+ },
+ "needs": ["IsoSolid"],
+ "cell": {
+  "w": 64,
+  "h": 64,
+  "pivot": {
+   "x": 32,
+   "y": 40
+  },
+  "pivotIs": "ground centre under the body",
+  "hpivot": {
+   "x": 32,
+   "y": 12
+  },
+  "hpivotIs": "the held pose only: THE GRIP on the back — pin to a CharacterIso hand anchor"
+ },
+ "keylineDefault": false,
+ "keylineAB": "render(kind, {outline:true}) — the live A/B only (ADR 0031)",
+ "colours": {
+  "key": "#101a19",
+  "water": "#123034"
+ },
+ "scale": {
+  "rule": "strict world scale — scale 1 = SIZES[kind].len metres overall; legs and antennae are depth-tested 1 px plots at any scale (2 px above 1.45x)",
+  "elev": 40
+ },
+ "kinds": ["lobster", "crab"],
+ "kind": {
+  "lobster": {
+   "len": 0.4,
+   "body": 0.26,
+   "mass": 0.7,
+   "label": "LOBSTER",
+   "hold": {
+    "at1": {
+     "mass": 0.7,
+     "hands": 1
+    }
+   },
+   "poses": ["walk", "rear", "defend", "held", "flip"],
+   "rendersAsWalk": {
+    "sidle": "walk",
+    "burrow": "walk"
+   },
+   "rendersAsWalkVerified": {
+    "sidle": true,
+    "burrow": true
+   },
+   "motion": {
+    "walk": {
+     "v": 0.07
+    },
+    "flip": {
+     "travel": -0.32,
+     "at": [0.05, 0.45, 0.85, 1],
+     "hop": [0, 0.06, 0.1, 0.04]
+    }
+   }
+  },
+  "crab": {
+   "len": 0.13,
+   "span": 0.3,
+   "mass": 0.4,
+   "label": "ROCK CRAB",
+   "hold": {
+    "at1": {
+     "mass": 0.4,
+     "hands": 1
+    }
+   },
+   "poses": ["walk", "rear", "defend", "held", "sidle", "burrow"],
+   "rendersAsWalk": {
+    "flip": "walk"
+   },
+   "rendersAsWalkVerified": {
+    "flip": true
+   },
+   "motion": {
+    "walk": {
+     "v": 0.05
+    },
+    "sidle": {
+     "v": 0.16,
+     "axis": "x"
+    },
+    "burrow": {
+     "sink": [0, 0.014, 0.03, 0.046]
+    }
+   }
+  }
+ },
+ "poseOrder": ["walk", "rear", "defend", "held", "flip", "sidle", "burrow"],
+ "poses": {
+  "walk": {
+   "frames": 4,
+   "ms": 140,
+   "loop": true
+  },
+  "rear": {
+   "frames": 1,
+   "ms": 400,
+   "loop": true
+  },
+  "defend": {
+   "frames": 1,
+   "ms": 400,
+   "loop": true
+  },
+  "held": {
+   "frames": 2,
+   "ms": 420,
+   "loop": true
+  },
+  "flip": {
+   "frames": 4,
+   "ms": 70,
+   "loop": false
+  },
+  "sidle": {
+   "frames": 4,
+   "ms": 120,
+   "loop": true
+  },
+  "burrow": {
+   "frames": 4,
+   "ms": 160,
+   "loop": false
+  }
+ },
+ "motionGlossary": {
+  "walk.v / sidle.v": "m/s along the travel axis",
+  "sidle.axis": "x — a crab faces ACROSS its travel; travel is body +x",
+  "flip.travel": "metres per flip cycle, negative = backward along the heading",
+  "flip.at": "cumulative fraction of the travel reached at each frame",
+  "flip.hop": "lift above the ground per frame, m — raise the sprite and shrink its shadow",
+  "burrow.sink": "metres below the sand per frame; pixels under sandZ are cut in the bake (dithered edge), the page draws the mound"
+ },
+ "heading": {
+  "ang": "radians, 0 = N, CW, continuous — turns the animal on the spot so fills can scatter it; ignored by held",
+  "dir": "0..7, the turntable camera; composes with ang"
+ },
+ "sandZ": {
+  "default": "burrow: 0; every other pose: null (no cut)",
+  "unit": "m above the pivot"
+ },
+ "water": {
+  "waterZ": "metres above the pivot. Water anims default 0 (the surface); rests default null (dry). Pass null for a dry bake.",
+  "tint": "a pixel whose spine height is below waterZ - 0.004 mixes toward WATER by min(0.72, 0.30 + 0.9 x depth) and takes alpha 160 (115 deeper than 0.35 m). Baked in — never clip against the water at runtime."
+ },
+ "spoil": {
+  "range": "0..1",
+  "rule": "per pixel, mix toward SPOIL by spoil x (0.40 + 0.28 where Bayer(x,y) < spoil x 0.55); the keyline colour is exempt",
+  "motes": "runtime FX in SPOIL — CatchKit2.particles(seed, n)"
+ },
+ "hold": {
+  "rule": "mass = SIZES[kind].mass x scale^3; hands = 2 when mass >= 2.2 kg, else 1 — dangled by the back, claws hanging, tail curled"
+ },
+ "layering": {
+  "behindDirs": [7, 0, 1],
+  "rule": "held rests (and anything pinned to a hand anchor) draw UNDER the character sprite for NW / N / NE, over it otherwise"
+ },
+ "sheet": {
+  "note": "the review page's CRUSTACEAN SHEET download: cols = every pose x frame in poseOrder (20), rows = kind x 8 headings (16), 64 x 64 cells -> 1280 x 1024; a kind's invalid poses render as walk"
+ }
+}

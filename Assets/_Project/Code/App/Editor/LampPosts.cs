@@ -186,6 +186,63 @@ namespace HiddenHarbours.App.Editor
         /// </summary>
         public const float FloodMastFittingWidthMetres = 1.49f;
 
+        // --- and how high the LENS itself sits ----------------------------------------------------------
+        // ⚠ NOT the same as heightM. The pack publishes the piece's whole drawn height — the finial, the
+        // top of the mast — while the thing that GLOWS hangs a little below it: a lantern under its cap, a
+        // lens under a swan neck's elbow. #721 set LampHeightMeters to heightM and reasoned it correctly
+        // (the head is at the top of all four "to within the fitting's own depth"), and that stays: a
+        // shadow's rake and a pool's shape are not sensitive to forty centimetres. The BLOOM is, because
+        // the eye checks it against a drawn lens — which is exactly what the owner did.
+        //
+        // Read off the rigs at the baked default len = 0.4, each from the piece's own `glow` geometry.
+
+        /// <summary>`lanternPost`: the flame prism spans lz+0.06..lz+0.2 with lz = ht − 0.34 and ht = 2.30,
+        /// so its centre is 2.09 m up (wharfDecorRig.js:990-994). The cap above it is what takes the piece
+        /// to its published 2.46 m.</summary>
+        public const float LanternPostFittingHeightMetres = 2.09f;
+
+        /// <summary>`streetLamp`: the pendant lens spans ht−0.28..ht+0.02 with ht = 4.32, so its centre is
+        /// 4.19 m up (utilityIsoRig.js:361).</summary>
+        public const float StreetLampFittingHeightMetres = 4.19f;
+
+        /// <summary>`yardLight`: the cobra head's glow slab lies at ht+0.06 with ht = 6.96 — 7.02 m up
+        /// (utilityIsoRig.js:339).</summary>
+        public const float YardLightFittingHeightMetres = 7.02f;
+
+        /// <summary>`floodMast`: the three flood cans' lenses sit at about ht+0.03 with ht = 7.60 — 7.63 m
+        /// up (utilityIsoRig.js:376).</summary>
+        public const float FloodMastFittingHeightMetres = 7.63f;
+
+        /// <summary>
+        /// <b>How high this piece's lit fitting sits, metres</b> — where the BLOOM is drawn.
+        ///
+        /// <para>The owner, on the 2026-09-05 plates: <i>"the glow emitters seem to always be at the base
+        /// and not the lantern lens."</i> Both iso packs pivot these pieces at the GROUND CENTRE, so a glow
+        /// posed on the transform comes out of the post's feet. This lifts it to the lamp.</para>
+        ///
+        /// <para>⚠️ <b>VERTICAL ONLY, and the horizontal is owed.</b> A swan-neck lamp's lens hangs 0.8 m to
+        /// one side of its mast (`prismT(-0.8, …)`) and a cobra head 1.53 m — and that offset ROTATES with
+        /// the piece's facing, so it cannot be a constant here. The right answer is the `lamp` ANCHOR the
+        /// pack already declares a kind for (`pointKinds: [wires, secondary, lamp, drop]`) and does not yet
+        /// publish coordinates for; reading it needs a rig re-bake, which is its own PR. Until then a
+        /// swan-neck lamp glows from the top of its mast rather than from the end of its arm — much closer
+        /// than its feet, and honestly short of the lens.</para>
+        ///
+        /// <para>Unknown keys fall back to 0: a piece nobody measured glows where it stands, which is what
+        /// every light in the game did before this.</para>
+        /// </summary>
+        public static float FittingHeightMetres(string key)
+        {
+            switch (key)
+            {
+                case LanternPost: return LanternPostFittingHeightMetres;
+                case StreetLamp:  return StreetLampFittingHeightMetres;
+                case YardLight:   return YardLightFittingHeightMetres;
+                case FloodMast:   return FloodMastFittingHeightMetres;
+                default:          return 0f;
+            }
+        }
+
         /// <summary>
         /// <b>How wide this piece's LIT FITTING is, metres</b> — its lantern, its lens, its glazed head.
         /// The glow blooms to this size (<see cref="LightPresets.BloomForFitting"/>), so two lamp posts
@@ -353,6 +410,12 @@ namespace HiddenHarbours.App.Editor
             if (light == null) light = go.AddComponent<SceneLight>();
             LightPresets.ApplyFitting(light, preset, fitting);
             light.LampHeightMeters = HeadHeightMetres(family, key);
+            // ⭐ AND THE GLOW GOES UP TO THE LENS. The pack pivots these pieces at the GROUND CENTRE, so a
+            // bloom posed on the transform glows out of the post's feet — exactly what the owner saw on the
+            // 2026-09-05 plates ("the glow emitters seem to always be at the base and not the lantern
+            // lens"). The lift is the LENS's own height rather than the piece's published one, because a
+            // lantern hangs under its cap and the eye checks a glow against the drawn glass.
+            light.BloomLiftMetres = FittingHeightMetres(key);
             light.CastsShadows = true;      // the wharf's gear throws from the post (lights PR B)
 
             var carried = go.GetComponent<PreconfiguredLight>();

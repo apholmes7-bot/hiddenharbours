@@ -101,6 +101,25 @@ namespace HiddenHarbours.Player
         public int HeldFramesPerDir;
         [Tooltip("From the rig's hold.hands: true = both hands (held at the hands' midpoint).")]
         public bool TwoHanded;
+
+        // ---- catch pass 2's two new water anims -------------------------------------------------
+        //
+        // Both are SURFACE beats and both were missing from pass 1 entirely, which is why the fight
+        // has only ever had two things a hooked fish can do at the top: run (dart) or shake
+        // (thrash). Wiring them to the sim's states is the visible-fish arc's job, not this one —
+        // these carry the art so that lane has something to reach for.
+
+        [Tooltip("8 dirs × n — the belly flash as she rolls at the surface. 4f in the rig.")]
+        public Sprite[] RollFrames;
+        public int RollFramesPerDir;
+        public Vector2[] RollMouthOffsets;
+
+        [Tooltip("8 dirs × n — the breach: a z arc and pitch baked into the frames. 6f in the rig, " +
+                 "and the rig's MOTION.jump.travel says she covers 0.55 m over them, so a presenter " +
+                 "must MOVE her across the anim rather than play it on the spot.")]
+        public Sprite[] JumpFrames;
+        public int JumpFramesPerDir;
+        public Vector2[] JumpMouthOffsets;
     }
 
     /// <summary>

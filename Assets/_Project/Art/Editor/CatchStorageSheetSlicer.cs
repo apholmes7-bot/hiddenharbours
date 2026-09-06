@@ -53,6 +53,43 @@ namespace HiddenHarbours.Art.Editor
                 // Shellfish items: 14×12, ipivot (7,10) = ground contact; ONE row × 4 lay variants.
                 ["CatchItem_mussel"] = new FishingSheetSlicer.KitSpec(14, 12, rows: 1, pivotX: 7, pivotY: 10),
                 ["CatchItem_clam"] = new FishingSheetSlicer.KitSpec(14, 12, rows: 1, pivotX: 7, pivotY: 10),
+
+                // ---- catch pass 2 -------------------------------------------------------------
+                //
+                // Every pass-2 stem carries a 2, so the pass-1 entries above keep working until
+                // their consumers switch. No key here is a prefix of another's stems: "Crust2_" and
+                // "Crust2Held_" diverge at the underscore, and so do "Shell2_" and "Shell2Hand_".
+
+                // Crustacean2 on the ground: 64×64, pivot (32,40) = ground centre; 8 direction rows.
+                ["Crust2_"] = new FishingSheetSlicer.KitSpec(64, 64, rows: 8, pivotX: 32, pivotY: 40),
+
+                // ⚠️ HELD is its own stem because it is its own PIVOT: hpivot (32,12), the grip on
+                // the animal's back. Measured — a held cell's content sits at y≈14 while a walking
+                // one sits at y≈38, so slicing held on the ground pivot would hang it in mid-air.
+                ["Crust2Held_"] = new FishingSheetSlicer.KitSpec(64, 64, rows: 8, pivotX: 32, pivotY: 12),
+
+                // Shellfish2 at STRICT WORLD SCALE — 8×8, not pass 1's 14×12, because scale 1 is now
+                // the real animal (a periwinkle is ONE PIXEL). Loose shell pivots on ground contact.
+                ["Shell2_"] = new FishingSheetSlicer.KitSpec(8, 8, rows: 1, pivotX: 4, pivotY: 6),
+
+                // The handful pivots on THE GRIP (4,4) — one clutch per hand.
+                ["Shell2Hand_"] = new FishingSheetSlicer.KitSpec(8, 8, rows: 1, pivotX: 4, pivotY: 4),
+
+                // The clam hod: 40×40, pivot (20,30) = ground centre; 8 direction rows, one frame.
+                // Two stems (back/front) because the basket is hollow — the heap goes between them.
+                ["Hod2_"] = new FishingSheetSlicer.KitSpec(40, 40, rows: 8, pivotX: 20, pivotY: 30),
+
+                // Pass-2 composed items. The crustaceans keep the 64×64 cell but move to
+                // Crustacean2's (32,40) pivot — pass 1's Crustacean pivoted at (32,36), so these are
+                // NOT the same spec as the CatchItem_ entries above and must not inherit them.
+                ["CatchItem2_lobster"] = new FishingSheetSlicer.KitSpec(64, 64, rows: 1, pivotX: 32, pivotY: 40),
+                ["CatchItem2_crab"] = new FishingSheetSlicer.KitSpec(64, 64, rows: 1, pivotX: 32, pivotY: 40),
+
+                ["CatchItem2_mussel"] = new FishingSheetSlicer.KitSpec(8, 8, rows: 1, pivotX: 4, pivotY: 6),
+                ["CatchItem2_clam"] = new FishingSheetSlicer.KitSpec(8, 8, rows: 1, pivotX: 4, pivotY: 6),
+                ["CatchItem2_scallop"] = new FishingSheetSlicer.KitSpec(8, 8, rows: 1, pivotX: 4, pivotY: 6),
+                ["CatchItem2_oyster"] = new FishingSheetSlicer.KitSpec(8, 8, rows: 1, pivotX: 4, pivotY: 6),
+                ["CatchItem2_periwinkle"] = new FishingSheetSlicer.KitSpec(8, 8, rows: 1, pivotX: 4, pivotY: 6),
             };
 
         /// <summary>The kit a stem belongs to, or null for a stranger (which must fail, not

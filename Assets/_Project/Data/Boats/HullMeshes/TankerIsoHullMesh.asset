@@ -428,6 +428,7 @@ MonoBehaviour:
   RestingDraftMeters: 2.47
   WatertightDeckHeightMeters: 8.6
   WatertightHalfBeamMeters: 9
+  WakeSternOffsetMeters: 55
   Lamps:
   - Kind: 0
     RigLocalMetres: {x: -8.5, y: -34.5, z: 21.15}
