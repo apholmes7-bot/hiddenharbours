@@ -70,8 +70,12 @@ namespace HiddenHarbours.Tests.EditMode
         /// <paramref name="tailSteps"/> frames of nothing but decay, with the ping-pong stored in
         /// <paramref name="store"/>. Returns the buffer's two channels per texel.
         /// </summary>
-        /// <param name="shiftEvery">0 = never scroll. Otherwise scroll one whole cell in +x every this
-        /// many frames — the cell law's own move, exercised through the format under test.</param>
+        /// <param name="shiftEvery">0 = never scroll. Otherwise scroll one whole cell every this many
+        /// frames — the cell law's own move, exercised through the format under test. ⚠️ It applies to
+        /// the TAIL frames only. A scroll that ran while the hull was still injecting would move the
+        /// content laid on frame 1 by the whole run and the content laid on the last frame by nothing,
+        /// so the two arms would differ by a smear rather than by a translation, and a guard comparing
+        /// them would be comparing two different pictures.</param>
         static Color[] RunArm(RenderTextureFormat store, int steps, int tailSteps, out int res,
                               int shiftEvery = 0)
         {
@@ -116,7 +120,7 @@ namespace HiddenHarbours.Tests.EditMode
                     shape[0] = Vector4.zero;
                 }
 
-                int shift = shiftEvery > 0 && i % shiftEvery == 0 ? 1 : 0;
+                int shift = !injecting && shiftEvery > 0 && i % shiftEvery == 0 ? 1 : 0;
                 mat.SetTexture(FoamShaderIds.Prev, src);
                 mat.SetVector(FoamShaderIds.BufferWorld, new Vector4(origin.x, origin.y, Extent, 1f / Extent));
                 mat.SetVector(FoamShaderIds.Resolution, new Vector4(res, res, 1f / res, 1f / res));
@@ -284,14 +288,16 @@ namespace HiddenHarbours.Tests.EditMode
         {
             RequireAGraphicsDevice();
             const int steps = 300;
+            const int tail = 200;
 
             int res;
-            Color[] still = RunArm(Fixed, steps, 0, out res);
-            Color[] scrolled = RunArm(Fixed, steps, 0, out _, shiftEvery: 1);
+            Color[] still = RunArm(Fixed, steps, tail, out res);
+            Color[] scrolled = RunArm(Fixed, steps, tail, out _, shiftEvery: 1);
 
-            // The buffer was shifted one texel in +x every frame for `steps` frames, and the source is
-            // read at texel + shift, so the content moves the other way. Compare the overlap.
-            int moved = steps;
+            // Both arms took the SAME number of decay steps and differ only by the scroll, so the two
+            // pictures must be the same picture, translated. The fragment reads its source at
+            // texel + shift, so the content travels the other way.
+            int moved = tail;
             int compared = 0, exact = 0;
             float worst = 0f;
             for (int y = 0; y < res; y++)
