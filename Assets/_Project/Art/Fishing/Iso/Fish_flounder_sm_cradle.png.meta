@@ -146,265 +146,353 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Fish_flounder_sm_cradle_0
+      name: Fish_flounder_sm_cradle_d0_f0
       rect:
         serializedVersion: 2
-        x: 29
-        y: 470
-        width: 6
-        height: 7
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 448
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: de50a9d2163b5bf30800000000000000
-      internalID: 4590772625132357101
+      spriteID: 62004ce6761c4e9449962df184024e38
+      internalID: -510218587
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_flounder_sm_cradle_1
+      name: Fish_flounder_sm_cradle_d0_f1
       rect:
         serializedVersion: 2
-        x: 93
-        y: 470
-        width: 6
-        height: 7
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 448
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: bec767035581fe210800000000000000
-      internalID: 1364335966280908011
+      spriteID: 948de25ff451cfb478f97bedc76f40f4
+      internalID: -48086835
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_flounder_sm_cradle_2
+      name: Fish_flounder_sm_cradle_d1_f0
       rect:
         serializedVersion: 2
-        x: 29
-        y: 407
-        width: 71
-        height: 6
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 384
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 1130e9bec09533f70800000000000000
-      internalID: 9165767578656572177
+      spriteID: bb1ee74a319b81f4a88b6be752ba092f
+      internalID: -844456485
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_flounder_sm_cradle_3
+      name: Fish_flounder_sm_cradle_d1_f1
       rect:
         serializedVersion: 2
-        x: 29
-        y: 343
-        width: 71
-        height: 6
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 384
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: f185b8a7022d088a0800000000000000
-      internalID: -6304808441381955553
+      spriteID: 430900b3bc06d0e41b17e0a83a4cc72b
+      internalID: -1253892151
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_flounder_sm_cradle_4
+      name: Fish_flounder_sm_cradle_d2_f0
       rect:
         serializedVersion: 2
-        x: 28
-        y: 279
-        width: 8
-        height: 6
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 320
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a60f6a3476fc92340800000000000000
-      internalID: 4839627317009903722
+      spriteID: d9c67404d81869b4996106ea67c4d39b
+      internalID: 639965743
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_flounder_sm_cradle_5
+      name: Fish_flounder_sm_cradle_d2_f1
       rect:
         serializedVersion: 2
-        x: 92
-        y: 279
-        width: 8
-        height: 7
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 320
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: d46a6613ae6cf0200800000000000000
-      internalID: 148556021879973453
+      spriteID: 8bd23d1491099da46a741078ca1a4379
+      internalID: -24598717
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_flounder_sm_cradle_6
+      name: Fish_flounder_sm_cradle_d3_f0
       rect:
         serializedVersion: 2
-        x: 29
-        y: 215
-        width: 6
-        height: 7
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 256
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: dfce117200f12bd20800000000000000
-      internalID: 3292728363077201149
+      spriteID: 930ada5024b03d244ba3dac1ddbb79c7
+      internalID: 1712582110
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_flounder_sm_cradle_7
+      name: Fish_flounder_sm_cradle_d3_f1
       rect:
         serializedVersion: 2
-        x: 93
-        y: 215
-        width: 6
-        height: 6
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 256
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: cd483af3c2897a770800000000000000
-      internalID: 8622027327437767900
+      spriteID: 04abeaf26ef6599489f8c6ad41c04f55
+      internalID: 1820869994
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_flounder_sm_cradle_8
+      name: Fish_flounder_sm_cradle_d4_f0
       rect:
         serializedVersion: 2
-        x: 28
-        y: 151
-        width: 8
-        height: 7
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 192
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: be4d1015b816f7e00800000000000000
-      internalID: 1044660889560667371
+      spriteID: 61a3685221abff14281744da06d8c9e3
+      internalID: 711327462
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_flounder_sm_cradle_9
+      name: Fish_flounder_sm_cradle_d4_f1
       rect:
         serializedVersion: 2
-        x: 92
-        y: 151
-        width: 8
-        height: 6
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 192
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 4eba256b6e17719d0800000000000000
-      internalID: -2803647007299556380
+      spriteID: 72f14cad6be67ee4fa204ac760e9cbcb
+      internalID: 484977288
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_flounder_sm_cradle_10
+      name: Fish_flounder_sm_cradle_d5_f0
       rect:
         serializedVersion: 2
-        x: 28
-        y: 87
-        width: 71
-        height: 6
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 128
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 35bf4be29275d54f0800000000000000
-      internalID: -838418121232155821
+      spriteID: 2cb75b572478d2d43a09b3ee6b4adfe3
+      internalID: -361983895
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_flounder_sm_cradle_11
+      name: Fish_flounder_sm_cradle_d5_f1
       rect:
         serializedVersion: 2
-        x: 28
-        y: 23
-        width: 71
-        height: 6
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 128
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 069c17f524ba9bdf0800000000000000
-      internalID: -163911609864828576
+      spriteID: 58387ab63bb3dda458e97aa53f086309
+      internalID: 859642096
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_sm_cradle_d6_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 64
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fc2af41a4f1570a42a0b2727701aa237
+      internalID: 1057604114
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_sm_cradle_d6_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 64
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6653bd43580190648b40845be7e63bee
+      internalID: -1636660139
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_sm_cradle_d7_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 25037ba01bd1d2d459395fed516ac472
+      internalID: -1163597737
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_sm_cradle_d7_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 0
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b4921ca82e54beb468dadb8703bffe8d
+      internalID: -1814120141
       vertices: []
       indices: 
       edges: []
@@ -413,7 +501,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 6bb6f8709adb9a8489e0b1c5d7d539fa
     internalID: 0
     vertices: []
     indices: 
@@ -423,18 +511,22 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Fish_flounder_sm_cradle_0: 4590772625132357101
-      Fish_flounder_sm_cradle_1: 1364335966280908011
-      Fish_flounder_sm_cradle_10: -838418121232155821
-      Fish_flounder_sm_cradle_11: -163911609864828576
-      Fish_flounder_sm_cradle_2: 9165767578656572177
-      Fish_flounder_sm_cradle_3: -6304808441381955553
-      Fish_flounder_sm_cradle_4: 4839627317009903722
-      Fish_flounder_sm_cradle_5: 148556021879973453
-      Fish_flounder_sm_cradle_6: 3292728363077201149
-      Fish_flounder_sm_cradle_7: 8622027327437767900
-      Fish_flounder_sm_cradle_8: 1044660889560667371
-      Fish_flounder_sm_cradle_9: -2803647007299556380
+      Fish_flounder_sm_cradle_d0_f0: -510218587
+      Fish_flounder_sm_cradle_d0_f1: -48086835
+      Fish_flounder_sm_cradle_d1_f0: -844456485
+      Fish_flounder_sm_cradle_d1_f1: -1253892151
+      Fish_flounder_sm_cradle_d2_f0: 639965743
+      Fish_flounder_sm_cradle_d2_f1: -24598717
+      Fish_flounder_sm_cradle_d3_f0: 1712582110
+      Fish_flounder_sm_cradle_d3_f1: 1820869994
+      Fish_flounder_sm_cradle_d4_f0: 711327462
+      Fish_flounder_sm_cradle_d4_f1: 484977288
+      Fish_flounder_sm_cradle_d5_f0: -361983895
+      Fish_flounder_sm_cradle_d5_f1: 859642096
+      Fish_flounder_sm_cradle_d6_f0: 1057604114
+      Fish_flounder_sm_cradle_d6_f1: -1636660139
+      Fish_flounder_sm_cradle_d7_f0: -1163597737
+      Fish_flounder_sm_cradle_d7_f1: -1814120141
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

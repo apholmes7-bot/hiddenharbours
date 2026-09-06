@@ -206,705 +206,705 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Fish_haddock_sm_thrash_0
+      name: Fish_haddock_sm_thrash_d0_f0
       rect:
         serializedVersion: 2
-        x: 28
-        y: 469
-        width: 9
-        height: 12
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 448
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 6643097f675530410800000000000000
-      internalID: 1442090275136615526
+      spriteID: 726da78251f92b4468e53ddf27bea19d
+      internalID: 2082939554
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_haddock_sm_thrash_1
+      name: Fish_haddock_sm_thrash_d0_f1
       rect:
         serializedVersion: 2
-        x: 89
-        y: 470
-        width: 11
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 448
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 3d4d74bf4e76dd3c0800000000000000
-      internalID: -4333193033294555949
+      spriteID: fa53e026f08ff8749bc8462995aa2404
+      internalID: 859054808
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_haddock_sm_thrash_2
+      name: Fish_haddock_sm_thrash_d0_f2
       rect:
         serializedVersion: 2
-        x: 156
-        y: 472
-        width: 7
-        height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 128
+        y: 448
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 0181f5a56fa8dc5a0800000000000000
-      internalID: -6499385896542988272
+      spriteID: d0a33462707ee5043b1ef1fd052fe3b7
+      internalID: -2041559439
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_haddock_sm_thrash_3
+      name: Fish_haddock_sm_thrash_d0_f3
       rect:
         serializedVersion: 2
-        x: 221
-        y: 471
-        width: 7
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 192
+        y: 448
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: d1454b4af129d6e00800000000000000
-      internalID: 1039647753597375517
+      spriteID: f53d0a910c72a5d4a871ead3be81a2ec
+      internalID: 1267767346
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_haddock_sm_thrash_4
+      name: Fish_haddock_sm_thrash_d1_f0
       rect:
         serializedVersion: 2
-        x: 28
-        y: 405
-        width: 10
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 384
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 19c50be1da657b190800000000000000
-      internalID: -7946787715927745391
+      spriteID: 6ffcdcccce776ef4da909a3d86727ded
+      internalID: 1652092915
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_haddock_sm_thrash_5
+      name: Fish_haddock_sm_thrash_d1_f1
       rect:
         serializedVersion: 2
-        x: 87
-        y: 407
-        width: 14
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 384
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a7413abf4ec18c410800000000000000
-      internalID: 1497478645900579962
+      spriteID: 56169d1014bb387419692e6a2c3d162b
+      internalID: -195190913
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_haddock_sm_thrash_6
+      name: Fish_haddock_sm_thrash_d1_f2
       rect:
         serializedVersion: 2
-        x: 154
-        y: 408
-        width: 12
-        height: 7
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 128
+        y: 384
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 99dfcf2da01c9bc60800000000000000
-      internalID: 7834505279021317529
+      spriteID: a06dbdf69aa8e5a46ac98fd1aa9f9ea2
+      internalID: -1879276705
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_haddock_sm_thrash_7
+      name: Fish_haddock_sm_thrash_d1_f3
       rect:
         serializedVersion: 2
-        x: 218
-        y: 407
-        width: 11
-        height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 192
+        y: 384
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 7e0f01ec292648420800000000000000
-      internalID: 2631336464953176295
+      spriteID: 3f2892510c0fe6a46ad9acc51e6eb56a
+      internalID: -602017080
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_haddock_sm_thrash_8
+      name: Fish_haddock_sm_thrash_d2_f0
       rect:
         serializedVersion: 2
-        x: 23
-        y: 342
-        width: 16
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 320
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 260b78de71046bed0800000000000000
-      internalID: -2398659280014692254
+      spriteID: 97f485ad1d60b474491e27d73efa2342
+      internalID: -1569939373
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_haddock_sm_thrash_9
+      name: Fish_haddock_sm_thrash_d2_f1
       rect:
         serializedVersion: 2
-        x: 88
-        y: 343
-        width: 15
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 320
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 6c018bee3d393cc10800000000000000
-      internalID: 2072662791972982982
+      spriteID: 467a5311e4e5f7f468b8a5d498c4821e
+      internalID: -637420659
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_haddock_sm_thrash_10
+      name: Fish_haddock_sm_thrash_d2_f2
       rect:
         serializedVersion: 2
-        x: 151
-        y: 344
-        width: 16
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 128
+        y: 320
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 6443e2baab7f49d30800000000000000
-      internalID: 4437443913974690886
+      spriteID: f79e121e754e10e44816d39430bacd2d
+      internalID: 1316727699
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_haddock_sm_thrash_11
+      name: Fish_haddock_sm_thrash_d2_f3
       rect:
         serializedVersion: 2
-        x: 214
-        y: 343
-        width: 17
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 192
+        y: 320
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c405fec0b302bfbd0800000000000000
-      internalID: -2595445322256789428
+      spriteID: b022a49a739930240bf47f5230ac0195
+      internalID: -1819513269
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_haddock_sm_thrash_12
+      name: Fish_haddock_sm_thrash_d3_f0
       rect:
         serializedVersion: 2
-        x: 21
-        y: 279
-        width: 16
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 256
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 1caeb9ea1ed4a9390800000000000000
-      internalID: -7810844972028269887
+      spriteID: ef84b6b136e17b24c9e0d3162f46ef42
+      internalID: 1851845963
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_haddock_sm_thrash_13
+      name: Fish_haddock_sm_thrash_d3_f1
       rect:
         serializedVersion: 2
-        x: 92
-        y: 279
-        width: 10
-        height: 13
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 256
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: b87c968914b0afa40800000000000000
-      internalID: 5402643079342180235
+      spriteID: 5bd8a7a102b41214093354cb20bb7577
+      internalID: 964177771
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_haddock_sm_thrash_14
+      name: Fish_haddock_sm_thrash_d3_f2
       rect:
         serializedVersion: 2
-        x: 151
-        y: 279
-        width: 14
-        height: 13
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 128
+        y: 256
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 64d62847338e2d670800000000000000
-      internalID: 8562161149280415046
+      spriteID: a1adf3e240857cc43a3ad410428f8abe
+      internalID: -1650373507
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_haddock_sm_thrash_15
+      name: Fish_haddock_sm_thrash_d3_f3
       rect:
         serializedVersion: 2
-        x: 217
-        y: 279
-        width: 13
-        height: 12
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 192
+        y: 256
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c9afcab6e23245770800000000000000
-      internalID: 8598536270839085724
+      spriteID: a22c7f5e92d94f9428d8e20a8ac9791d
+      internalID: 953587713
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_haddock_sm_thrash_16
+      name: Fish_haddock_sm_thrash_d4_f0
       rect:
         serializedVersion: 2
-        x: 25
-        y: 214
-        width: 10
-        height: 13
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 192
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: f72833841995fa4e0800000000000000
-      internalID: -1968256031621152129
+      spriteID: a5e803605c73e894988a53f30329ee73
+      internalID: -2131050038
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_haddock_sm_thrash_17
+      name: Fish_haddock_sm_thrash_d4_f1
       rect:
         serializedVersion: 2
-        x: 93
-        y: 215
-        width: 9
-        height: 13
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 192
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 3135029f0c0b6fa70800000000000000
-      internalID: 8860463659757884179
+      spriteID: 3af868039ab895d449e10aca3457d5c6
+      internalID: 1068197465
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_haddock_sm_thrash_18
+      name: Fish_haddock_sm_thrash_d4_f2
       rect:
         serializedVersion: 2
-        x: 156
-        y: 214
-        width: 8
-        height: 16
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 128
+        y: 192
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 623423f0a2b527530800000000000000
-      internalID: 3851240867556901670
+      spriteID: 02b380eb301f4b74da1ef5b22e160a4c
+      internalID: 1828834688
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_haddock_sm_thrash_19
+      name: Fish_haddock_sm_thrash_d4_f3
       rect:
         serializedVersion: 2
-        x: 220
-        y: 214
-        width: 8
-        height: 14
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 192
+        y: 192
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 6ad712d6140576d60800000000000000
-      internalID: 7883357914669350310
+      spriteID: a8624b647caab8f428b2e9172bbac9c5
+      internalID: 1438100245
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_haddock_sm_thrash_20
+      name: Fish_haddock_sm_thrash_d5_f0
       rect:
         serializedVersion: 2
-        x: 26
-        y: 150
-        width: 10
-        height: 13
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 128
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a37ee93bd2cbe74c0800000000000000
-      internalID: -4287782890737047750
+      spriteID: e110c9bc297c30f4d99240989e5087eb
+      internalID: -513195348
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_haddock_sm_thrash_21
+      name: Fish_haddock_sm_thrash_d5_f1
       rect:
         serializedVersion: 2
-        x: 91
-        y: 151
-        width: 15
-        height: 10
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 128
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 1508560e21c8d6290800000000000000
-      internalID: -7895500559008563119
+      spriteID: bce8b6cc49c599a40b6e3992cc960458
+      internalID: 341285807
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_haddock_sm_thrash_22
+      name: Fish_haddock_sm_thrash_d5_f2
       rect:
         serializedVersion: 2
-        x: 154
-        y: 151
-        width: 12
-        height: 14
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 128
+        y: 128
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 5522f10a08cce3e30800000000000000
-      internalID: 4485247131721867861
+      spriteID: a2509cbf499749c49a90516ea4751481
+      internalID: 844180833
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_haddock_sm_thrash_23
+      name: Fish_haddock_sm_thrash_d5_f3
       rect:
         serializedVersion: 2
-        x: 219
-        y: 150
-        width: 14
-        height: 12
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 192
+        y: 128
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: be797e54f573828b0800000000000000
-      internalID: -5176826889328158741
+      spriteID: af6685b1486d12e4f92593959305742a
+      internalID: -586248428
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_haddock_sm_thrash_24
+      name: Fish_haddock_sm_thrash_d6_f0
       rect:
         serializedVersion: 2
-        x: 25
-        y: 87
-        width: 13
-        height: 7
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 64
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 93bd323e6377a93a0800000000000000
-      internalID: -6657878021491139783
+      spriteID: a08be9c1bd92fee4d8aa3e0cf699fc5a
+      internalID: 238054791
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_haddock_sm_thrash_25
+      name: Fish_haddock_sm_thrash_d6_f1
       rect:
         serializedVersion: 2
-        x: 89
-        y: 87
-        width: 16
-        height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 64
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 9afa24ebc5a8b99a0800000000000000
-      internalID: -6225229928975913047
+      spriteID: cc416413ae4dc7e4b934332f1096cd42
+      internalID: 834851296
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_haddock_sm_thrash_26
+      name: Fish_haddock_sm_thrash_d6_f2
       rect:
         serializedVersion: 2
-        x: 153
-        y: 88
-        width: 13
-        height: 6
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 128
+        y: 64
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 9ebe8fe4d9ce1f240800000000000000
-      internalID: 4823896836269468649
+      spriteID: 76068557d2a26d643879c6fe2885be7a
+      internalID: 438426235
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_haddock_sm_thrash_27
+      name: Fish_haddock_sm_thrash_d6_f3
       rect:
         serializedVersion: 2
-        x: 217
-        y: 87
-        width: 17
-        height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 192
+        y: 64
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 736e86843dfda24c0800000000000000
-      internalID: -4311387594707900873
+      spriteID: b1d22225409990e40a7cb6c5fc330bdb
+      internalID: -562785924
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_haddock_sm_thrash_28
+      name: Fish_haddock_sm_thrash_d7_f0
       rect:
         serializedVersion: 2
-        x: 27
-        y: 23
-        width: 15
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 0
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: d2a49e5109546d880800000000000000
-      internalID: -8586599154390054355
+      spriteID: d0853c09e8a8ae94293118c89b2b5bdf
+      internalID: 1151286124
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_haddock_sm_thrash_29
+      name: Fish_haddock_sm_thrash_d7_f1
       rect:
         serializedVersion: 2
-        x: 90
-        y: 23
-        width: 10
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 0
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 07e9c6e18b256a520800000000000000
-      internalID: 2712946776275197552
+      spriteID: 5a6eacd19f3cbfd4abfe958dffe559b1
+      internalID: -78425243
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_haddock_sm_thrash_30
+      name: Fish_haddock_sm_thrash_d7_f2
       rect:
         serializedVersion: 2
-        x: 155
-        y: 24
-        width: 10
-        height: 7
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 128
+        y: 0
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 3051819cdb612d3b0800000000000000
-      internalID: -5489299991432784637
+      spriteID: 843c9c1ed33aca5469919e016c8bf640
+      internalID: -1785059683
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_haddock_sm_thrash_31
+      name: Fish_haddock_sm_thrash_d7_f3
       rect:
         serializedVersion: 2
-        x: 218
-        y: 22
-        width: 13
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 192
+        y: 0
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 9314f8ecb9c288590800000000000000
-      internalID: -7671832917528592071
+      spriteID: 389e9e206e3f14f4e940c65d2d5cffe8
+      internalID: -1492733723
       vertices: []
       indices: 
       edges: []
@@ -913,7 +913,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 2a316110e8f6c784f93040d679c9c3dd
     internalID: 0
     vertices: []
     indices: 
@@ -923,38 +923,38 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Fish_haddock_sm_thrash_0: 1442090275136615526
-      Fish_haddock_sm_thrash_1: -4333193033294555949
-      Fish_haddock_sm_thrash_10: 4437443913974690886
-      Fish_haddock_sm_thrash_11: -2595445322256789428
-      Fish_haddock_sm_thrash_12: -7810844972028269887
-      Fish_haddock_sm_thrash_13: 5402643079342180235
-      Fish_haddock_sm_thrash_14: 8562161149280415046
-      Fish_haddock_sm_thrash_15: 8598536270839085724
-      Fish_haddock_sm_thrash_16: -1968256031621152129
-      Fish_haddock_sm_thrash_17: 8860463659757884179
-      Fish_haddock_sm_thrash_18: 3851240867556901670
-      Fish_haddock_sm_thrash_19: 7883357914669350310
-      Fish_haddock_sm_thrash_2: -6499385896542988272
-      Fish_haddock_sm_thrash_20: -4287782890737047750
-      Fish_haddock_sm_thrash_21: -7895500559008563119
-      Fish_haddock_sm_thrash_22: 4485247131721867861
-      Fish_haddock_sm_thrash_23: -5176826889328158741
-      Fish_haddock_sm_thrash_24: -6657878021491139783
-      Fish_haddock_sm_thrash_25: -6225229928975913047
-      Fish_haddock_sm_thrash_26: 4823896836269468649
-      Fish_haddock_sm_thrash_27: -4311387594707900873
-      Fish_haddock_sm_thrash_28: -8586599154390054355
-      Fish_haddock_sm_thrash_29: 2712946776275197552
-      Fish_haddock_sm_thrash_3: 1039647753597375517
-      Fish_haddock_sm_thrash_30: -5489299991432784637
-      Fish_haddock_sm_thrash_31: -7671832917528592071
-      Fish_haddock_sm_thrash_4: -7946787715927745391
-      Fish_haddock_sm_thrash_5: 1497478645900579962
-      Fish_haddock_sm_thrash_6: 7834505279021317529
-      Fish_haddock_sm_thrash_7: 2631336464953176295
-      Fish_haddock_sm_thrash_8: -2398659280014692254
-      Fish_haddock_sm_thrash_9: 2072662791972982982
+      Fish_haddock_sm_thrash_d0_f0: 2082939554
+      Fish_haddock_sm_thrash_d0_f1: 859054808
+      Fish_haddock_sm_thrash_d0_f2: -2041559439
+      Fish_haddock_sm_thrash_d0_f3: 1267767346
+      Fish_haddock_sm_thrash_d1_f0: 1652092915
+      Fish_haddock_sm_thrash_d1_f1: -195190913
+      Fish_haddock_sm_thrash_d1_f2: -1879276705
+      Fish_haddock_sm_thrash_d1_f3: -602017080
+      Fish_haddock_sm_thrash_d2_f0: -1569939373
+      Fish_haddock_sm_thrash_d2_f1: -637420659
+      Fish_haddock_sm_thrash_d2_f2: 1316727699
+      Fish_haddock_sm_thrash_d2_f3: -1819513269
+      Fish_haddock_sm_thrash_d3_f0: 1851845963
+      Fish_haddock_sm_thrash_d3_f1: 964177771
+      Fish_haddock_sm_thrash_d3_f2: -1650373507
+      Fish_haddock_sm_thrash_d3_f3: 953587713
+      Fish_haddock_sm_thrash_d4_f0: -2131050038
+      Fish_haddock_sm_thrash_d4_f1: 1068197465
+      Fish_haddock_sm_thrash_d4_f2: 1828834688
+      Fish_haddock_sm_thrash_d4_f3: 1438100245
+      Fish_haddock_sm_thrash_d5_f0: -513195348
+      Fish_haddock_sm_thrash_d5_f1: 341285807
+      Fish_haddock_sm_thrash_d5_f2: 844180833
+      Fish_haddock_sm_thrash_d5_f3: -586248428
+      Fish_haddock_sm_thrash_d6_f0: 238054791
+      Fish_haddock_sm_thrash_d6_f1: 834851296
+      Fish_haddock_sm_thrash_d6_f2: 438426235
+      Fish_haddock_sm_thrash_d6_f3: -562785924
+      Fish_haddock_sm_thrash_d7_f0: 1151286124
+      Fish_haddock_sm_thrash_d7_f1: -78425243
+      Fish_haddock_sm_thrash_d7_f2: -1785059683
+      Fish_haddock_sm_thrash_d7_f3: -1492733723
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

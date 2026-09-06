@@ -140,221 +140,353 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Fish_mackerel_sm_shadow_0
+      name: Fish_mackerel_sm_shadow_d0_f0
       rect:
         serializedVersion: 2
-        x: 29
-        y: 395
-        width: 7
-        height: 6
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 448
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 79946716f3a6d7e00800000000000000
-      internalID: 1044107509070449047
+      spriteID: 22e4c98dfa4bd174eb03b33545493318
+      internalID: -1076628809
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_mackerel_sm_shadow_1
+      name: Fish_mackerel_sm_shadow_d0_f1
       rect:
         serializedVersion: 2
-        x: 30
-        y: 394
-        width: 70
-        height: 71
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 448
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 6e9212244be5b4410800000000000000
-      internalID: 1462366632308451814
+      spriteID: df4c01aaf1ddc744caf98ff3f63e6c40
+      internalID: -524688939
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_mackerel_sm_shadow_2
+      name: Fish_mackerel_sm_shadow_d1_f0
       rect:
         serializedVersion: 2
-        x: 25
-        y: 331
-        width: 76
-        height: 6
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 384
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 5c4f1263c3423eed0800000000000000
-      internalID: -2386023536551398203
+      spriteID: 8cbb821ba793f9b48a0efcaf71c5ad06
+      internalID: 449074317
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_mackerel_sm_shadow_3
+      name: Fish_mackerel_sm_shadow_d1_f1
       rect:
         serializedVersion: 2
-        x: 25
-        y: 202
-        width: 11
-        height: 72
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 384
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: b56974a024ec93b10800000000000000
-      internalID: 1961825895732188763
+      spriteID: daeef23b9c6d3b444baccee697f30e02
+      internalID: -415461411
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_mackerel_sm_shadow_4
+      name: Fish_mackerel_sm_shadow_d2_f0
       rect:
         serializedVersion: 2
-        x: 92
-        y: 202
-        width: 8
-        height: 72
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 320
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 36c7d908f0c650e70800000000000000
-      internalID: 9080783037500587107
+      spriteID: f4ec46117e96625419cdfbc61118a554
+      internalID: -166700208
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_mackerel_sm_shadow_5
+      name: Fish_mackerel_sm_shadow_d2_f1
       rect:
         serializedVersion: 2
-        x: 28
-        y: 138
-        width: 8
-        height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 320
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 19f8af3ee1276b300800000000000000
-      internalID: 267526704874557329
+      spriteID: efbb8fc83855a52489055c71b91e6e73
+      internalID: -2114717442
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_mackerel_sm_shadow_6
+      name: Fish_mackerel_sm_shadow_d3_f0
       rect:
         serializedVersion: 2
-        x: 92
-        y: 138
-        width: 11
-        height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 256
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 6223ac5be52bde440800000000000000
-      internalID: 4966822083906122278
+      spriteID: cb668324a513b624fbef3932173cc59e
+      internalID: 1803232284
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_mackerel_sm_shadow_7
+      name: Fish_mackerel_sm_shadow_d3_f1
       rect:
         serializedVersion: 2
-        x: 27
-        y: 75
-        width: 12
-        height: 6
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 256
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: ba00c559a94c92e30800000000000000
-      internalID: 4479327472606511275
+      spriteID: ab0f098a62abcf94fb38eb4eb7b3e6ce
+      internalID: 1234434884
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_mackerel_sm_shadow_8
+      name: Fish_mackerel_sm_shadow_d4_f0
       rect:
         serializedVersion: 2
-        x: 91
-        y: 11
-        width: 12
-        height: 69
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 192
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e33b319f72448bc40800000000000000
-      internalID: 5528243481070515006
+      spriteID: 9f49dd8cd695fe641800a7ee06474a98
+      internalID: -686985739
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_mackerel_sm_shadow_9
+      name: Fish_mackerel_sm_shadow_d4_f1
       rect:
         serializedVersion: 2
-        x: 28
-        y: 10
-        width: 11
-        height: 7
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 192
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 302dbe5a99823aba0800000000000000
-      internalID: -6078970431641234941
+      spriteID: 42ed7e45a3370684087d8808e8d5aa35
+      internalID: 1091126544
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_sm_shadow_d5_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 128
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 221e9d62c8845a5468e9f221128ecd29
+      internalID: 2032893177
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_sm_shadow_d5_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 128
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9bbbdff3c1653ae4d804e94f4b8832e8
+      internalID: 1385982268
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_sm_shadow_d6_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 64
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8bcba407fa5e59e4f8bef0351baa4a32
+      internalID: -671476219
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_sm_shadow_d6_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 64
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e1fbc74d434acf944b7acdeeed830878
+      internalID: -19101576
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_sm_shadow_d7_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 00cb44590be65da4f9a7727129991b04
+      internalID: 231425457
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_sm_shadow_d7_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 0
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3b4a0be6798038640b2a8285a72a7a18
+      internalID: -980176502
       vertices: []
       indices: 
       edges: []
@@ -363,7 +495,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: f08712fb7732da74d98324429af0b52a
     internalID: 0
     vertices: []
     indices: 
@@ -373,16 +505,22 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Fish_mackerel_sm_shadow_0: 1044107509070449047
-      Fish_mackerel_sm_shadow_1: 1462366632308451814
-      Fish_mackerel_sm_shadow_2: -2386023536551398203
-      Fish_mackerel_sm_shadow_3: 1961825895732188763
-      Fish_mackerel_sm_shadow_4: 9080783037500587107
-      Fish_mackerel_sm_shadow_5: 267526704874557329
-      Fish_mackerel_sm_shadow_6: 4966822083906122278
-      Fish_mackerel_sm_shadow_7: 4479327472606511275
-      Fish_mackerel_sm_shadow_8: 5528243481070515006
-      Fish_mackerel_sm_shadow_9: -6078970431641234941
+      Fish_mackerel_sm_shadow_d0_f0: -1076628809
+      Fish_mackerel_sm_shadow_d0_f1: -524688939
+      Fish_mackerel_sm_shadow_d1_f0: 449074317
+      Fish_mackerel_sm_shadow_d1_f1: -415461411
+      Fish_mackerel_sm_shadow_d2_f0: -166700208
+      Fish_mackerel_sm_shadow_d2_f1: -2114717442
+      Fish_mackerel_sm_shadow_d3_f0: 1803232284
+      Fish_mackerel_sm_shadow_d3_f1: 1234434884
+      Fish_mackerel_sm_shadow_d4_f0: -686985739
+      Fish_mackerel_sm_shadow_d4_f1: 1091126544
+      Fish_mackerel_sm_shadow_d5_f0: 2032893177
+      Fish_mackerel_sm_shadow_d5_f1: 1385982268
+      Fish_mackerel_sm_shadow_d6_f0: -671476219
+      Fish_mackerel_sm_shadow_d6_f1: -19101576
+      Fish_mackerel_sm_shadow_d7_f0: 231425457
+      Fish_mackerel_sm_shadow_d7_f1: -980176502
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

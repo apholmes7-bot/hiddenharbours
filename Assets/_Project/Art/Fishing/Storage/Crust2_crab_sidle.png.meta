@@ -206,705 +206,705 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Crust2_crab_sidle_0
+      name: Crust2_crab_sidle_d0_f0
       rect:
         serializedVersion: 2
-        x: 25
-        y: 469
-        width: 14
-        height: 6
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 448
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 44fc5d33876b6dcf0800000000000000
-      internalID: -227794103753650364
+      spriteID: 94c39f1b6e0f0be4797bc4841aebc3ee
+      internalID: -1992774271
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_sidle_1
+      name: Crust2_crab_sidle_d0_f1
       rect:
         serializedVersion: 2
-        x: 89
-        y: 469
-        width: 14
-        height: 6
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 448
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 1e59699645bc4bb60800000000000000
-      internalID: 7761051621275375073
+      spriteID: f6518754a9b37214cbc00410fe8715cb
+      internalID: -1938550038
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_sidle_2
+      name: Crust2_crab_sidle_d0_f2
       rect:
         serializedVersion: 2
-        x: 153
-        y: 469
-        width: 14
-        height: 6
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 128
+        y: 448
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: edebaa382f155ac20800000000000000
-      internalID: 3217067610859028190
+      spriteID: 173d49ddb9e63304badab16a4f173e04
+      internalID: -1191586699
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_sidle_3
+      name: Crust2_crab_sidle_d0_f3
       rect:
         serializedVersion: 2
-        x: 217
-        y: 469
-        width: 14
-        height: 6
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 192
+        y: 448
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 557e7610c4b1f70b0800000000000000
-      internalID: -5728830187736930475
+      spriteID: 4daefabd062f3524a95d468784515996
+      internalID: -1373662402
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_sidle_4
+      name: Crust2_crab_sidle_d1_f0
       rect:
         serializedVersion: 2
-        x: 26
-        y: 404
-        width: 11
-        height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 384
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 372c16d6aeee23990800000000000000
-      internalID: -7407595746446163341
+      spriteID: b2484b27d1a1b58448f10e3c114b8d70
+      internalID: -391730393
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_sidle_5
+      name: Crust2_crab_sidle_d1_f1
       rect:
         serializedVersion: 2
-        x: 90
-        y: 403
-        width: 12
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 384
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: b0b8acb47c592c8d0800000000000000
-      internalID: -2827532932832654581
+      spriteID: d94a26c3113e65b448a3560fbb260418
+      internalID: 1865833959
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_sidle_6
+      name: Crust2_crab_sidle_d1_f2
       rect:
         serializedVersion: 2
-        x: 153
-        y: 403
-        width: 12
-        height: 10
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 128
+        y: 384
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c97fa79d2f3f1d690800000000000000
-      internalID: -7579008473531484260
+      spriteID: 7d9b818525d9f6743b00b7ca758f6c7a
+      internalID: 412529289
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_sidle_7
+      name: Crust2_crab_sidle_d1_f3
       rect:
         serializedVersion: 2
-        x: 217
-        y: 403
-        width: 12
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 192
+        y: 384
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 7c0528c56fa289510800000000000000
-      internalID: 1556040908858872007
+      spriteID: 020ca5c5aadc0ab4fa53940fdc5e47d9
+      internalID: 1875672580
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_sidle_8
+      name: Crust2_crab_sidle_d2_f0
       rect:
         serializedVersion: 2
-        x: 28
-        y: 339
-        width: 7
-        height: 10
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 320
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e7e26dfd0e2943700800000000000000
-      internalID: 519201351580135038
+      spriteID: 307ef44e5e833ec429e087c71d57d9d7
+      internalID: 66178297
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_sidle_9
+      name: Crust2_crab_sidle_d2_f1
       rect:
         serializedVersion: 2
-        x: 92
-        y: 339
-        width: 7
-        height: 10
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 320
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 7af86bd8295589a80800000000000000
-      internalID: -8459917812084338777
+      spriteID: 3c5784d9f2efce24ea6c0a647ffbb90d
+      internalID: 297002169
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_sidle_10
+      name: Crust2_crab_sidle_d2_f2
       rect:
         serializedVersion: 2
-        x: 156
-        y: 339
-        width: 7
-        height: 10
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 128
+        y: 320
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 14766808cc34cb520800000000000000
-      internalID: 2719122820633618241
+      spriteID: 40705963f50c5c143a85455bcd60aada
+      internalID: -432705280
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_sidle_11
+      name: Crust2_crab_sidle_d2_f3
       rect:
         serializedVersion: 2
-        x: 220
-        y: 339
-        width: 7
-        height: 10
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 192
+        y: 320
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: f0d142eb907a20700800000000000000
-      internalID: 505149768505498895
+      spriteID: f1555c8c3fb553b4488f845d19384d4e
+      internalID: 93417733
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_sidle_12
+      name: Crust2_crab_sidle_d3_f0
       rect:
         serializedVersion: 2
-        x: 26
-        y: 276
-        width: 11
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 256
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: d37714f8720a3dba0800000000000000
-      internalID: -6065328181370325187
+      spriteID: 2b854affbc9d7c742b17aefb8b2bc8c6
+      internalID: 241469131
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_sidle_13
+      name: Crust2_crab_sidle_d3_f1
       rect:
         serializedVersion: 2
-        x: 90
-        y: 276
-        width: 12
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 256
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 234b999cf85d2c740800000000000000
-      internalID: 5170930135714083890
+      spriteID: 26baf78a02e646f43af16dc46fefbad3
+      internalID: 1418358155
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_sidle_14
+      name: Crust2_crab_sidle_d3_f2
       rect:
         serializedVersion: 2
-        x: 153
-        y: 276
-        width: 13
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 128
+        y: 256
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 396db3cbe9c9495c0800000000000000
-      internalID: -4209567546107767149
+      spriteID: bcc601f8a864b51438c597c5b75f22a3
+      internalID: 271421921
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_sidle_15
+      name: Crust2_crab_sidle_d3_f3
       rect:
         serializedVersion: 2
-        x: 218
-        y: 276
-        width: 11
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 192
+        y: 256
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 418dc4022c5dec2c0800000000000000
-      internalID: -4409351955406858220
+      spriteID: 454993699e9db6145a8f07973d5d2b51
+      internalID: -561169105
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_sidle_16
+      name: Crust2_crab_sidle_d4_f0
       rect:
         serializedVersion: 2
-        x: 25
-        y: 214
-        width: 14
-        height: 6
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 192
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 6c4967ff6dcca72d0800000000000000
-      internalID: -3280084154804955962
+      spriteID: 4a4ce2b9d487d8047b9c22e1d1c89301
+      internalID: 1338053079
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_sidle_17
+      name: Crust2_crab_sidle_d4_f1
       rect:
         serializedVersion: 2
-        x: 89
-        y: 214
-        width: 14
-        height: 6
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 192
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a0f490229bf9ec030800000000000000
-      internalID: 3516923976511737610
+      spriteID: 6e9eed6f696cac142aee329bd6cb75ff
+      internalID: 1016071263
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_sidle_18
+      name: Crust2_crab_sidle_d4_f2
       rect:
         serializedVersion: 2
-        x: 153
-        y: 214
-        width: 14
-        height: 6
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 128
+        y: 192
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: da2212ea2319c45f0800000000000000
-      internalID: -771081789331397971
+      spriteID: 872559f66c8ccb54ead561020f7de73d
+      internalID: -182793416
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_sidle_19
+      name: Crust2_crab_sidle_d4_f3
       rect:
         serializedVersion: 2
-        x: 217
-        y: 214
-        width: 14
-        height: 6
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 192
+        y: 192
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a4b715a427c0f6e50800000000000000
-      internalID: 6804671246992767818
+      spriteID: a7d8b43e3145ad243b8177f330512cde
+      internalID: 474006277
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_sidle_20
+      name: Crust2_crab_sidle_d5_f0
       rect:
         serializedVersion: 2
-        x: 27
-        y: 148
-        width: 11
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 128
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: b98d4ac61d0a929e0800000000000000
-      internalID: -1645607367495853925
+      spriteID: 71aecc8070e093743a5e4be5a26d2bbd
+      internalID: 1808804409
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_sidle_21
+      name: Crust2_crab_sidle_d5_f1
       rect:
         serializedVersion: 2
-        x: 90
-        y: 148
-        width: 12
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 128
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: f6e61226566a69e30800000000000000
-      internalID: 4509975031226396271
+      spriteID: ff4ed4cb948a59642aaa8161ad39fa7a
+      internalID: -1746001462
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_sidle_22
+      name: Crust2_crab_sidle_d5_f2
       rect:
         serializedVersion: 2
-        x: 155
-        y: 148
-        width: 12
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 128
+        y: 128
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 439c0ca7bbea3fc90800000000000000
-      internalID: -7137168864210532044
+      spriteID: 55e02b6c5bc62944491dd19f7e1d7f73
+      internalID: -739570073
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_sidle_23
+      name: Crust2_crab_sidle_d5_f3
       rect:
         serializedVersion: 2
-        x: 219
-        y: 148
-        width: 12
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 192
+        y: 128
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 690ede78be98b8740800000000000000
-      internalID: 5155365843146498198
+      spriteID: 4254ba834b698764da236ce8acd3f4e6
+      internalID: 1395774115
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_sidle_24
+      name: Crust2_crab_sidle_d6_f0
       rect:
         serializedVersion: 2
-        x: 29
-        y: 83
-        width: 7
-        height: 10
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 64
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 9a11dcac022e97cb0800000000000000
-      internalID: -4865609291927842391
+      spriteID: c6cebca6aff884a469a3e544fe2a90c9
+      internalID: -1659033705
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_sidle_25
+      name: Crust2_crab_sidle_d6_f1
       rect:
         serializedVersion: 2
-        x: 93
-        y: 83
-        width: 7
-        height: 10
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 64
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 43b7e40ebb03df8f0800000000000000
-      internalID: -505193999715370188
+      spriteID: 94718e2611412d14abdc58adf6ae2925
+      internalID: 2094546681
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_sidle_26
+      name: Crust2_crab_sidle_d6_f2
       rect:
         serializedVersion: 2
-        x: 157
-        y: 83
-        width: 7
-        height: 10
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 128
+        y: 64
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 75748f0fcedfb9e00800000000000000
-      internalID: 1052714132018054999
+      spriteID: c8dc4a78b8071a54aa5faa38b7cea428
+      internalID: -1438271114
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_sidle_27
+      name: Crust2_crab_sidle_d6_f3
       rect:
         serializedVersion: 2
-        x: 221
-        y: 83
-        width: 7
-        height: 10
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 192
+        y: 64
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 9c9e7d9ffc3372720800000000000000
-      internalID: 2821280659913828809
+      spriteID: c6aa5ea97a7e8df4faa59643713992a0
+      internalID: -373673369
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_sidle_28
+      name: Crust2_crab_sidle_d7_f0
       rect:
         serializedVersion: 2
-        x: 27
-        y: 20
-        width: 11
-        height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 0
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 5694083b3013e7960800000000000000
-      internalID: 7601567113014167909
+      spriteID: f724efed77b336c4b824f071390668b4
+      internalID: -2135301088
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_sidle_29
+      name: Crust2_crab_sidle_d7_f1
       rect:
         serializedVersion: 2
-        x: 90
-        y: 20
-        width: 12
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 0
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 02c10095a2e6bd4a0800000000000000
-      internalID: -6567534503428875232
+      spriteID: 26dddcef9a8e58048bbc2accdac2cd6d
+      internalID: -1493851410
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_sidle_30
+      name: Crust2_crab_sidle_d7_f2
       rect:
         serializedVersion: 2
-        x: 154
-        y: 19
-        width: 13
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 128
+        y: 0
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e4ff4777f43eeb370800000000000000
-      internalID: 8340353490382815054
+      spriteID: 2b83b07fc5c8c95468dfc8a9ac5dcaf8
+      internalID: 1024512818
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_sidle_31
+      name: Crust2_crab_sidle_d7_f3
       rect:
         serializedVersion: 2
-        x: 219
-        y: 19
-        width: 11
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 192
+        y: 0
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: f088162f0cfa17080800000000000000
-      internalID: -9191372121251411953
+      spriteID: c4f1a1c949494de409cc00b5e2915c92
+      internalID: -1722017546
       vertices: []
       indices: 
       edges: []
@@ -913,7 +913,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 29b064df39ca7b94b8968e5dfd9abc91
     internalID: 0
     vertices: []
     indices: 
@@ -923,38 +923,38 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Crust2_crab_sidle_0: -227794103753650364
-      Crust2_crab_sidle_1: 7761051621275375073
-      Crust2_crab_sidle_10: 2719122820633618241
-      Crust2_crab_sidle_11: 505149768505498895
-      Crust2_crab_sidle_12: -6065328181370325187
-      Crust2_crab_sidle_13: 5170930135714083890
-      Crust2_crab_sidle_14: -4209567546107767149
-      Crust2_crab_sidle_15: -4409351955406858220
-      Crust2_crab_sidle_16: -3280084154804955962
-      Crust2_crab_sidle_17: 3516923976511737610
-      Crust2_crab_sidle_18: -771081789331397971
-      Crust2_crab_sidle_19: 6804671246992767818
-      Crust2_crab_sidle_2: 3217067610859028190
-      Crust2_crab_sidle_20: -1645607367495853925
-      Crust2_crab_sidle_21: 4509975031226396271
-      Crust2_crab_sidle_22: -7137168864210532044
-      Crust2_crab_sidle_23: 5155365843146498198
-      Crust2_crab_sidle_24: -4865609291927842391
-      Crust2_crab_sidle_25: -505193999715370188
-      Crust2_crab_sidle_26: 1052714132018054999
-      Crust2_crab_sidle_27: 2821280659913828809
-      Crust2_crab_sidle_28: 7601567113014167909
-      Crust2_crab_sidle_29: -6567534503428875232
-      Crust2_crab_sidle_3: -5728830187736930475
-      Crust2_crab_sidle_30: 8340353490382815054
-      Crust2_crab_sidle_31: -9191372121251411953
-      Crust2_crab_sidle_4: -7407595746446163341
-      Crust2_crab_sidle_5: -2827532932832654581
-      Crust2_crab_sidle_6: -7579008473531484260
-      Crust2_crab_sidle_7: 1556040908858872007
-      Crust2_crab_sidle_8: 519201351580135038
-      Crust2_crab_sidle_9: -8459917812084338777
+      Crust2_crab_sidle_d0_f0: -1992774271
+      Crust2_crab_sidle_d0_f1: -1938550038
+      Crust2_crab_sidle_d0_f2: -1191586699
+      Crust2_crab_sidle_d0_f3: -1373662402
+      Crust2_crab_sidle_d1_f0: -391730393
+      Crust2_crab_sidle_d1_f1: 1865833959
+      Crust2_crab_sidle_d1_f2: 412529289
+      Crust2_crab_sidle_d1_f3: 1875672580
+      Crust2_crab_sidle_d2_f0: 66178297
+      Crust2_crab_sidle_d2_f1: 297002169
+      Crust2_crab_sidle_d2_f2: -432705280
+      Crust2_crab_sidle_d2_f3: 93417733
+      Crust2_crab_sidle_d3_f0: 241469131
+      Crust2_crab_sidle_d3_f1: 1418358155
+      Crust2_crab_sidle_d3_f2: 271421921
+      Crust2_crab_sidle_d3_f3: -561169105
+      Crust2_crab_sidle_d4_f0: 1338053079
+      Crust2_crab_sidle_d4_f1: 1016071263
+      Crust2_crab_sidle_d4_f2: -182793416
+      Crust2_crab_sidle_d4_f3: 474006277
+      Crust2_crab_sidle_d5_f0: 1808804409
+      Crust2_crab_sidle_d5_f1: -1746001462
+      Crust2_crab_sidle_d5_f2: -739570073
+      Crust2_crab_sidle_d5_f3: 1395774115
+      Crust2_crab_sidle_d6_f0: -1659033705
+      Crust2_crab_sidle_d6_f1: 2094546681
+      Crust2_crab_sidle_d6_f2: -1438271114
+      Crust2_crab_sidle_d6_f3: -373673369
+      Crust2_crab_sidle_d7_f0: -2135301088
+      Crust2_crab_sidle_d7_f1: -1493851410
+      Crust2_crab_sidle_d7_f2: 1024512818
+      Crust2_crab_sidle_d7_f3: -1722017546
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

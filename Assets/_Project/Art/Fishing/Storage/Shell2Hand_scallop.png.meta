@@ -116,45 +116,45 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Shell2Hand_scallop_0
+      name: Shell2Hand_scallop_d0_f0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
         width: 8
-        height: 7
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        height: 8
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: ce86d3ac716200340800000000000000
-      internalID: 4827900684160297196
+      spriteID: ca8ade6a02a7cea488141be17f26d8dc
+      internalID: 573919715
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Shell2Hand_scallop_1
+      name: Shell2Hand_scallop_d0_f1
       rect:
         serializedVersion: 2
-        x: 9
+        x: 8
         y: 0
-        width: 7
-        height: 7
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        width: 8
+        height: 8
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 5891e4b37530dda60800000000000000
-      internalID: 7700314611065428357
+      spriteID: 1be35a7545943664e946625609883e9c
+      internalID: -2127248993
       vertices: []
       indices: 
       edges: []
@@ -163,7 +163,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 2e65d61485b60f54289b8ae596758ce0
     internalID: 0
     vertices: []
     indices: 
@@ -173,8 +173,8 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Shell2Hand_scallop_0: 4827900684160297196
-      Shell2Hand_scallop_1: 7700314611065428357
+      Shell2Hand_scallop_d0_f0: 573919715
+      Shell2Hand_scallop_d0_f1: -2127248993
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

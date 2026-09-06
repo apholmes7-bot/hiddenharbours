@@ -248,1013 +248,1057 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Fish_flounder_lg_jump_0
+      name: Fish_flounder_lg_jump_d0_f0
       rect:
         serializedVersion: 2
-        x: 26
-        y: 463
-        width: 13
-        height: 21
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 448
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 9ac3529944a2169c0800000000000000
-      internalID: -3935818125229605719
+      spriteID: 075ad292eccfe9c49926a36b91adcc87
+      internalID: 1311700074
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_flounder_lg_jump_1
+      name: Fish_flounder_lg_jump_d0_f1
       rect:
         serializedVersion: 2
-        x: 90
-        y: 467
-        width: 12
-        height: 21
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 448
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: b1635a2b1c4e7f6e0800000000000000
-      internalID: -1803721605161601509
+      spriteID: 086d72c74747ec7428113800015d2677
+      internalID: 385849022
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_flounder_lg_jump_2
+      name: Fish_flounder_lg_jump_d0_f2
       rect:
         serializedVersion: 2
-        x: 154
-        y: 473
-        width: 12
-        height: 17
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 128
+        y: 448
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 3a390c3526ca3f950800000000000000
-      internalID: 6481713827028177827
+      spriteID: a67f0eebead624c47b1bd1ea0b1ad39a
+      internalID: 1011599071
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_flounder_lg_jump_3
+      name: Fish_flounder_lg_jump_d0_f3
       rect:
         serializedVersion: 2
-        x: 219
-        y: 476
-        width: 11
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 192
+        y: 448
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 977a27f5370d6a7f0800000000000000
-      internalID: -601564306266216583
+      spriteID: b0574c602e3bee64596a94991cb8e57e
+      internalID: -533141843
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_flounder_lg_jump_4
+      name: Fish_flounder_lg_jump_d0_f4
       rect:
         serializedVersion: 2
-        x: 284
-        y: 472
-        width: 74
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 256
+        y: 448
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 28840b70d9c2becb0800000000000000
-      internalID: -4833720722101614462
+      spriteID: 75b9aa3a2c1ce0c4b9c4fc86de15992c
+      internalID: 1755003227
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_flounder_lg_jump_5
+      name: Fish_flounder_lg_jump_d0_f5
       rect:
         serializedVersion: 2
-        x: 28
-        y: 398
-        width: 9
-        height: 21
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 320
+        y: 448
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: d66165caaf43792e0800000000000000
-      internalID: -2119166848416737683
+      spriteID: ada1333496c2104498326091dc6e3502
+      internalID: -529567117
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_flounder_lg_jump_6
+      name: Fish_flounder_lg_jump_d1_f0
       rect:
         serializedVersion: 2
-        x: 87
-        y: 405
-        width: 15
-        height: 18
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 384
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: f6c0dc05832e86ac0800000000000000
-      internalID: -3861587948968539025
+      spriteID: 8e4af8ce80aada540bf26b61cabdc8b7
+      internalID: 325196060
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_flounder_lg_jump_7
+      name: Fish_flounder_lg_jump_d1_f1
       rect:
         serializedVersion: 2
-        x: 152
-        y: 410
-        width: 15
-        height: 14
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 384
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: b095faab259e0ef90800000000000000
-      internalID: -6926279685367178997
+      spriteID: e9932cead5dec3a40b68c0022e79b484
+      internalID: -1017396607
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_flounder_lg_jump_8
+      name: Fish_flounder_lg_jump_d1_f2
       rect:
         serializedVersion: 2
-        x: 215
-        y: 415
-        width: 16
-        height: 7
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 128
+        y: 384
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 43cab9e6f401ba5e0800000000000000
-      internalID: -1897404884662375372
+      spriteID: 19ab605b48dba0848aa6eab668fe6744
+      internalID: -493369137
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_flounder_lg_jump_9
+      name: Fish_flounder_lg_jump_d1_f3
       rect:
         serializedVersion: 2
-        x: 283
-        y: 412
-        width: 11
-        height: 6
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 192
+        y: 384
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 6adb375a6807e0a70800000000000000
-      internalID: 8795090845904911782
+      spriteID: b2a28cd025f5380418c45b776f34f89a
+      internalID: 1660476942
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_flounder_lg_jump_10
+      name: Fish_flounder_lg_jump_d1_f4
       rect:
         serializedVersion: 2
-        x: 345
-        y: 407
-        width: 12
-        height: 10
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 256
+        y: 384
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: b26df607da26cfbb0800000000000000
-      internalID: -4900933797430700501
+      spriteID: 2fbd0aa59d99fc2458000a5b8bde5bc9
+      internalID: 1619522418
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_flounder_lg_jump_11
+      name: Fish_flounder_lg_jump_d1_f5
       rect:
         serializedVersion: 2
-        x: 24
-        y: 337
-        width: 14
-        height: 16
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 320
+        y: 384
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 01b36591d70c29040800000000000000
-      internalID: 4652993008555670288
+      spriteID: 9fd3a1af0c0e61d45a5d6452f3bd9a43
+      internalID: 17599627
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_flounder_lg_jump_12
+      name: Fish_flounder_lg_jump_d2_f0
       rect:
         serializedVersion: 2
-        x: 86
-        y: 345
-        width: 17
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 320
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 93ff24a8a74e551f0800000000000000
-      internalID: -1056687322591723719
+      spriteID: 67f741bab72d523448adb62c50292af1
+      internalID: 196775556
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_flounder_lg_jump_13
+      name: Fish_flounder_lg_jump_d2_f1
       rect:
         serializedVersion: 2
-        x: 149
-        y: 350
-        width: 20
-        height: 7
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 320
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 5ecaee98b2a7e3030800000000000000
-      internalID: 3476350289792904421
+      spriteID: 11783e2d2a778854dba710e3f8a12437
+      internalID: 497944825
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_flounder_lg_jump_14
+      name: Fish_flounder_lg_jump_d2_f2
       rect:
         serializedVersion: 2
-        x: 213
-        y: 351
-        width: 20
-        height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 128
+        y: 320
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 2c446d4872a812c50800000000000000
-      internalID: 6638739228057814210
+      spriteID: 935ea6a0a2c39794fa9ce9c0561d3786
+      internalID: 1016766297
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_flounder_lg_jump_15
+      name: Fish_flounder_lg_jump_d2_f3
       rect:
         serializedVersion: 2
-        x: 278
-        y: 346
-        width: 18
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 192
+        y: 320
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 3d2a783bedfee4f20800000000000000
-      internalID: 3408925707739833043
+      spriteID: 5280bf5821f2a004c86e9daaed3e62c2
+      internalID: -555619775
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_flounder_lg_jump_16
+      name: Fish_flounder_lg_jump_d2_f4
       rect:
         serializedVersion: 2
-        x: 345
-        y: 341
-        width: 13
-        height: 17
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 256
+        y: 320
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 5fa5c0d6c7f445820800000000000000
-      internalID: 2906035055384877813
+      spriteID: 6211db55e749b5143b04e34a574c846f
+      internalID: 767797874
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_flounder_lg_jump_17
+      name: Fish_flounder_lg_jump_d2_f5
       rect:
         serializedVersion: 2
-        x: 92
-        y: 285
-        width: 75
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 320
+        y: 320
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e41a7364278baea70800000000000000
-      internalID: 8857094418121335118
+      spriteID: b59d26f3bb31d0c44bf7e2ed9da82bc3
+      internalID: 244528569
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_flounder_lg_jump_18
+      name: Fish_flounder_lg_jump_d3_f0
       rect:
         serializedVersion: 2
-        x: 216
-        y: 285
-        width: 15
-        height: 14
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 256
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: ba5a0f0aa755fcf80800000000000000
-      internalID: -8084148820932254293
+      spriteID: 7b2c1f963c05ef847b7d4939384e3e3d
+      internalID: -43667632
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_flounder_lg_jump_19
+      name: Fish_flounder_lg_jump_d3_f1
       rect:
         serializedVersion: 2
-        x: 278
-        y: 279
-        width: 16
-        height: 18
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 256
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 97228c4b731358c60800000000000000
-      internalID: 7819710443324711545
+      spriteID: 6644a2f41caa93d4ea9cccf1ff8fe086
+      internalID: -1985657898
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_flounder_lg_jump_20
+      name: Fish_flounder_lg_jump_d3_f2
       rect:
         serializedVersion: 2
-        x: 347
-        y: 275
-        width: 10
-        height: 16
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 128
+        y: 256
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: bac3b1e693368f9e0800000000000000
-      internalID: -1587409770336535381
+      spriteID: bbca969dbdc430e478dc43beb8098a3d
+      internalID: 617977148
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_flounder_lg_jump_21
+      name: Fish_flounder_lg_jump_d3_f3
       rect:
         serializedVersion: 2
-        x: 348
-        y: 290
-        width: 6
-        height: 6
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 192
+        y: 256
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 95844077fc9c5af00800000000000000
-      internalID: 1127529174618359897
+      spriteID: 923c5aa95943e614cbf883affabcd529
+      internalID: 1790086947
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_flounder_lg_jump_22
+      name: Fish_flounder_lg_jump_d3_f4
       rect:
         serializedVersion: 2
-        x: 24
-        y: 277
-        width: 13
-        height: 10
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 256
+        y: 256
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: cc241d8d5e5f70a10800000000000000
-      internalID: 1875738137357009612
+      spriteID: 8f1c4b5a42917404d9064db856c9168e
+      internalID: 605088056
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_flounder_lg_jump_23
+      name: Fish_flounder_lg_jump_d3_f5
       rect:
         serializedVersion: 2
-        x: 26
-        y: 216
-        width: 75
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 320
+        y: 256
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: badb47ba471ebe500800000000000000
-      internalID: 426682480925654443
+      spriteID: 5183dcee11c325347b8d54407fba9f15
+      internalID: 203285692
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_flounder_lg_jump_24
+      name: Fish_flounder_lg_jump_d4_f0
       rect:
         serializedVersion: 2
-        x: 155
-        y: 221
-        width: 11
-        height: 12
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 192
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: cf2d6f956572ee410800000000000000
-      internalID: 1508186177045713660
+      spriteID: 29fb4f6cbad331043a39368b0eab257b
+      internalID: -1833620490
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_flounder_lg_jump_25
+      name: Fish_flounder_lg_jump_d4_f1
       rect:
         serializedVersion: 2
-        x: 218
-        y: 219
-        width: 11
-        height: 18
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 192
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 86eae522109ea5010800000000000000
-      internalID: 1178510443591675496
+      spriteID: 84a40d58141d30446b0f361542da7c9a
+      internalID: 466315299
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_flounder_lg_jump_26
+      name: Fish_flounder_lg_jump_d4_f2
       rect:
         serializedVersion: 2
-        x: 282
-        y: 214
-        width: 12
-        height: 21
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 128
+        y: 192
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: d5b727b9b1b19f490800000000000000
-      internalID: -7712103081509225635
+      spriteID: 8637d0d2bef9d3341b8e05882852580f
+      internalID: -962646916
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_flounder_lg_jump_27
+      name: Fish_flounder_lg_jump_d4_f3
       rect:
         serializedVersion: 2
-        x: 346
-        y: 210
-        width: 13
-        height: 21
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 192
+        y: 192
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c652c52eff0e59c80800000000000000
-      internalID: -8316493747250780820
+      spriteID: 8f9f300da079c5a439fa83bde82dcb78
+      internalID: 179256235
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_flounder_lg_jump_28
+      name: Fish_flounder_lg_jump_d4_f4
       rect:
         serializedVersion: 2
-        x: 27
-        y: 152
-        width: 8
-        height: 7
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 256
+        y: 192
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 3c067be9a0cbc9da0800000000000000
-      internalID: -5936663454982643517
+      spriteID: 8e919a8a859822447a9f3e31b8297fc6
+      internalID: 947811968
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_flounder_lg_jump_29
+      name: Fish_flounder_lg_jump_d4_f5
       rect:
         serializedVersion: 2
-        x: 90
-        y: 155
-        width: 14
-        height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 320
+        y: 192
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 11d7436d63e757910800000000000000
-      internalID: 1834511197210443025
+      spriteID: ccb1175d6b882dd46831239b7169acec
+      internalID: 2056844035
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_flounder_lg_jump_30
+      name: Fish_flounder_lg_jump_d5_f0
       rect:
         serializedVersion: 2
-        x: 153
-        y: 157
-        width: 15
-        height: 12
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 128
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 52b7af9d370b10a90800000000000000
-      internalID: -7349399105267139803
+      spriteID: c0e3655efeb72124a9294ae181606169
+      internalID: 1166297841
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_flounder_lg_jump_31
+      name: Fish_flounder_lg_jump_d5_f1
       rect:
         serializedVersion: 2
-        x: 217
-        y: 156
-        width: 18
-        height: 15
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 128
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 591e84e2478656570800000000000000
-      internalID: 8459282323287368085
+      spriteID: 6624f0dbbb187fe4e839938fe9293a58
+      internalID: -1483498739
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_flounder_lg_jump_32
+      name: Fish_flounder_lg_jump_d5_f2
       rect:
         serializedVersion: 2
-        x: 282
-        y: 152
-        width: 12
-        height: 19
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 128
+        y: 128
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 1f34be64aaf48d4f0800000000000000
-      internalID: -803804940732775439
+      spriteID: d41dc725225318d4ea12d2d3ee2e735e
+      internalID: 67419651
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_flounder_lg_jump_33
+      name: Fish_flounder_lg_jump_d5_f3
       rect:
         serializedVersion: 2
-        x: 347
-        y: 147
-        width: 14
-        height: 18
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 192
+        y: 128
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 6b39c22038eae3480800000000000000
-      internalID: -8917498334446578762
+      spriteID: 792df8e4a56c7ec4b810b60d1aadfe17
+      internalID: -925251425
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_flounder_lg_jump_34
+      name: Fish_flounder_lg_jump_d5_f4
       rect:
         serializedVersion: 2
-        x: 26
-        y: 85
-        width: 14
-        height: 12
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 256
+        y: 128
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a249d4d2acd87c8f0800000000000000
-      internalID: -520291332455033814
+      spriteID: 72f385be02943234fb4437cfdee4f411
+      internalID: 2141611469
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_flounder_lg_jump_35
+      name: Fish_flounder_lg_jump_d5_f5
       rect:
         serializedVersion: 2
-        x: 88
-        y: 85
-        width: 18
-        height: 16
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 320
+        y: 128
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: fea7c8e70db12f150800000000000000
-      internalID: 5904812643726424815
+      spriteID: d738a32cd0bd0ea469aad7822c405cac
+      internalID: 187004136
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_flounder_lg_jump_36
+      name: Fish_flounder_lg_jump_d6_f0
       rect:
         serializedVersion: 2
-        x: 151
-        y: 93
-        width: 21
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 64
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 5a37bc58f2a67ebb0800000000000000
-      internalID: -4906836516656155739
+      spriteID: dabc931475c2d5541ba63cc99011efae
+      internalID: -1398923966
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_flounder_lg_jump_37
+      name: Fish_flounder_lg_jump_d6_f1
       rect:
         serializedVersion: 2
-        x: 215
-        y: 93
-        width: 21
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 64
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 04eed6195b71abff0800000000000000
-      internalID: -19677179773325760
+      spriteID: c1fa78ccb6ec30645a55fd72f9282c59
+      internalID: 1470715129
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_flounder_lg_jump_38
+      name: Fish_flounder_lg_jump_d6_f2
       rect:
         serializedVersion: 2
-        x: 281
-        y: 90
-        width: 17
-        height: 14
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 128
+        y: 64
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 0734617c6ea41cb20800000000000000
-      internalID: 3152883569179116400
+      spriteID: e0a1de926056f894991c68891f79b57d
+      internalID: 2121434660
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_flounder_lg_jump_39
+      name: Fish_flounder_lg_jump_d6_f3
       rect:
         serializedVersion: 2
-        x: 346
-        y: 85
-        width: 14
-        height: 13
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 192
+        y: 64
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: db136dbef1b2cbc80800000000000000
-      internalID: -8305716196677373507
+      spriteID: 2232c8323d7c3104baa321206e80bb1d
+      internalID: -1432498304
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_flounder_lg_jump_40
+      name: Fish_flounder_lg_jump_d6_f4
       rect:
         serializedVersion: 2
-        x: 26
-        y: 18
-        width: 15
-        height: 17
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 256
+        y: 64
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c1e0e4e0b6a24e700800000000000000
-      internalID: 568626092245388828
+      spriteID: 03e407c6de6105a41918ec0c56c52eb8
+      internalID: -1685673043
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_flounder_lg_jump_41
+      name: Fish_flounder_lg_jump_d6_f5
       rect:
         serializedVersion: 2
-        x: 90
-        y: 19
-        width: 12
-        height: 20
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 320
+        y: 64
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e5daa347777714c90800000000000000
-      internalID: -7187332175371784866
+      spriteID: 4f317b5520a05ed448e9d9074f1ffef6
+      internalID: -820306090
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_flounder_lg_jump_42
+      name: Fish_flounder_lg_jump_d7_f0
       rect:
         serializedVersion: 2
-        x: 153
-        y: 27
-        width: 18
-        height: 14
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 0
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: fa4d74891af727370800000000000000
-      internalID: 8318851793728033967
+      spriteID: e000e5185e18b9e4ca5a0d8b3ad71da9
+      internalID: 472755068
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_flounder_lg_jump_43
+      name: Fish_flounder_lg_jump_d7_f1
       rect:
         serializedVersion: 2
-        x: 217
-        y: 29
-        width: 15
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 0
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 569c8e977328733e0800000000000000
-      internalID: -2074045928600712859
+      spriteID: ae80603b10e9c7f4bbf83d68ba9a6077
+      internalID: 1313149735
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_flounder_lg_jump_44
+      name: Fish_flounder_lg_jump_d7_f2
       rect:
         serializedVersion: 2
-        x: 282
-        y: 27
-        width: 14
-        height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 128
+        y: 0
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 2eb503b26cc497780800000000000000
-      internalID: -8684825992395465758
+      spriteID: ea75454af58c27b4f9c528dadcdb5d48
+      internalID: -1041948881
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_flounder_lg_jump_45
+      name: Fish_flounder_lg_jump_d7_f3
       rect:
         serializedVersion: 2
-        x: 347
-        y: 23
-        width: 9
-        height: 7
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 192
+        y: 0
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 380b56d67a01cc2d0800000000000000
-      internalID: -3257210119214747517
+      spriteID: b40337ec330264f48b98120a4a53e6ab
+      internalID: -1219746112
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_lg_jump_d7_f4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 0
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5857bca6de6ebfe469166b706a967a6d
+      internalID: 408501892
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_lg_jump_d7_f5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 0
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a507b37c63017ee4ba239d1bfb2425b7
+      internalID: -1980343092
       vertices: []
       indices: 
       edges: []
@@ -1263,7 +1307,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: b0bf716bd3a2414459251b24ece201a8
     internalID: 0
     vertices: []
     indices: 
@@ -1273,52 +1317,54 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Fish_flounder_lg_jump_0: -3935818125229605719
-      Fish_flounder_lg_jump_1: -1803721605161601509
-      Fish_flounder_lg_jump_10: -4900933797430700501
-      Fish_flounder_lg_jump_11: 4652993008555670288
-      Fish_flounder_lg_jump_12: -1056687322591723719
-      Fish_flounder_lg_jump_13: 3476350289792904421
-      Fish_flounder_lg_jump_14: 6638739228057814210
-      Fish_flounder_lg_jump_15: 3408925707739833043
-      Fish_flounder_lg_jump_16: 2906035055384877813
-      Fish_flounder_lg_jump_17: 8857094418121335118
-      Fish_flounder_lg_jump_18: -8084148820932254293
-      Fish_flounder_lg_jump_19: 7819710443324711545
-      Fish_flounder_lg_jump_2: 6481713827028177827
-      Fish_flounder_lg_jump_20: -1587409770336535381
-      Fish_flounder_lg_jump_21: 1127529174618359897
-      Fish_flounder_lg_jump_22: 1875738137357009612
-      Fish_flounder_lg_jump_23: 426682480925654443
-      Fish_flounder_lg_jump_24: 1508186177045713660
-      Fish_flounder_lg_jump_25: 1178510443591675496
-      Fish_flounder_lg_jump_26: -7712103081509225635
-      Fish_flounder_lg_jump_27: -8316493747250780820
-      Fish_flounder_lg_jump_28: -5936663454982643517
-      Fish_flounder_lg_jump_29: 1834511197210443025
-      Fish_flounder_lg_jump_3: -601564306266216583
-      Fish_flounder_lg_jump_30: -7349399105267139803
-      Fish_flounder_lg_jump_31: 8459282323287368085
-      Fish_flounder_lg_jump_32: -803804940732775439
-      Fish_flounder_lg_jump_33: -8917498334446578762
-      Fish_flounder_lg_jump_34: -520291332455033814
-      Fish_flounder_lg_jump_35: 5904812643726424815
-      Fish_flounder_lg_jump_36: -4906836516656155739
-      Fish_flounder_lg_jump_37: -19677179773325760
-      Fish_flounder_lg_jump_38: 3152883569179116400
-      Fish_flounder_lg_jump_39: -8305716196677373507
-      Fish_flounder_lg_jump_4: -4833720722101614462
-      Fish_flounder_lg_jump_40: 568626092245388828
-      Fish_flounder_lg_jump_41: -7187332175371784866
-      Fish_flounder_lg_jump_42: 8318851793728033967
-      Fish_flounder_lg_jump_43: -2074045928600712859
-      Fish_flounder_lg_jump_44: -8684825992395465758
-      Fish_flounder_lg_jump_45: -3257210119214747517
-      Fish_flounder_lg_jump_5: -2119166848416737683
-      Fish_flounder_lg_jump_6: -3861587948968539025
-      Fish_flounder_lg_jump_7: -6926279685367178997
-      Fish_flounder_lg_jump_8: -1897404884662375372
-      Fish_flounder_lg_jump_9: 8795090845904911782
+      Fish_flounder_lg_jump_d0_f0: 1311700074
+      Fish_flounder_lg_jump_d0_f1: 385849022
+      Fish_flounder_lg_jump_d0_f2: 1011599071
+      Fish_flounder_lg_jump_d0_f3: -533141843
+      Fish_flounder_lg_jump_d0_f4: 1755003227
+      Fish_flounder_lg_jump_d0_f5: -529567117
+      Fish_flounder_lg_jump_d1_f0: 325196060
+      Fish_flounder_lg_jump_d1_f1: -1017396607
+      Fish_flounder_lg_jump_d1_f2: -493369137
+      Fish_flounder_lg_jump_d1_f3: 1660476942
+      Fish_flounder_lg_jump_d1_f4: 1619522418
+      Fish_flounder_lg_jump_d1_f5: 17599627
+      Fish_flounder_lg_jump_d2_f0: 196775556
+      Fish_flounder_lg_jump_d2_f1: 497944825
+      Fish_flounder_lg_jump_d2_f2: 1016766297
+      Fish_flounder_lg_jump_d2_f3: -555619775
+      Fish_flounder_lg_jump_d2_f4: 767797874
+      Fish_flounder_lg_jump_d2_f5: 244528569
+      Fish_flounder_lg_jump_d3_f0: -43667632
+      Fish_flounder_lg_jump_d3_f1: -1985657898
+      Fish_flounder_lg_jump_d3_f2: 617977148
+      Fish_flounder_lg_jump_d3_f3: 1790086947
+      Fish_flounder_lg_jump_d3_f4: 605088056
+      Fish_flounder_lg_jump_d3_f5: 203285692
+      Fish_flounder_lg_jump_d4_f0: -1833620490
+      Fish_flounder_lg_jump_d4_f1: 466315299
+      Fish_flounder_lg_jump_d4_f2: -962646916
+      Fish_flounder_lg_jump_d4_f3: 179256235
+      Fish_flounder_lg_jump_d4_f4: 947811968
+      Fish_flounder_lg_jump_d4_f5: 2056844035
+      Fish_flounder_lg_jump_d5_f0: 1166297841
+      Fish_flounder_lg_jump_d5_f1: -1483498739
+      Fish_flounder_lg_jump_d5_f2: 67419651
+      Fish_flounder_lg_jump_d5_f3: -925251425
+      Fish_flounder_lg_jump_d5_f4: 2141611469
+      Fish_flounder_lg_jump_d5_f5: 187004136
+      Fish_flounder_lg_jump_d6_f0: -1398923966
+      Fish_flounder_lg_jump_d6_f1: 1470715129
+      Fish_flounder_lg_jump_d6_f2: 2121434660
+      Fish_flounder_lg_jump_d6_f3: -1432498304
+      Fish_flounder_lg_jump_d6_f4: -1685673043
+      Fish_flounder_lg_jump_d6_f5: -820306090
+      Fish_flounder_lg_jump_d7_f0: 472755068
+      Fish_flounder_lg_jump_d7_f1: 1313149735
+      Fish_flounder_lg_jump_d7_f2: -1041948881
+      Fish_flounder_lg_jump_d7_f3: -1219746112
+      Fish_flounder_lg_jump_d7_f4: 408501892
+      Fish_flounder_lg_jump_d7_f5: -1980343092
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

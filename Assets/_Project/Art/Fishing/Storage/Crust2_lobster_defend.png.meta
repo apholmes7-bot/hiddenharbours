@@ -134,177 +134,177 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Crust2_lobster_defend_0
+      name: Crust2_lobster_defend_d0_f0
       rect:
         serializedVersion: 2
-        x: 26
-        y: 468
-        width: 12
-        height: 12
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 448
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 15858958e2f869d60800000000000000
-      internalID: 7896656426613364817
+      spriteID: 7092c2c5df1ae3a4fa0776d5cd1d50c7
+      internalID: -178068207
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_defend_1
+      name: Crust2_lobster_defend_d1_f0
       rect:
         serializedVersion: 2
-        x: 24
-        y: 404
-        width: 17
-        height: 12
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 384
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 517a3b5161e567ae0800000000000000
-      internalID: -1551949572636170475
+      spriteID: e314cb713a25f7941aa63a1eb6ce3b26
+      internalID: 87123467
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_defend_2
+      name: Crust2_lobster_defend_d2_f0
       rect:
         serializedVersion: 2
-        x: 24
-        y: 340
-        width: 16
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 320
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 10f6180808e27d6f0800000000000000
-      internalID: -660007690939830527
+      spriteID: 6b99931a74b739b4faada53a81691e42
+      internalID: -597920102
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_defend_3
+      name: Crust2_lobster_defend_d3_f0
       rect:
         serializedVersion: 2
-        x: 24
-        y: 276
-        width: 17
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 256
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c8e57906f74efb200800000000000000
-      internalID: 198128144360103564
+      spriteID: 053a69b4eb01255498dd348269f316ac
+      internalID: -788961339
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_defend_4
+      name: Crust2_lobster_defend_d4_f0
       rect:
         serializedVersion: 2
-        x: 26
-        y: 213
-        width: 12
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 192
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 0921a47ab87477a00800000000000000
-      internalID: 754150127740523152
+      spriteID: f4b713fd11a1a964b9caa264dec0b6c8
+      internalID: -361121200
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_defend_5
+      name: Crust2_lobster_defend_d5_f0
       rect:
         serializedVersion: 2
-        x: 23
-        y: 148
-        width: 17
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 128
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 31130685675e78e50800000000000000
-      internalID: 6811665257872765203
+      spriteID: 985eacdb244e5244ba84f9766dbd7116
+      internalID: 1179768502
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_defend_6
+      name: Crust2_lobster_defend_d6_f0
       rect:
         serializedVersion: 2
-        x: 24
-        y: 84
-        width: 16
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 64
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: aa063eeb24e9dcc50800000000000000
-      internalID: 6687175031222657194
+      spriteID: e04daeabe568bfe4eaf6fe05797573a8
+      internalID: 220707001
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_defend_7
+      name: Crust2_lobster_defend_d7_f0
       rect:
         serializedVersion: 2
-        x: 23
-        y: 20
-        width: 17
-        height: 13
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 0
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 5ca5674e258905a90800000000000000
-      internalID: -7327189111944095035
+      spriteID: 5d8bb82cdc5661d45b97dbbd24373b0c
+      internalID: -29226937
       vertices: []
       indices: 
       edges: []
@@ -313,7 +313,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: a586b802904e142478932e858319c836
     internalID: 0
     vertices: []
     indices: 
@@ -323,14 +323,14 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Crust2_lobster_defend_0: 7896656426613364817
-      Crust2_lobster_defend_1: -1551949572636170475
-      Crust2_lobster_defend_2: -660007690939830527
-      Crust2_lobster_defend_3: 198128144360103564
-      Crust2_lobster_defend_4: 754150127740523152
-      Crust2_lobster_defend_5: 6811665257872765203
-      Crust2_lobster_defend_6: 6687175031222657194
-      Crust2_lobster_defend_7: -7327189111944095035
+      Crust2_lobster_defend_d0_f0: -178068207
+      Crust2_lobster_defend_d1_f0: 87123467
+      Crust2_lobster_defend_d2_f0: -597920102
+      Crust2_lobster_defend_d3_f0: -788961339
+      Crust2_lobster_defend_d4_f0: -361121200
+      Crust2_lobster_defend_d5_f0: 1179768502
+      Crust2_lobster_defend_d6_f0: 220707001
+      Crust2_lobster_defend_d7_f0: -29226937
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

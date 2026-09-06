@@ -134,177 +134,177 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Crust2_crab_defend_0
+      name: Crust2_crab_defend_d0_f0
       rect:
         serializedVersion: 2
-        x: 26
-        y: 469
-        width: 12
-        height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 448
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: f446d5d9b71b87c10800000000000000
-      internalID: 2051584774746498127
+      spriteID: 43c9b1d659e46bc4ca772a35cd9f52ce
+      internalID: -332689855
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_defend_1
+      name: Crust2_crab_defend_d1_f0
       rect:
         serializedVersion: 2
-        x: 26
-        y: 403
-        width: 11
-        height: 10
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 384
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 9b41cb462e5ed3330800000000000000
-      internalID: 3692360030029092025
+      spriteID: c27c32193f9faf04895a97cb945f5c19
+      internalID: -1434253546
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_defend_2
+      name: Crust2_crab_defend_d2_f0
       rect:
         serializedVersion: 2
-        x: 28
-        y: 340
-        width: 7
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 320
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 9e456be2dcd422970800000000000000
-      internalID: 8728624571444778217
+      spriteID: 4992d9c1a9738b644bfb6b3ce454354d
+      internalID: -1675947836
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_defend_3
+      name: Crust2_crab_defend_d3_f0
       rect:
         serializedVersion: 2
-        x: 26
-        y: 276
-        width: 11
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 256
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 66478a50222409510800000000000000
-      internalID: 1553814585334068326
+      spriteID: 418f4cd2dff90cb4f845db48f1443ea1
+      internalID: 863766973
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_defend_4
+      name: Crust2_crab_defend_d4_f0
       rect:
         serializedVersion: 2
-        x: 26
-        y: 214
-        width: 12
-        height: 6
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 192
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 62e462e03ee464a00800000000000000
-      internalID: 740365925850959398
+      spriteID: fdf0141043d506545838704c3a57ae60
+      internalID: -381164795
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_defend_5
+      name: Crust2_crab_defend_d5_f0
       rect:
         serializedVersion: 2
-        x: 27
-        y: 148
-        width: 11
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 128
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 2052c0edea5da4cc0800000000000000
-      internalID: -3725930794669300478
+      spriteID: 79851d951cd77c448b93f6e6a825fdc6
+      internalID: -414440
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_defend_6
+      name: Crust2_crab_defend_d6_f0
       rect:
         serializedVersion: 2
-        x: 29
-        y: 84
-        width: 7
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 64
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 1bdc2b450631020f0800000000000000
-      internalID: -1143893000893313615
+      spriteID: b88ae20ec95305a48b83b225fde0c693
+      internalID: 1212895964
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_defend_7
+      name: Crust2_crab_defend_d7_f0
       rect:
         serializedVersion: 2
-        x: 27
-        y: 19
-        width: 11
-        height: 10
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 0
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 98253d3d708664430800000000000000
-      internalID: 3766812521169900169
+      spriteID: b74c1f57fbf099f4a89e1236b6393bf5
+      internalID: 1523488105
       vertices: []
       indices: 
       edges: []
@@ -313,7 +313,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: be4545c64ba38774189ed1fe9c6c9a96
     internalID: 0
     vertices: []
     indices: 
@@ -323,14 +323,14 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Crust2_crab_defend_0: 2051584774746498127
-      Crust2_crab_defend_1: 3692360030029092025
-      Crust2_crab_defend_2: 8728624571444778217
-      Crust2_crab_defend_3: 1553814585334068326
-      Crust2_crab_defend_4: 740365925850959398
-      Crust2_crab_defend_5: -3725930794669300478
-      Crust2_crab_defend_6: -1143893000893313615
-      Crust2_crab_defend_7: 3766812521169900169
+      Crust2_crab_defend_d0_f0: -332689855
+      Crust2_crab_defend_d1_f0: -1434253546
+      Crust2_crab_defend_d2_f0: -1675947836
+      Crust2_crab_defend_d3_f0: 863766973
+      Crust2_crab_defend_d4_f0: -381164795
+      Crust2_crab_defend_d5_f0: -414440
+      Crust2_crab_defend_d6_f0: 1212895964
+      Crust2_crab_defend_d7_f0: 1523488105
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

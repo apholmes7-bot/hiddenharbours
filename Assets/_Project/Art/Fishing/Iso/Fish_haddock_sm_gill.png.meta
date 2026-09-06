@@ -158,353 +158,353 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Fish_haddock_sm_gill_0
+      name: Fish_haddock_sm_gill_d0_f0
       rect:
         serializedVersion: 2
-        x: 28
-        y: 465
-        width: 6
-        height: 12
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 448
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 283929e22181fca00800000000000000
-      internalID: 778867726928221058
+      spriteID: 3d1754f8eb93ef74fa6fde9504d1a08f
+      internalID: -1742328750
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_haddock_sm_gill_1
+      name: Fish_haddock_sm_gill_d0_f1
       rect:
         serializedVersion: 2
-        x: 94
-        y: 465
-        width: 6
-        height: 12
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 448
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 5724982e9a9702af0800000000000000
-      internalID: -423204594415746443
+      spriteID: 96aef5e931dc3b347b0fe5fcfd494930
+      internalID: -1812381126
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_haddock_sm_gill_2
+      name: Fish_haddock_sm_gill_d1_f0
       rect:
         serializedVersion: 2
-        x: 28
-        y: 398
-        width: 7
-        height: 15
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 384
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c898268748aa8ad70800000000000000
-      internalID: 9054674536760510860
+      spriteID: 2e68e20f2c023994b88241b2a6064662
+      internalID: -867351459
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_haddock_sm_gill_3
+      name: Fish_haddock_sm_gill_d1_f1
       rect:
         serializedVersion: 2
-        x: 93
-        y: 399
-        width: 6
-        height: 14
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 384
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 721afb0ae7e5b8b50800000000000000
-      internalID: 6596469977170026791
+      spriteID: d532450648222c148924d21af2f32872
+      internalID: 1385771810
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_haddock_sm_gill_4
+      name: Fish_haddock_sm_gill_d2_f0
       rect:
         serializedVersion: 2
-        x: 28
-        y: 334
-        width: 7
-        height: 15
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 320
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 7567af4a1a85bdbf0800000000000000
-      internalID: -298547499009149353
+      spriteID: c40d16f4c58c8b44e9965e3f108be235
+      internalID: 1513391239
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_haddock_sm_gill_5
+      name: Fish_haddock_sm_gill_d2_f1
       rect:
         serializedVersion: 2
-        x: 92
-        y: 335
-        width: 7
-        height: 14
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 320
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 4283ec8b61a1020b0800000000000000
-      internalID: -5755571638887368668
+      spriteID: 3258fec7e96d82b4aa68b5cdf84255f3
+      internalID: -1236917396
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_haddock_sm_gill_6
+      name: Fish_haddock_sm_gill_d3_f0
       rect:
         serializedVersion: 2
-        x: 29
-        y: 271
-        width: 6
-        height: 14
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 256
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e1406342c2fcf2780800000000000000
-      internalID: -8705511766190848994
+      spriteID: 84d9e5fe73456a14897c1a04bea34320
+      internalID: -1203951388
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_haddock_sm_gill_7
+      name: Fish_haddock_sm_gill_d3_f1
       rect:
         serializedVersion: 2
-        x: 92
-        y: 272
-        width: 7
-        height: 13
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 256
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e1ee3db7044db2650800000000000000
-      internalID: 6209289884680842782
+      spriteID: 8190eb285b2cf974d81c77eb76a114d5
+      internalID: 701740211
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_haddock_sm_gill_8
+      name: Fish_haddock_sm_gill_d4_f0
       rect:
         serializedVersion: 2
-        x: 30
-        y: 210
-        width: 6
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 192
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c842b70b93ae150f0800000000000000
-      internalID: -1129864497998388084
+      spriteID: d5d38434764292c41b7655db0da0991f
+      internalID: 865303387
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_haddock_sm_gill_9
+      name: Fish_haddock_sm_gill_d4_f1
       rect:
         serializedVersion: 2
-        x: 92
-        y: 210
-        width: 7
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 192
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 7ae868364da60bbf0800000000000000
-      internalID: -310630913853190489
+      spriteID: 70a8e23dbdc23864ebeec18cf6663975
+      internalID: 150043337
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_haddock_sm_gill_10
+      name: Fish_haddock_sm_gill_d5_f0
       rect:
         serializedVersion: 2
-        x: 29
-        y: 144
-        width: 7
-        height: 13
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 128
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 9e3e49b10551fe470800000000000000
-      internalID: 8425976861637796841
+      spriteID: c02cfcd83f86b404ea304b7744eeeb6e
+      internalID: 2077593581
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_haddock_sm_gill_11
+      name: Fish_haddock_sm_gill_d5_f1
       rect:
         serializedVersion: 2
-        x: 93
-        y: 143
-        width: 6
-        height: 14
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 128
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e3c3361f59efc90d0800000000000000
-      internalID: -3414574497500283842
+      spriteID: 140cf0e2f6aff174789d42d0c9f6588a
+      internalID: 1698869893
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_haddock_sm_gill_12
+      name: Fish_haddock_sm_gill_d6_f0
       rect:
         serializedVersion: 2
-        x: 29
-        y: 79
-        width: 7
-        height: 14
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 64
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 351359355b6cbec90800000000000000
-      internalID: -7139394302172122797
+      spriteID: ecb8afcc4fe538c4a96bcd3f32485727
+      internalID: 108128035
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_haddock_sm_gill_13
+      name: Fish_haddock_sm_gill_d6_f1
       rect:
         serializedVersion: 2
-        x: 93
-        y: 78
-        width: 7
-        height: 14
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 64
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a6dfa6d823b0b2f60800000000000000
-      internalID: 8010508673957428586
+      spriteID: 2dc7e6a3bd4c5d840a1e63fa2ade03ec
+      internalID: -1397781029
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_haddock_sm_gill_14
+      name: Fish_haddock_sm_gill_d7_f0
       rect:
         serializedVersion: 2
-        x: 29
-        y: 14
-        width: 6
-        height: 15
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 0
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 40dea321cf0955f70800000000000000
-      internalID: 9175399228149263620
+      spriteID: 23d40f3e77f7baf4091873a50ab66ada
+      internalID: 1161340949
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_haddock_sm_gill_15
+      name: Fish_haddock_sm_gill_d7_f1
       rect:
         serializedVersion: 2
-        x: 93
-        y: 13
-        width: 7
-        height: 16
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 0
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: d3858ba81e700c2c0800000000000000
-      internalID: -4413518969546713027
+      spriteID: bf7ee9b9a84073448a3df01698e4b2d6
+      internalID: 1218361164
       vertices: []
       indices: 
       edges: []
@@ -513,7 +513,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 80fa9adeab032e34c8258cf3384098b3
     internalID: 0
     vertices: []
     indices: 
@@ -523,22 +523,22 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Fish_haddock_sm_gill_0: 778867726928221058
-      Fish_haddock_sm_gill_1: -423204594415746443
-      Fish_haddock_sm_gill_10: 8425976861637796841
-      Fish_haddock_sm_gill_11: -3414574497500283842
-      Fish_haddock_sm_gill_12: -7139394302172122797
-      Fish_haddock_sm_gill_13: 8010508673957428586
-      Fish_haddock_sm_gill_14: 9175399228149263620
-      Fish_haddock_sm_gill_15: -4413518969546713027
-      Fish_haddock_sm_gill_2: 9054674536760510860
-      Fish_haddock_sm_gill_3: 6596469977170026791
-      Fish_haddock_sm_gill_4: -298547499009149353
-      Fish_haddock_sm_gill_5: -5755571638887368668
-      Fish_haddock_sm_gill_6: -8705511766190848994
-      Fish_haddock_sm_gill_7: 6209289884680842782
-      Fish_haddock_sm_gill_8: -1129864497998388084
-      Fish_haddock_sm_gill_9: -310630913853190489
+      Fish_haddock_sm_gill_d0_f0: -1742328750
+      Fish_haddock_sm_gill_d0_f1: -1812381126
+      Fish_haddock_sm_gill_d1_f0: -867351459
+      Fish_haddock_sm_gill_d1_f1: 1385771810
+      Fish_haddock_sm_gill_d2_f0: 1513391239
+      Fish_haddock_sm_gill_d2_f1: -1236917396
+      Fish_haddock_sm_gill_d3_f0: -1203951388
+      Fish_haddock_sm_gill_d3_f1: 701740211
+      Fish_haddock_sm_gill_d4_f0: 865303387
+      Fish_haddock_sm_gill_d4_f1: 150043337
+      Fish_haddock_sm_gill_d5_f0: 2077593581
+      Fish_haddock_sm_gill_d5_f1: 1698869893
+      Fish_haddock_sm_gill_d6_f0: 108128035
+      Fish_haddock_sm_gill_d6_f1: -1397781029
+      Fish_haddock_sm_gill_d7_f0: 1161340949
+      Fish_haddock_sm_gill_d7_f1: 1218361164
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -224,837 +224,705 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Fish_bass_deck_0
+      name: Fish_bass_deck_d0_f0
       rect:
         serializedVersion: 2
-        x: 26
-        y: 466
-        width: 10
-        height: 18
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 448
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 7c15c3d56ca819040800000000000000
-      internalID: 4652652474622824903
+      spriteID: 84ae2b1cd6a236e4b927e499e44cff8e
+      internalID: -1757477348
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_bass_deck_1
+      name: Fish_bass_deck_d0_f1
       rect:
         serializedVersion: 2
-        x: 92
-        y: 466
-        width: 10
-        height: 18
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 448
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 9dd9b0bd5509193e0800000000000000
-      internalID: -2048697657055273511
+      spriteID: 20b2deabb6f378543b2d86f1d204b2a7
+      internalID: -779968997
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_bass_deck_2
+      name: Fish_bass_deck_d0_f2
       rect:
         serializedVersion: 2
-        x: 154
-        y: 464
-        width: 10
-        height: 19
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 128
+        y: 448
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 15372c596f3022340800000000000000
-      internalID: 4837433307358720849
+      spriteID: 585e460aca9d04549817caa3b34e88a1
+      internalID: 1235372091
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_bass_deck_3
+      name: Fish_bass_deck_d0_f3
       rect:
         serializedVersion: 2
-        x: 220
-        y: 465
-        width: 10
-        height: 18
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 192
+        y: 448
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: add15b43a6fea0270800000000000000
-      internalID: 8217643709520747994
+      spriteID: 8645b0a6cb5093444a3dd306ea81b59e
+      internalID: 701433454
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_bass_deck_4
+      name: Fish_bass_deck_d1_f0
       rect:
         serializedVersion: 2
-        x: 18
-        y: 404
-        width: 23
-        height: 14
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 384
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 96d2d15644f686a40800000000000000
-      internalID: 5361657695929445737
+      spriteID: 9ffd178617743b148935872c149ac393
+      internalID: 264675693
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_bass_deck_5
+      name: Fish_bass_deck_d1_f1
       rect:
         serializedVersion: 2
-        x: 83
-        y: 403
-        width: 22
-        height: 15
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 384
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 0b90e2864235b1930800000000000000
-      internalID: 4114974100364855728
+      spriteID: f93cbebdbf4cde94e84d44dffb2c3da7
+      internalID: 1335721905
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_bass_deck_6
+      name: Fish_bass_deck_d1_f2
       rect:
         serializedVersion: 2
-        x: 146
-        y: 402
-        width: 23
-        height: 16
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 128
+        y: 384
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 6e279018f48b98380800000000000000
-      internalID: -8968434531324824858
+      spriteID: f27de693a0ad22d4bbbdaf68c81cbc0e
+      internalID: 1824019354
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_bass_deck_7
+      name: Fish_bass_deck_d1_f3
       rect:
         serializedVersion: 2
-        x: 211
-        y: 402
-        width: 22
-        height: 16
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 192
+        y: 384
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 0b60965b3a1c594c0800000000000000
-      internalID: -4281302961878399312
+      spriteID: 8c3d288ccdf937c4f970c73e56ba2dda
+      internalID: -2112469158
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_bass_deck_8
+      name: Fish_bass_deck_d2_f0
       rect:
         serializedVersion: 2
-        x: 16
-        y: 346
-        width: 7
-        height: 6
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 320
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 3d570e2f88a772210800000000000000
-      internalID: 1308148945383355859
+      spriteID: ae5969b30a1a5df49af50e388fde2357
+      internalID: -1163911633
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_bass_deck_9
+      name: Fish_bass_deck_d2_f1
       rect:
         serializedVersion: 2
-        x: 22
-        y: 343
-        width: 21
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 320
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: bd55c573e14541010800000000000000
-      internalID: 1158643492895610331
+      spriteID: e93ad90e8aa707845977a3c6e979aced
+      internalID: -1321896839
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_bass_deck_10
+      name: Fish_bass_deck_d2_f2
       rect:
         serializedVersion: 2
-        x: 80
-        y: 343
-        width: 27
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 128
+        y: 320
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 9d054b1363fb09e10800000000000000
-      internalID: 2202470457267212505
+      spriteID: f0fc5a337c6d96740ab0a5debc5bebe7
+      internalID: -743779377
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_bass_deck_11
+      name: Fish_bass_deck_d2_f3
       rect:
         serializedVersion: 2
-        x: 144
-        y: 344
-        width: 7
-        height: 6
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 192
+        y: 320
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 0ef69c81638042f10800000000000000
-      internalID: 2243927542774460384
+      spriteID: 80d28a6727eb9c14c8fa9e1df1a7bbc1
+      internalID: 1083099737
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_bass_deck_12
+      name: Fish_bass_deck_d3_f0
       rect:
         serializedVersion: 2
-        x: 150
-        y: 344
-        width: 22
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 256
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: bf47898baec7937c0800000000000000
-      internalID: -4091101438928194309
+      spriteID: fbf918ee83f068e48a4eea3757fd9e2a
+      internalID: 1471266958
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_bass_deck_13
+      name: Fish_bass_deck_d3_f1
       rect:
         serializedVersion: 2
-        x: 208
-        y: 344
-        width: 7
-        height: 6
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 256
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 88e32238d5cc41ed0800000000000000
-      internalID: -2444103995751252344
+      spriteID: 41926a0aff1532f40bba1ba9e124989c
+      internalID: 1582122205
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_bass_deck_14
+      name: Fish_bass_deck_d3_f2
       rect:
         serializedVersion: 2
-        x: 214
-        y: 344
-        width: 21
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 128
+        y: 256
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c39c4ae70cd370c50800000000000000
-      internalID: 6631336873294088508
+      spriteID: a0b105777b0080a408e7fba4798b5dc2
+      internalID: 1016432874
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_bass_deck_15
+      name: Fish_bass_deck_d3_f3
       rect:
         serializedVersion: 2
-        x: 18
-        y: 278
-        width: 23
-        height: 16
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 192
+        y: 256
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 964f61e5b63fa0560800000000000000
-      internalID: 7280899390063441001
+      spriteID: bc537979fbb9a9f47b767761f1c035c1
+      internalID: -784305980
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_bass_deck_16
+      name: Fish_bass_deck_d4_f0
       rect:
         serializedVersion: 2
-        x: 83
-        y: 278
-        width: 22
-        height: 16
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 192
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c008768ca359f8f80800000000000000
-      internalID: -8102093124913364980
+      spriteID: 425900498c6d14a478c3cb569702084b
+      internalID: -429345514
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_bass_deck_17
+      name: Fish_bass_deck_d4_f1
       rect:
         serializedVersion: 2
-        x: 147
-        y: 277
-        width: 22
-        height: 15
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 192
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: bc41763bea326c730800000000000000
-      internalID: 4018938950715905227
+      spriteID: a066f7606c37ca348b3f50d7f672abab
+      internalID: -1274224845
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_bass_deck_18
+      name: Fish_bass_deck_d4_f2
       rect:
         serializedVersion: 2
-        x: 210
-        y: 278
-        width: 23
-        height: 14
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 128
+        y: 192
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 6e2a7648f1f1c1d80800000000000000
-      internalID: -8278707794787982618
+      spriteID: e8f5d03f67555bc4982b1f7376c6e460
+      internalID: -95428910
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_bass_deck_19
+      name: Fish_bass_deck_d4_f3
       rect:
         serializedVersion: 2
-        x: 28
-        y: 213
-        width: 10
-        height: 19
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 192
+        y: 192
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 2962ee6b002601e20800000000000000
-      internalID: 3319260680580638354
+      spriteID: a5a593c73bdee7246a44eb901a91d3d2
+      internalID: -1517335762
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_bass_deck_20
+      name: Fish_bass_deck_d5_f0
       rect:
         serializedVersion: 2
-        x: 90
-        y: 213
-        width: 10
-        height: 18
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 128
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: df6ddb7fcc621be10800000000000000
-      internalID: 2211591553787221757
+      spriteID: 03d8c16861aff4d47898ae38e3273fa2
+      internalID: -779277781
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_bass_deck_21
+      name: Fish_bass_deck_d5_f1
       rect:
         serializedVersion: 2
-        x: 156
-        y: 212
-        width: 10
-        height: 17
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 128
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a8d239d73f2dddbb0800000000000000
-      internalID: -4909536075538289270
+      spriteID: a9bb5bc847ead9d43a9137ac629ce72f
+      internalID: -1807666225
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_bass_deck_22
+      name: Fish_bass_deck_d5_f2
       rect:
         serializedVersion: 2
-        x: 218
-        y: 212
-        width: 10
-        height: 18
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 128
+        y: 128
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: befd81e77ce7b94e0800000000000000
-      internalID: -1973844616392679445
+      spriteID: ff03819d22ab6fe4cbe546871816bd60
+      internalID: 401757868
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_bass_deck_23
+      name: Fish_bass_deck_d5_f3
       rect:
         serializedVersion: 2
-        x: 23
-        y: 150
-        width: 23
-        height: 16
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 192
+        y: 128
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 38be0f16702970c10800000000000000
-      internalID: 2019743518304562051
+      spriteID: 677561f7d067ebe4e95599e78b9ea4c0
+      internalID: -1334557043
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_bass_deck_24
+      name: Fish_bass_deck_d6_f0
       rect:
         serializedVersion: 2
-        x: 87
-        y: 150
-        width: 22
-        height: 16
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 64
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: eaf3039df19c6cd20800000000000000
-      internalID: 3298544915720454062
+      spriteID: 75b50f4d755f5dd44ba833cd6a126df5
+      internalID: -1421141378
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_bass_deck_25
+      name: Fish_bass_deck_d6_f1
       rect:
         serializedVersion: 2
-        x: 151
-        y: 149
-        width: 22
-        height: 15
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 64
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 6a58223c5e8525a90800000000000000
-      internalID: -7326695899933801050
+      spriteID: 9cda058bbaefe5b4496ba50d81c1b43d
+      internalID: -919614990
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_bass_deck_26
+      name: Fish_bass_deck_d6_f2
       rect:
         serializedVersion: 2
-        x: 215
-        y: 150
-        width: 22
-        height: 15
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 128
+        y: 64
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 3eedc47cba4800000800000000000000
-      internalID: 145873317977827
+      spriteID: 979870de343314242a9027a6b577adae
+      internalID: -1655022649
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_bass_deck_27
+      name: Fish_bass_deck_d6_f3
       rect:
         serializedVersion: 2
-        x: 21
-        y: 87
-        width: 21
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 192
+        y: 64
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e3a4736f289aa7850800000000000000
-      internalID: 6375594602438019646
+      spriteID: 3cb7852012421944eb9f7290195700cf
+      internalID: -1856227359
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_bass_deck_28
+      name: Fish_bass_deck_d7_f0
       rect:
         serializedVersion: 2
-        x: 41
-        y: 90
-        width: 7
-        height: 6
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 0
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: b04f4360791acdfe0800000000000000
-      internalID: -1162876933752163317
+      spriteID: 058e4886284c3204eac7756e56dc6608
+      internalID: -1281460079
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_bass_deck_29
+      name: Fish_bass_deck_d7_f1
       rect:
         serializedVersion: 2
-        x: 85
-        y: 87
-        width: 21
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 0
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 1a7bdc9d6464a9a60800000000000000
-      internalID: 7681529384549595041
+      spriteID: a5c4e368202f7134a801499d68003993
+      internalID: 239448724
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_bass_deck_30
+      name: Fish_bass_deck_d7_f2
       rect:
         serializedVersion: 2
-        x: 105
-        y: 90
-        width: 7
-        height: 6
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 128
+        y: 0
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 21c429c9dc12c5730800000000000000
-      internalID: 3989100536922262546
+      spriteID: cbd0af19829b2da4f9eaf00ebab5afc3
+      internalID: 1803181156
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_bass_deck_31
+      name: Fish_bass_deck_d7_f3
       rect:
         serializedVersion: 2
-        x: 148
-        y: 88
-        width: 22
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 192
+        y: 0
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: debc6950f70289810800000000000000
-      internalID: 1772202183296994285
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Fish_bass_deck_32
-      rect:
-        serializedVersion: 2
-        x: 169
-        y: 88
-        width: 7
-        height: 6
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: dc5ba35a7f00d2b50800000000000000
-      internalID: 6569908495032432077
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Fish_bass_deck_33
-      rect:
-        serializedVersion: 2
-        x: 213
-        y: 87
-        width: 27
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 93185c489e2705620800000000000000
-      internalID: 2760832918858596665
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Fish_bass_deck_34
-      rect:
-        serializedVersion: 2
-        x: 23
-        y: 20
-        width: 22
-        height: 14
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 5c6a950ecf2e3d8e0800000000000000
-      internalID: -1669741461100714299
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Fish_bass_deck_35
-      rect:
-        serializedVersion: 2
-        x: 87
-        y: 19
-        width: 22
-        height: 15
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 22e30ac9715b7d3e0800000000000000
-      internalID: -2028953994090496478
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Fish_bass_deck_36
-      rect:
-        serializedVersion: 2
-        x: 151
-        y: 17
-        width: 22
-        height: 17
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 1166bd96d3be7c3d0800000000000000
-      internalID: -3186319562339817967
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Fish_bass_deck_37
-      rect:
-        serializedVersion: 2
-        x: 215
-        y: 18
-        width: 22
-        height: 16
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 02731e196e45d6bc0800000000000000
-      internalID: -3788278362282051808
+      spriteID: 708fbfee10cc91748ad0b27bf10e11b7
+      internalID: 402628973
       vertices: []
       indices: 
       edges: []
@@ -1063,7 +931,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 05d38820e45679046bab8317aa61f065
     internalID: 0
     vertices: []
     indices: 
@@ -1073,44 +941,38 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Fish_bass_deck_0: 4652652474622824903
-      Fish_bass_deck_1: -2048697657055273511
-      Fish_bass_deck_10: 2202470457267212505
-      Fish_bass_deck_11: 2243927542774460384
-      Fish_bass_deck_12: -4091101438928194309
-      Fish_bass_deck_13: -2444103995751252344
-      Fish_bass_deck_14: 6631336873294088508
-      Fish_bass_deck_15: 7280899390063441001
-      Fish_bass_deck_16: -8102093124913364980
-      Fish_bass_deck_17: 4018938950715905227
-      Fish_bass_deck_18: -8278707794787982618
-      Fish_bass_deck_19: 3319260680580638354
-      Fish_bass_deck_2: 4837433307358720849
-      Fish_bass_deck_20: 2211591553787221757
-      Fish_bass_deck_21: -4909536075538289270
-      Fish_bass_deck_22: -1973844616392679445
-      Fish_bass_deck_23: 2019743518304562051
-      Fish_bass_deck_24: 3298544915720454062
-      Fish_bass_deck_25: -7326695899933801050
-      Fish_bass_deck_26: 145873317977827
-      Fish_bass_deck_27: 6375594602438019646
-      Fish_bass_deck_28: -1162876933752163317
-      Fish_bass_deck_29: 7681529384549595041
-      Fish_bass_deck_3: 8217643709520747994
-      Fish_bass_deck_30: 3989100536922262546
-      Fish_bass_deck_31: 1772202183296994285
-      Fish_bass_deck_32: 6569908495032432077
-      Fish_bass_deck_33: 2760832918858596665
-      Fish_bass_deck_34: -1669741461100714299
-      Fish_bass_deck_35: -2028953994090496478
-      Fish_bass_deck_36: -3186319562339817967
-      Fish_bass_deck_37: -3788278362282051808
-      Fish_bass_deck_4: 5361657695929445737
-      Fish_bass_deck_5: 4114974100364855728
-      Fish_bass_deck_6: -8968434531324824858
-      Fish_bass_deck_7: -4281302961878399312
-      Fish_bass_deck_8: 1308148945383355859
-      Fish_bass_deck_9: 1158643492895610331
+      Fish_bass_deck_d0_f0: -1757477348
+      Fish_bass_deck_d0_f1: -779968997
+      Fish_bass_deck_d0_f2: 1235372091
+      Fish_bass_deck_d0_f3: 701433454
+      Fish_bass_deck_d1_f0: 264675693
+      Fish_bass_deck_d1_f1: 1335721905
+      Fish_bass_deck_d1_f2: 1824019354
+      Fish_bass_deck_d1_f3: -2112469158
+      Fish_bass_deck_d2_f0: -1163911633
+      Fish_bass_deck_d2_f1: -1321896839
+      Fish_bass_deck_d2_f2: -743779377
+      Fish_bass_deck_d2_f3: 1083099737
+      Fish_bass_deck_d3_f0: 1471266958
+      Fish_bass_deck_d3_f1: 1582122205
+      Fish_bass_deck_d3_f2: 1016432874
+      Fish_bass_deck_d3_f3: -784305980
+      Fish_bass_deck_d4_f0: -429345514
+      Fish_bass_deck_d4_f1: -1274224845
+      Fish_bass_deck_d4_f2: -95428910
+      Fish_bass_deck_d4_f3: -1517335762
+      Fish_bass_deck_d5_f0: -779277781
+      Fish_bass_deck_d5_f1: -1807666225
+      Fish_bass_deck_d5_f2: 401757868
+      Fish_bass_deck_d5_f3: -1334557043
+      Fish_bass_deck_d6_f0: -1421141378
+      Fish_bass_deck_d6_f1: -919614990
+      Fish_bass_deck_d6_f2: -1655022649
+      Fish_bass_deck_d6_f3: -1856227359
+      Fish_bass_deck_d7_f0: -1281460079
+      Fish_bass_deck_d7_f1: 239448724
+      Fish_bass_deck_d7_f2: 1803181156
+      Fish_bass_deck_d7_f3: 402628973
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

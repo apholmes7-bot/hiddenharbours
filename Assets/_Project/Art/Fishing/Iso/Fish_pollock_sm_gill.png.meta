@@ -158,353 +158,353 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Fish_pollock_sm_gill_0
+      name: Fish_pollock_sm_gill_d0_f0
       rect:
         serializedVersion: 2
-        x: 28
-        y: 463
-        width: 7
-        height: 14
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 448
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: cfc20361265bc5310800000000000000
-      internalID: 1395189417461689596
+      spriteID: e142651518c7983448023c0087bd70fb
+      internalID: 621443115
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_pollock_sm_gill_1
+      name: Fish_pollock_sm_gill_d0_f1
       rect:
         serializedVersion: 2
-        x: 93
-        y: 459
-        width: 7
-        height: 18
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 448
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 205e449dd81483320800000000000000
-      internalID: 2537850467514639618
+      spriteID: 1f56bb43adee37d44987877d77f20c95
+      internalID: 148759700
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_pollock_sm_gill_2
+      name: Fish_pollock_sm_gill_d1_f0
       rect:
         serializedVersion: 2
-        x: 28
-        y: 395
-        width: 7
-        height: 18
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 384
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 85ce632a439ee7590800000000000000
-      internalID: -7674440302723666856
+      spriteID: 7bf57da39d44f474699a4ef2739f8361
+      internalID: -1894793861
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_pollock_sm_gill_3
+      name: Fish_pollock_sm_gill_d1_f1
       rect:
         serializedVersion: 2
-        x: 92
-        y: 396
-        width: 8
-        height: 17
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 384
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 1ed4776808f5b4060800000000000000
-      internalID: 6938744656510799329
+      spriteID: 7010f139be92aa940bb9a9a7a83d4dc5
+      internalID: 2110901066
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_pollock_sm_gill_4
+      name: Fish_pollock_sm_gill_d2_f0
       rect:
         serializedVersion: 2
-        x: 27
-        y: 332
-        width: 8
-        height: 17
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 320
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 4424c5cbc3d8d1a00800000000000000
-      internalID: 728894006701605444
+      spriteID: e340ac8dc91099847a67ed67caf4d1ea
+      internalID: -300733699
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_pollock_sm_gill_5
+      name: Fish_pollock_sm_gill_d2_f1
       rect:
         serializedVersion: 2
-        x: 91
-        y: 333
-        width: 8
-        height: 16
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 320
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 87c1eb685f57af800800000000000000
-      internalID: 646959193869130872
+      spriteID: a116ba1af2e04ed429ad215b12c24dd2
+      internalID: 267651694
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_pollock_sm_gill_6
+      name: Fish_pollock_sm_gill_d3_f0
       rect:
         serializedVersion: 2
-        x: 28
-        y: 269
-        width: 8
-        height: 16
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 256
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 2d1fdee9804cf93b0800000000000000
-      internalID: -5503464678318280238
+      spriteID: 7ec8a7f6e14c5004d9a3cbf0ef44287a
+      internalID: -608134350
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_pollock_sm_gill_7
+      name: Fish_pollock_sm_gill_d3_f1
       rect:
         serializedVersion: 2
-        x: 92
-        y: 269
-        width: 7
-        height: 16
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 256
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: f65cd9c23e2326290800000000000000
-      internalID: -7898694845166926481
+      spriteID: 1936ccec365d26946ab52364302cf161
+      internalID: -2033505021
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_pollock_sm_gill_8
+      name: Fish_pollock_sm_gill_d4_f0
       rect:
         serializedVersion: 2
-        x: 29
-        y: 208
-        width: 7
-        height: 13
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 192
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c643888df5f225260800000000000000
-      internalID: 7084777252508415084
+      spriteID: a557ad82fb6076149b814d8128ceec9c
+      internalID: -1338983374
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_pollock_sm_gill_9
+      name: Fish_pollock_sm_gill_d4_f1
       rect:
         serializedVersion: 2
-        x: 92
-        y: 207
-        width: 7
-        height: 14
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 192
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a003184cb1aad8270800000000000000
-      internalID: 8254440728277626890
+      spriteID: 83074238919fb774b9dc0b2e8ce49b41
+      internalID: 330714134
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_pollock_sm_gill_10
+      name: Fish_pollock_sm_gill_d5_f0
       rect:
         serializedVersion: 2
-        x: 29
-        y: 142
-        width: 7
-        height: 15
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 128
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: dd621eebd6570fed0800000000000000
-      internalID: -2382275088664680739
+      spriteID: 71c3eff6b2ec099459efe9cc93641f79
+      internalID: 1208537000
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_pollock_sm_gill_11
+      name: Fish_pollock_sm_gill_d5_f1
       rect:
         serializedVersion: 2
-        x: 92
-        y: 140
-        width: 8
-        height: 17
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 128
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 90ff5830411cad0f0800000000000000
-      internalID: -1091347667981304055
+      spriteID: 51efbe1b30557d246b9ac8de6b69cb8e
+      internalID: -1344908390
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_pollock_sm_gill_12
+      name: Fish_pollock_sm_gill_d6_f0
       rect:
         serializedVersion: 2
-        x: 29
-        y: 77
-        width: 8
-        height: 16
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 64
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 4622acd1464e4ffd0800000000000000
-      internalID: -2308969590286572956
+      spriteID: 2911c209713932749b9f332569f1541f
+      internalID: -876849290
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_pollock_sm_gill_13
+      name: Fish_pollock_sm_gill_d6_f1
       rect:
         serializedVersion: 2
-        x: 93
-        y: 76
-        width: 8
-        height: 17
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 64
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 232837fa55f633960800000000000000
-      internalID: 7580525011601162802
+      spriteID: ef787c33445863f49afff884a7b4a021
+      internalID: -1218820723
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_pollock_sm_gill_14
+      name: Fish_pollock_sm_gill_d7_f0
       rect:
         serializedVersion: 2
-        x: 28
-        y: 12
-        width: 8
-        height: 17
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 0
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a9a73dfa00a0fc830800000000000000
-      internalID: 4093501584369220250
+      spriteID: 19596f6904ee4b740935b0a3cc90a71f
+      internalID: -2114178151
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_pollock_sm_gill_15
+      name: Fish_pollock_sm_gill_d7_f1
       rect:
         serializedVersion: 2
-        x: 93
-        y: 11
-        width: 7
-        height: 18
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 0
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 4b8991618f932b070800000000000000
-      internalID: 8120616815787874484
+      spriteID: f992193b1d1dbde46b690a9bccc84388
+      internalID: -1994027216
       vertices: []
       indices: 
       edges: []
@@ -513,7 +513,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: bcf97cc3604b3bc4584a3ceb592f40ff
     internalID: 0
     vertices: []
     indices: 
@@ -523,22 +523,22 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Fish_pollock_sm_gill_0: 1395189417461689596
-      Fish_pollock_sm_gill_1: 2537850467514639618
-      Fish_pollock_sm_gill_10: -2382275088664680739
-      Fish_pollock_sm_gill_11: -1091347667981304055
-      Fish_pollock_sm_gill_12: -2308969590286572956
-      Fish_pollock_sm_gill_13: 7580525011601162802
-      Fish_pollock_sm_gill_14: 4093501584369220250
-      Fish_pollock_sm_gill_15: 8120616815787874484
-      Fish_pollock_sm_gill_2: -7674440302723666856
-      Fish_pollock_sm_gill_3: 6938744656510799329
-      Fish_pollock_sm_gill_4: 728894006701605444
-      Fish_pollock_sm_gill_5: 646959193869130872
-      Fish_pollock_sm_gill_6: -5503464678318280238
-      Fish_pollock_sm_gill_7: -7898694845166926481
-      Fish_pollock_sm_gill_8: 7084777252508415084
-      Fish_pollock_sm_gill_9: 8254440728277626890
+      Fish_pollock_sm_gill_d0_f0: 621443115
+      Fish_pollock_sm_gill_d0_f1: 148759700
+      Fish_pollock_sm_gill_d1_f0: -1894793861
+      Fish_pollock_sm_gill_d1_f1: 2110901066
+      Fish_pollock_sm_gill_d2_f0: -300733699
+      Fish_pollock_sm_gill_d2_f1: 267651694
+      Fish_pollock_sm_gill_d3_f0: -608134350
+      Fish_pollock_sm_gill_d3_f1: -2033505021
+      Fish_pollock_sm_gill_d4_f0: -1338983374
+      Fish_pollock_sm_gill_d4_f1: 330714134
+      Fish_pollock_sm_gill_d5_f0: 1208537000
+      Fish_pollock_sm_gill_d5_f1: -1344908390
+      Fish_pollock_sm_gill_d6_f0: -876849290
+      Fish_pollock_sm_gill_d6_f1: -1218820723
+      Fish_pollock_sm_gill_d7_f0: -2114178151
+      Fish_pollock_sm_gill_d7_f1: -1994027216
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

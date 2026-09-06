@@ -158,353 +158,353 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Fish_cod_sm_gill_0
+      name: Fish_cod_sm_gill_d0_f0
       rect:
         serializedVersion: 2
-        x: 28
-        y: 462
-        width: 8
-        height: 15
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 448
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: bdc4a8e650435b7b0800000000000000
-      internalID: -5209200196050072357
+      spriteID: 40ae755f8f1e44e4fb1840daffbd482b
+      internalID: 2027850744
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_cod_sm_gill_1
+      name: Fish_cod_sm_gill_d0_f1
       rect:
         serializedVersion: 2
-        x: 92
-        y: 458
-        width: 8
-        height: 19
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 448
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: fc4c44ac665ada350800000000000000
-      internalID: 6029657337017713871
+      spriteID: 4d17ca87d047a6e4899fdb6214fdc45b
+      internalID: 1509273992
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_cod_sm_gill_2
+      name: Fish_cod_sm_gill_d1_f0
       rect:
         serializedVersion: 2
-        x: 28
-        y: 393
-        width: 8
-        height: 20
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 384
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: f15ae3b36dd130e60800000000000000
-      internalID: 7927212575056373023
+      spriteID: bc3cf92961687654ebb50a9d49e60ba2
+      internalID: 2050344427
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_cod_sm_gill_3
+      name: Fish_cod_sm_gill_d1_f1
       rect:
         serializedVersion: 2
-        x: 92
-        y: 394
-        width: 8
-        height: 19
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 384
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 57e336b86fb776980800000000000000
-      internalID: -8545725469081518475
+      spriteID: 5fbb398968f6b9146bd783d54a1de5a3
+      internalID: 221369149
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_cod_sm_gill_4
+      name: Fish_cod_sm_gill_d2_f0
       rect:
         serializedVersion: 2
-        x: 27
-        y: 331
-        width: 8
-        height: 18
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 320
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 0b5083c6dcafeca70800000000000000
-      internalID: 8849286078020453808
+      spriteID: e4fe272e230416d4fba8d1755d21b35c
+      internalID: -1450149222
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_cod_sm_gill_5
+      name: Fish_cod_sm_gill_d2_f1
       rect:
         serializedVersion: 2
-        x: 91
-        y: 332
-        width: 8
-        height: 17
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 320
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: b191f6ee291a4a2a0800000000000000
-      internalID: -6727074290947122917
+      spriteID: 8929aa38d45990743a2baae33714a7c4
+      internalID: -1876445863
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_cod_sm_gill_6
+      name: Fish_cod_sm_gill_d3_f0
       rect:
         serializedVersion: 2
-        x: 28
-        y: 267
-        width: 8
-        height: 18
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 256
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: be74ee2e18a4c43a0800000000000000
-      internalID: -6679882225578784789
+      spriteID: 6fc3dd5e53bcbfd42b752112d3f9b1c3
+      internalID: 1753567844
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_cod_sm_gill_7
+      name: Fish_cod_sm_gill_d3_f1
       rect:
         serializedVersion: 2
-        x: 92
-        y: 267
-        width: 7
-        height: 18
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 256
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: f22366c9d67a39640800000000000000
-      internalID: 5085592493448639023
+      spriteID: 02e2888f707793f4eb8dce8983bac83a
+      internalID: 1255335481
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_cod_sm_gill_8
+      name: Fish_cod_sm_gill_d4_f0
       rect:
         serializedVersion: 2
-        x: 28
-        y: 207
-        width: 8
-        height: 14
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 192
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 4db2fb2952ed877a0800000000000000
-      internalID: -6379104619213149228
+      spriteID: 369e178a7d3c1e74586596a6204127b8
+      internalID: -1863038445
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_cod_sm_gill_9
+      name: Fish_cod_sm_gill_d4_f1
       rect:
         serializedVersion: 2
-        x: 92
-        y: 204
-        width: 8
-        height: 17
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 192
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 7b1c778020b293940800000000000000
-      internalID: 5276295726173241783
+      spriteID: 8f1aa7d38e7d4d943886cc126dbce347
+      internalID: -792178239
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_cod_sm_gill_10
+      name: Fish_cod_sm_gill_d5_f0
       rect:
         serializedVersion: 2
-        x: 29
-        y: 139
-        width: 7
-        height: 18
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 128
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: b5f83a871c58a1ce0800000000000000
-      internalID: -1433686465364914341
+      spriteID: a6e4eb5560f83db47a143b3937d7bcd6
+      internalID: -303340572
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_cod_sm_gill_11
+      name: Fish_cod_sm_gill_d5_f1
       rect:
         serializedVersion: 2
-        x: 92
-        y: 139
-        width: 8
-        height: 18
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 128
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 276719594b132f970800000000000000
-      internalID: 8787140474626471538
+      spriteID: dffec623779d901498727f3084a17ac1
+      internalID: 816680347
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_cod_sm_gill_12
+      name: Fish_cod_sm_gill_d6_f0
       rect:
         serializedVersion: 2
-        x: 29
-        y: 75
-        width: 8
-        height: 18
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 64
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 66a06b41f61d86ae0800000000000000
-      internalID: -1555763396237456794
+      spriteID: 7fc17b8d3f1a6704ea7e517c50595a5a
+      internalID: -1692294725
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_cod_sm_gill_13
+      name: Fish_cod_sm_gill_d6_f1
       rect:
         serializedVersion: 2
-        x: 93
-        y: 75
-        width: 8
-        height: 18
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 64
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a899399e76113a1d0800000000000000
-      internalID: -3340807360580707958
+      spriteID: ac0cd365a508adf4db79a92cb6c206cd
+      internalID: 1669540650
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_cod_sm_gill_14
+      name: Fish_cod_sm_gill_d7_f0
       rect:
         serializedVersion: 2
-        x: 28
-        y: 10
-        width: 8
-        height: 19
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 0
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a6f5d42e4b4b90dc0800000000000000
-      internalID: -3672205332160094358
+      spriteID: cadf111bbc80b14439d23eacf79668af
+      internalID: 1757695559
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_cod_sm_gill_15
+      name: Fish_cod_sm_gill_d7_f1
       rect:
         serializedVersion: 2
-        x: 92
-        y: 9
-        width: 8
-        height: 20
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 0
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 55961f6f6c21f4c40800000000000000
-      internalID: 5498634315798505813
+      spriteID: b0c6da2be6176ef46b2a012ac60718ba
+      internalID: -1336056845
       vertices: []
       indices: 
       edges: []
@@ -513,7 +513,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 8a59e099fe7c08140b45a123b2e30dae
     internalID: 0
     vertices: []
     indices: 
@@ -523,22 +523,22 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Fish_cod_sm_gill_0: -5209200196050072357
-      Fish_cod_sm_gill_1: 6029657337017713871
-      Fish_cod_sm_gill_10: -1433686465364914341
-      Fish_cod_sm_gill_11: 8787140474626471538
-      Fish_cod_sm_gill_12: -1555763396237456794
-      Fish_cod_sm_gill_13: -3340807360580707958
-      Fish_cod_sm_gill_14: -3672205332160094358
-      Fish_cod_sm_gill_15: 5498634315798505813
-      Fish_cod_sm_gill_2: 7927212575056373023
-      Fish_cod_sm_gill_3: -8545725469081518475
-      Fish_cod_sm_gill_4: 8849286078020453808
-      Fish_cod_sm_gill_5: -6727074290947122917
-      Fish_cod_sm_gill_6: -6679882225578784789
-      Fish_cod_sm_gill_7: 5085592493448639023
-      Fish_cod_sm_gill_8: -6379104619213149228
-      Fish_cod_sm_gill_9: 5276295726173241783
+      Fish_cod_sm_gill_d0_f0: 2027850744
+      Fish_cod_sm_gill_d0_f1: 1509273992
+      Fish_cod_sm_gill_d1_f0: 2050344427
+      Fish_cod_sm_gill_d1_f1: 221369149
+      Fish_cod_sm_gill_d2_f0: -1450149222
+      Fish_cod_sm_gill_d2_f1: -1876445863
+      Fish_cod_sm_gill_d3_f0: 1753567844
+      Fish_cod_sm_gill_d3_f1: 1255335481
+      Fish_cod_sm_gill_d4_f0: -1863038445
+      Fish_cod_sm_gill_d4_f1: -792178239
+      Fish_cod_sm_gill_d5_f0: -303340572
+      Fish_cod_sm_gill_d5_f1: 816680347
+      Fish_cod_sm_gill_d6_f0: -1692294725
+      Fish_cod_sm_gill_d6_f1: 1669540650
+      Fish_cod_sm_gill_d7_f0: 1757695559
+      Fish_cod_sm_gill_d7_f1: -1336056845
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -206,705 +206,705 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Crust2_lobster_walk_0
+      name: Crust2_lobster_walk_d0_f0
       rect:
         serializedVersion: 2
-        x: 27
-        y: 468
-        width: 10
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 448
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a5ad57433f274c2a0800000000000000
-      internalID: -6718118355247179174
+      spriteID: d7e264f13a722a64dbceec3e919299fc
+      internalID: -545258534
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_walk_1
+      name: Crust2_lobster_walk_d0_f1
       rect:
         serializedVersion: 2
-        x: 91
-        y: 468
-        width: 10
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 448
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: f791c5315a140f630800000000000000
-      internalID: 3958736249708878207
+      spriteID: 4b2e26a414ea2f9408e8abcd87327db5
+      internalID: 2098045781
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_walk_2
+      name: Crust2_lobster_walk_d0_f2
       rect:
         serializedVersion: 2
-        x: 155
-        y: 468
-        width: 10
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 128
+        y: 448
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 160ccfb64d8cebdd0800000000000000
-      internalID: -2468314731082104735
+      spriteID: 9c0ccc9f0bf172c44a26fbeaa3f180e5
+      internalID: 590609051
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_walk_3
+      name: Crust2_lobster_walk_d0_f3
       rect:
         serializedVersion: 2
-        x: 219
-        y: 468
-        width: 10
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 192
+        y: 448
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 749cf002e59b3f5d0800000000000000
-      internalID: -3029874310374241977
+      spriteID: abbb4966b8cee0e4c887929c96850533
+      internalID: 586312572
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_walk_4
+      name: Crust2_lobster_walk_d1_f0
       rect:
         serializedVersion: 2
-        x: 24
-        y: 403
-        width: 17
-        height: 12
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 384
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: ab75765cf324db920800000000000000
-      internalID: 3007632967815616442
+      spriteID: 79ad6ea427ba1584aad7a79c536091b8
+      internalID: 936014166
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_walk_5
+      name: Crust2_lobster_walk_d1_f1
       rect:
         serializedVersion: 2
-        x: 88
-        y: 403
-        width: 17
-        height: 12
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 384
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: b26ded077de60cd90800000000000000
-      internalID: -7079536742635743701
+      spriteID: 68c4713c54ff82f41b8ec04530e472a3
+      internalID: 695892261
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_walk_6
+      name: Crust2_lobster_walk_d1_f2
       rect:
         serializedVersion: 2
-        x: 152
-        y: 403
-        width: 17
-        height: 12
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 128
+        y: 384
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 55379b8b787062e00800000000000000
-      internalID: 1019510645147136853
+      spriteID: 7c3cc0246935d2d4e915b5e00faec289
+      internalID: -1343107525
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_walk_7
+      name: Crust2_lobster_walk_d1_f3
       rect:
         serializedVersion: 2
-        x: 216
-        y: 404
-        width: 17
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 192
+        y: 384
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 1e52411c424496800800000000000000
-      internalID: 606090549506876897
+      spriteID: 35f6f3d0063c1e145b45edbd73c5cc94
+      internalID: 553296241
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_walk_8
+      name: Crust2_lobster_walk_d2_f0
       rect:
         serializedVersion: 2
-        x: 24
-        y: 340
-        width: 17
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 320
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: ce83364010718c910800000000000000
-      internalID: 1857760139426347244
+      spriteID: 905f28fe6be092c4dbf02ce0b1a84990
+      internalID: -1932342903
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_walk_9
+      name: Crust2_lobster_walk_d2_f1
       rect:
         serializedVersion: 2
-        x: 88
-        y: 340
-        width: 17
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 320
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 57b04535bdba0e440800000000000000
-      internalID: 4963155747846490997
+      spriteID: 29156c98ace328345aa876b09a054168
+      internalID: 1892876776
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_walk_10
+      name: Crust2_lobster_walk_d2_f2
       rect:
         serializedVersion: 2
-        x: 152
-        y: 340
-        width: 17
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 128
+        y: 320
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c6eb5b8fede031740800000000000000
-      internalID: 5121453552068574828
+      spriteID: c707fb3365b8c2241a2f0c42538e466d
+      internalID: -858103326
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_walk_11
+      name: Crust2_lobster_walk_d2_f3
       rect:
         serializedVersion: 2
-        x: 216
-        y: 340
-        width: 17
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 192
+        y: 320
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 9656482d5f6f27b70800000000000000
-      internalID: 8895443749669463401
+      spriteID: be197cbd9a30ab94191e53bcdc0fc4f7
+      internalID: -2083386786
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_walk_12
+      name: Crust2_lobster_walk_d3_f0
       rect:
         serializedVersion: 2
-        x: 24
-        y: 274
-        width: 17
-        height: 13
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 256
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 8aa6fef194f66d4b0800000000000000
-      internalID: -5416019142007362904
+      spriteID: 2416e41b816bd9e4a9e980a2be4f3533
+      internalID: -1016358357
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_walk_13
+      name: Crust2_lobster_walk_d3_f1
       rect:
         serializedVersion: 2
-        x: 88
-        y: 274
-        width: 17
-        height: 13
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 256
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 2c7be2f31e9781050800000000000000
-      internalID: 5771496930809919426
+      spriteID: 4c80c77b6cf9f754d8cf61dee3d6d39a
+      internalID: 240145125
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_walk_14
+      name: Crust2_lobster_walk_d3_f2
       rect:
         serializedVersion: 2
-        x: 152
-        y: 274
-        width: 17
-        height: 13
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 128
+        y: 256
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 78441c97aeca56900800000000000000
-      internalID: 677137442054161543
+      spriteID: 51a980d36cb45fd4582608ca87ea53a3
+      internalID: 1678324206
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_walk_15
+      name: Crust2_lobster_walk_d3_f3
       rect:
         serializedVersion: 2
-        x: 216
-        y: 274
-        width: 17
-        height: 13
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 192
+        y: 256
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: de434a04f0543da50800000000000000
-      internalID: 6544650615310791917
+      spriteID: 16be705905ef929468404eb43e4763a9
+      internalID: -381877776
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_walk_16
+      name: Crust2_lobster_walk_d4_f0
       rect:
         serializedVersion: 2
-        x: 27
-        y: 211
-        width: 10
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 192
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: b7945d95f2c6bb820800000000000000
-      internalID: 2935058532788423035
+      spriteID: 0ee786127caa96e46afd28049dac040a
+      internalID: -1282921248
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_walk_17
+      name: Crust2_lobster_walk_d4_f1
       rect:
         serializedVersion: 2
-        x: 91
-        y: 211
-        width: 10
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 192
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 741dad4bd832b7990800000000000000
-      internalID: -7387271672239566521
+      spriteID: 959fa69494478324ebded6972b99d39a
+      internalID: 1429611848
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_walk_18
+      name: Crust2_lobster_walk_d4_f2
       rect:
         serializedVersion: 2
-        x: 155
-        y: 211
-        width: 10
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 128
+        y: 192
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 292ee1bee2575b750800000000000000
-      internalID: 6320086496457974418
+      spriteID: 52df75df9a5cbce4bb98f01ddc7cb41f
+      internalID: -505172934
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_walk_19
+      name: Crust2_lobster_walk_d4_f3
       rect:
         serializedVersion: 2
-        x: 219
-        y: 211
-        width: 10
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 192
+        y: 192
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: bc51bb3c92fdaece0800000000000000
-      internalID: -1375041365737794101
+      spriteID: a4d60e87dc3e38048940f532ee71cbc8
+      internalID: -1761987215
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_walk_20
+      name: Crust2_lobster_walk_d5_f0
       rect:
         serializedVersion: 2
-        x: 23
-        y: 147
-        width: 17
-        height: 12
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 128
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: ade698cd4fcfef5d0800000000000000
-      internalID: -3026703770944180518
+      spriteID: 3aa9c9e38f8ec034c833432a4ebe8dee
+      internalID: -1208859049
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_walk_21
+      name: Crust2_lobster_walk_d5_f1
       rect:
         serializedVersion: 2
-        x: 87
-        y: 147
-        width: 17
-        height: 12
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 128
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 2ed0ce6e4a1a0e080800000000000000
-      internalID: -9160143912450650654
+      spriteID: a31ea96696975e64fa6be9af54b04d76
+      internalID: -826274187
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_walk_22
+      name: Crust2_lobster_walk_d5_f2
       rect:
         serializedVersion: 2
-        x: 151
-        y: 147
-        width: 17
-        height: 12
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 128
+        y: 128
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 3ce31f8925e1d2810800000000000000
-      internalID: 1742081970964348611
+      spriteID: 2799cd1674052d04a80762ef71663647
+      internalID: 586376016
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_walk_23
+      name: Crust2_lobster_walk_d5_f3
       rect:
         serializedVersion: 2
-        x: 215
-        y: 147
-        width: 17
-        height: 12
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 192
+        y: 128
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 48e36f6b94f073ec0800000000000000
-      internalID: -3587381768900690300
+      spriteID: 4412f1e9db25e8c4daadcfd59b9dbd40
+      internalID: -1584579711
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_walk_24
+      name: Crust2_lobster_walk_d6_f0
       rect:
         serializedVersion: 2
-        x: 23
-        y: 84
-        width: 17
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 64
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 56893cd44f43ce670800000000000000
-      internalID: 8569282414860540005
+      spriteID: 41d8bc5804e43d74c839189397c51b2d
+      internalID: -761820959
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_walk_25
+      name: Crust2_lobster_walk_d6_f1
       rect:
         serializedVersion: 2
-        x: 87
-        y: 84
-        width: 17
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 64
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 663c6e47771876000800000000000000
-      internalID: 29134272663569254
+      spriteID: 28d844bd52498b7468f115377e96ecbe
+      internalID: 514565206
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_walk_26
+      name: Crust2_lobster_walk_d6_f2
       rect:
         serializedVersion: 2
-        x: 151
-        y: 84
-        width: 17
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 128
+        y: 64
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 382fc2b2e9d2bcdc0800000000000000
-      internalID: -3617747718309612925
+      spriteID: 74ae025dbd25dbb438adc1b9153c7bec
+      internalID: -1375440970
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_walk_27
+      name: Crust2_lobster_walk_d6_f3
       rect:
         serializedVersion: 2
-        x: 215
-        y: 84
-        width: 17
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 192
+        y: 64
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 2df14946495b3e480800000000000000
-      internalID: -8871047192042528814
+      spriteID: 7ca32d0b444413d4faf1b1c6a3f6ace6
+      internalID: -374410378
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_walk_28
+      name: Crust2_lobster_walk_d7_f0
       rect:
         serializedVersion: 2
-        x: 23
-        y: 19
-        width: 17
-        height: 12
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 0
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 33a9d2eec25b72c80800000000000000
-      internalID: -8347504179728770509
+      spriteID: b4f1b3681cef4014fbc15cb4de4c1be1
+      internalID: -2063890024
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_walk_29
+      name: Crust2_lobster_walk_d7_f1
       rect:
         serializedVersion: 2
-        x: 87
-        y: 19
-        width: 17
-        height: 12
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 0
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: f55eae1a5af14e390800000000000000
-      internalID: -7790066659197524641
+      spriteID: 93aa20d646baf9248aaf1e2199381b59
+      internalID: 281333496
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_walk_30
+      name: Crust2_lobster_walk_d7_f2
       rect:
         serializedVersion: 2
-        x: 151
-        y: 20
-        width: 17
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 128
+        y: 0
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 01bf8d61a9fe17320800000000000000
-      internalID: 2554085908783102736
+      spriteID: 6ce558a261624a54d9065e38e72064fb
+      internalID: -398477921
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_walk_31
+      name: Crust2_lobster_walk_d7_f3
       rect:
         serializedVersion: 2
-        x: 215
-        y: 20
-        width: 17
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 192
+        y: 0
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 65ce248e31dbd4790800000000000000
-      internalID: -7544165907576984490
+      spriteID: d2c5b4df45f499d41902c6ed769e88b9
+      internalID: -1079794257
       vertices: []
       indices: 
       edges: []
@@ -913,7 +913,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: eebdc4453c1cf6248ac34c459e599075
     internalID: 0
     vertices: []
     indices: 
@@ -923,38 +923,38 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Crust2_lobster_walk_0: -6718118355247179174
-      Crust2_lobster_walk_1: 3958736249708878207
-      Crust2_lobster_walk_10: 5121453552068574828
-      Crust2_lobster_walk_11: 8895443749669463401
-      Crust2_lobster_walk_12: -5416019142007362904
-      Crust2_lobster_walk_13: 5771496930809919426
-      Crust2_lobster_walk_14: 677137442054161543
-      Crust2_lobster_walk_15: 6544650615310791917
-      Crust2_lobster_walk_16: 2935058532788423035
-      Crust2_lobster_walk_17: -7387271672239566521
-      Crust2_lobster_walk_18: 6320086496457974418
-      Crust2_lobster_walk_19: -1375041365737794101
-      Crust2_lobster_walk_2: -2468314731082104735
-      Crust2_lobster_walk_20: -3026703770944180518
-      Crust2_lobster_walk_21: -9160143912450650654
-      Crust2_lobster_walk_22: 1742081970964348611
-      Crust2_lobster_walk_23: -3587381768900690300
-      Crust2_lobster_walk_24: 8569282414860540005
-      Crust2_lobster_walk_25: 29134272663569254
-      Crust2_lobster_walk_26: -3617747718309612925
-      Crust2_lobster_walk_27: -8871047192042528814
-      Crust2_lobster_walk_28: -8347504179728770509
-      Crust2_lobster_walk_29: -7790066659197524641
-      Crust2_lobster_walk_3: -3029874310374241977
-      Crust2_lobster_walk_30: 2554085908783102736
-      Crust2_lobster_walk_31: -7544165907576984490
-      Crust2_lobster_walk_4: 3007632967815616442
-      Crust2_lobster_walk_5: -7079536742635743701
-      Crust2_lobster_walk_6: 1019510645147136853
-      Crust2_lobster_walk_7: 606090549506876897
-      Crust2_lobster_walk_8: 1857760139426347244
-      Crust2_lobster_walk_9: 4963155747846490997
+      Crust2_lobster_walk_d0_f0: -545258534
+      Crust2_lobster_walk_d0_f1: 2098045781
+      Crust2_lobster_walk_d0_f2: 590609051
+      Crust2_lobster_walk_d0_f3: 586312572
+      Crust2_lobster_walk_d1_f0: 936014166
+      Crust2_lobster_walk_d1_f1: 695892261
+      Crust2_lobster_walk_d1_f2: -1343107525
+      Crust2_lobster_walk_d1_f3: 553296241
+      Crust2_lobster_walk_d2_f0: -1932342903
+      Crust2_lobster_walk_d2_f1: 1892876776
+      Crust2_lobster_walk_d2_f2: -858103326
+      Crust2_lobster_walk_d2_f3: -2083386786
+      Crust2_lobster_walk_d3_f0: -1016358357
+      Crust2_lobster_walk_d3_f1: 240145125
+      Crust2_lobster_walk_d3_f2: 1678324206
+      Crust2_lobster_walk_d3_f3: -381877776
+      Crust2_lobster_walk_d4_f0: -1282921248
+      Crust2_lobster_walk_d4_f1: 1429611848
+      Crust2_lobster_walk_d4_f2: -505172934
+      Crust2_lobster_walk_d4_f3: -1761987215
+      Crust2_lobster_walk_d5_f0: -1208859049
+      Crust2_lobster_walk_d5_f1: -826274187
+      Crust2_lobster_walk_d5_f2: 586376016
+      Crust2_lobster_walk_d5_f3: -1584579711
+      Crust2_lobster_walk_d6_f0: -761820959
+      Crust2_lobster_walk_d6_f1: 514565206
+      Crust2_lobster_walk_d6_f2: -1375440970
+      Crust2_lobster_walk_d6_f3: -374410378
+      Crust2_lobster_walk_d7_f0: -2063890024
+      Crust2_lobster_walk_d7_f1: 281333496
+      Crust2_lobster_walk_d7_f2: -398477921
+      Crust2_lobster_walk_d7_f3: -1079794257
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

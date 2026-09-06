@@ -152,309 +152,353 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Crust2Held_crab_0
+      name: Crust2Held_crab_d0_f0
       rect:
         serializedVersion: 2
-        x: 26
-        y: 431
-        width: 9
-        height: 7
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 448
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.8125}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: f4aa5056dc6ef6de0800000000000000
-      internalID: -1337596794468193713
+      spriteID: 72d18678b8f0d394b8b6930e75357371
+      internalID: -1339024984
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2Held_crab_1
+      name: Crust2Held_crab_d0_f1
       rect:
         serializedVersion: 2
-        x: 27
-        y: 431
-        width: 74
-        height: 70
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 448
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.8125}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 7aa4eeddf570050e0800000000000000
-      internalID: -2283316902750172505
+      spriteID: 85243e6fc9abc2b479e9f2224e81004e
+      internalID: -468515005
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2Held_crab_2
+      name: Crust2Held_crab_d1_f0
       rect:
         serializedVersion: 2
-        x: 27
-        y: 367
-        width: 7
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 384
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.8125}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 670b2246c10cbc6b0800000000000000
-      internalID: -5274911310362791818
+      spriteID: 19085f87acfda3b4d80fbd00c4a1e788
+      internalID: 683192994
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2Held_crab_3
+      name: Crust2Held_crab_d1_f1
       rect:
         serializedVersion: 2
-        x: 91
-        y: 367
-        width: 7
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 384
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.8125}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: b8777671054d52f90800000000000000
-      internalID: -6978938607085586549
+      spriteID: 47c2978f1cec25546b00385328882bcb
+      internalID: 950989801
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2Held_crab_4
+      name: Crust2Held_crab_d2_f0
       rect:
         serializedVersion: 2
-        x: 26
-        y: 304
-        width: 9
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 320
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.8125}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 236b1227d8a0ca610800000000000000
-      internalID: 1633692367450125874
+      spriteID: 323a1e975c1eb484987e6a132ebdaf98
+      internalID: -822141803
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2Held_crab_5
+      name: Crust2Held_crab_d2_f1
       rect:
         serializedVersion: 2
-        x: 90
-        y: 304
-        width: 9
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 320
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.8125}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 2fb653956770d6c70800000000000000
-      internalID: 8965830638048734194
+      spriteID: dfc5d36dd1c17c74c96f1c33a6e7ff6b
+      internalID: -2128823134
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2Held_crab_6
+      name: Crust2Held_crab_d3_f0
       rect:
         serializedVersion: 2
-        x: 27
-        y: 241
-        width: 10
-        height: 7
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 256
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.8125}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 0c29e535c90574830800000000000000
-      internalID: 4055298621814248128
+      spriteID: 6b312ba4880c5f2459cf1a4d37b4a43e
+      internalID: -816245924
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2Held_crab_7
+      name: Crust2Held_crab_d3_f1
       rect:
         serializedVersion: 2
-        x: 91
-        y: 241
-        width: 10
-        height: 7
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 256
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.8125}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 9ea28053eae3fc620800000000000000
-      internalID: 2796522811555326697
+      spriteID: a5691ab0632f3074da935c075b23e7a6
+      internalID: -1520311152
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2Held_crab_8
+      name: Crust2Held_crab_d4_f0
       rect:
         serializedVersion: 2
-        x: 29
-        y: 176
-        width: 9
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 192
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.8125}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 2210e440c164959a0800000000000000
-      internalID: -6243882322227232478
+      spriteID: 5df620f5054e3f643881f53e0224406a
+      internalID: -1323177578
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2Held_crab_9
+      name: Crust2Held_crab_d4_f1
       rect:
         serializedVersion: 2
-        x: 93
-        y: 176
-        width: 9
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 192
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.8125}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 35db7916563365f30800000000000000
-      internalID: 4563891782908624211
+      spriteID: 92471073b06ce3e44be529953ae61b25
+      internalID: -2025794903
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2Held_crab_10
+      name: Crust2Held_crab_d5_f0
       rect:
         serializedVersion: 2
-        x: 30
-        y: 111
-        width: 7
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 128
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.8125}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 296f16f435e1ccb90800000000000000
-      internalID: -7220362759418808686
+      spriteID: 8705965820764544c96594996b6073d7
+      internalID: 885439680
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2Held_crab_11
+      name: Crust2Held_crab_d5_f1
       rect:
         serializedVersion: 2
-        x: 94
-        y: 111
-        width: 7
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 128
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.8125}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e7d278d107f5e5370800000000000000
-      internalID: 8313186897308888446
+      spriteID: c71d69285b4ad5a48b5fbdacc3ae310a
+      internalID: 1323726661
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2Held_crab_12
+      name: Crust2Held_crab_d6_f0
       rect:
         serializedVersion: 2
-        x: 29
-        y: 47
-        width: 9
-        height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 64
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.8125}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 74d34c4434ea26780800000000000000
-      internalID: -8691192726931882681
+      spriteID: 05d435931d085f94b816a4054da7df3b
+      internalID: 1089865434
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2Held_crab_13
+      name: Crust2Held_crab_d6_f1
       rect:
         serializedVersion: 2
-        x: 93
-        y: 47
-        width: 9
-        height: 7
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 64
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.8125}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: ff64c5932ab7c4f90800000000000000
-      internalID: -6968058586771732737
+      spriteID: 5055b82682500e849934dee2e33e78e5
+      internalID: -778220958
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Crust2Held_crab_d7_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.8125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 969a60fde7ebeed43bcf8466adb5bf8b
+      internalID: -321433546
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Crust2Held_crab_d7_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 0
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.8125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5d5aa75037739bc4a83944e1c7bac3bb
+      internalID: -1055340020
       vertices: []
       indices: 
       edges: []
@@ -463,7 +507,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 54a525adea2b9364d93f9ffe2baedbd1
     internalID: 0
     vertices: []
     indices: 
@@ -473,20 +517,22 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Crust2Held_crab_0: -1337596794468193713
-      Crust2Held_crab_1: -2283316902750172505
-      Crust2Held_crab_10: -7220362759418808686
-      Crust2Held_crab_11: 8313186897308888446
-      Crust2Held_crab_12: -8691192726931882681
-      Crust2Held_crab_13: -6968058586771732737
-      Crust2Held_crab_2: -5274911310362791818
-      Crust2Held_crab_3: -6978938607085586549
-      Crust2Held_crab_4: 1633692367450125874
-      Crust2Held_crab_5: 8965830638048734194
-      Crust2Held_crab_6: 4055298621814248128
-      Crust2Held_crab_7: 2796522811555326697
-      Crust2Held_crab_8: -6243882322227232478
-      Crust2Held_crab_9: 4563891782908624211
+      Crust2Held_crab_d0_f0: -1339024984
+      Crust2Held_crab_d0_f1: -468515005
+      Crust2Held_crab_d1_f0: 683192994
+      Crust2Held_crab_d1_f1: 950989801
+      Crust2Held_crab_d2_f0: -822141803
+      Crust2Held_crab_d2_f1: -2128823134
+      Crust2Held_crab_d3_f0: -816245924
+      Crust2Held_crab_d3_f1: -1520311152
+      Crust2Held_crab_d4_f0: -1323177578
+      Crust2Held_crab_d4_f1: -2025794903
+      Crust2Held_crab_d5_f0: 885439680
+      Crust2Held_crab_d5_f1: 1323726661
+      Crust2Held_crab_d6_f0: 1089865434
+      Crust2Held_crab_d6_f1: -778220958
+      Crust2Held_crab_d7_f0: -321433546
+      Crust2Held_crab_d7_f1: -1055340020
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

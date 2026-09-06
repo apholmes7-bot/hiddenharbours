@@ -113,23 +113,45 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Shell2Hand_periwinkle_0
+      name: Shell2Hand_periwinkle_d0_f0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 16
+        width: 8
         height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 90afdb45ba27ab060800000000000000
-      internalID: 6970009453495974409
+      spriteID: 266cb88ae941da949b3aa77e7e93a29c
+      internalID: -1630195026
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shell2Hand_periwinkle_d0_f1
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 0
+        width: 8
+        height: 8
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 942d31aff72a62649b5b9733c3f3f0e7
+      internalID: -432732285
       vertices: []
       indices: 
       edges: []
@@ -138,7 +160,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 25872f7b73d40914383015f4575675a9
     internalID: 0
     vertices: []
     indices: 
@@ -148,7 +170,8 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Shell2Hand_periwinkle_0: 6970009453495974409
+      Shell2Hand_periwinkle_d0_f0: -1630195026
+      Shell2Hand_periwinkle_d0_f1: -432732285
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

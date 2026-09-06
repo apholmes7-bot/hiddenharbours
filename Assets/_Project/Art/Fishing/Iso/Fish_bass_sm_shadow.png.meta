@@ -158,353 +158,353 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Fish_bass_sm_shadow_0
+      name: Fish_bass_sm_shadow_d0_f0
       rect:
         serializedVersion: 2
-        x: 29
-        y: 454
-        width: 7
-        height: 13
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 448
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 6067e9a8f48f98870800000000000000
-      internalID: 8685746376872457734
+      spriteID: 4dbabf3855bc23c48ab3da9ff54e5956
+      internalID: 803750958
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_bass_sm_shadow_1
+      name: Fish_bass_sm_shadow_d0_f1
       rect:
         serializedVersion: 2
-        x: 92
-        y: 454
-        width: 7
-        height: 13
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 448
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a201aca34c3fc3120800000000000000
-      internalID: 2395057125979721770
+      spriteID: 5a1e754814c06544290acfb45e7eee68
+      internalID: 1256803311
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_bass_sm_shadow_2
+      name: Fish_bass_sm_shadow_d1_f0
       rect:
         serializedVersion: 2
-        x: 27
-        y: 392
-        width: 10
-        height: 10
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 384
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 654a265bf7c95edf0800000000000000
-      internalID: -151542940129123242
+      spriteID: 7dab244f8c0b356419496c60f45486db
+      internalID: -270536431
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_bass_sm_shadow_3
+      name: Fish_bass_sm_shadow_d1_f1
       rect:
         serializedVersion: 2
-        x: 87
-        y: 393
-        width: 14
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 384
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 1e7a3a1bdb9110a20800000000000000
-      internalID: 3026728727089489889
+      spriteID: 1abefacff8c031f43bcd8c1d101a53c2
+      internalID: 1762799860
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_bass_sm_shadow_4
+      name: Fish_bass_sm_shadow_d2_f0
       rect:
         serializedVersion: 2
-        x: 22
-        y: 330
-        width: 17
-        height: 7
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 320
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 0570994d96425ba10800000000000000
-      internalID: 1924484452727719760
+      spriteID: 792942f40f10cb64fbd52f5f35f35117
+      internalID: 1090316787
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_bass_sm_shadow_5
+      name: Fish_bass_sm_shadow_d2_f1
       rect:
         serializedVersion: 2
-        x: 86
-        y: 331
-        width: 17
-        height: 7
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 320
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 3326cd36c4bca71a0800000000000000
-      internalID: -6810907957491113421
+      spriteID: 037f6ae448e51984c80e5ecd6e877bad
+      internalID: 1142178862
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_bass_sm_shadow_6
+      name: Fish_bass_sm_shadow_d3_f0
       rect:
         serializedVersion: 2
-        x: 23
-        y: 266
-        width: 14
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 256
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 1e992d4a6d6873690800000000000000
-      internalID: -7622475587854886431
+      spriteID: 895af62ac4eae844584ecce345a7642a
+      internalID: 1936774841
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_bass_sm_shadow_7
+      name: Fish_bass_sm_shadow_d3_f1
       rect:
         serializedVersion: 2
-        x: 91
-        y: 266
-        width: 10
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 256
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: edb3e9e2203e9c070800000000000000
-      internalID: 8127276601078332382
+      spriteID: 5c1197f7276a06341bb13794e010d4a0
+      internalID: 1734474784
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_bass_sm_shadow_8
+      name: Fish_bass_sm_shadow_d4_f0
       rect:
         serializedVersion: 2
-        x: 28
-        y: 201
-        width: 7
-        height: 12
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 192
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: f44e91e5189b929e0800000000000000
-      internalID: -1645580223546530737
+      spriteID: b02e30fc51e9c6744860bccc5b45cfbd
+      internalID: 2125671019
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_bass_sm_shadow_9
+      name: Fish_bass_sm_shadow_d4_f1
       rect:
         serializedVersion: 2
-        x: 93
-        y: 201
-        width: 7
-        height: 12
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 192
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 2743c1f4dbf450880800000000000000
-      internalID: -8645416235173137294
+      spriteID: c0bb90d15ad75fc4a9f163e26076a24c
+      internalID: -1177731723
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_bass_sm_shadow_10
+      name: Fish_bass_sm_shadow_d5_f0
       rect:
         serializedVersion: 2
-        x: 27
-        y: 138
-        width: 10
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 128
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: ddd315041a92b7af0800000000000000
-      internalID: -397678369546617379
+      spriteID: 13c16e45f9ec1f74e8e4278e7eec7b5d
+      internalID: -631721213
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_bass_sm_shadow_11
+      name: Fish_bass_sm_shadow_d5_f1
       rect:
         serializedVersion: 2
-        x: 91
-        y: 138
-        width: 14
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 128
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 10cea8817f1de0210800000000000000
-      internalID: 1301208201555536897
+      spriteID: e883e56c941cb5f41baee90b0fc65294
+      internalID: 977884586
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_bass_sm_shadow_12
+      name: Fish_bass_sm_shadow_d6_f0
       rect:
         serializedVersion: 2
-        x: 25
-        y: 75
-        width: 17
-        height: 7
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 64
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 44ae58016005ff3f0800000000000000
-      internalID: -864884616454608316
+      spriteID: 8a3249ec8bb16a647b9381c64931eff6
+      internalID: 73246735
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_bass_sm_shadow_13
+      name: Fish_bass_sm_shadow_d6_f1
       rect:
         serializedVersion: 2
-        x: 89
-        y: 74
-        width: 17
-        height: 7
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 64
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 34e87f59fee8468e0800000000000000
-      internalID: -1701077599574847933
+      spriteID: 1a4898769eb375348ad61968e6723e30
+      internalID: -1325952958
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_bass_sm_shadow_14
+      name: Fish_bass_sm_shadow_d7_f0
       rect:
         serializedVersion: 2
-        x: 27
-        y: 9
-        width: 14
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 0
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: f7e4d0a6270296ae0800000000000000
-      internalID: -1555676520502178177
+      spriteID: a07e72a091131604181d35ca26c95bab
+      internalID: -51043804
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fish_bass_sm_shadow_15
+      name: Fish_bass_sm_shadow_d7_f1
       rect:
         serializedVersion: 2
-        x: 91
-        y: 8
-        width: 10
-        height: 10
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 0
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 47bf23c61f764dbd0800000000000000
-      internalID: -2606343997740614796
+      spriteID: c99b85e28d8d25e4db6f371c002c8f72
+      internalID: 1106285765
       vertices: []
       indices: 
       edges: []
@@ -513,7 +513,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 6580ce8a508b82e4b894772fa64e447b
     internalID: 0
     vertices: []
     indices: 
@@ -523,22 +523,22 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Fish_bass_sm_shadow_0: 8685746376872457734
-      Fish_bass_sm_shadow_1: 2395057125979721770
-      Fish_bass_sm_shadow_10: -397678369546617379
-      Fish_bass_sm_shadow_11: 1301208201555536897
-      Fish_bass_sm_shadow_12: -864884616454608316
-      Fish_bass_sm_shadow_13: -1701077599574847933
-      Fish_bass_sm_shadow_14: -1555676520502178177
-      Fish_bass_sm_shadow_15: -2606343997740614796
-      Fish_bass_sm_shadow_2: -151542940129123242
-      Fish_bass_sm_shadow_3: 3026728727089489889
-      Fish_bass_sm_shadow_4: 1924484452727719760
-      Fish_bass_sm_shadow_5: -6810907957491113421
-      Fish_bass_sm_shadow_6: -7622475587854886431
-      Fish_bass_sm_shadow_7: 8127276601078332382
-      Fish_bass_sm_shadow_8: -1645580223546530737
-      Fish_bass_sm_shadow_9: -8645416235173137294
+      Fish_bass_sm_shadow_d0_f0: 803750958
+      Fish_bass_sm_shadow_d0_f1: 1256803311
+      Fish_bass_sm_shadow_d1_f0: -270536431
+      Fish_bass_sm_shadow_d1_f1: 1762799860
+      Fish_bass_sm_shadow_d2_f0: 1090316787
+      Fish_bass_sm_shadow_d2_f1: 1142178862
+      Fish_bass_sm_shadow_d3_f0: 1936774841
+      Fish_bass_sm_shadow_d3_f1: 1734474784
+      Fish_bass_sm_shadow_d4_f0: 2125671019
+      Fish_bass_sm_shadow_d4_f1: -1177731723
+      Fish_bass_sm_shadow_d5_f0: -631721213
+      Fish_bass_sm_shadow_d5_f1: 977884586
+      Fish_bass_sm_shadow_d6_f0: 73246735
+      Fish_bass_sm_shadow_d6_f1: -1325952958
+      Fish_bass_sm_shadow_d7_f0: -51043804
+      Fish_bass_sm_shadow_d7_f1: 1106285765
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -116,45 +116,45 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Shell2Hand_mussel_0
+      name: Shell2Hand_mussel_d0_f0
       rect:
         serializedVersion: 2
-        x: 1
+        x: 0
         y: 0
-        width: 7
-        height: 7
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        width: 8
+        height: 8
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 7c3738aabf219a5c0800000000000000
-      internalID: -4203807905066814521
+      spriteID: 17ea61db8e6a5eb4a88996a83cd384d7
+      internalID: 186152284
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Shell2Hand_mussel_1
+      name: Shell2Hand_mussel_d0_f1
       rect:
         serializedVersion: 2
-        x: 10
+        x: 8
         y: 0
-        width: 6
-        height: 7
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        width: 8
+        height: 8
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 9bf53bd597530c550800000000000000
-      internalID: 6178997484131671993
+      spriteID: a50b5d1abecbc06438529f698b772a41
+      internalID: -39917994
       vertices: []
       indices: 
       edges: []
@@ -163,7 +163,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 795cae6e959cf94478da337f54770d80
     internalID: 0
     vertices: []
     indices: 
@@ -173,8 +173,8 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Shell2Hand_mussel_0: -4203807905066814521
-      Shell2Hand_mussel_1: 6178997484131671993
+      Shell2Hand_mussel_d0_f0: 186152284
+      Shell2Hand_mussel_d0_f1: -39917994
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

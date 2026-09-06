@@ -206,705 +206,705 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Crust2_crab_walk_0
+      name: Crust2_crab_walk_d0_f0
       rect:
         serializedVersion: 2
-        x: 26
-        y: 469
-        width: 12
-        height: 7
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 448
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 1a85ecbfbea45b610800000000000000
-      internalID: 1636296417021417633
+      spriteID: dfb5c83bc58f61f4bb4070aa817e144f
+      internalID: 176907306
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_walk_1
+      name: Crust2_crab_walk_d0_f1
       rect:
         serializedVersion: 2
-        x: 90
-        y: 469
-        width: 12
-        height: 7
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 448
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 88718f08f0be15ab0800000000000000
-      internalID: -5020973657720612984
+      spriteID: c0c58c7aa4905a8408d46e75571585d9
+      internalID: -1475354189
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_walk_2
+      name: Crust2_crab_walk_d0_f2
       rect:
         serializedVersion: 2
-        x: 154
-        y: 469
-        width: 12
-        height: 7
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 128
+        y: 448
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: dec21ed25d5374660800000000000000
-      internalID: 7369918504929144045
+      spriteID: 7941d3c1f1ca95943845142b6bd61bc8
+      internalID: 1472548813
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_walk_3
+      name: Crust2_crab_walk_d0_f3
       rect:
         serializedVersion: 2
-        x: 218
-        y: 469
-        width: 12
-        height: 7
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 192
+        y: 448
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 17ae58efeb48f8e60800000000000000
-      internalID: 7966732221690538609
+      spriteID: 92ed7bbebb07f49418a43c546c69523f
+      internalID: 722764205
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_walk_4
+      name: Crust2_crab_walk_d1_f0
       rect:
         serializedVersion: 2
-        x: 26
-        y: 403
-        width: 11
-        height: 10
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 384
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: b0ce7c6b11c06bd70800000000000000
-      internalID: 9058440970722864139
+      spriteID: 216ac2c6baaf81947a3bf37cafb102ab
+      internalID: -546760808
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_walk_5
+      name: Crust2_crab_walk_d1_f1
       rect:
         serializedVersion: 2
-        x: 90
-        y: 403
-        width: 12
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 384
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 92d819287868dcd60800000000000000
-      internalID: 7912128036929113385
+      spriteID: e058cf6dc8c07af4c9a78f710fc6f88e
+      internalID: 478341990
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_walk_6
+      name: Crust2_crab_walk_d1_f2
       rect:
         serializedVersion: 2
-        x: 153
-        y: 404
-        width: 12
-        height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 128
+        y: 384
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 3feb34c6e7e72c810800000000000000
-      internalID: 1784127483839495923
+      spriteID: 66197f7bc4918af4880995aad048a2f3
+      internalID: -1342588473
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_walk_7
+      name: Crust2_crab_walk_d1_f3
       rect:
         serializedVersion: 2
-        x: 217
-        y: 403
-        width: 12
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 192
+        y: 384
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 8c8f1263cfdd11020800000000000000
-      internalID: 2310872159127468232
+      spriteID: e44fbda8e66f2674cb1038af4f2fc40e
+      internalID: -622833472
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_walk_8
+      name: Crust2_crab_walk_d2_f0
       rect:
         serializedVersion: 2
-        x: 28
-        y: 340
-        width: 8
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 320
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 3f6b15b8567d75520800000000000000
-      internalID: 2690856133506217715
+      spriteID: a3e984c12a2469c4babfdba6e6f23cfa
+      internalID: 2015983761
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_walk_9
+      name: Crust2_crab_walk_d2_f1
       rect:
         serializedVersion: 2
-        x: 92
-        y: 340
-        width: 8
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 320
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 6c36077f4fe0a7400800000000000000
-      internalID: 322586768596558790
+      spriteID: a189934bf782ca3448d390aae1592ff6
+      internalID: 712577655
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_walk_10
+      name: Crust2_crab_walk_d2_f2
       rect:
         serializedVersion: 2
-        x: 156
-        y: 340
-        width: 8
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 128
+        y: 320
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 71654e9856a3edaf0800000000000000
-      internalID: -369793911618251241
+      spriteID: 12118fd432954e549ad9c668ba2be092
+      internalID: 1604495800
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_walk_11
+      name: Crust2_crab_walk_d2_f3
       rect:
         serializedVersion: 2
-        x: 220
-        y: 340
-        width: 8
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 192
+        y: 320
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 377c20a4fe4a14270800000000000000
-      internalID: 8233042941455812467
+      spriteID: dd29ae49da3b4144ebe01b0bb7340c5d
+      internalID: -18777335
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_walk_12
+      name: Crust2_crab_walk_d3_f0
       rect:
         serializedVersion: 2
-        x: 25
-        y: 276
-        width: 13
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 256
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 36e82663c8fe29d80800000000000000
-      internalID: -8245264582275068317
+      spriteID: 0d7bddb38b3c82e44af83b4f11c88ecc
+      internalID: 2131887533
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_walk_13
+      name: Crust2_crab_walk_d3_f1
       rect:
         serializedVersion: 2
-        x: 90
-        y: 276
-        width: 11
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 256
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 3a7c9035ea9ee1eb0800000000000000
-      internalID: -4747100022275192925
+      spriteID: 3ce397b88f793f945926d10308b6802f
+      internalID: -1410148402
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_walk_14
+      name: Crust2_crab_walk_d3_f2
       rect:
         serializedVersion: 2
-        x: 154
-        y: 276
-        width: 11
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 128
+        y: 256
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 3080e7708f1fa1f00800000000000000
-      internalID: 1088448307543279619
+      spriteID: 3ac490d341a5a9748ada3a6014e264ee
+      internalID: 638385362
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_walk_15
+      name: Crust2_crab_walk_d3_f3
       rect:
         serializedVersion: 2
-        x: 218
-        y: 276
-        width: 12
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 192
+        y: 256
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 1bdf2bfa02262eb60800000000000000
-      internalID: 7773883799321116081
+      spriteID: ed0123ff345c16249b39d4eaa1099a98
+      internalID: -1766330110
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_walk_16
+      name: Crust2_crab_walk_d4_f0
       rect:
         serializedVersion: 2
-        x: 26
-        y: 214
-        width: 12
-        height: 6
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 192
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 64a2ca65a0f025160800000000000000
-      internalID: 7012684106847496774
+      spriteID: b54085bea2d925e4281777762f4b096e
+      internalID: -43553691
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_walk_17
+      name: Crust2_crab_walk_d4_f1
       rect:
         serializedVersion: 2
-        x: 90
-        y: 213
-        width: 12
-        height: 7
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 192
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 5d8b08ea9ce7cdaf0800000000000000
-      internalID: -370281664670025515
+      spriteID: 10ed4a3ea576dd446b42a570444b2529
+      internalID: -1690779651
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_walk_18
+      name: Crust2_crab_walk_d4_f2
       rect:
         serializedVersion: 2
-        x: 154
-        y: 214
-        width: 12
-        height: 6
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 128
+        y: 192
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: ca53c25cb392c8fc0800000000000000
-      internalID: -3491370274431158868
+      spriteID: e77eed992545b4e4087b1a9f73779ecc
+      internalID: -627355677
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_walk_19
+      name: Crust2_crab_walk_d4_f3
       rect:
         serializedVersion: 2
-        x: 218
-        y: 214
-        width: 12
-        height: 6
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 192
+        y: 192
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 7a02432894852bd70800000000000000
-      internalID: 9057398873335799975
+      spriteID: d776146bf43ad314bb5b8a46870bbaaa
+      internalID: -1992007911
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_walk_20
+      name: Crust2_crab_walk_d5_f0
       rect:
         serializedVersion: 2
-        x: 27
-        y: 148
-        width: 11
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 128
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 2067dfa47a055f3a0800000000000000
-      internalID: -6632306196785302014
+      spriteID: 758d94b228628344dabef01275c5bebc
+      internalID: 1982016335
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_walk_21
+      name: Crust2_crab_walk_d5_f1
       rect:
         serializedVersion: 2
-        x: 90
-        y: 148
-        width: 12
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 128
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 103993d7eb8e14c60800000000000000
-      internalID: 7800771934424765185
+      spriteID: 7f3a2031dbf90054d8cbc92d4f63768c
+      internalID: -290493853
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_walk_22
+      name: Crust2_crab_walk_d5_f2
       rect:
         serializedVersion: 2
-        x: 155
-        y: 148
-        width: 12
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 128
+        y: 128
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 6f7fa94e802a00480800000000000000
-      internalID: -8934963501624264714
+      spriteID: 8a4232995a0d13a41a9d388f02604069
+      internalID: 1757774696
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_walk_23
+      name: Crust2_crab_walk_d5_f3
       rect:
         serializedVersion: 2
-        x: 219
-        y: 148
-        width: 12
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 192
+        y: 128
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e937a3e4a91209d60800000000000000
-      internalID: 7894847093401613214
+      spriteID: 834a318d3a885974da7f9b15681e3ba8
+      internalID: -794149012
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_walk_24
+      name: Crust2_crab_walk_d6_f0
       rect:
         serializedVersion: 2
-        x: 28
-        y: 84
-        width: 8
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 64
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 133b2ec512e1f34c0800000000000000
-      internalID: -4305689590101789903
+      spriteID: 255f9b88a9b4b994cb4f6e61211389d4
+      internalID: -836827698
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_walk_25
+      name: Crust2_crab_walk_d6_f1
       rect:
         serializedVersion: 2
-        x: 92
-        y: 84
-        width: 8
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 64
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 00ac8f69aade00780800000000000000
-      internalID: -8718707561656169984
+      spriteID: 959e8668a61b9124a9f702f5dcde925f
+      internalID: 1493129768
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_walk_26
+      name: Crust2_crab_walk_d6_f2
       rect:
         serializedVersion: 2
-        x: 156
-        y: 84
-        width: 8
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 128
+        y: 64
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 46112dcf29e425dd0800000000000000
-      internalID: -2498848450023386780
+      spriteID: 223d46b875d64924ab68e857c26f35d9
+      internalID: -808372165
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_walk_27
+      name: Crust2_crab_walk_d6_f3
       rect:
         serializedVersion: 2
-        x: 220
-        y: 84
-        width: 8
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 192
+        y: 64
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a5bbf785eb4198ef0800000000000000
-      internalID: -105530308505388198
+      spriteID: 60185ce8614e3ab4aacd898169f4128a
+      internalID: -230509508
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_walk_28
+      name: Crust2_crab_walk_d7_f0
       rect:
         serializedVersion: 2
-        x: 26
-        y: 20
-        width: 13
-        height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 0
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 29539df96487d0a00800000000000000
-      internalID: 724367359801374098
+      spriteID: 2a4589c7448bd4949b09c7a69d718b37
+      internalID: 1646368778
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_walk_29
+      name: Crust2_crab_walk_d7_f1
       rect:
         serializedVersion: 2
-        x: 91
-        y: 20
-        width: 11
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 0
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: cb5627306b1268f70800000000000000
-      internalID: 9189069155321669052
+      spriteID: ec30f8a050b56f343b892d57bc783cca
+      internalID: -385573025
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_walk_30
+      name: Crust2_crab_walk_d7_f2
       rect:
         serializedVersion: 2
-        x: 155
-        y: 19
-        width: 11
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 128
+        y: 0
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 9ae7226e992f41fe0800000000000000
-      internalID: -1219082856305623383
+      spriteID: 7b2e9960de6ddff4685e575db567a362
+      internalID: -330112237
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_walk_31
+      name: Crust2_crab_walk_d7_f3
       rect:
         serializedVersion: 2
-        x: 218
-        y: 19
-        width: 12
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 192
+        y: 0
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: b04b2eaf4a1447350800000000000000
-      internalID: 6013503579286057995
+      spriteID: 78b309af4b35740469cf67936fee04d9
+      internalID: 1800052167
       vertices: []
       indices: 
       edges: []
@@ -913,7 +913,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 841b34dab576f5146a055515b1f5137c
     internalID: 0
     vertices: []
     indices: 
@@ -923,38 +923,38 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Crust2_crab_walk_0: 1636296417021417633
-      Crust2_crab_walk_1: -5020973657720612984
-      Crust2_crab_walk_10: -369793911618251241
-      Crust2_crab_walk_11: 8233042941455812467
-      Crust2_crab_walk_12: -8245264582275068317
-      Crust2_crab_walk_13: -4747100022275192925
-      Crust2_crab_walk_14: 1088448307543279619
-      Crust2_crab_walk_15: 7773883799321116081
-      Crust2_crab_walk_16: 7012684106847496774
-      Crust2_crab_walk_17: -370281664670025515
-      Crust2_crab_walk_18: -3491370274431158868
-      Crust2_crab_walk_19: 9057398873335799975
-      Crust2_crab_walk_2: 7369918504929144045
-      Crust2_crab_walk_20: -6632306196785302014
-      Crust2_crab_walk_21: 7800771934424765185
-      Crust2_crab_walk_22: -8934963501624264714
-      Crust2_crab_walk_23: 7894847093401613214
-      Crust2_crab_walk_24: -4305689590101789903
-      Crust2_crab_walk_25: -8718707561656169984
-      Crust2_crab_walk_26: -2498848450023386780
-      Crust2_crab_walk_27: -105530308505388198
-      Crust2_crab_walk_28: 724367359801374098
-      Crust2_crab_walk_29: 9189069155321669052
-      Crust2_crab_walk_3: 7966732221690538609
-      Crust2_crab_walk_30: -1219082856305623383
-      Crust2_crab_walk_31: 6013503579286057995
-      Crust2_crab_walk_4: 9058440970722864139
-      Crust2_crab_walk_5: 7912128036929113385
-      Crust2_crab_walk_6: 1784127483839495923
-      Crust2_crab_walk_7: 2310872159127468232
-      Crust2_crab_walk_8: 2690856133506217715
-      Crust2_crab_walk_9: 322586768596558790
+      Crust2_crab_walk_d0_f0: 176907306
+      Crust2_crab_walk_d0_f1: -1475354189
+      Crust2_crab_walk_d0_f2: 1472548813
+      Crust2_crab_walk_d0_f3: 722764205
+      Crust2_crab_walk_d1_f0: -546760808
+      Crust2_crab_walk_d1_f1: 478341990
+      Crust2_crab_walk_d1_f2: -1342588473
+      Crust2_crab_walk_d1_f3: -622833472
+      Crust2_crab_walk_d2_f0: 2015983761
+      Crust2_crab_walk_d2_f1: 712577655
+      Crust2_crab_walk_d2_f2: 1604495800
+      Crust2_crab_walk_d2_f3: -18777335
+      Crust2_crab_walk_d3_f0: 2131887533
+      Crust2_crab_walk_d3_f1: -1410148402
+      Crust2_crab_walk_d3_f2: 638385362
+      Crust2_crab_walk_d3_f3: -1766330110
+      Crust2_crab_walk_d4_f0: -43553691
+      Crust2_crab_walk_d4_f1: -1690779651
+      Crust2_crab_walk_d4_f2: -627355677
+      Crust2_crab_walk_d4_f3: -1992007911
+      Crust2_crab_walk_d5_f0: 1982016335
+      Crust2_crab_walk_d5_f1: -290493853
+      Crust2_crab_walk_d5_f2: 1757774696
+      Crust2_crab_walk_d5_f3: -794149012
+      Crust2_crab_walk_d6_f0: -836827698
+      Crust2_crab_walk_d6_f1: 1493129768
+      Crust2_crab_walk_d6_f2: -808372165
+      Crust2_crab_walk_d6_f3: -230509508
+      Crust2_crab_walk_d7_f0: 1646368778
+      Crust2_crab_walk_d7_f1: -385573025
+      Crust2_crab_walk_d7_f2: -330112237
+      Crust2_crab_walk_d7_f3: 1800052167
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

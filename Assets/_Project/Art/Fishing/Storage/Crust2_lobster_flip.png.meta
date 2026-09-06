@@ -206,705 +206,705 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Crust2_lobster_flip_0
+      name: Crust2_lobster_flip_d0_f0
       rect:
         serializedVersion: 2
-        x: 27
-        y: 466
-        width: 10
-        height: 14
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 448
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 559906db1fd305620800000000000000
-      internalID: 2760774680051751253
+      spriteID: e30ec92abaf3b3d47b55a47c516116a2
+      internalID: 988704915
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_flip_1
+      name: Crust2_lobster_flip_d0_f1
       rect:
         serializedVersion: 2
-        x: 91
-        y: 467
-        width: 10
-        height: 15
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 448
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 308c3807dc3f19fc0800000000000000
-      internalID: -3489740172553893885
+      spriteID: df04ec2b71ad5f94d97b992154c69c78
+      internalID: -1229874518
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_flip_2
+      name: Crust2_lobster_flip_d0_f2
       rect:
         serializedVersion: 2
-        x: 155
-        y: 468
-        width: 10
-        height: 15
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 128
+        y: 448
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 36850a235df44d930800000000000000
-      internalID: 4167043332320548963
+      spriteID: 824fab18c1d24b84d93cbd77900de455
+      internalID: -920335796
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_flip_3
+      name: Crust2_lobster_flip_d0_f3
       rect:
         serializedVersion: 2
-        x: 219
-        y: 468
-        width: 10
-        height: 12
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 192
+        y: 448
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 78cd7bbb51ffaab00800000000000000
-      internalID: 840764749266803847
+      spriteID: 7b78aabbbabfbeb49ac3ef1dde0bfe9e
+      internalID: 280907480
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_flip_4
+      name: Crust2_lobster_flip_d1_f0
       rect:
         serializedVersion: 2
-        x: 24
-        y: 403
-        width: 17
-        height: 13
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 384
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 3e1c144976f000210800000000000000
-      internalID: 1297053630226088419
+      spriteID: 330ae7047a74a2d4294fc1a0b7b73a9c
+      internalID: -1551701887
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_flip_5
+      name: Crust2_lobster_flip_d1_f1
       rect:
         serializedVersion: 2
-        x: 88
-        y: 403
-        width: 16
-        height: 15
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 384
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 102f191e58bb54380800000000000000
-      internalID: -8987571297658473983
+      spriteID: 1f700110d9c836041be1048d03ac4572
+      internalID: -2017146003
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_flip_6
+      name: Crust2_lobster_flip_d1_f2
       rect:
         serializedVersion: 2
-        x: 152
-        y: 404
-        width: 17
-        height: 15
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 128
+        y: 384
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 0dbe9d65a583b52f0800000000000000
-      internalID: -983130132994987056
+      spriteID: bbea1ce3bacf91549be7bc14eba70451
+      internalID: 483676647
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_flip_7
+      name: Crust2_lobster_flip_d1_f3
       rect:
         serializedVersion: 2
-        x: 216
-        y: 404
-        width: 17
-        height: 12
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 192
+        y: 384
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 98bd28058ee279530800000000000000
-      internalID: 3861606780811533193
+      spriteID: fa67a1ff0c75b0140a5efc3738bbb27c
+      internalID: -1280363208
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_flip_8
+      name: Crust2_lobster_flip_d2_f0
       rect:
         serializedVersion: 2
-        x: 24
-        y: 341
-        width: 16
-        height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 320
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 7d70624ef491c35e0800000000000000
-      internalID: -1928638709500606505
+      spriteID: c96d7a9a7d6ed1048acf90740547f04a
+      internalID: 503618875
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_flip_9
+      name: Crust2_lobster_flip_d2_f1
       rect:
         serializedVersion: 2
-        x: 89
-        y: 341
-        width: 14
-        height: 12
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 320
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: f90c1b81b521533c0800000000000000
-      internalID: -4380574880082313057
+      spriteID: 4d7627e8966d7ea4dad5336eaecbf8c1
+      internalID: 533388670
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_flip_10
+      name: Crust2_lobster_flip_d2_f2
       rect:
         serializedVersion: 2
-        x: 153
-        y: 342
-        width: 15
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 128
+        y: 320
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 53be5f3a038b36190800000000000000
-      internalID: -7970324396466902219
+      spriteID: 0cfa568e811fceb4f8d16c6709ecf31e
+      internalID: 1265853467
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_flip_11
+      name: Crust2_lobster_flip_d2_f3
       rect:
         serializedVersion: 2
-        x: 216
-        y: 342
-        width: 17
-        height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 192
+        y: 320
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 79fdfa3c05ba64a30800000000000000
-      internalID: 4199232065938382743
+      spriteID: 5bee5ae7ba9cfe54194a1970f597d4b3
+      internalID: 619819064
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_flip_12
+      name: Crust2_lobster_flip_d3_f0
       rect:
         serializedVersion: 2
-        x: 24
-        y: 275
-        width: 17
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 256
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 6cc255371d01f45e0800000000000000
-      internalID: -1923300024094741306
+      spriteID: 0e51ce9bc4e047b4d9385179065755fb
+      internalID: 890824653
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_flip_13
+      name: Crust2_lobster_flip_d3_f1
       rect:
         serializedVersion: 2
-        x: 88
-        y: 277
-        width: 16
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 256
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 6b1ce319d1d8a22d0800000000000000
-      internalID: -3302672218592460362
+      spriteID: 9e7e1d2f698fda248882e29e95ea3ef6
+      internalID: -1088875782
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_flip_14
+      name: Crust2_lobster_flip_d3_f2
       rect:
         serializedVersion: 2
-        x: 152
-        y: 279
-        width: 16
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 128
+        y: 256
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 499f0e36693265210800000000000000
-      internalID: 1321282669507574164
+      spriteID: 142c2770689355549be9789c0ad08cfc
+      internalID: 483891166
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_flip_15
+      name: Crust2_lobster_flip_d3_f3
       rect:
         serializedVersion: 2
-        x: 216
-        y: 276
-        width: 17
-        height: 12
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 192
+        y: 256
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 04cac1f1fb32015f0800000000000000
-      internalID: -788090631022138304
+      spriteID: 2812f25439e3bbb46b0b24a48143cd1e
+      internalID: 247176447
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_flip_16
+      name: Crust2_lobster_flip_d4_f0
       rect:
         serializedVersion: 2
-        x: 27
-        y: 212
-        width: 10
-        height: 10
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 192
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 59be68869627c5340800000000000000
-      internalID: 4853880295449357205
+      spriteID: 91a380d689ce5174d8d896771ae3de76
+      internalID: 2067104389
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_flip_17
+      name: Crust2_lobster_flip_d4_f1
       rect:
         serializedVersion: 2
-        x: 91
-        y: 214
-        width: 10
-        height: 7
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 192
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 40cb844969de7a810800000000000000
-      internalID: 1776649809009622020
+      spriteID: aa683d66eb0a4c4448a68ffd3ebc1429
+      internalID: 55782955
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_flip_18
+      name: Crust2_lobster_flip_d4_f2
       rect:
         serializedVersion: 2
-        x: 155
-        y: 215
-        width: 10
-        height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 128
+        y: 192
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a8448c628184111d0800000000000000
-      internalID: -3381842576611457910
+      spriteID: 790502b018ac99d4c92bb31c8f25c221
+      internalID: 1506849758
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_flip_19
+      name: Crust2_lobster_flip_d4_f3
       rect:
         serializedVersion: 2
-        x: 219
-        y: 212
-        width: 10
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 192
+        y: 192
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 4669f63b2cf82c1b0800000000000000
-      internalID: -5637785717117577628
+      spriteID: 08f934791d5e1484cb2358e145362a33
+      internalID: 105369977
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_flip_20
+      name: Crust2_lobster_flip_d5_f0
       rect:
         serializedVersion: 2
-        x: 23
-        y: 148
-        width: 17
-        height: 10
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 128
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 85de9e9057708cb60800000000000000
-      internalID: 7766465756659314008
+      spriteID: 86dbbe6514f995d49a1e29d085ddb65f
+      internalID: 1806011636
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_flip_21
+      name: Crust2_lobster_flip_d5_f1
       rect:
         serializedVersion: 2
-        x: 88
-        y: 149
-        width: 16
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 128
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: ae99c03c3fb86cff0800000000000000
-      internalID: -16171669583521302
+      spriteID: 0342edf281400df40b869688dc57726a
+      internalID: 909879893
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_flip_22
+      name: Crust2_lobster_flip_d5_f2
       rect:
         serializedVersion: 2
-        x: 151
-        y: 151
-        width: 17
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 128
+        y: 128
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 8d5a66a89aa839230800000000000000
-      internalID: 3644408984248952280
+      spriteID: 0b1dee5c810eeaf40a9baf8c1a683263
+      internalID: -1316458263
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_flip_23
+      name: Crust2_lobster_flip_d5_f3
       rect:
         serializedVersion: 2
-        x: 215
-        y: 148
-        width: 17
-        height: 12
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 192
+        y: 128
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 9c6941776844fcdc0800000000000000
-      internalID: -3616596631441074487
+      spriteID: 83c1e96e7f30f064ca7d0781b6301b64
+      internalID: 1126356968
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_flip_24
+      name: Crust2_lobster_flip_d6_f0
       rect:
         serializedVersion: 2
-        x: 24
-        y: 85
-        width: 16
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 64
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c914a9c1df4c68730800000000000000
-      internalID: 4001101910350905756
+      spriteID: 9af3087d02f600643998fa766fd25479
+      internalID: -609104436
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_flip_25
+      name: Crust2_lobster_flip_d6_f1
       rect:
         serializedVersion: 2
-        x: 89
-        y: 85
-        width: 14
-        height: 12
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 64
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 34d0882bafc2e1980800000000000000
-      internalID: -8566359985963397821
+      spriteID: 4e904059b04213e469ff1b1a7a6a1914
+      internalID: -1523442586
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_flip_26
+      name: Crust2_lobster_flip_d6_f2
       rect:
         serializedVersion: 2
-        x: 152
-        y: 86
-        width: 15
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 128
+        y: 64
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 6480454b64cdabbb0800000000000000
-      internalID: -4919377446717618106
+      spriteID: 355e855ee895d3348ae3d80666f206f3
+      internalID: -1570268017
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_flip_27
+      name: Crust2_lobster_flip_d6_f3
       rect:
         serializedVersion: 2
-        x: 215
-        y: 86
-        width: 17
-        height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 192
+        y: 64
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: fadaf909d0b68f600800000000000000
-      internalID: 502269064456940975
+      spriteID: 4fcedf9283998374d9ba02023797bdf6
+      internalID: 835544206
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_flip_28
+      name: Crust2_lobster_flip_d7_f0
       rect:
         serializedVersion: 2
-        x: 23
-        y: 19
-        width: 17
-        height: 13
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 0
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e7ebb427aa6869430800000000000000
-      internalID: 3789364203098979966
+      spriteID: e32215b855ae41f4895cd83a7ba91a87
+      internalID: 388048564
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_flip_29
+      name: Crust2_lobster_flip_d7_f1
       rect:
         serializedVersion: 2
-        x: 88
-        y: 19
-        width: 16
-        height: 16
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 0
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 89fd243fc6ed1e5c0800000000000000
-      internalID: -4187821618958770280
+      spriteID: a8e2c75d4d91c2c4698a3e663eb7844c
+      internalID: 616122443
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_flip_30
+      name: Crust2_lobster_flip_d7_f2
       rect:
         serializedVersion: 2
-        x: 152
-        y: 20
-        width: 16
-        height: 15
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 128
+        y: 0
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 2fa10bd1f35ec0c70800000000000000
-      internalID: 8938771419667372786
+      spriteID: b416e79d52aab5146b2232205c2584f1
+      internalID: 912865025
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_lobster_flip_31
+      name: Crust2_lobster_flip_d7_f3
       rect:
         serializedVersion: 2
-        x: 215
-        y: 20
-        width: 17
-        height: 13
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 192
+        y: 0
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: d2cc761c35b049f60800000000000000
-      internalID: 8040063689118174253
+      spriteID: 68d4cb129bdfd4742a05272531c7612c
+      internalID: 958556294
       vertices: []
       indices: 
       edges: []
@@ -913,7 +913,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 67976634e7815574eb01591958ac5e89
     internalID: 0
     vertices: []
     indices: 
@@ -923,38 +923,38 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Crust2_lobster_flip_0: 2760774680051751253
-      Crust2_lobster_flip_1: -3489740172553893885
-      Crust2_lobster_flip_10: -7970324396466902219
-      Crust2_lobster_flip_11: 4199232065938382743
-      Crust2_lobster_flip_12: -1923300024094741306
-      Crust2_lobster_flip_13: -3302672218592460362
-      Crust2_lobster_flip_14: 1321282669507574164
-      Crust2_lobster_flip_15: -788090631022138304
-      Crust2_lobster_flip_16: 4853880295449357205
-      Crust2_lobster_flip_17: 1776649809009622020
-      Crust2_lobster_flip_18: -3381842576611457910
-      Crust2_lobster_flip_19: -5637785717117577628
-      Crust2_lobster_flip_2: 4167043332320548963
-      Crust2_lobster_flip_20: 7766465756659314008
-      Crust2_lobster_flip_21: -16171669583521302
-      Crust2_lobster_flip_22: 3644408984248952280
-      Crust2_lobster_flip_23: -3616596631441074487
-      Crust2_lobster_flip_24: 4001101910350905756
-      Crust2_lobster_flip_25: -8566359985963397821
-      Crust2_lobster_flip_26: -4919377446717618106
-      Crust2_lobster_flip_27: 502269064456940975
-      Crust2_lobster_flip_28: 3789364203098979966
-      Crust2_lobster_flip_29: -4187821618958770280
-      Crust2_lobster_flip_3: 840764749266803847
-      Crust2_lobster_flip_30: 8938771419667372786
-      Crust2_lobster_flip_31: 8040063689118174253
-      Crust2_lobster_flip_4: 1297053630226088419
-      Crust2_lobster_flip_5: -8987571297658473983
-      Crust2_lobster_flip_6: -983130132994987056
-      Crust2_lobster_flip_7: 3861606780811533193
-      Crust2_lobster_flip_8: -1928638709500606505
-      Crust2_lobster_flip_9: -4380574880082313057
+      Crust2_lobster_flip_d0_f0: 988704915
+      Crust2_lobster_flip_d0_f1: -1229874518
+      Crust2_lobster_flip_d0_f2: -920335796
+      Crust2_lobster_flip_d0_f3: 280907480
+      Crust2_lobster_flip_d1_f0: -1551701887
+      Crust2_lobster_flip_d1_f1: -2017146003
+      Crust2_lobster_flip_d1_f2: 483676647
+      Crust2_lobster_flip_d1_f3: -1280363208
+      Crust2_lobster_flip_d2_f0: 503618875
+      Crust2_lobster_flip_d2_f1: 533388670
+      Crust2_lobster_flip_d2_f2: 1265853467
+      Crust2_lobster_flip_d2_f3: 619819064
+      Crust2_lobster_flip_d3_f0: 890824653
+      Crust2_lobster_flip_d3_f1: -1088875782
+      Crust2_lobster_flip_d3_f2: 483891166
+      Crust2_lobster_flip_d3_f3: 247176447
+      Crust2_lobster_flip_d4_f0: 2067104389
+      Crust2_lobster_flip_d4_f1: 55782955
+      Crust2_lobster_flip_d4_f2: 1506849758
+      Crust2_lobster_flip_d4_f3: 105369977
+      Crust2_lobster_flip_d5_f0: 1806011636
+      Crust2_lobster_flip_d5_f1: 909879893
+      Crust2_lobster_flip_d5_f2: -1316458263
+      Crust2_lobster_flip_d5_f3: 1126356968
+      Crust2_lobster_flip_d6_f0: -609104436
+      Crust2_lobster_flip_d6_f1: -1523442586
+      Crust2_lobster_flip_d6_f2: -1570268017
+      Crust2_lobster_flip_d6_f3: 835544206
+      Crust2_lobster_flip_d7_f0: 388048564
+      Crust2_lobster_flip_d7_f1: 616122443
+      Crust2_lobster_flip_d7_f2: 912865025
+      Crust2_lobster_flip_d7_f3: 958556294
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

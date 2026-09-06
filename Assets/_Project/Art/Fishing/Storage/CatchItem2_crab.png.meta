@@ -122,89 +122,89 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: CatchItem2_crab_0
+      name: CatchItem2_crab_d0_f0
       rect:
         serializedVersion: 2
-        x: 26
-        y: 20
-        width: 12
-        height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 0
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 1ff66950f09fd34c0800000000000000
-      internalID: -4306011825782755343
+      spriteID: a6bd6f511e62ddd45a913d1456ad5067
+      internalID: -909582081
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: CatchItem2_crab_1
+      name: CatchItem2_crab_d0_f1
       rect:
         serializedVersion: 2
-        x: 90
-        y: 20
-        width: 11
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 64
+        y: 0
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: cb31ddf75c5fd83e0800000000000000
-      internalID: -2049712026781150276
+      spriteID: 77dae03df1e82b34dabee449640128f9
+      internalID: 1371223763
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: CatchItem2_crab_2
+      name: CatchItem2_crab_d0_f2
       rect:
         serializedVersion: 2
-        x: 154
-        y: 21
-        width: 13
-        height: 7
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 128
+        y: 0
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 0d54450e975ecfd20800000000000000
-      internalID: 3313775737455265232
+      spriteID: 11b27f212eae3314bb170e630dbe883a
+      internalID: -1199525064
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: CatchItem2_crab_3
+      name: CatchItem2_crab_d0_f3
       rect:
         serializedVersion: 2
-        x: 219
-        y: 19
-        width: 11
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 192
+        y: 0
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 75176e189fdba33c0800000000000000
-      internalID: -4378978808340516521
+      spriteID: 691c5c454f73b4246b3793fcade820e3
+      internalID: 1361428254
       vertices: []
       indices: 
       edges: []
@@ -213,7 +213,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: bba216276898f944091d2c62089bfed8
     internalID: 0
     vertices: []
     indices: 
@@ -223,10 +223,10 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      CatchItem2_crab_0: -4306011825782755343
-      CatchItem2_crab_1: -2049712026781150276
-      CatchItem2_crab_2: 3313775737455265232
-      CatchItem2_crab_3: -4378978808340516521
+      CatchItem2_crab_d0_f0: -909582081
+      CatchItem2_crab_d0_f1: 1371223763
+      CatchItem2_crab_d0_f2: -1199525064
+      CatchItem2_crab_d0_f3: 1361428254
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

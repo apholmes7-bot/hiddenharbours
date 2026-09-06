@@ -131,155 +131,177 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Crust2_crab_rear_0
+      name: Crust2_crab_rear_d0_f0
       rect:
         serializedVersion: 2
-        x: 26
-        y: 469
-        width: 12
-        height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 448
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 34901edce399b8020800000000000000
-      internalID: 2345136525997574467
+      spriteID: 78580c1e2a6f04c49acf40dabdf00cd5
+      internalID: -1465535289
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_rear_1
+      name: Crust2_crab_rear_d1_f0
       rect:
         serializedVersion: 2
-        x: 26
-        y: 403
-        width: 12
-        height: 10
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 384
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 67fce4bf5838bd880800000000000000
-      internalID: -8585123653181583498
+      spriteID: d92073930d0eead40989711dea08fcfd
+      internalID: 355072495
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_rear_2
+      name: Crust2_crab_rear_d2_f0
       rect:
         serializedVersion: 2
-        x: 29
-        y: 339
-        width: 7
-        height: 10
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 320
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 766f1831929d05e10800000000000000
-      internalID: 2184484589718861415
+      spriteID: 9ff8a6617ab576b4ab2795ccefc5449d
+      internalID: -711551394
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_rear_3
+      name: Crust2_crab_rear_d3_f0
       rect:
         serializedVersion: 2
-        x: 26
-        y: 214
-        width: 12
-        height: 70
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 256
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 111ca115080829e30800000000000000
-      internalID: 4508807465556164881
+      spriteID: e976a71ddaff6e847be87b6a26437cd8
+      internalID: 1883976154
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_rear_4
+      name: Crust2_crab_rear_d4_f0
       rect:
         serializedVersion: 2
-        x: 26
-        y: 148
-        width: 12
-        height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 192
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 38fc5e8b61ea81d10800000000000000
-      internalID: 2096617039155548035
+      spriteID: a5c372ffc6c0f794b88e99198f495de3
+      internalID: 1805925873
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_rear_5
+      name: Crust2_crab_rear_d5_f0
       rect:
         serializedVersion: 2
-        x: 28
-        y: 83
-        width: 7
-        height: 10
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 128
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 29766da82e0987b70800000000000000
-      internalID: 8897020366536730514
+      spriteID: 328b3d610ed13a84a82c9a5d5ac79082
+      internalID: 1155748504
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Crust2_crab_rear_6
+      name: Crust2_crab_rear_d6_f0
       rect:
         serializedVersion: 2
-        x: 26
-        y: 19
-        width: 12
-        height: 10
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 64
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: d4e817da3e444b6a0800000000000000
-      internalID: -6434442222947430835
+      spriteID: 6ac5d79d1a8f6d843a821e70f5628a50
+      internalID: 1194642559
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Crust2_crab_rear_d7_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 528d8921b27e69d49843a055fa586678
+      internalID: -1534849568
       vertices: []
       indices: 
       edges: []
@@ -288,7 +310,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 4debd7ba720dea24da020217fd192e94
     internalID: 0
     vertices: []
     indices: 
@@ -298,13 +320,14 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Crust2_crab_rear_0: 2345136525997574467
-      Crust2_crab_rear_1: -8585123653181583498
-      Crust2_crab_rear_2: 2184484589718861415
-      Crust2_crab_rear_3: 4508807465556164881
-      Crust2_crab_rear_4: 2096617039155548035
-      Crust2_crab_rear_5: 8897020366536730514
-      Crust2_crab_rear_6: -6434442222947430835
+      Crust2_crab_rear_d0_f0: -1465535289
+      Crust2_crab_rear_d1_f0: 355072495
+      Crust2_crab_rear_d2_f0: -711551394
+      Crust2_crab_rear_d3_f0: 1883976154
+      Crust2_crab_rear_d4_f0: 1805925873
+      Crust2_crab_rear_d5_f0: 1155748504
+      Crust2_crab_rear_d6_f0: 1194642559
+      Crust2_crab_rear_d7_f0: -1534849568
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

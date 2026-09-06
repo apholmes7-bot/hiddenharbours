@@ -134,177 +134,177 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Hod2_front_0
+      name: Hod2_front_d0_f0
       rect:
         serializedVersion: 2
-        x: 12
-        y: 286
-        width: 16
-        height: 15
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 280
+        width: 40
+        height: 40
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 586919366ff7f3fd0800000000000000
-      internalID: -2360026983509682555
+      spriteID: 392bc0e8b182d7c4ab5cd1a55bba4137
+      internalID: -393891781
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Hod2_front_1
+      name: Hod2_front_d1_f0
       rect:
         serializedVersion: 2
-        x: 10
-        y: 245
-        width: 19
-        height: 17
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 240
+        width: 40
+        height: 40
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: bea9b0e3d70ef1bf0800000000000000
-      internalID: -351315417395127573
+      spriteID: a29bdfa0d5a019249be58c8f79f59a64
+      internalID: -350918827
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Hod2_front_2
+      name: Hod2_front_d2_f0
       rect:
         serializedVersion: 2
-        x: 14
-        y: 205
-        width: 12
-        height: 16
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 200
+        width: 40
+        height: 40
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 8ad13bea338370670800000000000000
-      internalID: 8504828215937932712
+      spriteID: 29521444903e1894984f87477f9aa035
+      internalID: 941086529
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Hod2_front_3
+      name: Hod2_front_d3_f0
       rect:
         serializedVersion: 2
-        x: 11
-        y: 165
-        width: 19
-        height: 17
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 160
+        width: 40
+        height: 40
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 6300a615297516750800000000000000
-      internalID: 6296410039983407158
+      spriteID: 5588daa19ae7ac049b23a184645aae54
+      internalID: -1003013141
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Hod2_front_4
+      name: Hod2_front_d4_f0
       rect:
         serializedVersion: 2
-        x: 12
-        y: 126
-        width: 16
-        height: 15
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 120
+        width: 40
+        height: 40
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e4260b2511590f970800000000000000
-      internalID: 8786686774634111566
+      spriteID: 2e795419eaf03a24f830cabf0cfdcd69
+      internalID: 1483070095
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Hod2_front_5
+      name: Hod2_front_d5_f0
       rect:
         serializedVersion: 2
-        x: 10
-        y: 85
-        width: 19
-        height: 17
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 80
+        width: 40
+        height: 40
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 03799d129118e5b80800000000000000
-      internalID: -8404137909684693200
+      spriteID: f43cf88b625755343a3d9e20116507ba
+      internalID: -1161617333
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Hod2_front_6
+      name: Hod2_front_d6_f0
       rect:
         serializedVersion: 2
-        x: 14
-        y: 45
-        width: 12
-        height: 16
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 40
+        width: 40
+        height: 40
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 22befe1c6a51fc6a0800000000000000
-      internalID: -6426894337271928030
+      spriteID: d5af9980a950efe4b884ecbdffd2b0d0
+      internalID: 528278819
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Hod2_front_7
+      name: Hod2_front_d7_f0
       rect:
         serializedVersion: 2
-        x: 11
-        y: 5
-        width: 19
-        height: 17
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 0
+        width: 40
+        height: 40
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 3d2c668df6719dce0800000000000000
-      internalID: -1380046041672924461
+      spriteID: 4e10e8fd0fbc15f46862777fc7c97091
+      internalID: 972056598
       vertices: []
       indices: 
       edges: []
@@ -313,7 +313,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 1b3e082605c81af43831d8de12249196
     internalID: 0
     vertices: []
     indices: 
@@ -323,14 +323,14 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Hod2_front_0: -2360026983509682555
-      Hod2_front_1: -351315417395127573
-      Hod2_front_2: 8504828215937932712
-      Hod2_front_3: 6296410039983407158
-      Hod2_front_4: 8786686774634111566
-      Hod2_front_5: -8404137909684693200
-      Hod2_front_6: -6426894337271928030
-      Hod2_front_7: -1380046041672924461
+      Hod2_front_d0_f0: -393891781
+      Hod2_front_d1_f0: -350918827
+      Hod2_front_d2_f0: 941086529
+      Hod2_front_d3_f0: -1003013141
+      Hod2_front_d4_f0: 1483070095
+      Hod2_front_d5_f0: -1161617333
+      Hod2_front_d6_f0: 528278819
+      Hod2_front_d7_f0: 972056598
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
