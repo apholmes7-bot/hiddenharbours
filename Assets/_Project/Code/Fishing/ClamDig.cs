@@ -99,6 +99,7 @@ namespace HiddenHarbours.Fishing
         // MonoBehaviour is handed a dt rather than a time. Nothing here is saved (rule 5).
         private double _spurtClockMs;
         private float _phaseMs, _periodMs;
+        private int _seedUsed;
         private bool _showingSquirt;
         private float _spurtRise, _spurtU;
         private bool _consumed;
@@ -143,14 +144,31 @@ namespace HiddenHarbours.Fishing
         }
 
         /// <summary>
-        /// Roll this hole's phase and period from <c>(worldSeed, its own position)</c>. Called on wake
-        /// and whenever <see cref="Configure"/> moves the spot or changes the seed — the position IS
+        /// The seed the SPURT is rolled from: the WORLD's, exactly as the charter says
+        /// (<c>deterministic from (worldSeed, hole)</c>) and exactly where every other deterministic
+        /// system in the module reads it — <c>LiveFishSchoolWorld.WorldSeed</c> takes the same route.
+        ///
+        /// <para>⚠️ This is NOT <see cref="_rngSeed"/>. That field seeds the component's own
+        /// <see cref="System.Random"/> for the yield roll, it is an inspector convenience, and it is
+        /// <b>0 on every hole a builder places</b> — so seeding the spurt from it made every world's
+        /// flat identical. It stays the fallback for a scene with no environment service (a bare art
+        /// scene, a test), because there a caller-supplied seed is the only entropy there is.</para>
+        /// </summary>
+        private int SpurtWorldSeed()
+        {
+            IEnvironmentService env = GameServices.Environment;
+            return env != null ? env.WorldSeed : _rngSeed;
+        }
+
+        /// <summary>
+        /// Roll this hole's phase and period from <c>(worldSeed, its own position)</c>. The position IS
         /// the hole's identity, so a hole that moves is a different hole and must re-roll.
         /// </summary>
         private void ResolveSpurtTiming()
         {
+            _seedUsed = SpurtWorldSeed();
             Vector2 p = SpotPos;
-            ClamSpurtMath.TimingFor(_rngSeed, p.x, p.y, out _phaseMs, out _periodMs);
+            ClamSpurtMath.TimingFor(_seedUsed, p.x, p.y, out _phaseMs, out _periodMs);
         }
 
         private void Update()
@@ -428,7 +446,12 @@ namespace HiddenHarbours.Fishing
 
             // A hole that has never resolved its timing (a test that skipped Awake, an editor-time
             // instance) rolls it now rather than sitting silently at period 0 and never spurting.
-            if (!(_periodMs > 0f)) ResolveSpurtTiming();
+            //
+            // It also re-rolls if the world seed has CHANGED under it. That is not paranoia: the
+            // environment service is frequently absent at Awake and arrives with the persistent core
+            // a moment later, so a hole woken early would otherwise keep the fallback seed for the
+            // rest of the session and quietly disagree with every hole woken after it.
+            if (!(_periodMs > 0f) || SpurtWorldSeed() != _seedUsed) ResolveSpurtTiming();
 
             _spurtClockMs += Mathf.Max(0f, dt) * 1000.0;
             _showingSquirt = ClamSpurtMath.TrySpurt(_spurtClockMs, _phaseMs, _periodMs,
@@ -454,9 +477,10 @@ namespace HiddenHarbours.Fishing
             _rng = seed == 0 ? new System.Random() : new System.Random(seed);
             if (reachRadius >= 0f) _reachRadius = reachRadius;
 
-            // Both of the spurt's inputs may have just moved — the world seed and the hole's own
-            // position (the spot IS its identity). Re-roll rather than keep a timing that belonged
-            // to a different hole.
+            // The hole's position may have just moved, and the spot IS its identity — so re-roll
+            // rather than keep a timing that belonged to a different hole. The seed recorded here
+            // only reaches the spurt in a scene with no environment service (see SpurtWorldSeed);
+            // in play the world's seed wins, which is what the charter asks for.
             _rngSeed = seed;
             ResolveSpurtTiming();
         }
