@@ -208,7 +208,7 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void PlainHull_KeepsTheRotatingPicture_AndBuildsNoSkin()
         {
-            // The fallback that must not be stranded: the Punt and the FishingSkiff have no facings.
+            // The fallback that must not be stranded: a hull with no facings keeps her one picture.
             var plain = MakeSprite("Punt");
             var hull = MakeHull("boat.punt", null, plain);
             var (go, sr, boat) = MakeBoat(hull);

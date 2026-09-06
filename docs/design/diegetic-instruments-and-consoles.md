@@ -152,10 +152,12 @@ fitted to *that* Novi. This makes the dash a visible, per-boat capability (P2) a
 - **Equipment purchase** shipped as `InstrumentOffer` assets (`Data/Instruments/`) + `InstrumentShop`,
   deliberately *not* `GearOffer` — gear is a presence-only wallet you carry between boats, an instrument
   is bolted into one hull. See `InstrumentOffer`'s own doc-comment for the split.
-- **`boat.fishing_skiff` now shares the console-skiff `HelmConsoleDef`** (its `Helm` pointer resolves to
-  the same asset as `boat.console_skiff`), which answers §7 question 1 in data. ⚠ Awaiting the owner's
-  veto on the mapping — it is implemented, not yet blessed. Note `InstrumentLocker` keys by **hull id**,
-  so sharing a console def does *not* share purchases between the two hulls.
+- ~~**The fishing skiff shares the console-skiff `HelmConsoleDef`**, which answered §7 question 1 in
+  data.~~ **MOOT (2026-09-06)** — the owner retired that hull (Core `RetiredContentIds`), so the mapping
+  that was awaiting his veto no longer has a boat to apply to. The rule it established stands and is
+  worth keeping: a hull with no console rig of her own may point `Helm` at another hull's
+  `HelmConsoleDef`, and because `InstrumentLocker` keys by **hull id**, sharing a console def does *not*
+  share purchases between the two hulls.
 
 ### Seeing them without shopping — the dev brow cycle (S3d, 2026-08-04)
 
@@ -273,9 +275,9 @@ switches, swing the lever, tap the sounder to swap depth↔fish).
 
 ## 7. Open questions / rulings needed
 
-1. ~~**`boat.fishing_skiff` console** — no rig supplied. Tiller-only, shared console, or no readout until
-   upgraded?~~ **Answered in data (2026-08-03): it shares the console-skiff helm** (§4). ⚠ Still awaiting
-   the owner's veto on that mapping.
+1. ~~**The fishing skiff's console** — no rig supplied. Tiller-only, shared console, or no readout until
+   upgraded?~~ **Answered in data (2026-08-03): it shared the console-skiff helm** (§4), and **CLOSED
+   without a veto needed (2026-09-06)**: the owner retired the hull, so the question has no subject.
 2. **Throttle notch counts** — default 4 ahead / 2 astern; confirm on the feel-check, and whether Up/Down
    should hold-repeat (`HoldRepeatPerSec > 0`) or stay one-detent-per-press.
 3. **Dusk hour** — the watch's night flips at 19:00 by default; the global day-night `sunset` is 20:00. Keep

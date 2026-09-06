@@ -57,7 +57,7 @@ general store. Jerry cans and other fuel storage will need artwork. And the play
 tiller or a wheel over an outboard, it drinks gas. If it has an engine room, it drinks diesel.
 Exactly which hulls fall each side is a per-`BoatHullDef` fact to be authored in M2, not guessed
 here — but the split follows the existing tier ladder, so the boundary is around the point where the
-fleet stops being outboard-driven. **→ §9.10 proposes the split over all 38 shipped hulls** (10 gas ·
+fleet stops being outboard-driven. **→ §9.10 proposes the split over all 37 shipped hulls** (9 gas ·
 21 diesel · 6 on the line · the rowed dory), using the signal the art lane already laid down: a hull
 with a baked below-decks interior is an inboard boat. **Owner's call.**
 
@@ -672,7 +672,7 @@ that is P1 taught by the fuel gauge instead of a tutorial.
 
 #### 9.6.2 The per-hull proposal — grade, tank, burn, and what it buys
 
-**All 38 shipped `BoatHullDef` assets, grouped by family.** Columns 2–4 are what the owner authors;
+**All 37 shipped `BoatHullDef` assets, grouped by family.** Columns 2–4 are what the owner authors;
 columns 5–7 are *derived* from them and are the reason the numbers are what they are.
 
 *Cruise* = throttle 0.7, half hold, Moderate sea, no slip (the reference duty, multiplier **0.726**).
@@ -683,7 +683,6 @@ running** — about 40% of the 30-minute game day under power, the rest fishing,
 |---|---|---|---|---|---|---|---|---|
 | `boat.dory` | *(none — she rows)* | **0** | — | — | — | — | — | — |
 | `boat.dory_outboard` | gas | **10** | **23** | 16.7 | 36 min | 2.6 km | 3.0 | 16 ₲ |
-| `boat.fishing_skiff` | gas | 12 | 28 | 20.3 | 35 min | 3.7 km | 3.0 | 19 ₲ |
 | `boat.punt` | gas | **25** | 49 | 35.6 | 42 min | 4.1 km | 3.5 | 39 ₲ |
 | `boat.punt_upgraded` | gas | 25 | 49 | 35.6 | 42 min | 5.1 km | 3.5 | 39 ₲ |
 | `boat.console_skiff` | gas | 45 | 78 | 56.6 | 48 min | 7.8 km | 4.0 | 70 ₲ |
@@ -845,8 +844,10 @@ honest answer so a new hull is never accidentally rescued:
 public bool CanRowHome = false;
 ```
 
-**Proposed true for exactly:** `boat.dory`, `boat.dory_outboard`, `boat.punt`, `boat.punt_upgraded`,
-`boat.fishing_skiff`. **False for all other 33.** *(⏳ OWNER — the fishing skiff is the debatable one.)*
+**Proposed true for exactly:** `boat.dory`, `boat.dory_outboard`, `boat.punt`, `boat.punt_upgraded`.
+**False for all other 33.** *(The fifth entry was the fishing skiff, and she was the one genuinely
+debatable one; the owner retired the hull on 2026-09-06 — Core `RetiredContentIds` — so the question
+closed without needing an answer.)*
 
 ⚠ **`boat.dory_outboard` matters most here.** She is `PropulsionType.Engine`, so a naive "does she use
 the oar helm" test would strand her — and she is the *one boat in the game canon promises can always
@@ -907,13 +908,13 @@ worth having.
 ### 9.10 Which hulls are diesel — PROPOSAL (⏳ **OWNER'S CALL**)
 
 Owner canon (§2) is the rule: *"if you drive it with a tiller or a wheel over an outboard, it drinks
-gas. If it has an engine room, it drinks diesel."* Applied to the 38 shipped hulls — and the fleet
+gas. If it has an engine room, it drinks diesel."* Applied to the 37 shipped hulls — and the fleet
 turns out to have **already answered it in the art**: the boat-interiors kit gave a below-decks space
 to exactly the inboard boats.
 
 | Grade | Hulls | Count | Signal |
 |---|---|---|---|
-| **gas** | `dory_outboard` · `fishing_skiff` · `punt` · `punt_upgraded` · `console_skiff` · `sport_skiff` · `sport_skiff_mk2` · `sport_skiff_twin` · `zodiac_frc` · `zodiac_hurricane` | **10** | outboard-driven; no interior in the kit |
+| **gas** | `dory_outboard` · `punt` · `punt_upgraded` · `console_skiff` · `sport_skiff` · `sport_skiff_mk2` · `sport_skiff_twin` · `zodiac_frc` · `zodiac_hurricane` | **9** | outboard-driven; no interior in the kit |
 | **diesel** | `cape_islander` · `lobster_boat` · `lobster_standard_*` (6) · `lobster_offshore_*` (6) · `sport_fisher_convertible` · `sport_fisher_skybridge` · `side_dragger` · `stern_trawler` · `stern_trawler_mk2` · `coastal_packet` · `tanker` | **21** | all carry a baked interior; the sport fishers' rigs name an `engine_room` outright |
 | **⚠ the line** | `lobster_inshore_*` (6) | **6** | 8.6 m, hardtop and open, *with* interiors |
 | **none** | `boat.dory` | **1** | she rows |
@@ -987,7 +988,7 @@ is now a taste question with a price tag on both sides.
 **Data & units**
 - [ ] `1 FU = 1 L` is stated once, in `FuelGrades`' or the tank field's remarks; **no conversion
       constant exists anywhere in the code.**
-- [ ] `FuelCapacityLitres`, `FuelGrade`, `FullThrottleLitresPerHour` on `BoatHullDef`; all 38 shipped
+- [ ] `FuelCapacityLitres`, `FuelGrade`, `FullThrottleLitresPerHour` on `BoatHullDef`; all 37 shipped
       hulls authored to §9.6.2 (or deliberately left at 0).
 - [ ] Content validation fails on: a non-empty `FuelGrade` outside `FuelGrades.All`; a capacity > 0
       with `R` = 0; a capacity > 0 with an empty grade; `boat.dory` carrying a tank.
@@ -1049,7 +1050,7 @@ build.** Each is a small, single-purpose PR that leaves the build playable (rule
 | **F3** | **The tank is a vessel, and the two verbs.** `IFuelVessel` on the boat; `FuelTransfer` + `Draw` in Core; **FILL** aboard; **POUR** from a can. | economy-sim (+ **lead-architect** for the Core seam) | F1 | §9.12 "The tank, the verbs" |
 | **F4** | **Fuel persists.** `HullFuel` + save v14 + migration + round-trip tests. **Closes the §8.4.2 leak — tell the world lane, pumps can be placed after this.** | economy-sim → lead-architect sign-off | F1, F3 | §9.12 save rows |
 | **F5** | **Running dry — the event and the handoff.** `BoatFuelState` + `BoatFuelStateChanged` in Core; `CanRowHome` on `BoatHullDef` + the 5 hulls set; the low-fuel telegraph fires. **The breakdown → drift → stranded machine is `gameplay-systems`' and is NOT in this lane.** | economy-sim raises · **gameplay-systems** consumes | F2, F4 | §9.12 "Running dry" |
-| **F6** | **The numbers pass.** Author all 38 hulls to §9.6.2; pin the worked examples; a test that re-derives endurance/range from the authored Defs so a re-tune cannot silently break the ladder. | economy-sim | F1, F2 | the ladder in §9.6.2 holds; §9.7/§9.8 pinned |
+| **F6** | **The numbers pass.** Author all 37 hulls to §9.6.2; pin the worked examples; a test that re-derives endurance/range from the authored Defs so a re-tune cannot silently break the ladder. | economy-sim | F1, F2 | the ladder in §9.6.2 holds; §9.7/§9.8 pinned |
 
 **Deliberately NOT in this lane**, and each has a reason:
 
@@ -1110,7 +1111,9 @@ words, with `FuelRefusal.NoVessel`.
 4. **Are the §9.6.2 tanks and burn rates about right?** The columns to read are **Days/tank** and
    **Fill @ R91** — 3 days and 16 ₲ for the dory, 5.6 days and 119 ₲ for the lobster boat. If fuel
    feels too thirsty or too free *across the board*, that is **one number** (`BurnScale`), not 38.
-5. **Can `boat.fishing_skiff` row home?** (§9.9.2) — the one genuinely debatable entry in the five.
+5. ~~**Can the fishing skiff row home?** (§9.9.2) — the one genuinely debatable entry in the five.~~
+   **CLOSED 2026-09-06**: the owner retired that hull (Core `RetiredContentIds`); the remaining four
+   entries were never in doubt.
 6. **Standing, unchanged:** should the wharf pumps sell premix and oil? (§8.5 Q3). §9.11 Option A
    would force the answer to yes; Option B leaves it as the owner's taste call it is today.
 

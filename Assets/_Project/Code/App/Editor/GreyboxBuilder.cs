@@ -723,7 +723,6 @@ namespace HiddenHarbours.App.Editor
             ApplyFleetHull(DataBoats + "/ConsoleSkiff.asset", ApplyConsoleSkiffStats, "ConsoleSkiff");
             ApplyFleetHull(DataBoats + "/SportSkiff.asset", ApplySportSkiffStats, "SportSkiffSingle");
             ApplyFleetHull(DataBoats + "/SportSkiffTwin.asset", ApplySportSkiffTwinStats, "SportSkiffTwin");
-            ApplyFleetHull(DataBoats + "/FishingSkiff.asset", ApplyFishingSkiffStats, "FishingBoat");
             // The Punt goes through the SAME path, though she is not a picker-only hull: she is a real,
             // purchasable M1 boat (PuntOffer, ₲1800) who simply never had a skin. Her iso kit landed in #210
             // and this is what makes her wear it. Her upgraded-engine sister rides the same 5.2 m hull.
@@ -1015,37 +1014,6 @@ namespace HiddenHarbours.App.Editor
         }
 
         /// <summary>
-        /// THE FISHING SKIFF (<c>boat.fishing_skiff</c>) — the 8-direction fishing boat. This hull id has
-        /// existed, ORPHANED, since #97's engine-helm experiment was reverted: nothing pointed at it and its
-        /// stats were a copy of the dory's with the propulsion flipped. Rather than mint a sixth id for art
-        /// that already has one, it is un-orphaned here — pointed at the new <c>visual.fishing_boat</c>
-        /// compass and given stats of its own. The id is append-only and stable; a new id would have
-        /// stranded this one forever and broken the PlayMode tests already keyed to it.
-        ///
-        /// <para>Sized from the ART, not from a guess: the <c>FishingBoat_*</c> files are 128×128 cells at
-        /// PPU 32, so the drawn hull cannot exceed 4.0 m. (The old asset claimed 4.5 m — longer than its own
-        /// picture.) That makes her the smallest powered boat on the ladder: a dory with an outboard on it,
-        /// which is exactly what the art shows. She also predates the Seakeeping* fields, so they are
-        /// authored here for the first time.</para>
-        /// </summary>
-        static void ApplyFishingSkiffStats(BoatHullDef h)
-        {
-            h.Id = "boat.fishing_skiff"; h.DisplayName = "The Fishing Skiff";
-            h.Propulsion = PropulsionType.Engine;
-            h.LengthMeters = 4.0f;              // art fact: the 128 px cell at PPU 32 is a hard ceiling
-            h.DraughtMeters = 0.35f; h.MassKg = 450f;
-            h.HoldUnits = 6; h.CrewSlots = 1;
-            h.EnginePower = 550f;               // → 2.50 m/s: the slowest powered hull, quicker than the punt
-            h.RudderAuthority = 400f;           // ≈ 600·(4.5/7)
-            h.ForwardDrag = 130f; h.LateralDrag = 340f;
-            h.WindExposure = 0.6f;              // small and light, like the dory
-            h.MaxSafeSeaState = SeaState.Lively;   // a small open boat — no more seaworthy than the dory
-            h.SeakeepingMassFactor = 1.1f; h.SeakeepingLiveliness = 0.95f; h.SeakeepingDamping = 0.05f;
-            h.CameraWorldHeightMeters = 13.5f;  // the ladder, read back below the dory's 14 @ 4.5 m
-            ApplyDeckTray(h);                   // she keeps her tray (the content validator requires it)
-        }
-
-        /// <summary>
         /// THE CAPE ISLANDER (<c>boat.cape_islander</c>) — ~12.9 m of inshore working boat, and by a long
         /// way the biggest hull the owner can currently put himself in: she is 5× the console skiff's mass
         /// and nearly twice her length. The point of her is MOMENTUM. She is not the fastest boat afloat and
@@ -1170,7 +1138,7 @@ namespace HiddenHarbours.App.Editor
 
         // The deck-container ladder (owner canon): every small hull the builders generate carries the
         // committed fish tray, anchored on the starboard quarter of the drawn deck. Values mirror the
-        // committed Dory/FishingSkiff assets — one place for the builder-generated hulls.
+        // committed Dory asset — one place for the builder-generated hulls.
         static void ApplyDeckTray(BoatHullDef h)
         {
             h.DeckContainer = AssetDatabase.LoadAssetAtPath<DeckContainerDef>(DataBoats + "/Containers/FishTray.asset");

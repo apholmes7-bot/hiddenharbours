@@ -25,14 +25,16 @@ namespace HiddenHarbours.Tests.EditMode
     /// <see cref="BoatVisualDef.FacingsAreCounterClockwise"/> off the real committed asset. Flip that flag on
     /// any kit and these go red.</para>
     ///
-    /// <para><b>Both conventions are pinned here on purpose.</b> The hand-exported iso kits are CCW; the older
-    /// hand-drawn <c>FishingBoat_*</c> compass is CW and always was correct. (The two hulls baked IN-ENGINE by
-    /// RigBaker — the lobster boat and, since the full-mesh rollout's PR 2b, the Cape Islander — are 32-facing
-    /// and genuinely CW, and each has her own fixture: <see cref="LobsterBoatFacingTests"/>,
-    /// <see cref="CapeIslanderFacingTests"/>.) That disagreement is exactly why the fix
-    /// had to be per-artwork data rather than a blanket mirror — a global flip would have fixed the iso kits
-    /// and silently broken the fishing boat and the whole ambient fleet that shares her facings. Testing only
-    /// one lineage would let them diverge again in the dark, so both are asserted, together.</para>
+    /// <para><b>Both conventions still exist, and that is why the flag is per-artwork.</b> The hand-exported
+    /// iso kits pinned here are CCW. The two hulls baked IN-ENGINE by RigBaker — the lobster boat and, since
+    /// the full-mesh rollout's PR 2b, the Cape Islander — are 32-facing and genuinely CW, and each has her own
+    /// fixture: <see cref="LobsterBoatFacingTests"/>, <see cref="CapeIslanderFacingTests"/>. A blanket mirror
+    /// would fix one lineage and silently break the other, which is the whole argument for per-artwork data.
+    ///
+    /// <para>The CW lineage used to be represented HERE too, by the owner's hand-drawn plan-view compass,
+    /// measured off her own PNGs. She was retired on 2026-09-06 (Core RetiredContentIds) and her fixture went
+    /// with her; the CW side of the argument now lives entirely in the two RigBaker fixtures named above,
+    /// which measure 32 cells each rather than 8.</para></para>
     ///
     /// <para><b>How the depicted heading is measured.</b> Every kit is baked by the same orthographic rig at
     /// a fixed 40° elevation (<c>DEFAULT_ELEV</c>), so a compass bearing <c>b</c> projects to the screen
@@ -119,14 +121,14 @@ namespace HiddenHarbours.Tests.EditMode
         /// THE CAPE ISLANDER — the hull that neither feature above can measure.
         ///
         /// <para>She has no outboard (inboard diesel — her kit draws no engine) and no oars, so there is no
-        /// transom marker and no port-beam difference. All that is left is the HULL SILHOUETTE, which is what
-        /// the FishingBoat test falls back on — and that test is explicit that a principal axis is a LINE, so
-        /// it pins the heading modulo 180 and cannot tell bow from stern. Modulo 180 is not good enough here:
-        /// this kit's whole question is which of two 180°-apart conventions it was baked in, and a mod-180
-        /// test answers that question for the DIAGONALS but is exactly blind on the CARDINALS.</para>
+        /// transom marker and no port-beam difference. All that is left is the HULL SILHOUETTE, and a bare
+        /// principal axis of a silhouette is a LINE: it pins the heading modulo 180 and cannot tell bow from
+        /// stern. Modulo 180 is not good enough here: this kit's whole question is which of two 180°-apart
+        /// conventions it was baked in, and a mod-180 test answers that question for the DIAGONALS but is
+        /// exactly blind on the CARDINALS.</para>
         ///
-        /// <para>So this adds the missing term rather than accepting the blindness. Two changes to the
-        /// FishingBoat measurement:</para>
+        /// <para>So this adds the missing term rather than accepting the blindness. Two changes to a plain
+        /// principal-axis measurement:</para>
         /// <list type="number">
         ///   <item><b>Un-foreshorten before fitting.</b> The rig squashes screen-Y by sin(40°); a principal
         ///         axis fitted in raw screen pixels is therefore pulled toward the horizontal and reads the
@@ -156,9 +158,9 @@ namespace HiddenHarbours.Tests.EditMode
         /// the cardinals (+8/+8 against −8/−8 on the Cape Islander), the signature of a heavy wheelhouse pulling
         /// the covariance axis off the keel line, not of a mislabelled cell.</para>
         ///
-        /// <para><b>This asserts the ART, then the code that reads it</b>, in that order — the same discipline
-        /// as the FishingBoat test, and for the same reason: if the flag were checked first it would mask the
-        /// measurement and this file would be back to asserting configuration against itself.</para>
+        /// <para><b>This asserts the ART, then the code that reads it</b>, in that order, and the order is the
+        /// discipline: if the flag were checked first it would mask the measurement and this file would be
+        /// back to asserting configuration against itself.</para>
         /// </summary>
         [TestCase("DoryIso", "DoryIso.png")]           // calibration: established CCW, worst cell 2.8°
         [TestCase("PuntIsoBasic", "PuntIso.png")]      // calibration: established CCW, worst cell 3.1°
@@ -232,52 +234,6 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.Greater(worstUnderTheWrongConvention, HullAxisToleranceDegrees * 4f,
                 "the wrong convention must be wrong by far more than the measurement noise budget, or the " +
                 "budget is doing work it cannot do");
-        }
-
-        // ---- the OTHER lineage: the hand-drawn compass, CW and correct -----------------------
-
-        /// <summary>
-        /// The <c>FishingBoat_*</c> compass is 8 separate hand-drawn files and is labelled CORRECTLY, so its
-        /// flag must stay false. She carries no outboard and no oars, so the centroid features above do not
-        /// exist; instead each cell's hull is measured by the PRINCIPAL AXIS of its silhouette (the keel line),
-        /// which must lie along the heading the cell is chosen for.
-        ///
-        /// <para>An axis is a line, so this pins the heading modulo 180° — it cannot tell bow from stern. That
-        /// is a real limit and it is stated rather than papered over; a taper/skew bow-detector was tried and
-        /// is not trustworthy on this art (the cabin dominates the silhouette). It is still fully decisive for
-        /// the thing this file exists to guard: mirroring this compass would swing the four DIAGONALS by 90°
-        /// (the NE cell's axis would read 135° instead of 45°), which this catches immediately. Bow-vs-stern
-        /// on the cardinals was verified by eye against the raw PNGs at the time of the fix — E's flared bow
-        /// and mast point right.</para>
-        /// </summary>
-        [Test]
-        public void FishingBoatCompass_IsClockwise_CellChosenForHeadingLiesAlongIt()
-        {
-            var visual = LoadVisual("FishingBoat");
-
-            // The PIXELS first, then the flag: this order matters. If the flag guard ran first it would mask
-            // the measurement, and this file would be back to asserting configuration against itself — the
-            // exact self-referential blind spot that let the mirrored art ship in the first place.
-            for (int i = 0; i < Headings; i++)
-            {
-                float heading = i * Step;
-                int cell = DirectionalBoatSprite.HeadingToFacingIndex(
-                    heading, Headings, visual.ZeroHeadingDegrees, visual.FacingsAreCounterClockwise);
-
-                string path = $"{ArtBoats}/FishingBoat_{CompassSuffix(cell)}.png";
-                float axis = PrincipalAxisBearing(LoadTexture(path));
-
-                // Compare modulo 180: the keel is a line, not an arrow.
-                float delta = Mathf.Abs(Mathf.DeltaAngle(axis * 2f, heading * 2f)) * 0.5f;
-                Assert.LessOrEqual(delta, 12f,
-                    $"Heading {heading}° picks cell {cell} ({path}), whose hull axis measures {axis:0.0}° — " +
-                    $"off by {delta:0.0}°. The compass is drawn clockwise; if this fails the convention flag " +
-                    "for this artwork is wrong (or the art was re-drawn).");
-            }
-
-            Assert.IsFalse(visual.FacingsAreCounterClockwise,
-                "The hand-drawn FishingBoat compass is CLOCKWISE and correct — it must NOT be mirrored. " +
-                "It is shared with the ambient fleet; flipping this breaks every boat on the horizon.");
         }
 
         // ---- the shared assertion ------------------------------------------------------------
@@ -378,8 +334,9 @@ namespace HiddenHarbours.Tests.EditMode
 
         /// <summary>
         /// The bearing each of the 8 cells of a one-row hull sheet actually DEPICTS — full circle, bow and
-        /// all. See <see cref="IsoHull_CellChosenForHeading_ActuallyDepictsThatHeading_BowAndAll"/> for why
-        /// this exists alongside <see cref="PrincipalAxisBearing"/> and what the extra terms buy.
+        /// all. See <see cref="IsoHull_CellChosenForHeading_ActuallyDepictsThatHeading_BowAndAll"/> for what
+        /// the extra terms buy over a bare principal axis, which reads a keel modulo 180° and cannot tell
+        /// bow from stern.
         /// </summary>
         static float[] HullBearingsPerCell(string sheetPath)
         {
@@ -472,35 +429,6 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         /// <summary>
-        /// Compass bearing of the principal axis of a silhouette (the direction of greatest spread — for a
-        /// boat, the keel line). Modulo 180: this is a line, with no bow/stern sense.
-        /// </summary>
-        static float PrincipalAxisBearing(Texture2D tex)
-        {
-            var pixels = tex.GetPixels32();
-            double sx = 0, sy = 0; long n = 0;
-            for (int y = 0; y < tex.height; y++)
-                for (int x = 0; x < tex.width; x++)
-                    if (pixels[y * tex.width + x].a > 32) { sx += x; sy += y; n++; }
-            Assert.Greater(n, 0, "fully transparent sprite — nothing to measure");
-
-            double mx = sx / n, my = sy / n, xx = 0, yy = 0, xy = 0;
-            for (int y = 0; y < tex.height; y++)
-                for (int x = 0; x < tex.width; x++)
-                {
-                    if (pixels[y * tex.width + x].a <= 32) continue;
-                    double dx = x - mx, dy = y - my;
-                    xx += dx * dx; yy += dy * dy; xy += dx * dy;
-                }
-            Object.DestroyImmediate(tex);
-
-            // Major-axis angle of the covariance ellipse, then into the compass convention (0 = +Y, CW).
-            double ang = 0.5 * System.Math.Atan2(2 * xy, xx - yy);
-            float bearing = Mathf.Atan2((float)System.Math.Cos(ang), (float)System.Math.Sin(ang)) * Mathf.Rad2Deg;
-            return (bearing % 360f + 360f) % 360f;
-        }
-
-        /// <summary>
         /// The PNG off disk as a readable throwaway texture. Deliberately NOT the imported asset: these sheets
         /// import spriteMode Multiple (so LoadAssetAtPath&lt;Sprite&gt; is null) and non-readable, and a test
         /// has no business rewriting the import settings of committed art to see it.
@@ -520,8 +448,5 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(Headings, def.HeadingCount, $"{name} is not an 8-way compass");
             return def;
         }
-
-        static string CompassSuffix(int i) =>
-            new[] { "N", "NE", "E", "SE", "S", "SW", "W", "NW" }[i];
     }
 }

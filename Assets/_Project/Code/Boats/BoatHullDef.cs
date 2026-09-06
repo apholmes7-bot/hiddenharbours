@@ -35,7 +35,7 @@ namespace HiddenHarbours.Boats
         public BoatVisualDef Visual;
 
         [Tooltip("Fallback hull sprite: ONE picture that rotates with the hull, for hulls with no " +
-                 "directional Visual above (the Punt, the FishingSkiff). When a boat is granted, the " +
+                 "directional Visual above. When a boat is granted, the " +
                  "fleet swaps the renderer to this (null-safe). Attached by art-pipeline / wired in the " +
                  "greybox builder.")]
         public Sprite Sprite;

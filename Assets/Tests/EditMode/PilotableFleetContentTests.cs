@@ -68,8 +68,8 @@ namespace HiddenHarbours.Tests.EditMode
         /// were never in this file at all, because there was no way to say "this one has no compass" without
         /// a second parallel list. Now there is, so the fleet this file walks is the fleet the owner sails.</para>
         ///
-        /// <para><b>"Punt" is absent on purpose, and it is not an oversight.</b> The basic punt sits between
-        /// FishingSkiff and PuntUpgraded in the real roster — but <c>Data/Boats/Punt.asset</c>
+        /// <para><b>"Punt" is absent on purpose, and it is not an oversight.</b> The basic punt sits just
+        /// ahead of PuntUpgraded in the real roster — but <c>Data/Boats/Punt.asset</c>
         /// is BUILDER-GENERATED AND HAS NEVER BEEN COMMITTED: it exists only in a checkout where someone has
         /// run the cove builder. Listing her here would fail on a clean clone for a reason with nothing to do
         /// with the code under test. Every existing test in this repo mirrors the punt in memory for the same
@@ -78,7 +78,7 @@ namespace HiddenHarbours.Tests.EditMode
         static readonly (string File, int Facings)[] Fleet =
         {
             // --- drawn as a SPRITE COMPASS: Facings is how many headings her artwork is cut for ---
-            ("Dory", 8), ("FishingSkiff", 8), ("PuntUpgraded", 8), ("ConsoleSkiff", 8),
+            ("Dory", 8), ("PuntUpgraded", 8), ("ConsoleSkiff", 8),
             ("SportSkiff", 8), ("SportSkiffTwin", 8),
             ("CapeIslander", 32),  // baked in-engine since PR 2b, 11.25° steps — see CapeIslanderFacingTests
             ("LobsterBoat", 32),   // baked in-engine, 11.25° steps — see LobsterBoatFacingTests
@@ -181,7 +181,6 @@ namespace HiddenHarbours.Tests.EditMode
             var expected = new Dictionary<string, string>
             {
                 { "Dory", "boat.dory" },
-                { "FishingSkiff", "boat.fishing_skiff" },   // UN-ORPHANED, not replaced: ids are append-only
                 { "ConsoleSkiff", "boat.console_skiff" },
                 { "SportSkiff", "boat.sport_skiff" },
                 { "SportSkiffTwin", "boat.sport_skiff_twin" },
@@ -220,12 +219,15 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void TheSpeedLadder_IsMonotonic_AndInsideTheSpraySheetsFrame()
         {
-            float fishing = TerminalSpeed(Hull("FishingSkiff"));
+            // The bottom rung is the dory with her kicker on (D8). It used to be the 4 m fishing skiff,
+            // retired 2026-09-06 (Core RetiredContentIds) — she was the only hull in the fleet whose art
+            // was hand-drawn rather than baked from a rig.
+            float kicker = TerminalSpeed(Hull("DoryOutboard"));
             float console = TerminalSpeed(Hull("ConsoleSkiff"));
             float sport = TerminalSpeed(Hull("SportSkiff"));
             float twin = TerminalSpeed(Hull("SportSkiffTwin"));
 
-            Assert.Less(fishing, console, "the little fishing skiff is the slowest powered boat");
+            Assert.Less(kicker, console, "the dory's kicker is the slowest powered boat");
             Assert.Less(console, sport, "the workboat gives way to its glass sister");
             Assert.Less(sport, twin, "…and the second engine is worth something, or why fit it");
 
@@ -302,7 +304,7 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void EveryPoweredHull_TakesTheEngineHelm()
         {
-            foreach (var file in new[] { "FishingSkiff", "ConsoleSkiff", "SportSkiff", "SportSkiffTwin" })
+            foreach (var file in new[] { "DoryOutboard", "ConsoleSkiff", "SportSkiff", "SportSkiffTwin" })
             {
                 var h = Hull(file);
                 Assert.AreEqual(PropulsionType.Engine, h.Propulsion,
@@ -407,13 +409,6 @@ namespace HiddenHarbours.Tests.EditMode
                 "§7.7 she does carry a motor FITTING for the mesh path — posed by rotation rather " +
                 "than indexed by facing, which is exactly why that one can share a hull with the " +
                 "oars — and it is drawn only on boat.dory_outboard. See DoryOutboardContentTests.");
-
-            var fishing = Visual("FishingBoat");
-            Assert.IsTrue(fishing.HasFullCompass(),
-                "the 8-direction fishing boat's compass is 8 separate FILES — if this is empty, one of the " +
-                "FishingBoat_*.png files is missing or was renamed");
-            Assert.IsFalse(fishing.HasRockGrid(), "it ships no rock grid — static facings + the legacy rock");
-            Assert.IsFalse(fishing.HasMotor(), "and no motor sheets are baked for it");
         }
 
         // ---- the punt: her skin, her two engines ----------------------------------------------
@@ -598,25 +593,27 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void ThePunt_SeakeepsBetweenTheFishingSkiffAndTheSport_AndTheArtAgrees()
+        public void ThePunt_SeakeepsBelowTheSport_AndTheArtAgrees()
         {
             var punt = OptionalHull("Punt");
             if (punt == null) Assert.Ignore("Data/Boats/Punt.asset is builder-generated and not committed.");
 
-            // She predates the Seakeeping* fields and had been sitting on the raw defaults (1/1/0). Placed by
-            // mass between the fishing skiff (450 kg) and the sport (950 kg). The check that matters is that
-            // the ART agrees independently: her rig's rollA is 4.2 against the dory's 5.0 and the sport's
-            // 3.8, so she must cork about LESS than the dory and MORE than the sport — and she lands there.
-            var fishing = Hull("FishingSkiff");
+            // She predates the Seakeeping* fields and had been sitting on the raw defaults (1/1/0). The check
+            // that matters is that the ART agrees independently: her rig's rollA is 4.2 against the sport's
+            // 3.8, so she must cork about MORE than the sport — and she lands there.
+            //
+            // ⚠ THE DOWNWARD COMPARISON IS GONE AND CANNOT BE REPLACED TODAY. It used to run against the
+            // 450 kg fishing skiff, retired 2026-09-06 (Core RetiredContentIds), who was the only AUTHORED
+            // hull lighter than the punt. The only lighter hulls left — Dory and DoryOutboard, 400 kg — are
+            // both still on the raw 1/1/0 defaults, which this test's own last assertion calls UNAUTHORED.
+            // Comparing against a sentinel would pass while measuring nothing, so this asserts what is
+            // real: her upper neighbour, and that she is authored at all. Authoring the dory's seakeeping
+            // is what earns the lower rung back.
             var sport = Hull("SportSkiff");
 
-            Assert.Less(punt.SeakeepingLiveliness, fishing.SeakeepingLiveliness,
-                "heavier than the little fishing skiff → she corks about less");
             Assert.Greater(punt.SeakeepingLiveliness, sport.SeakeepingLiveliness,
-                "…but lighter than the 7 m sport → livelier than her");
-            Assert.Greater(punt.SeakeepingMassFactor, fishing.SeakeepingMassFactor);
+                "lighter than the 7 m sport → livelier than her");
             Assert.Less(punt.SeakeepingMassFactor, sport.SeakeepingMassFactor);
-            Assert.Greater(punt.SeakeepingDamping, fishing.SeakeepingDamping);
             Assert.Less(punt.SeakeepingDamping, sport.SeakeepingDamping);
 
             Assert.AreNotEqual(1f, punt.SeakeepingLiveliness,
@@ -638,11 +635,26 @@ namespace HiddenHarbours.Tests.EditMode
                     "the field and the wake fix is a silent no-op: re-run Hidden Harbours ▸ Art ▸ Build Boat " +
                     "Visual Defs, or the committed asset is wrong.");
 
-            // The odd one out, deliberately: 8 hand-drawn files, no camera, no bake. 90 = a plan view = do not
-            // foreshorten = its wake (and the whole ambient fleet's, which wears these facings) stays put.
-            Assert.AreEqual(90f, Visual("FishingBoat").ArtBakeElevationDegrees, 0.001f,
-                "FishingBoat is NOT a rig bake — foreshortening it would invent a camera it never had, the " +
-                "same trap the per-artwork mirror flag avoids");
+            // ...AND THERE IS NO LONGER AN ODD ONE OUT. This library used to hold exactly one artwork that
+            // was not a rig bake — the owner's hand-drawn plan-view compass, declared 90 (no foreshortening)
+            // because inventing a camera she never had would have been worse. The owner retired her on
+            // 2026-09-06 (Core RetiredContentIds), so EVERY shipped visual is now measured art, and 90 is
+            // once again nothing but the field's own "nobody has said" default.
+            //
+            // Sweeping the folder rather than a list is the point: a list only ever pins the hulls someone
+            // remembered to add, and this is the assertion that a NEW hand-drawn compass cannot arrive
+            // unnoticed. If you are deliberately shipping unmeasured art again, that is an owner-level
+            // decision about the fleet, and updating this test is how it gets recorded.
+            foreach (string guid in AssetDatabase.FindAssets("t:BoatVisualDef", new[] { $"{DataBoats}/Visuals" }))
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                var v = AssetDatabase.LoadAssetAtPath<BoatVisualDef>(path);
+                if (v == null) continue;
+                Assert.AreNotEqual(90f, v.ArtBakeElevationDegrees, 0.001f,
+                    $"{path}: still on the 90° PLAN-VIEW default. Either the asset predates the field (re-run " +
+                    "Hidden Harbours ▸ Art ▸ Build Boat Visual Defs) or it is unmeasured hand-drawn art, " +
+                    "which the fleet no longer carries — see Core RetiredContentIds.");
+            }
         }
 
         [Test]

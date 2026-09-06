@@ -72,7 +72,7 @@ namespace HiddenHarbours.Tests.EditMode
             // Owner canon: small boats carry a TRAY. The committed playable hulls must be wired to the
             // committed container asset — the tray is the hold's only readout, so an unwired hull is a
             // boat whose catch is invisible.
-            var mustCarry = new HashSet<string> { "boat.dory", "boat.fishing_skiff" };
+            var mustCarry = new HashSet<string> { "boat.dory" };
             int found = 0;
             foreach (var h in LoadAll<BoatHullDef>())
             {
@@ -88,7 +88,7 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.LessOrEqual(h.DeckContainerOffset.magnitude, h.LengthMeters,
                     $"{path}: the container anchor is off the boat (|offset| > hull length)");
             }
-            Assert.AreEqual(mustCarry.Count, found, "both committed small hulls (dory + fishing skiff) must exist in Data/");
+            Assert.AreEqual(mustCarry.Count, found, "the committed small hull (the dory) must exist in Data/");
         }
 
         [Test]

@@ -5,6 +5,13 @@ and bob up and down too fast and jerky as if they have no weight."*
 
 Charter: `HANDOFF-2026-09-05-hull-has-weight.md`. Base: `f2c7105b`.
 
+> **⚠ This is a dated MEASUREMENT RECORD, not a description of the current fleet.** The tables below
+> and in the two strip files are what was measured on `f2c7105b`, and they still name `FishingSkiff` —
+> a hull the owner retired on 2026-09-06 (Core `RetiredContentIds`). Her rows are left exactly as
+> measured, on purpose: editing a boat out of a record of a run that included her would make the
+> record a lie, and the ride numbers for the other hulls were derived alongside hers. Read the
+> shipped `BoatHullDef` assets for the fleet as it is now.
+
 ## What is in here
 
 | file | what it is |

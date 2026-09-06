@@ -95,9 +95,9 @@ namespace HiddenHarbours.Boats
                  "one place (ResolveDesignWaterlineMeters below) and a test pins that every shipped " +
                  "visual answers with exactly one of them.\n\n" +
                  "0 — the default, and the right answer for every sprite compass shipped so far — means " +
-                 "'this art is ALREADY drawn at her waterline': the hand-drawn FishingBoat_* compass " +
-                 "shares the hull's waterline pivot (see the conventions above), so she floats correctly " +
-                 "by riding the sea's lift with no sink at all, and 0 keeps that render byte-identical. " +
+                 "'this art is ALREADY drawn at her waterline': a compass that shares the hull's " +
+                 "waterline pivot (see the conventions above) floats correctly by riding the sea's lift " +
+                 "with no sink at all, and 0 keeps that render byte-identical. " +
                  "Set it only for sprite art whose origin is NOT the waterline.")]
         [Min(0f)] public float DesignWaterlineMeters = 0f;
 
@@ -130,9 +130,10 @@ namespace HiddenHarbours.Boats
                  "not +45°·i. The 3D rigs that bake the iso kits (dory, punt, skiffs) rotate the model CCW " +
                  "but LABEL the cells clockwise (N, NE, E...), so their sheets are mirrored: their 'E' cell " +
                  "is really a boat pointing West. This flag is the un-mirror, and it lives here — per " +
-                 "artwork — because the two art lineages genuinely disagree: the iso sheets are CCW, while " +
-                 "the older FishingBoat_* compass (8 separate hand-drawn files) is CW and CORRECT. A blanket " +
-                 "fix in the code would have fixed the first and broken the second. Default false = the CW " +
+                 "artwork — because the two art lineages genuinely disagree: the hand-exported iso sheets " +
+                 "are CCW, while the RigBaker outputs (the cape, the lobster) are CW and CORRECT, their " +
+                 "handedness having been measured and corrected at bake time. A blanket fix in the code " +
+                 "would fix the first and break the second. Default false = the CW " +
                  "convention, so no existing skin silently flips. Only the ART is affected: the boat's true " +
                  "heading, the wake and the spotlight always rode the real heading and were never wrong.")]
         public bool FacingsAreCounterClockwise = false;
@@ -140,8 +141,8 @@ namespace HiddenHarbours.Boats
         [Tooltip("The ELEVATION, in degrees above the horizon, of the camera this artwork was baked at — an ART " +
                  "FACT of the sheets, not a feel knob. Every iso rig (dory, punt, skiffs) bakes at 40. " +
                  "USE 90 FOR ART THAT IS NOT A RIG BAKE: 90 means a plan view — no foreshortening at all — " +
-                 "which is the honest answer for the hand-drawn FishingBoat_* compass (it never had a camera to " +
-                 "measure) and leaves its wake exactly where it has always been. Everything anchored to a point " +
+                 "which is the honest answer for artwork that never had a camera to measure, and leaves " +
+                 "its wake where a plan view puts it. Everything anchored to a point " +
                  "ON the drawn hull reads this: the wake plume at the transom, the bow spray at the cutwater, " +
                  "the outboard's rock pose. Those anchors are computed in honest top-down world metres, and " +
                  "this is the ONLY thing that says how the picture squashes them onto the screen — get it wrong " +
@@ -486,6 +487,39 @@ namespace HiddenHarbours.Boats
             def.OarStar = System.Array.Empty<Sprite>();
             def.MotorLower = System.Array.Empty<Sprite>();
             def.MotorUpper = System.Array.Empty<Sprite>();
+            return def;
+        }
+
+        /// <summary>
+        /// Build a throwaway skin binding from ANOTHER visual's compass — the DECOR-TIER reduction of a
+        /// shipped hull asset. Takes the four facts that make a facing compass READ CORRECTLY (the sprites,
+        /// the zero heading, the sheet's handedness, the bake elevation) and leaves every overlay block
+        /// empty, so a caller that wants a hull's PICTURE does not also inherit her rock grid, her oars and
+        /// her outboard.
+        ///
+        /// <para><b>Why this exists rather than a bare <c>Sprite[]</c>.</b> The two ART FACTS must travel
+        /// WITH the sprites or the compass ships mirrored. Every iso kit in this repo is baked
+        /// counter-clockwise and labelled clockwise (<c>BoatVisualLibraryBuilder.IsoSheetsAreCounterClockwise</c>),
+        /// while the bare-array overload above defaults to clockwise/plan-view — correct for the hand-drawn
+        /// compass it was written for, wrong for every sheet that has replaced it. The failure is SILENT at
+        /// north and south (drawn-minus-true is −2·heading, zero at N/S) and a full 180° at east and west,
+        /// which is exactly how it hid the first time. Copying the facts off the source asset keeps ONE
+        /// place where each is authored.</para>
+        ///
+        /// <para>The copy is deliberately a SPRITE — <see cref="Variant"/> stays at its default and
+        /// <see cref="HullMesh"/> stays null. A decor caller has no per-hull paint scheme to hand a mesh,
+        /// and the tint it does carry is a sprite-renderer colour (<c>BoatHullSkinner</c> writes
+        /// <c>options.Tint</c> onto the SpriteRenderer and nowhere else). See
+        /// <c>AmbientFleetDef.HullVisual</c> for the mesh path this defers.</para>
+        /// </summary>
+        public static BoatVisualDef CreateRuntimeFrom(BoatVisualDef source, int sortingOrder = 1)
+        {
+            if (source == null) return CreateRuntime(System.Array.Empty<Sprite>(), sortingOrder);
+
+            var def = CreateRuntime(source.Facings, sortingOrder, source.ZeroHeadingDegrees);
+            def.Id = "visual.runtime_from." + source.Id;
+            def.FacingsAreCounterClockwise = source.FacingsAreCounterClockwise;
+            def.ArtBakeElevationDegrees = source.ArtBakeElevationDegrees;
             return def;
         }
     }

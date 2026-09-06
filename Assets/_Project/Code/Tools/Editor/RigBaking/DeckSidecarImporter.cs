@@ -47,8 +47,8 @@ namespace HiddenHarbours.Tools.RigBaking
         /// <c>SportSkiffSingle/Twin</c>). Two paint builds of one hull share one deck, which is correct —
         /// paint does not move the sole.
         ///
-        /// <para><c>FishingBoat</c> is absent on purpose: she is the hand-drawn compass, has no rig and
-        /// therefore no measured deck, and keeps the deck-walk's greybox rectangle.</para>
+        /// <para>A hull with no rig has no measured deck, and keeps the deck-walk's greybox rectangle —
+        /// absence is data here, not a gap to fill in by hand.</para>
         /// </summary>
         static readonly IReadOnlyDictionary<string, string[]> VisualsBySidecar = BuildWiring();
 
