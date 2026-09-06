@@ -148,27 +148,11 @@ namespace HiddenHarbours.Tools.RigBaking
             return owned;
         }
 
-        /// <summary>Pose names in the rig's own order.</summary>
-        public static IReadOnlyList<string> PoseNames(IRigScriptHost host, string g)
-        {
-            string json = host.EvaluateString($"JSON.stringify(Object.keys({g}.POSES))");
-            var outp = new List<string>();
-            int i = 0;
-            while (i < json.Length)
-            {
-                if (json[i] == '"')
-                {
-                    int end = json.IndexOf('"', i + 1);
-                    if (end < 0) break;
-                    outp.Add(json.Substring(i + 1, end - i - 1));
-                    i = end + 1;
-                }
-                else i++;
-            }
-            if (outp.Count == 0)
-                throw new InvalidOperationException($"{g}.POSES yielded no names — rig changed shape?");
-            return outp;
-        }
+        /// <summary>Pose names in the rig's own order — <c>POSES</c> is an object, so its keys are
+        /// the order. Reads through the one shared parser rather than carrying a second copy of
+        /// it.</summary>
+        public static IReadOnlyList<string> PoseNames(IRigScriptHost host, string g) =>
+            FishingKitBaker.ReadStringArray(host, $"Object.keys({g}.POSES)");
 
         public static int PoseFrames(IRigScriptHost host, string g, string pose)
         {
