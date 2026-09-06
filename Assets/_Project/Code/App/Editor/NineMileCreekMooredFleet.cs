@@ -150,6 +150,10 @@ namespace HiddenHarbours.App.Editor
         /// there. The wall berths need none of it — they are a plan line, and they bare by ruling.</param>
         public static int Place(ITidalTerrain terrain)
         {
+            // ⭐ The berth line is PACKED from this register, and it is cached — so drop the cache
+            // before reading it, or a run after an owner edit lays the boats on yesterday's line.
+            NineMileCreekMainland.InvalidateBerthLine();
+
             var owners = LoadOwners();
             if (owners.Count == 0)
             {
@@ -193,6 +197,21 @@ namespace HiddenHarbours.App.Editor
                         $"{owner.BerthIndex}, which is the berth the PLAYER docks in (derived from the " +
                         "region's dock zone). Refused — she would arrive on top of him. Move the owner, " +
                         "not the dock.");
+                    continue;
+                }
+
+                // ⭐⭐ BERTH 0 IS THE PLAYER'S RESERVE, BY CONSTRUCTION. The wall's line is packed
+                // from the register in BerthIndex order with the player's berth first, so a wall index
+                // is a PLACE IN THE ORDER (1..N), not a slot in a table. An index of 0, a gap or a
+                // repeat does not merely misplace one boat — it shifts every berth east of her, and the
+                // bollards and the dredged trench with them.
+                if (!atFloat && owner.BerthIndex < 1)
+                {
+                    Debug.LogError(
+                        $"[NineMileCreekMooredFleet] '{owner.Id}' is authored into wall berth " +
+                        $"{owner.BerthIndex}. Berth 0 is the PLAYER'S reserve at the apron end " +
+                        $"({NineMileCreekMainland.PlayerBerthReserveMetres:0.0} m of wall kept clear for " +
+                        "his own boat), so the working fleet runs from 1. Refused.");
                     continue;
                 }
 
@@ -305,11 +324,10 @@ namespace HiddenHarbours.App.Editor
                             $"({LengthOf(owner):0.0} m long, {span}) and '{clashWith.Id}' at berth " +
                             $"{clashWith.BerthIndex} ({LengthOf(clashWith):0.0} m long, {clash}) share " +
                             $"{shared:0.00} m of wall — they would be drawn through one another. Refused " +
-                            "the second. A berth is a SPAN, not a point: the line's " +
-                            $"{NineMileCreekMainland.BerthSpacingMetres:0.0} m pitch is a BEAM pitch, and " +
-                            "a boat lying alongside spends her LENGTH on it. Rafting two deep is a real " +
-                            "thing this wharf does — but rafting is a second ROW off the wall, not two " +
-                            "hulls in one place. Move a BerthIndex; do not shorten the boat.");
+                            "the second. A berth is a SPAN, not a point, and the line is PACKED from " +
+                            "the hulls on it — so this can now only happen if two owners hold the same " +
+                            "index or the indices skip. Rafting two deep is a real thing this wharf does " +
+                            "— but rafting is a second ROW off the wall, not two hulls in one place.");
                         continue;
                     }
 

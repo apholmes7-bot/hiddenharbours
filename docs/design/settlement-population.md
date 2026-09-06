@@ -102,10 +102,10 @@ them — that slice re-homes two owners onto the float rather than adding any bo
 | owner | boat | moorage | shed (`LotIndex`) | deck figure | prosperity |
 |---|---|---|---|---|---|
 | Leo Arsenault | Lobster boat | quay wall, berth 1 | 0 | `SkipperIso` | 3 |
-| Marie Gallant | **Cape Islander** | quay wall, berth 4 | 1 | `DeckBossIso` | 3 |
-| Ross MacDonald | Lobster boat | quay wall, berth 10 | 2 | `HandIso` | 2 |
-| Yvette Doiron | Lobster boat | quay wall, berth 7 | 3 | `CutterIso` | 2 |
-| Hughie Campbell | Lobster boat | quay wall, berth 12 | 4 | ⚠️ **none** | 1 |
+| Marie Gallant | **Cape Islander** | quay wall, berth 2 | 1 | `DeckBossIso` | 3 |
+| Ross MacDonald | Lobster boat | quay wall, berth 4 | 2 | `HandIso` | 2 |
+| Yvette Doiron | Lobster boat | quay wall, berth 3 | 3 | `CutterIso` | 2 |
+| Hughie Campbell | Lobster boat | quay wall, berth 5 | 4 | ⚠️ **none** | 1 |
 | Celeste Bernard | Fishing skiff | **float**, berth 4 | 5 | `PackerIso` | 1 |
 | Dan Peters | Punt | **float**, berth 2 | 6 | `FisherIso` | 0 |
 | **Alma Boudreau** | **Console skiff** | **float**, berth 6 | **7** | `NanIso` | 1 |
@@ -113,16 +113,20 @@ them — that slice re-homes two owners onto the float rather than adding any bo
 **Eight boats. Five working hulls at the wall, three small craft on the float.** S3 and S4 move and
 spread them; neither adds one.
 
-> ⚠️ **The wall berths are SPANS, and that is why they read as scattered.** The owner played the
+> ⚠️ **The wall berths are SPANS, and the line is PACKED from the hulls on it.** The owner played the
 > creek on 2026-09-06 and found the wall boats drawn through one another. The berth line is
 > pitched at 5.5 m — a *beam* pitch, off the photographs — while the fleet lies **alongside** and
 > so spends its **length** on the line: 8.6 m for the two inshore boats, 12.0-12.9 m for the rest.
 > A berth is now the stretch of wall a hull occupies (half her length plus a fender either side of
 > her mark), the builder refuses a register whose spans overlap, and these four berths were
-> re-authored so five hulls fit between the player's berth and the end of the timber. Ross and
-> Yvette swap order along the wall: the two short boats go east, which is the only arrangement
-> that fits. ⚠️ **Moving one of these numbers now needs the arithmetic**, not a free index -
-> `NineMileCreekBerthLineTests` walks every pair and will say so.
+> re-authored. ⭐ **The owner then ruled (2026-09-06) that he wanted BOTH five working boats AND
+> his own berth kept clear**, which the old 14-mark, 5.5 m table could not give him: six spans need
+> 73.0 m and the wall has 84 m, but the lattice needed 14 pitches where only 12 were usable - and
+> its last mark could never hold a boat of any size. So the grid went. **A wall berth index is now a
+> PLACE IN THE ORDER (1..N), not a slot in a table**: berth 0 is the player's reserve at the apron
+> end, and each boat is laid against her neighbour at the fender gap. ⚠️ **These numbers must be
+> 1..N with no gaps and no repeats** - a gap does not merely misplace one boat, it shifts every
+> berth east of her, the bollards with them, and the dredged trench too.
 
 > ⭐ **Eight is what ships; TEN is still the M2 target** (ruling 8). This section counts the working
 > tree and must keep counting it — the last two boats are not in the register and nothing here

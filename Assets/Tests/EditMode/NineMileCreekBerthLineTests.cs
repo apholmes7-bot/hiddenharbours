@@ -207,19 +207,22 @@ namespace HiddenHarbours.Tests.EditMode
         private static NineMileCreekMainland.WallSpan SpanOf(BoatOwnerDef o) =>
             NineMileCreekMainland.BerthSpan(o.BerthIndex, NineMileCreekMooredFleet.LengthOf(o));
 
+        private static NineMileCreekMainland.WallSpan PlayerSpan() =>
+            NineMileCreekMainland.BerthSpan(0, NineMileCreekMainland.PlayerBerthReserveMetres);
+
         /// <summary>
         /// ⭐⭐ <b>THE GUARD THE OWNER ASKED FOR: no two hulls on this wall share any of it.</b>
         ///
-        /// <para>What he saw at 06:28 was five boats alongside the north wall drawn through one another.
-        /// The cause is arithmetic and not art: the line is pitched at
-        /// <see cref="NineMileCreekMainland.BerthSpacingMetres"/> = 5.5 m — a <i>beam</i> pitch, taken
-        /// from photographs of boats "rafted two deep in places" — while <c>MooredHeadingDegrees</c>
-        /// lays this fleet ALONGSIDE, so each boat spends her LENGTH on the line, and this fleet is
-        /// 8.6–12.9 m long. Rafting is a second ROW off the wall; it is not two hulls in one place, and
-        /// nothing before this walked the register asking that question.</para>
+        /// <para>What he saw at 06:28 was five boats alongside the north wall drawn through one another,
+        /// and the cause was arithmetic and not art: the line was a table of <b>14 marks at 5.5 m</b> —
+        /// a <i>beam</i> pitch off the photographs — while <c>MooredHeadingDegrees</c> lays this fleet
+        /// ALONGSIDE, so each boat spends her LENGTH on it, and this fleet is 8.6–12.9 m long.</para>
         ///
-        /// <para>Asserted on the SHIPPED register rather than a constructed one, because the defect was
-        /// shipped: the register is the thing that has to be right.</para>
+        /// <para><b>The line is packed now, so an overlap should be impossible by construction</b> — and
+        /// that is exactly why this stays. It is the guard that says the construction is still true:
+        /// the packing, the fender gap and the register all agree. Walked over EVERY pair rather than
+        /// neighbours, because the register the owner played overlapped in four pairs and one of them
+        /// was two berths apart.</para>
         /// </summary>
         [Test]
         public void NoTwoHullsOnTheWallShareAnyOfIt()
@@ -232,9 +235,13 @@ namespace HiddenHarbours.Tests.EditMode
             var report = new StringBuilder();
             report.AppendLine(
                 $"The wall runs x {NineMileCreekMainland.MooringFaceWestX:0.0} → " +
-                $"{NineMileCreekMainland.MooringFaceEastX:0.0} m and the pitch is " +
-                $"{NineMileCreekMainland.BerthSpacingMetres:0.0} m. Each hull's span is half her length " +
-                $"plus a {NineMileCreekMainland.BerthFenderMetres:0.0} m fender either side of her mark:");
+                $"{NineMileCreekMainland.MooringFaceEastX:0.0} m; the berth line is PACKED from " +
+                $"x {NineMileCreekMainland.BerthLineWestX:0.0} at the fender gap. Each hull's span is " +
+                $"half her length plus a {NineMileCreekMainland.BerthFenderMetres:0.0} m fender either " +
+                "side of her mark:");
+            report.AppendLine(
+                $"  berth  0  {"(the player's reserve)",-28} " +
+                $"{NineMileCreekMainland.PlayerBerthReserveMetres,5:0.0} m  {PlayerSpan()}");
 
             for (int i = 0; i < byPlace.Count; i++)
             {
@@ -260,78 +267,136 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsEmpty(offenders,
                 $"{offenders.Count} pair(s) of hulls are authored into the same stretch of wall:\n" +
                 string.Join("\n", offenders) + "\n\n" + report +
-                "\nFix by moving a BerthIndex — a 12 m hull needs about two and a half berths at this " +
-                "pitch, and the Cape Islander three. Do NOT close the gap by narrowing the fender or " +
-                "shortening a boat: both of those are measurements, not budget.");
+                "\nThe line is packed, so this can only happen if two owners hold the same BerthIndex " +
+                "or the indices skip — the packing lays berth i against berth i-1, and a gap in the " +
+                "order puts two boats on one length of wall.");
+        }
+
+        /// <summary>
+        /// ⭐⭐ <b>THE PLAYER'S BERTH IS RESERVED, AND NOBODY REACHES INTO IT</b> — the owner's ruling
+        /// of 2026-09-06, "five working boats, keep my berth clear anyway", which is what forced the
+        /// grid out.
+        ///
+        /// <para>Keeping his berth clear used to mean "no owner is authored at index 0", which is a
+        /// statement about a table and not about the water: Leo's span crossed the mark while the mark
+        /// itself was empty. Now the reserve is a <b>span</b> at the apron end, sized for
+        /// <see cref="NineMileCreekMainland.PlayerBerthReserveMetres"/>, and the fleet is packed east
+        /// of it — so "clear" is a measurement.</para>
+        /// </summary>
+        [Test]
+        public void ThePlayersBerthIsReservedAndNobodyReachesIntoIt()
+        {
+            var reserve = PlayerSpan();
+
+            Assert.That(reserve.Min, Is.EqualTo(NineMileCreekMainland.BerthLineWestX).Within(1e-3f),
+                $"the reserve must start at the west end of the line ({NineMileCreekMainland.BerthLineWestX:0.00}) " +
+                "— the owner asked for it at the APRON end, which is where he arrives.");
+
+            Assert.That(reserve.Metres,
+                Is.EqualTo(NineMileCreekMainland.PlayerBerthReserveMetres
+                           + 2f * NineMileCreekMainland.BerthFenderMetres).Within(1e-3f),
+                "the reserve is his largest hull plus a fender either side, and nothing else");
+
+            foreach (var o in WallOwners())
+            {
+                Assert.That(o.BerthIndex, Is.GreaterThan(0),
+                    $"'{o.Id}' is authored into berth 0, which is the player's reserve");
+
+                float shared = SpanOf(o).OverlapWith(reserve);
+                Assert.That(shared, Is.LessThanOrEqualTo(1e-4f),
+                    $"'{o.Id}' lies {SpanOf(o)} and reaches {shared:0.00} m into the player's reserve " +
+                    $"({reserve}). His berth is a SPAN, not a mark: a boat whose bow crosses it is in " +
+                    "his way whether or not she holds his index.");
+            }
+
+            Assert.That(NineMileCreekMooredFleet.PlayerBerthIndex(), Is.EqualTo(0),
+                "the berth nearest the dock zone must be the reserve itself — if it is not, the region " +
+                "has two ideas about where the player docks, and the derivation is the one that decides.");
+        }
+
+        /// <summary>
+        /// ⭐ <b>THE LINE IS PACKED FROM THE HULLS ON IT — which is what "fix the grid" bought.</b>
+        /// Consecutive spans abut exactly, so between two hulls there is precisely two fenders of clear
+        /// water: no berth is wider than the boat in it, and none is narrower. If this fails, the
+        /// packing has grown a gap or an overlap that the pairwise guard above may not localise.
+        /// </summary>
+        [Test]
+        public void EveryBerthIsCutForTheBoatThatLiesInIt()
+        {
+            float[] lengths = NineMileCreekMainland.BerthLengths();
+            float[] centres = NineMileCreekMainland.BerthCentres();
+
+            Assert.That(centres.Length, Is.EqualTo(lengths.Length));
+            Assert.That(NineMileCreekMainland.BerthCount, Is.EqualTo(lengths.Length),
+                "BerthCount is an OUTPUT now — one plus however many boats the register moors here");
+            Assert.That(NineMileCreekMainland.BerthCount, Is.EqualTo(1 + WallOwners().Count),
+                "the wall has a berth for the player and one per wall owner, and no spare marks: the " +
+                "table of 14 is gone, and with it the mark that could never hold a boat");
+
+            float edge = NineMileCreekMainland.BerthLineWestX;
+            for (int i = 0; i < lengths.Length; i++)
+            {
+                float half = NineMileCreekMainland.BerthHalfSpanFor(lengths[i]);
+                Assert.That(centres[i] - half, Is.EqualTo(edge).Within(1e-3f),
+                    $"berth {i} starts at {centres[i] - half:0.00} but the previous span ended at " +
+                    $"{edge:0.00} — the line has a gap or a lap in it.");
+                edge = centres[i] + half;
+            }
+
+            Assert.That(edge, Is.LessThanOrEqualTo(NineMileCreekMainland.MooringFaceEastX + 1e-4f),
+                $"the packed line ends at x = {edge:0.00} and the wall ends at " +
+                $"{NineMileCreekMainland.MooringFaceEastX:0.0} — it no longer fits the timber.");
         }
 
         /// <summary>
         /// ⭐⭐ <b>THE NEGATIVE CONTROL — and it asserts its own premise before it asserts anything
-        /// else.</b> A guard never seen to fire is a guard nobody has tested; a control that fires on a
-        /// scenario the shipped world cannot produce has tested nothing either. So this states, in
-        /// order: the pitch really is 5.5 m, adjacent berths really are one pitch apart, and a 12 m hull
-        /// really is a boat this register keeps — and only then puts two of them side by side and
-        /// requires the overlap to be found.
-        ///
-        /// <para>The positive half is in the same test on purpose: an <c>OverlapWith</c> that returned a
-        /// positive number for every pair would pass the negative half and be worthless.</para>
+        /// else.</b> The packing makes overlaps impossible by construction, which is exactly the
+        /// condition under which a pairwise guard quietly becomes a green no-op. So this states, in
+        /// order: the shipped line really has neighbours, they really do NOT overlap — and only then
+        /// lengthens one of them into the next and requires the overlap to be found, and to equal the
+        /// arithmetic rather than merely be positive.
         /// </summary>
         [Test]
-        public void TwoTwelveMetreHullsAtAdjacentBerthsAreCaught()
+        public void AHullLengthenedIntoHerNeighbourIsCaught()
         {
-            const float TwelveMetreHull = 12f;
+            var byPlace = WallOwners().OrderBy(o => SpanOf(o).Min).ToList();
+            Assert.That(byPlace.Count, Is.GreaterThanOrEqualTo(2),
+                "fewer than two boats on the wall: this control has no neighbours to test with");
 
-            // Premise 1 — the pitch this control is about is the pitch the region ships.
-            Assert.That(NineMileCreekMainland.BerthSpacingMetres, Is.EqualTo(5.5f).Within(1e-4f),
-                "this control is written against a 5.5 m pitch. The pitch has moved, so re-derive the " +
-                "control rather than trusting the numbers it prints.");
+            var west = byPlace[0];
+            var east = byPlace[1];
+            var westSpan = SpanOf(west);
+            var eastSpan = SpanOf(east);
 
-            // Premise 2 — "adjacent" means one pitch apart on the built line, not in the author's head.
-            float apart = NineMileCreekMainland.BerthPos(6).x - NineMileCreekMainland.BerthPos(5).x;
-            Assert.That(apart, Is.EqualTo(NineMileCreekMainland.BerthSpacingMetres).Within(1e-4f),
-                "berths 5 and 6 are not one pitch apart, so this control is not testing adjacency");
+            // Premise: as shipped, these two do NOT overlap. Without this the control below would
+            // "pass" on a line that was already broken.
+            Assert.That(westSpan.OverlapWith(eastSpan), Is.EqualTo(0f).Within(1e-4f),
+                $"'{west.Id}' {westSpan} and '{east.Id}' {eastSpan} already share wall, so a control " +
+                "that lengthens one of them proves nothing");
 
-            // Premise 3 — a 12 m hull is a boat that is actually kept here, not a hypothetical one.
-            var twelves = WallOwners()
-                .Where(o => NineMileCreekMooredFleet.LengthOf(o) >= TwelveMetreHull - 1e-3f)
-                .Select(o => $"{o.Id} ({NineMileCreekMooredFleet.LengthOf(o):0.0} m)")
-                .ToList();
-            Assert.IsNotEmpty(twelves,
-                "no hull on this wall is 12 m or longer, so a control built on one is testing a boat " +
-                "the register does not keep. Re-derive it from the fleet that is actually there.");
+            // The control: give the western boat two more metres of hull than she has.
+            const float Extra = 2f;
+            float loaded = NineMileCreekMooredFleet.LengthOf(west) + Extra;
+            var stretched = NineMileCreekMainland.BerthSpan(west.BerthIndex, loaded);
+            float shared = stretched.OverlapWith(eastSpan);
 
-            // The control itself: two of them, one pitch apart.
-            var a = NineMileCreekMainland.BerthSpan(5, TwelveMetreHull);
-            var b = NineMileCreekMainland.BerthSpan(6, TwelveMetreHull);
-            float span = TwelveMetreHull + 2f * NineMileCreekMainland.BerthFenderMetres;
-            float expected = span - NineMileCreekMainland.BerthSpacingMetres;
+            Assert.That(shared, Is.GreaterThan(0f),
+                $"'{west.Id}' lengthened by {Extra:0.0} m spans {stretched} against '{east.Id}' at " +
+                $"{eastSpan} and was NOT reported as overlapping. This call is the one the builder " +
+                "refuses on; if it cannot see this, it cannot see the register the owner played.");
 
-            Assert.That(a.OverlapWith(b), Is.GreaterThan(0f),
-                $"two {TwelveMetreHull:0.0} m hulls at berths 5 and 6 ({a} and {b}) were NOT reported as " +
-                "overlapping. The gate the builder refuses on is this very call — if it cannot see this, " +
-                $"it cannot see the register the owner played (real hulls this long: " +
-                $"{string.Join(", ", twelves)}).");
-
-            Assert.That(a.OverlapWith(b), Is.EqualTo(expected).Within(1e-3f),
-                $"the overlap must BE the arithmetic and not merely some positive number: " +
-                $"{TwelveMetreHull:0.0} m of hull plus two " +
-                $"{NineMileCreekMainland.BerthFenderMetres:0.0} m fenders is {span:0.0} m of span on a " +
-                $"{NineMileCreekMainland.BerthSpacingMetres:0.0} m pitch, so {expected:0.00} m is shared.");
-
-            // …and the positive half: far enough apart, the same call must report nothing at all.
-            int clearBerths = Mathf.CeilToInt(span / NineMileCreekMainland.BerthSpacingMetres);
-            var far = NineMileCreekMainland.BerthSpan(5 + clearBerths, TwelveMetreHull);
-            Assert.That(a.OverlapWith(far), Is.EqualTo(0f).Within(1e-4f),
-                $"{a} and {far} are {clearBerths} berths apart and do not touch. A gate that reported an " +
-                "overlap between them would refuse every register ever authored — and the negative half " +
-                "above would still have passed.");
+            Assert.That(shared, Is.EqualTo(Extra * 0.5f).Within(1e-3f),
+                $"the overlap must BE the arithmetic: half of {Extra:0.0} m of extra hull reaches east " +
+                $"(the span grows about its own centre), so {Extra * 0.5f:0.00} m is shared — not " +
+                "merely some positive number.");
         }
 
         /// <summary>
         /// <b>…and nobody is moored off the END of the wall.</b> The span makes this askable for the
-        /// first time: a berth mark inside the table said nothing about a 12.9 m hull whose bow is past
-        /// the last of the timber. Berth 13's mark is at x = 169.5 and the wall stops at x = 170, so the
-        /// question is not academic — the packing this PR authors avoids it, and this is what says so.
+        /// first time, and asking it is what found the defect that forced the grid out: the old table's
+        /// last mark stood at x = 169.5 with the wall ending at 170, so a hull there needed
+        /// <c>169.5 + L/2 + fender</c> — past the end for EVERY length, even zero. Fourteen marks of
+        /// which thirteen could ever be used.
         /// </summary>
         [Test]
         public void NoHullIsMooredPastTheEndOfTheWall()
@@ -347,8 +412,7 @@ namespace HiddenHarbours.Tests.EditMode
                     "that is not there.");
                 Assert.That(s.Max, Is.LessThanOrEqualTo(east + 1e-4f),
                     $"'{o.Id}' spans {s} but the wall ends at x = {east:0.0}, so {s.Max - east:0.00} m " +
-                    "of her is past the end of it. Move her west: the berth table runs further east than " +
-                    "the wall can carry a long hull.");
+                    "of her is past the end of it.");
             }
         }
     }

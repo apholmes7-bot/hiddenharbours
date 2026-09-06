@@ -706,14 +706,92 @@ namespace HiddenHarbours.App.Editor
 
         // --- the wharf PLAN, for Phase B ---------------------------------------------------------------
 
-        /// <summary>Berths along the north wall's south face: 14 at 5.5 m spacing, which is the fleet in
-        /// the photographs (twelve to fourteen boats, rafted two deep in places). Phase B lays the finger
-        /// piers and the mooring hardware on this line; Phase A only promises the water is there.</summary>
-        public const int BerthCount = 14;
-        public const float BerthSpacingMetres = 5.5f;
-        /// <summary>The west end of the berth line — east of the west wall's own deck so no boat is
-        /// moored on dry land. The line runs x = 98 → 169.5, inside the north wall's 86 → 170.</summary>
-        public const float FirstBerthX = 98f;
+        /// <summary>
+        /// ⭐⭐⭐ <b>THE BERTH LINE IS A PACKED RUN OF SPANS, NOT A MARK TABLE — owner ruling
+        /// 2026-09-06, "fix the grid".</b>
+        ///
+        /// <para>It used to be <b>14 marks at 5.5 m</b>, a pitch taken from photographs of boats "rafted
+        /// two deep in places". But this fleet lies <b>alongside</b>, so what a boat spends on the line
+        /// is her LENGTH — 8.6 m to 12.9 m — and rounding every hull up to whole 5.5 m pitches wasted
+        /// most of a pitch per pair. The measured cost: six spans (the player's berth and five working
+        /// boats) need <b>73.0 m</b> and the wall offers <b>84 m</b>, yet on the lattice they needed
+        /// <b>14 pitches where only 12 were usable</b>. The wall had room; the table did not.</para>
+        ///
+        /// <para>⚠️ <b>AND THE LAST MARK COULD NEVER HOLD A BOAT.</b> Mark 13 stood at x = 169.5 with
+        /// the wall ending at x = 170, so a hull there needed <c>169.5 + L/2 + fender</c> — over the end
+        /// for <i>every</i> length, even zero. The region shipped 14 marks of which 13 could ever be
+        /// used, and nothing said so. That is the finding that forced this.</para>
+        ///
+        /// <para><b>So the boats are packed and the marks are DERIVED from where they lie.</b> Berth 0
+        /// is the player's, at the apron end; each following berth is the next hull in
+        /// <c>BoatOwnerDef.BerthIndex</c> order, laid against her neighbour at the fender gap. Bollards,
+        /// tyres and ladders come off these centres (<see cref="NineMileCreekWharf.Fittings"/>), so the
+        /// hardware follows the fleet instead of the fleet being cut to fit the hardware.
+        /// <c>BerthSpacingMetres</c> is gone — there is no one pitch to name — and
+        /// <see cref="BerthCount"/> is now an OUTPUT: one plus however many boats the register moors
+        /// here.</para>
+        /// </summary>
+        public const float PlayerBerthReserveMetres = 12.9f;
+
+        /// <summary>The west end of the berth line — the west wall's own east face, read off the wall so
+        /// that re-siting it takes the fleet with it. No boat is moored on the apron's deck.</summary>
+        public static float BerthLineWestX => WestWallFill.Center.x + WestWallFill.HalfSize.x;
+
+        /// <summary>
+        /// The length each berth is cut for, west to east: index <b>0 is the PLAYER'S</b>
+        /// (<see cref="PlayerBerthReserveMetres"/>, at the apron end), then each wall owner in
+        /// <c>BerthIndex</c> order.
+        ///
+        /// <para>⚠️ <b>This is the one place the region's GEOMETRY reads the REGISTER</b>, and it has to:
+        /// a packed line is a function of the hulls on it. Which means a boat swapped for a longer one
+        /// moves every berth east of her, the bollards with them, and — through
+        /// <see cref="BerthTrenchWaypoints"/> — the dredged trench and the committed seabed bake.
+        /// Cached, because the terrain walks this line thousands of times per bake.</para>
+        /// </summary>
+        public static float[] BerthLengths()
+        {
+            var wall = new List<HiddenHarbours.Boats.BoatOwnerDef>();
+            foreach (var o in NineMileCreekMooredFleet.LoadOwners())
+                if (o != null && !o.LiesAtTheFloat) wall.Add(o);
+            wall.Sort((a, b) => a.BerthIndex.CompareTo(b.BerthIndex));
+
+            var lengths = new float[1 + wall.Count];
+            lengths[0] = PlayerBerthReserveMetres;
+            for (int i = 0; i < wall.Count; i++)
+                lengths[i + 1] = NineMileCreekMooredFleet.LengthOf(wall[i]);
+            return lengths;
+        }
+
+        private static float[] _berthCentres;
+
+        /// <summary>Drop the cached line. Call after editing the register — the builder does.</summary>
+        public static void InvalidateBerthLine() => _berthCentres = null;
+
+        /// <summary>
+        /// The centre of every berth, west to east, packed at the fender gap from
+        /// <see cref="BerthLineWestX"/>. Each hull's span is half her length plus a fender either side,
+        /// and neighbouring spans abut — so between two hulls there is exactly two fenders of clear
+        /// water, and no berth is wider than the boat that lies in it.
+        /// </summary>
+        public static float[] BerthCentres()
+        {
+            if (_berthCentres != null) return _berthCentres;
+
+            float[] lengths = BerthLengths();
+            var centres = new float[lengths.Length];
+            float x = BerthLineWestX;
+            for (int i = 0; i < lengths.Length; i++)
+            {
+                float half = BerthHalfSpanFor(lengths[i]);
+                centres[i] = x + half;
+                x = centres[i] + half;
+            }
+            return _berthCentres = centres;
+        }
+
+        /// <summary>How many berths the wall has — an OUTPUT now: the player's, plus one per owner the
+        /// register moors here. It is no longer a number anybody can type.</summary>
+        public static int BerthCount => BerthCentres().Length;
 
         /// <summary>
         /// ⭐ <b>THE WALL'S OWN FACE (y = 87) — taken from the wall rather than typed beside it.</b>
@@ -743,10 +821,13 @@ namespace HiddenHarbours.App.Editor
             (halfBeamMetres > 0f ? halfBeamMetres : WidestResidentBeamMetres * 0.5f) + BerthFenderMetres;
 
         /// <summary>Centre of berth <paramref name="index"/> (0-based) for a hull of the given half-beam.
-        /// The x is the line; the y is <i>her</i> standoff.</summary>
-        public static Vector2 BerthPos(int index, float halfBeamMetres) =>
-            new Vector2(FirstBerthX + BerthSpacingMetres * Mathf.Clamp(index, 0, BerthCount - 1),
-                        MooringFaceY - BerthStandoffFor(halfBeamMetres));
+        /// The x is where the packing put her; the y is <i>her</i> standoff.</summary>
+        public static Vector2 BerthPos(int index, float halfBeamMetres)
+        {
+            float[] centres = BerthCentres();
+            return new Vector2(centres[Mathf.Clamp(index, 0, centres.Length - 1)],
+                               MooringFaceY - BerthStandoffFor(halfBeamMetres));
+        }
 
         /// <summary>
         /// Centre of berth <paramref name="index"/> on the <b>authored</b> line — the widest resident's
@@ -762,8 +843,7 @@ namespace HiddenHarbours.App.Editor
         public static Vector2 BerthPos(int index) => BerthPos(index, 0f);
 
         /// <summary>
-        /// The first berth's centre on the <b>authored</b> line. Derived rather than stored, so the
-        /// standoff has exactly one definition.
+        /// The first berth's centre on the <b>authored</b> line — <b>the player's</b>, at the apron end.
         ///
         /// <para>⚠️⚠️ <b>THIS IS NOT "WHERE A BOAT LIES", AND IT USED TO BE.</b> Before S1b the berth
         /// line was a uniform 2 m off the face and this was every hull's berth; it now carries the

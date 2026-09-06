@@ -310,10 +310,21 @@ namespace HiddenHarbours.App.Editor
         /// <see cref="HiddenHarbours.World.FloatCleat"/>s, which read that height off the float itself
         /// instead of carrying a fixed one that would be wrong at every hour but two.</para>
         /// </summary>
+        /// <summary>
+        /// How far apart the float's cleats stand — <b>5.5 m</b>.
+        ///
+        /// <para>⚠️ <b>This used to read the WALL's berth pitch, and the wall no longer has one</b>
+        /// (owner ruling 2026-09-06: the berth line is a packed run of spans, not a mark table). The
+        /// number is kept because it is the spacing the float was drawn and baked at — it is now the
+        /// FLOAT's own, the same correction <see cref="MooredStandoffMetres"/> needed for the same
+        /// reason.</para>
+        /// </summary>
+        public const float FloatCleatSpacingMetres = 5.5f;
+
         public static List<Vector2> FloatCleatPositions()
         {
             var list = new List<Vector2>();
-            float spacing = NineMileCreekMainland.BerthSpacingMetres;
+            float spacing = FloatCleatSpacingMetres;
             float run = NineMileCreekMainland.FloatRunLengthMetres;
             int count = Mathf.Max(1, Mathf.FloorToInt(run / spacing));
             for (int i = 0; i < count; i++)
@@ -327,7 +338,8 @@ namespace HiddenHarbours.App.Editor
         // -------------------------------------------------------------------------------------
         // ⭐ THE PHOTOGRAPH IS TWO MOORINGS, NOT ONE. Small craft lie on the float fingers in the middle
         // of the bullpen; working boats lie against the tall quay walls. The wall's berth line has been
-        // authored since A-1 (14 at 5.5 m, NineMileCreekMainland.BerthPos); this is the OTHER table, and
+        // authored since A-1 (now a PACKED RUN of spans, NineMileCreekMainland.BerthPos — it was 14
+        // marks at 5.5 m until the owner ruled the grid out); this is the OTHER table, and
         // it is DERIVED from the float rather than typed beside it, so re-siting or re-cutting the float
         // takes its boats with it instead of leaving them lying in open water where a dock used to be.
 
