@@ -60,6 +60,20 @@ namespace HiddenHarbours.Art
                  "~0.9, a coastal packet several times that.")]
         [Min(0.05f)] [SerializeField] private float _radiusMeters = 0.9f;
 
+        [Tooltip("Metres from the hull's ORIGIN back to her transom, where the churn is actually shed. " +
+                 "0 lays the trail at the origin — amidships — which is the owner's 2026-09-04 defect: " +
+                 "\"the foam seem to come from the cetnre of a boat when turning and not accuratly from " +
+                 "the stern\". On a turn the centre traces a tighter arc than the transom, so the trail " +
+                 "springs from her middle. Configured from the hull def by the presentation service; a " +
+                 "hull whose stern has never been measured keeps 0 and is unchanged (absence is data).")]
+        [Min(0f)] [SerializeField] private float _sternOffsetMeters;
+
+        [Tooltip("The elevation the hull's art was baked at, degrees. The stern is a distance ON THE " +
+                 "WATER, and a 3/4 camera draws that distance shorter to the north than to the east — so " +
+                 "the offset above is foreshortened exactly as the artwork is, or the trail would breathe " +
+                 "toward and away from the transom as she turns. 90 = plan view = no foreshortening.")]
+        [Range(1f, 90f)] [SerializeField] private float _bakeElevationDegrees = 90f;
+
         [Tooltip("Move further than this in ONE frame and it is treated as a teleport (a scene load, " +
                  "a respawn, a debug warp), not as way through the water: the history re-primes and " +
                  "nothing is laid. Without it a teleport paints one capsule of foam straight across " +
@@ -119,6 +133,34 @@ namespace HiddenHarbours.Art
             _radiusMeters = Mathf.Max(0.05f, halfBeamMeters);
         }
 
+        /// <summary>
+        /// Where this hull sheds her churn: <paramref name="sternOffsetMeters"/> back from the origin along
+        /// her heading, projected at <paramref name="bakeElevationDegrees"/>. Configured from the hull def
+        /// the same way the radius is — Art must not reach into Boats for a hull's geometry (rule 4), so
+        /// the number arrives as data.
+        /// </summary>
+        public void ConfigureStern(float sternOffsetMeters, float bakeElevationDegrees)
+        {
+            _sternOffsetMeters = Mathf.Max(0f, sternOffsetMeters);
+            _bakeElevationDegrees = Mathf.Clamp(bakeElevationDegrees, 1f, 90f);
+        }
+
+        /// <summary>
+        /// The point the trail is laid at this frame: her TRANSOM, in world space.
+        ///
+        /// <para>The offset is foreshortened in Y by <c>sin(bakeElevation)</c> — the same projection the
+        /// hull art itself is drawn under. Without it the anchor would sit the full distance astern when
+        /// she heads east and too far astern when she heads north, and the gap between hull and foam would
+        /// open and close through every turn. (The plume anchor paid for this lesson already: "not even
+        /// connected to it and way off to the stern".)</para>
+        ///
+        /// <para>At <c>_sternOffsetMeters</c> 0 this returns <c>transform.position</c> exactly, which is
+        /// the shipped behaviour for any hull whose stern has not been measured.</para>
+        /// </summary>
+        private Vector2 SternWorld()
+            => FoamBuffer.SternWorld((Vector2)transform.position, (Vector2)transform.up,
+                                     _sternOffsetMeters, _bakeElevationDegrees);
+
         private void OnEnable()
         {
             _primed = false;
@@ -139,7 +181,11 @@ namespace HiddenHarbours.Art
         private void LateUpdate()
         {
             float dt = Time.deltaTime;
-            var position = (Vector2)transform.position;
+            // ⚠️ The TRANSOM, not the origin. This one line is half of the owner's 2026-09-04 defect:
+            // the churn is shed where the hull leaves the water, and on a turn her centre and her transom
+            // trace different arcs. Everything downstream (the depth gate, the speed-through-water, the
+            // swept capsule) is unchanged and simply follows the point that is now correct.
+            var position = SternWorld();
 
             var env = GameServices.Environment;
             IGameClock clock = GameServices.Clock;

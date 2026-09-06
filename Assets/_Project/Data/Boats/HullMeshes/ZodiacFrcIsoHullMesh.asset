@@ -428,3 +428,4 @@ MonoBehaviour:
   RestingDraftMeters: 0.3
   WatertightDeckHeightMeters: 0.4
   WatertightHalfBeamMeters: 1.52
+  WakeSternOffsetMeters: 3.33

@@ -244,6 +244,16 @@ namespace HiddenHarbours.Core
                  "re-opens far-rail flooding — the storm acceptance adjudicates.")]
         [Min(0f)] public float WatertightHalfBeamMeters = 0f;
 
+        [Tooltip("METRES FROM THE HULL'S ORIGIN BACK TO HER TRANSOM — where she actually sheds her " +
+                 "churn. The foam trail is laid here rather than at the origin; 0 lays it amidships, " +
+                 "which is the owner's 2026-09-04 defect (\"the foam seem to come from the cetnre of a " +
+                 "boat when turning and not accuratly from the stern\") — on a turn the centre traces a " +
+                 "tighter arc than the transom. Half the waterline length is the honest number for a " +
+                 "hull whose origin sits amidships. GAME-SIDE like RestingDraftMeters and the watertight " +
+                 "pair: the mesh baker never writes it, so it survives a re-bake. 0 = never measured, " +
+                 "and that hull keeps today's trail rather than a guessed one (absence is data).")]
+        [Min(0f)] public float WakeSternOffsetMeters = 0f;
+
         [Tooltip("THE LAMPS THIS HULL CARRIES (ADR 0016) — her navigation lights and her cabin " +
                  "glow, each at a point in her OWN rig metres (+x starboard, +y bow, +z up from " +
                  "the keel: the frame the deck polygons, the fitting pivots and the interior shell " +
