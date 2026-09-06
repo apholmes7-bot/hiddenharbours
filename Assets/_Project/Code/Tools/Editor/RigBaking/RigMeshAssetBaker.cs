@@ -366,9 +366,32 @@ namespace HiddenHarbours.Tools.RigBaking
             {
                 string[] keys = { "sloop30", "sloop88" };
                 var hulls = new List<FleetHull>(keys.Length);
-                foreach (string k in keys) hulls.Add(HullMeshFleet.Get(k));
+                foreach (string k in keys)
+                {
+                    if (!HullMeshFleet.TryGet(k, out FleetHull hull))
+                        throw new InvalidOperationException(BlockedReport(k));
+                    hulls.Add(hull);
+                }
                 return hulls;
             }
+        }
+
+        /// <summary>
+        /// Why there is no sloop to bake — read off <see cref="HullMeshFleet.BakeBlocked"/> so the
+        /// person who clicked the menu item gets the measured upstream ask instead of a
+        /// <c>KeyNotFoundException</c> naming a key they have never heard of.
+        /// </summary>
+        static string BlockedReport(string key)
+        {
+            var sb = new StringBuilder(
+                $"'{key}' is not in HullMeshFleet.Hulls: the sail rig kit's hulls are landed and " +
+                "registered, but their mesh bake is BLOCKED UPSTREAM and the block is measured, not " +
+                "assumed.\n\n");
+            foreach (var kv in HullMeshFleet.BakeBlocked) sb.Append($"  · {kv.Key}\n      {kv.Value}\n");
+            sb.Append("\nThe fix is in docs/art/rigs/** (the art director's lane) — do not default the " +
+                      "untagged faces to 'hull' here, and do not patch the rig. When the rigs land " +
+                      "stamped, delete their BakeBlocked entries and this entry point works unchanged.");
+            return sb.ToString();
         }
 
         [MenuItem(RigMeshGate.MenuRoot + "/Bake the 2 sloop hull meshes", priority = 225)]

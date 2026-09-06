@@ -32,7 +32,11 @@ namespace HiddenHarbours.Tools.RigBaking
     /// </summary>
     public static class SailPolarImporter
     {
-        const string SidecarFolder = "docs/art/rigs/gameplay";
+        // ⚠️ The SAIL subfolder, not the parent — see docs/art/rigs/gameplay/sail/README.md.
+        // The parent is swept by DeckSidecarImportParityTests, whose last assertion is that every
+        // deck it imports is worn by a hull; the sloops have no visual while their mesh bake is
+        // blocked upstream. They move up with the bake, and this constant moves with them.
+        const string SidecarFolder = "docs/art/rigs/gameplay/sail";
         const string PolarFolder = "Assets/_Project/Data/Boats/SailPolars";
 
         static string RepoRoot => Directory.GetParent(Application.dataPath)!.FullName;

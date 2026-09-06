@@ -314,47 +314,86 @@ namespace HiddenHarbours.Tools.RigBaking
                      "SportSkiffMk2Iso", "sport_skiff_mk2_iso",
                      "sport skiff Mk2 (~7.0 m, glass — the reshaped hull)"),
 
-            // ---- the SAIL RIG KIT (owner drop of 2026-09-06) — the first sails in the fleet ------
-            //
-            // ⚠️ THE FIRST ROWS WHOSE RIG IS NOT AT THE TOP OF docs/art/rigs/. The kit ships two
-            // READMEs, its writer (_sailKit.js) and its stamp script beside the rigs, so it lands as
-            // a folder. DeckSidecarReader.ResolveRigPath resolves a sidecar's named rig flat FIRST
-            // and only then searches the tree, so no committed hull's resolution moved.
-            //
-            // ⚠️ MESH-ONLY, AND FOR THESE TWO THAT IS NOT A CHOICE.
-            //   · The 88's cell is 1072×1504 — 6.4× the Cape Islander's area and the largest in the
-            //     game. A 32-facing sheet of her runs past the texture size cap, and past it Unity
-            //     slices wrong rather than refusing.
-            //   · Both hulls' pictures are a POSE, not a frame: hoist over eleven steps draws eleven
-            //     distinct pictures, and so does furl (measured, V8). A sheet set that covered the
-            //     sail states as well as the facings is not a bigger sheet, it is a different idea.
-            //
-            // ⚠️ WHAT THE MESH ACTUALLY GETS, and it is less than the picture — MEASURED, V8:
-            // `faces()` returns the rig's static `F`, which is byte-identical (same array identity,
-            // same fingerprint) after renders at opposite poses. It is the BODY: hull, deck,
-            // coachroof, cockpit, cabin, spars, standing rigging.
-            //   · sloop 30: 1,852 faces / 7,514 vertices / 14 materials
-            //   · sloop 88: 3,088 faces / 12,530 vertices / 14 materials
-            // Everything that answers the wind — main, headsail, staysail, boom, sheets, stack pack,
-            // wheel, door — comes from a private `dynamicFaces(o, pose, view)` and is NOT in `F`. So
-            // this bake is not "one pose frozen": the sails are simply absent. They are 27.5% of the
-            // 30's painted picture on a close reach and 47.5% of the 88's. The seam that would bring
-            // them across is PROPOSED, not decided, in docs/art/spikes/sail-rig-kit/.
-            //
-            // ⚠️ HER RAMP TABLE DOES NOT FIT UNFILTERED. palette({}).mats is 18 entries on the 30 and
-            // 19 on the 88; HullMeshDef.HullRampSlots is 16. Filtering to the materials `F` actually
-            // names — which is what the extractor's reconstruction below does — gives 14 on BOTH,
-            // with 2 slots spare. The entries dropped are exactly the sail's (canvas, sail, batten,
-            // + moto and, on the 88, mast). Note what that arithmetic says about the seam: 14 + 3
-            // sail ramps = 17, so a sail part cannot ride the body's ramp table. It needs its own.
-            MeshOnly("sloop30", "sail-rig-kit/sloop-30/sloopIsoRig.js", "SloopIso",
-                     "Sloop30Iso", "sloop_30_iso",
-                     "Sloop 30 (9.4 m fractional sloop — the first sail in the fleet)"),
-
-            MeshOnly("sloop88", "sail-rig-kit/sloop-88/sloop88IsoRig.js", "Sloop88Iso",
-                     "Sloop88Iso", "sloop_88_iso",
-                     "Sloop 88 (27.0 m masthead sloop — the largest cell in the game)"),
+            // ⚠️ THE SAIL RIG KIT'S TWO SLOOPS ARE NOT HERE, AND THAT IS MEASURED, NOT AN OMISSION.
+            // See BakeBlocked below: the mesh extractor refuses both hulls, by a guard that is right.
         };
+
+        /// <summary>
+        /// <b>Hulls whose rig is landed and registered but whose mesh CANNOT be baked yet, each with
+        /// the reason, measured.</b>
+        ///
+        /// <para>A different claim from <see cref="NotHulls"/>, and worth keeping separate.
+        /// <c>NotHulls</c> says "this rig is not a hull". This says "this IS a hull, the table knows
+        /// how to bake her, and the bake refuses" — a temporary, upstream-owned block, not a
+        /// classification. Keying it by the same repo-relative script path
+        /// <see cref="FleetHull.ScriptPath"/> uses means the entry travels with the file.</para>
+        ///
+        /// <para><b>⚠️ Asserted in BOTH directions</b> by <c>SailRigKitTests</c>: a listed rig must
+        /// still exist AND must still fail the contract that blocks it. The moment the art director
+        /// fixes a rig, its entry goes red saying "delist and bake" — which is what stops a ledger
+        /// like this from rotting into folklore that outlives its reason.</para>
+        /// </summary>
+        public static readonly IReadOnlyDictionary<string, string> BakeBlocked =
+            new Dictionary<string, string>(StringComparer.Ordinal)
+            {
+                // ---- the SAIL RIG KIT (owner drop of 2026-09-06) — the first sails in the fleet ---
+                //
+                // ⚠️ THE FIRST RIGS THAT ARE NOT AT THE TOP OF docs/art/rigs/. The kit ships two
+                // READMEs, its writer (_sailKit.js) and its stamp script beside the rigs, so it lands
+                // as a folder. DeckSidecarReader.ResolveRigPath resolves a sidecar's named rig flat
+                // FIRST and only then searches the tree, so no committed hull's resolution moved.
+                //
+                // ⚠️⚠️ WHY THE BAKE REFUSES — TWO NAMESPACES THAT DO NOT MEET. Both rigs publish
+                // `geometry().ids`, which arms RigMeshExtractor's level-tag contract: "this rig
+                // publishes geometry().ids, so every face it hands over must DECLARE its level".
+                // MEASURED in the repo's own V8 on the committed bytes (2026-09-06):
+                //
+                //                        sloop 30                        sloop 88
+                //   faces                1,852                           3,088
+                //   NO `lv` at all       842  (45.5%)                    1,312 (42.5%)
+                //   stamped with         cabin·lid·rig·under             cabin·lid·rig·under
+                //   geometry().ids       hull·cockpit·coachroof·         hull·cockpit·aft_deck·
+                //                        foredeck·cabin·rig              coachroof·foredeck·
+                //                                                        saloon·lower·rig
+                //   ids never stamped    hull, cockpit, coachroof,       ALL BUT `rig` — including
+                //                        foredeck (4 of 6)               `cabin`, which she does not
+                //                                                        even declare, yet 449 faces
+                //                                                        are stamped with it
+                //
+                // So this is not a handful of missed stamps. The faces carry a CUTAWAY vocabulary
+                // (cabin/lid/under) while `ids` publishes a LEVEL vocabulary, and on the 88 the two
+                // share exactly one member. `lid` and `under` are in neither hull's `ids`.
+                //
+                // ⚠️ DO NOT DEFAULT THEM TO `hull`, and do not patch the rigs. The extractor's own
+                // refusal says why: "The only defensible default is 'hull', which means NEVER CULL —
+                // so a missed stamp would ship as a room that quietly stops opening, in one wall, on
+                // one heading." And docs/art/rigs/** is the art director's lane; a fix made here comes
+                // back wrong on the next regeneration.
+                //
+                // THE UPSTREAM ASK, recorded for the owner's next art turn: stamp every emitted face
+                // with a member of `geometry().ids` (the cursor idiom the other cutaway hulls use),
+                // OR stop publishing `ids` in pass 1 and let these two bake as plain bodies. Either
+                // answers it; the current file asks for the cutaway and does not pay for it.
+                //
+                // Everything downstream of the BODY is already measured and waiting: `faces()` is
+                // pose-free (same array identity after renders at opposite poses), 1,852 / 3,088
+                // faces, 7,514 / 12,530 vertices, and the filtered ramp table is 14 of 16 on both
+                // (the unfiltered one is 18 and 19 — over the cap, and it fails quietly). The
+                // reconstruction entries in RigMeshExtractor and RigMeshAssetBaker.BakeSloopsCli are
+                // in place, so the bake is one art fix away, not one PR away.
+                ["docs/art/rigs/sail-rig-kit/sloop-30/sloopIsoRig.js"] =
+                    "842 of 1,852 faces (45.5%) carry no `lv`, and the ones that do are stamped " +
+                    "cabin/lid/rig/under while geometry().ids publishes hull/cockpit/coachroof/" +
+                    "foredeck/cabin/rig. RigMeshExtractor refuses rather than defaulting to 'hull', " +
+                    "which would mean NEVER CULL. Upstream ask: stamp every face from ids, or stop " +
+                    "publishing ids in pass 1.",
+
+                ["docs/art/rigs/sail-rig-kit/sloop-88/sloop88IsoRig.js"] =
+                    "1,312 of 3,088 faces (42.5%) carry no `lv`; of those that do, 449 are stamped " +
+                    "`cabin`, which is not in her geometry().ids at all (she declares saloon and " +
+                    "lower). Seven of her eight declared levels are never stamped on any face. Same " +
+                    "refusal, same ask.",
+            };
 
         /// <summary>
         /// <b>Every hull the baker knows how to bake</b> — the eleven above, then the lobster
@@ -446,6 +485,16 @@ namespace HiddenHarbours.Tools.RigBaking
             foreach (var h in Hulls) if (h.Key == key) return h;
             throw new ArgumentException(
                 $"No hull '{key}' in the fleet catalog. Known: {string.Join(", ", Hulls.Select(h => h.Key))}.");
+        }
+
+        /// <summary>Non-throwing <see cref="Get"/>, for a caller that has something better to say
+        /// than "unknown key" — see <c>RigMeshAssetBaker.BlockedReport</c>.</summary>
+        public static bool TryGet(string key, out FleetHull hull)
+        {
+            foreach (var h in Hulls)
+                if (h.Key == key) { hull = h; return true; }
+            hull = default;
+            return false;
         }
 
         /// <summary>The rig file names this catalog bakes, for the coverage test.</summary>

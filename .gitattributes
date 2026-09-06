@@ -202,5 +202,4 @@ docs/tools/reference/*.json    text eol=lf
 # every one of the six pins would miss, for line endings alone. Pin the working-tree form so the
 # kit's own checksum file is verifiable on any machine, which is the whole point of shipping it.
 docs/art/rigs/sail-rig-kit/**               text eol=lf
-docs/art/rigs/gameplay/sloopIsoRig.*.json   text eol=lf
-docs/art/rigs/gameplay/sloop88IsoRig.*.json text eol=lf
+docs/art/rigs/gameplay/sail/**              text eol=lf

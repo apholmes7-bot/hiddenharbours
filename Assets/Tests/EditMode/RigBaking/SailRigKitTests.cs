@@ -24,7 +24,7 @@ namespace HiddenHarbours.Tests.RigBaking
     public class SailRigKitTests
     {
         const string KitFolder = "docs/art/rigs/sail-rig-kit";
-        const string GameplayFolder = "docs/art/rigs/gameplay";
+        const string GameplayFolder = "docs/art/rigs/gameplay/sail";
 
         const string Rig30 = KitFolder + "/sloop-30/sloopIsoRig.js";
         const string Rig88 = KitFolder + "/sloop-88/sloop88IsoRig.js";
@@ -32,9 +32,10 @@ namespace HiddenHarbours.Tests.RigBaking
         /// <summary>
         /// The kit's own <c>SHA256SUMS.txt</c> is KIT-RELATIVE: it names each hull's sidecars under
         /// <c>sloop-30/</c> and <c>sloop-88/</c>, where this repo lands them in
-        /// <c>docs/art/rigs/gameplay/</c> beside the rest of the fleet's. The manifest is kept exactly
-        /// as the art director shipped it — re-writing a supplier's checksum file to suit our folders
-        /// is how a checksum stops being evidence — so the mapping lives here instead.
+        /// <c>docs/art/rigs/gameplay/sail/</c> (a subfolder while the mesh bake is blocked — see that
+        /// folder's README). The manifest is kept exactly as the art director shipped it — rewriting a
+        /// supplier's checksum file to suit our folders is how a checksum stops being evidence — so
+        /// the mapping lives here instead, and this is the ONE place the path is written down.
         /// </summary>
         static readonly IReadOnlyDictionary<string, string> ManifestToRepoPath =
             new Dictionary<string, string>(StringComparer.Ordinal)
@@ -489,23 +490,69 @@ namespace HiddenHarbours.Tests.RigBaking
         // =========================================================================================
 
         [Test]
-        public void BothSloopsAreInTheHullMeshFleetAsMeshOnly()
+        public void BothSloopsAreOnTheBakeBlockedLedger_AndTheirRigsExist()
         {
-            foreach ((string key, string meshId, string rigTail) in new[]
+            Assert.That(HullMeshFleet.BakeBlocked.Keys, Is.EquivalentTo(new[] { Rig30, Rig88 }),
+                "the ledger must name exactly the rigs whose bake is blocked, by the same " +
+                "repo-relative path the fleet table uses, so an entry travels with its file.");
+
+            foreach (var kv in HullMeshFleet.BakeBlocked)
             {
-                ("sloop30", "hullmesh.sloop_30_iso", "sail-rig-kit/sloop-30/sloopIsoRig.js"),
-                ("sloop88", "hullmesh.sloop_88_iso", "sail-rig-kit/sloop-88/sloop88IsoRig.js"),
-            })
+                FileAssert.Exists(Full(kv.Key),
+                    $"BakeBlocked names '{kv.Key}' but no such rig exists any more. Delete the entry " +
+                    "— a ledger that outlives its files rots into folklore.");
+                Assert.That(kv.Value, Is.Not.Empty, $"{kv.Key}: a block without a reason is a shrug.");
+            }
+
+            foreach (string key in new[] { "sloop30", "sloop88" })
+                Assert.That(HullMeshFleet.TryGet(key, out _), Is.False,
+                    $"'{key}' is in HullMeshFleet.Hulls while still on the BakeBlocked ledger. A hull " +
+                    "is on one list or the other, never both — every fixture that sweeps Hulls " +
+                    "expects a committed HullMeshDef behind each row.");
+        }
+
+        /// <summary>
+        /// ⭐⭐ <b>THE BLOCK, RE-MEASURED — this is what stops the ledger rotting.</b>
+        ///
+        /// <para>Both rigs publish <c>geometry().ids</c>, which arms the extractor's level-tag
+        /// contract: every face handed over must declare a level that <c>ids</c> names. Neither does.
+        /// The faces carry a CUTAWAY vocabulary (<c>cabin · lid · rig · under</c>) while <c>ids</c>
+        /// publishes a LEVEL vocabulary — and on the 88 the two share exactly one member, <c>rig</c>:
+        /// 449 of her faces are stamped <c>cabin</c>, which she does not declare at all.</para>
+        ///
+        /// <para><b>⚠️ This test is written to FAIL when the rigs are fixed</b>, and that is the
+        /// point. A ledger asserted in one direction only goes on explaining a problem that is gone.
+        /// When it reddens, the message is the instruction: delist and bake.</para>
+        /// </summary>
+        [Test]
+        public void TheBlockIsStillReal_EveryLedgeredRigStillBreaksTheLevelContract()
+        {
+            foreach ((string rig, string global) in new[] { (Rig30, "SloopIso"), (Rig88, "Sloop88Iso") })
             {
-                FleetHull hull = HullMeshFleet.Get(key);
-                Assert.That(hull.MeshId, Is.EqualTo(meshId));
-                Assert.That(hull.ScriptPath.Replace('\\', '/'), Does.EndWith(rigTail));
-                FileAssert.Exists(Full(hull.ScriptPath));
-                Assert.That(hull.HasBakedSheet, Is.False,
-                    $"{key}: a 32-facing sheet of the 88 runs past the texture size cap, and both " +
-                    "hulls' pictures are a pose rather than a frame. Mesh-only is not a shortcut here.");
-                Assert.That(hull.FlipsToMesh, Is.True,
-                    $"{key}: no sprite overlay to lose, so nothing blocks the flip.");
+                using IRigScriptHost host = RigScriptHostFactory.Create();
+                host.Execute(File.ReadAllText(Full(rig)));
+
+                Assert.That(host.EvaluateBool($"!!({global}.geometry && {global}.geometry().ids)"), Is.True,
+                    $"{global}: the rig no longer publishes geometry().ids, so the level-tag contract " +
+                    "is no longer armed and the bake may simply work. Delist her from BakeBlocked.");
+
+                host.Execute(
+                    $"globalThis.__bad = (function(){{var F={global}.faces(),ids={global}.geometry().ids," +
+                    "n=0;for(var i=0;i<F.length;i++){var lv=F[i].lv;" +
+                    "if(lv==null||!Object.prototype.hasOwnProperty.call(ids,lv))n++;}return n;}})();");
+
+                double bad = host.EvaluateNumber("__bad");
+                double total = host.EvaluateNumber($"{global}.faces().length");
+
+                Assert.Greater(bad, 0d,
+                    $"{global}: every face now declares a level its own geometry().ids names, so " +
+                    "RigMeshExtractor will accept her. DELIST her from HullMeshFleet.BakeBlocked, add " +
+                    "her back to OneHullPerRig as MeshOnly, and run " +
+                    "RigMeshAssetBaker.BakeSloopsCli — the entry point is already there.");
+
+                TestContext.WriteLine(
+                    $"{global}: {bad:0} of {total:0} faces ({100.0 * bad / total:0.0}%) carry no level " +
+                    "its geometry().ids declares.");
             }
         }
 
