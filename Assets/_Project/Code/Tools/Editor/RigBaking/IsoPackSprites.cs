@@ -195,6 +195,24 @@ namespace HiddenHarbours.Tools.RigBaking
             return slices.TryGetValue(Wrap(facing, Facings), out Sprite s) ? s : null;
         }
 
+        /// <summary>
+        /// One (facing, RUNG) of a key that bakes a SLOPE axis — today the wharf's <c>gangway</c> and
+        /// nothing else. Its sheet packs 8 facings ACROSS and its rungs DOWN, so the slice index is
+        /// <c>rung × 8 + facing</c>, read row-major the way every slicer in this repo writes a grid and
+        /// the way <see cref="FindSliceIndex"/> reads the finds' own second axis.
+        ///
+        /// <para>The rung is NOT wrapped. A facing derived from a compass turn is routinely out of
+        /// range and wrapping it is right; a rung out of range is a caller that solved the ladder
+        /// wrongly, and answering with the ramp from the other end of the tide would draw a brow at a
+        /// slope the water never had. Null instead, which every caller here already handles.</para>
+        /// </summary>
+        public static Sprite Facing(string rigKey, string key, int facing, int rung)
+        {
+            if (rung < 0) return null;
+            var slices = SlicesOf(SheetPath(rigKey, key));
+            return slices.TryGetValue(rung * Facings + Wrap(facing, Facings), out Sprite s) ? s : null;
+        }
+
         /// <summary>One (state, lie angle, variant) of a shore find, or null if it has not baked.</summary>
         public static Sprite Find(string find, string state, int lieAngle, int variant)
         {

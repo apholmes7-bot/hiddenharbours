@@ -274,9 +274,112 @@ namespace HiddenHarbours.App.Editor
         // walkable GangwayPlatform is unaffected — it has always been there and you can still cross it.
 
         /// <summary>The float bay — every one of the run's eight. <c>timberFloat</c> is the rig's plain
-        /// 2-bay timber raft: 6.0 × 2.4 m of planked deck with cleats, a ladder, a tyre and a foam fender,
-        /// guide piles and a mooring chain.</summary>
+        /// 2-bay timber raft: 6.0 × 2.4 m of planked deck with cleats, a ladder, a tyre and a foam
+        /// fender. <b>No guide piles and no mooring chain any more</b> — they are
+        /// <see cref="FloatPilesCourseKey"/>, because they are driven into the seabed and a raft
+        /// rides.</summary>
         public const string FloatCourseKey = "timberFloat";
+
+        /// <summary>
+        /// ⭐ <b>THE FIXED HALF OF THE FLOAT</b> — guide piles, mooring chain and its seabed anchor
+        /// block, with no raft at all. Placed ONCE at each bay's plan position and never moved, which
+        /// is the whole point: the rig has always tagged exactly these three <c>fixed</c> and skipped
+        /// them in its own rock transform, because they are driven into the bottom.
+        ///
+        /// <para><b>It measures the cell <c>timberFloat</c> used to</b> — 300×348 at pivot 149,216 —
+        /// so the split is a decomposition at one pivot rather than a re-draw, and the piles land
+        /// exactly where #735 drew them. Only the raft moves now.</para>
+        /// </summary>
+        public const string FloatPilesCourseKey = "floatPiles";
+
+        /// <summary>The brow. One key, and the only one in the pack with a SLOPE axis — see
+        /// <see cref="GangwayRungDrops"/>.</summary>
+        public const string GangwayCourseKey = "gangway";
+
+        /// <summary>
+        /// The compass heading the brow is drawn at: <b>0</b> — the same facing the float run uses, and
+        /// MEASURED rather than assumed. The rig's <c>rampBody</c> runs +X from hinge to foot, and at
+        /// facing 0 the buffer's west end does not move between rungs (0.03 px across the whole ladder)
+        /// while its east end drops 105 px: the hinge is WEST and the landing EAST, which is this
+        /// wharf's apron and this wharf's float in that order.
+        /// </summary>
+        public const float GangwayCourseHeadingDegrees = 0f;
+
+        /// <summary>The plan run the brow is BAKED at — <b>12 m</b>, which is
+        /// <c>NineMileCreekWharf.GangwayRunMetres</c>. The drawn brow and the walkable brow are the
+        /// same brow (ADR 0010), so a bake at any other run would draw a ramp the player does not walk;
+        /// <c>NineMileCreekFloatTests</c> holds the two equal.</summary>
+        public const float BakedRigGangwayRunMetres = 12f;
+
+        /// <summary>How far above the float's deck the rig lands the brow's rollers
+        /// (<c>rampBody(..., s.floatDeckZ + 0.06, ...)</c>) — 0.06 m, and the reason a correctly-picked
+        /// rung draws its foot a pixel and a half ABOVE the planks rather than in them.</summary>
+        public const float BakedRigGangwayFootClearanceMetres = 0.06f;
+
+        /// <summary>Rungs on the brow's slope axis — <b>9</b>, the rig's <c>GANGWAY_RUNGS</c>.</summary>
+        public const int GangwayRungCount = 9;
+
+        /// <summary>
+        /// ⭐⭐ <b>THE SLOPE LADDER, in metres of drop from hinge to landing</b> — the rig's own
+        /// <c>gangwayDrops()</c>, recomputed here from the same three committed defaults rather than
+        /// copied, so a re-baked coast moves the ladder and this file with it:
+        /// <c>[clearance − freeboard, tideRange + clearance − freeboard]</c> in
+        /// <see cref="GangwayRungCount"/> steps = <b>0.40 m to 4.80 m in 0.55 m steps</b>.
+        ///
+        /// <para>A drop is FRAME-FREE — it is a difference of two heights — so the rig's frame and the
+        /// game's give the same ladder, and this is the one number in the gangway that needs no
+        /// conversion. 4.40 m of travel, which is the tide itself: a fixed hinge over a riding landing
+        /// reads the water level one for one.</para>
+        /// </summary>
+        public static IReadOnlyList<float> GangwayRungDrops
+        {
+            get
+            {
+                float lo = BakedRigClearance - BakedRigFloatFreeboard;
+                float hi = BakedRigTideRange + BakedRigClearance - BakedRigFloatFreeboard;
+                var drops = new float[GangwayRungCount];
+                for (int i = 0; i < GangwayRungCount; i++)
+                    drops[i] = lo + (hi - lo) * (i / (float)(GangwayRungCount - 1));
+                return drops;
+            }
+        }
+
+        /// <summary>
+        /// ⭐ <b>WHICH RUNG DRAWS A DROP OF <paramref name="dropMetres"/>: the shallowest rung that is
+        /// NOT SHALLOWER THAN THE TRUTH</b>, clamped to the ladder's ends.
+        ///
+        /// <para><b>The bias is the whole design.</b> Round to the nearest rung and half the time the
+        /// drawn ramp is flatter than the real one, which lifts its foot off the planks and shows
+        /// daylight under the rollers — the one artefact that reads as broken. Round UP and the ramp is
+        /// never flatter than reality, so the foot only ever settles INTO a deck that is drawn 17 px
+        /// deep, and the residual (at most one 0.55 m step = 13.5 px of art) is covered by the thing
+        /// the brow lands on. The hinge is exact at every tide either way, because the sprite is placed
+        /// by its hinge and only the sprite CHANGES.</para>
+        /// </summary>
+        public static int GangwayRungFor(float dropMetres)
+        {
+            var drops = GangwayRungDrops;
+            for (int i = 0; i < drops.Count; i++)
+                if (drops[i] >= dropMetres - HiddenHarbours.World.GangwayVisual.RungToleranceMetres)
+                    return i;
+            return drops.Count - 1;
+        }
+
+        /// <summary>How far the drawn foot of rung <paramref name="rung"/> sits above the float's deck
+        /// when the true drop is <paramref name="dropMetres"/>, in metres: the rig's own roller
+        /// clearance less whatever the rung over-steepened by. Positive is clear of the planks;
+        /// negative is settled into them, and <see cref="GangwayRungFor"/> keeps it no deeper than one
+        /// ladder step.</summary>
+        /// <inheritdoc cref="HiddenHarbours.World.GangwayVisual.RungToleranceMetres"/>
+        public static float GangwayRungToleranceMetres =>
+            HiddenHarbours.World.GangwayVisual.RungToleranceMetres;
+
+        public static float GangwayFootClearanceMetres(int rung, float dropMetres)
+        {
+            var drops = GangwayRungDrops;
+            int i = Mathf.Clamp(rung, 0, drops.Count - 1);
+            return BakedRigGangwayFootClearanceMetres - (drops[i] - dropMetres);
+        }
 
         /// <summary>
         /// The compass heading a float bay is drawn at: <b>0</b> — the facing whose length runs east-west
@@ -550,8 +653,51 @@ namespace HiddenHarbours.App.Editor
             float half = FaceCourseWidthMetres * 0.5f;
             return new Vector2(
                 half * s.x,
-                BakedDeckZMetres * SpriteLightMath.HeightScale + half * s.y * SpriteLightMath.GroundDepthScale);
+                PackDatumRise + half * s.y * SpriteLightMath.GroundDepthScale);
         }
+
+        /// <summary>
+        /// ⭐⭐ <b>THE PACK'S DATUM LINE — 3.98 units, and every wharf-pack piece's chart datum belongs
+        /// on it.</b> <see cref="BakedDeckZMetres"/> of drawn height, at
+        /// <see cref="SpriteLightMath.HeightScale"/> a metre.
+        ///
+        /// <para>This was always the Y term of <see cref="LipRiseFromPivot"/> — it is pulled out and
+        /// NAMED because it is not the quay face's private arithmetic. It is the line that makes the
+        /// wharf ONE PICTURE: put two pack pieces' datums on it and every height either of them draws
+        /// is measured from the same zero, so a 3.00 m apron really does draw above a 0.62 m float and
+        /// a ramp between them slopes the way the water says. Put one piece's datum somewhere else and
+        /// nothing fails — each piece still looks perfect on its own — but the RELATIONSHIP between
+        /// them is a constant lie, which is exactly what <see cref="NineMileCreekWharf"/>'s float was
+        /// shipped with (#735) and what the brow, needing BOTH ends at once, is the first thing to
+        /// measure.</para>
+        ///
+        /// <para><b>The apron has always been on it</b>: <c>PivotForLip</c> subtracts this to land a
+        /// face's drawn deck lip on the wall's plan lip, which is what puts a walker and the planks
+        /// they stand on at the same place on screen.</para>
+        /// </summary>
+        public static float PackDatumRise => BakedDeckZMetres * SpriteLightMath.HeightScale;
+
+        /// <summary>Where a pack piece's PIVOT goes so that its chart datum lands on
+        /// <see cref="PackDatumRise"/> under <paramref name="planPoint"/> — the rule for a piece
+        /// anchored by its footprint CENTRE (a float bay, its piles, the brow) rather than by a deck
+        /// lip. <see cref="PivotForLip"/> is the same rule plus the lip's own half-width offset.</summary>
+        public static Vector2 PivotForPlan(Vector2 planPoint) =>
+            new Vector2(planPoint.x, planPoint.y - PackDatumRise);
+
+        /// <summary>
+        /// ⚠️ <b>THE BAKED FLOAT DECK IN THE GAME'S FRAME — 0.62 m</b>, which is
+        /// <see cref="BakedRigFloatDeckZMetres"/> (2.82, the RIG's frame) put through the SAME
+        /// conversion <see cref="ToRigZ"/> states, backwards.
+        ///
+        /// <para>The two frames do not share a zero (§1's opening note) and this is the number that
+        /// proves it matters: <c>FloatingPlatformVisual</c> compares its baked deck against
+        /// <c>FloatingPlatform.DeckElevationNow()</c>, which answers in the GAME's frame, so handing it
+        /// the rig's 2.82 puts the float 2.2 m — 1.68 units — out. It is the frame half of the float's
+        /// placement defect; <see cref="PackDatumRise"/> is the anchor half. They pushed opposite ways
+        /// and PARTLY CANCELLED, which is why the dock looked nearly right and was 2.30 units high.</para>
+        /// </summary>
+        public static float BakedFloatDeckGameMetres =>
+            BakedRigFloatDeckZMetres + NineMileCreekMainland.SpringLowWater;
 
         /// <summary>Where a piece's pivot goes so that its drawn deck lip lands on
         /// <paramref name="lip"/>. The only placement rule this file publishes, and the reason #471 kept

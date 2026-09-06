@@ -148,6 +148,14 @@ namespace HiddenHarbours.Art.Editor
         {
             public string key;
             public int cellW, cellH, pivotX, pivotY;
+
+            /// <summary>Rungs on this KEY's slope axis — a second sheet axis under the facings, absent
+            /// (0) on every key but the wharf's <c>gangway</c>. 0 and 1 both mean "no slope axis".
+            /// Read here for the same reason the cell size is: the number of slices a sheet carries is
+            /// the contract's to state, and getting it wrong slices 8 rects out of 72 cells and leaves
+            /// the sprite count looking plausible.</summary>
+            public int rungs;
+
             public SheetPlan sheet;
         }
 
@@ -387,8 +395,8 @@ namespace HiddenHarbours.Art.Editor
             if (c == null || !Directory.Exists(fam.Folder)) return specs;
 
             var byKey = c.cells.GroupBy(x => x.key).ToDictionary(g => g.Key, g => g.First(), StringComparer.Ordinal);
-            int cellsPerSheet = CellsPerSheet(c);
-            if (cellsPerSheet <= 0)
+            int cellsPerFacingAxis = CellsPerSheet(c);
+            if (cellsPerFacingAxis <= 0)
             {
                 Debug.LogError($"[IsoPackSheetSlicer] '{fam.Key}' contract declares neither facings nor " +
                                "lieAngles × variants, so a sheet's cell count is unknown. Not slicing.");
@@ -431,12 +439,19 @@ namespace HiddenHarbours.Art.Editor
                 // are ragged by design (3×3 for 8 facings — the cap forces near-square grids, and
                 // the ninth slot is deliberately empty). BuildRects emits exactly cellsPerSheet
                 // row-major rects and never touches the trailing slots, so the padding is inert.
+                // The cell count is the KEY's, not the family's: a key with a SLOPE axis packs its
+                // facings once per rung (the wharf's gangway: 8 × 9 = 72). Reading the family's 8 here
+                // would slice a 72-cell sheet into 8 rects across its top row, and every check below —
+                // grid fits, sprite count matches — would agree with itself.
+                int cellsPerSheet = cellsPerFacingAxis * Math.Max(1, cell.rungs);
+
                 if (cell.sheet.cols * cell.sheet.rows < cellsPerSheet)
                 {
                     Debug.LogError($"[IsoPackSheetSlicer] '{matched}' plans a {cell.sheet.cols}×" +
                                    $"{cell.sheet.rows} grid = {cell.sheet.cols * cell.sheet.rows} slots, " +
-                                   $"which cannot hold a {fam.Key} sheet's {cellsPerSheet} cells. " +
-                                   "Not slicing — the plan and the bake disagree.");
+                                   $"which cannot hold a {fam.Key} sheet's {cellsPerSheet} cells " +
+                                   $"({cellsPerFacingAxis} per facing axis × {Math.Max(1, cell.rungs)} " +
+                                   "rungs). Not slicing — the plan and the bake disagree.");
                     continue;
                 }
 
