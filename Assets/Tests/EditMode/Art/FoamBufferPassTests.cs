@@ -167,8 +167,9 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.IsNotNull(shader, $"Shader.Find(\"{AdvectShaderName}\") returned null.");
             Assert.IsTrue(shader.isSupported,
                 "The foam advect shader is not supported on this graphics device, so the wake buffer " +
-                "would never fill on it. Note the pass is SM 3.5 and writes one RG16 target (r = coverage, " +
-                "g = the freshness clock).");
+                "would never fill on it. Note the pass is SM 3.5 and writes one TWO-CHANNEL target " +
+                "(r = coverage, g = the freshness clock) whose format is chosen per device by " +
+                "FoamBuffer.SelectFormat — see register row 28.");
 
             var material = new Material(shader) { hideFlags = HideFlags.HideAndDontSave };
             try
