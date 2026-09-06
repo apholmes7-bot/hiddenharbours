@@ -1,0 +1,754 @@
+fileFormatVersion: 2
+guid: 67731789855773d4e923cda94c1e3a49
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 6673890144514359008
+    second: Fish_mackerel_sm_swim_0
+  - first:
+      213: -3374267784117960811
+    second: Fish_mackerel_sm_swim_1
+  - first:
+      213: -4088998240806933399
+    second: Fish_mackerel_sm_swim_2
+  - first:
+      213: -6288548542146514856
+    second: Fish_mackerel_sm_swim_3
+  - first:
+      213: 6107966178245336997
+    second: Fish_mackerel_sm_swim_4
+  - first:
+      213: 5424418604705857385
+    second: Fish_mackerel_sm_swim_5
+  - first:
+      213: 4139830566366358816
+    second: Fish_mackerel_sm_swim_6
+  - first:
+      213: 399978864036877232
+    second: Fish_mackerel_sm_swim_7
+  - first:
+      213: 8290799955716141818
+    second: Fish_mackerel_sm_swim_8
+  - first:
+      213: 2150004835580674959
+    second: Fish_mackerel_sm_swim_9
+  - first:
+      213: -8754587906815718044
+    second: Fish_mackerel_sm_swim_10
+  - first:
+      213: -5790948007267214373
+    second: Fish_mackerel_sm_swim_11
+  - first:
+      213: -3243572622762475928
+    second: Fish_mackerel_sm_swim_12
+  - first:
+      213: 6297023846018305865
+    second: Fish_mackerel_sm_swim_13
+  - first:
+      213: -3845899133284567087
+    second: Fish_mackerel_sm_swim_14
+  - first:
+      213: 4064284452966463381
+    second: Fish_mackerel_sm_swim_15
+  - first:
+      213: -7179055614971406509
+    second: Fish_mackerel_sm_swim_16
+  - first:
+      213: -3070748377130849295
+    second: Fish_mackerel_sm_swim_17
+  - first:
+      213: -9202384199930551019
+    second: Fish_mackerel_sm_swim_18
+  - first:
+      213: 7983968317328051888
+    second: Fish_mackerel_sm_swim_19
+  - first:
+      213: -5916334521652623454
+    second: Fish_mackerel_sm_swim_20
+  - first:
+      213: -1374405095743350063
+    second: Fish_mackerel_sm_swim_21
+  - first:
+      213: 2385375064608614986
+    second: Fish_mackerel_sm_swim_22
+  - first:
+      213: -8677290234696684490
+    second: Fish_mackerel_sm_swim_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Fish_mackerel_sm_swim_0
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 340
+        width: 13
+        height: 134
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0ee32c50abb6e9c50800000000000000
+      internalID: 6673890144514359008
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_sm_swim_1
+      rect:
+        serializedVersion: 2
+        x: 89
+        y: 339
+        width: 268
+        height: 135
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 59fba96f3513c21d0800000000000000
+      internalID: -3374267784117960811
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_sm_swim_2
+      rect:
+        serializedVersion: 2
+        x: 92
+        y: 401
+        width: 8
+        height: 73
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 96c6181b3c5f047c0800000000000000
+      internalID: -4088998240806933399
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_sm_swim_3
+      rect:
+        serializedVersion: 2
+        x: 157
+        y: 403
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8507e884b669ab8a0800000000000000
+      internalID: -6288548542146514856
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_sm_swim_4
+      rect:
+        serializedVersion: 2
+        x: 158
+        y: 402
+        width: 70
+        height: 72
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5afd962b0ead3c450800000000000000
+      internalID: 6107966178245336997
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_sm_swim_5
+      rect:
+        serializedVersion: 2
+        x: 345
+        y: 403
+        width: 11
+        height: 71
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 96f338e2bf7674b40800000000000000
+      internalID: 5424418604705857385
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_sm_swim_6
+      rect:
+        serializedVersion: 2
+        x: 27
+        y: 275
+        width: 9
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 02d229267f1a37930800000000000000
+      internalID: 4139830566366358816
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_sm_swim_7
+      rect:
+        serializedVersion: 2
+        x: 27
+        y: 84
+        width: 138
+        height: 135
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0b3159c58a20d8500800000000000000
+      internalID: 399978864036877232
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_sm_swim_8
+      rect:
+        serializedVersion: 2
+        x: 28
+        y: 147
+        width: 10
+        height: 70
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: af2f84812a6de0370800000000000000
+      internalID: 8290799955716141818
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_sm_swim_9
+      rect:
+        serializedVersion: 2
+        x: 89
+        y: 275
+        width: 11
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f83882ab10a56dd10800000000000000
+      internalID: 2150004835580674959
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_sm_swim_10
+      rect:
+        serializedVersion: 2
+        x: 153
+        y: 211
+        width: 11
+        height: 71
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 46d815bbea4718680800000000000000
+      internalID: -8754587906815718044
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_sm_swim_11
+      rect:
+        serializedVersion: 2
+        x: 218
+        y: 275
+        width: 10
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bdbd41a187b62afa0800000000000000
+      internalID: -5790948007267214373
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_sm_swim_12
+      rect:
+        serializedVersion: 2
+        x: 222
+        y: 211
+        width: 70
+        height: 73
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 86e7f0182e38cf2d0800000000000000
+      internalID: -3243572622762475928
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_sm_swim_13
+      rect:
+        serializedVersion: 2
+        x: 349
+        y: 211
+        width: 7
+        height: 70
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 94fc51c23d5836750800000000000000
+      internalID: 6297023846018305865
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_sm_swim_14
+      rect:
+        serializedVersion: 2
+        x: 156
+        y: 147
+        width: 7
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1d7379e5d1f90aac0800000000000000
+      internalID: -3845899133284567087
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_sm_swim_15
+      rect:
+        serializedVersion: 2
+        x: 219
+        y: 84
+        width: 13
+        height: 70
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 597753d2d2d376830800000000000000
+      internalID: 4064284452966463381
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_sm_swim_16
+      rect:
+        serializedVersion: 2
+        x: 284
+        y: 147
+        width: 11
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3571bd654fede5c90800000000000000
+      internalID: -7179055614971406509
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_sm_swim_17
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 147
+        width: 11
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1fb228ade928265d0800000000000000
+      internalID: -3070748377130849295
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_sm_swim_18
+      rect:
+        serializedVersion: 2
+        x: 28
+        y: 18
+        width: 9
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 515e87493509a4080800000000000000
+      internalID: -9202384199930551019
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_sm_swim_19
+      rect:
+        serializedVersion: 2
+        x: 92
+        y: 19
+        width: 11
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0becf4c32e0ccce60800000000000000
+      internalID: 7983968317328051888
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_sm_swim_20
+      rect:
+        serializedVersion: 2
+        x: 156
+        y: 19
+        width: 11
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2a7c3804915f4eda0800000000000000
+      internalID: -5916334521652623454
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_sm_swim_21
+      rect:
+        serializedVersion: 2
+        x: 220
+        y: 19
+        width: 10
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1da1bbae8d12dece0800000000000000
+      internalID: -1374405095743350063
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_sm_swim_22
+      rect:
+        serializedVersion: 2
+        x: 282
+        y: 19
+        width: 77
+        height: 70
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a4a2216abfd8a1120800000000000000
+      internalID: 2385375064608614986
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_sm_swim_23
+      rect:
+        serializedVersion: 2
+        x: 284
+        y: 17
+        width: 8
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 63c20fb7182149780800000000000000
+      internalID: -8677290234696684490
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Fish_mackerel_sm_swim_0: 6673890144514359008
+      Fish_mackerel_sm_swim_1: -3374267784117960811
+      Fish_mackerel_sm_swim_10: -8754587906815718044
+      Fish_mackerel_sm_swim_11: -5790948007267214373
+      Fish_mackerel_sm_swim_12: -3243572622762475928
+      Fish_mackerel_sm_swim_13: 6297023846018305865
+      Fish_mackerel_sm_swim_14: -3845899133284567087
+      Fish_mackerel_sm_swim_15: 4064284452966463381
+      Fish_mackerel_sm_swim_16: -7179055614971406509
+      Fish_mackerel_sm_swim_17: -3070748377130849295
+      Fish_mackerel_sm_swim_18: -9202384199930551019
+      Fish_mackerel_sm_swim_19: 7983968317328051888
+      Fish_mackerel_sm_swim_2: -4088998240806933399
+      Fish_mackerel_sm_swim_20: -5916334521652623454
+      Fish_mackerel_sm_swim_21: -1374405095743350063
+      Fish_mackerel_sm_swim_22: 2385375064608614986
+      Fish_mackerel_sm_swim_23: -8677290234696684490
+      Fish_mackerel_sm_swim_3: -6288548542146514856
+      Fish_mackerel_sm_swim_4: 6107966178245336997
+      Fish_mackerel_sm_swim_5: 5424418604705857385
+      Fish_mackerel_sm_swim_6: 4139830566366358816
+      Fish_mackerel_sm_swim_7: 399978864036877232
+      Fish_mackerel_sm_swim_8: 8290799955716141818
+      Fish_mackerel_sm_swim_9: 2150004835580674959
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

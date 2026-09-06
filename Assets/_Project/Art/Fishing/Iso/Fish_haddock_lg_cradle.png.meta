@@ -1,0 +1,598 @@
+fileFormatVersion: 2
+guid: b5e427a241f9edc47812ebb3f388414e
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -4473381153042776016
+    second: Fish_haddock_lg_cradle_0
+  - first:
+      213: 3106340618790382478
+    second: Fish_haddock_lg_cradle_1
+  - first:
+      213: -9027184696950459188
+    second: Fish_haddock_lg_cradle_2
+  - first:
+      213: -944665896962394138
+    second: Fish_haddock_lg_cradle_3
+  - first:
+      213: 3682090126712310916
+    second: Fish_haddock_lg_cradle_4
+  - first:
+      213: 7130893666951616903
+    second: Fish_haddock_lg_cradle_5
+  - first:
+      213: 7279434708683778398
+    second: Fish_haddock_lg_cradle_6
+  - first:
+      213: 1257288543910193314
+    second: Fish_haddock_lg_cradle_7
+  - first:
+      213: 1513816133039801569
+    second: Fish_haddock_lg_cradle_8
+  - first:
+      213: 932840622811293867
+    second: Fish_haddock_lg_cradle_9
+  - first:
+      213: -8264074765245030675
+    second: Fish_haddock_lg_cradle_10
+  - first:
+      213: -1087266252928216407
+    second: Fish_haddock_lg_cradle_11
+  - first:
+      213: 1082589111607559813
+    second: Fish_haddock_lg_cradle_12
+  - first:
+      213: 1508629739712116570
+    second: Fish_haddock_lg_cradle_13
+  - first:
+      213: -8926561595735230491
+    second: Fish_haddock_lg_cradle_14
+  - first:
+      213: 3812038505944898677
+    second: Fish_haddock_lg_cradle_15
+  - first:
+      213: 8075347790027236415
+    second: Fish_haddock_lg_cradle_16
+  - first:
+      213: -1848869900435633741
+    second: Fish_haddock_lg_cradle_17
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Fish_haddock_lg_cradle_0
+      rect:
+        serializedVersion: 2
+        x: 28
+        y: 461
+        width: 10
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 03045f3da8b5be1c0800000000000000
+      internalID: -4473381153042776016
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_cradle_1
+      rect:
+        serializedVersion: 2
+        x: 90
+        y: 461
+        width: 10
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e8b2e5ea550fb1b20800000000000000
+      internalID: 3106340618790382478
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_cradle_2
+      rect:
+        serializedVersion: 2
+        x: 19
+        y: 398
+        width: 23
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cc4fc60a85ff8b280800000000000000
+      internalID: -9027184696950459188
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_cradle_3
+      rect:
+        serializedVersion: 2
+        x: 83
+        y: 401
+        width: 22
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6e7712c2f5fd3e2f0800000000000000
+      internalID: -944665896962394138
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_cradle_4
+      rect:
+        serializedVersion: 2
+        x: 14
+        y: 342
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 48c09a13679691330800000000000000
+      internalID: 3682090126712310916
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_cradle_5
+      rect:
+        serializedVersion: 2
+        x: 21
+        y: 341
+        width: 24
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 789dbbd420606f260800000000000000
+      internalID: 7130893666951616903
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_cradle_6
+      rect:
+        serializedVersion: 2
+        x: 78
+        y: 340
+        width: 31
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e59eeb8ac4fb50560800000000000000
+      internalID: 7279434708683778398
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_cradle_7
+      rect:
+        serializedVersion: 2
+        x: 18
+        y: 275
+        width: 23
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2a86fefe449c27110800000000000000
+      internalID: 1257288543910193314
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_cradle_8
+      rect:
+        serializedVersion: 2
+        x: 83
+        y: 275
+        width: 23
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1e4c711a0c7220510800000000000000
+      internalID: 1513816133039801569
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_cradle_9
+      rect:
+        serializedVersion: 2
+        x: 26
+        y: 209
+        width: 10
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ba8a8b2aa9d12fc00800000000000000
+      internalID: 932840622811293867
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_cradle_10
+      rect:
+        serializedVersion: 2
+        x: 92
+        y: 209
+        width: 10
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: deedc4439cb105d80800000000000000
+      internalID: -8264074765245030675
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_cradle_11
+      rect:
+        serializedVersion: 2
+        x: 22
+        y: 147
+        width: 23
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9a291f18a1149e0f0800000000000000
+      internalID: -1087266252928216407
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_cradle_12
+      rect:
+        serializedVersion: 2
+        x: 87
+        y: 147
+        width: 23
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 586031baf01260f00800000000000000
+      internalID: 1082589111607559813
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_cradle_13
+      rect:
+        serializedVersion: 2
+        x: 19
+        y: 84
+        width: 31
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a57712551cabfe410800000000000000
+      internalID: 1508629739712116570
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_cradle_14
+      rect:
+        serializedVersion: 2
+        x: 83
+        y: 85
+        width: 24
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5e7be8c068b7e1480800000000000000
+      internalID: -8926561595735230491
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_cradle_15
+      rect:
+        serializedVersion: 2
+        x: 106
+        y: 86
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 57cd4f8f2d417e430800000000000000
+      internalID: 3812038505944898677
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_cradle_16
+      rect:
+        serializedVersion: 2
+        x: 23
+        y: 17
+        width: 22
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f342f4ea706611070800000000000000
+      internalID: 8075347790027236415
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_cradle_17
+      rect:
+        serializedVersion: 2
+        x: 86
+        y: 14
+        width: 23
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3b94f9c0f9e7756e0800000000000000
+      internalID: -1848869900435633741
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Fish_haddock_lg_cradle_0: -4473381153042776016
+      Fish_haddock_lg_cradle_1: 3106340618790382478
+      Fish_haddock_lg_cradle_10: -8264074765245030675
+      Fish_haddock_lg_cradle_11: -1087266252928216407
+      Fish_haddock_lg_cradle_12: 1082589111607559813
+      Fish_haddock_lg_cradle_13: 1508629739712116570
+      Fish_haddock_lg_cradle_14: -8926561595735230491
+      Fish_haddock_lg_cradle_15: 3812038505944898677
+      Fish_haddock_lg_cradle_16: 8075347790027236415
+      Fish_haddock_lg_cradle_17: -1848869900435633741
+      Fish_haddock_lg_cradle_2: -9027184696950459188
+      Fish_haddock_lg_cradle_3: -944665896962394138
+      Fish_haddock_lg_cradle_4: 3682090126712310916
+      Fish_haddock_lg_cradle_5: 7130893666951616903
+      Fish_haddock_lg_cradle_6: 7279434708683778398
+      Fish_haddock_lg_cradle_7: 1257288543910193314
+      Fish_haddock_lg_cradle_8: 1513816133039801569
+      Fish_haddock_lg_cradle_9: 932840622811293867
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

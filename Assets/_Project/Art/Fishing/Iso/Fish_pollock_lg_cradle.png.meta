@@ -1,0 +1,598 @@
+fileFormatVersion: 2
+guid: c67f6cfcf13a5a747b8473d8cf4d9f38
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 6307983794067134381
+    second: Fish_pollock_lg_cradle_0
+  - first:
+      213: 4263082897301132327
+    second: Fish_pollock_lg_cradle_1
+  - first:
+      213: 9134216463754051231
+    second: Fish_pollock_lg_cradle_2
+  - first:
+      213: -5049809865040619414
+    second: Fish_pollock_lg_cradle_3
+  - first:
+      213: -1170093113817042323
+    second: Fish_pollock_lg_cradle_4
+  - first:
+      213: -5721474429679530335
+    second: Fish_pollock_lg_cradle_5
+  - first:
+      213: -4559730991361007897
+    second: Fish_pollock_lg_cradle_6
+  - first:
+      213: 7634588524416626813
+    second: Fish_pollock_lg_cradle_7
+  - first:
+      213: 4230280210123536549
+    second: Fish_pollock_lg_cradle_8
+  - first:
+      213: 8673368740514452155
+    second: Fish_pollock_lg_cradle_9
+  - first:
+      213: -6764984411673086778
+    second: Fish_pollock_lg_cradle_10
+  - first:
+      213: -6729560798155834755
+    second: Fish_pollock_lg_cradle_11
+  - first:
+      213: 383382790490501497
+    second: Fish_pollock_lg_cradle_12
+  - first:
+      213: -8561616554784679794
+    second: Fish_pollock_lg_cradle_13
+  - first:
+      213: 513841329814705024
+    second: Fish_pollock_lg_cradle_14
+  - first:
+      213: 2419381039761829030
+    second: Fish_pollock_lg_cradle_15
+  - first:
+      213: 3794008344561768554
+    second: Fish_pollock_lg_cradle_16
+  - first:
+      213: -6916790461459588083
+    second: Fish_pollock_lg_cradle_17
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Fish_pollock_lg_cradle_0
+      rect:
+        serializedVersion: 2
+        x: 27
+        y: 459
+        width: 12
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: da7da4ee6d57a8750800000000000000
+      internalID: 6307983794067134381
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_pollock_lg_cradle_1
+      rect:
+        serializedVersion: 2
+        x: 89
+        y: 459
+        width: 12
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7245dadee43892b30800000000000000
+      internalID: 4263082897301132327
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_pollock_lg_cradle_2
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 396
+        width: 27
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f9eb5978a7143ce70800000000000000
+      internalID: 9134216463754051231
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_pollock_lg_cradle_3
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 399
+        width: 27
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a689dfacea87be9b0800000000000000
+      internalID: -5049809865040619414
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_pollock_lg_cradle_4
+      rect:
+        serializedVersion: 2
+        x: 11
+        y: 341
+        width: 9
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d62fdcc238ef2cfe0800000000000000
+      internalID: -1170093113817042323
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_pollock_lg_cradle_5
+      rect:
+        serializedVersion: 2
+        x: 19
+        y: 341
+        width: 28
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1ae8873e15d3990b0800000000000000
+      internalID: -5721474429679530335
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_pollock_lg_cradle_6
+      rect:
+        serializedVersion: 2
+        x: 75
+        y: 340
+        width: 36
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7ee569462d498b0c0800000000000000
+      internalID: -4559730991361007897
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_pollock_lg_cradle_7
+      rect:
+        serializedVersion: 2
+        x: 15
+        y: 274
+        width: 28
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d70702c20d183f960800000000000000
+      internalID: 7634588524416626813
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_pollock_lg_cradle_8
+      rect:
+        serializedVersion: 2
+        x: 81
+        y: 274
+        width: 26
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5a837c82079f4ba30800000000000000
+      internalID: 4230280210123536549
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_pollock_lg_cradle_9
+      rect:
+        serializedVersion: 2
+        x: 26
+        y: 208
+        width: 11
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bb257508aeefd5870800000000000000
+      internalID: 8673368740514452155
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_pollock_lg_cradle_10
+      rect:
+        serializedVersion: 2
+        x: 91
+        y: 208
+        width: 11
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6c4bb2f1582fd12a0800000000000000
+      internalID: -6764984411673086778
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_pollock_lg_cradle_11
+      rect:
+        serializedVersion: 2
+        x: 21
+        y: 146
+        width: 26
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d7af68bdb1ccb92a0800000000000000
+      internalID: -6729560798155834755
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_pollock_lg_cradle_12
+      rect:
+        serializedVersion: 2
+        x: 85
+        y: 146
+        width: 28
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9713f20ed9c025500800000000000000
+      internalID: 383382790490501497
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_pollock_lg_cradle_13
+      rect:
+        serializedVersion: 2
+        x: 17
+        y: 84
+        width: 36
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e8894f4da170f2980800000000000000
+      internalID: -8561616554784679794
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_pollock_lg_cradle_14
+      rect:
+        serializedVersion: 2
+        x: 81
+        y: 85
+        width: 28
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 083158e87f7812700800000000000000
+      internalID: 513841329814705024
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_pollock_lg_cradle_15
+      rect:
+        serializedVersion: 2
+        x: 108
+        y: 85
+        width: 9
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6aca15bbc3e539120800000000000000
+      internalID: 2419381039761829030
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_pollock_lg_cradle_16
+      rect:
+        serializedVersion: 2
+        x: 21
+        y: 15
+        width: 27
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a68d874ec7607a430800000000000000
+      internalID: 3794008344561768554
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_pollock_lg_cradle_17
+      rect:
+        serializedVersion: 2
+        x: 85
+        y: 12
+        width: 27
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d0c14e6d8bf9200a0800000000000000
+      internalID: -6916790461459588083
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Fish_pollock_lg_cradle_0: 6307983794067134381
+      Fish_pollock_lg_cradle_1: 4263082897301132327
+      Fish_pollock_lg_cradle_10: -6764984411673086778
+      Fish_pollock_lg_cradle_11: -6729560798155834755
+      Fish_pollock_lg_cradle_12: 383382790490501497
+      Fish_pollock_lg_cradle_13: -8561616554784679794
+      Fish_pollock_lg_cradle_14: 513841329814705024
+      Fish_pollock_lg_cradle_15: 2419381039761829030
+      Fish_pollock_lg_cradle_16: 3794008344561768554
+      Fish_pollock_lg_cradle_17: -6916790461459588083
+      Fish_pollock_lg_cradle_2: 9134216463754051231
+      Fish_pollock_lg_cradle_3: -5049809865040619414
+      Fish_pollock_lg_cradle_4: -1170093113817042323
+      Fish_pollock_lg_cradle_5: -5721474429679530335
+      Fish_pollock_lg_cradle_6: -4559730991361007897
+      Fish_pollock_lg_cradle_7: 7634588524416626813
+      Fish_pollock_lg_cradle_8: 4230280210123536549
+      Fish_pollock_lg_cradle_9: 8673368740514452155
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

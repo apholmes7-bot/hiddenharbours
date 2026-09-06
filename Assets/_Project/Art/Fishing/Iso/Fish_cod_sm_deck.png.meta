@@ -1,0 +1,962 @@
+fileFormatVersion: 2
+guid: eb3a56e1cac94314ca8e4990cdb7f78e
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -6718670093331819931
+    second: Fish_cod_sm_deck_0
+  - first:
+      213: -4614730462637899671
+    second: Fish_cod_sm_deck_1
+  - first:
+      213: 5141484094965264102
+    second: Fish_cod_sm_deck_2
+  - first:
+      213: 5131126857974455172
+    second: Fish_cod_sm_deck_3
+  - first:
+      213: -1607865431324964036
+    second: Fish_cod_sm_deck_4
+  - first:
+      213: -464784310702011748
+    second: Fish_cod_sm_deck_5
+  - first:
+      213: 3626751711227240129
+    second: Fish_cod_sm_deck_6
+  - first:
+      213: -1486011969110634736
+    second: Fish_cod_sm_deck_7
+  - first:
+      213: -4101738286574392064
+    second: Fish_cod_sm_deck_8
+  - first:
+      213: 4336213228373323989
+    second: Fish_cod_sm_deck_9
+  - first:
+      213: -6963543118180548215
+    second: Fish_cod_sm_deck_10
+  - first:
+      213: -4664071362299679564
+    second: Fish_cod_sm_deck_11
+  - first:
+      213: 8883751594173571966
+    second: Fish_cod_sm_deck_12
+  - first:
+      213: -5377742184827806751
+    second: Fish_cod_sm_deck_13
+  - first:
+      213: 5494873548017387261
+    second: Fish_cod_sm_deck_14
+  - first:
+      213: -6017424561837054369
+    second: Fish_cod_sm_deck_15
+  - first:
+      213: -1599507449292128907
+    second: Fish_cod_sm_deck_16
+  - first:
+      213: -3894086944286459177
+    second: Fish_cod_sm_deck_17
+  - first:
+      213: 3509141110958346970
+    second: Fish_cod_sm_deck_18
+  - first:
+      213: -3570684277026862245
+    second: Fish_cod_sm_deck_19
+  - first:
+      213: -6577814428615053809
+    second: Fish_cod_sm_deck_20
+  - first:
+      213: -6094420570555852514
+    second: Fish_cod_sm_deck_21
+  - first:
+      213: 5767803324689912624
+    second: Fish_cod_sm_deck_22
+  - first:
+      213: 7108992958221338794
+    second: Fish_cod_sm_deck_23
+  - first:
+      213: -5902061414864801097
+    second: Fish_cod_sm_deck_24
+  - first:
+      213: -7357828439806306656
+    second: Fish_cod_sm_deck_25
+  - first:
+      213: 1845276280408584668
+    second: Fish_cod_sm_deck_26
+  - first:
+      213: -759516072059285717
+    second: Fish_cod_sm_deck_27
+  - first:
+      213: 8012951662549850849
+    second: Fish_cod_sm_deck_28
+  - first:
+      213: 8437000508141010287
+    second: Fish_cod_sm_deck_29
+  - first:
+      213: -8014638013350569225
+    second: Fish_cod_sm_deck_30
+  - first:
+      213: -4081809218350040155
+    second: Fish_cod_sm_deck_31
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Fish_cod_sm_deck_0
+      rect:
+        serializedVersion: 2
+        x: 27
+        y: 467
+        width: 9
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5629aeba52d72c2a0800000000000000
+      internalID: -6718670093331819931
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_deck_1
+      rect:
+        serializedVersion: 2
+        x: 92
+        y: 467
+        width: 9
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9604b48181f25ffb0800000000000000
+      internalID: -4614730462637899671
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_deck_2
+      rect:
+        serializedVersion: 2
+        x: 155
+        y: 466
+        width: 9
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6eea9ba2b883a5740800000000000000
+      internalID: 5141484094965264102
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_deck_3
+      rect:
+        serializedVersion: 2
+        x: 220
+        y: 466
+        width: 9
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 48b980301bc653740800000000000000
+      internalID: 5131126857974455172
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_deck_4
+      rect:
+        serializedVersion: 2
+        x: 21
+        y: 405
+        width: 18
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c3bce37b8e6bfa9e0800000000000000
+      internalID: -1607865431324964036
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_deck_5
+      rect:
+        serializedVersion: 2
+        x: 85
+        y: 405
+        width: 18
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c9a8e67c121cc89f0800000000000000
+      internalID: -464784310702011748
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_deck_6
+      rect:
+        serializedVersion: 2
+        x: 149
+        y: 403
+        width: 18
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1ce5d3c477fc45230800000000000000
+      internalID: 3626751711227240129
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_deck_7
+      rect:
+        serializedVersion: 2
+        x: 213
+        y: 404
+        width: 18
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 01f8e21ccff906be0800000000000000
+      internalID: -1486011969110634736
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_deck_8
+      rect:
+        serializedVersion: 2
+        x: 19
+        y: 343
+        width: 22
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 00d2d13a2c2b317c0800000000000000
+      internalID: -4101738286574392064
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_deck_9
+      rect:
+        serializedVersion: 2
+        x: 83
+        y: 344
+        width: 22
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5d0ba8bf4f25d2c30800000000000000
+      internalID: 4336213228373323989
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_deck_10
+      rect:
+        serializedVersion: 2
+        x: 147
+        y: 344
+        width: 22
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9818bbead668c5f90800000000000000
+      internalID: -6963543118180548215
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_deck_11
+      rect:
+        serializedVersion: 2
+        x: 211
+        y: 344
+        width: 23
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4bc2e0baec3e54fb0800000000000000
+      internalID: -4664071362299679564
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_deck_12
+      rect:
+        serializedVersion: 2
+        x: 21
+        y: 279
+        width: 18
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e73a68bb10d694b70800000000000000
+      internalID: 8883751594173571966
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_deck_13
+      rect:
+        serializedVersion: 2
+        x: 84
+        y: 279
+        width: 19
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1eb94b3b9fb6e55b0800000000000000
+      internalID: -5377742184827806751
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_deck_14
+      rect:
+        serializedVersion: 2
+        x: 149
+        y: 278
+        width: 18
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: df6444bf066b14c40800000000000000
+      internalID: 5494873548017387261
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_deck_15
+      rect:
+        serializedVersion: 2
+        x: 212
+        y: 278
+        width: 19
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f56edf02e30dd7ca0800000000000000
+      internalID: -6017424561837054369
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_deck_16
+      rect:
+        serializedVersion: 2
+        x: 28
+        y: 214
+        width: 9
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 57df95d03786dc9e0800000000000000
+      internalID: -1599507449292128907
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_deck_17
+      rect:
+        serializedVersion: 2
+        x: 91
+        y: 213
+        width: 9
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7dab1515e8c65f9c0800000000000000
+      internalID: -3894086944286459177
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_deck_18
+      rect:
+        serializedVersion: 2
+        x: 156
+        y: 213
+        width: 9
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ad254698f39f2b030800000000000000
+      internalID: 3509141110958346970
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_deck_19
+      rect:
+        serializedVersion: 2
+        x: 219
+        y: 213
+        width: 9
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b5bcdbe7191627ec0800000000000000
+      internalID: -3570684277026862245
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_deck_20
+      rect:
+        serializedVersion: 2
+        x: 25
+        y: 151
+        width: 18
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f0ee5ffb0a8e6b4a0800000000000000
+      internalID: -6577814428615053809
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_deck_21
+      rect:
+        serializedVersion: 2
+        x: 89
+        y: 151
+        width: 18
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e195f2cd7c44c6ba0800000000000000
+      internalID: -6094420570555852514
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_deck_22
+      rect:
+        serializedVersion: 2
+        x: 153
+        y: 150
+        width: 18
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 033957e809a5b0050800000000000000
+      internalID: 5767803324689912624
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_deck_23
+      rect:
+        serializedVersion: 2
+        x: 217
+        y: 150
+        width: 18
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aa849813e6738a260800000000000000
+      internalID: 7108992958221338794
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_deck_24
+      rect:
+        serializedVersion: 2
+        x: 23
+        y: 88
+        width: 22
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7b2b174e96aa71ea0800000000000000
+      internalID: -5902061414864801097
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_deck_25
+      rect:
+        serializedVersion: 2
+        x: 87
+        y: 87
+        width: 22
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0a61417740eb3e990800000000000000
+      internalID: -7357828439806306656
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_deck_26
+      rect:
+        serializedVersion: 2
+        x: 151
+        y: 88
+        width: 22
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cd13536100dbb9910800000000000000
+      internalID: 1845276280408584668
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_deck_27
+      rect:
+        serializedVersion: 2
+        x: 214
+        y: 88
+        width: 23
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b2fc4b31828a575f0800000000000000
+      internalID: -759516072059285717
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_deck_28
+      rect:
+        serializedVersion: 2
+        x: 25
+        y: 21
+        width: 18
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1ead8a82519b33f60800000000000000
+      internalID: 8012951662549850849
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_deck_29
+      rect:
+        serializedVersion: 2
+        x: 89
+        y: 21
+        width: 18
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f6df881d24f361570800000000000000
+      internalID: 8437000508141010287
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_deck_30
+      rect:
+        serializedVersion: 2
+        x: 153
+        y: 19
+        width: 18
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7fa95e2b03946c090800000000000000
+      internalID: -8014638013350569225
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_deck_31
+      rect:
+        serializedVersion: 2
+        x: 217
+        y: 20
+        width: 18
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5abb45b64208a57c0800000000000000
+      internalID: -4081809218350040155
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Fish_cod_sm_deck_0: -6718670093331819931
+      Fish_cod_sm_deck_1: -4614730462637899671
+      Fish_cod_sm_deck_10: -6963543118180548215
+      Fish_cod_sm_deck_11: -4664071362299679564
+      Fish_cod_sm_deck_12: 8883751594173571966
+      Fish_cod_sm_deck_13: -5377742184827806751
+      Fish_cod_sm_deck_14: 5494873548017387261
+      Fish_cod_sm_deck_15: -6017424561837054369
+      Fish_cod_sm_deck_16: -1599507449292128907
+      Fish_cod_sm_deck_17: -3894086944286459177
+      Fish_cod_sm_deck_18: 3509141110958346970
+      Fish_cod_sm_deck_19: -3570684277026862245
+      Fish_cod_sm_deck_2: 5141484094965264102
+      Fish_cod_sm_deck_20: -6577814428615053809
+      Fish_cod_sm_deck_21: -6094420570555852514
+      Fish_cod_sm_deck_22: 5767803324689912624
+      Fish_cod_sm_deck_23: 7108992958221338794
+      Fish_cod_sm_deck_24: -5902061414864801097
+      Fish_cod_sm_deck_25: -7357828439806306656
+      Fish_cod_sm_deck_26: 1845276280408584668
+      Fish_cod_sm_deck_27: -759516072059285717
+      Fish_cod_sm_deck_28: 8012951662549850849
+      Fish_cod_sm_deck_29: 8437000508141010287
+      Fish_cod_sm_deck_3: 5131126857974455172
+      Fish_cod_sm_deck_30: -8014638013350569225
+      Fish_cod_sm_deck_31: -4081809218350040155
+      Fish_cod_sm_deck_4: -1607865431324964036
+      Fish_cod_sm_deck_5: -464784310702011748
+      Fish_cod_sm_deck_6: 3626751711227240129
+      Fish_cod_sm_deck_7: -1486011969110634736
+      Fish_cod_sm_deck_8: -4101738286574392064
+      Fish_cod_sm_deck_9: 4336213228373323989
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

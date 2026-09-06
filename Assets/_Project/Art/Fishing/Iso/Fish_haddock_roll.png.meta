@@ -1,0 +1,988 @@
+fileFormatVersion: 2
+guid: 868358c331033a34ea8bdae0f61379f5
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 6964569997513114262
+    second: Fish_haddock_roll_0
+  - first:
+      213: 8258660157087506640
+    second: Fish_haddock_roll_1
+  - first:
+      213: 7888506578698415154
+    second: Fish_haddock_roll_2
+  - first:
+      213: -4346264988065830467
+    second: Fish_haddock_roll_3
+  - first:
+      213: -4362672733036315277
+    second: Fish_haddock_roll_4
+  - first:
+      213: 6948467275247096950
+    second: Fish_haddock_roll_5
+  - first:
+      213: 3704469097304716217
+    second: Fish_haddock_roll_6
+  - first:
+      213: 5885557813471171196
+    second: Fish_haddock_roll_7
+  - first:
+      213: -5366174183574981325
+    second: Fish_haddock_roll_8
+  - first:
+      213: 5773712657850149214
+    second: Fish_haddock_roll_9
+  - first:
+      213: -5110141473888084389
+    second: Fish_haddock_roll_10
+  - first:
+      213: 2413547899531789910
+    second: Fish_haddock_roll_11
+  - first:
+      213: 4357055210294211828
+    second: Fish_haddock_roll_12
+  - first:
+      213: -711257259856271290
+    second: Fish_haddock_roll_13
+  - first:
+      213: -8762336288800054048
+    second: Fish_haddock_roll_14
+  - first:
+      213: 8945003106065240210
+    second: Fish_haddock_roll_15
+  - first:
+      213: 4252545350479728429
+    second: Fish_haddock_roll_16
+  - first:
+      213: -8253926530971689227
+    second: Fish_haddock_roll_17
+  - first:
+      213: -8249953179005226959
+    second: Fish_haddock_roll_18
+  - first:
+      213: -4808945162560440784
+    second: Fish_haddock_roll_19
+  - first:
+      213: 8775568506197909420
+    second: Fish_haddock_roll_20
+  - first:
+      213: -489180423721107834
+    second: Fish_haddock_roll_21
+  - first:
+      213: -6857777872232791852
+    second: Fish_haddock_roll_22
+  - first:
+      213: -2865745959949118729
+    second: Fish_haddock_roll_23
+  - first:
+      213: -8766493966985704675
+    second: Fish_haddock_roll_24
+  - first:
+      213: -3344795509713150579
+    second: Fish_haddock_roll_25
+  - first:
+      213: -5239423426450056650
+    second: Fish_haddock_roll_26
+  - first:
+      213: -9022825519154664528
+    second: Fish_haddock_roll_27
+  - first:
+      213: 7497354145996125201
+    second: Fish_haddock_roll_28
+  - first:
+      213: 6790918323414368393
+    second: Fish_haddock_roll_29
+  - first:
+      213: 2288684897219803133
+    second: Fish_haddock_roll_30
+  - first:
+      213: -6713314690733798023
+    second: Fish_haddock_roll_31
+  - first:
+      213: -7786531741517434552
+    second: Fish_haddock_roll_32
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Fish_haddock_roll_0
+      rect:
+        serializedVersion: 2
+        x: 28
+        y: 468
+        width: 8
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 692cc1b438f17a060800000000000000
+      internalID: 6964569997513114262
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_roll_1
+      rect:
+        serializedVersion: 2
+        x: 90
+        y: 464
+        width: 10
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0d06fd718a7ac9270800000000000000
+      internalID: 8258660157087506640
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_roll_2
+      rect:
+        serializedVersion: 2
+        x: 157
+        y: 468
+        width: 8
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 23ca6af20fa997d60800000000000000
+      internalID: 7888506578698415154
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_roll_3
+      rect:
+        serializedVersion: 2
+        x: 219
+        y: 462
+        width: 9
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: db96e965507fea3c0800000000000000
+      internalID: -4346264988065830467
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_roll_4
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 401
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 37d7614834ca473c0800000000000000
+      internalID: -4362672733036315277
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_roll_5
+      rect:
+        serializedVersion: 2
+        x: 84
+        y: 402
+        width: 20
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 674978a1c2aed6060800000000000000
+      internalID: 6948467275247096950
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_roll_6
+      rect:
+        serializedVersion: 2
+        x: 148
+        y: 404
+        width: 19
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9b37242540be86330800000000000000
+      internalID: 3704469097304716217
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_roll_7
+      rect:
+        serializedVersion: 2
+        x: 213
+        y: 399
+        width: 19
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c7259f8f5a3bda150800000000000000
+      internalID: 5885557813471171196
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_roll_8
+      rect:
+        serializedVersion: 2
+        x: 18
+        y: 342
+        width: 24
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3353421e2058785b0800000000000000
+      internalID: -5366174183574981325
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_roll_9
+      rect:
+        serializedVersion: 2
+        x: 82
+        y: 343
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e59a5566219502050800000000000000
+      internalID: 5773712657850149214
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_roll_10
+      rect:
+        serializedVersion: 2
+        x: 87
+        y: 341
+        width: 19
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b5ed8e877612519b0800000000000000
+      internalID: -5110141473888084389
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_roll_11
+      rect:
+        serializedVersion: 2
+        x: 146
+        y: 342
+        width: 24
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6568bffe605ae7120800000000000000
+      internalID: 2413547899531789910
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_roll_12
+      rect:
+        serializedVersion: 2
+        x: 210
+        y: 341
+        width: 24
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4f4f95c01ae577c30800000000000000
+      internalID: 4357055210294211828
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_roll_13
+      rect:
+        serializedVersion: 2
+        x: 19
+        y: 276
+        width: 20
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 64869526a4b1126f0800000000000000
+      internalID: -711257259856271290
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_roll_14
+      rect:
+        serializedVersion: 2
+        x: 84
+        y: 277
+        width: 20
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0e4ee87f19de56680800000000000000
+      internalID: -8762336288800054048
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_roll_15
+      rect:
+        serializedVersion: 2
+        x: 151
+        y: 277
+        width: 17
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 290d8cbaee8032c70800000000000000
+      internalID: 8945003106065240210
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_roll_16
+      rect:
+        serializedVersion: 2
+        x: 213
+        y: 276
+        width: 19
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d2f459e1773140b30800000000000000
+      internalID: 4252545350479728429
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_roll_17
+      rect:
+        serializedVersion: 2
+        x: 27
+        y: 211
+        width: 9
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5fe924f1d89247d80800000000000000
+      internalID: -8253926530971689227
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_roll_18
+      rect:
+        serializedVersion: 2
+        x: 92
+        y: 212
+        width: 9
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 130f9c73b47428d80800000000000000
+      internalID: -8249953179005226959
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_roll_19
+      rect:
+        serializedVersion: 2
+        x: 155
+        y: 211
+        width: 10
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 03670418ad1334db0800000000000000
+      internalID: -4808945162560440784
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_roll_20
+      rect:
+        serializedVersion: 2
+        x: 220
+        y: 210
+        width: 9
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: caf180abf0519c970800000000000000
+      internalID: 8775568506197909420
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_roll_21
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 149
+        width: 16
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 68e37051ff41639f0800000000000000
+      internalID: -489180423721107834
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_roll_22
+      rect:
+        serializedVersion: 2
+        x: 88
+        y: 149
+        width: 20
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4d0c709fb5744d0a0800000000000000
+      internalID: -6857777872232791852
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_roll_23
+      rect:
+        serializedVersion: 2
+        x: 153
+        y: 147
+        width: 20
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7f2d8b89b33da38d0800000000000000
+      internalID: -2865745959949118729
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_roll_24
+      rect:
+        serializedVersion: 2
+        x: 216
+        y: 148
+        width: 19
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d1b46341f28275680800000000000000
+      internalID: -8766493966985704675
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_roll_25
+      rect:
+        serializedVersion: 2
+        x: 22
+        y: 85
+        width: 24
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d8dd9359436e491d0800000000000000
+      internalID: -3344795509713150579
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_roll_26
+      rect:
+        serializedVersion: 2
+        x: 86
+        y: 86
+        width: 24
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 63a959e3724d947b0800000000000000
+      internalID: -5239423426450056650
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_roll_27
+      rect:
+        serializedVersion: 2
+        x: 150
+        y: 85
+        width: 24
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0bbe47ccefb78c280800000000000000
+      internalID: -9022825519154664528
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_roll_28
+      rect:
+        serializedVersion: 2
+        x: 214
+        y: 85
+        width: 24
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 114b6638fd3fb0860800000000000000
+      internalID: 7497354145996125201
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_roll_29
+      rect:
+        serializedVersion: 2
+        x: 25
+        y: 20
+        width: 19
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9800ecd3c303e3e50800000000000000
+      internalID: 6790918323414368393
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_roll_30
+      rect:
+        serializedVersion: 2
+        x: 88
+        y: 18
+        width: 20
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: df7769db9ca03cf10800000000000000
+      internalID: 2288684897219803133
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_roll_31
+      rect:
+        serializedVersion: 2
+        x: 152
+        y: 17
+        width: 17
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 97d86618bd385d2a0800000000000000
+      internalID: -6713314690733798023
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_roll_32
+      rect:
+        serializedVersion: 2
+        x: 216
+        y: 16
+        width: 20
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 841bc8ac2aea0f390800000000000000
+      internalID: -7786531741517434552
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Fish_haddock_roll_0: 6964569997513114262
+      Fish_haddock_roll_1: 8258660157087506640
+      Fish_haddock_roll_10: -5110141473888084389
+      Fish_haddock_roll_11: 2413547899531789910
+      Fish_haddock_roll_12: 4357055210294211828
+      Fish_haddock_roll_13: -711257259856271290
+      Fish_haddock_roll_14: -8762336288800054048
+      Fish_haddock_roll_15: 8945003106065240210
+      Fish_haddock_roll_16: 4252545350479728429
+      Fish_haddock_roll_17: -8253926530971689227
+      Fish_haddock_roll_18: -8249953179005226959
+      Fish_haddock_roll_19: -4808945162560440784
+      Fish_haddock_roll_2: 7888506578698415154
+      Fish_haddock_roll_20: 8775568506197909420
+      Fish_haddock_roll_21: -489180423721107834
+      Fish_haddock_roll_22: -6857777872232791852
+      Fish_haddock_roll_23: -2865745959949118729
+      Fish_haddock_roll_24: -8766493966985704675
+      Fish_haddock_roll_25: -3344795509713150579
+      Fish_haddock_roll_26: -5239423426450056650
+      Fish_haddock_roll_27: -9022825519154664528
+      Fish_haddock_roll_28: 7497354145996125201
+      Fish_haddock_roll_29: 6790918323414368393
+      Fish_haddock_roll_3: -4346264988065830467
+      Fish_haddock_roll_30: 2288684897219803133
+      Fish_haddock_roll_31: -6713314690733798023
+      Fish_haddock_roll_32: -7786531741517434552
+      Fish_haddock_roll_4: -4362672733036315277
+      Fish_haddock_roll_5: 6948467275247096950
+      Fish_haddock_roll_6: 3704469097304716217
+      Fish_haddock_roll_7: 5885557813471171196
+      Fish_haddock_roll_8: -5366174183574981325
+      Fish_haddock_roll_9: 5773712657850149214
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

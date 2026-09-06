@@ -1,0 +1,1092 @@
+fileFormatVersion: 2
+guid: 33e53d6a1ac05e0478fb2d827266d301
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 6264977380218102859
+    second: Fish_bass_roll_0
+  - first:
+      213: -8653355306889539262
+    second: Fish_bass_roll_1
+  - first:
+      213: 3607006408779905404
+    second: Fish_bass_roll_2
+  - first:
+      213: 6074663035123813043
+    second: Fish_bass_roll_3
+  - first:
+      213: -8632571464519764635
+    second: Fish_bass_roll_4
+  - first:
+      213: -6357993140322750709
+    second: Fish_bass_roll_5
+  - first:
+      213: -4210424766814670762
+    second: Fish_bass_roll_6
+  - first:
+      213: 6612803923791799425
+    second: Fish_bass_roll_7
+  - first:
+      213: -5768684903597053927
+    second: Fish_bass_roll_8
+  - first:
+      213: -6001810437853730324
+    second: Fish_bass_roll_9
+  - first:
+      213: -8565928908963537888
+    second: Fish_bass_roll_10
+  - first:
+      213: 8641895222226947712
+    second: Fish_bass_roll_11
+  - first:
+      213: 1534243032077463958
+    second: Fish_bass_roll_12
+  - first:
+      213: 8235302902800547187
+    second: Fish_bass_roll_13
+  - first:
+      213: -5447523980483064857
+    second: Fish_bass_roll_14
+  - first:
+      213: 9116702912999196965
+    second: Fish_bass_roll_15
+  - first:
+      213: -3088788062894198056
+    second: Fish_bass_roll_16
+  - first:
+      213: 4978787048294930377
+    second: Fish_bass_roll_17
+  - first:
+      213: 8370655226174097800
+    second: Fish_bass_roll_18
+  - first:
+      213: 5750196497176039244
+    second: Fish_bass_roll_19
+  - first:
+      213: 6157944397486050573
+    second: Fish_bass_roll_20
+  - first:
+      213: -6634935636368813457
+    second: Fish_bass_roll_21
+  - first:
+      213: -1241226273160671833
+    second: Fish_bass_roll_22
+  - first:
+      213: -1890212229185821445
+    second: Fish_bass_roll_23
+  - first:
+      213: -8745101945505467861
+    second: Fish_bass_roll_24
+  - first:
+      213: 8781872642477230290
+    second: Fish_bass_roll_25
+  - first:
+      213: -7663105169049402614
+    second: Fish_bass_roll_26
+  - first:
+      213: -1310021845551762956
+    second: Fish_bass_roll_27
+  - first:
+      213: 2937997885996272003
+    second: Fish_bass_roll_28
+  - first:
+      213: -2309921962155237934
+    second: Fish_bass_roll_29
+  - first:
+      213: 94615909008474081
+    second: Fish_bass_roll_30
+  - first:
+      213: 7671184643613453903
+    second: Fish_bass_roll_31
+  - first:
+      213: 8235229098909398432
+    second: Fish_bass_roll_32
+  - first:
+      213: -243728966600198264
+    second: Fish_bass_roll_33
+  - first:
+      213: 9091515489575299387
+    second: Fish_bass_roll_34
+  - first:
+      213: 6338177766479762487
+    second: Fish_bass_roll_35
+  - first:
+      213: -131586240932173723
+    second: Fish_bass_roll_36
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Fish_bass_roll_0
+      rect:
+        serializedVersion: 2
+        x: 28
+        y: 467
+        width: 9
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b44e1c9ebbba1f650800000000000000
+      internalID: 6264977380218102859
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_roll_1
+      rect:
+        serializedVersion: 2
+        x: 90
+        y: 463
+        width: 10
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2419b91223b19e780800000000000000
+      internalID: -8653355306889539262
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_roll_2
+      rect:
+        serializedVersion: 2
+        x: 157
+        y: 467
+        width: 8
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c7932e1d739ae0230800000000000000
+      internalID: 3607006408779905404
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_roll_3
+      rect:
+        serializedVersion: 2
+        x: 218
+        y: 460
+        width: 10
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3ba40c278d98d4450800000000000000
+      internalID: 6074663035123813043
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_roll_4
+      rect:
+        serializedVersion: 2
+        x: 22
+        y: 400
+        width: 19
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 56530278df1f23880800000000000000
+      internalID: -8632571464519764635
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_roll_5
+      rect:
+        serializedVersion: 2
+        x: 82
+        y: 400
+        width: 23
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b0f21bacceed3c7a0800000000000000
+      internalID: -6357993140322750709
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_roll_6
+      rect:
+        serializedVersion: 2
+        x: 147
+        y: 404
+        width: 21
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 650318c7bf09195c0800000000000000
+      internalID: -4210424766814670762
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_roll_7
+      rect:
+        serializedVersion: 2
+        x: 211
+        y: 398
+        width: 22
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1846beee12665cb50800000000000000
+      internalID: 6612803923791799425
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_roll_8
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 341
+        width: 27
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 91860fbd4a381ffa0800000000000000
+      internalID: -5768684903597053927
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_roll_9
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 343
+        width: 7
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ce92f7aa43945bca0800000000000000
+      internalID: -6001810437853730324
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_roll_10
+      rect:
+        serializedVersion: 2
+        x: 86
+        y: 341
+        width: 21
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 02c9af1aa05bf1980800000000000000
+      internalID: -8565928908963537888
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_roll_11
+      rect:
+        serializedVersion: 2
+        x: 144
+        y: 342
+        width: 27
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 08e8bfafaed2ee770800000000000000
+      internalID: 8641895222226947712
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_roll_12
+      rect:
+        serializedVersion: 2
+        x: 208
+        y: 340
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 691781ea8e9ba4510800000000000000
+      internalID: 1534243032077463958
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_roll_13
+      rect:
+        serializedVersion: 2
+        x: 214
+        y: 341
+        width: 21
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 37d7b2b8b5ca94270800000000000000
+      internalID: 8235302902800547187
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_roll_14
+      rect:
+        serializedVersion: 2
+        x: 17
+        y: 276
+        width: 23
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7eb82ed4dc18664b0800000000000000
+      internalID: -5447523980483064857
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_roll_15
+      rect:
+        serializedVersion: 2
+        x: 83
+        y: 276
+        width: 22
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 529061c3ff8058e70800000000000000
+      internalID: 9116702912999196965
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_roll_16
+      rect:
+        serializedVersion: 2
+        x: 152
+        y: 276
+        width: 17
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8d279b43f9b6225d0800000000000000
+      internalID: -3088788062894198056
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_roll_17
+      rect:
+        serializedVersion: 2
+        x: 211
+        y: 275
+        width: 22
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9c75fe11174381540800000000000000
+      internalID: 4978787048294930377
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_roll_18
+      rect:
+        serializedVersion: 2
+        x: 27
+        y: 210
+        width: 9
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 889cf5d149a8a2470800000000000000
+      internalID: 8370655226174097800
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_roll_19
+      rect:
+        serializedVersion: 2
+        x: 92
+        y: 211
+        width: 10
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c4f8fd29f3dcccf40800000000000000
+      internalID: 5750196497176039244
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_roll_20
+      rect:
+        serializedVersion: 2
+        x: 155
+        y: 210
+        width: 10
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d0d43c6adc9657550800000000000000
+      internalID: 6157944397486050573
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_roll_21
+      rect:
+        serializedVersion: 2
+        x: 220
+        y: 209
+        width: 10
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f6218ae2139fbe3a0800000000000000
+      internalID: -6634935636368813457
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_roll_22
+      rect:
+        serializedVersion: 2
+        x: 23
+        y: 148
+        width: 18
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7ad4066e74746cee0800000000000000
+      internalID: -1241226273160671833
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_roll_23
+      rect:
+        serializedVersion: 2
+        x: 87
+        y: 149
+        width: 22
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bf4a7490efd94c5e0800000000000000
+      internalID: -1890212229185821445
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_roll_24
+      rect:
+        serializedVersion: 2
+        x: 152
+        y: 147
+        width: 23
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b22b1953d1823a680800000000000000
+      internalID: -8745101945505467861
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_roll_25
+      rect:
+        serializedVersion: 2
+        x: 215
+        y: 147
+        width: 23
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2d88395d3aa7fd970800000000000000
+      internalID: 8781872642477230290
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_roll_26
+      rect:
+        serializedVersion: 2
+        x: 20
+        y: 85
+        width: 22
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a03c95a137e27a590800000000000000
+      internalID: -7663105169049402614
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_roll_27
+      rect:
+        serializedVersion: 2
+        x: 41
+        y: 90
+        width: 7
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4f1b2ef721ed1dde0800000000000000
+      internalID: -1310021845551762956
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_roll_28
+      rect:
+        serializedVersion: 2
+        x: 85
+        y: 86
+        width: 27
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 38908a9d28dd5c820800000000000000
+      internalID: 2937997885996272003
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_roll_29
+      rect:
+        serializedVersion: 2
+        x: 149
+        y: 84
+        width: 21
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2dd1dd2c63281ffd0800000000000000
+      internalID: -2309921962155237934
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_roll_30
+      rect:
+        serializedVersion: 2
+        x: 169
+        y: 85
+        width: 7
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1effc8efaa4205100800000000000000
+      internalID: 94615909008474081
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_roll_31
+      rect:
+        serializedVersion: 2
+        x: 213
+        y: 86
+        width: 21
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f4ee2092ac5857a60800000000000000
+      internalID: 7671184643613453903
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_roll_32
+      rect:
+        serializedVersion: 2
+        x: 234
+        y: 84
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0a5747cbb39694270800000000000000
+      internalID: 8235229098909398432
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_roll_33
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 20
+        width: 21
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8877254dbc91e9cf0800000000000000
+      internalID: -243728966600198264
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_roll_34
+      rect:
+        serializedVersion: 2
+        x: 87
+        y: 16
+        width: 22
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b39e81a3b2d8b2e70800000000000000
+      internalID: 9091515489575299387
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_roll_35
+      rect:
+        serializedVersion: 2
+        x: 151
+        y: 15
+        width: 19
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7341e46f81bb5f750800000000000000
+      internalID: 6338177766479762487
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_roll_36
+      rect:
+        serializedVersion: 2
+        x: 215
+        y: 14
+        width: 22
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 568a8e3d2038c2ef0800000000000000
+      internalID: -131586240932173723
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Fish_bass_roll_0: 6264977380218102859
+      Fish_bass_roll_1: -8653355306889539262
+      Fish_bass_roll_10: -8565928908963537888
+      Fish_bass_roll_11: 8641895222226947712
+      Fish_bass_roll_12: 1534243032077463958
+      Fish_bass_roll_13: 8235302902800547187
+      Fish_bass_roll_14: -5447523980483064857
+      Fish_bass_roll_15: 9116702912999196965
+      Fish_bass_roll_16: -3088788062894198056
+      Fish_bass_roll_17: 4978787048294930377
+      Fish_bass_roll_18: 8370655226174097800
+      Fish_bass_roll_19: 5750196497176039244
+      Fish_bass_roll_2: 3607006408779905404
+      Fish_bass_roll_20: 6157944397486050573
+      Fish_bass_roll_21: -6634935636368813457
+      Fish_bass_roll_22: -1241226273160671833
+      Fish_bass_roll_23: -1890212229185821445
+      Fish_bass_roll_24: -8745101945505467861
+      Fish_bass_roll_25: 8781872642477230290
+      Fish_bass_roll_26: -7663105169049402614
+      Fish_bass_roll_27: -1310021845551762956
+      Fish_bass_roll_28: 2937997885996272003
+      Fish_bass_roll_29: -2309921962155237934
+      Fish_bass_roll_3: 6074663035123813043
+      Fish_bass_roll_30: 94615909008474081
+      Fish_bass_roll_31: 7671184643613453903
+      Fish_bass_roll_32: 8235229098909398432
+      Fish_bass_roll_33: -243728966600198264
+      Fish_bass_roll_34: 9091515489575299387
+      Fish_bass_roll_35: 6338177766479762487
+      Fish_bass_roll_36: -131586240932173723
+      Fish_bass_roll_4: -8632571464519764635
+      Fish_bass_roll_5: -6357993140322750709
+      Fish_bass_roll_6: -4210424766814670762
+      Fish_bass_roll_7: 6612803923791799425
+      Fish_bass_roll_8: -5768684903597053927
+      Fish_bass_roll_9: -6001810437853730324
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

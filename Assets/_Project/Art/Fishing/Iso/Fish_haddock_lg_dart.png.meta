@@ -1,0 +1,858 @@
+fileFormatVersion: 2
+guid: 21774ff51e13a4546bc5d07b57e702cc
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -7218054015939215096
+    second: Fish_haddock_lg_dart_0
+  - first:
+      213: -4177566605260984415
+    second: Fish_haddock_lg_dart_1
+  - first:
+      213: -7732968438030425214
+    second: Fish_haddock_lg_dart_2
+  - first:
+      213: -5889542619559344554
+    second: Fish_haddock_lg_dart_3
+  - first:
+      213: 5537378929079864729
+    second: Fish_haddock_lg_dart_4
+  - first:
+      213: -2142603421515511819
+    second: Fish_haddock_lg_dart_5
+  - first:
+      213: 3070700742242906072
+    second: Fish_haddock_lg_dart_6
+  - first:
+      213: -6823455677439959965
+    second: Fish_haddock_lg_dart_7
+  - first:
+      213: 1469815144215028804
+    second: Fish_haddock_lg_dart_8
+  - first:
+      213: 805899058668548621
+    second: Fish_haddock_lg_dart_9
+  - first:
+      213: -1169058970231564403
+    second: Fish_haddock_lg_dart_10
+  - first:
+      213: 8242119593863431337
+    second: Fish_haddock_lg_dart_11
+  - first:
+      213: -8594215885624615140
+    second: Fish_haddock_lg_dart_12
+  - first:
+      213: 49424808478856824
+    second: Fish_haddock_lg_dart_13
+  - first:
+      213: 7187444671772815159
+    second: Fish_haddock_lg_dart_14
+  - first:
+      213: -7600547904834154404
+    second: Fish_haddock_lg_dart_15
+  - first:
+      213: -7403186011136798196
+    second: Fish_haddock_lg_dart_16
+  - first:
+      213: -5217828769301104595
+    second: Fish_haddock_lg_dart_17
+  - first:
+      213: -4617093799812036908
+    second: Fish_haddock_lg_dart_18
+  - first:
+      213: 553852562924971813
+    second: Fish_haddock_lg_dart_19
+  - first:
+      213: -8396258910333642745
+    second: Fish_haddock_lg_dart_20
+  - first:
+      213: 1376677989983338211
+    second: Fish_haddock_lg_dart_21
+  - first:
+      213: -8887847538925721550
+    second: Fish_haddock_lg_dart_22
+  - first:
+      213: -1995050243652837983
+    second: Fish_haddock_lg_dart_23
+  - first:
+      213: -6256111795515191197
+    second: Fish_haddock_lg_dart_24
+  - first:
+      213: 5284824697749325331
+    second: Fish_haddock_lg_dart_25
+  - first:
+      213: 6139734610796584202
+    second: Fish_haddock_lg_dart_26
+  - first:
+      213: 7324226971436410985
+    second: Fish_haddock_lg_dart_27
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Fish_haddock_lg_dart_0
+      rect:
+        serializedVersion: 2
+        x: 27
+        y: 456
+        width: 10
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8018c5a8d1254db90800000000000000
+      internalID: -7218054015939215096
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_dart_1
+      rect:
+        serializedVersion: 2
+        x: 91
+        y: 460
+        width: 10
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1af62e36e4d4606c0800000000000000
+      internalID: -4177566605260984415
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_dart_2
+      rect:
+        serializedVersion: 2
+        x: 155
+        y: 456
+        width: 10
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 283a3e73d2afea490800000000000000
+      internalID: -7732968438030425214
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_dart_3
+      rect:
+        serializedVersion: 2
+        x: 22
+        y: 394
+        width: 20
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 65644af0134244ea0800000000000000
+      internalID: -5889542619559344554
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_dart_4
+      rect:
+        serializedVersion: 2
+        x: 82
+        y: 394
+        width: 24
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 99dc9863cc8b8dc40800000000000000
+      internalID: 5537378929079864729
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_dart_5
+      rect:
+        serializedVersion: 2
+        x: 144
+        y: 396
+        width: 26
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5f708064a81f342e0800000000000000
+      internalID: -2142603421515511819
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_dart_6
+      rect:
+        serializedVersion: 2
+        x: 14
+        y: 335
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8dfaae84e025d9a20800000000000000
+      internalID: 3070700742242906072
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_dart_7
+      rect:
+        serializedVersion: 2
+        x: 20
+        y: 336
+        width: 25
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 36c919da6373e41a0800000000000000
+      internalID: -6823455677439959965
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_dart_8
+      rect:
+        serializedVersion: 2
+        x: 77
+        y: 336
+        width: 33
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4442d641615d56410800000000000000
+      internalID: 1469815144215028804
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_dart_9
+      rect:
+        serializedVersion: 2
+        x: 142
+        y: 340
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d02b2cc8ce02f2b00800000000000000
+      internalID: 805899058668548621
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_dart_10
+      rect:
+        serializedVersion: 2
+        x: 148
+        y: 336
+        width: 25
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d871ddd7f0ba6cfe0800000000000000
+      internalID: -1169058970231564403
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_dart_11
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 270
+        width: 26
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9a4448c1a14e16270800000000000000
+      internalID: 8242119593863431337
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_dart_12
+      rect:
+        serializedVersion: 2
+        x: 82
+        y: 270
+        width: 24
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c1f5356af263bb880800000000000000
+      internalID: -8594215885624615140
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_dart_13
+      rect:
+        serializedVersion: 2
+        x: 150
+        y: 270
+        width: 20
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8765978f9979fa000800000000000000
+      internalID: 49424808478856824
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_dart_14
+      rect:
+        serializedVersion: 2
+        x: 27
+        y: 204
+        width: 10
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 73feac729deeeb360800000000000000
+      internalID: 7187444671772815159
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_dart_15
+      rect:
+        serializedVersion: 2
+        x: 91
+        y: 204
+        width: 10
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c50550233fd658690800000000000000
+      internalID: -7600547904834154404
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_dart_16
+      rect:
+        serializedVersion: 2
+        x: 155
+        y: 204
+        width: 10
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c02dc00fb89924990800000000000000
+      internalID: -7403186011136798196
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_dart_17
+      rect:
+        serializedVersion: 2
+        x: 22
+        y: 142
+        width: 20
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d287efa216c8697b0800000000000000
+      internalID: -5217828769301104595
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_dart_18
+      rect:
+        serializedVersion: 2
+        x: 86
+        y: 142
+        width: 24
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4d68b87c6a9ccefb0800000000000000
+      internalID: -4617093799812036908
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_dart_19
+      rect:
+        serializedVersion: 2
+        x: 150
+        y: 142
+        width: 26
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5272517b8fdafa700800000000000000
+      internalID: 553852562924971813
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_dart_20
+      rect:
+        serializedVersion: 2
+        x: 19
+        y: 80
+        width: 25
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 708da5f910f7a7b80800000000000000
+      internalID: -8396258910333642745
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_dart_21
+      rect:
+        serializedVersion: 2
+        x: 43
+        y: 84
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3ee3e038651fa1310800000000000000
+      internalID: 1376677989983338211
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_dart_22
+      rect:
+        serializedVersion: 2
+        x: 82
+        y: 80
+        width: 33
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 238a080d0c508a480800000000000000
+      internalID: -8887847538925721550
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_dart_23
+      rect:
+        serializedVersion: 2
+        x: 147
+        y: 80
+        width: 25
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1ad1406af582054e0800000000000000
+      internalID: -1995050243652837983
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_dart_24
+      rect:
+        serializedVersion: 2
+        x: 171
+        y: 79
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3609f21e773dd29a0800000000000000
+      internalID: -6256111795515191197
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_dart_25
+      rect:
+        serializedVersion: 2
+        x: 22
+        y: 12
+        width: 26
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3164f89ff08775940800000000000000
+      internalID: 5284824697749325331
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_dart_26
+      rect:
+        serializedVersion: 2
+        x: 86
+        y: 10
+        width: 24
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a0d93bb4918b43550800000000000000
+      internalID: 6139734610796584202
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_dart_27
+      rect:
+        serializedVersion: 2
+        x: 150
+        y: 10
+        width: 20
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9686dc600a1e4a560800000000000000
+      internalID: 7324226971436410985
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Fish_haddock_lg_dart_0: -7218054015939215096
+      Fish_haddock_lg_dart_1: -4177566605260984415
+      Fish_haddock_lg_dart_10: -1169058970231564403
+      Fish_haddock_lg_dart_11: 8242119593863431337
+      Fish_haddock_lg_dart_12: -8594215885624615140
+      Fish_haddock_lg_dart_13: 49424808478856824
+      Fish_haddock_lg_dart_14: 7187444671772815159
+      Fish_haddock_lg_dart_15: -7600547904834154404
+      Fish_haddock_lg_dart_16: -7403186011136798196
+      Fish_haddock_lg_dart_17: -5217828769301104595
+      Fish_haddock_lg_dart_18: -4617093799812036908
+      Fish_haddock_lg_dart_19: 553852562924971813
+      Fish_haddock_lg_dart_2: -7732968438030425214
+      Fish_haddock_lg_dart_20: -8396258910333642745
+      Fish_haddock_lg_dart_21: 1376677989983338211
+      Fish_haddock_lg_dart_22: -8887847538925721550
+      Fish_haddock_lg_dart_23: -1995050243652837983
+      Fish_haddock_lg_dart_24: -6256111795515191197
+      Fish_haddock_lg_dart_25: 5284824697749325331
+      Fish_haddock_lg_dart_26: 6139734610796584202
+      Fish_haddock_lg_dart_27: 7324226971436410985
+      Fish_haddock_lg_dart_3: -5889542619559344554
+      Fish_haddock_lg_dart_4: 5537378929079864729
+      Fish_haddock_lg_dart_5: -2142603421515511819
+      Fish_haddock_lg_dart_6: 3070700742242906072
+      Fish_haddock_lg_dart_7: -6823455677439959965
+      Fish_haddock_lg_dart_8: 1469815144215028804
+      Fish_haddock_lg_dart_9: 805899058668548621
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

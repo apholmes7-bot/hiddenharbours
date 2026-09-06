@@ -1,0 +1,988 @@
+fileFormatVersion: 2
+guid: 4f53b44a7c93a4c4dad021f70fba7c8c
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -7430581014596499903
+    second: Fish_cod_sm_thrash_0
+  - first:
+      213: 5042175284427216988
+    second: Fish_cod_sm_thrash_1
+  - first:
+      213: -3414153035277523477
+    second: Fish_cod_sm_thrash_2
+  - first:
+      213: 1933869419835019495
+    second: Fish_cod_sm_thrash_3
+  - first:
+      213: 738857587593200248
+    second: Fish_cod_sm_thrash_4
+  - first:
+      213: -4502530733806096869
+    second: Fish_cod_sm_thrash_5
+  - first:
+      213: -3864164412702445994
+    second: Fish_cod_sm_thrash_6
+  - first:
+      213: -3827082635077677555
+    second: Fish_cod_sm_thrash_7
+  - first:
+      213: 6814494905031058058
+    second: Fish_cod_sm_thrash_8
+  - first:
+      213: -6338125882755983924
+    second: Fish_cod_sm_thrash_9
+  - first:
+      213: 7446915209965603584
+    second: Fish_cod_sm_thrash_10
+  - first:
+      213: -6458675471100420654
+    second: Fish_cod_sm_thrash_11
+  - first:
+      213: 547180690769087338
+    second: Fish_cod_sm_thrash_12
+  - first:
+      213: 1708334947726924920
+    second: Fish_cod_sm_thrash_13
+  - first:
+      213: -9200677339121574993
+    second: Fish_cod_sm_thrash_14
+  - first:
+      213: 4695969117010587128
+    second: Fish_cod_sm_thrash_15
+  - first:
+      213: -4381596245208993577
+    second: Fish_cod_sm_thrash_16
+  - first:
+      213: -1763851424048343730
+    second: Fish_cod_sm_thrash_17
+  - first:
+      213: -361275708072524832
+    second: Fish_cod_sm_thrash_18
+  - first:
+      213: -5207346656010802632
+    second: Fish_cod_sm_thrash_19
+  - first:
+      213: 174800403091907089
+    second: Fish_cod_sm_thrash_20
+  - first:
+      213: 987382600628126346
+    second: Fish_cod_sm_thrash_21
+  - first:
+      213: 3366246344602074719
+    second: Fish_cod_sm_thrash_22
+  - first:
+      213: -4639065562999077550
+    second: Fish_cod_sm_thrash_23
+  - first:
+      213: 6903581900068409778
+    second: Fish_cod_sm_thrash_24
+  - first:
+      213: -4375292330087729595
+    second: Fish_cod_sm_thrash_25
+  - first:
+      213: 7318905380564250116
+    second: Fish_cod_sm_thrash_26
+  - first:
+      213: 7464574677707304068
+    second: Fish_cod_sm_thrash_27
+  - first:
+      213: -556353479117521136
+    second: Fish_cod_sm_thrash_28
+  - first:
+      213: -8988314719448340642
+    second: Fish_cod_sm_thrash_29
+  - first:
+      213: 7860472111549550396
+    second: Fish_cod_sm_thrash_30
+  - first:
+      213: -2038298773020284932
+    second: Fish_cod_sm_thrash_31
+  - first:
+      213: 6952886251016737393
+    second: Fish_cod_sm_thrash_32
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Fish_cod_sm_thrash_0
+      rect:
+        serializedVersion: 2
+        x: 28
+        y: 467
+        width: 13
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 146c636afe541e890800000000000000
+      internalID: -7430581014596499903
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_thrash_1
+      rect:
+        serializedVersion: 2
+        x: 88
+        y: 469
+        width: 12
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c58d983e4b769f540800000000000000
+      internalID: 5042175284427216988
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_thrash_2
+      rect:
+        serializedVersion: 2
+        x: 155
+        y: 471
+        width: 8
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: be5267347ed7e90d0800000000000000
+      internalID: -3414153035277523477
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_thrash_3
+      rect:
+        serializedVersion: 2
+        x: 221
+        y: 470
+        width: 8
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7e0d143cdfb76da10800000000000000
+      internalID: 1933869419835019495
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_thrash_4
+      rect:
+        serializedVersion: 2
+        x: 27
+        y: 404
+        width: 13
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8724810bf03f04a00800000000000000
+      internalID: 738857587593200248
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_thrash_5
+      rect:
+        serializedVersion: 2
+        x: 82
+        y: 407
+        width: 20
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b1e653d272cc381c0800000000000000
+      internalID: -4502530733806096869
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_thrash_6
+      rect:
+        serializedVersion: 2
+        x: 154
+        y: 407
+        width: 13
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 65e2a2b90fabf5ac0800000000000000
+      internalID: -3864164412702445994
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_thrash_7
+      rect:
+        serializedVersion: 2
+        x: 214
+        y: 407
+        width: 17
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d0e0122ce9873eac0800000000000000
+      internalID: -3827082635077677555
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_thrash_8
+      rect:
+        serializedVersion: 2
+        x: 20
+        y: 341
+        width: 21
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a82e51ae203f19e50800000000000000
+      internalID: 6814494905031058058
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_thrash_9
+      rect:
+        serializedVersion: 2
+        x: 87
+        y: 342
+        width: 18
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cc5de9827147a08a0800000000000000
+      internalID: -6338125882755983924
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_thrash_10
+      rect:
+        serializedVersion: 2
+        x: 149
+        y: 343
+        width: 21
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 00b04729de1c85760800000000000000
+      internalID: 7446915209965603584
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_thrash_11
+      rect:
+        serializedVersion: 2
+        x: 212
+        y: 342
+        width: 21
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2ddd789e0ec2e56a0800000000000000
+      internalID: -6458675471100420654
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_thrash_12
+      rect:
+        serializedVersion: 2
+        x: 18
+        y: 283
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a6b8e3d60f9f79700800000000000000
+      internalID: 547180690769087338
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_thrash_13
+      rect:
+        serializedVersion: 2
+        x: 23
+        y: 278
+        width: 15
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 87c16a4759935b710800000000000000
+      internalID: 1708334947726924920
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_thrash_14
+      rect:
+        serializedVersion: 2
+        x: 91
+        y: 278
+        width: 13
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fab1ca415b0a05080800000000000000
+      internalID: -9200677339121574993
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_thrash_15
+      rect:
+        serializedVersion: 2
+        x: 149
+        y: 277
+        width: 18
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8fdee97180f6b2140800000000000000
+      internalID: 4695969117010587128
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_thrash_16
+      rect:
+        serializedVersion: 2
+        x: 215
+        y: 278
+        width: 16
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7d0f12ffd617133c0800000000000000
+      internalID: -4381596245208993577
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_thrash_17
+      rect:
+        serializedVersion: 2
+        x: 23
+        y: 213
+        width: 13
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e451801a97a8587e0800000000000000
+      internalID: -1763851424048343730
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_thrash_18
+      rect:
+        serializedVersion: 2
+        x: 92
+        y: 213
+        width: 13
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0e30c5a58ad7cfaf0800000000000000
+      internalID: -361275708072524832
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_thrash_19
+      rect:
+        serializedVersion: 2
+        x: 155
+        y: 212
+        width: 10
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 83a682a5ec9cbb7b0800000000000000
+      internalID: -5207346656010802632
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_thrash_20
+      rect:
+        serializedVersion: 2
+        x: 219
+        y: 213
+        width: 11
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 11263ec5a040d6200800000000000000
+      internalID: 174800403091907089
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_thrash_21
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 149
+        width: 13
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a8247df6e33e3bd00800000000000000
+      internalID: 987382600628126346
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_thrash_22
+      rect:
+        serializedVersion: 2
+        x: 90
+        y: 150
+        width: 20
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f5eb67c173f47be20800000000000000
+      internalID: 3366246344602074719
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_thrash_23
+      rect:
+        serializedVersion: 2
+        x: 153
+        y: 150
+        width: 15
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 25541b3037abe9fb0800000000000000
+      internalID: -4639065562999077550
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_thrash_24
+      rect:
+        serializedVersion: 2
+        x: 217
+        y: 150
+        width: 19
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2b1d46f49237ecf50800000000000000
+      internalID: 6903581900068409778
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_thrash_25
+      rect:
+        serializedVersion: 2
+        x: 23
+        y: 85
+        width: 18
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 54631ac9ec6d743c0800000000000000
+      internalID: -4375292330087729595
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_thrash_26
+      rect:
+        serializedVersion: 2
+        x: 86
+        y: 87
+        width: 21
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 40e2a399aa9f19560800000000000000
+      internalID: 7318905380564250116
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_thrash_27
+      rect:
+        serializedVersion: 2
+        x: 151
+        y: 87
+        width: 17
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 48cae10de1f779760800000000000000
+      internalID: 7464574677707304068
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_thrash_28
+      rect:
+        serializedVersion: 2
+        x: 215
+        y: 87
+        width: 22
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 01fb5ab557f6748f0800000000000000
+      internalID: -556353479117521136
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_thrash_29
+      rect:
+        serializedVersion: 2
+        x: 26
+        y: 22
+        width: 19
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e57edd18267134380800000000000000
+      internalID: -8988314719448340642
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_thrash_30
+      rect:
+        serializedVersion: 2
+        x: 88
+        y: 22
+        width: 13
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c3f86c72db1061d60800000000000000
+      internalID: 7860472111549550396
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_thrash_31
+      rect:
+        serializedVersion: 2
+        x: 153
+        y: 23
+        width: 18
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cf7e208b01286b3e0800000000000000
+      internalID: -2038298773020284932
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_thrash_32
+      rect:
+        serializedVersion: 2
+        x: 217
+        y: 22
+        width: 15
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 172dc83153d9d7060800000000000000
+      internalID: 6952886251016737393
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Fish_cod_sm_thrash_0: -7430581014596499903
+      Fish_cod_sm_thrash_1: 5042175284427216988
+      Fish_cod_sm_thrash_10: 7446915209965603584
+      Fish_cod_sm_thrash_11: -6458675471100420654
+      Fish_cod_sm_thrash_12: 547180690769087338
+      Fish_cod_sm_thrash_13: 1708334947726924920
+      Fish_cod_sm_thrash_14: -9200677339121574993
+      Fish_cod_sm_thrash_15: 4695969117010587128
+      Fish_cod_sm_thrash_16: -4381596245208993577
+      Fish_cod_sm_thrash_17: -1763851424048343730
+      Fish_cod_sm_thrash_18: -361275708072524832
+      Fish_cod_sm_thrash_19: -5207346656010802632
+      Fish_cod_sm_thrash_2: -3414153035277523477
+      Fish_cod_sm_thrash_20: 174800403091907089
+      Fish_cod_sm_thrash_21: 987382600628126346
+      Fish_cod_sm_thrash_22: 3366246344602074719
+      Fish_cod_sm_thrash_23: -4639065562999077550
+      Fish_cod_sm_thrash_24: 6903581900068409778
+      Fish_cod_sm_thrash_25: -4375292330087729595
+      Fish_cod_sm_thrash_26: 7318905380564250116
+      Fish_cod_sm_thrash_27: 7464574677707304068
+      Fish_cod_sm_thrash_28: -556353479117521136
+      Fish_cod_sm_thrash_29: -8988314719448340642
+      Fish_cod_sm_thrash_3: 1933869419835019495
+      Fish_cod_sm_thrash_30: 7860472111549550396
+      Fish_cod_sm_thrash_31: -2038298773020284932
+      Fish_cod_sm_thrash_32: 6952886251016737393
+      Fish_cod_sm_thrash_4: 738857587593200248
+      Fish_cod_sm_thrash_5: -4502530733806096869
+      Fish_cod_sm_thrash_6: -3864164412702445994
+      Fish_cod_sm_thrash_7: -3827082635077677555
+      Fish_cod_sm_thrash_8: 6814494905031058058
+      Fish_cod_sm_thrash_9: -6338125882755983924
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -1,0 +1,702 @@
+fileFormatVersion: 2
+guid: 41e9ad29bd0e95f43916e5f9e217f41e
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 4658628695385072062
+    second: Fish_bass_shadow_0
+  - first:
+      213: 4213167833555912647
+    second: Fish_bass_shadow_1
+  - first:
+      213: -652977726104206487
+    second: Fish_bass_shadow_2
+  - first:
+      213: 2619143132340008944
+    second: Fish_bass_shadow_3
+  - first:
+      213: -1684878809296452382
+    second: Fish_bass_shadow_4
+  - first:
+      213: 2953643846896960584
+    second: Fish_bass_shadow_5
+  - first:
+      213: -3527851678757641415
+    second: Fish_bass_shadow_6
+  - first:
+      213: 4959318083826263232
+    second: Fish_bass_shadow_7
+  - first:
+      213: 5711912853564724968
+    second: Fish_bass_shadow_8
+  - first:
+      213: 5584906586301793172
+    second: Fish_bass_shadow_9
+  - first:
+      213: 3761415580999365093
+    second: Fish_bass_shadow_10
+  - first:
+      213: 5725304210551494398
+    second: Fish_bass_shadow_11
+  - first:
+      213: -2525162018815803846
+    second: Fish_bass_shadow_12
+  - first:
+      213: -9178230005157701840
+    second: Fish_bass_shadow_13
+  - first:
+      213: -5742020453966546689
+    second: Fish_bass_shadow_14
+  - first:
+      213: 6400804936623012701
+    second: Fish_bass_shadow_15
+  - first:
+      213: 6888274849673038230
+    second: Fish_bass_shadow_16
+  - first:
+      213: 6284290917397581834
+    second: Fish_bass_shadow_17
+  - first:
+      213: -1857227700313326528
+    second: Fish_bass_shadow_18
+  - first:
+      213: 1684407419988814993
+    second: Fish_bass_shadow_19
+  - first:
+      213: 4917872570160385558
+    second: Fish_bass_shadow_20
+  - first:
+      213: -6537199747423836040
+    second: Fish_bass_shadow_21
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Fish_bass_shadow_0
+      rect:
+        serializedVersion: 2
+        x: 28
+        y: 449
+        width: 10
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eb16ed0bd16c6a040800000000000000
+      internalID: 4658628695385072062
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_shadow_1
+      rect:
+        serializedVersion: 2
+        x: 90
+        y: 449
+        width: 10
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7c7c33282dd287a30800000000000000
+      internalID: 4213167833555912647
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_shadow_2
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 387
+        width: 17
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 963015db73820f6f0800000000000000
+      internalID: -652977726104206487
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_shadow_3
+      rect:
+        serializedVersion: 2
+        x: 81
+        y: 390
+        width: 24
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0f7b7035dc0195420800000000000000
+      internalID: 2619143132340008944
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_shadow_4
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 327
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2e44d4a56ab1e98e0800000000000000
+      internalID: -1684878809296452382
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_shadow_5
+      rect:
+        serializedVersion: 2
+        x: 22
+        y: 329
+        width: 21
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 844cf4ffd637df820800000000000000
+      internalID: 2953643846896960584
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_shadow_6
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 333
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 933a26be69d8a0fc0800000000000000
+      internalID: -3527851678757641415
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_shadow_7
+      rect:
+        serializedVersion: 2
+        x: 86
+        y: 329
+        width: 21
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0c4a2aa858903d440800000000000000
+      internalID: 4959318083826263232
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_shadow_8
+      rect:
+        serializedVersion: 2
+        x: 17
+        y: 271
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8e696b03a7ac44f40800000000000000
+      internalID: 5711912853564724968
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_shadow_9
+      rect:
+        serializedVersion: 2
+        x: 23
+        y: 263
+        width: 17
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 493024c33f2918d40800000000000000
+      internalID: 5584906586301793172
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_shadow_10
+      rect:
+        serializedVersion: 2
+        x: 88
+        y: 263
+        width: 16
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5e13616ca8b333430800000000000000
+      internalID: 3761415580999365093
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_shadow_11
+      rect:
+        serializedVersion: 2
+        x: 26
+        y: 198
+        width: 10
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ef658f478dd547f40800000000000000
+      internalID: 5725304210551494398
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_shadow_12
+      rect:
+        serializedVersion: 2
+        x: 92
+        y: 198
+        width: 10
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a3efc24d582d4fcd0800000000000000
+      internalID: -2525162018815803846
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_shadow_13
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 135
+        width: 16
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0375ebb407060a080800000000000000
+      internalID: -9178230005157701840
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_shadow_14
+      rect:
+        serializedVersion: 2
+        x: 88
+        y: 135
+        width: 17
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ff8fb44d1de3050b0800000000000000
+      internalID: -5742020453966546689
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_shadow_15
+      rect:
+        serializedVersion: 2
+        x: 104
+        y: 143
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d5b3bfb4d2a34d850800000000000000
+      internalID: 6400804936623012701
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_shadow_16
+      rect:
+        serializedVersion: 2
+        x: 21
+        y: 73
+        width: 21
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 699c40aea71189f50800000000000000
+      internalID: 6888274849673038230
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_shadow_17
+      rect:
+        serializedVersion: 2
+        x: 41
+        y: 77
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a0052b43b49463750800000000000000
+      internalID: 6284290917397581834
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_shadow_18
+      rect:
+        serializedVersion: 2
+        x: 85
+        y: 73
+        width: 21
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 04cfecf1f3dc936e0800000000000000
+      internalID: -1857227700313326528
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_shadow_19
+      rect:
+        serializedVersion: 2
+        x: 105
+        y: 71
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 19c2775cf97306710800000000000000
+      internalID: 1684407419988814993
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_shadow_20
+      rect:
+        serializedVersion: 2
+        x: 23
+        y: 6
+        width: 24
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 61e0c0beb0bcf3440800000000000000
+      internalID: 4917872570160385558
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_shadow_21
+      rect:
+        serializedVersion: 2
+        x: 87
+        y: 3
+        width: 17
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 878670d17733745a0800000000000000
+      internalID: -6537199747423836040
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Fish_bass_shadow_0: 4658628695385072062
+      Fish_bass_shadow_1: 4213167833555912647
+      Fish_bass_shadow_10: 3761415580999365093
+      Fish_bass_shadow_11: 5725304210551494398
+      Fish_bass_shadow_12: -2525162018815803846
+      Fish_bass_shadow_13: -9178230005157701840
+      Fish_bass_shadow_14: -5742020453966546689
+      Fish_bass_shadow_15: 6400804936623012701
+      Fish_bass_shadow_16: 6888274849673038230
+      Fish_bass_shadow_17: 6284290917397581834
+      Fish_bass_shadow_18: -1857227700313326528
+      Fish_bass_shadow_19: 1684407419988814993
+      Fish_bass_shadow_2: -652977726104206487
+      Fish_bass_shadow_20: 4917872570160385558
+      Fish_bass_shadow_21: -6537199747423836040
+      Fish_bass_shadow_3: 2619143132340008944
+      Fish_bass_shadow_4: -1684878809296452382
+      Fish_bass_shadow_5: 2953643846896960584
+      Fish_bass_shadow_6: -3527851678757641415
+      Fish_bass_shadow_7: 4959318083826263232
+      Fish_bass_shadow_8: 5711912853564724968
+      Fish_bass_shadow_9: 5584906586301793172
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

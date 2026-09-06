@@ -1,0 +1,702 @@
+fileFormatVersion: 2
+guid: ce77f55e12241c4468132b7c72b4c1ae
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -5099956865917339737
+    second: Fish_herring_lg_swim_0
+  - first:
+      213: -8084433157754700258
+    second: Fish_herring_lg_swim_1
+  - first:
+      213: -7467889361379783438
+    second: Fish_herring_lg_swim_2
+  - first:
+      213: 4345512425471303801
+    second: Fish_herring_lg_swim_3
+  - first:
+      213: 3575547511634478691
+    second: Fish_herring_lg_swim_4
+  - first:
+      213: -2399747389127804179
+    second: Fish_herring_lg_swim_5
+  - first:
+      213: -7425763088648423236
+    second: Fish_herring_lg_swim_6
+  - first:
+      213: -67249251226647493
+    second: Fish_herring_lg_swim_7
+  - first:
+      213: 1625810113768114340
+    second: Fish_herring_lg_swim_8
+  - first:
+      213: -8436113928997630534
+    second: Fish_herring_lg_swim_9
+  - first:
+      213: -132855550399813271
+    second: Fish_herring_lg_swim_10
+  - first:
+      213: -2200607431949107716
+    second: Fish_herring_lg_swim_11
+  - first:
+      213: -1319737463933375410
+    second: Fish_herring_lg_swim_12
+  - first:
+      213: 8812888278298763542
+    second: Fish_herring_lg_swim_13
+  - first:
+      213: 7272727452851084052
+    second: Fish_herring_lg_swim_14
+  - first:
+      213: 1511584252155825716
+    second: Fish_herring_lg_swim_15
+  - first:
+      213: 1457764207307824323
+    second: Fish_herring_lg_swim_16
+  - first:
+      213: 2084977143006916281
+    second: Fish_herring_lg_swim_17
+  - first:
+      213: 7009385048891702371
+    second: Fish_herring_lg_swim_18
+  - first:
+      213: -8787256344011556853
+    second: Fish_herring_lg_swim_19
+  - first:
+      213: 5331586629050205606
+    second: Fish_herring_lg_swim_20
+  - first:
+      213: 6979599697794871625
+    second: Fish_herring_lg_swim_21
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Fish_herring_lg_swim_0
+      rect:
+        serializedVersion: 2
+        x: 26
+        y: 339
+        width: 75
+        height: 134
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7a7be2d40405939b0800000000000000
+      internalID: -5099956865917339737
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_herring_lg_swim_1
+      rect:
+        serializedVersion: 2
+        x: 26
+        y: 403
+        width: 9
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e1e34ad40e25ecf80800000000000000
+      internalID: -8084433157754700258
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_herring_lg_swim_2
+      rect:
+        serializedVersion: 2
+        x: 153
+        y: 340
+        width: 203
+        height: 133
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2fc0a01413abc5890800000000000000
+      internalID: -7467889361379783438
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_herring_lg_swim_3
+      rect:
+        serializedVersion: 2
+        x: 157
+        y: 403
+        width: 7
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9706347078c5e4c30800000000000000
+      internalID: 4345512425471303801
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_herring_lg_swim_4
+      rect:
+        serializedVersion: 2
+        x: 345
+        y: 340
+        width: 12
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 366418c8485ee9130800000000000000
+      internalID: 3575547511634478691
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_herring_lg_swim_5
+      rect:
+        serializedVersion: 2
+        x: 27
+        y: 275
+        width: 9
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: deabd58c67262bed0800000000000000
+      internalID: -2399747389127804179
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_herring_lg_swim_6
+      rect:
+        serializedVersion: 2
+        x: 30
+        y: 212
+        width: 70
+        height: 70
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cb837e270d362f890800000000000000
+      internalID: -7425763088648423236
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_herring_lg_swim_7
+      rect:
+        serializedVersion: 2
+        x: 153
+        y: 212
+        width: 11
+        height: 70
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b34893d8925111ff0800000000000000
+      internalID: -67249251226647493
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_herring_lg_swim_8
+      rect:
+        serializedVersion: 2
+        x: 218
+        y: 275
+        width: 10
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4a8c26f3fa9009610800000000000000
+      internalID: 1625810113768114340
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_herring_lg_swim_9
+      rect:
+        serializedVersion: 2
+        x: 223
+        y: 212
+        width: 69
+        height: 72
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: abd0f59f317ecea80800000000000000
+      internalID: -8436113928997630534
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_herring_lg_swim_10
+      rect:
+        serializedVersion: 2
+        x: 349
+        y: 212
+        width: 7
+        height: 69
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 969eaffa490082ef0800000000000000
+      internalID: -132855550399813271
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_herring_lg_swim_11
+      rect:
+        serializedVersion: 2
+        x: 28
+        y: 147
+        width: 10
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cfdb690333fd571e0800000000000000
+      internalID: -2200607431949107716
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_herring_lg_swim_12
+      rect:
+        serializedVersion: 2
+        x: 92
+        y: 147
+        width: 8
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e4ce971d4c95fade0800000000000000
+      internalID: -1319737463933375410
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_herring_lg_swim_13
+      rect:
+        serializedVersion: 2
+        x: 156
+        y: 147
+        width: 7
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 611a339423bad4a70800000000000000
+      internalID: 8812888278298763542
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_herring_lg_swim_14
+      rect:
+        serializedVersion: 2
+        x: 220
+        y: 147
+        width: 9
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 41b9b67f51bede460800000000000000
+      internalID: 7272727452851084052
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_herring_lg_swim_15
+      rect:
+        serializedVersion: 2
+        x: 283
+        y: 83
+        width: 76
+        height: 71
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 43e82dd5ed93af410800000000000000
+      internalID: 1511584252155825716
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_herring_lg_swim_16
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 147
+        width: 11
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3cc9cdea2d40b3410800000000000000
+      internalID: 1457764207307824323
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_herring_lg_swim_17
+      rect:
+        serializedVersion: 2
+        x: 27
+        y: 84
+        width: 203
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9be6cb53aa35fec10800000000000000
+      internalID: 2084977143006916281
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_herring_lg_swim_18
+      rect:
+        serializedVersion: 2
+        x: 28
+        y: 18
+        width: 75
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 36cbf1d8096564160800000000000000
+      internalID: 7009385048891702371
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_herring_lg_swim_19
+      rect:
+        serializedVersion: 2
+        x: 156
+        y: 19
+        width: 74
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b08b4e879e46d0680800000000000000
+      internalID: -8787256344011556853
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_herring_lg_swim_20
+      rect:
+        serializedVersion: 2
+        x: 285
+        y: 17
+        width: 7
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6a582c98ac99df940800000000000000
+      internalID: 5331586629050205606
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_herring_lg_swim_21
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 19
+        width: 7
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 941bc7512f48cd060800000000000000
+      internalID: 6979599697794871625
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Fish_herring_lg_swim_0: -5099956865917339737
+      Fish_herring_lg_swim_1: -8084433157754700258
+      Fish_herring_lg_swim_10: -132855550399813271
+      Fish_herring_lg_swim_11: -2200607431949107716
+      Fish_herring_lg_swim_12: -1319737463933375410
+      Fish_herring_lg_swim_13: 8812888278298763542
+      Fish_herring_lg_swim_14: 7272727452851084052
+      Fish_herring_lg_swim_15: 1511584252155825716
+      Fish_herring_lg_swim_16: 1457764207307824323
+      Fish_herring_lg_swim_17: 2084977143006916281
+      Fish_herring_lg_swim_18: 7009385048891702371
+      Fish_herring_lg_swim_19: -8787256344011556853
+      Fish_herring_lg_swim_2: -7467889361379783438
+      Fish_herring_lg_swim_20: 5331586629050205606
+      Fish_herring_lg_swim_21: 6979599697794871625
+      Fish_herring_lg_swim_3: 4345512425471303801
+      Fish_herring_lg_swim_4: 3575547511634478691
+      Fish_herring_lg_swim_5: -2399747389127804179
+      Fish_herring_lg_swim_6: -7425763088648423236
+      Fish_herring_lg_swim_7: -67249251226647493
+      Fish_herring_lg_swim_8: 1625810113768114340
+      Fish_herring_lg_swim_9: -8436113928997630534
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

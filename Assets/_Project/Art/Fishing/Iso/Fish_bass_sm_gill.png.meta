@@ -1,0 +1,520 @@
+fileFormatVersion: 2
+guid: 6cf208a7d0d2cbe45a601a7352f43e6f
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 2886210554605847480
+    second: Fish_bass_sm_gill_0
+  - first:
+      213: 8227477150192413932
+    second: Fish_bass_sm_gill_1
+  - first:
+      213: -1064410120941096746
+    second: Fish_bass_sm_gill_2
+  - first:
+      213: 6810405188694925498
+    second: Fish_bass_sm_gill_3
+  - first:
+      213: 6969527110743751414
+    second: Fish_bass_sm_gill_4
+  - first:
+      213: -6401110929874202091
+    second: Fish_bass_sm_gill_5
+  - first:
+      213: -2808161433452870214
+    second: Fish_bass_sm_gill_6
+  - first:
+      213: -8077268165824210597
+    second: Fish_bass_sm_gill_7
+  - first:
+      213: -655042495636925675
+    second: Fish_bass_sm_gill_8
+  - first:
+      213: 1676425909768294685
+    second: Fish_bass_sm_gill_9
+  - first:
+      213: -1505640486427435794
+    second: Fish_bass_sm_gill_10
+  - first:
+      213: 8779785105880455030
+    second: Fish_bass_sm_gill_11
+  - first:
+      213: 8794925345556134804
+    second: Fish_bass_sm_gill_12
+  - first:
+      213: 1912991988086099078
+    second: Fish_bass_sm_gill_13
+  - first:
+      213: -2673378784391392963
+    second: Fish_bass_sm_gill_14
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Fish_bass_sm_gill_0
+      rect:
+        serializedVersion: 2
+        x: 29
+        y: 466
+        width: 6
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8b3c3462531ed0820800000000000000
+      internalID: 2886210554605847480
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_gill_1
+      rect:
+        serializedVersion: 2
+        x: 93
+        y: 465
+        width: 6
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cecacd680eedd2270800000000000000
+      internalID: 8227477150192413932
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_gill_2
+      rect:
+        serializedVersion: 2
+        x: 29
+        y: 398
+        width: 6
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6d0b9fd62a47a31f0800000000000000
+      internalID: -1064410120941096746
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_gill_3
+      rect:
+        serializedVersion: 2
+        x: 93
+        y: 399
+        width: 6
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ab063a0af6b638e50800000000000000
+      internalID: 6810405188694925498
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_gill_4
+      rect:
+        serializedVersion: 2
+        x: 28
+        y: 335
+        width: 7
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6faf5582bfbb8b060800000000000000
+      internalID: 6969527110743751414
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_gill_5
+      rect:
+        serializedVersion: 2
+        x: 92
+        y: 335
+        width: 7
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5125af8168faa27a0800000000000000
+      internalID: -6401110929874202091
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_gill_6
+      rect:
+        serializedVersion: 2
+        x: 28
+        y: 271
+        width: 7
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ab50717fd086709d0800000000000000
+      internalID: -2808161433452870214
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_gill_7
+      rect:
+        serializedVersion: 2
+        x: 93
+        y: 272
+        width: 6
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b591a7cf567c7ef80800000000000000
+      internalID: -8077268165824210597
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_gill_8
+      rect:
+        serializedVersion: 2
+        x: 29
+        y: 211
+        width: 6
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 51396ce1252d8e6f0800000000000000
+      internalID: -655042495636925675
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_gill_9
+      rect:
+        serializedVersion: 2
+        x: 93
+        y: 210
+        width: 6
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d11100c9b7cd34710800000000000000
+      internalID: 1676425909768294685
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_gill_10
+      rect:
+        serializedVersion: 2
+        x: 29
+        y: 79
+        width: 7
+        height: 77
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eecdb0f64f3ea1be0800000000000000
+      internalID: -1505640486427435794
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_gill_11
+      rect:
+        serializedVersion: 2
+        x: 93
+        y: 143
+        width: 7
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6771548590018d970800000000000000
+      internalID: 8779785105880455030
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_gill_12
+      rect:
+        serializedVersion: 2
+        x: 93
+        y: 79
+        width: 7
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 49bf3f7110add0a70800000000000000
+      internalID: 8794925345556134804
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_gill_13
+      rect:
+        serializedVersion: 2
+        x: 29
+        y: 15
+        width: 6
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 68c4a04e3105c8a10800000000000000
+      internalID: 1912991988086099078
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_gill_14
+      rect:
+        serializedVersion: 2
+        x: 93
+        y: 14
+        width: 6
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d311946e82046ead0800000000000000
+      internalID: -2673378784391392963
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Fish_bass_sm_gill_0: 2886210554605847480
+      Fish_bass_sm_gill_1: 8227477150192413932
+      Fish_bass_sm_gill_10: -1505640486427435794
+      Fish_bass_sm_gill_11: 8779785105880455030
+      Fish_bass_sm_gill_12: 8794925345556134804
+      Fish_bass_sm_gill_13: 1912991988086099078
+      Fish_bass_sm_gill_14: -2673378784391392963
+      Fish_bass_sm_gill_2: -1064410120941096746
+      Fish_bass_sm_gill_3: 6810405188694925498
+      Fish_bass_sm_gill_4: 6969527110743751414
+      Fish_bass_sm_gill_5: -6401110929874202091
+      Fish_bass_sm_gill_6: -2808161433452870214
+      Fish_bass_sm_gill_7: -8077268165824210597
+      Fish_bass_sm_gill_8: -655042495636925675
+      Fish_bass_sm_gill_9: 1676425909768294685
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

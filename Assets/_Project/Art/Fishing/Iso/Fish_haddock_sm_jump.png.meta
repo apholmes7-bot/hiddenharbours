@@ -1,0 +1,1352 @@
+fileFormatVersion: 2
+guid: 8bb15c1375771a646bd3d3815c0bd153
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -5232024658672316135
+    second: Fish_haddock_sm_jump_0
+  - first:
+      213: 2620118087580521139
+    second: Fish_haddock_sm_jump_1
+  - first:
+      213: 5019050390256912644
+    second: Fish_haddock_sm_jump_2
+  - first:
+      213: 3308008676700101428
+    second: Fish_haddock_sm_jump_3
+  - first:
+      213: 6875178292663532043
+    second: Fish_haddock_sm_jump_4
+  - first:
+      213: 8910440627004324999
+    second: Fish_haddock_sm_jump_5
+  - first:
+      213: 5565436308887142400
+    second: Fish_haddock_sm_jump_6
+  - first:
+      213: -9088642237231838255
+    second: Fish_haddock_sm_jump_7
+  - first:
+      213: 6932855411474728084
+    second: Fish_haddock_sm_jump_8
+  - first:
+      213: 1129891658361463228
+    second: Fish_haddock_sm_jump_9
+  - first:
+      213: -782412219400201690
+    second: Fish_haddock_sm_jump_10
+  - first:
+      213: 4965590078317186365
+    second: Fish_haddock_sm_jump_11
+  - first:
+      213: -7199237323548265992
+    second: Fish_haddock_sm_jump_12
+  - first:
+      213: -7317378540351836963
+    second: Fish_haddock_sm_jump_13
+  - first:
+      213: 7363464017020321356
+    second: Fish_haddock_sm_jump_14
+  - first:
+      213: 7413221212773650381
+    second: Fish_haddock_sm_jump_15
+  - first:
+      213: -1259189091858878275
+    second: Fish_haddock_sm_jump_16
+  - first:
+      213: -6494865173500958547
+    second: Fish_haddock_sm_jump_17
+  - first:
+      213: 4282715913099644725
+    second: Fish_haddock_sm_jump_18
+  - first:
+      213: 5936187365065272957
+    second: Fish_haddock_sm_jump_19
+  - first:
+      213: -5005598680419787445
+    second: Fish_haddock_sm_jump_20
+  - first:
+      213: 6610965421676012607
+    second: Fish_haddock_sm_jump_21
+  - first:
+      213: -8338233199604912010
+    second: Fish_haddock_sm_jump_22
+  - first:
+      213: 9185558373018929629
+    second: Fish_haddock_sm_jump_23
+  - first:
+      213: 7830510823387317788
+    second: Fish_haddock_sm_jump_24
+  - first:
+      213: 1309185145893813183
+    second: Fish_haddock_sm_jump_25
+  - first:
+      213: 9102398208873197527
+    second: Fish_haddock_sm_jump_26
+  - first:
+      213: 5225455664961648443
+    second: Fish_haddock_sm_jump_27
+  - first:
+      213: -2734167032665508587
+    second: Fish_haddock_sm_jump_28
+  - first:
+      213: 6134671370348815313
+    second: Fish_haddock_sm_jump_29
+  - first:
+      213: -1974278258786960614
+    second: Fish_haddock_sm_jump_30
+  - first:
+      213: 3954268949422999822
+    second: Fish_haddock_sm_jump_31
+  - first:
+      213: -4936585648387467925
+    second: Fish_haddock_sm_jump_32
+  - first:
+      213: 7244414324650419007
+    second: Fish_haddock_sm_jump_33
+  - first:
+      213: -3981476064665995000
+    second: Fish_haddock_sm_jump_34
+  - first:
+      213: -2616176350339243379
+    second: Fish_haddock_sm_jump_35
+  - first:
+      213: 2931557304136380844
+    second: Fish_haddock_sm_jump_36
+  - first:
+      213: 5674098533347823083
+    second: Fish_haddock_sm_jump_37
+  - first:
+      213: 8800422833132860993
+    second: Fish_haddock_sm_jump_38
+  - first:
+      213: -4439402975043136845
+    second: Fish_haddock_sm_jump_39
+  - first:
+      213: 6131092745980485792
+    second: Fish_haddock_sm_jump_40
+  - first:
+      213: -2569480783602523283
+    second: Fish_haddock_sm_jump_41
+  - first:
+      213: -7371902673946126005
+    second: Fish_haddock_sm_jump_42
+  - first:
+      213: -6484079448370966387
+    second: Fish_haddock_sm_jump_43
+  - first:
+      213: -7712232855798801965
+    second: Fish_haddock_sm_jump_44
+  - first:
+      213: -116337868147482204
+    second: Fish_haddock_sm_jump_45
+  - first:
+      213: 6798870054530756193
+    second: Fish_haddock_sm_jump_46
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Fish_haddock_sm_jump_0
+      rect:
+        serializedVersion: 2
+        x: 29
+        y: 465
+        width: 8
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 91190cb1b4d1467b0800000000000000
+      internalID: -5232024658672316135
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_sm_jump_1
+      rect:
+        serializedVersion: 2
+        x: 91
+        y: 469
+        width: 9
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3b210d7c4878c5420800000000000000
+      internalID: 2620118087580521139
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_sm_jump_2
+      rect:
+        serializedVersion: 2
+        x: 157
+        y: 477
+        width: 70
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4098c05ecbf37a540800000000000000
+      internalID: 5019050390256912644
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_sm_jump_3
+      rect:
+        serializedVersion: 2
+        x: 285
+        y: 476
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 43b9e986d5868ed20800000000000000
+      internalID: 3308008676700101428
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_sm_jump_4
+      rect:
+        serializedVersion: 2
+        x: 347
+        y: 472
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b0abfad1b3a896f50800000000000000
+      internalID: 6875178292663532043
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_sm_jump_5
+      rect:
+        serializedVersion: 2
+        x: 29
+        y: 400
+        width: 7
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 78c3dcc6a8e38ab70800000000000000
+      internalID: 8910440627004324999
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_sm_jump_6
+      rect:
+        serializedVersion: 2
+        x: 87
+        y: 407
+        width: 14
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 000874306d66c3d40800000000000000
+      internalID: 5565436308887142400
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_sm_jump_7
+      rect:
+        serializedVersion: 2
+        x: 154
+        y: 412
+        width: 12
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1db4f27f908aed180800000000000000
+      internalID: -9088642237231838255
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_sm_jump_8
+      rect:
+        serializedVersion: 2
+        x: 215
+        y: 415
+        width: 14
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4948810d343763060800000000000000
+      internalID: 6932855411474728084
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_sm_jump_9
+      rect:
+        serializedVersion: 2
+        x: 284
+        y: 412
+        width: 9
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cb1ef431a7e2eaf00800000000000000
+      internalID: 1129891658361463228
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_sm_jump_10
+      rect:
+        serializedVersion: 2
+        x: 344
+        y: 407
+        width: 12
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 62ad9ba5b305425f0800000000000000
+      internalID: -782412219400201690
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_sm_jump_11
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 338
+        width: 13
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d3dcc4e0ed159e440800000000000000
+      internalID: 4965590078317186365
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_sm_jump_12
+      rect:
+        serializedVersion: 2
+        x: 88
+        y: 346
+        width: 14
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8f1fb242ccb271c90800000000000000
+      internalID: -7199237323548265992
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_sm_jump_13
+      rect:
+        serializedVersion: 2
+        x: 150
+        y: 349
+        width: 17
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ddc23479cf2737a90800000000000000
+      internalID: -7317378540351836963
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_sm_jump_14
+      rect:
+        serializedVersion: 2
+        x: 214
+        y: 351
+        width: 17
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c4efdda9287403660800000000000000
+      internalID: 7363464017020321356
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_sm_jump_15
+      rect:
+        serializedVersion: 2
+        x: 280
+        y: 347
+        width: 14
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dcf83c48a6d01e660800000000000000
+      internalID: 7413221212773650381
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_sm_jump_16
+      rect:
+        serializedVersion: 2
+        x: 345
+        y: 342
+        width: 12
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: db074b24136768ee0800000000000000
+      internalID: -1259189091858878275
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_sm_jump_17
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 276
+        width: 12
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: da86b65398a9dd5a0800000000000000
+      internalID: -6494865173500958547
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_sm_jump_18
+      rect:
+        serializedVersion: 2
+        x: 92
+        y: 284
+        width: 9
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 53f8732ae634f6b30800000000000000
+      internalID: 4282715913099644725
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_sm_jump_19
+      rect:
+        serializedVersion: 2
+        x: 151
+        y: 287
+        width: 14
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d7ea0ee05f2916250800000000000000
+      internalID: 5936187365065272957
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_sm_jump_20
+      rect:
+        serializedVersion: 2
+        x: 217
+        y: 286
+        width: 13
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b4d1a6d558a888ab0800000000000000
+      internalID: -5005598680419787445
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_sm_jump_21
+      rect:
+        serializedVersion: 2
+        x: 281
+        y: 281
+        width: 12
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f34a36d460edebb50800000000000000
+      internalID: 6610965421676012607
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_sm_jump_22
+      rect:
+        serializedVersion: 2
+        x: 349
+        y: 277
+        width: 7
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6703e233515a84c80800000000000000
+      internalID: -8338233199604912010
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_sm_jump_23
+      rect:
+        serializedVersion: 2
+        x: 27
+        y: 215
+        width: 8
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dd9886f4ca8a97f70800000000000000
+      internalID: 9185558373018929629
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_sm_jump_24
+      rect:
+        serializedVersion: 2
+        x: 93
+        y: 220
+        width: 7
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c164ad52b109bac60800000000000000
+      internalID: 7830510823387317788
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_sm_jump_25
+      rect:
+        serializedVersion: 2
+        x: 156
+        y: 222
+        width: 7
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fbbf73e24f82b2210800000000000000
+      internalID: 1309185145893813183
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_sm_jump_26
+      rect:
+        serializedVersion: 2
+        x: 220
+        y: 221
+        width: 7
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7dfe904c1f6325e70800000000000000
+      internalID: 9102398208873197527
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_sm_jump_27
+      rect:
+        serializedVersion: 2
+        x: 284
+        y: 216
+        width: 7
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b37779bdd3c848840800000000000000
+      internalID: 5225455664961648443
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_sm_jump_28
+      rect:
+        serializedVersion: 2
+        x: 349
+        y: 212
+        width: 6
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 515736de1994e0ad0800000000000000
+      internalID: -2734167032665508587
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_sm_jump_29
+      rect:
+        serializedVersion: 2
+        x: 28
+        y: 152
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1d36663cb1bb22550800000000000000
+      internalID: 6134671370348815313
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_sm_jump_30
+      rect:
+        serializedVersion: 2
+        x: 91
+        y: 154
+        width: 13
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a1bf9314264f994e0800000000000000
+      internalID: -1974278258786960614
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_sm_jump_31
+      rect:
+        serializedVersion: 2
+        x: 154
+        y: 159
+        width: 12
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e0907bca8a260e630800000000000000
+      internalID: 3954268949422999822
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_sm_jump_32
+      rect:
+        serializedVersion: 2
+        x: 219
+        y: 158
+        width: 13
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b65d2980289bd7bb0800000000000000
+      internalID: -4936585648387467925
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_sm_jump_33
+      rect:
+        serializedVersion: 2
+        x: 283
+        y: 153
+        width: 10
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f332a8a1274598460800000000000000
+      internalID: 7244414324650419007
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_sm_jump_34
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 148
+        width: 10
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 809fcdb2d94feb8c0800000000000000
+      internalID: -3981476064665995000
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_sm_jump_35
+      rect:
+        serializedVersion: 2
+        x: 27
+        y: 87
+        width: 12
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d826040787971bbd0800000000000000
+      internalID: -2616176350339243379
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_sm_jump_36
+      rect:
+        serializedVersion: 2
+        x: 90
+        y: 87
+        width: 14
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ca130c706dbfea820800000000000000
+      internalID: 2931557304136380844
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_sm_jump_37
+      rect:
+        serializedVersion: 2
+        x: 153
+        y: 95
+        width: 17
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bed03ccad827ebe40800000000000000
+      internalID: 5674098533347823083
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_sm_jump_38
+      rect:
+        serializedVersion: 2
+        x: 217
+        y: 95
+        width: 17
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 146fe1aa0f1612a70800000000000000
+      internalID: 8800422833132860993
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_sm_jump_39
+      rect:
+        serializedVersion: 2
+        x: 282
+        y: 91
+        width: 15
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3b2ddb1e3821462c0800000000000000
+      internalID: -4439402975043136845
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_sm_jump_40
+      rect:
+        serializedVersion: 2
+        x: 347
+        y: 86
+        width: 12
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0a024295e54061550800000000000000
+      internalID: 6131092745980485792
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_sm_jump_41
+      rect:
+        serializedVersion: 2
+        x: 28
+        y: 20
+        width: 11
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d63ed2c47de575cd0800000000000000
+      internalID: -2569480783602523283
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_sm_jump_42
+      rect:
+        serializedVersion: 2
+        x: 91
+        y: 22
+        width: 9
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b4950b8739db1b990800000000000000
+      internalID: -7371902673946126005
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_sm_jump_43
+      rect:
+        serializedVersion: 2
+        x: 155
+        y: 29
+        width: 14
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d801078881ce306a0800000000000000
+      internalID: -6484079448370966387
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_sm_jump_44
+      rect:
+        serializedVersion: 2
+        x: 218
+        y: 29
+        width: 13
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3d9140d2415a8f490800000000000000
+      internalID: -7712232855798801965
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_sm_jump_45
+      rect:
+        serializedVersion: 2
+        x: 283
+        y: 28
+        width: 13
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4a1a427435fa26ef0800000000000000
+      internalID: -116337868147482204
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_sm_jump_46
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 23
+        width: 7
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 16ea85aea407a5e50800000000000000
+      internalID: 6798870054530756193
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Fish_haddock_sm_jump_0: -5232024658672316135
+      Fish_haddock_sm_jump_1: 2620118087580521139
+      Fish_haddock_sm_jump_10: -782412219400201690
+      Fish_haddock_sm_jump_11: 4965590078317186365
+      Fish_haddock_sm_jump_12: -7199237323548265992
+      Fish_haddock_sm_jump_13: -7317378540351836963
+      Fish_haddock_sm_jump_14: 7363464017020321356
+      Fish_haddock_sm_jump_15: 7413221212773650381
+      Fish_haddock_sm_jump_16: -1259189091858878275
+      Fish_haddock_sm_jump_17: -6494865173500958547
+      Fish_haddock_sm_jump_18: 4282715913099644725
+      Fish_haddock_sm_jump_19: 5936187365065272957
+      Fish_haddock_sm_jump_2: 5019050390256912644
+      Fish_haddock_sm_jump_20: -5005598680419787445
+      Fish_haddock_sm_jump_21: 6610965421676012607
+      Fish_haddock_sm_jump_22: -8338233199604912010
+      Fish_haddock_sm_jump_23: 9185558373018929629
+      Fish_haddock_sm_jump_24: 7830510823387317788
+      Fish_haddock_sm_jump_25: 1309185145893813183
+      Fish_haddock_sm_jump_26: 9102398208873197527
+      Fish_haddock_sm_jump_27: 5225455664961648443
+      Fish_haddock_sm_jump_28: -2734167032665508587
+      Fish_haddock_sm_jump_29: 6134671370348815313
+      Fish_haddock_sm_jump_3: 3308008676700101428
+      Fish_haddock_sm_jump_30: -1974278258786960614
+      Fish_haddock_sm_jump_31: 3954268949422999822
+      Fish_haddock_sm_jump_32: -4936585648387467925
+      Fish_haddock_sm_jump_33: 7244414324650419007
+      Fish_haddock_sm_jump_34: -3981476064665995000
+      Fish_haddock_sm_jump_35: -2616176350339243379
+      Fish_haddock_sm_jump_36: 2931557304136380844
+      Fish_haddock_sm_jump_37: 5674098533347823083
+      Fish_haddock_sm_jump_38: 8800422833132860993
+      Fish_haddock_sm_jump_39: -4439402975043136845
+      Fish_haddock_sm_jump_4: 6875178292663532043
+      Fish_haddock_sm_jump_40: 6131092745980485792
+      Fish_haddock_sm_jump_41: -2569480783602523283
+      Fish_haddock_sm_jump_42: -7371902673946126005
+      Fish_haddock_sm_jump_43: -6484079448370966387
+      Fish_haddock_sm_jump_44: -7712232855798801965
+      Fish_haddock_sm_jump_45: -116337868147482204
+      Fish_haddock_sm_jump_46: 6798870054530756193
+      Fish_haddock_sm_jump_5: 8910440627004324999
+      Fish_haddock_sm_jump_6: 5565436308887142400
+      Fish_haddock_sm_jump_7: -9088642237231838255
+      Fish_haddock_sm_jump_8: 6932855411474728084
+      Fish_haddock_sm_jump_9: 1129891658361463228
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -1,0 +1,962 @@
+fileFormatVersion: 2
+guid: ce3f854340ea274408849cecfca721d0
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -6644089657952403216
+    second: Fish_mackerel_lg_roll_0
+  - first:
+      213: -8605158599428528848
+    second: Fish_mackerel_lg_roll_1
+  - first:
+      213: 3579045100934078554
+    second: Fish_mackerel_lg_roll_2
+  - first:
+      213: 7403235312673805176
+    second: Fish_mackerel_lg_roll_3
+  - first:
+      213: -6676933256228848492
+    second: Fish_mackerel_lg_roll_4
+  - first:
+      213: 5669606168281769470
+    second: Fish_mackerel_lg_roll_5
+  - first:
+      213: -2860922932900404155
+    second: Fish_mackerel_lg_roll_6
+  - first:
+      213: -2710239122934289407
+    second: Fish_mackerel_lg_roll_7
+  - first:
+      213: 1325035193777776567
+    second: Fish_mackerel_lg_roll_8
+  - first:
+      213: 7339726732092322152
+    second: Fish_mackerel_lg_roll_9
+  - first:
+      213: -1591351342596121079
+    second: Fish_mackerel_lg_roll_10
+  - first:
+      213: 6860985329424229874
+    second: Fish_mackerel_lg_roll_11
+  - first:
+      213: -3907840974446927337
+    second: Fish_mackerel_lg_roll_12
+  - first:
+      213: 1892559918081610749
+    second: Fish_mackerel_lg_roll_13
+  - first:
+      213: -7051436007304113183
+    second: Fish_mackerel_lg_roll_14
+  - first:
+      213: -4568213018478966754
+    second: Fish_mackerel_lg_roll_15
+  - first:
+      213: 8638609079662570869
+    second: Fish_mackerel_lg_roll_16
+  - first:
+      213: -74152116291671128
+    second: Fish_mackerel_lg_roll_17
+  - first:
+      213: 8903155527462827129
+    second: Fish_mackerel_lg_roll_18
+  - first:
+      213: 5395807671776556605
+    second: Fish_mackerel_lg_roll_19
+  - first:
+      213: -1681820177425688260
+    second: Fish_mackerel_lg_roll_20
+  - first:
+      213: 5364600949400425992
+    second: Fish_mackerel_lg_roll_21
+  - first:
+      213: 980955789000535198
+    second: Fish_mackerel_lg_roll_22
+  - first:
+      213: -4350838891294982870
+    second: Fish_mackerel_lg_roll_23
+  - first:
+      213: 3057227385371244766
+    second: Fish_mackerel_lg_roll_24
+  - first:
+      213: 1219190950229694352
+    second: Fish_mackerel_lg_roll_25
+  - first:
+      213: -6430139036621359242
+    second: Fish_mackerel_lg_roll_26
+  - first:
+      213: -255856105470934743
+    second: Fish_mackerel_lg_roll_27
+  - first:
+      213: -5898085657064363204
+    second: Fish_mackerel_lg_roll_28
+  - first:
+      213: 4793564468148154270
+    second: Fish_mackerel_lg_roll_29
+  - first:
+      213: 5559210163940078086
+    second: Fish_mackerel_lg_roll_30
+  - first:
+      213: -7725646971768310017
+    second: Fish_mackerel_lg_roll_31
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_roll_0
+      rect:
+        serializedVersion: 2
+        x: 29
+        y: 466
+        width: 7
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0f086e178a37bc3a0800000000000000
+      internalID: -6644089657952403216
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_roll_1
+      rect:
+        serializedVersion: 2
+        x: 92
+        y: 465
+        width: 7
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0352a2d88d5549880800000000000000
+      internalID: -8605158599428528848
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_roll_2
+      rect:
+        serializedVersion: 2
+        x: 157
+        y: 469
+        width: 7
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a5027448e825ba130800000000000000
+      internalID: 3579045100934078554
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_roll_3
+      rect:
+        serializedVersion: 2
+        x: 220
+        y: 463
+        width: 7
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 873dc88fa439db660800000000000000
+      internalID: 7403235312673805176
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_roll_4
+      rect:
+        serializedVersion: 2
+        x: 25
+        y: 402
+        width: 14
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 49cbc715494c653a0800000000000000
+      internalID: -6676933256228848492
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_roll_5
+      rect:
+        serializedVersion: 2
+        x: 86
+        y: 403
+        width: 17
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ef56ccc65cc7eae40800000000000000
+      internalID: 5669606168281769470
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_roll_6
+      rect:
+        serializedVersion: 2
+        x: 150
+        y: 405
+        width: 16
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 544e3b610c5fb48d0800000000000000
+      internalID: -2860922932900404155
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_roll_7
+      rect:
+        serializedVersion: 2
+        x: 214
+        y: 401
+        width: 17
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 10ca22d80eb436ad0800000000000000
+      internalID: -2710239122934289407
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_roll_8
+      rect:
+        serializedVersion: 2
+        x: 20
+        y: 342
+        width: 21
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7b7e3080d78736210800000000000000
+      internalID: 1325035193777776567
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_roll_9
+      rect:
+        serializedVersion: 2
+        x: 84
+        y: 342
+        width: 21
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8613dc64392fbd560800000000000000
+      internalID: 7339726732092322152
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_roll_10
+      rect:
+        serializedVersion: 2
+        x: 148
+        y: 343
+        width: 21
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 90e97bf92626ae9e0800000000000000
+      internalID: -1591351342596121079
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_roll_11
+      rect:
+        serializedVersion: 2
+        x: 212
+        y: 341
+        width: 21
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2f56f795ecd173f50800000000000000
+      internalID: 6860985329424229874
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_roll_12
+      rect:
+        serializedVersion: 2
+        x: 21
+        y: 277
+        width: 17
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 712ef5f965f84c9c0800000000000000
+      internalID: -3907840974446927337
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_roll_13
+      rect:
+        serializedVersion: 2
+        x: 87
+        y: 278
+        width: 16
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: df39561e739b34a10800000000000000
+      internalID: 1892559918081610749
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_roll_14
+      rect:
+        serializedVersion: 2
+        x: 155
+        y: 277
+        width: 12
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1e35d3cbf44442e90800000000000000
+      internalID: -7051436007304113183
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_roll_15
+      rect:
+        serializedVersion: 2
+        x: 217
+        y: 276
+        width: 14
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e180f3f86727a90c0800000000000000
+      internalID: -4568213018478966754
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_roll_16
+      rect:
+        serializedVersion: 2
+        x: 28
+        y: 212
+        width: 7
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 57d60ca403182e770800000000000000
+      internalID: 8638609079662570869
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_roll_17
+      rect:
+        serializedVersion: 2
+        x: 93
+        y: 213
+        width: 8
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8ab67190b0f88fef0800000000000000
+      internalID: -74152116291671128
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_roll_18
+      rect:
+        serializedVersion: 2
+        x: 156
+        y: 212
+        width: 8
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9743a7208cc5e8b70800000000000000
+      internalID: 8903155527462827129
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_roll_19
+      rect:
+        serializedVersion: 2
+        x: 221
+        y: 211
+        width: 7
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d36b1904d72c1ea40800000000000000
+      internalID: 5395807671776556605
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_roll_20
+      rect:
+        serializedVersion: 2
+        x: 25
+        y: 149
+        width: 13
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c3915749579f8a8e0800000000000000
+      internalID: -1681820177425688260
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_roll_21
+      rect:
+        serializedVersion: 2
+        x: 89
+        y: 150
+        width: 16
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8065cbef324e27a40800000000000000
+      internalID: 5364600949400425992
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_roll_22
+      rect:
+        serializedVersion: 2
+        x: 154
+        y: 148
+        width: 17
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e9c6dbfb71e0d9d00800000000000000
+      internalID: 980955789000535198
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_roll_23
+      rect:
+        serializedVersion: 2
+        x: 217
+        y: 148
+        width: 18
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a2d78618417be93c0800000000000000
+      internalID: -4350838891294982870
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_roll_24
+      rect:
+        serializedVersion: 2
+        x: 23
+        y: 86
+        width: 21
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ed836aeeb147d6a20800000000000000
+      internalID: 3057227385371244766
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_roll_25
+      rect:
+        serializedVersion: 2
+        x: 87
+        y: 87
+        width: 21
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 097dfcda5bf6be010800000000000000
+      internalID: 1219190950229694352
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_roll_26
+      rect:
+        serializedVersion: 2
+        x: 152
+        y: 85
+        width: 20
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 677bfc15d9e83c6a0800000000000000
+      internalID: -6430139036621359242
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_roll_27
+      rect:
+        serializedVersion: 2
+        x: 215
+        y: 85
+        width: 21
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9214ac74a34037cf0800000000000000
+      internalID: -255856105470934743
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_roll_28
+      rect:
+        serializedVersion: 2
+        x: 26
+        y: 21
+        width: 16
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c3b2ad3285ac52ea0800000000000000
+      internalID: -5898085657064363204
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_roll_29
+      rect:
+        serializedVersion: 2
+        x: 89
+        y: 19
+        width: 17
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e9fa7e38c79268240800000000000000
+      internalID: 4793564468148154270
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_roll_30
+      rect:
+        serializedVersion: 2
+        x: 153
+        y: 18
+        width: 15
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 602b36da038462d40800000000000000
+      internalID: 5559210163940078086
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_roll_31
+      rect:
+        serializedVersion: 2
+        x: 217
+        y: 17
+        width: 17
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ff67dabe20df8c490800000000000000
+      internalID: -7725646971768310017
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Fish_mackerel_lg_roll_0: -6644089657952403216
+      Fish_mackerel_lg_roll_1: -8605158599428528848
+      Fish_mackerel_lg_roll_10: -1591351342596121079
+      Fish_mackerel_lg_roll_11: 6860985329424229874
+      Fish_mackerel_lg_roll_12: -3907840974446927337
+      Fish_mackerel_lg_roll_13: 1892559918081610749
+      Fish_mackerel_lg_roll_14: -7051436007304113183
+      Fish_mackerel_lg_roll_15: -4568213018478966754
+      Fish_mackerel_lg_roll_16: 8638609079662570869
+      Fish_mackerel_lg_roll_17: -74152116291671128
+      Fish_mackerel_lg_roll_18: 8903155527462827129
+      Fish_mackerel_lg_roll_19: 5395807671776556605
+      Fish_mackerel_lg_roll_2: 3579045100934078554
+      Fish_mackerel_lg_roll_20: -1681820177425688260
+      Fish_mackerel_lg_roll_21: 5364600949400425992
+      Fish_mackerel_lg_roll_22: 980955789000535198
+      Fish_mackerel_lg_roll_23: -4350838891294982870
+      Fish_mackerel_lg_roll_24: 3057227385371244766
+      Fish_mackerel_lg_roll_25: 1219190950229694352
+      Fish_mackerel_lg_roll_26: -6430139036621359242
+      Fish_mackerel_lg_roll_27: -255856105470934743
+      Fish_mackerel_lg_roll_28: -5898085657064363204
+      Fish_mackerel_lg_roll_29: 4793564468148154270
+      Fish_mackerel_lg_roll_3: 7403235312673805176
+      Fish_mackerel_lg_roll_30: 5559210163940078086
+      Fish_mackerel_lg_roll_31: -7725646971768310017
+      Fish_mackerel_lg_roll_4: -6676933256228848492
+      Fish_mackerel_lg_roll_5: 5669606168281769470
+      Fish_mackerel_lg_roll_6: -2860922932900404155
+      Fish_mackerel_lg_roll_7: -2710239122934289407
+      Fish_mackerel_lg_roll_8: 1325035193777776567
+      Fish_mackerel_lg_roll_9: 7339726732092322152
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

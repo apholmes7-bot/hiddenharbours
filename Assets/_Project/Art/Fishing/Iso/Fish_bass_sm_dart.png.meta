@@ -1,0 +1,676 @@
+fileFormatVersion: 2
+guid: 6426727efbcbfc44c9518347fe17a32b
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -4241100341465134607
+    second: Fish_bass_sm_dart_0
+  - first:
+      213: -7258822646285241473
+    second: Fish_bass_sm_dart_1
+  - first:
+      213: -2785723592271695889
+    second: Fish_bass_sm_dart_2
+  - first:
+      213: 7503234844659403256
+    second: Fish_bass_sm_dart_3
+  - first:
+      213: -6398777346309428091
+    second: Fish_bass_sm_dart_4
+  - first:
+      213: 7735545115749651130
+    second: Fish_bass_sm_dart_5
+  - first:
+      213: 3908381105814846191
+    second: Fish_bass_sm_dart_6
+  - first:
+      213: -5429525626046556811
+    second: Fish_bass_sm_dart_7
+  - first:
+      213: 3491180964755806518
+    second: Fish_bass_sm_dart_8
+  - first:
+      213: 7650441812346931563
+    second: Fish_bass_sm_dart_9
+  - first:
+      213: 3230705663525874124
+    second: Fish_bass_sm_dart_10
+  - first:
+      213: 2624921403255214978
+    second: Fish_bass_sm_dart_11
+  - first:
+      213: 5293670483787998573
+    second: Fish_bass_sm_dart_12
+  - first:
+      213: -8014706989086456218
+    second: Fish_bass_sm_dart_13
+  - first:
+      213: -3282163570436718343
+    second: Fish_bass_sm_dart_14
+  - first:
+      213: -7512364840230295569
+    second: Fish_bass_sm_dart_15
+  - first:
+      213: 4232428940969071055
+    second: Fish_bass_sm_dart_16
+  - first:
+      213: -5860171685059425745
+    second: Fish_bass_sm_dart_17
+  - first:
+      213: 2232274834260128702
+    second: Fish_bass_sm_dart_18
+  - first:
+      213: -3352899314481100294
+    second: Fish_bass_sm_dart_19
+  - first:
+      213: -5145539721566309440
+    second: Fish_bass_sm_dart_20
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Fish_bass_sm_dart_0
+      rect:
+        serializedVersion: 2
+        x: 26
+        y: 399
+        width: 12
+        height: 75
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1f9ce22b5b59425c0800000000000000
+      internalID: -4241100341465134607
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_dart_1
+      rect:
+        serializedVersion: 2
+        x: 88
+        y: 399
+        width: 14
+        height: 75
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f737b98134b734b90800000000000000
+      internalID: -7258822646285241473
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_dart_2
+      rect:
+        serializedVersion: 2
+        x: 151
+        y: 400
+        width: 15
+        height: 74
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fef6838f62f1759d0800000000000000
+      internalID: -2785723592271695889
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_dart_3
+      rect:
+        serializedVersion: 2
+        x: 22
+        y: 338
+        width: 17
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8f9c14e5658d02860800000000000000
+      internalID: 7503234844659403256
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_dart_4
+      rect:
+        serializedVersion: 2
+        x: 85
+        y: 338
+        width: 19
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 58ce86cd7e9f237a0800000000000000
+      internalID: -6398777346309428091
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_dart_5
+      rect:
+        serializedVersion: 2
+        x: 150
+        y: 338
+        width: 17
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ab214405c4d2a5b60800000000000000
+      internalID: 7735545115749651130
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_dart_6
+      rect:
+        serializedVersion: 2
+        x: 23
+        y: 273
+        width: 15
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fea31f288eb5d3630800000000000000
+      internalID: 3908381105814846191
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_dart_7
+      rect:
+        serializedVersion: 2
+        x: 88
+        y: 273
+        width: 14
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5755d90c53376a4b0800000000000000
+      internalID: -5429525626046556811
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_dart_8
+      rect:
+        serializedVersion: 2
+        x: 155
+        y: 273
+        width: 11
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 63910e2279a237030800000000000000
+      internalID: 3491180964755806518
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_dart_9
+      rect:
+        serializedVersion: 2
+        x: 29
+        y: 208
+        width: 6
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b690cb76b44db2a60800000000000000
+      internalID: 7650441812346931563
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_dart_10
+      rect:
+        serializedVersion: 2
+        x: 93
+        y: 208
+        width: 6
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cc96d481fa5c5dc20800000000000000
+      internalID: 3230705663525874124
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_dart_11
+      rect:
+        serializedVersion: 2
+        x: 157
+        y: 208
+        width: 6
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 283d85cdb189d6420800000000000000
+      internalID: 2624921403255214978
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_dart_12
+      rect:
+        serializedVersion: 2
+        x: 26
+        y: 145
+        width: 11
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d6567280245e67940800000000000000
+      internalID: 5293670483787998573
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_dart_13
+      rect:
+        serializedVersion: 2
+        x: 90
+        y: 145
+        width: 14
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 66649a8057a06c090800000000000000
+      internalID: -8014706989086456218
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_dart_14
+      rect:
+        serializedVersion: 2
+        x: 154
+        y: 145
+        width: 15
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9f044615f996372d0800000000000000
+      internalID: -3282163570436718343
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_dart_15
+      rect:
+        serializedVersion: 2
+        x: 25
+        y: 82
+        width: 17
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fe760f2eaf7beb790800000000000000
+      internalID: -7512364840230295569
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_dart_16
+      rect:
+        serializedVersion: 2
+        x: 88
+        y: 82
+        width: 19
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fc15b8b82bb9cba30800000000000000
+      internalID: 4232428940969071055
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_dart_17
+      rect:
+        serializedVersion: 2
+        x: 153
+        y: 82
+        width: 17
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f2a0b35a6ec7caea0800000000000000
+      internalID: -5860171685059425745
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_dart_18
+      rect:
+        serializedVersion: 2
+        x: 26
+        y: 16
+        width: 15
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eb37e197222aafe10800000000000000
+      internalID: 2232274834260128702
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_dart_19
+      rect:
+        serializedVersion: 2
+        x: 90
+        y: 15
+        width: 14
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: af904b086db1871d0800000000000000
+      internalID: -3352899314481100294
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_dart_20
+      rect:
+        serializedVersion: 2
+        x: 154
+        y: 15
+        width: 12
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0c3b06ea2ee5798b0800000000000000
+      internalID: -5145539721566309440
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Fish_bass_sm_dart_0: -4241100341465134607
+      Fish_bass_sm_dart_1: -7258822646285241473
+      Fish_bass_sm_dart_10: 3230705663525874124
+      Fish_bass_sm_dart_11: 2624921403255214978
+      Fish_bass_sm_dart_12: 5293670483787998573
+      Fish_bass_sm_dart_13: -8014706989086456218
+      Fish_bass_sm_dart_14: -3282163570436718343
+      Fish_bass_sm_dart_15: -7512364840230295569
+      Fish_bass_sm_dart_16: 4232428940969071055
+      Fish_bass_sm_dart_17: -5860171685059425745
+      Fish_bass_sm_dart_18: 2232274834260128702
+      Fish_bass_sm_dart_19: -3352899314481100294
+      Fish_bass_sm_dart_2: -2785723592271695889
+      Fish_bass_sm_dart_20: -5145539721566309440
+      Fish_bass_sm_dart_3: 7503234844659403256
+      Fish_bass_sm_dart_4: -6398777346309428091
+      Fish_bass_sm_dart_5: 7735545115749651130
+      Fish_bass_sm_dart_6: 3908381105814846191
+      Fish_bass_sm_dart_7: -5429525626046556811
+      Fish_bass_sm_dart_8: 3491180964755806518
+      Fish_bass_sm_dart_9: 7650441812346931563
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

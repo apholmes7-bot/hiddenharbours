@@ -1,0 +1,1352 @@
+fileFormatVersion: 2
+guid: bf4c6258861aac94aaa9ae3faa63dc95
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -5549896176057308342
+    second: Fish_flounder_swim_0
+  - first:
+      213: 7068593035172049536
+    second: Fish_flounder_swim_1
+  - first:
+      213: -450733798577840527
+    second: Fish_flounder_swim_2
+  - first:
+      213: -8172216561284205231
+    second: Fish_flounder_swim_3
+  - first:
+      213: -8248456798187329825
+    second: Fish_flounder_swim_4
+  - first:
+      213: -582865159156586513
+    second: Fish_flounder_swim_5
+  - first:
+      213: -3170852162967149395
+    second: Fish_flounder_swim_6
+  - first:
+      213: -3976611957227835326
+    second: Fish_flounder_swim_7
+  - first:
+      213: -843696523866750400
+    second: Fish_flounder_swim_8
+  - first:
+      213: 2734261817361235185
+    second: Fish_flounder_swim_9
+  - first:
+      213: 8271581808595476029
+    second: Fish_flounder_swim_10
+  - first:
+      213: -1441386519492731536
+    second: Fish_flounder_swim_11
+  - first:
+      213: 3553039862656230166
+    second: Fish_flounder_swim_12
+  - first:
+      213: 4832616897991735854
+    second: Fish_flounder_swim_13
+  - first:
+      213: 8512279850369893516
+    second: Fish_flounder_swim_14
+  - first:
+      213: 5827050033573408723
+    second: Fish_flounder_swim_15
+  - first:
+      213: -2321310233496795776
+    second: Fish_flounder_swim_16
+  - first:
+      213: 7696347083142319999
+    second: Fish_flounder_swim_17
+  - first:
+      213: -603888638595561551
+    second: Fish_flounder_swim_18
+  - first:
+      213: 2931047592570805761
+    second: Fish_flounder_swim_19
+  - first:
+      213: 3899631156288849569
+    second: Fish_flounder_swim_20
+  - first:
+      213: 930915667710347319
+    second: Fish_flounder_swim_21
+  - first:
+      213: -7829632243597803677
+    second: Fish_flounder_swim_22
+  - first:
+      213: -5079578616180742382
+    second: Fish_flounder_swim_23
+  - first:
+      213: -3412329225662416576
+    second: Fish_flounder_swim_24
+  - first:
+      213: 570548212545752526
+    second: Fish_flounder_swim_25
+  - first:
+      213: 8917823072722864664
+    second: Fish_flounder_swim_26
+  - first:
+      213: 2294117757132175893
+    second: Fish_flounder_swim_27
+  - first:
+      213: 6405177782653177508
+    second: Fish_flounder_swim_28
+  - first:
+      213: -3710715949808813952
+    second: Fish_flounder_swim_29
+  - first:
+      213: 1018241679037999049
+    second: Fish_flounder_swim_30
+  - first:
+      213: 4408227839207082691
+    second: Fish_flounder_swim_31
+  - first:
+      213: 4074265835650751195
+    second: Fish_flounder_swim_32
+  - first:
+      213: -5726712630834746819
+    second: Fish_flounder_swim_33
+  - first:
+      213: -1852385646572999001
+    second: Fish_flounder_swim_34
+  - first:
+      213: 2828591796407780475
+    second: Fish_flounder_swim_35
+  - first:
+      213: -1594900516608881483
+    second: Fish_flounder_swim_36
+  - first:
+      213: -5151445886328654146
+    second: Fish_flounder_swim_37
+  - first:
+      213: -7422595849355278100
+    second: Fish_flounder_swim_38
+  - first:
+      213: -2111061990353840008
+    second: Fish_flounder_swim_39
+  - first:
+      213: 6496128193154292971
+    second: Fish_flounder_swim_40
+  - first:
+      213: 2088108128227969418
+    second: Fish_flounder_swim_41
+  - first:
+      213: 492876733564246820
+    second: Fish_flounder_swim_42
+  - first:
+      213: 8763727252400444214
+    second: Fish_flounder_swim_43
+  - first:
+      213: -5696051408392071336
+    second: Fish_flounder_swim_44
+  - first:
+      213: 7988604616503461109
+    second: Fish_flounder_swim_45
+  - first:
+      213: -8063065926763725718
+    second: Fish_flounder_swim_46
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Fish_flounder_swim_0
+      rect:
+        serializedVersion: 2
+        x: 28
+        y: 465
+        width: 8
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a4b2ecd15decaf2b0800000000000000
+      internalID: -5549896176057308342
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_swim_1
+      rect:
+        serializedVersion: 2
+        x: 92
+        y: 465
+        width: 8
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 082fa3b1aefa81260800000000000000
+      internalID: 7068593035172049536
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_swim_2
+      rect:
+        serializedVersion: 2
+        x: 156
+        y: 465
+        width: 8
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 17e518f8ffbaeb9f0800000000000000
+      internalID: -450733798577840527
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_swim_3
+      rect:
+        serializedVersion: 2
+        x: 220
+        y: 464
+        width: 8
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1553715f554769e80800000000000000
+      internalID: -8172216561284205231
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_swim_4
+      rect:
+        serializedVersion: 2
+        x: 284
+        y: 465
+        width: 8
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fd663e68e38978d80800000000000000
+      internalID: -8248456798187329825
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_swim_5
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 465
+        width: 8
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fe72584d93f39e7f0800000000000000
+      internalID: -582865159156586513
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_swim_6
+      rect:
+        serializedVersion: 2
+        x: 26
+        y: 402
+        width: 11
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: da46017f1cedef3d0800000000000000
+      internalID: -3170852162967149395
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_swim_7
+      rect:
+        serializedVersion: 2
+        x: 90
+        y: 402
+        width: 11
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2403ddf6e7c30d8c0800000000000000
+      internalID: -3976611957227835326
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_swim_8
+      rect:
+        serializedVersion: 2
+        x: 155
+        y: 401
+        width: 10
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 042c0bc4b769a44f0800000000000000
+      internalID: -843696523866750400
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_swim_9
+      rect:
+        serializedVersion: 2
+        x: 218
+        y: 401
+        width: 11
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1fcfabad2ac02f520800000000000000
+      internalID: 2734261817361235185
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_swim_10
+      rect:
+        serializedVersion: 2
+        x: 282
+        y: 402
+        width: 11
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d3e9ae784df8ac270800000000000000
+      internalID: 8271581808595476029
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_swim_11
+      rect:
+        serializedVersion: 2
+        x: 346
+        y: 402
+        width: 11
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 07d5999e89a2ffbe0800000000000000
+      internalID: -1441386519492731536
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_swim_12
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 339
+        width: 14
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6136d662eeeee4130800000000000000
+      internalID: 3553039862656230166
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_swim_13
+      rect:
+        serializedVersion: 2
+        x: 88
+        y: 339
+        width: 14
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e2af854e677e01340800000000000000
+      internalID: 4832616897991735854
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_swim_14
+      rect:
+        serializedVersion: 2
+        x: 153
+        y: 339
+        width: 13
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c8443068c61b12670800000000000000
+      internalID: 8512279850369893516
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_swim_15
+      rect:
+        serializedVersion: 2
+        x: 216
+        y: 339
+        width: 14
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3df229be127ddd050800000000000000
+      internalID: 5827050033573408723
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_swim_16
+      rect:
+        serializedVersion: 2
+        x: 281
+        y: 339
+        width: 13
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 085c1f634ac09cfd0800000000000000
+      internalID: -2321310233496795776
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_swim_17
+      rect:
+        serializedVersion: 2
+        x: 344
+        y: 339
+        width: 14
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f7fcfc625eaeeca60800000000000000
+      internalID: 7696347083142319999
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_swim_18
+      rect:
+        serializedVersion: 2
+        x: 26
+        y: 275
+        width: 11
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1b70e949b7e8e97f0800000000000000
+      internalID: -603888638595561551
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_swim_19
+      rect:
+        serializedVersion: 2
+        x: 90
+        y: 275
+        width: 11
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 10e52fe814c2da820800000000000000
+      internalID: 2931047592570805761
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_swim_20
+      rect:
+        serializedVersion: 2
+        x: 154
+        y: 275
+        width: 11
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1a684a120e54e1630800000000000000
+      internalID: 3899631156288849569
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_swim_21
+      rect:
+        serializedVersion: 2
+        x: 217
+        y: 275
+        width: 12
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 73888b91ed64bec00800000000000000
+      internalID: 930915667710347319
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_swim_22
+      rect:
+        serializedVersion: 2
+        x: 283
+        y: 275
+        width: 10
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 36f786625fe875390800000000000000
+      internalID: -7829632243597803677
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_swim_23
+      rect:
+        serializedVersion: 2
+        x: 346
+        y: 275
+        width: 11
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 21760ed4926b189b0800000000000000
+      internalID: -5079578616180742382
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_swim_24
+      rect:
+        serializedVersion: 2
+        x: 28
+        y: 210
+        width: 8
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 04935b706a8f4a0d0800000000000000
+      internalID: -3412329225662416576
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_swim_25
+      rect:
+        serializedVersion: 2
+        x: 92
+        y: 210
+        width: 8
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ecd0600939efae700800000000000000
+      internalID: 570548212545752526
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_swim_26
+      rect:
+        serializedVersion: 2
+        x: 156
+        y: 210
+        width: 8
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 81acd6306d872cb70800000000000000
+      internalID: 8917823072722864664
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_swim_27
+      rect:
+        serializedVersion: 2
+        x: 220
+        y: 210
+        width: 8
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 51a77c202f756df10800000000000000
+      internalID: 2294117757132175893
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_swim_28
+      rect:
+        serializedVersion: 2
+        x: 284
+        y: 210
+        width: 8
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4ae444ad143c3e850800000000000000
+      internalID: 6405177782653177508
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_swim_29
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 210
+        width: 8
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 088f44df083e08cc0800000000000000
+      internalID: -3710715949808813952
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_swim_30
+      rect:
+        serializedVersion: 2
+        x: 27
+        y: 147
+        width: 11
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9c7ae868965812e00800000000000000
+      internalID: 1018241679037999049
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_swim_31
+      rect:
+        serializedVersion: 2
+        x: 91
+        y: 147
+        width: 11
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3ca0dec2ddb2d2d30800000000000000
+      internalID: 4408227839207082691
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_swim_32
+      rect:
+        serializedVersion: 2
+        x: 155
+        y: 147
+        width: 11
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bda197ee033ba8830800000000000000
+      internalID: 4074265835650751195
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_swim_33
+      rect:
+        serializedVersion: 2
+        x: 219
+        y: 147
+        width: 11
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d3a2a542431a680b0800000000000000
+      internalID: -5726712630834746819
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_swim_34
+      rect:
+        serializedVersion: 2
+        x: 283
+        y: 147
+        width: 12
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7aeebfc91110b46e0800000000000000
+      internalID: -1852385646572999001
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_swim_35
+      rect:
+        serializedVersion: 2
+        x: 347
+        y: 147
+        width: 12
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b744877904d214720800000000000000
+      internalID: 2828591796407780475
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_swim_36
+      rect:
+        serializedVersion: 2
+        x: 26
+        y: 83
+        width: 13
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5bcc0772e66cdd9e0800000000000000
+      internalID: -1594900516608881483
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_swim_37
+      rect:
+        serializedVersion: 2
+        x: 90
+        y: 83
+        width: 78
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eb6bbb982436288b0800000000000000
+      internalID: -5151445886328654146
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_swim_38
+      rect:
+        serializedVersion: 2
+        x: 218
+        y: 83
+        width: 14
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ce8c3efc664adf890800000000000000
+      internalID: -7422595849355278100
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_swim_39
+      rect:
+        serializedVersion: 2
+        x: 282
+        y: 83
+        width: 13
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 878512efd4004b2e0800000000000000
+      internalID: -2111061990353840008
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_swim_40
+      rect:
+        serializedVersion: 2
+        x: 346
+        y: 83
+        width: 13
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bec9c587c22e62a50800000000000000
+      internalID: 6496128193154292971
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_swim_41
+      rect:
+        serializedVersion: 2
+        x: 27
+        y: 18
+        width: 10
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a8942a387437afc10800000000000000
+      internalID: 2088108128227969418
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_swim_42
+      rect:
+        serializedVersion: 2
+        x: 91
+        y: 18
+        width: 12
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 42bd62e17cc07d600800000000000000
+      internalID: 492876733564246820
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_swim_43
+      rect:
+        serializedVersion: 2
+        x: 155
+        y: 18
+        width: 11
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6331dbbf0830f9970800000000000000
+      internalID: 8763727252400444214
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_swim_44
+      rect:
+        serializedVersion: 2
+        x: 219
+        y: 18
+        width: 12
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8575d6c4c6f83f0b0800000000000000
+      internalID: -5696051408392071336
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_swim_45
+      rect:
+        serializedVersion: 2
+        x: 283
+        y: 17
+        width: 11
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5f40cb1c2993dde60800000000000000
+      internalID: 7988604616503461109
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_swim_46
+      rect:
+        serializedVersion: 2
+        x: 347
+        y: 17
+        width: 10
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a6c31b2724c3a1090800000000000000
+      internalID: -8063065926763725718
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Fish_flounder_swim_0: -5549896176057308342
+      Fish_flounder_swim_1: 7068593035172049536
+      Fish_flounder_swim_10: 8271581808595476029
+      Fish_flounder_swim_11: -1441386519492731536
+      Fish_flounder_swim_12: 3553039862656230166
+      Fish_flounder_swim_13: 4832616897991735854
+      Fish_flounder_swim_14: 8512279850369893516
+      Fish_flounder_swim_15: 5827050033573408723
+      Fish_flounder_swim_16: -2321310233496795776
+      Fish_flounder_swim_17: 7696347083142319999
+      Fish_flounder_swim_18: -603888638595561551
+      Fish_flounder_swim_19: 2931047592570805761
+      Fish_flounder_swim_2: -450733798577840527
+      Fish_flounder_swim_20: 3899631156288849569
+      Fish_flounder_swim_21: 930915667710347319
+      Fish_flounder_swim_22: -7829632243597803677
+      Fish_flounder_swim_23: -5079578616180742382
+      Fish_flounder_swim_24: -3412329225662416576
+      Fish_flounder_swim_25: 570548212545752526
+      Fish_flounder_swim_26: 8917823072722864664
+      Fish_flounder_swim_27: 2294117757132175893
+      Fish_flounder_swim_28: 6405177782653177508
+      Fish_flounder_swim_29: -3710715949808813952
+      Fish_flounder_swim_3: -8172216561284205231
+      Fish_flounder_swim_30: 1018241679037999049
+      Fish_flounder_swim_31: 4408227839207082691
+      Fish_flounder_swim_32: 4074265835650751195
+      Fish_flounder_swim_33: -5726712630834746819
+      Fish_flounder_swim_34: -1852385646572999001
+      Fish_flounder_swim_35: 2828591796407780475
+      Fish_flounder_swim_36: -1594900516608881483
+      Fish_flounder_swim_37: -5151445886328654146
+      Fish_flounder_swim_38: -7422595849355278100
+      Fish_flounder_swim_39: -2111061990353840008
+      Fish_flounder_swim_4: -8248456798187329825
+      Fish_flounder_swim_40: 6496128193154292971
+      Fish_flounder_swim_41: 2088108128227969418
+      Fish_flounder_swim_42: 492876733564246820
+      Fish_flounder_swim_43: 8763727252400444214
+      Fish_flounder_swim_44: -5696051408392071336
+      Fish_flounder_swim_45: 7988604616503461109
+      Fish_flounder_swim_46: -8063065926763725718
+      Fish_flounder_swim_5: -582865159156586513
+      Fish_flounder_swim_6: -3170852162967149395
+      Fish_flounder_swim_7: -3976611957227835326
+      Fish_flounder_swim_8: -843696523866750400
+      Fish_flounder_swim_9: 2734261817361235185
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

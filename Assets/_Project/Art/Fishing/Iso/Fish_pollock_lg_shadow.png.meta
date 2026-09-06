@@ -1,0 +1,650 @@
+fileFormatVersion: 2
+guid: d1431a3593509954c9fa1fc50bce1cc5
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 7680371377336188106
+    second: Fish_pollock_lg_shadow_0
+  - first:
+      213: 8818624867407362478
+    second: Fish_pollock_lg_shadow_1
+  - first:
+      213: -4361586475283349701
+    second: Fish_pollock_lg_shadow_2
+  - first:
+      213: -5598385496145408653
+    second: Fish_pollock_lg_shadow_3
+  - first:
+      213: -7554883911783577294
+    second: Fish_pollock_lg_shadow_4
+  - first:
+      213: 8158389314257163243
+    second: Fish_pollock_lg_shadow_5
+  - first:
+      213: 1824587095646178170
+    second: Fish_pollock_lg_shadow_6
+  - first:
+      213: -7648179346756282397
+    second: Fish_pollock_lg_shadow_7
+  - first:
+      213: 8605493262397980485
+    second: Fish_pollock_lg_shadow_8
+  - first:
+      213: -8350617649507627677
+    second: Fish_pollock_lg_shadow_9
+  - first:
+      213: -4976516784978327371
+    second: Fish_pollock_lg_shadow_10
+  - first:
+      213: -2166259121538054564
+    second: Fish_pollock_lg_shadow_11
+  - first:
+      213: -5341101744110891586
+    second: Fish_pollock_lg_shadow_12
+  - first:
+      213: -4958626058963235384
+    second: Fish_pollock_lg_shadow_13
+  - first:
+      213: -1814995779880833808
+    second: Fish_pollock_lg_shadow_14
+  - first:
+      213: 8034741369370539836
+    second: Fish_pollock_lg_shadow_15
+  - first:
+      213: -6968821366148844192
+    second: Fish_pollock_lg_shadow_16
+  - first:
+      213: 4039937702698498822
+    second: Fish_pollock_lg_shadow_17
+  - first:
+      213: 3362567441130977445
+    second: Fish_pollock_lg_shadow_18
+  - first:
+      213: 1702276193236268213
+    second: Fish_pollock_lg_shadow_19
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Fish_pollock_lg_shadow_0
+      rect:
+        serializedVersion: 2
+        x: 26
+        y: 447
+        width: 13
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: acc73394319269a60800000000000000
+      internalID: 7680371377336188106
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_pollock_lg_shadow_1
+      rect:
+        serializedVersion: 2
+        x: 89
+        y: 447
+        width: 13
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ea9fd35089c026a70800000000000000
+      internalID: 8818624867407362478
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_pollock_lg_shadow_2
+      rect:
+        serializedVersion: 2
+        x: 22
+        y: 384
+        width: 21
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b3f769b95388873c0800000000000000
+      internalID: -4361586475283349701
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_pollock_lg_shadow_3
+      rect:
+        serializedVersion: 2
+        x: 77
+        y: 388
+        width: 30
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 37dcd828d0a8e42b0800000000000000
+      internalID: -5598385496145408653
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_pollock_lg_shadow_4
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 326
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 23983d61c19a72790800000000000000
+      internalID: -7554883911783577294
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_pollock_lg_shadow_5
+      rect:
+        serializedVersion: 2
+        x: 19
+        y: 328
+        width: 28
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: be314a73bdb683170800000000000000
+      internalID: 8158389314257163243
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_pollock_lg_shadow_6
+      rect:
+        serializedVersion: 2
+        x: 76
+        y: 334
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a7b80c1eb4c325910800000000000000
+      internalID: 1824587095646178170
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_pollock_lg_shadow_7
+      rect:
+        serializedVersion: 2
+        x: 83
+        y: 328
+        width: 28
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3e7dc1ae7653cd590800000000000000
+      internalID: -7648179346756282397
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_pollock_lg_shadow_8
+      rect:
+        serializedVersion: 2
+        x: 13
+        y: 262
+        width: 30
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 54fbf3e378adc6770800000000000000
+      internalID: 8605493262397980485
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_pollock_lg_shadow_9
+      rect:
+        serializedVersion: 2
+        x: 86
+        y: 262
+        width: 21
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 36d8df1cd75ac1c80800000000000000
+      internalID: -8350617649507627677
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_pollock_lg_shadow_10
+      rect:
+        serializedVersion: 2
+        x: 25
+        y: 196
+        width: 13
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5b8099cc95cdfeab0800000000000000
+      internalID: -4976516784978327371
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_pollock_lg_shadow_11
+      rect:
+        serializedVersion: 2
+        x: 90
+        y: 196
+        width: 13
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c5646496ec6efe1e0800000000000000
+      internalID: -2166259121538054564
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_pollock_lg_shadow_12
+      rect:
+        serializedVersion: 2
+        x: 21
+        y: 134
+        width: 21
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ebd0d09134890e5b0800000000000000
+      internalID: -5341101744110891586
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_pollock_lg_shadow_13
+      rect:
+        serializedVersion: 2
+        x: 85
+        y: 134
+        width: 30
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8cd408d0fdb6f2bb0800000000000000
+      internalID: -4958626058963235384
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_pollock_lg_shadow_14
+      rect:
+        serializedVersion: 2
+        x: 17
+        y: 72
+        width: 28
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0fcae5754f6dfc6e0800000000000000
+      internalID: -1814995779880833808
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_pollock_lg_shadow_15
+      rect:
+        serializedVersion: 2
+        x: 44
+        y: 78
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c37777f94b2218f60800000000000000
+      internalID: 8034741369370539836
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_pollock_lg_shadow_16
+      rect:
+        serializedVersion: 2
+        x: 81
+        y: 72
+        width: 28
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 065bb8fc3e5c94f90800000000000000
+      internalID: -6968821366148844192
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_pollock_lg_shadow_17
+      rect:
+        serializedVersion: 2
+        x: 108
+        y: 70
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 60b3d04afedb01830800000000000000
+      internalID: 4039937702698498822
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_pollock_lg_shadow_18
+      rect:
+        serializedVersion: 2
+        x: 21
+        y: 4
+        width: 30
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5a8f7e5a54d3aae20800000000000000
+      internalID: 3362567441130977445
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_pollock_lg_shadow_19
+      rect:
+        serializedVersion: 2
+        x: 85
+        y: 0
+        width: 21
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5b4b37fbd23bf9710800000000000000
+      internalID: 1702276193236268213
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Fish_pollock_lg_shadow_0: 7680371377336188106
+      Fish_pollock_lg_shadow_1: 8818624867407362478
+      Fish_pollock_lg_shadow_10: -4976516784978327371
+      Fish_pollock_lg_shadow_11: -2166259121538054564
+      Fish_pollock_lg_shadow_12: -5341101744110891586
+      Fish_pollock_lg_shadow_13: -4958626058963235384
+      Fish_pollock_lg_shadow_14: -1814995779880833808
+      Fish_pollock_lg_shadow_15: 8034741369370539836
+      Fish_pollock_lg_shadow_16: -6968821366148844192
+      Fish_pollock_lg_shadow_17: 4039937702698498822
+      Fish_pollock_lg_shadow_18: 3362567441130977445
+      Fish_pollock_lg_shadow_19: 1702276193236268213
+      Fish_pollock_lg_shadow_2: -4361586475283349701
+      Fish_pollock_lg_shadow_3: -5598385496145408653
+      Fish_pollock_lg_shadow_4: -7554883911783577294
+      Fish_pollock_lg_shadow_5: 8158389314257163243
+      Fish_pollock_lg_shadow_6: 1824587095646178170
+      Fish_pollock_lg_shadow_7: -7648179346756282397
+      Fish_pollock_lg_shadow_8: 8605493262397980485
+      Fish_pollock_lg_shadow_9: -8350617649507627677
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

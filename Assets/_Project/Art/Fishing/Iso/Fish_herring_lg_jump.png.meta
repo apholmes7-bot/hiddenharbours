@@ -1,0 +1,702 @@
+fileFormatVersion: 2
+guid: f12971bcf7a00404680d9206df55e03e
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -49903263653689793
+    second: Fish_herring_lg_jump_0
+  - first:
+      213: 8105206794597253891
+    second: Fish_herring_lg_jump_1
+  - first:
+      213: 6940124479583189133
+    second: Fish_herring_lg_jump_2
+  - first:
+      213: 1816207188455425249
+    second: Fish_herring_lg_jump_3
+  - first:
+      213: -3832081664005034490
+    second: Fish_herring_lg_jump_4
+  - first:
+      213: -6966611649594507410
+    second: Fish_herring_lg_jump_5
+  - first:
+      213: 4209088536571387086
+    second: Fish_herring_lg_jump_6
+  - first:
+      213: 8322970725025585386
+    second: Fish_herring_lg_jump_7
+  - first:
+      213: -4177839881793986024
+    second: Fish_herring_lg_jump_8
+  - first:
+      213: -7862207794956051522
+    second: Fish_herring_lg_jump_9
+  - first:
+      213: 3097635205159782471
+    second: Fish_herring_lg_jump_10
+  - first:
+      213: 103004200017568526
+    second: Fish_herring_lg_jump_11
+  - first:
+      213: 3967642594628698229
+    second: Fish_herring_lg_jump_12
+  - first:
+      213: 3912649715858422354
+    second: Fish_herring_lg_jump_13
+  - first:
+      213: -8635926531655087291
+    second: Fish_herring_lg_jump_14
+  - first:
+      213: 7981957820089264921
+    second: Fish_herring_lg_jump_15
+  - first:
+      213: 8449353703897917887
+    second: Fish_herring_lg_jump_16
+  - first:
+      213: 4566471357035966148
+    second: Fish_herring_lg_jump_17
+  - first:
+      213: 3758622922818823684
+    second: Fish_herring_lg_jump_18
+  - first:
+      213: -4373202302193815922
+    second: Fish_herring_lg_jump_19
+  - first:
+      213: -5699329322078248358
+    second: Fish_herring_lg_jump_20
+  - first:
+      213: 4150640651393376085
+    second: Fish_herring_lg_jump_21
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Fish_herring_lg_jump_0
+      rect:
+        serializedVersion: 2
+        x: 30
+        y: 404
+        width: 198
+        height: 82
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f360ac00f35be4ff0800000000000000
+      internalID: -49903263653689793
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_herring_lg_jump_1
+      rect:
+        serializedVersion: 2
+        x: 90
+        y: 410
+        width: 9
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3034d0fe2aa7b7070800000000000000
+      internalID: 8105206794597253891
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_herring_lg_jump_2
+      rect:
+        serializedVersion: 2
+        x: 285
+        y: 409
+        width: 70
+        height: 73
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d887c8e9176405060800000000000000
+      internalID: 6940124479583189133
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_herring_lg_jump_3
+      rect:
+        serializedVersion: 2
+        x: 91
+        y: 347
+        width: 9
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1e48562b0d6743910800000000000000
+      internalID: 1816207188455425249
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_herring_lg_jump_4
+      rect:
+        serializedVersion: 2
+        x: 153
+        y: 351
+        width: 12
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 60e21b2a706b1dac0800000000000000
+      internalID: -3832081664005034490
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_herring_lg_jump_5
+      rect:
+        serializedVersion: 2
+        x: 217
+        y: 353
+        width: 12
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e6f32d98d9f915f90800000000000000
+      internalID: -6966611649594507410
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_herring_lg_jump_6
+      rect:
+        serializedVersion: 2
+        x: 282
+        y: 348
+        width: 10
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ecc918a29bfa96a30800000000000000
+      internalID: 4209088536571387086
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_herring_lg_jump_7
+      rect:
+        serializedVersion: 2
+        x: 347
+        y: 216
+        width: 8
+        height: 138
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ae8102507c1218370800000000000000
+      internalID: 8322970725025585386
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_herring_lg_jump_8
+      rect:
+        serializedVersion: 2
+        x: 26
+        y: 341
+        width: 9
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 812a53d33c45506c0800000000000000
+      internalID: -4177839881793986024
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_herring_lg_jump_9
+      rect:
+        serializedVersion: 2
+        x: 26
+        y: 217
+        width: 9
+        height: 68
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ebb565f8aa3d3e290800000000000000
+      internalID: -7862207794956051522
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_herring_lg_jump_10
+      rect:
+        serializedVersion: 2
+        x: 29
+        y: 88
+        width: 9
+        height: 69
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7480b4f9ec20dfa20800000000000000
+      internalID: 3097635205159782471
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_herring_lg_jump_11
+      rect:
+        serializedVersion: 2
+        x: 93
+        y: 155
+        width: 71
+        height: 139
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e03ab6036c1fd6100800000000000000
+      internalID: 103004200017568526
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_herring_lg_jump_12
+      rect:
+        serializedVersion: 2
+        x: 220
+        y: 224
+        width: 8
+        height: 71
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5708d881be5ef0730800000000000000
+      internalID: 3967642594628698229
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_herring_lg_jump_13
+      rect:
+        serializedVersion: 2
+        x: 220
+        y: 159
+        width: 10
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 25a364cbf268c4630800000000000000
+      internalID: 3912649715858422354
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_herring_lg_jump_14
+      rect:
+        serializedVersion: 2
+        x: 283
+        y: 156
+        width: 8
+        height: 137
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 54bc3561396072880800000000000000
+      internalID: -8635926531655087291
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_herring_lg_jump_15
+      rect:
+        serializedVersion: 2
+        x: 349
+        y: 151
+        width: 8
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 91b629ed85c95ce60800000000000000
+      internalID: 7981957820089264921
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_herring_lg_jump_16
+      rect:
+        serializedVersion: 2
+        x: 92
+        y: 25
+        width: 9
+        height: 73
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fb967765d62224570800000000000000
+      internalID: 8449353703897917887
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_herring_lg_jump_17
+      rect:
+        serializedVersion: 2
+        x: 156
+        y: 93
+        width: 138
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4ceef19418d5f5f30800000000000000
+      internalID: 4566471357035966148
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_herring_lg_jump_18
+      rect:
+        serializedVersion: 2
+        x: 349
+        y: 88
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 406a14f52af492430800000000000000
+      internalID: 3758622922818823684
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_herring_lg_jump_19
+      rect:
+        serializedVersion: 2
+        x: 29
+        y: 22
+        width: 8
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e8e21d62da34f43c0800000000000000
+      internalID: -4373202302193815922
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_herring_lg_jump_20
+      rect:
+        serializedVersion: 2
+        x: 156
+        y: 31
+        width: 72
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a52ee8b8d2ae7e0b0800000000000000
+      internalID: -5699329322078248358
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_herring_lg_jump_21
+      rect:
+        serializedVersion: 2
+        x: 285
+        y: 24
+        width: 69
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 55f19907ea90a9930800000000000000
+      internalID: 4150640651393376085
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Fish_herring_lg_jump_0: -49903263653689793
+      Fish_herring_lg_jump_1: 8105206794597253891
+      Fish_herring_lg_jump_10: 3097635205159782471
+      Fish_herring_lg_jump_11: 103004200017568526
+      Fish_herring_lg_jump_12: 3967642594628698229
+      Fish_herring_lg_jump_13: 3912649715858422354
+      Fish_herring_lg_jump_14: -8635926531655087291
+      Fish_herring_lg_jump_15: 7981957820089264921
+      Fish_herring_lg_jump_16: 8449353703897917887
+      Fish_herring_lg_jump_17: 4566471357035966148
+      Fish_herring_lg_jump_18: 3758622922818823684
+      Fish_herring_lg_jump_19: -4373202302193815922
+      Fish_herring_lg_jump_2: 6940124479583189133
+      Fish_herring_lg_jump_20: -5699329322078248358
+      Fish_herring_lg_jump_21: 4150640651393376085
+      Fish_herring_lg_jump_3: 1816207188455425249
+      Fish_herring_lg_jump_4: -3832081664005034490
+      Fish_herring_lg_jump_5: -6966611649594507410
+      Fish_herring_lg_jump_6: 4209088536571387086
+      Fish_herring_lg_jump_7: 8322970725025585386
+      Fish_herring_lg_jump_8: -4177839881793986024
+      Fish_herring_lg_jump_9: -7862207794956051522
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

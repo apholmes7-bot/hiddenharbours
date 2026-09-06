@@ -1,0 +1,676 @@
+fileFormatVersion: 2
+guid: 732c7725d7da04747b885ca70a1e6d47
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 8701595002776106531
+    second: Crust2_crab_burrow_0
+  - first:
+      213: 2202031920819089188
+    second: Crust2_crab_burrow_1
+  - first:
+      213: 2245008206985900192
+    second: Crust2_crab_burrow_2
+  - first:
+      213: 7073557476644013511
+    second: Crust2_crab_burrow_3
+  - first:
+      213: 74079314555046498
+    second: Crust2_crab_burrow_4
+  - first:
+      213: -8309597959190012300
+    second: Crust2_crab_burrow_5
+  - first:
+      213: -538105335315168912
+    second: Crust2_crab_burrow_6
+  - first:
+      213: -8207457651852510831
+    second: Crust2_crab_burrow_7
+  - first:
+      213: 4312959653569764534
+    second: Crust2_crab_burrow_8
+  - first:
+      213: -6722580330738199454
+    second: Crust2_crab_burrow_9
+  - first:
+      213: 5304643152172589585
+    second: Crust2_crab_burrow_10
+  - first:
+      213: 330625148873400210
+    second: Crust2_crab_burrow_11
+  - first:
+      213: 2114037467395395985
+    second: Crust2_crab_burrow_12
+  - first:
+      213: -5207621037716257473
+    second: Crust2_crab_burrow_13
+  - first:
+      213: -7414308543302966675
+    second: Crust2_crab_burrow_14
+  - first:
+      213: 6438786282855927962
+    second: Crust2_crab_burrow_15
+  - first:
+      213: 4110435980089876487
+    second: Crust2_crab_burrow_16
+  - first:
+      213: -817172610042428775
+    second: Crust2_crab_burrow_17
+  - first:
+      213: -1747781904450534487
+    second: Crust2_crab_burrow_18
+  - first:
+      213: 2600635558515436945
+    second: Crust2_crab_burrow_19
+  - first:
+      213: 4270889854430878486
+    second: Crust2_crab_burrow_20
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Crust2_crab_burrow_0
+      rect:
+        serializedVersion: 2
+        x: 25
+        y: 469
+        width: 14
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 326b8cf4d8642c870800000000000000
+      internalID: 8701595002776106531
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Crust2_crab_burrow_1
+      rect:
+        serializedVersion: 2
+        x: 90
+        y: 469
+        width: 12
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 42f2e787d503f8e10800000000000000
+      internalID: 2202031920819089188
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Crust2_crab_burrow_2
+      rect:
+        serializedVersion: 2
+        x: 155
+        y: 342
+        width: 71
+        height: 133
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0a03b37d11fd72f10800000000000000
+      internalID: 2245008206985900192
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Crust2_crab_burrow_3
+      rect:
+        serializedVersion: 2
+        x: 26
+        y: 403
+        width: 12
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7c5cca53c035a2260800000000000000
+      internalID: 7073557476644013511
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Crust2_crab_burrow_4
+      rect:
+        serializedVersion: 2
+        x: 90
+        y: 404
+        width: 11
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 26a024d7ebe270100800000000000000
+      internalID: 74079314555046498
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Crust2_crab_burrow_5
+      rect:
+        serializedVersion: 2
+        x: 28
+        y: 339
+        width: 7
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 47e1b28aea06eac80800000000000000
+      internalID: -8309597959190012300
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Crust2_crab_burrow_6
+      rect:
+        serializedVersion: 2
+        x: 93
+        y: 340
+        width: 6
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0710ccc6c044888f0800000000000000
+      internalID: -538105335315168912
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Crust2_crab_burrow_7
+      rect:
+        serializedVersion: 2
+        x: 157
+        y: 340
+        width: 6
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 199f44820c0491e80800000000000000
+      internalID: -8207457651852510831
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Crust2_crab_burrow_8
+      rect:
+        serializedVersion: 2
+        x: 25
+        y: 277
+        width: 12
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6bc1e9134f5badb30800000000000000
+      internalID: 4312959653569764534
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Crust2_crab_burrow_9
+      rect:
+        serializedVersion: 2
+        x: 25
+        y: 214
+        width: 77
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 26452549ec894b2a0800000000000000
+      internalID: -6722580330738199454
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Crust2_crab_burrow_10
+      rect:
+        serializedVersion: 2
+        x: 91
+        y: 276
+        width: 10
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 112a47977d0ed9940800000000000000
+      internalID: 5304643152172589585
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Crust2_crab_burrow_11
+      rect:
+        serializedVersion: 2
+        x: 155
+        y: 214
+        width: 72
+        height: 70
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 29fd86832dd969400800000000000000
+      internalID: 330625148873400210
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Crust2_crab_burrow_12
+      rect:
+        serializedVersion: 2
+        x: 26
+        y: 148
+        width: 12
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 19118fd30e1965d10800000000000000
+      internalID: 2114037467395395985
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Crust2_crab_burrow_13
+      rect:
+        serializedVersion: 2
+        x: 29
+        y: 83
+        width: 7
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f354212e140dab7b0800000000000000
+      internalID: -5207621037716257473
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Crust2_crab_burrow_14
+      rect:
+        serializedVersion: 2
+        x: 91
+        y: 148
+        width: 10
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d62684d99a51b1990800000000000000
+      internalID: -7414308543302966675
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Crust2_crab_burrow_15
+      rect:
+        serializedVersion: 2
+        x: 93
+        y: 84
+        width: 6
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a901946920a2b5950800000000000000
+      internalID: 6438786282855927962
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Crust2_crab_burrow_16
+      rect:
+        serializedVersion: 2
+        x: 155
+        y: 86
+        width: 71
+        height: 70
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 700ed31feb33b0930800000000000000
+      internalID: 4110435980089876487
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Crust2_crab_burrow_17
+      rect:
+        serializedVersion: 2
+        x: 157
+        y: 84
+        width: 6
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9920e3a37d1d8a4f0800000000000000
+      internalID: -817172610042428775
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Crust2_crab_burrow_18
+      rect:
+        serializedVersion: 2
+        x: 27
+        y: 20
+        width: 12
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9a3ce583e91aeb7e0800000000000000
+      internalID: -1747781904450534487
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Crust2_crab_burrow_19
+      rect:
+        serializedVersion: 2
+        x: 91
+        y: 19
+        width: 11
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 19def8ff240571420800000000000000
+      internalID: 2600635558515436945
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Crust2_crab_burrow_20
+      rect:
+        serializedVersion: 2
+        x: 156
+        y: 21
+        width: 70
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 61b1c28c1bf354b30800000000000000
+      internalID: 4270889854430878486
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Crust2_crab_burrow_0: 8701595002776106531
+      Crust2_crab_burrow_1: 2202031920819089188
+      Crust2_crab_burrow_10: 5304643152172589585
+      Crust2_crab_burrow_11: 330625148873400210
+      Crust2_crab_burrow_12: 2114037467395395985
+      Crust2_crab_burrow_13: -5207621037716257473
+      Crust2_crab_burrow_14: -7414308543302966675
+      Crust2_crab_burrow_15: 6438786282855927962
+      Crust2_crab_burrow_16: 4110435980089876487
+      Crust2_crab_burrow_17: -817172610042428775
+      Crust2_crab_burrow_18: -1747781904450534487
+      Crust2_crab_burrow_19: 2600635558515436945
+      Crust2_crab_burrow_2: 2245008206985900192
+      Crust2_crab_burrow_20: 4270889854430878486
+      Crust2_crab_burrow_3: 7073557476644013511
+      Crust2_crab_burrow_4: 74079314555046498
+      Crust2_crab_burrow_5: -8309597959190012300
+      Crust2_crab_burrow_6: -538105335315168912
+      Crust2_crab_burrow_7: -8207457651852510831
+      Crust2_crab_burrow_8: 4312959653569764534
+      Crust2_crab_burrow_9: -6722580330738199454
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

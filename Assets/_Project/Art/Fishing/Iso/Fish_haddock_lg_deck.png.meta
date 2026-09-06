@@ -1,0 +1,1196 @@
+fileFormatVersion: 2
+guid: 0d0e3dd31ad4a354aabceda119d473b8
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 2255258268335725678
+    second: Fish_haddock_lg_deck_0
+  - first:
+      213: 6215804040908149941
+    second: Fish_haddock_lg_deck_1
+  - first:
+      213: 5785984444475218504
+    second: Fish_haddock_lg_deck_2
+  - first:
+      213: -5668352202386590764
+    second: Fish_haddock_lg_deck_3
+  - first:
+      213: -6049194704771878156
+    second: Fish_haddock_lg_deck_4
+  - first:
+      213: -8989644267836330080
+    second: Fish_haddock_lg_deck_5
+  - first:
+      213: -4073145149874956367
+    second: Fish_haddock_lg_deck_6
+  - first:
+      213: -4813045343726385757
+    second: Fish_haddock_lg_deck_7
+  - first:
+      213: 655711428961641235
+    second: Fish_haddock_lg_deck_8
+  - first:
+      213: 7872621887704190909
+    second: Fish_haddock_lg_deck_9
+  - first:
+      213: 5666964308704482929
+    second: Fish_haddock_lg_deck_10
+  - first:
+      213: 5352228581728342235
+    second: Fish_haddock_lg_deck_11
+  - first:
+      213: 4310903756144162299
+    second: Fish_haddock_lg_deck_12
+  - first:
+      213: 3697570844731207173
+    second: Fish_haddock_lg_deck_13
+  - first:
+      213: 6293114941872734716
+    second: Fish_haddock_lg_deck_14
+  - first:
+      213: 5753051114854522438
+    second: Fish_haddock_lg_deck_15
+  - first:
+      213: -8338037520010098848
+    second: Fish_haddock_lg_deck_16
+  - first:
+      213: 2613192529602130651
+    second: Fish_haddock_lg_deck_17
+  - first:
+      213: -3712112208852197249
+    second: Fish_haddock_lg_deck_18
+  - first:
+      213: 2773411270678317442
+    second: Fish_haddock_lg_deck_19
+  - first:
+      213: -6663618668850161725
+    second: Fish_haddock_lg_deck_20
+  - first:
+      213: 4872951754044363334
+    second: Fish_haddock_lg_deck_21
+  - first:
+      213: -8789907678224732453
+    second: Fish_haddock_lg_deck_22
+  - first:
+      213: 7721864054261722036
+    second: Fish_haddock_lg_deck_23
+  - first:
+      213: 6696292532529879647
+    second: Fish_haddock_lg_deck_24
+  - first:
+      213: -5309306467647347992
+    second: Fish_haddock_lg_deck_25
+  - first:
+      213: -8334564959754714594
+    second: Fish_haddock_lg_deck_26
+  - first:
+      213: -2675185918190631242
+    second: Fish_haddock_lg_deck_27
+  - first:
+      213: -4128093504094013620
+    second: Fish_haddock_lg_deck_28
+  - first:
+      213: 4801637138560348043
+    second: Fish_haddock_lg_deck_29
+  - first:
+      213: -7934823971687470628
+    second: Fish_haddock_lg_deck_30
+  - first:
+      213: -2327170950661526367
+    second: Fish_haddock_lg_deck_31
+  - first:
+      213: -499636461029931164
+    second: Fish_haddock_lg_deck_32
+  - first:
+      213: 3220562112880162653
+    second: Fish_haddock_lg_deck_33
+  - first:
+      213: 3754953974405054766
+    second: Fish_haddock_lg_deck_34
+  - first:
+      213: -5480463164327483017
+    second: Fish_haddock_lg_deck_35
+  - first:
+      213: 898666846859585368
+    second: Fish_haddock_lg_deck_36
+  - first:
+      213: 4365680236117106624
+    second: Fish_haddock_lg_deck_37
+  - first:
+      213: -5328526462485894169
+    second: Fish_haddock_lg_deck_38
+  - first:
+      213: -2608001495445155089
+    second: Fish_haddock_lg_deck_39
+  - first:
+      213: 2437175190348829611
+    second: Fish_haddock_lg_deck_40
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Fish_haddock_lg_deck_0
+      rect:
+        serializedVersion: 2
+        x: 25
+        y: 466
+        width: 12
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e6cd9e832794c4f10800000000000000
+      internalID: 2255258268335725678
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_deck_1
+      rect:
+        serializedVersion: 2
+        x: 91
+        y: 465
+        width: 12
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5b494cba7d8f24650800000000000000
+      internalID: 6215804040908149941
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_deck_2
+      rect:
+        serializedVersion: 2
+        x: 153
+        y: 468
+        width: 12
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 84a91e06232fb4050800000000000000
+      internalID: 5785984444475218504
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_deck_3
+      rect:
+        serializedVersion: 2
+        x: 155
+        y: 463
+        width: 9
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4d3b1f244b7f551b0800000000000000
+      internalID: -5668352202386590764
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_deck_4
+      rect:
+        serializedVersion: 2
+        x: 219
+        y: 464
+        width: 12
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4f2f5ec4771fc0ca0800000000000000
+      internalID: -6049194704771878156
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_deck_5
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 403
+        width: 25
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0af2d76ea2e5e3380800000000000000
+      internalID: -8989644267836330080
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_deck_6
+      rect:
+        serializedVersion: 2
+        x: 82
+        y: 403
+        width: 24
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1b7191f01184977c0800000000000000
+      internalID: -4073145149874956367
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_deck_7
+      rect:
+        serializedVersion: 2
+        x: 145
+        y: 401
+        width: 24
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3a5475fa2c0a43db0800000000000000
+      internalID: -4813045343726385757
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_deck_8
+      rect:
+        serializedVersion: 2
+        x: 209
+        y: 401
+        width: 25
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3132c6e021e891900800000000000000
+      internalID: 655711428961641235
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_deck_9
+      rect:
+        serializedVersion: 2
+        x: 14
+        y: 346
+        width: 8
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dbfc29b55eb214d60800000000000000
+      internalID: 7872621887704190909
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_deck_10
+      rect:
+        serializedVersion: 2
+        x: 21
+        y: 342
+        width: 24
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 176d52f830a15ae40800000000000000
+      internalID: 5666964308704482929
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_deck_11
+      rect:
+        serializedVersion: 2
+        x: 78
+        y: 346
+        width: 8
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bd05c9aa98fe64a40800000000000000
+      internalID: 5352228581728342235
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_deck_12
+      rect:
+        serializedVersion: 2
+        x: 85
+        y: 343
+        width: 24
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bf5bed5402863db30800000000000000
+      internalID: 4310903756144162299
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_deck_13
+      rect:
+        serializedVersion: 2
+        x: 142
+        y: 344
+        width: 8
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 50e6b0cb719605330800000000000000
+      internalID: 3697570844731207173
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_deck_14
+      rect:
+        serializedVersion: 2
+        x: 149
+        y: 343
+        width: 24
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cf1070182b2a55750800000000000000
+      internalID: 6293114941872734716
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_deck_15
+      rect:
+        serializedVersion: 2
+        x: 206
+        y: 344
+        width: 8
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 64e919b0281f6df40800000000000000
+      internalID: 5753051114854522438
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_deck_16
+      rect:
+        serializedVersion: 2
+        x: 213
+        y: 344
+        width: 23
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0674be76d07594c80800000000000000
+      internalID: -8338037520010098848
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_deck_17
+      rect:
+        serializedVersion: 2
+        x: 17
+        y: 278
+        width: 25
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bd2b3a8a2cce34420800000000000000
+      internalID: 2613192529602130651
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_deck_18
+      rect:
+        serializedVersion: 2
+        x: 81
+        y: 278
+        width: 25
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f7069f81d9deb7cc0800000000000000
+      internalID: -3712112208852197249
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_deck_19
+      rect:
+        serializedVersion: 2
+        x: 145
+        y: 277
+        width: 25
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 28988d44bd22d7620800000000000000
+      internalID: 2773411270678317442
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_deck_20
+      rect:
+        serializedVersion: 2
+        x: 208
+        y: 277
+        width: 26
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3c7568440221683a0800000000000000
+      internalID: -6663618668850161725
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_deck_21
+      rect:
+        serializedVersion: 2
+        x: 27
+        y: 212
+        width: 12
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6425e636dc330a340800000000000000
+      internalID: 4872951754044363334
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_deck_22
+      rect:
+        serializedVersion: 2
+        x: 89
+        y: 212
+        width: 12
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bdeafee9989f30680800000000000000
+      internalID: -8789907678224732453
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_deck_23
+      rect:
+        serializedVersion: 2
+        x: 155
+        y: 211
+        width: 12
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4bba026f172992b60800000000000000
+      internalID: 7721864054261722036
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_deck_24
+      rect:
+        serializedVersion: 2
+        x: 217
+        y: 211
+        width: 12
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f5a5b8174920eec50800000000000000
+      internalID: 6696292532529879647
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_deck_25
+      rect:
+        serializedVersion: 2
+        x: 22
+        y: 150
+        width: 25
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8e22238c5ed8156b0800000000000000
+      internalID: -5309306467647347992
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_deck_26
+      rect:
+        serializedVersion: 2
+        x: 86
+        y: 150
+        width: 25
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e120768d35da55c80800000000000000
+      internalID: -8334564959754714594
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_deck_27
+      rect:
+        serializedVersion: 2
+        x: 150
+        y: 149
+        width: 25
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6b6ce16c494dfdad0800000000000000
+      internalID: -2675185918190631242
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_deck_28
+      rect:
+        serializedVersion: 2
+        x: 214
+        y: 149
+        width: 24
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c47f0e064d016b6c0800000000000000
+      internalID: -4128093504094013620
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_deck_29
+      rect:
+        serializedVersion: 2
+        x: 19
+        y: 87
+        width: 24
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b8f66309987d2a240800000000000000
+      internalID: 4801637138560348043
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_deck_30
+      rect:
+        serializedVersion: 2
+        x: 42
+        y: 90
+        width: 8
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cd9605463a7d1e190800000000000000
+      internalID: -7934823971687470628
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_deck_31
+      rect:
+        serializedVersion: 2
+        x: 83
+        y: 86
+        width: 24
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1ac263aa95a34bfd0800000000000000
+      internalID: -2327170950661526367
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_deck_32
+      rect:
+        serializedVersion: 2
+        x: 106
+        y: 90
+        width: 8
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4674a7f294fe019f0800000000000000
+      internalID: -499636461029931164
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_deck_33
+      rect:
+        serializedVersion: 2
+        x: 147
+        y: 88
+        width: 24
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d57bd4bad2cb1bc20800000000000000
+      internalID: 3220562112880162653
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_deck_34
+      rect:
+        serializedVersion: 2
+        x: 170
+        y: 88
+        width: 8
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e21ca50ceb64c1430800000000000000
+      internalID: 3754953974405054766
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_deck_35
+      rect:
+        serializedVersion: 2
+        x: 212
+        y: 87
+        width: 23
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 779a5ade9cb71f3b0800000000000000
+      internalID: -5480463164327483017
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_deck_36
+      rect:
+        serializedVersion: 2
+        x: 235
+        y: 89
+        width: 7
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8576c726cb4b87c00800000000000000
+      internalID: 898666846859585368
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_deck_37
+      rect:
+        serializedVersion: 2
+        x: 23
+        y: 19
+        width: 23
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0cf14bc5b03069c30800000000000000
+      internalID: 4365680236117106624
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_deck_38
+      rect:
+        serializedVersion: 2
+        x: 86
+        y: 19
+        width: 24
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7eb62430a654d06b0800000000000000
+      internalID: -5328526462485894169
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_deck_39
+      rect:
+        serializedVersion: 2
+        x: 151
+        y: 17
+        width: 24
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fe2dd4a25748ecbd0800000000000000
+      internalID: -2608001495445155089
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_haddock_lg_deck_40
+      rect:
+        serializedVersion: 2
+        x: 214
+        y: 18
+        width: 25
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ba313244ce592d120800000000000000
+      internalID: 2437175190348829611
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Fish_haddock_lg_deck_0: 2255258268335725678
+      Fish_haddock_lg_deck_1: 6215804040908149941
+      Fish_haddock_lg_deck_10: 5666964308704482929
+      Fish_haddock_lg_deck_11: 5352228581728342235
+      Fish_haddock_lg_deck_12: 4310903756144162299
+      Fish_haddock_lg_deck_13: 3697570844731207173
+      Fish_haddock_lg_deck_14: 6293114941872734716
+      Fish_haddock_lg_deck_15: 5753051114854522438
+      Fish_haddock_lg_deck_16: -8338037520010098848
+      Fish_haddock_lg_deck_17: 2613192529602130651
+      Fish_haddock_lg_deck_18: -3712112208852197249
+      Fish_haddock_lg_deck_19: 2773411270678317442
+      Fish_haddock_lg_deck_2: 5785984444475218504
+      Fish_haddock_lg_deck_20: -6663618668850161725
+      Fish_haddock_lg_deck_21: 4872951754044363334
+      Fish_haddock_lg_deck_22: -8789907678224732453
+      Fish_haddock_lg_deck_23: 7721864054261722036
+      Fish_haddock_lg_deck_24: 6696292532529879647
+      Fish_haddock_lg_deck_25: -5309306467647347992
+      Fish_haddock_lg_deck_26: -8334564959754714594
+      Fish_haddock_lg_deck_27: -2675185918190631242
+      Fish_haddock_lg_deck_28: -4128093504094013620
+      Fish_haddock_lg_deck_29: 4801637138560348043
+      Fish_haddock_lg_deck_3: -5668352202386590764
+      Fish_haddock_lg_deck_30: -7934823971687470628
+      Fish_haddock_lg_deck_31: -2327170950661526367
+      Fish_haddock_lg_deck_32: -499636461029931164
+      Fish_haddock_lg_deck_33: 3220562112880162653
+      Fish_haddock_lg_deck_34: 3754953974405054766
+      Fish_haddock_lg_deck_35: -5480463164327483017
+      Fish_haddock_lg_deck_36: 898666846859585368
+      Fish_haddock_lg_deck_37: 4365680236117106624
+      Fish_haddock_lg_deck_38: -5328526462485894169
+      Fish_haddock_lg_deck_39: -2608001495445155089
+      Fish_haddock_lg_deck_4: -6049194704771878156
+      Fish_haddock_lg_deck_40: 2437175190348829611
+      Fish_haddock_lg_deck_5: -8989644267836330080
+      Fish_haddock_lg_deck_6: -4073145149874956367
+      Fish_haddock_lg_deck_7: -4813045343726385757
+      Fish_haddock_lg_deck_8: 655711428961641235
+      Fish_haddock_lg_deck_9: 7872621887704190909
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

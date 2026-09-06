@@ -1,0 +1,546 @@
+fileFormatVersion: 2
+guid: 6dada539c39acbd4db5ceb5d539c5e73
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -1997357584816941196
+    second: Fish_cod_sm_cradle_0
+  - first:
+      213: 3290933437892113665
+    second: Fish_cod_sm_cradle_1
+  - first:
+      213: -1888143303164965306
+    second: Fish_cod_sm_cradle_2
+  - first:
+      213: 6483943168992564747
+    second: Fish_cod_sm_cradle_3
+  - first:
+      213: -768132967439838627
+    second: Fish_cod_sm_cradle_4
+  - first:
+      213: 165718272469910846
+    second: Fish_cod_sm_cradle_5
+  - first:
+      213: 2136027987427430738
+    second: Fish_cod_sm_cradle_6
+  - first:
+      213: -9033815825203571036
+    second: Fish_cod_sm_cradle_7
+  - first:
+      213: -6289062389884808248
+    second: Fish_cod_sm_cradle_8
+  - first:
+      213: 2318117418748255022
+    second: Fish_cod_sm_cradle_9
+  - first:
+      213: -7638201455062786444
+    second: Fish_cod_sm_cradle_10
+  - first:
+      213: -707393704935010218
+    second: Fish_cod_sm_cradle_11
+  - first:
+      213: -5920570995258591586
+    second: Fish_cod_sm_cradle_12
+  - first:
+      213: 8517978534664458548
+    second: Fish_cod_sm_cradle_13
+  - first:
+      213: -6346349757285612756
+    second: Fish_cod_sm_cradle_14
+  - first:
+      213: 8630587166958088754
+    second: Fish_cod_sm_cradle_15
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Fish_cod_sm_cradle_0
+      rect:
+        serializedVersion: 2
+        x: 29
+        y: 466
+        width: 6
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 477dd8bebd5f744e0800000000000000
+      internalID: -1997357584816941196
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_cradle_1
+      rect:
+        serializedVersion: 2
+        x: 93
+        y: 466
+        width: 6
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 105b301968ebbad20800000000000000
+      internalID: 3290933437892113665
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_cradle_2
+      rect:
+        serializedVersion: 2
+        x: 22
+        y: 402
+        width: 17
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 64ec1d96ba7fbc5e0800000000000000
+      internalID: -1888143303164965306
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_cradle_3
+      rect:
+        serializedVersion: 2
+        x: 86
+        y: 403
+        width: 17
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b065f9375f79bf950800000000000000
+      internalID: 6483943168992564747
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_cradle_4
+      rect:
+        serializedVersion: 2
+        x: 19
+        y: 342
+        width: 22
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d525b77c22b0755f0800000000000000
+      internalID: -768132967439838627
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_cradle_5
+      rect:
+        serializedVersion: 2
+        x: 83
+        y: 342
+        width: 22
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e354c5b04efbc4200800000000000000
+      internalID: 165718272469910846
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_cradle_6
+      rect:
+        serializedVersion: 2
+        x: 21
+        y: 277
+        width: 18
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 25197ec2322b4ad10800000000000000
+      internalID: 2136027987427430738
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_cradle_7
+      rect:
+        serializedVersion: 2
+        x: 88
+        y: 277
+        width: 15
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4a65074ce5071a280800000000000000
+      internalID: -9033815825203571036
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_cradle_8
+      rect:
+        serializedVersion: 2
+        x: 29
+        y: 211
+        width: 6
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8c395a8c313c8b8a0800000000000000
+      internalID: -6289062389884808248
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_cradle_9
+      rect:
+        serializedVersion: 2
+        x: 93
+        y: 211
+        width: 6
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e2b922ca28b9b2020800000000000000
+      internalID: 2318117418748255022
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_cradle_10
+      rect:
+        serializedVersion: 2
+        x: 25
+        y: 149
+        width: 15
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 47e5c1cde38aff590800000000000000
+      internalID: -7638201455062786444
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_cradle_11
+      rect:
+        serializedVersion: 2
+        x: 89
+        y: 149
+        width: 18
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 650500d5c25de26f0800000000000000
+      internalID: -707393704935010218
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_cradle_12
+      rect:
+        serializedVersion: 2
+        x: 23
+        y: 86
+        width: 22
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e9671206c08e5dda0800000000000000
+      internalID: -5920570995258591586
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_cradle_13
+      rect:
+        serializedVersion: 2
+        x: 87
+        y: 86
+        width: 22
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 431d31bd850f53670800000000000000
+      internalID: 8517978534664458548
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_cradle_14
+      rect:
+        serializedVersion: 2
+        x: 25
+        y: 19
+        width: 17
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c23ca98258c3de7a0800000000000000
+      internalID: -6346349757285612756
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_sm_cradle_15
+      rect:
+        serializedVersion: 2
+        x: 89
+        y: 18
+        width: 17
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 232f4913d4106c770800000000000000
+      internalID: 8630587166958088754
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Fish_cod_sm_cradle_0: -1997357584816941196
+      Fish_cod_sm_cradle_1: 3290933437892113665
+      Fish_cod_sm_cradle_10: -7638201455062786444
+      Fish_cod_sm_cradle_11: -707393704935010218
+      Fish_cod_sm_cradle_12: -5920570995258591586
+      Fish_cod_sm_cradle_13: 8517978534664458548
+      Fish_cod_sm_cradle_14: -6346349757285612756
+      Fish_cod_sm_cradle_15: 8630587166958088754
+      Fish_cod_sm_cradle_2: -1888143303164965306
+      Fish_cod_sm_cradle_3: 6483943168992564747
+      Fish_cod_sm_cradle_4: -768132967439838627
+      Fish_cod_sm_cradle_5: 165718272469910846
+      Fish_cod_sm_cradle_6: 2136027987427430738
+      Fish_cod_sm_cradle_7: -9033815825203571036
+      Fish_cod_sm_cradle_8: -6289062389884808248
+      Fish_cod_sm_cradle_9: 2318117418748255022
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

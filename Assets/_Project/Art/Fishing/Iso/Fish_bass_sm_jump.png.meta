@@ -1,0 +1,1222 @@
+fileFormatVersion: 2
+guid: b0f6ac4180bbe5247a1fda445657094b
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -4002765189959230800
+    second: Fish_bass_sm_jump_0
+  - first:
+      213: -5845743241786928805
+    second: Fish_bass_sm_jump_1
+  - first:
+      213: -2274130731205709865
+    second: Fish_bass_sm_jump_2
+  - first:
+      213: 467904786216758577
+    second: Fish_bass_sm_jump_3
+  - first:
+      213: -1839071265467636050
+    second: Fish_bass_sm_jump_4
+  - first:
+      213: -3947615317341051841
+    second: Fish_bass_sm_jump_5
+  - first:
+      213: 3663849753443455187
+    second: Fish_bass_sm_jump_6
+  - first:
+      213: -755568474852466788
+    second: Fish_bass_sm_jump_7
+  - first:
+      213: -5486139754733202002
+    second: Fish_bass_sm_jump_8
+  - first:
+      213: 8751330950915695741
+    second: Fish_bass_sm_jump_9
+  - first:
+      213: -3478000804994901506
+    second: Fish_bass_sm_jump_10
+  - first:
+      213: 592478016468796101
+    second: Fish_bass_sm_jump_11
+  - first:
+      213: 92306890721394551
+    second: Fish_bass_sm_jump_12
+  - first:
+      213: 5163708305111087663
+    second: Fish_bass_sm_jump_13
+  - first:
+      213: 2977781256161787073
+    second: Fish_bass_sm_jump_14
+  - first:
+      213: 1230743004761144555
+    second: Fish_bass_sm_jump_15
+  - first:
+      213: 2419222409943375179
+    second: Fish_bass_sm_jump_16
+  - first:
+      213: 2576023353616486980
+    second: Fish_bass_sm_jump_17
+  - first:
+      213: 637275958030076424
+    second: Fish_bass_sm_jump_18
+  - first:
+      213: 3651774576125877548
+    second: Fish_bass_sm_jump_19
+  - first:
+      213: 4592991896912878778
+    second: Fish_bass_sm_jump_20
+  - first:
+      213: 7725150953286914875
+    second: Fish_bass_sm_jump_21
+  - first:
+      213: -3173176567991374387
+    second: Fish_bass_sm_jump_22
+  - first:
+      213: 2480802219585907025
+    second: Fish_bass_sm_jump_23
+  - first:
+      213: 1707236502119642753
+    second: Fish_bass_sm_jump_24
+  - first:
+      213: 5895335763798361843
+    second: Fish_bass_sm_jump_25
+  - first:
+      213: 1602266884103856057
+    second: Fish_bass_sm_jump_26
+  - first:
+      213: 1227391845570171886
+    second: Fish_bass_sm_jump_27
+  - first:
+      213: 779074904659073441
+    second: Fish_bass_sm_jump_28
+  - first:
+      213: 997329074538319018
+    second: Fish_bass_sm_jump_29
+  - first:
+      213: -4104490071841511724
+    second: Fish_bass_sm_jump_30
+  - first:
+      213: -5584576980286027189
+    second: Fish_bass_sm_jump_31
+  - first:
+      213: -5688880417703538788
+    second: Fish_bass_sm_jump_32
+  - first:
+      213: 8908143427776772462
+    second: Fish_bass_sm_jump_33
+  - first:
+      213: 9122465710719838507
+    second: Fish_bass_sm_jump_34
+  - first:
+      213: -4485644196808093191
+    second: Fish_bass_sm_jump_35
+  - first:
+      213: 4125539869860705541
+    second: Fish_bass_sm_jump_36
+  - first:
+      213: 4893398550126272690
+    second: Fish_bass_sm_jump_37
+  - first:
+      213: -1385862683484010968
+    second: Fish_bass_sm_jump_38
+  - first:
+      213: -3019128198261748916
+    second: Fish_bass_sm_jump_39
+  - first:
+      213: -1073553571897528075
+    second: Fish_bass_sm_jump_40
+  - first:
+      213: -7801231672924086926
+    second: Fish_bass_sm_jump_41
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Fish_bass_sm_jump_0
+      rect:
+        serializedVersion: 2
+        x: 29
+        y: 465
+        width: 8
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0ba5e2d64425378c0800000000000000
+      internalID: -4002765189959230800
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_jump_1
+      rect:
+        serializedVersion: 2
+        x: 87
+        y: 407
+        width: 14
+        height: 79
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b5156216e7fbfdea0800000000000000
+      internalID: -5845743241786928805
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_jump_2
+      rect:
+        serializedVersion: 2
+        x: 157
+        y: 477
+        width: 6
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7df2fa9162aa070e0800000000000000
+      internalID: -2274130731205709865
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_jump_3
+      rect:
+        serializedVersion: 2
+        x: 216
+        y: 415
+        width: 13
+        height: 72
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 13da72b8ce45e7600800000000000000
+      internalID: 467904786216758577
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_jump_4
+      rect:
+        serializedVersion: 2
+        x: 285
+        y: 472
+        width: 69
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ea66c298d6e4a76e0800000000000000
+      internalID: -1839071265467636050
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_jump_5
+      rect:
+        serializedVersion: 2
+        x: 29
+        y: 400
+        width: 7
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f34eef3c8c04739c0800000000000000
+      internalID: -3947615317341051841
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_jump_6
+      rect:
+        serializedVersion: 2
+        x: 154
+        y: 412
+        width: 11
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3d0566850fb98d230800000000000000
+      internalID: 3663849753443455187
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_jump_7
+      rect:
+        serializedVersion: 2
+        x: 284
+        y: 412
+        width: 9
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c9f5feca97ea385f0800000000000000
+      internalID: -755568474852466788
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_jump_8
+      rect:
+        serializedVersion: 2
+        x: 344
+        y: 408
+        width: 12
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ea59afab5f05dd3b0800000000000000
+      internalID: -5486139754733202002
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_jump_9
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 338
+        width: 13
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d7426312229f27970800000000000000
+      internalID: 8751330950915695741
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_jump_10
+      rect:
+        serializedVersion: 2
+        x: 88
+        y: 346
+        width: 14
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ef991c1f1b8abbfc0800000000000000
+      internalID: -3478000804994901506
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_jump_11
+      rect:
+        serializedVersion: 2
+        x: 150
+        y: 350
+        width: 17
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5c2c9dced97e83800800000000000000
+      internalID: 592478016468796101
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_jump_12
+      rect:
+        serializedVersion: 2
+        x: 214
+        y: 352
+        width: 17
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 77ff4c7c0a0f74100800000000000000
+      internalID: 92306890721394551
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_jump_13
+      rect:
+        serializedVersion: 2
+        x: 280
+        y: 347
+        width: 14
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f2a71e1585d29a740800000000000000
+      internalID: 5163708305111087663
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_jump_14
+      rect:
+        serializedVersion: 2
+        x: 345
+        y: 342
+        width: 12
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1ccf6588644335920800000000000000
+      internalID: 2977781256161787073
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_jump_15
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 276
+        width: 12
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: becb598fd3a741110800000000000000
+      internalID: 1230743004761144555
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_jump_16
+      rect:
+        serializedVersion: 2
+        x: 92
+        y: 284
+        width: 9
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b4dd659d6fdc29120800000000000000
+      internalID: 2419222409943375179
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_jump_17
+      rect:
+        serializedVersion: 2
+        x: 151
+        y: 287
+        width: 14
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 442db6d779fdfb320800000000000000
+      internalID: 2576023353616486980
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_jump_18
+      rect:
+        serializedVersion: 2
+        x: 217
+        y: 286
+        width: 12
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 80a874e7b1f08d800800000000000000
+      internalID: 637275958030076424
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_jump_19
+      rect:
+        serializedVersion: 2
+        x: 222
+        y: 217
+        width: 71
+        height: 78
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c2d19c901a5bda230800000000000000
+      internalID: 3651774576125877548
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_jump_20
+      rect:
+        serializedVersion: 2
+        x: 349
+        y: 277
+        width: 7
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: abc5db7abc59dbf30800000000000000
+      internalID: 4592991896912878778
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_jump_21
+      rect:
+        serializedVersion: 2
+        x: 27
+        y: 215
+        width: 8
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b33dfe6ccdf353b60800000000000000
+      internalID: 7725150953286914875
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_jump_22
+      rect:
+        serializedVersion: 2
+        x: 94
+        y: 220
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dcde74f39bc96f3d0800000000000000
+      internalID: -3173176567991374387
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_jump_23
+      rect:
+        serializedVersion: 2
+        x: 156
+        y: 222
+        width: 6
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1592b6099749d6220800000000000000
+      internalID: 2480802219585907025
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_jump_24
+      rect:
+        serializedVersion: 2
+        x: 349
+        y: 212
+        width: 6
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 186fb68ad8251b710800000000000000
+      internalID: 1707236502119642753
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_jump_25
+      rect:
+        serializedVersion: 2
+        x: 28
+        y: 152
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3f68bd074a070d150800000000000000
+      internalID: 5895335763798361843
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_jump_26
+      rect:
+        serializedVersion: 2
+        x: 91
+        y: 154
+        width: 13
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9bfd16eed356c3610800000000000000
+      internalID: 1602266884103856057
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_jump_27
+      rect:
+        serializedVersion: 2
+        x: 155
+        y: 159
+        width: 9
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ee3db6b6162980110800000000000000
+      internalID: 1227391845570171886
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_jump_28
+      rect:
+        serializedVersion: 2
+        x: 219
+        y: 158
+        width: 13
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1a910a18f74dfca00800000000000000
+      internalID: 779074904659073441
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_jump_29
+      rect:
+        serializedVersion: 2
+        x: 283
+        y: 153
+        width: 10
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aac860c528937dd00800000000000000
+      internalID: 997329074538319018
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_jump_30
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 149
+        width: 12
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4d6e4c3b60ce907c0800000000000000
+      internalID: -4104490071841511724
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_jump_31
+      rect:
+        serializedVersion: 2
+        x: 27
+        y: 87
+        width: 12
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b4a4a3523d89f72b0800000000000000
+      internalID: -5584576980286027189
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_jump_32
+      rect:
+        serializedVersion: 2
+        x: 90
+        y: 87
+        width: 14
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c9fca1da6690d01b0800000000000000
+      internalID: -5688880417703538788
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_jump_33
+      rect:
+        serializedVersion: 2
+        x: 153
+        y: 95
+        width: 17
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e697ddc004510ab70800000000000000
+      internalID: 8908143427776772462
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_jump_34
+      rect:
+        serializedVersion: 2
+        x: 217
+        y: 91
+        width: 80
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b2923232b32899e70800000000000000
+      internalID: 9122465710719838507
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_jump_35
+      rect:
+        serializedVersion: 2
+        x: 347
+        y: 86
+        width: 12
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9f116747e5acfb1c0800000000000000
+      internalID: -4485644196808093191
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_jump_36
+      rect:
+        serializedVersion: 2
+        x: 28
+        y: 20
+        width: 11
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 50532c157acd04930800000000000000
+      internalID: 4125539869860705541
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_jump_37
+      rect:
+        serializedVersion: 2
+        x: 91
+        y: 22
+        width: 9
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2b020b41e08d8e340800000000000000
+      internalID: 4893398550126272690
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_jump_38
+      rect:
+        serializedVersion: 2
+        x: 155
+        y: 29
+        width: 14
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 82647736b3d64cce0800000000000000
+      internalID: -1385862683484010968
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_jump_39
+      rect:
+        serializedVersion: 2
+        x: 219
+        y: 29
+        width: 12
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c4b4e3356e6e916d0800000000000000
+      internalID: -3019128198261748916
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_jump_40
+      rect:
+        serializedVersion: 2
+        x: 284
+        y: 28
+        width: 12
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5f032bbd6b8f911f0800000000000000
+      internalID: -1073553571897528075
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_jump_41
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 23
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 27d55dc40257cb390800000000000000
+      internalID: -7801231672924086926
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Fish_bass_sm_jump_0: -4002765189959230800
+      Fish_bass_sm_jump_1: -5845743241786928805
+      Fish_bass_sm_jump_10: -3478000804994901506
+      Fish_bass_sm_jump_11: 592478016468796101
+      Fish_bass_sm_jump_12: 92306890721394551
+      Fish_bass_sm_jump_13: 5163708305111087663
+      Fish_bass_sm_jump_14: 2977781256161787073
+      Fish_bass_sm_jump_15: 1230743004761144555
+      Fish_bass_sm_jump_16: 2419222409943375179
+      Fish_bass_sm_jump_17: 2576023353616486980
+      Fish_bass_sm_jump_18: 637275958030076424
+      Fish_bass_sm_jump_19: 3651774576125877548
+      Fish_bass_sm_jump_2: -2274130731205709865
+      Fish_bass_sm_jump_20: 4592991896912878778
+      Fish_bass_sm_jump_21: 7725150953286914875
+      Fish_bass_sm_jump_22: -3173176567991374387
+      Fish_bass_sm_jump_23: 2480802219585907025
+      Fish_bass_sm_jump_24: 1707236502119642753
+      Fish_bass_sm_jump_25: 5895335763798361843
+      Fish_bass_sm_jump_26: 1602266884103856057
+      Fish_bass_sm_jump_27: 1227391845570171886
+      Fish_bass_sm_jump_28: 779074904659073441
+      Fish_bass_sm_jump_29: 997329074538319018
+      Fish_bass_sm_jump_3: 467904786216758577
+      Fish_bass_sm_jump_30: -4104490071841511724
+      Fish_bass_sm_jump_31: -5584576980286027189
+      Fish_bass_sm_jump_32: -5688880417703538788
+      Fish_bass_sm_jump_33: 8908143427776772462
+      Fish_bass_sm_jump_34: 9122465710719838507
+      Fish_bass_sm_jump_35: -4485644196808093191
+      Fish_bass_sm_jump_36: 4125539869860705541
+      Fish_bass_sm_jump_37: 4893398550126272690
+      Fish_bass_sm_jump_38: -1385862683484010968
+      Fish_bass_sm_jump_39: -3019128198261748916
+      Fish_bass_sm_jump_4: -1839071265467636050
+      Fish_bass_sm_jump_40: -1073553571897528075
+      Fish_bass_sm_jump_41: -7801231672924086926
+      Fish_bass_sm_jump_5: -3947615317341051841
+      Fish_bass_sm_jump_6: 3663849753443455187
+      Fish_bass_sm_jump_7: -755568474852466788
+      Fish_bass_sm_jump_8: -5486139754733202002
+      Fish_bass_sm_jump_9: 8751330950915695741
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -1,0 +1,832 @@
+fileFormatVersion: 2
+guid: a5a8e980f8aef3448b6fc10f4ad08e81
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 3550605627132164499
+    second: Fish_flounder_lg_roll_0
+  - first:
+      213: -6366750274103703590
+    second: Fish_flounder_lg_roll_1
+  - first:
+      213: -531282651051606767
+    second: Fish_flounder_lg_roll_2
+  - first:
+      213: 5774680332615995643
+    second: Fish_flounder_lg_roll_3
+  - first:
+      213: -7770776131750876812
+    second: Fish_flounder_lg_roll_4
+  - first:
+      213: -6649942601421421283
+    second: Fish_flounder_lg_roll_5
+  - first:
+      213: -2879431436546282541
+    second: Fish_flounder_lg_roll_6
+  - first:
+      213: 4125462003394164935
+    second: Fish_flounder_lg_roll_7
+  - first:
+      213: -5449955569937683896
+    second: Fish_flounder_lg_roll_8
+  - first:
+      213: -6382930036883858626
+    second: Fish_flounder_lg_roll_9
+  - first:
+      213: -6651414374743519646
+    second: Fish_flounder_lg_roll_10
+  - first:
+      213: 134175845171010063
+    second: Fish_flounder_lg_roll_11
+  - first:
+      213: -880674953631322058
+    second: Fish_flounder_lg_roll_12
+  - first:
+      213: -3776729482505959934
+    second: Fish_flounder_lg_roll_13
+  - first:
+      213: 1685436240701800185
+    second: Fish_flounder_lg_roll_14
+  - first:
+      213: -2492501397915018524
+    second: Fish_flounder_lg_roll_15
+  - first:
+      213: 8699821743768167039
+    second: Fish_flounder_lg_roll_16
+  - first:
+      213: 4464651533492535985
+    second: Fish_flounder_lg_roll_17
+  - first:
+      213: -7852774405440437291
+    second: Fish_flounder_lg_roll_18
+  - first:
+      213: -1961455508073616774
+    second: Fish_flounder_lg_roll_19
+  - first:
+      213: -658654099258799366
+    second: Fish_flounder_lg_roll_20
+  - first:
+      213: -6929201132084509395
+    second: Fish_flounder_lg_roll_21
+  - first:
+      213: -5601727946994022435
+    second: Fish_flounder_lg_roll_22
+  - first:
+      213: -5742912089146857543
+    second: Fish_flounder_lg_roll_23
+  - first:
+      213: -5491736487844195260
+    second: Fish_flounder_lg_roll_24
+  - first:
+      213: -93006068182984284
+    second: Fish_flounder_lg_roll_25
+  - first:
+      213: 9092714329603231299
+    second: Fish_flounder_lg_roll_26
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Fish_flounder_lg_roll_0
+      rect:
+        serializedVersion: 2
+        x: 26
+        y: 466
+        width: 11
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 39937b68109464130800000000000000
+      internalID: 3550605627132164499
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_lg_roll_1
+      rect:
+        serializedVersion: 2
+        x: 87
+        y: 403
+        width: 16
+        height: 78
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ad78d62bb52c4a7a0800000000000000
+      internalID: -6366750274103703590
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_lg_roll_2
+      rect:
+        serializedVersion: 2
+        x: 155
+        y: 466
+        width: 11
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 11dbdb46e3180a8f0800000000000000
+      internalID: -531282651051606767
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_lg_roll_3
+      rect:
+        serializedVersion: 2
+        x: 215
+        y: 401
+        width: 16
+        height: 79
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bf0d20dba29c32050800000000000000
+      internalID: 5774680332615995643
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_lg_roll_4
+      rect:
+        serializedVersion: 2
+        x: 25
+        y: 404
+        width: 14
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 479a7ed8748a82490800000000000000
+      internalID: -7770776131750876812
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_lg_roll_5
+      rect:
+        serializedVersion: 2
+        x: 149
+        y: 405
+        width: 18
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d150a89df68a6b3a0800000000000000
+      internalID: -6649942601421421283
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_lg_roll_6
+      rect:
+        serializedVersion: 2
+        x: 20
+        y: 343
+        width: 21
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3dbe0954d543a08d0800000000000000
+      internalID: -2879431436546282541
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_lg_roll_7
+      rect:
+        serializedVersion: 2
+        x: 84
+        y: 341
+        width: 21
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7c83eae95d5904930800000000000000
+      internalID: 4125462003394164935
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_lg_roll_8
+      rect:
+        serializedVersion: 2
+        x: 148
+        y: 340
+        width: 21
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 84ae334c84edd54b0800000000000000
+      internalID: -5449955569937683896
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_lg_roll_9
+      rect:
+        serializedVersion: 2
+        x: 212
+        y: 341
+        width: 21
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e3bdd5d13f64b67a0800000000000000
+      internalID: -6382930036883858626
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_lg_roll_10
+      rect:
+        serializedVersion: 2
+        x: 22
+        y: 277
+        width: 17
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 26e4c7beddd61b3a0800000000000000
+      internalID: -6651414374743519646
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_lg_roll_11
+      rect:
+        serializedVersion: 2
+        x: 87
+        y: 276
+        width: 16
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f0a1bd46830bcd100800000000000000
+      internalID: 134175845171010063
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_lg_roll_12
+      rect:
+        serializedVersion: 2
+        x: 152
+        y: 276
+        width: 15
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 630b832bbc637c3f0800000000000000
+      internalID: -880674953631322058
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_lg_roll_13
+      rect:
+        serializedVersion: 2
+        x: 215
+        y: 276
+        width: 16
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 206cc7eab8c569bc0800000000000000
+      internalID: -3776729482505959934
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_lg_roll_14
+      rect:
+        serializedVersion: 2
+        x: 27
+        y: 212
+        width: 11
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9feb992c45fd36710800000000000000
+      internalID: 1685436240701800185
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_lg_roll_15
+      rect:
+        serializedVersion: 2
+        x: 89
+        y: 148
+        width: 16
+        height: 74
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4ea5c173f2bd86dd0800000000000000
+      internalID: -2492501397915018524
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_lg_roll_16
+      rect:
+        serializedVersion: 2
+        x: 154
+        y: 212
+        width: 11
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f72658648c9fbb870800000000000000
+      internalID: 8699821743768167039
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_lg_roll_17
+      rect:
+        serializedVersion: 2
+        x: 217
+        y: 148
+        width: 16
+        height: 75
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1b2c9bb3ae0a5fd30800000000000000
+      internalID: 4464651533492535985
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_lg_roll_18
+      rect:
+        serializedVersion: 2
+        x: 25
+        y: 148
+        width: 15
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5d38176b847550390800000000000000
+      internalID: -7852774405440437291
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_lg_roll_19
+      rect:
+        serializedVersion: 2
+        x: 153
+        y: 149
+        width: 18
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a7ae98e8b9287c4e0800000000000000
+      internalID: -1961455508073616774
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_lg_roll_20
+      rect:
+        serializedVersion: 2
+        x: 23
+        y: 84
+        width: 21
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: afa03df169dfbd6f0800000000000000
+      internalID: -658654099258799366
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_lg_roll_21
+      rect:
+        serializedVersion: 2
+        x: 87
+        y: 85
+        width: 21
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d254ed8684886df90800000000000000
+      internalID: -6929201132084509395
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_lg_roll_22
+      rect:
+        serializedVersion: 2
+        x: 152
+        y: 85
+        width: 84
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dd70b078c1aa242b0800000000000000
+      internalID: -5601727946994022435
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_lg_roll_23
+      rect:
+        serializedVersion: 2
+        x: 25
+        y: 21
+        width: 18
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9b7ea16d1e31d40b0800000000000000
+      internalID: -5742912089146857543
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_lg_roll_24
+      rect:
+        serializedVersion: 2
+        x: 89
+        y: 20
+        width: 16
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 444def1c2ce69c3b0800000000000000
+      internalID: -5491736487844195260
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_lg_roll_25
+      rect:
+        serializedVersion: 2
+        x: 153
+        y: 20
+        width: 15
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4a95ff7497395bef0800000000000000
+      internalID: -93006068182984284
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_flounder_lg_roll_26
+      rect:
+        serializedVersion: 2
+        x: 217
+        y: 17
+        width: 16
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 34eca1ce18fcf2e70800000000000000
+      internalID: 9092714329603231299
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Fish_flounder_lg_roll_0: 3550605627132164499
+      Fish_flounder_lg_roll_1: -6366750274103703590
+      Fish_flounder_lg_roll_10: -6651414374743519646
+      Fish_flounder_lg_roll_11: 134175845171010063
+      Fish_flounder_lg_roll_12: -880674953631322058
+      Fish_flounder_lg_roll_13: -3776729482505959934
+      Fish_flounder_lg_roll_14: 1685436240701800185
+      Fish_flounder_lg_roll_15: -2492501397915018524
+      Fish_flounder_lg_roll_16: 8699821743768167039
+      Fish_flounder_lg_roll_17: 4464651533492535985
+      Fish_flounder_lg_roll_18: -7852774405440437291
+      Fish_flounder_lg_roll_19: -1961455508073616774
+      Fish_flounder_lg_roll_2: -531282651051606767
+      Fish_flounder_lg_roll_20: -658654099258799366
+      Fish_flounder_lg_roll_21: -6929201132084509395
+      Fish_flounder_lg_roll_22: -5601727946994022435
+      Fish_flounder_lg_roll_23: -5742912089146857543
+      Fish_flounder_lg_roll_24: -5491736487844195260
+      Fish_flounder_lg_roll_25: -93006068182984284
+      Fish_flounder_lg_roll_26: 9092714329603231299
+      Fish_flounder_lg_roll_3: 5774680332615995643
+      Fish_flounder_lg_roll_4: -7770776131750876812
+      Fish_flounder_lg_roll_5: -6649942601421421283
+      Fish_flounder_lg_roll_6: -2879431436546282541
+      Fish_flounder_lg_roll_7: 4125462003394164935
+      Fish_flounder_lg_roll_8: -5449955569937683896
+      Fish_flounder_lg_roll_9: -6382930036883858626
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

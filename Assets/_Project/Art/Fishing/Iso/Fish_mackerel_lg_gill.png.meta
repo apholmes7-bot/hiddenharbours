@@ -1,0 +1,520 @@
+fileFormatVersion: 2
+guid: 52b02a21da7794b498df570bed01ad72
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 7266343352504459005
+    second: Fish_mackerel_lg_gill_0
+  - first:
+      213: 254082134757713787
+    second: Fish_mackerel_lg_gill_1
+  - first:
+      213: -1196245112098575512
+    second: Fish_mackerel_lg_gill_2
+  - first:
+      213: 5810969838221620720
+    second: Fish_mackerel_lg_gill_3
+  - first:
+      213: 8329261479946733633
+    second: Fish_mackerel_lg_gill_4
+  - first:
+      213: 8892420613220853083
+    second: Fish_mackerel_lg_gill_5
+  - first:
+      213: 8819031688666807479
+    second: Fish_mackerel_lg_gill_6
+  - first:
+      213: -8183567149084439872
+    second: Fish_mackerel_lg_gill_7
+  - first:
+      213: 3669840278771043891
+    second: Fish_mackerel_lg_gill_8
+  - first:
+      213: -1872103936460984504
+    second: Fish_mackerel_lg_gill_9
+  - first:
+      213: -3655818619748095065
+    second: Fish_mackerel_lg_gill_10
+  - first:
+      213: 5663651042028965896
+    second: Fish_mackerel_lg_gill_11
+  - first:
+      213: -4938301072903987161
+    second: Fish_mackerel_lg_gill_12
+  - first:
+      213: 723064206432097637
+    second: Fish_mackerel_lg_gill_13
+  - first:
+      213: -5826984205509169428
+    second: Fish_mackerel_lg_gill_14
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_gill_0
+      rect:
+        serializedVersion: 2
+        x: 28
+        y: 395
+        width: 7
+        height: 82
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dfe9c06c7cc37d460800000000000000
+      internalID: 7266343352504459005
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_gill_1
+      rect:
+        serializedVersion: 2
+        x: 93
+        y: 459
+        width: 6
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b77a10afa5ea68300800000000000000
+      internalID: 254082134757713787
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_gill_2
+      rect:
+        serializedVersion: 2
+        x: 92
+        y: 396
+        width: 7
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 86b21159865166fe0800000000000000
+      internalID: -1196245112098575512
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_gill_3
+      rect:
+        serializedVersion: 2
+        x: 27
+        y: 332
+        width: 8
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0f575bfa746b4a050800000000000000
+      internalID: 5810969838221620720
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_gill_4
+      rect:
+        serializedVersion: 2
+        x: 91
+        y: 333
+        width: 8
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 148c1998f2b779370800000000000000
+      internalID: 8329261479946733633
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_gill_5
+      rect:
+        serializedVersion: 2
+        x: 28
+        y: 268
+        width: 8
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b55e3640f69386b70800000000000000
+      internalID: 8892420613220853083
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_gill_6
+      rect:
+        serializedVersion: 2
+        x: 92
+        y: 270
+        width: 7
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7bcf5e9789e736a70800000000000000
+      internalID: 8819031688666807479
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_gill_7
+      rect:
+        serializedVersion: 2
+        x: 29
+        y: 208
+        width: 6
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0ca044b49012e6e80800000000000000
+      internalID: -8183567149084439872
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_gill_8
+      rect:
+        serializedVersion: 2
+        x: 93
+        y: 204
+        width: 6
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 33e81963a44ede230800000000000000
+      internalID: 3669840278771043891
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_gill_9
+      rect:
+        serializedVersion: 2
+        x: 29
+        y: 142
+        width: 7
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 84fe1ac7363f406e0800000000000000
+      internalID: -1872103936460984504
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_gill_10
+      rect:
+        serializedVersion: 2
+        x: 92
+        y: 140
+        width: 8
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7abe7aea55ce34dc0800000000000000
+      internalID: -3655818619748095065
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_gill_11
+      rect:
+        serializedVersion: 2
+        x: 29
+        y: 77
+        width: 8
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 80058eb8d94599e40800000000000000
+      internalID: 5663651042028965896
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_gill_12
+      rect:
+        serializedVersion: 2
+        x: 93
+        y: 76
+        width: 8
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 720a0a3a651a77bb0800000000000000
+      internalID: -4938301072903987161
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_gill_13
+      rect:
+        serializedVersion: 2
+        x: 29
+        y: 11
+        width: 7
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5655f269017d80a00800000000000000
+      internalID: 723064206432097637
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_gill_14
+      rect:
+        serializedVersion: 2
+        x: 93
+        y: 11
+        width: 7
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cee60dedcb4622fa0800000000000000
+      internalID: -5826984205509169428
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Fish_mackerel_lg_gill_0: 7266343352504459005
+      Fish_mackerel_lg_gill_1: 254082134757713787
+      Fish_mackerel_lg_gill_10: -3655818619748095065
+      Fish_mackerel_lg_gill_11: 5663651042028965896
+      Fish_mackerel_lg_gill_12: -4938301072903987161
+      Fish_mackerel_lg_gill_13: 723064206432097637
+      Fish_mackerel_lg_gill_14: -5826984205509169428
+      Fish_mackerel_lg_gill_2: -1196245112098575512
+      Fish_mackerel_lg_gill_3: 5810969838221620720
+      Fish_mackerel_lg_gill_4: 8329261479946733633
+      Fish_mackerel_lg_gill_5: 8892420613220853083
+      Fish_mackerel_lg_gill_6: 8819031688666807479
+      Fish_mackerel_lg_gill_7: -8183567149084439872
+      Fish_mackerel_lg_gill_8: 3669840278771043891
+      Fish_mackerel_lg_gill_9: -1872103936460984504
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

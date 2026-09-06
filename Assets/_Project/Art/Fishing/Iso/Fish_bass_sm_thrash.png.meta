@@ -1,0 +1,962 @@
+fileFormatVersion: 2
+guid: b1e25c786b5c7db408788e6e16ef4dcd
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 2884253609540282019
+    second: Fish_bass_sm_thrash_0
+  - first:
+      213: -4694718356813154652
+    second: Fish_bass_sm_thrash_1
+  - first:
+      213: -7918500208968359151
+    second: Fish_bass_sm_thrash_2
+  - first:
+      213: -249415821667661813
+    second: Fish_bass_sm_thrash_3
+  - first:
+      213: 2148361903437935015
+    second: Fish_bass_sm_thrash_4
+  - first:
+      213: 3108236141401368491
+    second: Fish_bass_sm_thrash_5
+  - first:
+      213: 3520227775592765401
+    second: Fish_bass_sm_thrash_6
+  - first:
+      213: 1815859035069000532
+    second: Fish_bass_sm_thrash_7
+  - first:
+      213: -1131346928838006285
+    second: Fish_bass_sm_thrash_8
+  - first:
+      213: -5727493307133454362
+    second: Fish_bass_sm_thrash_9
+  - first:
+      213: -1737680995835847497
+    second: Fish_bass_sm_thrash_10
+  - first:
+      213: -6672427745730729806
+    second: Fish_bass_sm_thrash_11
+  - first:
+      213: 6956285154622361724
+    second: Fish_bass_sm_thrash_12
+  - first:
+      213: 5467539186456050241
+    second: Fish_bass_sm_thrash_13
+  - first:
+      213: -4795624653385299475
+    second: Fish_bass_sm_thrash_14
+  - first:
+      213: 5166000632683300774
+    second: Fish_bass_sm_thrash_15
+  - first:
+      213: -6326429006101312766
+    second: Fish_bass_sm_thrash_16
+  - first:
+      213: -840827364343474258
+    second: Fish_bass_sm_thrash_17
+  - first:
+      213: -3033531132745113085
+    second: Fish_bass_sm_thrash_18
+  - first:
+      213: 481868516881882409
+    second: Fish_bass_sm_thrash_19
+  - first:
+      213: -7529046634455077664
+    second: Fish_bass_sm_thrash_20
+  - first:
+      213: 3198762841249491667
+    second: Fish_bass_sm_thrash_21
+  - first:
+      213: -4243811194449000926
+    second: Fish_bass_sm_thrash_22
+  - first:
+      213: -5081893145186646590
+    second: Fish_bass_sm_thrash_23
+  - first:
+      213: -4443058946063150622
+    second: Fish_bass_sm_thrash_24
+  - first:
+      213: -9161813151849894214
+    second: Fish_bass_sm_thrash_25
+  - first:
+      213: -1118328477749078054
+    second: Fish_bass_sm_thrash_26
+  - first:
+      213: 8256188938493875953
+    second: Fish_bass_sm_thrash_27
+  - first:
+      213: -2345263521651668437
+    second: Fish_bass_sm_thrash_28
+  - first:
+      213: 6149293422565191696
+    second: Fish_bass_sm_thrash_29
+  - first:
+      213: 7362650042159276224
+    second: Fish_bass_sm_thrash_30
+  - first:
+      213: 8254436260196476817
+    second: Fish_bass_sm_thrash_31
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Fish_bass_sm_thrash_0
+      rect:
+        serializedVersion: 2
+        x: 29
+        y: 469
+        width: 9
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3a669ce506de60820800000000000000
+      internalID: 2884253609540282019
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_thrash_1
+      rect:
+        serializedVersion: 2
+        x: 89
+        y: 470
+        width: 10
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4a675a5378209deb0800000000000000
+      internalID: -4694718356813154652
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_thrash_2
+      rect:
+        serializedVersion: 2
+        x: 156
+        y: 472
+        width: 7
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 113a5929306db1290800000000000000
+      internalID: -7918500208968359151
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_thrash_3
+      rect:
+        serializedVersion: 2
+        x: 221
+        y: 471
+        width: 7
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b080324b1a5e98cf0800000000000000
+      internalID: -249415821667661813
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_thrash_4
+      rect:
+        serializedVersion: 2
+        x: 28
+        y: 405
+        width: 10
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7a17667c4c380dd10800000000000000
+      internalID: 2148361903437935015
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_thrash_5
+      rect:
+        serializedVersion: 2
+        x: 87
+        y: 408
+        width: 14
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ba7624e6d4ca22b20800000000000000
+      internalID: 3108236141401368491
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_thrash_6
+      rect:
+        serializedVersion: 2
+        x: 154
+        y: 408
+        width: 12
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9d79bacc28c5ad030800000000000000
+      internalID: 3520227775592765401
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_thrash_7
+      rect:
+        serializedVersion: 2
+        x: 218
+        y: 408
+        width: 11
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 45ba87beb2a333910800000000000000
+      internalID: 1815859035069000532
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_thrash_8
+      rect:
+        serializedVersion: 2
+        x: 23
+        y: 342
+        width: 16
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3f9a1ec56f5ac40f0800000000000000
+      internalID: -1131346928838006285
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_thrash_9
+      rect:
+        serializedVersion: 2
+        x: 88
+        y: 343
+        width: 15
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6e712e6ce2bd380b0800000000000000
+      internalID: -5727493307133454362
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_thrash_10
+      rect:
+        serializedVersion: 2
+        x: 151
+        y: 344
+        width: 16
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7bcd146475482e7e0800000000000000
+      internalID: -1737680995835847497
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_thrash_11
+      rect:
+        serializedVersion: 2
+        x: 218
+        y: 343
+        width: 13
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2b8624a3156c663a0800000000000000
+      internalID: -6672427745730729806
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_thrash_12
+      rect:
+        serializedVersion: 2
+        x: 22
+        y: 279
+        width: 15
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c70d69dfd70b98060800000000000000
+      internalID: 6956285154622361724
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_thrash_13
+      rect:
+        serializedVersion: 2
+        x: 92
+        y: 279
+        width: 10
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 14abd3cfbe990eb40800000000000000
+      internalID: 5467539186456050241
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_thrash_14
+      rect:
+        serializedVersion: 2
+        x: 151
+        y: 279
+        width: 14
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: de90dda39c4827db0800000000000000
+      internalID: -4795624653385299475
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_thrash_15
+      rect:
+        serializedVersion: 2
+        x: 217
+        y: 279
+        width: 13
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6a7088c643251b740800000000000000
+      internalID: 5166000632683300774
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_thrash_16
+      rect:
+        serializedVersion: 2
+        x: 25
+        y: 215
+        width: 10
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 20b8a9a76520438a0800000000000000
+      internalID: -6326429006101312766
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_thrash_17
+      rect:
+        serializedVersion: 2
+        x: 93
+        y: 215
+        width: 10
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ea711ee87f7c454f0800000000000000
+      internalID: -840827364343474258
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_thrash_18
+      rect:
+        serializedVersion: 2
+        x: 156
+        y: 214
+        width: 8
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 302a3a1d18bb6e5d0800000000000000
+      internalID: -3033531132745113085
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_thrash_19
+      rect:
+        serializedVersion: 2
+        x: 220
+        y: 214
+        width: 8
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 92d5031fcd0ffa600800000000000000
+      internalID: 481868516881882409
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_thrash_20
+      rect:
+        serializedVersion: 2
+        x: 26
+        y: 150
+        width: 10
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0ec64fff9f3738790800000000000000
+      internalID: -7529046634455077664
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_thrash_21
+      rect:
+        serializedVersion: 2
+        x: 91
+        y: 151
+        width: 15
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3da25693bd9446c20800000000000000
+      internalID: 3198762841249491667
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_thrash_22
+      rect:
+        serializedVersion: 2
+        x: 154
+        y: 151
+        width: 12
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2268a0d0434fa15c0800000000000000
+      internalID: -4243811194449000926
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_thrash_23
+      rect:
+        serializedVersion: 2
+        x: 219
+        y: 151
+        width: 14
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2c548a60c1d7979b0800000000000000
+      internalID: -5081893145186646590
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_thrash_24
+      rect:
+        serializedVersion: 2
+        x: 25
+        y: 87
+        width: 12
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2e1d8cbcd651752c0800000000000000
+      internalID: -4443058946063150622
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_thrash_25
+      rect:
+        serializedVersion: 2
+        x: 89
+        y: 88
+        width: 16
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: abe2c71da73bad080800000000000000
+      internalID: -9161813151849894214
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_thrash_26
+      rect:
+        serializedVersion: 2
+        x: 153
+        y: 88
+        width: 13
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ad71095bc26ea70f0800000000000000
+      internalID: -1118328477749078054
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_thrash_27
+      rect:
+        serializedVersion: 2
+        x: 217
+        y: 88
+        width: 16
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1f6df6da810e39270800000000000000
+      internalID: 8256188938493875953
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_thrash_28
+      rect:
+        serializedVersion: 2
+        x: 27
+        y: 23
+        width: 15
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b2a4547b043f37fd0800000000000000
+      internalID: -2345263521651668437
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_thrash_29
+      rect:
+        serializedVersion: 2
+        x: 90
+        y: 23
+        width: 10
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 010f4a799cda65550800000000000000
+      internalID: 6149293422565191696
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_thrash_30
+      rect:
+        serializedVersion: 2
+        x: 155
+        y: 24
+        width: 10
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0c02b6054336d2660800000000000000
+      internalID: 7362650042159276224
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_sm_thrash_31
+      rect:
+        serializedVersion: 2
+        x: 218
+        y: 22
+        width: 13
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1976d167b06ad8270800000000000000
+      internalID: 8254436260196476817
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Fish_bass_sm_thrash_0: 2884253609540282019
+      Fish_bass_sm_thrash_1: -4694718356813154652
+      Fish_bass_sm_thrash_10: -1737680995835847497
+      Fish_bass_sm_thrash_11: -6672427745730729806
+      Fish_bass_sm_thrash_12: 6956285154622361724
+      Fish_bass_sm_thrash_13: 5467539186456050241
+      Fish_bass_sm_thrash_14: -4795624653385299475
+      Fish_bass_sm_thrash_15: 5166000632683300774
+      Fish_bass_sm_thrash_16: -6326429006101312766
+      Fish_bass_sm_thrash_17: -840827364343474258
+      Fish_bass_sm_thrash_18: -3033531132745113085
+      Fish_bass_sm_thrash_19: 481868516881882409
+      Fish_bass_sm_thrash_2: -7918500208968359151
+      Fish_bass_sm_thrash_20: -7529046634455077664
+      Fish_bass_sm_thrash_21: 3198762841249491667
+      Fish_bass_sm_thrash_22: -4243811194449000926
+      Fish_bass_sm_thrash_23: -5081893145186646590
+      Fish_bass_sm_thrash_24: -4443058946063150622
+      Fish_bass_sm_thrash_25: -9161813151849894214
+      Fish_bass_sm_thrash_26: -1118328477749078054
+      Fish_bass_sm_thrash_27: 8256188938493875953
+      Fish_bass_sm_thrash_28: -2345263521651668437
+      Fish_bass_sm_thrash_29: 6149293422565191696
+      Fish_bass_sm_thrash_3: -249415821667661813
+      Fish_bass_sm_thrash_30: 7362650042159276224
+      Fish_bass_sm_thrash_31: 8254436260196476817
+      Fish_bass_sm_thrash_4: 2148361903437935015
+      Fish_bass_sm_thrash_5: 3108236141401368491
+      Fish_bass_sm_thrash_6: 3520227775592765401
+      Fish_bass_sm_thrash_7: 1815859035069000532
+      Fish_bass_sm_thrash_8: -1131346928838006285
+      Fish_bass_sm_thrash_9: -5727493307133454362
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

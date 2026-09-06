@@ -1,0 +1,1586 @@
+fileFormatVersion: 2
+guid: 5252aa2a9a0402b4099dbcf9b05ebce7
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -8884725624171748864
+    second: Fish_bass_lg_swim_0
+  - first:
+      213: 1602533999510065267
+    second: Fish_bass_lg_swim_1
+  - first:
+      213: -2105623281137145512
+    second: Fish_bass_lg_swim_2
+  - first:
+      213: -8826755127232484473
+    second: Fish_bass_lg_swim_3
+  - first:
+      213: 5402798055827107417
+    second: Fish_bass_lg_swim_4
+  - first:
+      213: 7979866198316245114
+    second: Fish_bass_lg_swim_5
+  - first:
+      213: -1002750448502208622
+    second: Fish_bass_lg_swim_6
+  - first:
+      213: -7940577518922742946
+    second: Fish_bass_lg_swim_7
+  - first:
+      213: -882874447437670953
+    second: Fish_bass_lg_swim_8
+  - first:
+      213: 8662507809167896720
+    second: Fish_bass_lg_swim_9
+  - first:
+      213: 8444786481196476555
+    second: Fish_bass_lg_swim_10
+  - first:
+      213: -4347302758009735799
+    second: Fish_bass_lg_swim_11
+  - first:
+      213: 8516487667890799997
+    second: Fish_bass_lg_swim_12
+  - first:
+      213: 8622552617768812437
+    second: Fish_bass_lg_swim_13
+  - first:
+      213: -9024959869179904346
+    second: Fish_bass_lg_swim_14
+  - first:
+      213: 6760495538151447347
+    second: Fish_bass_lg_swim_15
+  - first:
+      213: -8350973593451886152
+    second: Fish_bass_lg_swim_16
+  - first:
+      213: -8704748184063136249
+    second: Fish_bass_lg_swim_17
+  - first:
+      213: 7274507605442669225
+    second: Fish_bass_lg_swim_18
+  - first:
+      213: 837663917044895652
+    second: Fish_bass_lg_swim_19
+  - first:
+      213: 6800608068938811933
+    second: Fish_bass_lg_swim_20
+  - first:
+      213: 6149935943156522953
+    second: Fish_bass_lg_swim_21
+  - first:
+      213: -4751273960642741610
+    second: Fish_bass_lg_swim_22
+  - first:
+      213: 8513545897587671146
+    second: Fish_bass_lg_swim_23
+  - first:
+      213: 732599490558333317
+    second: Fish_bass_lg_swim_24
+  - first:
+      213: -666919721650374431
+    second: Fish_bass_lg_swim_25
+  - first:
+      213: 5285363126654231032
+    second: Fish_bass_lg_swim_26
+  - first:
+      213: -5216891151180847974
+    second: Fish_bass_lg_swim_27
+  - first:
+      213: -3151667076318575363
+    second: Fish_bass_lg_swim_28
+  - first:
+      213: -5900109442123318480
+    second: Fish_bass_lg_swim_29
+  - first:
+      213: -2097306179810816254
+    second: Fish_bass_lg_swim_30
+  - first:
+      213: -7694848054440841781
+    second: Fish_bass_lg_swim_31
+  - first:
+      213: -6948912685659438013
+    second: Fish_bass_lg_swim_32
+  - first:
+      213: -8888116564283519079
+    second: Fish_bass_lg_swim_33
+  - first:
+      213: -3287110769103709612
+    second: Fish_bass_lg_swim_34
+  - first:
+      213: 8356795505384979016
+    second: Fish_bass_lg_swim_35
+  - first:
+      213: -2255856237078166378
+    second: Fish_bass_lg_swim_36
+  - first:
+      213: 6077944441104583564
+    second: Fish_bass_lg_swim_37
+  - first:
+      213: -5497387046871449086
+    second: Fish_bass_lg_swim_38
+  - first:
+      213: -4210751838674635692
+    second: Fish_bass_lg_swim_39
+  - first:
+      213: 7112773162394123246
+    second: Fish_bass_lg_swim_40
+  - first:
+      213: -7513256760600189297
+    second: Fish_bass_lg_swim_41
+  - first:
+      213: -7182976237728245977
+    second: Fish_bass_lg_swim_42
+  - first:
+      213: 2030857500273394244
+    second: Fish_bass_lg_swim_43
+  - first:
+      213: -2517341555905702119
+    second: Fish_bass_lg_swim_44
+  - first:
+      213: 3569109592782580072
+    second: Fish_bass_lg_swim_45
+  - first:
+      213: 2069003931063644819
+    second: Fish_bass_lg_swim_46
+  - first:
+      213: 1042369509673378860
+    second: Fish_bass_lg_swim_47
+  - first:
+      213: -1045516509843122305
+    second: Fish_bass_lg_swim_48
+  - first:
+      213: 2089359799049987594
+    second: Fish_bass_lg_swim_49
+  - first:
+      213: -7009444211550891619
+    second: Fish_bass_lg_swim_50
+  - first:
+      213: -4667201442181386994
+    second: Fish_bass_lg_swim_51
+  - first:
+      213: -1915053090891947342
+    second: Fish_bass_lg_swim_52
+  - first:
+      213: 1049004544206578429
+    second: Fish_bass_lg_swim_53
+  - first:
+      213: -3257886958661032302
+    second: Fish_bass_lg_swim_54
+  - first:
+      213: -5615151423197734424
+    second: Fish_bass_lg_swim_55
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Fish_bass_lg_swim_0
+      rect:
+        serializedVersion: 2
+        x: 26
+        y: 459
+        width: 13
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 002ae6c3e1d13b480800000000000000
+      internalID: -8884725624171748864
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_lg_swim_1
+      rect:
+        serializedVersion: 2
+        x: 89
+        y: 451
+        width: 17
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 37098459e285d3610800000000000000
+      internalID: 1602533999510065267
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_lg_swim_2
+      rect:
+        serializedVersion: 2
+        x: 153
+        y: 451
+        width: 18
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 859270928c257c2e0800000000000000
+      internalID: -2105623281137145512
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_lg_swim_3
+      rect:
+        serializedVersion: 2
+        x: 217
+        y: 459
+        width: 13
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 78b23f95af0118580800000000000000
+      internalID: -8826755127232484473
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_lg_swim_4
+      rect:
+        serializedVersion: 2
+        x: 278
+        y: 451
+        width: 17
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 95eeebed4389afa40800000000000000
+      internalID: 5402798055827107417
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_lg_swim_5
+      rect:
+        serializedVersion: 2
+        x: 341
+        y: 451
+        width: 18
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a7069c9370e2ebe60800000000000000
+      internalID: 7979866198316245114
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_lg_swim_6
+      rect:
+        serializedVersion: 2
+        x: 13
+        y: 392
+        width: 32
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 29789a6a7c38512f0800000000000000
+      internalID: -1002750448502208622
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_lg_swim_7
+      rect:
+        serializedVersion: 2
+        x: 85
+        y: 390
+        width: 24
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e53482941d66dc190800000000000000
+      internalID: -7940577518922742946
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_lg_swim_8
+      rect:
+        serializedVersion: 2
+        x: 150
+        y: 390
+        width: 23
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7d555332e566fb3f0800000000000000
+      internalID: -882874447437670953
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_lg_swim_9
+      rect:
+        serializedVersion: 2
+        x: 207
+        y: 391
+        width: 30
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 090ff7dd4f8673870800000000000000
+      internalID: 8662507809167896720
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_lg_swim_10
+      rect:
+        serializedVersion: 2
+        x: 265
+        y: 396
+        width: 36
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b88acbfef88e13570800000000000000
+      internalID: 8444786481196476555
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_lg_swim_11
+      rect:
+        serializedVersion: 2
+        x: 328
+        y: 396
+        width: 37
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 985f0c1bc274ba3c0800000000000000
+      internalID: -4347302758009735799
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_lg_swim_12
+      rect:
+        serializedVersion: 2
+        x: 7
+        y: 335
+        width: 43
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d7540a26964a03670800000000000000
+      internalID: 8516487667890799997
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_lg_swim_13
+      rect:
+        serializedVersion: 2
+        x: 72
+        y: 333
+        width: 42
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 59f793febe579a770800000000000000
+      internalID: 8622552617768812437
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_lg_swim_14
+      rect:
+        serializedVersion: 2
+        x: 144
+        y: 335
+        width: 34
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6ae3065b0d6e0c280800000000000000
+      internalID: -9024959869179904346
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_lg_swim_15
+      rect:
+        serializedVersion: 2
+        x: 199
+        y: 337
+        width: 10
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 33b51219fda12dd50800000000000000
+      internalID: 6760495538151447347
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_lg_swim_16
+      rect:
+        serializedVersion: 2
+        x: 208
+        y: 335
+        width: 33
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8b902a913c16b1c80800000000000000
+      internalID: -8350973593451886152
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_lg_swim_17
+      rect:
+        serializedVersion: 2
+        x: 264
+        y: 343
+        width: 9
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 70ea0b575a5823780800000000000000
+      internalID: -8704748184063136249
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_lg_swim_18
+      rect:
+        serializedVersion: 2
+        x: 272
+        y: 335
+        width: 34
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9aaa94a002e34f460800000000000000
+      internalID: 7274507605442669225
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_lg_swim_19
+      rect:
+        serializedVersion: 2
+        x: 328
+        y: 335
+        width: 42
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4af8f98f4eaff9b00800000000000000
+      internalID: 837663917044895652
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_lg_swim_20
+      rect:
+        serializedVersion: 2
+        x: 136
+        y: 331
+        width: 9
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d1ac0cde10d906e50800000000000000
+      internalID: 6800608068938811933
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_lg_swim_21
+      rect:
+        serializedVersion: 2
+        x: 15
+        y: 269
+        width: 30
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9cf50431826f85550800000000000000
+      internalID: 6149935943156522953
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_lg_swim_22
+      rect:
+        serializedVersion: 2
+        x: 73
+        y: 269
+        width: 36
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 69a73519185101eb0800000000000000
+      internalID: -4751273960642741610
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_lg_swim_23
+      rect:
+        serializedVersion: 2
+        x: 136
+        y: 279
+        width: 10
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a6082bc13e0362670800000000000000
+      internalID: 8513545897587671146
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_lg_swim_24
+      rect:
+        serializedVersion: 2
+        x: 145
+        y: 268
+        width: 28
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5819c5dea57ba2a00800000000000000
+      internalID: 732599490558333317
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_lg_swim_25
+      rect:
+        serializedVersion: 2
+        x: 205
+        y: 269
+        width: 32
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1e8b351fb00aeb6f0800000000000000
+      internalID: -666919721650374431
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_lg_swim_26
+      rect:
+        serializedVersion: 2
+        x: 277
+        y: 269
+        width: 24
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8f16c29b2c1695940800000000000000
+      internalID: 5285363126654231032
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_lg_swim_27
+      rect:
+        serializedVersion: 2
+        x: 342
+        y: 269
+        width: 23
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a94acf56321e997b0800000000000000
+      internalID: -5216891151180847974
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_lg_swim_28
+      rect:
+        serializedVersion: 2
+        x: 25
+        y: 202
+        width: 13
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: df4ccb90e770344d0800000000000000
+      internalID: -3151667076318575363
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_lg_swim_29
+      rect:
+        serializedVersion: 2
+        x: 86
+        y: 202
+        width: 17
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 03bbf46f8b99e1ea0800000000000000
+      internalID: -5900109442123318480
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_lg_swim_30
+      rect:
+        serializedVersion: 2
+        x: 149
+        y: 202
+        width: 18
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 20f0527342fd4e2e0800000000000000
+      internalID: -2097306179810816254
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_lg_swim_31
+      rect:
+        serializedVersion: 2
+        x: 218
+        y: 202
+        width: 13
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bcda27aa678663590800000000000000
+      internalID: -7694848054440841781
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_lg_swim_32
+      rect:
+        serializedVersion: 2
+        x: 281
+        y: 202
+        width: 17
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3444014bab0809f90800000000000000
+      internalID: -6948912685659438013
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_lg_swim_33
+      rect:
+        serializedVersion: 2
+        x: 345
+        y: 202
+        width: 18
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 99f8d97731117a480800000000000000
+      internalID: -8888116564283519079
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_lg_swim_34
+      rect:
+        serializedVersion: 2
+        x: 19
+        y: 141
+        width: 32
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 45a563edb26d162d0800000000000000
+      internalID: -3287110769103709612
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_lg_swim_35
+      rect:
+        serializedVersion: 2
+        x: 83
+        y: 141
+        width: 24
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 84a7d076c3d49f370800000000000000
+      internalID: 8356795505384979016
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_lg_swim_36
+      rect:
+        serializedVersion: 2
+        x: 147
+        y: 141
+        width: 23
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6944b9454b691b0e0800000000000000
+      internalID: -2255856237078166378
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_lg_swim_37
+      rect:
+        serializedVersion: 2
+        x: 211
+        y: 141
+        width: 30
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c8b49905442395450800000000000000
+      internalID: 6077944441104583564
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_lg_swim_38
+      rect:
+        serializedVersion: 2
+        x: 275
+        y: 141
+        width: 36
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 202c4667b9b55b3b0800000000000000
+      internalID: -5497387046871449086
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_lg_swim_39
+      rect:
+        serializedVersion: 2
+        x: 339
+        y: 140
+        width: 28
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 454b97223876095c0800000000000000
+      internalID: -4210751838674635692
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_lg_swim_40
+      rect:
+        serializedVersion: 2
+        x: 366
+        y: 151
+        width: 10
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eebfe609185a5b260800000000000000
+      internalID: 7112773162394123246
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_lg_swim_41
+      rect:
+        serializedVersion: 2
+        x: 15
+        y: 79
+        width: 33
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f86af1e78cc8bb790800000000000000
+      internalID: -7513256760600189297
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_lg_swim_42
+      rect:
+        serializedVersion: 2
+        x: 47
+        y: 81
+        width: 10
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 727d2283b21f05c90800000000000000
+      internalID: -7182976237728245977
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_lg_swim_43
+      rect:
+        serializedVersion: 2
+        x: 78
+        y: 79
+        width: 34
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 442cb35f22e0f2c10800000000000000
+      internalID: 2030857500273394244
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_lg_swim_44
+      rect:
+        serializedVersion: 2
+        x: 111
+        y: 87
+        width: 9
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 91759ed313b901dd0800000000000000
+      internalID: -2517341555905702119
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_lg_swim_45
+      rect:
+        serializedVersion: 2
+        x: 142
+        y: 79
+        width: 42
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 869ae32c346088130800000000000000
+      internalID: 3569109592782580072
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_lg_swim_46
+      rect:
+        serializedVersion: 2
+        x: 206
+        y: 79
+        width: 43
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3927fedfc1496bc10800000000000000
+      internalID: 2069003931063644819
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_lg_swim_47
+      rect:
+        serializedVersion: 2
+        x: 270
+        y: 77
+        width: 42
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c24a7ccdb8d377e00800000000000000
+      internalID: 1042369509673378860
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_lg_swim_48
+      rect:
+        serializedVersion: 2
+        x: 334
+        y: 79
+        width: 34
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f779eff06449d71f0800000000000000
+      internalID: -1045516509843122305
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_lg_swim_49
+      rect:
+        serializedVersion: 2
+        x: 367
+        y: 75
+        width: 9
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a062b56daa5eefc10800000000000000
+      internalID: 2089359799049987594
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_lg_swim_50
+      rect:
+        serializedVersion: 2
+        x: 19
+        y: 7
+        width: 30
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d91579190a379be90800000000000000
+      internalID: -7009444211550891619
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_lg_swim_51
+      rect:
+        serializedVersion: 2
+        x: 83
+        y: 12
+        width: 36
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e0d66972405ca3fb0800000000000000
+      internalID: -4667201442181386994
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_lg_swim_52
+      rect:
+        serializedVersion: 2
+        x: 147
+        y: 12
+        width: 37
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2b22f573c5d5c65e0800000000000000
+      internalID: -1915053090891947342
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_lg_swim_53
+      rect:
+        serializedVersion: 2
+        x: 211
+        y: 8
+        width: 32
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: df224393310de8e00800000000000000
+      internalID: 1049004544206578429
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_lg_swim_54
+      rect:
+        serializedVersion: 2
+        x: 275
+        y: 6
+        width: 24
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 296a1a67219a9c2d0800000000000000
+      internalID: -3257886958661032302
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_bass_lg_swim_55
+      rect:
+        serializedVersion: 2
+        x: 339
+        y: 6
+        width: 23
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8e9154ce789f212b0800000000000000
+      internalID: -5615151423197734424
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Fish_bass_lg_swim_0: -8884725624171748864
+      Fish_bass_lg_swim_1: 1602533999510065267
+      Fish_bass_lg_swim_10: 8444786481196476555
+      Fish_bass_lg_swim_11: -4347302758009735799
+      Fish_bass_lg_swim_12: 8516487667890799997
+      Fish_bass_lg_swim_13: 8622552617768812437
+      Fish_bass_lg_swim_14: -9024959869179904346
+      Fish_bass_lg_swim_15: 6760495538151447347
+      Fish_bass_lg_swim_16: -8350973593451886152
+      Fish_bass_lg_swim_17: -8704748184063136249
+      Fish_bass_lg_swim_18: 7274507605442669225
+      Fish_bass_lg_swim_19: 837663917044895652
+      Fish_bass_lg_swim_2: -2105623281137145512
+      Fish_bass_lg_swim_20: 6800608068938811933
+      Fish_bass_lg_swim_21: 6149935943156522953
+      Fish_bass_lg_swim_22: -4751273960642741610
+      Fish_bass_lg_swim_23: 8513545897587671146
+      Fish_bass_lg_swim_24: 732599490558333317
+      Fish_bass_lg_swim_25: -666919721650374431
+      Fish_bass_lg_swim_26: 5285363126654231032
+      Fish_bass_lg_swim_27: -5216891151180847974
+      Fish_bass_lg_swim_28: -3151667076318575363
+      Fish_bass_lg_swim_29: -5900109442123318480
+      Fish_bass_lg_swim_3: -8826755127232484473
+      Fish_bass_lg_swim_30: -2097306179810816254
+      Fish_bass_lg_swim_31: -7694848054440841781
+      Fish_bass_lg_swim_32: -6948912685659438013
+      Fish_bass_lg_swim_33: -8888116564283519079
+      Fish_bass_lg_swim_34: -3287110769103709612
+      Fish_bass_lg_swim_35: 8356795505384979016
+      Fish_bass_lg_swim_36: -2255856237078166378
+      Fish_bass_lg_swim_37: 6077944441104583564
+      Fish_bass_lg_swim_38: -5497387046871449086
+      Fish_bass_lg_swim_39: -4210751838674635692
+      Fish_bass_lg_swim_4: 5402798055827107417
+      Fish_bass_lg_swim_40: 7112773162394123246
+      Fish_bass_lg_swim_41: -7513256760600189297
+      Fish_bass_lg_swim_42: -7182976237728245977
+      Fish_bass_lg_swim_43: 2030857500273394244
+      Fish_bass_lg_swim_44: -2517341555905702119
+      Fish_bass_lg_swim_45: 3569109592782580072
+      Fish_bass_lg_swim_46: 2069003931063644819
+      Fish_bass_lg_swim_47: 1042369509673378860
+      Fish_bass_lg_swim_48: -1045516509843122305
+      Fish_bass_lg_swim_49: 2089359799049987594
+      Fish_bass_lg_swim_5: 7979866198316245114
+      Fish_bass_lg_swim_50: -7009444211550891619
+      Fish_bass_lg_swim_51: -4667201442181386994
+      Fish_bass_lg_swim_52: -1915053090891947342
+      Fish_bass_lg_swim_53: 1049004544206578429
+      Fish_bass_lg_swim_54: -3257886958661032302
+      Fish_bass_lg_swim_55: -5615151423197734424
+      Fish_bass_lg_swim_6: -1002750448502208622
+      Fish_bass_lg_swim_7: -7940577518922742946
+      Fish_bass_lg_swim_8: -882874447437670953
+      Fish_bass_lg_swim_9: 8662507809167896720
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
