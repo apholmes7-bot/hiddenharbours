@@ -406,8 +406,8 @@ namespace HiddenHarbours.Tests.RigBaking
 
                 host.Execute(
                     $"globalThis.__used = (function(){{var F={global}.faces(),M={global}.palette({{}}).mats," +
-                    "u={},o={};for(var i=0;i<F.length;i++)u[F[i].mat]=1;" +
-                    "for(var k in M)if(u[k])o[k]=M[k];return Object.keys(o);}})();");
+                    $"u={{}},o={{}};for(var i=0;i<F.length;i++)u[F[i].mat]=1;" +
+                    $"for(var k in M)if(u[k])o[k]=M[k];return Object.keys(o);}})();");
 
                 double used = host.EvaluateNumber("__used.length");
                 Assert.That(used, Is.EqualTo(14d),
@@ -451,8 +451,8 @@ namespace HiddenHarbours.Tests.RigBaking
 
                 Assert.That(host.EvaluateBool(
                     $"(function(){{var F={global}.faces();for(var i=0;i<F.length;i++)" +
-                    "if(F[i].mat==='sail'||F[i].mat==='canvas'||F[i].mat==='batten')return false;" +
-                    "return true;}})()"), Is.True,
+                    $"if(F[i].mat==='sail'||F[i].mat==='canvas'||F[i].mat==='batten')return false;" +
+                    $"return true;}})()"), Is.True,
                     $"{global}: a face in the static body wears a SAIL material. The body is supposed " +
                     "to carry no cloth — if it does, the filtered ramp table above is wrong too.");
             }
@@ -536,10 +536,14 @@ namespace HiddenHarbours.Tests.RigBaking
                     $"{global}: the rig no longer publishes geometry().ids, so the level-tag contract " +
                     "is no longer armed and the bake may simply work. Delist her from BakeBlocked.");
 
+                // ⚠️ EVERY fragment is interpolated, deliberately. A `$"…"` head concatenated with a
+                // plain `"…}}"` tail leaves the tail's braces DOUBLED in the JS, and the engine
+                // answers "SyntaxError: Unexpected token '}'" from inside a string this file built —
+                // which reads like the rig being malformed. Keep the `$` on all of them.
                 host.Execute(
                     $"globalThis.__bad = (function(){{var F={global}.faces(),ids={global}.geometry().ids," +
-                    "n=0;for(var i=0;i<F.length;i++){var lv=F[i].lv;" +
-                    "if(lv==null||!Object.prototype.hasOwnProperty.call(ids,lv))n++;}return n;}})();");
+                    $"n=0;for(var i=0;i<F.length;i++){{var lv=F[i].lv;" +
+                    $"if(lv==null||!Object.prototype.hasOwnProperty.call(ids,lv))n++;}}return n;}})();");
 
                 double bad = host.EvaluateNumber("__bad");
                 double total = host.EvaluateNumber($"{global}.faces().length");
