@@ -313,6 +313,47 @@ namespace HiddenHarbours.Tools.RigBaking
             MeshOnly("sportSkiffMk2", "sportSkiffMk2IsoRig.js", "SportSkiffMk2Iso",
                      "SportSkiffMk2Iso", "sport_skiff_mk2_iso",
                      "sport skiff Mk2 (~7.0 m, glass — the reshaped hull)"),
+
+            // ---- the SAIL RIG KIT (owner drop of 2026-09-06) — the first sails in the fleet ------
+            //
+            // ⚠️ THE FIRST ROWS WHOSE RIG IS NOT AT THE TOP OF docs/art/rigs/. The kit ships two
+            // READMEs, its writer (_sailKit.js) and its stamp script beside the rigs, so it lands as
+            // a folder. DeckSidecarReader.ResolveRigPath resolves a sidecar's named rig flat FIRST
+            // and only then searches the tree, so no committed hull's resolution moved.
+            //
+            // ⚠️ MESH-ONLY, AND FOR THESE TWO THAT IS NOT A CHOICE.
+            //   · The 88's cell is 1072×1504 — 6.4× the Cape Islander's area and the largest in the
+            //     game. A 32-facing sheet of her runs past the texture size cap, and past it Unity
+            //     slices wrong rather than refusing.
+            //   · Both hulls' pictures are a POSE, not a frame: hoist over eleven steps draws eleven
+            //     distinct pictures, and so does furl (measured, V8). A sheet set that covered the
+            //     sail states as well as the facings is not a bigger sheet, it is a different idea.
+            //
+            // ⚠️ WHAT THE MESH ACTUALLY GETS, and it is less than the picture — MEASURED, V8:
+            // `faces()` returns the rig's static `F`, which is byte-identical (same array identity,
+            // same fingerprint) after renders at opposite poses. It is the BODY: hull, deck,
+            // coachroof, cockpit, cabin, spars, standing rigging.
+            //   · sloop 30: 1,852 faces / 7,514 vertices / 14 materials
+            //   · sloop 88: 3,088 faces / 12,530 vertices / 14 materials
+            // Everything that answers the wind — main, headsail, staysail, boom, sheets, stack pack,
+            // wheel, door — comes from a private `dynamicFaces(o, pose, view)` and is NOT in `F`. So
+            // this bake is not "one pose frozen": the sails are simply absent. They are 27.5% of the
+            // 30's painted picture on a close reach and 47.5% of the 88's. The seam that would bring
+            // them across is PROPOSED, not decided, in docs/art/spikes/sail-rig-kit/.
+            //
+            // ⚠️ HER RAMP TABLE DOES NOT FIT UNFILTERED. palette({}).mats is 18 entries on the 30 and
+            // 19 on the 88; HullMeshDef.HullRampSlots is 16. Filtering to the materials `F` actually
+            // names — which is what the extractor's reconstruction below does — gives 14 on BOTH,
+            // with 2 slots spare. The entries dropped are exactly the sail's (canvas, sail, batten,
+            // + moto and, on the 88, mast). Note what that arithmetic says about the seam: 14 + 3
+            // sail ramps = 17, so a sail part cannot ride the body's ramp table. It needs its own.
+            MeshOnly("sloop30", "sail-rig-kit/sloop-30/sloopIsoRig.js", "SloopIso",
+                     "Sloop30Iso", "sloop_30_iso",
+                     "Sloop 30 (9.4 m fractional sloop — the first sail in the fleet)"),
+
+            MeshOnly("sloop88", "sail-rig-kit/sloop-88/sloop88IsoRig.js", "Sloop88Iso",
+                     "Sloop88Iso", "sloop_88_iso",
+                     "Sloop 88 (27.0 m masthead sloop — the largest cell in the game)"),
         };
 
         /// <summary>

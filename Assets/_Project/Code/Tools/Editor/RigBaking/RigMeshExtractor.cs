@@ -756,6 +756,47 @@ namespace HiddenHarbours.Tools.RigBaking
                     ["MATS"] = "palette({}).mats",
                 },
 
+                // ---- the SAIL RIG KIT's two sloops (owner drop 2026-09-06) -----------------------
+                // Same shape as the five hulls above — no `MATS` const, `palette(opts).mats` inside
+                // `_paint` — but they are the FIRST rigs for which `palette({}).mats` on its own
+                // would be WRONG, and it fails in the quiet direction rather than the loud one.
+                //
+                // MEASURED in the repo's own V8 (2026-09-06): the full table is EIGHTEEN entries on
+                // the 30 and NINETEEN on the 88. HullMeshDef.HullRampSlots is 16, and
+                // HullMeshDef.IsUsable() returns false above it — so the bare form does not blow up
+                // at extraction, it writes a def the game refuses to present.
+                //
+                // Filtering to the materials the static face list actually names gives FOURTEEN on
+                // both, two slots clear of the cap. The zodiac's idiom, for the zodiac's reason: the
+                // used set comes off the rig's OWN faces, in the rig's OWN MATS key order, so `paint`
+                // stays index 0 — which is what the face packer resolves an unknown material to.
+                //
+                // What the filter drops is exactly the sail's palette: canvas, sail, batten (+ moto
+                // on both, and mast on the 88, which paints her spars from `spar` instead). Those
+                // are unreferenced by `F` because the sails are not IN `F` — they are built by
+                // `dynamicFaces(o, pose, view)` per pose. Dropping them therefore removes no
+                // geometry from this bake; it removes ramps nothing in this bake points at.
+                //
+                // ⚠️ And it is the arithmetic that sizes the seam: 14 used + 3 sail ramps = 17 > 16.
+                // A future articulated SAIL part cannot share the body's ramp table.
+                ["sloopIsoRig.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
+                {
+                    ["MATS"] =
+                        "(function(){var M=palette({}).mats,used={},out={};" +
+                        "for(var i=0;i<F.length;i++)used[F[i].mat]=1;" +
+                        "for(var k in M)if(used[k])out[k]=M[k];" +
+                        "return out;})()",
+                },
+
+                ["sloop88IsoRig.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
+                {
+                    ["MATS"] =
+                        "(function(){var M=palette({}).mats,used={},out={};" +
+                        "for(var i=0;i<F.length;i++)used[F[i].mat]=1;" +
+                        "for(var k in M)if(used[k])out[k]=M[k];" +
+                        "return out;})()",
+                },
+
                 // ---- the DUALLY 3500 — the first ROAD VEHICLE (ADR 0035) -------------------------
                 // Same gap as the five hulls above and for the same reason: she has no `MATS` const
                 // at all, because her table depends on a paint axis (`makeMats(s)` reads s.paint and
