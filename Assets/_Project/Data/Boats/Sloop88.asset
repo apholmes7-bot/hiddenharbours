@@ -1,0 +1,48 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb8575fc41a22d24c8433d9cb61748dc, type: 3}
+  m_Name: Sloop88
+  m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.BoatHullDef
+  Id: boat.sloop_88
+  DisplayName: The Sloop 88
+  Visual: {fileID: 0}
+  Sprite: {fileID: 0}
+  LengthMeters: 27
+  DraughtMeters: 4.6
+  MassKg: 89190
+  HoldUnits: 40
+  CrewSlots: 6
+  Propulsion: 2
+  EnginePower: 96300
+  RudderAuthority: 60000
+  OarPower: 0
+  OarLateralOffset: 0
+  OarBraceDrag: 0
+  ForwardDrag: 900
+  LateralDrag: 4000
+  WindExposure: 0.6
+  MaxSafeSeaState: 7
+  HasAnchor: 1
+  AnchorMassKg: 90
+  RodeMeters: 120
+  SeakeepingMassFactor: 6
+  SeakeepingLiveliness: 0.15
+  SeakeepingDamping: 0.85
+  CameraWorldHeightMeters: 42
+  DeckContainer: {fileID: 0}
+  DeckContainerOffset: {x: 0, y: -1.6}
+  FuelCapacityLitres: 1200
+  FuelGrade: diesel
+  FullThrottleLitresPerHour: 45
+  SailPolar: {fileID: 11400000, guid: 7cdb3fb1a1a12954b856a30a3c179b31, type: 2}
+  NoGoTrueWindDeg: 45
+  SpriteIronsApparentDeg: 25
