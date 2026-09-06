@@ -548,6 +548,53 @@ namespace HiddenHarbours.Tests.EditMode
         /// hero material dirty. And EVERY property is written on EVERY shot — a property block is sticky, and
         /// a value set only when asked for survives into the next capture.
         /// </summary>
+        /// <summary>
+        /// ⚠️ <b>Every SPEED the water fragment scrolls, boils or drifts on, pinned to 0.</b> In EDIT mode
+        /// the shader clock follows REAL time, so two renders of the identical arm differ by however far
+        /// the machine let the clock run between them — and this fixture takes its noise floor from exactly
+        /// such a pair. Measured on #737: the floor read 1707–1850 when the test ran alone and 2873–3018
+        /// inside a full suite, while the in-cone signal barely moved (3490–4716). The bar is
+        /// <c>in-cone &gt; 2 × floor</c>, so the SAME COMMIT passed alone and failed under load. That is a
+        /// guard measuring the box, not the beam.
+        ///
+        /// <para>These are SPEEDS, deliberately — not the strength keys <c>BreakerBoreLookTests</c> zeroes.
+        /// Zeroing a strength deletes the layer and would change what the plate shows; zeroing its speed
+        /// leaves every layer drawing exactly as it does in play and merely stops it moving, so the beam's
+        /// look is untouched and only the clock is taken away.</para>
+        ///
+        /// <para>The relief itself is unaffected by construction: it rides the PUBLISHED wave field's
+        /// analytic slope (ADR 0018 — the phases carry the travel), which no clock knob here touches.</para>
+        /// </summary>
+        static readonly string[] FrozenClocks =
+        {
+            // Every clock the water fragment scrolls, boils, drifts or twinkles on. ALL of them are
+            // SPEEDS, deliberately: each layer keeps drawing exactly as it does in play and merely stops
+            // moving. ⚠️ The first draft of this fix reached for the STRENGTH keys
+            // BreakerBoreLookTests.FrozenLayers zeroes, which does take the floor to 0.00 — and deletes
+            // the sky reflection, i.e. the very mirror that
+            // OnAGlassCalm_TheDialChangesNothing_AndTheMirrorSurvives exists to prove survives. A control
+            // must assert its own premise; that arm went red and was right to.
+            "_WindChopSpeed", "_CrossSwellSpeed", "_OceanSwellSpeed", "_FbmDriftSpeed", "_FoamEvolveSpeed",
+            "_SwashSpeed", "_RippleSpeed", "_SurfEvolveSpeed", "_Flow", "_WhitecapCollapseRate",
+            "_DispersionScale", "_DriftLineSpeed", "_RainRingSpeed",
+            // …and the two the NIGHT sea moves on, which a speed list written from the daytime layers
+            // misses: the reflected clouds drift and the stars twinkle. Speeds-without-these measured a
+            // floor of 526 on the main arm and 92.72 on the glass arm; the gale arm, which these barely
+            // touch, was already at 2.92.
+            "_CloudDriftSpeed", "_StarTwinkleSpeed",
+        };
+
+        // ⚠️ WHAT THIS DOES NOT REACH, stated so nobody re-derives it. Three of the four arms come back
+        // essentially static with the clocks above pinned — the gale floor 2.82/2.81 and the two lamp-height
+        // floors 1.27/1.26 and 0.88/0.86, isolated vs inside a 1344-test sweep. The MAIN arm does not: its
+        // floor is ~340-490 and still scatters ~20% between runs, so SOMETHING in that configuration still
+        // moves and it is not a shader speed. Ruled out by measurement, not by argument:
+        //   • the wave field itself — PublishTheSea is pure (WaveMath.TrainsFrom), identical every shot;
+        //   • the advected foam buffer — zeroing _WakeFoamStrength moved the floor to 490.79, i.e. nowhere.
+        // The GUARD is nonetheless fixed, which is what this commit is for: the in-cone/floor ratio is now
+        // 7.8-11.8x against a 2.00x bar, where before the fix it was ~2x on a floor that swung 1707->3018
+        // with the machine and flipped the same commit between pass and fail.
+
         void SetShot(float waterLevel, float reliefStrength)
         {
             var surface = _seaGo.GetComponent<WaterSurface>();
@@ -567,6 +614,9 @@ namespace HiddenHarbours.Tests.EditMode
             sr.GetPropertyBlock(block);
             block.SetFloat("_WaterLevel", waterLevel);
             block.SetFloat("_BeamReliefStrength", reliefStrength);
+            // …and the clock, on EVERY shot, because a property block is STICKY and a fixture must own its
+            // own clock (the #697 lesson). With these pinned the floor stops being a reading of the machine.
+            foreach (string clock in FrozenClocks) block.SetFloat(clock, 0f);
             sr.SetPropertyBlock(block);
         }
 
