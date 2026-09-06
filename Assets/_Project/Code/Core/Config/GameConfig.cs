@@ -229,6 +229,19 @@ namespace HiddenHarbours.Core
                  "existing seakeeping data.")]
         public StormRockSettings StormRock = StormRockSettings.Default;
 
+        [Header("Hull weight (water fidelity PR 10 — a hull is not a float on the surface)")]
+        [Tooltip("World-wide policy for how a hull ANSWERS the sea vertically (owner playtest " +
+                 "2026-09-05: \"the boats seem to have too much hangtime after a big wave and bob up " +
+                 "and down too fast and jerky as if they have no weight\"). Two physical facts: her " +
+                 "ride is the field averaged over her own WATERLINE (so a wave shorter than the hull " +
+                 "cancels under her and a wave longer lifts the whole boat), and she answers it " +
+                 "through her own NATURAL PERIOD T = 2π√(m/ρgA_wp) at her own damping ratio (so she " +
+                 "lags a swell, settles after it, and cannot twitch to a chop). Per-hull character " +
+                 "comes from each BoatHullDef's length, beam, draught and SeakeepingDamping — there " +
+                 "is no second per-hull knob. Enabled off restores the point-sampled, " +
+                 "surface-bolted ride bit-for-bit; that is the A/B.")]
+        public HullWeightSettings HullWeight = HullWeightSettings.Default;
+
         [Header("Ground tackle (dropping the hook)")]
         [Tooltip("World-wide ANCHORING policy: the dinghy-class rode a hull carries when her own Def " +
                  "does not say (BoatHullDef.RodeMeters = 0), the swing-circle floor, the firm-limit trio " +

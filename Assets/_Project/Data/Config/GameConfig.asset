@@ -237,6 +237,19 @@ MonoBehaviour:
     MaxDownwardAccelInGs: 1
     SurfaceBandMeters: 0.8
     SettleEpsilonMeters: 0.004
+  HullWeight:
+    Enabled: 1
+    FootprintSampleSpacingMeters: 2
+    MinFootprintSamples: 3
+    MaxFootprintSamples: 65
+    WaterplaneCoefficient: 0.85
+    BlockCoefficient: 0.55
+    AddedMassFactor: 1
+    WaterDensityKgPerCubicMeter: 1025
+    MinNaturalPeriodSeconds: 0.5
+    MaxNaturalPeriodSeconds: 8
+    MinDampingRatio: 0.35
+    MaxDampingRatio: 1
   RodFight:
     TensionRisePerSec: 0.55
     TensionFallPerSec: 0.7
