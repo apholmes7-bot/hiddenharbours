@@ -313,6 +313,7 @@ namespace HiddenHarbours.Boats
                 wave = root.GetComponent<BoatWaveMotion>();
                 if (wave == null) wave = root.AddComponent<BoatWaveMotion>();
                 wave.Configure(child, presenter);
+                EnsureTideRide(root);
             }
 
             // (6) The oars: baked per-side overlays, animated from the boat's REAL per-oar state.
@@ -464,6 +465,7 @@ namespace HiddenHarbours.Boats
                 wave = root.GetComponent<BoatWaveMotion>();
                 if (wave == null) wave = root.AddComponent<BoatWaveMotion>();
                 wave.Configure(child, presenter);
+                EnsureTideRide(root);
             }
 
             return new Rig
@@ -709,6 +711,24 @@ namespace HiddenHarbours.Boats
             layer.Configure(def.OarPort, def.OarStar, portSr, starSr, boat, hull,
                             def.HeadingCount, def.OarColumnCount);
             return layer;
+        }
+
+        /// <summary>
+        /// ⭐ <b>EVERY HULL THAT FLOATS RIDES THE TIDE</b> (owner playtest 2026-09-06 — "boats dont ride
+        /// the tide"). Installed here, beside the wave motion and behind the same gate, for the same
+        /// reason that one is: a boat is put on the water in half a dozen places (a region's moored
+        /// fleet, the review moorage, the intro's arrival, the player's own dory) and a ride wired per
+        /// caller is a ride the next caller forgets. Whatever installs a hull that answers the sea now
+        /// installs the whole of the sea she answers.
+        ///
+        /// <para>Idempotent, and it configures nothing: the component's own defaults are the honest
+        /// reading — her picture is correct at the game's datum (where a builder's plain plan point puts
+        /// her) and her draught is read live off the hull she is. A rig that knows better calls
+        /// <see cref="HullTideRide.Configure"/>.</para>
+        /// </summary>
+        private static void EnsureTideRide(GameObject root)
+        {
+            if (root.GetComponent<HullTideRide>() == null) root.AddComponent<HullTideRide>();
         }
 
         private static SpriteRenderer MakeOarRenderer(Transform visual, string name, SpriteRenderer hullVisual,
