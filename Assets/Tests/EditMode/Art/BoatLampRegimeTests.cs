@@ -11,7 +11,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
     /// <para><b>Why this is worth its own file.</b> Before PR 2 there was no regime at all: the one
     /// lamp-bearing hull in the game was always under way, so "show everything" was accidentally
     /// correct. The moment the fleet's lamp tables landed, that same code would have put sidelights,
-    /// mastheads and burning searchlights on the seven boats made fast to the Nine Mile Creek wharf
+    /// mastheads and burning searchlights on the boats made fast to the Nine Mile Creek wharf
     /// and on every hull in the review anchorage, all night — a wharf full of boats each claiming to
     /// be under way. This is the rule that stops it, and it is small enough to be read.</para>
     /// </summary>

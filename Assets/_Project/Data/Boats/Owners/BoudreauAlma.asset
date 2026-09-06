@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3b7c1e94a2f04d1e9c8a5f2d6b147a30, type: 3}
+  m_Name: BoudreauAlma
+  m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.BoatOwnerDef
+  Id: owner.boudreau_alma
+  DisplayName: Alma Boudreau
+  Boat: {fileID: 11400000, guid: 6dbe891864248f64592244825fe3fa02, type: 2}
+  BuoyScheme: Dory
+  HullPaint: {fileID: 11400000, guid: 561c583d32a3d134bad513c3d85b16e2, type: 2}
+  Prosperity: 1
+  ShedFootprintMetres: 6.0
+  LotIndex: 7
+  Moorage: 1
+  BerthIndex: 6
+  Skipper: {fileID: 11400000, guid: cc7e4619e6983df4c8922f506e46b7ae, type: 2}

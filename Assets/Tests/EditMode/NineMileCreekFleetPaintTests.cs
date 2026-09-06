@@ -122,13 +122,18 @@ namespace HiddenHarbours.Tests.EditMode
         /// <see cref="TheLobsterOwnersEachKeepADifferentLobsterBoat"/>, which owns that claim; this
         /// test only records what the painted SET became.</para>
         ///
-        /// <para><b>The one hull that is still missing is not an art gap.</b> The console skiff's
-        /// nine schemes ARE baked and proven, but no owner at Nine Mile Creek keeps a boat drawn from
-        /// <c>hullmesh.console_iso</c>: Celeste Bernard's <c>boat.fishing_skiff</c> resolves to
-        /// <c>visual.fishing_boat</c>, a legacy SPRITE-only visual (eight hand-drawn top-down facings,
-        /// no hull mesh), and paint exists only on the mesh path. <c>boat.console_skiff</c> is a
-        /// separate def that nobody on this wharf owns. Which boat Celeste Bernard keeps is a
-        /// world-content call, not an art one — see the PR body.</para>
+        /// <para><b>⭐ The console skiff's nine schemes stopped being an unspent bake on 2026-09-04.</b>
+        /// This note used to read "the one hull that is still missing is not an art gap" — the schemes
+        /// were baked and proven and nobody at Nine Mile Creek owned a boat drawn from
+        /// <c>hullmesh.console_iso</c> — and it named the fix as a world-content call rather than an
+        /// art one. <b>Alma Boudreau is that call taken:</b> the register's eighth name keeps
+        /// <c>boat.console_skiff</c> on the float fingers in <c>paint.console_cranberry</c>, so the
+        /// seventh mesh here is a hull that was drawn but never owned.</para>
+        ///
+        /// <para><b>⚠ One berth stays plain and it is still not an art gap.</b> Celeste Bernard's
+        /// <c>boat.fishing_skiff</c> resolves to <c>visual.fishing_boat</c>, a legacy SPRITE-only visual
+        /// (eight hand-drawn top-down facings, no hull mesh), and paint exists only on the mesh path, so
+        /// it cannot reach her at all. Which boat SHE keeps is the world-content call that is left.</para>
         ///
         /// <para><b>⚠️ It pins the SET, not a floor, for the reason its sibling below spells out.</b>
         /// A <c>GreaterOrEqual(2)</c> would have gone on passing when the Cape Islander gained her
@@ -136,7 +141,7 @@ namespace HiddenHarbours.Tests.EditMode
         /// exists to notice. The set moves the moment a hull gains or loses a painted keeper.</para>
         ///
         /// <para>⚠️ Ordered ORDINALLY rather than by the current culture: the pin is a literal array,
-        /// and with six ids sharing long prefixes the sort is load-bearing enough that it should not
+        /// and with seven ids sharing long prefixes the sort is load-bearing enough that it should not
         /// depend on which machine ran the suite.</para>
         /// </summary>
         [Test]
@@ -153,6 +158,7 @@ namespace HiddenHarbours.Tests.EditMode
                 new[]
                 {
                     "hullmesh.cape_islander_iso",
+                    "hullmesh.console_iso",
                     "hullmesh.lobster_inshore_hardtop_newfoundland_iso",
                     "hullmesh.lobster_inshore_open_northumberland_iso",
                     "hullmesh.lobster_standard_hardtop_northumberland_iso",
@@ -161,14 +167,15 @@ namespace HiddenHarbours.Tests.EditMode
                 },
                 hulls,
                 "The set of hull meshes wearing paint at Nine Mile Creek has moved — found " +
-                $"[{string.Join(", ", hulls)}]. Four lobster variants, the punt and the Cape Islander " +
-                "all have owners and all have paint axes; if one has stopped being drawn painted, a " +
-                "bake or an assignment was lost. If an owner was moved onto another variant that is " +
+                $"[{string.Join(", ", hulls)}]. Four lobster variants, the punt, the Cape Islander " +
+                "and the console skiff all have owners and all have paint axes; if one has stopped " +
+                "being drawn painted, a bake or an assignment was lost. If an owner was moved onto " +
+                "another variant that is " +
                 "a one-line edit here — but check she still has a table baked for the hull she moved to.");
         }
 
         /// <summary>
-        /// <b>Four owners, four different lobster boats.</b> Four of the seven names on this register
+        /// <b>Four owners, four different lobster boats.</b> Four of the names on this register
         /// kept the same <c>boat.lobster_boat</c> until the spread, so the money shot down the north
         /// wall was one hull drawn four times. The fleet rig pack ships eighteen lobster variants;
         /// this asserts the register actually spends them.

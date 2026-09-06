@@ -108,16 +108,26 @@ them — that slice re-homes two owners onto the float rather than adding any bo
 | Hughie Campbell | Lobster boat | quay wall, berth 7 | 4 | ⚠️ **none** | 1 |
 | Celeste Bernard | Fishing skiff | **float**, berth 4 | 5 | `PackerIso` | 1 |
 | Dan Peters | Punt | **float**, berth 2 | 6 | `FisherIso` | 0 |
+| **Alma Boudreau** | **Console skiff** | **float**, berth 6 | **7** | `NanIso` | 1 |
 
-**Seven boats. Five working hulls at the wall, two small craft on the float.** S3 and S4 move and
+**Eight boats. Five working hulls at the wall, three small craft on the float.** S3 and S4 move and
 spread them; neither adds one.
 
-> ⭐ **Seven is what ships; TEN is the M2 target** (ruling 8). This section counts the working tree and
-> must keep counting it — the three extra boats are not in the register and nothing here pretends they
-> are. **§2.3 is where the ten-boat arithmetic lives.**
+> ⭐ **Eight is what ships; TEN is still the M2 target** (ruling 8). This section counts the working
+> tree and must keep counting it — the last two boats are not in the register and nothing here
+> pretends they are. **§2.3 is where the ten-boat arithmetic lives.**
+
+> ⭐ **The eighth arrived on 2026-09-04, and where she came from is the point.** The register had been
+> capped at seven by GROUND — the yard walks its shed lots and every one was claimed — and the note
+> below still reads that way. The walk was skipping a whole 14 m stride past a working site and
+> stepping over six metres of clear ground east of the trap store; feeling past the obstruction and
+> infilling at 11 m yields **eight** lots off the same made ground. **Ground and art now cap the
+> register at the same number**, so the ninth fisher needs a buoy-scheme bake *and* more ground, and
+> neither alone will do. Alma Boudreau also spends the console skiff's nine baked paint schemes, which
+> had been an owned-by-nobody hull since the bake.
 
 > ⚠️ **`LotIndex` is a SHED, not a house.** `NineMileCreekLots` builds *"one shed per boat-owner on
-> the register"* along the wharf. **Not one of the seven registered owners has a dwelling anywhere in
+> the register"* along the wharf. **Not one of the registered owners has a dwelling anywhere in
 > the region.** They own a boat and a bait shed and sleep nowhere. That is finding **F1** (§3.3).
 
 > ⚠️ **Four of the seven share one `LobsterBoat.asset`.** The wharf reads as four identical hulls;
@@ -180,11 +190,12 @@ Sized per hull rather than flat, and the aggregate still lands inside the owner'
 | Lobster boat | 4 | **3** | 12 | 2 + 1 unanchored | needs the §6.1 anchor |
 | Cape Islander | 1 | **3** | 3 | 2 + 1 unanchored | same |
 | Fishing skiff | 1 | **2** | 2 | 1 + 1 | fits |
+| Console skiff | 1 | **2** | 2 | 2 (helm + one) | fits |
 | Punt | 1 | **1** | 1 | 1 | ⚠️ a punt is a one-man boat |
-| **Total afloat** | **7** | | **18** | | |
+| **Total afloat** | **8** | | **20** | | |
 
-**18 people put to sea from Nine Mile Creek**, of whom the 7 registered owners are already named —
-so **11 crew NPCs are new**. Against the owner's flat rule, 7 boats × 2–3 = **14–21**; 18 sits
+**20 people put to sea from Nine Mile Creek**, of whom the 8 registered owners are already named —
+so **12 crew NPCs are new**. Against the owner's flat rule, 8 boats × 2–3 = **16–24**; 20 sits
 comfortably inside it, so the hull-sized reading *satisfies* the ruling rather than bending it.
 
 #### ⭐ And at TEN boats — the M2 target, ruling 8
@@ -277,7 +288,7 @@ Every line below is a **placed or reserved site in the region**, not an invented
 
 | | people |
 |---|---:|
-| Afloat (§2.3) — 10 owners + 17 crew, at ruling 8's ten boats | **27** |
+| Afloat (§2.3) — 10 owners + 17 crew, at ruling 8's ten boats (eight are authored today) | **27** |
 | Shore, on built sites (§3.1) | **17** |
 | ~~Shore, awaiting a cannery site~~ | ~~*(+4)*~~ ⭐ **the island's now — F3** |
 | **NINE MILE CREEK — working adults** | **44** |

@@ -25,8 +25,15 @@ namespace HiddenHarbours.Tests.EditMode
         /// ⭐ <b>THE CAP IS THE ART'S, NOT A PREFERENCE.</b> The deck-loop kit bakes exactly eight buoy
         /// paint schemes, and a scheme is an OWNERSHIP MARK — two fishers painting the same cannot be told
         /// apart on the water, which is the only job the mark has. So a region's authored register cannot
-        /// exceed eight without a re-bake. Shared with the photograph tests, which size the shed row from
-        /// it, so the two cannot disagree about how many fishers this wharf holds.
+        /// exceed eight without a re-bake.
+        ///
+        /// <para>⚠️ <b>This is the ART's cap and it is NOT the only one.</b> Nine Mile Creek's yard is
+        /// walked for shed lots by <c>NineMileCreekMainland.OwnerShedLots()</c> and the register may not
+        /// outgrow THAT either — measured, independently, by
+        /// <c>NineMileCreekPhotographTests.TheRegisterFitsTheLotsTheYardAffords</c>. The ground cap was
+        /// the binding one at SEVEN until 2026-09-04; both now read EIGHT, so the ninth fisher needs a
+        /// buoy bake AND ground and neither on its own will do. Do not quote one cap as though it were
+        /// the register's only ceiling.</para>
         /// </summary>
         public const int MaxOwners = 8;
 
@@ -174,8 +181,8 @@ namespace HiddenHarbours.Tests.EditMode
         // =============================================================================================
 
         /// <summary>
-        /// ⭐ <b>THE DEFAULT IS THE WALL, IN BOTH READINGS OF "UNSET".</b> The seven owners on this
-        /// register predate <c>Moorage</c>, and the ones that still do not mention it in their YAML must
+        /// ⭐ <b>THE DEFAULT IS THE WALL, IN BOTH READINGS OF "UNSET".</b> The first seven owners on
+        /// this register predate <c>Moorage</c>, and the ones that still do not mention it in their YAML must
         /// read as wall-moored — Unity leaves an unmentioned field at whatever the C# constructor gave
         /// it, so the field initializer AND <c>default(BoatMoorage)</c> both have to be
         /// <see cref="BoatMoorage.QuayWall"/>. Get this wrong and a register edit nobody made moves the
