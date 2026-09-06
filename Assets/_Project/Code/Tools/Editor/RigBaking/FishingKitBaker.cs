@@ -17,7 +17,7 @@ namespace HiddenHarbours.Tools.RigBaking
             $"{AssetPath}  {Width}×{Height}  ({Frames} frames × {Rows} rows)";
     }
 
-    public sealed class FishingBakeResult
+    public class FishingBakeResult
     {
         public string RigKey;
         public string EngineName;

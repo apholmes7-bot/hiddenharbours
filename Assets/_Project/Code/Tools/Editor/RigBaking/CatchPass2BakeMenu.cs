@@ -1,0 +1,141 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using HiddenHarbours.Fishing;
+using UnityEditor;
+using UnityEngine;
+
+namespace HiddenHarbours.Tools.RigBaking
+{
+    /// <summary>
+    /// Owner-facing entry point for catch pass 2's fish sheets, and the resolver that decides which
+    /// weight band each species' size ladder spans.
+    ///
+    /// <para>Same philosophy as <see cref="FishingKitBakeMenu"/>: one click bakes, and the decisions
+    /// that are already made (which species, which states, how many rungs) are not offered as dials.
+    /// The one thing this menu DOES decide is the ladder's band, and it decides it by reading the
+    /// shipped content rather than by carrying a table — see <see cref="ResolveWeightBands"/>.</para>
+    /// </summary>
+    public static class CatchPass2BakeMenu
+    {
+        public const string OutputFolder = CatchPass2Baker.DefaultOutputFolder;
+
+        [MenuItem("Hidden Harbours/Art/Bake Catch Pass 2 Fish (7 species × 10 states × 3 sizes)",
+                  priority = 47)]
+        public static void BakeCatchPass2Fish()
+        {
+            CatchPass2BakeResult result = null;
+            try
+            {
+                var bands = ResolveWeightBands();
+                result = CatchPass2Baker.BakeFish(
+                    bands,
+                    progress: (label, t) =>
+                        EditorUtility.DisplayProgressBar("Baking catch pass-2 fish sheets", label, t));
+                Debug.Log(Summarise(result, bands));
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[CatchPass2BakeMenu] Bake FAILED, nothing further ran.\n{ex}");
+                throw;
+            }
+            finally
+            {
+                EditorUtility.ClearProgressBar();
+            }
+
+            AssetDatabase.Refresh();
+        }
+
+        /// <summary>
+        /// The weight band each rig species' ladder spans, read from the shipped
+        /// <see cref="FishSpeciesDef"/> assets.
+        ///
+        /// <para>A species is matched to a def the SAME way <c>RodKitImporter.BuildFishSpecies</c>
+        /// matches one — the rig's sheet key must appear in the def's id, so <c>cod</c> finds
+        /// <c>fish.atlantic_cod</c>. Using the importer's own rule is the point: if the two ever
+        /// disagreed, a species would be baked against one def's weights and wired to another's.</para>
+        ///
+        /// <para>⚠️ Unlike the importer this REFUSES an ambiguous match rather than taking the first.
+        /// A substring rule is only safe while the ids happen not to collide; the day content adds
+        /// <c>fish.pollock_juvenile</c>, "first match wins" would silently re-band the pollock. A
+        /// species with NO match is not an error — bass, flounder and herring have no def yet, and
+        /// their ladders fall back to the rig's own <c>SPECIES.range</c>.</para>
+        /// </summary>
+        public static IReadOnlyDictionary<string, CatchPass2Baker.FishWeightBand> ResolveWeightBands()
+        {
+            FishSpeciesDef[] defs = AssetDatabase.FindAssets("t:FishSpeciesDef")
+                .Select(AssetDatabase.GUIDToAssetPath)
+                .Select(AssetDatabase.LoadAssetAtPath<FishSpeciesDef>)
+                .Where(d => d != null && !string.IsNullOrEmpty(d.Id))
+                .ToArray();
+
+            var bands = new Dictionary<string, CatchPass2Baker.FishWeightBand>(StringComparer.Ordinal);
+
+            using IRigScriptHost host = RigScriptHostFactory.Create();
+            var entry = RigCatalog.Get(CatchPass2Baker.RigKey);
+            RigCatalog.Install(host, entry);
+            var species = FishingKitBaker.ReadStringArray(host, $"{entry.GlobalName}.ORDER");
+
+            foreach (string key in species)
+            {
+                FishSpeciesDef[] hits = defs.Where(d => d.Id.Contains(key)).ToArray();
+                if (hits.Length == 0) continue;
+                if (hits.Length > 1)
+                    throw new InvalidOperationException(
+                        $"Rig species '{key}' matches {hits.Length} FishSpeciesDef ids " +
+                        $"({string.Join(", ", hits.Select(h => h.Id))}). The ladder cannot pick a " +
+                        "weight band, and RodKitImporter would silently take the first. Give the " +
+                        "rig key a unique substring, or teach both sides an explicit mapping — do " +
+                        "not let this resolve by luck.");
+
+                FishSpeciesDef def = hits[0];
+                if (def.MaxWeightKg <= 0f || def.MinWeightKg < 0f || def.MinWeightKg > def.MaxWeightKg)
+                    throw new InvalidOperationException(
+                        $"{def.Id} has an unusable weight band ({def.MinWeightKg}..{def.MaxWeightKg} kg). " +
+                        "ContentValidationTests should have caught this before a bake did.");
+
+                bands[key] = new CatchPass2Baker.FishWeightBand(def.Id, def.MinWeightKg, def.MaxWeightKg);
+            }
+
+            return bands;
+        }
+
+        static string Summarise(CatchPass2BakeResult r,
+                                IReadOnlyDictionary<string, CatchPass2Baker.FishWeightBand> bands)
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine($"[CatchPass2BakeMenu] {r.Sheets.Count} sheet(s), {r.CellsRendered} cells, " +
+                          $"{r.TotalPngBytes / 1024} KB, {r.TotalMilliseconds / 1000.0:F1}s " +
+                          $"({r.EngineName}, convention {r.MeasuredConvention}).");
+
+            sb.AppendLine("  ladder:");
+            foreach (var kv in r.Ladders.OrderBy(k => k.Key, StringComparer.Ordinal))
+            {
+                string band = bands.ContainsKey(kv.Key)
+                    ? bands[kv.Key].DefId
+                    : "no def — SPECIES.range";
+                sb.AppendLine($"    {kv.Key,-9} {string.Join("  ", kv.Value.Select(x => x.ToString()))}" +
+                              $"   [{band}]");
+            }
+
+            if (r.Clipped.Count == 0)
+            {
+                sb.AppendLine("  clip ledger: EMPTY — nothing drew past its cell.");
+            }
+            else
+            {
+                sb.AppendLine($"  ⚠️ clip ledger: {r.Clipped.Count} cell(s) drew past the sheet cell. " +
+                              "This is recorded, not fatal — cod at its own declared 1.5 and bass at " +
+                              "its own 1.6 already clip, so refusing would make pass 2 unbakeable. " +
+                              "CatchPass2BakeTests pins the ledger in both directions.");
+                foreach (var group in r.Clipped.GroupBy(c => $"{c.Species}/{c.State} r{c.Rung} ({c.Edges})")
+                                               .OrderBy(g => g.Key, StringComparer.Ordinal))
+                    sb.AppendLine($"    {group.Key}: {group.Count()} cell(s)");
+            }
+
+            return sb.ToString().TrimEnd();
+        }
+    }
+}
