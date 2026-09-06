@@ -882,6 +882,24 @@ namespace HiddenHarbours.App.Editor
         /// is centred in its own slot, which is the same "west end PLUS half a block" rule #462's
         /// breakwater armour uses and the same reason: a piece placed at the start of its slot puts half
         /// of itself on the beach.</para>
+        ///
+        /// <para><b>⭐ THE RUN IS MEASURED IN DRAWN UNITS, WHICH IS WHY THE DIRECTION IS PASSED.</b> A
+        /// 9.6 m crib draws 9.6 units along an east–west wall and 6.17 along a north–south one, because
+        /// the sheet is baked at 40° and the pixels carry the foreshortening
+        /// (<c>NineMileCreekQuayFace.DrawnCourseRunMetres</c> is the whole argument). Pitching the two
+        /// north–south runs by the PLAN length left 3.43 units of bare wall at every seam, and what
+        /// stood in it was the next piece's own end return — the owner's bands across the apron.</para>
+        ///
+        /// <para><b>⚠️ The pieces are emitted from the run's <paramref name="from"/> end onward, and on a
+        /// north–south run that end must be the SOUTH one</b> — the end nearest the camera. Every piece
+        /// of a run shares ONE sorting order (<see cref="FaceSortingOrder"/> is a rung per WALL, and the
+        /// band has no orders to spare), so where two of them overlap the renderer resolves them by
+        /// placement order, and near-over-far is what the shipped picture already does: measured on the
+        /// committed plate, a seam shows 74 px of crib — the bare wall between two pieces — and not the
+        /// 154 px a far-over-near order would show. That dependency is not new, but it becomes
+        /// load-bearing here: closing the gap leaves each piece's return standing INSIDE its southern
+        /// neighbour's deck, hidden only because the neighbour draws over it. Authored north-to-south,
+        /// the same run would draw every return back on top of the deck it is meant to hide behind.</para>
         /// </summary>
         public static List<FacePiece> FaceRun(string wall, Vector2 from, Vector2 to, float seawardHeading,
                                               string reason)
@@ -894,7 +912,7 @@ namespace HiddenHarbours.App.Editor
 
             Vector2 along = span / run;
             Vector2 seaward = PlanDirectionOf(seawardHeading);
-            NineMileCreekQuayFace.CoverRun(run, out int count, out float pitch);
+            NineMileCreekQuayFace.CoverRun(run, along, out int count, out float pitch);
 
             for (int i = 0; i < count; i++)
             {

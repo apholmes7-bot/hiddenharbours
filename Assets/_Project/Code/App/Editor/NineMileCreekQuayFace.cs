@@ -749,7 +749,41 @@ namespace HiddenHarbours.App.Editor
             (BakedDeckZMetres - BakedRigMudZ) * SpriteLightMath.HeightScale;
 
         /// <summary>
-        /// How many pieces it takes to cover <paramref name="runMetres"/> of wall, and at what pitch.
+        /// ⭐⭐ <b>HOW LONG ONE PIECE IS <i>ON SCREEN</i> ALONG A RUN — which is not
+        /// <see cref="FaceCourseRunMetres"/> unless the run travels EAST–WEST.</b>
+        ///
+        /// <para><c>logCrib</c> is 9.6 m of crib in PLAN. The sheet is baked at 40° of elevation, so the
+        /// pixels carry the foreshortening: a metre of ground travel draws
+        /// <see cref="SpriteLightMath.GroundDepthScale"/> ≈ 0.643 of a unit in Y and a whole unit in X
+        /// (the same split <see cref="LipRiseFromPivot"/> already applies to the lip's half-width). The
+        /// region's ground is authored 1 unit = 1 m in BOTH axes — ADR 0042's "move-and-measure" regime
+        /// — so a 9.6 m piece laid along a NORTH–SOUTH wall draws only <b>6.17 units</b> of it, and
+        /// pitching those pieces 9.6 units apart leaves <b>3.43 units of wall with nothing on it</b>
+        /// between every pair.</para>
+        ///
+        /// <para><b>That hole is what the owner saw</b> (playtest 2026-09-06: <i>"wharfs facing north
+        /// south need to hide the south face between two sections"</i>). It does not read as a hole,
+        /// because what shows through it is the NEXT piece's own end return — 9.6 × 5.0 m of crib is a
+        /// closed block, and the end of a block standing in a gap is a band of log courses laid across
+        /// the apron, once per piece. The end return is correct art in the wrong place: it is the end of
+        /// a run, and there was a gap at every seam for it to stand in.</para>
+        ///
+        /// <para>ADR 0042 is the rule this restates: geometry that must COINCIDE with baked ¾ art places
+        /// under the art's projection. Two pieces butting each other is exactly that kind of
+        /// coincidence, so the run is measured in DRAWN units. East–west runs are unchanged to the last
+        /// decimal (<c>|along.x| = 1</c>), which is why the mooring face never showed this.</para>
+        /// </summary>
+        /// <param name="along">Unit plan direction the run travels in — the wall's own line.</param>
+        public static float DrawnCourseRunMetres(Vector2 along)
+        {
+            Vector2 a = along.sqrMagnitude < 1e-12f ? Vector2.right : along.normalized;
+            return FaceCourseRunMetres *
+                   new Vector2(a.x, a.y * SpriteLightMath.GroundDepthScale).magnitude;
+        }
+
+        /// <summary>
+        /// How many pieces it takes to cover <paramref name="runMetres"/> of wall running along
+        /// <paramref name="along"/>, and at what pitch.
         ///
         /// <para><b>The run is spread to COVER, never to leave a gap.</b> The count is the CEILING of the
         /// division and the pitch is the run over the count, so pieces butt or overlap slightly and the
@@ -758,10 +792,20 @@ namespace HiddenHarbours.App.Editor
         /// through the quay. An overlap of under a metre between two log cribs is invisible; a hole is
         /// not. The pack's own snap sockets (±<c>L/2</c> at deck height) are what make butting legal in
         /// the first place, and an overlap is only ever butting with the seam pushed inside a piece.</para>
+        ///
+        /// <para>⚠️ <b>It divides by <see cref="DrawnCourseRunMetres"/>, not by
+        /// <see cref="FaceCourseRunMetres"/></b> — the whole of the 2026-09-06 fix, and the reason this
+        /// takes a direction at all. Dividing by the plan length asks "how many 9.6 m cribs fit in this
+        /// wall?", which is the right question for the wall and the WRONG one for the picture: the
+        /// pieces have to butt each other on screen, and on a north–south wall they are 6.17 units long
+        /// there. The old signature is deliberately gone rather than kept as an overload, because the
+        /// version that does not know which way the run points cannot answer this and cannot be told
+        /// so.</para>
         /// </summary>
-        public static void CoverRun(float runMetres, out int count, out float pitchMetres)
+        public static void CoverRun(float runMetres, Vector2 along, out int count, out float pitchMetres)
         {
-            count = Mathf.Max(1, Mathf.CeilToInt(runMetres / FaceCourseRunMetres));
+            float piece = DrawnCourseRunMetres(along);
+            count = Mathf.Max(1, Mathf.CeilToInt(runMetres / piece));
             pitchMetres = runMetres / count;
         }
 
