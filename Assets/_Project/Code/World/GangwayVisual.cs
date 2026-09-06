@@ -54,6 +54,23 @@ namespace HiddenHarbours.World
                  "pick them, or the ramp drawn and the ramp walked part company as the tide runs.")]
         [SerializeField] private float[] _rungDrops;
 
+        /// <summary>
+        /// ⚠️ <b>HOW CLOSE COUNTS AS ON A RUNG — 1 mm, and it is not a nicety.</b>
+        ///
+        /// <para>The ladder is derived and the drop is derived, from the same three numbers by two
+        /// different routes, so a rung that is EXACTLY the drop lands a few parts in 10^16 either side
+        /// of it. Measured in the real region at mean water (2026-09-06 plate run): the true drop was
+        /// 2.600 m and rung 4 was baked at 2.5999999999999996 — <b>4.4e-16 m short</b> — so a strict
+        /// comparison walked past it and drew rung 5, settling the brow's foot a full 0.55 m step
+        /// (13.5 px) into the planks. The design's WORST case, at the most common state of the tide,
+        /// bought by a float epsilon.</para>
+        ///
+        /// <para>1 mm is 0.02 of a sprite pixel at 32 px/m, so it cannot let the drawn ramp be
+        /// meaningfully flatter than the real one — the property the round-up exists for — while being
+        /// nine orders of magnitude above the noise it is there to absorb.</para>
+        /// </summary>
+        public const float RungToleranceMetres = 1e-3f;
+
         private SpriteRenderer _renderer;
         private int _shown = -1;
 
@@ -93,7 +110,7 @@ namespace HiddenHarbours.World
         {
             if (rungDrops == null || rungDrops.Count == 0) return -1;
             for (int i = 0; i < rungDrops.Count; i++)
-                if (rungDrops[i] >= dropMetres) return i;
+                if (rungDrops[i] >= dropMetres - RungToleranceMetres) return i;
             return rungDrops.Count - 1;
         }
 

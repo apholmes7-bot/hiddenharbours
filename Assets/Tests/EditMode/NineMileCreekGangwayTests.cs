@@ -176,8 +176,11 @@ namespace HiddenHarbours.Tests.EditMode
                 float planks = DrawnFloatDeckY(deck);
                 float above = foot - planks;                       // + = clear of the deck, − = settled in
 
+                // The rig's own roller clearance, plus the 1 mm a rung is allowed to round DOWN by so an
+                // exact tie lands on its own rung rather than a step past it (GangwayVisual's note).
                 Assert.That(above, Is.LessThanOrEqualTo(
-                        NineMileCreekQuayFace.BakedRigGangwayFootClearanceMetres * H + 1e-4f),
+                        (NineMileCreekQuayFace.BakedRigGangwayFootClearanceMetres
+                         + NineMileCreekQuayFace.GangwayRungToleranceMetres) * H + 1e-4f),
                     $"at water {water:0.00} m the brow's foot floats {above:0.000} u above the planks. " +
                     "Daylight under the rollers is the one artefact that reads as broken — the rung must " +
                     "round UP so the drawn ramp is never flatter than the real one");
@@ -261,6 +264,14 @@ namespace HiddenHarbours.Tests.EditMode
             for (int i = 1; i < drops.Count; i++)
                 Assert.That(drops[i], Is.GreaterThan(drops[i - 1]),
                     "the ladder must ascend — GangwayRungFor walks it in order and would answer nonsense");
+
+            // ⭐ An EXACT tie must land on its own rung, not a step past it. This is the case the 09-06
+            // plate run caught in the real region: the ladder and the drop are derived from the same
+            // three numbers by two routes, so rung 4 came out 4.4e-16 m under a 2.600 m drop and a
+            // strict comparison bought a full 0.55 m step of foot-in-the-planks for nothing.
+            for (int i = 0; i < drops.Count; i++)
+                Assert.That(NineMileCreekQuayFace.GangwayRungFor(drops[i]), Is.EqualTo(i),
+                    $"a drop of exactly rung {i}'s own {drops[i]:0.000} m did not choose rung {i}");
 
             float step = drops[1] - drops[0];
             for (int i = 1; i < drops.Count; i++)
@@ -384,10 +395,23 @@ namespace HiddenHarbours.Tests.EditMode
         {
             string rig = RigSource();
 
-            StringAssert.Contains("timberFloat:  { family:'float',  hull:'timber', guidePiles:false, chain:false }", rig,
+            StringAssert.Contains("timberFloat:  { family:'float',  hull:'timber', guidePiles:false, chain:false, pileHoops:true }", rig,
                 "timberFloat has taken its guide piles and its mooring chain back into the raft's own " +
                 "cell — which is #735's named lie, and at this wharf it puts 4.4 m of tidal travel into " +
-                "piles that are driven into the bottom");
+                "piles that are driven into the bottom — or it has stopped drawing the sliding COLLARS, " +
+                "which belong with the raft they are bolted to");
+
+            // ⭐ THE HOOPS RIDE. A guide hoop is a sliding collar on the raft, not part of the pile it
+            // runs on. Split on the rig's `fixed` tag alone it went into the standing half, and the
+            // 2026-09-06 low-water plate drew sixteen collars hanging three units over a dock that had
+            // gone down the piles without them. The gate has to be the RAFT's.
+            StringAssert.Contains("if(s.raft && s.pileHoops) for", rig,
+                "the guide hoops are no longer drawn with the raft — either they are back on the pile " +
+                "(so they stand still while the dock rides down past them) or they are drawn with no " +
+                "raft at all");
+            StringAssert.Contains("pileHoops:false, fittings:", rig,
+                "floatPiles has taken the sliding collars back — it is the STANDING half, and a collar " +
+                "that stands is the defect this preset exists to end");
             StringAssert.Contains("floatPiles:   { family:'float',  hull:'timber', raft:false", rig,
                 "the fixed half of the float has gone from the rig's presets — nothing then draws the " +
                 "guide piles, the chain or its anchor block at all");

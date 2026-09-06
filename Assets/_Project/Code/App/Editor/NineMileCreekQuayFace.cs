@@ -360,7 +360,8 @@ namespace HiddenHarbours.App.Editor
         {
             var drops = GangwayRungDrops;
             for (int i = 0; i < drops.Count; i++)
-                if (drops[i] >= dropMetres) return i;
+                if (drops[i] >= dropMetres - HiddenHarbours.World.GangwayVisual.RungToleranceMetres)
+                    return i;
             return drops.Count - 1;
         }
 
@@ -369,6 +370,10 @@ namespace HiddenHarbours.App.Editor
         /// clearance less whatever the rung over-steepened by. Positive is clear of the planks;
         /// negative is settled into them, and <see cref="GangwayRungFor"/> keeps it no deeper than one
         /// ladder step.</summary>
+        /// <inheritdoc cref="HiddenHarbours.World.GangwayVisual.RungToleranceMetres"/>
+        public static float GangwayRungToleranceMetres =>
+            HiddenHarbours.World.GangwayVisual.RungToleranceMetres;
+
         public static float GangwayFootClearanceMetres(int rung, float dropMetres)
         {
             var drops = GangwayRungDrops;

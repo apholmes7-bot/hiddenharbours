@@ -698,6 +698,25 @@
           box(out, -hx, hx, hy-c[0], hy, top, top+c[1]*0.7, s.curb==='yellow'?'yel':'wood', 0.2, sawnTex()); }
         }
         }
+        // ⚠️⚠️ THE HOOP RIDES AND ROCKS; THE PILE DOES NEITHER. A guide hoop is a sliding collar
+        // bolted to the RAFT — it slides up and down the pile as the tide takes her, which is the whole
+        // mechanism a guide pile is for. It used to be drawn in the `fixed` block below, with the pile,
+        // and that is wrong twice over:
+        //   · it does not RIDE. Split into its own cell so the piles could stand still (the #735 defect),
+        //     that left sixteen galvanised collars hanging three units over a dock that had gone down
+        //     the piles without them — measured on the 2026-09-06 low-water plate, which is the only
+        //     reason it was ever seen.
+        //   · it does not ROCK. `fixed` exempts geometry from this family's own rock transform, and at
+        //     frame 0 that is 0.52° of pitch and 12 mm of heave. A collar bolted to a rocking raft rocks.
+        //     Correcting it moves plasticFloat's cell by a pixel and floatSet's / plasticSet's pixels.
+        //
+        // `pileHoops` defaults to `guidePiles`, so every preset that draws raft and pile in ONE cell is
+        // unchanged in what it contains; only where the two are split does the collar follow the raft.
+        if(s.raft && s.pileHoops) for(const gx of (s.bays > 1 ? [-hx+0.4, hx-0.4] : [hx-0.4])){
+          const py = hy + 0.34;
+          torusZ(out, gx, py, top + 0.22, s.pileR + 0.075, 0.045, 12, 5, 'galv', 0.25);
+          box(out, gx-0.05, gx+0.05, hy-0.02, py-s.pileR-0.04, top+0.16, top+0.28, 'galv', 0.1, null, true);
+        }
         // A gangway hung off this float: the hinge is on the fixed abutment, the landing rides the
         // float — so it is solved from the float's ROCKED deck height and then held out of the rock.
         const gFrom = out.length;
@@ -723,10 +742,7 @@
         // block and the already-solved gangway are tagged fixed and skipped by the rock transform.
         const fixedFrom = gFrom;
         if(s.guidePiles) for(const gx of (s.bays > 1 ? [-hx+0.4, hx-0.4] : [hx-0.4])){
-          const py = hy + 0.34;
-          bandedPile(out, gx, py, s.pileR, s.mudZ, T.hhw + s.guideAbove, 'pole', T, s, 10, s.capIron?'iron':null);
-          torusZ(out, gx, py, top + 0.22, s.pileR + 0.075, 0.045, 12, 5, 'galv', 0.25);
-          box(out, gx-0.05, gx+0.05, hy-0.02, py-s.pileR-0.04, top+0.16, top+0.28, 'galv', 0.1, null, true);
+          bandedPile(out, gx, hy + 0.34, s.pileR, s.mudZ, T.hhw + s.guideAbove, 'pole', T, s, 10, s.capIron?'iron':null);
         }
         // mooring chain to a seabed block — straightens as the tide falls
         if(s.chain){
@@ -888,6 +904,7 @@
     // the consequence as a named trade (at Nine Mile Creek the piles rose and fell 4.4 m with the dock).
     // `raft` splits the family into its two cells: the raft alone, and its fixed furniture alone.
     raft: true,           // float: draw the RAFT. false = the seabed-driven furniture only (floatPiles)
+    pileHoops: null,      // float: the sliding collars. null = follow guidePiles (the original look)
     rung: null,           // gangway: index into the slope ladder — see gangwayDrops()
   };
 
@@ -947,7 +964,7 @@
     // ⚠️ NO PILES, NO CHAIN — they are their own cell (`floatPiles`). A raft rides and they do not,
     // and #735 shipped the alternative as a named lie: 48 m of dock at Nine Mile Creek whose guide
     // piles rose and fell 4.4 m with it. Anything driven into the seabed is drawn ONCE, standing still.
-    timberFloat:  { family:'float',  hull:'timber', guidePiles:false, chain:false },
+    timberFloat:  { family:'float',  hull:'timber', guidePiles:false, chain:false, pileHoops:true },
     plasticFloat: { family:'float',  hull:'plastic', curb:'yellow' },
     floatSet:     { family:'float',  hull:'timber', gangway:true, bays:2 },
     plasticSet:   { family:'float',  hull:'plastic', gangway:true, bays:2, curb:'yellow' },
@@ -955,7 +972,7 @@
     // raft and no deck hardware (every fitting is ON the raft, so every one is zeroed here). Placed
     // once, at the plan position, and never moved by the thing that rides.
     floatPiles:   { family:'float',  hull:'timber', raft:false, guidePiles:true, chain:true,
-                    fittings:{ ladder:0, tyre:0, foam:0, cleat:0 } },
+                    pileHoops:false, fittings:{ ladder:0, tyre:0, foam:0, cleat:0 } },
     // THE BROW, as its own object at last. `run` is Nine Mile Creek's own 12 m — the gap between the
     // apron's east face (x 92) and the float run's west end (x 104) — because the drawn brow and the
     // walkable one must be the same brow (ADR 0010), and this pack is baked for one home world exactly
@@ -983,6 +1000,9 @@
     s.fittings = Object.assign({}, FIT_DEFAULT[family], opts.fittings || {});
     // deck height: quoted as clearance above HIGHEST water so a big range lifts the whole wharf
     if(family === 'float'){
+      // The collars ride with the raft, so they follow the RAFT unless asked otherwise — and by default
+      // they follow the piles, which is what every preset that draws both in one cell has always done.
+      s.pileHoops = opts.pileHoops != null ? !!opts.pileHoops : !!s.guidePiles;
       s.freeboard = clampF(s.freeboard, 0.25, 0.8);
       s.floatDeckZ = s.tide + s.freeboard;
       s.deckZ = s.floatDeckZ;

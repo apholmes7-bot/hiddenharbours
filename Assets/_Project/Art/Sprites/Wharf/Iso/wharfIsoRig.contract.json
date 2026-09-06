@@ -165,27 +165,29 @@
     },
     {
       "key": "timberFloat",
-      "cellW": 199,
-      "cellH": 195,
-      "pivotX": 99,
-      "pivotY": 138,
+      "cellW": 213,
+      "cellH": 202,
+      "pivotX": 106,
+      "pivotY": 145,
+      "note": "The raft AND its sliding hoops. A guide hoop is bolted to the raft and slides up the pile as the tide takes her, so it rides; only the pile itself stands. The rig's `fixed` tag could not make that split on its own - it answers whether a thing ROCKS with the raft, and a hoop on a pile does not rock and does ride.",
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 1592,
-        "sheetH": 195
+        "sheetW": 1704,
+        "sheetH": 202
       }
     },
     {
       "key": "plasticFloat",
-      "cellW": 300,
+      "cellW": 299,
       "cellH": 348,
       "pivotX": 149,
       "pivotY": 216,
+      "note": "299 px, one narrower than before the hoops left the `fixed` set. A guide hoop is bolted to the RAFT, so it rocks with her; the rig had it exempt from the float's own rock transform along with the pile it slides on. Correcting that moves this cell, floatSet's and plasticSet's pixels by a fraction of a degree of pitch.",
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 2400,
+        "sheetW": 2392,
         "sheetH": 348
       }
     },
@@ -221,7 +223,7 @@
       "cellH": 348,
       "pivotX": 149,
       "pivotY": 216,
-      "note": "The other half of timberFloat: guide piles, mooring chain and seabed block, no raft. It measures EXACTLY the cell timberFloat used to (300x348, pivot 149,216) — the split is a decomposition at one pivot, not a re-draw, so the piles land where they were always drawn and only the raft moves.",
+      "note": "The other half of timberFloat: guide piles, mooring chain and seabed block. No raft, and NO HOOPS - the collars slide with the raft and are drawn there. It measures EXACTLY the cell timberFloat used to before the split (300x348, pivot 149,216), so the piles land where they were always drawn and only the raft moves.",
       "sheet": {
         "cols": 8,
         "rows": 1,

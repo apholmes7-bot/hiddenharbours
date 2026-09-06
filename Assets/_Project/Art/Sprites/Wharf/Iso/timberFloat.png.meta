@@ -139,10 +139,10 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 199
-        height: 195
+        width: 213
+        height: 202
       alignment: 9
-      pivot: {x: 0.49748743, y: 0.2923077}
+      pivot: {x: 0.4976526, y: 0.28217822}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -159,12 +159,12 @@ TextureImporter:
       name: timberFloat_1
       rect:
         serializedVersion: 2
-        x: 199
+        x: 213
         y: 0
-        width: 199
-        height: 195
+        width: 213
+        height: 202
       alignment: 9
-      pivot: {x: 0.49748743, y: 0.2923077}
+      pivot: {x: 0.4976526, y: 0.28217822}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -181,12 +181,12 @@ TextureImporter:
       name: timberFloat_2
       rect:
         serializedVersion: 2
-        x: 398
+        x: 426
         y: 0
-        width: 199
-        height: 195
+        width: 213
+        height: 202
       alignment: 9
-      pivot: {x: 0.49748743, y: 0.2923077}
+      pivot: {x: 0.4976526, y: 0.28217822}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -203,12 +203,12 @@ TextureImporter:
       name: timberFloat_3
       rect:
         serializedVersion: 2
-        x: 597
+        x: 639
         y: 0
-        width: 199
-        height: 195
+        width: 213
+        height: 202
       alignment: 9
-      pivot: {x: 0.49748743, y: 0.2923077}
+      pivot: {x: 0.4976526, y: 0.28217822}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -225,12 +225,12 @@ TextureImporter:
       name: timberFloat_4
       rect:
         serializedVersion: 2
-        x: 796
+        x: 852
         y: 0
-        width: 199
-        height: 195
+        width: 213
+        height: 202
       alignment: 9
-      pivot: {x: 0.49748743, y: 0.2923077}
+      pivot: {x: 0.4976526, y: 0.28217822}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -247,12 +247,12 @@ TextureImporter:
       name: timberFloat_5
       rect:
         serializedVersion: 2
-        x: 995
+        x: 1065
         y: 0
-        width: 199
-        height: 195
+        width: 213
+        height: 202
       alignment: 9
-      pivot: {x: 0.49748743, y: 0.2923077}
+      pivot: {x: 0.4976526, y: 0.28217822}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -269,12 +269,12 @@ TextureImporter:
       name: timberFloat_6
       rect:
         serializedVersion: 2
-        x: 1194
+        x: 1278
         y: 0
-        width: 199
-        height: 195
+        width: 213
+        height: 202
       alignment: 9
-      pivot: {x: 0.49748743, y: 0.2923077}
+      pivot: {x: 0.4976526, y: 0.28217822}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -291,12 +291,12 @@ TextureImporter:
       name: timberFloat_7
       rect:
         serializedVersion: 2
-        x: 1393
+        x: 1491
         y: 0
-        width: 199
-        height: 195
+        width: 213
+        height: 202
       alignment: 9
-      pivot: {x: 0.49748743, y: 0.2923077}
+      pivot: {x: 0.4976526, y: 0.28217822}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
