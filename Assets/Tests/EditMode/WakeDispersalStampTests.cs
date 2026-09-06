@@ -231,7 +231,12 @@ namespace HiddenHarbours.Tests.EditMode
             public double Total;
             public float DrawnHalfWidth;    // outermost cell whose accumulated coverage draws
             public float EdgeAmountAtRim;   // per-frame value the edge writes at that outermost cell
+            public float[] DrawnAtAge;      // the same, sampled at Ages — the widening, age by age
         }
+
+        /// <summary>The ages the drawn band is measured at. The owner's complaint is about how the
+        /// trail changes WITH DISTANCE ASTERN, so one number at one age cannot answer it.</summary>
+        static readonly float[] Ages = { 0.25f, 0.5f, 1f, 1.5f, 2f, 3f, 6f };
 
         enum Arm { Shipped, AreaPreserving, NaiveSkirt }
 
@@ -241,13 +246,21 @@ namespace HiddenHarbours.Tests.EditMode
         /// from a radius ahead to a radius astern and counting only the astern half would halve the
         /// very arm everything is conserved against.
         /// </summary>
+        // lifeSeconds runs PAST the last sampled age, or the oldest snapshot never fires and reads 0.
         static Lay Walk(Arm arm, float r0, float envelopeRatio, float kelvin, float speed,
-                        float rate, float dt, int binCount = 6, float lifeSeconds = 6f,
+                        float rate, float dt, int binCount = 6, float lifeSeconds = 8f,
                         float lateralMetres = 26f)
         {
             int nd = Mathf.RoundToInt(lateralMetres / FoamBuffer.CellSize);
             var coverage = new double[nd];
-            var lay = new Lay { Bins = new double[binCount] };
+            var lay = new Lay { Bins = new double[binCount], DrawnAtAge = new float[Ages.Length] };
+
+            float DrawnEdge()
+            {
+                for (int i = coverage.Length - 1; i >= 0; i--)
+                    if (coverage[i] >= ComposeThreshold) return (i + 0.5f) * FoamBuffer.CellSize;
+                return 0f;
+            }
 
             float slope = FoamBuffer.SpreadSlope(kelvin);
             float wMax = arm == Arm.Shipped ? r0 : r0 * envelopeRatio;
@@ -298,14 +311,12 @@ namespace HiddenHarbours.Tests.EditMode
                 int bin = Mathf.Clamp(Mathf.FloorToInt(Mathf.Max(age, 0f)), 0, binCount - 1);
                 lay.Bins[bin] += 2.0 * binSum * FoamBuffer.CellSize;   // both sides of the track
                 lay.Total += 2.0 * binSum * FoamBuffer.CellSize;
+
+                for (int a = 0; a < Ages.Length; a++)
+                    if (Mathf.Abs(age - Ages[a]) < dt * 0.5f) lay.DrawnAtAge[a] = DrawnEdge();
             }
 
-            for (int i = nd - 1; i >= 0; i--)
-            {
-                if (coverage[i] < ComposeThreshold) continue;
-                lay.DrawnHalfWidth = (i + 0.5f) * FoamBuffer.CellSize;
-                break;
-            }
+            lay.DrawnHalfWidth = DrawnEdge();
             // The per-frame value the edge writes where the band's VISIBLE rim is. Not the smallest
             // value it ever writes — that is the taper running out past the rim, where nothing draws
             // and nothing is owed. This one is the number the 8-bit buffer has to be able to hold.
@@ -371,10 +382,44 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.Greater(area.DrawnHalfWidth / shipped.DrawnHalfWidth, 1.3f,
                 "A RATIO, not a width: the dispersing band must draw meaningfully wider than the " +
                 "shipped one under the same compose threshold, and both are measured in this run.");
-            TestContext.WriteLine(
-                $"drawn half-width: shipped {shipped.DrawnHalfWidth:0.00} m · " +
-                $"dispersing {area.DrawnHalfWidth:0.00} m " +
-                $"({area.DrawnHalfWidth / shipped.DrawnHalfWidth:0.00}x)");
+
+            // The owner's complaint is about how the trail changes WITH DISTANCE ASTERN, so the band
+            // is reported age by age rather than at one instant — and the shipped column being flat
+            // IS the defect, stated as a column of numbers.
+            TestContext.WriteLine("drawn half-width of the band, metres (threshold "
+                                  + ComposeThreshold.ToString("0.00") + "):");
+            for (int a = 0; a < Ages.Length; a++)
+                TestContext.WriteLine(
+                    $"  age {Ages[a],5:0.00} s ({Ages[a] * EightKnots,5:0.0} m astern): " +
+                    $"shipped {shipped.DrawnAtAge[a]:0.00} · dispersing {area.DrawnAtAge[a]:0.00} " +
+                    $"({area.DrawnAtAge[a] / Mathf.Max(shipped.DrawnAtAge[a], 1e-4f):0.00}x)");
+
+            // The edge lays out to the envelope and then stops, so the band may only WIDEN while the
+            // dispersal is still working. Past the reach it can narrow again — that is the trail
+            // fading, which is the other half of what the owner asked for, not a defect.
+            // (⚠️ It fades HERE because this harness decays in double precision. The shipped 8-bit
+            // buffer's coverage does not decay at 60 fps at all — register row 28, and
+            // FoamBufferQuantizationTests reports the numbers.)
+            float reachSeconds = (CapeHalfBeam * Envelope - CapeHalfBeam)
+                               / (FoamBuffer.SpreadSlope(Kelvin) * EightKnots);
+            int lastLaying = 0;
+            for (int a = 1; a < Ages.Length && Ages[a] <= reachSeconds; a++)
+            {
+                Assert.GreaterOrEqual(area.DrawnAtAge[a] + 1e-4f, area.DrawnAtAge[a - 1],
+                    $"The band NARROWED between {Ages[a - 1]:0.00} s and {Ages[a]:0.00} s, while the " +
+                    "edge is still laying. The buffer cannot take foam back out, so a fall there " +
+                    "means the term has stopped laying rather than that the wake has closed up.");
+                lastLaying = a;
+            }
+            Assert.Greater(lastLaying, 0, "The reach must span more than one sampled age, or this " +
+                                          "guard is watching a single instant.");
+            Assert.Greater(area.DrawnAtAge[lastLaying] / area.DrawnAtAge[0], 1.5f,
+                "The whole ask is that it widens WITH DISTANCE: the band at the end of the reach must " +
+                "be meaningfully wider than the band at her transom, measured against itself so no " +
+                "absolute width is asserted.");
+            Assert.AreEqual(shipped.DrawnAtAge[0], shipped.DrawnAtAge[lastLaying], 0.13f,
+                "DEAD CONTROL: the shipped band is supposed to be the SAME width at every age — that " +
+                "is the defect. If it has started widening on its own, the arms have converged.");
         }
 
         // ==== the edge itself ========================================================================

@@ -4707,8 +4707,13 @@ The shipped column is the defect: **the same width at every age**. The dispersin
 first 12 m astern — the reach — and then holds what it reached, which is also what a real wake does once
 the churn has spread as far as the hull's disturbance can push it.
 
-**And it does not depend on how fast she is going:** laid/shipped is 0.983× at 3 kn, 1.003× at 8 kn,
+**And it does not depend on how fast she is going:** laid/shipped is 1.002× at 3 kn, 1.003× at 8 kn,
 1.005× at 14 kn (the residual is the harness's own cell/step discretisation, and it shrinks with dt).
+
+⚠️ The 6 s row is **one cell narrower** than the 3 s row, and that is the trail FADING: the edge lays
+out to the envelope and stops, after which the band can only decay. Note where it fades, though — the
+harness decays in double precision, and the shipped 8-bit buffer's coverage does not decay at 60 fps
+at all (§35.8 (a) / register row 28). The widening lands in this PR; the fading is still owed.
 
 ### 35.10 The dials, and what is deliberately not one
 
