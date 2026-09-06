@@ -1,0 +1,13 @@
+94df19e5851f67ff546532ec2f855a2f926bc0b2944af68cb73994d8db33a2d2  sidecars/fishIsoRig2.rig.json
+6d7712f3a4eb6e0084163e2bc4d3fe244a457f6113f9d6b401e28f83f0f33549  sidecars/crustaceanRig2.rig.json
+ab6393f78f529a1e3c30dad71d0df496518731b495826fd007e458508dd61dd0  sidecars/shellfishRig2.rig.json
+80b5b90936cf3023c9be43b821f6b4a1eca73170414387bf7761cbfd22d37388  sidecars/clamHodRig.rig.json
+3d122f112a5ef3e718cdc0806bcec027b1f33b161759b200cc7c5c0ed01176db  sidecars/catchKit2.rig.json
+
+# rigs these were derived from (derivedFromRigSha256 in each file) — identical bytes in Art/ of this kit and the project
+f7fc9db510b0346dea568c43dc7378f1a12fd71ee8f5a7653e78377812b792bd  Art/isoSolid.js  (217 lines)
+c97f5f76851bfed806c2b74dbc894a2aef2506c69a5dd5e9f20086f71317d13c  Art/fishIsoRig2.js  (333 lines)
+40975234acf2515b7175b5468212af893f28f4535b49ef85af8ecf2473fd2901  Art/crustaceanRig2.js  (301 lines)
+3bcd4cef3116a6c59e8106c92f7b0f290deae73087590aa0d10814b60b81d9e5  Art/shellfishRig2.js  (120 lines)
+142c63db93af6f45749106a68523f1cacee5cceb260b3dc216d48c81fc926d36  Art/clamHodRig.js  (53 lines)
+4afe6d0d87deb169623d1ec5379bfec60457229c0b189fd9341e71c75e93dfd9  Art/catchKit2.js  (119 lines)
