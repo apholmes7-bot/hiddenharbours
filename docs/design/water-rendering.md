@@ -4879,3 +4879,85 @@ The format is the whole change. The injection maths (§35's stamp), the V arms, 
 clamp, the cell law's integer scroll and the compose all read exactly as they did — the advect shader is
 untouched by this section, because the rounding it was losing the decay to was never in the shader.
 
+## 37. "The waves move across the screen too fast" — a measurement (register row 30)
+
+**The owner, 2026-09-06 evening:** *"waves seem to move across the screen too fast, should be realistic
+to actual waves and windspeed/conditions."*
+
+Nothing was changed for this section. It is the numbers his ranking needs, and the arithmetic that says
+his sentence contains two asks that pull against each other.
+
+### 37.1 The standing hypothesis, refuted twice
+
+The charter proposed that the drawn wavelength is scaled while the phase advance is not, so a drawn crest
+would run at 2.8× the speed a wave of its drawn length could have.
+
+1. **There is no scale.** `_OceanSwellScale` ships at **0.025** and the shader normalises by that same
+   0.025 (`WAVE_LEGACY_SCALE_REF`), so the visual frequency scale is **exactly 1**: the drawn wavelength
+   is the modelled wavelength and the drawn speed is the modelled speed. Water PR 6 moved this dial from
+   0.07 to 0.025 in September for exactly this reason and it stayed closed.
+2. **And the old error's SIGN was the other way.** Scaling `k` by `fs` shortens the drawn wave to `λ/fs`,
+   which a wave of that length could carry at `c/√fs` — but the advance, being `k·c` divided by the
+   *larger* drawn `k`, only reaches `c/fs`. The ratio is therefore **`1/√fs`**, which is *below* 1 for
+   `fs > 1`. At the old 0.07 that is **0.60×**: the pre-PR-6 sea drew waves too **slow** for their size.
+
+### 37.2 What is actually wrong: the wind coupling is linear where the sea is quadratic
+
+`WaveMath.TrainsFrom` derives the peak from `DominantWavelengthBase + DominantWavelengthPerWindSpeed · U`,
+capped — shipped, **`λ_p = 6 + 1.5·U`, cap 40 m**. A fully-developed sea's peak follows
+Pierson–Moskowitz, **`λ_p = 2πU²/(0.877²g) ≈ 0.833·U²`**. A line and an upward parabola cross exactly
+once, at **U = 3.74 m/s**, so the shipped sea is too long below that and too short above it.
+
+⚠️ `SpectrumBlend` (0.65 on the shipped `GameConfig`) does **not** move this: `SpectrumTrainsFrom` is
+handed the same `dominantWavelength` and spreads its slots around it, so the peak law is the peak law on
+both paths.
+
+| U m/s | shipped λ | PM λ | ratio | shipped c | PM c | crest every | PM | ratio |
+|---|---|---|---|---|---|---|---|---|
+| 0.50 | 6.8 | 0.2 | 32.4 | 3.25 | 0.57 | 2.08 | 0.37 | 5.69 |
+| 1.62 (light) | 8.4 | 2.2 | 3.86 | 3.63 | 1.85 | 2.32 | 1.18 | 1.96 |
+| 3.00 | 10.5 | 7.5 | 1.40 | 4.05 | 3.42 | 2.59 | 2.19 | 1.18 |
+| 5.70 (blow) | 14.6 | 27.1 | **0.54** | 4.77 | 6.50 | 3.05 | 4.16 | **0.73** |
+| 8.00 | 18.0 | 53.3 | 0.34 | 5.30 | 9.12 | 3.40 | 5.84 | 0.58 |
+| 12.95 (gale) | 25.4 | 139.7 | **0.18** | 6.30 | 14.77 | 4.04 | 9.46 | **0.43** |
+| 20.00 | 36.0 | 333.1 | 0.11 | 7.50 | 22.81 | 4.80 | 14.61 | 0.33 |
+
+**The last column is the finding.** Because `T = √(2πλ/g)`, a sea that is short for its wind has crests
+that arrive too often: **1.4× too often at a blow, 2.3× at a gale.** That number depends on nothing but
+the wavelength — no zoom, aspect or framing enters it — so it is the reading of "too fast" that no camera
+change could ever fix.
+
+### 37.3 The screen, which is what "across the screen" actually means
+
+The camera's world height is the active hull's `CameraWorldHeightMeters`, so this is a **per-boat**
+number. At the owner's own window aspect (his screenshots render 1902×879):
+
+| boat | frame | light | blow | gale |
+|---|---|---|---|---|
+| dory | 14 m high = 30.3 m wide | 8.3 s / 3.6 λ | 6.4 s / 2.1 λ | **4.8 s** / 1.2 λ |
+| cape | 24 m high = 51.9 m wide | 14.3 s | 10.9 s | 8.2 s / 2.0 λ |
+| coastal packet | 90 m high = 194.7 m wide | 53.7 s | 40.9 s | 30.9 s |
+
+The same sea already reads about **1.7× faster on a dory than on a cape**, purely from the framing.
+
+### 37.4 🔴 The conflict, and why this is a row and not a fix
+
+`c ∝ √λ`, so **a longer wave is a faster wave.** Making the sea realistic for its wind lengthens it,
+which *speeds each crest across the frame* even as it *slows the rate at which crests arrive*. The
+owner's two asks therefore oppose each other at this framing. At a blow, on the cape, in his window:
+
+| lever | λ | c | crosses 51.9 m in | crest every |
+|---|---|---|---|---|
+| **shipped** | 14.6 m | 4.77 m/s | 10.9 s | 3.05 s |
+| (i) realistic for this wind (PM) | 27.1 m | 6.50 m/s | **8.0 s** — faster | **4.16 s** — better |
+| (ii) half the wavelength | 7.3 m | 3.37 m/s | 15.4 s — slower | 2.16 s — worse |
+| (iii) zoom out to 32 m | 14.6 m | 4.77 m/s | 14.5 s | 3.05 s — unchanged |
+| (iii) zoom out to 48 m | 14.6 m | 4.77 m/s | 21.8 s | 3.05 s — unchanged |
+
+**(iii) is the only lever that slows the screen without touching the physics** — and it is a camera call
+with its own costs (it shrinks the boat, and the framing is per hull today).
+
+⚠️ **If (i) is chosen it is a SIM change, not a look one.** The hull ride samples the same field
+(ADR 0018's one-sea rule), so a longer swell moves the seakeeping with it — and register row 6's
+ride≠drawn question closes at the same time. That is a Tier B change and wants its own charter.
+
