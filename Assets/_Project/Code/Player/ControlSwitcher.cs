@@ -1038,6 +1038,11 @@ namespace HiddenHarbours.Player
         /// symmetric with it: the same point that decided you could get in is the point you are set down
         /// on, read live off the machine wherever she has been driven to.
         ///
+        /// <para>⭐ <b>On a machine you sit ASTRIDE, "her door" is the side you are over</b> — see
+        /// <see cref="DriveSeatSides.NearestDoor"/>. A cab has one and gets it back unchanged; a saddle
+        /// has two, 1.96–2.38 m apart, and being set down on the far one would put the rider through the
+        /// machine she just stepped off.</para>
+        ///
         /// <para><b>Where the player lands, and why it is safe.</b> The door reach point is measured art
         /// (<c>VehicleMeshDef.DriveDoorLocal</c>), derived by the art side to stand outside the door leaf's
         /// swept disc — and on the Dually it is 1.75 m off her centreline against a 1.24 m half-width over
@@ -1061,11 +1066,21 @@ namespace HiddenHarbours.Player
             IDriveSeat seat = _seat;
             bool alive = SeatAlive;
 
-            // Both read BEFORE the controls are given up and before the seat is forgotten.
-            Vector3 landing = alive ? (Vector3)seat.DoorWorldPosition
+            // ⭐⭐ THE SIDE SHE IS OVER, on a machine that has two. A cab has one door and
+            // DriveSeatSides.NearestDoor hands it straight back, so every truck in the fleet and the Otter
+            // land exactly where they always did. A machine you sit ASTRIDE publishes both sides, and
+            // stepping off one you never got on from — the enduro's is 1.96 m across her — would put the
+            // rider through the machine. The rider's own position is the input, which after a ride is the
+            // saddle: ties therefore go to the art's preferred side (the enduro's stand is there).
+            Vector2 rider = Player != null ? (Vector2)Player.position
+                                           : (alive ? (Vector2)seat.Root.position : Vector2.zero);
+
+            // All read BEFORE the controls are given up and before the seat is forgotten.
+            Vector2 door = alive ? DriveSeatSides.NearestDoor(seat, rider) : rider;
+            Vector3 landing = alive ? (Vector3)door
                                     : (Player != null ? Player.position : Vector3.zero);
             Vector2 outward = alive
-                ? seat.DoorWorldPosition - (Vector2)seat.Root.position
+                ? door - (Vector2)seat.Root.position
                 : Vector2.zero;
 
             // ⭐ THE DOOR OPENS ONTO SOMEWHERE A PERSON CAN BE. Without this, E mid-crossing sets the
