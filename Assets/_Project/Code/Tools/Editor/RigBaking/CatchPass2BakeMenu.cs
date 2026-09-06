@@ -21,8 +21,61 @@ namespace HiddenHarbours.Tools.RigBaking
     {
         public const string OutputFolder = CatchPass2Baker.DefaultOutputFolder;
 
-        [MenuItem("Hidden Harbours/Art/Bake Catch Pass 2 Fish (7 species × 10 states × 3 sizes)",
+        /// <summary>
+        /// One click for the whole of catch pass 2 — 210 fish sheets plus the 30 storage-side ones.
+        /// The fish go first because they are the long pole and a failure there should stop the run
+        /// before anything else is written.
+        /// </summary>
+        [MenuItem("Hidden Harbours/Art/Bake Catch Pass 2 (fish + crustaceans + shellfish + hod)",
                   priority = 47)]
+        public static void BakeCatchPass2()
+        {
+            BakeCatchPass2Fish();
+            BakeCatchPass2Storage();
+        }
+
+        [MenuItem("Hidden Harbours/Art/Bake Catch Pass 2 Storage (crustaceans + shellfish + hod + items)",
+                  priority = 49)]
+        public static void BakeCatchPass2Storage()
+        {
+            var bakes = new (string Label, Func<FishingBakeResult> Run)[]
+            {
+                ("crustaceans", () => CatchPass2StorageBaker.BakeCrustaceans(
+                    progress: (l, t) => EditorUtility.DisplayProgressBar("Baking crustaceans", l, t))),
+                ("shellfish", () => CatchPass2StorageBaker.BakeShellfish(
+                    progress: (l, t) => EditorUtility.DisplayProgressBar("Baking shellfish", l, t))),
+                ("clam hod", () => CatchPass2StorageBaker.BakeClamHod(
+                    progress: (l, t) => EditorUtility.DisplayProgressBar("Baking the clam hod", l, t))),
+                ("catch items", () => CatchPass2StorageBaker.BakeCatchItems(
+                    progress: (l, t) => EditorUtility.DisplayProgressBar("Baking catch items", l, t))),
+            };
+
+            try
+            {
+                foreach (var (label, run) in bakes)
+                {
+                    FishingBakeResult r = run();
+                    Debug.Log($"[CatchPass2BakeMenu] {label}: {r.Sheets.Count} sheet(s), " +
+                              $"{r.CellsRendered} cells, {r.TotalPngBytes / 1024} KB, " +
+                              $"{r.TotalMilliseconds / 1000.0:F1}s\n  " +
+                              string.Join("\n  ", r.Sheets.Select(s => s.ToString())));
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[CatchPass2BakeMenu] Storage bake FAILED, nothing further ran.\n{ex}");
+                throw;
+            }
+            finally
+            {
+                EditorUtility.ClearProgressBar();
+            }
+
+            AssetDatabase.Refresh();
+        }
+
+        [MenuItem("Hidden Harbours/Art/Bake Catch Pass 2 Fish (7 species × 10 states × 3 sizes)",
+                  priority = 48)]
         public static void BakeCatchPass2Fish()
         {
             CatchPass2BakeResult result = null;

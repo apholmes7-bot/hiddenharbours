@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,9 +10,11 @@ namespace HiddenHarbours.Tests.Art.EditMode
 {
     /// <summary>
     /// Guards the baked slice of the FISHING KIT sheets under
-    /// <c>Assets/_Project/Art/Fishing/Iso/</c> — Rod Fishing v2 wave 3's fight art: the parametric
-    /// fish (4 species × 8 states), the rod bobber (4 state strips) and the rod overlay
-    /// (3 tiers × 9 states). The slice lives in the <c>.meta</c>, not in code, so nothing at
+    /// <c>Assets/_Project/Art/Fishing/Iso/</c> — the fight art: the parametric fish, the rod bobber
+    /// (4 state strips) and the rod overlay (3 tiers × 10 states). The fish are now catch pass 2's
+    /// <b>7 species × 10 states × 3 SIZE RUNGS</b>, and the rungs are why the count moved so much:
+    /// the runtime cannot scale pixel art on the 32 px/m grid, so a heavier catch has to be a
+    /// different sheet. The slice lives in the <c>.meta</c>, not in code, so nothing at
     /// runtime would notice it rotting: a re-bake that drifts the grid, a re-slice that loses a
     /// pivot, or an importer setting that downscales a sheet all land as silently wrong sprites.
     ///
@@ -41,12 +44,30 @@ namespace HiddenHarbours.Tests.Art.EditMode
 
         // ---- the guarded set, built from the kit's stated axes --------------------------------
 
-        private static readonly string[] FishSpecies = { "cod", "haddock", "pollock", "mackerel" };
+        /// <summary>
+        /// Catch pass 2's seven species. The four pass-1 names are still here and their stems are
+        /// unchanged — but the SHEETS behind them are not the pass-1 sheets: pass 2 re-lofts all four
+        /// (33,547 px differ at scale 1, across every one of 280 cells) and grows swim 4f→6f and
+        /// dart 2f→3f. The cell and pivot ARE identical, which is the only reason these ride the
+        /// existing <c>Fish_</c> spec with no slicer change at all.
+        /// </summary>
+        private static readonly string[] FishSpecies =
+            { "cod", "haddock", "pollock", "mackerel", "bass", "flounder", "herring" };
 
-        /// <summary>Water anims then dry rests, frame counts as the drop states them.</summary>
+        /// <summary>
+        /// The SIZE LADDER's stem suffixes. Each species is baked at three rungs spanning the weight
+        /// band its <c>FishSpeciesDef</c> actually rolls (owner ruling, 2026-09-05); the middle rung
+        /// is UNSUFFIXED on purpose, so it keeps the stem every existing consumer already loads and
+        /// the ladder is purely additive on disk.
+        /// </summary>
+        private static readonly string[] FishRungs = { "_sm", "", "_lg" };
+
+        /// <summary>Water anims then dry rests, frame counts as the RIG states them (<c>ANIMS[s].n</c>
+        /// and <c>RPOSE[s].length</c> — <c>CatchPass2KitTests</c> holds these numbers to the rig
+        /// itself, so this table cannot drift away from it unnoticed).</summary>
         private static readonly (string state, int frames)[] FishStates =
         {
-            ("swim", 4), ("dart", 2), ("thrash", 4), ("shadow", 2),
+            ("swim", 6), ("dart", 3), ("thrash", 4), ("shadow", 2), ("roll", 4), ("jump", 6),
             ("deck", 4), ("gill", 2), ("tail", 2), ("cradle", 2),
         };
 
@@ -96,22 +117,46 @@ namespace HiddenHarbours.Tests.Art.EditMode
         {
             var d = new Dictionary<string, Kit>();
             foreach (var sp in FishSpecies)
-                foreach (var (state, _) in FishStates) d[$"Fish_{sp}_{state}"] = FishKit;
+                foreach (var rung in FishRungs)
+                    foreach (var (state, _) in FishStates) d[$"Fish_{sp}{rung}_{state}"] = FishKit;
             foreach (var (state, _) in BobberStates) d[$"Bobber_{state}"] = BobberKit;
             foreach (var tier in RodTiers)
                 foreach (var (state, _) in RodStates) d[$"Rod_{tier}_{state}"] = RodKit;
-            return d;   // 4×8 + 4 + 3×9 = 63 stems
+            return d;   // 7×3×10 + 4 + 3×10 = 244 stems
         }
 
         private static Dictionary<string, int> BuildExpectedFrames()
         {
             var d = new Dictionary<string, int>();
             foreach (var sp in FishSpecies)
-                foreach (var (state, frames) in FishStates) d[$"Fish_{sp}_{state}"] = frames;
+                foreach (var rung in FishRungs)
+                    foreach (var (state, frames) in FishStates)
+                        d[$"Fish_{sp}{rung}_{state}"] = frames;
             foreach (var (state, frames) in BobberStates) d[$"Bobber_{state}"] = frames;
             foreach (var tier in RodTiers)
                 foreach (var (state, frames) in RodStates) d[$"Rod_{tier}_{state}"] = frames;
             return d;
+        }
+
+        /// <summary>
+        /// The ladder is a real axis, not a naming flourish — every rung is a genuinely different
+        /// sprite. Measured in the V8 harness over the full 8×35 cell set: the closest pair anywhere
+        /// is the herring's, and even that differs in 278 of 280 cells (1,171 px). So no rung
+        /// collapses into its neighbour and none of these 140 extra sheets is a duplicate.
+        /// </summary>
+        [Test]
+        public void TheSizeLadderHasThreeRungsPerSpecies_AndTheMiddleOneKeepsTheLegacyStem()
+        {
+            Assert.AreEqual(3, FishRungs.Length, "three rungs: small, middle, large");
+            CollectionAssert.Contains(FishRungs, "", "the middle rung must be unsuffixed");
+
+            foreach (var sp in FishSpecies)
+                Assert.IsTrue(Sheets.ContainsKey($"Fish_{sp}_swim"),
+                              $"{sp}'s middle rung must keep the stem consumers already load");
+
+            Assert.AreEqual(FishSpecies.Length * FishRungs.Length * FishStates.Length,
+                            Sheets.Keys.Count(k => k.StartsWith("Fish_", StringComparison.Ordinal)),
+                            "7 species × 3 rungs × 10 states");
         }
 
         /// <summary>

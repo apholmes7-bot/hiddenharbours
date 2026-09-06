@@ -65,6 +65,36 @@ namespace HiddenHarbours.Tests.Art.EditMode
         private static readonly Kit CrustItemKit = new Kit(64, 64, rows: 1, frames: 4, 32, 28);
         private static readonly Kit ShellItemKit = new Kit(14, 12, rows: 1, frames: 4, 7, 2);
 
+        // ---- catch pass 2 ---------------------------------------------------------------------
+        //
+        // Bottom-origin again: Crustacean2's ground pivot (32,40) on a 64-tall cell → 64−40 = 24;
+        // its HELD pivot (32,12) → 64−12 = 52, high in the cell because the animal dangles BELOW
+        // the grip; the hod's (20,30) on 40 → 10; Shellfish2's item pivot (4,6) on 8 → 2, and its
+        // handful GRIP pivot (4,4) → 4.
+        //
+        // ⚠️ The pass-2 shellfish cell is 8×8, not pass 1's 14×12. That is the strict world scale,
+        // not a mistake: at scale 1 a mussel is 2×1 px and a periwinkle is ONE pixel.
+        private static readonly string[] Pass2ShellKinds =
+            { "mussel", "clam", "scallop", "oyster", "periwinkle" };
+
+        /// <summary>The poses each animal genuinely owns. The rig remaps what it cannot do to
+        /// <c>walk</c> with zero pixels of difference, so these are what
+        /// <c>CatchPass2StorageBaker.PosesOwnedBy</c> discovers by RENDERING; the remaps themselves
+        /// are asserted against the rig by <c>CatchPass2KitTests</c>.</summary>
+        private static readonly (string pose, int frames)[] LobsterPoses =
+            { ("walk", 4), ("rear", 1), ("defend", 1), ("flip", 4) };
+        private static readonly (string pose, int frames)[] CrabPoses =
+            { ("walk", 4), ("rear", 1), ("defend", 1), ("sidle", 4), ("burrow", 4) };
+
+        private static readonly Kit Crust2HeldKit = new Kit(64, 64, rows: 8, frames: 2, 32, 52);
+        private static readonly Kit Hod2Kit = new Kit(40, 40, rows: 8, frames: 1, 20, 10);
+        private static readonly Kit Shell2ItemKit = new Kit(8, 8, rows: 1, frames: 4, 4, 2);
+        private static readonly Kit Shell2HandKit = new Kit(8, 8, rows: 1, frames: 2, 4, 4);
+        private static readonly Kit CatchItem2CrustKit = new Kit(64, 64, rows: 1, frames: 4, 32, 24);
+        private static readonly Kit CatchItem2ShellKit = new Kit(8, 8, rows: 1, frames: 4, 4, 2);
+
+        static Kit Crust2Kit(int frames) => new Kit(64, 64, rows: 8, frames: frames, 32, 24);
+
         private static readonly Dictionary<string, Kit> Sheets = BuildGuardedSet();
 
         private static Dictionary<string, Kit> BuildGuardedSet()
@@ -83,7 +113,28 @@ namespace HiddenHarbours.Tests.Art.EditMode
                     foreach (var catchKind in BucketCatches)
                         d[$"Bucket_{tier}_{fill}_{catchKind}"] = BucketKit;
             }
-            return d;   // 4 + 5×3 + 1 + 3×(1 + 4×3) = 59 stems
+
+            // ---- catch pass 2 (every stem carries a 2, so pass 1 above is untouched) ----------
+            foreach (var (pose, frames) in LobsterPoses) d[$"Crust2_lobster_{pose}"] = Crust2Kit(frames);
+            foreach (var (pose, frames) in CrabPoses) d[$"Crust2_crab_{pose}"] = Crust2Kit(frames);
+            d["Crust2Held_lobster"] = Crust2HeldKit;
+            d["Crust2Held_crab"] = Crust2HeldKit;
+
+            foreach (var kind in Pass2ShellKinds)
+            {
+                d[$"Shell2_{kind}"] = Shell2ItemKit;
+                d[$"Shell2Hand_{kind}"] = Shell2HandKit;
+                d[$"CatchItem2_{kind}"] = CatchItem2ShellKit;
+            }
+
+            d["Hod2_back"] = Hod2Kit;
+            d["Hod2_front"] = Hod2Kit;
+            d["CatchItem2_lobster"] = CatchItem2CrustKit;
+            d["CatchItem2_crab"] = CatchItem2CrustKit;
+
+            // pass 1: 4 + 5×3 + 1 + 3×(1 + 4×3) = 59
+            // pass 2: (4 + 5) crustacean poses + 2 held + 5×3 shellfish + 2 hod + 2 crust items = 30
+            return d;   // 89 stems
         }
 
         /// <summary>
