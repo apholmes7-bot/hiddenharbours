@@ -76,14 +76,30 @@ namespace HiddenHarbours.Player
         public Vector2[] LineAttachOffsets;
     }
 
-    /// <summary>One species' fight sheets + mouth anchors, keyed by the FishSpeciesDef id the catch
-    /// publishes (<c>FishingState.FishId</c>). Which held sheet ships (gill vs tail) was decided at
-    /// build time from the rig's hold.hands — data, not code.</summary>
+    /// <summary>
+    /// One species' fight sheets + mouth anchors <b>at one rung of its size ladder</b>.
+    ///
+    /// <para>Everything here is size-dependent, which is why it is a type of its own: the sheets are
+    /// baked at the rung's scale, the mouth offsets are measured at that scale (the rig rounds them
+    /// to whole pixels, so they cannot be scaled after the fact), and even the CARRY changes — the
+    /// same species is a one-hander at the bottom of its band and a two-arm cradle at the top.</para>
+    /// </summary>
     [Serializable]
-    public sealed class FishSpeciesVisual
+    public sealed class FishRungVisual
     {
-        [Tooltip("The species id FishingState.FishId publishes (e.g. 'fish.atlantic_cod').")]
-        public string FishId;
+        [Tooltip("Sheet-stem suffix this rung was baked under: '_sm', '' (the middle rung keeps the " +
+                 "legacy stem) or '_lg'. Carried for diagnostics — nothing resolves through it at " +
+                 "run time, because the sprites are already wired.")]
+        public string Suffix;
+
+        [Tooltip("The catch weight this rung DRAWS, kg, from the rig's own hold() at the rung's " +
+                 "scale. This is the ladder: the picker chooses the rung nearest the landed fish.")]
+        public float Kg;
+
+        [Tooltip("From the rig's hold().hands AT THIS RUNG: true = the two-arm cradle. It is a " +
+                 "property of the size, not of the species — a small cod is carried by the gill and " +
+                 "a large one is cradled.")]
+        public bool TwoHanded;
 
         public Sprite[] ShadowFrames;   // 8 dirs × n, d/f — the deep, unseen shape
         public int ShadowFramesPerDir;
@@ -99,8 +115,6 @@ namespace HiddenHarbours.Player
 
         public Sprite[] HeldFrames;     // 8 dirs × n — gill (two-handed) or tail (one-handed) hold
         public int HeldFramesPerDir;
-        [Tooltip("From the rig's hold.hands: true = both hands (held at the hands' midpoint).")]
-        public bool TwoHanded;
 
         // ---- catch pass 2's two new water anims -------------------------------------------------
         //
@@ -120,6 +134,83 @@ namespace HiddenHarbours.Player
         public Sprite[] JumpFrames;
         public int JumpFramesPerDir;
         public Vector2[] JumpMouthOffsets;
+    }
+
+    /// <summary>
+    /// One species' fight art across its whole size ladder, keyed by the FishSpeciesDef id the catch
+    /// publishes (<c>FishingState.FishId</c>).
+    ///
+    /// <para><b>Why a ladder and not one sheet set.</b> The runtime never scales a fish sprite — a
+    /// scaled pixel sprite is exactly the mush this project's whole art pipeline exists to avoid — so
+    /// the only way a 2 kg cod and a 12 kg cod can look different is to have been drawn different
+    /// sizes. Catch pass 2 bakes three rungs per species spanning the weight band the game actually
+    /// rolls; this is the table that lets the fight pick one.</para>
+    /// </summary>
+    [Serializable]
+    public sealed class FishSpeciesVisual
+    {
+        [Tooltip("The species id FishingState.FishId publishes (e.g. 'fish.atlantic_cod').")]
+        public string FishId;
+
+        [Tooltip("The size ladder, ascending by weight — the baked rungs of this species. The " +
+                 "thresholds ARE these weights; there is no separate table to keep in step.")]
+        public FishRungVisual[] Rungs;
+
+        /// <summary>
+        /// The rung to draw for a landed fish of <paramref name="weightKg"/>, or null when this
+        /// species has no rungs wired at all.
+        /// </summary>
+        public FishRungVisual RungFor(float weightKg)
+        {
+            int i = FishSizeLadder.PickRung(Rungs, weightKg);
+            return i < 0 ? null : Rungs[i];
+        }
+    }
+
+    /// <summary>
+    /// Which rung of a baked size ladder draws a given catch — pure, so an EditMode test can pin it
+    /// without a scene.
+    /// </summary>
+    public static class FishSizeLadder
+    {
+        /// <summary>
+        /// The index of the rung closest to <paramref name="weightKg"/> <b>in rendered LENGTH</b>, or
+        /// −1 when there are no rungs.
+        ///
+        /// <para><b>Why length and not mass.</b> The rig's own law is
+        /// <c>mass ∝ scale³</c>, so length goes as the cube root of weight, and the ladder is
+        /// deliberately spaced evenly in rendered LENGTH — that is what makes its three rungs look
+        /// equally far apart. Picking "nearest in kg" would therefore split the band off-centre and
+        /// send most of a species' catches to the small rung: for cod (2 / 5.59 / 12 kg) the kg
+        /// midpoints fall at 3.79 and 8.80 kg, while the length midpoints fall at 3.49 and 8.39 — the
+        /// difference is a whole size of fish either side. The player sees the fish's LENGTH, so the
+        /// metric that decides which drawing is "closest" has to be the one they are looking at.</para>
+        ///
+        /// <para>No threshold is stored anywhere: the boundaries are derived from the rung weights
+        /// themselves, so a re-bake that moves the ladder moves the picker with it and there is no
+        /// second table to fall out of step (rule 6 — the tunable is the ladder, in the asset).</para>
+        /// </summary>
+        public static int PickRung(FishRungVisual[] rungs, float weightKg)
+        {
+            if (rungs == null || rungs.Length == 0) return -1;
+
+            float want = CubeRoot(Mathf.Max(0f, weightKg));
+            int best = -1;
+            float bestGap = float.MaxValue;
+            for (int i = 0; i < rungs.Length; i++)
+            {
+                if (rungs[i] == null) continue;
+                float gap = Mathf.Abs(CubeRoot(Mathf.Max(0f, rungs[i].Kg)) - want);
+                // Strictly-less keeps the FIRST (smaller) rung on an exact tie, so a fish sitting
+                // precisely on a boundary always resolves the same way rather than by array order.
+                if (gap < bestGap) { bestGap = gap; best = i; }
+            }
+            return best;
+        }
+
+        /// <summary>Cube root, defined at 0 and never handed a negative (Mathf.Pow returns NaN for
+        /// a negative base at a fractional exponent, which would poison every comparison).</summary>
+        static float CubeRoot(float v) => v <= 0f ? 0f : Mathf.Pow(v, 1f / 3f);
     }
 
     /// <summary>
