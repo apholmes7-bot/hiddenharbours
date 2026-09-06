@@ -90,6 +90,7 @@ namespace HiddenHarbours.Tests.EditMode
 
             float deepest = 0f; string deepestWho = "(none)";
             float widest = 0f; string widestWho = "(none)";
+            float longest = 0f; string longestWho = "(none)";
             var beamless = new List<string>();
 
             foreach (BoatOwnerDef o in owners)
@@ -100,6 +101,14 @@ namespace HiddenHarbours.Tests.EditMode
                 {
                     deepest = o.Boat.DraughtMeters;
                     deepestWho = $"{o.DisplayName}'s {o.Boat.Id}";
+                }
+
+                // ⚠ Measured HERE, above the beam block, because that block `continue`s past a
+                // sprite-only boat — and length is a number every boat def carries, mesh or not.
+                if (o.Boat.LengthMeters > longest)
+                {
+                    longest = o.Boat.LengthMeters;
+                    longestWho = $"{o.DisplayName}'s {o.Boat.Id}";
                 }
 
                 // ⚠ A SPRITE-ONLY boat has no hull mesh and therefore no measured beam (Bernard's skiff
@@ -125,6 +134,15 @@ namespace HiddenHarbours.Tests.EditMode
                 $"the widest measured hull here is {widestWho} at {widest:0.00} m of beam, against the " +
                 $"authored {NineMileCreekMainland.WidestResidentBeamMetres:0.00} m. The navigable-width " +
                 $"floor is derived from it. (Sprite-only, unmeasurable: {string.Join(", ", beamless)})");
+
+            // ⭐ THE WALL'S OWN PIN. The beam above says how far off the timber a boat lies; this
+            // says how much of it she takes up, and NineMileCreekBerthLineTests spends it on the
+            // berth line. Berth a longer boat here and this fails by name rather than drawing her
+            // through her neighbour.
+            Assert.That(NineMileCreekMainland.LongestResidentLengthMetres, Is.EqualTo(longest).Within(0.005f),
+                $"the longest boat berthed here is {longestWho} at {longest:0.00} m, against the "
+                + $"authored {NineMileCreekMainland.LongestResidentLengthMetres:0.00} m. The berth "
+                + "line's spans are derived from it, so an unpinned value is two hulls in one place.");
         }
 
         // =============================================================================================

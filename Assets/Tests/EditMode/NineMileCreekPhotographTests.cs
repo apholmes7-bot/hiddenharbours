@@ -474,10 +474,14 @@ namespace HiddenHarbours.Tests.EditMode
         public void EveryBerthStillHasSomethingToTieTo()
         {
             var fittings = NineMileCreekWharf.Fittings();
-            float half = NineMileCreekMainland.BerthSpacingMetres * 0.5f;
+            // ⭐ "Within half a berth" used to be half the 5.5 m pitch. There is no pitch now — the line
+            // is packed from the hulls — so the tolerance is HER OWN half-span, which is what "half a
+            // berth" always meant and can now actually be asked.
+            float[] lengths = NineMileCreekMainland.BerthLengths();
 
             for (int i = 0; i < NineMileCreekWharf.BerthCount; i++)
             {
+                float half = NineMileCreekMainland.BerthHalfSpanFor(lengths[i]);
                 Vector2 berth = NineMileCreekWharf.BerthPos(i);
                 bool served = fittings.Any(f =>
                     HiddenHarbours.Art.Editor.WharfKitCatalog.IsMooringFitting(f.Name) &&

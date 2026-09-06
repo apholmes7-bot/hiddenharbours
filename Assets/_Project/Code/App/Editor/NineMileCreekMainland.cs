@@ -546,6 +546,13 @@ namespace HiddenHarbours.App.Editor
         /// hull mesh's 2.5 m watertight half-beam). Pinned to the assets by the channel tests.</summary>
         public const float WidestResidentBeamMetres = 5.0f;
 
+        /// <summary>The longest hull in the resident fleet — <b>12.9 m</b>, Marie Gallant's Cape
+        /// Islander. The wall's counterpart to <see cref="WidestResidentBeamMetres"/>: that number says
+        /// how far off the timber a boat lies, this one says how much OF the timber she takes up. Pinned
+        /// to the assets by the channel tests, and for the same reason — a line solved for the wrong boat
+        /// is a line two boats share.</summary>
+        public const float LongestResidentLengthMetres = 12.9f;
+
         /// <summary>
         /// How narrow the channel is allowed to get at dead low spring: <b>10.0 m</b> — one beam, with
         /// half a beam of water either side of her. The floor the width-shrink must never cross, and the
@@ -699,19 +706,218 @@ namespace HiddenHarbours.App.Editor
 
         // --- the wharf PLAN, for Phase B ---------------------------------------------------------------
 
-        /// <summary>Berths along the north wall's south face: 14 at 5.5 m spacing, which is the fleet in
-        /// the photographs (twelve to fourteen boats, rafted two deep in places). Phase B lays the finger
-        /// piers and the mooring hardware on this line; Phase A only promises the water is there.</summary>
-        public const int BerthCount = 14;
-        public const float BerthSpacingMetres = 5.5f;
-        /// <summary>The first berth's centre — 2 m off the wall's face (y = 87), and east of the west
-        /// wall's own deck so no boat is moored on dry land. The line runs x = 98 → 169.5, inside the
-        /// north wall's 86 → 170.</summary>
-        public static readonly Vector2 FirstBerthPos = new Vector2(98f, 85f);
+        /// <summary>
+        /// ⭐⭐⭐ <b>THE BERTH LINE IS A PACKED RUN OF SPANS, NOT A MARK TABLE — owner ruling
+        /// 2026-09-06, "fix the grid".</b>
+        ///
+        /// <para>It used to be <b>14 marks at 5.5 m</b>, a pitch taken from photographs of boats "rafted
+        /// two deep in places". But this fleet lies <b>alongside</b>, so what a boat spends on the line
+        /// is her LENGTH — 8.6 m to 12.9 m — and rounding every hull up to whole 5.5 m pitches wasted
+        /// most of a pitch per pair. The measured cost: six spans (the player's berth and five working
+        /// boats) need <b>73.0 m</b> and the wall offers <b>84 m</b>, yet on the lattice they needed
+        /// <b>14 pitches where only 12 were usable</b>. The wall had room; the table did not.</para>
+        ///
+        /// <para>⚠️ <b>AND THE LAST MARK COULD NEVER HOLD A BOAT.</b> Mark 13 stood at x = 169.5 with
+        /// the wall ending at x = 170, so a hull there needed <c>169.5 + L/2 + fender</c> — over the end
+        /// for <i>every</i> length, even zero. The region shipped 14 marks of which 13 could ever be
+        /// used, and nothing said so. That is the finding that forced this.</para>
+        ///
+        /// <para><b>So the boats are packed and the marks are DERIVED from where they lie.</b> Berth 0
+        /// is the player's, at the apron end; each following berth is the next hull in
+        /// <c>BoatOwnerDef.BerthIndex</c> order, laid against her neighbour at the fender gap. Bollards,
+        /// tyres and ladders come off these centres (<see cref="NineMileCreekWharf.Fittings"/>), so the
+        /// hardware follows the fleet instead of the fleet being cut to fit the hardware.
+        /// <c>BerthSpacingMetres</c> is gone — there is no one pitch to name — and
+        /// <see cref="BerthCount"/> is now an OUTPUT: one plus however many boats the register moors
+        /// here.</para>
+        /// </summary>
+        public const float PlayerBerthReserveMetres = 12.9f;
 
-        /// <summary>Centre of berth <paramref name="index"/> (0-based), along the north wall's face.</summary>
-        public static Vector2 BerthPos(int index) =>
-            FirstBerthPos + new Vector2(BerthSpacingMetres * Mathf.Clamp(index, 0, BerthCount - 1), 0f);
+        /// <summary>The west end of the berth line — the west wall's own east face, read off the wall so
+        /// that re-siting it takes the fleet with it. No boat is moored on the apron's deck.</summary>
+        public static float BerthLineWestX => WestWallFill.Center.x + WestWallFill.HalfSize.x;
+
+        /// <summary>
+        /// The length each berth is cut for, west to east: index <b>0 is the PLAYER'S</b>
+        /// (<see cref="PlayerBerthReserveMetres"/>, at the apron end), then each wall owner in
+        /// <c>BerthIndex</c> order.
+        ///
+        /// <para>⚠️ <b>This is the one place the region's GEOMETRY reads the REGISTER</b>, and it has to:
+        /// a packed line is a function of the hulls on it. Which means a boat swapped for a longer one
+        /// moves every berth east of her, the bollards with them, and — through
+        /// <see cref="BerthTrenchWaypoints"/> — the dredged trench and the committed seabed bake.
+        /// Cached, because the terrain walks this line thousands of times per bake.</para>
+        /// </summary>
+        public static float[] BerthLengths()
+        {
+            var wall = new List<HiddenHarbours.Boats.BoatOwnerDef>();
+            foreach (var o in NineMileCreekMooredFleet.LoadOwners())
+                if (o != null && !o.LiesAtTheFloat) wall.Add(o);
+            wall.Sort((a, b) => a.BerthIndex.CompareTo(b.BerthIndex));
+
+            var lengths = new float[1 + wall.Count];
+            lengths[0] = PlayerBerthReserveMetres;
+            for (int i = 0; i < wall.Count; i++)
+                lengths[i + 1] = NineMileCreekMooredFleet.LengthOf(wall[i]);
+            return lengths;
+        }
+
+        private static float[] _berthCentres;
+
+        /// <summary>Drop the cached line. Call after editing the register — the builder does.</summary>
+        public static void InvalidateBerthLine() => _berthCentres = null;
+
+        /// <summary>
+        /// The centre of every berth, west to east, packed at the fender gap from
+        /// <see cref="BerthLineWestX"/>. Each hull's span is half her length plus a fender either side,
+        /// and neighbouring spans abut — so between two hulls there is exactly two fenders of clear
+        /// water, and no berth is wider than the boat that lies in it.
+        /// </summary>
+        public static float[] BerthCentres()
+        {
+            if (_berthCentres != null) return _berthCentres;
+
+            float[] lengths = BerthLengths();
+            var centres = new float[lengths.Length];
+            float x = BerthLineWestX;
+            for (int i = 0; i < lengths.Length; i++)
+            {
+                float half = BerthHalfSpanFor(lengths[i]);
+                centres[i] = x + half;
+                x = centres[i] + half;
+            }
+            return _berthCentres = centres;
+        }
+
+        /// <summary>How many berths the wall has — an OUTPUT now: the player's, plus one per owner the
+        /// register moors here. It is no longer a number anybody can type.</summary>
+        public static int BerthCount => BerthCentres().Length;
+
+        /// <summary>
+        /// ⭐ <b>THE WALL'S OWN FACE (y = 87) — taken from the wall rather than typed beside it.</b>
+        /// <see cref="NineMileCreekWharf.MooringEdgeY"/> is this same number reached through the wharf's
+        /// footprint helper; the berth line needs it one layer below the wharf, so it comes off
+        /// <see cref="NorthWallFill"/> directly and the two cannot drift apart.
+        /// </summary>
+        public static float MooringFaceY => NorthWallFill.Center.y - NorthWallFill.HalfSize.y;
+
+        /// <summary>
+        /// ⭐⭐ <b>S1b — HOW FAR OFF THE TIMBER A HULL OF THIS BEAM LIES: her own half-beam plus a
+        /// fender.</b>
+        ///
+        /// <para>The berth line used to be one number — a uniform 2.0 m — and
+        /// <c>docs/design/npc-pilotage.md</c> §3 measured what that cost: the widest hull on this
+        /// register carries a 2.50 m half-beam, so she was authored <b>half a metre inside the
+        /// timber</b>. Invisible while the fleet is merely <i>placed</i>, and an illegal destination the
+        /// moment a boat has to come alongside under a pilot that promises not to reach the wall.</para>
+        ///
+        /// <para><b>This is the region's own principle — "gate the hull where the hull is" — which the
+        /// float berths already follow.</b> A beam of zero means "unknown", never "no width": a
+        /// sprite-only hull and an <b>unowned</b> berth both fall back to
+        /// <see cref="WidestResidentBeamMetres"/>, so a transient berth (§5.3 — visitors, and the
+        /// player) is never cut narrower than the worst case the wharf already holds.</para>
+        /// </summary>
+        public static float BerthStandoffFor(float halfBeamMetres) =>
+            (halfBeamMetres > 0f ? halfBeamMetres : WidestResidentBeamMetres * 0.5f) + BerthFenderMetres;
+
+        /// <summary>Centre of berth <paramref name="index"/> (0-based) for a hull of the given half-beam.
+        /// The x is where the packing put her; the y is <i>her</i> standoff.</summary>
+        public static Vector2 BerthPos(int index, float halfBeamMetres)
+        {
+            float[] centres = BerthCentres();
+            return new Vector2(centres[Mathf.Clamp(index, 0, centres.Length - 1)],
+                               MooringFaceY - BerthStandoffFor(halfBeamMetres));
+        }
+
+        /// <summary>
+        /// Centre of berth <paramref name="index"/> on the <b>authored</b> line — the widest resident's
+        /// standoff.
+        ///
+        /// <para>⚠️⚠️ <b>This overload is what the TRENCH is cut along</b>
+        /// (<see cref="BerthTrenchWaypoints"/>), and it is deliberately the widest case rather than any
+        /// one boat's: a cut solved for the narrowest hull on the wall would leave a wider neighbour
+        /// touching on her outboard bilge. Every hull's own lie is inboard of it, so every hull's
+        /// outboard edge stays inside <see cref="BerthFootprintHalfWidthMetres"/> of the centreline —
+        /// asserted by <c>NineMileCreekBerthLineTests.NoHullOverhangsTheTrenchTheBedWasSolvedFor</c>.</para>
+        /// </summary>
+        public static Vector2 BerthPos(int index) => BerthPos(index, 0f);
+
+        /// <summary>
+        /// The first berth's centre on the <b>authored</b> line — <b>the player's</b>, at the apron end.
+        ///
+        /// <para>⚠️⚠️ <b>THIS IS NOT "WHERE A BOAT LIES", AND IT USED TO BE.</b> Before S1b the berth
+        /// line was a uniform 2 m off the face and this was every hull's berth; it now carries the
+        /// <i>widest resident's</i> standoff, and a narrower boat lies inboard of it. Anything asking
+        /// "how far off the wall is she?" wants <see cref="BerthStandoffFor"/> with HER half-beam.
+        /// <c>NineMileCreekWharf.MooredStandoffMetres</c> is the one that was caught reading this for
+        /// the old meaning — it widened the float's beam gate from 4.00 m to 6.00 m in silence.</para>
+        /// </summary>
+        public static Vector2 FirstBerthPos => BerthPos(0);
+
+        // -----------------------------------------------------------------------------------------
+        //  ⭐⭐ AND ALONG THE WALL — a berth is a SPAN, not a point (owner playtest 2026-09-06)
+        // -----------------------------------------------------------------------------------------
+
+        /// <summary>
+        /// ⭐⭐ <b>HOW MUCH WALL A HULL OF THIS LENGTH TAKES UP either side of her berth mark: half her
+        /// length, plus a fender.</b>
+        ///
+        /// <para><see cref="BerthSpacingMetres"/> is <b>5.5 m</b> and its own comment says where that
+        /// came from — the photographs, "rafted two deep in places". But
+        /// <c>NineMileCreekMooredFleet.MooredHeadingDegrees</c> lays this fleet <b>alongside</b>, bow to
+        /// the harbour mouth, so what a boat spends along this wall is her LENGTH; and rafting is a
+        /// second ROW off the wall, never two hulls in one place. A beam pitch under hulls placed by
+        /// length is how the owner came to be looking at boats drawn through one another.</para>
+        ///
+        /// <para>The gap is <see cref="BerthFenderMetres"/> — the same half-metre the standoff spends
+        /// athwartships, spent here fore-and-aft. One number, one meaning: the slack a working hull is
+        /// allowed around her. A length of zero means "unknown", never "no length", and falls back to
+        /// <see cref="LongestResidentLengthMetres"/> exactly as a beam of zero falls back to the widest
+        /// resident — the safe direction for a clearance, in both axes.</para>
+        /// </summary>
+        public static float BerthHalfSpanFor(float lengthMetres) =>
+            (lengthMetres > 0f ? lengthMetres : LongestResidentLengthMetres) * 0.5f + BerthFenderMetres;
+
+        /// <summary>The stretch of wall berth <paramref name="index"/> occupies for a hull of this
+        /// length: her berth mark, with half her length and a fender either side of it.</summary>
+        public static WallSpan BerthSpan(int index, float lengthMetres)
+        {
+            float half = BerthHalfSpanFor(lengthMetres);
+            float centre = BerthPos(index).x;
+            return new WallSpan(centre - half, centre + half);
+        }
+
+        /// <summary>A stretch of the quay wall, in world x. Two hulls whose spans share ANY wall are two
+        /// hulls drawn through one another.</summary>
+        public readonly struct WallSpan
+        {
+            public readonly float Min;
+            public readonly float Max;
+
+            public WallSpan(float min, float max) { Min = min; Max = max; }
+
+            public float Metres => Max - Min;
+
+            /// <summary>Metres of wall these two spans share. Zero when they merely touch, and never
+            /// negative: "how far apart are they" is a different question, and this one must not answer
+            /// it by accident.</summary>
+            public float OverlapWith(WallSpan other) =>
+                Mathf.Max(0f, Mathf.Min(Max, other.Max) - Mathf.Max(Min, other.Min));
+
+            /// <summary>Metres of clear wall between two spans that do NOT overlap; 0 when they do.</summary>
+            public float ClearOf(WallSpan other) =>
+                Mathf.Max(0f, Mathf.Max(Min, other.Min) - Mathf.Min(Max, other.Max));
+
+            public override string ToString() => $"x {Min:0.00} → {Max:0.00}";
+        }
+
+        /// <summary>The west end of the timber a boat can lie against — read off the wall, like
+        /// <see cref="MooringFaceY"/>, rather than typed beside it.</summary>
+        public static float MooringFaceWestX => NorthWallFill.Center.x - NorthWallFill.HalfSize.x;
+
+        /// <summary>…and the east end. A hull whose span runs past either one is moored off the end of
+        /// the wall she is supposedly tied to.</summary>
+        public static float MooringFaceEastX => NorthWallFill.Center.x + NorthWallFill.HalfSize.x;
 
         // Where the working things stand. Phase A places greybox markers; Phase B swaps in the kit.
         public static readonly Vector3 WinchPos          = new Vector3( 87f,  84f, 0f);  // west wall, by the apron
