@@ -504,14 +504,44 @@ namespace HiddenHarbours.Tests.RigBaking
         [Test]
         public void SheetCells_AreTheRigsOwnPixels()
         {
-            AssertCellsMatchTheRig("sideDraggerIsoRig",
-                                   new[] { ("bridge", 2), ("house", 1), ("below", 5) });
-            // ADR 0041 rollout PR 1 retired every lobster variant sheet (their rooms are geometry), so
-            // the variant-aware case this used to run on offshore_open_fundy has no pixels to check.
-            // The variant path is exercised by the mesh bake now (the triple rides the extraction);
-            // the sheet side keeps a second single-hull case on the biggest remaining kit.
-            AssertCellsMatchTheRig("coastalPacketIsoRig",
-                                   new[] { ("house", 3), ("below", 6) });
+            // ⚠️ DERIVED FROM THE CONTRACT, not named. This test has now been re-pointed by two
+            // rollout batches in a row — PR 1 took its lobster-variant case away, PR 2 took both the
+            // dragger and the packet — and each time the hulls it happened to name went to geometry it
+            // failed with "no contract entry", which reads like a broken contract rather than like a
+            // retirement. So it walks whatever the kit still ships, and it shrinks with the kit until
+            // rollout PR 5 deletes the sheet system entirely.
+            //
+            // ONE CELL PER PAGE, and specifically each page's FIRST cell — because paging is exactly
+            // where the failure hides. A page boundary can fall mid-level (the dragger's did), so the
+            // first cell of page 1 is the one whose (level, facing) has to be recovered from
+            // firstCell rather than assumed to be level 0 facing 0.
+            var sheets = Contract().sheets.OrderBy(x => x.hullStem, StringComparer.Ordinal).ToArray();
+            Assert.IsNotEmpty(sheets,
+                "the kit ships no interior sheets at all, so this test opened no pixels. If the last " +
+                "hull has converted, this whole file goes with the sprite system (rollout PR 5) — it " +
+                "does not quietly pass.");
+
+            int pagesChecked = 0;
+            foreach (var sheet in sheets)
+            {
+                var cells = new List<(string level, int facing)>();
+                foreach (var page in sheet.pages)
+                {
+                    int flat = page.firstCell;
+                    int levelIndex = flat / sheet.facings;
+                    int facing = flat % sheet.facings;
+                    Assert.Less(levelIndex, sheet.levels.Length,
+                        $"'{sheet.hullStem}' page {page.file} starts at cell {flat}, past her " +
+                        $"{sheet.levels.Length} levels × {sheet.facings} facings.");
+                    cells.Add((sheet.levels[levelIndex], facing));
+                    pagesChecked++;
+                }
+                AssertCellsMatchTheRig(sheet.hullStem, cells.ToArray());
+            }
+
+            Assert.Greater(pagesChecked, 0, "no page was opened.");
+            UnityEngine.Debug.Log($"[interior-sheets] rig-pixel check: {pagesChecked} page(s) across " +
+                                  $"{sheets.Length} hull(s) — {string.Join(", ", sheets.Select(x => x.hullStem))}");
         }
 
         static void AssertCellsMatchTheRig(string hullStem, (string level, int facing)[] cells)

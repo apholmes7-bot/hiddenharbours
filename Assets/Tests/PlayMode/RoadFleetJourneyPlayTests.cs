@@ -77,6 +77,18 @@ namespace HiddenHarbours.Tests.PlayMode
         private const float SteerGainDegrees = 20f;
         private const float WaypointReachMetres = 3f;
         private const float RoadLookaheadMetres = 12f;
+
+        /// <summary>
+        /// The numbers above, as the one struct the SHIPPED maths reads. The driver's arithmetic used to
+        /// live privately in this file; it is now Core's <see cref="RouteFollowMath"/> and the game's own
+        /// RouteDriver reads the same functions, so the fixture and the village cannot disagree about how
+        /// a machine follows a road. What stays here is only the FEEL — these are test-driver numbers,
+        /// deliberately not the fleet's own tunables, so a def the owner retunes cannot silently move
+        /// what this file measures.
+        /// </summary>
+        private static RouteFollowMath.RouteFollowTuning TestDriver => new(
+            WaypointReachMetres, RoadLookaheadMetres, CruiseThrottle, TurnThrottle,
+            SlowForTurnDegrees, SteerGainDegrees);
         private const float AlongTheRoadMetres = 20f;
         private const float TowMetres = 30f;
         private const float BobtailMetres = 10f;
@@ -703,16 +715,9 @@ namespace HiddenHarbours.Tests.PlayMode
         /// <summary>Pure pursuit in compass terms. The error is the target's bearing less her heading,
         /// positive when it lies clockwise (to her RIGHT) — and right is −1 on the wheel, the rig's own
         /// sense, so the steer is the negated, gained error.</summary>
-        private static DriveDemand Toward(Transform machine, Vector2 target, bool slow)
-        {
-            Vector2 pos = machine.position;
-            float heading = BoatKinematics.BearingDegrees(machine.up);
-            float want = BoatKinematics.BearingDegrees(target - pos);
-            float error = Mathf.DeltaAngle(heading, want);
-            float steer = -Mathf.Clamp(error / SteerGainDegrees, -1f, 1f);
-            float throttle = slow || Mathf.Abs(error) > SlowForTurnDegrees ? TurnThrottle : CruiseThrottle;
-            return new DriveDemand(throttle, steer, false);
-        }
+        private static DriveDemand Toward(Transform machine, Vector2 target, bool slow) =>
+            RouteFollowMath.Toward(BoatKinematics.BearingDegrees(machine.up), machine.position, target,
+                                   slow, TestDriver);
 
         /// <summary>
         /// A waypoint is reached when she is within <paramref name="reach"/> of it — OR when she has passed
@@ -721,12 +726,8 @@ namespace HiddenHarbours.Tests.PlayMode
         /// back to a waypoint she overshot at an angle, and orbits it for ever. Measured before this clause
         /// existed — five machines circling the yard's gate at 1.65 m/s, 3000 steps each.
         /// </summary>
-        private static bool Reached(Vector2 from, Vector2 target, Vector2 pos, float reach)
-        {
-            if (Vector2.Distance(pos, target) <= reach) return true;
-            Vector2 leg = target - from;
-            return leg.sqrMagnitude > 1e-6f && Vector2.Dot(pos - target, leg.normalized) >= 0f;
-        }
+        private static bool Reached(Vector2 from, Vector2 target, Vector2 pos, float reach) =>
+            RouteFollowMath.HasReached(from, target, pos, reach);
 
         /// <summary>Drive her to a waypoint (see <see cref="Reached"/>), through the switcher, one physics
         /// step at a time, sampling the ground under her every step.</summary>
@@ -910,18 +911,8 @@ namespace HiddenHarbours.Tests.PlayMode
 
         /// <summary>The road's direction at a point on (or near) it — the segment whose nearest point to
         /// <paramref name="at"/> is closest, taken in the order the polyline is published.</summary>
-        private static Vector2 RoadDirectionAt(Vector2[] road, Vector2 at)
-        {
-            int best = 0;
-            float bestD = float.MaxValue;
-            for (int i = 0; i < road.Length - 1; i++)
-            {
-                Vector2 p = NineMileCreekRoads.NearestPointOnRoute(new[] { road[i], road[i + 1] }, at);
-                float d = Vector2.Distance(p, at);
-                if (d < bestD) { bestD = d; best = i; }
-            }
-            return (road[best + 1] - road[best]).normalized;
-        }
+        private static Vector2 RoadDirectionAt(Vector2[] road, Vector2 at) =>
+            RouteFollowMath.DirectionAt(road, 0, road.Length, at);
     }
 }
 #endif

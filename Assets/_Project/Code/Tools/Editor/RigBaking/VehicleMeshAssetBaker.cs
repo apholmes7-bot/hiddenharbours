@@ -201,6 +201,12 @@ namespace HiddenHarbours.Tools.RigBaking
                     Side = plan.Side,
                     HingeAxis = plan.Axis.HingeAxis,
                     SweepDegrees = plan.Axis.SweepDegrees,
+                    // ⚠️ Written for every fitting, so a motion that does not read them carries the
+                    // zeros it always carried and no baked asset in the fleet moves. The two arms
+                    // that DO read them refuse a zero axis rather than substituting vertical — see
+                    // VehicleMeshDriver.DeclaredAxis for why that refusal is the point.
+                    SteerAxisLocal = plan.Axis.SteerAxisLocal,
+                    SteerLockDegrees = plan.Axis.SteerLockDegrees,
                     SlidePath = plan.SlidePath,
                     StateProps = states,
                     StateNames = plan.Axis.StateNames,
@@ -346,6 +352,7 @@ namespace HiddenHarbours.Tools.RigBaking
                                       VehicleSidecarFacts facts)
         {
             def.DriveDoorLocal = facts.HasDriveDoor ? facts.DriveDoorLocal : Vector2.zero;
+            def.AltDriveDoorLocal = facts.HasAltDriveDoor ? facts.AltDriveDoorLocal : Vector2.zero;
             def.DriverSeatLocal = facts.HasDriverSeat ? facts.DriverSeatLocal : Vector3.zero;
 
             def.ColliderMinMeters = facts.HasCollider ? facts.ColliderMin : Vector3.zero;
@@ -368,7 +375,8 @@ namespace HiddenHarbours.Tools.RigBaking
 
             Debug.Log(
                 $"[rig-vehicle] {v.Key} sidecar facts from {where}: " +
-                $"drive door {(facts.HasDriveDoor ? def.DriveDoorLocal.ToString("0.###") : "none")}, " +
+                $"drive door {(facts.HasDriveDoor ? def.DriveDoorLocal.ToString("0.###") : "none")}" +
+                $"{(facts.HasAltDriveDoor ? $" + alt {def.AltDriveDoorLocal.ToString("0.###")}" : "")}, " +
                 $"driver seat {(facts.HasDriverSeat ? def.DriverSeatLocal.ToString("0.###") : "hidden")}, " +
                 $"collider {(def.HasCollider ? $"{def.ColliderMinMeters:0.##}..{def.ColliderMaxMeters:0.##}" : "none")}, " +
                 $"floats = {def.Floats}, " +
@@ -553,7 +561,7 @@ namespace HiddenHarbours.Tools.RigBaking
                   return s;
                 }}
                 function __vfaces(o){{ return {g}.{v.FaceBuilderName}({g}.resolve(__vpose(o))); }}
-                function __vmoved(pose, sideSign, yMin, yMax, mats){{
+                function __vmoved(pose, sideSign, yMin, yMax, mats, zMin, zMax){{
                   var a = __vfaces({{}}), b = __vfaces(pose), out = [];
                   for (var i = 0; i < a.length; i++) {{
                     // ⭐ THE MATERIAL CLAIM, and the only filter that separates a landing gear's
@@ -578,6 +586,18 @@ namespace HiddenHarbours.Tools.RigBaking
                       cy /= fa.length;
                       if (cy < yMin || cy > yMax) continue;
                     }}
+                    // ⭐ THE HEIGHT WINDOW, and the only filter that lifts a quad's HANDLEBARS out
+                    // of her front tyres: they share a side, they share a fore-aft station (bars
+                    // y 0.330..0.420, the tyre's own face centroids reach y 0.334) and they share
+                    // rubber (the grips ARE rubber). What separates them is height, and cleanly:
+                    // measured 2026-09-06, the highest tyre face centroid sits at z 0.6221 and the
+                    // lowest bar-assembly face — the stem — at z 0.7200, a 0.098 m gap.
+                    if (zMin > -Infinity || zMax < Infinity) {{
+                      var cz = 0;
+                      for (var q = 0; q < fa.length; q++) cz += fa[q][2];
+                      cz /= fa.length;
+                      if (cz < zMin || cz > zMax) continue;
+                    }}
                     out.push(i);
                   }}
                   return out.join(',');
@@ -597,7 +617,7 @@ namespace HiddenHarbours.Tools.RigBaking
             {
                 var mine = new List<int>();
                 foreach (int i in MovedFaces(host, axis.Probe, axis.SideSign, axis.YMin, axis.YMax,
-                                             axis.Materials))
+                                             axis.Materials, axis.ZMin, axis.ZMax))
                     if (!claimed.Contains(i)) mine.Add(i);
 
                 if (mine.Count == 0)
@@ -957,7 +977,9 @@ namespace HiddenHarbours.Tools.RigBaking
         }
 
         static List<int> MovedFaces(IRigScriptHost host, string probePose, int sideSign,
-                                    float yMin, float yMax, string[] materials = null)
+                                    float yMin, float yMax, string[] materials = null,
+                                    float zMin = float.NegativeInfinity,
+                                    float zMax = float.PositiveInfinity)
         {
             // ⚠️ The bounds are written as JS SOURCE, so they are emitted explicitly rather than
             // left to ToString: a culture or runtime that spells infinity any other way would
@@ -967,7 +989,7 @@ namespace HiddenHarbours.Tools.RigBaking
                 : "'|" + string.Join("|", materials) + "|'";
             string csv = host.EvaluateString(
                 $"__vmoved({probePose},{sideSign.ToString(Inv)}," +
-                $"{JsNumber(yMin)},{JsNumber(yMax)},{mats})");
+                $"{JsNumber(yMin)},{JsNumber(yMax)},{mats},{JsNumber(zMin)},{JsNumber(zMax)})");
             var list = new List<int>();
             if (string.IsNullOrEmpty(csv)) return list;
             foreach (string s in csv.Split(','))
@@ -1206,9 +1228,17 @@ namespace HiddenHarbours.Tools.RigBaking
             // ⚠️ ONLY A STEERED WHEEL CARRIES THE STEERING LOCK. A door's travel is its own
             // published sweep and lives on the fitment, not here — handing a barn door the truck's
             // 30° Ackermann limit would be a number that means nothing about her.
+            //
+            // ⭐ A fitting on its OWN declared axis carries its OWN lock, not the machine's inner
+            // Ackermann angle: the quad's bars turn ±28° while her front wheels take a 30° inner
+            // lock, and a single front wheel on a centreline has no Ackermann partner at all. The
+            // magnitude, because this field is "peak steer either side of dead ahead".
             def.MaxSteerDegrees =
                 plan.Motion == VehicleFitmentMotion.SteerAndRoll ||
-                plan.Motion == VehicleFitmentMotion.SteerOnly ? chassis.MaxInnerDeg : 0f;
+                plan.Motion == VehicleFitmentMotion.SteerOnly ? chassis.MaxInnerDeg :
+                plan.Motion == VehicleFitmentMotion.AxisSteerAndRoll ||
+                plan.Motion == VehicleFitmentMotion.AxisSteerOnly
+                    ? Mathf.Abs(plan.Axis.SteerLockDegrees) : 0f;
             def.MaxTiltDegrees = 0f;
             def.LateralMountsMeters = Array.Empty<float>();
             def.Ramps = ReadRamps(data);

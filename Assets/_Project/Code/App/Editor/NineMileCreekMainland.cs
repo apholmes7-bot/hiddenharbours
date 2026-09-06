@@ -478,8 +478,15 @@ namespace HiddenHarbours.App.Editor
         // lane in the satellite photograph curving away south-east from the wharf.
         //
         // ⚠ THIS REVERSES A STANDING FACT AT EXACTLY TWO PLACES AND NOWHERE ELSE. The flats, the reef
-        // ring, the tidal bar, the crossing and the ponds all still bare on the big tides; so do the
-        // BERTHS, and that is deliberate rather than an omission — see the ruled-gate note below.
+        // ring, the tidal bar, the crossing and the ponds all still bare on the big tides.
+        //
+        // ⭐⭐ AND SINCE 2026-09-05, SO DO THE BERTHS — NO LONGER. The 08-19 pass read the ruling as "the
+        // CHANNEL is always wet; the berths still bare" and routed the lane 14 m clear of them so the cut
+        // there was exactly zero. The owner has now ruled the other way, in her own words after a
+        // playtest: *"the bullpen should always have water at low tide so all the lobster boats can park
+        // on the wall."* §8b¾ below cuts the berth trench that delivers it. That reverses ONE constraint
+        // and nothing else — the flats south of the lane, the reef ring, the bar, the guts and the
+        // crossing all still bare, and the three-harbour depth ladder is untouched everywhere but here.
         //
         // ⭐ AND IT IS A CHANNEL, NOT A DEEPER BASIN, because the ruling's own description requires the
         // flats either side to dry: a uniformly deep bullpen has no meander to reveal and no width to
@@ -565,10 +572,12 @@ namespace HiddenHarbours.App.Editor
         /// <item><description><b>It carries the float run.</b> Every metre of the float (y = 70,
         /// x = 104 → 152) lies within 3 m of the centre-line, so the small craft on the fingers float at
         /// 1.34 m at spring low against the deepest of them (the punt, 0.50 m).</description></item>
-        /// <item><description><b>It leaves the RULED GATE alone.</b> The nearest berth and the dock zone
-        /// are 14 m off the line — past the 12 m half-width, so the cut is exactly zero there. The
-        /// −1.6 m shoal still gates the fleet and the basin still bares under it at spring low, which is
-        /// the region's whole teeth and is asserted by four committed tests.</description></item>
+        /// <item><description><b>⚠ IT USED TO LEAVE THE RULED GATE ALONE — and since 2026-09-05 the
+        /// BERTH TRENCH takes over that job.</b> This lane still runs 14 m off the berths, so its own cut
+        /// there is exactly zero; what wets them now is §8b¾, cut for the same deepest resident this one
+        /// is. The −1.6 m shoal still gates everything else, and the FLATS still bare under it at spring
+        /// low — that is the region's teeth, and the four committed tests that used to hold "the berths
+        /// bare" now hold "the berths float and the flats bare" instead.</description></item>
         /// <item><description><b>It clears the slipway and the breakwater</b> by more than the
         /// half-width, so neither the ramp's toe nor the crib's foot is undercut.</description></item>
         /// </list>
@@ -599,8 +608,94 @@ namespace HiddenHarbours.App.Editor
             new MainlandChannel(ChannelWaypoints, ChannelThalwegElevation,
                                 ChannelHalfWidthMetres, ChannelCuttableCeiling);
 
-        /// <summary>Every channel cut through this region's made ground.</summary>
-        public static MainlandChannel[] Channels => new[] { HarbourChannel };
+        // =================================================================================================
+        //  8b¾. THE BERTH TRENCH — the water the fleet lies in (owner ruling, 2026-09-04)
+        // =================================================================================================
+        // *"the bullpen should always have water at low tide so all the lobster boats can park on the
+        // wall."* The 08-19 lane deliberately stopped 14 m short of the berths; this is the cut that
+        // finishes the job, and it reverses that one constraint and nothing else.
+        //
+        // ⭐⭐ THE BED IS DERIVED, AND IT IS NOT THE THALWEG — because a channel here is a SMOOTHSTEP, not
+        // a flat-bottomed trench. `MainlandTidalTerrain` cuts `lerp(ground, bed, 1 − smoothstep(d/half))`,
+        // so the full bed depth exists ONLY on the centre-line and a hull is not a line. Cut at the
+        // harbour channel's own −3.90 m thalweg, this trench would carry 1.70 m under the berth mark and
+        //   **1.34 m at 3 m off it — under Marie Gallant's 1.40 m draught.**
+        // She would lie at her own berth and touch on her outboard bilge. So the bed is solved BACKWARDS
+        // from the falloff law, for the depth a hull needs at the far edge of her own footprint, and the
+        // number that falls out is 2.01 m on the mark. (A "half-width of one beam plus a fender" — the
+        // shape a flat-bottomed reading suggests — is not merely wrong here but impossible: at half 5.5 m
+        // the falloff at the footprint edge is 0.43, and the bed it demands is −6.69 m, below the bay
+        // floor the terrain clamps to.)
+
+        /// <summary>How much water a hull wants clear of her keel where she LIES, as against where she
+        /// steams: draught plus the region's own keel clearance. The over-cut
+        /// (<see cref="ChannelDredgeMarginMetres"/>) is a fairway allowance for a helmsman holding a line
+        /// across a bend — a moored boat holds no line, so it is not spent again here.</summary>
+        public static float BerthDepthNeededMetres =>
+            DeepestResidentDraughtMetres + ChannelKeelClearanceMetres;
+
+        /// <summary>A fender's worth of slack outboard of the widest resident's own side — half a metre,
+        /// so the cut carries her hull and the tyre she leans on rather than stopping at her plating.</summary>
+        public const float BerthFenderMetres = 0.5f;
+
+        /// <summary>How far off the berth mark the trench has to be honest: the widest resident's
+        /// half-beam plus a fender. <b>3.0 m</b> — the outboard edge of the widest hull that lies here,
+        /// which is where a smoothstep cut is shallowest under her.</summary>
+        public static float BerthFootprintHalfWidthMetres =>
+            WidestResidentBeamMetres * 0.5f + BerthFenderMetres;
+
+        /// <summary>
+        /// ⭐ <b>THE TRENCH'S BED — −4.21 m</b>, and every term of it is one of the region's own numbers
+        /// run through the terrain's own falloff:
+        /// <code>
+        /// w   = SmoothFalloff(BerthFootprintHalfWidthMetres, ChannelHalfWidthMetres)   // 0.844
+        /// bed = shoal + (springLow − berthDepthNeeded − shoal) / w
+        /// </code>
+        /// <para>Read it as: at the footprint's outboard edge the cut has faded to <c>w</c> of its full
+        /// depth, so to leave <see cref="BerthDepthNeededMetres"/> THERE the centre-line must be cut
+        /// <c>1/w</c> deeper than a flat bottom would need. Deeper than the fairway that leads to it,
+        /// which is right: a berth pocket is dredged for lying in, a channel for passing through.</para>
+        /// </summary>
+        public static float BerthTrenchBedElevation
+        {
+            get
+            {
+                float w = HiddenHarbours.World.MainlandTidalTerrain.SmoothFalloff(
+                    BerthFootprintHalfWidthMetres, ChannelHalfWidthMetres);
+                if (w <= 1e-4f) return BasinBedElevation;                 // no cut reaches there at all
+                return BasinBedElevation +
+                       (SpringLowWater - BerthDepthNeededMetres - BasinBedElevation) / w;
+            }
+        }
+
+        /// <summary>
+        /// ⚠️⚠️ <b>AND IT JOINS THE MEANDER, WHICH IS THE WHOLE OF THE LAST WAYPOINT.</b> The berth line
+        /// alone is a pond: measured on the built ground, a trench that only runs the wall leaves the
+        /// journey out of berth 1 at <b>0.53 m</b> at spring low — a sill the fleet cannot cross, and one
+        /// that no depth-along-the-berth-line test could ever see ([[a-channel-must-join-something]], the
+        /// law this region earned the first time). So the run ENDS on the harbour channel's own harbour
+        /// waypoint, taken from that array rather than typed, and the two cuts overlap at the junction by
+        /// construction. With the leg in, the same walk measures 1.70 m throughout.
+        ///
+        /// <para><b>SEAWARD → HARBOUR</b>, the convention every channel in this region is held to: the
+        /// junction first, then the wall, west to east.</para>
+        /// </summary>
+        public static Vector2[] BerthTrenchWaypoints => new[]
+        {
+            ChannelWaypoints[ChannelWaypoints.Length - 1],               // (100, 70) — ON the meander
+            BerthPos(0),                                                 // the first berth
+            BerthPos(BerthCount - 1),                                    // …and the last
+        };
+
+        /// <summary>The berth trench, assembled from the derivations above. Same cuttable ceiling as the
+        /// fairway — it may deepen the basin it lies in and may not touch the wall it lies against.</summary>
+        public static MainlandChannel BerthTrench =>
+            new MainlandChannel(BerthTrenchWaypoints, BerthTrenchBedElevation,
+                                ChannelHalfWidthMetres, ChannelCuttableCeiling);
+
+        /// <summary>Every channel cut through this region's made ground. ⚠ ORDER MATTERS ONLY IN THAT
+        /// EACH ONE SEES THE LAST'S RESULT — both are <c>Mathf.Min</c>, so the pair commutes.</summary>
+        public static MainlandChannel[] Channels => new[] { HarbourChannel, BerthTrench };
 
         // --- the wharf PLAN, for Phase B ---------------------------------------------------------------
 

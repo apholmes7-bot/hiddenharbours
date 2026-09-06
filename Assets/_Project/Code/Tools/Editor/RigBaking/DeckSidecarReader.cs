@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using UnityEngine;
@@ -176,6 +177,49 @@ namespace HiddenHarbours.Tools.RigBaking
 
             string stem = (sidecarFileName ?? "").Replace(".gameplay.json", "");
             return stem + ".js";
+        }
+
+        /// <summary>
+        /// <b>Where that rig file actually IS.</b> Flat first, then anywhere under
+        /// <c>docs/art/rigs/</c> — because kits arrive in folders now and a sidecar names a FILE, not
+        /// a path.
+        ///
+        /// <para>Every hull rig before the sail rig kit sat directly in <c>docs/art/rigs/</c>, so a
+        /// flat <c>Path.Combine(root, "docs/art/rigs", name)</c> was the whole resolution. The sail
+        /// kit lands as <c>sail-rig-kit/sloop-30/sloopIsoRig.js</c> — its two READMEs, its writer and
+        /// its stamp script belong beside the rigs, and splitting the kit across two places to satisfy
+        /// a lookup would be the tail wagging the dog. So the lookup widened instead.</para>
+        ///
+        /// <para><b>⚠️ The flat path is tried FIRST, and that is not an optimisation.</b> It
+        /// guarantees the thirty-nine committed sidecars resolve to exactly the file they resolved to
+        /// before, so this change cannot move any existing hull's staleness check — a recursive search
+        /// that happened to find a same-named copy in a subfolder would do precisely that.</para>
+        ///
+        /// <para><b>⚠️ Ambiguity THROWS.</b> Two files with one name under the rig tree means the
+        /// sidecar's <c>rig</c> field no longer identifies a file, and silently taking the first hit
+        /// would hash a sidecar against a hull it does not describe — the failure the staleness rule
+        /// exists to catch, reintroduced by its own resolver. Returns null when there is no match at
+        /// all; the caller reports that as a refusal.</para>
+        /// </summary>
+        public static string ResolveRigPath(string repoRoot, string rigFileName)
+        {
+            if (string.IsNullOrWhiteSpace(repoRoot) || string.IsNullOrWhiteSpace(rigFileName)) return null;
+
+            string rigFolder = Path.Combine(repoRoot, "docs", "art", "rigs");
+            string flat = Path.Combine(rigFolder, rigFileName);
+            if (File.Exists(flat)) return flat;
+            if (!Directory.Exists(rigFolder)) return null;
+
+            string[] hits = Directory.GetFiles(rigFolder, rigFileName, SearchOption.AllDirectories);
+            if (hits.Length == 1) return hits[0];
+            if (hits.Length == 0) return null;
+
+            Array.Sort(hits, StringComparer.Ordinal);
+            throw new InvalidOperationException(
+                $"AMBIGUOUS RIG: '{rigFileName}' exists {hits.Length} times under docs/art/rigs/ " +
+                $"({string.Join(", ", hits)}). A sidecar names a file, so two files with one name " +
+                "means the name no longer identifies a hull — and picking the first would hash a " +
+                "sidecar against a boat it does not describe. Rename one, or give the sidecar a path.");
         }
 
         /// <summary>

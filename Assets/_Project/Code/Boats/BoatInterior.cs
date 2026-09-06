@@ -241,14 +241,22 @@ namespace HiddenHarbours.Boats
         private bool _cellsLoaded;
 
         /// <summary>
+        /// <b>The hull mesh her room lives in (ADR 0041), or null for a sprite cabin.</b> Held rather
+        /// than a bare flag because the mesh answers a second question this component has to ask —
+        /// <see cref="LevelIndexAtHeight"/> needs to know which of the def's levels are rooms at all,
+        /// and on a converted hull the mesh's own level table is the only thing that says so.
+        /// </summary>
+        [SerializeField] private HullMeshDef _meshRoom;
+
+        /// <summary>
         /// <b>Her picture is the hull's own geometry (ADR 0041)</b> — the room's faces live in the hull
         /// mesh and the cutaway reveals them, so this cabin owns NO interior renderer, NO cells, and must
         /// never go to <c>Resources</c> for a sheet: there is none, and a converted hull whose sheets
-        /// were still wired would draw her cabin twice. Set by the installer off
+        /// were still wired would draw her cabin twice. Derived from
         /// <see cref="HullMeshDef.HasMeshInterior"/>, the bake's own output; everything else about the
         /// def — levels, routes, the threshold, the door, the cutaway — is read exactly as before.
         /// </summary>
-        public bool RoomIsGeometry { get; private set; }
+        public bool RoomIsGeometry => _meshRoom != null && _meshRoom.HasMeshInterior();
 
         /// <summary>The cells id this cabin is HOLDING a reference to, or null. The "did I actually
         /// hold?" half of the release below — a cabin that never loaded must release nothing.</summary>
@@ -269,10 +277,10 @@ namespace HiddenHarbours.Boats
                               Sprite[] cells, int facings, bool cellsAreCounterClockwise,
                               float zeroHeadingDegrees,
                               float deckRollDegrees, float deckHeavePixels, float deckPitchLiftMeters,
-                              int[] cellRowForLevel = null, bool roomIsGeometry = false)
+                              int[] cellRowForLevel = null, HullMeshDef meshRoom = null)
         {
             _def = def;
-            RoomIsGeometry = roomIsGeometry;
+            _meshRoom = meshRoom;
             _exterior = exterior;
             _interior = interior;
             _fittings = fittings;
@@ -429,11 +437,20 @@ namespace HiddenHarbours.Boats
                 BoatInteriorLevel l = _def.Levels[i];
                 if (l == null || !l.IsUsable()) continue;
 
-                // ⚠ Only a level the sheets actually DRAW can be walked into. The ships declare
-                // main_deck at the very height their house sole sits at (the trawler: both at 3.5 m),
-                // so a nearest-by-height answer that ignored this would walk the player onto an
-                // OUTDOOR deck through the cabin door and show them nothing.
-                if (_cellRowForLevel.Length > 0 && CellRowFor(i) < 0) continue;
+                // ⚠ Only a level the picture actually DRAWS can be walked into. All four working
+                // ships declare main_deck at the very height their house sole sits at (the trawler:
+                // both at 3.5 m, and her door's own threshold is at 3.5 too), so a nearest-by-height
+                // answer that ignored this would walk the player onto an OUTDOOR deck through the
+                // cabin door and show them nothing.
+                //
+                // ⚠️⚠️ TWO PICTURES, TWO ANSWERS, AND THE SECOND ONE IS NOT OPTIONAL (ADR 0041).
+                // A sprite cabin says it with the cells' row map — a level with no row is a level
+                // the sheets never baked. A CONVERTED hull has no cells and never loads any, so that
+                // map is empty forever and the guard above would be inert on exactly the hulls that
+                // need it. Her equivalent is the hull mesh's own level table, asked through the same
+                // gate the cutaway asks: CutawayForDeck refuses a level whose `Enclosed` is false, so
+                // a cut that cannot open is a level nobody is inside. One derivation, no second list.
+                if (!LevelIsDrawn(i)) continue;
 
                 float gap = Mathf.Abs(l.SoleZMeters - zMeters);
                 // Strictly-less keeps the FIRST of two equidistant soles, so the answer is a function of
@@ -441,6 +458,25 @@ namespace HiddenHarbours.Boats
                 if (best < 0 || gap < bestGap) { best = i; bestGap = gap; }
             }
             return best;
+        }
+
+        /// <summary>
+        /// <b>Does anything DRAW def level <paramref name="level"/> — is it a room, or an open working
+        /// deck the def declares so the walker can measure it?</b>
+        ///
+        /// <para>Asked of whichever picture this cabin actually has. A hull whose sheets are not yet
+        /// loaded (or a hand-built test rig with one level and no map) answers yes to everything, which
+        /// is the same honest fallback <see cref="CellRowFor"/> has always made.</para>
+        /// </summary>
+        private bool LevelIsDrawn(int level)
+        {
+            if (RoomIsGeometry)
+            {
+                if (_def == null || level < 0 || level >= _def.Levels.Length) return false;
+                BoatInteriorLevel l = _def.Levels[level];
+                return l != null && _meshRoom.CutawayForDeck(l.Id).Opens;
+            }
+            return _cellRowForLevel.Length == 0 || CellRowFor(level) >= 0;
         }
 
         // ---- lifetime -------------------------------------------------------------------------

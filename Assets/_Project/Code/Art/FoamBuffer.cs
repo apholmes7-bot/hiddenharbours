@@ -238,6 +238,31 @@ namespace HiddenHarbours.Art
             return value * DecayFactor(halfLifeSeconds, dt);
         }
 
+        // ---- where the trail is laid ------------------------------------------------------------
+
+        /// <summary>
+        /// The world point a hull sheds her churn at: <paramref name="sternOffsetMeters"/> back from her
+        /// origin along her heading, foreshortened in Y the way her art is drawn.
+        ///
+        /// <para>The foreshortening is not decoration. The stern is a distance ON THE WATER, and a 3/4
+        /// camera draws that distance in full to the east and only <c>sin(elevation)</c> of it to the
+        /// north — so an unprojected anchor would sit off the transom by an amount that OPENS AND CLOSES
+        /// through every turn. (The plume anchor paid for this exact lesson: "not even connected to it and
+        /// way off to the stern".)</para>
+        ///
+        /// <para><paramref name="sternOffsetMeters"/> 0 returns the origin unchanged, which is the shipped
+        /// behaviour for a hull whose stern has never been measured. Pure + static.</para>
+        /// </summary>
+        public static Vector2 SternWorld(Vector2 origin, Vector2 heading, float sternOffsetMeters,
+                                         float bakeElevationDegrees)
+        {
+            if (sternOffsetMeters <= 0f) return origin;
+            Vector2 dir = heading.sqrMagnitude > 1e-8f ? heading.normalized : Vector2.up;
+            Vector2 astern = -dir * sternOffsetMeters;
+            float squash = Mathf.Sin(Mathf.Clamp(bakeElevationDegrees, 1f, 90f) * Mathf.Deg2Rad);
+            return origin + new Vector2(astern.x, astern.y * squash);
+        }
+
         // ---- freshness: the SECOND channel, and the reason the wake can change colour -------------
 
         /// <summary>

@@ -826,3 +826,255 @@ buffer and the four per-wall accumulators are built once and rewritten in place.
 The night gate, the day/night curve, the water shader, the searchlight (its beam is already bounded by its
 own cone and relief), the regime (`ShowsWhen`), the rule of the road, and the sidelights. `HullMeshDef.Panes`
 is GAME-SIDE like `Lamps`: the mesh baker never writes it, so it survives a re-bake.
+
+## Amendment — boat-lights PR 2b: the marks flash their characters (2026-09-04)
+
+The other half of the 08-28 charter. PR 1 (#686) lit the arrival's hull, PR 2a (#716) lit the fleet;
+this lights the **channel furniture**. Ten `NavBuoyDef` assets have carried `LightCharacter` and
+`LightText` since the kit landed in August under the note *"DATA ONLY — nothing flashes yet; that is
+its own feature"*. This is that feature, and it adds no new light primitive: a mark's lantern is the
+same additive `SceneLight` radial this ADR has always described, switched on and off by a rhythm.
+
+### The rhythm lives in Core and is a pure function of the clock
+
+`NavLightCharacter` (Core) parses a chart abbreviation once and thereafter answers
+`IsOn(totalSeconds, phaseSeconds)` — no accumulator, no `Time.time`, no saved state, no RNG (rule 5).
+It is Core because the DATA is a Boats type and the LIGHT is drawn by Art, and those two assemblies do
+not reference each other (rule 4); `INavLightSource` is the seam, exactly as `IVesselWay` was for the
+fleet's regime.
+
+**The schedule model is one rule: every rhythm is a flash inside a cycle, and a group of N is N cycles
+laid end to end from the top of the period, dark thereafter.** That reproduces all six of the kit's
+characters with no special cases — the composite `Q(6) + LFl 15s` included, which is simply six quick
+cycles followed by one long-flash cycle. The four constants (quick 0.5 s in 1.0 s, very quick 0.25 s
+in 0.5 s, flash 1.0 s in 2.0 s, long flash 2.0 s in 3.0 s) are the IALA round numbers and they live in
+one place (rule 6).
+
+**The seconds are REAL seconds, and that is worth writing down.** `GameClock` advances
+`_t += Time.deltaTime * TimeScale` with `TimeScale = 1`, so `IGameClock.TotalSeconds` ticks once per
+wall-clock second even though a game DAY is only 1800 of them. A mark published as `Fl G 4s` therefore
+flashes every four seconds by the player's own watch, which is what the chart means. Nothing about the
+day length can change that; only a change to how the clock itself advances could.
+
+### ⚠️ It parses `LightText`, not `LightCharacter` — the charter's instruction could not be followed
+
+The lane was chartered to parse the `LightCharacter` id. **That id cannot be parsed, and the reason is
+not stylistic.** `Q3` is the east cardinal and her period is ten seconds; `Q9` is the west and hers is
+fifteen. Neither number appears in the id at all. The id is also ambiguous where it does carry two
+digits — in `Fl2W5` the 2 is a group count and the 5 a period, and only the colour letter between them
+distinguishes them. Recovering the missing periods would have meant writing "an east cardinal flashes
+on ten seconds" into C#, which is content-as-code and forbidden (rule 2).
+
+`LightText` is the international chart abbreviation, it is complete, it is already authored on all ten
+defs, and it is what a skipper reads. So the id stays an id and the text is the source of truth.
+`TheIdAndTheTextNameTheSameLight` holds the two together — same rhythm token, same colour letter, same
+group count — so a def cannot be catalogued as one light and drawn as another.
+
+### The phase: a plan, not a hash — and the measurement that forced it
+
+Real marks are unsynchronised, and two green cans winking together read as one light in the wrong
+place. The charter prescribed *"a hash of the plan's mark id / position, never sibling index or spawn
+order"*. **The first implementation did exactly that, and it was measured and found wanting.** Hashing
+each id independently spreads marks UNIFORMLY, and a uniform spread of a handful of points has small
+gaps in it by the birthday problem: on the twenty-five marks actually placed, it put
+`channel.nmc_entrance.p0` and `channel.nmc_bar_gut.p1` — two port-hand cans **in one harbour**, both
+`Fl G 4s` — **0.021 s apart on a four-second period**. That is unison to any eye, in one frame.
+
+`NavLightPhasePlan.Spread` (Core, pure) replaces it: marks wearing one character are sorted by chart id
+and given **a slot each**, so `k` marks are at worst `period/k` apart instead of however close chance
+put them. A hash still runs, but only to JITTER each mark inside her own slot by at most ±20% of it —
+because a perfectly even round-robin of six green flashes reads as a marquee — and the jitter is bounded
+so the guarantee survives: `(1 − 2·0.2)/k` of the period, asserted at every group size from 2 to 16.
+
+**The discipline the charter was really protecting is kept.** Slots are handed out in *sorted-id* order,
+so the marks may be placed in any sequence whatever and every one gets the same phase back; the shuffle
+arm proves it. What is *not* promised, stated plainly: adding a mark re-slots her whole character group.
+That is accepted rather than hidden — a phase is recomputed from the chart every time a region is built
+and is never saved or compared across versions (rule 5), so per-mark stability across an edited chart
+buys nothing, while order independence is what stops a picture changing for a reason nobody can see.
+
+**Per region, not per game.** Compared across the whole game the closest pair of one character is 0.019 s
+apart — the north cardinals of Nine Mile Creek and St Peters, two harbours the player is never in at
+once. Marks that can never share a frame do not need telling apart, so the spread and its test are both
+scoped to a region.
+
+### The flash is an ENABLE, not an intensity ramp
+
+`SceneLight` pushes its material block on a throttled tick (20 Hz shipped). Driving `Intensity` between
+0 and full would quantise every edge of a half-second quick flash to the nearest 50 ms — a ±10 % wobble
+on the very thing a skipper counts. Toggling the component's own `enabled` instead lands the edge on the
+frame the character asks for, because `SceneLight.OnEnable` ticks immediately and `OnDisable` drops the
+quad the same frame. **No change to `SceneLight` was needed**, and the "intensity dirty → push now" path
+the charter offered as an alternative was not built, because the enable path is exact rather than merely
+finer-grained. It is also cheaper: a dark mark costs **no quad at all**.
+
+The state is written only when it CHANGES — twice a period, not sixty times a second — so a lit mark
+costs one bool compare per frame and nothing else. `APortHandIsLitAQuarterOfHerPeriod` counts the frames
+the quad is actually enabled across a whole period and gets **exactly 20 of 80**;
+`TheSouthCardinalShowsSixQuicksAndThenALongFlash` counts **7 bursts with a 40-frame tail**, which is the
+two-second long flash and the feature that tells her from the west cardinal's nine.
+
+### Budget (rule 7)
+
+Twenty-five lit marks across the two harbours, at most one quad each, pooled by `SceneLight` and shared
+through one material. At an eighth duty the average is about three quads; the peak is twenty-five, and
+only if every character happened to align. **`CastsShadows` is off on every lantern**, which is a
+measurement rather than a preference: a buoy stands in open water with nothing inside her 1.1 m to cast
+anything, so every pair she added to the 10 Hz lamp/caster scan would provably yield no shadow — and a
+flashing mark would add and remove them twice a second. Nav lanterns stay off the four-slot water bridge
+for the same reason the fleet's nav lamps do: only `BoatSpotlight` lights the sea, and twenty-five
+flashing marks would evict the beam the player is steering by.
+
+### What did NOT change
+
+No new light primitive, no shader change, no change to the day/night curve, the water shader or the
+beam relief. The gate is the shipped in-shader night gate, so a lantern is invisible by day and full at
+night with no per-light coupling to the cycle — a buoy light that burns unseen through the afternoon is
+correct, and it is what the real one does. Unlit marks (the mooring buoy) get the component and **no
+`SceneLight` at all**: absence is data, exactly as it is for a hull with no lamps.
+
+### Tunables (rule 6)
+
+| Tunable | Where | Default |
+|---|---|---|
+| Lantern colour, per mark colour | `NavLightPresets` | green `(0.10, 1, 0.34)` · red `(1, 0.10, 0.09)` · white `(1, 0.96, 0.88)` · amber `(1, 0.82, 0.20)` |
+| Lantern reach | `NavLightPresets.LanternRangeMetres` | **1.1 m** — set by photographing it (1.6 m swallowed the can, and a mark's SHAPE is part of her signal); upper bound measured: the closest two marks are 8.29 m apart, so a pair clears by 6.09 m |
+| Lantern brightness | `NavLightPresets.LanternIntensity` | 1.7 (a sidelight is 1.4; a mark is meant to be picked up first) |
+| The four rhythms | `NavLightCharacter` constants | quick 0.5/1.0 s · very quick 0.25/0.5 s · flash 1.0/2.0 s · long flash 2.0/3.0 s |
+| Phase jitter inside a slot | `NavLightPhasePlan.JitterFractionOfSlot` | 0.2 (±20 % of a slot) |
+| Master switch for one mark's lamp | `NavLight._lampOn` | on |
+| Which character a mark shows | `NavBuoyDef.LightText` (data, ADR 0003) | per mark type |
+
+## Amendment — world-lighting PR 2c: the POOL is the illumination this ADR said the quad was not (2026-09-05)
+
+This ADR has said since it was written that the additive quad is **a light SOURCE'S OWN BLOOM and not
+illumination**. World-lighting PR 2b (#733) made the code say it too: on the owner's ruling —
+*"dock lights are just a round glow, it should glow from within the lamp reasilitcally"* — every land
+preset's quad came down to the size of its lit fitting, and the pool a lamp lights became a separate
+number under its own name (`LightPresets.ReachMetres`). That left the pier honestly dark: a lamp post
+glowed, and the planks under it stayed exactly as they read unlit.
+
+**This is the illumination.** `LampPoolSystem` draws the patch of ground a lamp makes brighter. The
+quad's role is unchanged and this ADR's central sentence still stands — what changes is that the quad
+is no longer the *only* way a lamp reaches the world.
+
+### ⭐⭐ It MULTIPLIES UP, and that is the whole design
+
+`Blend DstColor One` computes `dst × (1 + gain)`: the pass **scales what the frame already returned**
+instead of adding a sheet of its own over it. It is the exact mirror of the sun's shade arm (ADR 0013
+§5.5, #727), which multiplies DOWN by `Blend Zero SrcColor`. **Shade darkens what is there; a lamp
+brightens it.** One ladder, two directions.
+
+That single choice is the difference from the disc the owner refused. Relative contrast is a **ratio**,
+a uniform scale multiplies both of its terms, and so the deck's texture survives **by construction**
+rather than by tuning. It is what "modulating what the ground returns" actually means, and it is the one
+thing an additive quad can never do at any strength that reads. Measured on the St Peters pier at 02:00:
+the disc drove relative local contrast from 0.21 to **0.0118**; the pool holds it at **0.82×** while
+lifting the planks **3.06×** (`docs/art/spikes/lights-illuminate/`).
+
+**Its shape is `h/√(h²+d²)`** — the cosine between the lamp's ray and the ground's own normal — so a
+7.8 m flood mast pools broad and even and a 2.46 m lantern post pools tight and drops away fast, from
+geometry rather than from tuning. The same lamp-versus-sun distinction the water's beam relief (#691)
+and the cast shadows' rake (#698) already take theirs from. **A lamp that publishes no height draws
+nothing**, rather than falling back to a flat disc — that fallback *is* the bug this replaces.
+
+### ⚠️⚠️ The gain is divided by the night's own luminance, and without it the pass is invisible
+
+A multiply is bounded by what it multiplies, and **being above the day/night tint in the ladder does not
+exempt you** — a multiplicative brighten inherits the ceiling through its own operand. By the time this
+pass runs, ADR 0013's whole-frame tint has crushed the pier to a mean luminance around **0.04**, so a
+naive `dst × 1.6` lifts a plank by six values in a 0..255 read-back. **The first measured run changed
+zero pixels**, with a shader that was entirely correct.
+
+The cure is physics rather than a fudge: the ground's radiance is `albedo × (ambient + lamp)` and the
+frame is holding `albedo × ambient`, so the factor that reconstructs it is exactly `1 + lamp/ambient`.
+`LightMath.PoolBaseGain` divides by the published tint's luminance on the CPU — once per lamp per frame,
+never per pixel — with a **floor** (`MinPoolAmbientLuminance` 0.02, because a tint of zero is a frame
+with no cycle running rather than an infinitely dark one) and a **cap** (`MaxPoolGain` 8, because a
+moonless night would otherwise ask for a factor of fifty and clip the ground to white, which is the
+flattening the disc was refused for arriving through the other door). The invariant this buys is
+testable and tested: **a lamp puts the same light on the same planks whatever the night is doing** — the
+night changes what is around the pool, not the pool.
+
+It is the same compensation `SpriteLightCompensateForDayNight` already makes for the lit-decor path and
+the water's moon glitter, and the general law is the one this project keeps relearning: *before designing
+any lift into a pixel, ask what that pixel has already been multiplied by.*
+
+### The ladder
+
+All three lamp quads sit at `SceneLight.MaxSortingOrder`; the 2D renderer breaks equal orders
+back-to-front along the view axis, so the **depth pins are the whole ordering**. Farther draws first:
+
+| rung | metres in front of the camera | blend | what it does |
+|---|---|---|---|
+| the **pool** | `LampPoolSystem.PoolDepthOffset` **0.14** | `DstColor One` | multiplies the ground **up** |
+| the **bloom** | `SceneLight.DefaultCameraDepthOffset` 0.10 | `One One` | adds the lit fitting, so the lamp itself stays the hottest thing in frame |
+| the **shadows** | `LampShadowSystem.ShadowDepthOffset` 0.06 | `Zero SrcColor` | multiply back **down**, into the light the pool just laid |
+
+That last row is what makes a lamp's shadow and its pool **two halves of one picture**: a shadow is the
+*absence* of this term rather than a separate thing drawn beside it. Get the order backwards and a shadow
+lands under the light that is supposed to erase it. Pinned by constant in `LampPoolTests` and on the live
+quads in `LightsIlluminatePlatePlayTests`.
+
+### ⚠️ Why screen space, and not a lighting term in a shader
+
+The 09-04 charter asked for a point-light term on the lit-decor path (`SpriteLitDecor.hlsl`) and the
+terrain splat. **That would have lit the shore, the trees and the yards and lit nothing at either
+wharf** — which is where the owner was looking. Two facts, both grepped rather than assumed:
+
+- **Every wharf deck tile, every fitting and every lamp post is a plain `SpriteRenderer` with no material
+  set.** Not one `sharedMaterial` or `SpriteLightBinder` among either region's builders; only trees,
+  shrubs and shore plants are on the lit-decor path.
+- **There is no painted ground at a pier.** The splat shader clips below its paint floor, and the
+  St Peters pier stands over a slip dredged to −1.0 m: under those planks is sea.
+
+A pass that multiplies the assembled frame lights whatever occupies the pixel — planks, bollards, a mesh
+hull, the walker — with no per-family art and no bake. The mesh hull is worth calling out: a dory lying
+in a pool is brightened like the planks beside her **without the facet path being touched at all**.
+
+### ⚠️ The accepted cost, and the one-field way back
+
+Screen space cannot tell a plank from a gull: something **above** the ground passing over a pool is
+brightened as though it were standing in it. The lamp SHADOW system has accepted exactly this cost since
+#698 and the sun's shade arm since #727; this is the third member of that family and the trade is the
+same one. `LampShadowProfile.PoolsEnabled` restores the pre-pool frame exactly, and it is one field in an
+asset the owner can reach.
+
+### ⏳ OPEN for the owner: does a wharf light its own water?
+
+The charter asked whether shore lamps should compete for `WaterLightBridge`'s four slots so that a wharf
+at night lights the water beside it. **This amendment does not decide it.** Lamp posts remain off the
+water bridge by construction (only `BoatSpotlight` implements `IWaterLightEmitter`), so a berth's water is
+still unlit by the quay above it. The reason for leaving it is that the land pool is *visible* and can be
+ruled on by eye first; deciding the water in the same PR would be a second unreviewed change riding on the
+first. It stays an open question against this ADR.
+
+### Budget (rule 7)
+
+`LampShadowProfile.MaxPools` quads (8 shipped), one shared mesh, one shared material, one property block,
+no per-frame allocation; nearest lamps to the camera win the slots, chosen on the shadow system's own
+throttled tick from the **one** light registry (`LampShadowSystem.LiveLights` — two registries would mean
+two registration points, and the second is the one somebody forgets to unregister from). A lamp with no
+`SceneLight.ReachMetres` — every boat lamp, by default — is not a candidate at all, so a wharf full of
+moored hulls costs nothing. The fragment is one `rsqrt`, one `smoothstep`, one dot and a multiply; no
+texture reads.
+
+### What did NOT change
+
+No new light primitive: a lamp is still a `SceneLight`. No per-object materials. The day/night curve, the
+water shader and the beam relief are untouched. The night gate is the shipped one — `LampPoolSystem` asks
+`LightMath.NightGateWithFallback` at each lamp's own thresholds, so a pool is invisible by day with no
+per-light coupling to the cycle (measured: the two arms differ by 0 px at noon). `WindowGlow` still draws
+its bloom at its whole pool, by the owner's preference, and now casts a ground pool like any other lamp.
+
+### Tunables (rule 6)
+
+| Tunable | Where | Default |
+|---|---|---|
+| Do lamps light the ground at all | `LampShadowProfile.PoolsEnabled` | **on** (off = the pre-pool frame, exactly) |
+| How close to fully lit the ground comes back | `LampShadowProfile.PoolStrength` | 0.6 |
+| How much of the radius is edge | `LampShadowProfile.PoolEdgeSoftness` | 0.55 |
+| How many pools may draw at once | `LampShadowProfile.MaxPools` | 8 |
+| How far one lamp lights | `SceneLight.ReachMetres` (from `LightPresets.ReachMetres`) | 3.4 / 3.6 / 5.2 / 7 m by kind; 0 = no pool |
+| The gain's ceiling and the ambient floor | `LightMath.MaxPoolGain` / `MinPoolAmbientLuminance` | 8 / 0.02 |
+

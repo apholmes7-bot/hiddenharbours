@@ -305,6 +305,25 @@ namespace HiddenHarbours.Vehicles
                     VehicleFitmentMotion.RollOnly =>
                         Quaternion.AngleAxis(rollDegrees, RigRight),
 
+                    // ⭐⭐ A STEERED ASSEMBLY ON THE ART'S OWN AXIS — the two arms the ATV pack
+                    // forced. A dirtbike's front end turns about the RAKED axis through her head,
+                    // and a rotation about a vertical axis preserves z exactly, so the arms above
+                    // CANNOT draw her: measured 2026-09-06 at full lock, the bike's moved vertices
+                    // shift 0.1088 m in z (3.5 px at 32 px/m) and the trike's 0.0847 m (2.7 px),
+                    // while the quad's shift 0.000000000 m and stay on SteerAndRoll.
+                    //
+                    // ⚠️ THE RAW STEER FRACTION, NOT THE ACKERMANN SOLVE. A single front wheel on
+                    // the centreline has no partner to split against, and the quad's bars turn at
+                    // their own 28° while her wheels take a 30° inner lock. Feeding these the pair
+                    // above would turn a Centre fitting by the OUTER angle — 8.06° adrift at the
+                    // stops on the quad's bars, which is where the rider's hands are pinned.
+                    VehicleFitmentMotion.AxisSteerAndRoll =>
+                        Quaternion.AngleAxis(steer * f.SteerLockDegrees, DeclaredAxis(f)) *
+                        Quaternion.AngleAxis(rollDegrees, RigRight),
+
+                    VehicleFitmentMotion.AxisSteerOnly =>
+                        Quaternion.AngleAxis(steer * f.SteerLockDegrees, DeclaredAxis(f)),
+
                     // ⚠️ NAMED ARMS AND A THROWING DEFAULT — the standard #560 set for append-only
                     // Core enums, applied here 2026-08-27. This was `_ => roll`, which is the trap
                     // that standard exists for: the next motion appended to VehicleFitmentMotion
@@ -391,6 +410,29 @@ namespace HiddenHarbours.Vehicles
 
             for (int k = 0; k < built.Length; k++)
                 if (built[k] != null) built[k].Visible = k == state;
+        }
+
+        /// <summary>
+        /// ⚠️ <b>The axis an <c>AxisSteer*</c> fitting declares — and a REFUSAL when it declares
+        /// none.</b>
+        ///
+        /// <para>Substituting <see cref="RigUp"/> for a missing axis is the one thing this must not
+        /// do. A fork posed flat is a bike whose front wheel climbs out of the road at lock, and it
+        /// draws perfectly at steer 0 — so the failure would ship, and would only be visible in the
+        /// frames a player is busy steering through. The bake always writes this field for these two
+        /// motions; a zero here means an asset older than the arm, and stopping is the honest
+        /// answer.</para>
+        /// </summary>
+        private static Vector3 DeclaredAxis(in VehicleFitment f)
+        {
+            Vector3 axis = f.SteerAxisNormalised;
+            if (axis == Vector3.zero)
+                throw new System.InvalidOperationException(
+                    $"fitting '{f.Slot}' takes {f.Motion}, which turns about the axis the ART " +
+                    "declares, but its SteerAxisLocal is zero. Re-bake the vehicle: falling back to " +
+                    "vertical would draw a raked fork flat, which looks correct at rest and wrong at " +
+                    "every angle a rider actually holds.");
+            return axis;
         }
 
         /// <summary>The rig's own up axis (+z, out of the road). A positive rotation about it swings

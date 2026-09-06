@@ -193,13 +193,7 @@ namespace HiddenHarbours.World
 
         /// <summary>Total walked length of a polyline slice, in metres. 0 for fewer than two points.</summary>
         public static float PolylineLength(Vector2[] points, int start, int count)
-        {
-            if (points == null || count < 2) return 0f;
-            float total = 0f;
-            for (int i = start; i < start + count - 1; i++)
-                total += Vector2.Distance(points[i], points[i + 1]);
-            return total;
-        }
+            => Polyline.Length(points, start, count);
 
         /// <summary>
         /// The point <paramref name="distance"/> metres along a polyline slice — the whole of "where is she
@@ -210,21 +204,7 @@ namespace HiddenHarbours.World
         /// polyline with a repeated point cannot produce a NaN position.</para>
         /// </summary>
         public static Vector2 PointAlong(Vector2[] points, int start, int count, float distance)
-        {
-            if (points == null || count <= 0) return Vector2.zero;
-            if (count == 1 || distance <= 0f) return points[start];
-
-            float remaining = distance;
-            for (int i = start; i < start + count - 1; i++)
-            {
-                Vector2 a = points[i], b = points[i + 1];
-                float len = Vector2.Distance(a, b);
-                if (len <= 0f) continue;
-                if (remaining <= len) return Vector2.Lerp(a, b, remaining / len);
-                remaining -= len;
-            }
-            return points[start + count - 1];
-        }
+            => Polyline.PointAlong(points, start, count, distance);
 
         /// <summary>
         /// The compass heading (degrees, 0 = North, clockwise) the walk is travelling at
@@ -245,21 +225,12 @@ namespace HiddenHarbours.World
         public static float HeadingAlong(Vector2[] points, int start, int count, float distance,
                                         float fallback)
         {
-            if (points == null || count < 2) return fallback;
-
-            float remaining = Mathf.Max(0f, distance);
-            for (int i = start; i < start + count - 1; i++)
-            {
-                Vector2 a = points[i], b = points[i + 1];
-                float len = Vector2.Distance(a, b);
-                if (len <= 0f) continue;
-                if (remaining <= len || i == start + count - 2)
-                {
-                    return IsoGround.BearingDegrees(a, b);   // ground bearing, not the raw world-XY angle
-                }
-                remaining -= len;
-            }
-            return fallback;
+            Vector2 tangent = Polyline.TangentAlong(points, start, count, distance);
+            // ⭐ A GROUND bearing, and the un-squash is THIS caller's, not the primitive's. Polyline hands
+            // back a raw direction precisely so that a walker states her own convention here and a vehicle
+            // states hers (world-XY, transform.up) in Vehicles — the two differ by up to 12.5° and a body
+            // posed in the other one's is visibly crabbed. See Polyline's class note.
+            return tangent == Vector2.zero ? fallback : IsoGround.BearingDegrees(tangent);
         }
     }
 }

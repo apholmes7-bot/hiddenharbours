@@ -4390,3 +4390,106 @@ keep the shipped value on their LOOK shots. ⚠️ **Either** colour, not just t
 `ThePlungingAnatomy_DrawsOnlyWhereTheSlopeEarnsIt` paints the **lip alone**, and keying the pin on the
 sheet's colour left the walk live over a red lip — the lip came back as the palette's foam anchor and the
 test read *"no lip was drawn"*.
+
+## 34. The sun side — the light gets a colour and the swell gets a face to turn (register row 11, owner ranking 2026-09-04)
+
+The owner: *"the light needs to affect the environment."* At golden hour ADR 0013 multiplied the whole
+frame by the tint (0.866, 0.529, 0.356) and the sea took that orange exactly as the beach and the mirror
+stripes did. The fragment's only sun terms were `_SwellFaceShade`, which adds the **same amount to r, g
+and b** — a value, not a colour — and the glitter, which the register had already judged illegible
+against row 5's stripes. So there was no warm side and no cool one.
+
+### What it is
+
+`_SunSideStrength` (0..2, **1.7** on all nine materials) adds a **COLOUR** where `_SwellFaceShade` adds a
+**VALUE**, on the **same signed facing**. The facing was hoisted out of the shading block for this: there
+is one field slope, it is turned into a facing in exactly one place, and both terms read it. Neither dial
+can switch the other off, and the sea cannot grow a second normal on the next retune.
+
+```hlsl
+float3 sunChroma = tintRGB - tintGrey;              // the light's own hue, derived
+float  sinSq     = 1.0 - e * e;                     // e = _SunElevation = cos(solarX * pi/2)
+float  elevGate  = smoothstep(0.0, 0.12, e) * sinSq * sinSq;
+col.rgb += sunChroma * (faceSigned * max(_SunSideStrength, 0.0) * elevGate * swellReadGate);
+```
+
+**The two colours are not authored.** They are `_DayNightTint`'s deviation from its own grey — at 17:00
+that is (+0.282, −0.055, −0.228), orange, derived and never typed — and for the lee face, that deviation
+**negated**, which is the complement the sky throws into a shadow. Warm sun, cool shade, the actual
+physics of a low sun, and no new palette constant for a wholesale preset to forget (§13's trap). It is
+deliberately **not normalized**: a colourless light has a zero deviation and the term self-cancels, with
+no divide, no epsilon and no guard.
+
+### ⚠️ The trap: the golden hour's sun is not low
+
+The obvious gate is "strongest when `_SunElevation` is small". It is wrong here, and quietly so. Sunrise
+6 / sunset 20 puts **solar noon at 13:00**, so the register's golden hour (17:00, found on the profile as
+the warmest still-bright afternoon tint) sits only 4/7 of the way to the horizon and publishes
+`e = 0.6235`. A `1 − e` gate would have been **weakest exactly where the register complains**, and the
+plates would have shown almost nothing while the code read perfectly well.
+
+The gate is instead `sin⁴` of the solar arc angle. Since `e = cos(solarX·π/2)`, `(1 − e²)` is `sin²`, so:
+
+| hour | `_SunElevation` | gate |
+|---|---|---|
+| solar noon 13:00 | 1.0000 | 0 exactly |
+| the plates' noon 12:00 | 0.9749 | **0.00245** |
+| golden hour 17:00 | 0.6235 | **0.37364** |
+| horizon 20:00 | 0.0000 | 1 |
+| night 02:00 | −0.7818 | 0 (the `smoothstep`) |
+
+A **152× separation** between the two hours the sheet photographs — which is what makes the noon column
+provably blank rather than merely faint. The `smoothstep` is load-bearing and not decoration: `sin⁴` is
+symmetric about the horizon and reads **0.151 at 02:00**, i.e. a sun side on a night sea.
+
+### Measured, not argued (`SunSideMeasurementTests`, no GPU — CI runs it)
+
+A sun side is a claim about a **split between two populations**, and the populations are not a screen
+rectangle — they are the faces of a moving swell. So every number is a **centroid over faces**: each
+sample is assigned to the sunward or lee population by its own facing.
+
+| | value | as a fraction of the mirror's 0.063 row-band contrast |
+|---|---|---|
+| warm/cool split (r−b) at golden hour | **0.06298** | **1.00×** |
+| the same split in luminance | 0.00908 | 0.14× |
+| worst channel at noon | 0.000014 | 0.003 of one 8-bit code |
+
+It is a **hue** signal, not a second brightness layer competing with the mirror — which is why it is
+legible against stripes that own value.
+
+**The controls are the point.** A term that lifts BOTH faces genuinely brightens (luma +0.011 on each) and
+scores a warm/cool split of 0.0001 — 0.16 % of the real term's. And ⚠️ the honest baseline is not zero:
+because ADR 0013 **multiplies**, the signed GREY `_SwellFaceShade` already in the sea comes out orange on
+the lit face and blue on the shaded one all by itself — grey × orange is orange. It gets an **incidental
+split of 0.00513 for free**. "The sunward face got warmer" is therefore *not* evidence of a sun side. The
+claim is that this term is **12.3× that accident**, and that is the number that answers the register's
+*"none is legible"*.
+
+Sheet: `SHEET-sunside.png`, four cells, **0-px noise floor on every one**. Golden hour moves 1.05 % of the
+shoal's water and 8.70 % of the open sea; **noon moves exactly 0 px, and a glass calm exactly 0 px** — the
+term shares the modelled swell's calm gate, so row 5's sacred mirror is untouched by construction.
+
+The shoal moves so much less than the open sea for a reason worth knowing: this term composes into
+`col.rgb` **before** the surf band does (the sun side ~4863; the surf lerps over it at ~5233–5273), so
+wherever whitewater covers the water it covers the sun side with it. `nmc-sand` at spring low aimed down
+the longest surf run is mostly surf and drying beach; West Water is open swell with no surf at all.
+
+Cost: **~25 scalar ops per fragment, no new texture read** (rule 7). `_SunSideStrength 0` is an exact
+passthrough.
+
+### ⚠️ What shipping it uncovered — register row 25
+
+The term is correct and the controls are clean, but **it has nowhere legible to land on open water**, and
+that is not row 11's fault. Two shipped decisions meet:
+
+- the modelled swell's calm gate (`_SwellReadSeaStateLo 0.28` → `Hi 0.45`, the owner's 2026-07-08 tuning
+  so a glassy calm shows no read) means the swell terms are **0 at glass and at light airs**, awake only
+  at blow and above;
+- at blow and above the drawn sea is **near-black**: open water's mean wet luma falls **0.176 → 0.012
+  between light and blow at NOON**, a 15× cliff, and it is not a West Water quirk — `nmc-sand` at a blow is
+  0.454 at spring low but **0.026 at mean tide**, because the bright low-water plate is exposed sand, not
+  water.
+
+So "the swell reads" and "the water is visible" barely intersect. PR 9 **refused to widen the owner's calm
+gate** as a workaround for a defect that is not row 11's; row 25 carries the numbers and the two candidate
+directions, both of which are his call.

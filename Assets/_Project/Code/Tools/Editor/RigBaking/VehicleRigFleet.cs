@@ -114,6 +114,27 @@ namespace HiddenHarbours.Tools.RigBaking
             /// </summary>
             public readonly float YMin, YMax;
 
+            /// <summary>
+            /// ⭐ <b>Height window (centroid z, rig metres) — the FOURTH claim dimension, and the
+            /// only one that lifts a quad's HANDLEBARS out of her front tyres.</b> Defaults to the
+            /// whole machine, so everything that does not need it says nothing.
+            ///
+            /// <para><b>Why the other three cannot.</b> The bars straddle the centreline, so
+            /// <see cref="SideSign"/> would cut them in half and hand each half to a knuckle. They
+            /// sit at the same fore-aft station as the bottom of the front tyre — bars
+            /// y 0.330…0.420, and a 0.315 m tyre centred at y 0.64 puts face centroids as low as
+            /// y 0.334 — so <see cref="YMin"/>/<see cref="YMax"/> cannot. And the grips ARE rubber,
+            /// the same material as the tyre, so <see cref="Materials"/> cannot either.</para>
+            ///
+            /// <para><b>Height can, and with a wide margin.</b> Measured 2026-09-06 in the repo's
+            /// own V8 over the 125 faces her steer moves that her roll does not: the highest tyre
+            /// face centroid is <b>z 0.6221</b> and the lowest bar-assembly face — the stem — is
+            /// <b>z 0.7200</b>. A 0.098 m gap, and the split at 0.67 takes exactly 45 faces
+            /// (6 alloy + 14 galv + 5 paint + 20 rubber) spanning x[−0.380, 0.380] y[0.330, 0.420]:
+            /// the bars, the stem, the tube and both grips, and nothing else.</para>
+            /// </summary>
+            public readonly float ZMin, ZMax;
+
             /// <summary>The point this fitting turns about, in rig metres. For a front wheel this is
             /// the hub centre, which is ALSO a point on its own vertical steer axis (the rig models
             /// no kingpin offset, caster or scrub radius) — so ONE pivot serves both rotations, and
@@ -182,6 +203,20 @@ namespace HiddenHarbours.Tools.RigBaking
             /// cab.</summary>
             public readonly string ParentSlot;
 
+            /// <summary>
+            /// ⭐⭐ For <see cref="VehicleFitmentMotion.AxisSteerAndRoll"/> and
+            /// <see cref="VehicleFitmentMotion.AxisSteerOnly"/>: the axis this assembly turns about,
+            /// in rig metres, and the SIGNED angle it reaches at full LEFT lock (steer = +1).
+            ///
+            /// <para>Zero on everything else — the two arms that read them are the only ones that
+            /// can reach them, so no baked asset in the fleet moves. See
+            /// <see cref="VehicleFitmentMotion.AxisSteerAndRoll"/> for the measurement that made a
+            /// declared axis necessary: a rotation about the vertical preserves every vertex's z
+            /// exactly, and a raked fork's rotation does not.</para>
+            /// </summary>
+            public readonly Vector3 SteerAxisLocal;
+            public readonly float SteerLockDegrees;
+
             public Axis(string slot, string probe, VehicleFitmentMotion motion,
                         VehicleFitmentSide side, int sideSign, Vector3 pivot,
                         float yMin = float.NegativeInfinity,
@@ -192,7 +227,11 @@ namespace HiddenHarbours.Tools.RigBaking
                         float[] slideSampleTs = null,
                         string[] stateNames = null, string[] statePoses = null,
                         string[] stateProbes = null,
-                        string parentSlot = null)
+                        string parentSlot = null,
+                        Vector3 steerAxisLocal = default,
+                        float steerLockDegrees = 0f,
+                        float zMin = float.NegativeInfinity,
+                        float zMax = float.PositiveInfinity)
             {
                 Slot = slot; Probe = probe; Motion = motion; Side = side;
                 SideSign = sideSign; Pivot = pivot;
@@ -203,6 +242,8 @@ namespace HiddenHarbours.Tools.RigBaking
                 StateNames = stateNames; StatePoses = statePoses;
                 StateProbes = stateProbes;
                 ParentSlot = parentSlot;
+                SteerAxisLocal = steerAxisLocal; SteerLockDegrees = steerLockDegrees;
+                ZMin = zMin; ZMax = zMax;
             }
 
             /// <summary>Anything the player opens, as opposed to anything the road turns. Asked in one
@@ -997,6 +1038,280 @@ namespace HiddenHarbours.Tools.RigBaking
         static readonly Axis[] TrailerReefer53Axes =
             WithDoors(TrailerFlatbed53Axes, ReeferBarns(-16.15f / 2f + 0.02f));
 
+        // =============================================================================================
+        //  ⭐⭐ THE ATV PACK (owner drop 2026-09-06) — the first machines you sit ASTRIDE, and the
+        //  first in the fleet whose steer is not a rotation about the vertical.
+        //
+        //  Every number below was measured in the repo's own V8 on the delivered bytes (2026-09-06)
+        //  and every one is re-asserted in AtvPackProbeTests. The partition per body, face for face:
+        //
+        //    enduro250   497 faces = 36 WheelF (spokes) + 36 WheelR (spokes) + 176 ForkF + 249 body
+        //    trike200    574       = 64 WheelF          + 32+32 WheelR       + 186 ForkF + 260 body
+        //    utilityQuad 663       = 32+32 WheelF + 32+32 WheelR + 45 Bars + 40+40 KnuckleF + 410 body
+        //
+        //  ⚠️⚠️ THE BIKE'S BODY IS THE RIDDEN STATE, `stand:0`. `render(d,{body:'dirtbike'})` at rest
+        //  is stand 1 — PARKED, leaned 12° onto her side stand, 502 faces — and the kit's own README
+        //  calls the default a pooling trap. A mesh taken from it is a bike NOBODY CAN RIDE, and it
+        //  would have looked entirely correct in every still.
+        // =============================================================================================
+
+        /// <summary>
+        /// ⭐ The steering axis of a raked head, as a unit vector in rig metres: <c>(0, −sin, cos)</c>
+        /// of the rake, which is the rig's own <c>axisOf(P)</c> character for character.
+        ///
+        /// <para>Computed rather than typed. Two rakes, two axes, four components between them, and a
+        /// slip in any one of them draws a fork that leans the wrong way at lock — exactly the class
+        /// of near-miss this project has shipped before. Re-derived from <c>SPECS.&lt;body&gt;.rake</c>
+        /// in <c>AtvPackProbeTests</c>.</para>
+        /// </summary>
+        static Vector3 RakedSteerAxis(float rakeDegrees)
+        {
+            float r = rakeDegrees * Mathf.Deg2Rad;
+            return new Vector3(0f, -Mathf.Sin(r), Mathf.Cos(r));
+        }
+
+        /// <summary>
+        /// ⭐⭐ A SINGLE-TRACK machine's articulation — one front wheel on the centreline, one raked
+        /// steering axis, and a rear that only rolls. The bike and the trike share it; the trike's
+        /// rear is a PAIR and the bike's is one wheel, which is the only difference between them.
+        ///
+        /// <para><b>The order is the whole plan, as it is on the trucks.</b> The front ROLL axis takes
+        /// the spokes first, so by the time <c>{steer:1}</c> is asked it finds only what turns and
+        /// does not roll: the slider, the yoke, the bars, the fender and the lamp. Listing steer first
+        /// would swallow the wheel and leave the roll axis empty — which the baker fails on rather
+        /// than shipping.</para>
+        ///
+        /// <para><b>Why the pivot is the HUB for both.</b> Measured: the rig's steering axis is
+        /// <c>alongFork(P, 0, t)</c>, and at <c>t = 0</c> that IS <c>(0, axF, rF)</c> — the rig models
+        /// no trail and no offset — so one point serves the steer and the roll and both fittings can
+        /// name it. Applying ONE rotation about that axis through that point to the rest vertices
+        /// reproduces the rig's own full-lock pose with a worst residual of <b>2.7e-16 m</b> on the
+        /// bike over 908 vertices and <b>3.4e-16 m</b> on the trike over 1152. That is the last bit of
+        /// a double, not an approximation.</para>
+        ///
+        /// <para>⚠️ <b>What ROLLS is small, and that is the rig rather than a mistake.</b> The bike's
+        /// front wheel moves 36 faces under <c>rollF</c> — six galvanised spokes — because her tread is
+        /// a procedural <c>lugTex</c> and the mesh path drops procedural <c>tex</c> entirely. The
+        /// Otter and the whole road fleet are built the same way.</para>
+        /// </summary>
+        /// <param name="rearX">half the rear track, or 0 for a single rear wheel. A trike's rear pair
+        /// sits at ±0.42 and one <c>rollR</c> probe moves both, so they are split by side.</param>
+        static Axis[] BuildSaddleAxes(float axF, float rF, float axR, float rR,
+                                      float rakeDegrees, float lockDegrees, float rearX)
+        {
+            Vector3 steerAxis = RakedSteerAxis(rakeDegrees);
+            var hub = new Vector3(0f, axF, rF);
+            var axes = new List<Axis>(4);
+
+            // ⚠️ THE FRONT ROLL FIRST. It claims the spokes; the fork axis below then finds the rest.
+            axes.Add(new Axis("WheelF", "{rollF:0.25}", VehicleFitmentMotion.AxisSteerAndRoll,
+                              VehicleFitmentSide.Centre, 0, hub,
+                              steerAxisLocal: steerAxis, steerLockDegrees: lockDegrees));
+
+            if (rearX <= 0f)
+            {
+                axes.Add(new Axis("WheelR", "{rollR:0.25}", VehicleFitmentMotion.RollOnly,
+                                  VehicleFitmentSide.Centre, 0, new Vector3(0f, axR, rR)));
+            }
+            else
+            {
+                // One probe, two wheels, opposite sides. Measured 32/32 with NOTHING on the
+                // centreline, so the side sign partitions them exactly.
+                axes.Add(new Axis("WheelRL", "{rollR:0.25}", VehicleFitmentMotion.RollOnly,
+                                  VehicleFitmentSide.Left, -1, new Vector3(-rearX, axR, rR)));
+                axes.Add(new Axis("WheelRR", "{rollR:0.25}", VehicleFitmentMotion.RollOnly,
+                                  VehicleFitmentSide.Right, +1, new Vector3(rearX, axR, rR)));
+            }
+
+            // The fork: everything the steer moves that the front wheel did not already take.
+            axes.Add(new Axis("ForkF", "{steer:1}", VehicleFitmentMotion.AxisSteerOnly,
+                              VehicleFitmentSide.Centre, 0, hub,
+                              steerAxisLocal: steerAxis, steerLockDegrees: lockDegrees));
+            return axes.ToArray();
+        }
+
+        /// <summary>
+        /// ⭐ <b>The quad's articulation — and she is the one body in the pack that fits the existing
+        /// arms.</b> Her front pair yaw about their own VERTICAL kingpins (the rig's <c>hingeZ</c>),
+        /// measured at full lock as a max |Δz| of <b>0.000000000 m</b> over all 896 moved vertices, so
+        /// <see cref="VehicleFitmentMotion.SteerAndRoll"/> is exactly right for her and the Ackermann
+        /// solve is what splits her inner from her outer (30° / 21.94°).
+        ///
+        /// <para>⚠️⚠️ <b>HER BARS ARE A SEPARATE FITTING, AND THE ORDER IS LOAD-BEARING.</b> They turn
+        /// ±28° about the stem while her wheels take the Ackermann pair off a 30° inner lock, so they
+        /// cannot ride the wheels' solve — a Centre fitting would take the OUTER angle and be 8.06°
+        /// adrift at the stops, which is 0.053 m at her 0.38 m bar half-width: 1.7 px, and the on-deck
+        /// arc pins a rider's hands to those grips.</para>
+        ///
+        /// <para><b>And they need the fourth claim dimension.</b> The bars straddle the centreline
+        /// (no side sign), share a fore-aft station with the bottom of the front tyre (bars
+        /// y 0.330…0.420; the tyre's own face centroids reach y 0.334 — no y window), and the grips are
+        /// RUBBER, the same material as the tyre (no material filter). Height separates them, and
+        /// cleanly: highest tyre face centroid <b>z 0.6221</b>, lowest bar face — the stem —
+        /// <b>z 0.7200</b>. The split at 0.67 takes exactly 45 faces spanning x[−0.380, 0.380]
+        /// y[0.330, 0.420]: the stem, the crossbar, both grips and the cowl, and nothing else. The
+        /// knuckles then find 40 a side with no face left on the centreline.</para>
+        /// </summary>
+        static Axis[] BuildQuadAxes(float wheelX, float axF, float axR, float wheelR,
+                                    float stemY, float barsLockDegrees)
+        {
+            var axes = new List<Axis>(7);
+
+            // The four roll axes first: they take the rim studs, and nothing else moves under roll.
+            axes.Add(new Axis("WheelFL", "{rollF:0.25}", VehicleFitmentMotion.SteerAndRoll,
+                              VehicleFitmentSide.Left, -1, new Vector3(-wheelX, axF, wheelR)));
+            axes.Add(new Axis("WheelFR", "{rollF:0.25}", VehicleFitmentMotion.SteerAndRoll,
+                              VehicleFitmentSide.Right, +1, new Vector3(wheelX, axF, wheelR)));
+            axes.Add(new Axis("WheelRL", "{rollR:0.25}", VehicleFitmentMotion.RollOnly,
+                              VehicleFitmentSide.Left, -1, new Vector3(-wheelX, axR, wheelR)));
+            axes.Add(new Axis("WheelRR", "{rollR:0.25}", VehicleFitmentMotion.RollOnly,
+                              VehicleFitmentSide.Right, +1, new Vector3(wheelX, axR, wheelR)));
+
+            // ⚠️ THE BARS BEFORE THE KNUCKLES. A side-signed knuckle would cut the crossbar in half
+            // and hand each grip to a different front wheel. The height window is what lifts them out;
+            // 0.67 sits in the measured 0.098 m gap between the tyre's crown and the stem's foot. The
+            // pivot's z is arbitrary for a rotation about a vertical axis, so it is the stem's own
+            // foot rather than an invented number.
+            axes.Add(new Axis("Bars", "{steer:1}", VehicleFitmentMotion.AxisSteerOnly,
+                              VehicleFitmentSide.Centre, 0, new Vector3(0f, stemY, 0.72f),
+                              steerAxisLocal: new Vector3(0f, 0f, 1f),
+                              steerLockDegrees: barsLockDegrees,
+                              zMin: 0.67f));
+
+            // What is left of the steer on each side: the tyre carcass and the rim that yaw with the
+            // corner but do not turn with the studs.
+            axes.Add(new Axis("KnuckleFL", "{steer:1}", VehicleFitmentMotion.SteerOnly,
+                              VehicleFitmentSide.Left, -1, new Vector3(-wheelX, axF, wheelR)));
+            axes.Add(new Axis("KnuckleFR", "{steer:1}", VehicleFitmentMotion.SteerOnly,
+                              VehicleFitmentSide.Right, +1, new Vector3(wheelX, axF, wheelR)));
+            return axes.ToArray();
+        }
+
+        // The three bodies' own numbers, off AtvIso.SPECS. Asserted against the rig in
+        // AtvPackProbeTests, so a re-shaped rig reddens rather than baking a wheel in the wrong place.
+        static readonly Axis[] Enduro250Axes =
+            BuildSaddleAxes(0.74f, 0.35f, -0.74f, 0.33f, 27f, 35f, 0f);
+
+        static readonly Axis[] Trike200Axes =
+            BuildSaddleAxes(0.60f, 0.29f, -0.60f, 0.28f, 25f, 30f, 0.42f);
+
+        static readonly Axis[] UtilityQuadAxes =
+            BuildQuadAxes(0.48f, 0.64f, -0.64f, 0.315f, 0.40f, 28f);
+
+        /// <summary>
+        /// One saddle body's chassis, in the ATV rig's own words — one expression set with the body
+        /// substituted, because all three really do share a vocabulary.
+        ///
+        /// <para>⚠️ <b>WHEEL RADIUS IS THE REAR ONE, and on two of the three the front differs.</b>
+        /// The rig's <c>roll</c> is <i>revolutions of the REAR wheel</i> and its
+        /// <c>distancePerRev</c> is <c>2πrR</c>, so the odometer the driver rolls the wheels from has
+        /// to be solved on that radius. Reading <c>rF</c> instead would turn every wheel at the wrong
+        /// rate against the ground she covers — 6% out on the bike.</para>
+        ///
+        /// <para>⚠️ <b>FRONT TRACK IS ZERO on the bike and the trike, and it is a MEASUREMENT.</b>
+        /// Both are single-track at the front: one wheel on the centreline, no Ackermann partner to
+        /// split against, and <c>VehicleSteeringMath.AckermannDegrees</c> with a zero track returns
+        /// <c>outer == inner</c>, which is what a single front wheel does. The trike's REAR track is
+        /// 0.84 m and is deliberately not written here: this field is the Ackermann term, and hers is
+        /// a dead axle.</para>
+        ///
+        /// <para><b>The outer lock equals the inner on those two</b> for the same reason — the same
+        /// wheel is both. The quad publishes a real pair and reads it off <c>steer.quad</c>.</para>
+        /// </summary>
+        static VehicleChassisSource SaddleChassis(string body, string frontTrack,
+                                                  string maxInner, string maxOuter) =>
+            new VehicleChassisSource
+            {
+                Wheelbase = $"AtvIso.SPECS.{body}.axF - AtvIso.SPECS.{body}.axR",
+                FrontTrack = frontTrack,
+                // rR on the bike and the trike; the quad has ONE radius and publishes it as `r`.
+                WheelRadius = $"(function(P){{return P.rR != null ? P.rR : P.r;}})(AtvIso.SPECS.{body})",
+                FrontAxleY = $"AtvIso.SPECS.{body}.axF",
+                RearAxleY = $"AtvIso.SPECS.{body}.axR",
+                MaxInnerDeg = maxInner,
+                MaxOuterDeg = maxOuter,
+                TravelFront = $"AtvIso.SPECS.{body}.TF",
+                // ⚠️ The trike's is a MEASURED ZERO — a rigid rear axle on balloon tyres, recorded in
+                // her own sidecar as the class's fact rather than as an omission. `susR` on her moves
+                // 0 faces.
+                TravelRear = $"AtvIso.SPECS.{body}.TR",
+            };
+
+        /// <summary>
+        /// One ATV entry — three bodies off ONE rig and ONE sidecar, so every field that carries the
+        /// PICK is written once here rather than three times.
+        ///
+        /// <para>⚠️⚠️ <b>FIVE places carry it, and every one fails SILENTLY without it</b>, because
+        /// <c>AtvIso.resolve</c> falls back to the QUAD for an unknown or absent body — measured
+        /// 2026-09-06 at <b>0 pixels</b> difference from a real quad, and a plausible quad is exactly
+        /// why nothing downstream would catch it:</para>
+        /// <list type="number">
+        ///   <item><c>Extraction.FaceExpression</c> — which body's faces are baked;</item>
+        ///   <item><c>Extraction.ViewOptions</c> — which body the azimuth anchors are read for;</item>
+        ///   <item><c>RestPose</c> — which body the articulation probes measure from;</item>
+        ///   <item><c>SidecarBodyScope</c> — whose collider, saddle and interactions are read;</item>
+        ///   <item>and on the bike, <c>stand:0</c> in the first three — see the block comment above.
+        ///   </item>
+        /// </list>
+        /// <para>There is no per-body CELL to get wrong, which is the one way this is easier than the
+        /// trailers: 256 × 192 at pivot (128,128) serves all three, and it is the Otter's cell.</para>
+        /// </summary>
+        static Vehicle SaddleVehicle(string key, string pick, string label, string meshName,
+                                     string defName, string restExtras,
+                                     Axis[] axes, VehicleChassisSource chassis,
+                                     string abeamLeft, string abeamRight,
+                                     string aftAnchor, string foreAnchor)
+        {
+            string pose = $"{{body:'{pick}'{restExtras}}}";
+            return new Vehicle(
+                key,
+                "docs/art/rigs/atv-pack/atvIsoRig.js",
+                SidecarFolder + "/atvIsoRig.atvPack.gameplay.json",
+                "AtvIso",
+                pick: pick,
+                meshAssetPath: $"Assets/_Project/Data/Vehicles/Meshes/{meshName}VehicleMesh.asset",
+                meshId: $"vehiclemesh.{ToSnakeKey(key)}",
+                faceBuilderName: "build",
+                extraction: new RigHullExtraction
+                {
+                    // ⚠️ `AtvIso.resolve`, QUALIFIED — the shim widens `build` onto the GLOBAL and does
+                    // not put the closure's other privates in scope. And the BODY IS NAMED: without it
+                    // all three bake the quad, three times, with no error anywhere.
+                    FaceExpression = $"build(AtvIso.resolve({pose}))",
+                    ExtraSymbols = new[] { "build" },
+                    // What a probe needs to photograph THIS body rather than the rig's default. The
+                    // cell is shared, so there is no HullScope — the global's W/H/pivot are right for
+                    // all three.
+                    ViewOptions = pose,
+                },
+                axes: axes,
+                chassisSource: chassis,
+                azimuthAftAnchor: aftAnchor, azimuthForeAnchor: foreAnchor,
+                azimuthAbeamLeftAnchor: abeamLeft, azimuthAbeamRightAnchor: abeamRight,
+                restPose: pose,
+                sidecarBodyScope: pick,
+                // ⚠️ NO DOOR GROUPS. `ride` and `stand` are INTERACT ids, but a door group resolves to
+                // FITTINGS it moves and neither of those moves one: mounting is a rider's animation and
+                // the side stand is deferred (see NotBaked's neighbours in the PR body). The way on is
+                // carried by DriveDoorLocal / AltDriveDoorLocal off the sidecar instead.
+                bodyMustNotMove: new[] { "{roll:0.25}", "{steer:1}" },
+                vehicleDefPath: $"Assets/_Project/Data/Vehicles/{defName}.asset",
+                vehicleId: $"vehicle.{ToSnakeKey(key)}",
+                label: label);
+        }
+
+        /// <summary>The fleet key as its Def id's snake_case tail — <c>enduro250</c> →
+        /// <c>enduro_250</c>. Written out rather than derived, because the three are the whole
+        /// population and a general splitter would be a guess about the next one.</summary>
+        static string ToSnakeKey(string key) => key switch
+        {
+            "enduro250" => "enduro_250",
+            "trike200" => "trike_200",
+            "utilityQuad" => "utility_quad",
+            _ => throw new ArgumentOutOfRangeException(nameof(key), key,
+                     "unmapped ATV key — ids are append-only and stable, so a new body names its own."),
+        };
+
         /// <summary>
         /// Every road vehicle whose rig and sidecar are committed. Being here means the drop has
         /// LANDED and is hash-verified — it does <b>not</b> mean it is baked to a mesh. What is baked
@@ -1439,6 +1754,66 @@ namespace HiddenHarbours.Tools.RigBaking
                 bodyMustNotMove: new[] { "{roll:0.25}", "{gear:0}", "{barnL:1,barnR:1}" },
                 doorGroups: new[] { GearGroup(7.175f - 2.00f), ReeferDoorsGroup(16.15f) },
                 label: "Reefer Trailer 53 ft"),
+
+            // =====================================================================================
+            //  ⭐⭐ THE ATV PACK — owner drop 2026-09-06, ONE rig, ONE sidecar, THREE bodies.
+            //  "It's the only used transportation on St. Peter's island other than boats."
+            //
+            //  Azimuth is COUNTER-CLOCKWISE on all three, and both of the baker's oracles agree on
+            //  every one: the abeam pair reads a ground bearing of exactly −90.00° at a quarter turn,
+            //  and the centreline pair puts the nose 52.8 px (bike) / 46.1 px (trike) / 43.5 px
+            //  (quad) WEST at the cell the rig's own `order` labels 'E'. Measured with the same two
+            //  gates the baker applies, before any of this was written.
+            // =====================================================================================
+
+            // ⚠️ HER ABEAM PAIR IS THE GRIPS, not a front axle — she has ONE front wheel, so
+            // `wheelFL`/`wheelFR` (the fleet's default, and the gate's own first suggestion) are
+            // simply absent from her anchors() and the admissibility check would read `undefined.y`.
+            // gripL/gripR are 21.12 px apart at heading 0, level to 0.00000, and give the same
+            // −90.00° bearing every other machine in the fleet does.
+            //
+            // ⚠️ AND HER REST POSE CARRIES `stand:0`. At the rig's own default she is leaned 12° onto
+            // her stand, which would tilt the "abeam" pair off the level the gate requires — the
+            // parked default failing the azimuth gate is the friendliest of its consequences.
+            SaddleVehicle(
+                "enduro250", "dirtbike", "Enduro 250", "Enduro250", "Enduro250",
+                restExtras: ",stand:0",
+                axes: Enduro250Axes,
+                chassis: SaddleChassis("dirtbike", frontTrack: "0",
+                                       maxInner: "AtvIso.steer.dirtbike.maxDeg",
+                                       maxOuter: "AtvIso.steer.dirtbike.maxDeg"),
+                abeamLeft: "gripL", abeamRight: "gripR",
+                aftAnchor: "tail", foreAnchor: "lamp"),
+
+            // Same single-track shape as the bike, and the same grip pair for the same reason. Her
+            // rear IS a pair (±0.42) and `wheelRL`/`wheelRR` would also be admissible at 26.88 px —
+            // the grips are used instead so the two saddle bodies read alike, and both were measured
+            // to agree.
+            SaddleVehicle(
+                "trike200", "trike", "Trike 200", "Trike200", "Trike200",
+                restExtras: "",
+                axes: Trike200Axes,
+                chassis: SaddleChassis("trike", frontTrack: "0",
+                                       maxInner: "AtvIso.steer.trike.maxDeg",
+                                       maxOuter: "AtvIso.steer.trike.maxDeg"),
+                abeamLeft: "gripL", abeamRight: "gripR",
+                aftAnchor: "tail", foreAnchor: "lamp"),
+
+            // ⚠️ HER FORE ANCHOR IS `bars`, NOT a lamp. She carries TWO headlamps, at x ±0.29 in her
+            // fender nose, so `lampL`/`lampR` are off the centreline and the gate rejects either —
+            // correctly, since neither is a fore-aft signal. `bars` sits on the centreline at
+            // y 0.36 and gives −43.5 px at E, read at the rest pose where steer is 0. (`winch` would
+            // be wider still, and it is OFF by default: an anchor that exists only when a fitting is
+            // fitted is not one to hang a heading map on.)
+            SaddleVehicle(
+                "utilityQuad", "quad", "Utility Quad 4x4", "UtilityQuad", "UtilityQuad",
+                restExtras: "",
+                axes: UtilityQuadAxes,
+                chassis: SaddleChassis("quad", frontTrack: "AtvIso.SPECS.quad.wheelX * 2",
+                                       maxInner: "AtvIso.steer.quad.innerMaxDeg",
+                                       maxOuter: "AtvIso.steer.quad.outerMaxDeg"),
+                abeamLeft: "wheelFL", abeamRight: "wheelFR",
+                aftAnchor: "tail", foreAnchor: "bars"),
         };
 
         /// <summary>
@@ -1488,6 +1863,10 @@ namespace HiddenHarbours.Tools.RigBaking
             // hightop van joined the day her re-stamped sidecar landed (2026-08-27, same day asked).
             "caboverBox", "convBox", "hightopVan", "aeroSemi", "classicSemi",
             "trailerFlatbed28", "trailerFlatbed53", "trailerReefer28", "trailerReefer53",
+            // The ATV pack — all three bodies, baked on intake (2026-09-06). Nothing about them was
+            // blocked: 9 ramps against the shader's 16, one shared 256×192 cell, and both azimuth
+            // oracles agreeing counter-clockwise on every body.
+            "enduro250", "trike200", "utilityQuad",
         };
 
         /// <summary>

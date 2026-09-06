@@ -101,18 +101,44 @@ namespace HiddenHarbours.Art
         [Tooltip("How far the beam throws ahead of the bow (metres).")]
         [Min(0.5f)] [SerializeField] private float _range = DefaultRangeMetres;
 
+        /// <summary>
+        /// <b>The shipped fraction of Range the additive quad throws</b> — 0.3, so a 9 m beam wears a
+        /// 2.7 m bloom at the lamp and the water's own relief term carries the rest of the throw.
+        ///
+        /// <para><b>⭐ It shipped at 1, and the owner ruled on what 1 looks like</b> (2026-09-04, the
+        /// St Peters arrival at 06:13): <i>"spotlight doesnt read on water or enviroement its just a flat
+        /// white"</i>. That is a literal description of the mechanism. #691 built the honest illumination —
+        /// the water shader lights each pixel by N·L against the wave field's own normal, so crests catch
+        /// the beam and troughs fall into shadow — and then the full-length quad lays a flat amber cone
+        /// over the top of it, adding the same light again with no relief in it. The brighter, flatter
+        /// layer wins, and the sea under the beam goes featureless.</para>
+        ///
+        /// <para>The dial has existed since #691 and has always named this number in its own tooltip; what
+        /// it lacked was the owner's eye on a plate, which it now has. Nothing else about the beam moves:
+        /// the WATER range is still the full <see cref="DefaultRangeMetres"/>, and the four relief dials on
+        /// <c>Water.mat</c> ship exactly as they are.</para>
+        ///
+        /// <para><b>⚠ A scene that already serialized this keeps its own value.</b>
+        /// <c>StPeters.unity</c> carries <c>_quadGlowScale: 1</c> on the arrival cape's spotlight, and a C#
+        /// default cannot reach a serialized field — the owner's next St Peters Build is what lands 0.3
+        /// there. Said out loud because the alternative is a PR that claims a fix the running game does
+        /// not have.</para>
+        /// </summary>
+        public const float DefaultQuadGlowScale = 0.3f;
+
         [Tooltip("How far the beam's additive QUAD throws, as a fraction of Range. The quad is what lights " +
                  "LAND; the WATER is lit from inside the water shader, which keeps the full Range regardless " +
                  "of this. Since #686 raised the additive lights above the sea, a full-length quad also lays " +
                  "its flat amber cone OVER the water the shader is already lighting with wave relief -- two " +
-                 "illuminations stacked, and the flat one washes the relief out. Dropping this toward ~0.3 " +
-                 "pulls the quad back to a source GLOW at the lamp and lets the water channel carry the " +
-                 "throw: one illumination, on the surface that owns it. 1 = the shipped look exactly (the " +
-                 "quad throws the full Range), which is the default so this changes nothing until it is " +
-                 "dialled. NOTE: the quad cannot tell water from land -- it has neither the seabed height map " +
-                 "nor the water level -- so this shortens the beam over LAND too. That is the trade, and it " +
-                 "is the owner's eye to rule on.")]
-        [Range(0.05f, 1f)] [SerializeField] private float _quadGlowScale = 1f;
+                 "illuminations stacked, and the flat one washes the relief out. THE OWNER RULED ON THAT " +
+                 "PICTURE (2026-09-04): 'spotlight doesnt read on water or enviroement its just a flat " +
+                 "white'. So the shipped default is now 0.3 -- the quad pulled back to a source GLOW at the " +
+                 "lamp, with the water channel carrying the throw: one illumination, on the surface that " +
+                 "owns it. 1 = the look he refused (the quad throws the full Range). NOTE: the quad cannot " +
+                 "tell water from land -- it has neither the seabed height map nor the water level -- so " +
+                 "this shortens the beam over LAND too, and until a lamp lights the ground the land under " +
+                 "the beam is darker for it. That is the trade.")]
+        [Range(0.05f, 1f)] [SerializeField] private float _quadGlowScale = DefaultQuadGlowScale;
 
         [Tooltip("Cone HALF-angle (degrees): a tight searchlight (~15) to a broad floodlight (~50).")]
         [Range(0f, 90f)] [SerializeField] private float _coneHalfAngle = 26f;
@@ -491,6 +517,12 @@ namespace HiddenHarbours.Art
             // The searchlight's height reaches the LAND lamp too, so the shadows it throws (ADR 0016,
             // lights PR B) rake by the same 2.5 m the water's wave relief already lights it from.
             _light.LampHeightMeters = _lampHeightMeters;
+            // ⭐ AND THE BEAM LIGHTS THE GROUND IT SWEEPS, at its FULL throw. This is the one place the
+            // reach is not the bloom by a long way: the quad is pulled back to 0.3 of Range so it reads as
+            // a source (#733), while the light itself still reaches nine metres — which is what the water's
+            // own relief term has always used, and now what the ground pool uses too. Set from _range
+            // rather than from _light.Range for exactly that reason: Range has the quad scale in it.
+            _light.ReachMetres = _range;
             // The bow anchor: forward along the boat heading (transform.up) plus any side offset. SceneLight
             // throws the cone along this transform's up, so the beam already points along the bow.
             _light.OriginOffset = new Vector2(_sideOffset, _bowOffset);

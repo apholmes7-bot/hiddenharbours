@@ -237,8 +237,14 @@ namespace HiddenHarbours.Vehicles
         /// <summary>Available only when there is really something to get into: a usable def, a controller,
         /// and a published door. Scenery — a truck parked as dressing, which is what most trucks in a
         /// village should be — is not available, so it is neither resolved nor highlighted and the press
-        /// falls through to whatever else is nearby.</summary>
-        public bool IsAvailable => IsDrivable;
+        /// falls through to whatever else is nearby.
+        ///
+        /// <para><b>And not while somebody else has her wheel</b> (<see cref="DriveSeats"/>). A truck on
+        /// a scheduled trip is claimed from the moment her driver sets off for the door until he is back
+        /// on his feet at the far end, so she is neither offered nor highlighted while she is his. It is
+        /// a REFUSAL BY SILENCE rather than a notice, which is the cozy answer (P5) and the same one
+        /// scenery gets: there is nothing to explain about a truck that is already somebody's.</para></summary>
+        public bool IsAvailable => IsDrivable && !DriveSeats.IsOccupied(this);
 
         /// <summary>What you do at a door you can open. Scenery never gets here — it is not
         /// <see cref="IsAvailable"/>, so the popup never offers a truck that is only dressing.</summary>

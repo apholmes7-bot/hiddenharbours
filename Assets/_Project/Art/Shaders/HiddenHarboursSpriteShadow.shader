@@ -72,6 +72,47 @@
 // needs to know about the camera. It writes the same stencil as the cast shadow, so a crown's pool and
 // its own rake meet without doubling.
 //
+// ================================================================================================
+// 🔴 THE SCREEN-SPACE SHADE ARM — how a RECEIVER comes to read shaded (_ScreenShade)
+// ================================================================================================
+// The two arms differ in ONE thing: where the shade lands in the compositing ladder, and therefore
+// what it is allowed to darken.
+//
+//   _ScreenShade 0  (LEGACY, shipped) — Blend SrcAlpha OneMinusSrcAlpha, sorted one order UNDER the
+//     caster. The shade is a dark sprite IN the world sort, so anything standing in it draws OVER it
+//     at full brightness. The ground reads shaded; a fisher standing on that ground does not. That is
+//     not a tuning shortfall, it is what a world-sorted dark sprite IS.
+//
+//   _ScreenShade 1  (the SunShade band — SortingBands.SunShade / SunShadePool) —
+//     Blend Zero SrcColor, sorted ABOVE every world sprite and BELOW the lamps' additive glow. The
+//     fragment outputs lerp(1, tint, a) and the frame is MULTIPLIED down, so whatever occupies the
+//     pixel loses the same fraction: the ground, the fisher standing on it, a mesh hull moored in it.
+//     This is LampShadowSystem's rung (ADR 0016, lights PR B) applied to the sun — the sun path never
+//     needed it before, because nobody had asked the sun for a shaded receiver.
+//
+// THE COST, STATED: a screen-space multiply darkens whatever occupies that pixel, INCLUDING
+// something that is above the shade in the world rather than standing in it — a boat's upper works, a
+// roof edge, a gull. The lamp system already accepts exactly this cost. It is the owner's trade to
+// weigh against today's cost (nothing standing in a sun shadow is EVER shaded), which is why the arm
+// ships OFF and the profile carries the switch.
+//
+// A CASTER IS NEVER DARKENED BY ITS OWN CAST SILHOUETTE. Sorted under its caster the legacy arm got
+// that for free; at the ceiling the shade would otherwise lie on the caster's own image and a tree
+// would wear its own crown at noon. So the shade arm discards on the caster's own opaque pixels — the
+// same rule HiddenHarboursLampShadow.shader states as "a shadow never darkens ITS OWN CASTER", here
+// done in uv space: this fragment's own texel is IN.uv, the CASTER's texel at the same screen point is
+// IN.uv + shearUV (the shear, converted to uv by _ShadowUVPerUnit = ppu / texture size). The
+// GROUND-CONTACT pool takes no such exclusion, deliberately: it is shade lying flat on the ground at
+// the feet, and the trunk foot standing in it is the one place that is certainly under the crown.
+//
+// THE ARM IS MATERIAL STATE, NOT A KEYWORD AND NOT A PROPERTY BLOCK VALUE. Blend mode is render
+// state — a MaterialPropertyBlock feeds uniforms only (the same wall the stencil hit above) — so the
+// arm is two SHIPPED MATERIALS on this one shader: Resources/SpriteShadow.mat (alpha over) and
+// Resources/SpriteShadowShade.mat (multiply), with Blend [_SrcBlend] [_DstBlend] read per material.
+// Material FLOATS rather than a shader keyword also means there is no variant for the stripper to
+// drop out of a player build — the trap a runtime-built material walks into when a keyword is
+// declared shader_feature rather than multi_compile.
+//
 // Visual-only: drives no sim, saves nothing (rule 5). Force-compiled by WaterShaderCompileGuardTests via the
 // shipped Resources/SpriteShadow.mat (the magenta guard scans every project material) — a break fails CI RED.
 Shader "HiddenHarbours/SpriteShadow"
@@ -92,6 +133,17 @@ Shader "HiddenHarbours/SpriteShadow"
         // radial pool with NO shear, this value being its edge softness as a fraction of the radius. Per
         // RENDERER through the property block, because one caster draws both.
         [HideInInspector] _GroundContact ("Ground contact mode (0 = silhouette, >0 = pool softness)", Float) = 0
+        // PUBLISHED per renderer beside _ShadowUV: uv per OBJECT unit (ppu / texture size), which is what
+        // converts the vertex shear back into texture space so the shade arm can find the caster's own
+        // texel under this fragment. The default (1,1) is the unit-square case.
+        [HideInInspector] _ShadowUVPerUnit ("uv per object unit (published per renderer)", Vector) = (1, 1, 0, 0)
+        // THE ARM. 0 = a dark sprite sorted under the caster (the shipped look); 1 = a multiply composited
+        // over the assembled frame in the SunShade band, which is what darkens a RECEIVER. See the header.
+        [HideInInspector] _ScreenShade ("Screen-space shade arm (0 = under the caster, 1 = over the frame)", Float) = 0
+        // The blend the arm needs, as material state. The defaults are the LEGACY arm, so a material that
+        // states nothing renders exactly as this shader always has.
+        [HideInInspector] _SrcBlend ("Src blend (5 = SrcAlpha, 0 = Zero)", Float) = 5
+        [HideInInspector] _DstBlend ("Dst blend (10 = OneMinusSrcAlpha, 3 = SrcColor)", Float) = 10
         // THE STENCIL, as material state (see the header for why it cannot be a per-renderer dial).
         // Shipped 1 / NotEqual(6) / Replace(2): first shadow at a pixel wins, later ones are discarded.
         // A material with Comp = Always(8) reproduces the pre-PR stacking exactly.
@@ -104,7 +156,9 @@ Shader "HiddenHarbours/SpriteShadow"
     {
         Tags { "RenderType"="Transparent" "Queue"="Transparent" "RenderPipeline"="UniversalPipeline" "IgnoreProjector"="True" }
 
-        Blend SrcAlpha OneMinusSrcAlpha
+        // Per MATERIAL, not per renderer: SrcAlpha/OneMinusSrcAlpha is the legacy arm (a dark sprite laid
+        // over the world), Zero/SrcColor is the shade arm (a multiply laid over the frame).
+        Blend [_SrcBlend] [_DstBlend]
         Cull Off
         ZWrite Off
         ZTest LEqual
@@ -136,6 +190,10 @@ Shader "HiddenHarbours/SpriteShadow"
             {
                 float4 positionCS : SV_POSITION;
                 float2 uv         : TEXCOORD0;
+                // The vertex shear in UV units. Adding it to uv gives the CASTER's own texel at this
+                // fragment's screen point, which is how the shade arm refuses to darken its own caster.
+                // It interpolates correctly because the shear is affine in uv.y, exactly as uv is.
+                float2 shearUV    : TEXCOORD1;
             };
 
             TEXTURE2D(_MainTex);
@@ -153,6 +211,8 @@ Shader "HiddenHarbours/SpriteShadow"
                 float  _ShadowLen;
                 float  _EdgeSoftness;
                 float  _GroundContact;
+                float4 _ShadowUVPerUnit;
+                float  _ScreenShade;
             CBUFFER_END
 
             Varyings vert(Attributes IN)
@@ -189,6 +249,10 @@ Shader "HiddenHarbours/SpriteShadow"
 
                 OUT.positionCS = GetVertexPositionInputs(posOS).positionCS;
                 OUT.uv = TRANSFORM_TEX(IN.uv, _MainTex);
+                // Object units -> uv. dpos/duv is the sprite's texture size over its PPU whatever the
+                // slicing (FullRect or Tight), so its inverse is exact for both — the same reasoning that
+                // makes _ShadowUV exact. It is zero when the arm is off; the fragment never reads it there.
+                OUT.shearUV = shear * _ShadowUVPerUnit.xy;
                 return OUT;
             }
 
@@ -218,8 +282,27 @@ Shader "HiddenHarbours/SpriteShadow"
                         mask = smoothstep(0.0, max(_EdgeSoftness, 1e-3), srcA);
                 }
 
+                // A CASTER IS NEVER DARKENED BY ITS OWN CAST SILHOUETTE (shade arm only — the legacy arm
+                // gets it from sorting under the caster, and must keep drawing exactly what it always
+                // drew). The pool is deliberately exempt: see the header.
+                if (_ScreenShade > 0.0 && _GroundContact <= 0.0)
+                {
+                    float2 uvSelf = IN.uv + IN.shearUV;
+                    if (all(uvSelf >= 0.0) && all(uvSelf <= 1.0) &&
+                        SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, uvSelf).a > 0.5)
+                        discard;   // discards the STENCIL write too, so a neighbour's shade may still land here
+                }
+
                 half a = _ShadowColor.a * mask;
                 if (a <= 0.0) discard;   // no contribution -> skip (also the night/overcast = 0-alpha case)
+
+                // THE SHADE ARM: dst *= lerp(1, tint, a) under Blend Zero SrcColor. Every pixel under the
+                // shade loses the same FRACTION of what it had, whoever drew it — which is what makes a
+                // fisher standing in a tree's shadow read shaded. At a == 0 the factor is exactly 1, and
+                // the discard above has already taken that case.
+                if (_ScreenShade > 0.0)
+                    return half4(lerp(half3(1.0, 1.0, 1.0), _ShadowColor.rgb, a), 1.0);
+
                 return half4(_ShadowColor.rgb, a);
             }
             ENDHLSL

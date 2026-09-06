@@ -51,8 +51,11 @@ namespace HiddenHarbours.Tests.RigBaking
             string who = Path.GetFileName(file);
             string json = File.ReadAllText(file);
             string rigFile = DeckSidecarReader.ResolveRigFileName(who, json);
-            string rigPath = Path.Combine(RepoRoot, RigFolder, rigFile);
-            Assert.IsTrue(File.Exists(rigPath), $"{who}: the rig it names ({rigFile}) is missing");
+            // The SAME resolver the importer uses — flat first, then anywhere under the rig tree
+            // (the sail rig kit's two hulls live in sail-rig-kit/<hull>/). Sharing it is the point:
+            // a test that resolved rigs its own way could pass while the import refused.
+            string rigPath = DeckSidecarReader.ResolveRigPath(RepoRoot, rigFile);
+            Assert.IsNotNull(rigPath, $"{who}: the rig it names ({rigFile}) is nowhere under {RigFolder}");
             return DeckSidecarReader.Read(json, $"{SidecarFolder}/{who}", File.ReadAllBytes(rigPath));
         }
 

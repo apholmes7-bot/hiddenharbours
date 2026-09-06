@@ -17,7 +17,7 @@ namespace HiddenHarbours.Tools.RigBaking
             $"{AssetPath}  {Width}×{Height}  ({Frames} frames × {Rows} rows)";
     }
 
-    public sealed class FishingBakeResult
+    public class FishingBakeResult
     {
         public string RigKey;
         public string EngineName;
@@ -713,7 +713,18 @@ namespace HiddenHarbours.Tools.RigBaking
             sb.Append("  \"facingsAreCounterClockwise\": false,\n");
         }
 
-        internal static IReadOnlyList<string> ReadStringArray(IRigScriptHost host, string arrayExpr)
+        /// <summary>
+        /// The strings in a rig's order array, e.g. <c>FishIso2.ORDER</c>. Any expression that
+        /// <c>JSON.stringify</c> renders as an array of strings works, so
+        /// <c>Object.keys(X.POSES)</c> is fair game too.
+        ///
+        /// <para><b>public, not internal</b>, because a test in another assembly is a legitimate
+        /// caller: asserting "the rig declares these seven species" is exactly the kind of claim
+        /// that must be read from the rig rather than restated, and every other way of doing that
+        /// from a test means a second copy of this parser. The rest of the plumbing below stays
+        /// internal — this is the one piece with a reader outside the bake.</para>
+        /// </summary>
+        public static IReadOnlyList<string> ReadStringArray(IRigScriptHost host, string arrayExpr)
         {
             // The rigs' order arrays are plain identifier strings — parse the same defensive way
             // CharacterRigAzimuthProbe parses ramps.

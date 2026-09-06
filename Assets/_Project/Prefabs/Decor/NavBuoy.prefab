@@ -103,6 +103,7 @@ GameObject:
   - component: {fileID: 3703370951144126903}
   - component: {fileID: 310535751321405347}
   - component: {fileID: 4633658143121750456}
+  - component: {fileID: 4633658143121750460}
   m_Layer: 0
   m_Name: NavBuoy
   m_TagString: Untagged
@@ -171,3 +172,16 @@ MonoBehaviour:
   _facing: 0
   _renderer: {fileID: 2716125401796360544}
   _visual: {fileID: 7745256172729522781}
+--- !u!114 &4633658143121750460
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8806797731035874255}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 66cf6db3edc1d5342b9b1f0685c55e48, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.NavLight
+  _lampOn: 1

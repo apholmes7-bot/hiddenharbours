@@ -509,6 +509,182 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_dart_d0_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 448
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 305cf8f945ecc36438706e838b904a0d
+      internalID: 1951222780
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_dart_d1_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 384
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 36e755469fe47e140877543a21658a60
+      internalID: -1366165060
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_dart_d2_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 320
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fe8cda4697640274694176e3dcec21b1
+      internalID: -82780039
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_dart_d3_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 256
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 216e1c5b728d3bc46ab2e193a9287575
+      internalID: -1617529575
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_dart_d4_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 192
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f82505071ba70ae458c3450331cef1f4
+      internalID: 1599653776
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_dart_d5_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 128
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 93f4bdec3d5432248b89396452349b8a
+      internalID: 1533306091
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_dart_d6_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 64
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5eef332e81d1c034cb897139d2c28d59
+      internalID: -548231000
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_dart_d7_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 86979fc230ba825428dd4e4c6364918b
+      internalID: 233544671
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     customData: 
     physicsShape: []
@@ -525,20 +701,28 @@ TextureImporter:
     nameFileIdTable:
       Fish_mackerel_dart_d0_f0: -854565941
       Fish_mackerel_dart_d0_f1: -1149731667
+      Fish_mackerel_dart_d0_f2: 1951222780
       Fish_mackerel_dart_d1_f0: 693729187
       Fish_mackerel_dart_d1_f1: -447696532
+      Fish_mackerel_dart_d1_f2: -1366165060
       Fish_mackerel_dart_d2_f0: -1355420886
       Fish_mackerel_dart_d2_f1: 1805633724
+      Fish_mackerel_dart_d2_f2: -82780039
       Fish_mackerel_dart_d3_f0: 1085427412
       Fish_mackerel_dart_d3_f1: 1693680813
+      Fish_mackerel_dart_d3_f2: -1617529575
       Fish_mackerel_dart_d4_f0: -534038065
       Fish_mackerel_dart_d4_f1: -1868812284
+      Fish_mackerel_dart_d4_f2: 1599653776
       Fish_mackerel_dart_d5_f0: -292235736
       Fish_mackerel_dart_d5_f1: 743655339
+      Fish_mackerel_dart_d5_f2: 1533306091
       Fish_mackerel_dart_d6_f0: -881803105
       Fish_mackerel_dart_d6_f1: -76141237
+      Fish_mackerel_dart_d6_f2: -548231000
       Fish_mackerel_dart_d7_f0: 688825712
       Fish_mackerel_dart_d7_f1: 1726728775
+      Fish_mackerel_dart_d7_f2: 233544671
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

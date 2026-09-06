@@ -163,13 +163,16 @@ namespace HiddenHarbours.Tools.RigBaking
                 string stem = Path.GetFileName(file).Replace(".gameplay.json", "");
                 string json = File.ReadAllText(file);
                 string rigFile = DeckSidecarReader.ResolveRigFileName(Path.GetFileName(file), json);
-                string rigPath = Path.Combine(root, RigFolder, rigFile);
-                byte[] rigBytes = File.Exists(rigPath) ? File.ReadAllBytes(rigPath) : null;
+                // Flat first, then anywhere under the rig tree — the sail rig kit lands its two hulls
+                // in sail-rig-kit/<hull>/ (DeckSidecarReader.ResolveRigPath, which the parity test
+                // calls too, so the two cannot disagree about which file is being checked).
+                string rigPath = DeckSidecarReader.ResolveRigPath(root, rigFile);
+                byte[] rigBytes = rigPath != null ? File.ReadAllBytes(rigPath) : null;
 
                 if (rigBytes == null)
                 {
                     refused++;
-                    log.Append($"  ✗ {stem}: the rig it names ({rigFile}) is not in {RigFolder}.\n");
+                    log.Append($"  ✗ {stem}: the rig it names ({rigFile}) is nowhere under {RigFolder}.\n");
                     continue;
                 }
 

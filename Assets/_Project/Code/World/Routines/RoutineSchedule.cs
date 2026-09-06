@@ -1,4 +1,5 @@
 using System;
+using HiddenHarbours.Core;
 using UnityEngine;
 
 namespace HiddenHarbours.World
@@ -27,8 +28,10 @@ namespace HiddenHarbours.World
         private const uint FnvOffsetBasis = 2166136261u;
         private const uint FnvPrime = 16777619u;
 
-        /// <summary>Game hours in a day. Not a tunable: it is what "hour of day" means.</summary>
-        public const float HoursPerDay = 24f;
+        /// <summary>Game hours in a day. Not a tunable: it is what "hour of day" means. The value lives
+        /// in Core (<see cref="DaySchedule.HoursPerDay"/>) now that the road fleet's timetables read the
+        /// same day; this is the villagers' name for it.</summary>
+        public const float HoursPerDay = DaySchedule.HoursPerDay;
 
         // ---- deterministic hashing (process-stable — mirrors AmbientFleetPlan) --------------------
 
@@ -178,12 +181,8 @@ namespace HiddenHarbours.World
 
         // ---- reading the clock -------------------------------------------------------------------
 
-        /// <summary>An hour value folded into [0, 24). Negative-safe.</summary>
-        public static float Wrap24(float hour)
-        {
-            float h = hour % HoursPerDay;
-            return h < 0f ? h + HoursPerDay : h;
-        }
+        /// <inheritdoc cref="DaySchedule.Wrap24"/>
+        public static float Wrap24(float hour) => DaySchedule.Wrap24(hour);
 
         /// <summary>
         /// Which block is running at <paramref name="hourOfDay"/>, given the DEPARTURE hours (already
@@ -196,25 +195,13 @@ namespace HiddenHarbours.World
         /// jitter has nudged out of exact order still resolves sanely.</para>
         /// </summary>
         public static int BlockIndexAt(float hourOfDay, float[] departureHours)
-        {
-            if (departureHours == null || departureHours.Length == 0) return -1;
-            float h = Wrap24(hourOfDay);
-
-            int best = 0;
-            float bestElapsed = float.MaxValue;
-            for (int i = 0; i < departureHours.Length; i++)
-            {
-                float elapsed = Wrap24(h - Wrap24(departureHours[i]));
-                if (elapsed < bestElapsed) { bestElapsed = elapsed; best = i; }
-            }
-            return best;
-        }
+            => DaySchedule.BlockIndexAt(hourOfDay, departureHours);
 
         /// <summary>How long the block departing at <paramref name="departureHour"/> has been running at
         /// <paramref name="hourOfDay"/>, in game hours — wrapped, so the block that spans midnight
         /// measures straight through it.</summary>
         public static float ElapsedHours(float hourOfDay, float departureHour) =>
-            Wrap24(Wrap24(hourOfDay) - Wrap24(departureHour));
+            DaySchedule.ElapsedHours(hourOfDay, departureHour);
 
         /// <summary>
         /// How many GAME hours a walk of <paramref name="routeLengthMetres"/> takes at
@@ -229,19 +216,12 @@ namespace HiddenHarbours.World
         /// </summary>
         public static float TravelHours(float routeLengthMetres, float speedMetresPerSecond,
                                         float secondsPerGameHour)
-        {
-            if (routeLengthMetres <= 0f || speedMetresPerSecond <= 0f || secondsPerGameHour <= 0f)
-                return 0f;
-            return routeLengthMetres / speedMetresPerSecond / secondsPerGameHour;
-        }
+            => DaySchedule.TravelHours(routeLengthMetres, speedMetresPerSecond, secondsPerGameHour);
 
         /// <summary>How far along their walk someone is, in metres, after <paramref name="elapsedHours"/>
         /// of a block — the inverse of <see cref="TravelHours"/>, and what the position is sampled at.</summary>
         public static float DistanceWalked(float elapsedHours, float speedMetresPerSecond,
                                            float secondsPerGameHour)
-        {
-            if (elapsedHours <= 0f || speedMetresPerSecond <= 0f || secondsPerGameHour <= 0f) return 0f;
-            return elapsedHours * secondsPerGameHour * speedMetresPerSecond;
-        }
+            => DaySchedule.DistanceTravelled(elapsedHours, speedMetresPerSecond, secondsPerGameHour);
     }
 }

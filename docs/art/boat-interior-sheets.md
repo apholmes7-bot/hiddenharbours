@@ -5,7 +5,7 @@
 > row in `BoatInteriors.json` are deleted in the same PR (`RigMeshAssetBaker.MeshInteriorHulls` is the
 > switch; `BoatInteriorSheetTests.Sheets_CoverExactlyTheClearedHulls_MinusTheConverted` tracks it).
 > Retired so far — **2026-09-01, fleet rollout PR 0:** the lobster boat (#688's room) and the cape
-> islander (#690's room); **2026-09-02, rollout PR 1:** the eighteen lobster variants; the kit ships **7** of the 27 cleared hulls (side dragger, two stern trawlers, coastal packet, tanker, two sport fishers). The runtime never builds a
+> islander (#690's room); **2026-09-02, rollout PR 1:** the eighteen lobster variants; **2026-09-04, rollout PR 2:** the four working ships (side dragger, both stern trawlers, coastal packet) — 5.3 MiB of pages and 724 MB of worst-case resident sheet; the kit ships **3** of the 27 cleared hulls (tanker, two sport fishers). The runtime never builds a
 > sprite room for a converted hull (`HullMeshDef.HasMeshInterior()`); the numbers below describe the
 > kit as baked on 2026-08-20 and are kept as the record. The whole sprite-interior system is deleted
 > after the last hull converts (rollout PR 5).

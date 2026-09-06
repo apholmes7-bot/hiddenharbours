@@ -37,13 +37,30 @@ namespace HiddenHarbours.Tools.RigBaking
         /// sidecar that describes one machine. See <see cref="Read"/>.</summary>
         public string BodyScope = "";
 
-        /// <summary>Where the driver stands to open her door, rig metres (x, y) — the
-        /// <c>INTERACT</c> entry with <c>id: "drive"</c> and its <c>reach_point</c>.</summary>
+        /// <summary>Where the driver stands to get on, rig metres (x, y) — the <c>INTERACT</c>
+        /// entry with <c>id: "drive"</c> (a cab) or <c>id: "ride"</c> (a saddle) and its
+        /// <c>reach_point</c>. See <see cref="ReadWayIn"/>.</summary>
         public bool HasDriveDoor;
         public Vector2 DriveDoorLocal;
 
-        /// <summary>Where the driver sits AND IS SEEN, rig metres — published only by a machine
-        /// whose <c>drive</c> interaction happens AT a seat (see <see cref="Read"/>).</summary>
+        /// <summary>
+        /// ⭐ <b>The OTHER side, where the art publishes one</b> — a saddle's
+        /// <c>alt_reach_point</c>.
+        ///
+        /// <para>A cab has one driver's door and the question does not arise. A machine you sit
+        /// astride can be mounted from either side, and the two sides are not equivalent: the
+        /// bike's side stand is on the STREET side, which is why her own sidecar says
+        /// <c>mount.preferred: "street"</c> and the quad's says <c>"either"</c>. The preferred side
+        /// is <see cref="DriveDoorLocal"/>; this is the other one.</para>
+        ///
+        /// <para>Absent on every cab in the fleet, and that is the answer rather than a gap.</para>
+        /// </summary>
+        public bool HasAltDriveDoor;
+        public Vector2 AltDriveDoorLocal;
+
+        /// <summary>Where the driver sits AND IS SEEN, rig metres — published by a machine whose way
+        /// in happens AT a seat the sidecar lists in the open, or at a <c>SADDLE</c>
+        /// (see <see cref="ReadWayIn"/>).</summary>
         public bool HasDriverSeat;
         public Vector3 DriverSeatLocal;
 
@@ -144,12 +161,47 @@ namespace HiddenHarbours.Tools.RigBaking
             }
 
             ReadCollider(facts, body);
-            ReadDriveDoorAndSeat(facts, root);
-            ReadFlotation(facts, root);
-            ReadFifthWheel(facts, root);
-            ReadKingpin(facts, root, bodyScope);
+            ReadWayIn(facts, root, body);
+            ReadFlotation(facts, Scoped(root, body, "FLOAT"));
+            ReadFifthWheel(facts, Scoped(root, body, "TOW"));
+            ReadKingpin(facts, Scoped(root, body, "KINGPIN"), bodyScope);
             return facts;
         }
+
+        /// <summary>
+        /// ⭐ <b>One named block, looked for in the BODY first and then at the root.</b>
+        ///
+        /// <para><b>Why the order, and why this is not a free choice.</b> A container sidecar can put
+        /// a block at either level and the level means something. The trailer set publishes ONE
+        /// <c>INTERACT</c>, one <c>KINGPIN</c> and one <c>GEAR</c> at the root, because all four
+        /// bodies really do share them — only <c>BODY</c>, <c>CARGO</c> and <c>THRESHOLD</c> differ.
+        /// The ATV pack publishes <c>INTERACT</c>, <c>SADDLE</c> and <c>TOW</c> <b>per body</b>,
+        /// because a dirtbike's way on is not a quad's and only the quad has a hitch.</para>
+        ///
+        /// <para>⚠️ The root-only reader this replaced would have handed the bike the quad's
+        /// interactions, or more likely nothing at all — and "nothing at all" is the dangerous half:
+        /// <see cref="ReadWayIn"/> records an absent way in as an ABSENCE and returns, so the bake
+        /// proceeds with no door, no seat, <c>ShowsDriver</c> false, and nobody able to get on. Not a
+        /// refusal; a silent nothing.</para>
+        ///
+        /// <para>Body-first is safe for every sidecar already committed: their body blocks carry
+        /// none of these keys, so each one resolves to the root exactly as before.</para>
+        /// </summary>
+        static object Scoped(object root, object body, string key)
+        {
+            if (!ReferenceEquals(body, root))
+            {
+                object inBody = DeckSidecarJson.Member(body, key);
+                if (inBody != null) return WrapAs(key, inBody);
+            }
+            return root;
+        }
+
+        /// <summary>The readers below take an OWNER and ask it for their own key, so a block found in
+        /// the body has to be handed back inside something that answers to that key. Cheapest honest
+        /// way to say "look here instead" without rewriting five readers' signatures.</summary>
+        static object WrapAs(string key, object value) =>
+            new Dictionary<string, object>(StringComparer.Ordinal) { [key] = value };
 
         // ---- the solid box ---------------------------------------------------------------------
 
@@ -186,34 +238,53 @@ namespace HiddenHarbours.Tools.RigBaking
                     "collider that is simply somewhere else.");
         }
 
-        // ---- the door, and the seat the door leads to --------------------------------------------
+        // ---- the way in, and the seat it leads to -------------------------------------------------
 
         /// <summary>
         /// ⭐ <b>Whether a machine SHOWS her driver is decided by the art, and this is the
         /// mechanism.</b>
         ///
-        /// <para>The <c>drive</c> interaction names what it happens AT. On the Otter that is
-        /// <c>"at": "front_bench"</c> — a member of her root <c>SEATS</c> array, so the seat exists,
-        /// it is in the open, and its <c>seat_ref</c> is where a fisher is genuinely on screen. On
-        /// every truck in the fleet it is <c>"at": "door_l"</c>, and her seats live INSIDE a
-        /// <c>CAB</c> block instead: a room with a liner, a roof panel and glass that is opaque at
-        /// 32 px/m. A figure drawn there would be standing on the roofline.</para>
+        /// <para>The way-in interaction names what it happens AT, and the answer is read off the
+        /// document rather than typed per vehicle. Three shapes occur in the fleet, and all three
+        /// are the same question:</para>
         ///
-        /// <para>So the rule is read off the documents rather than typed per vehicle: <b>a driver
-        /// seat is published exactly when the drive interaction happens at a seat the sidecar lists
-        /// in the open.</b> The day a hard-cab amphibian or an open-cab tractor arrives, nothing here
-        /// needs to learn about her.</para>
+        /// <list type="bullet">
+        ///   <item>the Otter's <c>drive</c> happens at <c>"front_bench"</c>, a member of her root
+        ///   <c>SEATS</c> array — the seat exists, it is in the open, and its <c>seat_ref</c> is
+        ///   where a fisher is genuinely on screen;</item>
+        ///   <item>every truck's <c>drive</c> happens at <c>"door_l"</c>, and her seats live INSIDE
+        ///   a <c>CAB</c> block: a room with a liner, a roof panel and glass that is opaque at
+        ///   32 px/m. A figure drawn there would be standing on the roofline, so she publishes
+        ///   none;</item>
+        ///   <item>⭐ the ATV pack's <c>ride</c> happens at <c>"SADDLE.seat_ref"</c> — a POINTER
+        ///   into the same body block. There is no room to be inside: the way in is a leg over the
+        ///   saddle, and a rider is the missing half of the silhouette.</item>
+        /// </list>
+        ///
+        /// <para>⚠️⚠️ <b>The saddle arm is the fix for a SILENT NOTHING, not a widening for its own
+        /// sake.</b> Before it, a sidecar with no <c>drive</c> entry recorded
+        /// <i>"no INTERACT entry with id 'drive'"</i> as an ABSENCE and returned — so an ATV would
+        /// have baked with no door, no seat, <c>ShowsDriver</c> false, and nobody able ever to get
+        /// on. Not a refusal: a bake that succeeds and produces a machine that cannot be ridden.
+        /// The <c>drive</c> path below is unchanged byte-for-byte, so the trucks and the Otter read
+        /// exactly as they did.</para>
+        ///
+        /// <para>⚠️ A TOWED body publishes neither id, and still gets the absence. That is the right
+        /// answer for something that is dragged, and it is why this arm keys on the art's own ids
+        /// rather than on "is there any INTERACT at all".</para>
         /// </summary>
-        static void ReadDriveDoorAndSeat(VehicleSidecarFacts facts, object root)
+        static void ReadWayIn(VehicleSidecarFacts facts, object root, object body)
         {
-            List<object> interact = DeckSidecarJson.AsArray(DeckSidecarJson.Member(root, "INTERACT"));
+            object interactOwner = Scoped(root, body, "INTERACT");
+            List<object> interact =
+                DeckSidecarJson.AsArray(DeckSidecarJson.Member(interactOwner, "INTERACT"));
             if (interact == null)
             {
                 facts.Absences.Add("no INTERACT block — no published way in.");
                 return;
             }
 
-            object drive = null;
+            object drive = null, ride = null;
             foreach (object entry in interact)
             {
                 string id = DeckSidecarJson.String(DeckSidecarJson.Member(entry, "id"));
@@ -231,26 +302,31 @@ namespace HiddenHarbours.Tools.RigBaking
                     facts.ReachPoints[id] = new Vector2((float)rx, (float)ry);
 
                 if (string.Equals(id, "drive", StringComparison.Ordinal)) drive = entry;
+                else if (string.Equals(id, "ride", StringComparison.Ordinal)) ride = entry;
             }
 
-            if (drive == null)
-            {
-                facts.Absences.Add(
-                    "no INTERACT entry with id 'drive' — she is not a machine anybody gets into. " +
-                    "That is the right answer for a towed body and the wrong one for a truck.");
-                return;
-            }
+            // ⚠️ `drive` FIRST and unconditionally. Nothing in the fleet publishes both, and if
+            // something ever does, a cab is the more specific claim — but the real reason for the
+            // order is that the trucks' path must not become conditional on a second id existing.
+            if (drive != null) { ReadCabWayIn(facts, root, drive); return; }
+            if (ride != null) { ReadSaddleWayIn(facts, root, body, ride); return; }
 
-            object reach = DeckSidecarJson.Member(drive, "reach_point");
+            facts.Absences.Add(
+                "no INTERACT entry with id 'drive' or 'ride' — she is not a machine anybody gets " +
+                "onto or into. That is the right answer for a towed body and the wrong one for a " +
+                "truck or a saddle. Published ids: " +
+                (facts.InteractIds.Count == 0 ? "none" : string.Join(", ", facts.InteractIds)) + ".");
+        }
 
+        /// <summary>The cab arm — a <c>drive</c> interaction, and the open seat it names if it names
+        /// one. Unchanged from the reader the trucks and the Otter have always had.</summary>
+        static void ReadCabWayIn(VehicleSidecarFacts facts, object root, object drive)
+        {
             // ⚠️ A reach_point is not always a point. The trailer set's `couple` entry carries PROSE
             // there ("under the nose — but the ACT is the tractor backing on"), because the act
             // belongs to the tractor. Reading a string as a point silently yields (0,0), which
             // VehicleDoor treats as "no door published" — a refusal wearing the shape of a value.
-            List<object> pt = DeckSidecarJson.AsArray(reach);
-            if (pt == null || pt.Count < 2 ||
-                !DeckSidecarJson.TryDouble(pt[0], out double dx) ||
-                !DeckSidecarJson.TryDouble(pt[1], out double dy))
+            if (!TryPointXY(drive, "reach_point", out Vector2 door))
             {
                 facts.Errors.Add(
                     "INTERACT[id=drive].reach_point is not a numeric point. It is where the driver " +
@@ -260,7 +336,7 @@ namespace HiddenHarbours.Tools.RigBaking
             }
 
             facts.HasDriveDoor = true;
-            facts.DriveDoorLocal = new Vector2((float)dx, (float)dy);
+            facts.DriveDoorLocal = door;
 
             // ---- the seat, if the drive interaction happens at one ------------------------------
             string at = DeckSidecarJson.String(DeckSidecarJson.Member(drive, "at")) ?? "";
@@ -279,12 +355,7 @@ namespace HiddenHarbours.Tools.RigBaking
                 if (!string.Equals(DeckSidecarJson.String(DeckSidecarJson.Member(seat, "id")), at,
                                    StringComparison.Ordinal)) continue;
 
-                List<object> reference = DeckSidecarJson.AsArray(
-                    DeckSidecarJson.Member(seat, "seat_ref"));
-                if (reference == null || reference.Count < 3 ||
-                    !DeckSidecarJson.TryDouble(reference[0], out double sx) ||
-                    !DeckSidecarJson.TryDouble(reference[1], out double sy) ||
-                    !DeckSidecarJson.TryDouble(reference[2], out double sz))
+                if (!TryVector3(seat, "seat_ref", out Vector3 reference))
                 {
                     facts.Errors.Add(
                         $"SEATS['{at}'] has no three-number seat_ref. The drive interaction names " +
@@ -294,7 +365,7 @@ namespace HiddenHarbours.Tools.RigBaking
                 }
 
                 facts.HasDriverSeat = true;
-                facts.DriverSeatLocal = new Vector3((float)sx, (float)sy, (float)sz);
+                facts.DriverSeatLocal = reference;
                 return;
             }
 
@@ -304,11 +375,141 @@ namespace HiddenHarbours.Tools.RigBaking
                 "bench nobody aimed the helm at.");
         }
 
+        /// <summary>
+        /// ⭐⭐ <b>The saddle arm — a <c>ride</c> interaction, and it publishes a VISIBLE rider.</b>
+        ///
+        /// <para>Where a cab may or may not show her driver, a saddle always does: there is nothing
+        /// to be inside. The ATV pack's own <c>SADDLE._what</c> says it in as many words —
+        /// <i>"THE BAKE CARRIES NO RIDER. These are the mount points the character rig sits on."</i>
+        /// So a <c>ride</c> whose <c>at</c> resolves to a three-number reference is
+        /// <see cref="HasDriverSeat"/>, which is what makes <c>VehicleMeshDef.ShowsDriver</c> true —
+        /// from the sidecar, never from a rule about kinds.</para>
+        ///
+        /// <para><b><c>at</c> is followed as a PATH, not matched as a string.</b> The pack writes
+        /// <c>"at": "SADDLE.seat_ref"</c>, and resolving it means walking the document the way the
+        /// document says to. Matching the literal would work today and go quietly wrong the first
+        /// time a body names a different point; following the path fails LOUDLY instead, which is
+        /// the whole difference.</para>
+        ///
+        /// <para>⚠️ <b>The reach point is the PREFERRED side and there is a second one.</b> The bike's
+        /// stand is on the street side, so her sidecar's <c>mount.preferred</c> is <c>"street"</c>
+        /// and a rider mounts over the stand; the quad's is <c>"either"</c>. Taking only the first
+        /// would silently make every machine one-sided.</para>
+        /// </summary>
+        static void ReadSaddleWayIn(VehicleSidecarFacts facts, object root, object body, object ride)
+        {
+            if (!TryPointXY(ride, "reach_point", out Vector2 near))
+            {
+                facts.Errors.Add(
+                    "INTERACT[id=ride].reach_point is not a numeric point. It is where the rider " +
+                    "STANDS to swing a leg over, so a prose note cannot be read as one — and reading " +
+                    "it as (0,0) would stand her on the machine she is trying to mount.");
+                return;
+            }
+
+            facts.HasDriveDoor = true;
+            facts.DriveDoorLocal = near;
+
+            if (TryPointXY(ride, "alt_reach_point", out Vector2 far))
+            {
+                facts.HasAltDriveDoor = true;
+                facts.AltDriveDoorLocal = far;
+            }
+            else
+            {
+                facts.Absences.Add(
+                    "INTERACT[id=ride] publishes no numeric alt_reach_point — she is mounted from " +
+                    "one side only.");
+            }
+
+            // ---- the saddle the ride happens at ------------------------------------------------
+            string at = DeckSidecarJson.String(DeckSidecarJson.Member(ride, "at")) ?? "";
+            if (at.Length == 0)
+            {
+                facts.Errors.Add(
+                    "INTERACT[id=ride] names no 'at'. A saddle machine has nothing to be inside, so " +
+                    "the seat is not optional the way a cab's is: without it she would bake with " +
+                    "ShowsDriver false and nobody would ever appear on her.");
+                return;
+            }
+
+            object target = ResolvePath(at, body, root);
+            if (target == null)
+            {
+                facts.Errors.Add(
+                    $"INTERACT[id=ride].at is '{at}', which this sidecar does not carry. The path is " +
+                    "followed through the body block and then the root; guessing a seat instead " +
+                    "would sit the rider somewhere nobody drew.");
+                return;
+            }
+
+            // The path may land on the point itself (SADDLE.seat_ref) or on the block that holds it
+            // (SADDLE) — both are honest ways for the art to write it, and neither is a guess.
+            if (!TryVector3Value(target, out Vector3 seat) &&
+                !TryVector3(target, "seat_ref", out seat))
+            {
+                facts.Errors.Add(
+                    $"INTERACT[id=ride].at is '{at}', which resolves to something that is neither a " +
+                    "three-number point nor a block with a three-number seat_ref. That is where the " +
+                    "rider is DRAWN; a missing cushion height plants her in the frame rails.");
+                return;
+            }
+
+            facts.HasDriverSeat = true;
+            facts.DriverSeatLocal = seat;
+        }
+
+        /// <summary>Follow a dotted path (<c>SADDLE.seat_ref</c>) through the first owner that
+        /// carries its head, then the second. Null when neither does — a refusal, never a guess.</summary>
+        static object ResolvePath(string path, params object[] owners)
+        {
+            string[] parts = path.Split('.');
+            foreach (object owner in owners)
+            {
+                object at = owner;
+                bool ok = true;
+                foreach (string part in parts)
+                {
+                    at = DeckSidecarJson.Member(at, part);
+                    if (at == null) { ok = false; break; }
+                }
+                if (ok) return at;
+            }
+            return null;
+        }
+
+        /// <summary>The first two numbers of a member array, as a point. False for an absent member,
+        /// a short array, or prose — all three of which are facts about the interaction rather than
+        /// parse failures.</summary>
+        static bool TryPointXY(object owner, string key, out Vector2 p)
+        {
+            p = default;
+            List<object> a = DeckSidecarJson.AsArray(DeckSidecarJson.Member(owner, key));
+            if (a == null || a.Count < 2) return false;
+            if (!DeckSidecarJson.TryDouble(a[0], out double x)) return false;
+            if (!DeckSidecarJson.TryDouble(a[1], out double y)) return false;
+            p = new Vector2((float)x, (float)y);
+            return true;
+        }
+
+        /// <summary>A value that IS a three-number array, rather than a member of one.</summary>
+        static bool TryVector3Value(object value, out Vector3 v)
+        {
+            v = default;
+            List<object> a = DeckSidecarJson.AsArray(value);
+            if (a == null || a.Count < 3) return false;
+            if (!DeckSidecarJson.TryDouble(a[0], out double x)) return false;
+            if (!DeckSidecarJson.TryDouble(a[1], out double y)) return false;
+            if (!DeckSidecarJson.TryDouble(a[2], out double z)) return false;
+            v = new Vector3((float)x, (float)y, (float)z);
+            return true;
+        }
+
         // ---- flotation ---------------------------------------------------------------------------
 
-        static void ReadFlotation(VehicleSidecarFacts facts, object root)
+        static void ReadFlotation(VehicleSidecarFacts facts, object owner)
         {
-            object flotation = DeckSidecarJson.Member(root, "FLOAT");
+            object flotation = DeckSidecarJson.Member(owner, "FLOAT");
             if (DeckSidecarJson.AsObject(flotation) == null)
             {
                 facts.Absences.Add(
@@ -354,9 +555,9 @@ namespace HiddenHarbours.Tools.RigBaking
         /// one more: the seat, the throat, the reach, the ramp mouth, the release handle and the
         /// clearance the jackknife cap is solved against.
         /// </summary>
-        static void ReadFifthWheel(VehicleSidecarFacts facts, object root)
+        static void ReadFifthWheel(VehicleSidecarFacts facts, object owner)
         {
-            object tow = DeckSidecarJson.Member(root, "TOW");
+            object tow = DeckSidecarJson.Member(owner, "TOW");
             object fw = DeckSidecarJson.Member(tow, "fifth_wheel");
             if (DeckSidecarJson.AsObject(fw) == null)
             {
@@ -404,9 +605,9 @@ namespace HiddenHarbours.Tools.RigBaking
         /// lengths. Reading the map instead of the body is the (file, pick) trap again, in the one
         /// place where getting it wrong makes a 28 ft pup track like a 53.
         /// </summary>
-        static void ReadKingpin(VehicleSidecarFacts facts, object root, string bodyScope)
+        static void ReadKingpin(VehicleSidecarFacts facts, object owner, string bodyScope)
         {
-            object kp = DeckSidecarJson.Member(root, "KINGPIN");
+            object kp = DeckSidecarJson.Member(owner, "KINGPIN");
             if (DeckSidecarJson.AsObject(kp) == null)
             {
                 facts.Absences.Add("no KINGPIN - she is not something anybody tows.");

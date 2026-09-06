@@ -22,6 +22,33 @@ namespace HiddenHarbours.Art
     /// boat spotlight's job (a searchlight you aim), which stays its own bespoke <see cref="BoatSpotlight"/>; a
     /// vehicle HEADLIGHT, when vehicles arrive (M2), would be the first placed CONE preset — the same pattern,
     /// just <see cref="SceneLight.LightShape.Cone"/> with a headlight colour/throw.</para>
+    ///
+    /// <para><b>⭐⭐ A PRESET NOW CARRIES TWO SIZES, AND THEY ARE DIFFERENT THINGS.</b> Until 2026-09-04 it
+    /// carried one — <see cref="Config.Range"/> — and that number was doing two incompatible jobs at once.
+    /// <list type="bullet">
+    ///   <item><b>The BLOOM</b> (<see cref="Config.Range"/>) is how far the additive quad reaches: the
+    ///   SOURCE'S OWN GLOW, the halo you see around a lit fitting. ADR 0016 says so in as many words, and
+    ///   it is all the quad can ever be — it is ADDED to the frame, so it cannot darken, cannot be
+    ///   occluded, and cannot tell a plank from the sea.</item>
+    ///   <item><b>The REACH</b> (<see cref="ReachMetres"/>) is how far the lamp LIGHTS: the pool on the
+    ///   ground, the thing a lamp is actually for. Nothing draws it yet. It is what the builders site
+    ///   their lamps by, and it is what the lit-decor path will illuminate with when a lamp lights the
+    ///   ground the way the sun lights a tree.</item>
+    /// </list></para>
+    ///
+    /// <para><b>Why they had to be split (the owner's ruling, 2026-09-04).</b> Playing the St Peters arrival
+    /// he said of the pier lanterns: <i>"dock lights are just a round glow, it should glow from within the
+    /// lamp reasilitcally."</i> (his spelling) He is describing a 3.6 m bloom — a bloom drawn at the REACH. A lamp does
+    /// not have a 3.6 m glowing part; it has a 0.4 m lantern, and a 3.6 m patch of ground that the lantern
+    /// makes brighter. Drawing the second as though it were the first is what produces a flat cream disc
+    /// with the planks, the bollards and the post itself hidden inside it. So the bloom comes down to the
+    /// FITTING — the same ruling <see cref="BoatLampPresets"/> already applied to every lamp the fleet
+    /// carries — and the reach keeps the plate-tuned number it always had, under its own name, for the
+    /// siting that derives from it and for the illumination PR that will finally draw it.</para>
+    ///
+    /// <para><b>⚠ Until then a lamp post has no pool at all, and that is deliberate.</b> The post glows and
+    /// the planks under it stay dark. It is the honest half-picture: the owner has already ruled the disc
+    /// worse than the dark.</para>
     /// </summary>
     public static class LightPresets
     {
@@ -55,7 +82,11 @@ namespace HiddenHarbours.Art
             public readonly Color Color;
             /// <summary>Master intensity (pre night-gate / pre flicker).</summary>
             public readonly float Intensity;
-            /// <summary>How far the glow reaches (world metres) — a window pool is small, a lamp pool larger.</summary>
+            /// <summary>
+            /// <b>The BLOOM radius</b>, world metres — how far the additive quad's halo reaches from the
+            /// lamp, i.e. how big the SOURCE looks. Since 2026-09-04 this is the size of the lit FITTING
+            /// and not of the pool it lights; the pool is <see cref="ReachMetres"/>. See the class note.
+            /// </summary>
             public readonly float Range;
             /// <summary>Radial edge softness (0 hard disc .. 1 soft halo). Placed glows are soft.</summary>
             public readonly float EdgeSoftness;
@@ -102,71 +133,88 @@ namespace HiddenHarbours.Art
                         flickerAmount: 0.05f,              // a living hearth/lamp within
                         originOffset: new Vector2(0f, -0.35f));
 
-                // LAMPPOST — a warm lamp pool cast on the ground beneath a post. Bigger + a touch brighter than a
-                // window spill, steadier (an electric/gas street lamp barely flickers). Offset so the glow sits
-                // at the ground under the lamp HEAD (the post decor mounts the head ~2.2 m up; the pool falls
-                // just below it).
+                // LAMPPOST — the warm glow of a LIT LANTERN on a post. Offset so the glow sits at the lamp
+                // HEAD rather than at the post's feet, steadier than a hearth (an electric/gas street lamp
+                // barely flickers), and warm sodium in colour.
                 //
-                // ⭐ RETUNED 2026-09-04 from 1.15 / 4.6 m / 0.78, off 02:00 plates of the St Peters pier at
-                // the game's own on-foot framing (9 m of world height). At 4.6 m the pool is HALF THE
-                // SCREEN and, added on top of ADR 0013's night multiply, saturates to a flat cream disc
-                // that hides the planks it is meant to light — the deck, the bollards and the post itself
-                // all vanish inside it. A sweep at 4.6 / 3.5 / 2.5 m put the read squarely at the short
-                // end. These are the FIRST measured values this preset has ever carried; the shipped
-                // numbers were a stub, placed nowhere in the game.
+                // ⭐⭐ THE BLOOM IS THE LANTERN, NOT THE POOL — the owner's ruling of 2026-09-04, and the
+                // reason the two numbers below no longer describe the same thing. It shipped at 3.6 m, and
+                // 3.6 m is the POOL: the patch of ground a street lamp lights. Drawn as an additive quad
+                // that is a 7.2 m disc of cream laid over the frame, and the owner, looking at the pier
+                // through it, said the lamps were "just a round glow" and should "glow from within the
+                // lamp". He is right, and no radius fixes it — a smaller disc is a smaller disc. What a
+                // lit lamp looks like is a BRIGHT FITTING with a short halo round it.
                 //
-                // ⚠ The physical answer and the rendered one disagree, and it is worth saying why. A lamp
-                // lights a circle of roughly twice its head height, so a 4.48 m streetLamp really should
-                // pool ~4.5 m. It cannot here, because ADR 0016's additive quad is the SOURCE'S OWN BLOOM
-                // and not illumination — it adds light to the frame rather than modulating what the ground
-                // returns. Making a lamp light the ground the way the sun lights a tree (the lit-decor
-                // path, #715) is the real fix and is its own PR; until then the pool is deliberately
-                // smaller than physics so that it reads.
+                // So the bloom is the size of the lantern: 0.40 m, the width of `streetLamp`'s own lens
+                // (utilityIsoRig.js:361, prismT(-0.8, 0, r=0.2, ..., 'glow')), which is this preset's
+                // archetype. Each placed piece then overrides it with ITS OWN measured fitting via
+                // <see cref="ApplyFitting"/> — a wharf lantern is a smaller lamp than a road lamp and
+                // should look like one — so this value is the floor for a lamp post nobody measured.
                 //
-                // ⚠ The RANGE did the work, not the intensity. Area goes as r², so 4.6 -> 3.6 m is a 39 %
-                // smaller pool on its own. Intensity lands at 1.0 rather than the 0.9 the sweep was shot at
-                // because a lamp pool must stay brighter than a WINDOW SPILL (WindowGlow 0.95) -- an
-                // ordering the preset library has asserted since it was written, and one that is obviously
-                // right: you can see a street lamp from further away than you can see somebody's window.
+                // ⚠ THE POOL IS NOT DELETED, IT IS RENAMED. <see cref="ReachMetres"/> still says 3.6 m,
+                // still carries the plate tuning of 2026-09-04, and is still what the builders site their
+                // lamps by — so not one lamp post moves on this change. What moved is what gets DRAWN.
+                //
+                // ⚠ Intensity rises 1.0 -> 1.3 because the radius gave something up and something has to
+                // carry it: a small hot point reads as a lamp far better than a broad haze, which is the
+                // trade every lamp in <see cref="BoatLampPresets"/> made under the same ruling on
+                // 2026-09-03. It stays above a WINDOW SPILL (WindowGlow 0.95) — an ordering this library
+                // has asserted since it was written, and an obviously right one: you can see a street lamp
+                // from further away than you can see somebody's window.
                 case Kind.Lightpost:
                     return new Config(
                         SceneLight.LightShape.Radial,
                         new Color(1f, 0.88f, 0.62f, 1f),   // warm sodium-ish lamp
-                        intensity: 1f,                     // see the note: just ABOVE WindowGlow's 0.95
-                        range: 3.6f,
+                        intensity: 1.3f,                   // the core carries what the radius gave up
+                        range: 0.40f,                      // the BLOOM: streetLamp's own lantern lens
                         edgeSoftness: 0.88f,               // softer: the hard edge is what read as a disc
                         flickerAmount: 0.02f,              // a barely-there electric hum
                         originOffset: new Vector2(0f, -0.2f));
 
-                // WORKLIGHT — a brighter, COOLER, steady work lamp (a wharf floodlight). Bigger reach, near-white,
-                // rock-steady (no flicker — it's electric work light, not a flame). Centred on the object.
+                // WORKLIGHT — a brighter, COOLER, steady work lamp on a wall. Near-white, rock-steady (no
+                // flicker — it's electric work light, not a flame), centred on the object.
+                //
+                // ⚠ THE ONE FITTING HERE WITH NO ART TO MEASURE, and it says so rather than pretending.
+                // This preset is placed NOWHERE (LampPosts' four kit pieces take Lightpost or Floodlight),
+                // so there is no rig part to read a lens off. 0.50 m is reasoned, not measured: a bulkhead
+                // work lamp is a bigger fitting than a street lantern (0.40 m) and a smaller one than a
+                // cobra head (0.58 m), and it sits between them. The moment something places a Worklight,
+                // that thing should hand its own fitting to <see cref="ApplyFitting"/> and this number
+                // stops mattering.
+                //
+                // Its POOL is unchanged at 5.2 m — see <see cref="ReachMetres"/>.
                 case Kind.Worklight:
                     return new Config(
                         SceneLight.LightShape.Radial,
                         new Color(1f, 0.97f, 0.9f, 1f),    // near-white cool work light
-                        intensity: 1.35f,
-                        range: 5.2f,
+                        intensity: 1.7f,
+                        range: 0.50f,                      // the BLOOM: reasoned, not measured — see the note
                         edgeSoftness: 0.7f,
                         flickerAmount: 0f,                 // steady electric work light
                         originOffset: Vector2.zero);
 
                 // FLOODLIGHT — what a 7 m pole is FOR. The two tall utility pieces (`yardLight` 7.26 m,
                 // `floodMast` 7.8 m) exist to flood an open working area — a laydown yard, a forecourt —
-                // and the Worklight above is sized for a lamp on a wall: 5.2 m of reach under a pole
-                // taller than its own pool is wide reads as a torch on a mast. So the two tall pieces get
-                // their own preset rather than a per-placement multiplier, which is the magic number rule 6
+                // and the Worklight above is sized for a lamp on a wall: a 5.2 m pool under a pole taller
+                // than its own pool is wide reads as a torch on a mast. So the two tall pieces get their
+                // own preset rather than a per-placement multiplier, which is the magic number rule 6
                 // forbids. Cooler and steadier than a lamp post: this is electric light over a place where
                 // work gets done in the dark.
                 //
-                // ⚠ 7 m, not the 9.5 m this shipped at for one commit. Sized to READ, the same way and for
-                // the same reason as Lightpost above — see its note. It stays comfortably wider than a lamp
-                // post's 3.6 m, which is the ordering that matters.
+                // The BLOOM is the `yardLight` cobra head's own lens — 0.58 m, the glow slab spanning
+                // x -1.82..-1.24 at utilityIsoRig.js:339 — this preset's archetypal single head. The
+                // `floodMast` is a THREE-lamp array 1.49 m across and overrides upward with its own
+                // measured fitting through <see cref="ApplyFitting"/>, which is why the two tall pieces can
+                // share a preset and still not glow the same size.
+                //
+                // Its POOL is unchanged at 7 m — see <see cref="ReachMetres"/>, where the ordering that
+                // matters (a flood reaches comfortably further than a lamp post's 3.6 m) still lives.
                 case Kind.Floodlight:
                     return new Config(
                         SceneLight.LightShape.Radial,
                         new Color(0.96f, 0.97f, 1f, 1f),   // cool mercury/LED flood
-                        intensity: 1.1f,
-                        range: 7f,                         // see Lightpost's note: sized to READ, not to physics
+                        intensity: 1.45f,
+                        range: 0.58f,                      // the BLOOM: yardLight's own cobra-head lens
                         edgeSoftness: 0.72f,               // harder-edged than a lamp pool: it is higher up
                         flickerAmount: 0f,                 // steady electric flood
                         originOffset: Vector2.zero);
@@ -176,6 +224,97 @@ namespace HiddenHarbours.Art
             }
         }
 
+        // -------------------------------------------------------------------------------------------
+        //  the REACH — the pool the lamp lights, which is not the bloom it wears
+        // -------------------------------------------------------------------------------------------
+
+        /// <summary>
+        /// <b>How far this kind of lamp LIGHTS, world metres</b> — the pool on the ground, as distinct from
+        /// the <see cref="Config.Range"/> bloom the fitting itself wears. See the class note for why the two
+        /// had to become separate numbers.
+        ///
+        /// <para><b>⭐ These are exactly the numbers that shipped as <c>Range</c>, to the decimal.</b> They
+        /// carry the 2026-09-04 plate tuning of the land lamp posts and nothing about them was re-derived
+        /// here: the reach is not a new decision, it is the old number given the name it always deserved.
+        /// That is what lets the bloom shrink without a single lamp post moving — the builders site their
+        /// lamps by the reach (<c>StPetersWharf.LampRowY</c>), and the reach did not change.</para>
+        ///
+        /// <para><b>⚠ NOTHING DRAWS THIS YET, and that is the honest state of the feature.</b> ADR 0016's
+        /// additive quad is the source's own bloom; it adds to the frame instead of modulating what the
+        /// ground returns, so it cannot draw a pool that a bollard's shadow could fall across. Making a lamp
+        /// light the ground the way the sun lights a tree — the lit-decor path, <c>SpriteLitDecor.hlsl</c> —
+        /// is the illumination PR, and THIS is the number it will illuminate with. Until it lands, a lamp
+        /// post glows and the planks under it stay dark, which the owner has already ruled the better of
+        /// the two honest pictures.</para>
+        ///
+        /// <para>Pure, and pinned value-for-value by the preset tests against the numbers that shipped —
+        /// a reach that has drifted from its plates is a reach nobody measured.</para>
+        /// </summary>
+        public static float ReachMetres(Kind kind)
+        {
+            switch (kind)
+            {
+                // A window spill: small, because it is light that has already been through glass and a room.
+                case Kind.WindowGlow: return 3.4f;
+                // A street/quay lamp: retuned 4.6 -> 3.6 m off the 02:00 plates of the St Peters pier
+                // (docs/art/spikes/land-lamp-posts/). Area goes as r², so that alone was a 39 % smaller pool.
+                case Kind.Lightpost:  return 3.6f;
+                // A lamp on a wall, placed nowhere — untouched since the library was written.
+                case Kind.Worklight:  return 5.2f;
+                // A tall pole over open working ground: 7 m, not the 9.5 m it shipped at for one commit.
+                case Kind.Floodlight: return 7f;
+                default:              goto case Kind.WindowGlow;
+            }
+        }
+
+        // -------------------------------------------------------------------------------------------
+        //  the BLOOM — sized to the lit fitting, whichever piece is carrying it
+        // -------------------------------------------------------------------------------------------
+
+        /// <summary>The smallest bloom a fitting gets, metres. A pilot lamp in a fitting narrower than a
+        /// hand still has to be visible at the game's framing; below this it stops being a light and
+        /// becomes a stray bright pixel.</summary>
+        public const float MinBloomRadiusMetres = 0.10f;
+
+        /// <summary>The largest, metres — a backstop rather than a working number. The widest lit fitting
+        /// in the kit is `floodMast`'s three-lamp array at 1.49 m, which this only just clears; it exists so
+        /// that a caller handing in a whole BUILDING as a "fitting" gets a lamp rather than the disc this
+        /// ruling retired. ⚠ A kit piece wider than a flood mast's head bar is a piece that should be asking
+        /// for more than one light, not for a bigger one.</summary>
+        public const float MaxBloomRadiusMetres = 1.60f;
+
+        /// <summary>
+        /// <b>The bloom radius a lit fitting this wide wears</b>, metres — the one place the rule lives, so
+        /// a test can pin it without building a light and a report can print it.
+        ///
+        /// <para><b>The radius is the fitting's own WIDTH, so the glow's DIAMETER is twice the fitting.</b>
+        /// A lit lantern is not a disc the size of its glass and nothing more — glass that bright bleeds a
+        /// little into the dark around it. Half a fitting-width of halo all round is what that looks like,
+        /// and it is the same ratio the fleet's lamps landed on under the same ruling a day earlier
+        /// (<see cref="BoatLampPresets"/>: a ~0.15 m sidelight box blooms at 0.28 m, a ~0.25 m masthead at
+        /// 0.50 m).</para>
+        /// </summary>
+        public static float BloomForFitting(float fittingWidthMetres) =>
+            Mathf.Clamp(fittingWidthMetres, MinBloomRadiusMetres, MaxBloomRadiusMetres);
+
+        /// <summary>
+        /// <b>Stamp a preset, then size its bloom to THIS piece's own lit fitting</b> — the twin of
+        /// <see cref="BoatLampPresets.ApplyWallSpill"/>, and for the same reason: the preset owns the LOOK
+        /// (colour, softness, flicker, how bright), the art owns the SIZE. A wharf lantern and a road lamp
+        /// are both <see cref="Kind.Lightpost"/> and should not glow the same size, because they are not
+        /// the same lamp.
+        ///
+        /// <para>Everything except <see cref="Config.Range"/> is the preset's verbatim. Null-safe; a
+        /// non-positive width falls back to the preset's own bloom, so a caller that cannot measure its
+        /// fitting gets the archetype rather than nothing.</para>
+        /// </summary>
+        public static void ApplyFitting(SceneLight light, Kind kind, float fittingWidthMetres)
+        {
+            if (light == null) return;
+            Apply(light, kind);
+            if (fittingWidthMetres > 0f) light.Range = BloomForFitting(fittingWidthMetres);
+        }
+
         /// <summary>
         /// Stamp a preset <see cref="Config"/> onto a <see cref="SceneLight"/> — the ONE place the preset→light
         /// mapping lives, shared by the runtime <see cref="PreconfiguredLight"/> component and the editor
@@ -183,7 +322,16 @@ namespace HiddenHarbours.Art
         /// Sets only the shape/colour/size/softness/flicker/origin; the night-gate is the shader's job (every
         /// light gates off the same published <c>_DayNightTint</c>, ADR 0016), so a preset never touches it.
         /// </summary>
-        public static void Apply(SceneLight light, Kind kind) => Stamp(light, For(kind));
+        public static void Apply(SceneLight light, Kind kind)
+        {
+            Stamp(light, For(kind));
+            // ⭐ AND THE REACH GOES WITH IT. Stamp writes the Config, and a Config carries the BLOOM only —
+            // deliberately, because BoatLampPresets shares that struct and a boat's sidelight has no pool.
+            // The reach is per-KIND, so it can only be attached here, where the kind is known. Without this
+            // line the split would exist in the library and never reach the runtime, and the thing that
+            // draws a pool is handed a SceneLight, not a preset kind.
+            if (light != null) light.ReachMetres = ReachMetres(kind);
+        }
 
         /// <summary>
         /// Write ONE <see cref="Config"/> onto a <see cref="SceneLight"/> — the single place a preset

@@ -1,0 +1,129 @@
+{
+ "schema": "hidden-harbours/rig-sidecar@1",
+ "rig": "Art/clamHodRig.js",
+ "exportSymbol": "ClamHod",
+ "derivedFromRigSha256": "142c63db93af6f45749106a68523f1cacee5cceb260b3dc216d48c81fc926d36",
+ "generated": {
+  "date": "2026-09-06T00:14:50.676Z",
+  "by": "Art/_catchSidecars.js",
+  "harness": "CATCH_SIDECARS",
+  "isoSolidSha256": "f7fc9db510b0346dea568c43dc7378f1a12fd71ee8f5a7653e78377812b792bd"
+ },
+ "note": "The wire roller basket for the clam dig. Cell, pivots, dims, openings and depth computed by ClamHod at generation for all 8 headings.",
+ "camera": {
+  "ppu": 32,
+  "view": "3/4 from the south, orthographic",
+  "elevDeg": 40,
+  "headings": ["N", "NE", "E", "SE", "S", "SW", "W", "NW"],
+  "headingStepDeg": 45,
+  "turn": "CW",
+  "dirIndex": "dir 0..7 = headings[dir]",
+  "key": "upper-left",
+  "dither": "ordered 4x4 Bayer",
+  "antialias": false,
+  "source": "M2 bake recipe, ADR-0006"
+ },
+ "needs": ["IsoSolid"],
+ "cell": {
+  "w": 40,
+  "h": 40,
+  "pivot": {
+   "x": 20,
+   "y": 30
+  },
+  "pivotIs": "ground centre",
+  "cpivotIs": "the roller grip — pins to a CharacterIso carry anchor when carried",
+  "cpivot": [
+   [20, 21],
+   [20, 21],
+   [20, 21],
+   [20, 21],
+   [20, 21],
+   [20, 21],
+   [20, 21],
+   [20, 21]
+  ],
+  "cpivotUnits": "cell px [x, y] per heading"
+ },
+ "dims": {
+  "units": "m — length x width x height",
+  "l": 0.42,
+  "w": 0.3,
+  "h": 0.2
+ },
+ "elev": 40,
+ "keyline": "render(dir, {keyline:true}) is the A/B; the shipping bake is ringless (ADR 0031)",
+ "layers": {
+  "back": "render(dir, {layer:\"back\"}) — the far half of the wire",
+  "front": "render(dir, {layer:\"front\"}) — the near half",
+  "all": "render(dir) — both",
+  "order": "back -> the CatchKit2 heap clipped to opening(dir) -> front"
+ },
+ "opening": {
+  "units": "px from the pivot, [dx, dy] x 4 rim corners per heading (a clockwise quad)",
+  "perHeading": [
+   [
+    [-6, -2],
+    [6, -2],
+    [6, -8],
+    [-6, -8]
+   ],
+   [
+    [-7, -6],
+    [1, 0],
+    [7, -4],
+    [-1, -10]
+   ],
+   [
+    [-4, -9],
+    [-4, -1],
+    [4, -1],
+    [4, -9]
+   ],
+   [
+    [1, -10],
+    [-7, -4],
+    [-1, 0],
+    [7, -6]
+   ],
+   [
+    [6, -8],
+    [-6, -8],
+    [-6, -2],
+    [6, -2]
+   ],
+   [
+    [7, -4],
+    [-1, -10],
+    [-7, -6],
+    [1, 0]
+   ],
+   [
+    [4, -1],
+    [4, -9],
+    [-4, -9],
+    [-4, -1]
+   ],
+   [
+    [-1, 0],
+    [7, -6],
+    [1, -10],
+    [-7, -4]
+   ]
+  ]
+ },
+ "depthPx": 4,
+ "depthPxIs": "rim to floor in px at the default elevation; partial fills lower the heap surface by (1 - min(1, frac / 0.85)) x depthPx (CatchKit2.heap, _transcribed); brim crowns 2 px above the rim",
+ "fills": ["empty", "few", "half", "full", "brim"],
+ "fillFrac": {
+  "empty": 0,
+  "few": 0.25,
+  "half": 0.55,
+  "full": 0.85,
+  "brim": 1
+ },
+ "materials": {
+  "wire": "galvanised — bucketRig's STEEL ramp, wires baked 1 px (0.012 m half-thickness) so the catch shows through",
+  "bail": "ash with a roller grip — bucketRig's WOOD ramp"
+ }
+}
