@@ -165,6 +165,12 @@ namespace HiddenHarbours.Art
                  "pool instead of stamping a disc. The bloom is unchanged by it.")]
         [Min(0f)] [SerializeField] private float _lampHeightMeters = DefaultLampHeightMeters;
 
+        [Tooltip("How far UP the drawn art this lamp's own fitting sits, metres — a lantern on a post, a " +
+                 "lens on a swan neck. The BLOOM is drawn there; the pool and the cast shadows still work " +
+                 "from the foot, because that is where the lamp stands on the ground. 0 = the fitting is at " +
+                 "the transform (a window glow, a boat's lamp mounted where its anchor already is).")]
+        [Min(0f)] [SerializeField] private float _bloomLiftMetres;
+
         [Tooltip("How far this lamp LIGHTS the ground, metres — its pool, which is NOT the same as Range. " +
                  "Range is the BLOOM: how big the lit fitting looks. This is the patch of ground the lamp " +
                  "makes brighter, drawn by LampPoolSystem. 0 = this lamp casts no pool (a boat's sidelight " +
@@ -238,6 +244,28 @@ namespace HiddenHarbours.Art
         /// <summary>Lamp height above its casters' ground, metres — the cast shadows' rake lever, and what
         /// gives the ground pool its shape.</summary>
         public float LampHeightMeters { get => _lampHeightMeters; set => _lampHeightMeters = Mathf.Max(0f, value); }
+
+        /// <summary>
+        /// <b>How far up the drawn art the lit FITTING sits</b>, metres — the lantern on its post, the lens
+        /// on its swan neck. The bloom is drawn THERE; <see cref="WorldOrigin"/>, and therefore the ground
+        /// pool and every cast shadow, stays at the foot, because that is where the lamp stands.
+        ///
+        /// <para><b>⚠ It exists because the owner looked at the plates and said so</b> (2026-09-05):
+        /// <i>"the glow emitters seem to always be at the base and not the lantern lens."</i> He was right,
+        /// and it had been true since lamp posts were placed. The reason is a fossil: the
+        /// <c>Lightpost</c> preset's origin offset is (0, −0.2), nudged DOWN — which was correct when the
+        /// thing being drawn was a POOL that should fall just below the head, and became wrong the moment
+        /// #733 made the quad the FITTING instead. A fitting-sized glow at the foot of a post is a lamp
+        /// that glows out of its own base.</para>
+        ///
+        /// <para>Set from the piece's published head height (<c>LampPosts.HeadHeightMetres</c>), so it is
+        /// read off the art like everything else about these lamps and never guessed.</para>
+        /// </summary>
+        public float BloomLiftMetres { get => _bloomLiftMetres; set => _bloomLiftMetres = Mathf.Max(0f, value); }
+
+        /// <summary>The world point the BLOOM is drawn at — the lamp's origin lifted to its fitting. The
+        /// pool and the shadows use <see cref="WorldOrigin"/> instead, which stays on the ground.</summary>
+        public Vector2 BloomWorldOrigin => (Vector2)WorldOrigin + new Vector2(0f, _bloomLiftMetres);
 
         /// <summary>
         /// <b>How far this lamp LIGHTS the ground</b>, metres — its POOL, and not to be confused with
@@ -429,7 +457,13 @@ namespace HiddenHarbours.Art
         {
             if (_quad == null) return;
 
-            Vector3 origin = transform.TransformPoint(new Vector3(_originOffset.x, _originOffset.y, 0f));
+            // ⚠ THE BLOOM IS DRAWN AT THE FITTING, NOT AT THE FEET. A lamp post's transform is its FOOT
+            // (both iso packs pivot at the ground centre), so a quad posed on the transform puts the glow
+            // where the post meets the ground — which is what the owner saw and named on 2026-09-05. The
+            // lift raises it to the lantern; WorldOrigin below is deliberately NOT lifted, because the
+            // pool and the cast shadows are asking where the lamp STANDS, not where it glows.
+            Vector3 origin = transform.TransformPoint(new Vector3(_originOffset.x, _originOffset.y, 0f))
+                           + new Vector3(0f, _bloomLiftMetres, 0f);
             _quad.rotation = transform.rotation;
 
             float r = Mathf.Max(_range, 0.01f);

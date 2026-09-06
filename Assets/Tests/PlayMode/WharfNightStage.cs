@@ -104,6 +104,26 @@ namespace HiddenHarbours.Tests.PlayMode
         /// keeps running until <see cref="FrameOn"/>, which is law 3.</summary>
         public IEnumerator SetNight(float hour)
         {
+            // ⚠️⚠️ THE SECOND REGION A RUN LOADS ARRIVES WITH NO CLOCK, and it is not that region's fault.
+            // `GameRoot` publishes `GameServices.Clock` from `Awake` and is `DontDestroyOnLoad`, so the
+            // FIRST scene's root survives every later `LoadSceneMode.Single` — and a later region's root,
+            // finding one already there, never publishes its own. Meanwhile the first root's clock COMPONENT
+            // lived in the scene that was just unloaded, so the published reference is a destroyed object:
+            // fake-null, and `GameServices.Clock == null` is true. The clock the new region wired is sitting
+            // right there in the loaded scene, unpublished. Republish it rather than skipping, or a fixture
+            // can only ever photograph the first region a run happens to touch.
+            if (GameServices.Clock == null)
+            {
+                var live = Object.FindFirstObjectByType<HiddenHarbours.Environment.GameClock>();
+                if (live != null)
+                {
+                    GameServices.Clock = live;
+                    if (GameServices.Config == null) GameServices.Config = live.Config;
+                    Debug.Log($"[{_plateDir}] republished this region's own GameClock — the previous " +
+                              "region's DontDestroyOnLoad GameRoot had left a destroyed one in its place");
+                }
+            }
+
             if (GameServices.Clock == null || GameServices.Config == null)
             {
                 Assert.Ignore("SKIPPED — the region registered no clock, so the night cannot be pinned and a " +

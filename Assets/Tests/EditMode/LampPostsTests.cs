@@ -184,6 +184,56 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         /// <summary>
+        /// <b>⚠️⚠️ THE GLOW BELONGS AT THE LANTERN, AND IT WAS AT THE POST'S FEET.</b>
+        ///
+        /// <para>The owner, looking at the 2026-09-05 plates: <i>"the glow emitters seem to always be at the
+        /// base and not the lantern lens."</i> He was right, and it had been true since lamp posts were
+        /// placed. The cause is a fossil: both iso packs pivot these pieces at the GROUND CENTRE, and the
+        /// <c>Lightpost</c> preset's origin offset is (0, −0.2) — nudged DOWN, which was correct while the
+        /// thing being drawn was a POOL that should fall just below the head, and became wrong the moment
+        /// #733 made the quad the FITTING. A fitting-sized glow at a post's foot is a lamp glowing out of
+        /// its own base.</para>
+        ///
+        /// <para>Two positions, and they must stay different: the BLOOM rises to the head, while
+        /// <see cref="SceneLight.WorldOrigin"/> — what the ground pool centres on and what every cast shadow
+        /// measures its lamp-to-caster distance from — stays on the ground, because that is where the lamp
+        /// stands. Lift them both and the pool floats off up the screen with the glow.</para>
+        /// </summary>
+        [Test]
+        public void ALampGlowsAtItsLantern_WhileItsPoolAndShadowsStayOnTheGround()
+        {
+            var go = new GameObject("bloomLift") { hideFlags = HideFlags.HideAndDontSave };
+            try
+            {
+                go.transform.position = new Vector3(10f, 4f, 0f);
+                SceneLight light = LampPosts.Light(go, LampPosts.DecorFamily, LampPosts.LanternPost);
+
+                float lens = LampPosts.FittingHeightMetres(LampPosts.LanternPost);
+                float drawn = LampPosts.HeadHeightMetres(LampPosts.DecorFamily, LampPosts.LanternPost);
+                Assert.Greater(lens, 1f, "the fixture needs a piece whose lens is meaningfully off the ground");
+                Assert.AreEqual(lens, light.BloomLiftMetres, 1e-4f,
+                    "the lift is the LENS's own height, read off the rig and never guessed");
+                Assert.Less(lens, drawn,
+                    $"and it is BELOW the piece's published {drawn:0.00} m drawn height, because a lantern " +
+                    "hangs under its cap — using the drawn height would glow out of the finial");
+
+                float head = lens;
+
+                Vector2 ground = light.WorldOrigin;
+                Vector2 bloom = light.BloomWorldOrigin;
+
+                Assert.AreEqual(head, bloom.y - ground.y, 1e-4f,
+                    $"the glow sits {bloom.y - ground.y:0.00} m above the foot where the lantern is {head:0.00} m up");
+                Assert.AreEqual(ground.x, bloom.x, 1e-4f, "and directly over it");
+
+                Assert.Less(ground.y, go.transform.position.y + 0.01f,
+                    "the GROUND origin must stay at the foot — the pool centres on it and every cast shadow " +
+                    "measures from it, so lifting it would float the pool up the screen with the glow");
+            }
+            finally { Object.DestroyImmediate(go); }
+        }
+
+        /// <summary>
         /// <b>⚠️⚠️ SHRINKING THE BLOOM MUST NOT SWITCH THE LAMP SHADOWS OFF — and before this test it did.</b>
         ///
         /// <para><c>LampShadowSystem</c> pairs a lamp with the casters inside it by a RADIUS, and until

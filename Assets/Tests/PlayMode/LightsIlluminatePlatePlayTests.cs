@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using HiddenHarbours.App.Editor;
 using HiddenHarbours.Art;
+using HiddenHarbours.Core;
 using Object = UnityEngine.Object;
 
 namespace HiddenHarbours.Tests.PlayMode
@@ -27,6 +28,7 @@ namespace HiddenHarbours.Tests.PlayMode
     public class LightsIlluminatePlatePlayTests
     {
         const string SceneName = "StPeters";
+        const string CreekSceneName = "NineMileCreek";
         const string PlateDir = "lights-illuminate";
 
         private WharfNightStage _stage;
@@ -36,8 +38,11 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             if (_stage != null) yield return _stage.TearDown();
             _stage = null;
-            // Put the profile back: it is a Resources asset shared by every test that follows.
+            // Put BOTH systems' profiles back. Null re-resolves the shipped Resources asset on the next
+            // access, so a test that handed them its own copy cannot leave the owner's dials moved for
+            // whatever runs next — and saying it for both is what puts the intent on the page.
             if (LampPoolSystem.Instance != null) LampPoolSystem.Instance.Profile = null;
+            if (LampShadowSystem.Instance != null) LampShadowSystem.Instance.Profile = null;
         }
 
         // =============================================================================================
@@ -222,6 +227,165 @@ namespace HiddenHarbours.Tests.PlayMode
                 $"a lamp lit the ground at noon: {changed} px changed against a {noiseFloor} px floor. The " +
                 "gate is the shared additive machinery's and reads the published tint — if this fails, the " +
                 "pool is bypassing it.");
+        }
+
+        // =============================================================================================
+        //  the charter's other two acceptance plates
+        // =============================================================================================
+
+        /// <summary>
+        /// <b>The Nine Mile Creek mooring wall at night, with the fleet lying against it.</b> The charter's
+        /// second acceptance location, and a different question from the pier: NMC's lamps are 4.48 m
+        /// `streetLamp`s rather than 2.46 m lantern posts, so their pools should read BROADER and FLATTER —
+        /// which is `h/√(h²+d²)` and nothing else, since both lamps carry the same preset and the same
+        /// reach. If the two regions' pools looked alike, the shape would be decoration rather than
+        /// geometry.
+        ///
+        /// <para>It also puts the pass over the one receiver the pier has none of: <b>a mesh hull</b>. The
+        /// fleet moored along that wall is `IsoFacetHullRenderer` geometry, not sprites, and a screen-space
+        /// multiply lights her exactly as it lights the quay — with the facet path untouched. That is worth
+        /// a measurement rather than an assurance.</para>
+        /// </summary>
+        [UnityTest]
+        public IEnumerator TheCreekWallAndTheFleetAlongsideAreLit_AndTheTallerLampPoolsFlatter()
+        {
+            WharfNightStage.RequireAGraphicsDevice();
+
+            _stage = new WharfNightStage(CreekSceneName, PlateDir);
+            yield return _stage.Load();
+            yield return _stage.SetNight(2f);
+
+            ITidalTerrain terrain = GameServices.TidalTerrain;
+            if (terrain == null)
+            {
+                Assert.Ignore("SKIPPED — Nine Mile Creek registered no ITidalTerrain, so the lamp sites " +
+                              "cannot be asked whether they stand on dry ground and the builder would " +
+                              "decline every one of them.");
+                yield break;
+            }
+
+            IReadOnlyList<LampPosts.Site> sites = NineMileCreekDressing.Lamps(terrain);
+            var host = _stage.Track(new GameObject("PlateLamps"));
+            int placed = LampPosts.Place(host.transform, sites, terrain,
+                                         NineMileCreekMainland.SpringHighWater, "[lights-illuminate]");
+            Assert.Greater(placed, 0, "the builder placed no lamp at the creek at all");
+            foreach (SceneLight l in host.GetComponentsInChildren<SceneLight>(true)) l.FlickerAmount = 0f;
+
+            // Frame the wall between its two lamps — the stretch a crew steps off a boat onto.
+            var wall = new Vector2(NineMileCreekDressing.AtBerth(4), NineMileCreekDressing.LampRowY);
+            yield return _stage.FrameOn(wall + new Vector2(0f, -1.5f));
+
+            LampShadowProfile profile = PoolProfile();
+
+            profile.PoolsEnabled = false;
+            yield return Settle();
+            byte[] noPool = _stage.Capture();
+            _stage.SavePlate("05-creek-wall-0200-no-pool-BEFORE.png", noPool);
+
+            profile.PoolsEnabled = true;
+            yield return Settle();
+            byte[] pooled = _stage.Capture();
+            _stage.SavePlate("06-creek-wall-0200-pool-AFTER.png", pooled);
+
+            bool[] mask = WharfNightStage.LitMask(noPool, pooled, out int lit);
+            float before = WharfNightStage.MeanLuma(noPool, mask);
+            float after = WharfNightStage.MeanLuma(pooled, mask);
+            float contrastBefore = _stage.RelativeLocalContrast(noPool, mask);
+            float contrastAfter = _stage.RelativeLocalContrast(pooled, mask);
+            int px = _stage.Width * _stage.Height;
+
+            Debug.Log($"[{PlateDir}] creek wall {_stage.Width}x{_stage.Height}  lamps placed {placed}, pools " +
+                      $"{LampPoolSystem.Instance?.ActivePoolCount}  |  lit {lit} px ({100f * lit / px:0.00} %)" +
+                      $"  |  mean luma {before:0.0000} -> {after:0.0000} " +
+                      $"({after / Mathf.Max(before, 1e-6f):0.00}x)  |  relative local contrast " +
+                      $"{contrastBefore:0.0000} -> {contrastAfter:0.0000} " +
+                      $"({contrastAfter / Mathf.Max(contrastBefore, 1e-6f):0.000}x)");
+
+            Assert.Greater(lit, px / 200, $"the wall's lamps lit only {lit} px of {px}");
+            Assert.Greater(after, before * 1.15f, "the quay a crew steps onto must come up");
+            Assert.AreEqual(contrastBefore, contrastAfter, contrastBefore * 0.25f,
+                "and the wall must still read as a wall — the multiply's promise holds here or it holds " +
+                "nowhere");
+
+            // ⭐ THE SHAPE IS GEOMETRY, NOT DECORATION. Same preset, same reach, different head height:
+            // a 4.48 m streetLamp must strike the ground more squarely at a given distance than the pier's
+            // 2.46 m lantern post. Asked of the maths both the shader and the plate share.
+            float creek = LightMath.GroundIncidence(4.48f, 3f);
+            float pier = LightMath.GroundIncidence(2.46f, 3f);
+            Assert.Greater(creek, pier,
+                $"at three metres out the creek's taller lamp reads {creek:0.000} against the pier's " +
+                $"{pier:0.000} — if these were equal the pool would be a decal with a soft edge");
+        }
+
+        /// <summary>
+        /// <b>The searchlight lights the dock it sweeps</b> — the charter's third acceptance, and the half of
+        /// the owner's sentence that #733 could only half answer.
+        ///
+        /// <para>He said the beam <i>"doesnt read on water or enviroement"</i>. #733 fixed the WATER by
+        /// pulling the additive quad back to a source glow so the sea's own N·L relief could read through
+        /// it (#691). The ENVIRONMENT is this: a cone lamp is a point lamp with an angular gate, so the same
+        /// pool machinery puts a wedge of light on the planks the beam is pointed at — and the beam's reach
+        /// is its FULL throw, not the shortened quad.</para>
+        ///
+        /// <para>Shot at 06:13, the hour he was playing, with the beam aimed at the pier from the water.</para>
+        /// </summary>
+        [UnityTest]
+        public IEnumerator TheSearchlightLightsTheDockItSweeps()
+        {
+            WharfNightStage.RequireAGraphicsDevice();
+
+            _stage = new WharfNightStage(SceneName, PlateDir);
+            yield return _stage.Load();
+            yield return _stage.SetNight(2f);
+
+            // Off the mooring face, aimed NORTH at the planks: transform.up is the beam axis, so a zero
+            // rotation throws +Y, which is at the pier from seaward.
+            Rect deck = StPetersWharf.DeckFootprint();
+            var from = new Vector2(StPetersWharf.LadderPosition().x,
+                                   deck.yMin - BoatSpotlight.DefaultRangeMetres * 0.55f);
+            var boat = _stage.Track(new GameObject("PlateSearchlight"));
+            boat.transform.position = new Vector3(from.x, from.y, 0f);
+            boat.transform.rotation = Quaternion.identity;
+            var spot = boat.AddComponent<BoatSpotlight>();
+            spot.KeyTogglesBeam = false;
+            spot.SetBeam(true);
+            // She is stationary by construction here, and a searchlight dims when not making way.
+            var dim = typeof(BoatSpotlight).GetField("_dimWhenStationary",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            Assert.IsNotNull(dim);
+            dim.SetValue(spot, false);
+
+            yield return _stage.FrameOn(from + new Vector2(0f, BoatSpotlight.DefaultRangeMetres * 0.5f));
+
+            LampShadowProfile profile = PoolProfile();
+
+            profile.PoolsEnabled = false;
+            yield return Settle();
+            byte[] noPool = _stage.Capture();
+            _stage.SavePlate("07-beam-on-the-dock-no-pool-BEFORE.png", noPool);
+
+            profile.PoolsEnabled = true;
+            yield return Settle();
+            byte[] pooled = _stage.Capture();
+            _stage.SavePlate("08-beam-on-the-dock-pool-AFTER.png", pooled);
+
+            Assert.Greater(spot.Light.ReachMetres, spot.Light.Range,
+                "the beam's POOL is its full throw while its bloom is the shortened quad — if these were " +
+                "equal, #733's source-glow dial would be shortening the illumination too");
+
+            bool[] mask = WharfNightStage.LitMask(noPool, pooled, out int lit);
+            float before = WharfNightStage.MeanLuma(noPool, mask);
+            float after = WharfNightStage.MeanLuma(pooled, mask);
+            int px = _stage.Width * _stage.Height;
+
+            Debug.Log($"[{PlateDir}] searchlight on the dock: reach {spot.Light.ReachMetres:0.0} m vs bloom " +
+                      $"{spot.Light.Range:0.0} m  |  lit {lit} px ({100f * lit / px:0.00} %)  |  mean luma " +
+                      $"{before:0.0000} -> {after:0.0000} ({after / Mathf.Max(before, 1e-6f):0.00}x)");
+
+            Assert.Greater(lit, px / 500,
+                $"the beam lit only {lit} px of the dock. A cone is a point lamp with an angular gate; if " +
+                "this is empty the gate is closing on everything or the beam is not aimed at the planks.");
+            Assert.Greater(after, before * 1.15f, "and what it sweeps must actually come up");
         }
 
         // =============================================================================================

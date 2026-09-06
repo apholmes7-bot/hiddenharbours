@@ -15,6 +15,10 @@ ground the lantern makes brighter.
 | `02-pier-0200-pool-AFTER.png` | the same lamp lighting the ground it stands over |
 | `03-pier-0200-pool-and-shadows.png` | the pool with the lamp shadows cut into it |
 | `04-pier-noon-control.png` | the same lamps by day |
+| `05-creek-wall-0200-no-pool-BEFORE.png` | the Nine Mile Creek mooring wall, the fleet alongside |
+| `06-creek-wall-0200-pool-AFTER.png` | the same wall, lit — a taller lamp pooling broader and flatter |
+| `07-beam-on-the-dock-no-pool-BEFORE.png` | the searchlight aimed at the pier from seaward |
+| `08-beam-on-the-dock-pool-AFTER.png` | the same beam putting a wedge of light on the planks |
 
 Both arms are the same frame with one field moved (`LampShadowProfile.PoolsEnabled`), so they differ by the
 thing under review and nothing else. Re-shoot with:
@@ -41,6 +45,81 @@ MULTIPLY: `Blend DstColor One` computes `dst × (1 + gain)`, and relative contra
 scale cancels out of it exactly. The planks survive by construction rather than by tuning. (The 18 % that
 does move is the pool's own spatial gradient — the incidence and edge falloff vary across the patch — not
 the flattening of anything.)
+
+## The charter's other two locations
+
+**Nine Mile Creek, the mooring wall with the fleet alongside** (05 → 06). A different question from the
+pier, and two of them:
+
+| | no pool | pool |
+|---|---|---|
+| pixels the lamps light | — | **62,449 (5.78 %)** |
+| mean luminance there | 0.1055 | **0.1864 — 1.77×** |
+| relative local contrast | 0.1196 | **0.1051 (0.878×)** |
+
+⭐ **The pool is broader and flatter than the pier's, and nothing tuned it.** Both lamps carry the same
+preset and the same 3.6 m reach; the creek's is a 4.48 m `streetLamp` where the pier's is a 2.46 m
+`lanternPost`, and `h/√(h²+d²)` does the rest — 0.831 against 0.634 at three metres out. The lift is
+correspondingly gentler (1.77× against the pier's 3.06×) because the same light is spread over more
+ground. If the two regions' pools looked alike, the shape would be decoration rather than geometry.
+
+It also puts the pass over the one receiver the pier has none of: **a mesh hull**. The fleet along that
+wall is `IsoFacetHullRenderer` geometry rather than sprites, and a screen-space multiply lights her exactly
+as it lights the quay, with the facet path untouched.
+
+⚠️ The two small white beads on the quay in **both** arms are pre-existing lamps of the region's own — they
+are identical in the BEFORE plate and are not this change.
+
+**The searchlight on the dock it sweeps** (07 → 08). The half of the owner's sentence #733 could only half
+answer: he said the beam *"doesnt read on water or enviroement"*, and #733 fixed the WATER by pulling the
+quad back so the sea's own N·L relief (#691) could read through it. This is the ENVIRONMENT — a cone lamp
+is a point lamp with an angular gate, so the same pool machinery lays a wedge of light on the planks:
+**30,910 px, 1.47× brighter**, at the beam's **full 9 m reach against its 2.7 m bloom**. That last pair is
+the point: #733's source-glow dial shortens what the lamp LOOKS like and not what it LIGHTS.
+
+⚠️ **Shot at 02:00, where the charter names 06:13.** Declared rather than glossed: at 06:13 the night gate
+is already closing, and #691's own correction to this arc records that the shipped searchlight photographs
+faintly at that hour by design. 02:00 is where the mechanism is visible; the hour does not change what is
+being shown, and the owner's judgement of the beam at dawn is a separate question about the gate's timing
+rather than about whether a beam lights ground.
+
+## ⭐⭐ The glow was at the post's FEET, and the owner caught it on these plates
+
+**Him, 2026-09-05:** *"the glow emitters seem to always be at the base and not the lantern lens."*
+
+He was right, and it had been true since lamp posts were placed — every plate in this folder and in
+`lights-are-sources/` showed it before this fix, and I had read the bead at the bottom of the pier's post
+as being at its head. The cause is a fossil: both iso packs pivot these pieces at the **ground centre**, and
+the `Lightpost` preset's origin offset is `(0, −0.2)` — nudged DOWN, which was right while the thing being
+drawn was a POOL that should fall just below the head, and became wrong the moment #733 made the quad the
+FITTING. A fitting-sized glow at a post's foot is a lamp glowing out of its own base.
+
+`SceneLight.BloomLiftMetres` raises the bloom to the lamp, from each piece's own **lens height** read off
+its rig — 2.09 m for `lanternPost` (the flame prism under its cap, `wharfDecorRig.js:990-994`), 4.19 m for
+`streetLamp`, 7.02 m for `yardLight`, 7.63 m for `floodMast`. Deliberately *below* each piece's published
+drawn height, because a lantern hangs under its cap and the eye checks a glow against the drawn glass.
+
+⚠️ **`WorldOrigin` is NOT lifted, and that separation is the point.** The pool centres on it and every cast
+shadow measures its lamp-to-caster distance from it, and both of those are asking where the lamp *stands*.
+Lift them with the glow and the pool floats up the screen with it.
+
+⚠️ **Vertical only — the horizontal is owed.** A swan-neck lamp's lens hangs 0.8 m to one side of its mast
+and a cobra head 1.53 m, and that offset **rotates with the piece's facing**, so it cannot be a constant.
+The right answer is the `lamp` ANCHOR the pack already declares a kind for
+(`pointKinds: [wires, secondary, lamp, drop]`) and does not yet publish coordinates for — reading it needs a
+rig re-bake, which is its own PR. Until then a swan-neck lamp glows from the top of its mast rather than the
+end of its arm: much closer than its feet, and honestly short of the lens.
+
+## ⏳ The owner's second point, not in this PR
+
+**Him, same message:** *"the lenses should glow on anything emitting light, glass, lense, windows."*
+
+Correct, and it is a different mechanism from anything here. A lamp's own lens pixels are part of its
+SPRITE, drawn below ADR 0013's whole-frame multiply, so they are crushed to near-black however bright the
+lamp is — a bloom sits *over* the glass rather than making the glass itself read as lit. #723 solved exactly
+this for a boat's cabin (`BoatWindowGlow` draws the panes as their own rectangles above the tint, because
+*a pre-multiply lift cannot make a lit window*), and the same treatment is owed to every land lens, pane and
+piece of glass. It is its own PR and it is named here so it is not lost.
 
 ## Two things that were nearly shipped wrong
 
