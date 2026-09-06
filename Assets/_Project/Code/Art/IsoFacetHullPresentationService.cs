@@ -260,6 +260,11 @@ namespace HiddenHarbours.Art
             if (injector == null) injector = host.AddComponent<FoamInjector>();
             if (def != null && def.WatertightHalfBeamMeters > 0f)
                 injector.ConfigureRadius(def.WatertightHalfBeamMeters);
+            // …and WHERE she sheds it. The trail is laid at the transom, projected the way this hull's
+            // art was baked, so it does not spring from her middle through a turn. A def that never had
+            // a stern measured passes 0 and keeps the shipped anchor.
+            if (def != null)
+                injector.ConfigureStern(def.WakeSternOffsetMeters, def.ElevationDeg);
         }
 
         /// <summary>
