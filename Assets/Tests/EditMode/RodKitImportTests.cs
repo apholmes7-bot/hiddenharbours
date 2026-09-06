@@ -199,6 +199,56 @@ namespace HiddenHarbours.Tests.EditMode
             }
         }
 
+        /// <summary>
+        /// Catch pass 2 adds two surface beats, <c>roll</c> and <c>jump</c>. Their sheets arrive with
+        /// the pass-2 bake, so this asserts CONDITIONALLY on the sheet being on disk rather than
+        /// failing before the bake — but it is not a free pass either: whenever the sheet IS there,
+        /// the frames and the mouth table must both wire, and whenever it is NOT there the importer
+        /// must degrade to empty rather than to something half-built.
+        ///
+        /// <para>The importer loads the ladder's MIDDLE rung, which is unsuffixed precisely so this
+        /// call site did not have to change. When a size picker lands, it chooses a suffix here.</para>
+        /// </summary>
+        [Test]
+        public void RollAndJump_WireWhenBaked_AndDegradeToEmptyWhenNot()
+        {
+            FishSpeciesDef[] roster = { MakeDef("fish.atlantic_cod") };
+            FishSpeciesVisual[] species = RodKitImporter.BuildFishSpecies(roster);
+            Assert.AreEqual(1, species.Length, "the cod is baked and in the roster");
+            FishSpeciesVisual cod = species[0];
+
+            int baked = 0;
+            foreach (var (label, frames, perDir, mouths) in new[]
+            {
+                ("roll", cod.RollFrames, cod.RollFramesPerDir, cod.RollMouthOffsets),
+                ("jump", cod.JumpFrames, cod.JumpFramesPerDir, cod.JumpMouthOffsets),
+            })
+            {
+                Assert.IsNotNull(frames, $"{label} frames must be an array, never null");
+
+                if (frames.Length == 0)
+                {
+                    Assert.AreEqual(0, perDir, $"{label}: no sheet means no frames per dir");
+                    Assert.IsNull(mouths, $"{label}: no sheet means no mouth table, not an empty one");
+                    continue;
+                }
+
+                baked++;
+                Assert.Greater(perDir, 0, $"{label}: a wired sheet has frames per direction");
+                Assert.AreEqual(8 * perDir, frames.Length, $"{label}: eight direction rows");
+                Assert.IsNotNull(mouths, $"{label}: a wired water anim carries its mouth table");
+                Assert.AreEqual(8 * perDir, mouths.Length, $"{label}: a mouth anchor per cell");
+                foreach (Vector2 m in mouths) AssertFinite(m, $"{label} mouth");
+            }
+
+            if (baked == 0)
+                Assert.Ignore("catch pass 2 has not been baked yet — Fish_cod_roll/_jump are not on " +
+                              "disk. Run Hidden Harbours ▸ Art ▸ Bake Catch Pass 2.");
+            else
+                Assert.AreEqual(2, baked, "roll and jump bake together — one without the other means " +
+                                          "a half-run bake, which is worse than no bake");
+        }
+
         [Test]
         public void NoRoster_WiresNoSpecies_AndAMissingSidecarDegradesToNull()
         {

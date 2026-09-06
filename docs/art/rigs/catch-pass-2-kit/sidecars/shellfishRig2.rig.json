@@ -1,0 +1,200 @@
+{
+ "schema": "hidden-harbours/rig-sidecar@1",
+ "rig": "Art/shellfishRig2.js",
+ "exportSymbol": "Shellfish2",
+ "derivedFromRigSha256": "3bcd4cef3116a6c59e8106c92f7b0f290deae73087590aa0d10814b60b81d9e5",
+ "generated": {
+  "date": "2026-09-06T00:14:50.676Z",
+  "by": "Art/_catchSidecars.js",
+  "harness": "CATCH_SIDECARS",
+  "isoSolidSha256": "f7fc9db510b0346dea568c43dc7378f1a12fd71ee8f5a7653e78377812b792bd"
+ },
+ "note": "Mussel / clam / scallop / oyster / periwinkle at true size, catch pass 2. Item and handful cells, palettes and the tiny-kind pixel patterns read from Shellfish2; bed and flat contracts measured by calling it.",
+ "camera": {
+  "ppu": 32,
+  "view": "top-down 3/4 read (y x 0.64 = sin 40 deg), same upper-left key",
+  "elevDeg": 40,
+  "headings": ["N", "NE", "E", "SE", "S", "SW", "W", "NW"],
+  "headingStepDeg": 45,
+  "turn": "CW",
+  "dirIndex": "dir 0..7 = headings[dir]",
+  "key": "upper-left",
+  "dither": "ordered 4x4 Bayer",
+  "antialias": false,
+  "source": "M2 bake recipe, ADR-0006"
+ },
+ "kinds": ["mussel", "clam", "scallop", "oyster", "periwinkle"],
+ "sizes": {
+  "mussel": {
+   "len": 0.06,
+   "wid": 0.03,
+   "mass": 0.012,
+   "label": "BLUE MUSSEL"
+  },
+  "clam": {
+   "len": 0.07,
+   "wid": 0.05,
+   "mass": 0.03,
+   "label": "SOFT-SHELL CLAM"
+  },
+  "scallop": {
+   "len": 0.1,
+   "wid": 0.09,
+   "mass": 0.08,
+   "label": "SEA SCALLOP"
+  },
+  "oyster": {
+   "len": 0.1,
+   "wid": 0.07,
+   "mass": 0.09,
+   "label": "OYSTER"
+  },
+  "periwinkle": {
+   "len": 0.025,
+   "wid": 0.02,
+   "mass": 0.004,
+   "label": "PERIWINKLE"
+  }
+ },
+ "variants": 4,
+ "item": {
+  "w": 8,
+  "h": 8,
+  "pivot": {
+   "x": 4,
+   "y": 6
+  },
+  "pivotIs": "ground contact — the odd loose shell on a deck",
+  "call": "renderItem(kind, variant 0..3, scale)"
+ },
+ "handful": {
+  "w": 8,
+  "h": 8,
+  "pivot": {
+   "x": 4,
+   "y": 4
+  },
+  "pivotIs": "THE GRIP — one clutch per hand, pin to a CharacterIso hand anchor",
+  "variants": 2,
+  "call": "renderHandful(kind, variant 0..1)"
+ },
+ "scale": {
+  "rule": "strict world scale: 32 px = 1 m, so a mussel is 2x1 px, a clam 2x2, a scallop or oyster 3x3, a periwinkle one pixel. Nothing is inflated to read alone — the beds carry it."
+ },
+ "palette": {
+  "rampIndex": "0 dark .. 4 light",
+  "ramps": {
+   "mussel": ["#10151a", "#1b2430", "#293747", "#3d5064", "#c2d6da"],
+   "clam": ["#8a6a48", "#9c7f57", "#c9b083", "#e7d8b0", "#f3ead0"],
+   "scallop": ["#7a4a34", "#a8694a", "#cf8f6a", "#e2b98f", "#f1d8b8"],
+   "oyster": ["#4d4a42", "#6b675c", "#8f8a7c", "#b1ab99", "#dcd6c3"],
+   "periwinkle": ["#2a2219", "#4a3c2c", "#7a6a4a", "#9a8a66", "#b8a985"]
+  }
+ },
+ "tiny": {
+  "note": "the 1-2 px kinds are explicit pixel patterns, one per variant: [dx, dy, rampIndex] from the placement pixel",
+  "patterns": {
+   "mussel": [
+    [
+     [0, 0, 3],
+     [1, 0, 2]
+    ],
+    [
+     [0, 0, 3],
+     [0, 1, 1]
+    ],
+    [
+     [0, 0, 3],
+     [1, 1, 1]
+    ],
+    [
+     [1, 0, 3],
+     [0, 1, 2]
+    ]
+   ],
+   "periwinkle": [
+    [
+     [0, 0, 2]
+    ],
+    [
+     [0, 0, 3]
+    ],
+    [
+     [0, 0, 2]
+    ],
+    [
+     [0, 0, 1]
+    ]
+   ],
+   "clam": [
+    [
+     [0, 0, 3],
+     [1, 0, 2],
+     [0, 1, 2],
+     [1, 1, 1]
+    ],
+    [
+     [0, 0, 3],
+     [1, 0, 3],
+     [0, 1, 1],
+     [1, 1, 1]
+    ],
+    [
+     [0, 0, 2],
+     [1, 0, 3],
+     [0, 1, 1],
+     [1, 1, 2]
+    ],
+    [
+     [0, 0, 3],
+     [1, 0, 2],
+     [1, 1, 1]
+    ]
+   ]
+  }
+ },
+ "bed": {
+  "call": "bed(kind, {w, h, seed, cover}) -> {w, h, rgba}",
+  "use": "alpha-masked texture laid over rock / sand / mud: mussels + periwinkles on tide-pool rock, oyster clumps on the mud edge, scallops apart on sand. A clam flat shows NO clams — see flat.",
+  "defaults": {
+   "w": 48,
+   "h": 32,
+   "seed": 5,
+   "cover": 0.85
+  },
+  "densityPerPx": {
+   "mussel": 1.6,
+   "periwinkle": 0.14,
+   "oyster": 0.45,
+   "scallop": 0.05,
+   "clam": 0,
+   "_transcribed": "internal `dens` table in bed(); coverage blobs (2 + 3 x cover of them) leave ground showing between"
+  }
+ },
+ "flat": {
+  "holes": "holes(seed, n, w, h) -> [{x, y, phase, period, dur}] — the keyholes a clam flat shows",
+  "measured": {
+   "periodMs": [2616.2039735354483, 7793.919028900564],
+   "durMs": [420, 420],
+   "sample": "holes(3, 400, 100, 100)"
+  },
+  "spurt": "spurt(hole, tMs) -> null | {rise 0..1, u 0..1}; rise = sin(pi x u) over dur. Draw a 1 px jet, rise x 4 px tall; a droplet 1 px above it once u > 0.45. This is the gameplay TELL for the dig.",
+  "spurtSampleAtDur420": [
+   [0, 0],
+   [70, 0.5],
+   [140, 0.866],
+   [210, 1],
+   [280, 0.866],
+   [350, 0.5],
+   [420, 0]
+  ]
+ },
+ "heap": {
+  "call": "heap(kind, w, h, seed, mask(x,y), {dome(x,y)}) -> rgba",
+  "use": "heaped shells clipped to a container opening — THE container fill for shellfish at this scale; CatchKit2.heap wraps it for a rim polygon"
+ },
+ "layering": {
+  "behindDirs": [7, 0, 1],
+  "rule": "held rests (and anything pinned to a hand anchor) draw UNDER the character sprite for NW / N / NE, over it otherwise"
+ }
+}

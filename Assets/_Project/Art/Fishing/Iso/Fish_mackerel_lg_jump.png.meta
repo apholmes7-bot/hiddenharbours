@@ -1,0 +1,1378 @@
+fileFormatVersion: 2
+guid: 376c37815fea88d4090623365b2d237e
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 859885232518538849
+    second: Fish_mackerel_lg_jump_0
+  - first:
+      213: -1620361774481035965
+    second: Fish_mackerel_lg_jump_1
+  - first:
+      213: -7708911277095303911
+    second: Fish_mackerel_lg_jump_2
+  - first:
+      213: 6488565178952622633
+    second: Fish_mackerel_lg_jump_3
+  - first:
+      213: 3399553009549652825
+    second: Fish_mackerel_lg_jump_4
+  - first:
+      213: 4070376597259016520
+    second: Fish_mackerel_lg_jump_5
+  - first:
+      213: -2655954866087110586
+    second: Fish_mackerel_lg_jump_6
+  - first:
+      213: 7977243042826039901
+    second: Fish_mackerel_lg_jump_7
+  - first:
+      213: -2202602021781337635
+    second: Fish_mackerel_lg_jump_8
+  - first:
+      213: -5897720906608621484
+    second: Fish_mackerel_lg_jump_9
+  - first:
+      213: 924754481406746589
+    second: Fish_mackerel_lg_jump_10
+  - first:
+      213: 8256877596292984459
+    second: Fish_mackerel_lg_jump_11
+  - first:
+      213: 7125827515660948898
+    second: Fish_mackerel_lg_jump_12
+  - first:
+      213: -2347473406175367247
+    second: Fish_mackerel_lg_jump_13
+  - first:
+      213: 6803652002684835829
+    second: Fish_mackerel_lg_jump_14
+  - first:
+      213: -6998146356962561347
+    second: Fish_mackerel_lg_jump_15
+  - first:
+      213: 2624012504644310576
+    second: Fish_mackerel_lg_jump_16
+  - first:
+      213: 1852038730040713574
+    second: Fish_mackerel_lg_jump_17
+  - first:
+      213: 4232262468400477536
+    second: Fish_mackerel_lg_jump_18
+  - first:
+      213: -1250091739582698152
+    second: Fish_mackerel_lg_jump_19
+  - first:
+      213: 5964726770756662067
+    second: Fish_mackerel_lg_jump_20
+  - first:
+      213: 34515560921352778
+    second: Fish_mackerel_lg_jump_21
+  - first:
+      213: 966945978812239625
+    second: Fish_mackerel_lg_jump_22
+  - first:
+      213: 598529153855569163
+    second: Fish_mackerel_lg_jump_23
+  - first:
+      213: 5557766989964182224
+    second: Fish_mackerel_lg_jump_24
+  - first:
+      213: 6297556089503230767
+    second: Fish_mackerel_lg_jump_25
+  - first:
+      213: 2871893146834267869
+    second: Fish_mackerel_lg_jump_26
+  - first:
+      213: 8585099805831202190
+    second: Fish_mackerel_lg_jump_27
+  - first:
+      213: 2162517002182581286
+    second: Fish_mackerel_lg_jump_28
+  - first:
+      213: -4140806036812417704
+    second: Fish_mackerel_lg_jump_29
+  - first:
+      213: 1833141642873494099
+    second: Fish_mackerel_lg_jump_30
+  - first:
+      213: 9008410058515269661
+    second: Fish_mackerel_lg_jump_31
+  - first:
+      213: -1793083374552486854
+    second: Fish_mackerel_lg_jump_32
+  - first:
+      213: 6449116017835556841
+    second: Fish_mackerel_lg_jump_33
+  - first:
+      213: -778094940339300094
+    second: Fish_mackerel_lg_jump_34
+  - first:
+      213: -5046762365045566374
+    second: Fish_mackerel_lg_jump_35
+  - first:
+      213: 1320636630567006034
+    second: Fish_mackerel_lg_jump_36
+  - first:
+      213: 6838823119802478601
+    second: Fish_mackerel_lg_jump_37
+  - first:
+      213: 1436209672333272937
+    second: Fish_mackerel_lg_jump_38
+  - first:
+      213: 2135160215098450809
+    second: Fish_mackerel_lg_jump_39
+  - first:
+      213: 3635368147119404393
+    second: Fish_mackerel_lg_jump_40
+  - first:
+      213: -3603908453579817004
+    second: Fish_mackerel_lg_jump_41
+  - first:
+      213: -6695130293607978284
+    second: Fish_mackerel_lg_jump_42
+  - first:
+      213: 8145299963258534798
+    second: Fish_mackerel_lg_jump_43
+  - first:
+      213: -638920802342515510
+    second: Fish_mackerel_lg_jump_44
+  - first:
+      213: 5778308330823779603
+    second: Fish_mackerel_lg_jump_45
+  - first:
+      213: -7711199151291226842
+    second: Fish_mackerel_lg_jump_46
+  - first:
+      213: -5524743893412030926
+    second: Fish_mackerel_lg_jump_47
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_jump_d0_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 448
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ca4964f27d0cdc044a4fb3e0714fccd2
+      internalID: -1484692648
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_jump_d0_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 448
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 65ce3b0764fe49648a1138010c5213c5
+      internalID: -1324505968
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_jump_d0_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 448
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 60fbf736957639c47917e9a6609bb11f
+      internalID: 530959626
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_jump_d0_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 448
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 00b60f7df38de78428efacb4f33404ba
+      internalID: -952813886
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_jump_d0_f4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 448
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3169eb3a61bd9b149b7b54761df27e76
+      internalID: -1276462571
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_jump_d0_f5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 448
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6b4bb9f64c8346b4cadc5b07246dd444
+      internalID: 344083652
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_jump_d1_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 384
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c97dfaa77a86a9643a5f469978ef3111
+      internalID: -1550382981
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_jump_d1_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 384
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 86e17ba546f79bd4183ef3b4e39b0165
+      internalID: -172703449
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_jump_d1_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 384
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0efeddaef638b634aa6a9e59faa874b6
+      internalID: 1274039802
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_jump_d1_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 384
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 351a8d69bfd5eb647a5c726cb9826b6b
+      internalID: 571684388
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_jump_d1_f4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 384
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 56846b9cb41096e4a87944a68636d999
+      internalID: -386724320
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_jump_d1_f5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 384
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5d097fa421dc676439df2715192d9388
+      internalID: 1071891573
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_jump_d2_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 320
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7d31df8e47bf8464fabbc2f9726764ed
+      internalID: -1272451669
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_jump_d2_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 320
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9345e60b29d4b844c8b9f78d3456c06f
+      internalID: -1308702440
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_jump_d2_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 320
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fa0b659d003f6e24caeda35f55e8f4a0
+      internalID: -348569606
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_jump_d2_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 320
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 71ea14818e5c24b4fa843bf3b097d129
+      internalID: 1624545187
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_jump_d2_f4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 320
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5cb138f6d7a78e14cae1e511dc6c7399
+      internalID: 444912685
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_jump_d2_f5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 320
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 471b9f11af7944246a81eb957530a9cb
+      internalID: 210972151
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_jump_d3_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 256
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0d153d89d330f6c4aa8b776e53fc9491
+      internalID: -711774414
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_jump_d3_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 256
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 86c98e18b60adab4fa89a98db2cb9eab
+      internalID: 954900195
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_jump_d3_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 256
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d3e154d55023fd34b862b273bbbf1011
+      internalID: -229306624
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_jump_d3_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 256
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9b938b7fb49027744a8f853b2c643f0c
+      internalID: 1281293576
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_jump_d3_f4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 256
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f86f9d6d088042448aaf06576ed122b0
+      internalID: -815000731
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_jump_d3_f5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 256
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 575e0941d4832774c8b401d978a7baff
+      internalID: 1535566855
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_jump_d4_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 192
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a3ab201aae42d7041974cd36bf1919b6
+      internalID: 1793743086
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_jump_d4_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 192
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 794e0f504dd81164a94955163376c5ed
+      internalID: -1430355866
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_jump_d4_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 192
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d253e1b112642c146824c1f77eb8a9b9
+      internalID: 476971537
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_jump_d4_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 192
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e9b76224035904c4997e3c2aaacb599e
+      internalID: -905491503
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_jump_d4_f4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 192
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2536bf27774d9c24db6b3b35b0ec4b7c
+      internalID: 386803391
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_jump_d4_f5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 192
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e12dd3ada3249c84a828dbdfa9a199e5
+      internalID: 2141884116
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_jump_d5_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 128
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5c1dc5c507fc38946854b8415d6d2379
+      internalID: -564256598
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_jump_d5_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 128
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 342e8a8ef1dd40e48bb62c34932aea21
+      internalID: 622251673
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_jump_d5_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 128
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5e7973ed17a615946aa542dd05927f60
+      internalID: 1026553198
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_jump_d5_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 128
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fcc73c2888eaefa4ebfd38f38579429f
+      internalID: 1022168997
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_jump_d5_f4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 128
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a184c63ceb22b2c4dbad87c29f2bced2
+      internalID: 1426448180
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_jump_d5_f5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 128
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7a33a299eaffc304cb6238d6e0afd800
+      internalID: 1888595463
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_jump_d6_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 64
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a84a549661bdbc84ba65c0d0dc8f57a3
+      internalID: 1175120302
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_jump_d6_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 64
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 381cb125170091b4ab72fd1b1df5fb9c
+      internalID: 1933536325
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_jump_d6_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 64
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f5437d9b78afa164db325d3eba371e53
+      internalID: 1322636814
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_jump_d6_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 64
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7ba45c4da143d4348b8604dcdbd9ab86
+      internalID: 1728258396
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_jump_d6_f4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 64
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2b666eb4593d4844f8b5f0b65c710562
+      internalID: -1287125847
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_jump_d6_f5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 64
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: deaa1b857279e174ab60c372a412a1f2
+      internalID: 341918006
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_jump_d7_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ddf46aad4aab74547994e1ec9860e114
+      internalID: -1411425761
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_jump_d7_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 0
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4454967ba8ce0254e9014ac6e5cc94e9
+      internalID: -1229579962
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_jump_d7_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f011301d21c8e564eb01f0c30c7f0fa3
+      internalID: -703201145
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_jump_d7_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 0
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8b74bbc7f040c514597841437dba31f6
+      internalID: -1007943759
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_jump_d7_f4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 0
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 716edfe88ea99f2449bdfda6041ffc84
+      internalID: -1791276521
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_mackerel_lg_jump_d7_f5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 0
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bec79e7e9029ad843bbf4039dbba2b1d
+      internalID: -1709975100
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: a4bc216cac95001488a318c87d5279c5
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Fish_mackerel_lg_jump_d0_f0: -1484692648
+      Fish_mackerel_lg_jump_d0_f1: -1324505968
+      Fish_mackerel_lg_jump_d0_f2: 530959626
+      Fish_mackerel_lg_jump_d0_f3: -952813886
+      Fish_mackerel_lg_jump_d0_f4: -1276462571
+      Fish_mackerel_lg_jump_d0_f5: 344083652
+      Fish_mackerel_lg_jump_d1_f0: -1550382981
+      Fish_mackerel_lg_jump_d1_f1: -172703449
+      Fish_mackerel_lg_jump_d1_f2: 1274039802
+      Fish_mackerel_lg_jump_d1_f3: 571684388
+      Fish_mackerel_lg_jump_d1_f4: -386724320
+      Fish_mackerel_lg_jump_d1_f5: 1071891573
+      Fish_mackerel_lg_jump_d2_f0: -1272451669
+      Fish_mackerel_lg_jump_d2_f1: -1308702440
+      Fish_mackerel_lg_jump_d2_f2: -348569606
+      Fish_mackerel_lg_jump_d2_f3: 1624545187
+      Fish_mackerel_lg_jump_d2_f4: 444912685
+      Fish_mackerel_lg_jump_d2_f5: 210972151
+      Fish_mackerel_lg_jump_d3_f0: -711774414
+      Fish_mackerel_lg_jump_d3_f1: 954900195
+      Fish_mackerel_lg_jump_d3_f2: -229306624
+      Fish_mackerel_lg_jump_d3_f3: 1281293576
+      Fish_mackerel_lg_jump_d3_f4: -815000731
+      Fish_mackerel_lg_jump_d3_f5: 1535566855
+      Fish_mackerel_lg_jump_d4_f0: 1793743086
+      Fish_mackerel_lg_jump_d4_f1: -1430355866
+      Fish_mackerel_lg_jump_d4_f2: 476971537
+      Fish_mackerel_lg_jump_d4_f3: -905491503
+      Fish_mackerel_lg_jump_d4_f4: 386803391
+      Fish_mackerel_lg_jump_d4_f5: 2141884116
+      Fish_mackerel_lg_jump_d5_f0: -564256598
+      Fish_mackerel_lg_jump_d5_f1: 622251673
+      Fish_mackerel_lg_jump_d5_f2: 1026553198
+      Fish_mackerel_lg_jump_d5_f3: 1022168997
+      Fish_mackerel_lg_jump_d5_f4: 1426448180
+      Fish_mackerel_lg_jump_d5_f5: 1888595463
+      Fish_mackerel_lg_jump_d6_f0: 1175120302
+      Fish_mackerel_lg_jump_d6_f1: 1933536325
+      Fish_mackerel_lg_jump_d6_f2: 1322636814
+      Fish_mackerel_lg_jump_d6_f3: 1728258396
+      Fish_mackerel_lg_jump_d6_f4: -1287125847
+      Fish_mackerel_lg_jump_d6_f5: 341918006
+      Fish_mackerel_lg_jump_d7_f0: -1411425761
+      Fish_mackerel_lg_jump_d7_f1: -1229579962
+      Fish_mackerel_lg_jump_d7_f2: -703201145
+      Fish_mackerel_lg_jump_d7_f3: -1007943759
+      Fish_mackerel_lg_jump_d7_f4: -1791276521
+      Fish_mackerel_lg_jump_d7_f5: -1709975100
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

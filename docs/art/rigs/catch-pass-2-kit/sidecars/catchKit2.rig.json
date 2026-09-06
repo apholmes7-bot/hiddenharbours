@@ -1,0 +1,250 @@
+{
+ "schema": "hidden-harbours/rig-sidecar@1",
+ "rig": "Art/catchKit2.js",
+ "exportSymbol": "CatchKit2",
+ "derivedFromRigSha256": "4afe6d0d87deb169623d1ec5379bfec60457229c0b189fd9341e71c75e93dfd9",
+ "generated": {
+  "date": "2026-09-06T00:14:50.676Z",
+  "by": "Art/_catchSidecars.js",
+  "harness": "CATCH_SIDECARS",
+  "isoSolidSha256": "f7fc9db510b0346dea568c43dc7378f1a12fd71ee8f5a7653e78377812b792bd"
+ },
+ "note": "The glue over all fourteen catch kinds: item cells and anchors, fill rules, heap rule, hold. Tables and per-kind results read from CatchKit2 at generation; the item variant -> pose mapping is transcribed from item().",
+ "needs": ["FishIso2", "Crustacean2", "Shellfish2", "— whichever the catch uses"],
+ "colours": {
+  "spoil": "#7d9a46"
+ },
+ "catches": ["cod", "haddock", "pollock", "mackerel", "bass", "flounder", "herring", "lobster", "crab", "mussel", "clam", "scallop", "oyster", "periwinkle", "mixed"],
+ "fish": ["cod", "haddock", "pollock", "mackerel", "bass", "flounder", "herring"],
+ "crustaceans": ["lobster", "crab"],
+ "shellfish": ["mussel", "clam", "scallop", "oyster", "periwinkle"],
+ "kind": {
+  "cod": {
+   "class": "fish",
+   "isHeap": false,
+   "dense": 1,
+   "hold": {
+    "mass": 3.01,
+    "hands": 2
+   },
+   "len": 0.7,
+   "label": "COD"
+  },
+  "haddock": {
+   "class": "fish",
+   "isHeap": false,
+   "dense": 1,
+   "hold": {
+    "mass": 1.74,
+    "hands": 1
+   },
+   "len": 0.55,
+   "label": "HADDOCK"
+  },
+  "pollock": {
+   "class": "fish",
+   "isHeap": false,
+   "dense": 1,
+   "hold": {
+    "mass": 1.98,
+    "hands": 1
+   },
+   "len": 0.6,
+   "label": "POLLOCK"
+  },
+  "mackerel": {
+   "class": "fish",
+   "isHeap": false,
+   "dense": 1.5,
+   "hold": {
+    "mass": 0.81,
+    "hands": 1
+   },
+   "len": 0.45,
+   "label": "MACKEREL"
+  },
+  "bass": {
+   "class": "fish",
+   "isHeap": false,
+   "dense": 1,
+   "hold": {
+    "mass": 4.6,
+    "hands": 2
+   },
+   "len": 0.75,
+   "label": "STRIPED BASS"
+  },
+  "flounder": {
+   "class": "fish",
+   "isHeap": false,
+   "dense": 1.5,
+   "hold": {
+    "mass": 0.44,
+    "hands": 1
+   },
+   "len": 0.35,
+   "label": "FLOUNDER"
+  },
+  "herring": {
+   "class": "fish",
+   "isHeap": false,
+   "dense": 3,
+   "hold": {
+    "mass": 0.15,
+    "hands": 1
+   },
+   "len": 0.25,
+   "label": "HERRING"
+  },
+  "lobster": {
+   "class": "crustacean",
+   "isHeap": false,
+   "dense": 1,
+   "hold": {
+    "mass": 0.7,
+    "hands": 1
+   },
+   "len": 0.4,
+   "label": "LOBSTER"
+  },
+  "crab": {
+   "class": "crustacean",
+   "isHeap": false,
+   "dense": 1.5,
+   "hold": {
+    "mass": 0.4,
+    "hands": 1
+   },
+   "len": 0.13,
+   "span": 0.3,
+   "label": "ROCK CRAB"
+  },
+  "mussel": {
+   "class": "shellfish",
+   "isHeap": true,
+   "dense": 1,
+   "hold": {
+    "mass": 0.08,
+    "hands": 1,
+    "handful": true
+   },
+   "len": 0.06,
+   "mass": 0.012,
+   "label": "BLUE MUSSEL"
+  },
+  "clam": {
+   "class": "shellfish",
+   "isHeap": true,
+   "dense": 1,
+   "hold": {
+    "mass": 0.21,
+    "hands": 1,
+    "handful": true
+   },
+   "len": 0.07,
+   "mass": 0.03,
+   "label": "SOFT-SHELL CLAM"
+  },
+  "scallop": {
+   "class": "shellfish",
+   "isHeap": true,
+   "dense": 1,
+   "hold": {
+    "mass": 0.56,
+    "hands": 1,
+    "handful": true
+   },
+   "len": 0.1,
+   "mass": 0.08,
+   "label": "SEA SCALLOP"
+  },
+  "oyster": {
+   "class": "shellfish",
+   "isHeap": true,
+   "dense": 1,
+   "hold": {
+    "mass": 0.63,
+    "hands": 1,
+    "handful": true
+   },
+   "len": 0.1,
+   "mass": 0.09,
+   "label": "OYSTER"
+  },
+  "periwinkle": {
+   "class": "shellfish",
+   "isHeap": true,
+   "dense": 1,
+   "hold": {
+    "mass": 0.03,
+    "hands": 1,
+    "handful": true
+   },
+   "len": 0.025,
+   "mass": 0.004,
+   "label": "PERIWINKLE"
+  }
+ },
+ "fillFrac": {
+  "empty": 0,
+  "few": 0.25,
+  "half": 0.55,
+  "full": 0.85,
+  "brim": 1
+ },
+ "dense": {
+  "_note": "DENSE kinds add jittered extras per slot so a tote of herring reads as ninety herring, not eight fish in a box",
+  "herring": 3,
+  "mackerel": 1.5,
+  "flounder": 1.5,
+  "crab": 1.5
+ },
+ "item": {
+  "call": "item(kind, {variant 0..3, scale, spoil}) -> {canvas, w, h, ax, ay}",
+  "anchor": "ax, ay = the ground anchor in the item canvas; draw at slot - anchor",
+  "source": {
+   "fish": {
+    "rig": "FishIso2",
+    "cell": [64, 64],
+    "anchor": [32, 38],
+    "bake": "rest deck, frame = variant % 4, heading = [E, W, SE, SW][variant % 4]"
+   },
+   "crustacean": {
+    "rig": "Crustacean2",
+    "cell": [64, 64],
+    "anchor": [32, 40],
+    "bake": "pose walk, frame = variant % 4, ang = [0.4, 2.2, 3.7, 5.3][variant % 4] rad"
+   },
+   "shellfish": {
+    "rig": "Shellfish2",
+    "cell": [8, 8],
+    "anchor": [4, 6],
+    "bake": "renderItem(kind, variant % 4, scale), spoil via tintSpoil"
+   },
+   "_transcribed": "from item()"
+  }
+ },
+ "fillItems": {
+  "call": "fillItems(catch, fill, seed, slotCount) -> [{kind, variant, scale, jx, jy}]",
+  "count": "round(FRAC[fill] x slotCount x DENSE[catch])",
+  "monotonic": "seeded — growing a fill never moves earlier items; pass the container's real slot count so full / brim genuinely heap",
+  "scale": "clamp(0.85 + rng x 0.30, SPECIES.range) — fish take their species range, everything else [0.85, 1.15]",
+  "jitter": "extras beyond count / DENSE get jx in [-3, 3], jy in [-2, 2] px",
+  "mixed": "kind drawn per item from [herring, mackerel, haddock, lobster, crab, pollock, cod, bass, flounder]",
+  "shellfish": "returns [] — use heap()"
+ },
+ "heap": {
+  "call": "heap(kind, rimPoly [{dx,dy}], depthPx, fill, seed, {spoil}) -> {canvas, x, y} | null (empty)",
+  "rule": "surface lowered by (1 - min(1, FRAC[fill] / 0.85)) x depthPx; brim crowns 2 px above the rim as a dome; ramp steps darken down-right, lift up-left"
+ },
+ "hold": {
+  "rule": "fish -> FishIso2.hold, crustaceans -> Crustacean2.hold, shellfish -> {mass: SIZES.mass x 7 x scale, hands: 1, handful: true}"
+ },
+ "spoil": {
+  "range": "0..1",
+  "rule": "per pixel, mix toward SPOIL by spoil x (0.40 + 0.28 where Bayer(x,y) < spoil x 0.55); the keyline colour is exempt",
+  "motes": "runtime FX in SPOIL — CatchKit2.particles(seed, n)",
+  "tintSpoil": "tintSpoil(rgba, w, h, spoil) — skips pixels with r + g + b < 70 (the keyline / eye darks)",
+  "particles": "particles(seed, n) -> [{ox, oy, phase, speed}] mote specs, drawn in SPOIL with alpha (1 - cycle) x 0.5 x spoil"
+ }
+}

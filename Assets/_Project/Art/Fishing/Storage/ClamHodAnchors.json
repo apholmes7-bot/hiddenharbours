@@ -1,0 +1,19 @@
+{
+  "global": "ClamHod",
+  "cell": { "w": 40, "h": 40 },
+  "pivotTopLeft": { "x": 20, "y": 30 },
+  "dirs": 8,
+  "depthPx": 4,
+  "_note": "opening[] is the rim quad per direction row, in px offsets from the pivot — the polygon a shellfish heap is clipped to. carryGrip is the roller grip; it is the SAME point at every facing because it projects (0,0,GZ), dead centre, and a turn about the vertical axis cannot move it.",
+  "carryGrip": {"x":20,"y":21},
+  "opening": [
+    [{"dx":-6,"dy":-2},{"dx":6,"dy":-2},{"dx":6,"dy":-8},{"dx":-6,"dy":-8}],
+    [{"dx":-7,"dy":-6},{"dx":1,"dy":0},{"dx":7,"dy":-4},{"dx":-1,"dy":-10}],
+    [{"dx":-4,"dy":-9},{"dx":-4,"dy":-1},{"dx":4,"dy":-1},{"dx":4,"dy":-9}],
+    [{"dx":1,"dy":-10},{"dx":-7,"dy":-4},{"dx":-1,"dy":0},{"dx":7,"dy":-6}],
+    [{"dx":6,"dy":-8},{"dx":-6,"dy":-8},{"dx":-6,"dy":-2},{"dx":6,"dy":-2}],
+    [{"dx":7,"dy":-4},{"dx":-1,"dy":-10},{"dx":-7,"dy":-6},{"dx":1,"dy":0}],
+    [{"dx":4,"dy":-1},{"dx":4,"dy":-9},{"dx":-4,"dy":-9},{"dx":-4,"dy":-1}],
+    [{"dx":-1,"dy":0},{"dx":7,"dy":-6},{"dx":1,"dy":-10},{"dx":-7,"dy":-4}]
+  ]
+}
