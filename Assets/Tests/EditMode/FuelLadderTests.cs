@@ -185,6 +185,18 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.Greater(daysPerTank, 2.5f,
                     $"{h.Id} gets only {daysPerTank:0.0} working days on a tank — under ~3 the fill " +
                     "stops being a decision and becomes a chore");
+                // The CEILING does not apply to a boat whose propulsion is the wind, and that is a
+                // premise rather than a number to tune. Its complaint — "she has effectively stopped
+                // having a fuel economy" — is TRUE of a sailing hull and is the point of her: her
+                // economy is the weather (P1), and her diesel is for getting off a berth and home
+                // through a calm. The metric divides by a working day UNDER POWER, which a sloop
+                // simply does not spend. Nor can the numbers be moved to satisfy it: the sloop 30's
+                // 60 L tank and ~2.5 L/h cruise are a real 20 hp auxiliary, and passing the ceiling
+                // would need a 12 L tank or a 60 hp engine in a 9.4 m hull. The FLOOR above still
+                // binds her, and still means something — she must be able to motor a full day when
+                // the wind dies.
+                if (h.HasSailPlan) continue;
+
                 Assert.Less(daysPerTank, 25f,
                     $"{h.Id} gets {daysPerTank:0.0} working days on a tank, which is far enough that " +
                     "she has effectively stopped having a fuel economy at all");

@@ -80,6 +80,34 @@ namespace HiddenHarbours.Tests.EditMode
             return rows;
         }
 
+        /// <summary>
+        /// The trimmed presets out of POINTS_OF_SAIL — (awa, main, jib) — straight from the sidecar.
+        /// Presets carrying no sheets (becalmed) are skipped: they state a mode, not a trim.
+        /// </summary>
+        static List<(float Awa, float Main, float Jib)> BuilderPresets(string sidecarRepoPath)
+        {
+            string json = File.ReadAllText(Path.Combine(RepoRoot, sidecarRepoPath));
+            int at = json.IndexOf("\"POINTS_OF_SAIL\"", StringComparison.Ordinal);
+            Assert.Greater(at, 0, $"{sidecarRepoPath}: no POINTS_OF_SAIL section.");
+
+            var found = new List<(float, float, float)>();
+            int i = at;
+            while (true)
+            {
+                int k = json.IndexOf("\"builder_preset\"", i, StringComparison.Ordinal);
+                if (k < 0) break;
+                int open = json.IndexOf('{', k);
+                int close = json.IndexOf('}', open);
+                string obj = json.Substring(open, close - open + 1);
+                i = close;
+
+                float awa = Num(obj, "awa"), main = Num(obj, "main"), jib = Num(obj, "jib");
+                if (float.IsNaN(awa) || float.IsNaN(main) || float.IsNaN(jib)) continue;
+                found.Add((awa, main, jib));
+            }
+            return found;
+        }
+
         static float Num(string obj, string key)
         {
             int k = obj.IndexOf($"\"{key}\"", StringComparison.Ordinal);
@@ -171,14 +199,30 @@ namespace HiddenHarbours.Tests.EditMode
             int reproduced = 0, checkedRows = 0;
             foreach (Row r in rows)
             {
-                // Skip the two ends of the range: dead upwind and dead downwind are their own mirrors,
-                // so a reversed wind legitimately reproduces there and would blunt the arm.
+                // ⚠️⚠️ THE BEAM IS THE FIXED POINT OF THIS REFLECTION, so it must be excluded BY
+                // CONSTRUCTION rather than tolerated. Reversing the wind maps twa -> 180 - twa, and
+                // 90° is the one angle that maps to ITSELF: at the beam a reversed wind is the SAME
+                // wind, the row reproduces exactly, and it says nothing whatever about whether the
+                // closure test measures direction. That is all ten of the beam's wind rows — exactly
+                // the "10 of 100" this arm reported before the exclusion. The two ends go for a
+                // weaker reason: near dead-upwind and dead-downwind the fold barely moves the
+                // apparent angle, so they blunt the arm without sharpening it.
                 if (r.Twa <= 40f || r.Twa >= 150f) continue;
+                if (Mathf.Abs(r.Twa - 90f) < 0.01f) continue;
                 checkedRows++;
                 SailWind felt = FeelOf(180f - r.Twa, r.Tws, r.Kn, headingDeg: 47f);
                 if (Mathf.Abs(Mathf.Abs(felt.ApparentAngleDeg) - r.Awa) <= 0.05f) reproduced++;
             }
             Assert.Greater(checkedRows, 40, "the sabotage arm must actually sweep the grid.");
+
+            // ...and the exclusion must be EARNED, not asserted in a comment. If the beam ever stops
+            // reproducing under a reversed wind then the reflection is no longer twa -> 180 - twa and
+            // this arm's whole construction needs re-deriving.
+            Row beam = rows.First(x => Mathf.Abs(x.Twa - 90f) < 0.01f);
+            SailWind beamReversed = FeelOf(180f - beam.Twa, beam.Tws, beam.Kn, headingDeg: 47f);
+            Assert.AreEqual(beam.Awa, Mathf.Abs(beamReversed.ApparentAngleDeg), 0.05f,
+                "the beam MUST reproduce under a reversed wind — it is the fold's fixed point. If it " +
+                "no longer does, delete the exclusion above: it has stopped being a fact.");
             Assert.AreEqual(0, reproduced,
                 $"{reproduced} of {checkedRows} rows reproduced with the wind rotated 180°. The " +
                 "closure test above is therefore not measuring the wind's direction at all.");
@@ -372,16 +416,25 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void AutoTrimReproducesTheBuilderPagesLaw()
         {
-            // (awa, main, jib) — the presets in POINTS_OF_SAIL.builder_preset, both hulls share them.
-            foreach ((float awa, float main, float jib) in new[]
-            {
-                (8f, 1f, 1f), (38f, 0.80f, 0.83f), (60f, 0.55f, 0.58f),
-                (90f, 0.18f, 0.20f), (135f, 0f, 0f), (172f, 0f, 0f),
-            })
+            // ⚠️ READ FROM THE SIDECAR, never transcribed. This table used to be six hand-copied
+            // triples and TWO OF THEM WERE WRONG (awa 60 was written 0.55/0.58 against the file's
+            // 0.54/0.54; awa 90 was written 0.18/0.20 against 0.17/0.14), so CI failed the SHIPPED
+            // law for disagreeing with a typo. The file is the oracle; copying it defeats the point.
+            var presets = BuilderPresets(Sidecar30);
+            Assert.GreaterOrEqual(presets.Count, 6,
+                "POINTS_OF_SAIL must still carry its trimmed presets — if this drops, the fixture is " +
+                "asserting against nothing.");
+
+            foreach ((float awa, float main, float jib) in presets)
             {
                 SailDrive.AutoTrim(awa, out float m, out float j);
-                Assert.AreEqual(main, m, 0.005f, $"main sheet at awa {awa}");
-                Assert.AreEqual(jib, j, 0.005f, $"headsail sheet at awa {awa}");
+                // The presets are stated to TWO DECIMALS, so the honest comparison is the law rounded
+                // as the file rounds it — an exact identity, not a fuzzy band wide enough to hide a
+                // real drift of up to half a hundredth.
+                Assert.AreEqual(main, Mathf.Round(m * 100f) / 100f, 1e-4f,
+                    $"main sheet at awa {awa}: the law gives {m:0.0000}, the builder page says {main}");
+                Assert.AreEqual(jib, Mathf.Round(j * 100f) / 100f, 1e-4f,
+                    $"headsail sheet at awa {awa}: the law gives {j:0.0000}, the builder page says {jib}");
             }
 
             // Symmetric: the same trim on either tack. The SIDE the sails go is the pose's business.
@@ -461,9 +514,30 @@ namespace HiddenHarbours.Tests.EditMode
                                 SailDrive.TargetSpeedKn(polar, 90f, topWind * 3f, 45f), 1e-4f,
                     $"{path}: past the grid's last wind the speed is CLAMPED. Extrapolating would " +
                     "invent the surfing the polar's own note says is not modelled.");
-                Assert.AreEqual(SailDrive.TargetSpeedKn(polar, 180f, 12f, 45f),
+                // ⚠️ THE ANGLE AXIS MIRRORS; IT DOES NOT CLAMP, and that is correct rather than a
+                // gap. This used to assert that 200° gives the same speed as 180° — but 200° off the
+                // bow IS -160°, i.e. 160° off the OTHER bow, and the sampler folds it there (5.39 kn
+                // at 12 kn, the twa-160 interpolation). Clamping it to 180 would tell a boat with the
+                // wind 160° off her port quarter that she is running dead downwind. The old
+                // expectation was unreachable as well as wrong: ResolveWind answers through
+                // BoatKinematics.RelativeBearingDegrees, which is ±180 by construction, so nothing in
+                // the game can hand this function 200° in the first place
+                // (a-test-that-passes-an-unreachable-input-guarantees-nothing).
+                Assert.AreEqual(SailDrive.TargetSpeedKn(polar, 160f, 12f, 45f),
                                 SailDrive.TargetSpeedKn(polar, 200f, 12f, 45f), 1e-4f,
-                    $"{path}: past dead downwind the angle wraps back, it does not run off the end.");
+                    $"{path}: 200° off the bow is 160° off the other bow — the fold is a MIRROR.");
+                Assert.AreEqual(SailDrive.TargetSpeedKn(polar, 120f, 12f, 45f),
+                                SailDrive.TargetSpeedKn(polar, -120f, 12f, 45f), 1e-4f,
+                    $"{path}: port and starboard are the same boat — the reachable half of the same " +
+                    "law, and the half a tack actually exercises.");
+
+                // The angle axis DOES clamp at its low end, which is reachable whenever a hull's
+                // no-go sits below the grid's first angle: ask below it and you get that first row,
+                // never an extrapolation off the front of the table.
+                float firstAngle = polar.TrueWindAngleDeg.First();
+                Assert.AreEqual(SailDrive.TargetSpeedKn(polar, firstAngle, 12f, 20f),
+                                SailDrive.TargetSpeedKn(polar, firstAngle - 5f, 12f, 20f), 1e-4f,
+                    $"{path}: below the grid's first angle the speed is CLAMPED to it.");
             }
         }
 
