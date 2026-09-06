@@ -73,9 +73,14 @@ namespace HiddenHarbours.World
         /// How far UP-SCREEN a float drawn at <paramref name="bakedDeckElevation"/> belongs when her deck
         /// is really at <paramref name="deckElevation"/>. Pure and static, so the whole ride is EditMode-
         /// testable with no scene: <c>(deck − baked) × 0.766</c>, positive on the flood.
+        ///
+        /// <para><b>The rule itself is <see cref="TidalRide.ScreenRise"/>'s</b>, and this is the float's
+        /// name for it. Every hull afloat rides the same line from a module that cannot see this one
+        /// (rule 4), and two spellings of one projection is how a float and the boat tied to it start
+        /// drawing on two different seas — so there is one, and this asks it.</para>
         /// </summary>
         public static float ScreenRise(float deckElevation, float bakedDeckElevation)
-            => (deckElevation - bakedDeckElevation) * IsoGround.HeightScale;
+            => TidalRide.ScreenRise(deckElevation, bakedDeckElevation);
 
         private void OnEnable() => Apply();
 
