@@ -114,6 +114,17 @@ namespace HiddenHarbours.Boats
         /// <summary>What the polar promised at that wind, knots. 0 in the no-go and 0 becalmed.</summary>
         public float LastSailTargetKn { get; private set; }
 
+        /// <summary>
+        /// ⭐ <b>Is she to be DRAWN in irons?</b> The one place anything may ask (owner ruling
+        /// 2026-09-06): the picture is derived from the drive's OWN apparent wind, never from a second
+        /// derivation and never from a threshold the presentation keeps for itself. A pose loop, a HUD
+        /// telltale and a test all read THIS. False for a hull with no sail plan — she has no sails to
+        /// flog. See <see cref="SailDrive.IsInIrons"/> for why it is a union of both frames.
+        /// </summary>
+        public bool DrawnInIrons => _hull != null && _hull.HasSailPlan &&
+            SailDrive.IsInIrons(LastSailWind.TrueAngleDeg, LastSailWind.ApparentAngleDeg,
+                                _hull.NoGoTrueWindDeg, _hull.SpriteIronsApparentDeg);
+
         /// <summary>Sheets, 0 eased .. 1 hardened — main then headsail. What the rig is posed with.</summary>
         public float MainSheet => _mainSheet;
         public float JibSheet => _jibSheet;

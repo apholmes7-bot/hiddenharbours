@@ -487,5 +487,84 @@ namespace HiddenHarbours.Tests.EditMode
                     "ruling has a size. Zero would mean the coupling defect is gone.");
             }
         }
+
+        // =========================================================================================
+        //  5. THE OWNER'S NO-GO RULING (2026-09-06) — the two frames must agree
+        // =========================================================================================
+
+        /// <summary>
+        /// ⭐⭐ <b>The picture and the physics never disagree about whether she is sailing</b> — owner
+        /// ruling 2026-09-06 ("whatever no-go angle is realistic"), applied as: the no-go is a TRUE
+        /// angle at a realistic cruising figure (45° on the fractional 30), the polar's 35° stays
+        /// REFERENCE data (a VMG limit, not a sailing limit), and the sprite's 25° APPARENT is not a
+        /// second threshold — <see cref="SailDrive.IsInIrons"/> is the one publisher.
+        ///
+        /// <para><b>⚠️ The union is not decoration, and this is the arm that proves it.</b> Inside the
+        /// no-go the drive takes her speed to ZERO, and at zero speed the apparent wind IS the true
+        /// wind — so <c>awa == twa</c>. An apparent-only test therefore draws a boat pinching at
+        /// twa 30° with her sails DRAWING while she sits dead in the water, because 30° is outside the
+        /// rig's 25° flogging band. The whole band 25° &lt; twa &lt; 45° has that defect. Only taking
+        /// the no-go as well closes it.</para>
+        /// </summary>
+        [Test]
+        public void TheDrawnPictureAndTheDriveAgreeAboutWhetherSheIsSailing()
+        {
+            SailPolarDef polar = Polar(Sloop30Polar);
+            const float noGo = 45f, spriteIrons = 25f;
+
+            // --- JUST sailing: at the no-go boundary she must be drawn SAILING. ---
+            // At twa 45 in 12 kn the polar gives 4.97 kn, and her own motion pulls the apparent angle
+            // forward to 32.2° — outside the 25° band, so the boat that is only just sailing is drawn
+            // as sailing. (The kit README's "28-30°" is not this hull's number; the sidecar says 32.2.)
+            float target = SailDrive.TargetSpeedKn(polar, noGo, 12f, noGo);
+            Assert.Greater(target, 0f, "at the no-go boundary itself the polar must still hand out speed.");
+            SailWind sailing = FeelOf(noGo, 12f, target, headingDeg: 47f);
+            Assert.AreEqual(32.2f, Mathf.Abs(sailing.ApparentAngleDeg), 0.15f,
+                "the apparent angle at the boundary is the sidecar's own 32.2°.");
+            Assert.IsFalse(SailDrive.IsInIrons(noGo, sailing.ApparentAngleDeg, noGo, spriteIrons),
+                "a boat the polar is sailing must never be drawn with her sails flogging.");
+
+            // --- Dead in the no-go: she must be drawn IN IRONS, at every angle inside it. ---
+            // She is stopped, so awa == twa; for 25 < twa < 45 the sprite's band alone says "drawing".
+            for (float twa = 5f; twa < noGo; twa += 5f)
+            {
+                Assert.AreEqual(0f, SailDrive.TargetSpeedKn(polar, twa, 12f, noGo), 1e-4f,
+                    $"twa {twa}° is inside the no-go: the drive gives her nothing.");
+                SailWind dead = FeelOf(twa, 12f, 0f, headingDeg: 47f);
+                Assert.AreEqual(twa, Mathf.Abs(dead.ApparentAngleDeg), 0.05f,
+                    "stopped, the apparent wind IS the true wind — this is why an apparent-only " +
+                    "threshold cannot see a boat that the no-go has already killed.");
+                Assert.IsTrue(SailDrive.IsInIrons(twa, dead.ApparentAngleDeg, noGo, spriteIrons),
+                    $"at twa {twa}° she makes no way, so she must be DRAWN making no way.");
+            }
+        }
+
+        /// <summary>
+        /// ⭐ <b>Two sabotage arms for the ruling above.</b> A guard that only ever sees the shipped
+        /// numbers cannot tell you it is load-bearing.
+        /// </summary>
+        [Test]
+        public void TheInIronsPublisherRefusesBothWaysOfGettingItWrong()
+        {
+            const float noGo = 45f, spriteIrons = 25f;
+
+            // ARM 1 — the sprite's band used ALONE (a presenter that kept its own threshold and asked
+            // only about apparent wind). At twa 30, stopped, awa = 30: it says "drawing" for a boat the
+            // drive has killed. This is the defect the union exists to close, so it MUST still be
+            // visible here — if it is not, awa no longer collapses onto twa and the union's whole
+            // justification needs re-measuring.
+            SailWind dead = FeelOf(30f, 12f, 0f, headingDeg: 47f);
+            Assert.IsFalse(Mathf.Abs(dead.ApparentAngleDeg) < spriteIrons,
+                "the apparent-only test must still be WRONG at twa 30 — that is the premise of the union.");
+            Assert.IsTrue(SailDrive.IsInIrons(30f, dead.ApparentAngleDeg, noGo, spriteIrons),
+                "...and the publisher must nonetheless call her in irons.");
+
+            // ARM 2 — the sprite's 25° fed in as a TRUE-angle threshold (the frame confusion the ruling
+            // names). It would declare a boat sailing at twa 30 — dead water, drawn drawing.
+            Assert.IsFalse(SailDrive.IsInIrons(30f, dead.ApparentAngleDeg, spriteIrons, spriteIrons),
+                "25° is an APPARENT threshold. Used as the true-angle no-go it says a boat pinching at " +
+                "twa 30 is sailing, which is the exact frame error the owner's ruling forbids. If this " +
+                "ever passes, the two thresholds have been transposed.");
+        }
     }
 }

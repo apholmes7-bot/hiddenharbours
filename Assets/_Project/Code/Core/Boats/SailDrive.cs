@@ -183,6 +183,43 @@ namespace HiddenHarbours.Core
             jib = Mathf.Clamp01(1f - (jibOffset - 9f) / 76f);
         }
 
+        /// <summary>
+        /// ⭐⭐ <b>IN IRONS — the ONE publisher (owner ruling 2026-09-06).</b> Is she to be DRAWN with
+        /// her sails flogging? The physics and the picture must never answer this separately, so they
+        /// do not each own a threshold: this is the union of both, and it is the only thing anything
+        /// should ask.
+        ///
+        /// <para><b>Why a union and not the sprite's band alone.</b> The rig flogs below
+        /// <paramref name="spriteIronsApparentDeg"/> of APPARENT wind (25° on both sloops). Apparent
+        /// angle is a function of boat speed — and inside the no-go the drive takes her speed to zero,
+        /// at which point the apparent wind IS the true wind and <c>awa == twa</c>. So an
+        /// apparent-only test draws a boat pinching at twa 30° with her sails DRAWING while she sits
+        /// dead in the water: measured, not hypothetical — 25° &lt; twa &lt; 45° is exactly the band
+        /// where the no-go has stopped her but her own apparent angle is still outside the rig's
+        /// flogging threshold. Taking the no-go as well closes it: if the drive says she makes no way,
+        /// she is drawn making no way.</para>
+        ///
+        /// <para><b>The other direction is already closed by the no-go's VALUE, not by this code.</b>
+        /// A boat the polar sails while the rig flogs her would be just as wrong, and
+        /// <c>NoGoTrueWindDeg = 45</c> was chosen because it leaves ZERO such cells on both hulls'
+        /// shipped grids (at 40 there are 1 and 6; at 35, 4 and 14). At the boundary itself — twa 45 in
+        /// 12 kn at the polar's 4.97 kn — the apparent angle is <b>32.2°</b>, comfortably outside the
+        /// 25° band, so the boat that is only just sailing is drawn sailing.</para>
+        ///
+        /// <para>⚠️ <paramref name="apparentAngleDeg"/> must come from the drive's own
+        /// <see cref="ResolveWind"/> (i.e. Core's <c>TelltaleMath.ApparentWind</c>), never from a
+        /// second derivation of the apparent wind, and <paramref name="noGoTrueDeg"/> is a TRUE-wind
+        /// angle — feeding the sprite's 25° in as a true-angle threshold is the sabotage the guard
+        /// suite pins.</para>
+        /// </summary>
+        public static bool IsInIrons(float trueAngleDeg, float apparentAngleDeg, float noGoTrueDeg,
+                                     float spriteIronsApparentDeg)
+        {
+            float twa = Mathf.Abs(Mathf.Repeat(trueAngleDeg + 180f, 360f) - 180f);
+            float awa = Mathf.Abs(Mathf.Repeat(apparentAngleDeg + 180f, 360f) - 180f);
+            return twa < noGoTrueDeg || awa < spriteIronsApparentDeg;
+        }
+
         // ---- the grid ---------------------------------------------------------------------------
 
         /// <summary>
