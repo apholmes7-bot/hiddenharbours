@@ -72,7 +72,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             go.transform.position = new Vector3(at.x, at.y, 0f);
             go.transform.up = new Vector3(facing.x, facing.y, 0f);
             var lamp = go.AddComponent<Headlamp>();
-            lamp.Configure(WalkerLights.HeadlampConeHalfDegrees, WalkerLights.HeadlampLiftMetres);
+            lamp.Configure(WalkerLights.HeadlampLiftMetres);
             lamp.SetOn(true);
             return lamp;
         }
@@ -282,7 +282,12 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.AreEqual(WalkerLights.HeadlampLiftMetres, lamp.Light.LampHeightMeters, 1e-4f,
                 "and its shadows are thrown from there");
             Assert.AreEqual(SceneLight.LightShape.Cone, lamp.Light.Shape);
-            Assert.AreEqual(WalkerLights.HeadlampConeHalfDegrees, lamp.Light.ConeHalfAngle, 1e-4f);
+            // The angle comes from the preset library, not from a constant on the walker: one place it is
+            // written, and LightPresetsTests' shape guard can assert it there.
+            Assert.IsTrue(LightPresets.IsDirected(LightPresets.Kind.Headlamp),
+                "the library must declare the headlamp a beam, or its cone is undeclared");
+            Assert.AreEqual(LightPresets.ConeHalfDegrees(LightPresets.Kind.Headlamp),
+                lamp.Light.ConeHalfAngle, 1e-4f);
         }
 
         /// <summary>

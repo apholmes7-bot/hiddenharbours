@@ -61,11 +61,6 @@ namespace HiddenHarbours.Art
         /// <summary>Height of the headlamp on her brow, metres.</summary>
         public const float HeadlampLiftMetres = 1.55f;
 
-        /// <summary>Half-angle of the headlamp cone. Narrow — a headlamp you can aim is the point, and a
-        /// wide one is just a worse lantern. (The boat's searchlight is 26°; hers is tighter because it is
-        /// a lamp on a band, not a searchlight on a mounting.)</summary>
-        public const float HeadlampConeHalfDegrees = 21f;
-
         /// <summary>The key the beam answers — the SAME one the boat's searchlight uses, deliberately.
         /// See <see cref="WalksHerOwnBeam"/> for why that is safe.</summary>
         public const Key ToggleKey = Key.L;
@@ -242,7 +237,7 @@ namespace HiddenHarbours.Art
                 var go = new GameObject("WalkerHeadlamp");
                 go.transform.SetParent(her, worldPositionStays: false);
                 _headlamp = go.AddComponent<Headlamp>();
-                _headlamp.Configure(HeadlampConeHalfDegrees, HeadlampLiftMetres);
+                _headlamp.Configure(HeadlampLiftMetres);
             }
         }
     }

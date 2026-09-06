@@ -49,13 +49,15 @@ namespace HiddenHarbours.Art
         /// <summary>The lamp this drives.</summary>
         public SceneLight Light => _light != null ? _light : _light = GetComponent<SceneLight>();
 
-        /// <summary>Set the cone's half-angle and the height it is worn at. Called once by the carrier.</summary>
-        public void Configure(float coneHalfDegrees, float browHeightMetres)
+        /// <summary>Set the height it is worn at. The beam's SHAPE is not a parameter: it comes from
+        /// <see cref="LightPresets.ConeHalfDegrees"/>, so the angle is written in exactly one place and
+        /// the preset library's own guard can assert it. Called once by the carrier.</summary>
+        public void Configure(float browHeightMetres)
         {
             SceneLight l = Light;
             LightPresets.Apply(l, LightPresets.Kind.Headlamp);
             l.Shape = SceneLight.LightShape.Cone;
-            l.ConeHalfAngle = coneHalfDegrees;
+            l.ConeHalfAngle = LightPresets.ConeHalfDegrees(LightPresets.Kind.Headlamp);
             l.AngularSoftness = 0.35f;                 // a feathered edge; a hard-edged cone reads as a cutout
             l.ReachMetres = LightPresets.ReachMetres(LightPresets.Kind.Headlamp);
             l.BloomLiftMetres = browHeightMetres;      // the lit fitting rides on her brow (#733)

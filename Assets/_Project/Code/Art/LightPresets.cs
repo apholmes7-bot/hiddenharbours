@@ -315,6 +315,65 @@ namespace HiddenHarbours.Art
         }
 
         // -------------------------------------------------------------------------------------------
+        //  DIRECTED or POOLED — the library's own statement of what each kind IS
+        // -------------------------------------------------------------------------------------------
+
+        /// <summary>
+        /// <b>Is this kind a directed BEAM rather than a pool?</b>
+        ///
+        /// <para><b>⭐ Deliberately NOT derived from <see cref="For"/>'s <c>Shape</c>, and that is the whole
+        /// point of it existing.</b> This library shipped with a guard asserting that every preset in it was
+        /// radial — a real assertion while every preset was a pool, and one that would have caught a lamp
+        /// post accidentally authored as a cone. World-lighting PR 3 added the first genuinely directed kind
+        /// (<see cref="Kind.Headlamp"/>) and aged that guard's premise out from under it.</para>
+        ///
+        /// <para>The cheap repair would have been to read the shape off the preset and assert it equals
+        /// itself, which is not a guard at all. So directedness is declared HERE, independently, and the
+        /// fixture cross-checks the two statements: change a preset's shape without changing this, or this
+        /// without the preset, and it reddens. A pool quietly turning into a cone is still caught — it just
+        /// now takes two edits to say so instead of none.</para>
+        ///
+        /// <para><b>Why a declaration and not a list of names in the test.</b> A test-side name list is
+        /// invisible to whoever adds the next preset; a switch in the library beside <see cref="For"/> and
+        /// <see cref="ReachMetres"/> is on the path they are already editing. Same reason the reach lives
+        /// here rather than at the call site.</para>
+        /// </summary>
+        public static bool IsDirected(Kind kind)
+        {
+            switch (kind)
+            {
+                // A lamp on a band, aimed by turning her head. The only directed kind in the library.
+                case Kind.Headlamp: return true;
+                // Everything else is a placed (or carried) pool: window spill, lamp post, worklight,
+                // floodlight, lantern. They light what is around them, not what is in front of them.
+                default: return false;
+            }
+        }
+
+        /// <summary>
+        /// The half-angle of the cone a directed kind throws, in degrees — <b>180 for a pool</b>, which is
+        /// exactly how <see cref="SceneLight"/> reads "the whole circle" and keeps this total over
+        /// <see cref="Kind"/> rather than throwing on five of its seven members.
+        ///
+        /// <para>It lives here, beside <see cref="ReachMetres"/>, for the reason that one does: it is the
+        /// second number that says how a lamp of this kind is SHAPED, and a shape split between the library
+        /// and whichever component happened to configure the light is a shape nobody can guard. It was a
+        /// <c>const</c> on the walker for one commit; a beam angle is a tunable, and tunables belong in the
+        /// preset library (rule 6).</para>
+        /// </summary>
+        public static float ConeHalfDegrees(Kind kind)
+        {
+            switch (kind)
+            {
+                // Narrow — a headlamp you can aim is the point, and a wide one is just a worse lantern.
+                // (The boat's searchlight is 26°; hers is tighter because it is a lamp on a band, not a
+                // searchlight on a mounting.)
+                case Kind.Headlamp: return 21f;
+                default:            return 180f;
+            }
+        }
+
+        // -------------------------------------------------------------------------------------------
         //  the BLOOM — sized to the lit fitting, whichever piece is carrying it
         // -------------------------------------------------------------------------------------------
 
