@@ -1,0 +1,5426 @@
+{
+  "kit": "vehicle-rig-pack/atv-pack",
+  "rig": "atvIsoRig.js",
+  "exportSymbol": "AtvIso",
+  "rigSha256": "8578eb450f563489d3a40e6422e41f1b5de65ec061f90d3dc93c9cfe1fc0be9b",
+  "bodies": [
+    "dirtbike",
+    "trike",
+    "quad"
+  ],
+  "label": "ATV Set: Enduro 250, Trike 200, Utility Quad 4x4",
+  "kind": "saddle_vehicles",
+  "bake": {
+    "scale_px_per_m": 32,
+    "cell": {
+      "W": 256,
+      "H": 192
+    },
+    "pivot": {
+      "x": 128,
+      "y": 128
+    },
+    "dirs": 8,
+    "order": [
+      "N",
+      "NE",
+      "E",
+      "SE",
+      "S",
+      "SW",
+      "W",
+      "NW"
+    ],
+    "camera": {
+      "elev_deg": 40,
+      "step_deg": 45,
+      "projection": "flat-facet 3/4, z-buffered, ordered dither (4x4 Bayer), depth-edge darkening, no AA, binary alpha"
+    },
+    "keyline": {
+      "default": false,
+      "adr": "ADR-0031 ringless",
+      "opt_in": "{outline:true}"
+    },
+    "shading": {
+      "gain": 3.1,
+      "bias": 2.55,
+      "edge": 0.16,
+      "key": "fixed upper-LEFT"
+    },
+    "one_cell": "one 256 x 192 cell for all three bodies; model z=0 projects to the pivot row in all 8 facings at every pose — leaned, parked, on full bump",
+    "no_rider": "THE BAKE CARRIES NO RIDER. The character rig mounts on anchors(dir, opts): seat, gripL/gripR, pegL/pegR, already posed through steer, suspension and lean.",
+    "parked_default": "the dirtbike DEFAULTS TO stand 1 — she bakes parked, leaning 12deg to the street side. Every rolling cue sets stand 0. See per_body.dirtbike.painted_bbox.ridden.",
+    "facing_note": "dir 0 (N) shows the TAIL: the machine points away. dir 4 (S) shows the nose. Street side (-x) reads at NE E SE; curb side at SW W NW. Exhaust curb side, side stand street side."
+  },
+  "paints": [
+    "white",
+    "cream",
+    "red",
+    "sage",
+    "blue",
+    "teal",
+    "gold",
+    "rustOrange",
+    "greyShingle",
+    "plum"
+  ],
+  "presets": {
+    "showroom": {
+      "paint": "red",
+      "weather": 0.05
+    },
+    "trailWorn": {
+      "paint": "blue",
+      "weather": 0.55
+    },
+    "enduro": {
+      "body": "dirtbike",
+      "paint": "teal",
+      "weather": 0.3,
+      "lamp": true,
+      "stand": 1
+    },
+    "mxPlate": {
+      "body": "dirtbike",
+      "paint": "rustOrange",
+      "weather": 0.22,
+      "lamp": false,
+      "stand": 1
+    },
+    "beachTrike": {
+      "body": "trike",
+      "paint": "gold",
+      "weather": 0.38,
+      "rackR": true
+    },
+    "wharfQuad": {
+      "body": "quad",
+      "paint": "sage",
+      "weather": 0.42,
+      "rackF": true,
+      "rackR": true,
+      "hitch": true,
+      "winch": true
+    }
+  },
+  "cues": {
+    "list": [
+      "roll",
+      "turn",
+      "bounce",
+      "steer",
+      "park"
+    ],
+    "cyclic": [
+      "roll",
+      "turn",
+      "bounce"
+    ],
+    "per_body": {
+      "dirtbike": [
+        "roll",
+        "turn",
+        "bounce",
+        "steer",
+        "park"
+      ],
+      "trike": [
+        "roll",
+        "turn",
+        "bounce",
+        "steer"
+      ],
+      "quad": [
+        "roll",
+        "turn",
+        "bounce",
+        "steer"
+      ]
+    },
+    "frames_baked": {
+      "roll": 10,
+      "turn": 8,
+      "bounce": 8,
+      "steer": 8,
+      "park": 8
+    },
+    "t_rule": "cyclic cues sample t = i/n (frame n wraps to 0); steer and park sample t = i/(n-1), both ends inclusive",
+    "stand_rule": "roll, turn and bounce set stand 0 themselves; steer does not — the steer sheet is baked with stand 0 passed in"
+  },
+  "articulation": {
+    "roll": {
+      "params": [
+        "roll",
+        "rollF",
+        "rollR"
+      ],
+      "units": "revolutions of the REAR wheel",
+      "distance_per_rev_m": {
+        "dirtbike": 2.073,
+        "trike": 1.759,
+        "quad": 1.979
+      },
+      "front_scaling": "bike and trike: the front wheel is a different radius and turns rR/rF times as fast, so both tread the same road",
+      "cyclic": "exact — the lug pitch is fitted to a whole number of lugs per revolution; see per_body.*.roll_seam"
+    },
+    "steer": {
+      "param": "steer",
+      "range": [
+        -1,
+        1
+      ],
+      "sense": "+1 = full LEFT (nose swings toward -x) — the dually's convention",
+      "dirtbike": {
+        "mechanism": "whole front assembly about the raked head axis",
+        "rake_deg": 27,
+        "max_deg": 35,
+        "turning_radius_m": 2.114
+      },
+      "trike": {
+        "mechanism": "whole front assembly about the raked head axis",
+        "rake_deg": 25,
+        "max_deg": 30,
+        "turning_radius_m": 2.078
+      },
+      "quad": {
+        "mechanism": "bars about a vertical stem; front pair yaw about their own kingpins, Ackermann",
+        "bars_max_deg": 28,
+        "inner_max_deg": 30,
+        "outer_max_deg": 21.944,
+        "turning": {
+          "inner_wheel_radius_m": 2.217,
+          "centreline_radius_m": 2.697
+        }
+      },
+      "coupling": "steer, yaw and lean are published together and NOT coupled by the rig; the turn cue couples them for the sheet only"
+    },
+    "suspension": {
+      "params": [
+        "susF",
+        "susR"
+      ],
+      "range": [
+        -1,
+        1
+      ],
+      "travel_m": {
+        "dirtbike": {
+          "front": 0.14,
+          "rear": 0.12
+        },
+        "trike": {
+          "front": 0.08,
+          "rear": 0
+        },
+        "quad": {
+          "front": 0.1,
+          "rear": 0.09
+        }
+      },
+      "rule": "the BODY moves and pitches, the wheels stay on the ground: dz(y) linear between the axles, applied to every sprung polygon and every SADDLE anchor",
+      "trike_rear": "RIGID (travel 0). susR is accepted and ignored; the balloon tires are the springs."
+    },
+    "lean": {
+      "bodies": [
+        "dirtbike"
+      ],
+      "param": "lean",
+      "range": [
+        -1,
+        1
+      ],
+      "max_deg": 28,
+      "axis": "the tyre contact line — world y at x=0, z=0 — so the ground row never moves",
+      "sense": "+1 leans toward the CURB (+x); cornering leans INTO the turn: steer +1 pairs with lean -1",
+      "stacks_with_stand": "leanDeg = lean*28 - stand*12; dims().leanDeg publishes the sum and the rider rolls with it"
+    },
+    "stand": {
+      "bodies": [
+        "dirtbike"
+      ],
+      "param": "stand",
+      "range": [
+        0,
+        1
+      ],
+      "default": 1,
+      "side": "street (-x)",
+      "lean_deg_at_1": 12,
+      "hinge": [
+        -0.12,
+        -0.12,
+        0.36
+      ],
+      "tip_world_at_1": [
+        -0.317,
+        -0.02,
+        0
+      ],
+      "rule": "she BAKES PARKED. A dirtbike does not stand upright unridden; the roll/turn/bounce cues set stand 0 and a rider owns the upright state."
+    },
+    "yaw": {
+      "param": "yaw",
+      "units": "degrees",
+      "range": [
+        -45,
+        45
+      ],
+      "what": "heading between the facings. The model turns about z under the fixed key before projection, so the shading is rebaked, not rotated; 45deg at a facing is bit-identical to the next facing.",
+      "pivot": "unaffected at any yaw"
+    },
+    "parts": {
+      "dirtbike": {
+        "lamp": true,
+        "_alt": "lamp:false = MX number plate at the same station, no light at night"
+      },
+      "trike": {
+        "rackR": true
+      },
+      "quad": {
+        "rackF": true,
+        "rackR": true,
+        "hitch": true,
+        "winch": false
+      }
+    },
+    "night": {
+      "param": "night",
+      "effect": "headlamps swap to the glow ramp and spill one pixel; tail lamps do not glow"
+    },
+    "weather": {
+      "param": "weather",
+      "range": [
+        0,
+        1
+      ],
+      "default": 0.32,
+      "effect": "greys and grimes the plastics, rusts the running gear, speckles"
+    },
+    "ramp_budget": "11 ramps at most on any build of any body; the fleet cap is 16"
+  },
+  "per_body": {
+    "dirtbike": {
+      "label": "Enduro 250",
+      "kind": "dirtbike",
+      "sheet_stem": "Enduro250",
+      "dims": {
+        "key": "dirtbike",
+        "label": "Enduro 250",
+        "kind": "dirtbike",
+        "loa": 2.23,
+        "width": 0.86,
+        "height": 1.07,
+        "wheelbase": 1.48,
+        "seatZ": 0.94,
+        "clearance": 0.32,
+        "wheels": 2,
+        "rearWheelR": 0.33,
+        "distancePerRev": 2.073,
+        "travel_m": {
+          "front": 0.14,
+          "rear": 0.12
+        },
+        "mass_kg_estimate": 112,
+        "y_extent_m": [
+          -1.07,
+          1.16
+        ]
+      },
+      "measured_with": {
+        "body": "dirtbike",
+        "paint": "teal",
+        "weather": 0.3,
+        "lamp": true,
+        "stand": 1
+      },
+      "painted_bbox": {
+        "_units": "cell px, [x0,y0,x1,y1] inclusive, measured off the alpha channel",
+        "at_rest": {
+          "N": [
+            108,
+            87,
+            133,
+            145
+          ],
+          "NE": [
+            97,
+            92,
+            151,
+            140
+          ],
+          "E": [
+            91,
+            97,
+            161,
+            134
+          ],
+          "SE": [
+            103,
+            92,
+            158,
+            140
+          ],
+          "S": [
+            122,
+            84,
+            147,
+            145
+          ],
+          "SW": [
+            104,
+            87,
+            158,
+            139
+          ],
+          "W": [
+            94,
+            92,
+            164,
+            128
+          ],
+          "NW": [
+            97,
+            89,
+            151,
+            139
+          ]
+        },
+        "union_at_rest": [
+          91,
+          84,
+          164,
+          145
+        ],
+        "ridden": {
+          "N": [
+            115,
+            87,
+            140,
+            145
+          ],
+          "NE": [
+            100,
+            90,
+            155,
+            140
+          ],
+          "E": [
+            91,
+            94,
+            161,
+            128
+          ],
+          "SE": [
+            100,
+            89,
+            154,
+            140
+          ],
+          "S": [
+            115,
+            84,
+            140,
+            145
+          ],
+          "SW": [
+            101,
+            89,
+            155,
+            140
+          ],
+          "W": [
+            94,
+            94,
+            164,
+            128
+          ],
+          "NW": [
+            101,
+            90,
+            155,
+            140
+          ]
+        },
+        "union_ridden": [
+          91,
+          84,
+          164,
+          145
+        ],
+        "plate": {
+          "N": [
+            108,
+            87,
+            133,
+            145
+          ],
+          "NE": [
+            97,
+            92,
+            151,
+            140
+          ],
+          "E": [
+            91,
+            97,
+            161,
+            134
+          ],
+          "SE": [
+            103,
+            92,
+            158,
+            140
+          ],
+          "S": [
+            122,
+            84,
+            147,
+            145
+          ],
+          "SW": [
+            104,
+            87,
+            158,
+            139
+          ],
+          "W": [
+            94,
+            92,
+            164,
+            128
+          ],
+          "NW": [
+            97,
+            89,
+            151,
+            139
+          ]
+        },
+        "union_plate": [
+          91,
+          84,
+          164,
+          145
+        ],
+        "_state_note": "at_rest IS PARKED (stand 1, leaning 12deg to the street side, lamp). ridden = stand 0, upright. plate = lamp:false, the MX number plate.",
+        "over_yaw_sweep": [
+          93,
+          85,
+          162,
+          144
+        ],
+        "over_steer": [
+          92,
+          84,
+          163,
+          145
+        ],
+        "over_suspension": [
+          91,
+          80,
+          164,
+          145
+        ],
+        "over_lean": [
+          91,
+          85,
+          164,
+          145
+        ],
+        "union_everything": [
+          91,
+          80,
+          164,
+          145
+        ],
+        "union_everything_size": [
+          74,
+          66
+        ],
+        "all_poses_inside_cell": true,
+        "crop_note": "pack from union_everything to hold every fitting, pose, yaw step, the lean and the parked attitude in one atlas cell; union_at_rest is the tight default build."
+      },
+      "painted_px_at_rest": [
+        628,
+        988,
+        1231,
+        994,
+        691,
+        1204,
+        1342,
+        1198
+      ],
+      "union_at_rest_size": [
+        74,
+        62
+      ],
+      "roll_seam": {
+        "facing": "W",
+        "painted_px": 1341,
+        "roll1_vs_roll0": {
+          "colour_px": 27,
+          "alpha_px": 28,
+          "pct_of_painted": 2.013
+        },
+        "roll05_vs_roll0": {
+          "colour_px": 69,
+          "alpha_px": 41
+        },
+        "distance_per_rev_m": 2.073,
+        "rear_lugs_per_rev": 13,
+        "verdict": "seamless, not bit-exact",
+        "front_wheel": {
+          "rev_per_rear_rev": 0.943,
+          "short_of_closing_deg": 20.571,
+          "spoked": true,
+          "closed_by_rollF": {
+            "value": 0.057,
+            "colour_px": 0,
+            "alpha_px": 0,
+            "note": "roll:1 with rollF = 1 - rR/rF added brings the front round to its start: the seam is the front wheel and nothing else (bit-identical)"
+          }
+        }
+      },
+      "cue_motion": {
+        "roll": {
+          "facing": "W",
+          "why": "W — side on, both wheels read",
+          "cyclic": true,
+          "compared": "t=0 vs t=0.25",
+          "colour_px": 55,
+          "alpha_px": 46
+        },
+        "turn": {
+          "facing": "SE",
+          "why": "SE — nose quarter, street side: steer, yaw and (bike) lean all read",
+          "cyclic": true,
+          "compared": "t=0 vs t=0.25",
+          "colour_px": 442,
+          "alpha_px": 829
+        },
+        "bounce": {
+          "facing": "W",
+          "why": "W — side on, the pitch reads",
+          "cyclic": true,
+          "compared": "t=0 vs t=0.25",
+          "colour_px": 366,
+          "alpha_px": 253
+        },
+        "steer": {
+          "facing": "S",
+          "why": "S — nose to camera, the front wheel(s) turning read",
+          "cyclic": false,
+          "compared": "t=0 vs t=1",
+          "colour_px": 324,
+          "alpha_px": 149
+        },
+        "park": {
+          "facing": "SE",
+          "why": "SE — the street side, where the stand is",
+          "cyclic": false,
+          "compared": "t=0 vs t=1",
+          "colour_px": 662,
+          "alpha_px": 542
+        }
+      },
+      "suspension": {
+        "facing": "W",
+        "bottom_row": {
+          "rest": 128,
+          "compressed": 128,
+          "extended": 128
+        },
+        "top_row": {
+          "rest": 94,
+          "compressed": 97,
+          "extended": 90
+        },
+        "travel_m": {
+          "front": 0.14,
+          "rear": 0.12
+        }
+      },
+      "steering": {
+        "mechanism": "the WHOLE front assembly (wheel, fork, fender, lamp, bars) turns about the raked steering axis through the head",
+        "rake_deg": 27,
+        "max_deg": 35,
+        "turning_at_full_lock": {
+          "radius_m": 2.114,
+          "note": "geometric, no lean, no slip"
+        },
+        "full_lock_differs_px": 324
+      },
+      "stand": {
+        "default": 1,
+        "lean_deg_at_1": 12,
+        "tip_world_at_1": [
+          -0.317,
+          -0.02,
+          0
+        ],
+        "tip_z_error_m": 0,
+        "tip_stowed_at_0": [
+          -0.14,
+          -0.5,
+          0.4
+        ],
+        "side": "street (-x)",
+        "parked_vs_ridden_px": {
+          "colour_px": 662,
+          "alpha_px": 542
+        }
+      },
+      "lean": {
+        "max_deg": 28,
+        "leanDeg_at_stand1": -12,
+        "leanDeg_lean1_stand0": 28,
+        "leanDeg_lean1_stand1": 16,
+        "ground_row_at_S": {
+          "upright": 145,
+          "lean_curb": 145,
+          "lean_street": 145
+        },
+        "note": "the contact line is the axis, so the ground row does not move with lean"
+      },
+      "distinct_colours_at_rest": {
+        "W": 36,
+        "SE": 39
+      },
+      "anchors": {
+        "_units": "{x,y} in cell px for that facing, m = [x,y,z] in model metres, already posed",
+        "measured_with": {
+          "body": "dirtbike",
+          "paint": "teal",
+          "weather": 0.3,
+          "lamp": true,
+          "stand": 1
+        },
+        "by_facing": {
+          "N": {
+            "seat": {
+              "x": 121.7,
+              "y": 111.6,
+              "m": [
+                -0.195,
+                -0.3,
+                0.919
+              ]
+            },
+            "bars": {
+              "x": 121.1,
+              "y": 94.4,
+              "m": [
+                -0.216,
+                0.42,
+                1.017
+              ]
+            },
+            "gripL": {
+              "x": 110.8,
+              "y": 96.1,
+              "m": [
+                -0.539,
+                0.42,
+                0.949
+              ]
+            },
+            "gripR": {
+              "x": 131.4,
+              "y": 92.7,
+              "m": [
+                0.107,
+                0.42,
+                1.086
+              ]
+            },
+            "pegL": {
+              "x": 116.8,
+              "y": 120.5,
+              "m": [
+                -0.351,
+                -0.06,
+                0.355
+              ]
+            },
+            "pegR": {
+              "x": 133.7,
+              "y": 117.8,
+              "m": [
+                0.177,
+                -0.06,
+                0.467
+              ]
+            },
+            "wheelF": {
+              "x": 125.7,
+              "y": 104.4,
+              "m": [
+                -0.073,
+                0.74,
+                0.342
+              ]
+            },
+            "wheelR": {
+              "x": 125.8,
+              "y": 135.3,
+              "m": [
+                -0.069,
+                -0.74,
+                0.323
+              ]
+            },
+            "standTip": {
+              "x": 117.9,
+              "y": 128.4,
+              "m": [
+                -0.317,
+                -0.02,
+                0
+              ]
+            },
+            "tail": {
+              "x": 122.1,
+              "y": 128.5,
+              "m": [
+                -0.185,
+                -1.06,
+                0.871
+              ]
+            },
+            "lamp": {
+              "x": 122.1,
+              "y": 94.5,
+              "m": [
+                -0.185,
+                0.59,
+                0.871
+              ]
+            }
+          },
+          "NE": {
+            "seat": {
+              "x": 130.4,
+              "y": 112.7,
+              "m": [
+                -0.195,
+                -0.3,
+                0.919
+              ]
+            },
+            "bars": {
+              "x": 113.6,
+              "y": 100.1,
+              "m": [
+                -0.216,
+                0.42,
+                1.017
+              ]
+            },
+            "gripL": {
+              "x": 106.3,
+              "y": 106.5,
+              "m": [
+                -0.539,
+                0.42,
+                0.949
+              ]
+            },
+            "gripR": {
+              "x": 120.9,
+              "y": 93.7,
+              "m": [
+                0.107,
+                0.42,
+                1.086
+              ]
+            },
+            "pegL": {
+              "x": 121.4,
+              "y": 125.3,
+              "m": [
+                -0.351,
+                -0.06,
+                0.355
+              ]
+            },
+            "pegR": {
+              "x": 133.4,
+              "y": 114.9,
+              "m": [
+                0.177,
+                -0.06,
+                0.467
+              ]
+            },
+            "wheelF": {
+              "x": 109.6,
+              "y": 109.9,
+              "m": [
+                -0.073,
+                0.74,
+                0.342
+              ]
+            },
+            "wheelR": {
+              "x": 143.2,
+              "y": 131.8,
+              "m": [
+                -0.069,
+                -0.74,
+                0.323
+              ]
+            },
+            "standTip": {
+              "x": 121.3,
+              "y": 132.9,
+              "m": [
+                -0.317,
+                -0.02,
+                0
+              ]
+            },
+            "tail": {
+              "x": 147.8,
+              "y": 124.8,
+              "m": [
+                -0.185,
+                -1.06,
+                0.871
+              ]
+            },
+            "lamp": {
+              "x": 110.5,
+              "y": 100.8,
+              "m": [
+                -0.185,
+                0.59,
+                0.871
+              ]
+            }
+          },
+          "E": {
+            "seat": {
+              "x": 137.6,
+              "y": 109.5,
+              "m": [
+                -0.195,
+                -0.3,
+                0.919
+              ]
+            },
+            "bars": {
+              "x": 114.6,
+              "y": 107.5,
+              "m": [
+                -0.216,
+                0.42,
+                1.017
+              ]
+            },
+            "gripL": {
+              "x": 114.6,
+              "y": 115.8,
+              "m": [
+                -0.539,
+                0.42,
+                0.949
+              ]
+            },
+            "gripR": {
+              "x": 114.6,
+              "y": 99.2,
+              "m": [
+                0.107,
+                0.42,
+                1.086
+              ]
+            },
+            "pegL": {
+              "x": 129.9,
+              "y": 126.5,
+              "m": [
+                -0.351,
+                -0.06,
+                0.355
+              ]
+            },
+            "pegR": {
+              "x": 129.9,
+              "y": 112.9,
+              "m": [
+                0.177,
+                -0.06,
+                0.467
+              ]
+            },
+            "wheelF": {
+              "x": 104.3,
+              "y": 121.1,
+              "m": [
+                -0.073,
+                0.74,
+                0.342
+              ]
+            },
+            "wheelR": {
+              "x": 151.7,
+              "y": 121.5,
+              "m": [
+                -0.069,
+                -0.74,
+                0.323
+              ]
+            },
+            "standTip": {
+              "x": 128.6,
+              "y": 134.5,
+              "m": [
+                -0.317,
+                -0.02,
+                0
+              ]
+            },
+            "tail": {
+              "x": 161.9,
+              "y": 110.5,
+              "m": [
+                -0.185,
+                -1.06,
+                0.871
+              ]
+            },
+            "lamp": {
+              "x": 109.1,
+              "y": 110.5,
+              "m": [
+                -0.185,
+                0.59,
+                0.871
+              ]
+            }
+          },
+          "SE": {
+            "seat": {
+              "x": 139.2,
+              "y": 103.9,
+              "m": [
+                -0.195,
+                -0.3,
+                0.919
+              ]
+            },
+            "bars": {
+              "x": 123.4,
+              "y": 112.3,
+              "m": [
+                -0.216,
+                0.42,
+                1.017
+              ]
+            },
+            "gripL": {
+              "x": 130.7,
+              "y": 118.7,
+              "m": [
+                -0.539,
+                0.42,
+                0.949
+              ]
+            },
+            "gripR": {
+              "x": 116.1,
+              "y": 105.9,
+              "m": [
+                0.107,
+                0.42,
+                1.086
+              ]
+            },
+            "pegL": {
+              "x": 137.3,
+              "y": 123.5,
+              "m": [
+                -0.351,
+                -0.06,
+                0.355
+              ]
+            },
+            "pegR": {
+              "x": 125.4,
+              "y": 113.1,
+              "m": [
+                0.177,
+                -0.06,
+                0.467
+              ]
+            },
+            "wheelF": {
+              "x": 112.9,
+              "y": 131.4,
+              "m": [
+                -0.073,
+                0.74,
+                0.342
+              ]
+            },
+            "wheelR": {
+              "x": 146.3,
+              "y": 110.3,
+              "m": [
+                -0.069,
+                -0.74,
+                0.323
+              ]
+            },
+            "standTip": {
+              "x": 135.6,
+              "y": 132.3,
+              "m": [
+                -0.317,
+                -0.02,
+                0
+              ]
+            },
+            "tail": {
+              "x": 156.2,
+              "y": 93.9,
+              "m": [
+                -0.185,
+                -1.06,
+                0.871
+              ]
+            },
+            "lamp": {
+              "x": 118.8,
+              "y": 117.9,
+              "m": [
+                -0.185,
+                0.59,
+                0.871
+              ]
+            }
+          },
+          "S": {
+            "seat": {
+              "x": 134.3,
+              "y": 99.3,
+              "m": [
+                -0.195,
+                -0.3,
+                0.919
+              ]
+            },
+            "bars": {
+              "x": 134.9,
+              "y": 111.7,
+              "m": [
+                -0.216,
+                0.42,
+                1.017
+              ]
+            },
+            "gripL": {
+              "x": 145.2,
+              "y": 113.4,
+              "m": [
+                -0.539,
+                0.42,
+                0.949
+              ]
+            },
+            "gripR": {
+              "x": 124.6,
+              "y": 110,
+              "m": [
+                0.107,
+                0.42,
+                1.086
+              ]
+            },
+            "pegL": {
+              "x": 139.2,
+              "y": 118.1,
+              "m": [
+                -0.351,
+                -0.06,
+                0.355
+              ]
+            },
+            "pegR": {
+              "x": 122.3,
+              "y": 115.3,
+              "m": [
+                0.177,
+                -0.06,
+                0.467
+              ]
+            },
+            "wheelF": {
+              "x": 130.3,
+              "y": 134.8,
+              "m": [
+                -0.073,
+                0.74,
+                0.342
+              ]
+            },
+            "wheelR": {
+              "x": 130.2,
+              "y": 104.9,
+              "m": [
+                -0.069,
+                -0.74,
+                0.323
+              ]
+            },
+            "standTip": {
+              "x": 138.1,
+              "y": 127.6,
+              "m": [
+                -0.317,
+                -0.02,
+                0
+              ]
+            },
+            "tail": {
+              "x": 133.9,
+              "y": 84.9,
+              "m": [
+                -0.185,
+                -1.06,
+                0.871
+              ]
+            },
+            "lamp": {
+              "x": 133.9,
+              "y": 118.8,
+              "m": [
+                -0.185,
+                0.59,
+                0.871
+              ]
+            }
+          },
+          "SW": {
+            "seat": {
+              "x": 125.6,
+              "y": 98.3,
+              "m": [
+                -0.195,
+                -0.3,
+                0.919
+              ]
+            },
+            "bars": {
+              "x": 142.4,
+              "y": 106,
+              "m": [
+                -0.216,
+                0.42,
+                1.017
+              ]
+            },
+            "gripL": {
+              "x": 149.7,
+              "y": 103,
+              "m": [
+                -0.539,
+                0.42,
+                0.949
+              ]
+            },
+            "gripR": {
+              "x": 135.1,
+              "y": 109,
+              "m": [
+                0.107,
+                0.42,
+                1.086
+              ]
+            },
+            "pegL": {
+              "x": 134.6,
+              "y": 113.3,
+              "m": [
+                -0.351,
+                -0.06,
+                0.355
+              ]
+            },
+            "pegR": {
+              "x": 122.6,
+              "y": 118.3,
+              "m": [
+                0.177,
+                -0.06,
+                0.467
+              ]
+            },
+            "wheelF": {
+              "x": 146.4,
+              "y": 129.3,
+              "m": [
+                -0.073,
+                0.74,
+                0.342
+              ]
+            },
+            "wheelR": {
+              "x": 112.8,
+              "y": 108.3,
+              "m": [
+                -0.069,
+                -0.74,
+                0.323
+              ]
+            },
+            "standTip": {
+              "x": 134.7,
+              "y": 123.1,
+              "m": [
+                -0.317,
+                -0.02,
+                0
+              ]
+            },
+            "tail": {
+              "x": 108.2,
+              "y": 88.6,
+              "m": [
+                -0.185,
+                -1.06,
+                0.871
+              ]
+            },
+            "lamp": {
+              "x": 145.5,
+              "y": 112.5,
+              "m": [
+                -0.185,
+                0.59,
+                0.871
+              ]
+            }
+          },
+          "W": {
+            "seat": {
+              "x": 118.4,
+              "y": 101.4,
+              "m": [
+                -0.195,
+                -0.3,
+                0.919
+              ]
+            },
+            "bars": {
+              "x": 141.4,
+              "y": 98.6,
+              "m": [
+                -0.216,
+                0.42,
+                1.017
+              ]
+            },
+            "gripL": {
+              "x": 141.4,
+              "y": 93.7,
+              "m": [
+                -0.539,
+                0.42,
+                0.949
+              ]
+            },
+            "gripR": {
+              "x": 141.4,
+              "y": 103.6,
+              "m": [
+                0.107,
+                0.42,
+                1.086
+              ]
+            },
+            "pegL": {
+              "x": 126.1,
+              "y": 112.1,
+              "m": [
+                -0.351,
+                -0.06,
+                0.355
+              ]
+            },
+            "pegR": {
+              "x": 126.1,
+              "y": 120.2,
+              "m": [
+                0.177,
+                -0.06,
+                0.467
+              ]
+            },
+            "wheelF": {
+              "x": 151.7,
+              "y": 118.1,
+              "m": [
+                -0.073,
+                0.74,
+                0.342
+              ]
+            },
+            "wheelR": {
+              "x": 104.3,
+              "y": 118.7,
+              "m": [
+                -0.069,
+                -0.74,
+                0.323
+              ]
+            },
+            "standTip": {
+              "x": 127.4,
+              "y": 121.5,
+              "m": [
+                -0.317,
+                -0.02,
+                0
+              ]
+            },
+            "tail": {
+              "x": 94.1,
+              "y": 102.9,
+              "m": [
+                -0.185,
+                -1.06,
+                0.871
+              ]
+            },
+            "lamp": {
+              "x": 146.9,
+              "y": 102.9,
+              "m": [
+                -0.185,
+                0.59,
+                0.871
+              ]
+            }
+          },
+          "NW": {
+            "seat": {
+              "x": 116.8,
+              "y": 107,
+              "m": [
+                -0.195,
+                -0.3,
+                0.919
+              ]
+            },
+            "bars": {
+              "x": 132.6,
+              "y": 93.8,
+              "m": [
+                -0.216,
+                0.42,
+                1.017
+              ]
+            },
+            "gripL": {
+              "x": 125.3,
+              "y": 90.8,
+              "m": [
+                -0.539,
+                0.42,
+                0.949
+              ]
+            },
+            "gripR": {
+              "x": 139.9,
+              "y": 96.8,
+              "m": [
+                0.107,
+                0.42,
+                1.086
+              ]
+            },
+            "pegL": {
+              "x": 118.7,
+              "y": 115.1,
+              "m": [
+                -0.351,
+                -0.06,
+                0.355
+              ]
+            },
+            "pegR": {
+              "x": 130.6,
+              "y": 120,
+              "m": [
+                0.177,
+                -0.06,
+                0.467
+              ]
+            },
+            "wheelF": {
+              "x": 143.1,
+              "y": 107.8,
+              "m": [
+                -0.073,
+                0.74,
+                0.342
+              ]
+            },
+            "wheelR": {
+              "x": 109.7,
+              "y": 129.9,
+              "m": [
+                -0.069,
+                -0.74,
+                0.323
+              ]
+            },
+            "standTip": {
+              "x": 120.4,
+              "y": 123.7,
+              "m": [
+                -0.317,
+                -0.02,
+                0
+              ]
+            },
+            "tail": {
+              "x": 99.8,
+              "y": 119.4,
+              "m": [
+                -0.185,
+                -1.06,
+                0.871
+              ]
+            },
+            "lamp": {
+              "x": 137.2,
+              "y": 95.4,
+              "m": [
+                -0.185,
+                0.59,
+                0.871
+              ]
+            }
+          }
+        },
+        "_note": "by_facing is PARKED (stand 1, 12deg lean) — the default bake. by_facing_ridden is stand 0, the state a rider mounts into; the character rig wants these.",
+        "by_facing_ridden": {
+          "N": {
+            "seat": {
+              "x": 128,
+              "y": 111.1,
+              "m": [
+                0,
+                -0.3,
+                0.94
+              ]
+            },
+            "bars": {
+              "x": 128,
+              "y": 93.9,
+              "m": [
+                0,
+                0.42,
+                1.04
+              ]
+            },
+            "gripL": {
+              "x": 117.4,
+              "y": 93.9,
+              "m": [
+                -0.33,
+                0.42,
+                1.04
+              ]
+            },
+            "gripR": {
+              "x": 138.6,
+              "y": 93.9,
+              "m": [
+                0.33,
+                0.42,
+                1.04
+              ]
+            },
+            "pegL": {
+              "x": 119.4,
+              "y": 118.9,
+              "m": [
+                -0.27,
+                -0.06,
+                0.42
+              ]
+            },
+            "pegR": {
+              "x": 136.6,
+              "y": 118.9,
+              "m": [
+                0.27,
+                -0.06,
+                0.42
+              ]
+            },
+            "wheelF": {
+              "x": 128,
+              "y": 104.2,
+              "m": [
+                0,
+                0.74,
+                0.35
+              ]
+            },
+            "wheelR": {
+              "x": 128,
+              "y": 135.1,
+              "m": [
+                0,
+                -0.74,
+                0.33
+              ]
+            },
+            "standTip": {
+              "x": 123.5,
+              "y": 128.5,
+              "m": [
+                -0.14,
+                -0.5,
+                0.4
+              ]
+            },
+            "tail": {
+              "x": 128,
+              "y": 128,
+              "m": [
+                0,
+                -1.06,
+                0.89
+              ]
+            },
+            "lamp": {
+              "x": 128,
+              "y": 94,
+              "m": [
+                0,
+                0.59,
+                0.89
+              ]
+            }
+          },
+          "NE": {
+            "seat": {
+              "x": 134.8,
+              "y": 109.3,
+              "m": [
+                0,
+                -0.3,
+                0.94
+              ]
+            },
+            "bars": {
+              "x": 118.5,
+              "y": 96.4,
+              "m": [
+                0,
+                0.42,
+                1.04
+              ]
+            },
+            "gripL": {
+              "x": 111,
+              "y": 101.2,
+              "m": [
+                -0.33,
+                0.42,
+                1.04
+              ]
+            },
+            "gripR": {
+              "x": 126,
+              "y": 91.6,
+              "m": [
+                0.33,
+                0.42,
+                1.04
+              ]
+            },
+            "pegL": {
+              "x": 123.2,
+              "y": 122.5,
+              "m": [
+                -0.27,
+                -0.06,
+                0.42
+              ]
+            },
+            "pegR": {
+              "x": 135.5,
+              "y": 114.6,
+              "m": [
+                0.27,
+                -0.06,
+                0.42
+              ]
+            },
+            "wheelF": {
+              "x": 111.3,
+              "y": 108.7,
+              "m": [
+                0,
+                0.74,
+                0.35
+              ]
+            },
+            "wheelR": {
+              "x": 144.7,
+              "y": 130.7,
+              "m": [
+                0,
+                -0.74,
+                0.33
+              ]
+            },
+            "standTip": {
+              "x": 136.1,
+              "y": 127.5,
+              "m": [
+                -0.14,
+                -0.5,
+                0.4
+              ]
+            },
+            "tail": {
+              "x": 152,
+              "y": 121.6,
+              "m": [
+                0,
+                -1.06,
+                0.89
+              ]
+            },
+            "lamp": {
+              "x": 114.6,
+              "y": 97.6,
+              "m": [
+                0,
+                0.59,
+                0.89
+              ]
+            }
+          },
+          "E": {
+            "seat": {
+              "x": 137.6,
+              "y": 105,
+              "m": [
+                0,
+                -0.3,
+                0.94
+              ]
+            },
+            "bars": {
+              "x": 114.6,
+              "y": 102.5,
+              "m": [
+                0,
+                0.42,
+                1.04
+              ]
+            },
+            "gripL": {
+              "x": 114.6,
+              "y": 109.3,
+              "m": [
+                -0.33,
+                0.42,
+                1.04
+              ]
+            },
+            "gripR": {
+              "x": 114.6,
+              "y": 95.7,
+              "m": [
+                0.33,
+                0.42,
+                1.04
+              ]
+            },
+            "pegL": {
+              "x": 129.9,
+              "y": 123.3,
+              "m": [
+                -0.27,
+                -0.06,
+                0.42
+              ]
+            },
+            "pegR": {
+              "x": 129.9,
+              "y": 112.2,
+              "m": [
+                0.27,
+                -0.06,
+                0.42
+              ]
+            },
+            "wheelF": {
+              "x": 104.3,
+              "y": 119.4,
+              "m": [
+                0,
+                0.74,
+                0.35
+              ]
+            },
+            "wheelR": {
+              "x": 151.7,
+              "y": 119.9,
+              "m": [
+                0,
+                -0.74,
+                0.33
+              ]
+            },
+            "standTip": {
+              "x": 144,
+              "y": 121.1,
+              "m": [
+                -0.14,
+                -0.5,
+                0.4
+              ]
+            },
+            "tail": {
+              "x": 161.9,
+              "y": 106.2,
+              "m": [
+                0,
+                -1.06,
+                0.89
+              ]
+            },
+            "lamp": {
+              "x": 109.1,
+              "y": 106.2,
+              "m": [
+                0,
+                0.59,
+                0.89
+              ]
+            }
+          },
+          "SE": {
+            "seat": {
+              "x": 134.8,
+              "y": 100.6,
+              "m": [
+                0,
+                -0.3,
+                0.94
+              ]
+            },
+            "bars": {
+              "x": 118.5,
+              "y": 108.6,
+              "m": [
+                0,
+                0.42,
+                1.04
+              ]
+            },
+            "gripL": {
+              "x": 126,
+              "y": 113.4,
+              "m": [
+                -0.33,
+                0.42,
+                1.04
+              ]
+            },
+            "gripR": {
+              "x": 111,
+              "y": 103.8,
+              "m": [
+                0.33,
+                0.42,
+                1.04
+              ]
+            },
+            "pegL": {
+              "x": 135.5,
+              "y": 120.8,
+              "m": [
+                -0.27,
+                -0.06,
+                0.42
+              ]
+            },
+            "pegR": {
+              "x": 123.2,
+              "y": 112.9,
+              "m": [
+                0.27,
+                -0.06,
+                0.42
+              ]
+            },
+            "wheelF": {
+              "x": 111.3,
+              "y": 130.2,
+              "m": [
+                0,
+                0.74,
+                0.35
+              ]
+            },
+            "wheelR": {
+              "x": 144.7,
+              "y": 109.1,
+              "m": [
+                0,
+                -0.74,
+                0.33
+              ]
+            },
+            "standTip": {
+              "x": 142.5,
+              "y": 113,
+              "m": [
+                -0.14,
+                -0.5,
+                0.4
+              ]
+            },
+            "tail": {
+              "x": 152,
+              "y": 90.8,
+              "m": [
+                0,
+                -1.06,
+                0.89
+              ]
+            },
+            "lamp": {
+              "x": 114.6,
+              "y": 114.8,
+              "m": [
+                0,
+                0.59,
+                0.89
+              ]
+            }
+          },
+          "S": {
+            "seat": {
+              "x": 128,
+              "y": 98.8,
+              "m": [
+                0,
+                -0.3,
+                0.94
+              ]
+            },
+            "bars": {
+              "x": 128,
+              "y": 111.1,
+              "m": [
+                0,
+                0.42,
+                1.04
+              ]
+            },
+            "gripL": {
+              "x": 138.6,
+              "y": 111.1,
+              "m": [
+                -0.33,
+                0.42,
+                1.04
+              ]
+            },
+            "gripR": {
+              "x": 117.4,
+              "y": 111.1,
+              "m": [
+                0.33,
+                0.42,
+                1.04
+              ]
+            },
+            "pegL": {
+              "x": 136.6,
+              "y": 116.5,
+              "m": [
+                -0.27,
+                -0.06,
+                0.42
+              ]
+            },
+            "pegR": {
+              "x": 119.4,
+              "y": 116.5,
+              "m": [
+                0.27,
+                -0.06,
+                0.42
+              ]
+            },
+            "wheelF": {
+              "x": 128,
+              "y": 134.6,
+              "m": [
+                0,
+                0.74,
+                0.35
+              ]
+            },
+            "wheelR": {
+              "x": 128,
+              "y": 104.7,
+              "m": [
+                0,
+                -0.74,
+                0.33
+              ]
+            },
+            "standTip": {
+              "x": 132.5,
+              "y": 107.9,
+              "m": [
+                -0.14,
+                -0.5,
+                0.4
+              ]
+            },
+            "tail": {
+              "x": 128,
+              "y": 84.4,
+              "m": [
+                0,
+                -1.06,
+                0.89
+              ]
+            },
+            "lamp": {
+              "x": 128,
+              "y": 118.3,
+              "m": [
+                0,
+                0.59,
+                0.89
+              ]
+            }
+          },
+          "SW": {
+            "seat": {
+              "x": 121.2,
+              "y": 100.6,
+              "m": [
+                0,
+                -0.3,
+                0.94
+              ]
+            },
+            "bars": {
+              "x": 137.5,
+              "y": 108.6,
+              "m": [
+                0,
+                0.42,
+                1.04
+              ]
+            },
+            "gripL": {
+              "x": 145,
+              "y": 103.8,
+              "m": [
+                -0.33,
+                0.42,
+                1.04
+              ]
+            },
+            "gripR": {
+              "x": 130,
+              "y": 113.4,
+              "m": [
+                0.33,
+                0.42,
+                1.04
+              ]
+            },
+            "pegL": {
+              "x": 132.8,
+              "y": 112.9,
+              "m": [
+                -0.27,
+                -0.06,
+                0.42
+              ]
+            },
+            "pegR": {
+              "x": 120.5,
+              "y": 120.8,
+              "m": [
+                0.27,
+                -0.06,
+                0.42
+              ]
+            },
+            "wheelF": {
+              "x": 144.7,
+              "y": 130.2,
+              "m": [
+                0,
+                0.74,
+                0.35
+              ]
+            },
+            "wheelR": {
+              "x": 111.3,
+              "y": 109.1,
+              "m": [
+                0,
+                -0.74,
+                0.33
+              ]
+            },
+            "standTip": {
+              "x": 119.9,
+              "y": 108.9,
+              "m": [
+                -0.14,
+                -0.5,
+                0.4
+              ]
+            },
+            "tail": {
+              "x": 104,
+              "y": 90.8,
+              "m": [
+                0,
+                -1.06,
+                0.89
+              ]
+            },
+            "lamp": {
+              "x": 141.4,
+              "y": 114.8,
+              "m": [
+                0,
+                0.59,
+                0.89
+              ]
+            }
+          },
+          "W": {
+            "seat": {
+              "x": 118.4,
+              "y": 105,
+              "m": [
+                0,
+                -0.3,
+                0.94
+              ]
+            },
+            "bars": {
+              "x": 141.4,
+              "y": 102.5,
+              "m": [
+                0,
+                0.42,
+                1.04
+              ]
+            },
+            "gripL": {
+              "x": 141.4,
+              "y": 95.7,
+              "m": [
+                -0.33,
+                0.42,
+                1.04
+              ]
+            },
+            "gripR": {
+              "x": 141.4,
+              "y": 109.3,
+              "m": [
+                0.33,
+                0.42,
+                1.04
+              ]
+            },
+            "pegL": {
+              "x": 126.1,
+              "y": 112.2,
+              "m": [
+                -0.27,
+                -0.06,
+                0.42
+              ]
+            },
+            "pegR": {
+              "x": 126.1,
+              "y": 123.3,
+              "m": [
+                0.27,
+                -0.06,
+                0.42
+              ]
+            },
+            "wheelF": {
+              "x": 151.7,
+              "y": 119.4,
+              "m": [
+                0,
+                0.74,
+                0.35
+              ]
+            },
+            "wheelR": {
+              "x": 104.3,
+              "y": 119.9,
+              "m": [
+                0,
+                -0.74,
+                0.33
+              ]
+            },
+            "standTip": {
+              "x": 112,
+              "y": 115.3,
+              "m": [
+                -0.14,
+                -0.5,
+                0.4
+              ]
+            },
+            "tail": {
+              "x": 94.1,
+              "y": 106.2,
+              "m": [
+                0,
+                -1.06,
+                0.89
+              ]
+            },
+            "lamp": {
+              "x": 146.9,
+              "y": 106.2,
+              "m": [
+                0,
+                0.59,
+                0.89
+              ]
+            }
+          },
+          "NW": {
+            "seat": {
+              "x": 121.2,
+              "y": 109.3,
+              "m": [
+                0,
+                -0.3,
+                0.94
+              ]
+            },
+            "bars": {
+              "x": 137.5,
+              "y": 96.4,
+              "m": [
+                0,
+                0.42,
+                1.04
+              ]
+            },
+            "gripL": {
+              "x": 130,
+              "y": 91.6,
+              "m": [
+                -0.33,
+                0.42,
+                1.04
+              ]
+            },
+            "gripR": {
+              "x": 145,
+              "y": 101.2,
+              "m": [
+                0.33,
+                0.42,
+                1.04
+              ]
+            },
+            "pegL": {
+              "x": 120.5,
+              "y": 114.6,
+              "m": [
+                -0.27,
+                -0.06,
+                0.42
+              ]
+            },
+            "pegR": {
+              "x": 132.8,
+              "y": 122.5,
+              "m": [
+                0.27,
+                -0.06,
+                0.42
+              ]
+            },
+            "wheelF": {
+              "x": 144.7,
+              "y": 108.7,
+              "m": [
+                0,
+                0.74,
+                0.35
+              ]
+            },
+            "wheelR": {
+              "x": 111.3,
+              "y": 130.7,
+              "m": [
+                0,
+                -0.74,
+                0.33
+              ]
+            },
+            "standTip": {
+              "x": 113.5,
+              "y": 123.4,
+              "m": [
+                -0.14,
+                -0.5,
+                0.4
+              ]
+            },
+            "tail": {
+              "x": 104,
+              "y": 121.6,
+              "m": [
+                0,
+                -1.06,
+                0.89
+              ]
+            },
+            "lamp": {
+              "x": 141.4,
+              "y": 97.6,
+              "m": [
+                0,
+                0.59,
+                0.89
+              ]
+            }
+          }
+        },
+        "grips_turn_with_steer_px": 2,
+        "seat_holds_under_steer_px": 0
+      },
+      "sheets": [
+        {
+          "file": "Enduro250_teal_8dir.png",
+          "cells": 8,
+          "layout": "1 row",
+          "grid": [
+            2048,
+            192
+          ],
+          "pose": "PARKED at rest — enduro (teal, weather 0.3, lamp, stand 1: leaning 12deg onto the side stand)",
+          "order": [
+            "N",
+            "NE",
+            "E",
+            "SE",
+            "S",
+            "SW",
+            "W",
+            "NW"
+          ]
+        },
+        {
+          "file": "Enduro250_teal_ridden_8dir.png",
+          "cells": 8,
+          "layout": "1 row",
+          "grid": [
+            2048,
+            192
+          ],
+          "pose": "RIDDEN at rest — stand 0, upright. The state a rider mounts into; pool THIS for a moving bike, not the default.",
+          "order": [
+            "N",
+            "NE",
+            "E",
+            "SE",
+            "S",
+            "SW",
+            "W",
+            "NW"
+          ]
+        },
+        {
+          "file": "Enduro250_teal_roll_W.png",
+          "cells": 10,
+          "layout": "1 row",
+          "grid": [
+            2560,
+            192
+          ],
+          "pose": "one rear-wheel revolution at W, cyclic (frame 10 wraps to frame 0); stand 0"
+        },
+        {
+          "file": "Enduro250_teal_turn_SE.png",
+          "cells": 8,
+          "layout": "1 row",
+          "grid": [
+            2048,
+            192
+          ],
+          "pose": "turn cue at SE, cyclic: steer sin(2pi t), yaw 14deg with it, lean -0.55 into the turn, rolling, stand 0"
+        },
+        {
+          "file": "Enduro250_teal_bounce_W.png",
+          "cells": 8,
+          "layout": "1 row",
+          "grid": [
+            2048,
+            192
+          ],
+          "pose": "bounce cue at W, cyclic: susF/susR sin sweep 0.8 out of phase, rolling, stand 0"
+        },
+        {
+          "file": "Enduro250_teal_steer_S.png",
+          "cells": 8,
+          "layout": "1 row",
+          "grid": [
+            2048,
+            192
+          ],
+          "pose": "steer cue at S: full RIGHT lock -> full LEFT lock, 8 inclusive; baked at stand 0 — steering is a ridden act"
+        },
+        {
+          "file": "Enduro250_teal_park_SE.png",
+          "cells": 8,
+          "layout": "1 row",
+          "grid": [
+            2048,
+            192
+          ],
+          "pose": "park cue at SE: stand 0 -> 1, upright -> 12deg onto the stand, 8 inclusive. Run reversed to kick it up."
+        },
+        {
+          "file": "Enduro250_rustOrange_plate_8dir.png",
+          "cells": 8,
+          "layout": "1 row",
+          "grid": [
+            2048,
+            192
+          ],
+          "pose": "mxPlate preset — rustOrange, weather 0.22, lamp:false (white MX number plate at the lamp station), parked",
+          "order": [
+            "N",
+            "NE",
+            "E",
+            "SE",
+            "S",
+            "SW",
+            "W",
+            "NW"
+          ]
+        },
+        {
+          "file": "Enduro250_paints_SE.png",
+          "cells": 10,
+          "layout": "5 x 2",
+          "grid": [
+            1280,
+            384
+          ],
+          "pose": "the ten harbour paints at SE, weather 0.22, parked",
+          "order": [
+            "white",
+            "cream",
+            "red",
+            "sage",
+            "blue",
+            "teal",
+            "gold",
+            "rustOrange",
+            "greyShingle",
+            "plum"
+          ]
+        }
+      ]
+    },
+    "trike": {
+      "label": "Trike 200",
+      "kind": "three_wheeler",
+      "sheet_stem": "Trike200",
+      "dims": {
+        "key": "trike",
+        "label": "Trike 200",
+        "kind": "three_wheeler",
+        "loa": 1.85,
+        "width": 1.2,
+        "height": 0.95,
+        "wheelbase": 1.2,
+        "seatZ": 0.76,
+        "clearance": 0.2,
+        "wheels": 3,
+        "rearWheelR": 0.28,
+        "distancePerRev": 1.759,
+        "travel_m": {
+          "front": 0.08,
+          "rear": 0
+        },
+        "mass_kg_estimate": 132,
+        "y_extent_m": [
+          -0.935,
+          0.92
+        ]
+      },
+      "measured_with": {
+        "body": "trike",
+        "paint": "gold",
+        "weather": 0.38,
+        "rackR": true
+      },
+      "painted_bbox": {
+        "_units": "cell px, [x0,y0,x1,y1] inclusive, measured off the alpha channel",
+        "at_rest": {
+          "N": [
+            109,
+            96,
+            146,
+            141
+          ],
+          "NE": [
+            106,
+            94,
+            161,
+            145
+          ],
+          "E": [
+            99,
+            97,
+            157,
+            138
+          ],
+          "SE": [
+            104,
+            92,
+            161,
+            138
+          ],
+          "S": [
+            109,
+            92,
+            146,
+            142
+          ],
+          "SW": [
+            94,
+            92,
+            151,
+            138
+          ],
+          "W": [
+            98,
+            97,
+            156,
+            138
+          ],
+          "NW": [
+            94,
+            94,
+            149,
+            145
+          ]
+        },
+        "union_at_rest": [
+          94,
+          92,
+          161,
+          145
+        ],
+        "bare": {
+          "N": [
+            109,
+            96,
+            146,
+            141
+          ],
+          "NE": [
+            106,
+            94,
+            161,
+            145
+          ],
+          "E": [
+            99,
+            97,
+            157,
+            138
+          ],
+          "SE": [
+            104,
+            92,
+            161,
+            138
+          ],
+          "S": [
+            109,
+            94,
+            146,
+            142
+          ],
+          "SW": [
+            94,
+            92,
+            151,
+            138
+          ],
+          "W": [
+            98,
+            97,
+            156,
+            138
+          ],
+          "NW": [
+            94,
+            94,
+            149,
+            145
+          ]
+        },
+        "union_bare": [
+          94,
+          92,
+          161,
+          145
+        ],
+        "_state_note": "at_rest = rear rack fitted (the default). bare = rackR:false.",
+        "over_yaw_sweep": [
+          94,
+          91,
+          161,
+          144
+        ],
+        "over_steer": [
+          94,
+          91,
+          161,
+          145
+        ],
+        "over_suspension": [
+          94,
+          91,
+          161,
+          145
+        ],
+        "union_everything": [
+          94,
+          91,
+          161,
+          145
+        ],
+        "union_everything_size": [
+          68,
+          55
+        ],
+        "all_poses_inside_cell": true,
+        "crop_note": "pack from union_everything to hold every fitting, pose, yaw step in one atlas cell; union_at_rest is the tight default build."
+      },
+      "painted_px_at_rest": [
+        1065,
+        1405,
+        1445,
+        1375,
+        1121,
+        1370,
+        1436,
+        1383
+      ],
+      "union_at_rest_size": [
+        68,
+        54
+      ],
+      "roll_seam": {
+        "facing": "W",
+        "painted_px": 1436,
+        "roll1_vs_roll0": {
+          "colour_px": 8,
+          "alpha_px": 0,
+          "pct_of_painted": 0.557
+        },
+        "roll05_vs_roll0": {
+          "colour_px": 7,
+          "alpha_px": 0
+        },
+        "distance_per_rev_m": 1.759,
+        "rear_lugs_per_rev": 11,
+        "verdict": "seamless, not bit-exact",
+        "front_wheel": {
+          "rev_per_rear_rev": 0.966,
+          "short_of_closing_deg": 12.414,
+          "spoked": false,
+          "closed_by_rollF": {
+            "value": 0.034,
+            "colour_px": 0,
+            "alpha_px": 0,
+            "note": "roll:1 with rollF = 1 - rR/rF added brings the front round to its start: the seam is the front wheel and nothing else (bit-identical)"
+          }
+        }
+      },
+      "cue_motion": {
+        "roll": {
+          "facing": "W",
+          "why": "W — side on, both wheels read",
+          "cyclic": true,
+          "compared": "t=0 vs t=0.25",
+          "colour_px": 4,
+          "alpha_px": 0
+        },
+        "turn": {
+          "facing": "SE",
+          "why": "SE — nose quarter, street side: steer, yaw and (bike) lean all read",
+          "cyclic": true,
+          "compared": "t=0 vs t=0.25",
+          "colour_px": 713,
+          "alpha_px": 495
+        },
+        "bounce": {
+          "facing": "W",
+          "why": "W — side on, the pitch reads",
+          "cyclic": true,
+          "compared": "t=0 vs t=0.25",
+          "colour_px": 264,
+          "alpha_px": 80
+        },
+        "steer": {
+          "facing": "S",
+          "why": "S — nose to camera, the front wheel(s) turning read",
+          "cyclic": false,
+          "compared": "t=0 vs t=1",
+          "colour_px": 361,
+          "alpha_px": 93
+        }
+      },
+      "suspension": {
+        "facing": "W",
+        "bottom_row": {
+          "rest": 138,
+          "compressed": 138,
+          "extended": 138
+        },
+        "top_row": {
+          "rest": 97,
+          "compressed": 98,
+          "extended": 95
+        },
+        "travel_m": {
+          "front": 0.08,
+          "rear": 0
+        },
+        "rear_rigid": {
+          "susR1_vs_susR0_colour_px": 0,
+          "alpha_px": 0,
+          "note": "susR is accepted and ignored — the rear axle is rigid"
+        }
+      },
+      "steering": {
+        "mechanism": "the WHOLE front assembly (wheel, fork, fender, lamp, bars) turns about the raked steering axis through the head",
+        "rake_deg": 25,
+        "max_deg": 30,
+        "turning_at_full_lock": {
+          "radius_m": 2.078,
+          "note": "geometric, no lean, no slip"
+        },
+        "full_lock_differs_px": 361
+      },
+      "distinct_colours_at_rest": {
+        "W": 41,
+        "SE": 39
+      },
+      "anchors": {
+        "_units": "{x,y} in cell px for that facing, m = [x,y,z] in model metres, already posed",
+        "measured_with": {
+          "body": "trike",
+          "paint": "gold",
+          "weather": 0.38,
+          "rackR": true
+        },
+        "by_facing": {
+          "N": {
+            "seat": {
+              "x": 128,
+              "y": 116.4,
+              "m": [
+                0,
+                -0.34,
+                0.76
+              ]
+            },
+            "bars": {
+              "x": 128,
+              "y": 98,
+              "m": [
+                0,
+                0.36,
+                0.92
+              ]
+            },
+            "gripL": {
+              "x": 118.1,
+              "y": 98,
+              "m": [
+                -0.31,
+                0.36,
+                0.92
+              ]
+            },
+            "gripR": {
+              "x": 137.9,
+              "y": 98,
+              "m": [
+                0.31,
+                0.36,
+                0.92
+              ]
+            },
+            "pegL": {
+              "x": 117.8,
+              "y": 121.3,
+              "m": [
+                -0.32,
+                -0.08,
+                0.34
+              ]
+            },
+            "pegR": {
+              "x": 138.2,
+              "y": 121.3,
+              "m": [
+                0.32,
+                -0.08,
+                0.34
+              ]
+            },
+            "wheelF": {
+              "x": 128,
+              "y": 108.5,
+              "m": [
+                0,
+                0.6,
+                0.29
+              ]
+            },
+            "wheelRL": {
+              "x": 114.6,
+              "y": 133.5,
+              "m": [
+                -0.42,
+                -0.6,
+                0.28
+              ]
+            },
+            "wheelRR": {
+              "x": 141.4,
+              "y": 133.5,
+              "m": [
+                0.42,
+                -0.6,
+                0.28
+              ]
+            },
+            "tail": {
+              "x": 128,
+              "y": 132.7,
+              "m": [
+                0,
+                -0.92,
+                0.58
+              ]
+            },
+            "lamp": {
+              "x": 128,
+              "y": 97.4,
+              "m": [
+                0,
+                0.52,
+                0.811
+              ]
+            },
+            "rackR": {
+              "x": 128,
+              "y": 126.3,
+              "m": [
+                0,
+                -0.75,
+                0.7
+              ]
+            }
+          },
+          "NE": {
+            "seat": {
+              "x": 135.7,
+              "y": 114.3,
+              "m": [
+                0,
+                -0.34,
+                0.76
+              ]
+            },
+            "bars": {
+              "x": 119.9,
+              "y": 100.2,
+              "m": [
+                0,
+                0.36,
+                0.92
+              ]
+            },
+            "gripL": {
+              "x": 112.8,
+              "y": 104.7,
+              "m": [
+                -0.31,
+                0.36,
+                0.92
+              ]
+            },
+            "gripR": {
+              "x": 126.9,
+              "y": 95.7,
+              "m": [
+                0.31,
+                0.36,
+                0.92
+              ]
+            },
+            "pegL": {
+              "x": 122.6,
+              "y": 125.5,
+              "m": [
+                -0.32,
+                -0.08,
+                0.34
+              ]
+            },
+            "pegR": {
+              "x": 137.1,
+              "y": 116.2,
+              "m": [
+                0.32,
+                -0.08,
+                0.34
+              ]
+            },
+            "wheelF": {
+              "x": 114.4,
+              "y": 112.2,
+              "m": [
+                0,
+                0.6,
+                0.29
+              ]
+            },
+            "wheelRL": {
+              "x": 132.1,
+              "y": 136,
+              "m": [
+                -0.42,
+                -0.6,
+                0.28
+              ]
+            },
+            "wheelRR": {
+              "x": 151.1,
+              "y": 123.8,
+              "m": [
+                0.42,
+                -0.6,
+                0.28
+              ]
+            },
+            "tail": {
+              "x": 148.8,
+              "y": 127.2,
+              "m": [
+                0,
+                -0.92,
+                0.58
+              ]
+            },
+            "lamp": {
+              "x": 116.2,
+              "y": 100.5,
+              "m": [
+                0,
+                0.52,
+                0.811
+              ]
+            },
+            "rackR": {
+              "x": 145,
+              "y": 121.7,
+              "m": [
+                0,
+                -0.75,
+                0.7
+              ]
+            }
+          },
+          "E": {
+            "seat": {
+              "x": 138.9,
+              "y": 109.4,
+              "m": [
+                0,
+                -0.34,
+                0.76
+              ]
+            },
+            "bars": {
+              "x": 116.5,
+              "y": 105.4,
+              "m": [
+                0,
+                0.36,
+                0.92
+              ]
+            },
+            "gripL": {
+              "x": 116.5,
+              "y": 111.8,
+              "m": [
+                -0.31,
+                0.36,
+                0.92
+              ]
+            },
+            "gripR": {
+              "x": 116.5,
+              "y": 99.1,
+              "m": [
+                0.31,
+                0.36,
+                0.92
+              ]
+            },
+            "pegL": {
+              "x": 130.6,
+              "y": 126.2,
+              "m": [
+                -0.32,
+                -0.08,
+                0.34
+              ]
+            },
+            "pegR": {
+              "x": 130.6,
+              "y": 113.1,
+              "m": [
+                0.32,
+                -0.08,
+                0.34
+              ]
+            },
+            "wheelF": {
+              "x": 108.8,
+              "y": 120.9,
+              "m": [
+                0,
+                0.6,
+                0.29
+              ]
+            },
+            "wheelRL": {
+              "x": 147.2,
+              "y": 129.8,
+              "m": [
+                -0.42,
+                -0.6,
+                0.28
+              ]
+            },
+            "wheelRR": {
+              "x": 147.2,
+              "y": 112.5,
+              "m": [
+                0.42,
+                -0.6,
+                0.28
+              ]
+            },
+            "tail": {
+              "x": 157.4,
+              "y": 113.8,
+              "m": [
+                0,
+                -0.92,
+                0.58
+              ]
+            },
+            "lamp": {
+              "x": 111.4,
+              "y": 108.1,
+              "m": [
+                0,
+                0.52,
+                0.811
+              ]
+            },
+            "rackR": {
+              "x": 152,
+              "y": 110.8,
+              "m": [
+                0,
+                -0.75,
+                0.7
+              ]
+            }
+          },
+          "SE": {
+            "seat": {
+              "x": 135.7,
+              "y": 104.4,
+              "m": [
+                0,
+                -0.34,
+                0.76
+              ]
+            },
+            "bars": {
+              "x": 119.9,
+              "y": 110.7,
+              "m": [
+                0,
+                0.36,
+                0.92
+              ]
+            },
+            "gripL": {
+              "x": 126.9,
+              "y": 115.2,
+              "m": [
+                -0.31,
+                0.36,
+                0.92
+              ]
+            },
+            "gripR": {
+              "x": 112.8,
+              "y": 106.2,
+              "m": [
+                0.31,
+                0.36,
+                0.92
+              ]
+            },
+            "pegL": {
+              "x": 137.1,
+              "y": 123.2,
+              "m": [
+                -0.32,
+                -0.08,
+                0.34
+              ]
+            },
+            "pegR": {
+              "x": 122.6,
+              "y": 113.8,
+              "m": [
+                0.32,
+                -0.08,
+                0.34
+              ]
+            },
+            "wheelF": {
+              "x": 114.4,
+              "y": 129.6,
+              "m": [
+                0,
+                0.6,
+                0.29
+              ]
+            },
+            "wheelRL": {
+              "x": 151.1,
+              "y": 118.5,
+              "m": [
+                -0.42,
+                -0.6,
+                0.28
+              ]
+            },
+            "wheelRR": {
+              "x": 132.1,
+              "y": 106.3,
+              "m": [
+                0.42,
+                -0.6,
+                0.28
+              ]
+            },
+            "tail": {
+              "x": 148.8,
+              "y": 100.4,
+              "m": [
+                0,
+                -0.92,
+                0.58
+              ]
+            },
+            "lamp": {
+              "x": 116.2,
+              "y": 115.7,
+              "m": [
+                0,
+                0.52,
+                0.811
+              ]
+            },
+            "rackR": {
+              "x": 145,
+              "y": 99.9,
+              "m": [
+                0,
+                -0.75,
+                0.7
+              ]
+            }
+          },
+          "S": {
+            "seat": {
+              "x": 128,
+              "y": 102.4,
+              "m": [
+                0,
+                -0.34,
+                0.76
+              ]
+            },
+            "bars": {
+              "x": 128,
+              "y": 112.9,
+              "m": [
+                0,
+                0.36,
+                0.92
+              ]
+            },
+            "gripL": {
+              "x": 137.9,
+              "y": 112.9,
+              "m": [
+                -0.31,
+                0.36,
+                0.92
+              ]
+            },
+            "gripR": {
+              "x": 118.1,
+              "y": 112.9,
+              "m": [
+                0.31,
+                0.36,
+                0.92
+              ]
+            },
+            "pegL": {
+              "x": 138.2,
+              "y": 118,
+              "m": [
+                -0.32,
+                -0.08,
+                0.34
+              ]
+            },
+            "pegR": {
+              "x": 117.8,
+              "y": 118,
+              "m": [
+                0.32,
+                -0.08,
+                0.34
+              ]
+            },
+            "wheelF": {
+              "x": 128,
+              "y": 133.2,
+              "m": [
+                0,
+                0.6,
+                0.29
+              ]
+            },
+            "wheelRL": {
+              "x": 141.4,
+              "y": 108.8,
+              "m": [
+                -0.42,
+                -0.6,
+                0.28
+              ]
+            },
+            "wheelRR": {
+              "x": 114.6,
+              "y": 108.8,
+              "m": [
+                0.42,
+                -0.6,
+                0.28
+              ]
+            },
+            "tail": {
+              "x": 128,
+              "y": 94.9,
+              "m": [
+                0,
+                -0.92,
+                0.58
+              ]
+            },
+            "lamp": {
+              "x": 128,
+              "y": 118.8,
+              "m": [
+                0,
+                0.52,
+                0.811
+              ]
+            },
+            "rackR": {
+              "x": 128,
+              "y": 95.4,
+              "m": [
+                0,
+                -0.75,
+                0.7
+              ]
+            }
+          },
+          "SW": {
+            "seat": {
+              "x": 120.3,
+              "y": 104.4,
+              "m": [
+                0,
+                -0.34,
+                0.76
+              ]
+            },
+            "bars": {
+              "x": 136.1,
+              "y": 110.7,
+              "m": [
+                0,
+                0.36,
+                0.92
+              ]
+            },
+            "gripL": {
+              "x": 143.2,
+              "y": 106.2,
+              "m": [
+                -0.31,
+                0.36,
+                0.92
+              ]
+            },
+            "gripR": {
+              "x": 129.1,
+              "y": 115.2,
+              "m": [
+                0.31,
+                0.36,
+                0.92
+              ]
+            },
+            "pegL": {
+              "x": 133.4,
+              "y": 113.8,
+              "m": [
+                -0.32,
+                -0.08,
+                0.34
+              ]
+            },
+            "pegR": {
+              "x": 118.9,
+              "y": 123.2,
+              "m": [
+                0.32,
+                -0.08,
+                0.34
+              ]
+            },
+            "wheelF": {
+              "x": 141.6,
+              "y": 129.6,
+              "m": [
+                0,
+                0.6,
+                0.29
+              ]
+            },
+            "wheelRL": {
+              "x": 123.9,
+              "y": 106.3,
+              "m": [
+                -0.42,
+                -0.6,
+                0.28
+              ]
+            },
+            "wheelRR": {
+              "x": 104.9,
+              "y": 118.5,
+              "m": [
+                0.42,
+                -0.6,
+                0.28
+              ]
+            },
+            "tail": {
+              "x": 107.2,
+              "y": 100.4,
+              "m": [
+                0,
+                -0.92,
+                0.58
+              ]
+            },
+            "lamp": {
+              "x": 139.8,
+              "y": 115.7,
+              "m": [
+                0,
+                0.52,
+                0.811
+              ]
+            },
+            "rackR": {
+              "x": 111,
+              "y": 99.9,
+              "m": [
+                0,
+                -0.75,
+                0.7
+              ]
+            }
+          },
+          "W": {
+            "seat": {
+              "x": 117.1,
+              "y": 109.4,
+              "m": [
+                0,
+                -0.34,
+                0.76
+              ]
+            },
+            "bars": {
+              "x": 139.5,
+              "y": 105.4,
+              "m": [
+                0,
+                0.36,
+                0.92
+              ]
+            },
+            "gripL": {
+              "x": 139.5,
+              "y": 99.1,
+              "m": [
+                -0.31,
+                0.36,
+                0.92
+              ]
+            },
+            "gripR": {
+              "x": 139.5,
+              "y": 111.8,
+              "m": [
+                0.31,
+                0.36,
+                0.92
+              ]
+            },
+            "pegL": {
+              "x": 125.4,
+              "y": 113.1,
+              "m": [
+                -0.32,
+                -0.08,
+                0.34
+              ]
+            },
+            "pegR": {
+              "x": 125.4,
+              "y": 126.2,
+              "m": [
+                0.32,
+                -0.08,
+                0.34
+              ]
+            },
+            "wheelF": {
+              "x": 147.2,
+              "y": 120.9,
+              "m": [
+                0,
+                0.6,
+                0.29
+              ]
+            },
+            "wheelRL": {
+              "x": 108.8,
+              "y": 112.5,
+              "m": [
+                -0.42,
+                -0.6,
+                0.28
+              ]
+            },
+            "wheelRR": {
+              "x": 108.8,
+              "y": 129.8,
+              "m": [
+                0.42,
+                -0.6,
+                0.28
+              ]
+            },
+            "tail": {
+              "x": 98.6,
+              "y": 113.8,
+              "m": [
+                0,
+                -0.92,
+                0.58
+              ]
+            },
+            "lamp": {
+              "x": 144.6,
+              "y": 108.1,
+              "m": [
+                0,
+                0.52,
+                0.811
+              ]
+            },
+            "rackR": {
+              "x": 104,
+              "y": 110.8,
+              "m": [
+                0,
+                -0.75,
+                0.7
+              ]
+            }
+          },
+          "NW": {
+            "seat": {
+              "x": 120.3,
+              "y": 114.3,
+              "m": [
+                0,
+                -0.34,
+                0.76
+              ]
+            },
+            "bars": {
+              "x": 136.1,
+              "y": 100.2,
+              "m": [
+                0,
+                0.36,
+                0.92
+              ]
+            },
+            "gripL": {
+              "x": 129.1,
+              "y": 95.7,
+              "m": [
+                -0.31,
+                0.36,
+                0.92
+              ]
+            },
+            "gripR": {
+              "x": 143.2,
+              "y": 104.7,
+              "m": [
+                0.31,
+                0.36,
+                0.92
+              ]
+            },
+            "pegL": {
+              "x": 118.9,
+              "y": 116.2,
+              "m": [
+                -0.32,
+                -0.08,
+                0.34
+              ]
+            },
+            "pegR": {
+              "x": 133.4,
+              "y": 125.5,
+              "m": [
+                0.32,
+                -0.08,
+                0.34
+              ]
+            },
+            "wheelF": {
+              "x": 141.6,
+              "y": 112.2,
+              "m": [
+                0,
+                0.6,
+                0.29
+              ]
+            },
+            "wheelRL": {
+              "x": 104.9,
+              "y": 123.8,
+              "m": [
+                -0.42,
+                -0.6,
+                0.28
+              ]
+            },
+            "wheelRR": {
+              "x": 123.9,
+              "y": 136,
+              "m": [
+                0.42,
+                -0.6,
+                0.28
+              ]
+            },
+            "tail": {
+              "x": 107.2,
+              "y": 127.2,
+              "m": [
+                0,
+                -0.92,
+                0.58
+              ]
+            },
+            "lamp": {
+              "x": 139.8,
+              "y": 100.5,
+              "m": [
+                0,
+                0.52,
+                0.811
+              ]
+            },
+            "rackR": {
+              "x": 111,
+              "y": 121.7,
+              "m": [
+                0,
+                -0.75,
+                0.7
+              ]
+            }
+          }
+        },
+        "_note": "at rest, every fitting the preset carries. Grips turn with steer and every point rides the suspension — read anchors(dir, opts) live for a posed machine.",
+        "grips_turn_with_steer_px": 1.4,
+        "seat_holds_under_steer_px": 0
+      },
+      "sheets": [
+        {
+          "file": "Trike200_gold_8dir.png",
+          "cells": 8,
+          "layout": "1 row",
+          "grid": [
+            2048,
+            192
+          ],
+          "pose": "at rest — beachTrike (gold, weather 0.38, rear rack)",
+          "order": [
+            "N",
+            "NE",
+            "E",
+            "SE",
+            "S",
+            "SW",
+            "W",
+            "NW"
+          ]
+        },
+        {
+          "file": "Trike200_gold_roll_W.png",
+          "cells": 10,
+          "layout": "1 row",
+          "grid": [
+            2560,
+            192
+          ],
+          "pose": "one rear-wheel revolution at W, cyclic (frame 10 wraps to frame 0)"
+        },
+        {
+          "file": "Trike200_gold_turn_SE.png",
+          "cells": 8,
+          "layout": "1 row",
+          "grid": [
+            2048,
+            192
+          ],
+          "pose": "turn cue at SE, cyclic: steer sin(2pi t), yaw 14deg with it, rolling"
+        },
+        {
+          "file": "Trike200_gold_bounce_W.png",
+          "cells": 8,
+          "layout": "1 row",
+          "grid": [
+            2048,
+            192
+          ],
+          "pose": "bounce cue at W, cyclic: susF/susR sin sweep 0.8 out of phase, rolling — the rear does not move (rigid axle)"
+        },
+        {
+          "file": "Trike200_gold_steer_S.png",
+          "cells": 8,
+          "layout": "1 row",
+          "grid": [
+            2048,
+            192
+          ],
+          "pose": "steer cue at S: full RIGHT lock -> full LEFT lock, 8 inclusive"
+        },
+        {
+          "file": "Trike200_paints_SE.png",
+          "cells": 10,
+          "layout": "5 x 2",
+          "grid": [
+            1280,
+            384
+          ],
+          "pose": "the ten harbour paints at SE, weather 0.22",
+          "order": [
+            "white",
+            "cream",
+            "red",
+            "sage",
+            "blue",
+            "teal",
+            "gold",
+            "rustOrange",
+            "greyShingle",
+            "plum"
+          ]
+        }
+      ]
+    },
+    "quad": {
+      "label": "Utility Quad 4x4",
+      "kind": "quad",
+      "sheet_stem": "UtilityQuad",
+      "dims": {
+        "key": "quad",
+        "label": "Utility Quad 4x4",
+        "kind": "quad",
+        "loa": 2.16,
+        "width": 1.28,
+        "height": 1.07,
+        "wheelbase": 1.28,
+        "seatZ": 0.9,
+        "clearance": 0.22,
+        "wheels": 4,
+        "rearWheelR": 0.315,
+        "distancePerRev": 1.979,
+        "travel_m": {
+          "front": 0.1,
+          "rear": 0.09
+        },
+        "mass_kg_estimate": 300,
+        "y_extent_m": [
+          -1.1,
+          1.058
+        ]
+      },
+      "measured_with": {
+        "body": "quad",
+        "paint": "sage",
+        "weather": 0.42,
+        "rackF": true,
+        "rackR": true,
+        "hitch": true,
+        "winch": true
+      },
+      "painted_bbox": {
+        "_units": "cell px, [x0,y0,x1,y1] inclusive, measured off the alpha channel",
+        "at_rest": {
+          "N": [
+            107,
+            89,
+            148,
+            143
+          ],
+          "NE": [
+            91,
+            87,
+            164,
+            146
+          ],
+          "E": [
+            94,
+            94,
+            162,
+            139
+          ],
+          "SE": [
+            91,
+            87,
+            164,
+            146
+          ],
+          "S": [
+            107,
+            87,
+            148,
+            143
+          ],
+          "SW": [
+            91,
+            87,
+            164,
+            146
+          ],
+          "W": [
+            93,
+            94,
+            161,
+            139
+          ],
+          "NW": [
+            91,
+            87,
+            164,
+            146
+          ]
+        },
+        "union_at_rest": [
+          91,
+          87,
+          164,
+          146
+        ],
+        "bare": {
+          "N": [
+            107,
+            90,
+            148,
+            143
+          ],
+          "NE": [
+            91,
+            87,
+            164,
+            146
+          ],
+          "E": [
+            94,
+            94,
+            160,
+            139
+          ],
+          "SE": [
+            91,
+            87,
+            164,
+            146
+          ],
+          "S": [
+            107,
+            90,
+            148,
+            143
+          ],
+          "SW": [
+            91,
+            87,
+            164,
+            146
+          ],
+          "W": [
+            95,
+            94,
+            161,
+            139
+          ],
+          "NW": [
+            91,
+            87,
+            164,
+            146
+          ]
+        },
+        "union_bare": [
+          91,
+          87,
+          164,
+          146
+        ],
+        "winch": {
+          "N": [
+            107,
+            89,
+            148,
+            143
+          ],
+          "NE": [
+            91,
+            87,
+            164,
+            146
+          ],
+          "E": [
+            94,
+            94,
+            162,
+            139
+          ],
+          "SE": [
+            91,
+            87,
+            164,
+            146
+          ],
+          "S": [
+            107,
+            87,
+            148,
+            143
+          ],
+          "SW": [
+            91,
+            87,
+            164,
+            146
+          ],
+          "W": [
+            93,
+            94,
+            161,
+            139
+          ],
+          "NW": [
+            91,
+            87,
+            164,
+            146
+          ]
+        },
+        "union_winch": [
+          91,
+          87,
+          164,
+          146
+        ],
+        "_state_note": "at_rest = the wharfQuad build: both racks + hitch + winch. bare = nothing fitted. winch = the default build (racks + hitch) plus the winch.",
+        "over_yaw_sweep": [
+          91,
+          85,
+          164,
+          146
+        ],
+        "over_steer": [
+          91,
+          87,
+          164,
+          146
+        ],
+        "over_suspension": [
+          91,
+          83,
+          164,
+          146
+        ],
+        "union_everything": [
+          91,
+          83,
+          164,
+          146
+        ],
+        "union_everything_size": [
+          74,
+          64
+        ],
+        "all_poses_inside_cell": true,
+        "crop_note": "pack from union_everything to hold every fitting, pose, yaw step in one atlas cell; union_at_rest is the tight default build."
+      },
+      "painted_px_at_rest": [
+        2062,
+        2370,
+        2349,
+        2388,
+        2100,
+        2388,
+        2346,
+        2370
+      ],
+      "union_at_rest_size": [
+        74,
+        60
+      ],
+      "roll_seam": {
+        "facing": "W",
+        "painted_px": 2346,
+        "roll1_vs_roll0": {
+          "colour_px": 0,
+          "alpha_px": 0,
+          "pct_of_painted": 0
+        },
+        "roll05_vs_roll0": {
+          "colour_px": 33,
+          "alpha_px": 0
+        },
+        "distance_per_rev_m": 1.979,
+        "rear_lugs_per_rev": 13,
+        "verdict": "bit-identical — the loop closes exactly"
+      },
+      "cue_motion": {
+        "roll": {
+          "facing": "W",
+          "why": "W — side on, both wheels read",
+          "cyclic": true,
+          "compared": "t=0 vs t=0.25",
+          "colour_px": 23,
+          "alpha_px": 0
+        },
+        "turn": {
+          "facing": "SE",
+          "why": "SE — nose quarter, street side: steer, yaw and (bike) lean all read",
+          "cyclic": true,
+          "compared": "t=0 vs t=0.25",
+          "colour_px": 1276,
+          "alpha_px": 599
+        },
+        "bounce": {
+          "facing": "W",
+          "why": "W — side on, the pitch reads",
+          "cyclic": true,
+          "compared": "t=0 vs t=0.25",
+          "colour_px": 704,
+          "alpha_px": 140
+        },
+        "steer": {
+          "facing": "S",
+          "why": "S — nose to camera, the front wheel(s) turning read",
+          "cyclic": false,
+          "compared": "t=0 vs t=1",
+          "colour_px": 243,
+          "alpha_px": 86
+        }
+      },
+      "suspension": {
+        "facing": "W",
+        "bottom_row": {
+          "rest": 139,
+          "compressed": 139,
+          "extended": 139
+        },
+        "top_row": {
+          "rest": 94,
+          "compressed": 96,
+          "extended": 92
+        },
+        "travel_m": {
+          "front": 0.1,
+          "rear": 0.09
+        }
+      },
+      "steering": {
+        "mechanism": "bars about a vertical stem; the front pair yaw about their own kingpins, Ackermann-split",
+        "bars_max_deg": 28,
+        "inner_max_deg": 30,
+        "outer_max_deg": 21.944,
+        "turning_at_full_lock": {
+          "inner_wheel_radius_m": 2.217,
+          "centreline_radius_m": 2.697
+        },
+        "full_lock_differs_px": 243
+      },
+      "distinct_colours_at_rest": {
+        "W": 38,
+        "SE": 31
+      },
+      "anchors": {
+        "_units": "{x,y} in cell px for that facing, m = [x,y,z] in model metres, already posed",
+        "measured_with": {
+          "body": "quad",
+          "paint": "sage",
+          "weather": 0.42,
+          "rackF": true,
+          "rackR": true,
+          "hitch": true,
+          "winch": true
+        },
+        "by_facing": {
+          "N": {
+            "seat": {
+              "x": 128,
+              "y": 112.1,
+              "m": [
+                0,
+                -0.3,
+                0.9
+              ]
+            },
+            "bars": {
+              "x": 128,
+              "y": 95.1,
+              "m": [
+                0,
+                0.36,
+                1.04
+              ]
+            },
+            "gripL": {
+              "x": 118.1,
+              "y": 95.1,
+              "m": [
+                -0.31,
+                0.36,
+                1.04
+              ]
+            },
+            "gripR": {
+              "x": 137.9,
+              "y": 95.1,
+              "m": [
+                0.31,
+                0.36,
+                1.04
+              ]
+            },
+            "pegL": {
+              "x": 117.4,
+              "y": 119.9,
+              "m": [
+                -0.33,
+                -0.04,
+                0.365
+              ]
+            },
+            "pegR": {
+              "x": 138.6,
+              "y": 119.9,
+              "m": [
+                0.33,
+                -0.04,
+                0.365
+              ]
+            },
+            "wheelFL": {
+              "x": 112.6,
+              "y": 107.1,
+              "m": [
+                -0.48,
+                0.64,
+                0.315
+              ]
+            },
+            "wheelFR": {
+              "x": 143.4,
+              "y": 107.1,
+              "m": [
+                0.48,
+                0.64,
+                0.315
+              ]
+            },
+            "wheelRL": {
+              "x": 112.6,
+              "y": 133.4,
+              "m": [
+                -0.48,
+                -0.64,
+                0.315
+              ]
+            },
+            "wheelRR": {
+              "x": 143.4,
+              "y": 133.4,
+              "m": [
+                0.48,
+                -0.64,
+                0.315
+              ]
+            },
+            "tail": {
+              "x": 128,
+              "y": 133.9,
+              "m": [
+                0,
+                -1,
+                0.6
+              ]
+            },
+            "lampL": {
+              "x": 118.7,
+              "y": 93.2,
+              "m": [
+                -0.29,
+                0.99,
+                0.59
+              ]
+            },
+            "lampR": {
+              "x": 137.3,
+              "y": 93.2,
+              "m": [
+                0.29,
+                0.99,
+                0.59
+              ]
+            },
+            "rackF": {
+              "x": 128,
+              "y": 94.2,
+              "m": [
+                0,
+                0.69,
+                0.8
+              ]
+            },
+            "rackR": {
+              "x": 128,
+              "y": 125.2,
+              "m": [
+                0,
+                -0.84,
+                0.82
+              ]
+            },
+            "hitch": {
+              "x": 128,
+              "y": 138.3,
+              "m": [
+                0,
+                -1.06,
+                0.47
+              ]
+            },
+            "winch": {
+              "x": 128,
+              "y": 97.9,
+              "m": [
+                0,
+                0.95,
+                0.43
+              ]
+            }
+          },
+          "NE": {
+            "seat": {
+              "x": 134.8,
+              "y": 110.3,
+              "m": [
+                0,
+                -0.3,
+                0.9
+              ]
+            },
+            "bars": {
+              "x": 119.9,
+              "y": 97.3,
+              "m": [
+                0,
+                0.36,
+                1.04
+              ]
+            },
+            "gripL": {
+              "x": 112.8,
+              "y": 101.8,
+              "m": [
+                -0.31,
+                0.36,
+                1.04
+              ]
+            },
+            "gripR": {
+              "x": 126.9,
+              "y": 92.8,
+              "m": [
+                0.31,
+                0.36,
+                1.04
+              ]
+            },
+            "pegL": {
+              "x": 121.4,
+              "y": 124.4,
+              "m": [
+                -0.33,
+                -0.04,
+                0.365
+              ]
+            },
+            "pegR": {
+              "x": 136.4,
+              "y": 114.8,
+              "m": [
+                0.33,
+                -0.04,
+                0.365
+              ]
+            },
+            "wheelFL": {
+              "x": 102.7,
+              "y": 118,
+              "m": [
+                -0.48,
+                0.64,
+                0.315
+              ]
+            },
+            "wheelFR": {
+              "x": 124.4,
+              "y": 104,
+              "m": [
+                0.48,
+                0.64,
+                0.315
+              ]
+            },
+            "wheelRL": {
+              "x": 131.6,
+              "y": 136.6,
+              "m": [
+                -0.48,
+                -0.64,
+                0.315
+              ]
+            },
+            "wheelRR": {
+              "x": 153.3,
+              "y": 122.6,
+              "m": [
+                0.48,
+                -0.64,
+                0.315
+              ]
+            },
+            "tail": {
+              "x": 150.6,
+              "y": 127.8,
+              "m": [
+                0,
+                -1,
+                0.6
+              ]
+            },
+            "lampL": {
+              "x": 99,
+              "y": 103.4,
+              "m": [
+                -0.29,
+                0.99,
+                0.59
+              ]
+            },
+            "lampR": {
+              "x": 112.2,
+              "y": 94.9,
+              "m": [
+                0.29,
+                0.99,
+                0.59
+              ]
+            },
+            "rackF": {
+              "x": 112.4,
+              "y": 98.4,
+              "m": [
+                0,
+                0.69,
+                0.8
+              ]
+            },
+            "rackR": {
+              "x": 147,
+              "y": 120.1,
+              "m": [
+                0,
+                -0.84,
+                0.82
+              ]
+            },
+            "hitch": {
+              "x": 152,
+              "y": 131.9,
+              "m": [
+                0,
+                -1.06,
+                0.47
+              ]
+            },
+            "winch": {
+              "x": 106.5,
+              "y": 103.6,
+              "m": [
+                0,
+                0.95,
+                0.43
+              ]
+            }
+          },
+          "E": {
+            "seat": {
+              "x": 137.6,
+              "y": 105.9,
+              "m": [
+                0,
+                -0.3,
+                0.9
+              ]
+            },
+            "bars": {
+              "x": 116.5,
+              "y": 102.5,
+              "m": [
+                0,
+                0.36,
+                1.04
+              ]
+            },
+            "gripL": {
+              "x": 116.5,
+              "y": 108.9,
+              "m": [
+                -0.31,
+                0.36,
+                1.04
+              ]
+            },
+            "gripR": {
+              "x": 116.5,
+              "y": 96.1,
+              "m": [
+                0.31,
+                0.36,
+                1.04
+              ]
+            },
+            "pegL": {
+              "x": 129.3,
+              "y": 125.8,
+              "m": [
+                -0.33,
+                -0.04,
+                0.365
+              ]
+            },
+            "pegR": {
+              "x": 129.3,
+              "y": 112.3,
+              "m": [
+                0.33,
+                -0.04,
+                0.365
+              ]
+            },
+            "wheelFL": {
+              "x": 107.5,
+              "y": 130.2,
+              "m": [
+                -0.48,
+                0.64,
+                0.315
+              ]
+            },
+            "wheelFR": {
+              "x": 107.5,
+              "y": 110.4,
+              "m": [
+                0.48,
+                0.64,
+                0.315
+              ]
+            },
+            "wheelRL": {
+              "x": 148.5,
+              "y": 130.2,
+              "m": [
+                -0.48,
+                -0.64,
+                0.315
+              ]
+            },
+            "wheelRR": {
+              "x": 148.5,
+              "y": 110.4,
+              "m": [
+                0.48,
+                -0.64,
+                0.315
+              ]
+            },
+            "tail": {
+              "x": 160,
+              "y": 113.3,
+              "m": [
+                0,
+                -1,
+                0.6
+              ]
+            },
+            "lampL": {
+              "x": 96.3,
+              "y": 119.5,
+              "m": [
+                -0.29,
+                0.99,
+                0.59
+              ]
+            },
+            "lampR": {
+              "x": 96.3,
+              "y": 107.6,
+              "m": [
+                0.29,
+                0.99,
+                0.59
+              ]
+            },
+            "rackF": {
+              "x": 105.9,
+              "y": 108.4,
+              "m": [
+                0,
+                0.69,
+                0.8
+              ]
+            },
+            "rackR": {
+              "x": 154.9,
+              "y": 107.9,
+              "m": [
+                0,
+                -0.84,
+                0.82
+              ]
+            },
+            "hitch": {
+              "x": 161.9,
+              "y": 116.5,
+              "m": [
+                0,
+                -1.06,
+                0.47
+              ]
+            },
+            "winch": {
+              "x": 97.6,
+              "y": 117.5,
+              "m": [
+                0,
+                0.95,
+                0.43
+              ]
+            }
+          },
+          "SE": {
+            "seat": {
+              "x": 134.8,
+              "y": 101.6,
+              "m": [
+                0,
+                -0.3,
+                0.9
+              ]
+            },
+            "bars": {
+              "x": 119.9,
+              "y": 107.7,
+              "m": [
+                0,
+                0.36,
+                1.04
+              ]
+            },
+            "gripL": {
+              "x": 126.9,
+              "y": 112.3,
+              "m": [
+                -0.31,
+                0.36,
+                1.04
+              ]
+            },
+            "gripR": {
+              "x": 112.8,
+              "y": 103.2,
+              "m": [
+                0.31,
+                0.36,
+                1.04
+              ]
+            },
+            "pegL": {
+              "x": 136.4,
+              "y": 123.3,
+              "m": [
+                -0.33,
+                -0.04,
+                0.365
+              ]
+            },
+            "pegR": {
+              "x": 121.4,
+              "y": 113.7,
+              "m": [
+                0.33,
+                -0.04,
+                0.365
+              ]
+            },
+            "wheelFL": {
+              "x": 124.4,
+              "y": 136.6,
+              "m": [
+                -0.48,
+                0.64,
+                0.315
+              ]
+            },
+            "wheelFR": {
+              "x": 102.7,
+              "y": 122.6,
+              "m": [
+                0.48,
+                0.64,
+                0.315
+              ]
+            },
+            "wheelRL": {
+              "x": 153.3,
+              "y": 118,
+              "m": [
+                -0.48,
+                -0.64,
+                0.315
+              ]
+            },
+            "wheelRR": {
+              "x": 131.6,
+              "y": 104,
+              "m": [
+                0.48,
+                -0.64,
+                0.315
+              ]
+            },
+            "tail": {
+              "x": 150.6,
+              "y": 98.7,
+              "m": [
+                0,
+                -1,
+                0.6
+              ]
+            },
+            "lampL": {
+              "x": 112.2,
+              "y": 132.2,
+              "m": [
+                -0.29,
+                0.99,
+                0.59
+              ]
+            },
+            "lampR": {
+              "x": 99,
+              "y": 123.7,
+              "m": [
+                0.29,
+                0.99,
+                0.59
+              ]
+            },
+            "rackF": {
+              "x": 112.4,
+              "y": 118.4,
+              "m": [
+                0,
+                0.69,
+                0.8
+              ]
+            },
+            "rackR": {
+              "x": 147,
+              "y": 95.7,
+              "m": [
+                0,
+                -0.84,
+                0.82
+              ]
+            },
+            "hitch": {
+              "x": 152,
+              "y": 101.1,
+              "m": [
+                0,
+                -1.06,
+                0.47
+              ]
+            },
+            "winch": {
+              "x": 106.5,
+              "y": 131.3,
+              "m": [
+                0,
+                0.95,
+                0.43
+              ]
+            }
+          },
+          "S": {
+            "seat": {
+              "x": 128,
+              "y": 99.8,
+              "m": [
+                0,
+                -0.3,
+                0.9
+              ]
+            },
+            "bars": {
+              "x": 128,
+              "y": 109.9,
+              "m": [
+                0,
+                0.36,
+                1.04
+              ]
+            },
+            "gripL": {
+              "x": 137.9,
+              "y": 109.9,
+              "m": [
+                -0.31,
+                0.36,
+                1.04
+              ]
+            },
+            "gripR": {
+              "x": 118.1,
+              "y": 109.9,
+              "m": [
+                0.31,
+                0.36,
+                1.04
+              ]
+            },
+            "pegL": {
+              "x": 138.6,
+              "y": 118.2,
+              "m": [
+                -0.33,
+                -0.04,
+                0.365
+              ]
+            },
+            "pegR": {
+              "x": 117.4,
+              "y": 118.2,
+              "m": [
+                0.33,
+                -0.04,
+                0.365
+              ]
+            },
+            "wheelFL": {
+              "x": 143.4,
+              "y": 133.4,
+              "m": [
+                -0.48,
+                0.64,
+                0.315
+              ]
+            },
+            "wheelFR": {
+              "x": 112.6,
+              "y": 133.4,
+              "m": [
+                0.48,
+                0.64,
+                0.315
+              ]
+            },
+            "wheelRL": {
+              "x": 143.4,
+              "y": 107.1,
+              "m": [
+                -0.48,
+                -0.64,
+                0.315
+              ]
+            },
+            "wheelRR": {
+              "x": 112.6,
+              "y": 107.1,
+              "m": [
+                0.48,
+                -0.64,
+                0.315
+              ]
+            },
+            "tail": {
+              "x": 128,
+              "y": 92.7,
+              "m": [
+                0,
+                -1,
+                0.6
+              ]
+            },
+            "lampL": {
+              "x": 137.3,
+              "y": 133.9,
+              "m": [
+                -0.29,
+                0.99,
+                0.59
+              ]
+            },
+            "lampR": {
+              "x": 118.7,
+              "y": 133.9,
+              "m": [
+                0.29,
+                0.99,
+                0.59
+              ]
+            },
+            "rackF": {
+              "x": 128,
+              "y": 122.6,
+              "m": [
+                0,
+                0.69,
+                0.8
+              ]
+            },
+            "rackR": {
+              "x": 128,
+              "y": 90.6,
+              "m": [
+                0,
+                -0.84,
+                0.82
+              ]
+            },
+            "hitch": {
+              "x": 128,
+              "y": 94.7,
+              "m": [
+                0,
+                -1.06,
+                0.47
+              ]
+            },
+            "winch": {
+              "x": 128,
+              "y": 137,
+              "m": [
+                0,
+                0.95,
+                0.43
+              ]
+            }
+          },
+          "SW": {
+            "seat": {
+              "x": 121.2,
+              "y": 101.6,
+              "m": [
+                0,
+                -0.3,
+                0.9
+              ]
+            },
+            "bars": {
+              "x": 136.1,
+              "y": 107.7,
+              "m": [
+                0,
+                0.36,
+                1.04
+              ]
+            },
+            "gripL": {
+              "x": 143.2,
+              "y": 103.2,
+              "m": [
+                -0.31,
+                0.36,
+                1.04
+              ]
+            },
+            "gripR": {
+              "x": 129.1,
+              "y": 112.3,
+              "m": [
+                0.31,
+                0.36,
+                1.04
+              ]
+            },
+            "pegL": {
+              "x": 134.6,
+              "y": 113.7,
+              "m": [
+                -0.33,
+                -0.04,
+                0.365
+              ]
+            },
+            "pegR": {
+              "x": 119.6,
+              "y": 123.3,
+              "m": [
+                0.33,
+                -0.04,
+                0.365
+              ]
+            },
+            "wheelFL": {
+              "x": 153.3,
+              "y": 122.6,
+              "m": [
+                -0.48,
+                0.64,
+                0.315
+              ]
+            },
+            "wheelFR": {
+              "x": 131.6,
+              "y": 136.6,
+              "m": [
+                0.48,
+                0.64,
+                0.315
+              ]
+            },
+            "wheelRL": {
+              "x": 124.4,
+              "y": 104,
+              "m": [
+                -0.48,
+                -0.64,
+                0.315
+              ]
+            },
+            "wheelRR": {
+              "x": 102.7,
+              "y": 118,
+              "m": [
+                0.48,
+                -0.64,
+                0.315
+              ]
+            },
+            "tail": {
+              "x": 105.4,
+              "y": 98.7,
+              "m": [
+                0,
+                -1,
+                0.6
+              ]
+            },
+            "lampL": {
+              "x": 157,
+              "y": 123.7,
+              "m": [
+                -0.29,
+                0.99,
+                0.59
+              ]
+            },
+            "lampR": {
+              "x": 143.8,
+              "y": 132.2,
+              "m": [
+                0.29,
+                0.99,
+                0.59
+              ]
+            },
+            "rackF": {
+              "x": 143.6,
+              "y": 118.4,
+              "m": [
+                0,
+                0.69,
+                0.8
+              ]
+            },
+            "rackR": {
+              "x": 109,
+              "y": 95.7,
+              "m": [
+                0,
+                -0.84,
+                0.82
+              ]
+            },
+            "hitch": {
+              "x": 104,
+              "y": 101.1,
+              "m": [
+                0,
+                -1.06,
+                0.47
+              ]
+            },
+            "winch": {
+              "x": 149.5,
+              "y": 131.3,
+              "m": [
+                0,
+                0.95,
+                0.43
+              ]
+            }
+          },
+          "W": {
+            "seat": {
+              "x": 118.4,
+              "y": 105.9,
+              "m": [
+                0,
+                -0.3,
+                0.9
+              ]
+            },
+            "bars": {
+              "x": 139.5,
+              "y": 102.5,
+              "m": [
+                0,
+                0.36,
+                1.04
+              ]
+            },
+            "gripL": {
+              "x": 139.5,
+              "y": 96.1,
+              "m": [
+                -0.31,
+                0.36,
+                1.04
+              ]
+            },
+            "gripR": {
+              "x": 139.5,
+              "y": 108.9,
+              "m": [
+                0.31,
+                0.36,
+                1.04
+              ]
+            },
+            "pegL": {
+              "x": 126.7,
+              "y": 112.3,
+              "m": [
+                -0.33,
+                -0.04,
+                0.365
+              ]
+            },
+            "pegR": {
+              "x": 126.7,
+              "y": 125.8,
+              "m": [
+                0.33,
+                -0.04,
+                0.365
+              ]
+            },
+            "wheelFL": {
+              "x": 148.5,
+              "y": 110.4,
+              "m": [
+                -0.48,
+                0.64,
+                0.315
+              ]
+            },
+            "wheelFR": {
+              "x": 148.5,
+              "y": 130.2,
+              "m": [
+                0.48,
+                0.64,
+                0.315
+              ]
+            },
+            "wheelRL": {
+              "x": 107.5,
+              "y": 110.4,
+              "m": [
+                -0.48,
+                -0.64,
+                0.315
+              ]
+            },
+            "wheelRR": {
+              "x": 107.5,
+              "y": 130.2,
+              "m": [
+                0.48,
+                -0.64,
+                0.315
+              ]
+            },
+            "tail": {
+              "x": 96,
+              "y": 113.3,
+              "m": [
+                0,
+                -1,
+                0.6
+              ]
+            },
+            "lampL": {
+              "x": 159.7,
+              "y": 107.6,
+              "m": [
+                -0.29,
+                0.99,
+                0.59
+              ]
+            },
+            "lampR": {
+              "x": 159.7,
+              "y": 119.5,
+              "m": [
+                0.29,
+                0.99,
+                0.59
+              ]
+            },
+            "rackF": {
+              "x": 150.1,
+              "y": 108.4,
+              "m": [
+                0,
+                0.69,
+                0.8
+              ]
+            },
+            "rackR": {
+              "x": 101.1,
+              "y": 107.9,
+              "m": [
+                0,
+                -0.84,
+                0.82
+              ]
+            },
+            "hitch": {
+              "x": 94.1,
+              "y": 116.5,
+              "m": [
+                0,
+                -1.06,
+                0.47
+              ]
+            },
+            "winch": {
+              "x": 158.4,
+              "y": 117.5,
+              "m": [
+                0,
+                0.95,
+                0.43
+              ]
+            }
+          },
+          "NW": {
+            "seat": {
+              "x": 121.2,
+              "y": 110.3,
+              "m": [
+                0,
+                -0.3,
+                0.9
+              ]
+            },
+            "bars": {
+              "x": 136.1,
+              "y": 97.3,
+              "m": [
+                0,
+                0.36,
+                1.04
+              ]
+            },
+            "gripL": {
+              "x": 129.1,
+              "y": 92.8,
+              "m": [
+                -0.31,
+                0.36,
+                1.04
+              ]
+            },
+            "gripR": {
+              "x": 143.2,
+              "y": 101.8,
+              "m": [
+                0.31,
+                0.36,
+                1.04
+              ]
+            },
+            "pegL": {
+              "x": 119.6,
+              "y": 114.8,
+              "m": [
+                -0.33,
+                -0.04,
+                0.365
+              ]
+            },
+            "pegR": {
+              "x": 134.6,
+              "y": 124.4,
+              "m": [
+                0.33,
+                -0.04,
+                0.365
+              ]
+            },
+            "wheelFL": {
+              "x": 131.6,
+              "y": 104,
+              "m": [
+                -0.48,
+                0.64,
+                0.315
+              ]
+            },
+            "wheelFR": {
+              "x": 153.3,
+              "y": 118,
+              "m": [
+                0.48,
+                0.64,
+                0.315
+              ]
+            },
+            "wheelRL": {
+              "x": 102.7,
+              "y": 122.6,
+              "m": [
+                -0.48,
+                -0.64,
+                0.315
+              ]
+            },
+            "wheelRR": {
+              "x": 124.4,
+              "y": 136.6,
+              "m": [
+                0.48,
+                -0.64,
+                0.315
+              ]
+            },
+            "tail": {
+              "x": 105.4,
+              "y": 127.8,
+              "m": [
+                0,
+                -1,
+                0.6
+              ]
+            },
+            "lampL": {
+              "x": 143.8,
+              "y": 94.9,
+              "m": [
+                -0.29,
+                0.99,
+                0.59
+              ]
+            },
+            "lampR": {
+              "x": 157,
+              "y": 103.4,
+              "m": [
+                0.29,
+                0.99,
+                0.59
+              ]
+            },
+            "rackF": {
+              "x": 143.6,
+              "y": 98.4,
+              "m": [
+                0,
+                0.69,
+                0.8
+              ]
+            },
+            "rackR": {
+              "x": 109,
+              "y": 120.1,
+              "m": [
+                0,
+                -0.84,
+                0.82
+              ]
+            },
+            "hitch": {
+              "x": 104,
+              "y": 131.9,
+              "m": [
+                0,
+                -1.06,
+                0.47
+              ]
+            },
+            "winch": {
+              "x": 149.5,
+              "y": 103.6,
+              "m": [
+                0,
+                0.95,
+                0.43
+              ]
+            }
+          }
+        },
+        "_note": "at rest, every fitting the preset carries. Grips turn with steer and every point rides the suspension — read anchors(dir, opts) live for a posed machine.",
+        "grips_turn_with_steer_px": 3.4,
+        "seat_holds_under_steer_px": 0
+      },
+      "sheets": [
+        {
+          "file": "UtilityQuad_sage_8dir.png",
+          "cells": 8,
+          "layout": "1 row",
+          "grid": [
+            2048,
+            192
+          ],
+          "pose": "at rest — wharfQuad (sage, weather 0.42, both racks + hitch + winch)",
+          "order": [
+            "N",
+            "NE",
+            "E",
+            "SE",
+            "S",
+            "SW",
+            "W",
+            "NW"
+          ]
+        },
+        {
+          "file": "UtilityQuad_sage_bare_8dir.png",
+          "cells": 8,
+          "layout": "1 row",
+          "grid": [
+            2048,
+            192
+          ],
+          "pose": "bare — no racks, no hitch, no winch (sage, weather 0.42)",
+          "order": [
+            "N",
+            "NE",
+            "E",
+            "SE",
+            "S",
+            "SW",
+            "W",
+            "NW"
+          ]
+        },
+        {
+          "file": "UtilityQuad_sage_roll_W.png",
+          "cells": 10,
+          "layout": "1 row",
+          "grid": [
+            2560,
+            192
+          ],
+          "pose": "one rear-wheel revolution at W, cyclic (frame 10 wraps to frame 0)"
+        },
+        {
+          "file": "UtilityQuad_sage_turn_SE.png",
+          "cells": 8,
+          "layout": "1 row",
+          "grid": [
+            2048,
+            192
+          ],
+          "pose": "turn cue at SE, cyclic: steer sin(2pi t), yaw 14deg with it, rolling"
+        },
+        {
+          "file": "UtilityQuad_sage_bounce_W.png",
+          "cells": 8,
+          "layout": "1 row",
+          "grid": [
+            2048,
+            192
+          ],
+          "pose": "bounce cue at W, cyclic: susF/susR sin sweep 0.8 out of phase, rolling"
+        },
+        {
+          "file": "UtilityQuad_sage_steer_S.png",
+          "cells": 8,
+          "layout": "1 row",
+          "grid": [
+            2048,
+            192
+          ],
+          "pose": "steer cue at S: full RIGHT lock -> full LEFT lock, 8 inclusive"
+        },
+        {
+          "file": "UtilityQuad_paints_SE.png",
+          "cells": 10,
+          "layout": "5 x 2",
+          "grid": [
+            1280,
+            384
+          ],
+          "pose": "the ten harbour paints at SE, weather 0.22",
+          "order": [
+            "white",
+            "cream",
+            "red",
+            "sage",
+            "blue",
+            "teal",
+            "gold",
+            "rustOrange",
+            "greyShingle",
+            "plum"
+          ]
+        }
+      ]
+    }
+  },
+  "sidecar": "atvIsoRig.atvPack.gameplay.json",
+  "sidecar_note": "one file, three bodies keyed under bodies.{dirtbike,trike,quad}; byte-identical to Art/gameplay/ in the art workspace and stamped with the same rigSha256 as above"
+}

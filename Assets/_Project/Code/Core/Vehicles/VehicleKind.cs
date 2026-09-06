@@ -87,6 +87,21 @@ namespace HiddenHarbours.Core
                 // because a kind describes one registered body.
                 ["towed_body"] = VehicleKind.TowedBody,
                 ["towed_bodies"] = VehicleKind.TowedBody,
+
+                // ⭐ THE ATV PACK (drop of 2026-09-06) — three machines you sit ASTRIDE, in one
+                // container sidecar whose `variant` is `atvPack-x3`. Plural for the same reason the
+                // trailers' is: the document really does describe three.
+                //
+                // They map to RoadVehicle, and that is a claim about CAPABILITY rather than about
+                // tarmac. This enum names what the game branches on — "water is a wall" versus "she
+                // swims" versus "she is dragged" — and an enduro bike is the first of those. Her
+                // sidecar's own `_excluded` block says `float: these do not swim. No FLOAT section;
+                // the Otter is the amphibian`, so the absence is a measured answer and not a gap.
+                //
+                // ⚠️ There is no road registry on St Peters and none is needed: the land gate is
+                // TERRAIN (VehicleGrounding), so "RoadVehicle" here means dry ground, not a road.
+                ["saddle_vehicles"] = VehicleKind.RoadVehicle,
+                ["saddle_vehicle"] = VehicleKind.RoadVehicle,
             };
 
         /// <summary>Every token this repo recognises — the coverage law enumerates it so a sidecar

@@ -156,6 +156,24 @@ namespace HiddenHarbours.Core
                  "the player inside the cab wall.")]
         public Vector2 DriveDoorLocal;
 
+        [Tooltip("⭐ The OTHER side she can be got onto from, in rig metres — a saddle machine's " +
+                 "INTERACT 'ride' alt_reach_point.\n\n" +
+                 "A cab has one driver's door and the question does not arise, so every truck and " +
+                 "the Otter carry (0,0) here. Something you sit ASTRIDE has two sides and they are " +
+                 "not equivalent: the enduro's side stand is on the STREET side (−x), so her sidecar " +
+                 "says mount.preferred 'street' and a rider swings a leg over the stand; the quad's " +
+                 "says 'either'. DriveDoorLocal is the preferred side and this is the other one.\n\n" +
+                 "(0,0) = one way on, which is the honest answer for a cab as much as for a def " +
+                 "baked before the field existed. Measured art, not feel: the reach points are " +
+                 "derived as width/2 + 0.55 m outboard at the seat reference, and they change when " +
+                 "the rig re-bakes and at no other time.")]
+        public Vector2 AltDriveDoorLocal;
+
+        /// <summary>True when the art publishes a second side to mount from — see
+        /// <see cref="AltDriveDoorLocal"/>. Never inferred from the kind: a machine has two ways on
+        /// exactly when her own document says so.</summary>
+        public bool HasAltDriveDoor => AltDriveDoorLocal != Vector2.zero;
+
         [Tooltip("Where the driver SITS AND IS SEEN, in rig metres (+x curb side, +y nose, +z up) — " +
                  "the reference point of her seat cushion, off the gameplay sidecar's own SEATS block. " +
                  "The Otter's is her front bench, seat_ref (0, 0.36, 0.76), the one the centre " +
@@ -415,6 +433,55 @@ namespace HiddenHarbours.Core
         /// mesh without knowing about states still gets a real one.</para>
         /// </summary>
         DiscreteStates = 5,
+
+        /// <summary>
+        /// ⭐⭐ <b>A steered assembly that turns about an axis the ART declares, not about the
+        /// vertical — and rolls about its own axle as well.</b> A dirtbike's or a three-wheeler's
+        /// front wheel.
+        ///
+        /// <para><b>Why <see cref="SteerAndRoll"/> could not take them, measured 2026-09-06 in the
+        /// repo's own V8.</b> That arm turns the corner about <c>RigUp</c>, and a rotation about a
+        /// vertical axis <b>preserves every vertex's z exactly</b>. The quad's steer does: max
+        /// |Δz| over all 896 moved vertices at full lock is <b>0.000000000 m</b>, so she stays on
+        /// the existing arm. The bike's does not — her whole front assembly turns about the RAKED
+        /// axis through her head (27°, and the trike's 25°), and at full lock the moved vertices
+        /// shift <b>0.108812 m</b> (bike) and <b>0.084653 m</b> (trike) in z: <b>3.5 px and 2.7 px</b>
+        /// at this kit's 32 px/m. That is not a rounding difference, it is a fork that leans as it
+        /// turns, and posing it flat would draw a bike whose front wheel climbs out of the road at
+        /// lock.</para>
+        ///
+        /// <para>The axis rides <see cref="VehicleFitment.SteerAxisLocal"/> and the full-lock angle
+        /// rides <see cref="VehicleFitment.SteerLockDegrees"/>, because this arm is posed from the
+        /// RAW steer fraction rather than from the Ackermann solve — a single front wheel on the
+        /// centreline has no Ackermann partner to split against.</para>
+        ///
+        /// <para>⚠️ <b>The pivot is a point ON the declared axis, and on these two rigs that is the
+        /// hub centre.</b> Measured, not assumed: the rig's steering axis is
+        /// <c>alongFork(P, 0, t)</c>, which at <c>t = 0</c> IS <c>(0, axF, rF)</c> — no trail, no
+        /// offset — so one pivot serves the steer and the roll, exactly as
+        /// <see cref="SteerAndRoll"/>'s doc says of a vertical corner.</para>
+        /// </summary>
+        AxisSteerAndRoll = 6,
+
+        /// <summary>
+        /// ⭐ <b>The part of a steered assembly that turns but does not roll</b>, about an axis the
+        /// art declares — see <see cref="AxisSteerAndRoll"/> for the measurement that made a
+        /// declared axis necessary.
+        ///
+        /// <para>Two shapes in the ATV pack, and they are not the same shape:</para>
+        /// <list type="bullet">
+        ///   <item>the bike's and the trike's <b>fork</b> — the slider, the yoke, the bars, the
+        ///   fender and the lamp, on the RAKED axis with the front tyre already claimed by its own
+        ///   roll axis;</item>
+        ///   <item>the quad's <b>bars</b> — on the VERTICAL stem, and here because her bars turn
+        ///   <b>±28°</b> while her front wheels take the Ackermann pair off a <b>30°</b> inner
+        ///   lock. Posing them from the wheels' solve would turn the grips 8.06° too far at the
+        ///   stops (she is a Centre fitting, so she would take the OUTER angle), which is 0.053 m
+        ///   at her 0.38 m bar half-width: <b>1.7 px</b>, and the rider's hands are pinned to those
+        ///   grips in the on-deck arc.</item>
+        /// </list>
+        /// </summary>
+        AxisSteerOnly = 7,
     }
 
     /// <summary>
@@ -478,6 +545,38 @@ namespace HiddenHarbours.Core
 
         public VehicleFitmentMotion Motion;
         public VehicleFitmentSide Side;
+
+        // ---- a steer axis the art declares ----------------------------------------------------
+
+        [Tooltip("For an AxisSteerAndRoll / AxisSteerOnly fitting: the axis it turns about, in rig " +
+                 "metres (+x curb, +y nose, +z up), unit length.\n\n" +
+                 "⚠️ ZERO ON EVERY OTHER MOTION, and it must stay that way. A vertical corner turns " +
+                 "about RigUp and says nothing here, so an existing baked asset carries (0,0,0) and " +
+                 "the two arms that read this field are the only ones that can reach it. The driver " +
+                 "REFUSES a degenerate axis rather than substituting RigUp: a fork silently posed " +
+                 "flat is the exact defect this field exists to prevent, and it looks fine until " +
+                 "the wheel is at lock.")]
+        public Vector3 SteerAxisLocal;
+
+        [Tooltip("For an AxisSteerAndRoll / AxisSteerOnly fitting: the SIGNED angle at full LEFT " +
+                 "lock (steer = +1), degrees, as the rig publishes it.\n\n" +
+                 "Posed from the raw steer fraction, not from the Ackermann solve — a single front " +
+                 "wheel on the centreline has no partner to split against, and the quad's bars turn " +
+                 "at their own 28° while her wheels take a 30° inner lock.")]
+        public float SteerLockDegrees;
+
+        /// <summary>
+        /// The declared steer axis, unit length — or <c>Vector3.zero</c> when none was declared.
+        /// ⚠️ Never falls back to vertical: see the tooltip. A caller that gets zero must refuse.
+        /// </summary>
+        public Vector3 SteerAxisNormalised =>
+            SteerAxisLocal.sqrMagnitude < 1e-8f ? Vector3.zero : SteerAxisLocal.normalized;
+
+        /// <summary>True when this fitting is posed about its own declared axis rather than about
+        /// the vertical — asked in one place so the driver, the baker and the tests agree.</summary>
+        public bool TurnsAboutADeclaredAxis =>
+            Motion == VehicleFitmentMotion.AxisSteerAndRoll ||
+            Motion == VehicleFitmentMotion.AxisSteerOnly;
 
         // ---- doors ---------------------------------------------------------------------------
 
