@@ -119,11 +119,15 @@ namespace HiddenHarbours.Tests.PlayMode
 
             Assert.IsTrue(InteractOffer.Current.Has,
                           "…so the popup names her, through the seam that already existed");
-            Assert.AreEqual("Go below", InteractOffer.Current.Label);
+            Assert.AreEqual("Open the door", InteractOffer.Current.Label);
 
             Assert.IsTrue(rig.Installer.Door.TryUse());
             yield return WaitForCue(rig.Installer.Door);
-            Assert.IsTrue(rig.Installer.Interior.IsInside, "and the press lands her below");
+            Assert.IsTrue(rig.Installer.Door.IsOpen, "the press leaves her door standing open");
+            Assert.IsFalse(rig.Installer.Interior.IsInside, "…and opening it is not walking through it");
+
+            WalkThroughTheDoorway(rig.Installer.Door);
+            Assert.IsTrue(rig.Installer.Interior.IsInside, "and the WALK lands her below");
         }
 
         // =====================================================================================
@@ -150,18 +154,18 @@ namespace HiddenHarbours.Tests.PlayMode
                 new InteractActor(rig.Installer.Door.transform.position, Vector2.zero,
                                   InteractContext.OnDeck), 90f);
             Assert.IsTrue(InteractOffer.Current.Has);
-            Assert.AreEqual("Go below", InteractOffer.Current.Label);
+            Assert.AreEqual("Open the door", InteractOffer.Current.Label);
 
             Assert.IsTrue(rig.Installer.Door.TryUse());
             yield return WaitForCue(rig.Installer.Door);
+            WalkThroughTheDoorway(rig.Installer.Door);
 
             Assert.IsTrue(rig.Installer.Interior.IsInside);
             Assert.IsTrue(rig.Installer.Interior.ExactlyOneLayerOn,
                           "exactly one layer on — the invariant the gate exists to protect");
             Assert.IsFalse(standIn.enabled);
 
-            Assert.IsTrue(rig.Installer.Door.TryUse());
-            yield return WaitForCue(rig.Installer.Door);
+            WalkThroughTheDoorway(rig.Installer.Door);
 
             Assert.IsFalse(rig.Installer.Interior.IsInside);
             Assert.IsTrue(standIn.enabled);
@@ -207,6 +211,19 @@ namespace HiddenHarbours.Tests.PlayMode
             public BoatInteriorInstaller Installer;
             public BoatInteriorDef Def;
             public Sprite[] Cells;
+        }
+
+        /// <summary>Cross an open threshold: one call measurably clear of the doorway to arm the
+        /// approach, one standing in it to spend it. Both points are DERIVED from the door's own measured
+        /// opening, so a re-measured doorway needs no edit here.</summary>
+        private static void WalkThroughTheDoorway(BoatCabinDoor door)
+        {
+            Vector2 doorway = BoatCabinThreshold.PointOf(door.Door);
+            Vector2 clear = doorway + Vector2.right *
+                            (BoatCabinThreshold.ReleaseRadiusMetres(door.Door) + 1f);
+
+            door.TryWalkThrough(clear);
+            Assert.IsTrue(door.TryWalkThrough(doorway), "she walks through the open door");
         }
 
         private IEnumerator WaitForCue(BoatCabinDoor door)

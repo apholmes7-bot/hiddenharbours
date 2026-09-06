@@ -223,6 +223,15 @@ namespace HiddenHarbours.Tests.PlayMode
             AssertArmandKeepsTheHelm();
 
             // ---- 2. she can move about the cabin --------------------------------------------------
+            // ⭐ HIS DOOR IS SHUT FOR THIS SECTION, and shutting it is half of what is under test. Since
+            // the 2026-08-28 ruling his aft door stands OPEN on a fair dawn, and an open doorway is one
+            // she walks straight out of — she begins standing IN it (see below), so a wander that happens
+            // to step aft would leave the room this section is trying to measure her moving about. Shut,
+            // the sole is a room with four walls and the doorway is one of them: what the clamp does here
+            // is exactly the ruling's "a door is closed until its opened", asserted in the shipped intro.
+            Assert.IsTrue(opening.CabinDoor.IsOpen, "his aft door stands open on a fair dawn (08-28)");
+            opening.CabinDoor.SetOpen(false);
+
             Vector2 startSole = opening.CabinLocalPosition;
             Vector3 startWorldRelative = _player.transform.position - opening.Boat.transform.position;
 
@@ -256,8 +265,12 @@ namespace HiddenHarbours.Tests.PlayMode
             // not a true statement while she is below, and it is waiting the moment she comes up.
             Assert.IsFalse(opening.CanStepAshore, "the wharf is being offered to somebody inside a cabin");
 
-            // ---- 3. up on deck, through his aft door ----------------------------------------------
+            // ---- 3. up on deck, through his aft door — and it is a WALK ---------------------------
+            // ⛔ SHUT, the threshold is a WALL. She walks right up into the doorway and stays in the room;
+            // that is the ruling's first sentence, asserted on the shipped intro rather than a fixture.
             yield return WalkToTheDoor(opening);
+            Assert.IsTrue(opening.IsBelowDecks,
+                "she walked out through a door that was SHUT — a closed leaf is a wall. " + Where());
 
             float reach = opening.CabinDoor.ReachMeters;
             float gap = Vector2.Distance(_player.transform.position,
@@ -266,15 +279,24 @@ namespace HiddenHarbours.Tests.PlayMode
                 $"she could not walk within reach of her own doorway: {gap:F2} m against {reach:F2}. " +
                 Where());
 
+            // ⭐ One press, and it moves the LEAF and nothing else. This is the whole of the 2026-09-04
+            // fix, at the one place the owner met it: when the cue finishes she is STILL BELOW, standing
+            // at an open door she has not yet walked through.
             Assert.IsTrue(opening.WorkTheCabinDoor(), "the door refused the press. " + Where());
+            yield return Until(() => !opening.CabinDoor.IsCueing, "his leaf to finish swinging");
+            Assert.IsTrue(opening.CabinDoor.IsOpen, "the press left it standing open. " + Where());
+            Assert.IsTrue(opening.IsBelowDecks,
+                "opening a door carried her through it — a press is for the leaf, not the passage. "
+                + Where());
 
             // ⛔ THE ABSENCE OF A TELEPORT, MEASURED. Crossing the threshold changes which FRAME she is
-            // placed in — sole to deck — and the two must join without a step. Sampled every frame from
-            // the press until she is out, and the largest single-frame move is the claim.
+            // placed in — sole to deck — and the two must join without a step. Sampled every frame of the
+            // WALK out, and the largest single-frame move is the claim.
             float worstJump = 0f;
-            yield return WatchForTheDoorToResolve(opening, j => worstJump = Mathf.Max(worstJump, j));
+            yield return SheWalksThroughHisOpenDoor(opening, j => worstJump = Mathf.Max(worstJump, j));
 
-            Assert.IsFalse(opening.IsBelowDecks, "the cue finished and she is still below. " + Where());
+            Assert.IsFalse(opening.IsBelowDecks,
+                "she never crossed his open threshold on her own two feet. " + Where());
             Assert.AreEqual(1, _left.Count, "the cabin publishes exactly one exit on the way out");
             Assert.AreEqual(HullId, _left[0].HullId, "CabinLeft named a different hull");
             Assert.IsFalse(opening.CabinCutaway.OccupantIsBelow,
@@ -466,20 +488,39 @@ namespace HiddenHarbours.Tests.PlayMode
             // Not a failure by itself — the caller asserts the reach, and says what it measured.
         }
 
-        /// <summary>Let the leaf run, sampling her per-frame travel so the caller can assert that crossing
-        /// the threshold moved nobody.</summary>
-        private IEnumerator WatchForTheDoorToResolve(ArrivalOpening opening, Action<float> jump)
+        /// <summary>
+        /// ⭐ <b>Walk her across his OPEN threshold</b>, sampling her per-frame travel so the caller can
+        /// assert that crossing it moved nobody. <b>No press</b>: the door is standing open and the
+        /// passage is a step, which is the whole of the 2026-09-04 fix.
+        ///
+        /// <para>Steered by the door's LIVE position every frame — it follows the hull round as she turns,
+        /// so a direction taken once would be stale within a second — and driven through whichever walk
+        /// owns her at the time, because the sole and the deck are the two floors this one doorway joins
+        /// and it has to work from both.</para>
+        /// </summary>
+        private IEnumerator SheWalksThroughHisOpenDoor(ArrivalOpening opening, Action<float> jump)
         {
+            BoatCabinDoor door = opening.CabinDoor;
+            Assert.IsNotNull(door, "her cabin has no door to walk through");
+            Assert.IsTrue(door.IsOpen, "this walks through an OPEN door; nothing here presses one");
+
+            bool startedBelow = opening.IsBelowDecks;
             Vector3 last = _player.transform.position;
-            float deadline = Time.realtimeSinceStartup + 10f;
-            while (opening.IsBelowDecks && Time.realtimeSinceStartup < deadline)
+            float deadline = Time.realtimeSinceStartup + 20f;
+
+            while (opening.IsBelowDecks == startedBelow && Time.realtimeSinceStartup < deadline)
             {
+                Vector2 toDoor = (Vector2)door.transform.position - (Vector2)_player.transform.position;
+                Vector2 heading = toDoor.sqrMagnitude > 1e-6f ? toDoor.normalized : Vector2.up;
+
+                if (opening.IsBelowDecks) opening.WalkTheCabin(heading, Time.deltaTime);
+                else                      opening.WalkTheDeck(heading, Time.deltaTime);
+
                 yield return null;
                 jump(Vector3.Distance(_player.transform.position, last));
                 last = _player.transform.position;
             }
-            // One more frame after the swap: the seat changes frame in LateUpdate, and the step it could
-            // introduce is the one this is here to catch.
+
             yield return null;
             jump(Vector3.Distance(_player.transform.position, last));
         }
@@ -677,13 +718,15 @@ namespace HiddenHarbours.Tests.PlayMode
         //  walking her about his deck
         // =============================================================================================
 
-        /// <summary>Come up the way the player does: walk to his aft door, press it, and let its own cue
-        /// run out. One frame more at the end, so the deck seat has been seeded and taken.</summary>
+        /// <summary>Come up the way the player does — and since the 2026-08-28 ruling that is a WALK and
+        /// not a press: Armand is aboard his own boat on a fair dawn, so his aft door is standing open and
+        /// the doorway is simply a place on the floor she crosses. One frame more at the end, so the deck
+        /// seat has been seeded and taken.</summary>
         private IEnumerator ComeUpOnDeck(ArrivalOpening opening)
         {
-            yield return WalkToTheDoor(opening);
-            Assert.IsTrue(opening.WorkTheCabinDoor(), "the door refused the press. " + Where());
-            yield return Until(() => !opening.IsBelowDecks, "came up on deck through his aft door");
+            yield return SheWalksThroughHisOpenDoor(opening, _ => { });
+            Assert.IsFalse(opening.IsBelowDecks,
+                           "she never came up through his open door. " + Where());
             yield return null;
         }
 

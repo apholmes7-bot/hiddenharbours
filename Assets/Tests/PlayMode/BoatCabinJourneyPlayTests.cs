@@ -160,7 +160,7 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.IsTrue(InteractOffer.Current.Has,
                           $"standing at her threshold ({Vector2.Distance(rig.Player.transform.position, door.transform.position):0.00} m " +
                           $"from a door with {door.ReachMeters:0.00} m of reach) must offer the way in");
-            Assert.AreEqual("Go below", InteractOffer.Current.Label);
+            Assert.AreEqual("Open the door", InteractOffer.Current.Label);
 
             // ---- press, through the KEY's own entry point ------------------------------------
             Assert.IsTrue(rig.Switcher.BeginInteract(), "E at her threshold is spent on her door");
@@ -181,8 +181,18 @@ namespace HiddenHarbours.Tests.PlayMode
 
             yield return WaitForCue(door);
 
+            // ---- …and the press ends on a door that is STANDING OPEN, with her still on deck ----
+            // ⭐ THE 2026-08-28 RULING, at the one place the player meets it: opening a door is not
+            // walking through it. The 09-04 dawn playtest caught exactly this seam — "walking in and out
+            // of cabin isnt seamless with door open" — and the crossing below costs no press and no cue.
+            Assert.IsTrue(door.IsOpen, "the cue ends on a leaf standing open");
+            Assert.IsFalse(cabin.IsInside, "…and she has not moved");
+
+            // ---- through it, on her own two feet, driving the SHIPPED deck walk -----------------
+            yield return SheWalksThroughTheDoorway(rig, door);
+
             // ---- inside --------------------------------------------------------------------
-            Assert.IsTrue(cabin.IsInside, "the swap lands at the END of the cue");
+            Assert.IsTrue(cabin.IsInside, "the walk lands her below — no second press");
             Assert.AreEqual(0, cabin.Level, "her sill is at house-sole height, so that is where she walks in");
 
             // ADR 0041: her cabin is her own hull mesh, revealed by the cutaway — ONE picture. No
@@ -194,10 +204,11 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.AreEqual(1, BelowDecksDrawSources.Measure(rig.Boat.transform).Total,
                             "exactly one source draws below decks");
 
-            // ---- and back out --------------------------------------------------------------
-            Assert.AreEqual("Come out", door.VerbLabel, "the same door, said the other way round");
-            Assert.IsTrue(door.TryUse());
-            yield return WaitForCue(door);
+            // ---- and back out, the same way: a walk, through a door still standing open --------
+            Assert.AreEqual("Close the door", door.VerbLabel,
+                            "the same door, and the press now names the LEAF rather than the passage");
+            Assert.IsTrue(door.IsOpen, "she left it open behind her");
+            yield return SheWalksThroughTheDoorway(rig, door);
 
             Assert.IsFalse(cabin.IsInside);
             yield return null;   // the cutaway re-asserts on CabinLeft
@@ -276,8 +287,7 @@ namespace HiddenHarbours.Tests.PlayMode
 
             BoatCabinDoor door = installer.Door;
             Assert.IsNotNull(door, "…and a door at her measured threshold");
-            Assert.IsTrue(door.TryUse(), "her door offers, so the press is taken");
-            yield return WaitForCue(door);
+            yield return OpenAndWalkThrough(door);
             Assert.IsTrue(installer.Interior.IsInside);
             yield return null;
 
@@ -345,9 +355,8 @@ namespace HiddenHarbours.Tests.PlayMode
 
             BoatCabinDoor door = installer.Door;
             Assert.IsNotNull(door, "…and a door at her measured threshold");
-            Assert.IsTrue(door.TryUse(), "her door offers, so the press is taken");
-            yield return WaitForCue(door);
-            Assert.IsTrue(installer.Interior.IsInside, "the swap lands at the end of the cue");
+            yield return OpenAndWalkThrough(door);
+            Assert.IsTrue(installer.Interior.IsInside, "the walk lands her below");
             yield return null;
 
             // WHERE she landed. The def is the authority on the id; the mesh is the authority on whether
@@ -437,7 +446,7 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.IsTrue(rig.Installer.Door.IsAvailable,
                           "the door itself is willing — the gate is open and she is in reach");
 
-            Assert.AreEqual("Go below", InteractOffer.Current.Label,
+            Assert.AreEqual("Open the door", InteractOffer.Current.Label,
                             "the popup names the way in, not the dock: with a fixture resolving, the " +
                             "switcher makes no transit offer at all");
             Assert.AreEqual(InteractOfferSource.Fixture, InteractOffer.Current.Source,
@@ -446,7 +455,9 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.IsTrue(rig.Switcher.BeginInteract(), "E at her threshold is spent on her door");
             Assert.AreEqual(ControlMode.OnDeck, rig.Switcher.Mode, "…and it did not step her ashore");
             yield return WaitForCue(rig.Installer.Door);
+            Assert.IsTrue(rig.Installer.Door.IsOpen, "the press worked her leaf");
 
+            yield return SheWalksThroughTheDoorway(rig, rig.Installer.Door);
             Assert.IsTrue(rig.Installer.Interior.IsInside,
                           "she went below — from a boat that is tied up, which is the whole ruling");
         }
@@ -634,8 +645,7 @@ namespace HiddenHarbours.Tests.PlayMode
                             "her sill is at house-sole height — and poop_deck, which is at the SAME " +
                             "height, must be skipped because the sheets bake no working deck");
 
-            Assert.IsTrue(rig.Door.TryUse());
-            yield return WaitForCue(rig.Door);
+            yield return OpenAndWalkThrough(rig.Door);
             Assert.IsTrue(rig.Cabin.IsInside);
             Assert.AreEqual(sillLevel, rig.Cabin.Level);
 
@@ -790,7 +800,8 @@ namespace HiddenHarbours.Tests.PlayMode
             var doorGo = new GameObject("CabinDoor");
             doorGo.transform.SetParent(root.transform, false);
             var door = doorGo.AddComponent<BoatCabinDoor>();
-            door.Configure(cabin, $"fixture.boat.{def.Id}.entry", -1, 1.2f, "Go below", "Come out");
+            door.Configure(cabin, $"fixture.boat.{def.Id}.entry", -1, 1.2f,
+                           "Open the door", "Close the door");
 
             return new CabinRig { Cabin = cabin, Door = door, Room = room };
         }
@@ -820,18 +831,66 @@ namespace HiddenHarbours.Tests.PlayMode
 
         private IEnumerator EnterTheCabin(Rig rig)
         {
-            BoatCabinDoor door = rig.Installer.Door;
-            Assert.IsTrue(door.TryUse(), "her door offers, so the press is taken");
-            yield return WaitForCue(door);
+            yield return OpenAndWalkThrough(rig.Installer.Door);
             Assert.IsTrue(rig.Installer.Interior.IsInside);
         }
 
         private IEnumerator LeaveTheCabin(Rig rig)
         {
             BoatCabinDoor door = rig.Installer.Door;
-            Assert.IsTrue(door.TryUse());
-            yield return WaitForCue(door);
+            Assert.IsTrue(door.IsOpen, "she came in through it and it is still open");
+            WalkTheDoorway(door);
+            yield return null;
             Assert.IsFalse(rig.Installer.Interior.IsInside);
+        }
+
+        /// <summary>Work her leaf, then walk through it — the two acts the 2026-08-28 ruling separated,
+        /// said once for every test that only wants the player below decks.</summary>
+        private IEnumerator OpenAndWalkThrough(BoatCabinDoor door)
+        {
+            Assert.IsTrue(door.TryUse(), "her door offers, so the press is taken");
+            yield return WaitForCue(door);
+            Assert.IsTrue(door.IsOpen, "the cue ends on a leaf standing open");
+            WalkTheDoorway(door);
+            yield return null;
+        }
+
+        /// <summary>Cross the threshold by handing the door where she is standing, exactly as a walker
+        /// does once a tick: one call measurably clear of the doorway arms the approach, one in it spends
+        /// it. Both points are DERIVED from the door's own measured opening.</summary>
+        private static void WalkTheDoorway(BoatCabinDoor door)
+        {
+            Vector2 doorway = BoatCabinThreshold.PointOf(door.Door);
+            Vector2 clear = doorway + Vector2.right *
+                            (BoatCabinThreshold.ReleaseRadiusMetres(door.Door) + 1f);
+
+            door.TryWalkThrough(clear);
+            Assert.IsTrue(door.TryWalkThrough(doorway), "she walks through the open door");
+        }
+
+        /// <summary>
+        /// ⭐ The crossing driven through the SHIPPED walk, not through the door's API: her hull-frame
+        /// position is snapped and <c>DeckWalkController.Update</c> is the thing that asks the doorway.
+        /// That is the wiring the 09-04 playtest was missing, so it is the wiring this asserts.
+        ///
+        /// <para>Two frames, and they are the two the latch needs: one measurably clear of the doorway to
+        /// arm the approach, one standing in it to spend it. ⚠ The snap is the only way in — the walk
+        /// INTEGRATES its hull-frame point and never reads it back off the transform, so moving the
+        /// player's transform would leave the frame it actually asks the doorway with untouched.</para>
+        /// </summary>
+        private IEnumerator SheWalksThroughTheDoorway(Rig rig, BoatCabinDoor door)
+        {
+            var walk = rig.Player.GetComponent<DeckWalkController>();
+            Assert.IsNotNull(walk, "the shipped deck walk is what carries her through a doorway");
+
+            Vector2 doorway = BoatCabinThreshold.PointOf(door.Door);
+            Vector2 clear = doorway + Vector2.right *
+                            (BoatCabinThreshold.ReleaseRadiusMetres(door.Door) + 1f);
+
+            walk.SnapToDeckLocal(clear);
+            yield return null;
+            walk.SnapToDeckLocal(doorway);
+            yield return null;
         }
 
         /// <summary>Wait out the leaf, by SECONDS and a real deadline. Frames are not time.</summary>
