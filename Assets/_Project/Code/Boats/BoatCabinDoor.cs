@@ -69,7 +69,7 @@ namespace HiddenHarbours.Boats
     /// <see cref="BoatCabinThreshold"/>.</para>
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class BoatCabinDoor : MonoBehaviour, IInteractable
+    public sealed class BoatCabinDoor : MonoBehaviour, IInteractable, ICabinThreshold
     {
         [Tooltip("The cabin this door opens. Required — a door with no interior is INERT rather than " +
                  "broken, which is the right answer for a hull nobody has measured yet.")]
@@ -446,6 +446,13 @@ namespace HiddenHarbours.Boats
         /// HULL's own metres. Crosses the level exactly as the press used to
         /// (<see cref="BoatInterior.TryEnter"/> / <see cref="BoatInterior.TryExit"/>) and returns whether
         /// it did, so no caller has to hold a second copy of "is she inside".
+        ///
+        /// <para><b>⛔ THIS IS <see cref="ICabinThreshold"/>'s ONE MEMBER, and that is how the PLAYER lane
+        /// reaches it</b> — <c>DeckWalkController</c> resolves the Core interface off the boat root and
+        /// never names this class (rule 4). The walker knows where she is standing; every other part of
+        /// the decision is on this side of the seam, which is why the call both asks and acts. The App
+        /// lane's arrival walkers hold the concrete door instead, and may: App is the composition
+        /// root.</para>
         ///
         /// <para><b>Nothing here moves her.</b> The room is drawn into the same cell at the same pivot as
         /// the hull, so a walker standing in the doorway is already standing in the doorway of the picture

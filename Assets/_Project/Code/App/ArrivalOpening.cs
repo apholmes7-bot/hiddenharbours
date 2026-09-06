@@ -411,6 +411,13 @@ namespace HiddenHarbours.App
             // ⭐ AND THE DOORWAY IS ASKED, on the sole's own hull-local point. Armand's aft door stands
             // open while he is aboard, so walking into it walks her out on deck — no press, no cue. The
             // door owns every part of that decision, including the latch the two floors share.
+            //
+            // ⚠ The CONCRETE door here, not Core's ICabinThreshold — App is the composition ROOT and
+            // already holds this hull's BoatCabinDoor outright (CabinDoor, WorkTheCabinDoor, the offer it
+            // registers). The seam exists for the PLAYER lane, which may not name a Boats type;
+            // DeckWalkController takes it. Routing App through an interface it composes on the next line
+            // would be ceremony, not a boundary.
+            //
             // ⚠ `!= null`, never `?.`: the operator that reports a destroyed component as null lives on
             // UnityEngine.Object and the null-propagating operators never reach it.
             BoatCabinDoor door = _cabin.Door;
