@@ -180,27 +180,65 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         /// <summary>
-        /// The wall berths are DREDGED — a trench cut to carry the deepest resident at dead low spring —
-        /// so the fleet the owner was looking at rides the whole tide and never touches. This is the test
-        /// that says the grounding arm above is not quietly the answer at Nine Mile Creek.
+        /// The berth TRENCH was cut to carry the deepest resident at dead low spring — its bed is derived
+        /// from exactly that requirement — so over <b>that</b> ground the fleet rides the whole tide.
+        ///
+        /// <para>⚠️⚠️ <b>AND THAT IS A CLAIM ABOUT A CONSTANT, NOT ABOUT THE HARBOUR.</b> Measured in the
+        /// built scene during the plate run (2026-09-06): the ground the rider reads under berth 1 is
+        /// <b>−1.60 m</b> — <c>NineMileCreekMainland.BasinBedElevation</c>, the basin's own filled bed —
+        /// not the trench's −4.21 m. A 1.30 m lobster boat therefore takes the ground at water −0.30 m
+        /// and her picture stops there, which is what the plates show and what the moored-fleet builder's
+        /// own log has always said ("those berths BARE at spring low, by ruling"). Whether the trench is
+        /// meant to reach the berths is the region's question, not this component's: the rider draws the
+        /// hull on whatever ground is actually under her. Named here so nobody reads a green constant as
+        /// a promise about the terrain — see <see cref="AHullOverTheBasinsOwnBedTakesTheGround"/> for
+        /// the case the harbour really has.</para>
         /// </summary>
         [Test]
-        public void TheWallFleetNeverTakesTheGround_BecauseHerBerthWasDredgedForIt()
+        public void TheBerthTrenchsOwnBedWouldCarryTheDeepestResidentAtSpringLow()
         {
             float bed = NineMileCreekMainland.BerthTrenchBedElevation;
             float draught = NineMileCreekMainland.DeepestResidentDraughtMetres;
             float low = NineMileCreekMainland.SpringLowWater;
 
             Assert.IsFalse(TidalRide.IsAground(low, bed, draught),
-                $"the deepest resident draws {draught:0.00} m and her berth's bed is at {bed:0.00} m; at " +
-                $"spring low ({low:0.00} m) she would be sitting on it, and the fleet would stop riding " +
-                "the bottom half of every tide");
+                $"the deepest resident draws {draught:0.00} m and the trench's derived bed is " +
+                $"{bed:0.00} m; if she were aground there at spring low ({low:0.00} m) the trench would " +
+                "not be doing the one job it was derived for");
 
             HullTideRide rider = Rider(draught: draught);
             Assert.That(rider.ScreenRiseAt(NineMileCreekMainland.SpringHighWater, bed)
                         - rider.ScreenRiseAt(low, bed),
                 Is.EqualTo((NineMileCreekMainland.SpringHighWater - low) * IsoGround.HeightScale)
                   .Within(1e-4f));
+        }
+
+        /// <summary>
+        /// ⭐ <b>THE CASE THE HARBOUR ACTUALLY HAS</b>, pinned headless so the plates are not the only
+        /// place it is written down. Over the basin's filled bed a standard lobster boat dries out on
+        /// the bottom half of the tide, and her picture stops with her — measured live at the wall on
+        /// 2026-09-06 and reproduced here from the region's own two numbers.
+        /// </summary>
+        [Test]
+        public void AHullOverTheBasinsOwnBedTakesTheGround()
+        {
+            const float lobsterDraught = 1.30f;             // Data/Boats/LobsterBoat.asset
+            float bed = NineMileCreekMainland.BasinBedElevation;   // −1.60 m
+            float floatsAt = bed + lobsterDraught;
+
+            Assert.That(floatsAt, Is.EqualTo(-0.30f).Within(0.01f),
+                "the water level a 1.30 m hull floats off the basin's fill at — the number the plate run " +
+                "solved out of her drawn y, and the reason her low leg is flat");
+
+            HullTideRide rider = Rider(draught: lobsterDraught);
+            float atSpringLow = rider.ScreenRiseAt(NineMileCreekMainland.SpringLowWater, bed);
+            Assert.That(rider.ScreenRiseAt(floatsAt, bed), Is.EqualTo(atSpringLow).Within(1e-4f),
+                "she moved between spring low and the level she floats off at — she is drawn sinking " +
+                "into the basin");
+
+            // …and above it she rides at the full rate again, so the grounding is a floor and not a gain.
+            Assert.That(rider.ScreenRiseAt(floatsAt + 1f, bed) - rider.ScreenRiseAt(floatsAt, bed),
+                        Is.EqualTo(IsoGround.HeightScale).Within(1e-4f));
         }
 
         /// <summary>Open water has no bottom to be shallow over — the same reading

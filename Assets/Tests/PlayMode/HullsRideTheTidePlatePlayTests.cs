@@ -1,9 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 using HiddenHarbours.App.Editor;
+using HiddenHarbours.Art;
 using HiddenHarbours.Boats;
 using HiddenHarbours.Core;
 using Object = UnityEngine.Object;
@@ -61,6 +63,76 @@ namespace HiddenHarbours.Tests.PlayMode
             {
                 Name = name; TotalSeconds = totalSeconds; Level = level;
             }
+        }
+
+        /// <summary>One frame of a set: where her picture went, and what the WORLD said at that instant —
+        /// the water she was in, the ground the rider read under her, her own draught, and whether she was
+        /// on the bottom. Recorded together so the check below can be made against the harbour rather
+        /// than against the code that drew it.</summary>
+        readonly struct Shot
+        {
+            public readonly float DrawnY, Water, Bed, Draught;
+            public readonly bool Aground;
+            public Shot(float drawnY, float water, float bed, float draught, bool aground)
+            {
+                DrawnY = drawnY; Water = water; Bed = bed; Draught = draught; Aground = aground;
+            }
+            /// <summary>The waterline she is sitting at — spelled out HERE, from the physics, rather
+            /// than asked of <c>TidalRide</c>: a plate that checks the drawing against the very function
+            /// that drew it has checked nothing.</summary>
+            public float Waterline => Mathf.Max(Water, Bed + Mathf.Max(0f, Draught));
+        }
+
+        /// <summary>
+        /// ⭐⭐ <b>THE LAW, CHECKED AGAINST THE HARBOUR.</b> Between two states her picture must move by
+        /// the change in her WATERLINE — not the change in the water. Afloat those are the same thing and
+        /// the leg runs at <see cref="IsoGround.HeightScale"/> a metre; aground they are not, because the
+        /// ebb goes on falling without her and she stops on the bed she is sitting on.
+        ///
+        /// <para><b>This is what the first plate run measured and the first assertion got wrong.</b> The
+        /// wall fleet rode mean→high at 0.765 units per metre — exact — and did not move at all below
+        /// water −0.30 m, which is <c>bed + draught</c> for a 1.30 m hull over the basin's own filled bed
+        /// at −1.60 m. An assertion that demanded the full tidal range called a correct picture a failure;
+        /// worse, it would have been "fixed" by loosening a tolerance until the defect fitted through
+        /// it.</para>
+        ///
+        /// <para>So both readings are demanded: every leg matches the physics for the ground she is
+        /// actually over, AND at least one leg must find her afloat at both ends — otherwise the set
+        /// proves she stayed still on the mud and shows nothing about the projection at all.</para>
+        /// </summary>
+        static void AssertSheRodeTheTide(string who, IReadOnlyList<Shot> shots)
+        {
+            Assert.Greater(shots.Count, 1, $"{who}: fewer than two frames, so nothing moved between anything");
+
+            float total = shots[shots.Count - 1].DrawnY - shots[0].DrawnY;
+            Assert.Greater(total, 0.5f,
+                $"{who}: her picture travelled {total:0.000} units across the whole set. 0.00 is the " +
+                "owner's defect verbatim — a fleet that sits at the same place on the wall at every " +
+                "state of the tide.");
+
+            bool sawAnAfloatLeg = false;
+            for (int i = 1; i < shots.Count; i++)
+            {
+                Shot a = shots[i - 1], b = shots[i];
+                float rose = b.DrawnY - a.DrawnY;
+                float expected = (b.Waterline - a.Waterline) * IsoGround.HeightScale;
+                bool afloat = !a.Aground && !b.Aground;
+                sawAnAfloatLeg |= afloat;
+
+                Debug.Log($"[{PlateDir}] {who} leg {i}: water {a.Water:0.00} -> {b.Water:0.00} m, " +
+                          $"waterline {a.Waterline:0.00} -> {b.Waterline:0.00} m over bed {b.Bed:0.00} " +
+                          $"at draught {b.Draught:0.00} ({(afloat ? "AFLOAT" : "TOOK THE GROUND")}); " +
+                          $"picture rose {rose:0.000} units, physics says {expected:0.000}");
+
+                Assert.That(rose, Is.EqualTo(expected).Within(0.05f),
+                    $"{who} leg {i}: her picture rose {rose:0.000} units where the water she is in and " +
+                    $"the ground under her say {expected:0.000}. Water {a.Water:0.00}→{b.Water:0.00} m, " +
+                    $"bed {b.Bed:0.00} m, draught {b.Draught:0.00} m.");
+            }
+
+            Assert.IsTrue(sawAnAfloatLeg,
+                $"{who}: she was on the bottom at every state in this set, so these plates say nothing " +
+                "about whether a FLOATING hull rides. Re-shoot at states that find her afloat.");
         }
 
         [UnityTearDown]
@@ -162,17 +234,105 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         /// <summary>Photograph one set: the same place, three states of tide, and the number under each.
-        /// Returns the drawn y of <paramref name="subject"/> at each state, in order.</summary>
+        /// Returns the drawn y of <paramref name="subject"/> at each state, in order.
+        ///
+        /// <para>⚠️⚠️ <b>The frame is CHECKED before it is written</b> — see
+        /// <see cref="AssertTheSubjectIsInFrame"/>. A capture that saves without asking whether its
+        /// subject is on screen produces a confident blank plate, named after the thing it does not
+        /// show, and files it as acceptance evidence.</para>
+        /// </summary>
         IEnumerator ShootTheSet(string setName, IReadOnlyList<TideState> states, Transform subject,
-                                List<float> drawnY)
+                                List<Shot> shots)
         {
+            HullTideRide rider = subject != null ? subject.GetComponentInParent<HullTideRide>() : null;
             for (int i = 0; i < states.Count; i++)
             {
                 yield return GoTo(states[i]);
-                if (subject != null) drawnY.Add(subject.position.y);
-                _stage.SavePlate($"{setName}-{i + 1}-{states[i].Name}-{states[i].Level:0.00}m.png",
-                                 _stage.Capture());
+                if (subject != null)
+                    shots.Add(new Shot(subject.position.y, states[i].Level,
+                                       rider != null ? rider.BedElevation : float.NegativeInfinity,
+                                       rider != null ? rider.DraughtMetres : 0f,
+                                       rider != null && rider.IsAgroundNow()));
+
+                // Render FIRST, then check, then write: `isVisible` is only meaningful after a render,
+                // and a plate must never reach the disk unverified.
+                byte[] frame = _stage.Capture();
+                if (subject != null) AssertTheSubjectIsInFrame(subject, $"{setName} at {states[i].Name} water");
+                if (CanComposite(subject, $"{setName} at {states[i].Name} water"))
+                    _stage.SavePlate($"{setName}-{i + 1}-{states[i].Name}-{states[i].Level:0.00}m.png", frame);
             }
+        }
+
+        /// <summary>
+        /// ⚠️⚠️ <b>AND "IN FRAME" IS NOT ENOUGH FOR A MESH HULL</b> — measured 2026-09-06, and it is the
+        /// half of the blank-plate law that <c>renderer.isVisible</c> cannot cover.
+        ///
+        /// <para>A mesh hull's picture is composed through the facet buffer, and her place in it is a
+        /// HULL ID out of 255, allocated 1 + 12 at a time. <c>IsoFacetHullRegistry.s_NextId</c> never
+        /// rewinds, so a long editor session that has stood up a few dozen hulls exhausts the pool and
+        /// every hull after that "shares id 255 and may composite over one another" — logged, loudly, 97
+        /// times in the full PlayMode run this fixture was first shot inside. Her GameObjects are all
+        /// there, her renderers are enabled, they are inside the frustum, and <c>isVisible</c> is true.
+        /// <b>She simply is not in the picture.</b></para>
+        ///
+        /// <para>So a plate is written only when the subject actually holds an id. When she does not,
+        /// the frame is DISCARDED with the reason named, rather than saved as a picture of a wharf with
+        /// no boats at it — and the ride numbers below are asserted anyway, because the transform moves
+        /// whether or not the compositor drew her. Shoot these in a FRESH editor.</para>
+        /// </summary>
+        static bool CanComposite(Transform subject, string what)
+        {
+            if (subject == null) return false;
+            var facet = subject.GetComponentInChildren<IsoFacetHullRenderer>(true);
+            if (facet == null) return true;          // a sprite hull composites by drawing; nothing to check
+            if (facet.HullId > 0) return true;
+
+            Debug.LogWarning(
+                $"[{PlateDir}] NO PLATE WRITTEN for {what}: this hull holds facet id 0, so the " +
+                "compositor has no place for her and the frame would show the harbour without her in " +
+                "it. The facet pool is 255 ids at 1 + 12 a hull and never rewinds, so a session that " +
+                "has already stood up a few dozen hulls cannot photograph one. Re-shoot this fixture " +
+                "in a FRESH editor, on its own filter.");
+            return false;
+        }
+
+        /// <summary>
+        /// ⭐⭐ <b>THE PLATE MUST CONTAIN ITS SUBJECT</b> (the law the berth-line lane bought on
+        /// 2026-09-06: a capture returned success, reported the hour, the water level and every hull's
+        /// world position — all of it true — and the image had no boats in it). Two independent reads,
+        /// because either one alone can be fooled: the subject's own point must land inside the frame,
+        /// AND something of hers must actually have rasterised.
+        ///
+        /// <para>The margin is generous on purpose. This is not a composition check; it is the
+        /// difference between evidence and a picture of a wall.</para>
+        /// </summary>
+        void AssertTheSubjectIsInFrame(Transform subject, string what)
+        {
+            Camera cam = _stage.Camera;
+            Vector3 vp = cam.WorldToViewportPoint(subject.position);
+            var renderers = subject.GetComponentsInChildren<Renderer>(true);
+            int visible = renderers.Count(r => r != null && r.enabled && r.isVisible);
+
+            string diagnosis =
+                $"[{PlateDir}] {what}: subject at world {subject.position}, viewport " +
+                $"({vp.x:0.000}, {vp.y:0.000}, z {vp.z:0.00}); camera at {cam.transform.position} " +
+                $"ortho {cam.orthographicSize:0.00} aspect {cam.aspect:0.000}; " +
+                $"{visible} of {renderers.Length} renderers visible";
+            Debug.Log(diagnosis);
+
+            Assert.Greater(vp.z, 0f, $"the subject is BEHIND the camera. {diagnosis}");
+            Assert.That(vp.x, Is.InRange(0.02f, 0.98f),
+                $"the subject is off the side of the frame — this plate would be a picture of the " +
+                $"harbour without her in it. {diagnosis}");
+            Assert.That(vp.y, Is.InRange(0.02f, 0.98f),
+                $"the subject is off the top or bottom of the frame. She RIDES between states, so a " +
+                $"framing that held her at low water can lose her at high. {diagnosis}");
+            Assert.Greater(renderers.Length, 0,
+                $"the subject carries no renderer at all, so there is nothing of her to photograph. " +
+                $"{diagnosis}");
+            Assert.Greater(visible, 0,
+                $"nothing of the subject rasterised into the frame that is about to be saved as " +
+                $"evidence of her. {diagnosis}");
         }
 
         // ---- the sets ---------------------------------------------------------------------------------
@@ -201,19 +361,9 @@ namespace HiddenHarbours.Tests.PlayMode
 
             yield return _stage.FrameOn(NineMileCreekMainland.BerthPos(2) + new Vector2(0f, 1f));
 
-            var drawn = new List<float>();
-            yield return ShootTheSet("wall-fleet", states, picture, drawn);
-
-            float travelled = drawn[drawn.Count - 1] - drawn[0];
-            float tideRange = states[states.Count - 1].Level - states[0].Level;
-            Debug.Log($"[{PlateDir}] wall fleet '{subject.name}': drawn y {string.Join(" -> ", drawn)} " +
-                      $"= {travelled:0.000} units over {tideRange:0.00} m of tide " +
-                      $"({travelled / Mathf.Max(tideRange, 1e-3f):0.000} units per metre; " +
-                      $"IsoGround.HeightScale is {IsoGround.HeightScale:0.000})");
-
-            Assert.That(travelled, Is.EqualTo(tideRange * IsoGround.HeightScale).Within(0.25f),
-                "the fleet did not climb the face by the tide it was standing in. 0.00 is the defect " +
-                "this change exists to end; anything else is the wrong projection.");
+            var shots = new List<Shot>();
+            yield return ShootTheSet("wall-fleet", states, picture, shots);
+            AssertSheRodeTheTide($"wall fleet '{subject.name}'", shots);
         }
 
         /// <summary>
@@ -240,8 +390,8 @@ namespace HiddenHarbours.Tests.PlayMode
 
             yield return _stage.FrameOn(at);
 
-            var drawn = new List<float>();
-            yield return ShootTheSet("float-boats", states, picture, drawn);
+            var shots = new List<Shot>();
+            yield return ShootTheSet("float-boats", states, picture, shots);
 
             if (picture == null)
             {
@@ -251,12 +401,7 @@ namespace HiddenHarbours.Tests.PlayMode
                 yield break;
             }
 
-            float travelled = drawn[drawn.Count - 1] - drawn[0];
-            float tideRange = states[states.Count - 1].Level - states[0].Level;
-            Debug.Log($"[{PlateDir}] float boat '{subject.name}': {travelled:0.000} units over " +
-                      $"{tideRange:0.00} m of tide");
-            Assert.That(travelled, Is.EqualTo(tideRange * IsoGround.HeightScale).Within(0.25f),
-                "a boat lying at the float did not go up and down with the planks she is made fast to");
+            AssertSheRodeTheTide($"float boat '{subject.name}'", shots);
         }
 
         /// <summary>
@@ -293,22 +438,22 @@ namespace HiddenHarbours.Tests.PlayMode
 
             yield return _stage.FrameOn(berth + new Vector2(0f, 1f));
 
-            var drawn = new List<float>();
-            yield return ShootTheSet("player-alongside", states, picture, drawn);
+            var shots = new List<Shot>();
+            yield return ShootTheSet("player-alongside", states, picture, shots);
 
-            float travelled = drawn[drawn.Count - 1] - drawn[0];
-            float tideRange = states[states.Count - 1].Level - states[0].Level;
+            float top = shots[shots.Count - 1].DrawnY;
             Debug.Log($"[{PlateDir}] player's hull at berth {NineMileCreekMooredFleet.PlayerBerthIndex()}: " +
-                      $"drawn y {string.Join(" -> ", drawn)} = {travelled:0.000} units over " +
-                      $"{tideRange:0.00} m; the wall's drawn lip line is y = " +
-                      $"{NineMileCreekWharf.MooringEdgeY:0.00}, so at high water her waterline is " +
-                      $"{NineMileCreekWharf.MooringEdgeY - drawn[drawn.Count - 1]:0.000} units under it");
+                      $"the wall's drawn lip line is y = {NineMileCreekWharf.MooringEdgeY:0.00}, so at the " +
+                      $"highest state photographed her waterline is " +
+                      $"{NineMileCreekWharf.MooringEdgeY - top:0.000} units under it");
 
-            Assert.That(travelled, Is.EqualTo(tideRange * IsoGround.HeightScale).Within(0.25f),
-                "the player's boat lay still against a wall the fleet beside her was climbing");
-            Assert.Less(drawn[drawn.Count - 1], NineMileCreekWharf.MooringEdgeY,
-                "at high water the player's waterline is drawn ABOVE the top of the quay — she is not " +
-                "alongside the wall any more, she is on it");
+            AssertSheRodeTheTide("the player's hull alongside", shots);
+
+            // ⭐ THE SORT, at the state where she is nearest the coping. Her ORDER never changes (the face
+            // sits on a fixed rung, asserted above), so what the ride can still do is carry her WATERLINE
+            // over the top of the wall — at which point she is not alongside the quay, she is on it.
+            Assert.Less(top, NineMileCreekWharf.MooringEdgeY,
+                "at high water the player's waterline is drawn ABOVE the top of the quay");
         }
 
         // ---- the fixture's own hands -------------------------------------------------------------------
