@@ -126,20 +126,44 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         /// <summary>
-        /// ⭐ The standoff is the WALL's own, read off the region's berth line rather than picked again
-        /// for the float. One convention for "alongside", so the float's boats stand off their dock
-        /// exactly as far as the fleet stands off the quay — and moving the berth line moves both.
+        /// ⭐⭐ <b>THE FLOAT KEEPS ITS OWN STANDOFF, AND MUST NOT FOLLOW THE WALL'S ANY MORE.</b>
+        ///
+        /// <para>This test used to assert the opposite — "one convention for alongside", the float's
+        /// standoff read off <c>FirstBerthPos</c> — and that was right while the wall had ONE standoff.
+        /// S1b made the wall's per-hull (her own half-beam plus a fender), so the old derivation kept
+        /// answering while quietly meaning something else: the <b>widest resident's</b> line, 3 m.</para>
+        ///
+        /// <para>The cost was not cosmetic. <see cref="NineMileCreekWharf.WidestHalfBeamAFloatBerthCarries"/>
+        /// IS the standoff, so the float's size gate widened from 4.00 m of beam to 6.00 m — admitting
+        /// the Cape Islander it exists to refuse — and every boat at the float moved a metre further out
+        /// for a change about the wall. So the assertion is inverted on purpose: the float's number is
+        /// its own, and this is the guard that says a future "tidy-up" must not re-derive it from a wall
+        /// that no longer has one answer.</para>
         /// </summary>
         [Test]
-        public void TheStandoffIsTheWallsOwn_NotASecondNumber()
+        public void TheFloatKeepsItsOwnStandoff_TheWallsIsNoLongerOneNumber()
         {
-            float wallGap = NineMileCreekWharf.MooringEdgeY - NineMileCreekMainland.FirstBerthPos.y;
+            Assert.That(NineMileCreekWharf.MooredStandoffMetres, Is.EqualTo(2f).Within(1e-4f),
+                "the float's standoff is 2 m — the number this dock has always had. Changing it moves " +
+                "every boat at the float AND the beam gate that keeps working hulls off her.");
 
-            Assert.That(NineMileCreekWharf.MooredStandoffMetres, Is.EqualTo(wallGap).Within(1e-4f),
-                "the float's standoff has stopped being the wall's — one of the two is now a typed " +
-                "number and the moorings will drift apart on the next plan edit");
             Assert.That(NineMileCreekWharf.MooredStandoffMetres, Is.GreaterThan(0f),
                 "a standoff of zero berths every boat inside the structure she is tied to");
+
+            // ⭐ The premise this guard exists for: the wall no longer HAS one standoff to borrow.
+            float narrow = NineMileCreekMainland.BerthStandoffFor(0.9f);      // the punt's half-beam
+            float widest = NineMileCreekMainland.BerthStandoffFor(0f);        // the widest resident's
+            Assert.That(narrow, Is.Not.EqualTo(widest).Within(1e-4f),
+                "the wall's standoff is the same for a punt and for the widest hull on the register, so " +
+                "it IS one number again and this test's whole reason has gone. Re-read S1b before " +
+                "deleting it — the float may legitimately go back to borrowing.");
+
+            Assert.That(NineMileCreekWharf.MooredStandoffMetres,
+                Is.Not.EqualTo(NineMileCreekWharf.MooringEdgeY - NineMileCreekMainland.FirstBerthPos.y)
+                  .Within(1e-4f),
+                "the float's standoff is once again equal to the wall's widest-resident line. If that is " +
+                "deliberate, say so here; if it is a re-derivation, it has just widened the float's beam " +
+                "gate to admit a working hull.");
             Assert.That(NineMileCreekWharf.FloatBerthOffsetMetres,
                 Is.EqualTo(NineMileCreekWharf.FloatFootprint().height * 0.5f
                            + NineMileCreekWharf.MooredStandoffMetres).Within(1e-4f),
@@ -443,8 +467,15 @@ namespace HiddenHarbours.Tests.EditMode
                 }
                 else
                 {
-                    Assert.That(at, Is.EqualTo(NineMileCreekMainland.BerthPos(o.BerthIndex)),
-                        $"'{o.Id}' lies at the wall on paper but was not placed on the berth line");
+                    // ⭐ HER OWN standoff, not the authored line: S1b stands each hull off the
+                    // timber by her own half-beam plus a fender, so a narrow boat lies closer in than a
+                    // wide one and BerthPos(index) — the widest resident's line — is nobody's berth
+                    // unless she happens to be the widest.
+                    float half = NineMileCreekMooredFleet.HalfBeamOf(o);
+                    Assert.That(at, Is.EqualTo(NineMileCreekMainland.BerthPos(o.BerthIndex, half)),
+                        $"'{o.Id}' lies at the wall on paper but was not placed on her own berth line " +
+                        $"(half-beam {half:0.00} m, so {NineMileCreekMainland.BerthStandoffFor(half):0.00} m " +
+                        "off the face)");
                     Assert.That(boat.HeadingDegrees,
                         Is.EqualTo(NineMileCreekMooredFleet.MooredHeadingDegrees()),
                         $"'{o.Id}' lies across the wall rather than along it");

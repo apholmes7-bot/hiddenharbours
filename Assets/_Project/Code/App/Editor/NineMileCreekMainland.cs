@@ -761,8 +761,17 @@ namespace HiddenHarbours.App.Editor
         /// </summary>
         public static Vector2 BerthPos(int index) => BerthPos(index, 0f);
 
-        /// <summary>The first berth's centre on the authored line. Derived rather than stored, so the
-        /// standoff has exactly one definition.</summary>
+        /// <summary>
+        /// The first berth's centre on the <b>authored</b> line. Derived rather than stored, so the
+        /// standoff has exactly one definition.
+        ///
+        /// <para>⚠️⚠️ <b>THIS IS NOT "WHERE A BOAT LIES", AND IT USED TO BE.</b> Before S1b the berth
+        /// line was a uniform 2 m off the face and this was every hull's berth; it now carries the
+        /// <i>widest resident's</i> standoff, and a narrower boat lies inboard of it. Anything asking
+        /// "how far off the wall is she?" wants <see cref="BerthStandoffFor"/> with HER half-beam.
+        /// <c>NineMileCreekWharf.MooredStandoffMetres</c> is the one that was caught reading this for
+        /// the old meaning — it widened the float's beam gate from 4.00 m to 6.00 m in silence.</para>
+        /// </summary>
         public static Vector2 FirstBerthPos => BerthPos(0);
 
         // -----------------------------------------------------------------------------------------

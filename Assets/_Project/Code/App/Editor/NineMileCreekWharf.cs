@@ -408,14 +408,29 @@ namespace HiddenHarbours.App.Editor
         public static int FloatSortingOrder => SortingBands.WharfDeckMax - 1;
 
         /// <summary>
-        /// How far off a mooring face a moored hull's centre-line lies — <b>2 m</b>, and READ OFF THE
-        /// WALL rather than picked again here: the region authored its berth line at
-        /// <see cref="NineMileCreekMainland.FirstBerthPos"/>, two metres in front of
-        /// <see cref="MooringEdgeY"/>. One convention for "alongside", so the float's boats stand off
-        /// their dock exactly as far as the fleet stands off the quay, and moving the berth line moves
-        /// both.
+        /// How far off the float's planking a moored hull's centre-line lies — <b>2 m</b>.
+        ///
+        /// <para>⚠️⚠️ <b>THIS USED TO BE READ OFF THE WALL, AND S1b IS WHY IT NO LONGER CAN BE.</b> It
+        /// was <c>MooringEdgeY − NineMileCreekMainland.FirstBerthPos.y</c> — "one convention for
+        /// alongside", when the wall had one: a uniform 2 m for every hull. The wall now stands each
+        /// boat off by <i>her own</i> half-beam plus a fender
+        /// (<see cref="NineMileCreekMainland.BerthStandoffFor"/>), so there is no single wall standoff
+        /// left to borrow. <c>FirstBerthPos</c> still answers — with the <b>widest resident's</b> line,
+        /// 3 m — and that is a different quantity wearing the old name.</para>
+        ///
+        /// <para><b>What that silently did, and what this constant prevents:</b>
+        /// <see cref="WidestHalfBeamAFloatBerthCarries"/> IS this number, because a hull wider in the
+        /// half-beam than her standoff is drawn lying ON the planking. Inheriting the wall's 3 m widened
+        /// the float's size gate from <b>4.00 m of beam to 6.00 m</b> — enough to admit a Cape Islander
+        /// (4.80 m), which is the one thing the gate exists to refuse, and it moved every boat at the
+        /// float a metre further out for a change that was about the wall.
+        /// <c>NineMileCreekFloatBerthTests.TheWorkingFleetIsTooWideForTheFloat</c> is what caught it.</para>
+        ///
+        /// <para>So the float keeps the number it has always had, as its OWN. It is a property of this
+        /// dock — how far off her planking a small craft lies — and it is now free to be re-measured
+        /// against the float's own drawn width without asking the wall's permission.</para>
         /// </summary>
-        public static float MooredStandoffMetres => MooringEdgeY - NineMileCreekMainland.FirstBerthPos.y;
+        public const float MooredStandoffMetres = 2f;
 
         /// <summary>How far off the float's CENTRE-LINE a boat alongside her lies: half the dock's own
         /// width, plus the standoff. Derived from <see cref="FloatFootprint"/>, so a re-baked float of a
