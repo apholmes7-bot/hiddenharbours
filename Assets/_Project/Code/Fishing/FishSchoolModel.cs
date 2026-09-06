@@ -32,7 +32,7 @@ namespace HiddenHarbours.Fishing
     /// that needs them to outlive the call copies them (<see cref="SchoolInfluence"/> does exactly
     /// that).</para>
     /// </summary>
-    public sealed class FishSchoolModel : IFishSchools
+    public sealed class FishSchoolModel : IFishSchools, IFishSchoolView
     {
         private readonly IFishSchoolWorld _world;
         private readonly IReadOnlyList<FishSpeciesDef> _pool;
@@ -44,9 +44,20 @@ namespace HiddenHarbours.Fishing
         private readonly DepthDropSettings _fixedDepth;
         private readonly double _fixedSecondsPerHour;
 
-        // The read-path buffers — sized once, never grown (rule 7).
-        private readonly FishSchool[] _found = new FishSchool[FishSchoolMath.SearchCells];
-        private readonly List<string>[] _species = new List<string>[FishSchoolMath.SearchCells];
+        /// <summary>
+        /// How many schools one <see cref="SchoolsInView"/> read may return. The point query is provably
+        /// O(9) (<see cref="FishSchoolMath.SearchCells"/> — a school's radius is capped to one cell), but a
+        /// VIEW spans as many cells as the camera plus one ring of neighbours covers, and the owner can
+        /// tune <c>CellSizeMetres</c> down. At the shipped 120 m cells a 16:9 camera plus the 55 m radius
+        /// ring spans 3x3, so this 5x5 budget is roomy; past it the read is capped rather than allowed to
+        /// grow without bound (rule 7, and the cap the seam documents).
+        /// </summary>
+        public const int ViewCells = 25;
+
+        // The read-path buffers — sized once, never grown (rule 7). Sized for the WIDER of the two reads,
+        // so the point query keeps using the first nine slots exactly as before.
+        private readonly FishSchool[] _found = new FishSchool[ViewCells];
+        private readonly List<string>[] _species = new List<string>[ViewCells];
         private int _foundCount;
 
         /// <summary>
@@ -126,6 +137,23 @@ namespace HiddenHarbours.Fishing
             return n;
         }
 
+        /// <inheritdoc/>
+        /// <remarks>
+        /// The SAME per-<c>(cell, slot)</c> build as <see cref="SchoolsAt"/>, over the cells the rect
+        /// covers instead of the nine around a point, and accepted on OVERLAP instead of containment.
+        /// There is no second density number, no second species pick and no view-only state — a school
+        /// drawn here is the school the rod finds when you cast onto it. See
+        /// <see cref="IFishSchoolView"/> for why that identity is the whole point of the seam.
+        /// </remarks>
+        public int SchoolsInView(Rect viewWorld, double gameSeconds, List<FishSchool> into)
+        {
+            into?.Clear();
+            int n = GatherView(viewWorld, gameSeconds);
+            if (into != null)
+                for (int i = 0; i < n; i++) into.Add(_found[i]);
+            return n;
+        }
+
         // ---- the search --------------------------------------------------------------------------------
 
         /// <summary>
@@ -140,10 +168,92 @@ namespace HiddenHarbours.Fishing
         private int Gather(Vector2 worldPos, double gameSeconds)
         {
             _foundCount = 0;
+            if (!Prepare(gameSeconds, out Query q)) return 0;
+
+            int cx = FishSchoolMath.CellIndex(worldPos.x, q.Settings.CellSizeMetres);
+            int cy = FishSchoolMath.CellIndex(worldPos.y, q.Settings.CellSizeMetres);
+
+            for (int dy = -1; dy <= 1; dy++)
+            for (int dx = -1; dx <= 1; dx++)
+                Accept(cx + dx, cy + dy, gameSeconds, in q, worldPos, useRect: false, default);
+
+            return _foundCount;
+        }
+
+        /// <summary>
+        /// Fill <see cref="_found"/> with every school whose disc OVERLAPS <paramref name="viewWorld"/>
+        /// and whose window is open — <see cref="Gather"/>'s twin, and deliberately built out of the very
+        /// same <see cref="Prepare"/> and <see cref="Accept"/> so the two reads cannot drift apart.
+        ///
+        /// <para>The cell span is the rect GROWN by the largest radius a school may have, because a school
+        /// centred outside the view can still reach into it. <see cref="FishSchoolMath.Sanitized"/> caps
+        /// that radius to one cell, so one ring of neighbours is provably enough and the span stays
+        /// finite. It is then clamped to <see cref="ViewCells"/> — a presentation budget, never a claim
+        /// about how many fish are there (see <see cref="IFishSchoolView.SchoolsInView"/>).</para>
+        /// </summary>
+        private int GatherView(Rect viewWorld, double gameSeconds)
+        {
+            _foundCount = 0;
+            if (!Prepare(gameSeconds, out Query q)) return 0;
+
+            float cell = q.Settings.CellSizeMetres;
+            float reach = q.Settings.MaxRadiusMetres;      // already clamped to one cell by Sanitized
+
+            int x0 = FishSchoolMath.CellIndex(viewWorld.xMin - reach, cell);
+            int x1 = FishSchoolMath.CellIndex(viewWorld.xMax + reach, cell);
+            int y0 = FishSchoolMath.CellIndex(viewWorld.yMin - reach, cell);
+            int y1 = FishSchoolMath.CellIndex(viewWorld.yMax + reach, cell);
+
+            for (int cy = y0; cy <= y1; cy++)
+            for (int cx = x0; cx <= x1; cx++)
+            {
+                if (_foundCount >= _found.Length) return _foundCount;   // the documented cap
+                Accept(cx, cy, gameSeconds, in q, default, useRect: true, viewWorld);
+            }
+
+            return _foundCount;
+        }
+
+        /// <summary>Everything a query hoists before it touches a single cell — weather, date, seed and
+        /// the slot — so the two gathers agree about the world by construction, not by repetition.</summary>
+        private readonly struct Query
+        {
+            public readonly FishSchoolSettings Settings;
+            public readonly double SecondsPerHour;
+            public readonly long Slot;
+            public readonly double SlotStart;
+            public readonly float SeaState01;
+            public readonly Season Season;
+            public readonly int Seed;
+            public readonly string RegionId;
+            public readonly float Chance01;
+
+            public Query(in FishSchoolSettings settings, double secondsPerHour, long slot, double slotStart,
+                         float seaState01, Season season, int seed, string regionId, float chance01)
+            {
+                Settings = settings;
+                SecondsPerHour = secondsPerHour;
+                Slot = slot;
+                SlotStart = slotStart;
+                SeaState01 = seaState01;
+                Season = season;
+                Seed = seed;
+                RegionId = regionId;
+                Chance01 = chance01;
+            }
+        }
+
+        /// <summary>
+        /// Hoist the whole-query terms once. False means the sea is empty for this instant and not one
+        /// cell need be visited — the owner's off switch, or a weather/date the fish do not show in.
+        /// </summary>
+        private bool Prepare(double gameSeconds, out Query q)
+        {
+            q = default;
 
             FishSchoolSettings s = Settings;
-            if (s.BaseAppearanceChance01 <= 0f) return 0;      // the owner's off switch: an empty sea
-            if (_world == null) return 0;
+            if (s.BaseAppearanceChance01 <= 0f) return false;   // the owner's off switch: an empty sea
+            if (_world == null) return false;
 
             double secondsPerHour = SecondsPerHour;
             double slotSeconds = FishSchoolMath.SlotSeconds(in s, secondsPerHour);
@@ -153,34 +263,52 @@ namespace HiddenHarbours.Fishing
             // The world is asked about the moment the schools FORMED, not about now — see IFishSchoolWorld.
             float seaState01 = _world.SeaState01At(slotStart);
             Season season = _world.SeasonAt(slotStart);
-            int seed = _world.WorldSeed;
-            string regionId = _world.RegionId;
 
-            // Weather × date is the same for all nine cells, so it is hoisted here and the presence draw is
+            // Weather x date is the same for every cell, so it is hoisted here and the presence draw is
             // judged against it BEFORE any bathymetry is sampled — the location bar can only take the
             // chance to zero, never raise it.
             float chance = FishSchoolMath.AppearanceChance01(seaState01, season, in s);
-            if (chance <= 0f) return 0;
+            if (chance <= 0f) return false;
 
-            int cx = FishSchoolMath.CellIndex(worldPos.x, s.CellSizeMetres);
-            int cy = FishSchoolMath.CellIndex(worldPos.y, s.CellSizeMetres);
+            q = new Query(in s, secondsPerHour, slot, slotStart, seaState01, season,
+                          _world.WorldSeed, _world.RegionId, chance);
+            return true;
+        }
 
-            for (int dy = -1; dy <= 1; dy++)
-            for (int dx = -1; dx <= 1; dx++)
-            {
-                if (!TryBuild(seed, regionId, cx + dx, cy + dy, slot, slotStart, secondsPerHour,
-                              seaState01, chance, in s, out FishSchool school, out uint key)) continue;
-                if (!school.Contains(worldPos) || !school.IsActiveAt(gameSeconds)) continue;
+        /// <summary>
+        /// Build the one school a <c>(cell, slot)</c> holds and keep it if it passes the query's spatial
+        /// test and its own window. <b>The single place a school is admitted to a result</b>, for both
+        /// reads — which is what makes "the fish you see are the fish you catch" structural.
+        /// </summary>
+        private void Accept(int cellX, int cellY, double gameSeconds, in Query q,
+                            Vector2 worldPos, bool useRect, Rect viewWorld)
+        {
+            if (_foundCount >= _found.Length) return;
 
-                // Only a school we are actually ON pays for its species list.
-                List<string> ids = _species[_foundCount];
-                FillSpecies(key, school.DepthMetres, regionId, season, in s, ids);
-                _found[_foundCount++] = new FishSchool(school.Centre, school.RadiusMetres,
-                                                       school.DepthMetres, school.MarkCount, ids,
-                                                       school.StartSeconds, school.EndSeconds);
-            }
+            if (!TryBuild(q.Seed, q.RegionId, cellX, cellY, q.Slot, q.SlotStart, q.SecondsPerHour,
+                          q.SeaState01, q.Chance01, in q.Settings, out FishSchool school, out uint key))
+                return;
 
-            return _foundCount;
+            if (!school.IsActiveAt(gameSeconds)) return;
+            if (useRect ? !OverlapsRect(school, viewWorld) : !school.Contains(worldPos)) return;
+
+            // Only a school the query actually keeps pays for its species list.
+            List<string> ids = _species[_foundCount];
+            FillSpecies(key, school.DepthMetres, q.RegionId, q.Season, in q.Settings, ids);
+            _found[_foundCount++] = new FishSchool(school.Centre, school.RadiusMetres,
+                                                   school.DepthMetres, school.MarkCount, ids,
+                                                   school.StartSeconds, school.EndSeconds);
+        }
+
+        /// <summary>Does the school's disc touch the rect? Closest-point test — a school whose centre is
+        /// off screen still counts while any of its water is on it.</summary>
+        private static bool OverlapsRect(in FishSchool school, Rect r)
+        {
+            if (school.RadiusMetres <= 0f) return false;
+            float nx = Mathf.Clamp(school.Centre.x, r.xMin, r.xMax);
+            float ny = Mathf.Clamp(school.Centre.y, r.yMin, r.yMax);
+            float dx = school.Centre.x - nx, dy = school.Centre.y - ny;
+            return dx * dx + dy * dy <= school.RadiusMetres * school.RadiusMetres;
         }
 
         /// <summary>
