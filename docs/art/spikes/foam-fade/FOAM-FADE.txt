@@ -1,0 +1,8 @@
+foam buffer, 96 m window, cape at 8 kn, 60 fps
+  the fixed arm's format on this device: RG32 (4 bytes/texel, shipped RG16 = 2)
+
+figure            | arm     | drawn texels | peak coverage | drawn tail astern
+1 the run 20 s    | shipped |        23004 |        1.0000 |          88.0 m
+1 the run 20 s    | fixed   |        19070 |        1.0000 |          81.9 m
+2 +30 s tail      | shipped |        23004 |        1.0000 |          88.0 m
+2 +30 s tail      | fixed   |            0 |        0.0312 |           0.0 m
