@@ -279,9 +279,15 @@ namespace HiddenHarbours.Tests.PlayMode
                 $"she could not walk within reach of her own doorway: {gap:F2} m against {reach:F2}. " +
                 Where());
 
+            // ⚠ A STEP BACK OFF THE SILL BEFORE THE PRESS, and the reason is what the next claim means.
+            // Standing IN an open doorway with a live approach is a crossing — correctly, that is the
+            // ruling — so pressing from the sill would prove nothing about whether the PRESS carried her.
+            // From a step back the two are separable, and the claim below is about the leaf alone.
+            yield return StepClearOfHisDoorway(opening);
+
             // ⭐ One press, and it moves the LEAF and nothing else. This is the whole of the 2026-09-04
-            // fix, at the one place the owner met it: when the cue finishes she is STILL BELOW, standing
-            // at an open door she has not yet walked through.
+            // fix, at the one place the owner met it: when the cue finishes she is STILL BELOW, with an
+            // open door in front of her that she has not yet walked through.
             Assert.IsTrue(opening.WorkTheCabinDoor(), "the door refused the press. " + Where());
             yield return Until(() => !opening.CabinDoor.IsCueing, "his leaf to finish swinging");
             Assert.IsTrue(opening.CabinDoor.IsOpen, "the press left it standing open. " + Where());
@@ -504,6 +510,14 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.IsNotNull(door, "her cabin has no door to walk through");
             Assert.IsTrue(door.IsOpen, "this walks through an OPEN door; nothing here presses one");
 
+            // ⚠ CLEAR OF IT FIRST, and this is not fixture housekeeping — it is the shipped rule. She may
+            // already be standing IN the doorway: the game opens with her in Armand's (a threshold is on
+            // the sole's edge by construction), and the latch starts DISARMED precisely so that first
+            // frame does not walk her out of his cabin before she has touched a key. One approach is one
+            // crossing, so an approach has to begin outside the band — which for a player means taking a
+            // step into the room before the door will let her out of it.
+            yield return StepClearOfHisDoorway(opening);
+
             bool startedBelow = opening.IsBelowDecks;
             Vector3 last = _player.transform.position;
             float deadline = Time.realtimeSinceStartup + 20f;
@@ -717,6 +731,76 @@ namespace HiddenHarbours.Tests.PlayMode
         // =============================================================================================
         //  walking her about his deck
         // =============================================================================================
+
+        /// <summary>
+        /// ⭐⭐ <b>OUT THROUGH HIS OPEN DOOR AND BACK IN, UNDER WAY.</b> The owner's 2026-09-04 sentence
+        /// end to end: <i>"walking in and out of cabin isnt seamless with door open."</i>
+        ///
+        /// <para>The opening passage above proves ONE crossing. This proves his aft door is a doorway and
+        /// not a one-shot: she comes up through it, walks his deck while he is still making way, and walks
+        /// back down through the same opening — two crossings, no press between them, and no frame in
+        /// which anybody moved her.</para>
+        ///
+        /// <para><b>The latch is what this would catch if it broke.</b> An unlatched doorway would put her
+        /// back out on the frame after she came in, and back in on the frame after that, at the frame rate
+        /// — so the step clear between the two crossings is asked of the DOOR
+        /// (<c>BoatCabinDoor.PassageIsArmed</c>) rather than counted in metres here.</para>
+        /// </summary>
+        [UnityTest]
+        public IEnumerator OnDeck_SheWalksOutAndBackInThroughHisOpenDoor_UnderWay_AndNothingIsPressed()
+        {
+            Assert.IsNotNull(_skipper, "the arrival skipper Def must exist for this to mean anything");
+            ArrivalOpening opening = Build();
+
+            Assert.IsTrue(opening.TryBegin(), "a fresh save must be brought in");
+            Assert.IsTrue(opening.IsBelowDecks, "the game did not open below decks. " + Where());
+            Assert.IsTrue(opening.CabinDoor.IsOpen,
+                "his aft door must stand OPEN on a fair dawn — that is what makes this a walk. " + Where());
+
+            // ---- OUT, and nothing was pressed ---------------------------------------------------
+            float worstJump = 0f;
+            yield return SheWalksThroughHisOpenDoor(opening, j => worstJump = Mathf.Max(worstJump, j));
+            Assert.IsFalse(opening.IsBelowDecks, "she never came up through his open door. " + Where());
+            Assert.AreNotEqual(ArrivalOpening.Phase.Moored, opening.Current,
+                "she is tied up already, so this run says nothing about a crossing under way. " + Where());
+
+            // ---- a step clear of the sill, so the next approach is a fresh one -------------------
+            yield return StepClearOfHisDoorway(opening);
+
+            // ---- and BACK IN, through the same opening, still with no press ----------------------
+            Assert.IsTrue(opening.CabinDoor.IsOpen, "she left it open behind her. " + Where());
+            yield return SheWalksThroughHisOpenDoor(opening, j => worstJump = Mathf.Max(worstJump, j));
+            Assert.IsTrue(opening.IsBelowDecks,
+                "she walked into his open doorway off the deck and stayed outside it. " + Where());
+
+            Assert.Less(worstJump, 0.5f,
+                $"she moved {worstJump:F2} m in one frame crossing his threshold. Continuity is the law: " +
+                "the two frames one doorway joins must meet without a step, in both directions. " +
+                Where());
+            AssertArmandKeepsTheHelm();
+        }
+
+        /// <summary>Walk her off the sill until the doorway will take her again. How far that is belongs to
+        /// the DOOR — one whole clear width of daylight — so this asks it rather than counting metres.
+        /// Whichever floor she is on, "away" is away from the same drawn doorway.</summary>
+        private IEnumerator StepClearOfHisDoorway(ArrivalOpening opening)
+        {
+            BoatCabinDoor door = opening.CabinDoor;
+            float deadline = Time.realtimeSinceStartup + 10f;
+
+            while (!door.PassageIsArmed && Time.realtimeSinceStartup < deadline)
+            {
+                Vector2 away = (Vector2)_player.transform.position - (Vector2)door.transform.position;
+                Vector2 heading = away.sqrMagnitude > 1e-6f ? away.normalized : Vector2.down;
+
+                if (opening.IsBelowDecks) opening.WalkTheCabin(heading, Time.deltaTime);
+                else                      opening.WalkTheDeck(heading, Time.deltaTime);
+                yield return null;
+            }
+
+            Assert.IsTrue(door.PassageIsArmed,
+                          "she could not get a doorway's width clear of his sill. " + Where());
+        }
 
         /// <summary>Come up the way the player does — and since the 2026-08-28 ruling that is a WALK and
         /// not a press: Armand is aboard his own boat on a fair dawn, so his aft door is standing open and

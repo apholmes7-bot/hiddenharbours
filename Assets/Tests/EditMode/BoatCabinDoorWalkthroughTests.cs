@@ -428,6 +428,84 @@ namespace HiddenHarbours.Tests.EditMode
                       $"({worstHull}):\n{report}");
         }
 
+        [Test]
+        public void EveryMeasuredSoleIsDeepEnoughToLetHerOutOfItAgain()
+        {
+            // ⭐⭐ THE OTHER HALF, and the one that would TRAP the player rather than merely shut her out.
+            // One approach is one crossing, so after walking in she must get a whole clear width from the
+            // threshold before the doorway will take her again. If a cabin's sole were shallower than that
+            // release radius there would be nowhere on it far enough to stand, the latch could never
+            // re-arm, and she would be below decks for good — with the door standing open in front of her.
+            //
+            // The test is the sole's own outline: a necessary condition, honestly named. Whether an
+            // obstruction stands in the way of the far corner is a pathfinding question this does not ask;
+            // what it catches is the room that is simply too small, which is the failure that ships.
+            var report = new StringBuilder();
+            int measured = 0;
+            float tightest = float.PositiveInfinity;
+            string tightestHull = "none";
+
+            foreach (string guid in AssetDatabase.FindAssets("t:BoatVisualDef"))
+            {
+                var visual = AssetDatabase.LoadAssetAtPath<BoatVisualDef>(
+                    AssetDatabase.GUIDToAssetPath(guid));
+                if (visual == null || visual.Interior == null) continue;
+
+                BoatInteriorDoor door = visual.Interior.Door;
+                if (door == null || !BoatCabinThreshold.HasBand(door)) continue;
+
+                // The sole she walks in ONTO, picked by sill height. ⚠ This is the DEF's arithmetic and
+                // not BoatInterior.LevelIndexAtHeight, which additionally skips levels a hull's sheets
+                // never baked (or asks her mesh, on a converted hull) — state a def does not carry. For
+                // this guard the nearest sole is the right question anyway: it is the shallowest candidate
+                // she could be put on, so passing here passes for whichever one the runtime picks.
+                BoatInteriorLevel sole = NearestSole(visual.Interior, door.ThresholdPoint.z);
+                if (sole == null) continue;
+
+                measured++;
+                Vector2 doorway = BoatCabinThreshold.PointOf(door);
+                float release = BoatCabinThreshold.ReleaseRadiusMetres(door);
+
+                float deepest = 0f;
+                foreach (Vector2 v in sole.Outline)
+                    deepest = Mathf.Max(deepest, Vector2.Distance(v, doorway));
+
+                float margin = deepest - release;
+                if (margin < tightest) { tightest = margin; tightestHull = visual.name; }
+                report.AppendLine(
+                    $"  {visual.name,-36} release {release:F3} m   sole reaches {deepest:F3} m   " +
+                    $"margin {margin:F3} m   ('{sole.Id}')");
+
+                Assert.Greater(deepest, release,
+                    $"{visual.name}: her '{sole.Id}' reaches only {deepest:F3} m from her own doorway, " +
+                    $"against a release radius of {release:F3} m. There is nowhere on that sole she can " +
+                    "stand that counts as clear of the threshold, so once she walks in the doorway can " +
+                    "never re-arm and she is below decks for good.");
+            }
+
+            Assert.Greater(measured, 0, "no measured hull reached this guard — it is asleep");
+
+            Debug.Log($"[cabin-soles] {measured} measured hulls, tightest margin {tightest:F3} m " +
+                      $"({tightestHull}):\n{report}");
+        }
+
+        /// <summary>The usable level whose sole sits nearest <paramref name="zMeters"/>, or null when the
+        /// def declares none — the def-only half of the runtime's own level pick.</summary>
+        private static BoatInteriorLevel NearestSole(BoatInteriorDef interior, float zMeters)
+        {
+            BoatInteriorLevel best = null;
+            float bestGap = float.PositiveInfinity;
+
+            if (interior.Levels == null) return null;
+            foreach (BoatInteriorLevel level in interior.Levels)
+            {
+                if (level == null || !level.IsUsable()) continue;
+                float gap = Mathf.Abs(level.SoleZMeters - zMeters);
+                if (gap < bestGap) { bestGap = gap; best = level; }
+            }
+            return best;
+        }
+
         /// <summary>How far <paramref name="point"/> is from the nearest place a walker may stand, in the
         /// hull's own metres — 0 when it is ON the deck. WASHBOARDS do not count: a side deck is somewhere
         /// she climbs onto, deliberately not part of the free walk, and a doorway reachable only from the
