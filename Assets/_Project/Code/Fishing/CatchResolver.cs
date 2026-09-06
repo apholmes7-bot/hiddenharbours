@@ -71,13 +71,36 @@ namespace HiddenHarbours.Fishing
         /// </summary>
         public readonly SchoolInfluence School;
 
+        /// <summary>
+        /// Signed rate of change of the water level in METRES PER IN-GAME HOUR — flood positive, ebb
+        /// negative, near zero at slack. The tide's DERIVATIVE, which <see cref="TideHeight"/> cannot
+        /// express and which is the whole of "bites on the moving water"
+        /// (<see cref="FishSpeciesDef.MovingWaterOnly"/>).
+        ///
+        /// <para><b><see cref="float.NaN"/> means "not sampled"</b>, and every gate reads that as NO
+        /// gate. It is deliberately NOT 0: a default-constructed context would then claim dead slack
+        /// water and silently starve the roll of every moving-water species. Only the live fishing path
+        /// fills this in; rigs, fixtures and the twenty existing constructor call sites leave it
+        /// unsampled and roll bit-for-bit as they always did.</para>
+        /// </summary>
+        public readonly float TideRateMetresPerHour;
+
+        /// <summary>The owner's slack-water bar for this roll
+        /// (<c>GameConfig.FishSchools.MovingWaterMetresPerHour</c>), carried here so the resolver and the
+        /// school model judge "moving" against ONE number. 0 = the gate never bites.</summary>
+        public readonly float MovingWaterThresholdMetresPerHour;
+
         /// <summary>The fullest constructor — a cast carrying depth, tackle, bait and the fish under it.</summary>
         public CatchContext(string regionId, float tideHeight, float hourOfDay, Season season, Gear gear,
                             float heldDepthM, float floorDepthM,
                             LureTag lure,
                             System.Collections.Generic.IReadOnlyList<string> baitFavours,
-                            in SchoolInfluence school)
+                            in SchoolInfluence school,
+                            float tideRateMetresPerHour = float.NaN,
+                            float movingWaterThresholdMetresPerHour = 0f)
         {
+            TideRateMetresPerHour = tideRateMetresPerHour;
+            MovingWaterThresholdMetresPerHour = movingWaterThresholdMetresPerHour;
             RegionId = regionId;
             TideHeight = tideHeight;
             HourOfDay = hourOfDay;
@@ -142,7 +165,8 @@ namespace HiddenHarbours.Fishing
                 && f.GearAllowed(ctx.Gear)
                 && f.SeasonAllowed(ctx.Season)
                 && f.TimeAllowed(ctx.HourOfDay)
-                && f.TideAllowed(ctx.TideHeight);
+                && f.TideAllowed(ctx.TideHeight)
+                && f.MovingWaterAllowed(ctx.TideRateMetresPerHour, ctx.MovingWaterThresholdMetresPerHour);
         }
 
         /// <summary>Pick a species by weighted chance among those that match, or null if none bite.

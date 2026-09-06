@@ -486,6 +486,76 @@ namespace HiddenHarbours.Tests.EditMode
                         "the cap must not be so low that density never matters at all");
         }
 
+        // ---- the two new gates (owner ruling 2026-09-06) -------------------------------------------
+
+        /// <summary>
+        /// A species with two windows bites in BOTH and not between — the striped bass's Dawn+Dusk,
+        /// which one window cannot say.
+        /// </summary>
+        [Test]
+        public void ASecondWindowIsAdditiveNotAReplacement()
+        {
+            FishSpeciesDef bass = Species("fish.striped_bass", FishDepthBand.Shallows);
+            bass.StartHour = 5f; bass.EndHour = 9f;
+            bass.SecondStartHour = 17f; bass.SecondEndHour = 21f;
+
+            Assert.IsTrue(bass.TimeAllowed(6f), "dawn window");
+            Assert.IsTrue(bass.TimeAllowed(18f), "dusk window");
+            Assert.IsFalse(bass.TimeAllowed(12f), "midday is between the two windows");
+            Assert.IsFalse(bass.TimeAllowed(2f), "the small hours are outside both");
+        }
+
+        /// <summary>
+        /// ⭐ THE OWNER'S "everything else stays as it is". A species that sets neither new field behaves
+        /// bit-for-bit as it did before they existed — no time gate, no water gate. If this reddens, the
+        /// append became a behaviour change for every fish in the game.
+        /// </summary>
+        [Test]
+        public void UnsetFieldsGateNothing()
+        {
+            FishSpeciesDef plain = Species("fish.atlantic_cod", FishDepthBand.None);
+            plain.StartHour = 0f; plain.EndHour = 24f;      // how every shipped def says "all day"
+
+            for (float h = 0f; h < 24f; h += 0.5f)
+                Assert.IsTrue(plain.TimeAllowed(h), $"an ungated species refused hour {h}");
+
+            // and the water gate is off for anything that does not ask for it, at any rate at all
+            Assert.IsTrue(plain.MovingWaterAllowed(0f, 0.25f), "slack water barred an ungated species");
+            Assert.IsTrue(plain.MovingWaterAllowed(float.NaN, 0.25f));
+            Assert.IsTrue(plain.MovingWaterAllowed(9f, 0.25f));
+        }
+
+        /// <summary>The moving-water gate is about the tide's RATE, not its height: a bass feeds on the
+        /// run of the flood AND the run of the ebb, and goes off at slack.</summary>
+        [Test]
+        public void MovingWaterGatesOnTheRateAndIsSymmetric()
+        {
+            FishSpeciesDef bass = Species("fish.striped_bass", FishDepthBand.Shallows);
+            bass.MovingWaterOnly = true;
+            const float bar = 0.25f;
+
+            Assert.IsTrue(bass.MovingWaterAllowed(0.9f, bar), "a running flood must feed");
+            Assert.IsTrue(bass.MovingWaterAllowed(-0.9f, bar), "and the ebb exactly as much");
+            Assert.IsFalse(bass.MovingWaterAllowed(0.05f, bar), "slack water must not");
+            Assert.IsFalse(bass.MovingWaterAllowed(-0.05f, bar));
+            Assert.IsTrue(bass.MovingWaterAllowed(bar, bar), "the bar itself counts as moving");
+
+            // ⚠ An UNSAMPLED rate must never starve the roll — a rig or a fixture with no tide behind it
+            // has to keep fishing, which is why the sentinel is NaN and not 0.
+            Assert.IsTrue(bass.MovingWaterAllowed(float.NaN, bar),
+                          "an unsampled tide barred a species — the gate must fail OPEN");
+        }
+
+        /// <summary>A negative control for the gate: with the owner's bar at 0 nothing is ever slack, so
+        /// the guard above is not passing because the gate is inert.</summary>
+        [Test]
+        public void AZeroBarMeansTheWaterGateNeverBites()
+        {
+            FishSpeciesDef bass = Species("fish.striped_bass", FishDepthBand.Shallows);
+            bass.MovingWaterOnly = true;
+            Assert.IsTrue(bass.MovingWaterAllowed(0f, 0f), "a zero bar must let dead slack through");
+        }
+
         /// <summary>The owner's off switch empties the water as well as the glass.</summary>
         [Test]
         public void TheOwnersOffSwitchEmptiesTheWater()

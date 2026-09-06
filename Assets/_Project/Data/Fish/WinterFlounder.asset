@@ -22,14 +22,14 @@ MonoBehaviour:
   - region.st_peters
   - region.nine_mile_creek
   AllowedGear: 3
-  Seasons: 15
+  Seasons: 5
   MinTide: -10
   MaxTide: 10
-  StartHour: 0
-  EndHour: 24
+  StartHour: 6
+  EndHour: 18
   DepthBands: 6
   BehaviorFlags: 1
-  FavoredLures: 4
+  FavoredLures: 0
   MinSchoolMarks: 1
   MaxSchoolMarks: 2
   MinWeightKg: 0.2

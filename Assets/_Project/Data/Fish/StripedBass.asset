@@ -25,8 +25,11 @@ MonoBehaviour:
   Seasons: 6
   MinTide: -10
   MaxTide: 10
-  StartHour: 0
-  EndHour: 24
+  StartHour: 5
+  EndHour: 9
+  SecondStartHour: 17
+  SecondEndHour: 21
+  MovingWaterOnly: 1
   DepthBands: 6
   BehaviorFlags: 2
   FavoredLures: 7

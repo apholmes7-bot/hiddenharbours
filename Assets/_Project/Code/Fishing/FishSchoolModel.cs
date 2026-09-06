@@ -227,10 +227,15 @@ namespace HiddenHarbours.Fishing
             public readonly int Seed;
             public readonly string RegionId;
             public readonly float Chance01;
+            public readonly float HourOfDay;
+            public readonly float TideRateMetresPerHour;
 
             public Query(in FishSchoolSettings settings, double secondsPerHour, long slot, double slotStart,
-                         float seaState01, Season season, int seed, string regionId, float chance01)
+                         float seaState01, Season season, int seed, string regionId, float chance01,
+                         float hourOfDay, float tideRateMetresPerHour)
             {
+                HourOfDay = hourOfDay;
+                TideRateMetresPerHour = tideRateMetresPerHour;
                 Settings = settings;
                 SecondsPerHour = secondsPerHour;
                 Slot = slot;
@@ -271,7 +276,8 @@ namespace HiddenHarbours.Fishing
             if (chance <= 0f) return false;
 
             q = new Query(in s, secondsPerHour, slot, slotStart, seaState01, season,
-                          _world.WorldSeed, _world.RegionId, chance);
+                          _world.WorldSeed, _world.RegionId, chance,
+                          _world.HourOfDayAt(slotStart), _world.TideRateMetresPerHourAt(slotStart));
             return true;
         }
 
@@ -294,7 +300,7 @@ namespace HiddenHarbours.Fishing
 
             // Only a school the query actually keeps pays for its species list.
             List<string> ids = _species[_foundCount];
-            FillSpecies(key, school.DepthMetres, q.RegionId, q.Season, in q.Settings, ids);
+            FillSpecies(key, school.DepthMetres, in q, ids);
 
             // ⚠ DENSITY IS RESOLVED AFTER THE SPECIES, and only here (owner's ruling 2026-09-06: a
             // herring shoal is not a flounder). TryBuild's count is provisional and never escapes — it
@@ -394,9 +400,12 @@ namespace HiddenHarbours.Fishing
         /// save. Allocation-free: the caller's list is reused and the selection is an O(n·m) scan over a
         /// handful of candidates.</para>
         /// </summary>
-        private void FillSpecies(uint key, float schoolDepthM, string regionId, Season season,
-                                 in FishSchoolSettings s, List<string> into)
+        private void FillSpecies(uint key, float schoolDepthM, in Query q, List<string> into)
         {
+            string regionId = q.RegionId;
+            Season season = q.Season;
+            FishSchoolSettings s = q.Settings;
+
             into.Clear();
             if (_pool == null || _pool.Count == 0) return;
 
@@ -408,15 +417,16 @@ namespace HiddenHarbours.Fishing
             int wanted = FishSchoolMath.SpeciesCountFor(key, in s);
 
             // Pass 1: region + season + depth band. Pass 2 (only if pass 1 found nothing): drop the band.
-            if (!Select(key, regionId, season, band, requireBand: true, wanted, into))
-                Select(key, regionId, season, band, requireBand: false, wanted, into);
+            if (!Select(key, in q, band, requireBand: true, wanted, into))
+                Select(key, in q, band, requireBand: false, wanted, into);
         }
 
         /// <summary>Take the <paramref name="wanted"/> highest-scoring candidates that pass the filters.
         /// Returns true if anything was written.</summary>
-        private bool Select(uint key, string regionId, Season season, FishDepthBand band,
+        private bool Select(uint key, in Query q, FishDepthBand band,
                             bool requireBand, int wanted, List<string> into)
         {
+            string regionId = q.RegionId;
             for (int picked = 0; picked < wanted; picked++)
             {
                 string best = null;
@@ -427,7 +437,15 @@ namespace HiddenHarbours.Fishing
                     FishSpeciesDef f = _pool[i];
                     if (f == null || string.IsNullOrEmpty(f.Id)) continue;
                     if (!f.RegionAllowed(regionId)) continue;
-                    if (!f.SeasonAllowed(season)) continue;
+                    if (!f.SeasonAllowed(q.Season)) continue;
+
+                    // ⚠ The SAME two gates the catch resolver applies, read off the SAME Def fields —
+                    // a species the rod could not catch here and now must never be put in a school for
+                    // the water to draw. Both no-op when the world cannot sample them (a rig, a fixture),
+                    // so nothing that worked before this existed starts starving.
+                    if (q.HourOfDay >= 0f && !f.TimeAllowed(q.HourOfDay)) continue;
+                    if (!f.MovingWaterAllowed(q.TideRateMetresPerHour,
+                                              q.Settings.MovingWaterMetresPerHour)) continue;
                     if (requireBand && f.DepthBands != FishDepthBand.None && (f.DepthBands & band) == 0) continue;
                     if (Contains(into, f.Id)) continue;
 
