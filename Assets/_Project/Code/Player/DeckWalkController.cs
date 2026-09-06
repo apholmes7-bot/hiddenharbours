@@ -636,6 +636,16 @@ namespace HiddenHarbours.Player
 
             transform.position = boatPos + relative;
 
+            // ⭐ AND HER CABIN DOOR, if this hull has one standing open. The owner's 2026-08-28 ruling is
+            // that "a player can walk through freely when opened", so the crossing is a step and not a
+            // press: the door owns the threshold band and the one-crossing-per-approach latch (both sides
+            // of one doorway must share one), and all this does is tell it where she is standing.
+            //
+            // ⚠ Not on the rail. Out on the washboard _deckLocal is read back off her world offset with
+            // no foreshortening inverted, so it is not the hull-frame point the threshold is measured in
+            // — and a doorway is not something you cross from the gunwale anyway.
+            if (!_onWashboard) WalkThroughAnOpenCabinDoor();
+
             // Publish the LIVE deck frame through Core (DeckStance — Rod Fishing v2 §4): hull position,
             // the drawn facing, the walkable bounds and where the angler actually stands in them,
             // re-published every tick so the drifting, weathervaning hull reaches consumers (the
@@ -645,6 +655,27 @@ namespace HiddenHarbours.Player
             // Publisher-owned: cleared the moment deck-walking ends (OnDisable).
             DeckStance.Publish(this, new DeckStanceState(boatPos, drawnHeading, stanceCenter,
                                                          stanceHalfExtents, _deckLocal));
+        }
+
+        /// <summary>
+        /// ⭐ <b>Has she just stepped through this hull's cabin door?</b> One call a tick, handing the door
+        /// where she is standing in the HULL's own metres — the frame <c>_deckLocal</c> is already in, and
+        /// the frame a threshold is measured in, so nothing is projected, inverted or re-derived here.
+        ///
+        /// <para>Every decision belongs to the door: whether the leaf is open, whether she is in the
+        /// band, whether this approach has already been spent, and which way the crossing goes
+        /// (<c>BoatCabinDoor.TryWalkThrough</c>). This component owns where the player stands and nothing
+        /// else — the same division of labour it keeps with the hull presenter and the deck areas.</para>
+        ///
+        /// <para>Silent and free on the whole rest of the fleet: <c>Resolve</c> is one
+        /// <c>GetComponent</c> on the boat root, and a hull with no measured interior has no door to
+        /// find.</para>
+        /// </summary>
+        private void WalkThroughAnOpenCabinDoor()
+        {
+            BoatCabinDoor door = BoatInteriorInstaller.Resolve(
+                _boatRoot != null ? _boatRoot.gameObject : null);
+            if (door != null) door.TryWalkThrough(_deckLocal);
         }
 
         /// <summary>Deck-walking ended (helm taken / stepped ashore / teardown) — the player no longer

@@ -68,6 +68,22 @@ namespace HiddenHarbours.Boats
         /// <summary>The door it built, or null.</summary>
         public BoatCabinDoor Door { get; private set; }
 
+        /// <summary>
+        /// <b>The cabin door installed on <paramref name="root"/>, or null</b> — the one read a WALKER
+        /// makes, null-safe on a boat with no cabin and on one that has not been built yet.
+        ///
+        /// <para>Deliberately the same shape as <see cref="BoatDeckAreas.Resolve"/>, and asked live for
+        /// its reason: the dev hull picker changes the boat under the player's feet, and a door captured
+        /// at boarding would be the previous hull's. One <c>GetComponent</c> on the root, no allocation —
+        /// the discipline <c>DeckWalkController.LiveDeck</c> already keeps.</para>
+        /// </summary>
+        public static BoatCabinDoor Resolve(GameObject root)
+        {
+            if (root == null) return null;
+            var installer = root.GetComponent<BoatInteriorInstaller>();
+            return installer != null ? installer.Door : null;
+        }
+
         /// <summary>The cutaway it built, or null on a hull with no mesh to cut. Read by tests.</summary>
         public BoatCutaway Cutaway { get; private set; }
 
@@ -182,7 +198,11 @@ namespace HiddenHarbours.Boats
 
             Door = doorGo.AddComponent<BoatCabinDoor>();
             Door.Configure(Interior, $"fixture.boat.{def.Id}.{DoorId(door)}", -1,
-                           ReachMetres(door), "Go below", "Come out");
+                           // ⚠ The labels name what the PRESS does, and since 2026-08-28 the press moves
+                           // the LEAF — going below is a walk and has no prompt of its own. "Go below" on
+                           // a press that opens a door would be the words drifting from the action, which
+                           // is the exact failure VerbLabel derives itself to avoid (rule 6).
+                           ReachMetres(door), "Open the door", "Close the door");
         }
 
         /// <summary>The door's own id, or a stable stand-in. Ids must be unique among live registrants,
