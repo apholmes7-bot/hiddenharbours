@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>ATV Pack — bake + assert harness</title>
+<style>
+  html,body{margin:0;background:#0b1216;color:#aeb9bb;font:12px ui-monospace,SFMono-Regular,Menlo,monospace;}
+  body{padding:26px 22px 60px;display:flex;flex-direction:column;gap:18px;align-items:flex-start;}
+  h1{font-size:17px;color:#eef3f2;margin:0;letter-spacing:0.04em;font-weight:400;}
+  .sub{font-size:10.5px;letter-spacing:0.15em;color:#6f7e83;}
+  canvas{image-rendering:pixelated;display:block;}
+  .panel{border:1px solid #243137;background:#0e181d;padding:12px;overflow-x:auto;max-width:100%;}
+  .grp{font-size:10px;letter-spacing:0.14em;color:#c9a86a;margin:14px 0 5px;}
+  .t{border-collapse:collapse;font-size:11.5px;}
+  .t td{padding:3px 10px 3px 0;vertical-align:top;}
+  .ok{color:#6fd6a8;} .no{color:#f0655a;} .sk{color:#6f7e83;}
+  .tot{font-size:13px;color:#eef3f2;padding:8px 12px;border:1px solid #243137;background:#0f191e;}
+  .note{font-size:10.5px;color:#5f6e73;line-height:1.6;max-width:760px;}
+</style>
+<script src="atvIsoRig.js"></script>
+</head>
+<body>
+<h1>ATV Pack &mdash; bake + assert harness</h1>
+<div class="sub">THREE SADDLES &middot; atvIsoRig.js &middot; ENDURO 250 &middot; TRIKE 200 &middot; UTILITY QUAD 4&times;4 &middot; NO BUILD, NO DEPS &middot; OPEN IT AND IT RUNS</div>
+<div class="note">Serve this over http to include the JSON group: it fetches the contract and the gameplay sidecar, cross-checks both against the live rig and re-hashes the rig source. Opened off disk those fetches are blocked and the group reports <b>skipped</b>, never passed.</div>
+<div id="total" class="tot">running&hellip;</div>
+<div id="out"></div>
+<div class="grp">ENDURO 250 &middot; EIGHT FACINGS &middot; PARKED (the default: stand 1, 12&deg; onto the side stand)</div>
+<div class="panel"><canvas id="s0"></canvas></div>
+<div class="grp">TRIKE 200 &middot; EIGHT FACINGS &middot; AT REST</div>
+<div class="panel"><canvas id="s1"></canvas></div>
+<div class="grp">UTILITY QUAD 4&times;4 &middot; EIGHT FACINGS &middot; AT REST (both racks, hitch, winch)</div>
+<div class="panel"><canvas id="s2"></canvas></div>
+<div class="grp">POSES &middot; RIDDEN &middot; LEANED &middot; FULL LOCK &middot; FRONT DIP &middot; BARE</div>
+<div class="panel"><canvas id="s3"></canvas></div>
+
+<script>
+const R = window.AtvIso, W = R.W, H = R.H, PV = R.pivot, DEG = Math.PI/180;
+const BODIES = ['dirtbike','trike','quad'];
+const LABEL = { dirtbike:'Enduro 250', trike:'Trike 200', quad:'Utility Quad' };
+const BUILD = { dirtbike:Object.assign({body:'dirtbike'}, R.PRESETS.enduro), trike:Object.assign({body:'trike'}, R.PRESETS.beachTrike), quad:Object.assign({body:'quad'}, R.PRESETS.wharfQuad) };
+const RIDDEN = { dirtbike:{stand:0}, trike:{}, quad:{} };
+const UNION = { dirtbike:[74,62], trike:[68,54], quad:[74,60] };     // published in atvPack.contract.json, union_at_rest_size
+const out = document.getElementById('out');
+let pass=0, fail=0, skip=0, tbl=null;
+function group(name){ const h=document.createElement('div'); h.className='grp'; h.textContent=name; out.appendChild(h);
+  tbl=document.createElement('table'); tbl.className='t'; out.appendChild(tbl); }
+function row(ok, what, detail){
+  const tr=tbl.insertRow(); const a=tr.insertCell(), b=tr.insertCell(), c=tr.insertCell();
+  if(ok===null){ skip++; a.className='sk'; a.textContent='SKIP'; } else if(ok){ pass++; a.className='ok'; a.textContent='PASS'; }
+  else { fail++; a.className='no'; a.textContent='FAIL'; console.warn('FAIL · '+what+' · '+(detail||'')); }
+  b.textContent=what; c.textContent=detail||''; c.className='sk';
+}
+function done(){ const t=document.getElementById('total');
+  t.innerHTML = pass+' passed &middot; <span class="'+(fail?'no':'ok')+'">'+fail+' failed</span> &middot; '+skip+' skipped';
+  t.style.borderColor = fail?'#5a2420':'#24413a'; console.log('atv-pack harness: '+pass+' passed, '+fail+' failed, '+skip+' skipped'); }
+
+const bake=(b,d,o)=>R.render(d, Object.assign({}, BUILD[b], o||{}));
+const ridden=(b,o)=>Object.assign({}, RIDDEN[b], o||{});
+function bbox(p){ let x0=1e9,y0=1e9,x1=-1,y1=-1,n=0;
+  for(let y=0;y<H;y++)for(let x=0;x<W;x++) if(p[(y*W+x)*4+3]){ n++; if(x<x0)x0=x; if(x>x1)x1=x; if(y<y0)y0=y; if(y>y1)y1=y; }
+  return {x0,y0,x1,y1,n}; }
+function diffPx(a,b){ let d=0,al=0;
+  for(let i=0;i<W*H;i++){ const p=a[i*4+3]>0, q=b[i*4+3]>0; if(p!==q) al++;
+    if(p&&q&&(a[i*4]!==b[i*4]||a[i*4+1]!==b[i*4+1]||a[i*4+2]!==b[i*4+2])) d++; }
+  return {d, al}; }
+const inCell=(b)=>!(b.x0<0||b.y0<0||b.x1>=W||b.y1>=H);
+
+// ---------- geometry ----------
+group('GEOMETRY \u00b7 ONE CELL, ONE PIVOT, THREE BODIES');
+{ let pivOK=true, pivMax=0;
+  for(let d=0;d<8;d++){ const p=R.project(d,[0,0,0]); const e=Math.max(Math.abs(p.x-PV.x), Math.abs(p.y-PV.y)); pivMax=Math.max(pivMax,e); if(e>0.001) pivOK=false; }
+  row(pivOK, 'model origin projects to the pivot in all 8 facings', 'max error '+pivMax.toFixed(4)+' px \u00b7 pivot ('+PV.x+','+PV.y+') \u00b7 cell '+W+'\u00d7'+H); }
+const REST={}, BB={};
+for(const b of BODIES){ REST[b]=[]; BB[b]=[];
+  for(let d=0;d<8;d++){ REST[b].push(bake(b,d)); BB[b].push(bbox(REST[b][d])); }
+  const bb=BB[b];
+  row(bb.every(inCell), LABEL[b]+': nothing paints outside the cell', '8 facings, at rest');
+  const low=Math.max.apply(null,bb.map(x=>x.y1-PV.y));
+  row(low<=30, LABEL[b]+': nothing paints more than 30 px below the pivot', 'deepest '+low+' px');
+  row(bb.every(x=>x.n>500), LABEL[b]+': every facing paints a body', 'min '+Math.min.apply(null,bb.map(x=>x.n))+' px (end-on)');
+  const wid=Math.max.apply(null,bb.map(x=>x.x1))-Math.min.apply(null,bb.map(x=>x.x0))+1, hei=Math.max.apply(null,bb.map(x=>x.y1))-Math.min.apply(null,bb.map(x=>x.y0))+1;
+  row(wid===UNION[b][0]&&hei===UNION[b][1], LABEL[b]+': union at rest is the published '+UNION[b][0]+' \u00d7 '+UNION[b][1], 'measured '+wid+' \u00d7 '+hei+(b==='dirtbike'?' (parked)':'')); }
+
+// ---------- anchors ----------
+group('THE SADDLE \u00b7 NO RIDER IN THE BAKE, ANCHORS FOR ONE');
+for(const b of BODIES){
+  let ok=true, count=0, names=[];
+  for(let d=0;d<8;d++){ const A=R.anchors(d, BUILD[b]);
+    for(const k of Object.keys(A)){ const v=A[k]; if(!v||typeof v!=='object'||!('x' in v)) continue; if(d===0){ count++; names.push(k); }
+      if(v.x<0||v.x>=W||v.y<0||v.y>=H) ok=false; } }
+  row(ok, LABEL[b]+': all '+count+' anchors land inside the cell in all 8 facings', names.join(' '));
+  const a=R.anchors(6, Object.assign({}, BUILD[b], ridden(b))), s=R.anchors(6, Object.assign({}, BUILD[b], ridden(b,{steer:1})));
+  const gm=Math.hypot(s.gripL.x-a.gripL.x, s.gripL.y-a.gripL.y), sm=Math.hypot(s.seat.x-a.seat.x, s.seat.y-a.seat.y);
+  row(gm>1 && sm===0, LABEL[b]+': grips turn with the bars, the seat does not', 'gripL moves '+gm.toFixed(1)+' px at full left lock (W), seat '+sm.toFixed(1)+' px');
+  const c=R.anchors(6, Object.assign({}, BUILD[b], ridden(b,{susF:1,susR:1})));
+  const wheelKey = b==='dirtbike'?'wheelR':'wheelRL';
+  row(c.seat.y>a.seat.y && Math.abs(c[wheelKey].y-a[wheelKey].y)<0.01, LABEL[b]+': the seat rides the suspension, the wheels stay put', 'seat drops '+(c.seat.y-a.seat.y).toFixed(1)+' px on full bump, '+wheelKey+' '+(c[wheelKey].y-a[wheelKey].y).toFixed(2)+' px');
+}
+{ const u=R.anchors(4,{body:'dirtbike',stand:0}), L=R.anchors(4,{body:'dirtbike',stand:0,lean:1}), Rr=R.anchors(4,{body:'dirtbike',stand:0,lean:-1});
+  row((L.seat.x-u.seat.x)*(Rr.seat.x-u.seat.x)<0 && Math.abs(L.seat.x-u.seat.x)>4, 'Enduro: the saddle leans with the machine, both ways', 'seat x at S: lean +1 '+(L.seat.x-u.seat.x).toFixed(1)+' px, lean -1 '+(Rr.seat.x-u.seat.x).toFixed(1)+' px'); }
+
+// ---------- cues ----------
+group('CUES \u00b7 EVERY ONE MOVES PIXELS, AT THE FACING IT READS');
+const CUE_DIR={ roll:6, turn:3, bounce:6, steer:4, park:3 };
+for(const b of BODIES) for(const cue of R.cuesFor(b)){ const cyc=!!R.CYCLIC[cue], d=CUE_DIR[cue];
+  const a=bake(b,d,ridden(b,R.CUES[cue](0))), c=bake(b,d,ridden(b,R.CUES[cue](cyc?0.25:1)));
+  const {d:dd,al}=diffPx(a,c);
+  row(dd+al>3, LABEL[b]+': cue "'+cue+'" changes the sprite at '+R.order[d], dd+' colour px, '+al+' alpha px'+(cyc?' (t 0 vs 0.25)':' (t 0 vs 1)')); }
+row(R.CUES.roll(0.3).stand===0 && R.CUES.turn(0.3).stand===0 && R.CUES.bounce(0.3).stand===0, 'the rolling cues kick the stand up themselves', 'roll / turn / bounce all set stand 0');
+
+// ---------- roll ----------
+group('ROLL \u00b7 ONE REAR REVOLUTION, AND WHAT THE FRONT WHEEL DOES');
+for(const b of BODIES){ const P=R.SPECS[b];
+  const a=bake(b,6,ridden(b,{roll:0})), c=bake(b,6,ridden(b,{roll:1})), {d,al}=diffPx(a,c), n=bbox(a).n;
+  if(b==='quad'){ row(d===0&&al===0, 'Quad: roll:1 is bit-identical to roll:0', d+' colour px, '+al+' alpha px \u2014 four equal wheels, whole lugs per revolution'); }
+  else { const ratio=P.rR/P.rF, lim = b==='dirtbike' ? 2.5 : 1.0;
+    row(100*d/n<lim, LABEL[b]+': the one-revolution seam is under '+lim+'% of painted', d+' of '+n+' px = '+(100*d/n).toFixed(2)+'%, '+al+' alpha px \u2014 the front wheel turns rR/rF = '+ratio.toFixed(3)+' rev and stops '+((1-ratio)*360).toFixed(1)+'\u00b0 short');
+    const k=bake(b,6,ridden(b,{roll:1, rollF:1-ratio})), z=diffPx(a,k);
+    row(z.d===0&&z.al===0, LABEL[b]+': roll:1 + rollF:'+(1-ratio).toFixed(3)+' closes bit-identical \u2014 the seam is the front wheel and nothing else', z.d+' colour px, '+z.al+' alpha px'); } }
+
+// ---------- steering ----------
+group('STEERING \u00b7 RAKED HEADS ON TWO, ACKERMANN KINGPINS ON ONE');
+for(const b of ['dirtbike','trike']){ const P=R.SPECS[b], {d}=diffPx(bake(b,4,ridden(b,{steer:1})), bake(b,4,ridden(b,{steer:-1})));
+  row(d>100, LABEL[b]+': full left lock differs from full right at S', d+' px \u00b7 whole front assembly about a '+P.rake+'\u00b0 raked axis, \u00b1'+P.steerMax+'\u00b0'); }
+{ const P=R.SPECS.quad, a=R.steer.angles(1,P), outer=Math.atan(1/(1/Math.tan(P.steerMax*DEG)+(P.wheelX*2)/(P.axF-P.axR)))/DEG;
+  row(a.L>a.R && Math.abs(a.R-outer)<1e-6 && Math.abs(R.steer.quad.outerMaxDeg-+outer.toFixed(2))<1e-9, 'Quad: Ackermann \u2014 inner '+a.L.toFixed(1)+'\u00b0, outer '+a.R.toFixed(2)+'\u00b0, and the export agrees', 'atan(1/(cot 30\u00b0 + track/wheelbase)) = '+outer.toFixed(3)+'\u00b0');
+  const m=R.steer.angles(-1,P); row(m.R===-a.L && m.L===-a.R, 'Quad: right lock mirrors left lock', 'steer -1: L '+m.L.toFixed(2)+' R '+m.R.toFixed(2));
+  const {d}=diffPx(bake('quad',4,{steer:1}), bake('quad',4,{steer:-1})); row(d>100, 'Quad: full left lock differs from full right at S', d+' px'); }
+
+// ---------- suspension ----------
+group('SUSPENSION \u00b7 THE BODY MOVES, THE WHEELS STAY ON THE ROAD');
+for(const b of BODIES){ const r=bbox(bake(b,6,ridden(b))), c=bbox(bake(b,6,ridden(b,{susF:1,susR:1}))), e=bbox(bake(b,6,ridden(b,{susF:-1,susR:-1})));
+  row(r.y1===c.y1 && r.y1===e.y1, LABEL[b]+': the ground row does not move on full bump or full droop', 'row '+r.y1+' / '+c.y1+' / '+e.y1+' at W');
+  row(c.y0>r.y0 && e.y0<r.y0, LABEL[b]+': the body drops on bump and rises on droop', 'top row '+r.y0+' \u2192 '+c.y0+' bump, '+e.y0+' droop (travel F '+R.SPECS[b].TF+' / R '+R.SPECS[b].TR+' m)'); }
+{ const {d,al}=diffPx(bake('trike',6,{}), bake('trike',6,{susR:1})); row(d===0&&al===0, 'Trike: susR is accepted and ignored \u2014 the rear axle is rigid', d+' colour px, '+al+' alpha px differ, TR = '+R.SPECS.trike.TR); }
+
+// ---------- stand + lean ----------
+group('STAND + LEAN \u00b7 THE DIRTBIKE ONLY');
+{ const P=R.SPECS.dirtbike;
+  row(R.resolve({body:'dirtbike'}).stand===1 && R.resolve({body:'trike'}).stand===0 && R.resolve({body:'quad'}).stand===0, 'she defaults to stand 1; the other two have no stand', 'resolve() stand: bike 1, trike 0, quad 0');
+  const {d,al}=diffPx(bake('dirtbike',3,{}), bake('dirtbike',3,{stand:0})); row(d+al>300, 'parked and ridden are different sprites at SE', d+' colour px, '+al+' alpha px');
+  const tip=R.anchors(3,BUILD.dirtbike).standTip.m; row(Math.abs(tip[2])<=0.001, 'at stand 1 the stand tip sits on the road', 'tip z = '+tip[2]+' m at ['+tip[0]+', '+tip[1]+'] \u2014 leaned '+P.standLean+'\u00b0 about the contact line');
+  row(R.dims({body:'dirtbike'}).leanDeg===-P.standLean && R.dims({body:'dirtbike',stand:0,lean:1}).leanDeg===P.leanMax && R.dims({body:'dirtbike',stand:1,lean:1}).leanDeg===P.leanMax-P.standLean, 'dims().leanDeg = lean\u00b7'+P.leanMax+' \u2212 stand\u00b7'+P.standLean, 'parked -12 \u00b7 lean 1 ridden 28 \u00b7 lean 1 on the stand 16');
+  const u=bbox(bake('dirtbike',4,{stand:0})), L=bbox(bake('dirtbike',4,{stand:0,lean:1})), Rr=bbox(bake('dirtbike',4,{stand:0,lean:-1}));
+  row(u.y1===L.y1 && u.y1===Rr.y1, 'lean pivots on the contact line: the ground row holds at S', 'row '+u.y1+' upright / '+L.y1+' curb / '+Rr.y1+' street');
+  const curbLeft = R.project(4,[1,0,0]).x < R.project(4,[0,0,0]).x;   // at S the curb (+x) is on screen LEFT
+  const toCurb = curbLeft ? (L.x0<u.x0 && L.x1<u.x1) : (L.x1>u.x1 && L.x0>u.x0), toStreet = curbLeft ? (Rr.x1>u.x1 && Rr.x0>u.x0) : (Rr.x0<u.x0 && Rr.x1<u.x1);
+  row(toCurb && toStreet, 'lean +1 goes to the curb, lean -1 to the street', 'at S the curb is screen-'+(curbLeft?'left':'right')+': upright '+u.x0+'\u2013'+u.x1+', lean +1 '+L.x0+'\u2013'+L.x1+', lean -1 '+Rr.x0+'\u2013'+Rr.x1);
+  row(R.resolve({body:'trike',lean:1,stand:1}).leanDeg===0 && R.resolve({body:'quad',lean:1}).leanDeg===0, 'lean and stand are refused on the trike and the quad', 'leanDeg 0 both'); }
+
+// ---------- yaw ----------
+group('YAW \u00b7 A HEADING, NOT A ROTATED SPRITE');
+for(const b of BODIES){ const a=bake(b,1,{yaw:45}), c=bake(b,2), {d,al}=diffPx(a,c);
+  row(d===0&&al===0, LABEL[b]+': yaw 45\u00b0 at NE is bit-identical to the E facing', d+' colour px, '+al+' alpha px differ');
+  let ok=true, big=[0,0];
+  for(let dd=0;dd<8;dd++) for(const y of [-22.5,22.5]){ const bx=bbox(bake(b,dd,ridden(b,{yaw:y}))); if(!inCell(bx)) ok=false; big=[Math.max(big[0],bx.x1-bx.x0+1), Math.max(big[1],bx.y1-bx.y0+1)]; }
+  row(ok, LABEL[b]+': a \u00b122.5\u00b0 sweep stays inside the cell in all 8 facings', 'largest painted '+big[0]+' \u00d7 '+big[1]+' px'); }
+{ const p=R.project(1,[0,0,0],null,22.5); row(Math.abs(p.x-PV.x)<0.001&&Math.abs(p.y-PV.y)<0.001, 'the pivot survives yaw', 'at 22.5\u00b0: ('+p.x.toFixed(2)+','+p.y.toFixed(2)+')'); }
+
+// ---------- json ----------
+async function jsonGroup(){
+  group('CONTRACT + SIDECAR \u00b7 http only');
+  let contract=null, sidecar=null, srcTxt=null, blocked=false;
+  try{
+    const [a,b,c]=await Promise.all([
+      fetch('atvPack.contract.json').then(r=>r.json()),
+      fetch('atvIsoRig.atvPack.gameplay.json').then(r=>r.json()),
+      fetch('atvIsoRig.js').then(r=>r.text())]);
+    contract=a; sidecar=b; srcTxt=c;
+  }catch(e){ blocked=true; }
+  if(blocked){
+    row(null,'contract fetched','file:// blocks it \u2014 serve over http');
+    row(null,'sidecar fetched',''); row(null,'rig re-hashed','');
+    done(); return;
+  }
+  row(contract.bake.cell.W===W && contract.bake.cell.H===H && contract.bake.pivot.x===PV.x && contract.bake.pivot.y===PV.y && sidecar.frame.pivot_px.x===PV.x && sidecar.frame.pivot_px.y===PV.y,
+    'contract and sidecar cell + pivot match the rig', contract.bake.cell.W+'\u00d7'+contract.bake.cell.H+' @ '+contract.bake.pivot.x+','+contract.bake.pivot.y);
+  for(const b of BODIES){ const pb=contract.per_body[b]; let ok=true, worst='';
+    const build=Object.assign({}, pb.measured_with);
+    for(let d=0;d<8;d++){ const n=R.order[d], c=pb.painted_bbox.at_rest[n], m=bbox(R.render(d, build)), got=[m.x0,m.y0,m.x1,m.y1];
+      if(c.join()!==got.join()){ ok=false; worst=n+' contract '+c.join(',')+' vs bake '+got.join(','); } }
+    row(ok, LABEL[b]+': contract painted_bbox.at_rest matches a fresh bake, per facing', worst||'8/8 exact');
+    const S=R.SPECS[b], G=sidecar.bodies[b], checks=[
+      ['wheelbase_m', G.BODY.wheelbase_m, +(S.axF-S.axR).toFixed(2)],
+      ['seat_height_m', G.BODY.seat_height_m, S.seatZ],
+      ['SADDLE.grips.L x', G.SADDLE.grips.L[0], S.grips[0][0]],
+      ['SADDLE.grips.L z', G.SADDLE.grips.L[2], S.grips[0][2]],
+      ['SUSPENSION.travel front', G.SUSPENSION.travel_m.front, S.TF],
+      ['SUSPENSION.travel rear', G.SUSPENSION.travel_m.rear, S.TR],
+      ['WHEELS.roll distance/rev', G.WHEELS.roll.distance_per_rev_m, R.BODIES[b].distancePerRev],
+      b==='quad' ? ['STEERING outer_max_deg', G.STEERING.wheels.outer_max_deg, +R.steer.angles(1,S).R.toFixed(3)] : ['STEERING rake_deg', G.STEERING.axis.rake_deg, S.rake],
+    ];
+    if(b==='dirtbike'){ checks.push(['STAND.lean_deg_at_1', G.STAND.lean_deg_at_1, S.standLean], ['LEAN.max_deg', G.LEAN.max_deg, S.leanMax]); }
+    let bad=[]; for(const [w,x,y] of checks) if(Math.abs(x-y)>1e-6) bad.push(w+' '+x+' vs '+y);
+    row(bad.length===0, LABEL[b]+': sidecar values = rig SPECS ('+checks.length+' read)', bad.join('; ')||checks.map(c=>c[0]).join(', ')); }
+  const h=await crypto.subtle.digest('SHA-256', new TextEncoder().encode(srcTxt));
+  const hex=Array.from(new Uint8Array(h)).map(x=>x.toString(16).padStart(2,'0')).join('');
+  row(hex===contract.rigSha256, 'contract rigSha256 matches the shipped rig', hex.slice(0,16)+'\u2026');
+  row(hex===sidecar.derivedFromRigSha256, 'sidecar derivedFromRigSha256 matches the shipped rig', sidecar.derivedFromRigSha256.slice(0,16)+'\u2026');
+  done();
+}
+
+// ---------- contact sheets ----------
+function strip(id, cells, labels){
+  const cv=document.getElementById(id), S=1.4, gap=6, cw=W*S, ch=H*S;
+  cv.width=Math.ceil(cells.length*(cw+gap)); cv.height=Math.ceil(ch+18);
+  const ctx=cv.getContext('2d'); ctx.imageSmoothingEnabled=false;
+  const t=document.createElement('canvas'); t.width=W; t.height=H; const tc=t.getContext('2d');
+  cells.forEach((rgba,i)=>{ const x=i*(cw+gap);
+    ctx.fillStyle=(i&1)?'#111d23':'#16232b'; ctx.fillRect(x,0,cw,ch);
+    tc.clearRect(0,0,W,H); tc.putImageData(new ImageData(rgba,W,H),0,0);
+    ctx.drawImage(t,x,0,cw,ch);
+    ctx.fillStyle='rgba(240,90,80,0.5)'; ctx.fillRect(x, PV.y*S, cw, 1);
+    ctx.fillStyle='#6f7e83'; ctx.font='10px ui-monospace,monospace'; ctx.textAlign='center';
+    ctx.fillText(labels[i], x+cw/2, ch+13); });
+  ctx.textAlign='left';
+}
+strip('s0', REST.dirtbike, R.order); strip('s1', REST.trike, R.order); strip('s2', REST.quad, R.order);
+strip('s3', [bake('dirtbike',6,{stand:0}), bake('dirtbike',4,{stand:0,lean:-1}), bake('dirtbike',4,{stand:0,steer:1}), bake('trike',6,{susF:1}), bake('quad',4,{steer:1}), bake('quad',1,{rackF:false,rackR:false,hitch:false,winch:false})],
+  ['bike ridden W','bike lean street S','bike full left S','trike front dip W','quad full left S','quad bare NE']);
+done();
+jsonGroup();
+</script>
+</body>
+</html>

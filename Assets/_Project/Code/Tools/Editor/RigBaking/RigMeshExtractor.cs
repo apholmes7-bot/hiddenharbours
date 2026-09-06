@@ -957,6 +957,46 @@ namespace HiddenHarbours.Tools.RigBaking
                         "return {W:c.W,H:c.H,pivot:{x:p.x,y:p.y},defaultElev:DEFAULT_ELEV};}",
                 },
 
+                // ---- THE ATV PACK — ONE rig, THREE bodies you sit astride (drop 2026-09-06) ------
+                // The trailer set's UNION shape, for the trailer set's reason: a `Reconstructions`
+                // entry is keyed by FILE and can produce only ONE table, and this rig builds three
+                // different bodies. Filtering at one of them would drop the others' ramps, and the
+                // face packer resolves an unknown material name to index 0 — a silent re-paint.
+                //
+                // ⚠️ `resolve({})` on this rig defaults to the QUAD, and an unknown body id does too:
+                // measured 2026-09-06, `render(d,{body:'NONSENSE'})` is the quad to ZERO pixels. So
+                // the loop is over `SPECS`, never over a single default.
+                //
+                // MEASURED in the repo's own V8 on the delivered bytes, 2026-09-06:
+                //   · `makeMats` declares THIRTEEN, in order
+                //     paint,trim,cloth,shade,iron,galv,chrome,alloy,rubber,lensR,head,glass,glow;
+                //   · all three bodies' faces name the SAME NINE, so the union is nine and the
+                //     filtered table is paint,cloth,iron,galv,chrome,alloy,rubber,lensR,head;
+                //   · the four dropped are genuinely absent from these builds — `glass` and `glow`
+                //     belong to the night pass, `shade` to nothing the mesh carries, and `trim` to
+                //     the bike's MX number plate, which is the `lamp:false` BUILD and not this one.
+                //
+                // Nine against the facet shader's float4[16] `_RampMeta` is the widest headroom any
+                // vehicle in the fleet has had (the Dually filters to 16, the Otter to 16 exactly).
+                //
+                // Order is load-bearing as everywhere: `paint` is first in the rig's own table and IS
+                // used, so it stays index 0 — which is what the packer resolves an unknown material
+                // to, and what the rig's own `MATS[f.mat] || MATS.paint` fallback agrees with.
+                //
+                // ⚠️ Every name unqualified ON PURPOSE: this is inserted INSIDE the rig's closure, so
+                // `makeMats`, `resolve`, `build` and `SPECS` are in scope. Qualifying them is the
+                // shape a PROBE needs (the widening puts symbols on the global, not in scope) and it
+                // is wrong here.
+                ["atvIsoRig.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
+                {
+                    ["MATS"] =
+                        "(function(){var M=makeMats(resolve({})),used={},out={};" +
+                        "for(var b in SPECS){var F=build(resolve({body:b}));" +
+                        "for(var i=0;i<F.length;i++)used[F[i].mat]=1;}" +
+                        "for(var k in M)if(used[k])out[k]=M[k];" +
+                        "return out;})()",
+                },
+
                 // The skiff motor is a LAYER, not a hull, so its export omits two things every hull
                 // rig publishes and the extractor reads unconditionally: the pixel scale and the bake
                 // elevation. Both exist under the rig's own names (`S`, `DEFAULT_ELEV`) — this is a
