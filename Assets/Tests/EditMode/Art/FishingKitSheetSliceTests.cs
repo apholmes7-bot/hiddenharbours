@@ -242,8 +242,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
         public void TheGuardedSet_IsTheFullKit()
         {
             // The set arithmetic itself, so a future edit that drops a species or tier by accident
-            // is loud: 4 species × 8 states + 4 bobber states + 3 tiers × 10 states.
-            Assert.AreEqual(4 * 8 + 4 + 3 * 10, Sheets.Count);
+            // is loud: 7 species × 3 rungs × 10 states + 4 bobber states + 3 rod tiers × 10 states (pass 2).
+            Assert.AreEqual(7 * 3 * 10 + 4 + 3 * 10, Sheets.Count);
             Assert.AreEqual(Sheets.Count, ExpectedFrames.Count);
 
             // Every guarded stem must be a stem the spec actually names — a guard on a typo would

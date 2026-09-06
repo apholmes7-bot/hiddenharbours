@@ -184,9 +184,10 @@ namespace HiddenHarbours.Tests.Art.EditMode
         public void TheGuardedSet_IsTheFullKit()
         {
             // The set arithmetic, so an accidental drop of a colour/tier/fill is loud:
-            // 4 items + 5 colours × 3 lids + 1 mask + 3 tiers × (1 empty + 4 fills × 3 catches).
-            Assert.AreEqual(4 + 5 * 3 + 1 + 3 * (1 + 4 * 3), Sheets.Count);
-            Assert.AreEqual(59, Sheets.Count);
+            // pass 1: 4 items + 5 colours × 3 lids + 1 mask + 3 tiers × (1 empty + 4 fills × 3 catches) = 59,
+            // + pass 2: 7 catch items + 9 crustacean poses + 2 held + 5 shells + 5 handfuls + 2 hod = 30.
+            Assert.AreEqual(4 + 5 * 3 + 1 + 3 * (1 + 4 * 3) + 30, Sheets.Count);
+            Assert.AreEqual(89, Sheets.Count);
         }
 
         [Test]
