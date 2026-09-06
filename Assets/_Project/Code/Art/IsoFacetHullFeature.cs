@@ -345,6 +345,27 @@ namespace HiddenHarbours.Art
             // scene view frame different places and pan independently — one shared buffer would have
             // them fighting over the window origin every frame.
             private readonly Dictionary<EntityId, FoamState> _foamStates = new Dictionary<EntityId, FoamState>();
+
+            // The foam buffer's format, asked ONCE per graphics device rather than per camera per
+            // frame: SupportsRenderTextureFormat is a native call and GetFoamState runs every frame
+            // that foam draws (rule 7 — the budget is a feature). Keyed on the device TYPE so an
+            // editor that comes up on Null and later has a device re-asks instead of keeping the
+            // answer no device gave it. Register row 28.
+            private GraphicsDeviceType _foamFormatProbedOn = GraphicsDeviceType.Null;
+            private RenderTextureFormat _foamFormat = RenderTextureFormat.RG16;
+
+            /// <summary>The format <see cref="FoamBuffer.FormatPreference"/> resolves to on this
+            /// device, memoized. Never a literal at the descriptor: see <see cref="GetFoamState"/>.</summary>
+            private RenderTextureFormat FoamFormat()
+            {
+                GraphicsDeviceType device = SystemInfo.graphicsDeviceType;
+                if (_foamFormatProbedOn != device)
+                {
+                    _foamFormatProbedOn = device;
+                    _foamFormat = FoamBuffer.SelectFormat(SystemInfo.SupportsRenderTextureFormat);
+                }
+                return _foamFormat;
+            }
             // Staging for the registry's collect call, reused every frame so packing the injection
             // slots allocates nothing (rule 7). The GPU-bound copies live per camera on FoamState.
             private readonly FoamInjection[] _foamInjections = new FoamInjection[FoamBuffer.MaxInjectors];
@@ -994,11 +1015,11 @@ namespace HiddenHarbours.Art
                     state = new FoamState();
                     _foamStates[cameraId] = state;
                 }
-                // THE POLICY, asked every time — never a constant typed at the descriptor. Row 28
-                // was hidden for two months behind exactly such a constant, so the format the buffer
-                // ships in has to come from the one place that states why (FoamBuffer.FormatPreference)
-                // and be re-checked against what this device will actually render to.
-                RenderTextureFormat format = FoamBuffer.SelectFormat(SystemInfo.SupportsRenderTextureFormat);
+                // THE POLICY — never a constant typed at the descriptor. Row 28 hid for two months
+                // behind exactly such a constant, so the format the buffer ships in comes from the one
+                // place that states why (FoamBuffer.FormatPreference), resolved against what THIS
+                // device will actually render to.
+                RenderTextureFormat format = FoamFormat();
                 if (state.A != null && state.B != null && state.Resolution == resolution
                     && state.Format == format)
                     return state;
