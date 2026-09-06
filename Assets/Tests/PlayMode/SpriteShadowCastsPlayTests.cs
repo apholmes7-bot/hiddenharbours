@@ -76,9 +76,25 @@ namespace HiddenHarbours.Tests.PlayMode
             public float TideHeightAt(double totalSeconds) => 0f;
         }
 
+        /// <summary>
+        /// ⚠️ <see cref="SpriteShadow.SharedProfile"/> hands back the <c>Resources</c> ASSET itself, not a
+        /// copy — so a test that flips the shade arm on it flips it for every test that runs afterwards in
+        /// the same process. Captured here and restored in <see cref="TearDown"/>, for exactly the reason
+        /// the sun globals are: process-wide state a fixture borrows, it must give back.
+        /// </summary>
+        private bool _shadeArmOnEntry;
+
+        [SetUp]
+        public void SetUp()
+        {
+            _shadeArmOnEntry = SpriteShadow.SharedProfile.ScreenSpaceShade;
+        }
+
         [TearDown]
         public void TearDown()
         {
+            SpriteShadow.SharedProfile.ScreenSpaceShade = _shadeArmOnEntry;
+
             foreach (var o in _spawned)
                 if (o != null) Object.Destroy(o);
             _spawned.Clear();
@@ -501,12 +517,19 @@ namespace HiddenHarbours.Tests.PlayMode
         /// renderer with it, and a child that carried a YSortSprite of its own would double that
         /// population — silently, because it would look perfectly correct.
         ///
-        /// <para>It must not carry one for a second reason: the shadow's order is derived from its
-        /// caster's every tick (<c>caster.sortingOrder − 1</c>, so it draws UNDER it). A YSortSprite on
-        /// the child would recompute that same order from the child's own world Y and fight it.</para>
+        /// <para>It must not carry one for a second reason: the shadow's order is decided by the profile's
+        /// SHADE ARM every tick, and a YSortSprite on the child would recompute an order from the child's
+        /// own world Y and fight whichever arm is running.</para>
+        ///
+        /// <para><b>Both arms are asserted here, because they put the quad in opposite places and only one
+        /// of them can be "under its caster".</b> ON (the shipped arm since the owner's 2026-09-06 ruling)
+        /// composites over the assembled frame in <see cref="SortingBands.SunShade"/>, on the default layer,
+        /// with the MULTIPLY material — so "under its caster" is not a thing that can be true of it. OFF
+        /// derives <c>caster.sortingOrder − 1</c> and draws under it, and that is still the one-field way
+        /// back, so it stays pinned rather than deleted. The Y-sort budget claim above holds in both.</para>
         /// </summary>
         [UnityTest]
-        public IEnumerator TheShadowChildCostsNoYSortDispatch_AndSortsUnderItsCaster()
+        public IEnumerator TheShadowChildCostsNoYSortDispatch_AndSortsByItsArm()
         {
             var go = new GameObject("ysort-budget-caster");
             _spawned.Add(go);
@@ -526,11 +549,52 @@ namespace HiddenHarbours.Tests.PlayMode
                 "The CASTER's own static YSortSprite is still dispatching. Adding a shadow must not " +
                 "re-arm the per-frame sort the #393 pass stood down.");
 
+            // ---- ARM 1: the SHIPPED profile -----------------------------------------------------
+            //
+            // The owner ruled the shade ON (2026-09-06), and ON deliberately takes the quad OUT of the
+            // caster's neighbourhood: it composites over the assembled frame, so "under its caster" is
+            // not a thing that can be true of it. This half asserts where it actually goes.
+            Assert.IsTrue(SpriteShadow.SharedProfile.ScreenSpaceShade,
+                "the shipped profile must be the ON arm — SpriteShadowProfileTests pins that; if it has " +
+                "flipped, this test is measuring the wrong arm and the halves below are swapped");
+
+            Repose(caster);
+            Assert.AreEqual(SortingBands.SunShade, shadow.sortingOrder,
+                $"The ON arm must land in the compositing band ({SortingBands.SunShade}), where it " +
+                "multiplies the assembled frame. It spends TWO FIXED orders there and none in the decor " +
+                "band, which is the point — the OFF arm spends shadowDir.y x length x OrdersPerMetre per " +
+                "caster inside a band ADR 0032 already calls tight.");
+            Assert.AreEqual(0, shadow.sortingLayerID,
+                "The ON arm sorts on the DEFAULT layer explicitly — a sorting LAYER outranks a sorting " +
+                "order, and the rest of this band (the day/night overlay, the lamp quads) is on layer 0.");
+            Assert.AreEqual(Resources.Load<Material>(SpriteShadow.ShadeMaterialPath), shadow.sharedMaterial,
+                "The ON arm must carry the MULTIPLY material. The two arms differ in BLEND STATE, which a " +
+                "MaterialPropertyBlock cannot change — so landing in the band with the alpha-over material " +
+                "would darken nothing and look identical to a shade that simply is not drawing.");
+
+            // ---- ARM 2: the same caster with the arm forced OFF ----------------------------------
+            //
+            // The under-the-caster law is what the OFF arm is FOR, and it is still the one-field way back,
+            // so it stays pinned. SetUp captured the shipped value and TearDown puts it back.
+            SpriteShadow.SharedProfile.ScreenSpaceShade = false;
+            Repose(caster);
+
             Assert.AreEqual(sr.sortingLayerID, shadow.sortingLayerID,
                 "The shadow drifted onto a different sorting layer from its caster.");
             Assert.Less(shadow.sortingOrder, sr.sortingOrder,
                 $"The shadow sorts at {shadow.sortingOrder} against its caster's {sr.sortingOrder} — it " +
                 "must draw UNDER the thing casting it, not over it.");
+        }
+
+        /// <summary>
+        /// Re-run the caster's own pose after changing the arm. Both entry points, in the order the engine
+        /// calls them: the arm is read in <c>PoseShadow</c>, which both reach, and driving only one of them
+        /// would leave the answer depending on which happened to run last in the frame the test borrowed.
+        /// </summary>
+        private static void Repose(SpriteShadow caster)
+        {
+            Invoke(caster, "Tick");
+            Invoke(caster, "LateUpdate");
         }
     }
 }

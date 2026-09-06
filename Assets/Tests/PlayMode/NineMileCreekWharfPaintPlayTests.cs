@@ -11,8 +11,8 @@ using Object = UnityEngine.Object;
 namespace HiddenHarbours.Tests.PlayMode
 {
     /// <summary>
-    /// <b>The whole fleet, end to end, in the real scene: seven boats wake at one wharf and draw
-    /// themselves from the register.</b>
+    /// <b>The whole fleet, end to end, in the real scene: every boat on the register wakes at one
+    /// wharf and draws herself from it.</b>
     ///
     /// <para>Everything else about fleet paint is checked against doubles — which is right, because a
     /// double makes the assertion sharp. This fixture is the one that runs the actual thing: the
@@ -21,8 +21,9 @@ namespace HiddenHarbours.Tests.PlayMode
     /// will on the player's machine.</para>
     ///
     /// <para><b>Play mode is not optional here.</b> The facet renderer registers itself at runtime
-    /// load, so an EditMode scene open leaves every hull unskinned (measured: all seven report
-    /// <c>IsPresented == false</c>, and the render comes back as terrain with no boats on it). A
+    /// load, so an EditMode scene open leaves every hull unskinned (measured on the seven-boat
+    /// register: all of them report <c>IsPresented == false</c>, and the render comes back as terrain
+    /// with no boats on it). A
     /// screenshot taken that way would look like a wharf and prove nothing.</para>
     ///
     /// <para>It also writes the PR's proof image to the gitignored <c>artifacts/</c> as a side
@@ -128,17 +129,31 @@ namespace HiddenHarbours.Tests.PlayMode
                 //     drop all four painted boats were lobster boats, so a fixture asserting only
                 //     "two or more are painted" passed while three berths sat in gelcoat.
                 //
-                //     ⚠️ ONE berth is still plain, and it is not an art gap: the console skiff's
-                //     nine schemes are baked and proven, but nobody at this wharf owns a boat drawn
-                //     from hullmesh.console_iso — Celeste Bernard's boat.fishing_skiff resolves to
-                //     visual.fishing_boat, a legacy SPRITE-only visual. Paint lives on the mesh path,
-                //     so it cannot reach her at all. See the PR body; it is a world-content call.
-                //     The Cape Islander's paint axis (2026-08-12) closed the other gap, so this count
-                //     moved from -2 to -1 and Marie Gallant is in `painted` for the first time.
+                //     ⚠️ ONE berth is still plain, and it is not an art gap: Celeste Bernard's
+                //     boat.fishing_skiff resolves to visual.fishing_boat, a legacy SPRITE-only visual,
+                //     and paint lives on the mesh path, so it cannot reach her at all. Which boat SHE
+                //     keeps is the world-content call that is left. The Cape Islander's paint axis
+                //     (2026-08-12) closed the other gap, so this count moved from -2 to -1 and Marie
+                //     Gallant is in `painted` for the first time.
                 //
                 //     The 2026-08-20 lobster spread took the painted set from THREE meshes to SIX:
                 //     the four owners who all kept boat.lobster_boat now keep four different variants,
                 //     so every painted boat at this wharf is off a hull of her own.
+                //
+                //     ⚠️⚠️ 2026-09-04 — THE REGISTER IS AHEAD OF THIS SCENE BY ONE BOAT, ON PURPOSE.
+                //     Alma Boudreau keeps boat.console_skiff on the float fingers in
+                //     paint.console_cranberry, which makes the REGISTER's painted set SEVEN meshes —
+                //     and NineMileCreekFleetPaintTests, which reads the register, pins seven. This
+                //     fixture reads the BANKED SCENE, and the scene is banked by the owner's own
+                //     Build click in a separate `chore(scenes): bank …` commit (the repo's law: see
+                //     the scene's git history). Until that click she is not in NineMileCreek.unity,
+                //     so SIX is the honest number here and the two fixtures disagreeing is the
+                //     staleness showing rather than a bug.
+                //
+                //     ⭐ WHOEVER BANKS THE NEXT NINE MILE CREEK BUILD: add "hullmesh.console_iso"
+                //     to the array below — ordinal-sorted it goes SECOND, after the cape islander —
+                //     in the same commit as the scene. The count assertion above needs no edit; it
+                //     is derived.
                 Assert.AreEqual(moored.Length - 1, painted.Length,
                     $"{painted.Length} of {moored.Length} boats at the wharf wear paint. Exactly ONE " +
                     "is expected to be plain — Celeste Bernard, whose boat has no hull mesh at all, " +
@@ -166,7 +181,8 @@ namespace HiddenHarbours.Tests.PlayMode
                     meshes,
                     "The hull meshes wearing paint at this wharf have moved — found " +
                     $"[{string.Join(", ", meshes)}]. Four lobster variants, the punt and the Cape " +
-                    "Islander all have owners and paint axes; if one is missing, a bake or an " +
+                    "Islander have owners and paint axes IN THIS BANKED SCENE; if one is missing, a " +
+                    "bake or an " +
                     "assignment was lost. Pinned as a SET rather than a floor because a >= 2 would " +
                     "have gone on passing through the very drop that added the third — and, since the " +
                     "lobster spread, through three of the four lobster owners collapsing back onto " +
@@ -205,9 +221,9 @@ namespace HiddenHarbours.Tests.PlayMode
                 // would have been worse than not having it. The claim it was meant to make is already
                 // made where it can be made sharply: on the GPU in HullPaintSchemeProofSheet (25,730
                 // of 38,446 opaque px differ), and at the seam in NineMileCreekFleetPaintPlayTests,
-                // sabotage-proved. What THIS fixture uniquely proves is that all seven wake and draw
-                // in the real scene — asserted above — and the image it leaves behind is the evidence
-                // a human reads for the rest.
+                // sabotage-proved. What THIS fixture uniquely proves is that every one of them wakes
+                // and draws in the real scene — asserted above — and the image it leaves behind is
+                // the evidence a human reads for the rest.
                 var ids = means.Keys.OrderBy(k => k).ToArray();
                 for (int i = 0; i < ids.Length; i++)
                     for (int j = i + 1; j < ids.Length; j++)

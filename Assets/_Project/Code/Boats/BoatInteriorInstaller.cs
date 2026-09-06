@@ -184,7 +184,11 @@ namespace HiddenHarbours.Boats
 
             Door = doorGo.AddComponent<BoatCabinDoor>();
             Door.Configure(Interior, $"fixture.boat.{def.Id}.{DoorId(door)}", -1,
-                           ReachMetres(door), "Go below", "Come out");
+                           // ⚠ The labels name what the PRESS does, and since 2026-08-28 the press moves
+                           // the LEAF — going below is a walk and has no prompt of its own. "Go below" on
+                           // a press that opens a door would be the words drifting from the action, which
+                           // is the exact failure VerbLabel derives itself to avoid (rule 6).
+                           ReachMetres(door), "Open the door", "Close the door");
         }
 
         /// <summary>The door's own id, or a stable stand-in. Ids must be unique among live registrants,

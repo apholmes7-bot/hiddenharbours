@@ -570,8 +570,10 @@ hulls are within 5 cm of anyway. That reading needs the collision guarantee in �
 promise, honestly stated, and yours to prefer.
 
 **Q7 — How busy is "busy"?**
-*Recommend: ten boats, but never ten at once.* The register is ruled at **10 for M2** (7 today, capped
-by shed lots on the spit, not by art). Movements spread across the tide mean typically **one to three
+*Recommend: ten boats, but never ten at once.* The register is ruled at **10 for M2** (**8 today** —
+the shed-lot walk stopped throwing ground away on 2026-09-04 and now affords eight, which is also
+exactly the number of buoy paint schemes the kit bakes, so **ground and art cap it together** and the
+ninth needs both). Movements spread across the tide mean typically **one to three
 boats under way** in the basin at a time, which is a working wharf rather than a regatta — and it is
 also what keeps the helmed-boat count in Q3 honest. Say the word if you want the wharf busier, and the
 lever is the tide spread, not the boat count.

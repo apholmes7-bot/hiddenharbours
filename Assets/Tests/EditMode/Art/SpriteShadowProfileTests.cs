@@ -128,10 +128,15 @@ namespace HiddenHarbours.Tests.Art.EditMode
         {
             var p = Default();
             Assert.AreEqual(0.45f, p.MaxAlpha, 1e-6f, "_maxAlpha was 0.45 on the component");
-            Assert.IsFalse(p.ScreenSpaceShade,
-                "_screenSpaceShade must default OFF: with it on, every sun shadow in the game stops sorting " +
-                "under its caster and starts multiplying the assembled frame. That is a look change with the " +
-                "widest blast radius on the board and it is the OWNER's to make, not a default's.");
+            // ⚠️ THE ONE HISTORICAL NUMBER THIS FIXTURE NO LONGER HOLDS. It read IsFalse until the
+            // owner ruled "Shade buffer on" (2026-09-06). Everything else in this test is still the
+            // component's own pre-asset value, because those are TUNING numbers and a missing asset
+            // should render the old frame. The shade arm is not a tuning number — it decides whether a
+            // figure standing in a tree's shadow is darkened at all — so a fallback that quietly kept
+            // it OFF would render a materially different game and announce nothing.
+            Assert.IsTrue(p.ScreenSpaceShade,
+                "_screenSpaceShade now defaults ON, by the owner's ruling. It is the deliberate exception " +
+                "to this fixture's rule; see SpriteShadowProfile.CreateDefault's remarks.");
             Assert.AreEqual(new Color(0.04f, 0.05f, 0.10f, 1f), p.ShadowColor, "_shadowColor");
             Assert.AreEqual(0.35f, p.LengthAtNoon, 1e-6f, "_lengthAtNoon was 0.35");
             Assert.AreEqual(5f, p.LengthAtHorizon, 1e-6f, "_lengthAtHorizon was 5");
@@ -385,20 +390,36 @@ namespace HiddenHarbours.Tests.Art.EditMode
         // =========================================================================================
 
         /// <summary>
-        /// 🔴 <b>THE ARM SHIPS OFF, IN BOTH THE CODE AND THE ASSET — this PR is a no-op until the owner
-        /// rules.</b> Every other dial on the profile tunes a shade that darkens the ground; this one
-        /// decides whether the shade darkens what STANDS in it, by moving every sun shadow in the game out
-        /// of the decor band and onto the compositing ladder. It carries a real cost of its own (a
-        /// screen-space multiply cannot tell "standing in the shade" from "passing over it"), so it is the
-        /// owner's call off the plates and neither default may make it for him.
+        /// <b>THE ARM SHIPS ON, IN BOTH THE CODE AND THE ASSET.</b> The owner ruled it, 2026-09-06:
+        /// <i>"Shade buffer on."</i>
+        ///
+        /// <para>This test used to assert the opposite, and the arm was written OFF on purpose — every
+        /// other dial on the profile tunes a shade that darkens the ground, while this one decides
+        /// whether the shade darkens what STANDS in it, by moving every sun shadow in the game out of
+        /// the decor band and onto the compositing ladder. Neither default was allowed to make that
+        /// call for him. He has now made it off the plates, so the pin flips rather than disappears:
+        /// the arm's state is still something a reader must not be able to change by accident.</para>
+        ///
+        /// <para>⚠️ It carries a real cost, and turning it on does not remove it — it chooses it. A
+        /// screen-space multiply cannot tell "standing in the shade" from "passing over it", so a boat's
+        /// upper works or a roof edge crossing a shadow is darkened too. The way back is this one field
+        /// in both places.</para>
+        ///
+        /// <para>⚠️ <b>BOTH arms, and the second one is not the field initialiser.</b>
+        /// <c>Default()</c> is <c>SpriteShadowProfile.CreateDefault()</c> — the fallback a project with
+        /// no <c>Resources</c> asset renders from. That method otherwise reproduces the pre-asset frame
+        /// deliberately, and this field is the one historical default it no longer honours; see its own
+        /// remarks for why the shade was judged too load-bearing to leave behind there.</para>
         /// </summary>
         [Test]
-        public void TheShadeArm_ShipsOff_InBothTheCodeDefaultAndTheAsset()
+        public void TheShadeArm_ShipsOn_InBothTheCodeDefaultAndTheAsset()
         {
-            Assert.IsFalse(Default().ScreenSpaceShade, "the built-in default");
+            Assert.IsTrue(Default().ScreenSpaceShade,
+                          "the built-in default (CreateDefault) — the fallback must not render a "
+                          + "different game from the shipped asset without saying so");
             var asset = Resources.Load<SpriteShadowProfile>(SpriteShadow.ProfileResourcePath);
             Assert.IsNotNull(asset);
-            Assert.IsFalse(asset.ScreenSpaceShade, "the shipped asset");
+            Assert.IsTrue(asset.ScreenSpaceShade, "the shipped asset — this is what the game renders");
         }
 
         /// <summary>

@@ -105,16 +105,17 @@ namespace HiddenHarbours.Art
                  "between its caster and its tip.")]
         [SerializeField] private bool _sortByFarEnd = true;
 
-        [Tooltip("THE SHADE ARM. Off (shipped) = a sun shadow is a dark sprite sorted UNDER its caster, so " +
-                 "the ground reads shaded and anything STANDING in the shade draws over it at full " +
-                 "brightness — a fisher in a tree's shadow is not darkened, by construction. On = the " +
+        [Tooltip("THE SHADE ARM. On (SHIPPED - owner ruling 2026-09-06, \"Shade buffer on\") = the " +
                  "shade is composited over the assembled frame as one multiply, above every world sprite " +
                  "and below the lamps' glow, so whatever occupies the pixel loses the same fraction: the " +
-                 "ground, the fisher on it, a mesh hull moored in it. The cost of ON is that something " +
-                 "ABOVE the shade in the world — a boat's upper works, a roof edge — is darkened too, " +
-                 "because a screen-space multiply cannot tell the two apart. Both are wrong in some " +
-                 "frame; this switch is which one the game is wrong in.")]
-        [SerializeField] private bool _screenSpaceShade = false;
+                 "ground, the fisher on it, a mesh hull moored in it. Off = a sun shadow is a dark sprite " +
+                 "sorted UNDER its caster, so the ground reads shaded and anything STANDING in the shade " +
+                 "draws over it at full brightness - a fisher in a tree's shadow is not darkened, by " +
+                 "construction. The cost of ON is that something ABOVE the shade in the world - a boat's " +
+                 "upper works, a roof edge - is darkened too, because a screen-space multiply cannot " +
+                 "tell the two apart. Both are wrong in some frame; this switch is which one the game is " +
+                 "wrong in, and the owner has picked.")]
+        [SerializeField] private bool _screenSpaceShade = true;
 
         [Header("Look")]
         [Tooltip("Edge feather of the silhouette (0 = crisp pixel cutout — the pixel-art default; up to " +
@@ -164,6 +165,14 @@ namespace HiddenHarbours.Art
         /// the asset's binding 3) and <see cref="GroundContactRadius"/> (0 here — no pool at all — against
         /// the asset's 0.42). Everything else agrees, and the shipped-asset test names each divergence
         /// explicitly rather than skipping it.</para>
+        ///
+        /// <para>⚠️ <b><see cref="ScreenSpaceShade"/> is the one historical default this method no longer
+        /// reproduces.</b> It used to be <c>false</c> here, matching the pre-asset component. The owner
+        /// ruled the shade ON (2026-09-06), and the shade is not a tuning value — it decides whether a
+        /// figure standing in a tree's shadow is darkened at all. Leaving the fallback off would mean a
+        /// project without the asset renders a materially different game and says nothing about it, which
+        /// is worse than losing the historical fidelity. <c>SortByFarEnd</c> is still historical here,
+        /// because that one only re-sorts a shadow rather than changing what the frame contains.</para>
         /// </summary>
         public static SpriteShadowProfile CreateDefault()
         {
@@ -172,7 +181,7 @@ namespace HiddenHarbours.Art
             p._maxLength = 7f;              // the dead clamp the component always carried
             p._groundContactRadius = 0f;    // no ground pool: the pre-PR frame
             p._sortByFarEnd = false;        // shadows paint over what they cross, as they always did
-            p._screenSpaceShade = false;    // the shade sorts under its caster: nothing standing in it is darkened
+            p._screenSpaceShade = true;     // owner ruling 2026-09-06: the shade is ON, fallback included
             return p;
         }
     }

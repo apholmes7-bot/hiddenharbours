@@ -75,6 +75,11 @@ namespace HiddenHarbours.Player
         private IBoatHullPresenter _hull;   // the drawn-facing read (resolved at Bind; null = smooth hull)
         private BoatDeckDef _deck;          // the authored areas (resolved at Bind; null = the rectangle)
 
+        // Her cabin doorway, through the Core seam (rule 4 — Player never names the door's own type), and
+        // the hull it was looked for under. Null for most of the fleet, which has no measured interior.
+        private ICabinThreshold _doorway;
+        private Transform _doorwaySearchedUnder;
+
         // The player's position IN THE HULL FRAME — the authoritative state on the polygon path, because
         // the projection cannot be inverted from a screen offset alone (along-hull distance and height
         // land on the same screen axis). Re-seeded from the transform on Bind/enable/SnapTo, which are
@@ -224,6 +229,11 @@ namespace HiddenHarbours.Player
             _hull = boatRoot != null ? BoatHullPresenterHost.Resolve(boatRoot.gameObject) : null;
             _deck = boatRoot != null ? BoatDeckAreas.Resolve(boatRoot.gameObject) : null;
             _deckArea = -1;
+            // Look for her doorway again on the next tick. A bind is exactly the moment a cached "she has
+            // no cabin" could be stale — the installer builds in its own Start, and a test stands a whole
+            // boat up inside one frame.
+            _doorway = null;
+            _doorwaySearchedUnder = null;
             SeedDeckLocalFromTransform();
         }
 
@@ -636,6 +646,16 @@ namespace HiddenHarbours.Player
 
             transform.position = boatPos + relative;
 
+            // ⭐ AND HER CABIN DOOR, if this hull has one standing open. The owner's 2026-08-28 ruling is
+            // that "a player can walk through freely when opened", so the crossing is a step and not a
+            // press: the door owns the threshold band and the one-crossing-per-approach latch (both sides
+            // of one doorway must share one), and all this does is tell it where she is standing.
+            //
+            // ⚠ Not on the rail. Out on the washboard _deckLocal is read back off her world offset with
+            // no foreshortening inverted, so it is not the hull-frame point the threshold is measured in
+            // — and a doorway is not something you cross from the gunwale anyway.
+            if (!_onWashboard) WalkThroughAnOpenCabinDoor();
+
             // Publish the LIVE deck frame through Core (DeckStance — Rod Fishing v2 §4): hull position,
             // the drawn facing, the walkable bounds and where the angler actually stands in them,
             // re-published every tick so the drifting, weathervaning hull reaches consumers (the
@@ -645,6 +665,56 @@ namespace HiddenHarbours.Player
             // Publisher-owned: cleared the moment deck-walking ends (OnDisable).
             DeckStance.Publish(this, new DeckStanceState(boatPos, drawnHeading, stanceCenter,
                                                          stanceHalfExtents, _deckLocal));
+        }
+
+        /// <summary>
+        /// ⭐ <b>Has she just stepped through this hull's cabin door?</b> One call a tick, handing the
+        /// doorway where she is standing in the HULL's own metres — the frame <c>_deckLocal</c> is
+        /// already in, and the frame a threshold is measured in, so nothing is projected, inverted or
+        /// re-derived here.
+        ///
+        /// <para><b>⛔ THROUGH THE CORE SEAM, and this component names no Boats type to do it.</b> The
+        /// question is asked of <see cref="ICabinThreshold"/> — Player says where she is standing, Boats
+        /// decides whether that was a crossing and makes it (rule 4). Every part of the decision is on
+        /// the far side: whether the leaf is open, whether she is inside the measured opening, whether
+        /// this approach has already been spent, which way it goes, and whether the room will have her.
+        /// This component owns where the player stands and nothing else — the same division of labour it
+        /// keeps with the hull presenter and the deck areas.</para>
+        /// </summary>
+        private void WalkThroughAnOpenCabinDoor()
+        {
+            ICabinThreshold doorway = LiveCabinThreshold();
+            if (doorway != null) doorway.TryWalkThrough(_deckLocal);
+        }
+
+        /// <summary>
+        /// This hull's doorway, or null — the same live-read discipline as <see cref="LiveHull"/> and
+        /// <see cref="LiveDeck"/>, for the same reason: the dev hull picker changes the boat under the
+        /// player's feet, and a doorway captured at boarding would be the previous hull's.
+        ///
+        /// <para><b>⚠ The liveness test goes through <c>UnityEngine.Object</c>'s own <c>==</c>.</b> An
+        /// interface reference compared with <c>== null</c> / <c>?.</c> sees the raw managed reference
+        /// and is satisfied by a destroyed component's fake-null, so a torn-down door would go on
+        /// answering with whatever it last held. <c>BoatCutaway.Renderer</c> keeps this exact pattern for
+        /// this exact reason.</para>
+        ///
+        /// <para><b>The searched-root latch is rule 7, not tidiness.</b> Most of the fleet has no
+        /// measured interior, and without it every hull with no cabin would pay a whole-hierarchy walk
+        /// on every tick of every deck walk. One search per hull answers "she has none" for good, and a
+        /// re-skin under her feet (a new root, or a door torn off) starts a fresh one.</para>
+        /// </summary>
+        private ICabinThreshold LiveCabinThreshold()
+        {
+            if (_doorway is UnityEngine.Object live && live != null) return _doorway;
+            if (_doorway != null) { _doorway = null; _doorwaySearchedUnder = null; }
+
+            if (ReferenceEquals(_doorwaySearchedUnder, _boatRoot)) return null;
+
+            _doorwaySearchedUnder = _boatRoot;
+            _doorway = _boatRoot != null
+                ? _boatRoot.GetComponentInChildren<ICabinThreshold>(includeInactive: true)
+                : null;
+            return _doorway is UnityEngine.Object found && found != null ? _doorway : null;
         }
 
         /// <summary>Deck-walking ended (helm taken / stepped ashore / teardown) — the player no longer

@@ -1043,6 +1043,30 @@ namespace HiddenHarbours.App.Editor
         /// <summary>How far apart the owners' sheds stand along the row.</summary>
         public const float OwnerShedSpacingMetres = 14f;
 
+        /// <summary>
+        /// <b>⭐ THE PITCH THE ROW CLOSES TO ONCE A WORKING SITE HAS INTERRUPTED IT.</b>
+        ///
+        /// <para>West of the bait shed the row is the shanty row and stands at
+        /// <see cref="OwnerShedSpacingMetres"/>, a comfortable fourteen metres for a five-metre shed.
+        /// East of the trap store there are twenty-two metres of made ground and <b>nothing beyond
+        /// them</b> — the spit ends. Spent at the comfortable pitch that ground buys two lots and
+        /// leaves eight metres doing nothing, which is how a yard runs out of room while ground is
+        /// still lying there. So past an interruption the sheds stand closer, the way an infilled
+        /// yard's do.</para>
+        ///
+        /// <para><b>It is a floor plus a metre, not a taste.</b> Two sheds may stand
+        /// <c>2 × <see cref="WharfShedRadius"/></c> = 10 m apart and no closer — the plan's own
+        /// separation, asserted by <c>NineMileCreekPhotographTests.NoTwoOwnerShedLotsShareGround</c>.
+        /// This is that floor with a metre of slack, so the row does not sit exactly on a boundary the
+        /// day somebody grows <see cref="WharfShedRadius"/> by a hair.</para>
+        /// </summary>
+        public const float OwnerShedInfillSpacingMetres = 11f;
+
+        /// <summary>How finely the walk feels its way past a working site. Small enough that the row
+        /// resumes on the first clear ground rather than a whole stride past it — those are the metres
+        /// the old walk threw away.</summary>
+        public const float OwnerShedProbeMetres = 0.5f;
+
         /// <summary>The row the owners' sheds stand on — the shanty row's own latitude, because that IS
         /// the row of sheds in the photograph and a second row beside it would be a second wharf.</summary>
         public static float OwnerShedRowY => ShantyRow[0].y;
@@ -1052,21 +1076,32 @@ namespace HiddenHarbours.App.Editor
         ///
         /// <para><b>⭐ A RULE, NOT A TABLE.</b> The lots march east along the shed row from the shanty
         /// row's west end at <see cref="OwnerShedSpacingMetres"/>, and a step that would land inside a
-        /// working site's reserved ground is SKIPPED rather than nudged — so the row cannot collide with
-        /// the bait shed, the trap store or anything else the plan already put on the yard, and adding a
+        /// working site's reserved ground is never nudged onto it — so the row cannot collide with the
+        /// bait shed, the trap store or anything else the plan already put on the yard, and adding a
         /// working site later re-flows the row instead of silently overlapping it.</para>
         ///
-        /// <para><b>⚠ THE YARD AFFORDS SEVEN, AND THAT IS WHAT SIZES THE REGISTER.</b> Walked, the row
-        /// yields the shanty row's own five and two more east of the trap store: the bait shed and the
-        /// trap store each eat a step, and the spit's east edge stops the walk. The buoy kit's eight paint
-        /// schemes are therefore NOT the binding cap here — the ground is — and
+        /// <para><b>⭐ AND AN INTERRUPTION SHORTENS THE STRIDE, IT DOES NOT COST A LOT.</b> The walk
+        /// used to jump a whole fourteen-metre stride past a blocked step, which put the first lot east
+        /// of the trap store at x = 164 when the ground had been clear since x = 158 — six metres thrown
+        /// away, and the stride after it ran off the spit, so the last twenty-two metres of made ground
+        /// held two sheds instead of three. It now feels its way past the obstruction at
+        /// <see cref="OwnerShedProbeMetres"/> and runs the rest of the row at
+        /// <see cref="OwnerShedInfillSpacingMetres"/>. <b>That is where the eighth lot comes from</b>,
+        /// and it comes from ground the plan already owned rather than from growing the spit.</para>
+        ///
+        /// <para><b>⚠ THE YARD AFFORDS EIGHT, AND THAT IS WHAT SIZES THE REGISTER.</b> Walked, the row
+        /// yields the shanty row's own five and three more east of the trap store. The buoy kit's eight
+        /// paint schemes are the SAME number, so ground and art now cap the register together at eight
+        /// and a ninth fisher needs both — and
         /// <c>NineMileCreekPhotographTests.TheRegisterFitsTheLotsTheYardAffords</c> measures the walk
         /// rather than trusting this paragraph, because the day a working site is added the row loses a
         /// lot and the last owner would otherwise fall to the clamp below and be drawn on a neighbour.</para>
         ///
         /// <para>Lots 0–4 land exactly on <see cref="ShantyRow"/>, and that is the intent rather than a
         /// coincidence: the photograph's shed row IS the shanty row, so an owner's shed and the shanty
-        /// drawn there are one building.</para>
+        /// drawn there are one building. <b>The infill pitch is deliberately applied only AFTER an
+        /// interruption</b> so that stays true — a row re-pitched from its west end would lift every
+        /// shed off its shanty.</para>
         /// </summary>
         public static Vector2 OwnerShedLot(int index)
         {
@@ -1079,10 +1114,9 @@ namespace HiddenHarbours.App.Editor
         /// How many shed lots this yard actually affords — the walk, counted.
         ///
         /// <para><b>⭐ THE REGISTER MAY NOT OUTGROW IT, and that is a real cap rather than a formality.</b>
-        /// Walked today the row yields SEVEN: the shanty row's five, then east past the bait shed and the
-        /// trap store (each of which eats a step) to the spit's east edge. An eighth owner's
-        /// <c>LotIndex</c> clamps onto the seventh and the two sheds are drawn in one place — which is
-        /// exactly what happened on the first pass, and is why
+        /// Walked today the row yields EIGHT: the shanty row's five, then three east of the trap store at
+        /// the infill pitch. A ninth owner's <c>LotIndex</c> clamps onto the eighth and the two sheds are
+        /// drawn in one place — which is exactly what happened on the first pass, and is why
         /// <c>NineMileCreekPhotographTests.TheRegisterFitsTheLotsTheYardAffords</c> measures this rather
         /// than trusting the number in this paragraph.</para>
         /// </summary>
@@ -1093,15 +1127,25 @@ namespace HiddenHarbours.App.Editor
         {
             var row = new List<Vector2>();
             float y = OwnerShedRowY;
-            float west = ShantyRow[0].x;
             float east = SpitFill.Center.x + SpitFill.HalfSize.x - WharfShedRadius;
 
-            for (int step = 0; step < 64; step++)
+            float x = ShantyRow[0].x;
+            float pitch = OwnerShedSpacingMetres;
+
+            // ⚠ The guard counts ITERATIONS, not strides: past an interruption the walk advances by
+            // OwnerShedProbeMetres, so the row's length in strides is not what bounds this loop.
+            for (int guard = 0; guard < 512 && x <= east; guard++)
             {
-                var candidate = new Vector2(west + step * OwnerShedSpacingMetres, y);
-                if (candidate.x > east) break;                       // off the made ground
-                if (IsWorkingSiteInTheWay(candidate)) continue;      // step around, never nudge
-                row.Add(candidate);
+                if (IsWorkingSiteInTheWay(new Vector2(x, y)))
+                {
+                    // Feel past it rather than jumping a stride — and from here the row is an INFILL,
+                    // because whatever ground is left east of a working site is the last there is.
+                    x += OwnerShedProbeMetres;
+                    pitch = OwnerShedInfillSpacingMetres;
+                    continue;
+                }
+                row.Add(new Vector2(x, y));
+                x += pitch;
             }
             return row;
         }

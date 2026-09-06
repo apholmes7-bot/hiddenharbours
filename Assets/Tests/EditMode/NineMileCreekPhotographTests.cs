@@ -277,10 +277,16 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         /// <summary>
-        /// ⭐ The register cannot outgrow the yard. This is the test that would have caught the eighth
-        /// owner: the shed walk yields seven lots on this spit (the shanty row, then east past the bait
-        /// shed and the trap store), and an eighth <c>LotIndex</c> falls through to the row's clamp — two
-        /// sheds in one place, drawn as one.
+        /// ⭐ The register cannot outgrow the yard. This is the test that caught the eighth owner on the
+        /// first pass: the walk yields a finite row (the shanty row, then east past the bait shed and the
+        /// trap store), and a <c>LotIndex</c> past its end falls through to the row's clamp — two sheds
+        /// in one place, drawn as one.
+        ///
+        /// <para>⭐ <b>The number it measures moved from SEVEN to EIGHT on 2026-09-04</b>, and not by
+        /// growing the spit: the walk had been skipping a whole stride past a working site and stepping
+        /// over six metres of clear ground. <see cref="TheShedRowDoesNotThrowAwayGroundPastAWorkingSite"/>
+        /// holds that fix with a positive control. This test deliberately reads
+        /// <c>OwnerShedLotCount</c> rather than either number, so it keeps being a measurement.</para>
         /// </summary>
         [Test]
         public void TheRegisterFitsTheLotsTheYardAffords()
@@ -296,6 +302,92 @@ namespace HiddenHarbours.Tests.EditMode
             foreach (var owner in owners)
                 Assert.That(owner.LotIndex, Is.LessThan(afforded),
                     $"{owner.Id} claims lot {owner.LotIndex} and the row only reaches {afforded - 1}");
+        }
+
+        /// <summary>
+        /// ⭐ <b>THE ROW MAY NOT THROW GROUND AWAY, and this is a POSITIVE CONTROL on the walk that did.</b>
+        ///
+        /// <para>Until 2026-09-04 the walk marched a rigid <see cref="NineMileCreekMainland.OwnerShedSpacingMetres"/>
+        /// grid from the shanty row's west end and <i>skipped a whole stride</i> whenever a step landed
+        /// inside a working site's ground. Measured, that put the first lot east of the trap store at
+        /// x = 164 when the ground had been clear since x = 158, and the stride after it ran off the
+        /// spit — so the last twenty-two metres of made ground held TWO sheds where three fit. The yard
+        /// afforded seven and the register was full at seven, and the shortage read as a ground ask when
+        /// six metres of it were simply being stepped over.</para>
+        ///
+        /// <para><b>The old walk is transcribed here rather than described</b>, for the reason
+        /// <c>NineMileCreekShopsTests.TheOldRestaurantLot_WouldHaveStoodOnTheQuay</c> exists: a guard
+        /// that only measures the CURRENT rule starts agreeing with whatever the plan happens to hold,
+        /// and this one has to keep saying what the fix was worth. Both numbers are asserted, so the day
+        /// the shipped walk regresses to a stride-skip the test names the six metres by their size.</para>
+        /// </summary>
+        [Test]
+        public void TheShedRowDoesNotThrowAwayGroundPastAWorkingSite()
+        {
+            // The walk as it stood before 2026-09-04, transcribed: a rigid grid that skips a stride.
+            var oldWalk = new List<Vector2>();
+            {
+                float y = NineMileCreekMainland.OwnerShedRowY;
+                float west = NineMileCreekMainland.ShantyRow[0].x;
+                float east = NineMileCreekMainland.SpitFill.Center.x
+                           + NineMileCreekMainland.SpitFill.HalfSize.x
+                           - NineMileCreekMainland.WharfShedRadius;
+                for (int step = 0; step < 64; step++)
+                {
+                    var candidate = new Vector2(west + step * NineMileCreekMainland.OwnerShedSpacingMetres, y);
+                    if (candidate.x > east) break;
+                    if (NineMileCreekMainland.IsWorkingSiteInTheWay(candidate)) continue;
+                    oldWalk.Add(candidate);
+                }
+            }
+
+            var row = NineMileCreekMainland.OwnerShedLots();
+
+            Assert.That(oldWalk.Count, Is.EqualTo(7),
+                "the POSITIVE CONTROL has stopped controlling: the stride-skipping walk is supposed to " +
+                $"afford seven lots on this yard and afforded {oldWalk.Count}. Either a working site " +
+                "moved or the spit did, and the six metres this test is about are no longer the six " +
+                "metres it was written against — re-measure before trusting the number below.");
+
+            Assert.That(row.Count, Is.GreaterThan(oldWalk.Count),
+                $"the shipped walk affords {row.Count} lots and the stride-skipping one it replaced " +
+                $"afforded {oldWalk.Count}. It has regressed to stepping over clear ground, which is " +
+                "how this yard ran out of room while ground was still lying there.");
+
+            Assert.That(row.Count, Is.EqualTo(8),
+                $"the yard is expected to afford EIGHT shed lots and walked {row.Count}. That number " +
+                "sizes the register (see TheRegisterFitsTheLotsTheYardAffords) and it is measured, not " +
+                "chosen — if a working site was added or the spit was trimmed, the register has to " +
+                "shrink with it rather than this number being edited to agree.");
+        }
+
+        /// <summary>
+        /// ⭐ <b>THE FIRST FIVE LOTS ARE THE SHANTIES, and that stopped being decorative on 2026-09-04.</b>
+        ///
+        /// <para><c>OwnerShedLot</c> has always said in prose that <i>"lots 0–4 land exactly on
+        /// ShantyRow… the photograph's shed row IS the shanty row, so an owner's shed and the shanty
+        /// drawn there are one building"</i>. While the row had a single pitch that was arithmetic
+        /// nobody could break by accident. It now has TWO — the comfortable stride west of the bait
+        /// shed and a closer infill pitch east of the trap store — and a row re-pitched from its west
+        /// end would lift every shed off its shanty and draw the yard twice. So the prose becomes an
+        /// assertion.</para>
+        /// </summary>
+        [Test]
+        public void TheFirstShedLotsStandExactlyOnTheShanties()
+        {
+            var row = NineMileCreekMainland.OwnerShedLots();
+            var shanties = NineMileCreekMainland.ShantyRow;
+
+            Assert.That(row.Count, Is.GreaterThanOrEqualTo(shanties.Length),
+                $"the row walks {row.Count} lots and the photograph draws {shanties.Length} shanties on " +
+                "the same latitude — a shanty with no lot on it is a building nobody owns");
+
+            for (int i = 0; i < shanties.Length; i++)
+                Assert.That(Vector2.Distance(row[i], new Vector2(shanties[i].x, shanties[i].y)),
+                    Is.LessThan(0.001f),
+                    $"shed lot {i} is at {row[i]} and shanty {i} is at ({shanties[i].x}, {shanties[i].y}). " +
+                    "They are supposed to be ONE building. The infill pitch must apply only AFTER a " +
+                    "working site has interrupted the row, never from its west end.");
         }
 
         [Test]

@@ -519,7 +519,7 @@ namespace HiddenHarbours.Tests.EditMode
             // The policy is what changed.
             Assert.IsTrue(rig.Door.IsAvailable,
                           "a hull that was measured may be entered — the overdraw is an R1 optimisation");
-            Assert.AreEqual("Go below", rig.Door.VerbLabel);
+            Assert.AreEqual("Open the door", rig.Door.VerbLabel);
             Assert.IsTrue(rig.Door.TryUse(), "…and the press is accepted");
         }
 
@@ -650,7 +650,8 @@ namespace HiddenHarbours.Tests.EditMode
             var doorGo = new GameObject("Door");
             doorGo.transform.SetParent(root.transform, false);
             var door = doorGo.AddComponent<BoatCabinDoor>();
-            door.Configure(interior, "fixture.boat.gate_test.cabin_door", -1, 1.2f, "Go below", "Come out");
+            door.Configure(interior, "fixture.boat.gate_test.cabin_door", -1, 1.2f,
+                           "Open the door", "Close the door");
 
             return new Rig
             {
