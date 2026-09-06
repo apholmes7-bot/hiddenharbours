@@ -20,5 +20,5 @@ MonoBehaviour:
   Prosperity: 1
   ShedFootprintMetres: 6.0
   LotIndex: 4
-  BerthIndex: 7
+  BerthIndex: 12
   Skipper: {fileID: 0}

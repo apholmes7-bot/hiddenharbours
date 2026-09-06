@@ -104,6 +104,22 @@ namespace HiddenHarbours.App.Editor
             return mesh != null ? Mathf.Max(0f, mesh.WatertightHalfBeamMeters) : 0f;
         }
 
+        /// <summary>
+        /// The LENGTH of an owner's hull, in metres, or <b>0</b> when she has none to measure.
+        ///
+        /// <para>⚠ Read off <c>BoatHullDef.LengthMeters</c> and not off the mesh, because the mesh does
+        /// not carry one: <c>HullMeshDef</c> publishes a watertight half-BEAM and no length at all. So
+        /// the two numbers a berth is measured from come from two different assets, and there is no
+        /// third opinion to reconcile — but also no single survey behind them, which is the same caveat
+        /// <see cref="HalfBeamOf"/> carries and the same day's work would fix.</para>
+        ///
+        /// <para>Zero means "unknown", never "no length":
+        /// <see cref="NineMileCreekMainland.BerthHalfSpanFor"/> turns it into the longest resident, which
+        /// is the safe direction for a clearance.</para>
+        /// </summary>
+        public static float LengthOf(BoatOwnerDef owner) =>
+            owner != null && owner.Boat != null ? Mathf.Max(0f, owner.Boat.LengthMeters) : 0f;
+
         /// <summary>Every owner asset the region ships, in a stable order (by id) so a rebuild does not
         /// reshuffle the fleet.</summary>
         public static List<BoatOwnerDef> LoadOwners()
@@ -154,6 +170,12 @@ namespace HiddenHarbours.App.Editor
             // a double-booking of a berth she is nowhere near.
             var wallTaken = new Dictionary<int, BoatOwnerDef>();
             var floatTaken = new Dictionary<int, BoatOwnerDef>();
+
+            // ⭐⭐ A WALL BERTH IS A SPAN, NOT A POINT, so what the wall table holds is not enough to
+            // catch two boats in one place: they can hold two different berths and still be drawn
+            // through one another. Kept as a list beside the table because the refusal has to name the
+            // boat she WOULD have been drawn through, and a bare index cannot.
+            var wallSpans = new List<(BoatOwnerDef Owner, NineMileCreekMainland.WallSpan Span)>();
             int wallPlaced = 0, floatPlaced = 0;
 
             foreach (var owner in owners)
@@ -254,6 +276,46 @@ namespace HiddenHarbours.App.Editor
                             "but the gap is real: bake her a hull and the gate starts covering her.");
                 }
 
+                // ⭐⭐ THE WALL'S OWN GATE, and it is about LENGTH rather than width — the along-wall
+                // half of "gate the hull where the hull is" (owner playtest 2026-09-06: "boats … overlap
+                // each other", five hulls at the north wall drawn through one another at 06:28). The
+                // line is pitched at 5.5 m off the photographs; these boats lie ALONGSIDE and are
+                // 8.6–12.9 m long. Refused rather than nudged, for the reason every refusal here is
+                // refused: a boat quietly moved to somewhere she fits is a boat nobody notices is in the
+                // wrong place.
+                if (!atFloat)
+                {
+                    var span = NineMileCreekMainland.BerthSpan(owner.BerthIndex, LengthOf(owner));
+                    NineMileCreekMainland.WallSpan clash = default;
+                    BoatOwnerDef clashWith = null;
+                    float shared = 0f;
+
+                    foreach (var lying in wallSpans)
+                    {
+                        float over = span.OverlapWith(lying.Span);
+                        if (over <= 0f) continue;
+                        clashWith = lying.Owner; clash = lying.Span; shared = over;
+                        break;
+                    }
+
+                    if (clashWith != null)
+                    {
+                        Debug.LogError(
+                            $"[NineMileCreekMooredFleet] '{owner.Id}' at wall berth {owner.BerthIndex} " +
+                            $"({LengthOf(owner):0.0} m long, {span}) and '{clashWith.Id}' at berth " +
+                            $"{clashWith.BerthIndex} ({LengthOf(clashWith):0.0} m long, {clash}) share " +
+                            $"{shared:0.00} m of wall — they would be drawn through one another. Refused " +
+                            "the second. A berth is a SPAN, not a point: the line's " +
+                            $"{NineMileCreekMainland.BerthSpacingMetres:0.0} m pitch is a BEAM pitch, and " +
+                            "a boat lying alongside spends her LENGTH on it. Rafting two deep is a real " +
+                            "thing this wharf does — but rafting is a second ROW off the wall, not two " +
+                            "hulls in one place. Move a BerthIndex; do not shorten the boat.");
+                        continue;
+                    }
+
+                    wallSpans.Add((owner, span));
+                }
+
                 taken[owner.BerthIndex] = owner;
 
                 // S1b: at the WALL she lies off the timber by her OWN beam plus a fender, the same way
@@ -291,6 +353,35 @@ namespace HiddenHarbours.App.Editor
                 $"⚠ THE REGISTER IS FULL AT {owners.Count}: the yard walks " +
                 $"{NineMileCreekMainland.OwnerShedLotCount} shed lots and every owner has one, so a " +
                 "further boat on the float needs GROUND on the spit before it needs an asset.");
+
+            if (wallSpans.Count > 0)
+            {
+                // ⭐ THE BERTH LINE, SAID OUT LOUD. The overlap gate above only speaks when it refuses;
+                // this says what was actually laid down, so a register that fits by a hand's breadth
+                // reads differently from one that fits by three metres — and so the wall's own ends are
+                // in front of whoever next moves a BerthIndex.
+                var ordered = wallSpans.OrderBy(p => p.Span.Min).ToList();
+                var line = new System.Text.StringBuilder();
+                line.Append("[NineMileCreekMooredFleet] THE BERTH LINE, boat by boat — a berth is a SPAN ")
+                    .Append("(half her length plus a ")
+                    .Append(NineMileCreekMainland.BerthFenderMetres.ToString("0.0"))
+                    .Append(" m fender either side of the mark), and the wall she lies against runs x ")
+                    .Append(NineMileCreekMainland.MooringFaceWestX.ToString("0.0")).Append(" → ")
+                    .Append(NineMileCreekMainland.MooringFaceEastX.ToString("0.0")).Append(" m:");
+
+                for (int i = 0; i < ordered.Count; i++)
+                {
+                    line.Append("\n  berth ").Append(ordered[i].Owner.BerthIndex.ToString().PadLeft(2))
+                        .Append("  ").Append(ordered[i].Owner.Id.PadRight(28))
+                        .Append(LengthOf(ordered[i].Owner).ToString("00.0")).Append(" m  ")
+                        .Append(ordered[i].Span.ToString());
+                    if (i + 1 < ordered.Count)
+                        line.Append("   → ")
+                            .Append(ordered[i].Span.ClearOf(ordered[i + 1].Span).ToString("0.00"))
+                            .Append(" m of clear wall to the next");
+                }
+                Debug.Log(line.ToString());
+            }
             return placed;
         }
     }

@@ -546,6 +546,13 @@ namespace HiddenHarbours.App.Editor
         /// hull mesh's 2.5 m watertight half-beam). Pinned to the assets by the channel tests.</summary>
         public const float WidestResidentBeamMetres = 5.0f;
 
+        /// <summary>The longest hull in the resident fleet — <b>12.9 m</b>, Marie Gallant's Cape
+        /// Islander. The wall's counterpart to <see cref="WidestResidentBeamMetres"/>: that number says
+        /// how far off the timber a boat lies, this one says how much OF the timber she takes up. Pinned
+        /// to the assets by the channel tests, and for the same reason — a line solved for the wrong boat
+        /// is a line two boats share.</summary>
+        public const float LongestResidentLengthMetres = 12.9f;
+
         /// <summary>
         /// How narrow the channel is allowed to get at dead low spring: <b>10.0 m</b> — one beam, with
         /// half a beam of water either side of her. The floor the width-shrink must never cross, and the
@@ -757,6 +764,71 @@ namespace HiddenHarbours.App.Editor
         /// <summary>The first berth's centre on the authored line. Derived rather than stored, so the
         /// standoff has exactly one definition.</summary>
         public static Vector2 FirstBerthPos => BerthPos(0);
+
+        // -----------------------------------------------------------------------------------------
+        //  ⭐⭐ AND ALONG THE WALL — a berth is a SPAN, not a point (owner playtest 2026-09-06)
+        // -----------------------------------------------------------------------------------------
+
+        /// <summary>
+        /// ⭐⭐ <b>HOW MUCH WALL A HULL OF THIS LENGTH TAKES UP either side of her berth mark: half her
+        /// length, plus a fender.</b>
+        ///
+        /// <para><see cref="BerthSpacingMetres"/> is <b>5.5 m</b> and its own comment says where that
+        /// came from — the photographs, "rafted two deep in places". But
+        /// <c>NineMileCreekMooredFleet.MooredHeadingDegrees</c> lays this fleet <b>alongside</b>, bow to
+        /// the harbour mouth, so what a boat spends along this wall is her LENGTH; and rafting is a
+        /// second ROW off the wall, never two hulls in one place. A beam pitch under hulls placed by
+        /// length is how the owner came to be looking at boats drawn through one another.</para>
+        ///
+        /// <para>The gap is <see cref="BerthFenderMetres"/> — the same half-metre the standoff spends
+        /// athwartships, spent here fore-and-aft. One number, one meaning: the slack a working hull is
+        /// allowed around her. A length of zero means "unknown", never "no length", and falls back to
+        /// <see cref="LongestResidentLengthMetres"/> exactly as a beam of zero falls back to the widest
+        /// resident — the safe direction for a clearance, in both axes.</para>
+        /// </summary>
+        public static float BerthHalfSpanFor(float lengthMetres) =>
+            (lengthMetres > 0f ? lengthMetres : LongestResidentLengthMetres) * 0.5f + BerthFenderMetres;
+
+        /// <summary>The stretch of wall berth <paramref name="index"/> occupies for a hull of this
+        /// length: her berth mark, with half her length and a fender either side of it.</summary>
+        public static WallSpan BerthSpan(int index, float lengthMetres)
+        {
+            float half = BerthHalfSpanFor(lengthMetres);
+            float centre = BerthPos(index).x;
+            return new WallSpan(centre - half, centre + half);
+        }
+
+        /// <summary>A stretch of the quay wall, in world x. Two hulls whose spans share ANY wall are two
+        /// hulls drawn through one another.</summary>
+        public readonly struct WallSpan
+        {
+            public readonly float Min;
+            public readonly float Max;
+
+            public WallSpan(float min, float max) { Min = min; Max = max; }
+
+            public float Metres => Max - Min;
+
+            /// <summary>Metres of wall these two spans share. Zero when they merely touch, and never
+            /// negative: "how far apart are they" is a different question, and this one must not answer
+            /// it by accident.</summary>
+            public float OverlapWith(WallSpan other) =>
+                Mathf.Max(0f, Mathf.Min(Max, other.Max) - Mathf.Max(Min, other.Min));
+
+            /// <summary>Metres of clear wall between two spans that do NOT overlap; 0 when they do.</summary>
+            public float ClearOf(WallSpan other) =>
+                Mathf.Max(0f, Mathf.Max(Min, other.Min) - Mathf.Min(Max, other.Max));
+
+            public override string ToString() => $"x {Min:0.00} → {Max:0.00}";
+        }
+
+        /// <summary>The west end of the timber a boat can lie against — read off the wall, like
+        /// <see cref="MooringFaceY"/>, rather than typed beside it.</summary>
+        public static float MooringFaceWestX => NorthWallFill.Center.x - NorthWallFill.HalfSize.x;
+
+        /// <summary>…and the east end. A hull whose span runs past either one is moored off the end of
+        /// the wall she is supposedly tied to.</summary>
+        public static float MooringFaceEastX => NorthWallFill.Center.x + NorthWallFill.HalfSize.x;
 
         // Where the working things stand. Phase A places greybox markers; Phase B swaps in the kit.
         public static readonly Vector3 WinchPos          = new Vector3( 87f,  84f, 0f);  // west wall, by the apron
