@@ -92,6 +92,41 @@ namespace HiddenHarbours.Boats
     /// while the water's starts at zero on the bridge's, so the hull heaved on a sea correct in every
     /// respect except WHEN — it now reads the published field through
     /// <see cref="SharedWaveField"/> and rides the very trains the shader was handed.</para>
+    ///
+    /// <para><b>⭐ AND SHE HAS WEIGHT (water fidelity PR 10 — owner playtest 2026-09-05: <i>"the
+    /// boats seem to have too much hangtime after a big wave and bob up and down too fast and jerky
+    /// as if they have no weight"</i>).</b> Every paragraph above still sampled the field at ONE
+    /// point — this component's transform origin — and, below the storm gate, handed it to the
+    /// screen unfiltered (<see cref="StormRockMath.StepHeaveWeight"/> is an exact passthrough at
+    /// blend 0). Measured before it was touched, the ride/wave transfer function read <b>1.000 at
+    /// every wavelength from 2 m to 64 m for the 4.5 m dory, the 12.9 m cape islander and the 110 m
+    /// tanker alike</b>. Two physical facts now stand between the sea and the picture:
+    /// <list type="bullet">
+    /// <item><b>The FOOTPRINT</b> (<see cref="SampleTheHullsFootprint"/>): the field is read at N
+    /// points along her waterline and averaged, so a wave shorter than the hull cancels under her and
+    /// one longer lifts the whole boat — a <c>sinc(L/λ)</c> low-pass she gets from her own length,
+    /// which also gives the PITCH read her bow-to-stern difference instead of the tangent under her
+    /// middle, and attenuates the mesh attitude ENVELOPES (never the instantaneous value — the
+    /// phase-lock rule below).</item>
+    /// <item><b>The NATURAL PERIOD</b> (<see cref="HullHeaveResponseMath"/>): she answers that mean
+    /// through her own mass-spring, <c>T = 2π√(m/ρgA_wp)</c> at her own damping ratio, in the SAME
+    /// <see cref="StormRockMath.StepHeaveWeight"/> filter — an overload that takes (ω, ζ) outright
+    /// rather than the storm block's policy stiffness. ONE filter, one state: the storm's crest hold
+    /// becomes a property of a heavy hull's lag instead of a second timer behind it.</item>
+    /// </list>
+    /// The hangtime turned out not to be gravity misbehaving: the free-fall cap fires only when the
+    /// water under her falls faster than g, and <b>only a POINT sample of a crest-sharpened field is
+    /// ever that steep</b> — measured, it pinned 0.06–0.22 % of frames before and <b>0.00 %</b>
+    /// after. Per-hull character comes from data that already exists (her length, beam, draught and
+    /// <c>SeakeepingDamping</c>); the dials are <c>GameConfig.HullWeight</c>, and
+    /// <see cref="HullWeightSettings.Enabled"/> off restores the point-sampled, storm-gated ride bit
+    /// for bit — that is the A/B. <c>_motionSmoothingSeconds</c> is untouched and is now purely the
+    /// residual-noise velvet on the SLOPE reads: the displaced ride has never routed through it.
+    /// <b>The spring is per-hull state, which the stateful-smoother law permits precisely because
+    /// this component PUBLISHES what it applied</b> (<c>SetDisplacedHeaveMeters</c> /
+    /// <c>SetDrawnRideMeters</c>) instead of letting riders recompute it — the publisher-follows-
+    /// applier rule, unchanged. Nothing is saved (rule 5): the filter wakes ON the water and is back
+    /// on it inside two natural periods.</para>
     /// </summary>
     [DisallowMultipleComponent]
     // THE WRITER of DirectionalBoatSprite.RockFrame, so it runs FIRST of the boat's visual chain
@@ -234,7 +269,9 @@ namespace HiddenHarbours.Boats
         private float _smoothedRoll;
         private float _smoothedBob;
 
-        // The weight filter's per-boat state (ADR 0018 B2.5) — presentation-only, reset on wake.
+        // The weight filter's per-boat state (ADR 0018 B2.5, now also the hull's own heave spring —
+        // water fidelity PR 10) — presentation-only, reset on wake. ONE filter, one state: the storm
+        // read and the hull's weight compose inside it, they never stack two lags.
         private HeaveWeightState _heaveWeight;
 
         // The sibling BoatController (same root), resolved lazily ONCE per wiring — the hull's
@@ -402,6 +439,14 @@ namespace HiddenHarbours.Boats
             float seaState01 = 0f;                            // no sim = glass = no storm (blend 0)
             float fetchEnvelope = 1f;                         // resolved ONCE per tick (rule 7)
             WaveFieldSettings field = GameServices.WaveField; // also supplies g to the weight filter
+            // THE HULL'S OWN HEAVE CHARACTER (water fidelity PR 10): how many points of her waterline
+            // the sea is read at, and the mass-spring she answers it with, from the data her own
+            // BoatHullDef already carries. Resolved EVERY tick on purpose — it is a handful of
+            // multiplies and one sqrt, and the owner tuning a dial must see it move without
+            // re-skinning the fleet. A hull with no def reads Bolted, which is the point sample and
+            // the storm-gated chase exactly as they were.
+            HullWeightSettings hullWeight = GameServices.HullWeight;
+            HullHeaveResponse heave = ResolveHeaveResponse(field.Gravity, in hullWeight);
             var env = GameServices.Environment;
             if (env != null)
             {
@@ -413,7 +458,8 @@ namespace HiddenHarbours.Boats
                 // shared by the surface sample below AND the storm-attitude envelope — the march is
                 // real terrain reads, and the two consumers must see the same lee.
                 fetchEnvelope = GameServices.FetchEnvelopeAt((Vector2)transform.position);
-                wave = SampleTheDrawnSea((Vector2)transform.position, fetchEnvelope);
+                wave = SampleTheHullsFootprint((Vector2)transform.position, (Vector2)transform.up,
+                                               in heave, fetchEnvelope);
             }
             else
             {
@@ -443,9 +489,24 @@ namespace HiddenHarbours.Boats
             SeakeepingResponse hullCharacter = ResolveHullCharacter();
             if (rideActive)
             {
-                rideMeters = StormRockMath.StepHeaveWeight(
-                    ref _heaveWeight, rideMeters, dt, field.Gravity,
-                    stormBlend * Mathf.Clamp01(storm.HeaveWeight01), in hullCharacter, in storm);
+                // ⭐ THE HULL HAS WEIGHT (water fidelity PR 10, owner playtest 2026-09-05: "they bob
+                // up and down too fast and jerky as if they have no weight"). With her own honest
+                // size she rides her OWN spring — ω = 2π/T from T = 2π√(m/ρgA_wp), ζ from her own
+                // SeakeepingDamping — at FULL engagement, at every sea state, because the calm ride
+                // is precisely what the owner called the defect. It is the SAME filter the storm has
+                // always used (free-fall cap, submarine band, settle snap, realized-step floor all
+                // unchanged): the storm's crest hold is now a property of a heavy hull's own lag
+                // instead of a second timer bolted behind it.
+                //
+                // No honest size (a bare rig, a decor boat, or HullWeight.Enabled off) ⇒ Bolted ⇒ the
+                // storm-gated chase exactly as f2c7105b ran it, bit for bit. That is the A/B.
+                rideMeters = heave.IsHonest
+                    ? StormRockMath.StepHeaveWeight(
+                          ref _heaveWeight, rideMeters, dt, field.Gravity, 1f,
+                          heave.NaturalFrequencyRadPerSec, heave.DampingRatio, in storm)
+                    : StormRockMath.StepHeaveWeight(
+                          ref _heaveWeight, rideMeters, dt, field.Gravity,
+                          stormBlend * Mathf.Clamp01(storm.HeaveWeight01), in hullCharacter, in storm);
             }
             else
             {
@@ -488,7 +549,7 @@ namespace HiddenHarbours.Boats
             if (DrivingRockFrames)
             {
                 DriveRockFrame(rideMeters, stormBlend, response, in hullCharacter, in storm,
-                               fetchEnvelope);
+                               fetchEnvelope, in heave);
                 return;
             }
 
@@ -550,6 +611,100 @@ namespace HiddenHarbours.Boats
             }
             if (_controller == null) return 0f;
             return SeakeepingForcesMath.SurfLiftMeters(_controller.SurfUnderHull, _controller.SeakeepingPolicy);
+        }
+
+        /// <summary>
+        /// <b>The hull's own heave character</b> (water fidelity PR 10) — the footprint she reads the
+        /// sea over and the mass-spring she answers it with, from her sibling
+        /// <see cref="BoatController"/>'s <c>BoatHullDef</c>: her length and beam (the footprint and
+        /// the waterplane), her draught (the displacement, hence the period) and her
+        /// <c>SeakeepingDamping</c> (the ratio). Her beam comes from
+        /// <see cref="HullPresence.HalfBeamOf"/> — the ONE derivation in the repo, so a hull cannot be
+        /// one width to the water and another to the registry.
+        ///
+        /// <para>A boat with no controller or no hull def (the ambient fleet's decor rigs, a bare test
+        /// rig) reads <see cref="HullHeaveResponse.Bolted"/> — the point sample and the storm-gated
+        /// chase exactly as before, the same neutral <see cref="ResolveHullCharacter"/> gives her.
+        /// So does the whole fleet with <see cref="HullWeightSettings.Enabled"/> off: that is the
+        /// A/B, and it is bit-identical.</para>
+        /// </summary>
+        private HullHeaveResponse ResolveHeaveResponse(float gravity, in HullWeightSettings settings)
+        {
+            if (!_controllerResolved)
+            {
+                _controller = GetComponent<BoatController>();
+                _controllerResolved = true;
+            }
+            if (_controller == null || _controller.Hull == null) return HullHeaveResponse.Bolted;
+            BoatHullDef hull = _controller.Hull;
+            return HullHeaveResponseMath.Resolve(hull.LengthMeters, HullPresence.HalfBeamOf(hull),
+                                                 hull.DraughtMeters, hull.SeakeepingDamping,
+                                                 gravity, in settings);
+        }
+
+        /// <summary>
+        /// <b>THE SEA UNDER HER WHOLE WATERLINE, not under her origin</b> (water fidelity PR 10).
+        /// Reads <see cref="HullHeaveResponse.FootprintSamples"/> points spaced along the keel and
+        /// returns them as one <see cref="WaveSample"/> whose
+        /// <list type="bullet">
+        /// <item><b>Height</b> is their MEAN — the physical low-pass. A wave shorter than the hull
+        /// cancels across her length (she bridges it); a wave longer lifts the whole boat. The
+        /// continuous limit is <c>sinc(L/λ)</c>, and the fleet's spread — a dory lively, a cape
+        /// islander steady, a tanker barely nodding — comes out of the hull list for free.</item>
+        /// <item><b>Slope</b> is the CENTRE point's beam component plus the bow component measured as
+        /// the outer samples' height DIFFERENCE over their true separation. A 12.9 m hull's pitch is
+        /// set by how much higher her bow is than her stern, not by the tangent under her middle, and
+        /// taking it that way gives the pitch read the same footprint filtering the heave gets. The
+        /// roll axis keeps the point slope: her beam is a fifth of her length, so the abeam filter is
+        /// ≈ 1 for every wave the field carries, and sampling it would double the cost to say so.
+        /// </item>
+        /// <item><b>CrestFactor</b> is the centre point's — it is a local property of the water she
+        /// sits on, not something to average.</item>
+        /// </list>
+        ///
+        /// <para>The sample count is ODD by construction, so the middle sample IS the centre and the
+        /// slope costs nothing extra: N samples per hull per tick, total (rule 7).</para>
+        ///
+        /// <para><b>The fetch envelope is resolved ONCE, at her centre, and shared by every point</b>
+        /// — the same discipline <see cref="SampleTheDrawnSea"/> already documents. The march is real
+        /// terrain reads; running one per footprint point would multiply the most expensive part of
+        /// the tick to resolve a lee that does not change over a boat's length.</para>
+        ///
+        /// <para>A hull with no honest size (<see cref="HullHeaveResponse.IsHonest"/> false) takes the
+        /// single centre sample and returns it untouched — the byte-identical pre-PR path.</para>
+        /// </summary>
+        private WaveSample SampleTheHullsFootprint(Vector2 worldPos, Vector2 heading,
+                                                   in HullHeaveResponse heave, float fetchEnvelope01)
+        {
+            WaveSample centre = SampleTheDrawnSea(worldPos, fetchEnvelope01);
+            int n = heave.FootprintSamples;
+            if (!heave.IsHonest || n < 3) return centre;
+
+            float sqr = heading.x * heading.x + heading.y * heading.y;
+            Vector2 bow = sqr < BoatWaveMotionMath.MinHeadingSqrMagnitude
+                ? Vector2.up
+                : heading * (1f / Mathf.Sqrt(sqr));
+
+            float sum = 0f, aft = 0f, fore = 0f;
+            for (int i = 0; i < n; i++)
+            {
+                float offset = HullHeaveResponseMath.FootprintOffsetMeters(i, n, heave.HalfLengthMeters);
+                // The middle sample is exactly amidships (odd N, segment centres) — reuse the centre
+                // read rather than paying for it twice.
+                float height = i == (n >> 1)
+                    ? centre.Height
+                    : SampleTheDrawnSea(worldPos + bow * offset, fetchEnvelope01).Height;
+                sum += height;
+                if (i == 0) aft = height;
+                if (i == n - 1) fore = height;
+            }
+
+            float span = HullHeaveResponseMath.FootprintSpanMeters(n, heave.HalfLengthMeters);
+            float bowSlope = span > 1e-4f ? (fore - aft) / span : 0f;
+            Vector2 starboard = BoatWaveMotionMath.Starboard(bow);
+            float beamSlope = centre.Slope.x * starboard.x + centre.Slope.y * starboard.y;
+            Vector2 slope = bow * bowSlope + starboard * beamSlope;
+            return new WaveSample(sum / n, slope, centre.CrestFactor);
         }
 
         /// <summary>
@@ -711,7 +866,7 @@ namespace HiddenHarbours.Boats
         /// </summary>
         private void DriveRockFrame(float rideMeters, float stormBlend, float responseMultiplier,
                                     in SeakeepingResponse hullCharacter, in StormRockSettings storm,
-                                    float fetchEnvelope01)
+                                    float fetchEnvelope01, in HullHeaveResponse heave)
         {
             var hull = Hull;
 
@@ -781,11 +936,36 @@ namespace HiddenHarbours.Boats
                                         + dominant.Direction.y * starboard.y;
 
                         float hullScale = StormRockMath.HullAttitudeScale(in hullCharacter, in storm);
+
+                        // THE FOOTPRINT FILTERS THE ATTITUDE TOO (water fidelity PR 10). A hull that
+                        // bridges a wave does not lean to it either: the same sinc(extent/λ) that
+                        // averages her HEAVE away attenuates the ANGLE she takes, over her LENGTH for
+                        // pitch and her BEAM for roll (each projected onto the wave's own direction,
+                        // which is why the shares appear here as well). Without it a 12.9 m hull
+                        // would ride a 4 m chop steady and still roll to it.
+                        //
+                        // It is an AMPLITUDE on a slowly-varying ENVELOPE — deliberately, and it is
+                        // the only shape this may take: the waveform below is cos() of the very phase
+                        // the canned rock cycle is posed at, and that phase lock is what makes the
+                        // summed channels smooth BY ALGEBRA (the MeshRockSmoothness lesson, CI run
+                        // 30968839931). A filter on the instantaneous value would break it.
+                        float drawnWavelength = dominant.Wavelength / Mathf.Max(1e-4f, freqScale);
+                        float pitchFootprint = heave.IsHonest
+                            ? HullHeaveResponseMath.FootprintGain01(
+                                  2f * heave.HalfLengthMeters * Mathf.Abs(bowShare), drawnWavelength)
+                            : 1f;
+                        float rollFootprint = heave.IsHonest
+                            ? HullHeaveResponseMath.FootprintGain01(
+                                  2f * heave.HalfBeamMeters * Mathf.Abs(beamShare), drawnWavelength)
+                            : 1f;
+
                         float rollAmp = Mathf.Clamp(
-                            slopeEnvelope * beamShare * storm.MeshStormRollDegreesPerSlope * hullScale,
+                            slopeEnvelope * beamShare * rollFootprint
+                                * storm.MeshStormRollDegreesPerSlope * hullScale,
                             -storm.MeshStormMaxRollDegrees, storm.MeshStormMaxRollDegrees);
                         float pitchAmp = Mathf.Clamp(
-                            slopeEnvelope * bowShare * storm.MeshStormPitchDegreesPerSlope * hullScale,
+                            slopeEnvelope * bowShare * pitchFootprint
+                                * storm.MeshStormPitchDegreesPerSlope * hullScale,
                             -storm.MeshStormMaxPitchDegrees, storm.MeshStormMaxPitchDegrees);
 
                         // The ordinary-sea head-sea pitch: the same slope × bow-share × per-hull
@@ -801,7 +981,8 @@ namespace HiddenHarbours.Boats
                         // never the instantaneous value.
                         float headSeaPitchAmp = headSeaPitch
                             ? Mathf.Clamp(
-                                slopeEnvelope * bowShare * _meshHeadSeaPitchDegreesPerSlope * hullScale,
+                                slopeEnvelope * bowShare * pitchFootprint
+                                    * _meshHeadSeaPitchDegreesPerSlope * hullScale,
                                 -_maxMeshHeadSeaPitchDegrees, _maxMeshHeadSeaPitchDegrees)
                             : 0f;
 

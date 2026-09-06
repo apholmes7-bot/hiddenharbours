@@ -1,0 +1,516 @@
+// THE RIDE STRIP — water fidelity PR 10 ("the hull has WEIGHT").
+//
+// Runs the REPO'S OWN wave field + ride maths (the real .cs files are <Compile Include>d by the
+// csproj — nothing here is a transcription) against a scripted 60 Hz clock, and prints the two
+// measurements the charter asks for:
+//
+//   (1) the TRANSFER FUNCTION per hull: steady-state heave amplitude / wave amplitude, swept over
+//       wavelength on a single pure train. This is the physical statement — a wave shorter than the
+//       hull must average out under her; a wave longer must lift the whole boat.
+//   (2) the 30 s STRIP on the shipped four-train field at a blow and in a chop: the surface height
+//       under her against the ride she is drawn at, with RMS, reversals, the phase lag at the swell
+//       period, and the overshoot after the biggest crest (the "hangtime").
+//
+// Every constant comes from the shipped GameConfig.asset / Water.mat, parsed here, never typed.
+
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Text;
+using UnityEngine;
+using HiddenHarbours.Core;
+using HiddenHarbours.Boats;
+
+static class Program
+{
+    // ---- the shipped numbers, READ (never typed) -------------------------------------------------
+    static string Repo = Environment.GetEnvironmentVariable("HHROOT") ?? "C:/hh-waves";
+
+    static Dictionary<string, float> ParseBlock(string path, string blockKey)
+    {
+        var result = new Dictionary<string, float>();
+        string[] lines = File.ReadAllLines(path);
+        int indent = -1;
+        bool inBlock = false;
+        foreach (string raw in lines)
+        {
+            string line = raw.TrimEnd();
+            if (line.Length == 0) continue;
+            int lead = line.Length - line.TrimStart().Length;
+            string trimmed = line.Trim();
+            if (!inBlock)
+            {
+                if (trimmed == blockKey + ":") { inBlock = true; indent = lead; }
+                continue;
+            }
+            if (lead <= indent) break;                       // block ended
+            int colon = trimmed.IndexOf(':');
+            if (colon <= 0) continue;
+            string key = trimmed.Substring(0, colon).Trim();
+            string val = trimmed.Substring(colon + 1).Trim();
+            if (float.TryParse(val, NumberStyles.Float, CultureInfo.InvariantCulture, out float f))
+                result[key] = f;
+        }
+        return result;
+    }
+
+    static float Scalar(string path, string key)
+    {
+        foreach (string raw in File.ReadAllLines(path))
+        {
+            string t = raw.Trim();
+            if (t.StartsWith(key + ":"))
+            {
+                string v = t.Substring(key.Length + 1).Trim();
+                if (float.TryParse(v, NumberStyles.Float, CultureInfo.InvariantCulture, out float f)) return f;
+            }
+        }
+        throw new Exception("key not found: " + key);
+    }
+
+    static WaveFieldSettings Field()
+    {
+        var b = ParseBlock(Repo + "/Assets/_Project/Data/Config/GameConfig.asset", "WaveField");
+        var s = WaveFieldSettings.Default;
+        s.Gravity = b["Gravity"];
+        s.SecondaryTrainCount = (int)b["SecondaryTrainCount"];
+        s.DominantWavelengthBase = b["DominantWavelengthBase"];
+        s.DominantWavelengthPerWindSpeed = b["DominantWavelengthPerWindSpeed"];
+        s.DominantWavelengthMax = b["DominantWavelengthMax"];
+        s.PrimaryAmplitude = b["PrimaryAmplitude"];
+        s.SeaStateAmplitudeExponent = b["SeaStateAmplitudeExponent"];
+        s.CrestSharpening = b["CrestSharpening"];
+        s.PhaseSeed = (int)b["PhaseSeed"];
+        s.Secondary1AngleDegrees = b["Secondary1AngleDegrees"];
+        s.Secondary1WavelengthRatio = b["Secondary1WavelengthRatio"];
+        s.Secondary1AmplitudeRatio = b["Secondary1AmplitudeRatio"];
+        s.Secondary2AngleDegrees = b["Secondary2AngleDegrees"];
+        s.Secondary2WavelengthRatio = b["Secondary2WavelengthRatio"];
+        s.Secondary2AmplitudeRatio = b["Secondary2AmplitudeRatio"];
+        s.Secondary3AngleDegrees = b["Secondary3AngleDegrees"];
+        s.Secondary3WavelengthRatio = b["Secondary3WavelengthRatio"];
+        s.Secondary3AmplitudeRatio = b["Secondary3AmplitudeRatio"];
+        s.SpectrumBlend = b["SpectrumBlend"];
+        s.SpectrumPeakEnhancement = b["SpectrumPeakEnhancement"];
+        s.SpectrumPeakWidth = b["SpectrumPeakWidth"];
+        s.SpectrumFrequencySpacing = b["SpectrumFrequencySpacing"];
+        s.SpectrumSpreadDegrees = b["SpectrumSpreadDegrees"];
+        s.SpectrumSpreadExponent = b["SpectrumSpreadExponent"];
+        return s;
+    }
+
+    static StormRockSettings Storm()
+    {
+        var b = ParseBlock(Repo + "/Assets/_Project/Data/Config/GameConfig.asset", "StormRock");
+        var s = StormRockSettings.Default;
+        s.Enabled = b["Enabled"] != 0f;
+        s.StormStartSeaState01 = b["StormStartSeaState01"];
+        s.ResponseExponent = b["ResponseExponent"];
+        s.MaxResponseMultiplier = b["MaxResponseMultiplier"];
+        s.StormSmoothingFactor = b["StormSmoothingFactor"];
+        s.HeaveWeight01 = b["HeaveWeight01"];
+        s.HeaveChaseStiffnessRadPerSec = b["HeaveChaseStiffnessRadPerSec"];
+        s.HeaveDampingRatio = b["HeaveDampingRatio"];
+        s.HullStiffnessResponseExponent = b["HullStiffnessResponseExponent"];
+        s.MaxHullResponseScale = b["MaxHullResponseScale"];
+        s.MaxDownwardAccelInGs = b["MaxDownwardAccelInGs"];
+        s.SurfaceBandMeters = b["SurfaceBandMeters"];
+        s.SettleEpsilonMeters = b["SettleEpsilonMeters"];
+        return s;
+    }
+
+    // The band edges of WeatherModel.SeaState01 (Environment module — not referenced here, so the
+    // one table it owns is restated and CHECKED against its own inverse in the print-out).
+    static readonly float[] SeaBandEdges = { 0f, 0.5f, 2f, 4f, 6f, 8f, 11f, 14f };
+    static float WindFor(float sea01)
+    {
+        int top = SeaBandEdges.Length - 1;
+        if (sea01 <= 0f) return 0f;
+        if (sea01 >= 1f) return SeaBandEdges[top];
+        float scaled = sea01 * top;
+        int k = Mathf.Clamp((int)scaled, 0, top - 1);
+        float t = scaled - k;
+        return Mathf.Lerp(SeaBandEdges[k], SeaBandEdges[k + 1], t);
+    }
+
+    // ---- the hulls under test (Data/Boats, read) --------------------------------------------------
+    struct Hull
+    {
+        public string Name;
+        public float LengthM, DraughtM, MassKg, Liveliness, MassFactor, Damping;
+        public float HalfBeamM;                     // HullPresence.BeamFraction stand-in unless authored
+        public SeakeepingResponse Response => new SeakeepingResponse(
+            MassFactor > 0f ? Liveliness / MassFactor : Liveliness, Damping);
+    }
+
+    static Hull ReadHull(string assetName)
+    {
+        string path = Repo + "/Assets/_Project/Data/Boats/" + assetName + ".asset";
+        var h = new Hull { Name = assetName };
+        h.LengthM = Scalar(path, "LengthMeters");
+        h.DraughtM = Scalar(path, "DraughtMeters");
+        h.MassKg = Scalar(path, "MassKg");
+        h.MassFactor = Scalar(path, "SeakeepingMassFactor");
+        h.Liveliness = Scalar(path, "SeakeepingLiveliness");
+        h.Damping = Scalar(path, "SeakeepingDamping");
+        h.HalfBeamM = h.LengthM * 0.37f * 0.5f;     // HullPresence.BeamFraction, the shipped stand-in
+        return h;
+    }
+
+    // ---- the ride, both arms ----------------------------------------------------------------------
+    const float Dt = 1f / 60f;
+    const float Exaggeration = 1.6f;                // GameConfig.WaveExaggeration (read below)
+    const float FreqScale = 1f;                     // Water.mat _OceanSwellScale 0.025 / 0.025 (read below)
+
+    /// <summary>BEFORE — f2c7105b's BoatWaveMotion.Tick, exactly: ONE WaveMath.Sample at the hull's
+    /// position, through ShoreFadeMath.DisplacedHeight, through StepHeaveWeight at the STORM engage
+    /// (which is 0 — an exact passthrough — below StormStartSeaState01 = 0.4).</summary>
+    static float RideBefore(Vector2 pos, in WaveTrains trains, in Hull hull, float dt,
+                            float stormBlend, in StormRockSettings storm, float gravity,
+                            ref HeaveWeightState state, out float surface, out float target)
+    {
+        WaveSample w = WaveMath.Sample(pos * FreqScale, 0.0, in trains, 1f);
+        surface = ShoreFadeMath.DisplacedHeight(w.Height, float.PositiveInfinity, 1f, Exaggeration);
+        target = surface;               // the point sample IS what she chased
+        SeakeepingResponse r = hull.Response;
+        return StormRockMath.StepHeaveWeight(ref state, surface, dt, gravity,
+                                             stormBlend * Mathf.Clamp01(storm.HeaveWeight01),
+                                             in r, in storm);
+    }
+
+    /// <summary>AFTER — BoatWaveMotion.Tick's new path, line for line: the footprint MEAN through
+    /// ShoreFadeMath.DisplacedHeight, then the SAME StepHeaveWeight filter driven by the hull's own
+    /// (ω, ζ) at full engagement. Every number comes out of the production HullHeaveResponseMath;
+    /// only the MonoBehaviour plumbing (which the harness has no editor for) is restated here.
+    /// <paramref name="surface"/> is the POINT sample under her origin — the water she is drawn on —
+    /// so both arms are judged against one sea.</summary>
+    static float RideAfter(Vector2 pos, Vector2 bow, in WaveTrains trains, in Hull hull, float dt,
+                           float stormBlend, in StormRockSettings storm, float gravity,
+                           ref HeaveWeightState state, out float surface, out float target)
+    {
+        surface = SurfaceAt(pos, in trains);
+        target = surface;
+        HullHeaveResponse heave = HullHeaveResponseMath.Resolve(
+            hull.LengthM, hull.HalfBeamM, hull.DraughtM, hull.Damping, gravity, in HullWeight);
+        if (!heave.IsHonest)
+        {
+            SeakeepingResponse fallback = hull.Response;
+            return StormRockMath.StepHeaveWeight(ref state, surface, dt, gravity,
+                                                 stormBlend * Mathf.Clamp01(storm.HeaveWeight01),
+                                                 in fallback, in storm);
+        }
+
+        int n = heave.FootprintSamples;
+        float sum = 0f;
+        for (int i = 0; i < n; i++)
+        {
+            float offset = HullHeaveResponseMath.FootprintOffsetMeters(i, n, heave.HalfLengthMeters);
+            sum += WaveMath.Sample((pos + bow * offset) * FreqScale, 0.0, in trains, 1f).Height;
+        }
+        target = ShoreFadeMath.DisplacedHeight(sum / n, float.PositiveInfinity, 1f, Exaggeration);
+        return StormRockMath.StepHeaveWeight(ref state, target, dt, gravity, 1f,
+                                             heave.NaturalFrequencyRadPerSec, heave.DampingRatio,
+                                             in storm);
+    }
+
+    static HullWeightSettings HullWeight = HullWeightSettings.Default;
+    static float OverrideCapInGs = -1f;
+
+    /// <summary>The SHIPPED hull-weight block, read out of GameConfig.asset (never typed).</summary>
+    static HullWeightSettings ReadHullWeight()
+    {
+        var b = ParseBlock(Repo + "/Assets/_Project/Data/Config/GameConfig.asset", "HullWeight");
+        var s = HullWeightSettings.Default;
+        s.Enabled = b["Enabled"] != 0f;
+        s.FootprintSampleSpacingMeters = b["FootprintSampleSpacingMeters"];
+        s.MinFootprintSamples = (int)b["MinFootprintSamples"];
+        s.MaxFootprintSamples = (int)b["MaxFootprintSamples"];
+        s.WaterplaneCoefficient = b["WaterplaneCoefficient"];
+        s.BlockCoefficient = b["BlockCoefficient"];
+        s.AddedMassFactor = b["AddedMassFactor"];
+        s.WaterDensityKgPerCubicMeter = b["WaterDensityKgPerCubicMeter"];
+        s.MinNaturalPeriodSeconds = b["MinNaturalPeriodSeconds"];
+        s.MaxNaturalPeriodSeconds = b["MaxNaturalPeriodSeconds"];
+        s.MinDampingRatio = b["MinDampingRatio"];
+        s.MaxDampingRatio = b["MaxDampingRatio"];
+        return s;
+    }
+
+    /// <summary>The surface height under her, footprint-averaged the way the AFTER arm will read it —
+    /// used for the BEFORE arm too, purely as the REFERENCE "what the water under her is doing", so
+    /// both arms are judged against one sea.</summary>
+    static float SurfaceAt(Vector2 pos, in WaveTrains trains)
+        => ShoreFadeMath.DisplacedHeight(WaveMath.Sample(pos * FreqScale, 0.0, in trains, 1f).Height,
+                                         float.PositiveInfinity, 1f, Exaggeration);
+
+    // ---- metrics ----------------------------------------------------------------------------------
+    static float Rms(IReadOnlyList<float> xs)
+    {
+        double s = 0; foreach (float x in xs) s += (double)x * x;
+        return (float)Math.Sqrt(s / Math.Max(1, xs.Count));
+    }
+
+    static int Reversals(IReadOnlyList<float> xs)
+    {
+        int n = 0; int lastSign = 0;
+        for (int i = 1; i < xs.Count; i++)
+        {
+            float d = xs[i] - xs[i - 1];
+            int s = d > 1e-5f ? 1 : d < -1e-5f ? -1 : 0;
+            if (s != 0 && lastSign != 0 && s != lastSign) n++;
+            if (s != 0) lastSign = s;
+        }
+        return n;
+    }
+
+    /// <summary>Peak |d ride/dt| over the strip (m/s) — "bobs too fast" as a number.</summary>
+    static float PeakRate(IReadOnlyList<float> xs, float dt)
+    {
+        float m = 0;
+        for (int i = 1; i < xs.Count; i++) m = Mathf.Max(m, Mathf.Abs(xs[i] - xs[i - 1]) / dt);
+        return m;
+    }
+
+    /// <summary>
+    /// <b>THE HANGTIME, as the thing that actually causes it.</b> A hull left above the water is a
+    /// hull whose descent is being HELD — by the free-fall cap (she is unweighted and falling at g,
+    /// no faster) rather than by the water. So the honest measurement is the fraction of the strip
+    /// where the realized downward acceleration of the drawn ride is pinned AT the cap: a smooth
+    /// phase lag never touches it, a hold is nothing else.
+    /// </summary>
+    static float CapPinnedPercent(IReadOnlyList<float> ride, float dt, float gravity, float capInGs)
+    {
+        float cap = gravity * capInGs;
+        int pinned = 0, total = 0;
+        for (int i = 2; i < ride.Count; i++)
+        {
+            float a = (ride[i] - 2f * ride[i - 1] + ride[i - 2]) / (dt * dt);
+            total++;
+            if (a <= -cap * 0.98f) pinned++;
+        }
+        return total > 0 ? 100f * pinned / total : 0f;
+    }
+
+    /// <summary>THE HANGTIME as an EXCURSION. After each of the strip's biggest crests (top decile of the surface),
+    /// how far above the surface the hull is left, and for how long it stays over 5 cm above it.</summary>
+    static (float maxAbove, float secondsAbove) Hangtime(List<float> surface, List<float> ride, float dt)
+    {
+        var sorted = new List<float>(surface); sorted.Sort();
+        float crestGate = sorted[(int)(sorted.Count * 0.90f)];
+        float maxAbove = 0f; int worstRun = 0;
+        int run = 0;
+        for (int i = 1; i < surface.Count; i++)
+        {
+            // a crest has just passed when the surface was over the gate and is now falling
+            bool afterCrest = surface[i - 1] >= crestGate && surface[i] < surface[i - 1];
+            float above = ride[i] - surface[i];
+            if (afterCrest || run > 0)
+            {
+                if (above > 0.05f) { run++; maxAbove = Mathf.Max(maxAbove, above); }
+                else { worstRun = Math.Max(worstRun, run); run = 0; }
+            }
+        }
+        worstRun = Math.Max(worstRun, run);
+        return (maxAbove, worstRun * dt);
+    }
+
+    /// <summary>Cross-correlation lag (seconds) that best aligns the ride onto the surface — the
+    /// hull's phase lag. Positive = the hull is BEHIND the water.</summary>
+    static float LagSeconds(List<float> surface, List<float> ride, float dt, float maxLagSeconds)
+    {
+        int maxK = (int)(maxLagSeconds / dt);
+        float best = 0f; int bestK = 0;
+        for (int k = 0; k <= maxK; k++)
+        {
+            double num = 0, ds = 0, dr = 0;
+            for (int i = k; i < surface.Count; i++)
+            {
+                num += (double)surface[i - k] * ride[i];
+                ds += (double)surface[i - k] * surface[i - k];
+                dr += (double)ride[i] * ride[i];
+            }
+            float c = (float)(num / Math.Sqrt(Math.Max(1e-12, ds * dr)));
+            if (c > best) { best = c; bestK = k; }
+        }
+        return bestK * dt;
+    }
+
+    // ---- runs --------------------------------------------------------------------------------------
+    static void Main(string[] args)
+    {
+        string arm = args.Length > 0 ? args[0] : "before";
+        var field = Field();
+        HullWeight = ReadHullWeight();
+        if (args.Length > 1)   // tuning sweep: override the damping-ratio floor
+        {
+            var hw = HullWeight;
+            hw.MinDampingRatio = float.Parse(args[1], CultureInfo.InvariantCulture);
+            HullWeight = hw;
+        }
+        var storm = Storm();
+        if (args.Length > 2)   // tuning sweep: override the free-fall cap (g's)
+        {
+            OverrideCapInGs = float.Parse(args[2], CultureInfo.InvariantCulture);
+            storm.MaxDownwardAccelInGs = OverrideCapInGs;
+        }
+        var anim = WaveFieldAnimatorSettings.Default;
+        anim.ParameterSmoothingSeconds = Scalar(Repo + "/Assets/_Project/Data/Config/GameConfig.asset",
+                                                "ParameterSmoothingSeconds");
+        float exaggerationRead = Scalar(Repo + "/Assets/_Project/Data/Config/GameConfig.asset", "WaveExaggeration");
+        float scaleRead = Scalar(Repo + "/Assets/_Project/Art/Materials/Water.mat", "- _OceanSwellScale") ;
+
+        var sb = new StringBuilder();
+        void P(string s) { Console.WriteLine(s); sb.AppendLine(s); }
+
+        P($"# RIDE STRIP — arm={arm}");
+        P($"# GameConfig: WaveExaggeration={exaggerationRead} (harness uses {Exaggeration}); " +
+          $"Water.mat _OceanSwellScale={scaleRead} => freqScale={scaleRead / 0.025f} (harness uses {FreqScale})");
+        P($"# WaveField: base λ {field.DominantWavelengthBase} m + {field.DominantWavelengthPerWindSpeed} m per m/s, " +
+          $"A {field.PrimaryAmplitude} m, sharpening {field.CrestSharpening}, spectrum blend {field.SpectrumBlend}");
+        P($"# StormRock: start {storm.StormStartSeaState01}, chase ω {storm.HeaveChaseStiffnessRadPerSec} rad/s, " +
+          $"ζ {storm.HeaveDampingRatio}, cap {storm.MaxDownwardAccelInGs} g, band {storm.SurfaceBandMeters} m");
+        P("");
+
+        string[] fleet = { "Dory", "CapeIslander", "Tanker" };
+        string[] wholeFleet = { "Dory", "FishingSkiff", "Punt", "SportSkiff", "ConsoleSkiff",
+                                "LobsterInshoreOpenFundy", "LobsterBoat", "CapeIslander",
+                                "LobsterOffshoreOpenFundy", "SportFisherConvertible", "SideDragger",
+                                "SternTrawler", "CoastalPacket", "Tanker" };
+
+        P("## THE FLEET'S HEAVE CHARACTER — every number from the hull's own asset + the shipped block");
+        P($"# HullWeight: enabled={HullWeight.Enabled} spacing={HullWeight.FootprintSampleSpacingMeters} m " +
+          $"N in [{HullWeight.MinFootprintSamples},{HullWeight.MaxFootprintSamples}] " +
+          $"C_wp={HullWeight.WaterplaneCoefficient} C_b={HullWeight.BlockCoefficient} " +
+          $"added={HullWeight.AddedMassFactor} rho={HullWeight.WaterDensityKgPerCubicMeter} " +
+          $"zeta in [{HullWeight.MinDampingRatio},{HullWeight.MaxDampingRatio}]");
+        P("|hull|L m|beam m|draught m|displacement t|MassKg t|N|spacing m|T s|T(MassKg) s|zeta|overshoot|");
+        P("|---|---|---|---|---|---|---|---|---|---|---|---|");
+        foreach (string name in wholeFleet)
+        {
+            Hull h = ReadHull(name);
+            var r = HullHeaveResponseMath.Resolve(h.LengthM, h.HalfBeamM, h.DraughtM, h.Damping,
+                                                  field.Gravity, in HullWeight);
+            float beam = h.HalfBeamM * 2f;
+            float awp = HullHeaveResponseMath.WaterplaneAreaSqM(h.LengthM, beam, in HullWeight);
+            float disp = HullHeaveResponseMath.DisplacedMassKg(h.LengthM, beam, h.DraughtM, in HullWeight);
+            // what the charter's literal reading (BoatHullDef.MassKg) would have produced
+            float tMass = HullHeaveResponseMath.NaturalPeriodSeconds(
+                HullHeaveResponseMath.HeavingMassKg(h.MassKg, in HullWeight), awp, field.Gravity, in HullWeight);
+            float z = r.DampingRatio;
+            float over = Mathf.Exp(-Mathf.PI * z / Mathf.Sqrt(Mathf.Max(1e-6f, 1f - z * z)));
+            P($"|{name}|{h.LengthM:0.0}|{beam:0.00}|{h.DraughtM:0.00}|{disp / 1000f:0.0}|{h.MassKg / 1000f:0.0}|" +
+              $"{r.FootprintSamples}|{(r.FootprintSamples > 1 ? h.LengthM / r.FootprintSamples : 0f):0.00}|" +
+              $"{r.NaturalPeriodSeconds:0.00}|{tMass:0.00}|{z:0.00}|{(z < 1f ? over : 0f):0.00}|");
+        }
+        P("");
+
+        // ---- (2) the 30 s strip, two seas ----------------------------------------------------------
+        foreach (float sea in new[] { 0.30f, 0.75f })
+        {
+            float wind = WindFor(sea);
+            P($"## STRIP — sea state {sea:0.00} (wind {wind:0.0} m/s), 30 s at 60 Hz, hull lying to at the origin");
+            P($"|hull|L m|T m|surface RMS m|ride RMS m|ride/surface|reversals/30s|peak rate m/s|lag s|held-at-g %|excursion m|");
+            P($"|---|---|---|---|---|---|---|---|---|---|---|");
+            foreach (string name in fleet)
+            {
+                Hull hull = ReadHull(name);
+                var animator = new WaveFieldAnimator();
+                var state = new HeaveWeightState();
+                var surfaceLog = new List<float>();
+                var rideLog = new List<float>();
+                var targetLog = new List<float>();
+                float stormBlend = StormRockMath.StormBlend01(sea, in storm);
+                var pos = new Vector2(0f, 0f);
+                // 5 s of settling, then 30 s of strip
+                for (int i = 0; i < (int)(35f / Dt); i++)
+                {
+                    WaveTrains trains = animator.Tick(Dt, new Vector2(0f, wind), sea, in field, in anim);
+                    float ride, surf, tgt;
+                    if (arm == "before")
+                        ride = RideBefore(pos, in trains, in hull, Dt, stormBlend, in storm, field.Gravity,
+                                          ref state, out surf, out tgt);
+                    else
+                        ride = RideAfter(pos, Vector2.up, in trains, in hull, Dt, stormBlend, in storm,
+                                         field.Gravity, ref state, out surf, out tgt);
+                    if (i * Dt >= 5f) { surfaceLog.Add(surf); rideLog.Add(ride); targetLog.Add(tgt); }
+                }
+                var (hangMax, hangSec) = Hangtime(targetLog, rideLog, Dt);   // vs the water she CHASES
+                float sRms = Rms(surfaceLog), rRms = Rms(rideLog);
+                P($"|{hull.Name}|{hull.LengthM:0.0}|{hull.DraughtM:0.00}|{sRms:0.0000}|{rRms:0.0000}|" +
+                  $"{(sRms > 0 ? rRms / sRms : 0):0.000}|{Reversals(rideLog)}|{PeakRate(rideLog, Dt):0.000}|" +
+                  $"{LagSeconds(targetLog, rideLog, Dt, 3f):0.000}|" +
+                  $"{CapPinnedPercent(rideLog, Dt, field.Gravity, storm.MaxDownwardAccelInGs):0.00}|" +
+                  $"{hangMax:0.000}|");
+            }
+            P("");
+        }
+
+        // ---- (1) the transfer function -------------------------------------------------------------
+        P("## TRANSFER FUNCTION — one pure train, A = 1.00 m, running down the hull's own axis");
+        P("(steady-state ride amplitude / wave amplitude, measured over the last 20 s of a 40 s run)");
+        var lambdas = new[] { 2f, 3f, 4f, 6f, 8f, 12f, 16f, 24f, 32f, 48f, 64f };
+        var head = new StringBuilder("|hull|L m|");
+        var rule = new StringBuilder("|---|---|");
+        foreach (float l in lambdas) { head.Append($"λ{l:0}|"); rule.Append("---|"); }
+        P(head.ToString()); P(rule.ToString());
+        foreach (string name in fleet)
+        {
+            Hull hull = ReadHull(name);
+            var row = new StringBuilder($"|{hull.Name}|{hull.LengthM:0.0}|");
+            foreach (float lambda in lambdas)
+            {
+                var state = new HeaveWeightState();
+                float lo = float.MaxValue, hi = float.MinValue;
+                int steps = (int)(40f / Dt);
+                float k = 2f * Mathf.PI / lambda;
+                float c = Mathf.Sqrt(field.Gravity * lambda / (2f * Mathf.PI));
+                for (int i = 0; i < steps; i++)
+                {
+                    // The train's travel rides its PhaseOffset, exactly as WaveFieldAnimator
+                    // accumulates it (Φ += k·c·dt) and exactly as the published field is sampled —
+                    // at timeSeconds = 0, so a footprint's points all read ONE instant.
+                    var train = new WaveTrain(Vector2.up, lambda, 1f, k * c * (i * Dt), field.Gravity);
+                    var trains = new WaveTrains(in train, in train, in train, in train, 1, 1f);
+                    float ride, surf, tgt;
+                    if (arm == "before")
+                        ride = RideBefore(Vector2.zero, in trains, in hull, Dt, 0f, in storm, field.Gravity,
+                                          ref state, out surf, out tgt);
+                    else
+                        ride = RideAfter(Vector2.zero, Vector2.up, in trains, in hull, Dt, 0f, in storm,
+                                         field.Gravity, ref state, out surf, out tgt);
+                    if (i * Dt >= 20f) { lo = Mathf.Min(lo, ride); hi = Mathf.Max(hi, ride); }
+                }
+                // the surface's own amplitude at this train, through the same exaggeration
+                float surfaceAmp = 1f * Exaggeration;
+                row.Append($"{(hi - lo) * 0.5f / surfaceAmp:0.000}|");
+            }
+            P(row.ToString());
+        }
+        P("");
+
+        // ---- the cost of a sample (rule 7) ----------------------------------------------------------
+        {
+            var animator = new WaveFieldAnimator();
+            WaveTrains trains = animator.Tick(1f, new Vector2(0f, 8.75f), 0.75f, in field, in anim);
+            for (int i = 0; i < 60; i++) trains = animator.Tick(Dt, new Vector2(0f, 8.75f), 0.75f, in field, in anim);
+            const int Reps = 2000000;
+            float sink = 0f;
+            var sw = System.Diagnostics.Stopwatch.StartNew();
+            for (int i = 0; i < Reps; i++)
+                sink += WaveMath.Sample(new Vector2(i * 0.001f, 0f), 0.0, in trains, 1f).Height;
+            sw.Stop();
+            double ns = sw.Elapsed.TotalMilliseconds * 1e6 / Reps;
+            P($"## COST (rule 7) — one WaveMath.Sample over {trains.Count} live trains = **{ns:0.0} ns** " +
+              $"on this box (sink {sink:0.0}, {Reps} reps).");
+            P($"Nine Mile Creek's moored fleet is 30 hulls; at the shipped block a 12 m lobster boat takes 7 " +
+              $"samples, so the fleet + the player is ~{31 * 7} samples/frame = " +
+              $"**{31 * 7 * ns / 1e6:0.000} ms**, against a 16.7 ms frame. Before this PR it was 31 samples = " +
+              $"{31 * ns / 1e6:0.000} ms.");
+            P("");
+        }
+
+        File.WriteAllText(Repo + "/artifacts/ridestrip-" + arm + ".md", sb.ToString());
+        Console.WriteLine("written: " + Repo + "/artifacts/ridestrip-" + arm + ".md");
+    }
+}

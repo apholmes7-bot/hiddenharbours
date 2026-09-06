@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>disable</Nullable>
+    <AssemblyName>ridestrip</AssemblyName>
+    <RootNamespace>RideStrip</RootNamespace>
+    <LangVersion>latest</LangVersion>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <NoWarn>CS0618;CS0649;CS0414;CS0169;CS0067</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Compile Include="$(HHROOT)/Assets/_Project/Code/Core/Environment/WaveMath.cs" />
+    <Compile Include="$(HHROOT)/Assets/_Project/Code/Core/Environment/WaveFieldAnimator.cs" />
+    <Compile Include="$(HHROOT)/Assets/_Project/Code/Core/Environment/ShoreFadeMath.cs" />
+    <Compile Include="$(HHROOT)/Assets/_Project/Code/Core/Environment/StormRockSettings.cs" />
+    <Compile Include="$(HHROOT)/Assets/_Project/Code/Core/Environment/WaveSpectrum.cs" />
+    <Compile Include="$(HHROOT)/Assets/_Project/Code/Core/Environment/DisplacedSea.cs" />
+    <Compile Include="$(HHROOT)/Assets/_Project/Code/Core/Environment/SurfState.cs" />
+    <Compile Include="$(HHROOT)/Assets/_Project/Code/Core/Environment/SeakeepingSettings.cs" />
+    <Compile Include="$(HHROOT)/Assets/_Project/Code/Core/Environment/HullWeightSettings.cs" />
+    <Compile Include="$(HHROOT)/Assets/_Project/Code/Boats/HullHeaveResponseMath.cs" />
+    <Compile Include="$(HHROOT)/Assets/_Project/Code/Boats/StormRockMath.cs" />
+    <Compile Include="$(HHROOT)/Assets/_Project/Code/Boats/SeakeepingForcesMath.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>C:/Program Files/Unity/Hub/Editor/6000.5.0f1/Editor/Data/Managed/UnityEngine/UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>

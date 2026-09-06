@@ -439,6 +439,14 @@ namespace HiddenHarbours.Core
         public static StormRockSettings StormRock =>
             Config != null ? Config.StormRock : StormRockSettings.Default;
 
+        /// <summary>The HULL-WEIGHT policy (water fidelity PR 10 — the footprint the sea is read over
+        /// and the natural period she answers it with), same contract as <see cref="WaveField"/>
+        /// including the <c>Config != null</c> discipline (never <c>?.</c>/<c>??</c> — they defeat
+        /// Unity's fake-null). Read by <c>BoatWaveMotion</c>'s ride; the storm block above stays the
+        /// separate, untouched STORM policy and the two compose in one filter, never two.</summary>
+        public static HullWeightSettings HullWeight =>
+            Config != null ? Config.HullWeight : HullWeightSettings.Default;
+
         /// <summary>The GROUND-TACKLE policy (the rode, the swing circle, the firm limit, the drag creep),
         /// same contract as <see cref="WaveField"/> including the <c>Config != null</c> discipline (never
         /// <c>?.</c>/<c>??</c> on a <c>UnityEngine.Object</c>) and the resolved-per-read liveness, so
