@@ -226,18 +226,13 @@ namespace HiddenHarbours.Art
 
         // ---- the published GLOBAL shader uniforms (the water shader reads these; ADR 0016) ----------------
         // ONE boat "water light" is published as a handful of globals (like _SunDir / _DayNightTint already are),
-        // and the water fragment adds the cone illumination to its own col.rgb. ONE global light is enough for
-        // now: the boat spotlight is THE night-nav light. The clean extension to MANY lights later is to publish
-        // ARRAYS (_BoatLightPos[], ... with a _BoatLightCount) and loop in the shader; the single-light path is a
-        // count-1 special case of that, so nothing here needs rethinking when a second light arrives.
-        private static readonly int IdBoatLightPos    = Shader.PropertyToID("_BoatLightPos");     // xy = world lamp pos
-        private static readonly int IdBoatLightDir    = Shader.PropertyToID("_BoatLightDir");     // xy = world beam axis (unit)
-        private static readonly int IdBoatLightColor  = Shader.PropertyToID("_BoatLightColor");   // rgb = colour
-        // x = effective intensity (master × way-gate × water-strength × flicker), y = range (m),
-        // z = cos(halfAngle) (outer cone edge), w = cos(innerAngle) (fully-lit inner cone).
-        private static readonly int IdBoatLightParams = Shader.PropertyToID("_BoatLightParams");
-        // x = radial edge softness, y = night-gate threshold, z = night-gate softness, w = cycle-off fallback.
-        private static readonly int IdBoatLightParams2 = Shader.PropertyToID("_BoatLightParams2");
+        // and the water fragment adds the cone illumination to its own col.rgb.
+        //
+        // ⭐ THE SECOND LIGHT ARRIVED, and it is not a boat. The note here used to end "nothing here needs
+        // rethinking when a second light arrives" — world-lighting PR 3's walker headlamp is that light, and
+        // what needed rethinking was not the packing but WHO WRITES IT. The five property ids and the one
+        // packing now live in DecorLampGlobals so a boat and a walker cannot pack the same lamp differently;
+        // which of them writes is WalkerLights.OwnsDecorLight, at the call site in PublishWaterLight.
 
         // Whether ANY BoatSpotlight has published a live water-light this frame, so a disabled/destroyed light
         // zeroes the global out (no stuck beam over the water). Set when a spotlight publishes; the publisher
@@ -649,14 +644,36 @@ namespace HiddenHarbours.Art
             // SpriteLitDecor.hlsl reads _BoatLightPos.xy only, never .z (it takes its own elevation from the
             // per-material _LampElevation). A zero height reads as "unknown" and the relief is skipped.
             float lampHeight = intensity > 0f ? Mathf.Max(0f, _lampHeightMeters) : 0f;
-            Shader.SetGlobalVector(IdBoatLightPos, new Vector4(lampWorld.x, lampWorld.y, lampHeight, 0f));
-            Shader.SetGlobalVector(IdBoatLightDir, new Vector4(beamDir.x, beamDir.y, 0f, 0f));
-            Shader.SetGlobalColor(IdBoatLightColor, _color);
-            Shader.SetGlobalVector(IdBoatLightParams,
-                new Vector4(Mathf.Max(0f, intensity), Mathf.Max(0.01f, _range), cosHalf, cosInner));
-            Shader.SetGlobalVector(IdBoatLightParams2,
-                new Vector4(Mathf.Clamp01(_edgeSoftness), Mathf.Clamp01(_gateThreshold),
-                            Mathf.Clamp01(_gateSoftness), Mathf.Clamp01(_gateFallback)));
+
+            // ⭐ ONE PUBLISHER (world-lighting PR 3). These five globals ARE the lit-decor path's only lamp
+            // — SpriteLitDecor.hlsl lights every tree, shrub and shore plant from them — and EVERY
+            // BoatSpotlight in the scene writes them every frame, including one whose beam is off (which
+            // writes zeros, above). That was harmless while boats were the only thing that owned a beam.
+            // It stops being harmless the moment the WALKER has one: on foot in the woods her headlamp
+            // would be blanked by a moored dory forty metres away on whichever frames its Update ran
+            // last, and the trees in front of her would go unlit by script order alone — no error, and
+            // nothing anywhere to say why.
+            //
+            // So while she is walking her own beam, the boats stand off this singleton and she writes it.
+            // ⚠️ The ARRAY slot below is deliberately still filled: that is the water's four-nearest-lamps
+            // bridge, which sums lamps properly and has no such conflict, so the sea is lit exactly as
+            // before. And at the helm or on a deck — the only places this beam answers her switch —
+            // WalkerLights.OwnsDecorLight is false BY CONSTRUCTION (it requires ControlMode.OnFoot), so
+            // the searchlight's every published byte is unchanged.
+            //
+            // ⚠️ The ONE case where the sea does notice, stated so nobody has to rediscover it: the water
+            // shader falls back to this singleton when _WaterLightCount is 0 — no bridge running, which
+            // means a bare art scene, a legacy scene or an EditMode harness, never the running game. In
+            // that fallback the sea would show HER beam rather than a moored boat's while she owns the
+            // lamp. That is the right lamp of the two (she is the one that is lit and near), and in any
+            // scene where the bridge IS running her headlamp holds a slot of its own, so the fallback is
+            // unreachable there. It is named here because "the sea is lit exactly as before" is a claim
+            // about a shader two files away, and claims like that rot silently.
+            if (!WalkerLights.OwnsDecorLight)
+                DecorLampGlobals.Publish(
+                    new Vector2(lampWorld.x, lampWorld.y), lampHeight, beamDir, _color,
+                    intensity, _range, cosHalf, cosInner,
+                    _edgeSoftness, _gateThreshold, _gateSoftness, _gateFallback);
 
             // ...and the SAME numbers as one array-slot candidate, so the two publishing routes can never
             // disagree about where this lamp is or how hard it is burning.

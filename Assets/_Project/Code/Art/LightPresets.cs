@@ -67,6 +67,10 @@ namespace HiddenHarbours.Art
             Worklight,
             /// <summary>A TALL mast's wide, cool pool over a working yard — a yard light or a flood mast.</summary>
             Floodlight,
+            /// <summary>A flame lantern CARRIED — slung on the walker's back, warm and alive (world-lighting PR 3).</summary>
+            Lantern,
+            /// <summary>A HEADLAMP worn on the walker's brow: a narrow cool beam that goes where she looks.</summary>
+            Headlamp,
         }
 
         /// <summary>
@@ -219,6 +223,41 @@ namespace HiddenHarbours.Art
                         flickerAmount: 0f,                 // steady electric flood
                         originOffset: Vector2.zero);
 
+                // LANTERN — a FLAME, and the only preset in this library that is one. Everything else here is
+                // electric: a filament hums (Lightpost 0.02) or does not move at all (Floodlight 0). A wick in
+                // a glass breathes, so this is the one place a visible flicker is right rather than a defect.
+                // Warmer and further down the amber than the sodium lamps for the same reason.
+                //
+                // The bloom is the LANTERN'S GLASS — smaller than a street lamp's lens (0.40) because the
+                // fitting is smaller: it is a thing she carries in one hand's worth of space. The pool it
+                // throws is in ReachMetres below, and it is what she actually walks by.
+                case Kind.Lantern:
+                    return new Config(
+                        SceneLight.LightShape.Radial,
+                        new Color(1f, 0.79f, 0.46f, 1f),   // flame, not sodium
+                        intensity: 1.05f,
+                        range: 0.26f,                      // the BLOOM: the lantern's own glass
+                        edgeSoftness: 0.9f,                // soft: it is a flame behind glass
+                        flickerAmount: 0.09f,              // ⭐ a wick breathing — the one live flame in the library
+                        originOffset: Vector2.zero);
+
+                // HEADLAMP — the only CONE in this library, and the only one that is not placed decor: it is
+                // worn, it is switched, and it goes where she looks. Cool and close to white because it is an
+                // electric lamp on a band, not a flame; narrow, because a headlamp you can aim is the point.
+                //
+                // ⚠ The cone's HALF-ANGLE is not here. Config carries no angle (every other preset is radial),
+                // so the beam's shape lives on the SceneLight the carrier configures, beside its reach — the
+                // same split BoatSpotlight already uses for the searchlight.
+                case Kind.Headlamp:
+                    return new Config(
+                        SceneLight.LightShape.Cone,
+                        new Color(0.98f, 0.98f, 0.94f, 1f),   // near-white LED
+                        intensity: 1.25f,
+                        range: 0.18f,                      // the BLOOM: a lamp the size of her brow
+                        edgeSoftness: 0.85f,
+                        flickerAmount: 0f,                 // a battery lamp is steady
+                        originOffset: Vector2.zero);
+
                 default:
                     goto case Kind.WindowGlow;
             }
@@ -263,7 +302,74 @@ namespace HiddenHarbours.Art
                 case Kind.Worklight:  return 5.2f;
                 // A tall pole over open working ground: 7 m, not the 9.5 m it shipped at for one commit.
                 case Kind.Floodlight: return 7f;
+                // A carried flame lights the ground you are about to put a foot on and not much more — the
+                // charter's "~3 m". It is deliberately SHORTER than a lamp post's 3.6 m: a lantern in the
+                // hand is not a lamp on a pole, and if it lit as far it would stop being worth carrying.
+                case Kind.Lantern:    return 3f;
+                // The headlamp throws FURTHER than anything else she owns, because a cone concentrates what a
+                // radial spreads: the same lamp aimed is the same light over a fifth of the ground. The reach
+                // is down the beam, so this is a THROW and not a radius.
+                case Kind.Headlamp:   return 9f;
                 default:              goto case Kind.WindowGlow;
+            }
+        }
+
+        // -------------------------------------------------------------------------------------------
+        //  DIRECTED or POOLED — the library's own statement of what each kind IS
+        // -------------------------------------------------------------------------------------------
+
+        /// <summary>
+        /// <b>Is this kind a directed BEAM rather than a pool?</b>
+        ///
+        /// <para><b>⭐ Deliberately NOT derived from <see cref="For"/>'s <c>Shape</c>, and that is the whole
+        /// point of it existing.</b> This library shipped with a guard asserting that every preset in it was
+        /// radial — a real assertion while every preset was a pool, and one that would have caught a lamp
+        /// post accidentally authored as a cone. World-lighting PR 3 added the first genuinely directed kind
+        /// (<see cref="Kind.Headlamp"/>) and aged that guard's premise out from under it.</para>
+        ///
+        /// <para>The cheap repair would have been to read the shape off the preset and assert it equals
+        /// itself, which is not a guard at all. So directedness is declared HERE, independently, and the
+        /// fixture cross-checks the two statements: change a preset's shape without changing this, or this
+        /// without the preset, and it reddens. A pool quietly turning into a cone is still caught — it just
+        /// now takes two edits to say so instead of none.</para>
+        ///
+        /// <para><b>Why a declaration and not a list of names in the test.</b> A test-side name list is
+        /// invisible to whoever adds the next preset; a switch in the library beside <see cref="For"/> and
+        /// <see cref="ReachMetres"/> is on the path they are already editing. Same reason the reach lives
+        /// here rather than at the call site.</para>
+        /// </summary>
+        public static bool IsDirected(Kind kind)
+        {
+            switch (kind)
+            {
+                // A lamp on a band, aimed by turning her head. The only directed kind in the library.
+                case Kind.Headlamp: return true;
+                // Everything else is a placed (or carried) pool: window spill, lamp post, worklight,
+                // floodlight, lantern. They light what is around them, not what is in front of them.
+                default: return false;
+            }
+        }
+
+        /// <summary>
+        /// The half-angle of the cone a directed kind throws, in degrees — <b>180 for a pool</b>, which is
+        /// exactly how <see cref="SceneLight"/> reads "the whole circle" and keeps this total over
+        /// <see cref="Kind"/> rather than throwing on five of its seven members.
+        ///
+        /// <para>It lives here, beside <see cref="ReachMetres"/>, for the reason that one does: it is the
+        /// second number that says how a lamp of this kind is SHAPED, and a shape split between the library
+        /// and whichever component happened to configure the light is a shape nobody can guard. It was a
+        /// <c>const</c> on the walker for one commit; a beam angle is a tunable, and tunables belong in the
+        /// preset library (rule 6).</para>
+        /// </summary>
+        public static float ConeHalfDegrees(Kind kind)
+        {
+            switch (kind)
+            {
+                // Narrow — a headlamp you can aim is the point, and a wide one is just a worse lantern.
+                // (The boat's searchlight is 26°; hers is tighter because it is a lamp on a band, not a
+                // searchlight on a mounting.)
+                case Kind.Headlamp: return 21f;
+                default:            return 180f;
             }
         }
 

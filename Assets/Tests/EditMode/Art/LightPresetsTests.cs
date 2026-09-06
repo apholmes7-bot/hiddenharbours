@@ -34,18 +34,70 @@ namespace HiddenHarbours.Tests.Art.EditMode
             }
         }
 
-        // ---- every placed preset is a soft, sane RADIAL warm/cool pool -------------------------------------
+        // ---- every preset is a sane lamp, and is the SHAPE the library says it is -------------------------
 
+        /// <summary>
+        /// The one shape check, factored out of the sweep below so
+        /// <see cref="APresetWhoseShapeContradictsItsDeclaration_Reddens_TheGuardsOwnControl"/> can prove it
+        /// has teeth. Every shipped preset passes it, which is exactly why it needs a control: an assertion
+        /// nothing violates is indistinguishable from an assertion that cannot fail.
+        /// </summary>
+        private static void AssertShapeMatchesDeclaration(string kind, bool declaredDirected,
+                                                          SceneLight.LightShape shape)
+        {
+            Assert.AreEqual(declaredDirected ? SceneLight.LightShape.Cone : SceneLight.LightShape.Radial, shape,
+                $"{kind}: LightPresets.IsDirected says {(declaredDirected ? "beam" : "pool")} and the preset is " +
+                $"authored as a {shape}. Two independent statements about one lamp disagree — change both, or " +
+                "neither.");
+        }
+
+        /// <summary>
+        /// Every preset is a sane lamp with bounded tunables, and its SHAPE is the one the library declares.
+        ///
+        /// <para><b>⭐ This used to assert that every preset was RADIAL, and that premise aged.</b> It was a
+        /// real guard while every preset in the library was a pool — it would have caught a lamp post
+        /// accidentally authored as a cone. World-lighting PR 3 added <c>Kind.Headlamp</c>, the first
+        /// genuinely directed lamp in the game, and the guard reddened on a preset that is correct.</para>
+        ///
+        /// <para><b>What it must NOT have become.</b> The cheap repair is to read the shape off the preset
+        /// and assert it equals itself, or to keep a list of "the cone ones" here in the test — the first is
+        /// not a guard, and the second is invisible to whoever adds the next preset. Instead
+        /// <see cref="LightPresets.IsDirected"/> declares directedness in the library, beside
+        /// <c>For</c> and <c>ReachMetres</c> where the next author is already working, and this
+        /// cross-checks the two independent statements. A pool quietly turning into a cone still reddens; it
+        /// just takes two edits to say so instead of none.</para>
+        ///
+        /// <para>The bounds then split by shape, because a beam and a pool are not sane in the same way: a
+        /// pool's reach is a radius around the fitting, a beam's is a THROW down the axis, and a "cone" of
+        /// 90° or more is a pool with extra steps.</para>
+        /// </summary>
         [Test]
-        public void EveryPreset_IsRadial_WithSaneBoundedTunables()
+        public void EveryPreset_IsTheShapeTheLibraryDeclares_WithSaneBoundedTunables()
         {
             foreach (LightPresets.Kind kind in System.Enum.GetValues(typeof(LightPresets.Kind)))
             {
                 var c = LightPresets.For(kind);
-                Assert.AreEqual(SceneLight.LightShape.Radial, c.Shape, $"{kind} should be a radial pool, not a cone");
+                bool directed = LightPresets.IsDirected(kind);
+                float half = LightPresets.ConeHalfDegrees(kind);
+
+                AssertShapeMatchesDeclaration(kind.ToString(), directed, c.Shape);
+
+                if (directed)
+                {
+                    Assert.Greater(half, 0f, $"{kind} is a beam, so it must have an opening");
+                    Assert.Less(half, 90f,
+                        $"{kind} at {half}° is not a beam — a cone of a hemisphere or more is a pool with " +
+                        "extra steps, and would light behind her shoulders");
+                }
+                else
+                {
+                    Assert.AreEqual(180f, half, Eps,
+                        $"{kind} is a pool, and a pool is the whole circle — 180° is how SceneLight reads that");
+                }
+
                 Assert.Greater(c.Intensity, 0f, $"{kind} must actually emit light");
                 Assert.LessOrEqual(c.Intensity, 3f, $"{kind} intensity should stay in a sane band");
-                // The REACH is the pool the lamp lights — the number that has to be room-sized.
+                // The REACH is what the lamp lights: a radius for a pool, a throw down the axis for a beam.
                 Assert.Greater(LightPresets.ReachMetres(kind), 1f, $"{kind} should light beyond its own footprint");
                 Assert.LessOrEqual(LightPresets.ReachMetres(kind), 12f, $"{kind} reach should stay in a sane band");
                 // The BLOOM is how big the SOURCE looks, and it can never exceed what the source lights.
@@ -57,6 +109,31 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 Assert.GreaterOrEqual(c.FlickerAmount, 0f);
                 Assert.LessOrEqual(c.FlickerAmount, 0.2f, $"{kind} flicker should be subtle, not strobing");
             }
+        }
+
+        /// <summary>
+        /// <b>The guard above has teeth, in BOTH directions.</b> Every shipped preset agrees with its
+        /// declaration, so the sweep is green either way — which is precisely the condition under which a
+        /// broken assertion goes unnoticed for a year. This drives the check with the two disagreements it
+        /// exists to catch, and with the two agreements it must not reject.
+        /// </summary>
+        [Test]
+        public void APresetWhoseShapeContradictsItsDeclaration_Reddens_TheGuardsOwnControl()
+        {
+            Assert.Throws<AssertionException>(() =>
+                AssertShapeMatchesDeclaration("aPoolAuthoredAsACone", false, SceneLight.LightShape.Cone),
+                "a lamp post quietly turned into a cone must still be caught — that is what the original " +
+                "all-radial guard was FOR, and it must survive being generalised");
+
+            Assert.Throws<AssertionException>(() =>
+                AssertShapeMatchesDeclaration("aBeamAuthoredAsAPool", true, SceneLight.LightShape.Radial),
+                "and the new direction too: a kind declared directed whose preset is a pool would throw no " +
+                "beam at all, silently");
+
+            Assert.DoesNotThrow(() =>
+                AssertShapeMatchesDeclaration("pool", false, SceneLight.LightShape.Radial));
+            Assert.DoesNotThrow(() =>
+                AssertShapeMatchesDeclaration("beam", true, SceneLight.LightShape.Cone));
         }
 
         [Test]
