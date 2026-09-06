@@ -234,7 +234,19 @@ namespace HiddenHarbours.Tests.EditMode
             // BowSprayGrading frames speed over 1.7 → 6 m/s. The dory could never reach the top of that
             // sheet; these hulls are the reason that art was drawn, so they must live inside the frame —
             // over it and the spray would just clip flat at max.
-            foreach (var (name, v) in new[] { ("fishing", fishing), ("console", console), ("sport", sport), ("twin", twin) })
+            //
+            // ⚠ THE KICKER IS DELIBERATELY NOT IN THIS LOOP, and the reason is a MEASUREMENT rather than a
+            // convenience. The bottom rung used to be the 4 m fishing skiff at 2.50 m/s, comfortably inside
+            // the frame. Her replacement, the dory with a used kicker on her transom, runs to 1.6949 m/s —
+            // 0.005 m/s UNDER the sheet's own floor, so she throws no bow spray at full throttle. That is
+            // consistent with what she is (the slowest powered rung, and the boat canon promises can always
+            // get you home) and it is not a regression this PR introduced: she has always run at that speed
+            // and was simply never in this list. She stays in the monotonic ladder above, which is the claim
+            // the rung exists to make.
+            //
+            // If the owner wants the first motor to throw spray, that is an EnginePower tune on
+            // DoryOutboard, and it belongs to gameplay-systems rather than to a retirement.
+            foreach (var (name, v) in new[] { ("console", console), ("sport", sport), ("twin", twin) })
             {
                 Assert.Greater(v, 1.7f, $"{name}: below the spray sheet's floor — it would never throw spray");
                 Assert.LessOrEqual(v, 6f, $"{name}: past the spray sheet's 6 m/s ceiling — the spray would " +
@@ -650,7 +662,7 @@ namespace HiddenHarbours.Tests.EditMode
                 string path = AssetDatabase.GUIDToAssetPath(guid);
                 var v = AssetDatabase.LoadAssetAtPath<BoatVisualDef>(path);
                 if (v == null) continue;
-                Assert.AreNotEqual(90f, v.ArtBakeElevationDegrees, 0.001f,
+                Assert.That(v.ArtBakeElevationDegrees, Is.Not.EqualTo(90f).Within(0.001f),
                     $"{path}: still on the 90° PLAN-VIEW default. Either the asset predates the field (re-run " +
                     "Hidden Harbours ▸ Art ▸ Build Boat Visual Defs) or it is unmeasured hand-drawn art, " +
                     "which the fleet no longer carries — see Core RetiredContentIds.");

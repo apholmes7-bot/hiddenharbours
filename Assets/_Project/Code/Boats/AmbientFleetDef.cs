@@ -174,17 +174,13 @@ namespace HiddenHarbours.Boats
                  "is not just its pictures, it is the pictures PLUS the two art facts that say how to " +
                  "read them — the sheet's handedness and the elevation it was baked at. Point at the " +
                  "asset and both arrive with the art; hand-copy the sprites and they do not, and the " +
-                 "fleet ships MIRRORED at every heading except north and south.
-
-" +
+                 "fleet ships MIRRORED at every heading except north and south.\n\n" +
                  "Only the compass is taken (BoatVisualDef.CreateRuntimeFrom): this is DECOR TIER, so " +
                  "the hull's rock grid, oars and outboard are deliberately left behind, and the copy is " +
                  "drawn as a SPRITE even when the source ships a mesh. A mesh fisher is owed but not " +
                  "free — each fisher's hull carries her own identity colour (HullTintStrength below), " +
                  "and a tint is a SpriteRenderer colour, while a mesh hull's paint is a ramp table " +
-                 "chosen per hull. Wiring the mesh means giving the fleet paint SCHEMES, not a colour.
-
-" +
+                 "chosen per hull. Wiring the mesh means giving the fleet paint SCHEMES, not a colour.\n\n" +
                  "Null = fall back to HullFacings below, exactly as before this field existed.")]
         public BoatVisualDef HullVisual = null;
 
@@ -193,9 +189,7 @@ namespace HiddenHarbours.Boats
                  "the field is append-only and a fleet may still author its own art. ALL-OR-NOTHING, " +
                  "like the player-boat builder guard: leave it empty (or any slot unassigned) and the " +
                  "fleet renders exactly as before (HullSprite, or the greybox wedge, rotating smoothly " +
-                 "with the bow) — never a partial compass that snaps into a stale picture mid-turn.
-
-" +
+                 "with the bow) — never a partial compass that snaps into a stale picture mid-turn.\n\n" +
                  "⚠ Sprites authored HERE carry no handedness and no bake elevation, so they are read as " +
                  "CLOCKWISE PLAN-VIEW art. That was true of the hand-drawn compass this field was built " +
                  "for; it is FALSE of every iso sheet in this repo. If the art you are reaching for " +

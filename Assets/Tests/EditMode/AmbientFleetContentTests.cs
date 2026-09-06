@@ -262,7 +262,7 @@ namespace HiddenHarbours.Tests.EditMode
                     $"fixture premise: '{source.Id}' is a hand-exported iso sheet, so her cells run CCW " +
                     "while the bare-array default assumes CW. If she is genuinely CW now (a RigBaker " +
                     "re-bake), this test is no longer measuring anything — point it at a CCW hull.");
-                Assert.AreNotEqual(90f, source.ArtBakeElevationDegrees, 0.001f,
+                Assert.That(source.ArtBakeElevationDegrees, Is.Not.EqualTo(90f).Within(0.001f),
                     $"fixture premise: '{source.Id}' is a rig bake, so her elevation is not the plan-view " +
                     "default. If it were, a copy that dropped it would look identical.");
 

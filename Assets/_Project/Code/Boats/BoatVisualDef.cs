@@ -470,7 +470,7 @@ namespace HiddenHarbours.Boats
         /// <summary>
         /// Build a throwaway skin binding in memory from a bare facing compass — the adapter for callers
         /// that already carry their own facings as data and have no asset to point at (the ambient fleet's
-        /// <c>AmbientFleetDef.HullFacings</c>, the rotation-test harness). Lets those call sites share the
+        /// <c>AmbientFleetDef.HullFacings</c>). Lets those call sites share the
         /// ONE <see cref="BoatHullSkinner"/> install path instead of re-implementing the rig. No rock grid,
         /// no oars — exactly what those callers rendered before.
         /// </summary>
