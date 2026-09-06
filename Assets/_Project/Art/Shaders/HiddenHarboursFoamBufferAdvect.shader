@@ -92,9 +92,27 @@ Shader "Hidden/HiddenHarbours/FoamBufferAdvect"
             float  _HHFoamDecay;         // exponential decay multiplier for COVERAGE this frame
             float  _HHFoamAgeDecay;      // exponential decay multiplier for FRESHNESS this frame
 
+            // PR 11b: how many nodes the dispersal edge's track is sampled at. Also a
+            // COMPILE-TIME bound, for the same reason FOAM_MAX_INJECTORS is one.
+            // Twin: FoamDispersal.Nodes.
+            #define FOAM_DISPERSAL_NODES 6
+            // argmax of x*falloff(x) -- where the area-preserving family peaks once its amplitude
+            // has been scaled by 1/w. Twin: FoamBuffer.EnvelopePeakX.
+            #define FOAM_ENVELOPE_PEAK_X 0.5796825
+
             float4 _HHFoamInjectSeg[FOAM_MAX_INJECTORS];     // xy = from, zw = to (world m)
-            // x = radius (m), y = amount (0 = unused slot), z = vigour 0..1 (the freshness GATE)
+            // x = radius (m), y = amount (0 = unused slot), z = vigour 0..1 (the freshness GATE),
+            // w = PR 11b's TAIL AGE MARK (0 when this hull is not dispersing)
             float4 _HHFoamInjectShape[FOAM_MAX_INJECTORS];
+
+            // PR 11b -- THE DISPERSAL EDGE. Three arrays of track nodes (newest first: A.xy is the
+            // transom now, C.zw the oldest water the edge has reached) and one of shape.
+            // x = the edge's per-frame gain (0 = not dispersing, and the whole block adds nothing),
+            // y = the edge's soft width (m), z = the churn band's half-width (m), w = the envelope (m).
+            float4 _HHFoamDispTrackA[FOAM_MAX_INJECTORS];
+            float4 _HHFoamDispTrackB[FOAM_MAX_INJECTORS];
+            float4 _HHFoamDispTrackC[FOAM_MAX_INJECTORS];
+            float4 _HHFoamDispShape[FOAM_MAX_INJECTORS];
 
 
             // ==== THE BORE'S DEPOSIT (ADR 0040 rev 3): the surf physics, twinned from the water shader ====
@@ -569,6 +587,44 @@ Shader "Hidden/HiddenHarbours/FoamBufferAdvect"
                 return length(p - (a + ab * t));
             }
 
+            // ==== TWIN C: THE DISPERSAL (PR 11b) — FoamBuffer.Profile / EnvelopeShape ==============
+            //
+            // The owner, 2026-09-06: "the foam always stays to the original foam path, it doesnt
+            // widen over time and fade away." The buffer cannot blur — the cell law above makes every
+            // scroll an exact integer texel Load, which is what stops a wake smudging under a pan —
+            // so the width has to be laid at INJECTION, against each deposit's own age.
+            //
+            // A deposit's profile is taken to widen with age at a fraction of the Kelvin slope while
+            // its amount falls by the ratio of the profiles' integrals: the AREA-PRESERVING family
+            // P_w(d) = (Phi / 1.5w) * falloff(d/w), every member of which lays the same foam. What an
+            // ADDITIVE buffer is left holding is that family's ENVELOPE (nothing can take foam back
+            // out of the core as the profile spreads), so the envelope is what conservation is stated
+            // on and what this stamp lays -- ONCE at each lateral distance, as the edge sweeps past.
+            // Stamping the whole profile every frame instead is what made the naive skirt multiply,
+            // and would also put the per-frame amount below the 8-bit buffer's rounding floor.
+
+            // The shipped profile at unit half-width — the same curve the injection loop's falloff
+            // line is, written once so the two cannot drift. Twin: FoamBuffer.Profile(x, 1).
+            float FoamProfile01(float x)
+            {
+                return 1.0 - smoothstep(0.5, 1.0, x);
+            }
+
+            // max over w in [r0, wMax] of falloff(d/w)/w, in 1/metres: flat across the core,
+            // 0.54/d through the middle (the widening band thins as 1/d, which is the look), and
+            // exactly 0 at wMax because the widest member of the family is. No shaping choice is
+            // made here — the family's own outer taper IS the band's outer edge.
+            // Twin: FoamBuffer.EnvelopeShape.
+            float FoamEnvelope(float d, float r0, float wMax)
+            {
+                if (r0 <= 0.0 || d >= wMax) return 0.0;
+                if (d <= 1e-6) return 1.0 / r0;
+                float xLo = d / wMax;
+                float xHi = min(1.0, d / r0);
+                float x = clamp(FOAM_ENVELOPE_PEAK_X, xLo, xHi);
+                return x * FoamProfile01(x) / d;
+            }
+
             float4 frag (Varyings input) : SV_Target
             {
                 int2 texel = int2(input.positionCS.xy);
@@ -628,6 +684,69 @@ Shader "Hidden/HiddenHarbours/FoamBufferAdvect"
                     // keeps the mark inside the band this hull actually swept.
                     float churned = step(1e-6, shape.z) * step(1e-3, falloff);
                     fresh = max(fresh, churned);
+                }
+
+                // ---- 3b. THE DISPERSAL EDGE (PR 11b) ------------------------------------------------
+                // The share of a hull's churn that leaves her band, laid on the water it has reached.
+                // Its gain is 0 in an unused slot AND at the shipped passthrough (the spread dial at
+                // 0), so this block is bit-exactly nothing until the owner turns it on.
+                [unroll]
+                for (int j = 0; j < FOAM_MAX_INJECTORS; j++)
+                {
+                    float4 disp = _HHFoamDispShape[j];    // x gain, y edge width, z r0, w wMax
+                    // A branch, not a continue: an unrolled loop wants a predicate it can fold away,
+                    // and an unused slot must cost nothing rather than skip a jump.
+                    if (disp.x > 0.0)
+                    {
+                        float4 ta = _HHFoamDispTrackA[j];
+                        float4 tb = _HHFoamDispTrackB[j];
+                        float4 tc = _HHFoamDispTrackC[j];
+                        float2 nodes[FOAM_DISPERSAL_NODES] =
+                            { ta.xy, ta.zw, tb.xy, tb.zw, tc.xy, tc.zw };
+
+                        // The nearest point on her track, and how far astern along it that is (0 at the
+                        // transom, 1 at the oldest node). The nodes are equal arc length apart, so this
+                        // parameter is also the edge's own position: w = lerp(r0, wMax, u), a SLOPE, which
+                        // is why no per-node width has to be sent.
+                        float bestD = 1e9;
+                        float bestU = 0.0;
+                        const float span = FOAM_DISPERSAL_NODES - 1.0;
+                        // ⚠️ ASTERN ONLY. Without this the first sub-segment's projection CLAMPS for
+                        // every texel forward of the transom, so the u = 0 ring closes into a full
+                        // circle around her and lays a second time on water she has not reached yet —
+                        // measured at about +30 % of the foam, straight through the conservation this
+                        // whole term exists to hold. (The tail needs no such gate: the envelope is
+                        // exactly 0 at its own outer edge, so the ring past the oldest node lays
+                        // nothing.)
+                        float2 aft = nodes[1] - nodes[0];
+                        float astern = step(0.0, dot(worldXY - nodes[0], aft));
+                        [unroll]
+                        for (int k = 0; k < FOAM_DISPERSAL_NODES - 1; k++)
+                        {
+                            float2 a = nodes[k];
+                            float2 ab = nodes[k + 1] - a;
+                            float t = saturate(dot(worldXY - a, ab) / max(dot(ab, ab), 1e-8));
+                            float dd = length(worldXY - (a + ab * t));
+                            bool nearer = dd < bestD;
+                            bestD = nearer ? dd : bestD;
+                            bestU = nearer ? (k + t) / span : bestU;
+                        }
+
+                        // The ring: a triangle of half-width disp.y about the edge, whose integral over
+                        // the edge's passage is exactly 1 — which is what makes one sweep leave exactly
+                        // the envelope value behind and no more. Twin: FoamBuffer.EdgeBump.
+                        float edge = lerp(disp.z, disp.w, bestU);
+                        float bump = astern * saturate(1.0 - abs(bestD - edge) / max(disp.y, 1e-4));
+                        foam += disp.x * FoamEnvelope(bestD, disp.z, disp.w) * bump;
+
+                        // The dispersed foam lands on water this hull never churned, and that water has an
+                        // AGE. Mark it with the freshness a mark made now would have decayed to by then,
+                        // or the whole widening band is born at the far end of the colour walk while the
+                        // core beside it is white. A MAX, so it is a no-op inside the churn band — whose
+                        // own mark has decayed to exactly this. Twin: FoamBuffer.AgeMark.
+                        float tail = max(_HHFoamInjectShape[j].w, 1e-6);
+                        fresh = max(fresh, step(1e-4, bump) * pow(tail, bestU));
+                    }
                 }
 
 

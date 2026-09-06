@@ -36,13 +36,106 @@ namespace HiddenHarbours.Art
         /// </summary>
         public readonly float Vigour;
 
+        /// <summary>
+        /// This hull's DISPERSAL this frame (water fidelity PR 11b) — the widening edge that carries
+        /// the share of her churn which leaves the band. <see cref="FoamDispersal.IsActive"/> is
+        /// false at the shipped passthrough (the spread dial at 0, or a hull with no track behind her
+        /// yet), and then this injection is bit-for-bit the one PR 11a shipped.
+        /// </summary>
+        public readonly FoamDispersal Dispersal;
+
         public FoamInjection(Vector2 from, Vector2 to, float radius, float amount, float vigour)
+            : this(from, to, radius, amount, vigour, default)
+        {
+        }
+
+        public FoamInjection(Vector2 from, Vector2 to, float radius, float amount, float vigour,
+                             in FoamDispersal dispersal)
         {
             From = from;
             To = to;
             Radius = radius;
             Amount = amount;
             Vigour = vigour;
+            Dispersal = dispersal;
+        }
+    }
+
+    /// <summary>
+    /// One hull's DISPERSAL EDGE this frame (water fidelity PR 11b): the outward-sweeping rim of her
+    /// churn, sampled along her recent track.
+    ///
+    /// <para><b>The owner, 2026-09-04 and 09-06:</b> <i>"foam fades behind boat but doesnt disperse
+    /// in width"</i> · <i>"the foam always stays to the original foam path, it doesnt widen over time
+    /// and fade away."</i> The buffer cannot blur — its cell law makes every scroll an exact integer
+    /// texel copy (<see cref="FoamBuffer.AdvectCells"/>), which is what stops a wake smudging under a
+    /// camera pan — so a laid trail could fade but never widen. This is that width, evaluated at
+    /// INJECTION against each deposit's own age, never as a filter over the target.</para>
+    ///
+    /// <para><b>What the shader is told, and what it derives.</b> Only the TRACK is sent. The edge's
+    /// law is a SLOPE, <c>w = r₀ + slope·s</c>, so with the nodes spaced at equal arc length the
+    /// half-width is linear in the node index and the shader computes it from
+    /// <see cref="HalfWidth"/> and <see cref="MaxHalfWidth"/> alone; the age mark is exponential in
+    /// the same parameter, so <see cref="TailMark"/> is enough for all six. That keeps this to four
+    /// constant arrays and leaves nothing to drift between the two halves of the seam.</para>
+    ///
+    /// <para><b>Six nodes, spaced by DISTANCE astern, not by time.</b> The reach
+    /// <c>S = (w_max − r₀)/slope</c> is the same at any speed, so the spacing is fixed. Six is what a
+    /// hard turn needs: five sub-segments hold a 90°-over-the-reach arc to about 10 cm, three hold it
+    /// to 27 cm, and a single straight extension astern of the transom misses the track by over a
+    /// metre.</para>
+    /// </summary>
+    public readonly struct FoamDispersal
+    {
+        /// <summary>How many track nodes the edge is sampled at. Mirrored as
+        /// <c>FOAM_DISPERSAL_NODES</c> and a COMPILE-TIME loop bound in the advect shader, for the
+        /// same reason <see cref="FoamBuffer.MaxInjectors"/> is one.</summary>
+        public const int Nodes = 6;
+
+        /// <summary>The transom's track, newest first: node 0 is where she is now, node 5 the oldest
+        /// water the edge has reached (world m). Equal arc length apart.</summary>
+        public readonly Vector2 Node0, Node1, Node2, Node3, Node4, Node5;
+
+        /// <summary>The churn band's own half-width (m) — where the edge starts, and what the
+        /// envelope is measured from.</summary>
+        public readonly float HalfWidth;
+
+        /// <summary>The envelope this hull's churn spreads to (m): where the band's outer taper
+        /// reaches exactly zero. Reduced to what her AVAILABLE track can reach, so conservation holds
+        /// while a wake is still being born rather than only once it is full length.</summary>
+        public readonly float MaxHalfWidth;
+
+        /// <summary>The edge's per-frame amplitude (<see cref="FoamBuffer.EdgeGain"/>) — already
+        /// dt-scaled, and already speed-free.</summary>
+        public readonly float EdgeGain;
+
+        /// <summary>The edge's soft width (m) — <see cref="FoamBuffer.EdgeWidth"/>.</summary>
+        public readonly float EdgeWidth;
+
+        /// <summary>The freshness the OLDEST node's water should carry
+        /// (<see cref="FoamBuffer.AgeMark"/>). Without it the widening band would be born at the far
+        /// end of #724's colour walk while the core beside it is white. Intermediate nodes are
+        /// <c>TailMark^u</c>, which is exact at a steady speed and a phase error in the colour walk
+        /// (never in the geometry) when she is accelerating.</summary>
+        public readonly float TailMark;
+
+        /// <summary>False at the shipped passthrough: the spread dial at 0, or a hull with no track
+        /// behind her yet. Then nothing about her injection differs from PR 11a's.</summary>
+        public bool IsActive => EdgeGain > 0f && EdgeWidth > 0f && MaxHalfWidth > HalfWidth
+                                && HalfWidth > 0f;
+
+        public FoamDispersal(Vector2 node0, Vector2 node1, Vector2 node2,
+                             Vector2 node3, Vector2 node4, Vector2 node5,
+                             float halfWidth, float maxHalfWidth,
+                             float edgeGain, float edgeWidth, float tailMark)
+        {
+            Node0 = node0; Node1 = node1; Node2 = node2;
+            Node3 = node3; Node4 = node4; Node5 = node5;
+            HalfWidth = halfWidth;
+            MaxHalfWidth = maxHalfWidth;
+            EdgeGain = edgeGain;
+            EdgeWidth = edgeWidth;
+            TailMark = tailMark;
         }
     }
 
@@ -140,6 +233,28 @@ namespace HiddenHarbours.Art
         public static void PublishDriftVelocity(Vector2 metresPerSecond)
         {
             DriftVelocity = metresPerSecond;
+        }
+
+        /// <summary>
+        /// The FRESHNESS channel's half-life (s), mirrored out of <c>IsoFacetHullFeature</c> — the
+        /// clock the wake's colour walks down (<c>WakeFoamAgeing</c>).
+        ///
+        /// <para>PR 11b needs it on the injection side: the dispersal lays foam on water the hull
+        /// never touched, and that water has an AGE, so its freshness mark has to be the value a
+        /// mark made now would have decayed to by then (<see cref="FoamBuffer.AgeMark"/>). Without
+        /// it the widening band is born at the far end of the colour walk while the core beside it
+        /// is white.</para>
+        ///
+        /// <para>The default matches the feature's own serialized default, so the very first frame —
+        /// before any renderer feature has run — ages correctly rather than not at all.</para>
+        /// </summary>
+        public static float AgeHalfLifeSeconds { get; private set; } = 4f;
+
+        /// <summary>Called by <c>IsoFacetHullFeature</c> each time it sets the pass up — the same
+        /// read-not-push contract as <see cref="LookStrength"/>.</summary>
+        public static void PublishAgeHalfLife(float halfLifeSeconds)
+        {
+            AgeHalfLifeSeconds = Mathf.Max(0f, halfLifeSeconds);
         }
 
         /// <summary>
@@ -286,5 +401,19 @@ namespace HiddenHarbours.Art
         public static readonly int AgeDecay = Shader.PropertyToID("_HHFoamAgeDecay");
         /// <summary>ADR 0040 rev 3: the bore's deposit — x = strength, y = the drawn wave scale, z = dt.</summary>
         public static readonly int SurfDeposit = Shader.PropertyToID("_HHSurfDeposit");
+
+        /// <summary>PR 11b: per-slot dispersal track, nodes 0 and 1 — <c>xy</c> = the transom now,
+        /// <c>zw</c> = one fifth of the reach astern (world m).</summary>
+        public static readonly int DispersalTrackA = Shader.PropertyToID("_HHFoamDispTrackA");
+        /// <summary>PR 11b: per-slot dispersal track, nodes 2 and 3 (world m).</summary>
+        public static readonly int DispersalTrackB = Shader.PropertyToID("_HHFoamDispTrackB");
+        /// <summary>PR 11b: per-slot dispersal track, nodes 4 and 5 (world m) — 5 is the oldest.</summary>
+        public static readonly int DispersalTrackC = Shader.PropertyToID("_HHFoamDispTrackC");
+        /// <summary>PR 11b: <c>x</c> = the edge's per-frame gain (0 in an unused slot and at the
+        /// shipped passthrough — which is what makes the whole block cost nothing and stay
+        /// bit-exact), <c>y</c> = the edge's soft width (m), <c>z</c> = the churn band's half-width
+        /// (m), <c>w</c> = the envelope half-width (m). The tail's age mark rides
+        /// <c>_HHFoamInjectShape[i].w</c>, which PR 11a left unused.</summary>
+        public static readonly int DispersalShape = Shader.PropertyToID("_HHFoamDispShape");
     }
 }

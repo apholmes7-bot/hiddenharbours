@@ -88,6 +88,24 @@ namespace HiddenHarbours.Art
         [Tooltip("Weight of the wake channel in the sum. 0 = bobbing only.")]
         [Range(0f, 2f)] [SerializeField] private float _wakeWeight = 1f;
 
+        [Header("Dispersal — the trail widens and thins with age (PR 11b)")]
+        [Tooltip("HOW FAST THE CHURN SPREADS ABEAM, as a fraction of the Kelvin slope — the " +
+                 "physical outer limit a hull's disturbance can spread at (tan 19.5 degrees per " +
+                 "metre of track). The churn inside the arms spreads slower, so this is below 1. " +
+                 "0 IS THE PASSTHROUGH: no dispersal, and this hull lays exactly the trail PR 11a " +
+                 "shipped, bit for bit. The owner, 2026-09-06: \"the foam always stays to the " +
+                 "original foam path, it doesnt widen over time and fade away.\"")]
+        [Range(0f, 1f)] [SerializeField] private float _spreadKelvinFraction = 0.8f;
+
+        [Tooltip("THE ENVELOPE the churn spreads to, in multiples of the band's own half-width — " +
+                 "where the widening band's outer taper reaches exactly zero, and therefore how far " +
+                 "astern the dispersal keeps working. A multiple rather than metres so a dory and a " +
+                 "tanker disperse alike (rule 6). 1 = no dispersal, same as a spread of 0.\n\n" +
+                 "Its ceiling is not taste: the buffer is 8 bits per channel, and a deposit thinner " +
+                 "than half a code is rounded away entirely. See docs/design/water-rendering.md " +
+                 "section 35 for where that floor lands.")]
+        [Range(1f, 6f)] [SerializeField] private float _spreadEnvelopeHalfBeams = 2.5f;
+
         [Header("Bob channel — the owner's ask (hull vs wave surface)")]
         [Tooltip("The hull's vertical INERTIA: the time constant of its lag behind the wave surface. " +
                  "0 = the hull tracks the surface exactly and never slaps, so this channel goes " +
@@ -117,6 +135,19 @@ namespace HiddenHarbours.Art
         private FoamInjection _pending;
         private bool _hasPending;
         private int _pendingFrame = -1;
+
+        // ---- the transom's recent TRACK, which is what the dispersal edge rides ----------------
+        // A ring of positions stamped at a fixed distance apart, plus the clock reading at each, so
+        // the six nodes the shader is given can be resampled at equal ARC LENGTH astern. Distance,
+        // not time: the edge's law is a slope, so its reach is the same at any speed and the spacing
+        // can be a constant. Allocation-free and fixed size (rule 7); cleared on a teleport with the
+        // rest of the history, because a track that jumps is not a track.
+        private const int TrailCapacity = 64;
+        private readonly Vector2[] _trailPos = new Vector2[TrailCapacity];
+        private readonly float[] _trailTime = new float[TrailCapacity];
+        private int _trailCount;
+        private int _trailNewest;
+        private float _elapsed;
 
         /// <summary>The churned band's half-width (m) — read by the feature when it packs the slot.</summary>
         public float RadiusMeters => Mathf.Max(0.05f, _radiusMeters);
@@ -166,6 +197,8 @@ namespace HiddenHarbours.Art
             _primed = false;
             _hasPending = false;
             _pendingFrame = -1;
+            _trailCount = 0;
+            _elapsed = 0f;
         }
 
         private void OnDisable()
@@ -174,6 +207,7 @@ namespace HiddenHarbours.Art
             _primed = false;
             _hasPending = false;
             _pendingFrame = -1;
+            _trailCount = 0;
         }
 
         // LateUpdate: after physics has moved the boat and after BoatWaveMotion has run, so the
@@ -250,9 +284,14 @@ namespace HiddenHarbours.Art
                 _previousHullY = surfaceY;
                 _primed = true;
                 _hasPending = false;
+                // A track that jumps is not a track: the dispersal edge would ride a chord across
+                // the map. Start it again from where she actually is.
+                _trailCount = 0;
+                AppendTrail(position);
                 return;
             }
 
+            _elapsed += dt;
             _previousSurfaceY = _surfaceY;
             _previousHullY = _hullY;
             _surfaceY = surfaceY;
@@ -274,10 +313,34 @@ namespace HiddenHarbours.Art
             // hull's own contribution dial but never by the frame's dt — a clock reset, not a deposit.
             float vigour = Mathf.Clamp01(rate01 * Mathf.Max(_strength, 0f));
 
+            // ---- the DISPERSAL (PR 11b) ---------------------------------------------------------
+            // The share of this hull's churn that leaves her band is taken OUT of the stamp above and
+            // handed to the widening edge, so the two together lay exactly what PR 11a laid. The
+            // share is DERIVED from the envelope (FoamBuffer.DispersingShare), never dialled — which
+            // is also why a spread of 0 leaves the line above untouched, bit for bit.
+            AppendTrail(position);
+            // ⚠️ Only the churn she makes by MAKING WAY forms a trail that disperses astern. A hull
+            // slapping at anchor churns IN PLACE, and the edge's whole premise — that it lays the
+            // envelope once, as its rim sweeps past a parcel — needs the rim to be moving: with no way
+            // on, the rim stands still and the same ring is painted into the same water every frame
+            // until it saturates. So the edge is fed the WAKE channel alone, and the share is taken
+            // out of only that part of the stamp, which keeps the two conserved against each other at
+            // any mix of the two channels. At rest the bob channel's churn is untouched.
+            float wake01 = Mathf.Min(rate01,
+                FoamBuffer.Shape01(horizontalSpeed, _wakeSpeedKnee, _wakeExponent)
+                * Mathf.Max(_wakeWeight, 0f));
+            float depositRate = wake01 * Mathf.Max(_depositPerSecond, 0f) * Mathf.Max(_strength, 0f);
+            FoamDispersal dispersal = BuildDispersal(position, depositRate, horizontalSpeed, dt,
+                                                     out float share);
+            if (share > 0f && rate01 > 1e-6f) amount *= 1f - share * (wake01 / rate01);
+
             // The capsule from last frame's position to this one — continuous at any frame rate.
             _pending = new FoamInjection(_previousPosition, position, RadiusMeters,
-                                         Mathf.Clamp01(amount), vigour);
-            _hasPending = amount > 1e-5f;
+                                         Mathf.Clamp01(amount), vigour, in dispersal);
+            // The dispersal can outlive the stamp it was taken from: a gently-working hull whose
+            // amount rounds toward nothing may still have a live edge, and dropping the injection
+            // would drop that too.
+            _hasPending = amount > 1e-5f || dispersal.IsActive;
             _pendingFrame = Time.frameCount;
             _previousPosition = position;
         }
@@ -292,6 +355,157 @@ namespace HiddenHarbours.Art
         {
             injection = _pending;
             return _hasPending && _pendingFrame == Time.frameCount;
+        }
+
+        /// <summary>
+        /// The distance between stored track samples, metres — the reach the edge can ever want,
+        /// cut into 24. Constant at runtime (both dials are serialized), floored at two world cells
+        /// so a sample can never land inside the one before it.
+        /// </summary>
+        private float TrailStepMeters()
+        {
+            float slope = FoamBuffer.SpreadSlope(_spreadKelvinFraction);
+            float r0 = RadiusMeters;
+            float wMax = r0 * Mathf.Max(1f, _spreadEnvelopeHalfBeams);
+            float reach = slope > 0f ? (wMax - r0) / slope : 0f;
+            return Mathf.Max(2f * FoamBuffer.CellSize, reach / 24f);
+        }
+
+        /// <summary>Stamp the transom's position onto the track once it has moved a whole step from
+        /// the last stamp. The CURRENT position is always the polyline's head and is not stored, so
+        /// node 0 is exact at every frame rate.</summary>
+        private void AppendTrail(Vector2 position)
+        {
+            if (_trailCount > 0)
+            {
+                float step = TrailStepMeters();
+                if ((position - _trailPos[_trailNewest]).sqrMagnitude < step * step) return;
+                _trailNewest = (_trailNewest + 1) % TrailCapacity;
+                if (_trailCount < TrailCapacity) _trailCount++;
+            }
+            else
+            {
+                _trailNewest = 0;
+                _trailCount = 1;
+            }
+            _trailPos[_trailNewest] = position;
+            _trailTime[_trailNewest] = _elapsed;
+        }
+
+        /// <summary>The i-th stored sample counting BACK from the newest (0 = newest).</summary>
+        private Vector2 TrailPos(int back)
+        {
+            int i = _trailNewest - back;
+            while (i < 0) i += TrailCapacity;
+            return _trailPos[i];
+        }
+
+        private float TrailTime(int back)
+        {
+            int i = _trailNewest - back;
+            while (i < 0) i += TrailCapacity;
+            return _trailTime[i];
+        }
+
+        /// <summary>How much track is actually behind her, metres — measured from the live transom
+        /// position back through every stored sample. A wake that has only just started is SHORT, and
+        /// the dispersal is sized to what is there rather than to what it would like.</summary>
+        private float TrailLength(Vector2 head)
+        {
+            float total = 0f;
+            Vector2 prev = head;
+            for (int i = 0; i < _trailCount; i++)
+            {
+                Vector2 next = TrailPos(i);
+                total += (next - prev).magnitude;
+                prev = next;
+            }
+            return total;
+        }
+
+        /// <summary>
+        /// The point <paramref name="astern"/> metres back along the track, and how long ago she was
+        /// there. Walks the polyline and interpolates within the segment it lands in; past the oldest
+        /// sample it clamps, which only happens when the caller has already shortened the reach to
+        /// <see cref="TrailLength"/>.
+        /// </summary>
+        private void SampleTrail(Vector2 head, float astern, out Vector2 point, out float ageSeconds)
+        {
+            point = head;
+            ageSeconds = 0f;
+            if (astern <= 0f) return;
+            float walked = 0f;
+            Vector2 prev = head;
+            float prevTime = _elapsed;
+            for (int i = 0; i < _trailCount; i++)
+            {
+                Vector2 next = TrailPos(i);
+                float nextTime = TrailTime(i);
+                float len = (next - prev).magnitude;
+                if (len > 1e-6f && walked + len >= astern)
+                {
+                    float t = (astern - walked) / len;
+                    point = Vector2.Lerp(prev, next, t);
+                    ageSeconds = Mathf.Max(0f, _elapsed - Mathf.Lerp(prevTime, nextTime, t));
+                    return;
+                }
+                walked += len;
+                prev = next;
+                prevTime = nextTime;
+            }
+            point = prev;
+            ageSeconds = Mathf.Max(0f, _elapsed - prevTime);
+        }
+
+        /// <summary>
+        /// This frame's dispersal edge, and the share of the churn it carries (0 when there is none,
+        /// which is what keeps the stamp above bit-identical to PR 11a's).
+        ///
+        /// <para>The envelope is cut down to what her available track can reach, so the share, the
+        /// envelope integral and the gain all describe the SAME annulus and conservation holds while
+        /// a wake is still being born — not only once it is full length.</para>
+        /// </summary>
+        private FoamDispersal BuildDispersal(Vector2 head, float depositRate, float speed, float dt,
+                                             out float share)
+        {
+            share = 0f;
+            float slope = FoamBuffer.SpreadSlope(_spreadKelvinFraction);
+            float r0 = RadiusMeters;
+            if (slope <= 0f || depositRate <= 0f || dt <= 0f) return default;
+
+            float wWanted = r0 * Mathf.Max(1f, _spreadEnvelopeHalfBeams);
+            if (wWanted <= r0) return default;
+
+            // A wake still being born has a short track, so the envelope is cut down to what she
+            // can actually reach — the share, the envelope integral and the gain then all describe
+            // the SAME annulus and conservation holds while she is getting under way, not only once
+            // the trail is full length. Below a couple of cells there is no annulus to speak of.
+            float reach = Mathf.Min((wWanted - r0) / slope, TrailLength(head));
+            if (reach < 2f * FoamBuffer.CellSize) return default;
+            float wMax = r0 + slope * reach;
+            if (wMax <= r0) return default;
+
+            share = FoamBuffer.DispersingShare(r0, wMax);
+            if (share <= 0f) return default;
+
+            // The edge advances at slope x speed; its soft width is floored on the world grid so it
+            // can never fall between texels, and on its own advance so it cannot outrun itself. The
+            // gain divides by it, so the frames a parcel spends under the sweeping edge SUM to the
+            // envelope rather than to a multiple of it.
+            float edgeWidth = FoamBuffer.EdgeWidth(slope * speed, dt);
+            float gain = FoamBuffer.EdgeGain(depositRate, r0, wMax, _spreadKelvinFraction, dt,
+                                             edgeWidth);
+            if (gain <= 0f) { share = 0f; return default; }
+
+            const float span = FoamDispersal.Nodes - 1;
+            SampleTrail(head, reach * (1f / span), out Vector2 n1, out _);
+            SampleTrail(head, reach * (2f / span), out Vector2 n2, out _);
+            SampleTrail(head, reach * (3f / span), out Vector2 n3, out _);
+            SampleTrail(head, reach * (4f / span), out Vector2 n4, out _);
+            SampleTrail(head, reach, out Vector2 n5, out float tailAge);
+
+            float tailMark = FoamBuffer.AgeMark(tailAge, FoamInjectionRegistry.AgeHalfLifeSeconds);
+            return new FoamDispersal(head, n1, n2, n3, n4, n5, r0, wMax, gain, edgeWidth, tailMark);
         }
 
         private void Join()

@@ -409,5 +409,255 @@ namespace HiddenHarbours.Art
             if (dt <= 0f) return 0f;
             return Mathf.Abs((surfaceY - hullY) - (previousSurfaceY - previousHullY)) / dt;
         }
+
+        // ---- DISPERSAL: the trail widens and thins with age (water fidelity PR 11b) ---------------
+        //
+        // 🔴 THE OWNER, 2026-09-04 and 09-06: "foam fades behind boat but doesnt disperse in width" ·
+        // "the foam always stays to the original foam path, it doesnt widen over time and fade away."
+        //
+        // WHY NOTHING HERE BLURS. The buffer's cell law makes every scroll an exact integer texel
+        // Load (see AdvectCells), which is what stops a wake smudging under a camera pan — so the
+        // buffer has no diffusion term and a laid trail can fade but cannot widen. The dispersal is
+        // therefore evaluated at INJECTION, per deposit, against that deposit's own AGE. Nothing is
+        // ever applied to the target between frames.
+        //
+        // THE TERM, IN ONE LINE. A deposit's profile is taken to widen with age at a fraction of the
+        // Kelvin slope while its amount falls by the ratio of the profiles' integrals — the
+        // AREA-PRESERVING family P_w(d) = (Phi / 1.5w) * falloff(d/w), every member of which lays the
+        // same foam. Widening then changes the DISTRIBUTION of the churn and never its total, which
+        // is exactly what the naive skirt could not do (it multiplied by 5.6x, measured).
+        //
+        // ⚠️ AN ADDITIVE BUFFER RETAINS THE ENVELOPE OF THAT FAMILY, NOT ITS CURRENT MEMBER. Nothing
+        // can take foam back out of the core as the profile spreads, so what the sea ends up holding
+        // is max over w of P_w(d) — EnvelopeShape. Stating conservation on the instantaneous profile
+        // and stamping it anyway is how an area-preserving term still overshoots; conservation is
+        // stated on the envelope (EnvelopeIntegral) and the stamp lays that envelope ONCE at each
+        // lateral distance, as its outer edge sweeps past. That single-pass stamp is also what keeps
+        // the per-frame amount clear of the buffer's 8-bit rounding floor: the same term re-stamped
+        // over the whole trail every frame lands BELOW it and is quantized away
+        // (docs/design/water-rendering.md §35 carries both sets of numbers).
+
+        /// <summary>
+        /// The Kelvin wake's half-angle as a SLOPE — metres of half-width per metre of track. The
+        /// physical outer limit a hull's disturbance can spread at, and therefore the bound on
+        /// <see cref="SpreadSlope"/>: the churn inside the arms spreads slower, never faster.
+        /// </summary>
+        public static readonly float KelvinSlope = Mathf.Tan(19.5f * Mathf.Deg2Rad);
+
+        /// <summary>
+        /// The AREA integral of the shipped injection stamp, in units of its own radius squared:
+        /// <c>∬ falloff(|p|) dA = 2π ∫₀¹ falloff(ρ)·ρ dρ = 0.575π</c>.
+        ///
+        /// <para>This — not the lateral cross-section — is what the shipped disc actually lays on a
+        /// parcel of sea, because a parcel is stamped for its whole DWELL under the passing hull
+        /// rather than once. It is the conserved quantity: foam laid per metre of track is
+        /// <c>rate · StampAreaIntegral · r₀² / speed</c>. Reaching for the 1.5·r₀ cross-section
+        /// instead makes an "area-preserving" stamp lay 1.4× the shipped foam — measured, and the
+        /// reason this constant is named rather than inlined.</para>
+        /// </summary>
+        public const float StampAreaIntegral = 0.575f * Mathf.PI;
+
+        /// <summary>The lateral integral of the shipped profile, per unit half-width:
+        /// <c>∫ falloff(|d|/w) dd = 1.5·w</c>, exactly.</summary>
+        public const float ProfileLateralIntegral = 1.5f;
+
+        /// <summary>
+        /// <c>argmax x·falloff(x)</c> — where a member of the area-preserving family peaks once its
+        /// amplitude has been scaled by 1/w. Root of <c>8t³ − 3t² − 6t + 1</c> at <c>t = 2x − 1</c>;
+        /// <c>WakeDispersalMathTests</c> re-derives it by search rather than trusting this number.
+        /// </summary>
+        public const float EnvelopePeakX = 0.5796825f;
+
+        /// <summary>The value of <c>x·falloff(x)</c> at <see cref="EnvelopePeakX"/> — the envelope's
+        /// own constant, so that the envelope is <c>EnvelopePeak / d</c> across the middle of its
+        /// range: the widening band thins as 1/d, which is the whole look.</summary>
+        public const float EnvelopePeak = 0.5402084f;
+
+        /// <summary>
+        /// The shipped injection profile as a function of distance from the swept segment — the
+        /// C# twin of the advect shader's <c>falloff</c> line. Full along the line, gone by
+        /// <paramref name="halfWidth"/>.
+        /// </summary>
+        public static float Profile(float distance, float halfWidth)
+        {
+            if (halfWidth <= 0f) return 0f;
+            float half = halfWidth * 0.5f;
+            if (distance <= half) return 1f;
+            if (distance >= halfWidth) return 0f;
+            float t = (distance - half) / half;
+            return 1f - (3f * t * t - 2f * t * t * t);
+        }
+
+        /// <summary>
+        /// The lateral spread rate as a SLOPE, from the owner-facing dial: a fraction of the Kelvin
+        /// slope, clamped to it. 0 is the passthrough — no dispersal, and the injector emits exactly
+        /// the shipped stamp.
+        /// </summary>
+        public static float SpreadSlope(float kelvinFraction)
+        {
+            return Mathf.Clamp01(kelvinFraction) * KelvinSlope;
+        }
+
+        /// <summary>
+        /// <c>∫₀ˣ falloff(u) du</c> in closed form — the running lateral integral of the profile,
+        /// needed by <see cref="DispersingShare"/>. <c>F(1) = 0.75</c>, which is the 1.5 of
+        /// <see cref="ProfileLateralIntegral"/> halved.
+        /// </summary>
+        public static float ProfileRunningIntegral(float x)
+        {
+            if (x <= 0f) return 0f;
+            if (x >= 1f) return 0.75f;
+            if (x <= 0.5f) return x;
+            float t = 2f * x - 1f;
+            return 0.5f + 0.5f * (t - t * t * t + 0.5f * t * t * t * t);
+        }
+
+        /// <summary>
+        /// 🔴 <b>THE DISPERSING SHARE, DERIVED — not a third dial.</b> How much of a hull's churn
+        /// leaves her own band: the fraction of the fully-spread profile that lies OUTSIDE the
+        /// original half-width. <c>β = 1 − (4/3)·F(r₀/w_max)</c>.
+        ///
+        /// <para>It falls out of the geometry rather than being tuned, and it is 0 exactly when
+        /// <paramref name="maxHalfWidth"/> equals <paramref name="halfWidth"/> — which is why the
+        /// spread dial at 0 hands the whole deposit back to the shipped stamp, bit for bit. At a
+        /// 2× envelope it is 1/3; at 2.5× it is 7/15.</para>
+        /// </summary>
+        public static float DispersingShare(float halfWidth, float maxHalfWidth)
+        {
+            if (halfWidth <= 0f || maxHalfWidth <= halfWidth) return 0f;
+            return Mathf.Clamp01(1f - (4f / 3f) * ProfileRunningIntegral(halfWidth / maxHalfWidth));
+        }
+
+        /// <summary>
+        /// 🔴 <b>THE ENVELOPE</b> — what an additive buffer is left holding once the area-preserving
+        /// family <c>P_w(d) ∝ falloff(d/w)/w</c> has widened from <paramref name="halfWidth"/> to
+        /// <paramref name="maxHalfWidth"/>: <c>max over w of falloff(d/w)/w</c>, in units of
+        /// 1/metres.
+        ///
+        /// <para>Flat at <c>1/r₀</c> across the core, <see cref="EnvelopePeak"/><c>/d</c> through the
+        /// middle, and tapering to exactly 0 at <paramref name="maxHalfWidth"/> because the widest
+        /// member of the family does. No shaping choice is made here: the family's own outer taper
+        /// IS the band's outer edge, so there is no third curve to tune.</para>
+        /// </summary>
+        public static float EnvelopeShape(float distance, float halfWidth, float maxHalfWidth)
+        {
+            if (halfWidth <= 0f || distance < 0f) return 0f;
+            float wMax = Mathf.Max(maxHalfWidth, halfWidth);
+            if (distance >= wMax) return 0f;
+            if (distance <= 1e-6f) return 1f / halfWidth;
+            // x = distance/w, so w over [r0, wMax] is x over [d/wMax, d/r0]; the family peaks at
+            // EnvelopePeakX, and the clamp picks the nearest reachable member.
+            float xLo = distance / wMax;
+            float xHi = Mathf.Min(1f, distance / halfWidth);
+            float x = Mathf.Clamp(EnvelopePeakX, xLo, xHi);
+            return x * Profile(x, 1f) / distance;
+        }
+
+        /// <summary>
+        /// <c>2·∫ envelope(d) dd</c> across the DISPERSED annulus (from the band's own half-width out
+        /// to the envelope) — the integral conservation is stated on. Fixed-step Simpson, so it is
+        /// pure, deterministic and allocation-free; the shape is smooth and 64 panels put it well
+        /// inside the discretisation of everything downstream.
+        /// </summary>
+        public static float EnvelopeIntegral(float halfWidth, float maxHalfWidth)
+        {
+            if (halfWidth <= 0f || maxHalfWidth <= halfWidth) return 0f;
+            const int panels = 64;                       // even, so Simpson's rule closes
+            float h = (maxHalfWidth - halfWidth) / panels;
+            float sum = EnvelopeShape(halfWidth, halfWidth, maxHalfWidth)
+                      + EnvelopeShape(maxHalfWidth, halfWidth, maxHalfWidth);
+            for (int i = 1; i < panels; i++)
+                sum += (i % 2 == 1 ? 4f : 2f) * EnvelopeShape(halfWidth + i * h, halfWidth, maxHalfWidth);
+            return 2f * sum * h / 3f;
+        }
+
+        /// <summary>
+        /// Foam laid per METRE OF TRACK by the shipped stamp — <c>rate · StampAreaIntegral · r₀² /
+        /// speed</c>. The quantity every arm of this term is conserved against, and the reason a
+        /// slower hull leaves a denser mark: she dwells over each parcel longer.
+        /// </summary>
+        public static float ShippedFoamPerMetre(float depositRatePerSecond, float halfWidth,
+                                                float speed)
+        {
+            if (speed <= 1e-4f || halfWidth <= 0f) return 0f;
+            return Mathf.Max(depositRatePerSecond, 0f) * StampAreaIntegral * halfWidth * halfWidth / speed;
+        }
+
+        /// <summary>
+        /// The dispersal edge's soft width, metres. Floored at two world cells so the ring can never
+        /// fall between texels, and at four frames of its own advance so it cannot outrun itself at a
+        /// low frame rate. Derived, not a dial.
+        /// </summary>
+        public static float EdgeWidth(float spreadSpeed, float dt)
+        {
+            return Mathf.Max(2f * CellSize, 4f * Mathf.Max(spreadSpeed, 0f) * Mathf.Max(dt, 0f));
+        }
+
+        /// <summary>
+        /// 🔴 <b>THE STAMP.</b> The per-frame amplitude of the dispersal edge: the envelope scaled so
+        /// that sweeping the edge once across a parcel leaves exactly the envelope value there, and
+        /// so that the annulus receives exactly the dispersing share of the shipped foam.
+        ///
+        /// <para><b>The speed cancels.</b> The envelope's amplitude carries <c>1/v</c> (a slow hull
+        /// lays a denser mark) and the edge's advance carries <c>v</c>, so this gain has no speed
+        /// term at all: a hull losing way lays a fainter ring, never a divide. Nothing needs a
+        /// minimum-speed gate, and nothing blows up at rest.</para>
+        ///
+        /// <para><b>Why the ring's own width divides.</b> The edge is soft over
+        /// <paramref name="edgeWidth"/> metres, so a parcel is under it for several frames as it
+        /// sweeps past; dividing by that width is what makes those frames SUM to the envelope
+        /// instead of to a multiple of it. Conservation is exact for any edge width — the width
+        /// only decides how many frames the deposit is spread over, which is what keeps every one
+        /// of them clear of the buffer's 8-bit rounding floor.</para>
+        ///
+        /// <para>Multiply by <see cref="EnvelopeShape"/> and by <see cref="EdgeBump"/> to get the
+        /// amount added to a texel this frame. Twin: the advect shader's dispersal block.</para>
+        /// </summary>
+        public static float EdgeGain(float depositRatePerSecond, float halfWidth, float maxHalfWidth,
+                                     float kelvinFraction, float dt, float edgeWidth)
+        {
+            float slope = SpreadSlope(kelvinFraction);
+            if (slope <= 0f || halfWidth <= 0f || maxHalfWidth <= halfWidth || dt <= 0f) return 0f;
+            if (edgeWidth <= 0f) return 0f;
+            float envelope = EnvelopeIntegral(halfWidth, maxHalfWidth);
+            if (envelope <= 1e-9f) return 0f;
+            float share = DispersingShare(halfWidth, maxHalfWidth);
+            if (share <= 0f) return 0f;
+            // share * (foam per metre) / envelope is the envelope's amplitude, which carries 1/speed;
+            // the edge advances at slope*speed. Written with the speed already cancelled rather than
+            // divided out and multiplied back, so no speed can ever reach a denominator here.
+            float amplitudePerSpeed = share * Mathf.Max(depositRatePerSecond, 0f) * StampAreaIntegral
+                                    * halfWidth * halfWidth / envelope;
+            return amplitudePerSpeed * slope * Mathf.Max(dt, 0f) / edgeWidth;
+        }
+
+        /// <summary>
+        /// The ring's own shape across the sweeping edge: a triangle of half-width
+        /// <paramref name="edgeWidth"/>, whose integral over the edge's passage is exactly 1 — which
+        /// is what makes the single pass lay exactly the envelope and no more.
+        /// </summary>
+        public static float EdgeBump(float distance, float edgePosition, float edgeWidth)
+        {
+            if (edgeWidth <= 0f) return 0f;
+            float u = Mathf.Abs(distance - edgePosition) / edgeWidth;
+            return u >= 1f ? 0f : 1f - u;
+        }
+
+        /// <summary>
+        /// The freshness a deposit of the given AGE should carry — the value a mark made now will
+        /// have decayed to by then. The dispersal lays foam on water the hull never touched, and
+        /// that water has an age: without this the whole widening band would be born at the far end
+        /// of #724's colour walk while the core beside it is white (measured: age01 1.000 against
+        /// the 0.414 it should read at the envelope).
+        ///
+        /// <para>Because the freshness update is a MAX, this is a no-op inside the churn band — whose
+        /// own mark has decayed to exactly this — and correct outside it.</para>
+        /// </summary>
+        public static float AgeMark(float ageSeconds, float ageHalfLifeSeconds)
+        {
+            if (ageSeconds <= 0f) return 1f;
+            if (ageHalfLifeSeconds <= 0f) return 0f;
+            return Mathf.Pow(0.5f, ageSeconds / ageHalfLifeSeconds);
+        }
     }
 }
