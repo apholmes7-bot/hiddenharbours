@@ -656,6 +656,9 @@
       build(out, s, T){
         const L = s.bays*s.bayLen, hx = L/2, hy = s.width/2;
         const top = s.floatDeckZ, t = 0.05, frameD = 0.26, fz1 = top - t, fz0 = fz1 - frameD;
+        // The frame heights above are solved whether or not the raft is drawn: the chain hangs off
+        // fz0, so `floatPiles` needs the raft's geometry without the raft's pixels.
+        if(s.raft){
         if(s.hull === 'plastic'){
           // modular HDPE cube raft: the cubes ARE the buoyancy, the frame and the deck
           const cz1 = top, cz0 = top - 0.42;
@@ -693,6 +696,7 @@
         slab(out, [[-hx,-hy],[hx,-hy],[hx,hy],[-hx,hy]], top, 'plank', 0.12, plankTex(0.20));
         if(s.curb !== 'none'){ const c = DECK.curb;
           box(out, -hx, hx, hy-c[0], hy, top, top+c[1]*0.7, s.curb==='yellow'?'yel':'wood', 0.2, sawnTex()); }
+        }
         }
         // A gangway hung off this float: the hinge is on the fixed abutment, the landing rides the
         // float — so it is solved from the float's ROCKED deck height and then held out of the rock.
@@ -878,7 +882,47 @@
     mound: 'revetment',   // riprap: revetment | breakwater | sheetCell
     gangway: false,       // float: hang a gangway off it, solved from the same tide
     gangRun: null, gangWidth: 0.95, abutZ: null,
+    // ⚠️ ONE SPRITE CANNOT HOLD BOTH HALVES OF A FLOAT. The raft rides the tide; the guide piles, the
+    // mooring chain and its seabed block are DRIVEN INTO THE SEABED and must not — this build() has
+    // always tagged exactly those `fixed` and skipped them in its own rock transform, and #735 shipped
+    // the consequence as a named trade (at Nine Mile Creek the piles rose and fell 4.4 m with the dock).
+    // `raft` splits the family into its two cells: the raft alone, and its fixed furniture alone.
+    raft: true,           // float: draw the RAFT. false = the seabed-driven furniture only (floatPiles)
+    rung: null,           // gangway: index into the slope ladder — see gangwayDrops()
   };
+
+  // ---- THE GANGWAY'S SLOPE AXIS ---------------------------------------------------------------
+  // A brow is the one piece in this kit whose PICTURE changes with the tide rather than merely moving
+  // with it. Its hinge is bolted to fixed ground and its landing rides a float, so the drop between
+  // them is the whole tidal range and its slope swings from nearly flat to better than 1:3. A single
+  // cell can only be right at one water level — which is exactly the defect #735 refused, at the one
+  // end of a gangway that is not supposed to move at all.
+  //
+  // So the ramp bakes across a LADDER OF DROPS, and the sheet's second axis is that ladder. The two
+  // ends are DERIVED, never typed, from the same three numbers the rest of the pack is parameterised
+  // by — so a coast with another tide re-solves its own ladder instead of inheriting this one's:
+  //
+  //     hinge      = tideRange + clearance          (the deck every FIXED family stands at)
+  //     floatDeck  = water + freeboard,  water ∈ [0, tideRange]
+  //     ⇒ drop     ∈ [clearance − freeboard,  tideRange + clearance − freeboard]
+  //
+  // At the shipped defaults (4.4 / 0.8 / 0.4) that is 0.40 m at highest water to 4.80 m at lowest —
+  // 4.40 m of travel, which is the tide itself, because a fixed hinge over a riding landing is a
+  // one-to-one reader of the water level.
+  //
+  // ⚠️ THE COUNT IS A COST, NOT A TASTE. Every rung is 8 more cells on the sheet; the runtime picks the
+  // nearest rung and cannot interpolate, so the residual is what the drawn brow's ends are wrong by.
+  // NINE rungs steps the ladder at 0.55 m — see the PR that added it for why that is the number the
+  // 4096 cap and the raft's own drawn depth agree on.
+  const GANGWAY_RUNGS = 9;
+
+  /// The ladder itself, in metres of DROP from hinge to landing, shallowest first.
+  function gangwayDrops(s){
+    const lo = s.clearance - s.freeboard, hi = s.tideRange + s.clearance - s.freeboard, out = [];
+    for(let i = 0; i < GANGWAY_RUNGS; i++)
+      out.push(lo + (hi - lo) * (i / (GANGWAY_RUNGS - 1)));
+    return out;
+  }
   const FIT_DEFAULT = {
     quay:    { ladder:'auto', tyre:'auto', foam:0, cleat:'auto', bollard:2, ring:2, dolphin:false },
     pier:    { ladder:'auto', tyre:'auto', foam:'auto', cleat:'auto', bollard:1, ring:2, dolphin:false },
@@ -900,10 +944,24 @@
     timberQuay:   { family:'quay',   face:'timberSheet', curb:'wood', bays:5, bayLen:3.0, width:6.5 },
     logCrib:      { family:'crib',   cap:'plank' },
     cappedCrib:   { family:'crib',   cap:'concrete', curb:'yellow' },
-    timberFloat:  { family:'float',  hull:'timber' },
+    // ⚠️ NO PILES, NO CHAIN — they are their own cell (`floatPiles`). A raft rides and they do not,
+    // and #735 shipped the alternative as a named lie: 48 m of dock at Nine Mile Creek whose guide
+    // piles rose and fell 4.4 m with it. Anything driven into the seabed is drawn ONCE, standing still.
+    timberFloat:  { family:'float',  hull:'timber', guidePiles:false, chain:false },
     plasticFloat: { family:'float',  hull:'plastic', curb:'yellow' },
     floatSet:     { family:'float',  hull:'timber', gangway:true, bays:2 },
     plasticSet:   { family:'float',  hull:'plastic', gangway:true, bays:2, curb:'yellow' },
+    // The other half of timberFloat: the guide piles, the mooring chain and its seabed block, with no
+    // raft and no deck hardware (every fitting is ON the raft, so every one is zeroed here). Placed
+    // once, at the plan position, and never moved by the thing that rides.
+    floatPiles:   { family:'float',  hull:'timber', raft:false, guidePiles:true, chain:true,
+                    fittings:{ ladder:0, tyre:0, foam:0, cleat:0 } },
+    // THE BROW, as its own object at last. `run` is Nine Mile Creek's own 12 m — the gap between the
+    // apron's east face (x 92) and the float run's west end (x 104) — because the drawn brow and the
+    // walkable one must be the same brow (ADR 0010), and this pack is baked for one home world exactly
+    // as its tide and clearance are. The hinge is the auto (tideRange + clearance = 5.20 m, which IS
+    // this wharf's +3.00 m apron in the game's frame); the SLOPE is the sheet's second axis.
+    gangway:      { family:'gangway', run:12 },
     graniteEdge:  { family:'riprap', stone:'granite',   mound:'revetment' },
     redEdge:      { family:'riprap', stone:'sandstone', mound:'revetment' },
     breakwater:   { family:'riprap', stone:'granite',   mound:'breakwater', width:6, bays:6 },
@@ -934,7 +992,12 @@
     }
     if(family === 'gangway'){
       s.run = clampF(s.run != null ? s.run : D.bayLen[2], D.bayLen[0], D.bayLen[1]);
-      s.floatDeckZ = opts.floatDeckZ != null ? opts.floatDeckZ : s.tide + 0.40;
+      // `rung` reads the ladder against the hinge the auto ALREADY solved, never against a second
+      // literal: s.deckZ here is still tideRange + clearance, so rung 0 is the brow at highest water
+      // and the last rung is the brow at lowest, whatever coast this is baked for.
+      s.rung = opts.rung != null ? clampI(opts.rung, 0, GANGWAY_RUNGS - 1) : null;
+      s.floatDeckZ = s.rung != null ? s.deckZ - gangwayDrops(s)[s.rung]
+                   : opts.floatDeckZ != null ? opts.floatDeckZ : s.tide + 0.40;
       s.deckZ = clampF(s.deckZ, s.floatDeckZ + 0.15, s.floatDeckZ + s.run*0.92);
     }
     if(family === 'slipway'){
@@ -1224,7 +1287,11 @@
     FAMILIES, PRESETS, BOATS, BERTH_CLR, FIT, DECK, WOOD, PLANK, POLE, IRON, GALV, ALUM, CONCRETE, ROCK,
     SANDST, RUST, STEEL, HDPE, HDPEDECK, RUBBER, FOAM, ROPE, NET, YEL, POLY, BARN, WEED, ALG, KEY,
     KEYLINE_DEFAULT,
-    GROWTH_ALL, FIT_DEFAULT,
+    GROWTH_ALL, FIT_DEFAULT, GANGWAY_RUNGS,
+    // The slope ladder in metres of drop, for the baker's rung axis and for the game that has to pick
+    // one. Takes the same opts render() does, so a caller reads the ladder of the bake it is asking
+    // about rather than of the defaults.
+    gangwayDrops: (opts)=> gangwayDrops(resolve('gangway', opts || {})),
     STYLES: { face:['concrete','steelSheet','timberSheet'], struct:['open','sheeted','steelPile'],
       cap:['plank','concrete'], hull:['timber','plastic'], stone:['granite','sandstone'],
       mound:['revetment','breakwater','sheetCell'], curb:['wood','yellow','none'] },

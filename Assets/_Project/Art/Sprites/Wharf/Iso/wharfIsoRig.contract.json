@@ -1,7 +1,7 @@
 {
   "rig": "wharfIsoRig",
   "version": 1,
-  "generated": "measured from docs/art/rigs/iso-rig-pack/wharf-kit-iso/wharfIsoRig.js in a standalone V8 host at rig-default dimensions, tide and clearance (tideRange 4.4, clearance 0.8 — Hillsborough Bay). The cell is PARAMETRIC: these numbers hold for a bake at the rig's defaults and for no other, so re-measure rather than trusting them after any authoring change.",
+  "generated": "measured from docs/art/rigs/iso-rig-pack/wharf-kit-iso/wharfIsoRig.js in a standalone V8 host at rig-default dimensions, tide and clearance (tideRange 4.4, clearance 0.8 — Hillsborough Bay). The cell is PARAMETRIC: these numbers hold for a bake at the rig's defaults and for no other, so re-measure rather than trusting them after any authoring change. 17 -> 19 keys: gangway and floatPiles are new, and timberFloat MOVED (300x348 -> 199x195) because its guide piles, mooring chain and seabed block left it for floatPiles — one sprite could not hold a raft that rides and furniture that is driven into the seabed, and the rig had always tagged exactly those `fixed`.",
   "projection": {
     "ppu": 32,
     "elev": 40,
@@ -10,7 +10,7 @@
     "alpha": "binary",
     "pivot": "projection of the model origin (footprint centre at chart datum) — the rig reports px,py per bake",
     "keyline": "#1a1c22",
-    "cellRule": "pivot-aligned union of the rig's RETURNED BUFFER extents across all 8 facings, floor/ceil, pivot-inclusive: cellW=ceil(max(w-1-px))-floor(min(-px))+1, pivotX=-floor(min(-px)), likewise Y. Measure the BUFFER, not the ink bbox — ink gives floatSet 751x556 against the 757x592 recorded here, and every one of the 17 keys then disagrees.",
+    "cellRule": "pivot-aligned union of the rig's RETURNED BUFFER extents across EVERY CELL THE KEY BAKES — all 8 facings, and for gangway all 8 x 9 rungs too — floor/ceil, pivot-inclusive: cellW=ceil(max(w-1-px))-floor(min(-px))+1, pivotX=-floor(min(-px)), likewise Y. Measure the BUFFER, not the ink bbox — ink gives floatSet 751x556 against the 757x592 recorded here, and every one of the 19 keys then disagrees. Unioning a rung axis is what makes the ladder swappable: gangway's 9 rungs measure 296..403 px tall on their own and share one 404 px cell at one pivot, so the runtime changes sprite without moving the object.",
     "keylineDefault": false
   },
   "azimuth": {
@@ -32,9 +32,9 @@
   },
   "families": "[\"quay\",\"pier\",\"crib\",\"float\",\"gangway\",\"slipway\",\"riprap\"]",
   "worstSheet": {
-    "key": "floatSet",
-    "w": 2310,
-    "h": 3628
+    "key": "gangway",
+    "w": 3256,
+    "h": 3636
   },
   "worstSheetByMaxDim": {
     "key": "sheetedPier",
@@ -42,9 +42,9 @@
     "h": 470,
     "maxDim": 3784,
     "headroomToCap": 312,
-    "note": "A texture cap binds on the LONGEST SIDE, not on area — size import headroom off THIS, not off worstSheet (which is the worst by area). Cells are parametric, so re-measure rather than trusting either field after an authoring change."
+    "note": "A texture cap binds on the LONGEST SIDE, not on area — size import headroom off THIS, not off worstSheet (which is the worst by area). Cells are parametric, so re-measure rather than trusting either field after an authoring change. The gangway's 9-rung sheet is the worst by AREA and does NOT take this field: 3636 px is still inside sheetedPier's 3784, so the family's binding side is unchanged — but its own headroom is 460 px and a rung is 404 of them, so the ladder cannot be lengthened without re-packing."
   },
-  "count": 17,
+  "count": 19,
   "cells": [
     {
       "key": "lowPier",
@@ -165,15 +165,15 @@
     },
     {
       "key": "timberFloat",
-      "cellW": 300,
-      "cellH": 348,
-      "pivotX": 149,
-      "pivotY": 216,
+      "cellW": 199,
+      "cellH": 195,
+      "pivotX": 99,
+      "pivotY": 138,
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 2400,
-        "sheetH": 348
+        "sheetW": 1592,
+        "sheetH": 195
       }
     },
     {
@@ -213,6 +213,36 @@
         "rows": 4,
         "sheetW": 2310,
         "sheetH": 3628
+      }
+    },
+    {
+      "key": "floatPiles",
+      "cellW": 300,
+      "cellH": 348,
+      "pivotX": 149,
+      "pivotY": 216,
+      "note": "The other half of timberFloat: guide piles, mooring chain and seabed block, no raft. It measures EXACTLY the cell timberFloat used to (300x348, pivot 149,216) — the split is a decomposition at one pivot, not a re-draw, so the piles land where they were always drawn and only the raft moves.",
+      "sheet": {
+        "cols": 8,
+        "rows": 1,
+        "sheetW": 2400,
+        "sheetH": 348
+      }
+    },
+    {
+      "key": "gangway",
+      "cellW": 407,
+      "cellH": 404,
+      "pivotX": 203,
+      "pivotY": 278,
+      "rungs": 9,
+      "rungDrops": "[0.4,0.95,1.5,2.05,2.6,3.15,3.7,4.25,4.8]",
+      "note": "THE ONLY KEY WITH A SECOND SHEET AXIS. A brow's hinge is bolted to fixed ground and its landing rides a float, so its picture is a function of the tide and not merely of its position: one cell can only ever be right at one water level, which is what #735 refused. 8 facings ACROSS, 9 rungs DOWN, cell index = rung*8 + facing. The drops are the rig's own gangwayDrops() at the baked defaults (clearance - freeboard = 0.40 m at highest water, tideRange + clearance - freeboard = 4.80 m at lowest, in 0.55 m steps); the cell is the union across all 72, so every rung shares one pivot and the runtime swaps sprite without moving the object. Baked at run 12 m — Nine Mile Creek's own gap between the apron face and the float run, because the drawn brow and the walkable one must be the same brow (ADR 0010).",
+      "sheet": {
+        "cols": 8,
+        "rows": 9,
+        "sheetW": 3256,
+        "sheetH": 3636
       }
     },
     {

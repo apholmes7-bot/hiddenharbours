@@ -212,8 +212,12 @@ namespace HiddenHarbours.Tests.RigBaking
             foreach (var cell in C("wharfIso").Cells)
             {
                 checkedCells++;
+                // ⚠️ The CONTRACT overload, not the facings-count one: `gangway` bakes a SLOPE axis
+                // (8 facings × 9 rungs) and its committed cell is the union across all 72. Measuring
+                // rung 0 alone gives 407×296 against the committed 407×404 — a failure that reads like
+                // the rig moved when it is the oracle asking the wrong question.
                 var facings = WharfIsoSheetBaker.RenderFacings(
-                    _host, G("wharfIso"), cell.key, C("wharfIso").Facings,
+                    _host, G("wharfIso"), cell.key, C("wharfIso"),
                     RigCatalog.Get("wharfIso").DeclaredConvention);
 
                 WharfIsoSheetBaker.MeasureCell(facings, out int w, out int h, out int px, out int py);
@@ -251,9 +255,10 @@ namespace HiddenHarbours.Tests.RigBaking
                 Compare(failures, "shoreFinds", cell, w, h, px, py, null);
             }
 
-            Assert.AreEqual(156, checkedCells,
-                "the pack is 17 + 61 + 42 + 36 = 156 cells; a different total means a family gained or " +
-                "lost keys without its contract being regenerated.");
+            Assert.AreEqual(158, checkedCells,
+                "the pack is 19 + 61 + 42 + 36 = 158 cells; a different total means a family gained or " +
+                "lost keys without its contract being regenerated. It was 17 + … = 156 until the wharf " +
+                "gained `gangway` and `floatPiles`.");
 
             if (failures.Count == 0) return;
 
