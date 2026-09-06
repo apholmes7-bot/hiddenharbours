@@ -249,6 +249,9 @@ namespace HiddenHarbours.Art
             _pass.FoamWindowMeters = _foamWindowMeters;
             _pass.FoamHalfLifeSeconds = _foamHalfLifeSeconds;
             _pass.FoamAgeHalfLifeSeconds = _foamAgeHalfLifeSeconds;
+            // PR 11b: the injection side has to age its own dispersed deposits on the same clock the
+            // colour walk reads, and only this feature knows what that clock is.
+            FoamInjectionRegistry.PublishAgeHalfLife(_foamAgeHalfLifeSeconds);
             renderer.EnqueuePass(_pass);
         }
 
@@ -361,6 +364,12 @@ namespace HiddenHarbours.Art
                 // this pass's record and its execute cannot overwrite the deposits.
                 public readonly Vector4[] Segments = new Vector4[FoamBuffer.MaxInjectors];
                 public readonly Vector4[] Shapes = new Vector4[FoamBuffer.MaxInjectors];
+                // PR 11b — the dispersal edge: three arrays of track nodes and one of shape. All
+                // zero in an unused slot and at the shipped passthrough, so the block costs nothing.
+                public readonly Vector4[] DispTrackA = new Vector4[FoamBuffer.MaxInjectors];
+                public readonly Vector4[] DispTrackB = new Vector4[FoamBuffer.MaxInjectors];
+                public readonly Vector4[] DispTrackC = new Vector4[FoamBuffer.MaxInjectors];
+                public readonly Vector4[] DispShape = new Vector4[FoamBuffer.MaxInjectors];
 
                 public RTHandle Read => ReadIsA ? A : B;
                 public RTHandle Write => ReadIsA ? B : A;
@@ -408,6 +417,7 @@ namespace HiddenHarbours.Art
                 public float DecayFactor;
                 public float AgeDecayFactor;
                 public Vector4[] Segments, Shapes;
+                public Vector4[] DispTrackA, DispTrackB, DispTrackC, DispShape;   // PR 11b
                 public Vector4 SurfDeposit;   // ADR 0040 rev 3: strength, drawn scale, dt
             }
 
@@ -532,13 +542,36 @@ namespace HiddenHarbours.Art
                         {
                             FoamInjection inj = _foamInjections[i];
                             state.Segments[i] = new Vector4(inj.From.x, inj.From.y, inj.To.x, inj.To.y);
+                            FoamDispersal d = inj.Dispersal;
+                            bool disperses = d.IsActive;
                             // z = the dt-INDEPENDENT vigour: the GATE that resets the freshness clock.
-                            state.Shapes[i] = new Vector4(inj.Radius, inj.Amount, inj.Vigour, 0f);
+                            // w = PR 11b's tail age mark, riding the float PR 11a left spare.
+                            state.Shapes[i] = new Vector4(inj.Radius, inj.Amount, inj.Vigour,
+                                                          disperses ? d.TailMark : 0f);
+                            if (disperses)
+                            {
+                                state.DispTrackA[i] = new Vector4(d.Node0.x, d.Node0.y, d.Node1.x, d.Node1.y);
+                                state.DispTrackB[i] = new Vector4(d.Node2.x, d.Node2.y, d.Node3.x, d.Node3.y);
+                                state.DispTrackC[i] = new Vector4(d.Node4.x, d.Node4.y, d.Node5.x, d.Node5.y);
+                                state.DispShape[i] = new Vector4(d.EdgeGain, d.EdgeWidth,
+                                                                 d.HalfWidth, d.MaxHalfWidth);
+                            }
+                            else
+                            {
+                                state.DispTrackA[i] = Vector4.zero;
+                                state.DispTrackB[i] = Vector4.zero;
+                                state.DispTrackC[i] = Vector4.zero;
+                                state.DispShape[i] = Vector4.zero;   // gain 0 = the edge adds nothing
+                            }
                         }
                         else
                         {
                             state.Segments[i] = Vector4.zero;
                             state.Shapes[i] = Vector4.zero;   // amount 0 = the slot adds exactly nothing
+                            state.DispTrackA[i] = Vector4.zero;
+                            state.DispTrackB[i] = Vector4.zero;
+                            state.DispTrackC[i] = Vector4.zero;
+                            state.DispShape[i] = Vector4.zero;
                         }
                     }
 
@@ -579,6 +612,10 @@ namespace HiddenHarbours.Art
                         passData.AgeDecayFactor = FoamBuffer.DecayFactor(FoamAgeHalfLifeSeconds, dt);
                         passData.Segments = state.Segments;
                         passData.Shapes = state.Shapes;
+                        passData.DispTrackA = state.DispTrackA;
+                        passData.DispTrackB = state.DispTrackB;
+                        passData.DispTrackC = state.DispTrackC;
+                        passData.DispShape = state.DispShape;
                         passData.SurfDeposit = new Vector4(FoamInjectionRegistry.SurfDepositStrength,
                                                            FoamInjectionRegistry.DrawnWaveScale, dt, 0f);
 
@@ -598,6 +635,10 @@ namespace HiddenHarbours.Art
                             data.Material.SetFloat(FoamShaderIds.AgeDecay, data.AgeDecayFactor);
                             data.Material.SetVectorArray(FoamShaderIds.InjectSeg, data.Segments);
                             data.Material.SetVectorArray(FoamShaderIds.InjectShape, data.Shapes);
+                            data.Material.SetVectorArray(FoamShaderIds.DispersalTrackA, data.DispTrackA);
+                            data.Material.SetVectorArray(FoamShaderIds.DispersalTrackB, data.DispTrackB);
+                            data.Material.SetVectorArray(FoamShaderIds.DispersalTrackC, data.DispTrackC);
+                            data.Material.SetVectorArray(FoamShaderIds.DispersalShape, data.DispShape);
                             data.Material.SetVector(FoamShaderIds.SurfDeposit, data.SurfDeposit);
                             Blitter.BlitTexture(ctx.cmd, new Vector4(1f, 1f, 0f, 0f), data.Material, 0);
                         });
