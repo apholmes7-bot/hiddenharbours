@@ -152,6 +152,60 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsEmpty(failures.ToString(), "\n" + failures);
         }
 
+        /// <summary>
+        /// 🔴 <b>WHAT UNITY LOADS MUST BE WHAT THE FILE SAYS.</b> The offsets are hand-appended text in
+        /// a YAML asset, and an append can land somewhere the deserializer never reads — in which case
+        /// the field silently keeps its default and every downstream number is quietly wrong while the
+        /// file looks right to anyone who opens it.
+        ///
+        /// <para><b>It has already happened once.</b> PR 11a appended
+        /// <c>WakeSternOffsetMeters</c> to the end of three assets whose MonoBehaviour block is LAST in
+        /// the file (the mesh comes first in those three). Two got no trailing newline;
+        /// <c>SportSkiffIsoHullMesh</c> also got a BLANK LINE before the key — and a blank line ENDS a
+        /// block mapping, so Unity dropped the key and loaded 0.00 m while the file plainly read 3.5.
+        /// The rig guard above caught the wrong number; this one names why, which is the difference
+        /// between "the data is wrong" and "the data never arrived".</para>
+        /// </summary>
+        [Test]
+        public void EveryHullsSternOffset_SurvivesSerialization_TheFileAndTheObjectAgree()
+        {
+            var failures = new StringBuilder();
+            foreach (string guid in AssetDatabase.FindAssets("t:HullMeshDef", new[] { DefRoot }))
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                var def = AssetDatabase.LoadAssetAtPath<HullMeshDef>(path);
+                if (def == null) continue;
+
+                string text = File.ReadAllText(path);
+                Match m = Regex.Match(text, @"WakeSternOffsetMeters:\s*([0-9.]+)");
+                if (!m.Success)
+                {
+                    failures.AppendLine($"  {Path.GetFileName(path)}: the key is not in the file at all.");
+                    continue;
+                }
+                float onDisk = float.Parse(m.Groups[1].Value, CultureInfo.InvariantCulture);
+                if (Mathf.Abs(onDisk - def.WakeSternOffsetMeters) > 1e-4f)
+                    failures.AppendLine(
+                        $"  {Path.GetFileName(path)}: the file says {onDisk:0.00} m but the loaded " +
+                        $"object says {def.WakeSternOffsetMeters:0.00} m — the append did not reach " +
+                        "the deserializer. Check for a blank line before the key (it ends the block " +
+                        "mapping) or a missing trailing newline.");
+
+                // The two shapes that caused it, caught BEFORE they cost a wrong number.
+                string[] lines = text.Replace("\r\n", "\n").Split('\n');
+                int at = System.Array.FindIndex(lines, l => l.Contains("WakeSternOffsetMeters"));
+                if (at > 0 && lines[at - 1].Trim().Length == 0)
+                    failures.AppendLine(
+                        $"  {Path.GetFileName(path)}: a BLANK LINE sits immediately before " +
+                        "WakeSternOffsetMeters, which ends the YAML mapping and drops the key.");
+                if (!text.EndsWith("\n"))
+                    failures.AppendLine(
+                        $"  {Path.GetFileName(path)}: the file does not end with a newline, which is " +
+                        "what makes the next hand-append land on the same line or after a blank one.");
+            }
+            Assert.IsEmpty(failures.ToString(), "\n" + failures);
+        }
+
         /// <summary>Nothing in <c>HullMeshes</c> may sit outside the table above — a hull added
         /// without a rig mapping would keep whatever offset somebody typed, unchecked.</summary>
         [Test]
