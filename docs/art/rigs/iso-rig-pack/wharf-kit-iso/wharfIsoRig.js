@@ -656,6 +656,9 @@
       build(out, s, T){
         const L = s.bays*s.bayLen, hx = L/2, hy = s.width/2;
         const top = s.floatDeckZ, t = 0.05, frameD = 0.26, fz1 = top - t, fz0 = fz1 - frameD;
+        // The frame heights above are solved whether or not the raft is drawn: the chain hangs off
+        // fz0, so `floatPiles` needs the raft's geometry without the raft's pixels.
+        if(s.raft){
         if(s.hull === 'plastic'){
           // modular HDPE cube raft: the cubes ARE the buoyancy, the frame and the deck
           const cz1 = top, cz0 = top - 0.42;
@@ -694,6 +697,26 @@
         if(s.curb !== 'none'){ const c = DECK.curb;
           box(out, -hx, hx, hy-c[0], hy, top, top+c[1]*0.7, s.curb==='yellow'?'yel':'wood', 0.2, sawnTex()); }
         }
+        }
+        // ⚠️⚠️ THE HOOP RIDES AND ROCKS; THE PILE DOES NEITHER. A guide hoop is a sliding collar
+        // bolted to the RAFT — it slides up and down the pile as the tide takes her, which is the whole
+        // mechanism a guide pile is for. It used to be drawn in the `fixed` block below, with the pile,
+        // and that is wrong twice over:
+        //   · it does not RIDE. Split into its own cell so the piles could stand still (the #735 defect),
+        //     that left sixteen galvanised collars hanging three units over a dock that had gone down
+        //     the piles without them — measured on the 2026-09-06 low-water plate, which is the only
+        //     reason it was ever seen.
+        //   · it does not ROCK. `fixed` exempts geometry from this family's own rock transform, and at
+        //     frame 0 that is 0.52° of pitch and 12 mm of heave. A collar bolted to a rocking raft rocks.
+        //     Correcting it moves plasticFloat's cell by a pixel and floatSet's / plasticSet's pixels.
+        //
+        // `pileHoops` defaults to `guidePiles`, so every preset that draws raft and pile in ONE cell is
+        // unchanged in what it contains; only where the two are split does the collar follow the raft.
+        if(s.raft && s.pileHoops) for(const gx of (s.bays > 1 ? [-hx+0.4, hx-0.4] : [hx-0.4])){
+          const py = hy + 0.34;
+          torusZ(out, gx, py, top + 0.22, s.pileR + 0.075, 0.045, 12, 5, 'galv', 0.25);
+          box(out, gx-0.05, gx+0.05, hy-0.02, py-s.pileR-0.04, top+0.16, top+0.28, 'galv', 0.1, null, true);
+        }
         // A gangway hung off this float: the hinge is on the fixed abutment, the landing rides the
         // float — so it is solved from the float's ROCKED deck height and then held out of the rock.
         const gFrom = out.length;
@@ -719,10 +742,7 @@
         // block and the already-solved gangway are tagged fixed and skipped by the rock transform.
         const fixedFrom = gFrom;
         if(s.guidePiles) for(const gx of (s.bays > 1 ? [-hx+0.4, hx-0.4] : [hx-0.4])){
-          const py = hy + 0.34;
-          bandedPile(out, gx, py, s.pileR, s.mudZ, T.hhw + s.guideAbove, 'pole', T, s, 10, s.capIron?'iron':null);
-          torusZ(out, gx, py, top + 0.22, s.pileR + 0.075, 0.045, 12, 5, 'galv', 0.25);
-          box(out, gx-0.05, gx+0.05, hy-0.02, py-s.pileR-0.04, top+0.16, top+0.28, 'galv', 0.1, null, true);
+          bandedPile(out, gx, hy + 0.34, s.pileR, s.mudZ, T.hhw + s.guideAbove, 'pole', T, s, 10, s.capIron?'iron':null);
         }
         // mooring chain to a seabed block — straightens as the tide falls
         if(s.chain){
@@ -878,7 +898,48 @@
     mound: 'revetment',   // riprap: revetment | breakwater | sheetCell
     gangway: false,       // float: hang a gangway off it, solved from the same tide
     gangRun: null, gangWidth: 0.95, abutZ: null,
+    // ⚠️ ONE SPRITE CANNOT HOLD BOTH HALVES OF A FLOAT. The raft rides the tide; the guide piles, the
+    // mooring chain and its seabed block are DRIVEN INTO THE SEABED and must not — this build() has
+    // always tagged exactly those `fixed` and skipped them in its own rock transform, and #735 shipped
+    // the consequence as a named trade (at Nine Mile Creek the piles rose and fell 4.4 m with the dock).
+    // `raft` splits the family into its two cells: the raft alone, and its fixed furniture alone.
+    raft: true,           // float: draw the RAFT. false = the seabed-driven furniture only (floatPiles)
+    pileHoops: null,      // float: the sliding collars. null = follow guidePiles (the original look)
+    rung: null,           // gangway: index into the slope ladder — see gangwayDrops()
   };
+
+  // ---- THE GANGWAY'S SLOPE AXIS ---------------------------------------------------------------
+  // A brow is the one piece in this kit whose PICTURE changes with the tide rather than merely moving
+  // with it. Its hinge is bolted to fixed ground and its landing rides a float, so the drop between
+  // them is the whole tidal range and its slope swings from nearly flat to better than 1:3. A single
+  // cell can only be right at one water level — which is exactly the defect #735 refused, at the one
+  // end of a gangway that is not supposed to move at all.
+  //
+  // So the ramp bakes across a LADDER OF DROPS, and the sheet's second axis is that ladder. The two
+  // ends are DERIVED, never typed, from the same three numbers the rest of the pack is parameterised
+  // by — so a coast with another tide re-solves its own ladder instead of inheriting this one's:
+  //
+  //     hinge      = tideRange + clearance          (the deck every FIXED family stands at)
+  //     floatDeck  = water + freeboard,  water ∈ [0, tideRange]
+  //     ⇒ drop     ∈ [clearance − freeboard,  tideRange + clearance − freeboard]
+  //
+  // At the shipped defaults (4.4 / 0.8 / 0.4) that is 0.40 m at highest water to 4.80 m at lowest —
+  // 4.40 m of travel, which is the tide itself, because a fixed hinge over a riding landing is a
+  // one-to-one reader of the water level.
+  //
+  // ⚠️ THE COUNT IS A COST, NOT A TASTE. Every rung is 8 more cells on the sheet; the runtime picks the
+  // nearest rung and cannot interpolate, so the residual is what the drawn brow's ends are wrong by.
+  // NINE rungs steps the ladder at 0.55 m — see the PR that added it for why that is the number the
+  // 4096 cap and the raft's own drawn depth agree on.
+  const GANGWAY_RUNGS = 9;
+
+  /// The ladder itself, in metres of DROP from hinge to landing, shallowest first.
+  function gangwayDrops(s){
+    const lo = s.clearance - s.freeboard, hi = s.tideRange + s.clearance - s.freeboard, out = [];
+    for(let i = 0; i < GANGWAY_RUNGS; i++)
+      out.push(lo + (hi - lo) * (i / (GANGWAY_RUNGS - 1)));
+    return out;
+  }
   const FIT_DEFAULT = {
     quay:    { ladder:'auto', tyre:'auto', foam:0, cleat:'auto', bollard:2, ring:2, dolphin:false },
     pier:    { ladder:'auto', tyre:'auto', foam:'auto', cleat:'auto', bollard:1, ring:2, dolphin:false },
@@ -900,10 +961,24 @@
     timberQuay:   { family:'quay',   face:'timberSheet', curb:'wood', bays:5, bayLen:3.0, width:6.5 },
     logCrib:      { family:'crib',   cap:'plank' },
     cappedCrib:   { family:'crib',   cap:'concrete', curb:'yellow' },
-    timberFloat:  { family:'float',  hull:'timber' },
+    // ⚠️ NO PILES, NO CHAIN — they are their own cell (`floatPiles`). A raft rides and they do not,
+    // and #735 shipped the alternative as a named lie: 48 m of dock at Nine Mile Creek whose guide
+    // piles rose and fell 4.4 m with it. Anything driven into the seabed is drawn ONCE, standing still.
+    timberFloat:  { family:'float',  hull:'timber', guidePiles:false, chain:false, pileHoops:true },
     plasticFloat: { family:'float',  hull:'plastic', curb:'yellow' },
     floatSet:     { family:'float',  hull:'timber', gangway:true, bays:2 },
     plasticSet:   { family:'float',  hull:'plastic', gangway:true, bays:2, curb:'yellow' },
+    // The other half of timberFloat: the guide piles, the mooring chain and its seabed block, with no
+    // raft and no deck hardware (every fitting is ON the raft, so every one is zeroed here). Placed
+    // once, at the plan position, and never moved by the thing that rides.
+    floatPiles:   { family:'float',  hull:'timber', raft:false, guidePiles:true, chain:true,
+                    pileHoops:false, fittings:{ ladder:0, tyre:0, foam:0, cleat:0 } },
+    // THE BROW, as its own object at last. `run` is Nine Mile Creek's own 12 m — the gap between the
+    // apron's east face (x 92) and the float run's west end (x 104) — because the drawn brow and the
+    // walkable one must be the same brow (ADR 0010), and this pack is baked for one home world exactly
+    // as its tide and clearance are. The hinge is the auto (tideRange + clearance = 5.20 m, which IS
+    // this wharf's +3.00 m apron in the game's frame); the SLOPE is the sheet's second axis.
+    gangway:      { family:'gangway', run:12 },
     graniteEdge:  { family:'riprap', stone:'granite',   mound:'revetment' },
     redEdge:      { family:'riprap', stone:'sandstone', mound:'revetment' },
     breakwater:   { family:'riprap', stone:'granite',   mound:'breakwater', width:6, bays:6 },
@@ -925,6 +1000,9 @@
     s.fittings = Object.assign({}, FIT_DEFAULT[family], opts.fittings || {});
     // deck height: quoted as clearance above HIGHEST water so a big range lifts the whole wharf
     if(family === 'float'){
+      // The collars ride with the raft, so they follow the RAFT unless asked otherwise — and by default
+      // they follow the piles, which is what every preset that draws both in one cell has always done.
+      s.pileHoops = opts.pileHoops != null ? !!opts.pileHoops : !!s.guidePiles;
       s.freeboard = clampF(s.freeboard, 0.25, 0.8);
       s.floatDeckZ = s.tide + s.freeboard;
       s.deckZ = s.floatDeckZ;
@@ -934,7 +1012,12 @@
     }
     if(family === 'gangway'){
       s.run = clampF(s.run != null ? s.run : D.bayLen[2], D.bayLen[0], D.bayLen[1]);
-      s.floatDeckZ = opts.floatDeckZ != null ? opts.floatDeckZ : s.tide + 0.40;
+      // `rung` reads the ladder against the hinge the auto ALREADY solved, never against a second
+      // literal: s.deckZ here is still tideRange + clearance, so rung 0 is the brow at highest water
+      // and the last rung is the brow at lowest, whatever coast this is baked for.
+      s.rung = opts.rung != null ? clampI(opts.rung, 0, GANGWAY_RUNGS - 1) : null;
+      s.floatDeckZ = s.rung != null ? s.deckZ - gangwayDrops(s)[s.rung]
+                   : opts.floatDeckZ != null ? opts.floatDeckZ : s.tide + 0.40;
       s.deckZ = clampF(s.deckZ, s.floatDeckZ + 0.15, s.floatDeckZ + s.run*0.92);
     }
     if(family === 'slipway'){
@@ -1224,7 +1307,11 @@
     FAMILIES, PRESETS, BOATS, BERTH_CLR, FIT, DECK, WOOD, PLANK, POLE, IRON, GALV, ALUM, CONCRETE, ROCK,
     SANDST, RUST, STEEL, HDPE, HDPEDECK, RUBBER, FOAM, ROPE, NET, YEL, POLY, BARN, WEED, ALG, KEY,
     KEYLINE_DEFAULT,
-    GROWTH_ALL, FIT_DEFAULT,
+    GROWTH_ALL, FIT_DEFAULT, GANGWAY_RUNGS,
+    // The slope ladder in metres of drop, for the baker's rung axis and for the game that has to pick
+    // one. Takes the same opts render() does, so a caller reads the ladder of the bake it is asking
+    // about rather than of the defaults.
+    gangwayDrops: (opts)=> gangwayDrops(resolve('gangway', opts || {})),
     STYLES: { face:['concrete','steelSheet','timberSheet'], struct:['open','sheeted','steelPile'],
       cap:['plank','concrete'], hull:['timber','plastic'], stone:['granite','sandstone'],
       mound:['revetment','breakwater','sheetCell'], curb:['wood','yellow','none'] },

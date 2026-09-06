@@ -113,14 +113,21 @@ namespace HiddenHarbours.Tests.RigBaking
             foreach (string key in AllFamilies)
             {
                 var contract = C(key);
-                int perSheet = contract.CellsPerSheet;
 
                 foreach (var cell in contract.Cells)
                 {
+                    // ⚠️ The KEY's cell count, not the FAMILY's. A key with a SLOPE axis packs its
+                    // facings once per rung (wharfIso's `gangway`: 8 × 9 = 72), and asking the family
+                    // gives 8 — which fails a correct plan and would PASS an 8-slot one that bakes the
+                    // first rung and drops the other eight.
+                    int perSheet = contract.CellsFor(cell.key);
+
                     Assert.AreEqual(perSheet, cell.sheet.cols * cell.sheet.rows,
                         $"{key}.{cell.key}: a {cell.sheet.cols}×{cell.sheet.rows} grid does not hold " +
-                        $"exactly {perSheet} cells. Every plan in this pack is an exact factorisation — " +
-                        "a ragged tail would bake transparent padding that still slices as a sprite.");
+                        $"exactly {perSheet} cells ({contract.CellsPerSheet} per facing axis × " +
+                        $"{contract.RungsFor(cell.key)} rungs). Every plan in this pack is an exact " +
+                        "factorisation — a ragged tail would bake transparent padding that still " +
+                        "slices as a sprite.");
 
                     int maxDim = Mathf.Max(cell.sheet.sheetW, cell.sheet.sheetH);
                     Assert.LessOrEqual(maxDim, contract.ImportSizeCap,
@@ -212,8 +219,12 @@ namespace HiddenHarbours.Tests.RigBaking
             foreach (var cell in C("wharfIso").Cells)
             {
                 checkedCells++;
+                // ⚠️ The CONTRACT overload, not the facings-count one: `gangway` bakes a SLOPE axis
+                // (8 facings × 9 rungs) and its committed cell is the union across all 72. Measuring
+                // rung 0 alone gives 407×296 against the committed 407×404 — a failure that reads like
+                // the rig moved when it is the oracle asking the wrong question.
                 var facings = WharfIsoSheetBaker.RenderFacings(
-                    _host, G("wharfIso"), cell.key, C("wharfIso").Facings,
+                    _host, G("wharfIso"), cell.key, C("wharfIso"),
                     RigCatalog.Get("wharfIso").DeclaredConvention);
 
                 WharfIsoSheetBaker.MeasureCell(facings, out int w, out int h, out int px, out int py);
@@ -251,9 +262,10 @@ namespace HiddenHarbours.Tests.RigBaking
                 Compare(failures, "shoreFinds", cell, w, h, px, py, null);
             }
 
-            Assert.AreEqual(156, checkedCells,
-                "the pack is 17 + 61 + 42 + 36 = 156 cells; a different total means a family gained or " +
-                "lost keys without its contract being regenerated.");
+            Assert.AreEqual(158, checkedCells,
+                "the pack is 19 + 61 + 42 + 36 = 158 cells; a different total means a family gained or " +
+                "lost keys without its contract being regenerated. It was 17 + … = 156 until the wharf " +
+                "gained `gangway` and `floatPiles`.");
 
             if (failures.Count == 0) return;
 
@@ -407,7 +419,7 @@ namespace HiddenHarbours.Tests.RigBaking
         [Test]
         public void TheCommittedPlansAreNotWhatChooseGridWouldPick()
         {
-            // Not a style note: 7 of wharfIso's 17 presets and 5 of shoreFinds' 36 differ. Counting them
+            // Not a style note: 8 of wharfIso's 19 presets and 5 of shoreFinds' 36 differ. Counting them
             // here documents the size of the divergence so a future reader does not assume timberQuay is
             // a one-off.
             int diverged = 0, total = 0;
@@ -417,15 +429,26 @@ namespace HiddenHarbours.Tests.RigBaking
                 foreach (var cell in contract.Cells)
                 {
                     total++;
-                    BuildingRigBaker.ChooseGrid(cell.cellW, cell.cellH, contract.CellsPerSheet,
+                    // The KEY's cells, for the reason EveryCommittedSheetPlanIsExact states — handing
+                    // ChooseGrid the family's 8 would ask it to pack a sheet nine times smaller than the
+                    // one committed, and it would "agree" with a plan it had never been shown.
+                    BuildingRigBaker.ChooseGrid(cell.cellW, cell.cellH, contract.CellsFor(cell.key),
                                                 out int cols, out int rows, contract.ImportSizeCap);
                     if (cols != cell.sheet.cols || rows != cell.sheet.rows) diverged++;
                 }
             }
 
-            Assert.AreEqual(12, diverged,
+            Assert.AreEqual(13, diverged,
                 $"{diverged} of {total} committed plans differ from ChooseGrid's choice. This test " +
-                "exists to keep that number visible; if it moved, the packing rule or a cell did.");
+                "exists to keep that number visible; if it moved, the packing rule or a cell did.\n\n" +
+                "It was 12 until wharfIso gained `gangway`, whose plan diverges for a reason the other " +
+                "twelve do not have. ChooseGrid picks 10×8 = 80 slots (4070×3232) for its 72 cells; the " +
+                "committed plan is 8×9 = 72 (3256×3636). THREE things are wrong with ChooseGrid's:\n" +
+                "  · it is RAGGED — 8 empty slots, which EveryCommittedSheetPlanIsExact refuses;\n" +
+                "  · 4070 px leaves 26 px of headroom on a PARAMETRIC cell, against 3636's 460;\n" +
+                "  · and it breaks the SLOPE AXIS. The baker packs cell index rung×8 + facing at " +
+                "col = index % cols, so cols MUST equal the facing count or a row stops being a rung " +
+                "and the runtime's sprite lookup returns another rung's facing.");
         }
 
         // =====================================================================================
