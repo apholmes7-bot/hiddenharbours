@@ -67,6 +67,10 @@ namespace HiddenHarbours.Art
             Worklight,
             /// <summary>A TALL mast's wide, cool pool over a working yard — a yard light or a flood mast.</summary>
             Floodlight,
+            /// <summary>A flame lantern CARRIED — slung on the walker's back, warm and alive (world-lighting PR 3).</summary>
+            Lantern,
+            /// <summary>A HEADLAMP worn on the walker's brow: a narrow cool beam that goes where she looks.</summary>
+            Headlamp,
         }
 
         /// <summary>
@@ -219,6 +223,41 @@ namespace HiddenHarbours.Art
                         flickerAmount: 0f,                 // steady electric flood
                         originOffset: Vector2.zero);
 
+                // LANTERN — a FLAME, and the only preset in this library that is one. Everything else here is
+                // electric: a filament hums (Lightpost 0.02) or does not move at all (Floodlight 0). A wick in
+                // a glass breathes, so this is the one place a visible flicker is right rather than a defect.
+                // Warmer and further down the amber than the sodium lamps for the same reason.
+                //
+                // The bloom is the LANTERN'S GLASS — smaller than a street lamp's lens (0.40) because the
+                // fitting is smaller: it is a thing she carries in one hand's worth of space. The pool it
+                // throws is in ReachMetres below, and it is what she actually walks by.
+                case Kind.Lantern:
+                    return new Config(
+                        SceneLight.LightShape.Radial,
+                        new Color(1f, 0.79f, 0.46f, 1f),   // flame, not sodium
+                        intensity: 1.05f,
+                        range: 0.26f,                      // the BLOOM: the lantern's own glass
+                        edgeSoftness: 0.9f,                // soft: it is a flame behind glass
+                        flickerAmount: 0.09f,              // ⭐ a wick breathing — the one live flame in the library
+                        originOffset: Vector2.zero);
+
+                // HEADLAMP — the only CONE in this library, and the only one that is not placed decor: it is
+                // worn, it is switched, and it goes where she looks. Cool and close to white because it is an
+                // electric lamp on a band, not a flame; narrow, because a headlamp you can aim is the point.
+                //
+                // ⚠ The cone's HALF-ANGLE is not here. Config carries no angle (every other preset is radial),
+                // so the beam's shape lives on the SceneLight the carrier configures, beside its reach — the
+                // same split BoatSpotlight already uses for the searchlight.
+                case Kind.Headlamp:
+                    return new Config(
+                        SceneLight.LightShape.Cone,
+                        new Color(0.98f, 0.98f, 0.94f, 1f),   // near-white LED
+                        intensity: 1.25f,
+                        range: 0.18f,                      // the BLOOM: a lamp the size of her brow
+                        edgeSoftness: 0.85f,
+                        flickerAmount: 0f,                 // a battery lamp is steady
+                        originOffset: Vector2.zero);
+
                 default:
                     goto case Kind.WindowGlow;
             }
@@ -263,6 +302,14 @@ namespace HiddenHarbours.Art
                 case Kind.Worklight:  return 5.2f;
                 // A tall pole over open working ground: 7 m, not the 9.5 m it shipped at for one commit.
                 case Kind.Floodlight: return 7f;
+                // A carried flame lights the ground you are about to put a foot on and not much more — the
+                // charter's "~3 m". It is deliberately SHORTER than a lamp post's 3.6 m: a lantern in the
+                // hand is not a lamp on a pole, and if it lit as far it would stop being worth carrying.
+                case Kind.Lantern:    return 3f;
+                // The headlamp throws FURTHER than anything else she owns, because a cone concentrates what a
+                // radial spreads: the same lamp aimed is the same light over a fifth of the ground. The reach
+                // is down the beam, so this is a THROW and not a radius.
+                case Kind.Headlamp:   return 9f;
                 default:              goto case Kind.WindowGlow;
             }
         }
