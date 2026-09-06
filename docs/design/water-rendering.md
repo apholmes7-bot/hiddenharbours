@@ -4625,8 +4625,8 @@ the hull never churned, where the freshness channel was never marked, and an unm
 blue right beside a white core. So the edge marks freshness with **the value a mark made now would have
 decayed to by then** (`FoamBuffer.AgeMark`); because the freshness update is a MAX, that is a no-op
 inside the churn band and correct outside it. At the shipped envelope the rim is 12.71 m astern = 3.09 s
-old, so it is born at **age01 0.415** instead of 1.000 — it walks the blues instead of jumping to their
-end. Across the dispersal the mark takes **65 distinct codes of 256**, so the walk is a walk and not a
+old, so it is born at **age01 0.414** instead of 1.000 — it walks the blues instead of jumping to their
+end. Across the dispersal the mark takes **64 distinct codes of 256**, so the walk is a walk and not a
 staircase.
 
 **Pre-check 1 — does the buffer's clock outlive a visible widening?** It outlives it and then some, and
@@ -4740,6 +4740,12 @@ envelope's shape and its integral (§35.4), the age mark (§35.7).
 - A wake still being born has a short track, so the envelope is cut down to what her available track can
   reach and β, the envelope integral and the gain are all computed from *that*. Conservation therefore
   holds while the wake is growing, not only once it is full length.
+- ⚠️ **The edge is fed the WAKE channel alone.** Its premise is that the rim sweeps past a parcel once,
+  and the rim only moves because she does — with no way on it stands still and paints the same ring into
+  the same water every frame until it saturates, which is a burnt-in circle round a moored boat. So the
+  dispersing share is taken out of only the part of the stamp she makes by MAKING WAY; a hull slapping at
+  anchor churns in place exactly as she does today, and the two halves stay conserved against each other
+  at any mix of the two channels.
 - The reach is a distance, so **the widening stops at the envelope** and the rest of the visible trail
   holds the width it reached. Extending it further is bounded by §35.8 (b), not by this term.
 - Everything here is presentation state: it reads the sim, feeds no sim, and enters no save

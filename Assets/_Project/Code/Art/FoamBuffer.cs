@@ -648,7 +648,7 @@ namespace HiddenHarbours.Art
         /// have decayed to by then. The dispersal lays foam on water the hull never touched, and
         /// that water has an age: without this the whole widening band would be born at the far end
         /// of #724's colour walk while the core beside it is white (measured: age01 1.000 against
-        /// the 0.415 it should read at the envelope).
+        /// the 0.414 it should read at the envelope).
         ///
         /// <para>Because the freshness update is a MAX, this is a no-op inside the churn band — whose
         /// own mark has decayed to exactly this — and correct outside it.</para>

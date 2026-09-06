@@ -145,6 +145,32 @@ namespace HiddenHarbours.Tests.EditMode
                 "An envelope of 1 half-beam must gate the edge off however hard the spread is dialled.");
         }
 
+        /// <summary>
+        /// 🔴 <b>A HULL WITH NO WAY ON MAKES NO EDGE.</b> The edge lays the envelope ONCE, as its rim
+        /// sweeps past a parcel — and the rim only moves because she does. With no way on it would
+        /// stand still and paint the same ring into the same water every frame until it saturated,
+        /// which is a burnt-in circle round a moored boat.
+        ///
+        /// <para>So the injector feeds the edge the <b>wake channel alone</b> and takes the dispersing
+        /// share out of only that part of the stamp: a hull slapping at anchor churns in place, exactly
+        /// as she does today, and her bob channel is untouched. Pinned here at the two ends the maths
+        /// owns — the shaping curve at rest, and the gain's refusal of a zero rate.</para>
+        /// </summary>
+        [Test]
+        public void WithNoWayOn_TheWakeChannelIsSilent_AndTheEdgeRefusesToLay()
+        {
+            const float knee = 3f, exponent = 1f;    // FoamInjector's shipped wake channel
+            Assert.AreEqual(0f, FoamBuffer.Shape01(0f, knee, exponent),
+                "At rest the wake channel contributes nothing, so the edge is fed nothing.");
+            Assert.AreEqual(0f, FoamBuffer.EdgeGain(0f, CapeHalfBeam, CapeHalfBeam * Envelope,
+                                                    Kelvin, Dt, 0.25f),
+                "A zero deposit rate must gate the edge off outright — never a small ring standing " +
+                "still in the water.");
+            Assert.Greater(FoamBuffer.Shape01(EightKnots, knee, exponent), 0f,
+                "DEAD CONTROL: under way the same channel must be loud, or the test above passes " +
+                "because the curve is broken rather than because she is stopped.");
+        }
+
         /// <summary>The share is DERIVED from the envelope, not dialled — so it cannot be tuned into
         /// disagreeing with the geometry it is supposed to describe.</summary>
         [Test]

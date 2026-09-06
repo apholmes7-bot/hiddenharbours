@@ -319,10 +319,20 @@ namespace HiddenHarbours.Art
             // share is DERIVED from the envelope (FoamBuffer.DispersingShare), never dialled — which
             // is also why a spread of 0 leaves the line above untouched, bit for bit.
             AppendTrail(position);
-            float depositRate = rate01 * Mathf.Max(_depositPerSecond, 0f) * Mathf.Max(_strength, 0f);
+            // ⚠️ Only the churn she makes by MAKING WAY forms a trail that disperses astern. A hull
+            // slapping at anchor churns IN PLACE, and the edge's whole premise — that it lays the
+            // envelope once, as its rim sweeps past a parcel — needs the rim to be moving: with no way
+            // on, the rim stands still and the same ring is painted into the same water every frame
+            // until it saturates. So the edge is fed the WAKE channel alone, and the share is taken
+            // out of only that part of the stamp, which keeps the two conserved against each other at
+            // any mix of the two channels. At rest the bob channel's churn is untouched.
+            float wake01 = Mathf.Min(rate01,
+                FoamBuffer.Shape01(horizontalSpeed, _wakeSpeedKnee, _wakeExponent)
+                * Mathf.Max(_wakeWeight, 0f));
+            float depositRate = wake01 * Mathf.Max(_depositPerSecond, 0f) * Mathf.Max(_strength, 0f);
             FoamDispersal dispersal = BuildDispersal(position, depositRate, horizontalSpeed, dt,
                                                      out float share);
-            if (share > 0f) amount *= 1f - share;
+            if (share > 0f && rate01 > 1e-6f) amount *= 1f - share * (wake01 / rate01);
 
             // The capsule from last frame's position to this one — continuous at any frame rate.
             _pending = new FoamInjection(_previousPosition, position, RadiusMeters,
