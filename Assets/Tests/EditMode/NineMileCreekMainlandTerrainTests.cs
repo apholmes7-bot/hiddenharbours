@@ -238,16 +238,22 @@ namespace HiddenHarbours.Tests.EditMode
         // =============================================================================================
 
         [Test]
-        public void EveryBerthLiesOverTheRuledGate_AndNoBoatIsMooredOnTheDeck()
+        public void EveryBerthLiesInTheTrenchThatWasCutForIt_NotOnTheDeckAndNotInTheOpenBay()
         {
+            // ⚠ OWNER RULING 2026-09-04, and it moved this assertion: *"the bullpen should always have water at low tide so all the lobster boats can park on the wall."* The −1.6 m shoal is still the gate everywhere else in the basin — it is what the flats, the crossing and the guts are measured against — but along the berth line the trench (NineMileCreekMainland §8b¾) has cut it to the depth the fleet lies in. What used to be "exactly the gate" is now "deeper than the gate, by the trench's own arithmetic".
+            float needed = NineMileCreekMainland.BerthDepthNeededMetres;
             for (int i = 0; i < NineMileCreekMainland.BerthCount; i++)
             {
                 Vector2 berth = NineMileCreekMainland.BerthPos(i);
                 float bed = Elev(berth);
-                Assert.That(bed, Is.EqualTo(NineMileCreekMainland.BasinBedElevation).Within(0.02f),
-                    $"berth {i} at {berth} sits on {bed:0.00} m rather than the ruled " +
-                    $"{NineMileCreekMainland.BasinBedElevation:0.00} m gate. A berth on the deck is not " +
-                    "a berth; a berth in the bay is not gated.");
+                Assert.That(NineMileCreekMainland.SpringLowWater - bed,
+                    Is.GreaterThanOrEqualTo(needed - 1e-3f),
+                    $"berth {i} at {berth} sits on {bed:0.00} m and carries only " +
+                    $"{NineMileCreekMainland.SpringLowWater - bed:0.00} m at dead low spring. The boats " +
+                    "cannot park on the wall, which is the whole of the 2026-09-04 ruling.");
+                Assert.That(bed, Is.GreaterThan(NineMileCreekMainland.BayFloorElevation),
+                    $"berth {i} has been cut to the open bay's own floor — a berth in the bay is not a " +
+                    "berth, and the trench is not supposed to reach that deep");
             }
         }
 
@@ -298,12 +304,16 @@ namespace HiddenHarbours.Tests.EditMode
                 "the persistent ControlSwitcher disembarks on a pure DISTANCE test, so a boat parked " +
                 "outside the dock radius on arrival cannot be got off (the #52 playtest gap)");
 
-            Assert.That(Elev(NineMileCreekMainland.DockZonePos),
-                Is.EqualTo(NineMileCreekMainland.BasinBedElevation).Within(0.05f),
-                "you dock in the basin, over the gate");
-            Assert.That(Elev(NineMileCreekMainland.ArrivalPos),
-                Is.EqualTo(NineMileCreekMainland.BasinBedElevation).Within(0.05f),
-                "and you arrive in water, not on a wall");
+            // ⚠ OWNER RULING 2026-09-04, and it moved this assertion: *"the bullpen should always have water at low tide so all the lobster boats can park on the wall."* The −1.6 m shoal is still the gate everywhere else in the basin — it is what the flats, the crossing and the guts are measured against — but along the berth line the trench (NineMileCreekMainland §8b¾) has cut it to the depth the fleet lies in. What used to be "exactly the gate" is now "deeper than the gate, by the trench's own arithmetic".
+            // The dock zone and the arrival park sit ON the berth line (y = 84.5), so they came with it:
+            // you used to arrive at dead low water onto mud.
+            float needed = NineMileCreekMainland.BerthDepthNeededMetres;
+            Assert.That(NineMileCreekMainland.SpringLowWater - Elev(NineMileCreekMainland.DockZonePos),
+                Is.GreaterThanOrEqualTo(needed - 1e-3f),
+                "you dock in the basin, and it holds water at every state of tide now");
+            Assert.That(NineMileCreekMainland.SpringLowWater - Elev(NineMileCreekMainland.ArrivalPos),
+                Is.GreaterThanOrEqualTo(needed - 1e-3f),
+                "and you arrive in water, not on a wall and not on mud");
             Assert.That(Elev(NineMileCreekMainland.DisembarkPos),
                 Is.EqualTo(NineMileCreekMainland.WharfDeckElevation).Within(0.05f),
                 "and you step ashore onto the deck");

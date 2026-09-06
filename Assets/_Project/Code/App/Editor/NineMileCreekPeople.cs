@@ -126,6 +126,25 @@ namespace HiddenHarbours.App.Editor
         };
 
         /// <summary>
+        /// The one person named <paramref name="assetName"/>, by their asset stem — so anything that
+        /// needs to know where somebody stands (the fish buyer's truck, a quest, a test) reads it from
+        /// the ONE table that computes it rather than deriving a second copy that stops agreeing.
+        ///
+        /// <para>Throws for a name nobody carries, deliberately: a caller that asks for a villager who is
+        /// not in the cast has a typo, and the honest failure is at the call rather than a default person
+        /// standing at the origin.</para>
+        /// </summary>
+        public static Person Named(string assetName)
+        {
+            foreach (var person in People)
+                if (person.AssetName == assetName) return person;
+            throw new System.ArgumentException(
+                $"[NineMileCreekPeople] nobody at the creek is called '{assetName}'. The cast is " +
+                string.Join(", ", System.Linq.Enumerable.Select(People, p => p.AssetName)) + ".",
+                nameof(assetName));
+        }
+
+        /// <summary>
         /// How far the storekeeper stands out from the store's own centre, toward the road.
         ///
         /// <para><b>MEASURED, not chosen.</b> The general store's <c>BoxCollider2D</c> in the shipped

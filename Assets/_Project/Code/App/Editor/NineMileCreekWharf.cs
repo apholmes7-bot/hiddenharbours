@@ -337,6 +337,76 @@ namespace HiddenHarbours.App.Editor
         /// deck that moves.</summary>
         public static int FloatBerthCount => FloatCleatPositions().Count;
 
+        // -------------------------------------------------------------------------------------
+        //  ⭐⭐ AND THE PICTURE OF HER — owner, 2026-09-04: "there should be a floating dock with a
+        //  gangway too with boats moored"
+        // -------------------------------------------------------------------------------------
+        // She was right that there should be, and she was looking at the reason there wasn't: A-1 built
+        // the float and the brow as SURFACES — a FloatingPlatform and a GangwayPlatform, both walkable,
+        // moorable and standable — and gave them no SpriteRenderer at all. 48 m of dock, a 12 m brow and
+        // eight float berths, two of them occupied, all of it invisible, so Bernard's and Dan's boats lay
+        // in open water. Every number the drawing needs was already measured in NineMileCreekQuayFace
+        // (#471/#477); nobody had ever laid the cells.
+        //
+        // The run is laid at the rig's own float length so a bay is a bay: 48 m / 6 m = 8 of them, all
+        // of them the plain raft. No count is typed — lengthen the run and it gets more bays, or a
+        // fractional one that this refuses rather than stretches. The BROW is not drawn and
+        // NineMileCreekQuayFace's float section carries the measurement of why.
+
+        /// <summary>One drawn bay of the float run: which cell, and the plan point its footprint centres
+        /// on. Pure and public, so the layout is asserted without a scene or an imported sheet.</summary>
+        public readonly struct FloatCourse
+        {
+            /// <summary>The pack preset — <c>NineMileCreekQuayFace.FloatCourseKey</c> for every bay.</summary>
+            public readonly string Key;
+            /// <summary>The centre of this bay's footprint, on the float run's own line.</summary>
+            public readonly Vector2 Position;
+
+            public FloatCourse(string key, Vector2 position)
+            {
+                Key = key; Position = position;
+            }
+        }
+
+        /// <summary>
+        /// The float run as drawn bays, west to east. The count is the run over the rig's own float
+        /// length; a run that is not a whole number of bays is an AUTHORING error and returns the floor
+        /// with the remainder left undrawn rather than a stretched cell — the pack's pieces are one size
+        /// and pretending otherwise is how a dock ends up 6 m longer in the picture than under the feet.
+        /// </summary>
+        public static List<FloatCourse> FloatCourses()
+        {
+            var list = new List<FloatCourse>();
+            float bay = NineMileCreekQuayFace.BakedRigFloatRunMetres;
+            int bays = Mathf.FloorToInt(NineMileCreekMainland.FloatRunLengthMetres / bay + 1e-4f);
+            for (int i = 0; i < bays; i++)
+                list.Add(new FloatCourse(
+                    NineMileCreekQuayFace.FloatCourseKey,
+                    new Vector2(NineMileCreekMainland.FloatRunWestX + bay * (i + 0.5f),
+                                NineMileCreekMainland.FloatRunY)));
+            return list;
+        }
+
+        /// <summary>How much of the run no bay covers, in metres — zero at the authored 48 m, and the
+        /// number a test names if the run is ever re-cut to something the pack cannot tile.</summary>
+        public static float FloatRunRemainderMetres =>
+            NineMileCreekMainland.FloatRunLengthMetres -
+            FloatCourses().Count * NineMileCreekQuayFace.BakedRigFloatRunMetres;
+
+        /// <summary>
+        /// The order the drawn float and its brow sit on: the top rung of the wharf-deck band that is
+        /// still UNDER a hull.
+        ///
+        /// <para>The same argument the quay face's rungs are picked by
+        /// (<c>NineMileCreekDressing.FaceSortingOrder</c>), and the float needs the top of the ladder for
+        /// two reasons. A boat lying at a float berth composites at <c>SortingOrder 1</c>
+        /// (<c>BoatVisualDef</c>, every one of them), so the dock has to be under that or the two small
+        /// craft on the fingers are drawn inside the planks they are tied to — the same defect the quay
+        /// face had. And the brow LANDS ON the apron's east face, so it has to be over that face's own
+        /// rung. Between those two there is exactly one rung.</para>
+        /// </summary>
+        public static int FloatSortingOrder => SortingBands.WharfDeckMax - 1;
+
         /// <summary>
         /// How far off a mooring face a moored hull's centre-line lies — <b>2 m</b>, and READ OFF THE
         /// WALL rather than picked again here: the region authored its berth line at
@@ -815,7 +885,65 @@ namespace HiddenHarbours.App.Editor
                   .Configure($"{FloatSurfaceId}.cleat_{n}", dock);
                 n++;
             }
+
+            PlaceFloatCourses(floatRoot, dock);
             return n;
+        }
+
+        /// <summary>
+        /// ⭐ DRAW her — the run of bays and the brow, each riding the same deck height the surfaces above
+        /// were configured with (<c>HiddenHarbours.World.FloatingPlatformVisual</c>).
+        ///
+        /// <para><b>Null-tolerant, like every other sheet this region places.</b> The pack bakes to order
+        /// and the sheets are Git-LFS binaries, so a missing cell warns and leaves the float undrawn —
+        /// which is exactly the state this method exists to end, and still better than a blank sprite
+        /// standing on the water. The SURFACES are built above and unconditionally: you could always walk
+        /// the dock, and you still can if the art is not there.</para>
+        /// </summary>
+        static int PlaceFloatCourses(GameObject floatRoot, HiddenHarbours.World.FloatingPlatform dock)
+        {
+            var courses = FloatCourses();
+            if (courses.Count == 0) return 0;
+
+            var deckRoot = new GameObject("FloatDeck");
+            deckRoot.transform.SetParent(floatRoot.transform, worldPositionStays: false);
+
+            int facing = HiddenHarbours.Tools.RigBaking.IsoPackSprites.FacingForHeading(
+                NineMileCreekDressing.WharfFamily, NineMileCreekQuayFace.FloatCourseHeadingDegrees);
+
+            int placed = 0;
+            foreach (var course in courses)
+            {
+                Sprite sprite = HiddenHarbours.Tools.RigBaking.IsoPackSprites.Facing(
+                    NineMileCreekDressing.WharfFamily, course.Key, facing);
+                if (sprite == null)
+                {
+                    Debug.LogWarning(
+                        $"[NineMileCreekWharf] the float bay '{course.Key}' facing {facing} has no sprite " +
+                        $"at {HiddenHarbours.Tools.RigBaking.IsoPackSprites.SheetPath(NineMileCreekDressing.WharfFamily, course.Key)}" +
+                        " — that bay is undrawn. The dock is still walkable and still moorable; re-run the " +
+                        "builder once the wharf ISO pack imports.");
+                    continue;
+                }
+
+                var go = new GameObject($"FloatBay_{placed}");
+                go.transform.SetParent(deckRoot.transform, worldPositionStays: false);
+                // The plan line only — the HEIGHT is the visual's, every frame, off the live deck.
+                go.transform.position = new Vector3(course.Position.x, course.Position.y, 0f);
+
+                var sr = go.AddComponent<SpriteRenderer>();
+                sr.sprite = sprite;
+                // ⚠️ NOT a YSortSprite. A float is structure over water like the quay face is, and it has the
+                // same two customers: the boats tied to it composite below the decor floor, and the brow
+                // lands on the apron's face. See FloatSortingOrder.
+                sr.sortingOrder = FloatSortingOrder;
+
+                go.AddComponent<HiddenHarbours.World.FloatingPlatformVisual>()
+                  .Configure(dock, NineMileCreekQuayFace.BakedRigFloatDeckZMetres, course.Position.y);
+
+                placed++;
+            }
+            return placed;
         }
 
         static int PlaceBreakwater(GameObject root)

@@ -75,6 +75,7 @@ MonoBehaviour:
   RestingDraftMeters: 0.11
   WatertightDeckHeightMeters: 0.06
   WatertightHalfBeamMeters: 0.85
+  WakeSternOffsetMeters: 2.25
 --- !u!43 &8134150741496059582
 Mesh:
   m_ObjectHideFlags: 0

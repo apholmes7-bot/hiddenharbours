@@ -322,13 +322,17 @@ namespace HiddenHarbours.Art.Editor
         /// A LAMPPOST that comes PRECONFIGURED with its own night light (ADR 0016, the owner's lighting
         /// principle): a slim greybox POST with a small warm LAMP HEAD on top, carrying a
         /// <see cref="PreconfiguredLight"/> set to <see cref="LightPresets.Kind.Lightpost"/>. Dropping it in a
-        /// scene lights the ground beneath it at night — automatically (the light self-installs a
-        /// <see cref="SceneLight"/> radial pool and NIGHT-GATES in-shader off the published day/night tint; no
-        /// owner wiring, no clock read). The visual is GREYBOX (a dark post + a warm-tinted head built from the
-        /// shared square sprite) because no lamp-post art is imported yet — re-run after importing a real
-        /// Lamppost.png and swap the head/post sprite refs; the LIGHT stays identical. Everything is at honest
-        /// metric scale (PPU 32) so the pool sits right under the head. Returns false (with a warning) if the
-        /// shared square sprite can't be created.
+        /// scene gives it a lit lamp head at night — automatically (the light self-installs a
+        /// <see cref="SceneLight"/> glow and NIGHT-GATES in-shader off the published day/night tint; no owner
+        /// wiring, no clock read). ⚠ Its GLOW is the lamp head, not a pool on the ground: since the owner's
+        /// 2026-09-04 ruling the additive quad is the source's own bloom and is sized to the fitting, and the
+        /// pool a lamp casts (<see cref="LightPresets.ReachMetres"/>) is not drawn by anything yet.
+        ///
+        /// <para>The visual is GREYBOX (a dark post + a warm-tinted head built from the shared square sprite)
+        /// because no lamp-post art is imported yet — re-run after importing a real Lamppost.png and swap the
+        /// head/post sprite refs; the LIGHT stays identical. Everything is at honest metric scale (PPU 32),
+        /// which is what lets the glow be sized off the head's own drawn width. Returns false (with a
+        /// warning) if the shared square sprite can't be created.</para>
         /// </summary>
         static bool BuildLamppostPrefab(string prefabPath)
         {
@@ -341,6 +345,7 @@ namespace HiddenHarbours.Art.Editor
             }
 
             const float PostHeight = 2.2f;   // metres — the lamp head rides at the top (matches the preset offset)
+            const float LampHeadWidthMetres = 0.42f;   // the head's own drawn width, below — and its bloom's
 
             var root = new GameObject("Lamppost");
             try
@@ -363,20 +368,26 @@ namespace HiddenHarbours.Art.Editor
                 var head = new GameObject("LampHead");
                 head.transform.SetParent(root.transform, false);
                 head.transform.localPosition = new Vector3(0f, PostHeight, 0f);
-                head.transform.localScale = new Vector3(0.42f, 0.34f, 1f);
+                head.transform.localScale = new Vector3(LampHeadWidthMetres, 0.34f, 1f);
                 var headSr = head.AddComponent<SpriteRenderer>();
                 headSr.sprite = square;
                 headSr.color = new Color(1f, 0.86f, 0.55f, 1f);      // warm lamp glass
                 headSr.sortingOrder = PropSortingOrder + 1;
 
-                // The PRECONFIGURED LIGHT — the lamp pool on the ground. Parent it at the lamp HEAD so the glow's
-                // origin sits at the top of the post (the Lightpost preset then pools it just below). Self-installs
-                // its SceneLight + night-gates automatically; no wiring.
+                // The PRECONFIGURED LIGHT — the lit lamp head. Parent it at the head so the glow's origin sits
+                // at the top of the post (the Lightpost preset then nudges it a touch below). Self-installs its
+                // SceneLight + night-gates automatically; no wiring.
+                //
+                // ⭐ AND IT IS TOLD THE HEAD IT IS LIGHTING. The fitting width is the head's own drawn width
+                // above — the same 0.42 m the SpriteRenderer is scaled to, in the same units — so this greybox
+                // glows at the size of the thing it is drawn as rather than at the preset's archetype. Change
+                // the head and the glow follows; that is the whole point of the seam.
                 var glow = new GameObject("LampGlow");
                 glow.transform.SetParent(root.transform, false);
                 glow.transform.localPosition = new Vector3(0f, PostHeight, 0f);
                 var pre = glow.AddComponent<PreconfiguredLight>();
                 pre.Preset = LightPresets.Kind.Lightpost;
+                pre.FittingWidthMetres = LampHeadWidthMetres;
 
                 SavePrefabReplacing(root, prefabPath);
                 return true;

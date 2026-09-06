@@ -33,5 +33,15 @@ namespace HiddenHarbours.World
         /// <summary>Off duty and somewhere public — the green in the evening, the pier head at sunset. What
         /// turns a village into a place people are IN rather than a place people work.</summary>
         Recreation = 3,
+
+        /// <summary>At a wheel, on the road — the block a fish buyer spends bringing his truck down to the
+        /// wharf and back (the road fleet's scheduled trips, 2026-09-04).
+        ///
+        /// <para>⚠️ A TAG like the four above, and NOTHING branches on it — least of all the driving. A
+        /// scheduled trip is run by <c>Vehicles.ScheduledTrip</c> off its own timetable; this word exists
+        /// so a routine table the owner reads, a dialogue context and an idle stance have a name for the
+        /// hours somebody is away with the truck. Making the routine engine drive would give "where is
+        /// she?" two answers that can disagree.</para></summary>
+        Drive = 4,
     }
 }

@@ -195,3 +195,11 @@ Assets/_Project/Art/Terrain/Derived/*.asset filter=lfs diff=lfs merge=lfs -text
 # everyone, so a diff between two machines shows content and not line endings.
 tools/scene-export/packages/** text eol=lf
 docs/tools/reference/*.json    text eol=lf
+
+# The sail rig kit (docs/art/rigs/sail-rig-kit/) ships its own SHA256SUMS.txt, and BOTH sidecars of
+# each sloop stamp derivedFromRigSha256 over the rig bytes AS WRITTEN, which are LF. With
+# core.autocrlf on, an unpinned checkout would hand `sha256sum -c SHA256SUMS.txt` the CRLF form and
+# every one of the six pins would miss, for line endings alone. Pin the working-tree form so the
+# kit's own checksum file is verifiable on any machine, which is the whole point of shipping it.
+docs/art/rigs/sail-rig-kit/**               text eol=lf
+docs/art/rigs/gameplay/sail/**              text eol=lf

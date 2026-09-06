@@ -311,6 +311,59 @@ out of her own front door.
 **Not shipped:** the talk-bounce / emote animation while speaking (§5 Q1 of the dialogue doc) — that
 is an art-lane rig ask, and until it lands she simply stands and faces you.
 
+### 2.8 ⭐ A VILLAGER AT A WHEEL — scheduled trips (road fleet PR 5, 2026-09-04)
+
+Owner's ask: *"i want npcs to be able to enter and drive vehicles, lets set up some basic routes."*
+
+**A trip is NOT a routine, and that separation is deliberate.** `RoutineActivity.Drive` is appended to
+the tag vocabulary (append-only, index 4) and — like the other four — **nothing branches on it**: where a
+machine goes and when is decided by `Vehicles.ScheduledTrip` off its own `VehicleTripDef` timetable.
+Making the routine engine drive would give "where is she?" two answers that can disagree, which is
+exactly what §2.2's tag rule exists to prevent.
+
+**The engine is the same shape as this one, one body along.** `VehicleTripPlan.SampleAt(hour)` is a pure,
+allocation-free function of the clock, like `RoutinePlan.SampleAt`; a block carries a DEPARTURE and no end
+hour, like a `RoutineEntry`; the polyline walkers and the day maths both bodies read are now the same
+code, moved down to Core (`Polyline`, `DaySchedule`) with this module delegating. A trip differs in
+carrying TWO bodies on ONE timetable — the machine on her road and her driver on his few metres of gravel
+— and in deriving six of its eight hours from how long each leg takes, so a road the owner lengthens
+arrives later rather than teleporting to keep an authored arrival.
+
+⭐ **A machine's heading and a walker's are different conventions**, and the shared primitive hands back a
+raw DIRECTION so each caller states its own: a vehicle's is world-XY (`transform.up` is her nose,
+the fleet's one convention) and a walker's is a GROUND bearing (the iso squash un-done, §2.6's own law).
+They differ by up to 12.5°, and a body posed in the other one's is visibly crabbed.
+
+⚠️ **A trip OWNS its driver's position for the whole day** — his two posts cover the ~22 hours he is not
+travelling. So a driver's origin post has to be somewhere he can plausibly stand all day, which is a real
+constraint on which villager can drive what: a machine parked beyond walking distance of every post
+strands whoever is given it.
+
+⚠️ **Nine Mile Creek still has no routine engine** (§2.6 is St Peters-only): no station table, no lane
+tree, no `RoutineDef` asset. The creek's cast is anchored, and a scheduled trip is the first thing there
+that reads the clock at all. Standing the routine engine up on the mainland is still its own
+world-content lane.
+
+**The three runs the creek ships** (`NineMileCreekTrips`, all geometry derived, all hours on assets):
+
+| who | machine | from | to | out | home |
+|---|---|---|---|---|---|
+| Wendell Arsenault, the fish buyer | Dually 3500 | the truck park | the buyers' gravel | 04:45 | 20:30 |
+| Claudette Boudreau, the chandler | Hightop Van | her verge on Route 19 | the Route 91 pumps | 09:12 | 10:30 |
+| Hector Bernard, the outboard man | Cabover Box | Wharf Road's verge by the dory yard | the Route 91 pumps | 14:18 | 16:06 |
+
+**Three, and no more, on purpose** — `municipal-infrastructure.md` §3.4's negative test applies to roads
+as much as to lamp posts: a road that reads as TRAFFIC is worse than one that reads as empty, and three
+staggered departures from two ends of a village is what "used" looks like.
+
+⚠️ **A village with no car park parks on the verge.** Nine Mile Creek authors vehicle ground only at its
+two ends (the truck park, the laydown apron, the buyers' gravel), so the chandlery and the dory yard get
+a derived pull-off instead: onto the grass on the driver's side, then a truck's length along it. The
+offset is measured against passing traffic — half a carriageway, half a truck, half a metre of air —
+because one run's road is another's front step. ⭐ And the leg out of a pull-off must run ALONG the verge
+before it merges: aiming it at the road's nearest point parks the machine PERPENDICULAR to the road, with
+her 6.7 m length lying across the carriageway and her tail a metre from the centre-line.
+
 ---
 
 ## 3. The handcrafted core cast

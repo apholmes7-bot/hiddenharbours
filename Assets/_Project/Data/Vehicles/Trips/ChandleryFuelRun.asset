@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 04af251002fb429ea7c359005ada140f, type: 3}
+  m_Name: ChandleryFuelRun
+  m_EditorClassIdentifier: HiddenHarbours.Vehicles::HiddenHarbours.Vehicles.VehicleTripDef
+  Id: trip.nmc_chandlery_fuel_run
+  DisplayName: The Chandler's Fuel Run
+  Why: 'A shop that sells outboards and lamps sells the fuel for them too, and somebody has to fetch it. Claudette pulls her van off Route 19 outside her own door, runs down to the Route 91 pumps mid-morning while the shop is quiet, and is back before dinner.'
+  OutboundDepartureHour: 9.2
+  ReturnDepartureHour: 10.5
+  CruiseMetresPerSecond: 7
+  WalkMetresPerSecond: 1.4

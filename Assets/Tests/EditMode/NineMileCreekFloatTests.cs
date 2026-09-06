@@ -29,6 +29,104 @@ namespace HiddenHarbours.Tests.EditMode
     /// </summary>
     public class NineMileCreekFloatTests
     {
+        // =============================================================================================
+        //  ⭐⭐ THE PICTURE OF HER — owner, 2026-09-04: "there should be a floating dock with a gangway
+        //  too with boats moored". She was right, and she was looking at the reason: the dock and the
+        //  brow were built as SURFACES with no sprite at all, so the two small craft on the fingers lay
+        //  in open water.
+        // =============================================================================================
+
+        [Test]
+        public void TheFloatRunIsDrawnAsAWholeNumberOfTheRigsOwnBays()
+        {
+            var courses = NineMileCreekWharf.FloatCourses();
+            Assert.That(courses, Is.Not.Empty, "the float run is undrawn again");
+
+            float bay = NineMileCreekQuayFace.BakedRigFloatRunMetres;
+            Assert.That(NineMileCreekWharf.FloatRunRemainderMetres, Is.EqualTo(0f).Within(1e-3f),
+                $"the {NineMileCreekMainland.FloatRunLengthMetres:0.#} m run is not a whole number of " +
+                $"{bay:0.#} m bays — {NineMileCreekWharf.FloatRunRemainderMetres:0.##} m of dock you can " +
+                "walk on has no picture. Re-cut the run to a multiple of the bay, or the pack needs a " +
+                "shorter float preset; a stretched cell is not an option");
+
+            // Butted end to end, west to east, each centred in its own bay.
+            for (int i = 0; i < courses.Count; i++)
+            {
+                Assert.That(courses[i].Position.y,
+                    Is.EqualTo(NineMileCreekMainland.FloatRunY).Within(1e-3f),
+                    "a float bay has left the run's own line");
+                Assert.That(courses[i].Position.x,
+                    Is.EqualTo(NineMileCreekMainland.FloatRunWestX + bay * (i + 0.5f)).Within(1e-3f),
+                    $"float bay {i} is not centred in its own bay");
+                Assert.That(courses[i].Key, Is.EqualTo(NineMileCreekQuayFace.FloatCourseKey));
+            }
+
+            // …and the run they cover is the run the SURFACE claims, so the planks drawn and the planks
+            // stood on are the same planks.
+            Rect box = NineMileCreekWharf.FloatFootprint();
+            Assert.That(courses[0].Position.x - bay * 0.5f, Is.EqualTo(box.xMin).Within(1e-3f));
+            Assert.That(courses[courses.Count - 1].Position.x + bay * 0.5f,
+                        Is.EqualTo(box.xMax).Within(1e-3f));
+        }
+
+        [Test]
+        public void TheDrawnFloatRidesTheSameDeckTheSurfaceStandsYouOn()
+        {
+            // ⭐ THE ONE NUMBER A DRAWN FLOAT CARRIES. The sprite was baked with her lying at ONE water
+            // level; the sim drives her from the live tide. If the two ever disagree the player stands on
+            // planks the picture has moved out from under — which is the defect FloatingPlatform's own
+            // doc comment warns about, from the other side.
+            Assert.That(NineMileCreekQuayFace.BakedRigWaterLevelMetres, Is.EqualTo(2.42f).Within(1e-3f),
+                "the pack's contract records tide.baked = 2.42; the rig's own rule is " +
+                "s.tide = s.tideRange * 0.55. If this has moved the pack was re-baked at another coast " +
+                "and every drawn float in the game is riding from the wrong datum");
+            Assert.That(NineMileCreekQuayFace.BakedRigFloatDeckZMetres,
+                Is.EqualTo(NineMileCreekQuayFace.BakedRigWaterLevelMetres +
+                           NineMileCreekQuayFace.BakedRigFloatFreeboard).Within(1e-4f),
+                "the drawn deck is the rig's own s.floatDeckZ = s.tide + s.freeboard, not a second rule");
+
+            // At the tide she was drawn at, the picture belongs exactly where the builder put it.
+            Assert.That(FloatingPlatformVisual.ScreenRise(
+                            NineMileCreekQuayFace.BakedRigFloatDeckZMetres,
+                            NineMileCreekQuayFace.BakedRigFloatDeckZMetres),
+                        Is.EqualTo(0f).Within(1e-5f));
+
+            // And a metre of deck is a metre of HEIGHT — 0.766 up the screen, not the 0.643 a metre of
+            // northward GROUND draws. Nineteen per cent, and indistinguishable from "the art is a bit off".
+            Assert.That(FloatingPlatformVisual.ScreenRise(
+                            NineMileCreekQuayFace.BakedRigFloatDeckZMetres + 1f,
+                            NineMileCreekQuayFace.BakedRigFloatDeckZMetres),
+                        Is.EqualTo(IsoGround.HeightScale).Within(1e-5f));
+            Assert.That(IsoGround.HeightScale, Is.Not.EqualTo(IsoGround.GroundDepthScale).Within(0.01f));
+        }
+
+        [Test]
+        public void TheDrawnFloatSitsUnderEveryHullThatTiesToIt_AndOverTheApronFaceTheBrowLandsOn()
+        {
+            int order = NineMileCreekWharf.FloatSortingOrder;
+
+            Assert.That(order, Is.LessThan(SortingBands.DecorFloor),
+                "the dock draws inside the Y-sort decor band, so anything standing on it — the player, a " +
+                "villager — is behind the planks at half the positions on it");
+            Assert.That(order, Is.GreaterThan(SortingBands.Sea),
+                "the dock draws at or under the sea plane and the water is over it");
+            Assert.That(order, Is.InRange(SortingBands.WharfDeckMin, SortingBands.WharfDeckMax));
+
+            // The two customers, in the same argument the quay face's rungs are picked by.
+            Assert.That(order, Is.GreaterThan(
+                NineMileCreekDressing.FaceSortingOrder(NineMileCreekDressing.WestWallRun)),
+                "the brow lands ON the apron's east face, so the dock has to draw over it");
+
+            foreach (var owner in NineMileCreekMooredFleet.LoadOwners())
+            {
+                var visual = owner != null && owner.Boat != null ? owner.Boat.Visual : null;
+                if (visual == null) continue;
+                Assert.That(visual.SortingOrder, Is.GreaterThan(order),
+                    $"a hull composites at {visual.SortingOrder} and the dock draws at {order} — a boat " +
+                    "tied to the float would be drawn inside the planks she is tied to");
+            }
+        }
+
         private GameObject _go;
         private MainlandTidalTerrain _terrain;
 

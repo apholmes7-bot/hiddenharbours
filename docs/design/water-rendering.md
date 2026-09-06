@@ -4390,3 +4390,368 @@ keep the shipped value on their LOOK shots. ⚠️ **Either** colour, not just t
 `ThePlungingAnatomy_DrawsOnlyWhereTheSlopeEarnsIt` paints the **lip alone**, and keying the pin on the
 sheet's colour left the walk live over a red lip — the lip came back as the palette's foam anchor and the
 test read *"no lip was drawn"*.
+
+## 34. The sun side — the light gets a colour and the swell gets a face to turn (register row 11, owner ranking 2026-09-04)
+
+The owner: *"the light needs to affect the environment."* At golden hour ADR 0013 multiplied the whole
+frame by the tint (0.866, 0.529, 0.356) and the sea took that orange exactly as the beach and the mirror
+stripes did. The fragment's only sun terms were `_SwellFaceShade`, which adds the **same amount to r, g
+and b** — a value, not a colour — and the glitter, which the register had already judged illegible
+against row 5's stripes. So there was no warm side and no cool one.
+
+### What it is
+
+`_SunSideStrength` (0..2, **1.7** on all nine materials) adds a **COLOUR** where `_SwellFaceShade` adds a
+**VALUE**, on the **same signed facing**. The facing was hoisted out of the shading block for this: there
+is one field slope, it is turned into a facing in exactly one place, and both terms read it. Neither dial
+can switch the other off, and the sea cannot grow a second normal on the next retune.
+
+```hlsl
+float3 sunChroma = tintRGB - tintGrey;              // the light's own hue, derived
+float  sinSq     = 1.0 - e * e;                     // e = _SunElevation = cos(solarX * pi/2)
+float  elevGate  = smoothstep(0.0, 0.12, e) * sinSq * sinSq;
+col.rgb += sunChroma * (faceSigned * max(_SunSideStrength, 0.0) * elevGate * swellReadGate);
+```
+
+**The two colours are not authored.** They are `_DayNightTint`'s deviation from its own grey — at 17:00
+that is (+0.282, −0.055, −0.228), orange, derived and never typed — and for the lee face, that deviation
+**negated**, which is the complement the sky throws into a shadow. Warm sun, cool shade, the actual
+physics of a low sun, and no new palette constant for a wholesale preset to forget (§13's trap). It is
+deliberately **not normalized**: a colourless light has a zero deviation and the term self-cancels, with
+no divide, no epsilon and no guard.
+
+### ⚠️ The trap: the golden hour's sun is not low
+
+The obvious gate is "strongest when `_SunElevation` is small". It is wrong here, and quietly so. Sunrise
+6 / sunset 20 puts **solar noon at 13:00**, so the register's golden hour (17:00, found on the profile as
+the warmest still-bright afternoon tint) sits only 4/7 of the way to the horizon and publishes
+`e = 0.6235`. A `1 − e` gate would have been **weakest exactly where the register complains**, and the
+plates would have shown almost nothing while the code read perfectly well.
+
+The gate is instead `sin⁴` of the solar arc angle. Since `e = cos(solarX·π/2)`, `(1 − e²)` is `sin²`, so:
+
+| hour | `_SunElevation` | gate |
+|---|---|---|
+| solar noon 13:00 | 1.0000 | 0 exactly |
+| the plates' noon 12:00 | 0.9749 | **0.00245** |
+| golden hour 17:00 | 0.6235 | **0.37364** |
+| horizon 20:00 | 0.0000 | 1 |
+| night 02:00 | −0.7818 | 0 (the `smoothstep`) |
+
+A **152× separation** between the two hours the sheet photographs — which is what makes the noon column
+provably blank rather than merely faint. The `smoothstep` is load-bearing and not decoration: `sin⁴` is
+symmetric about the horizon and reads **0.151 at 02:00**, i.e. a sun side on a night sea.
+
+### Measured, not argued (`SunSideMeasurementTests`, no GPU — CI runs it)
+
+A sun side is a claim about a **split between two populations**, and the populations are not a screen
+rectangle — they are the faces of a moving swell. So every number is a **centroid over faces**: each
+sample is assigned to the sunward or lee population by its own facing.
+
+| | value | as a fraction of the mirror's 0.063 row-band contrast |
+|---|---|---|
+| warm/cool split (r−b) at golden hour | **0.06298** | **1.00×** |
+| the same split in luminance | 0.00908 | 0.14× |
+| worst channel at noon | 0.000014 | 0.003 of one 8-bit code |
+
+It is a **hue** signal, not a second brightness layer competing with the mirror — which is why it is
+legible against stripes that own value.
+
+**The controls are the point.** A term that lifts BOTH faces genuinely brightens (luma +0.011 on each) and
+scores a warm/cool split of 0.0001 — 0.16 % of the real term's. And ⚠️ the honest baseline is not zero:
+because ADR 0013 **multiplies**, the signed GREY `_SwellFaceShade` already in the sea comes out orange on
+the lit face and blue on the shaded one all by itself — grey × orange is orange. It gets an **incidental
+split of 0.00513 for free**. "The sunward face got warmer" is therefore *not* evidence of a sun side. The
+claim is that this term is **12.3× that accident**, and that is the number that answers the register's
+*"none is legible"*.
+
+Sheet: `SHEET-sunside.png`, four cells, **0-px noise floor on every one**. Golden hour moves 1.05 % of the
+shoal's water and 8.70 % of the open sea; **noon moves exactly 0 px, and a glass calm exactly 0 px** — the
+term shares the modelled swell's calm gate, so row 5's sacred mirror is untouched by construction.
+
+The shoal moves so much less than the open sea for a reason worth knowing: this term composes into
+`col.rgb` **before** the surf band does (the sun side ~4863; the surf lerps over it at ~5233–5273), so
+wherever whitewater covers the water it covers the sun side with it. `nmc-sand` at spring low aimed down
+the longest surf run is mostly surf and drying beach; West Water is open swell with no surf at all.
+
+Cost: **~25 scalar ops per fragment, no new texture read** (rule 7). `_SunSideStrength 0` is an exact
+passthrough.
+
+### ⚠️ What shipping it uncovered — register row 25
+
+The term is correct and the controls are clean, but **it has nowhere legible to land on open water**, and
+that is not row 11's fault. Two shipped decisions meet:
+
+- the modelled swell's calm gate (`_SwellReadSeaStateLo 0.28` → `Hi 0.45`, the owner's 2026-07-08 tuning
+  so a glassy calm shows no read) means the swell terms are **0 at glass and at light airs**, awake only
+  at blow and above;
+- at blow and above the drawn sea is **near-black**: open water's mean wet luma falls **0.176 → 0.012
+  between light and blow at NOON**, a 15× cliff, and it is not a West Water quirk — `nmc-sand` at a blow is
+  0.454 at spring low but **0.026 at mean tide**, because the bright low-water plate is exposed sand, not
+  water.
+
+So "the swell reads" and "the water is visible" barely intersect. PR 9 **refused to widen the owner's calm
+gate** as a workaround for a defect that is not row 11's; row 25 carries the numbers and the two candidate
+directions, both of which are his call.
+
+---
+
+## 35. The wake DISPERSES — an area-preserving stamp (register row 26b, water fidelity PR 11b)
+
+**The owner, 2026-09-04 and 2026-09-06:** *"foam fades behind boat but doesnt disperse in width"* ·
+*"the foam always stays to the original foam path, it doesnt widen over time and fade away."* Pillar P1.
+
+PR 11a (#741) fixed where the trail is ROOTED — at the transom, foreshortened by the hull's own bake
+elevation. It fenced the WIDTH deliberately, and this is that.
+
+### 35.1 Why the buffer cannot simply blur
+
+`FoamBuffer`'s cell law (§28) makes every frame's scroll an **exact integer texel `Load`**: the
+window's origin is snapped onto a world lattice, so a foam cell belongs to a place on the sea and the
+frame-to-frame copy is a move, never a resample. That is what stops the whole wake crawling under a
+camera pan, and it is not negotiable. The price is that the buffer has **no diffusion term at all** —
+a laid trail can decay, and it can drift bodily downwind, but nothing in it can spread. `RadiusMeters`
+is a constant stamped at birth, so the band is exactly as wide at 25 m astern as it is at the transom.
+
+PR 11a measured the two cheap ways out and both are dead:
+
+- **A compose-only reveal cannot widen.** The drawn band already sits at **78 % of the stamp radius**
+  (1.86 m of 2.4 m on the cape), where the profile has fallen to 0.425 and is heading for 0. Dropping
+  `_WakeFoamThreshold` moved the band 1.86 → 1.91 m. You cannot reveal width that was never stamped.
+- **A naive stamped skirt widens but MULTIPLIES.** Coverage accumulates over passes, so "faint enough
+  to hide while it is young" is not one constant but a function of speed, deposit rate and dt. 11a
+  measured the drawn integral going 9356 → 13052; measured again here per age bin, on the injection
+  side, the same skirt lays **8.72× the shipped foam**.
+
+So the width has to be laid **at injection, against each deposit's own age** — never as a filter over
+the target between frames.
+
+### 35.2 The family: area-preserving by construction
+
+Take a deposit's lateral profile to widen with age while its amount falls by the ratio of the
+profiles' integrals. The shipped injection profile is `falloff(d/w) = 1 − smoothstep(0.5, 1, d/w)`,
+whose lateral integral is exactly `1.5·w`, so the family is
+
+```
+P_w(d) = (Φ / 1.5w) · falloff(d/w)        ∫P_w dd = Φ  for every w
+```
+
+Every member lays the same foam. Widening therefore changes the **distribution** of a hull's churn and
+never its total — which is the charter's term, and it is what the naive skirt could not do.
+
+The width law is a **slope**, bounded by the Kelvin wake's own half-angle:
+
+```
+w(s) = r₀ + κ·s          κ = fraction · tan 19.5°   (tan 19.5° = 0.354119)
+```
+
+`s` is distance astern, so the reach `S = (w_max − r₀)/κ` is the **same at any speed** — which is why
+the track can be sampled at fixed spacing and no per-node width has to be sent to the shader.
+
+### 35.3 ⚠️ The conserved quantity is the disc's AREA integral, not its cross-section
+
+The obvious number to conserve is the lateral cross-section, `1.5·r₀`. It is the wrong one, and using
+it makes an "area-preserving" stamp lay **1.4× the shipped foam** — measured, before it was caught.
+
+A parcel of sea is not stamped once. It is stamped for its whole **dwell** under the passing hull, and
+the shipped stamp is a disc, so what actually lands on a metre of track is the disc's *area* integral:
+
+```
+A_disc = ∬ falloff(|p|) dA = 2π ∫₀¹ falloff(ρ)·ρ dρ = 0.575π = 1.806416   (× r₀²)
+
+Φ₀ = rate · A_disc · r₀² / speed          foam laid per METRE OF TRACK
+```
+
+`FoamBuffer.StampAreaIntegral` / `ShippedFoamPerMetre`. Note the `1/speed`: a slower hull dwells longer
+over each parcel and correctly leaves a denser mark.
+
+### 35.4 ⚠️ An additive buffer retains the ENVELOPE, not the current profile
+
+Nothing can take foam back out of the core as a profile spreads. So what the sea ends up holding is not
+`P_{w_max}` but the family's **envelope**:
+
+```
+envelope(d) = max over w∈[r₀, w_max] of falloff(d/w)/w
+            = falloff(d/r₀)/r₀                  d ≤ x*·r₀      (flat core)
+            = 0.5402084 / d                     the middle      (the band thins as 1/d)
+            = falloff(d/w_max)/w_max            d > x*·w_max    (→ 0 at w_max)
+```
+
+`x* = 0.5796825` is `argmax x·falloff(x)`, the root of `8t³ − 3t² − 6t + 1` at `t = 2x − 1`;
+`WakeDispersalStampTests` re-derives both by search rather than trusting them. Note that the outer
+taper is **the family's own** — no third curve is chosen, so there is nothing here to tune.
+
+Conservation is therefore stated on the envelope (`FoamBuffer.EnvelopeIntegral`, a 64-panel Simpson so
+it stays pure and deterministic), not on the instantaneous profile. Stating it on the profile and
+stamping the envelope anyway is how an area-preserving term still overshoots.
+
+### 35.5 The dispersing share is DERIVED, not a third dial
+
+How much of a hull's churn leaves her own band is the fraction of the fully-spread profile lying
+outside the original half-width:
+
+```
+β = 1 − (4/3)·F(r₀/w_max)          F(x) = ∫₀ˣ falloff(u) du   (closed form; F(1) = 0.75)
+```
+
+0 exactly when `w_max = r₀`, 1/3 at a 2× envelope, **7/15 at the shipped 2.5×**. The stamp keeps
+`(1 − β)` and the edge carries `β`, so the two together lay exactly `Φ₀`. Because β is 0 at the
+passthrough, a spread dial of 0 leaves the injector's amount line **untouched, bit for bit**.
+
+### 35.6 The stamp: the envelope's edge, laid once
+
+The edge sweeps outward at `κ·speed` and lays the envelope value **once** at each lateral distance, as
+a soft triangular ring of half-width `δ` whose integral over the passage is exactly 1:
+
+```
+amount(d) = gain · envelope(d) · max(0, 1 − |d − w(s)|/δ)
+gain      = β · Φ₀ / ∫envelope · κ · dt / δ          ← FoamBuffer.EdgeGain
+δ         = max(2 cells, 4·κ·speed·dt)               ← FoamBuffer.EdgeWidth (derived, not a dial)
+```
+
+**The speed cancels.** `Φ₀` carries `1/v` and the edge's advance carries `v`, so the gain has no speed
+term at all: a hull losing way lays a fainter ring rather than dividing by nothing, and no
+minimum-speed gate exists anywhere in the term.
+
+Laying the envelope **once at the sweeping rim**, rather than re-stamping the whole widened profile
+every frame, is not a stylistic choice — §35.8 is why it is the only version of this term an 8-bit
+buffer can actually hold.
+
+### 35.7 The two pre-checks the charter asked for, answered with numbers
+
+**Pre-check 2 — does widening fight #724's age-walk?** It would have. The dispersal lands foam on water
+the hull never churned, where the freshness channel was never marked, and an unmarked texel reads
+`age01 = 1` — the far end of the colour walk. The whole widening band would have been born the deepest
+blue right beside a white core. So the edge marks freshness with **the value a mark made now would have
+decayed to by then** (`FoamBuffer.AgeMark`); because the freshness update is a MAX, that is a no-op
+inside the churn band and correct outside it. At the shipped envelope the rim is 12.71 m astern = 3.09 s
+old, so it is born at **age01 0.414** instead of 1.000 — it walks the blues instead of jumping to their
+end. Across the dispersal the mark takes **64 distinct codes of 256**, so the walk is a walk and not a
+staircase.
+
+**Pre-check 1 — does the buffer's clock outlive a visible widening?** It outlives it and then some, and
+the answer is a finding rather than a knob. See §35.8.
+
+### 35.8 🔴 FINDING: the buffer is 8-bit, and that bounds two very different things
+
+The foam buffer is `RenderTextureFormat.RG16` — **8 bits per channel**. The pass multiplies the previous
+value by a decay factor, adds this frame's deposits and writes the result back into those 8 bits, so
+**a per-frame change below half a code (1/510 ≈ 0.00196) rounds back to where it started and is lost.**
+
+**(a) What that does to the DECAY — a shipped defect, not PR 11b's, reported here with its numbers.**
+The decay is a multiply, so its per-frame change is largest at full white:
+
+| channel | half-life | 30 fps | 60 fps | 120 fps | 144 fps |
+|---|---|---|---|---|---|
+| coverage R | 6 s | 0.980 codes/frame at white — decays above stored 0.51 | **0.491 — under the floor at every stored value** | 0.245 — never | 0.204 — never |
+| freshness G | 4 s | 1.469 — decays above 0.34 | 0.735 — **stalls at stored 0.680** | 0.368 — never | 0.307 — never |
+
+At the PC-first 60 fps baseline **the coverage channel does not decay at all**, and the freshness clock
+stops two thirds of the way down. The wake leaves the 96 m window and the compose's lace tears at it,
+but nothing in the buffer fades — and the better the machine, the more permanent the foam. The owner's
+sentence names two things: *"it doesnt widen over time"* is this PR's, and ***"and fade away"* is this
+table.** The fix is one line — a wider buffer format, or a world-locked dither on the decay — but it is
+**not in this PR**, because the charter's acceptance requires the spread dial at 0 to reproduce 11a's
+trail bit for bit, and either fix changes every stored value. It is register row 26 (c) and it wants its
+own A/B.
+
+**(b) What it does to THIS term — guarded, because it is ours.** It is the reason the stamp lays the
+envelope once at the rim instead of re-stamping the profile. Both arms, at the band's visible rim
+(5.15 m), in codes written per frame:
+
+| | 30 fps | 60 fps | 120 fps | 144 fps |
+|---|---|---|---|---|
+| the edge, laid once at the rim | 5.11 | **2.55** | 1.28 | 1.06 |
+| the same foam re-stamped over the deposit's life | 0.36 | 0.18 | 0.09 | 0.07 |
+| the rounding floor | 0.5 | 0.5 | 0.5 | 0.5 |
+
+The re-stamped form — the version the charter's formula describes most directly — is **below the floor
+at every frame rate**: it is quantized away and draws nothing. `FoamBufferQuantizationTests` shoots both
+arms in one run. **This is also what bounds the envelope dial**, and it is why that dial's tooltip cites
+this section rather than taste.
+
+### 35.9 What it measures
+
+Cape Islander (2.4 m half-beam), 8 kn, 60 fps, the shipped dials (spread **0.8** of Kelvin, envelope
+**2.5** half-beams). Every arm below is computed in the same run; the sabotage arm is the calibration
+(`a-guard-with-an-absolute-bar-rots-on-a-good-change`).
+
+**Conservation, per age bin, at injection** — foam laid per metre of track:
+
+| | shipped (11a) | area-preserving (11b) | naive skirt (sabotage) |
+|---|---|---|---|
+| age 0–1 s | 6.3205 | 5.0716 | 17.4702 |
+| age 1–2 s | 0.0000 | 1.0261 | 15.5218 |
+| age 2–3 s | 0.0000 | 0.2434 | 19.8940 |
+| age 3–4 s | 0.0000 | 0.0006 | 2.2299 |
+| **total** | **6.3205** | **6.3416 (1.003×)** | **55.1159 (8.72×)** |
+
+The shipped row reproduces `ShippedFoamPerMetre` to 0.00 %, which is what makes the comparison a
+measurement rather than a coincidence. Note the shape of it: the shipped stamp is **done** with a parcel
+inside its own radius, and the dispersal is still working on that same water two seconds later. That is
+the widening, as arithmetic.
+
+**The band's drawn half-width against age** (the compose's own 0.12 threshold):
+
+| age astern | shipped (11a) | dispersing (11b) | ratio |
+|---|---|---|---|
+| 0.25 s (1.0 m) | 2.06 m | 2.69 m | 1.30× |
+| 0.50 s (2.1 m) | 2.06 m | 3.06 m | 1.48× |
+| 1.00 s (4.1 m) | 2.06 m | 3.56 m | 1.73× |
+| 1.50 s (6.2 m) | 2.06 m | 4.19 m | 2.03× |
+| 2.00 s (8.2 m) | 2.06 m | 4.69 m | 2.27× |
+| 3.00 s (12.3 m) | 1.94 m | 5.06 m | 2.61× |
+| 6.00 s (24.7 m) | 1.94 m | 4.94 m | 2.55× |
+
+The shipped column is the defect: **the same width at every age**. The dispersing column widens over the
+first 12 m astern — the reach — and then holds what it reached, which is also what a real wake does once
+the churn has spread as far as the hull's disturbance can push it.
+
+**And it does not depend on how fast she is going:** laid/shipped is 1.002× at 3 kn, 1.003× at 8 kn,
+1.005× at 14 kn (the residual is the harness's own cell/step discretisation, and it shrinks with dt).
+
+⚠️ The 6 s row is **one cell narrower** than the 3 s row, and that is the trail FADING: the edge lays
+out to the envelope and stops, after which the band can only decay. Note where it fades, though — the
+harness decays in double precision, and the shipped 8-bit buffer's coverage does not decay at 60 fps
+at all (§35.8 (a) / register row 28). The widening lands in this PR; the fading is still owed.
+
+### 35.10 The dials, and what is deliberately not one
+
+Both live on `FoamInjector`, beside every other injection tunable. ⚠️ Not on `WakeConfig`, which the
+charter named: that struct belongs to `BoatWakeEmitter`'s **sprite** trail — a different system with a
+different lifetime — and hanging the buffer's keys off it would cross a seam for the sake of a name.
+
+| key | shipped | what it is |
+|---|---|---|
+| `_spreadKelvinFraction` | **0.8** | how fast the churn spreads abeam, as a fraction of the Kelvin slope. **0 is the passthrough — 11a's trail, bit for bit.** |
+| `_spreadEnvelopeHalfBeams` | **2.5** | how wide it gets, in multiples of the band's own half-width (so a dory and a tanker disperse alike). 1 is also a passthrough. |
+
+Derived and therefore NOT dials: the dispersing share β (§35.5), the edge's soft width δ (§35.6), the
+envelope's shape and its integral (§35.4), the age mark (§35.7).
+
+### 35.11 Limits, stated
+
+- The trail's **track** is sampled at six nodes at equal arc length. Five sub-segments hold a 90°-over-
+  the-reach turn to about 10 cm; three would hold it to 27 cm, and a single straight extension astern of
+  the transom misses the track by over a metre. Under a harder turn than that the edge cuts the corner.
+- Intermediate nodes take the age mark as `tailMark^u`, which is exact at a steady speed and a small
+  **phase error in the colour walk** — never in the geometry — while she is accelerating.
+- ⚠️ The ring is gated **astern of the transom**, and that gate is load-bearing rather than tidy: a
+  polyline projection CLAMPS, so without it every texel forward of her lands on node 0 and the
+  `u = 0` ring closes into a full circle around the boat, laying on water she has not reached yet.
+  Measured: **1.65× what the edge is entitled to, +30 % of the whole stamp.** The TAIL needs no such
+  gate, because the envelope is exactly 0 at its own outer edge — a property of the family, not a
+  special case.
+- A wake still being born has a short track, so the envelope is cut down to what her available track can
+  reach and β, the envelope integral and the gain are all computed from *that*. Conservation therefore
+  holds while the wake is growing, not only once it is full length.
+- ⚠️ **The edge is fed the WAKE channel alone.** Its premise is that the rim sweeps past a parcel once,
+  and the rim only moves because she does — with no way on it stands still and paints the same ring into
+  the same water every frame until it saturates, which is a burnt-in circle round a moored boat. So the
+  dispersing share is taken out of only the part of the stamp she makes by MAKING WAY; a hull slapping at
+  anchor churns in place exactly as she does today, and the two halves stay conserved against each other
+  at any mix of the two channels.
+- The reach is a distance, so **the widening stops at the envelope** and the rest of the visible trail
+  holds the width it reached. Extending it further is bounded by §35.8 (b), not by this term.
+- Everything here is presentation state: it reads the sim, feeds no sim, and enters no save
+  (rule 5 / ADR 0008).

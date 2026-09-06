@@ -242,6 +242,76 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
+        public void EveryEdgeOfTheWharfThatStandsOverWater_HasAFaceDrawnOnIt()
+        {
+            // ⭐⭐ THE OWNER'S "theres gaps between sections", 2026-09-04, as a measurement rather than a
+            // list. The wharf is a FILL: wherever the ground just outside an edge is well below the deck,
+            // that edge IS a wall and has to be drawn, or the bay laps against a raw cut in the terrain.
+            // A-1 drew the two working faces and the arm; the apron's west side (48 m), the apron's south
+            // end (10 m) and the wharf head (7 m) had nothing on them at all.
+            //
+            // This walks the perimeter on the BUILT terrain rather than trusting the list of runs, so a
+            // future re-site, a widened fill or a new wall is caught here instead of in a playtest.
+            var terrain = MakeCreekTerrain();
+            Rect quay = NineMileCreekWharf.DeckFootprint();
+            Rect apron = NineMileCreekWharf.ApronFootprint();
+
+            AssertEdgeIsFacedWhereItStandsOverWater(terrain, "quay south",
+                new Vector2(quay.xMin, quay.yMin), new Vector2(quay.xMax, quay.yMin), Vector2.down);
+            AssertEdgeIsFacedWhereItStandsOverWater(terrain, "quay east (the wharf head)",
+                new Vector2(quay.xMax, quay.yMin), new Vector2(quay.xMax, quay.yMax), Vector2.right);
+            AssertEdgeIsFacedWhereItStandsOverWater(terrain, "apron east",
+                new Vector2(apron.xMax, apron.yMin), new Vector2(apron.xMax, apron.yMax), Vector2.right);
+            AssertEdgeIsFacedWhereItStandsOverWater(terrain, "apron west",
+                new Vector2(apron.xMin, apron.yMin), new Vector2(apron.xMin, apron.yMax), Vector2.left);
+            AssertEdgeIsFacedWhereItStandsOverWater(terrain, "apron south",
+                new Vector2(apron.xMin, apron.yMin), new Vector2(apron.xMax, apron.yMin), Vector2.down);
+        }
+
+        /// <summary>How far outside an edge the ground is sampled. Past the fills' own 1.2 m of falloff,
+        /// so "below the deck" means the bay rather than the lip of the slope.</summary>
+        private const float OutsideProbeMetres = 3f;
+
+        /// <summary>How far below the deck the outside ground has to be before the edge counts as a wall
+        /// somebody could see. A metre: less than that is a step, not a face.</summary>
+        private const float WallDropMetres = 1f;
+
+        /// <summary>The along-run half-extent of one drawn course — the STRUCTURE, not the cell, so the
+        /// test never credits a run with the union extent of eight facings. The committed sheet draws a
+        /// little past it (the crib's header logs stand proud), which only makes this stricter.</summary>
+        private static float CourseHalfRun => NineMileCreekQuayFace.FaceCourseRunMetres * 0.5f;
+
+        private void AssertEdgeIsFacedWhereItStandsOverWater(
+            MainlandTidalTerrain terrain, string edge, Vector2 from, Vector2 to, Vector2 outward)
+        {
+            var face = Face();
+            Vector2 span = to - from;
+            float length = span.magnitude;
+            Assert.That(length, Is.GreaterThan(0f));
+            Vector2 along = span / length;
+
+            var bare = new List<float>();
+            for (float s = 0.5f; s < length; s += 0.5f)
+            {
+                Vector2 p = from + along * s;
+                float inside = terrain.ElevationAt(p);
+                float outside = terrain.ElevationAt(p + outward * OutsideProbeMetres);
+                if (outside > inside - WallDropMetres) continue;          // no wall here to draw
+
+                bool covered = face.Any(f =>
+                    Mathf.Abs(Vector2.Dot(f.Lip - p, outward)) < 0.5f &&  // its lip is ON this edge
+                    Mathf.Abs(Vector2.Dot(f.Lip - p, along)) <= CourseHalfRun + 1e-3f);
+                if (!covered) bare.Add(s);
+            }
+
+            Assert.That(bare, Is.Empty,
+                $"the {edge} edge stands {WallDropMetres:0.#} m or more above the ground outside it and " +
+                $"{bare.Count * 0.5f:0.#} m of it has no course drawn on it — first at " +
+                $"{(bare.Count > 0 ? (from + along * bare[0]).ToString("F1") : "")}. From the water the " +
+                "wharf reads as ground that stops, which is the owner's 'gaps between sections'");
+        }
+
+        [Test]
         public void EveryFacePieceIsPlacedSoItsDRAWNLipLandsOnTheWallsREALLip()
         {
             // ⭐ THE ONE LINE THE PLACEMENT GUARANTEES, and the trap it exists to absorb: the wharf pack
@@ -352,30 +422,105 @@ namespace HiddenHarbours.Tests.EditMode
                     $"{NineMileCreekDressing.Facings} facings");
         }
 
+        // =============================================================================================
+        //  2b. THE LAYERING — the owner's "you can disappear under them" (playtest 2026-09-04)
+        // =============================================================================================
+
         [Test]
-        public void TheQuayFaceSortsByItsLip_SoABoatAtTheBerthIsNotDrawnBehindTheWall()
+        public void TheQuayFaceIsNotInTheDecorBand_BecauseNothingIsEverBehindAQuayFace()
         {
-            foreach (var p in Face())
-                Assert.That(p.Position.y + p.SortYOffset, Is.EqualTo(p.Lip.y).Within(1e-3f),
-                    $"a {p.Wall} piece's sort offset does not land on its lip");
+            // ⭐ THE RULING THIS TEST HOLDS. A quay face is the edge of the land: everything that can
+            // overlap it is either standing on the deck it holds up or floating in the water in front of
+            // it, and both must draw OVER it. So it draws on a fixed rung of the band #462 kept open for
+            // structure standing over water — never on a Y-sorted decor order, which is above every one
+            // of those things at some position and above a moored hull at ALL positions.
+            var face = Face();
+            Assert.That(face, Is.Not.Empty, "the quay is undrawn again");
 
-            // ⭐ WHY THE OFFSET IS LOAD-BEARING. The pivot sits down-screen of the wall, out where the
-            // fleet lies. Sorted from there the quay draws IN FRONT of every boat moored against it —
-            // invisible until there is a boat at the berth to be hidden, and then obviously wrong.
-            float berthY = NineMileCreekWharf.BerthPos(0).y;
-            int boat = Order(berthY);
-
-            var north = FaceRun(NineMileCreekDressing.NorthWallRun);
-            Assert.That(north, Is.Not.Empty);
-            foreach (var p in north)
+            foreach (var p in face)
             {
-                Assert.That(Order(p.Position.y + p.SortYOffset), Is.LessThan(boat),
-                    $"sorted at its lip ({p.Lip.y:0.##}) the wall still draws over a hull at the berth " +
-                    $"line ({berthY:0.##})");
-                Assert.That(Order(p.Position.y), Is.GreaterThan(boat),
-                    "sorted at its PIVOT the wall would draw in front of the boat — which is exactly " +
-                    "the defect YSortSprite.SortPivotYOffset is set to avoid here. If this ever stops " +
-                    "being true the offset has become decoration and can go");
+                Assert.That(p.SortingOrder, Is.LessThan(SortingBands.DecorFloor),
+                    $"a {p.Wall} piece draws at {p.SortingOrder}, inside the Y-sort decor band. " +
+                    "Everything on the quay — the player, the bollards — is in that band, and half of " +
+                    "them stand up-screen of the lip, so the wall draws over them");
+                Assert.That(p.SortingOrder, Is.GreaterThan(SortingBands.Sea),
+                    $"a {p.Wall} piece draws at {p.SortingOrder}, at or under the sea plane — the wall " +
+                    "would be drawn over by the water it stands in");
+                Assert.That(p.SortingOrder,
+                    Is.InRange(SortingBands.WharfDeckMin, SortingBands.WharfDeckMax),
+                    $"a {p.Wall} piece has left the wharf-deck band it is supposed to be on a rung of");
+            }
+
+            // …and no run may share a rung with a run it overlaps on screen. Only the pairs listed in
+            // FaceSortingOrder's own argument can meet; if a new run is added and this fails, that
+            // argument is what needs re-deriving, not this number.
+            AssertRunsDoNotShareARung(NineMileCreekDressing.NorthWallRun,
+                                      NineMileCreekDressing.WestWallRun);
+            AssertRunsDoNotShareARung(NineMileCreekDressing.WestWallRun,
+                                      NineMileCreekDressing.ApronWestRun);
+            AssertRunsDoNotShareARung(NineMileCreekDressing.WestWallRun,
+                                      NineMileCreekDressing.ApronSouthRun);
+            AssertRunsDoNotShareARung(NineMileCreekDressing.ApronWestRun,
+                                      NineMileCreekDressing.ApronSouthRun);
+            AssertRunsDoNotShareARung(NineMileCreekDressing.NorthWallRun,
+                                      NineMileCreekDressing.QuayHeadRun);
+        }
+
+        private static void AssertRunsDoNotShareARung(string a, string b) =>
+            Assert.That(NineMileCreekDressing.FaceSortingOrder(a),
+                Is.Not.EqualTo(NineMileCreekDressing.FaceSortingOrder(b)),
+                $"the {a} and {b} runs overlap on screen and draw on the same rung — which of the two " +
+                "wins is then decided by renderer order and can change between builds");
+
+        [Test]
+        public void EveryHullTheFleetMoorsAtThisWall_DrawsOverTheFace()
+        {
+            // ⭐⭐ THE MEASUREMENT THAT SETTLED THE BAND, taken off the fleet's OWN visual defs rather
+            // than off the number 1 somebody remembered. Every BoatVisualDef ships SortingOrder 1 and
+            // BoatHullSkinner hands it to the hull's composite overlay, so a hull cannot be Y-sorted
+            // against at all: at Nine Mile Creek the face used to draw at 854 and the five boats at the
+            // wall were drawn inside it and invisible. If a hull is ever raised into the decor band this
+            // fails, and the answer then is to re-derive FaceSortingOrder — not to loosen this.
+            var orders = new List<int>();
+            foreach (var owner in NineMileCreekMooredFleet.LoadOwners())
+            {
+                var visual = owner != null && owner.Boat != null ? owner.Boat.Visual : null;
+                if (visual != null) orders.Add(visual.SortingOrder);
+            }
+            Assert.That(orders, Is.Not.Empty,
+                "the moored fleet has no boats with visuals — this test has stopped measuring anything");
+
+            int highestFaceRung = NineMileCreekDressing.FaceRuns
+                .Select(NineMileCreekDressing.FaceSortingOrder).Max();
+            foreach (int order in orders)
+                Assert.That(order, Is.GreaterThan(highestFaceRung),
+                    $"a hull at this wall composites at {order} and the highest rung the quay face " +
+                    $"draws on is {highestFaceRung} — a boat lying alongside is drawn inside the wall");
+        }
+
+        [Test]
+        public void ThePictureStandsWellAboveTheLip_WhichIsWhyTheLipCouldNeverHaveBeenTheSortLine()
+        {
+            // ⭐ THE DEFECT, AS A NUMBER. A course is a face PLUS its own deck top — 5 m of crib drawn
+            // foreshortened — so the piece paints metres of picture up-screen of the line it used to be
+            // sorted on, and anything in the decor band standing in that band went behind it. Measured
+            // on the committed cell where the pack has sliced, and on the footprint where it has not.
+            foreach (var p in Face())
+            {
+                Vector2 seaward = NineMileCreekDressing.PlanDirectionOf(p.Heading);
+                float geometric = NineMileCreekQuayFace.DrawnTopRiseFromPivot(seaward);
+                Assert.That(geometric - p.LipRiseFromPivot, Is.GreaterThan(2f),
+                    $"a {p.Wall} piece's own footprint draws only " +
+                    $"{geometric - p.LipRiseFromPivot:0.00} units above its lip. If this ever goes near " +
+                    "zero the pack has been re-baked without a deck top and lip-sorting would be honest");
+
+                if (!NineMileCreekDressing.DrawnExtent(p, out float above, out float below)) continue;
+                Assert.That(above, Is.GreaterThan(p.LipRiseFromPivot + 1f),
+                    $"the committed {p.Wall} sprite draws to {above:0.00} above its pivot against a lip " +
+                    $"at {p.LipRiseFromPivot:0.00} — the picture no longer stands above the lip, which " +
+                    "is the premise of the whole layering fix");
+                Assert.That(below, Is.GreaterThan(0f),
+                    "a face piece draws nothing below its own pivot, so it is not a wall");
             }
         }
 
@@ -460,7 +605,7 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void TheBuilderDrawsTheQuay_AndTheWallJoinsTheYSortBandLikeEverythingElse()
+        public void TheBuilderDrawsTheQuay_AndTheWallDrawsOnItsOwnRungOfTheWharfDeckBand()
         {
             var terrain = MakeCreekTerrain();
             NineMileCreekDressing.Place(terrain);
@@ -485,17 +630,20 @@ namespace HiddenHarbours.Tests.EditMode
 
             foreach (var sr in renderers)
             {
-                var ysort = sr.GetComponent<YSortSprite>();
-                Assert.That(ysort, Is.Not.Null,
-                    $"'{sr.name}' has no YSortSprite. The wharf-deck band #462 kept open for this is six " +
-                    "orders wide and the north wall is 84 m long — that is #462's own argument against " +
-                    "the retired tile kit's per-row scheme, and it applies to the piece it was about");
-                Assert.That(ysort.SortPivotYOffset, Is.GreaterThan(0f),
-                    $"'{sr.name}' sorts by its own transform, which for this pack is a pivot at chart " +
-                    "datum — out in the basin, in front of the boats");
+                Assert.That(sr.GetComponent<YSortSprite>(), Is.Null,
+                    $"'{sr.name}' has been given a YSortSprite again. A quay face is not decor: it is the " +
+                    "edge of the land, everything that can overlap it must draw over it, and a hull at " +
+                    "the berth composites below the decor floor where no Y-sorted order can reach. See " +
+                    "NineMileCreekDressing.FaceSortingOrder");
+                Assert.That(sr.sortingOrder, Is.LessThan(SortingBands.DecorFloor),
+                    $"'{sr.name}' draws at {sr.sortingOrder}, inside the decor band");
+                Assert.That(sr.sortingOrder, Is.GreaterThan(SortingBands.Sea),
+                    $"'{sr.name}' draws at {sr.sortingOrder}, at or under the sea plane");
+
+                string wall = sr.name.Substring(0, sr.name.IndexOf('_'));
                 Assert.That(sr.sortingOrder,
-                    Is.InRange(SortingBands.DecorFloor, SortingBands.DecorCeiling),
-                    $"'{sr.name}' sorts at {sr.sortingOrder}, outside the decor band");
+                    Is.EqualTo(NineMileCreekDressing.FaceSortingOrder(wall)),
+                    $"'{sr.name}' was placed on a rung the table does not give its run");
             }
         }
 
@@ -510,10 +658,16 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(root, Is.Not.Null);
 
             var renderers = root.GetComponentsInChildren<SpriteRenderer>(includeInactive: true);
+            var face = root.transform.Find(NineMileCreekDressing.FaceRootName);
             // Vacuous when the pack has not imported, and deliberately so — see the class note. The
             // PLACEMENT is asserted without art by the band-arithmetic sweep below.
             foreach (var sr in renderers)
             {
+                // ⚠️ THE QUAY FACE IS THE ONE EXEMPTION, and it is exempt for the opposite reason to
+                // the one this test guards: a prop with a fixed order cannot be walked IN FRONT OF, while
+                // a wall at the water's edge must never be walked BEHIND. It has its own sweep above.
+                if (face != null && sr.transform.IsChildOf(face)) continue;
+
                 Assert.That(sr.GetComponent<YSortSprite>(), Is.Not.Null,
                     $"'{sr.name}' has no YSortSprite — dressing joins the decor band (ADR 0032), it does " +
                     "not pick an order. A prop with a fixed order cannot be walked in front of");

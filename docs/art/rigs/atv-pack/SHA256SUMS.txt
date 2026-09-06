@@ -1,0 +1,28 @@
+8578eb450f563489d3a40e6422e41f1b5de65ec061f90d3dc93c9cfe1fc0be9b  atvIsoRig.js
+e22d5bb6843dc7c95a45ab2a4a665047a4dcc649b57fdc6ef9dc276dd5715801  _atvKit.js
+c3fdcbc35cca62f49b9b04c30ef3989ce2a44ae8e6eed82619b8f3088e9923a5  atvPack.contract.json
+4371cfc9941c38e0fb3cae1785f5501d5bdcf37925d3bee6185333698553803b  harness.html
+f568439709441d8c5fef66eef0362a4d606497893daadb909bc14a3081f79d50  README.md
+a3323616e47e0304470e8188b37c4462f8ac6c16d85562393118e4afa04db01f  ../gameplay/vehicles/atvIsoRig.atvPack.gameplay.json
+
+# Hashes are over the LF-NORMALISED bytes: the form git stores in the blob, and the one number
+# that is the same on every platform. `core.autocrlf` is true here and no .gitattributes rule
+# covers *.js or this kit's *.json, so a WORKING TREE copy is CRLF after a fresh checkout and
+# hashes differently. Normalise before comparing:
+#
+#   python -c "import hashlib,sys;b=open(sys.argv[1],'rb').read().replace(b'\r\n',b'\n');print(hashlib.sha256(b).hexdigest())" docs/art/rigs/atv-pack/atvIsoRig.js
+#
+# atvIsoRig.js's hash above is ALSO atvPack.contract.json's `rigSha256` and the sidecar's
+# `derivedFromRigSha256`. All three were verified equal on the delivered bytes and again after
+# the copy into the repo (2026-09-06, ATV pack intake). Compare the FULL 64-char digest, never a
+# prefix: the hightop van's bad stamp shared its rig's first SIXTEEN hex digits and diverged over
+# the remaining 48, and a prefix check is what let it through.
+#
+# If the rig moves and those two stamps do not, the sidecar is STALE: do not read its geometry,
+# and do NOT re-stamp it here. docs/art/rigs/** is the art director's lane; a hash corrected on
+# our side comes back wrong on the next regeneration and fakes freshness. Register the refusal in
+# VehicleRigFleet.SidecarHashRefused and send the re-stamp upstream.
+#
+# The 22 sheets under reference/ are LFS binaries and are not listed here; git's own oids cover
+# them. They are REFERENCE ONLY: these three bodies bake as MESH (ADR 0035, the road fleet's
+# path), and no sprite path consumes them.

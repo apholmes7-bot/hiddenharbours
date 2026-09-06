@@ -344,9 +344,20 @@ namespace HiddenHarbours.Tests.EditMode
             // middle of the bullpen, so the rectangle's centre-point sits in the LANE (about −2.6 m) and
             // no longer reports the gate at all. The gate was always a claim about where the fleet
             // LIES — and a berth is where it lies, so this now measures the thing it always meant.
-            Matches(NineMileCreekMainland.BerthPos(0), "the berth on the ruled gate");
-            Assert.AreEqual(NineMileCreekMainland.BasinBedElevation,
+            // ⭐⭐ MOVED AGAIN 2026-09-05, and for the same shape of reason the comment above records: the
+            // BERTH TRENCH (NineMileCreekMainland §8b¾) now cuts the berth line to −4.21 m on the owner's
+            // ruling, so a berth no longer reports the −1.6 m gate either. The gate is still the number
+            // every hull is measured against — it is simply measured on the FLATS now, which is where the
+            // shoal is still the shoal. The export's job is unchanged: carry the analytic coast faithfully,
+            // whatever that coast says.
+            Matches(NineMileCreekMainland.BerthPos(0), "the berth in its trench");
+            Assert.AreEqual(NineMileCreekMainland.BerthTrenchBedElevation,
                 field.ElevationAt(NineMileCreekMainland.BerthPos(0)), tol,
+                "the berth trench's own bed — the export must carry the cut, not the ground under it");
+
+            Matches(new Vector2(120f, 56f), "the harbour flat on the ruled gate");
+            Assert.AreEqual(NineMileCreekMainland.BasinBedElevation,
+                field.ElevationAt(new Vector2(120f, 56f)), tol,
                 "the ruled −1.6 m gate — the one number every hull here is measured against");
             Assert.AreEqual(NineMileCreekMainland.BayFloorElevation,
                 field.ElevationAt(new Vector2(330f, 200f)), tol,

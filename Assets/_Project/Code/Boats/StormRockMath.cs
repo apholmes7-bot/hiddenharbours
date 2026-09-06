@@ -171,6 +171,37 @@ namespace HiddenHarbours.Boats
                                             in SeakeepingResponse hullResponse,
                                             in StormRockSettings settings)
         {
+            // The STORM chase's own spring: a policy stiffness bent by the hull's liveliness curve.
+            // The hull-weight path (water fidelity PR 10) hands the overload below a spring derived
+            // from the hull's own GEOMETRY instead — see HullHeaveResponseMath. One filter, one
+            // state, two ways to say what its spring is; never two filters (a second lag stacked on
+            // this one is exactly what the charter forbids).
+            float hullFactor = Mathf.Clamp(hullResponse.Response, MinHullResponseFactor,
+                                           Mathf.Max(1f, settings.MaxHullResponseScale));
+            float policyOmega = Mathf.Max(0.1f, settings.HeaveChaseStiffnessRadPerSec)
+                              * Mathf.Pow(hullFactor, settings.HullStiffnessResponseExponent);
+            return StepHeaveWeight(ref state, targetRideMeters, dt, gravity, engage01,
+                                   policyOmega, Mathf.Max(0f, settings.HeaveDampingRatio), in settings);
+        }
+
+        /// <summary>
+        /// The same step with the spring stated OUTRIGHT — the natural frequency and damping ratio
+        /// the hull actually has, rather than the storm block's policy stiffness (water fidelity
+        /// PR 10, "the hull has WEIGHT"). Everything else — the free-fall cap, the submarine band,
+        /// the settle snap, the realized-step floor, the exact passthrough at
+        /// <paramref name="engage01"/> ≤ 0, the sub-stepping — is the SAME code, because it is the
+        /// same filter: <see cref="HullHeaveResponseMath"/> supplies (ω, ζ) from the hull's own
+        /// draught, waterplane and self-damping, and the storm's weight blend composes with it here
+        /// instead of hanging a second lag behind it.
+        /// </summary>
+        /// <param name="naturalFrequencyRadPerSec">ω = 2π/T — the hull's own heave frequency.</param>
+        /// <param name="dampingRatio">ζ — 1 is critical damping; below it she overshoots once and
+        /// settles; 0 rings forever (which is why the settings floor it).</param>
+        public static float StepHeaveWeight(ref HeaveWeightState state, float targetRideMeters, float dt,
+                                            float gravity, float engage01,
+                                            float naturalFrequencyRadPerSec, float dampingRatio,
+                                            in StormRockSettings settings)
+        {
             float engage = Mathf.Clamp01(engage01);
             if (engage <= 0f)
             {
@@ -192,11 +223,8 @@ namespace HiddenHarbours.Boats
                 state.Primed = true;
             }
 
-            float hullFactor = Mathf.Clamp(hullResponse.Response, MinHullResponseFactor,
-                                           Mathf.Max(1f, settings.MaxHullResponseScale));
-            float omega = Mathf.Max(0.1f, settings.HeaveChaseStiffnessRadPerSec)
-                        * Mathf.Pow(hullFactor, settings.HullStiffnessResponseExponent);
-            float zeta = Mathf.Max(0f, settings.HeaveDampingRatio);
+            float omega = Mathf.Max(0.1f, naturalFrequencyRadPerSec);
+            float zeta = Mathf.Max(0f, dampingRatio);
             float capAccel = Mathf.Max(0f, gravity) * Mathf.Max(0f, settings.MaxDownwardAccelInGs);
 
             // The surface's own vertical rate (finite difference over the REAL dt), guarded against

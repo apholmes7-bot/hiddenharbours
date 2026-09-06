@@ -179,26 +179,42 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void NineMileCreek_TheBerthIsGATED_NotDredged_TheShoalIsTheLaddersMiddleRung()
         {
-            // ⚠ THIS TEST'S CLAIM IS INVERTED FROM ITS ANCESTOR'S, and that is the recreation.
+            // ⚠ THIS TEST'S CLAIM HAS NOW BEEN INVERTED TWICE, and both turns were owner rulings.
             //
-            // It used to read "the DREDGED berth keeps a deep-harbour margin at low water — no tide-gating
+            // It first read "the DREDGED berth keeps a deep-harbour margin at low water — no tide-gating
             // here", because the region was standing in for Port Greywick with a flat −6 m floor. The
             // ruled ladder is three HARBOURS — St Peters' dock ~0.6 m, Nine Mile Creek ~1.6 m, Greywick
-            // 6 m dredged — and this is the middle rung: the lobster-boat berth. So the berth is a SHOAL,
-            // the shoal IS the gate, and the fleet dries out under itself at spring low exactly as the
-            // ladders and tyre fenders in the owner's photograph imply.
+            // 6 m dredged — and this is the middle rung, so it became "the berth is a SHOAL, the shoal IS
+            // the gate, and the fleet dries out under itself at spring low".
+            //
+            // ⭐⭐ 2026-09-04, the owner again: *"the bullpen should always have water at low tide so all
+            // the lobster boats can park on the wall."* The berth trench (NineMileCreekMainland §8b¾) cuts
+            // the berth line to the depth the fleet lies in. THE LADDER IS UNCHANGED, and that is the
+            // point of what is asserted below instead: what admits a hull to this harbour was never the
+            // berth but the FAIRWAY that leads to it, and the trench is cut for the same deepest resident
+            // the fairway is. Nothing new gets in; the fleet that was already here simply stops sitting
+            // on the mud. The drying that IS the region's teeth is asserted on the flats, in
+            // NineMileCreekChannelTests and NineMileCreekWharfTests.
             var t = MakeNineMileCreek(out var go);
             try
             {
                 float bed = t.ElevationAt(NineMileCreekBuilder.ArrivalPos);
-                Assert.AreEqual(NineMileCreekMainland.BasinBedElevation, bed, 0.01f,
-                    "the berth must sit on the ruled gate — not the open bay, and not the made ground");
+                Assert.GreaterOrEqual(
+                    NineMileCreekMainland.SpringLowWater - bed,
+                    NineMileCreekMainland.BerthDepthNeededMetres - 1e-3f,
+                    "the berth must hold the water the deepest resident needs to lie in it at dead low " +
+                    "spring — the 2026-09-04 ruling");
+                Assert.Greater(bed, NineMileCreekMainland.BayFloorElevation,
+                    "…and it must not have been cut to the open bay's own floor: the trench is a berth " +
+                    "pocket, not a dredged harbour");
 
                 Assert.Greater(TidalExposure.WaterDepth(HighWater, bed), 1.3f,
                     "a lobster boat must float here on the flood, or the region's ceiling hull has no home");
-                Assert.LessOrEqual(TidalExposure.WaterDepth(LowWater, bed), 0f,
-                    "…and the basin must BARE at spring low. A berth that never dries has quietly become " +
-                    "the dredged harbour this region stopped being");
+                Assert.LessOrEqual(
+                    TidalExposure.WaterDepth(LowWater, t.ElevationAt(new Vector2(120f, 56f))), 0f,
+                    "…and the harbour FLATS must still bare at spring low. If nothing dries, this region " +
+                    "has quietly become the dredged harbour it stopped being — the berths are cut now, " +
+                    "the basin either side of the lane is not");
 
                 Assert.AreEqual(NineMileCreekBuilder.NineMileCreekDeepElevation,
                     t.ElevationAt(NineMileCreekBuilder.ToCovePassagePos), 1e-3f,

@@ -158,6 +158,21 @@ Shader "HiddenHarbours/Water"
         // rule 5). _SwellFaceShade = 0 is an EXACT passthrough.
         _SwellFaceShade ("Swell face shading (0 = off / flat bands)", Range(0,1)) = 0.22
 
+        [Header(Sun SIDE (the low sun colours the faces it rakes))]
+        // Water-fidelity register row 11 — the owner: "the light needs to affect the environment".
+        // Golden hour multiplied the WHOLE frame orange (ADR 0013) over a sea whose only sun terms were
+        // _SwellFaceShade and the glitter: surf band, mirror stripes and beach all took the same orange,
+        // so there was no warm/cool split and no face turned to the low sun. This term is that split, and
+        // it is a COLOUR where _SwellFaceShade above is a VALUE — the two compose on the SAME signed
+        // facing (one field slope, one normal, computed once): the shading models the wave, this paints
+        // the light on it. Its two colours are not authored — they are the published _DayNightTint's own
+        // deviation from grey and that deviation NEGATED, so the sunward face takes the light's hue and
+        // the lee face takes its complement (warm sun / cool shadow, the physics of a low sun) with NO new
+        // palette constant a preset could forget, and a colourless light self-cancels to nothing.
+        // Gated by _SunElevation: a high sun has no side. col.rgb ONLY — never depth/clip()/_WaterLevel/
+        // the sim field (P1 integrity, CLAUDE.md rule 5). _SunSideStrength = 0 is an EXACT passthrough.
+        _SunSideStrength ("Sun side warm/cool split (0 = off)", Range(0,2)) = 1.7
+
         [Header(Modelled swell CALM gate (glassy calm shows no read))]
         // Owner playtest (2026-07-08): "i can definitely notice the swells now better. although i still do
         // see them at calm." The wave field's own amplitude gate (swellLive) fully engages at ~0.025 m, so a
@@ -1341,6 +1356,7 @@ Shader "HiddenHarbours/Water"
                 float  _SwellReadBands;
                 // Swell FACE shading (lit face / shaded back off the wave field's analytic slope).
                 float  _SwellFaceShade;
+                float  _SunSideStrength;
                 // Modelled-swell CALM gate (shared by the read band + the face shade; keys _Chop).
                 float  _SwellReadSeaStateLo;
                 float  _SwellReadSeaStateHi;
@@ -4775,18 +4791,76 @@ Shader "HiddenHarbours/Water"
                 // there). col.rgb ONLY — never depth/clip()/the deep tint/_WaterLevel/the sim wave field
                 // (P1 integrity, CLAUDE.md rule 5). _SwellFaceShade = 0 is an EXACT passthrough. Shares the
                 // calm gate with the read band above — one modelled swell melts away as one on a glassy calm.
-                if (_SwellFaceShade > 0.001 && swellReadGate > 0.001)
+                // ONE signed facing, shared by BOTH face terms below (the VALUE shading and the row-11
+                // sun-side COLOUR). Hoisted out of the shading block so neither dial can switch the other
+                // off and so the sea can never grow a second normal: there is one field slope and this is
+                // the only place it is turned into a facing. With _SwellFaceShade up this is the identical
+                // expression, in the identical order, that shipped before — the shading is bit-unchanged.
+                float faceSigned = 0.0;
+                if ((_SwellFaceShade > 0.001 || _SunSideStrength > 0.001) && swellReadGate > 0.001)
                 {
                     float2 shadeSunXY = dot(_SunDir.xy, _SunDir.xy) > 1e-6 ? _SunDir.xy : _LightDir.xy;
                     float2 shadeLd = normalize(shadeSunXY + float2(1e-4, 0));
                     // x2 normalizes the field's small physical slopes (amp x k, ~0.1..0.8 in a real sea,
                     // already carrying the _OceanSwellScale visual-frequency factor) to a legible -1..1
-                    // signal; the clamp bounds a heavy sea. 0.15 is the add ceiling (the swell-read idiom):
-                    // at the 0.22 default the swing is +/-0.033 — shading, not glare — and the §13 palette
-                    // rail bounds the extremes like every other layer.
+                    // signal; the clamp bounds a heavy sea.
                     // + the bore front's own face (ADR 0040 rev 3; zero unless _SurfFrontSlope is up).
-                    float faceSigned = clamp(-dot(waveSlope + surfFrontSlope, shadeLd) * 2.0, -1.0, 1.0);
+                    faceSigned = clamp(-dot(waveSlope + surfFrontSlope, shadeLd) * 2.0, -1.0, 1.0);
+                }
+                if (_SwellFaceShade > 0.001 && swellReadGate > 0.001)
+                {
+                    // 0.15 is the add ceiling (the swell-read idiom): at the 0.22 default the swing is
+                    // +/-0.033 — shading, not glare — and the §13 palette rail bounds the extremes like
+                    // every other layer.
                     col.rgb += faceSigned * saturate(_SwellFaceShade) * swellReadGate * 0.15;
+                }
+
+                // ---- SUN SIDE (register row 11: "the light needs to affect the environment") ------------
+                // The frame was multiplied orange and the SEA had no side to turn to the sun. This adds the
+                // one thing that a multiply cannot: a SPLIT. On the shared facing above, the sunward face
+                // takes the light's own hue and the lee face takes its complement.
+                //
+                // (1) THE COLOUR IS NOT AUTHORED. _DayNightTint is the sun’s colour this hour, already
+                //     published on every material by the shipped day/night maths. Its deviation from its
+                //     OWN grey is what "warm" means at this hour and nothing else: at the register’s 17:00
+                //     the tint is (0.866, 0.529, 0.356), grey 0.584, so the deviation is
+                //     (+0.282, -0.055, -0.228) — orange, derived, never typed. The lee face takes MINUS
+                //     that, which is the complement the sky throws into a shadow (warm sun / cool shade,
+                //     the actual physics of a low sun), so there is no second colour to author either.
+                //     ⛔ Deliberately NOT a new palette constant: a wholesale preset that forgot to carry
+                //     one would draw a sun side in another sea's colours (the §13 preset trap). And it is
+                //     deliberately NOT normalized — a colourless light has a zero deviation and the term
+                //     self-cancels to nothing, with no divide, no epsilon and no guard.
+                //
+                // (2) THE GATE IS THE SUN’S HEIGHT. _SunElevation is cos(solarX * pi/2), so (1 - e*e) is
+                //     sin^2 of the solar arc angle and this gate is sin^4: exactly 0 at solar noon, 1 at
+                //     the horizon, and — the number that matters — 0.0025 at the plates’ 12:00 (e = 0.975,
+                //     solar noon being 13:00) against 0.374 at the 17:00 golden hour. That 152x separation
+                //     is what makes the noon control byte-identical rather than merely faint: at the
+                //     shipped strength the largest noon channel moves 0.000008 (MEASURED, on the drawn
+                //     swell at the blow reference sea) -- two thousandths of one 8-bit code, because the
+                //     noon light is very nearly colourless (0.980, 1.000, 1.000) as well as high.
+                //     ⚠ sin^4 alone is NOT enough — it is symmetric about the horizon and reads 0.151 at
+                //     02:00 (e = -0.78), i.e. a sun side at night. The smoothstep is what puts a sun below
+                //     the horizon out of the term, and it fades in over the first sliver of elevation so
+                //     nothing pops at sunrise.
+                //
+                // Shares the swell CALM gate with the two terms above — one modelled swell, and a glassy
+                // calm keeps the §11 mirror untouched. col.rgb ONLY — never depth/clip()/the deep tint/
+                // _WaterLevel/the sim wave field (P1 integrity, CLAUDE.md rule 5).
+                // _SunSideStrength = 0 is an EXACT passthrough. ~25 scalar ops, no new texture read.
+                if (_SunSideStrength > 0.001 && swellReadGate > 0.001)
+                {
+                    float3 tintRGB   = _DayNightTint.rgb;
+                    float  tintGrey  = (tintRGB.r + tintRGB.g + tintRGB.b) * (1.0 / 3.0);
+                    float3 sunChroma = tintRGB - tintGrey;
+
+                    float  e        = _SunElevation;
+                    float  sinSq    = 1.0 - e * e;
+                    float  elevGate = smoothstep(0.0, 0.12, e) * sinSq * sinSq;
+
+                    float  amt = faceSigned * max(_SunSideStrength, 0.0) * elevGate * swellReadGate;
+                    col.rgb += sunChroma * amt;
                 }
 
                 // ---- ENVELOPE VALUE BANDS (ADR 0023 §(4) — the big wave is marked by SHADE as well as foam)

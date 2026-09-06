@@ -509,6 +509,182 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: Fish_cod_dart_d0_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 448
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bdf75903b37a8ee42a1e270e2602c0f8
+      internalID: 1325850396
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_dart_d1_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 384
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c8c2f91ab9d20974d99823e9b2586e00
+      internalID: -1208134107
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_dart_d2_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 320
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f4b6bdc8faec8934bbf060844139a210
+      internalID: 261608015
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_dart_d3_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 256
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c761c4283079d7349a9a3593e9be8d48
+      internalID: -1006607172
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_dart_d4_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 192
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8505a3ef7e7823a43a0f493677bed4b3
+      internalID: -218463225
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_dart_d5_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 128
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d067c60fd4751ae42aa61d863acac678
+      internalID: 1222522013
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_dart_d6_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 64
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 066ad4af00889854bbefb166bce4420d
+      internalID: -672902060
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_cod_dart_d7_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0b21354a4f1a46241b0ceea56b4e99fc
+      internalID: -1271395337
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     customData: 
     physicsShape: []
@@ -525,20 +701,28 @@ TextureImporter:
     nameFileIdTable:
       Fish_cod_dart_d0_f0: -172224732
       Fish_cod_dart_d0_f1: -1285342515
+      Fish_cod_dart_d0_f2: 1325850396
       Fish_cod_dart_d1_f0: 198197935
       Fish_cod_dart_d1_f1: -2089459713
+      Fish_cod_dart_d1_f2: -1208134107
       Fish_cod_dart_d2_f0: 1576156084
       Fish_cod_dart_d2_f1: -948184549
+      Fish_cod_dart_d2_f2: 261608015
       Fish_cod_dart_d3_f0: 254067856
       Fish_cod_dart_d3_f1: -841964758
+      Fish_cod_dart_d3_f2: -1006607172
       Fish_cod_dart_d4_f0: -215388079
       Fish_cod_dart_d4_f1: -1758818878
+      Fish_cod_dart_d4_f2: -218463225
       Fish_cod_dart_d5_f0: -1065208267
       Fish_cod_dart_d5_f1: 1814622005
+      Fish_cod_dart_d5_f2: 1222522013
       Fish_cod_dart_d6_f0: -1751178532
       Fish_cod_dart_d6_f1: -1517236132
+      Fish_cod_dart_d6_f2: -672902060
       Fish_cod_dart_d7_f0: 1264997819
       Fish_cod_dart_d7_f1: 1945879669
+      Fish_cod_dart_d7_f2: -1271395337
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

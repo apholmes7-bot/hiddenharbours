@@ -161,8 +161,22 @@ namespace HiddenHarbours.Art
 
         [Tooltip("How high the lamp sits above the ground (or water) its casters stand on, metres. It is " +
                  "what makes a lamp not the sun: a low lamp throws a long rake behind a far caster, a high " +
-                 "one a stub. Only the cast shadows read it; the glow is unchanged by it.")]
+                 "one a stub. The cast shadows read it, and so does the ground POOL — it is what shapes a " +
+                 "pool instead of stamping a disc. The bloom is unchanged by it.")]
         [Min(0f)] [SerializeField] private float _lampHeightMeters = DefaultLampHeightMeters;
+
+        [Tooltip("How far UP the drawn art this lamp's own fitting sits, metres — a lantern on a post, a " +
+                 "lens on a swan neck. The BLOOM is drawn there; the pool and the cast shadows still work " +
+                 "from the foot, because that is where the lamp stands on the ground. 0 = the fitting is at " +
+                 "the transform (a window glow, a boat's lamp mounted where its anchor already is).")]
+        [Min(0f)] [SerializeField] private float _bloomLiftMetres;
+
+        [Tooltip("How far this lamp LIGHTS the ground, metres — its pool, which is NOT the same as Range. " +
+                 "Range is the BLOOM: how big the lit fitting looks. This is the patch of ground the lamp " +
+                 "makes brighter, drawn by LampPoolSystem. 0 = this lamp casts no pool (a boat's sidelight " +
+                 "is a signal, not a floodlight). LightPresets.Apply sets it from ReachMetres; the " +
+                 "searchlight sets it from its own throw.")]
+        [Min(0f)] [SerializeField] private float _reachMetres;
 
         /// <summary>The height a lamp that never said (2.5 m — the searchlight's own shipped figure).</summary>
         public const float DefaultLampHeightMeters = 2.5f;
@@ -227,8 +241,47 @@ namespace HiddenHarbours.Art
 
         /// <summary>Does this lamp throw cast shadows (<see cref="LampShadowSystem"/>)?</summary>
         public bool CastsShadows { get => _castsShadows; set => _castsShadows = value; }
-        /// <summary>Lamp height above its casters' ground, metres — the cast shadows' rake lever.</summary>
+        /// <summary>Lamp height above its casters' ground, metres — the cast shadows' rake lever, and what
+        /// gives the ground pool its shape.</summary>
         public float LampHeightMeters { get => _lampHeightMeters; set => _lampHeightMeters = Mathf.Max(0f, value); }
+
+        /// <summary>
+        /// <b>How far up the drawn art the lit FITTING sits</b>, metres — the lantern on its post, the lens
+        /// on its swan neck. The bloom is drawn THERE; <see cref="WorldOrigin"/>, and therefore the ground
+        /// pool and every cast shadow, stays at the foot, because that is where the lamp stands.
+        ///
+        /// <para><b>⚠ It exists because the owner looked at the plates and said so</b> (2026-09-05):
+        /// <i>"the glow emitters seem to always be at the base and not the lantern lens."</i> He was right,
+        /// and it had been true since lamp posts were placed. The reason is a fossil: the
+        /// <c>Lightpost</c> preset's origin offset is (0, −0.2), nudged DOWN — which was correct when the
+        /// thing being drawn was a POOL that should fall just below the head, and became wrong the moment
+        /// #733 made the quad the FITTING instead. A fitting-sized glow at the foot of a post is a lamp
+        /// that glows out of its own base.</para>
+        ///
+        /// <para>Set from the piece's published head height (<c>LampPosts.HeadHeightMetres</c>), so it is
+        /// read off the art like everything else about these lamps and never guessed.</para>
+        /// </summary>
+        public float BloomLiftMetres { get => _bloomLiftMetres; set => _bloomLiftMetres = Mathf.Max(0f, value); }
+
+        /// <summary>The world point the BLOOM is drawn at — the lamp's origin lifted to its fitting. The
+        /// pool and the shadows use <see cref="WorldOrigin"/> instead, which stays on the ground.</summary>
+        public Vector2 BloomWorldOrigin => (Vector2)WorldOrigin + new Vector2(0f, _bloomLiftMetres);
+
+        /// <summary>
+        /// <b>How far this lamp LIGHTS the ground</b>, metres — its POOL, and not to be confused with
+        /// <see cref="Range"/>, which since 2026-09-04 is the BLOOM: the size of the lit fitting.
+        ///
+        /// <para>The split was made in the preset library (<c>LightPresets.ReachMetres</c>) where the
+        /// SITING could read it, and this is the other half — the runtime needs it too, because the thing
+        /// that draws a pool is handed a <see cref="SceneLight"/> and not a preset kind. Set by
+        /// <c>LightPresets.Apply</c> for a placed lamp and by <c>BoatSpotlight</c> for the searchlight.</para>
+        ///
+        /// <para><b>0 means this lamp casts no pool, and that is a real answer rather than a missing one.</b>
+        /// A boat's sidelight is a SIGNAL — a coloured point another skipper reads your aspect from — and
+        /// lighting the sea under it would be a lie about what it is for. Every boat lamp therefore leaves
+        /// this at zero by default, and only the searchlight, which is aimed at the world, sets it.</para>
+        /// </summary>
+        public float ReachMetres { get => _reachMetres; set => _reachMetres = Mathf.Max(0f, value); }
         /// <summary>Night-gate darkness threshold (0..1) — read-only mirror for the shadow system.</summary>
         public float GateThreshold => _gateThreshold;
         /// <summary>Night-gate fade band (0..1).</summary>
@@ -404,7 +457,13 @@ namespace HiddenHarbours.Art
         {
             if (_quad == null) return;
 
-            Vector3 origin = transform.TransformPoint(new Vector3(_originOffset.x, _originOffset.y, 0f));
+            // ⚠ THE BLOOM IS DRAWN AT THE FITTING, NOT AT THE FEET. A lamp post's transform is its FOOT
+            // (both iso packs pivot at the ground centre), so a quad posed on the transform puts the glow
+            // where the post meets the ground — which is what the owner saw and named on 2026-09-05. The
+            // lift raises it to the lantern; WorldOrigin below is deliberately NOT lifted, because the
+            // pool and the cast shadows are asking where the lamp STANDS, not where it glows.
+            Vector3 origin = transform.TransformPoint(new Vector3(_originOffset.x, _originOffset.y, 0f))
+                           + new Vector3(0f, _bloomLiftMetres, 0f);
             _quad.rotation = transform.rotation;
 
             float r = Mathf.Max(_range, 0.01f);

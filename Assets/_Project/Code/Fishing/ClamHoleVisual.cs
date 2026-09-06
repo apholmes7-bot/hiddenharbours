@@ -49,12 +49,11 @@ namespace HiddenHarbours.Fishing
         [Tooltip("The still two-holes sprite, shown on the BASE renderer the whole time the ground is bared.")]
         [SerializeField] private Sprite _holeSprite;
 
-        [Tooltip("The 'two squirting holes' flip-book frames, cycled on a SEPARATE overlay renderer ON TOP of " +
-                 "the holes while the dig's squirt tell shows. Empty → no overlay (the holes just don't squirt).")]
+        [Tooltip("The jet strip, drawn on a SEPARATE overlay renderer ON TOP of the holes while the dig is " +
+                 "squirting. It is a HEIGHT RAMP, not a flip-book: frame 0 is the lip and the last frame is " +
+                 "the crest, and the frame is picked by ClamDig.SpurtRise (the rig's rise x 4 px). Empty -> " +
+                 "no overlay (the holes just don't squirt).")]
         [SerializeField] private Sprite[] _squirtFrames;
-
-        [Tooltip("Flip-book speed of the squirt overlay (frames per second).")]
-        [Min(1f)] [SerializeField] private float _squirtFps = 6f;
 
         [Tooltip("Vertical nudge (local units, positive = up) of the squirt OVERLAY so it animates CENTERED on " +
                  "the two-holes base sprite. The base art's squirt holes sit above its pivot, so the overlay is " +
@@ -82,7 +81,6 @@ namespace HiddenHarbours.Fishing
         private SpriteRenderer _holeRenderer;     // BASE: the two-holes sprite, on while exposed
         private SpriteRenderer _squirtRenderer;   // OVERLAY: the squirt effect, one order on top
         private float _refreshTimer;
-        private float _squirtClock;
 
         private float _lingerTimer;   // how long the player has been inside the escape radius (resets on leave)
         private bool _sinking;        // mid sink-into-sand animation (escape fired)
@@ -180,18 +178,27 @@ namespace HiddenHarbours.Fishing
             if (_holeSprite != null && _holeRenderer.sprite != _holeSprite) _holeRenderer.sprite = _holeSprite;
 
             // OVERLAY: the squirt effect on its own renderer, ON TOP of the holes — added, not a swap.
+            //
+            // ⚠️ The frame is chosen by the jet's HEIGHT, not by a clock. shellfishRig2's spurt()
+            // publishes rise = sin(π·u) over the 420 ms window and the sidecar's instruction to the
+            // page is literally "draw a 1 px jet, rise × 4 px tall" — so the strip is a height ramp,
+            // and frame 0 is the lip while the last frame is the crest. Free-running the strip at a
+            // fixed fps (what this did before, 6 fps against a 1.5 s boolean) would put the crest
+            // wherever the clock happened to be, which is exactly the thing the rig took the trouble
+            // to specify away.
             bool squirting = _dig.ShowingSquirt && _squirtFrames != null && _squirtFrames.Length > 0
                              && _squirtRenderer != null;
             if (squirting)
             {
-                _squirtClock += 1f / _refreshHz;
-                int frame = Mathf.FloorToInt(_squirtClock * _squirtFps) % _squirtFrames.Length;
+                int last = _squirtFrames.Length - 1;
+                int frame = last <= 0
+                    ? 0
+                    : Mathf.Clamp(Mathf.RoundToInt(Mathf.Clamp01(_dig.SpurtRise) * last), 0, last);
                 if (_squirtFrames[frame] != null) _squirtRenderer.sprite = _squirtFrames[frame];
                 if (!_squirtRenderer.enabled) _squirtRenderer.enabled = true;
             }
             else
             {
-                _squirtClock = 0f;
                 if (_squirtRenderer != null && _squirtRenderer.enabled) _squirtRenderer.enabled = false;
             }
         }

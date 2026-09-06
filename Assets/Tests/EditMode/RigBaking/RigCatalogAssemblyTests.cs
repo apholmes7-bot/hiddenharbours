@@ -106,6 +106,12 @@ namespace HiddenHarbours.Tests.RigBaking
                          "CapeIslanderIso", AzimuthConvention.CounterClockwise),
             new Snapshot("catchKit", "docs/art/rigs/catchKit.js",
                          "CatchKit", AzimuthConvention.Clockwise),
+            // catch pass 2 (drop of 2026-09-05). THE GLUE: it reaches root.FishIso2, root.Crustacean2
+            // and root.Shellfish2, and its fillItems() reads FishIso2.SPECIES[kind].range for every
+            // item's scale — a missing fish rig does not throw, it silently rolls [0.85, 1.15].
+            new Snapshot("catchKit2", "docs/art/rigs/catch-pass-2-kit/Art/catchKit2.js",
+                         "CatchKit2", AzimuthConvention.Clockwise,
+                         "fish2", "crustacean2", "shellfish2"),
             new Snapshot("character", "docs/art/rigs/characterIsoRig6.js",
                          "CharacterIso6", AzimuthConvention.Clockwise, "characterHead"),
             new Snapshot("characterEye", "docs/art/rigs/eyeIsoRig.js",
@@ -119,8 +125,15 @@ namespace HiddenHarbours.Tests.RigBaking
                          "CharacterHands6", AzimuthConvention.Clockwise, "character"),
             new Snapshot("characterHead", "docs/art/rigs/headIsoRig3.js",
                          "HeadIso3", AzimuthConvention.Clockwise, "characterEye"),
+            // catch pass 2. The wire roller basket, lathed against the shared turntable.
+            new Snapshot("clamHod", "docs/art/rigs/catch-pass-2-kit/Art/clamHodRig.js",
+                         "ClamHod", AzimuthConvention.Clockwise, "deckIsoSolid"),
             new Snapshot("crustacean", "docs/art/rigs/crustaceanRig.js",
                          "Crustacean", AzimuthConvention.Clockwise),
+            // catch pass 2. ⚠️ render() takes the KIND first and the camera in opts.dir; an
+            // unrecognised kind renders a LOBSTER with zero pixels of difference.
+            new Snapshot("crustacean2", "docs/art/rigs/catch-pass-2-kit/Art/crustaceanRig2.js",
+                         "Crustacean2", AzimuthConvention.Clockwise, "deckIsoSolid"),
             new Snapshot("deckGear", "docs/art/rigs/deck-loop-kit/Art/deckGearRig.js",
                          "DeckGear", AzimuthConvention.Clockwise, "deckIsoSolid"),
             new Snapshot("deckIsoSolid", "docs/art/rigs/deck-loop-kit/Art/isoSolid.js",
@@ -134,6 +147,10 @@ namespace HiddenHarbours.Tests.RigBaking
                          "BubbleKit", AzimuthConvention.Clockwise),
             new Snapshot("fish", "docs/art/rigs/fishIsoRig.js",
                          "FishIso", AzimuthConvention.Clockwise),
+            // catch pass 2. Seven species on pass 1's cell and pivot — but NOT pass 1's pixels:
+            // the four shared species are re-lofted (33,547 px at scale 1). Stands alone.
+            new Snapshot("fish2", "docs/art/rigs/catch-pass-2-kit/Art/fishIsoRig2.js",
+                         "FishIso2", AzimuthConvention.Clockwise),
             new Snapshot("fishTote", "docs/art/rigs/fishToteRig.js",
                          "FishTote", AzimuthConvention.Clockwise),
             new Snapshot("fishTray2", "docs/art/rigs/deck-loop-kit/Art/trayIsoRig.js",
@@ -176,6 +193,9 @@ namespace HiddenHarbours.Tests.RigBaking
                          "RodIso", AzimuthConvention.Clockwise),
             new Snapshot("shellfish", "docs/art/rigs/shellfishRig.js",
                          "Shellfish", AzimuthConvention.Clockwise),
+            // catch pass 2. NOT directional (IW/IH/ipivot, no camera) — InstallModule only.
+            new Snapshot("shellfish2", "docs/art/rigs/catch-pass-2-kit/Art/shellfishRig2.js",
+                         "Shellfish2", AzimuthConvention.Clockwise),
             new Snapshot("shipyardIso", "docs/art/rigs/shipyard-iso-kit/shipyardIsoRig.js",
                          "ShipyardIso", AzimuthConvention.CounterClockwise),
             new Snapshot("shopBuilding", "docs/art/rigs/shop-building-kit/shopBuildingRig.js",
@@ -187,6 +207,22 @@ namespace HiddenHarbours.Tests.RigBaking
                          "buildingLifecycle", "shopInterior"),
             new Snapshot("shoreFinds", "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
                          "ShoreFinds", AzimuthConvention.CounterClockwise),
+            // Added by the SAIL RIG KIT (drop 2026-09-06) — the first sails in the fleet, and the
+            // first hull rigs that do not sit at the top of docs/art/rigs/. Standalone: each is a
+            // self-contained IIFE, no isoSolid and no prerequisites.
+            //
+            // Convention MEASURED two ways rather than inherited from the neighbours, in the repo's
+            // own V8: the bearing of each rig's OWN +X, taken between anchors at equal y AND equal z
+            // (winchPort/winchStbd on the 30, helmPort/helmStbd on the 88), steps −45.0000° seven
+            // times; and bowRoller projects 147.84 px (30) / 448.00 px (88) WEST at cell 2, which
+            // their own `order` array labels 'E'. ⚠️ A bearing off the bow roller ALONE is
+            // incoherent — it sits 2.044 m up, and un-squashing that height by sin(elev) gives steps
+            // summing to 330° over seven instead of 315°. See RigCatalog.SailKit and
+            // docs/art/spikes/sail-rig-kit/probe-record.md.
+            new Snapshot("sloop30", "docs/art/rigs/sail-rig-kit/sloop-30/sloopIsoRig.js",
+                         "SloopIso", AzimuthConvention.CounterClockwise),
+            new Snapshot("sloop88", "docs/art/rigs/sail-rig-kit/sloop-88/sloop88IsoRig.js",
+                         "Sloop88Iso", AzimuthConvention.CounterClockwise),
             // Added by the gas station kit (2026-08-20). The sales floor inside the storefront. Its
             // ONE prerequisite is the shell, whose own prerequisites bring the grade table and the
             // turntable up in front of it — so installing this key alone stands the whole kit up in

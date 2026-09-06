@@ -242,11 +242,21 @@ namespace HiddenHarbours.App.Editor
                 var holdNode = MiniJson.Dict(kv.Value, "hold");
                 bool twoHanded = MiniJson.Int(holdNode, "hands", 1) >= 2;
 
+                // ⚠️ These stems are catch pass 2's MIDDLE size rung, which is unsuffixed exactly so
+                // this call site keeps working — the _sm and _lg rungs sit beside them on disk and
+                // are not loaded here, because nothing picks a rung yet (RodFightPresenter never
+                // reads WeightKg). When a picker lands, this is where it chooses a suffix.
                 Sprite[] shadow = PersistentCoreBuilder.LoadIsoDirFrames($"{FishingIsoFolder}/Fish_{key}_shadow.png");
                 Sprite[] dart = PersistentCoreBuilder.LoadIsoDirFrames($"{FishingIsoFolder}/Fish_{key}_dart.png");
                 Sprite[] thrash = PersistentCoreBuilder.LoadIsoDirFrames($"{FishingIsoFolder}/Fish_{key}_thrash.png");
                 Sprite[] held = PersistentCoreBuilder.LoadIsoDirFrames(
                     $"{FishingIsoFolder}/Fish_{key}_{(twoHanded ? "gill" : "tail")}.png");
+
+                // Pass 2's two new surface beats. Absent sheets are NOT an error — the loader hands
+                // back an empty array, the fields stay empty, and a presenter that checks Length
+                // simply never plays them. That keeps this importer working against a pass-1 bake.
+                Sprite[] roll = PersistentCoreBuilder.LoadIsoDirFrames($"{FishingIsoFolder}/Fish_{key}_roll.png");
+                Sprite[] jump = PersistentCoreBuilder.LoadIsoDirFrames($"{FishingIsoFolder}/Fish_{key}_jump.png");
 
                 float ppu = FirstPpu(dart) ?? FirstPpu(shadow) ?? FirstPpu(thrash) ?? 32f;
                 entries.Add(new FishSpeciesVisual
@@ -263,6 +273,12 @@ namespace HiddenHarbours.App.Editor
                     HeldFrames = held,
                     HeldFramesPerDir = held.Length / Directions,
                     TwoHanded = twoHanded,
+                    RollFrames = roll,
+                    RollFramesPerDir = roll.Length / Directions,
+                    RollMouthOffsets = ReadMouths(statesNode, "roll", roll.Length / Directions, ppu),
+                    JumpFrames = jump,
+                    JumpFramesPerDir = jump.Length / Directions,
+                    JumpMouthOffsets = ReadMouths(statesNode, "jump", jump.Length / Directions, ppu),
                 });
             }
             return entries.ToArray();

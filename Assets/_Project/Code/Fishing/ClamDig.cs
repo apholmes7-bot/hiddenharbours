@@ -91,23 +91,39 @@ namespace HiddenHarbours.Fishing
                  "OFF for the pre-ruling behaviour; that path is what a test uses to prove the difference.")]
         [SerializeField] private bool _landInHand = true;
 
-        [Header("Greybox reveal (cosmetic placeholder)")]
-        [Tooltip("Shortest gap between squirt-hole reveals while exposed (real seconds).")]
-        [SerializeField] private float _revealMinSeconds = 10f;
-        [Tooltip("Longest gap between squirt-hole reveals while exposed (real seconds).")]
-        [SerializeField] private float _revealMaxSeconds = 20f;
-        [Tooltip("How long a squirt reveal stays shown (real seconds).")]
-        [SerializeField] private float _revealShowSeconds = 1.5f;
-
         private IHold _bucket;
         private System.Random _rng;
-        private float _revealTimer;
+
+        // The spurt is a pure function of (worldSeed, hole position, t) — ClamSpurtMath, transcribed
+        // from shellfishRig2's own holes()/spurt(). The only state kept here is the clock, because a
+        // MonoBehaviour is handed a dt rather than a time. Nothing here is saved (rule 5).
+        private double _spurtClockMs;
+        private float _phaseMs, _periodMs;
+        private int _seedUsed;
         private bool _showingSquirt;
+        private float _spurtRise, _spurtU;
         private bool _consumed;
         private string _resolvedId;
 
-        /// <summary>True while the greybox squirt-hole cue is showing (art/UI hint; cosmetic, never gates).</summary>
+        /// <summary>True while this hole is squirting — the dig's TELL (cosmetic, never gates).</summary>
         public bool ShowingSquirt => _showingSquirt;
+
+        /// <summary>How high the jet stands, 0..1 (<c>sin(π·u)</c> across the 420 ms window). Zero
+        /// whenever <see cref="ShowingSquirt"/> is false, so a reader that forgets to check draws
+        /// nothing rather than a stuck jet.</summary>
+        public float SpurtRise => _spurtRise;
+
+        /// <summary>Progress through the current spurt, 0..1 — the droplet detaches past
+        /// <see cref="ClamSpurtMath.DropletAfterU"/>.</summary>
+        public float SpurtU => _spurtU;
+
+        /// <summary>This hole's rolled gap between spurts, ms (2600..7800). Exposed for tests and the
+        /// presenter; it is derived, never serialized.</summary>
+        public float SpurtPeriodMs => _periodMs;
+
+        /// <summary>This hole's rolled phase, ms. ⚠️ NOT "when it starts" — the window opens when
+        /// <c>(t + phase) % period ≤ dur</c>. See <see cref="ClamSpurtMath"/>.</summary>
+        public float SpurtPhaseMs => _phaseMs;
 
         /// <summary>True once this hole has been spent — either dug (it yielded its clam) or escaped (the
         /// skittish clam burrowed away). A consumed hole no longer yields; the visual hides/animates it.
@@ -124,7 +140,35 @@ namespace HiddenHarbours.Fishing
         {
             _rng = _rngSeed == 0 ? new System.Random() : new System.Random(_rngSeed);
             if (_bucketProvider != null) _bucket = _bucketProvider.GetComponent<IHold>();
-            _revealTimer = RandomRevealGap();
+            ResolveSpurtTiming();
+        }
+
+        /// <summary>
+        /// The seed the SPURT is rolled from: the WORLD's, exactly as the charter says
+        /// (<c>deterministic from (worldSeed, hole)</c>) and exactly where every other deterministic
+        /// system in the module reads it — <c>LiveFishSchoolWorld.WorldSeed</c> takes the same route.
+        ///
+        /// <para>⚠️ This is NOT <see cref="_rngSeed"/>. That field seeds the component's own
+        /// <see cref="System.Random"/> for the yield roll, it is an inspector convenience, and it is
+        /// <b>0 on every hole a builder places</b> — so seeding the spurt from it made every world's
+        /// flat identical. It stays the fallback for a scene with no environment service (a bare art
+        /// scene, a test), because there a caller-supplied seed is the only entropy there is.</para>
+        /// </summary>
+        private int SpurtWorldSeed()
+        {
+            IEnvironmentService env = GameServices.Environment;
+            return env != null ? env.WorldSeed : _rngSeed;
+        }
+
+        /// <summary>
+        /// Roll this hole's phase and period from <c>(worldSeed, its own position)</c>. The position IS
+        /// the hole's identity, so a hole that moves is a different hole and must re-roll.
+        /// </summary>
+        private void ResolveSpurtTiming()
+        {
+            _seedUsed = SpurtWorldSeed();
+            Vector2 p = SpotPos;
+            ClamSpurtMath.TimingFor(_seedUsed, p.x, p.y, out _phaseMs, out _periodMs);
         }
 
         private void Update()
@@ -385,29 +429,40 @@ namespace HiddenHarbours.Fishing
             if (_bucket == null && _bucketProvider != null) _bucket = _bucketProvider.GetComponent<IHold>();
         }
 
-        // Cosmetic greybox reveal cadence: flash the "squirt" cue every 10–20 s while exposed.
+        /// <summary>
+        /// The squirt tell, on the art director's own clock: <see cref="ClamSpurtMath"/> says whether
+        /// this hole is spurting at the current moment and how high the jet stands.
+        ///
+        /// <para>The method still takes a <c>dt</c> because that is what <c>Update</c> is handed, but
+        /// the only thing dt does now is advance a clock — the answer is a pure function of that
+        /// clock, so two holes at the same instant cannot disagree and nothing drifts. It replaced a
+        /// stateful 10–20 s / 1.5 s greybox cadence that was invented rather than measured; the rig
+        /// says 2.6–7.8 s apart and 420 ms long.</para>
+        /// </summary>
         private void UpdateReveal(float dt, bool exposed)
         {
-            if (_consumed) { _showingSquirt = false; return; }   // a spent hole gives no more tells
-            if (!exposed) { _showingSquirt = false; return; }
+            if (_consumed) { ClearSpurt(); return; }   // a spent hole gives no more tells
+            if (!exposed) { ClearSpurt(); return; }
 
-            _revealTimer -= dt;
-            if (_showingSquirt)
-            {
-                if (_revealTimer <= 0f) { _showingSquirt = false; _revealTimer = RandomRevealGap(); }
-            }
-            else if (_revealTimer <= 0f)
-            {
-                _showingSquirt = true;
-                _revealTimer = Mathf.Max(0.1f, _revealShowSeconds);
-            }
+            // A hole that has never resolved its timing (a test that skipped Awake, an editor-time
+            // instance) rolls it now rather than sitting silently at period 0 and never spurting.
+            //
+            // It also re-rolls if the world seed has CHANGED under it. That is not paranoia: the
+            // environment service is frequently absent at Awake and arrives with the persistent core
+            // a moment later, so a hole woken early would otherwise keep the fallback seed for the
+            // rest of the session and quietly disagree with every hole woken after it.
+            if (!(_periodMs > 0f) || SpurtWorldSeed() != _seedUsed) ResolveSpurtTiming();
+
+            _spurtClockMs += Mathf.Max(0f, dt) * 1000.0;
+            _showingSquirt = ClamSpurtMath.TrySpurt(_spurtClockMs, _phaseMs, _periodMs,
+                                                    out _spurtRise, out _spurtU);
         }
 
-        private float RandomRevealGap()
+        private void ClearSpurt()
         {
-            float lo = Mathf.Min(_revealMinSeconds, _revealMaxSeconds);
-            float hi = Mathf.Max(_revealMinSeconds, _revealMaxSeconds);
-            return lo + (float)(_rng?.NextDouble() ?? 0.0) * (hi - lo);
+            _showingSquirt = false;
+            _spurtRise = 0f;
+            _spurtU = 0f;
         }
 
         /// <summary>Wire the dig in one call (tests / editor). <paramref name="reachRadius"/> is the shovel
@@ -421,6 +476,13 @@ namespace HiddenHarbours.Fishing
             _shovelGearId = shovelGearId;
             _rng = seed == 0 ? new System.Random() : new System.Random(seed);
             if (reachRadius >= 0f) _reachRadius = reachRadius;
+
+            // The hole's position may have just moved, and the spot IS its identity — so re-roll
+            // rather than keep a timing that belonged to a different hole. The seed recorded here
+            // only reaches the spurt in a scene with no environment service (see SpurtWorldSeed);
+            // in play the world's seed wins, which is what the charter asks for.
+            _rngSeed = seed;
+            ResolveSpurtTiming();
         }
 
         /// <summary>

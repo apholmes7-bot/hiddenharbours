@@ -478,8 +478,15 @@ namespace HiddenHarbours.App.Editor
         // lane in the satellite photograph curving away south-east from the wharf.
         //
         // ⚠ THIS REVERSES A STANDING FACT AT EXACTLY TWO PLACES AND NOWHERE ELSE. The flats, the reef
-        // ring, the tidal bar, the crossing and the ponds all still bare on the big tides; so do the
-        // BERTHS, and that is deliberate rather than an omission — see the ruled-gate note below.
+        // ring, the tidal bar, the crossing and the ponds all still bare on the big tides.
+        //
+        // ⭐⭐ AND SINCE 2026-09-05, SO DO THE BERTHS — NO LONGER. The 08-19 pass read the ruling as "the
+        // CHANNEL is always wet; the berths still bare" and routed the lane 14 m clear of them so the cut
+        // there was exactly zero. The owner has now ruled the other way, in her own words after a
+        // playtest: *"the bullpen should always have water at low tide so all the lobster boats can park
+        // on the wall."* §8b¾ below cuts the berth trench that delivers it. That reverses ONE constraint
+        // and nothing else — the flats south of the lane, the reef ring, the bar, the guts and the
+        // crossing all still bare, and the three-harbour depth ladder is untouched everywhere but here.
         //
         // ⭐ AND IT IS A CHANNEL, NOT A DEEPER BASIN, because the ruling's own description requires the
         // flats either side to dry: a uniformly deep bullpen has no meander to reveal and no width to
@@ -565,10 +572,12 @@ namespace HiddenHarbours.App.Editor
         /// <item><description><b>It carries the float run.</b> Every metre of the float (y = 70,
         /// x = 104 → 152) lies within 3 m of the centre-line, so the small craft on the fingers float at
         /// 1.34 m at spring low against the deepest of them (the punt, 0.50 m).</description></item>
-        /// <item><description><b>It leaves the RULED GATE alone.</b> The nearest berth and the dock zone
-        /// are 14 m off the line — past the 12 m half-width, so the cut is exactly zero there. The
-        /// −1.6 m shoal still gates the fleet and the basin still bares under it at spring low, which is
-        /// the region's whole teeth and is asserted by four committed tests.</description></item>
+        /// <item><description><b>⚠ IT USED TO LEAVE THE RULED GATE ALONE — and since 2026-09-05 the
+        /// BERTH TRENCH takes over that job.</b> This lane still runs 14 m off the berths, so its own cut
+        /// there is exactly zero; what wets them now is §8b¾, cut for the same deepest resident this one
+        /// is. The −1.6 m shoal still gates everything else, and the FLATS still bare under it at spring
+        /// low — that is the region's teeth, and the four committed tests that used to hold "the berths
+        /// bare" now hold "the berths float and the flats bare" instead.</description></item>
         /// <item><description><b>It clears the slipway and the breakwater</b> by more than the
         /// half-width, so neither the ramp's toe nor the crib's foot is undercut.</description></item>
         /// </list>
@@ -599,8 +608,94 @@ namespace HiddenHarbours.App.Editor
             new MainlandChannel(ChannelWaypoints, ChannelThalwegElevation,
                                 ChannelHalfWidthMetres, ChannelCuttableCeiling);
 
-        /// <summary>Every channel cut through this region's made ground.</summary>
-        public static MainlandChannel[] Channels => new[] { HarbourChannel };
+        // =================================================================================================
+        //  8b¾. THE BERTH TRENCH — the water the fleet lies in (owner ruling, 2026-09-04)
+        // =================================================================================================
+        // *"the bullpen should always have water at low tide so all the lobster boats can park on the
+        // wall."* The 08-19 lane deliberately stopped 14 m short of the berths; this is the cut that
+        // finishes the job, and it reverses that one constraint and nothing else.
+        //
+        // ⭐⭐ THE BED IS DERIVED, AND IT IS NOT THE THALWEG — because a channel here is a SMOOTHSTEP, not
+        // a flat-bottomed trench. `MainlandTidalTerrain` cuts `lerp(ground, bed, 1 − smoothstep(d/half))`,
+        // so the full bed depth exists ONLY on the centre-line and a hull is not a line. Cut at the
+        // harbour channel's own −3.90 m thalweg, this trench would carry 1.70 m under the berth mark and
+        //   **1.34 m at 3 m off it — under Marie Gallant's 1.40 m draught.**
+        // She would lie at her own berth and touch on her outboard bilge. So the bed is solved BACKWARDS
+        // from the falloff law, for the depth a hull needs at the far edge of her own footprint, and the
+        // number that falls out is 2.01 m on the mark. (A "half-width of one beam plus a fender" — the
+        // shape a flat-bottomed reading suggests — is not merely wrong here but impossible: at half 5.5 m
+        // the falloff at the footprint edge is 0.43, and the bed it demands is −6.69 m, below the bay
+        // floor the terrain clamps to.)
+
+        /// <summary>How much water a hull wants clear of her keel where she LIES, as against where she
+        /// steams: draught plus the region's own keel clearance. The over-cut
+        /// (<see cref="ChannelDredgeMarginMetres"/>) is a fairway allowance for a helmsman holding a line
+        /// across a bend — a moored boat holds no line, so it is not spent again here.</summary>
+        public static float BerthDepthNeededMetres =>
+            DeepestResidentDraughtMetres + ChannelKeelClearanceMetres;
+
+        /// <summary>A fender's worth of slack outboard of the widest resident's own side — half a metre,
+        /// so the cut carries her hull and the tyre she leans on rather than stopping at her plating.</summary>
+        public const float BerthFenderMetres = 0.5f;
+
+        /// <summary>How far off the berth mark the trench has to be honest: the widest resident's
+        /// half-beam plus a fender. <b>3.0 m</b> — the outboard edge of the widest hull that lies here,
+        /// which is where a smoothstep cut is shallowest under her.</summary>
+        public static float BerthFootprintHalfWidthMetres =>
+            WidestResidentBeamMetres * 0.5f + BerthFenderMetres;
+
+        /// <summary>
+        /// ⭐ <b>THE TRENCH'S BED — −4.21 m</b>, and every term of it is one of the region's own numbers
+        /// run through the terrain's own falloff:
+        /// <code>
+        /// w   = SmoothFalloff(BerthFootprintHalfWidthMetres, ChannelHalfWidthMetres)   // 0.844
+        /// bed = shoal + (springLow − berthDepthNeeded − shoal) / w
+        /// </code>
+        /// <para>Read it as: at the footprint's outboard edge the cut has faded to <c>w</c> of its full
+        /// depth, so to leave <see cref="BerthDepthNeededMetres"/> THERE the centre-line must be cut
+        /// <c>1/w</c> deeper than a flat bottom would need. Deeper than the fairway that leads to it,
+        /// which is right: a berth pocket is dredged for lying in, a channel for passing through.</para>
+        /// </summary>
+        public static float BerthTrenchBedElevation
+        {
+            get
+            {
+                float w = HiddenHarbours.World.MainlandTidalTerrain.SmoothFalloff(
+                    BerthFootprintHalfWidthMetres, ChannelHalfWidthMetres);
+                if (w <= 1e-4f) return BasinBedElevation;                 // no cut reaches there at all
+                return BasinBedElevation +
+                       (SpringLowWater - BerthDepthNeededMetres - BasinBedElevation) / w;
+            }
+        }
+
+        /// <summary>
+        /// ⚠️⚠️ <b>AND IT JOINS THE MEANDER, WHICH IS THE WHOLE OF THE LAST WAYPOINT.</b> The berth line
+        /// alone is a pond: measured on the built ground, a trench that only runs the wall leaves the
+        /// journey out of berth 1 at <b>0.53 m</b> at spring low — a sill the fleet cannot cross, and one
+        /// that no depth-along-the-berth-line test could ever see ([[a-channel-must-join-something]], the
+        /// law this region earned the first time). So the run ENDS on the harbour channel's own harbour
+        /// waypoint, taken from that array rather than typed, and the two cuts overlap at the junction by
+        /// construction. With the leg in, the same walk measures 1.70 m throughout.
+        ///
+        /// <para><b>SEAWARD → HARBOUR</b>, the convention every channel in this region is held to: the
+        /// junction first, then the wall, west to east.</para>
+        /// </summary>
+        public static Vector2[] BerthTrenchWaypoints => new[]
+        {
+            ChannelWaypoints[ChannelWaypoints.Length - 1],               // (100, 70) — ON the meander
+            BerthPos(0),                                                 // the first berth
+            BerthPos(BerthCount - 1),                                    // …and the last
+        };
+
+        /// <summary>The berth trench, assembled from the derivations above. Same cuttable ceiling as the
+        /// fairway — it may deepen the basin it lies in and may not touch the wall it lies against.</summary>
+        public static MainlandChannel BerthTrench =>
+            new MainlandChannel(BerthTrenchWaypoints, BerthTrenchBedElevation,
+                                ChannelHalfWidthMetres, ChannelCuttableCeiling);
+
+        /// <summary>Every channel cut through this region's made ground. ⚠ ORDER MATTERS ONLY IN THAT
+        /// EACH ONE SEES THE LAST'S RESULT — both are <c>Mathf.Min</c>, so the pair commutes.</summary>
+        public static MainlandChannel[] Channels => new[] { HarbourChannel, BerthTrench };
 
         // --- the wharf PLAN, for Phase B ---------------------------------------------------------------
 
@@ -948,6 +1043,30 @@ namespace HiddenHarbours.App.Editor
         /// <summary>How far apart the owners' sheds stand along the row.</summary>
         public const float OwnerShedSpacingMetres = 14f;
 
+        /// <summary>
+        /// <b>⭐ THE PITCH THE ROW CLOSES TO ONCE A WORKING SITE HAS INTERRUPTED IT.</b>
+        ///
+        /// <para>West of the bait shed the row is the shanty row and stands at
+        /// <see cref="OwnerShedSpacingMetres"/>, a comfortable fourteen metres for a five-metre shed.
+        /// East of the trap store there are twenty-two metres of made ground and <b>nothing beyond
+        /// them</b> — the spit ends. Spent at the comfortable pitch that ground buys two lots and
+        /// leaves eight metres doing nothing, which is how a yard runs out of room while ground is
+        /// still lying there. So past an interruption the sheds stand closer, the way an infilled
+        /// yard's do.</para>
+        ///
+        /// <para><b>It is a floor plus a metre, not a taste.</b> Two sheds may stand
+        /// <c>2 × <see cref="WharfShedRadius"/></c> = 10 m apart and no closer — the plan's own
+        /// separation, asserted by <c>NineMileCreekPhotographTests.NoTwoOwnerShedLotsShareGround</c>.
+        /// This is that floor with a metre of slack, so the row does not sit exactly on a boundary the
+        /// day somebody grows <see cref="WharfShedRadius"/> by a hair.</para>
+        /// </summary>
+        public const float OwnerShedInfillSpacingMetres = 11f;
+
+        /// <summary>How finely the walk feels its way past a working site. Small enough that the row
+        /// resumes on the first clear ground rather than a whole stride past it — those are the metres
+        /// the old walk threw away.</summary>
+        public const float OwnerShedProbeMetres = 0.5f;
+
         /// <summary>The row the owners' sheds stand on — the shanty row's own latitude, because that IS
         /// the row of sheds in the photograph and a second row beside it would be a second wharf.</summary>
         public static float OwnerShedRowY => ShantyRow[0].y;
@@ -957,21 +1076,32 @@ namespace HiddenHarbours.App.Editor
         ///
         /// <para><b>⭐ A RULE, NOT A TABLE.</b> The lots march east along the shed row from the shanty
         /// row's west end at <see cref="OwnerShedSpacingMetres"/>, and a step that would land inside a
-        /// working site's reserved ground is SKIPPED rather than nudged — so the row cannot collide with
-        /// the bait shed, the trap store or anything else the plan already put on the yard, and adding a
+        /// working site's reserved ground is never nudged onto it — so the row cannot collide with the
+        /// bait shed, the trap store or anything else the plan already put on the yard, and adding a
         /// working site later re-flows the row instead of silently overlapping it.</para>
         ///
-        /// <para><b>⚠ THE YARD AFFORDS SEVEN, AND THAT IS WHAT SIZES THE REGISTER.</b> Walked, the row
-        /// yields the shanty row's own five and two more east of the trap store: the bait shed and the
-        /// trap store each eat a step, and the spit's east edge stops the walk. The buoy kit's eight paint
-        /// schemes are therefore NOT the binding cap here — the ground is — and
+        /// <para><b>⭐ AND AN INTERRUPTION SHORTENS THE STRIDE, IT DOES NOT COST A LOT.</b> The walk
+        /// used to jump a whole fourteen-metre stride past a blocked step, which put the first lot east
+        /// of the trap store at x = 164 when the ground had been clear since x = 158 — six metres thrown
+        /// away, and the stride after it ran off the spit, so the last twenty-two metres of made ground
+        /// held two sheds instead of three. It now feels its way past the obstruction at
+        /// <see cref="OwnerShedProbeMetres"/> and runs the rest of the row at
+        /// <see cref="OwnerShedInfillSpacingMetres"/>. <b>That is where the eighth lot comes from</b>,
+        /// and it comes from ground the plan already owned rather than from growing the spit.</para>
+        ///
+        /// <para><b>⚠ THE YARD AFFORDS EIGHT, AND THAT IS WHAT SIZES THE REGISTER.</b> Walked, the row
+        /// yields the shanty row's own five and three more east of the trap store. The buoy kit's eight
+        /// paint schemes are the SAME number, so ground and art now cap the register together at eight
+        /// and a ninth fisher needs both — and
         /// <c>NineMileCreekPhotographTests.TheRegisterFitsTheLotsTheYardAffords</c> measures the walk
         /// rather than trusting this paragraph, because the day a working site is added the row loses a
         /// lot and the last owner would otherwise fall to the clamp below and be drawn on a neighbour.</para>
         ///
         /// <para>Lots 0–4 land exactly on <see cref="ShantyRow"/>, and that is the intent rather than a
         /// coincidence: the photograph's shed row IS the shanty row, so an owner's shed and the shanty
-        /// drawn there are one building.</para>
+        /// drawn there are one building. <b>The infill pitch is deliberately applied only AFTER an
+        /// interruption</b> so that stays true — a row re-pitched from its west end would lift every
+        /// shed off its shanty.</para>
         /// </summary>
         public static Vector2 OwnerShedLot(int index)
         {
@@ -984,10 +1114,9 @@ namespace HiddenHarbours.App.Editor
         /// How many shed lots this yard actually affords — the walk, counted.
         ///
         /// <para><b>⭐ THE REGISTER MAY NOT OUTGROW IT, and that is a real cap rather than a formality.</b>
-        /// Walked today the row yields SEVEN: the shanty row's five, then east past the bait shed and the
-        /// trap store (each of which eats a step) to the spit's east edge. An eighth owner's
-        /// <c>LotIndex</c> clamps onto the seventh and the two sheds are drawn in one place — which is
-        /// exactly what happened on the first pass, and is why
+        /// Walked today the row yields EIGHT: the shanty row's five, then three east of the trap store at
+        /// the infill pitch. A ninth owner's <c>LotIndex</c> clamps onto the eighth and the two sheds are
+        /// drawn in one place — which is exactly what happened on the first pass, and is why
         /// <c>NineMileCreekPhotographTests.TheRegisterFitsTheLotsTheYardAffords</c> measures this rather
         /// than trusting the number in this paragraph.</para>
         /// </summary>
@@ -998,15 +1127,25 @@ namespace HiddenHarbours.App.Editor
         {
             var row = new List<Vector2>();
             float y = OwnerShedRowY;
-            float west = ShantyRow[0].x;
             float east = SpitFill.Center.x + SpitFill.HalfSize.x - WharfShedRadius;
 
-            for (int step = 0; step < 64; step++)
+            float x = ShantyRow[0].x;
+            float pitch = OwnerShedSpacingMetres;
+
+            // ⚠ The guard counts ITERATIONS, not strides: past an interruption the walk advances by
+            // OwnerShedProbeMetres, so the row's length in strides is not what bounds this loop.
+            for (int guard = 0; guard < 512 && x <= east; guard++)
             {
-                var candidate = new Vector2(west + step * OwnerShedSpacingMetres, y);
-                if (candidate.x > east) break;                       // off the made ground
-                if (IsWorkingSiteInTheWay(candidate)) continue;      // step around, never nudge
-                row.Add(candidate);
+                if (IsWorkingSiteInTheWay(new Vector2(x, y)))
+                {
+                    // Feel past it rather than jumping a stride — and from here the row is an INFILL,
+                    // because whatever ground is left east of a working site is the last there is.
+                    x += OwnerShedProbeMetres;
+                    pitch = OwnerShedInfillSpacingMetres;
+                    continue;
+                }
+                row.Add(new Vector2(x, y));
+                x += pitch;
             }
             return row;
         }

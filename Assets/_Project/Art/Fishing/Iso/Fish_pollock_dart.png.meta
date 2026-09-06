@@ -509,6 +509,182 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: Fish_pollock_dart_d0_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 448
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 717c4464713304f40903365e38b7eace
+      internalID: -437744401
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_pollock_dart_d1_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 384
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f94584cf7c9ccb0408973016d9dd153b
+      internalID: -763620759
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_pollock_dart_d2_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 320
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1192f4c55b9e7e9499f93ea4751fc00b
+      internalID: -731828534
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_pollock_dart_d3_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 256
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6f22ca2d591f627409bbd450887854b4
+      internalID: 832069627
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_pollock_dart_d4_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 192
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 82eb6087ddff61c44bad9716e3fb3a4d
+      internalID: -947550945
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_pollock_dart_d5_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 128
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d836637a623527846a15c947b4b9d160
+      internalID: -1337081366
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_pollock_dart_d6_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 64
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4387f67c8452fca49aa5083b7e49e81d
+      internalID: 215812918
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fish_pollock_dart_d7_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 64
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.40625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a69ccdf1b4cf5614e93b620325203982
+      internalID: -729806243
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     customData: 
     physicsShape: []
@@ -525,20 +701,28 @@ TextureImporter:
     nameFileIdTable:
       Fish_pollock_dart_d0_f0: -264921620
       Fish_pollock_dart_d0_f1: -109383206
+      Fish_pollock_dart_d0_f2: -437744401
       Fish_pollock_dart_d1_f0: -672801227
       Fish_pollock_dart_d1_f1: -163081007
+      Fish_pollock_dart_d1_f2: -763620759
       Fish_pollock_dart_d2_f0: -1253363472
       Fish_pollock_dart_d2_f1: -909647583
+      Fish_pollock_dart_d2_f2: -731828534
       Fish_pollock_dart_d3_f0: -1852118855
       Fish_pollock_dart_d3_f1: -1543497914
+      Fish_pollock_dart_d3_f2: 832069627
       Fish_pollock_dart_d4_f0: -171318644
       Fish_pollock_dart_d4_f1: -704627013
+      Fish_pollock_dart_d4_f2: -947550945
       Fish_pollock_dart_d5_f0: 996557559
       Fish_pollock_dart_d5_f1: -579358498
+      Fish_pollock_dart_d5_f2: -1337081366
       Fish_pollock_dart_d6_f0: 2033290719
       Fish_pollock_dart_d6_f1: 1420011040
+      Fish_pollock_dart_d6_f2: 215812918
       Fish_pollock_dart_d7_f0: -1246610186
       Fish_pollock_dart_d7_f1: 1247664944
+      Fish_pollock_dart_d7_f2: -729806243
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

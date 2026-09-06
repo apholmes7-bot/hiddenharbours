@@ -2,6 +2,7 @@ using System.IO;
 using NUnit.Framework;
 using UnityEngine;
 using HiddenHarbours.Art;
+using HiddenHarbours.Core;   // SortingBands — the compositing ladder is pinned here too
 
 namespace HiddenHarbours.Tests.Art.EditMode
 {
@@ -297,16 +298,46 @@ namespace HiddenHarbours.Tests.Art.EditMode
         }
 
         /// <summary>
-        /// The sorting law in numbers: overlay, then shadows, then glow — nearer draws later at an
-        /// equal order, so the shadow quad must be pinned strictly between the overlay and the light
-        /// quads. If any of the three constants moves past another, the shadows silently vanish
-        /// under the glow (or the overlay darkens them into the world), so the ordering is pinned.
+        /// <b>THE WHOLE COMPOSITING LADDER, PINNED IN ONE PLACE.</b> Everything above the world sprites
+        /// either multiplies the frame down or adds light to it, and the design is entirely in WHICH
+        /// LANDS ON WHICH. Two rungs split their tie by camera DEPTH (nearer draws later at an equal
+        /// sorting order); the rest are separated by sorting ORDER alone.
+        ///
+        /// <list type="bullet">
+        /// <item>day/night tint (<c>SortingBands.WorldTint</c>) — the whole-frame multiply, ADR 0013</item>
+        /// <item>the SUN's shade (<c>SortingBands.SunShadePool</c>, then <c>SunShade</c>) — a multiply,
+        /// and it must sit BELOW the lamps because a lamp's light is ADDED and a sun shadow must not dim
+        /// it. Order alone settles that, which is why the sun shade needs no depth pin of its own.</item>
+        /// <item>the lamps' additive glow (<see cref="SceneLight.MaxSortingOrder"/>, depth
+        /// <see cref="SceneLight.DefaultCameraDepthOffset"/>)</item>
+        /// <item>the LAMP shadows' multiply, same order, NEARER depth
+        /// (<see cref="LampShadowSystem.ShadowDepthOffset"/>) so it lands on the glow</item>
+        /// </list>
+        ///
+        /// <para>If any constant moves past another the failure is silent: shadows vanish under the glow,
+        /// or the sun's shade starts dimming lamps, or the day/night tint darkens a composite that was
+        /// meant to be above it. So they are pinned together, here, rather than each in its own file.</para>
         /// </summary>
         [Test]
         public void TheDepthPins_AreOrdered_OverlayThenShadowsThenGlow()
         {
             Assert.Less(DayNightController.OverlayNearOffset, LampShadowSystem.ShadowDepthOffset);
             Assert.Less(LampShadowSystem.ShadowDepthOffset, SceneLight.DefaultCameraDepthOffset);
+
+            // The ORDER rungs, in the same one place. The sun's shade is above every world sprite (so it
+            // can darken a receiver at all), above the day/night tint (harmless — two multiplies commute)
+            // and strictly below the lamps' ceiling (not harmless — see the remark).
+            Assert.Less(SortingBands.AboveDecor, SortingBands.WorldTint,
+                "the sun's shade must clear every world sprite, and AboveDecor is the highest of them");
+            Assert.Less(SortingBands.WorldTint, SortingBands.SunShadePool);
+            Assert.Less(SortingBands.SunShadePool, SortingBands.SunShade,
+                "the ground pool draws first so it deterministically wins the shadow stencil where the " +
+                "two overlap — the same relationship the legacy arm carries in the decor band");
+            Assert.Less(SortingBands.SunShade, SceneLight.MaxSortingOrder,
+                "A LAMP'S LIGHT IS ADDED. If the sun's shade ever sorted at or above the lamps' ceiling it " +
+                "would multiply their glow down, and a tree's shadow would dim a lantern at dusk.");
+            Assert.LessOrEqual(SceneLight.MaxSortingOrder, short.MaxValue,
+                "sortingOrder is a signed 16-bit field: anything above 32767 wraps to the bottom of the world");
 
             const float camZ = -10f, near = 0.3f;
             float shadowZ = LightMath.CameraDepthZ(camZ, 1f, near, LampShadowSystem.ShadowDepthOffset);

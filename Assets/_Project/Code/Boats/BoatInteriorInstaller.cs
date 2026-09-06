@@ -156,7 +156,9 @@ namespace HiddenHarbours.Boats
                 deckPitchLiftMeters: PitchLiftMetres(visual),
                 // ⚠ The def's levels are NOT the sheet's rows; the map arrives with the cells.
                 cellRowForLevel: null,
-                roomIsGeometry: roomIsGeometry);
+                // The mesh itself, not a flag off it: the cabin re-asks it which levels are rooms
+                // (LevelIndexAtHeight), which a bool could not answer.
+                meshRoom: roomIsGeometry ? visual.HullMesh : null);
 
             // --- the cutaway --------------------------------------------------------------------
             // The owner's 2026-08-26 ruling: below decks, her house is CUT AWAY rather than covered
@@ -182,7 +184,11 @@ namespace HiddenHarbours.Boats
 
             Door = doorGo.AddComponent<BoatCabinDoor>();
             Door.Configure(Interior, $"fixture.boat.{def.Id}.{DoorId(door)}", -1,
-                           ReachMetres(door), "Go below", "Come out");
+                           // ⚠ The labels name what the PRESS does, and since 2026-08-28 the press moves
+                           // the LEAF — going below is a walk and has no prompt of its own. "Go below" on
+                           // a press that opens a door would be the words drifting from the action, which
+                           // is the exact failure VerbLabel derives itself to avoid (rule 6).
+                           ReachMetres(door), "Open the door", "Close the door");
         }
 
         /// <summary>The door's own id, or a stable stand-in. Ids must be unique among live registrants,

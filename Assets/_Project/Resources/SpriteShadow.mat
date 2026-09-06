@@ -35,6 +35,9 @@ Material:
     - _StencilPass: 2
     - _StencilRef: 1
     - _EdgeSoftness: 0
+    - _ScreenShade: 0
+    - _SrcBlend: 5
+    - _DstBlend: 10
     m_Colors:
     - _ShadowColor: {r: 0.04, g: 0.05, b: 0.1, a: 0.45}
     - _ShadowDir: {r: -1, g: 0, b: 0, a: 0}
