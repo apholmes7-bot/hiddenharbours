@@ -30,8 +30,8 @@ namespace HiddenHarbours.Tests.PlayMode
     ///
     /// <para><b>Real assets, on purpose.</b> A mirror def would pass this suite and tell us nothing about
     /// the boat in the game. The lobster is the cheapest hull that carries a cabin (11.7 MB of cells) and
-    /// the only interior-bearing hull whose level map is the identity — which is why the tanker gets her
-    /// own journey at the bottom of this file, where it is not.</para>
+    /// the only interior-bearing hull whose level map is the identity — which is why the sport fisher
+    /// skybridge gets her own journey at the bottom of this file, where it is not.</para>
     ///
     /// <para><b>State, never pixels.</b> Nothing here renders: no camera is created and nothing calls
     /// <c>Camera.Render</c>/<c>ReadPixels</c>, which on a CI editor with no graphics device kills the
@@ -54,7 +54,14 @@ namespace HiddenHarbours.Tests.PlayMode
     {
         private const string LobsterVisualPath = "Assets/_Project/Data/Boats/Visuals/LobsterBoatIso.asset";
         private const string LobsterHullPath = "Assets/_Project/Data/Boats/LobsterBoat.asset";
-        private const string TankerInteriorPath = "Assets/_Project/Data/Boats/Interiors/TankerIso.asset";
+        /// <summary>The two hulls still on sprite sheets after ADR 0041's rollout PR 3. The skybridge
+        /// carries the level-map trap (her def's house-sole index is the sheet's BRIDGE row); the
+        /// convertible is the only one left declaring a weather deck. Both claims used to ride on the
+        /// tanker, who carried both until her room became geometry.</summary>
+        private const string SkybridgeInteriorPath =
+            "Assets/_Project/Data/Boats/Interiors/SportFisherSkybridgeIso.asset";
+        private const string ConvertibleInteriorPath =
+            "Assets/_Project/Data/Boats/Interiors/SportFisherConvertibleIso.asset";
         /// <summary>One of the eighteen lobster variants (ADR 0041 rollout PR 1) — a hardtop; she has a
         /// committed visual and interior def but no BoatHullDef, so the journey wraps her visual in one.</summary>
         private const string VariantVisualPath = "Assets/_Project/Data/Boats/Visuals/LobsterStandardHardtopFundyIso.asset";
@@ -590,49 +597,64 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         // =====================================================================================
-        //  D · THE LEVEL MAP — a def's LEVELS are not a sheet's ROWS, and the tanker proves it
+        //  D · THE LEVEL MAP — a def's LEVELS are not a sheet's ROWS, and the skybridge proves it
         // =====================================================================================
 
         [UnityTest]
-        public IEnumerator TheTankerDoorOpensOntoHerHOUSE_NotHerEngineSpace()
+        public IEnumerator TheSkybridgeDoorOpensOntoHerSALOON_NotHerFlyingBridge()
         {
             // ⭐ THE WORST TRAP IN THIS ARC, driven rather than reasoned about. A BoatInteriorDef
             // declares every level a ROUTE reaches — including exterior working decks the sheets never
-            // bake — and the sheets run bridge/house/below where the tanker's def runs
-            // main_deck/poop_deck/house_sole/bridge_sole/below_sole. Index the cells by the DEF's level
-            // index and walking into her wheelhouse draws row 2, which is `below`: the engine space.
-            // It looks like a perfectly good cabin, and nothing else in the project would notice.
-            BoatInteriorDef def = LoadCommitted<BoatInteriorDef>(TankerInteriorPath);
+            // bake — and the sheets are baked in the RIG's order, which is not the def's. The skybridge
+            // bakes bridge/house/below where her def runs house_sole/bridge_sole/below_sole: index the
+            // cells by the DEF's level index and walking into her saloon draws row 0, which is `bridge`
+            // — the flying bridge, open to the sky. It looks like a perfectly good cabin, and nothing
+            // else in the project would notice.
+            //
+            // ⚠️ SHE INHERITED THIS SUITE FROM THE TANKER (ADR 0041 rollout PR 3, 2026-09-06). The
+            // tanker held it because her def index and her sheet row differed; her room is geometry now
+            // and she ships no cells, so the claim moved to a hull that still has some and still differs.
+            // The tanker's OTHER half — an exterior weather deck mapping to nothing — moved to the
+            // convertible below, who is now the only sprite hull that declares one. When the last sheet
+            // retires (rollout PR 5) both of these go with the sprite path they guard.
+            BoatInteriorDef def = LoadCommitted<BoatInteriorDef>(SkybridgeInteriorPath);
             if (def == null) yield break;
 
             BoatInteriorCellsDef cells = BoatInteriorCells.Acquire(def.Id);
-            Assert.IsNotNull(cells, $"the tanker's committed cells must be under Resources as " +
+            Assert.IsNotNull(cells, $"the skybridge's committed cells must be under Resources as " +
                                     $"{BoatInteriorCellsDef.PathFor(def.Id)}");
             Assert.IsTrue(cells.IsUsableFor(def));
 
             int house = Array.IndexOf(cells.CellLevels, "house");
-            int below = Array.IndexOf(cells.CellLevels, "below");
+            int bridge = Array.IndexOf(cells.CellLevels, "bridge");
             Assert.GreaterOrEqual(house, 0, "her sheets must bake a `house` row at all");
-            Assert.AreNotEqual(house, below);
+            Assert.AreNotEqual(house, bridge);
 
             // ⭐ THE HARNESS GUARD THAT MAKES THIS TEST WORTH RUNNING: her def's index for the house sole
             // must NOT equal the sheet's house row. If a re-bake ever made them agree, this file would go
             // on passing while testing nothing — so say so out loud rather than discover it later.
             int defIndexOfHouseSole = Array.FindIndex(def.Levels, l => l != null && l.Id == "house_sole");
             Assert.AreNotEqual(house, defIndexOfHouseSole,
-                               "the tanker is in this suite BECAUSE her def index and her sheet row " +
+                               "the skybridge is in this suite BECAUSE her def index and her sheet row " +
                                "differ; if they ever agree, pick a hull where they do not");
 
+            // ⭐ AND THE WRONG ANSWER IS NAMED, not merely "not the right one": indexing by the def's
+            // level index would hand her saloon the row baked at that index, and asserting it is exactly
+            // the row a reader can look up in her cells asset is what stops this passing on a hull where
+            // the two happen to differ for some other reason.
+            Assert.AreEqual(bridge, defIndexOfHouseSole,
+                            "her def's house-sole index is the sheet's BRIDGE row — that is the picture " +
+                            "the bug would draw, and it is why this hull was chosen");
+
             // The journey, on the smallest rig that can make it: her real def, her real cells, her real
-            // sill. (No mesh hull — the tanker's 281 MB of sheets is quite enough for one test, and what
-            // is under examination is which ROW gets drawn, not how she is skinned.)
+            // sill. (No mesh hull — her 144.6 MB of sheets is quite enough for one test, and what is
+            // under examination is which ROW gets drawn, not how she is skinned.)
             CabinRig rig = NewCabinRig(def, cells);
             yield return null;
 
             int sillLevel = rig.Cabin.LevelIndexAtHeight(def.Door.ThresholdPoint.z);
             Assert.AreEqual("house_sole", def.Levels[sillLevel].Id,
-                            "her sill is at house-sole height — and poop_deck, which is at the SAME " +
-                            "height, must be skipped because the sheets bake no working deck");
+                            "her sill is at house-sole height, which is where her aft door lands");
 
             Assert.IsTrue(rig.Door.TryUse());
             yield return WaitForCue(rig.Door);
@@ -640,22 +662,57 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.AreEqual(sillLevel, rig.Cabin.Level);
 
             Assert.AreEqual(house, rig.Cabin.CellRowFor(sillLevel),
-                            "the level map — builder-computed, matched by id — sends her wheelhouse to " +
+                            "the level map — builder-computed, matched by id — sends her saloon to " +
                             "the sheet's HOUSE row");
-            Assert.AreNotEqual(below, rig.Cabin.CellRowFor(sillLevel),
-                               "…and never to `below`, which is what indexing by the def's level would give");
+            Assert.AreNotEqual(bridge, rig.Cabin.CellRowFor(sillLevel),
+                               "…and never to `bridge`, which is what indexing by the def's level would give");
 
             // What is actually DRAWN, which is the only version of this claim that cannot be argued with.
             int facing = IsoFacing.HeadingToFacingIndex(0f, cells.Facings, 0f, cells.CellsAreCounterClockwise);
             Assert.AreSame(cells.Cells[house * cells.Facings + facing], rig.Room.sprite,
                            "the cell on screen is the one baked for her house");
 
-            // An outdoor deck is a real answer of -1, and it is what stops a cabin door walking somebody
-            // onto a working deck to be shown nothing.
+            BoatInteriorCells.Release(def.Id);
+        }
+
+        /// <summary>
+        /// <b>An outdoor deck is a real answer of −1</b> — the other half of the tanker's old journey,
+        /// on the convertible, who after rollout PR 3 is the only hull still on sheets that declares a
+        /// weather deck at all (<c>helm_deck</c>). It is what stops a cabin door walking somebody onto a
+        /// working deck to be shown nothing.
+        ///
+        /// <para>Driven through the runtime cabin rather than read off the asset, which is the whole
+        /// difference from <c>BoatInteriorPlacementTests</c>'s asset-side guard on the same property:
+        /// there the row map is inspected, here it is the thing answering a door.</para>
+        /// </summary>
+        [UnityTest]
+        public IEnumerator TheConvertiblesWeatherDeckDrawsNothing_BecauseTheSheetsBakeNone()
+        {
+            BoatInteriorDef def = LoadCommitted<BoatInteriorDef>(ConvertibleInteriorPath);
+            if (def == null) yield break;
+
+            BoatInteriorCellsDef cells = BoatInteriorCells.Acquire(def.Id);
+            Assert.IsNotNull(cells, $"the convertible's committed cells must be under Resources as " +
+                                    $"{BoatInteriorCellsDef.PathFor(def.Id)}");
+
+            CabinRig rig = NewCabinRig(def, cells);
+            yield return null;
+
+            int decks = 0;
             for (int i = 0; i < def.Levels.Length; i++)
                 if (def.Levels[i] != null && def.Levels[i].Id.EndsWith("_deck", StringComparison.Ordinal))
+                {
+                    decks++;
                     Assert.AreEqual(-1, rig.Cabin.CellRowFor(i),
                                     $"'{def.Levels[i].Id}' is weather deck: the sheets draw nothing for it");
+                }
+
+            // The premise, stated: a hull with no weather deck would pass this vacuously, and after the
+            // rollout retires her sheets too there will be no sprite hull left that has one.
+            Assert.Greater(decks, 0,
+                           "she is in this suite BECAUSE she declares a weather deck. If she stops " +
+                           "declaring one — or her sheets retire — this claim has no subject left on " +
+                           "the sprite path and dies with it (ADR 0041 rollout PR 5).");
 
             BoatInteriorCells.Release(def.Id);
         }

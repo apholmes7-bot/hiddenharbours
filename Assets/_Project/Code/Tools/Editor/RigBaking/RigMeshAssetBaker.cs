@@ -285,6 +285,23 @@ namespace HiddenHarbours.Tools.RigBaking
         }
 
         /// <summary>
+        /// <b>The tanker, and nothing else</b> — ADR 0041's rollout PR 3, the last hull with a
+        /// shipped <c>geometry()</c> export to get a mesh room.
+        ///
+        /// <para>Her own entry for the reason every batch above has one: a whole-fleet bake rewrites
+        /// every def, and Unity's serialisation is not byte-deterministic, so re-baking the hulls
+        /// this batch does not touch buries a one-hull change in churn on assets nobody edited.</para>
+        /// </summary>
+        [MenuItem(RigMeshGate.MenuRoot + "/Bake Tanker hull-mesh asset", priority = 225)]
+        public static void BakeTanker() => BakeOne("tanker");
+
+        [MenuItem(RigMeshGate.MenuRoot + "/Bake Tanker hull-mesh asset", validate = true)]
+        static bool BakeTankerValidate() => RigMeshGate.Enabled;
+
+        /// <summary>Headless entry (-executeMethod) for the tanker's bake.</summary>
+        public static void BakeTankerCli() => BakeOneCli("tanker");
+
+        /// <summary>
         /// <b>The five hulls the fleet pack's last three rigs make, and nothing else</b> — the
         /// zodiac's two builds, the reshaped sport skiff, and the two battlewagons.
         ///
@@ -895,6 +912,13 @@ namespace HiddenHarbours.Tools.RigBaking
             "SternTrawlerIso",
             "SternTrawlerMk2Iso",
             "CoastalPacketIso",
+            // The TANKER (ADR 0041 rollout PR 3) — the fleet's largest hull, and the only one baked
+            // at 16 px = 1 m. The scale is irrelevant to a room measured in metres, which is half the
+            // point of converting her: she is the hull that finds anything that assumed 32. She also
+            // carries TWO open decks, and her poop_deck sits at her house sole's very height — the
+            // same tie the four working ships brought, answered the same way (the cutaway gate, not
+            // a sheet's row map), so she is its second, independent witness.
+            "TankerIso",
         };
 
         /// <summary>Is this hull converted — is her rig family on the switch? One predicate for

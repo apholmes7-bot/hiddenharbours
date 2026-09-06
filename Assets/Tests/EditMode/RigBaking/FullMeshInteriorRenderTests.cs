@@ -83,6 +83,8 @@ namespace HiddenHarbours.Tests.RigBaking
                 ["sternTrawler"] = "trawler",
                 ["sternTrawlerMk2"] = "trawler2",
                 ["coastalPacket"] = "packet",
+                // The tanker (rollout PR 3) — the interior rig's own key for her is her plain name.
+                ["tanker"] = "tanker",
             };
             foreach (LobsterVariant v in LobsterVariantFleet.All)
                 names[v.Key] = $"lobvar-{v.Size}-{v.Style}-{v.Region}";
@@ -110,6 +112,9 @@ namespace HiddenHarbours.Tests.RigBaking
             "sternTrawler",
             "sternTrawlerMk2",
             "coastalPacket",
+            // The tanker: 110 m against the packet's 60, the fleet's only 16 px/m rig, and the only
+            // hull carrying two open decks. Nothing above her stands in for any of that.
+            "tanker",
         };
 
         /// <summary>

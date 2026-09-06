@@ -307,9 +307,11 @@ namespace HiddenHarbours.Tests.EditMode
 
             Assert.IsEmpty(wrong, string.Join("\n  ", wrong));
             Assert.Greater(shipsSeen, 0,
-                "no hull declared an exterior working deck. The five ships do (main_deck, and the " +
-                "tanker's poop_deck), so a suite that sees none is not looking at the fleet that " +
-                "produced this bug.");
+                "no hull STILL ON SHEETS declared an exterior working deck. All five ships did " +
+                "(main_deck, and the tanker's poop_deck) and every one of them is converted now, so " +
+                "after ADR 0041's rollout PR 3 the only witness left on the sprite path is the sport " +
+                "fisher convertible's helm_deck. When her sheets retire this claim has no subject here " +
+                "and belongs to the mesh side alone (ConvertedHullEntryLevelTests).");
         }
 
         // =====================================================================================

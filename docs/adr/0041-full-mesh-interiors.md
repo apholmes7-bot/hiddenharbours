@@ -193,10 +193,10 @@ it, so a batch that adds a hull without its evidence reddens.
 | lobster variant standard-open-fundy | #702 | 2026-09-02 | 425 | **19** | 1318 + 930 = 2248 | +70.6% | 0 px vs room-stripped control, 4 headings | house 20.9–31.0%, cuddy 7.7–11.5% vs 4% floor |
 | lobster variant standard-open-newfoundland | #702 | 2026-09-02 | 433 | **19** | 1334 + 946 = 2280 | +70.9% | 0 px vs room-stripped control, 4 headings | house 29.3–40.1%, cuddy 5.9–10.3% vs 4% floor |
 | lobster variant standard-open-northumberland | #702 | 2026-09-02 | 481 | **19** | 1378 + 1042 = 2420 | +75.6% | 0 px vs room-stripped control, 4 headings | house 33.4–40.9%, cuddy 6.0–9.6% vs 4% floor |
-| side dragger | #731 | pending | 571 | **18** | 1744 + 1222 = 2966 | +70.1% | 0 px vs room-stripped control, 4 headings | house 19.2–30.1%, bridge 9.5–15.8%, below 31.6–51.4% vs 4% floor |
-| stern trawler | #731 | pending | 668 | **18** | 1762 + 1412 = 3174 | +80.1% | 0 px vs room-stripped control, 4 headings | house 16.5–26.8%, bridge 9.7–17.9%, below 33.7–55.1% vs 4% floor |
-| stern trawler Mk2 | #731 | pending | 668 | **18** | 2596 + 1412 = 4008 | +54.4% | 0 px vs room-stripped control, 4 headings | house 15.9–25.9%, bridge 10.6–17.7%, below 31.3–51.8% vs 4% floor |
-| coastal packet | #731 | pending | 664 | **18** | 2638 + 1408 = 4046 | +53.4% | 0 px vs room-stripped control, 4 headings | house 13.0–19.2%, bridge 8.2–13.5%, below 42.5–65.5% vs 4% floor |
+| side dragger | #731 | 2026-09-05 | 571 | **18** | 1744 + 1222 = 2966 | +70.1% | 0 px vs room-stripped control, 4 headings | house 19.2–30.1%, bridge 9.5–15.8%, below 31.6–51.4% vs 4% floor |
+| stern trawler | #731 | 2026-09-05 | 668 | **18** | 1762 + 1412 = 3174 | +80.1% | 0 px vs room-stripped control, 4 headings | house 16.5–26.8%, bridge 9.7–17.9%, below 33.7–55.1% vs 4% floor |
+| stern trawler Mk2 | #731 | 2026-09-05 | 668 | **18** | 2596 + 1412 = 4008 | +54.4% | 0 px vs room-stripped control, 4 headings | house 15.9–25.9%, bridge 10.6–17.7%, below 31.3–51.8% vs 4% floor |
+| coastal packet | #731 | 2026-09-05 | 664 | **18** | 2638 + 1408 = 4046 | +53.4% | 0 px vs room-stripped control, 4 headings | house 13.0–19.2%, bridge 8.2–13.5%, below 42.5–65.5% vs 4% floor |
 
 **Census correction (both hulls).** The palette census above projected 22 distinct interior ramps
 for the lobster and 21 for the cape; their baked rooms paint **19** and **18**. The decision the
