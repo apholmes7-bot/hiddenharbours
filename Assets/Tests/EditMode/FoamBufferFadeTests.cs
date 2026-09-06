@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using HiddenHarbours.Art;
 using HiddenHarbours.Core;
 using NUnit.Framework;
@@ -507,6 +508,100 @@ namespace HiddenHarbours.Tests.EditMode
                     Assert.LessOrEqual(worst, 0.5f / 65535f + 1e-9f, "16-bit UNORM: half a code of 65535.");
                 if (format == RenderTextureFormat.RGHalf)
                     Assert.LessOrEqual(worst, Mathf.Pow(2f, -11f), "binary16: half an ULP at 1.0.");
+            }
+        }
+
+        // ==== 8. PR 11b's CONSERVATION, RE-BASED ON A BUFFER THAT DECAYS =============================
+
+        /// <summary>
+        /// 🔴 <b>THE RE-BASE THE CHARTER ASKED FOR, and the first thing to say is why nothing of
+        /// 11b's moved.</b> <c>WakeDispersalStampTests.ConservationPerAgeBin_...</c> states its
+        /// conservation <b>at injection</b>, and it walks its parcel of sea in <c>double</c> — so the
+        /// render target cannot touch its numbers, and this PR re-based none of them. That is not a
+        /// loophole; it is precisely why a guard on the stamp could never have caught row 28.
+        ///
+        /// <para>The statement this PR owes is the other one: <b>what the BUFFER HOLDS at age t against
+        /// what was laid at birth, times the decay over t</b>. Same passing hull, same shipped stamp —
+        /// but every cell goes through <see cref="FoamBuffer.Store"/>, so the target is in the loop.
+        /// The decay is linear in the stored value and nothing else happens after the hull has gone, so
+        /// the whole lateral integral must fall on the channel's own half-life. The sabotage arm is the
+        /// shipped format, which holds its birth value instead.</para>
+        /// </summary>
+        [Test]
+        public void WhatTheBufferHolds_FallsOnItsOwnHalfLife_WhereTheShippedFormatHoldsItsBirthValue()
+        {
+            const float halfBeam = 2.4f;                 // the cape, as 11a/11b measured her
+            const float depositRate = 2.5f;              // FoamInjector._depositPerSecond at full churn
+            const float dt = 1f / 60f;
+            float speed = 8f * 0.514444f;
+            var ages = new[] { 3f, 6f, 12f };
+
+            double Integral(float[] cells)
+            {
+                double s = 0;
+                foreach (float c in cells) s += c;
+                return s * FoamBuffer.CellSize * 2.0;    // both sides of the track
+            }
+
+            foreach (RenderTextureFormat format in new[] { Fixed, Shipped })
+            {
+                int n = Mathf.RoundToInt(12f / FoamBuffer.CellSize);
+                var cells = new float[n];
+                float factor = FoamBuffer.DecayFactor(CoverageHalfLife, dt);
+
+                // The hull passes: a parcel is lapped from a radius ahead of the transom to a radius
+                // astern of it, which is the whole of what the shipped capsule lays on this water.
+                int pass = Mathf.CeilToInt(2f * halfBeam / speed / dt);
+                for (int k = 0; k <= pass; k++)
+                {
+                    float astern = speed * (k * dt) - halfBeam;
+                    for (int i = 0; i < n; i++)
+                    {
+                        float d = (i + 0.5f) * FoamBuffer.CellSize;
+                        float deposit = Mathf.Abs(astern) <= halfBeam
+                            ? depositRate * dt * FoamBuffer.Profile(Mathf.Sqrt(astern * astern + d * d), halfBeam)
+                            : 0f;
+                        cells[i] = FoamBuffer.Store(cells[i] * factor + deposit, format);
+                    }
+                }
+
+                double birth = Integral(cells);
+                var measured = new double[ages.Length];
+                int frame = 0;
+                for (int a = 0; a < ages.Length; a++)
+                {
+                    int until = Mathf.RoundToInt(ages[a] / dt);
+                    for (; frame < until; frame++)
+                        for (int i = 0; i < n; i++)
+                            cells[i] = FoamBuffer.Store(cells[i] * factor, format);
+                    measured[a] = Integral(cells);
+                }
+
+                TestContext.WriteLine($"{format,-6} laid {birth:0.0000} per metre of track at birth; " +
+                                      "held at age " + string.Join(" · ", System.Linq.Enumerable.Range(0, ages.Length)
+                                          .Select(a => $"{ages[a]:0}s {measured[a] / birth:0.0000} " +
+                                                       $"(decay says {Mathf.Pow(0.5f, ages[a] / CoverageHalfLife):0.0000})")));
+
+                Assert.Greater(birth, 0.0, $"{format}: nothing was laid, so nothing is being conserved.");
+                for (int a = 0; a < ages.Length; a++)
+                {
+                    double predicted = Mathf.Pow(0.5f, ages[a] / CoverageHalfLife);
+                    double held = measured[a] / birth;
+                    if (format == Shipped)
+                        continue;   // the control is asserted once, below, as one statement
+                    Assert.AreEqual(predicted, held, predicted * 0.02,
+                        $"At age {ages[a]:0} s the buffer holds {held:0.0000} of what was laid, against " +
+                        $"the {predicted:0.0000} its own half-life says. The decay is linear in the " +
+                        "stored value and nothing is injected after the hull has gone, so the whole " +
+                        "lateral integral has to fall on the channel's half-life — a gap here means " +
+                        "the store is eating part of the decay again.");
+                }
+                if (format == Shipped)
+                    Assert.AreEqual(1.0, measured[ages.Length - 1] / birth, 0.01,
+                        "DEAD CONTROL: on the shipped 8-bit target the buffer must still be holding " +
+                        "essentially its BIRTH value 12 seconds later — two coverage half-lives. If it " +
+                        "no longer does, the two formats have converged and the arm above proves " +
+                        "nothing.");
             }
         }
     }

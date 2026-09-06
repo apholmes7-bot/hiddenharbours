@@ -4818,6 +4818,15 @@ a stated 8 MB, past which the WINDOW dial — not the format — is what needs t
 | where the coverage decay comes to rest at 60 fps | **1.000** (it does not move) | 0.00395 — far below the compose's 0.12 |
 | the freshness clock at 60 fps | rests at 0.678 → `age01` 0.322 → ramp **0.305**, so #724's SHALLOW blue (0.5) is never reached | rests at 0.0026 → `age01` 0.997 → ramp **1.000**, the whole walk |
 | distinct stored values along that walk | 83 | 2016 |
+| what the buffer HOLDS 3 / 6 / 12 s after a cape's pass, as a fraction of what she laid | 1.0000 / 1.0000 / **1.0000** | 0.7071 / 0.5001 / 0.2502, against the decay's 0.7071 / 0.5000 / 0.2500 |
+
+⚠️ **Nothing of PR 11b's was re-based, and that is the point.**
+`WakeDispersalStampTests.ConservationPerAgeBin_...` states its conservation **at injection** and walks its
+parcel of sea in `double`, so the render target cannot touch its numbers — which is exactly why a guard on
+the stamp could never have caught this. The statement this PR owes is the last row of the table above:
+what the buffer HOLDS at age t against what was laid at birth times the decay over t, with every cell
+going through `FoamBuffer.Store`
+(`WhatTheBufferHolds_FallsOnItsOwnHalfLife_WhereTheShippedFormatHoldsItsBirthValue`).
 
 ### 36.4 🔴 The alternative that was measured and not shipped
 
@@ -4840,6 +4849,10 @@ other one" is not a reason.
 - **An exact temporal error diffusion** — one that neither walks nor freezes — has to STORE its residual,
   one byte per channel. That is **precisely the two bytes a texel the wider format costs**. The honest
   dither buys nothing over the honest format and pays for it in noise.
+
+Its running cost, for the record, was never the objection: one 4-operation integer hash per texel per
+frame is 590 k hashes at the shipped 768² window, which is nothing beside the advect pass's eight-slot
+injection loop. It was rejected on what it does to the picture, not on what it costs.
 
 ### 36.5 ⚠️ What is now the owner's, and was not reachable before
 
