@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using System.Text;
 using System.Text.RegularExpressions;
 using NUnit.Framework;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.TestTools;
 using HiddenHarbours.Core;
@@ -368,6 +370,80 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsTrue(rig.Door.TryUse());
             Assert.IsFalse(rig.Door.IsCueing);
             Assert.IsTrue(rig.Door.IsOpen, "no frames to play, so the leaf is simply open");
+        }
+
+        // =====================================================================================
+        //  6 · THE FLEET — every measured doorway is somewhere she can actually stand
+        // =====================================================================================
+
+        [Test]
+        public void EveryMeasuredDoorwayIsReachableFromHerOwnWalkableDeck()
+        {
+            // ⭐⭐ THE GUARD THIS WHOLE CHANGE NEEDS, and it exists because the failure it catches is
+            // SILENT. While the crossing was a press, where the doorway sat relative to the deck did not
+            // matter: you pressed from anywhere within reach (1.2 m or better) and the swap carried you.
+            // Now the crossing is a WALK, so the threshold must be a point the deck clamp will actually
+            // let her stand on — within the band, which is half her own clear width and as little as
+            // 0.24 m on the inshore lobsters. A hull whose doorway fell outside her walkable deck would
+            // ship a cabin nobody can enter, with no error, no refused press and nothing in the log:
+            // just a room the player walks past. One assertion over the whole fleet is the only honest
+            // way to know it has not happened.
+            //
+            // ⚠ Reads the SHIPPED assets and mutates none of them (a run that rewrites a boat def is a
+            // run that dirties the working tree behind you).
+            var report = new StringBuilder();
+            int measured = 0;
+            float worstGap = 0f;
+            string worstHull = "none";
+
+            foreach (string guid in AssetDatabase.FindAssets("t:BoatVisualDef"))
+            {
+                var visual = AssetDatabase.LoadAssetAtPath<BoatVisualDef>(
+                    AssetDatabase.GUIDToAssetPath(guid));
+                if (visual == null || visual.Interior == null || visual.Deck == null) continue;
+
+                BoatInteriorDoor door = visual.Interior.Door;
+                if (door == null || !BoatCabinThreshold.HasBand(door)) continue;
+                if (!visual.Deck.HasWalkableDeck()) continue;
+
+                measured++;
+                Vector2 doorway = BoatCabinThreshold.PointOf(door);
+                float band = BoatCabinThreshold.BandRadiusMetres(door);
+                float gap = DistanceToWalkableDeck(visual.Deck, doorway);
+
+                if (gap > worstGap) { worstGap = gap; worstHull = visual.name; }
+                report.AppendLine(
+                    $"  {visual.name,-36} band {band:F3} m   doorway {gap:F3} m from her walkable deck");
+
+                Assert.Less(gap, band,
+                    $"{visual.name}: her doorway {doorway} is {gap:F3} m outside every walkable deck " +
+                    $"area, against a band of {band:F3} m. She can never stand in her own threshold, so " +
+                    "her cabin is unreachable — the door would open onto a room the walk cannot cross.");
+            }
+
+            Assert.Greater(measured, 0,
+                           "no measured hull carries both a deck and a doorway — this guard is asleep");
+
+            Debug.Log($"[cabin-doorways] {measured} measured hulls, worst gap {worstGap:F3} m " +
+                      $"({worstHull}):\n{report}");
+        }
+
+        /// <summary>How far <paramref name="point"/> is from the nearest place a walker may stand, in the
+        /// hull's own metres — 0 when it is ON the deck. WASHBOARDS do not count: a side deck is somewhere
+        /// she climbs onto, deliberately not part of the free walk, and a doorway reachable only from the
+        /// gunwale is not reachable.</summary>
+        private static float DistanceToWalkableDeck(BoatDeckDef deck, Vector2 point)
+        {
+            float best = float.PositiveInfinity;
+            foreach (DeckArea area in deck.Areas)
+            {
+                if (area == null || !area.IsUsable() || area.Kind != DeckAreaKind.Deck) continue;
+                if (DeckAreaMath.Contains(area.Outline, point)) return 0f;
+
+                DeckAreaMath.ClosestPointOnOutline(area.Outline, point, out float sqrDistance);
+                best = Mathf.Min(best, Mathf.Sqrt(sqrDistance));
+            }
+            return best;
         }
 
         // =====================================================================================
