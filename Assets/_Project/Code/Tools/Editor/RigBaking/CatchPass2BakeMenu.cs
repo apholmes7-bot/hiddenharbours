@@ -22,7 +22,8 @@ namespace HiddenHarbours.Tools.RigBaking
         public const string OutputFolder = CatchPass2Baker.DefaultOutputFolder;
 
         /// <summary>
-        /// One click for the whole of catch pass 2 — 210 fish sheets plus the 30 storage-side ones.
+        /// One click for the whole of catch pass 2 — 210 fish sheets plus the 34 storage-side ones
+        /// (30 as pass 2 shipped, plus the hod’s four heap bands).
         /// The fish go first because they are the long pole and a failure there should stop the run
         /// before anything else is written.
         /// </summary>

@@ -414,6 +414,135 @@ namespace HiddenHarbours.Tests.RigBaking
             Assert.AreEqual(40, host.EvaluateNumber("ClamHod.H"));
         }
 
+        // =========================================================================================
+        // the hod's HEAP — what the bake composes between the two wire layers
+        // =========================================================================================
+
+        /// <summary>The heap's own chain: everything <c>CatchKit2</c> composes from, then the canvas
+        /// shim, then the glue, then the hod. Exactly what <c>CatchPass2StorageBaker.BakeClamHod</c>
+        /// installs — a test that built a different chain would be measuring a different bake.</summary>
+        static IRigScriptHost HeapChain()
+        {
+            var host = Chain();
+            host.Execute(CatchStorageBaker.CanvasShimJs);
+            RigCatalog.InstallModule(host, RigCatalog.Get("catchKit2"));
+            RigCatalog.Install(host, RigCatalog.Get("clamHod"));
+            return host;
+        }
+
+        [Test]
+        public void TheHodBakesTheFourBandsThatHeapSomething_AndNotEmpty()
+        {
+            using var host = HeapChain();
+
+            CollectionAssert.AreEqual(new[] { "empty", "few", "half", "full", "brim" },
+                                      FishingKitBaker.ReadStringArray(host, "ClamHod.FILLS"),
+                                      "the rig's own band ladder");
+
+            CollectionAssert.AreEqual(new[] { "few", "half", "full", "brim" },
+                                      CatchPass2StorageBaker.HeapBands(host, "ClamHod"),
+                                      "the bands with a non-zero fraction — 'empty' heaps nothing, so " +
+                                      "an empty hod is the back+front pair with nothing between them");
+
+            // ⚠️ heap() answers NULL for a zero fraction and — silently — when Shellfish2 is absent.
+            // Both would bake four fully transparent sheets that pass every geometry guard.
+            Assert.IsTrue(host.EvaluateBool(
+                "CatchKit2.heap('clam', ClamHod.opening(0), ClamHod.depthPx(), 'empty') === null"),
+                "'empty' must heap nothing");
+            foreach (string band in new[] { "few", "half", "full", "brim" })
+                Assert.IsFalse(host.EvaluateBool(
+                    $"CatchKit2.heap('clam', ClamHod.opening(0), ClamHod.depthPx(), '{band}') === null"),
+                    $"'{band}' must heap something");
+        }
+
+        [Test]
+        public void EveryHeapLandsInsideTheHodsCell_AtThePivotTheRigReports()
+        {
+            // The bake places the heap at pivot + (x, y) and REFUSES rather than cropping. If the rim
+            // quad ever outgrows the cell this is where it says so, before four sheets are written.
+            using var host = HeapChain();
+            int w = (int)host.EvaluateNumber("ClamHod.W"), h = (int)host.EvaluateNumber("ClamHod.H");
+            int px = (int)host.EvaluateNumber("ClamHod.pivot.x"), py = (int)host.EvaluateNumber("ClamHod.pivot.y");
+
+            foreach (string band in new[] { "few", "half", "full", "brim" })
+            for (int d = 0; d < 8; d++)
+            {
+                host.Execute($"globalThis.__h = CatchKit2.heap('clam', ClamHod.opening({d}), " +
+                             $"ClamHod.depthPx(), '{band}');");
+                int x0 = px + (int)host.EvaluateNumber("__h.x"), y0 = py + (int)host.EvaluateNumber("__h.y");
+                int hw = (int)host.EvaluateNumber("__h.w"), hh = (int)host.EvaluateNumber("__h.h");
+
+                Assert.GreaterOrEqual(x0, 0, $"{band} d{d}: heap starts left of the cell");
+                Assert.GreaterOrEqual(y0, 0, $"{band} d{d}: heap starts above the cell");
+                Assert.LessOrEqual(x0 + hw, w, $"{band} d{d}: heap runs past the right of the cell");
+                Assert.LessOrEqual(y0 + hh, h, $"{band} d{d}: heap runs past the bottom of the cell");
+
+                Assert.AreEqual(hw * hh * 4, host.EvaluateBytes("__h.canvas.__img.data").Length,
+                                $"{band} d{d}: the shim's mailbox does not hold a {hw}×{hh} RGBA surface");
+            }
+        }
+
+        [Test]
+        public void TheBandLadderRises_AndOnlyBrimCrownsAboveTheRim()
+        {
+            // What the ladder IS, measured: the same heap surface LOWERED into the basket by
+            // (1 − min(1, frac/0.85)) × depthPx — 3 px at few, 1 at half, 0 at full — and then brim
+            // alone crowns 2 px proud of the rim. So few→full is one plate translated three pixels,
+            // and brim is the only band that changes shape. Pinned because it is easy to look at the
+            // four sheets, see near-identical pixel counts, and conclude the bake is broken.
+            using var host = HeapChain();
+            string[] bands = { "few", "half", "full", "brim" };
+
+            for (int d = 0; d < 8; d++)
+            {
+                var top = new int[bands.Length];
+                var area = new int[bands.Length];
+                for (int b = 0; b < bands.Length; b++)
+                {
+                    host.Execute($"globalThis.__h = CatchKit2.heap('clam', ClamHod.opening({d}), " +
+                                 $"ClamHod.depthPx(), '{bands[b]}');");
+                    top[b] = (int)host.EvaluateNumber("__h.y");
+                    byte[] rgba = host.EvaluateBytes("__h.canvas.__img.data");
+                    int n = 0;
+                    for (int i = 3; i < rgba.Length; i += 4) if (rgba[i] != 0) n++;
+                    area[b] = n;
+                }
+
+                for (int b = 1; b < bands.Length; b++)
+                    Assert.Less(top[b], top[b - 1],
+                                $"d{d}: '{bands[b]}' must sit higher in the basket than '{bands[b - 1]}' " +
+                                $"(tops {string.Join(",", top)})");
+
+                Assert.AreEqual(area[0], area[1], $"d{d}: few and half are the same plate, lowered");
+                Assert.AreEqual(area[0], area[2], $"d{d}: few and full are the same plate, lowered");
+                Assert.Greater(area[3], area[2], $"d{d}: brim crowns, so it is the one band that grows");
+            }
+        }
+
+        [Test]
+        public void LoadingTheHeapsChain_DoesNotMoveOneHodPixel()
+        {
+            // BakeClamHod now loads fish2/shellfish2/crustacean2/the shim/catchKit2 BEFORE the hod,
+            // where it used to load the hod alone. Nothing in that chain should reach the hod's own
+            // render — but "should" is not evidence, and the two shipped sheets are the thing a
+            // re-bake must not move.
+            using var bare = Chain();
+            RigCatalog.Install(bare, RigCatalog.Get("clamHod"));
+            using var full = HeapChain();
+
+            foreach (string layer in new[] { "back", "front" })
+            for (int d = 0; d < 8; d++)
+            {
+                byte[] a = bare.EvaluateBytes($"ClamHod.render({d},{{layer:'{layer}'}})");
+                byte[] b = full.EvaluateBytes($"ClamHod.render({d},{{layer:'{layer}'}})");
+                Assert.AreEqual(a.Length, b.Length, $"{layer} d{d}: cell size moved");
+                for (int i = 0; i < a.Length; i++)
+                    if (a[i] != b[i])
+                        Assert.Fail($"Hod2_{layer} d{d} differs at byte {i} once the heap's chain is " +
+                                    "loaded — the two shipped sheets would move on a re-bake.");
+            }
+        }
+
         // ---- helpers ---------------------------------------------------------------------------
 
         /// <summary>Pixels that differ between two render expressions.</summary>
