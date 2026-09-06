@@ -22,6 +22,30 @@ namespace HiddenHarbours.Art
     [CreateAssetMenu(menuName = "Hidden Harbours/Lighting/Lamp Shadow Profile", fileName = "LampShadowProfile")]
     public sealed class LampShadowProfile : ScriptableObject
     {
+        [Header("The ground pool (world-lighting PR 2c) — what the lamp does to the ground")]
+        [Tooltip("Do lamps light the ground at all? OFF restores the frame exactly as it was before the " +
+                 "pool existed: a lamp glows at its fitting and the planks under it stay dark. This is the " +
+                 "way back from the one trade the pool makes — a screen-space multiply brightens whatever " +
+                 "occupies the pixel, including something passing OVER a pool rather than standing in it.")]
+        [SerializeField] private bool _poolsEnabled = true;
+
+        [Tooltip("THE dial. How close to FULLY LIT the ground under a lamp comes back: 1 = roughly what it " +
+                 "would return in open light, 0 = no pools at all (today's frame, byte-identical). It is a " +
+                 "fraction of daylight rather than of the night because the pass divides by the night's own " +
+                 "tint — a multiply is bounded by what it multiplies, and the crushed night frame is almost " +
+                 "nothing. The lamp's own intensity, the incidence angle, the edge falloff and the night " +
+                 "gate all scale it from here.")]
+        [Range(0f, 1f)] [SerializeField] private float _poolStrength = 0.6f;
+
+        [Tooltip("How much of the pool's radius is edge: 0 = a hard rim (a decal), 1 = fading from the " +
+                 "lamp's own foot. A lamp's light does not stop at a line, and the hard edge is exactly " +
+                 "what read as a disc.")]
+        [Range(0f, 1f)] [SerializeField] private float _poolEdgeSoftness = 0.55f;
+
+        [Tooltip("How many ground pools may draw at once. The nearest lamps to the camera win the slots; " +
+                 "a lamp with no published reach (every boat lamp, by default) is not a candidate at all.")]
+        [Range(0, 32)] [SerializeField] private int _maxPools = 8;
+
         [Header("Darkness")]
         [Tooltip("THE dial. The fraction of the light at a pixel a lamp's shadow removes, at the caster's " +
                  "feet, at the cone's core: 1 = a fully shadowed pixel keeps none of the lamp's light, 0 = " +
@@ -73,6 +97,15 @@ namespace HiddenHarbours.Art
 
         [Tooltip("Pixels-per-unit the snap uses (match the project's sprite PPU).")]
         [Min(1f)] [SerializeField] private float _pixelsPerUnit = 32f;
+
+        /// <summary>Do lamps light the ground? False is the way back to the pre-pool frame.</summary>
+        public bool PoolsEnabled { get => _poolsEnabled; set => _poolsEnabled = value; }
+        /// <summary>How much brighter the ground reads under a lamp, as a fraction of unlit (0 = no pools).</summary>
+        public float PoolStrength { get => _poolStrength; set => _poolStrength = Mathf.Clamp01(value); }
+        /// <summary>The pool's edge, as a fraction of its radius.</summary>
+        public float PoolEdgeSoftness { get => _poolEdgeSoftness; set => _poolEdgeSoftness = Mathf.Clamp01(value); }
+        /// <summary>How many ground pools may draw at once.</summary>
+        public int MaxPools { get => _maxPools; set => _maxPools = Mathf.Clamp(value, 0, 32); }
 
         public float Strength { get => _strength; set => _strength = Mathf.Clamp01(value); }
         public Color ShadowColor { get => _shadowColor; set => _shadowColor = value; }

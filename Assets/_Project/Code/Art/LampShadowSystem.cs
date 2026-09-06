@@ -164,6 +164,25 @@ namespace HiddenHarbours.Art
         public static LampShadowSystem Instance => s_Instance;
         /// <summary>How many lamps are registered right now. Diagnostics and tests.</summary>
         public static int LiveLightCount => Lights.Count;
+
+        /// <summary>
+        /// <b>Every registered lamp, as the ONE registry the lamp systems share.</b> A lamp registers here
+        /// from <see cref="SceneLight.OnEnable"/> and leaves from its <c>OnDisable</c>, so this list is
+        /// already the answer to "which lamps are live" — and <see cref="LampPoolSystem"/> reads it rather
+        /// than keeping a second one.
+        ///
+        /// <para><b>⚠ Why not a second registry.</b> Two lists mean two registration points, and the second
+        /// one is the one somebody forgets to unregister from: a lamp that goes dark in the shadow system
+        /// and stays lit in the pool system is a bug nobody would look for. It also means the SHADOW a lamp
+        /// throws and the POOL it throws can never disagree about which lamps exist — which matters here
+        /// more than usual, because the two are halves of one picture (a shadow is the ABSENCE of the pool).
+        /// </para>
+        ///
+        /// <para>Read-only by contract: registration goes through <see cref="RegisterLight"/>. Exposed as
+        /// the concrete list rather than copied, because this is read every frame by the pooling loop and
+        /// rule 7 does not allow an allocation there.</para>
+        /// </summary>
+        public static IReadOnlyList<SceneLight> LiveLights => Lights;
         /// <summary>How many casters are registered right now. Diagnostics and tests.</summary>
         public static int LiveCasterCount => Casters.Count;
 
@@ -352,6 +371,8 @@ namespace HiddenHarbours.Art
                 // not where you changed it — it is in every OTHER reader of the old meaning. Grep them.
                 // A lamp throws a shadow of whatever stands in the ground it LIGHTS, so the reach is the
                 // right number and always was — it simply did not exist under its own name until #733.
+                // <see cref="LampPoolSystem"/> reads it for the same reason, which is what makes a
+                // lamp's shadow and its pool two halves of one picture rather than two pictures.
                 float r = Mathf.Max(ShadowReachOf(light), 1e-4f);
                 float r2 = r * r;
                 for (int ci = 0; ci < casterCount; ci++)

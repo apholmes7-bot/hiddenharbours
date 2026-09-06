@@ -481,12 +481,54 @@ not a taste call — it is read from the ISO pack's published `heightM` and writ
 `SceneLight.LampHeightMeters`, because the lamp's height is what sets the length of every shadow it casts
 (§6.3). Left at the 2.5 m default a 7.8 m flood mast lights a yard like a mast and shadows it like a bollard.
 
-⚠️ **So a lamp post glows and the planks under it stay dark, and that is the honest half-picture.** The reach
-is deliberately *smaller* than the physical rule too (a lamp lights a circle of roughly twice its head height,
-so a 4.48 m street lamp should pool ~4.5 m) because it was tuned as a bloom on the 02:00 plates
-(`docs/art/spikes/land-lamp-posts/`, plates 05–07). Making a lamp light the ground the way §5 makes the sun
-light a tree — the lit-decor path, with the reach as its falloff — is the standing follow-up, and it is where
-the reach stops being a number nothing draws.
+The reach is deliberately *smaller* than the physical rule (a lamp lights a circle of roughly twice its head
+height, so a 4.48 m street lamp should pool ~4.5 m) because it was tuned as a bloom on the 02:00 plates
+(`docs/art/spikes/land-lamp-posts/`, plates 05–07).
+
+#### ⭐⭐ And the reach is DRAWN — the lamp's ground pool (`LampPoolSystem`, world-lighting PR 2c)
+
+A lamp post glowed and the planks under it stayed dark for exactly one PR. `LampPoolSystem` draws the other
+half: the patch of ground the lantern makes brighter, shaped by the lamp's own geometry.
+
+**It MULTIPLIES UP.** `Blend DstColor One` computes `dst × (1 + gain)`, so the pass SCALES what the frame
+already returned instead of adding a sheet of its own over it — the exact mirror of §5.5's shade arm, which
+multiplies DOWN by `Blend Zero SrcColor`. Shade darkens what is there; a lamp brightens it. That one choice is
+the whole difference from the disc the owner refused: relative contrast is a ratio, a uniform scale multiplies
+both of its terms, and the deck's texture therefore survives **by construction**. Measured on the pier: the
+disc drove relative local contrast from 0.21 to 0.0118, the pool holds it at 0.145 while lifting the planks
+**3.06×** (`docs/art/spikes/lights-illuminate/`).
+
+**Its shape is `h/√(h²+d²)`** — the cosine between the lamp's ray and the ground's normal — so a 7.8 m flood
+mast pools broad and even and a 2.46 m lantern post pools tight and drops away fast, from geometry rather than
+from tuning. It is the same lamp-versus-sun distinction the water's beam relief (§5.1) and the cast shadows'
+rake (§5.2) already take their geometry from. **A lamp that publishes no height draws nothing**, rather than
+falling back to a flat disc.
+
+⚠️⚠️ **The gain is divided by the night's own luminance, and without that the pass is invisible.** A multiply
+is bounded by what it multiplies, and ADR 0013's tint has crushed the pier to ~0.04 before this draws — a
+naive `dst × 1.6` lifts a plank by six values in 255, and the first measured run changed **zero** pixels. The
+factor that reconstructs `albedo × (ambient + lamp)` from a frame holding `albedo × ambient` is exactly
+`1 + lamp/ambient`. Same compensation the lit-decor path makes, same law as §5.5's: *check what your pixel is
+multiplied by before designing a lift into it.*
+
+**Why screen space rather than a lighting term in a shader.** The obvious design — extend `SpriteLitDecor.hlsl`
+and the terrain splat with a point-light term — lights the wrong things. **Every wharf deck tile, every fitting
+and every lamp post is a plain `SpriteRenderer` with no material set**; only trees, shrubs and shore plants are
+on the lit-decor path. And there is no painted ground at a pier either — the splat clips below its paint floor
+and the St Peters pier stands over a slip dredged to −1.0 m. A lit-path term would light the shore, the trees
+and the yards and light *nothing* at either wharf, which is where the owner was looking.
+
+⚠️ **The cost, stated rather than bounded away.** Screen space cannot tell a plank from a gull: something
+ABOVE the ground passing over a pool is brightened as though it were standing in it. §5.2's lamp shadows have
+accepted exactly this cost since #698 and §5.5's shade arm since #727. `LampShadowProfile.PoolsEnabled` is the
+way back.
+
+| dial (`Resources/LampShadowProfile.asset`) | shipped | what it does |
+|---|---|---|
+| `PoolsEnabled` | on | off restores the pre-pool frame exactly |
+| `PoolStrength` | 0.6 | how close to fully lit the ground under a lamp comes back |
+| `PoolEdgeSoftness` | 0.55 | how much of the radius is edge |
+| `MaxPools` | 8 | how many may draw at once; nearest to the camera win |
 
 ### Lamps on the land (`LampPosts`)
 
