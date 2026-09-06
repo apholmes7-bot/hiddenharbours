@@ -124,6 +124,28 @@ namespace HiddenHarbours.Vehicles
         }
 
         /// <inheritdoc/>
+        public bool HasAltDoor
+        {
+            get { VehicleMeshDef m = Mesh; return m != null && m.HasAltDriveDoor; }
+        }
+
+        /// <inheritdoc/>
+        public Vector2 AltDoorWorldPosition
+        {
+            get
+            {
+                VehicleMeshDef m = Mesh;
+                // Falls back to the preferred side rather than to her origin: a caller that reads this
+                // without checking HasAltDoor gets a real place to stand, not a point inside her.
+                if (m == null || !m.HasAltDriveDoor) return DoorWorldPosition;
+                Vector2 local = m.AltDriveDoorLocal;
+                // Through the ROOT, for the same two reasons the preferred side is — see above.
+                Vector3 world = transform.TransformPoint(new Vector3(local.x, local.y, 0f));
+                return new Vector2(world.x, world.y);
+            }
+        }
+
+        /// <inheritdoc/>
         public bool ShowsDriver
         {
             get { VehicleMeshDef m = Mesh; return m != null && m.ShowsDriver; }
@@ -254,7 +276,92 @@ namespace HiddenHarbours.Vehicles
         /// never itself puts anyone behind one.</summary>
         public void Interact(in InteractActor actor) => EventBus.Publish(new DriveSeatRequested(this));
 
-        private void OnEnable() => Interactables.Register(this);
-        private void OnDisable() => Interactables.Unregister(this);
+        // ---- the OTHER side, for a machine you sit astride ---------------------------------------
+
+        /// <summary>
+        /// ⭐⭐ <b>The curb side, registered as its own place to stand.</b>
+        ///
+        /// <para><b>Why a second candidate and not a wider reach.</b> <see cref="InteractResolver"/>
+        /// measures <c>WorldPosition − actor.Position</c> against ONE <see cref="ReachMeters"/>, and it is
+        /// a pure static over a candidate list — a property cannot know where the actor is. The ATV pack's
+        /// two reach points are 1.96 m (enduro), 2.30 m (trike) and 2.38 m (quad) apart, so the published
+        /// second side sat outside the 1.5 m disc and a rider standing exactly where the art says she may
+        /// mount was refused. Widening the reach to 2.4 m would have covered it and also let her mount
+        /// from over the NOSE, which the art never published; two discs is what the art actually says.</para>
+        ///
+        /// <para>Everything but the position and the id is the door's own, read live, so the two sides
+        /// cannot answer differently about availability, priority or what the verb says. Working either
+        /// publishes the same <c>DriveSeatRequested</c> carrying the DOOR — the seat is the machine, not
+        /// the side you approached her from.</para>
+        ///
+        /// <para>⚠️ Registered only while the def publishes an alternate side, so nothing about a cab
+        /// changes: no second candidate exists for a truck, and the resolver's list is the length it
+        /// always was.</para>
+        /// </summary>
+        private sealed class AltMountSide : IInteractable
+        {
+            private readonly VehicleDoor _door;
+
+            public AltMountSide(VehicleDoor door) => _door = door;
+
+            // ⚠️ Its OWN id, and derived from the door's so the pair reads as one machine's two sides in
+            // any ledger. A shared id would break InteractResolver's last tie-break, which needs them
+            // total across live registrants.
+            public string Id => _door.Id + ".alt";
+
+            public Vector2 WorldPosition => _door.AltDoorWorldPosition;
+            public float ReachMeters => _door.ReachMeters;
+            public int Priority => _door.Priority;
+            public InteractContext Contexts => _door.Contexts;
+            public bool RequiresFacing => _door.RequiresFacing;
+
+            // ⚠️ AND the def's own answer, re-read: a def that stops publishing a second side (a re-bake,
+            // or a machine swapped under her) must stop offering one, not go on offering a point that is
+            // now her origin. The registration below cannot catch that on its own — it happens once.
+            public bool IsAvailable => _door.IsAvailable && _door.HasAltDoor;
+
+            public string VerbLabel => _door.VerbLabel;
+
+            public void Interact(in InteractActor actor) =>
+                EventBus.Publish(new DriveSeatRequested(_door));
+        }
+
+        private AltMountSide _altSide;
+
+        /// <summary>
+        /// ⭐ <b>The curb-side candidate</b> — created on demand, never replaced, so the pair the
+        /// resolver sees is stable for the life of the component.
+        ///
+        /// <para><b>Why this is exposed at all.</b> <b>An EditMode fixture never gets an
+        /// <c>OnEnable</c></b>: a component added to a bare GameObject at edit time is not enabled by
+        /// Unity unless it is <c>[ExecuteAlways]</c>, and none of this repo's self-installing components
+        /// are. So an EditMode test that adds a door and then reads <see cref="Interactables.Active"/>
+        /// sees an <b>empty</b> registry — and the dangerous half of that is not the assertions that
+        /// fail loudly, it is the NEGATIVE ones ("she cannot mount from over the nose") which pass on an
+        /// empty registry while proving nothing at all. The repo has paid for this once already (#350).
+        /// </para>
+        ///
+        /// <para>The split it settled on is the one used here: <b>EditMode registers explicitly</b>,
+        /// with the REAL candidate rather than a stub, so the maths under test is the shipped maths; and
+        /// <b>PlayMode</b> is where the self-registration below is genuinely exercised.</para>
+        /// </summary>
+        public IInteractable AltSide => _altSide ??= new AltMountSide(this);
+
+        private void OnEnable()
+        {
+            Interactables.Register(this);
+
+            // ⚠️ NOT gated on HasAltDoor here. AddComponent on a live object runs OnEnable before the
+            // caller has said which vehicle this is (the #556 trap the Id property is written around), so
+            // the def is not knowable yet — the candidate is always registered and answers IsAvailable
+            // false until she has one. A cab therefore offers nothing and costs one false test.
+            Interactables.Register(AltSide);
+        }
+
+        private void OnDisable()
+        {
+            Interactables.Unregister(this);
+            if (_altSide != null) Interactables.Unregister(_altSide);
+        }
     }
 }

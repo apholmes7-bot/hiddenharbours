@@ -57,12 +57,54 @@ of them, and this plate is which: the rig's own defaults (`rackF`, `rackR` and `
 off), which is also what her `wharfQuad` preset dresses. A game that wants a bare quad needs a second
 mesh, not a pose.
 
+## `astride-gap.png` — PR 1
+
+The plate the section below promised, and it is not the one that was expected: **the rider goes on,
+and her hands do not reach the bars.**
+
+Left: the enduro pointing east, with the three points her sidecar publishes — `seat_ref` at 0.94 m
+(amber) and the two `grips` at 1.04 m, 0.42 m ahead of the seat (green). Right: the same machine with
+the `drive` clip placed on her by the shipped arithmetic — `DriveSeatMath.SeatPivotWorld`, no
+adjustment of any kind — and a line from where the pose puts her hands to where the bars actually are.
+
+**13.5 px on screen, 0.433 m in the machine's own frame.** The seat is exact: that is what
+`DriveSeatMath` guarantees, and it is visibly right in the picture. What is wrong is the REACH. The
+`drive` clip was baked to a helm **0.315 m forward and 0.255 m above** the seat — a wheel you reach
+out and down to, sitting up — and a bike's bars are **0.72 m** ahead of hers.
+
+The control is in the fixture rather than the plate, and it is the sentence that makes this a finding
+rather than an opinion: the same arithmetic, on the Otter it shipped for, lands **0.68 px** out. And
+the **trike's seat is 0.76 m, the Otter's height to the millimetre**, so her lift is identical while
+her hands are still 12.7 px short. `AtvAstrideRiderTests` pins all of it, per machine, exactly — so
+the day the astride stance lands, the numbers go red and somebody has to come and say so.
+
+⚠️ **Two azimuths meet in this plate and they run opposite ways.** The pack's cell order is
+counter-clockwise — at the cell *labelled* `E` the nose points **west** — while the character rows run
+clockwise. The machine here is therefore cell **6** (`W` by the sheet's own label), which is the one
+whose nose points east, matching the rider's `d2`. Neither convention is wrong and neither is a bug:
+each side is measured by its own probe at bake time. It only bites when a human composites the two by
+hand, as this plate does.
+
+### What PR 1 did NOT do, and why
+
+The section above expected PR 1 to take the stand — *"the lean is a transform of the whole machine and
+the leg is a state swap"*. It did not, and the reason is in the bake: the enduro's mesh has **three**
+moving parts, and they are `WheelF`, `WheelR` and `ForkF`. There is no lean axis and no stand in it to
+raise. A rider rolled by `dims().leanDeg` today would lean while the machine underneath her stayed
+bolt upright — inventing a fact the machine does not have, which `PlayerDrivePresenter`'s own doc
+forbids. The absence is pinned at both ends instead (the sidecar publishes `LEAN` and `STAND`; the
+mesh carries neither), so the day a lean is baked, the rider is known to be owed one.
+
+Nothing in the world parks an ATV yet either — that is PR 2.
+
 ---
 
 ## What these plates deliberately do NOT show
 
-- **A rider.** Nobody is on any of these machines in any sheet, by design: the rider is the
-  CHARACTER rig, mounted at `anchors()` / the sidecar's `SADDLE`. Until the astride stance lands
-  upstream, a placed machine is a parked machine. That is PR 1.
+- **A rider.** Nobody is on any of these machines in any *sheet*, by design: the rider is the
+  CHARACTER rig, mounted at `anchors()` / the sidecar's `SADDLE`. PR 1 put her on
+  (`astride-gap.png` above) and measured what the missing astride stance costs — **11.6–13.9 px at
+  the hands**, against 0.68 px on the Otter. She is drawn, she is on the saddle, and her hands are
+  in the air until that stance lands upstream.
 - **A machine in the world.** Nothing is placed in a scene by this PR. St Peters gets her riders in
   PR 2, after the owner's rulings on who owns what and where it is parked.
