@@ -10,6 +10,13 @@ namespace HiddenHarbours.Boats
         Oars,
         /// <summary>Throttle + rudder (boats you buy up the ladder): the existing engine helm.</summary>
         Engine,
+        /// <summary>
+        /// Sheets + rudder (the sloops): the boat's speed is the WIND, read off her polar. She still
+        /// has an auxiliary — <see cref="BoatHullDef.EnginePower"/> is it, and the rig's own
+        /// <c>motoring</c> is a SAIL STATE (everything stowed), not a second propulsion type. Sail is
+        /// what she does when the sails are up; the engine seam underneath is untouched.
+        /// </summary>
+        Sail,
     }
 
     /// <summary>
@@ -216,5 +223,42 @@ namespace HiddenHarbours.Boats
                  "Defaults FALSE, which is the honest answer for a hull nobody has thought about: a new " +
                  "boat is never accidentally rescued.")]
         public bool CanRowHome = false;
+
+        // ---- sail (Propulsion = Sail) ------------------------------------------------------------
+
+        [Header("Sail")]
+        [Tooltip("The speed table this hull sails to. When Propulsion is Sail and this is set, the " +
+                 "boat's speed comes from the WIND through this polar instead of from a throttle.\n\n" +
+                 "⚠ The shipped polars are flagged REFERENCE on the asset itself (SailPolarDef." +
+                 "Status) — a stated model over rig-derived inputs, not a measurement of the boat. " +
+                 "A drive that treats a Reference polar as the boat's real performance is reading a " +
+                 "placeholder as truth; replace the model, keep the glue.")]
+        public SailPolarDef SailPolar;
+
+        [Tooltip("Below this TRUE wind angle off the bow she makes no way — the no-go, in degrees.\n\n" +
+                 "⚠ TRUE, never apparent, and that is a law rather than a preference: apparent " +
+                 "angle is a function of boat speed, so gating on it gates on its own output and " +
+                 "oscillates at exactly the angle a player pinching to windward sails (measured: the " +
+                 "sloop 88 at twa 40 in 12 kn sits at awa 23.6° moving and 40° stopped).\n\n" +
+                 "⭐ DEFAULT 45, NOT the reference polar's own 35. MEASURED on both hulls' shipped " +
+                 "grids: at 45 there is not one cell left where the polar hands out a speed while the " +
+                 "rig draws flogging sails — at 40 there are 1 (sloop 30) and 6 (sloop 88), at 35 " +
+                 "there are 4 and 14. It costs at most 1.6% of best upwind VMG and usually 0.1%, " +
+                 "because 45° is already her best pointing angle at half the wind speeds. " +
+                 "OWNER RULING OWED on whether the player should feel the polar's 35 or this.")]
+        [Min(0f)] public float NoGoTrueWindDeg = 45f;
+
+        [Tooltip("The apparent angle below which the RIG draws both sails flogging — the picture, " +
+                 "not the physics. Read from the sailing sidecar's WIND.thresholds " +
+                 "(in_irons_below_awa_deg = 25 on both sloops).\n\n" +
+                 "Nothing gates speed on this. It is here so a presenter and a guard can ask the one " +
+                 "question that matters — 'would she be drawn flogging at a cell the polar says " +
+                 "she sails?' — without transcribing a number out of the sidecar.")]
+        [Min(0f)] public float SpriteIronsApparentDeg = 25f;
+
+        /// <summary>True when this hull is driven by her sails and has a table to sail to. A hull
+        /// declared <see cref="PropulsionType.Sail"/> with no polar is NOT sailable — she falls back
+        /// to her auxiliary rather than sitting still with no explanation.</summary>
+        public bool HasSailPlan => Propulsion == PropulsionType.Sail && SailPolar != null && SailPolar.IsUsable();
     }
 }

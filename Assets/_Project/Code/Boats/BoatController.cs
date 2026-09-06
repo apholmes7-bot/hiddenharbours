@@ -86,6 +86,33 @@ namespace HiddenHarbours.Boats
         private float _rightOar;   // Oars: -1..1 (starboard-oar pull)
         private bool _brace;       // Oars: oars planted in the water = strong braking drag
 
+        // --- Sail: the sheets, and what the last drive step read. -------------------------------
+        // Sheets are HELD (a sheet is a held axis, not an edge) and default to the builder pages'
+        // AUTO_TRIM, so a player who never touches one still sails. Hoist and furl are TRANSITIONS —
+        // they change which sails are up, not how hard they are pulled — and are carried here for the
+        // presenter, since nothing in the physics reads them yet (the polar is stated at full hoist).
+        private bool _autoTrim = true;
+        private float _mainSheet = 1f, _jibSheet = 1f;
+        private float _hoist = 1f, _furl = 0f;
+
+        /// <summary>The wind the last sail step resolved — true for the physics, apparent for the
+        /// picture. Read by the HUD and by a presenter posing the rig; never written by them.</summary>
+        public SailWind LastSailWind { get; private set; }
+
+        /// <summary>What the polar promised at that wind, knots. 0 in the no-go and 0 becalmed.</summary>
+        public float LastSailTargetKn { get; private set; }
+
+        /// <summary>Sheets, 0 eased .. 1 hardened — main then headsail. What the rig is posed with.</summary>
+        public float MainSheet => _mainSheet;
+        public float JibSheet => _jibSheet;
+
+        /// <summary>Main up the mast, 0..1; headsail rolled onto the forestay, 0..1.</summary>
+        public float Hoist => _hoist;
+        public float Furl => _furl;
+
+        /// <summary>True while the sheets are being trimmed for the player by AUTO_TRIM.</summary>
+        public bool AutoTrim => _autoTrim;
+
         public BoatHullDef Hull => _hull;
         public bool IsAground { get; private set; }
         public Vector2 Velocity => _rb != null ? _rb.linearVelocity : Vector2.zero;
@@ -262,6 +289,33 @@ namespace HiddenHarbours.Boats
         {
             _throttle = Mathf.Clamp(throttle, -1f, 1f);
             _steer = Mathf.Clamp(steer, -1f, 1f);
+        }
+
+        /// <summary>
+        /// Trim the sheets by hand — 0 eased, 1 hardened. Takes the boat OFF auto-trim: once a player
+        /// has pulled a sheet, the boat holds their trim until they change it or hand it back with
+        /// <see cref="SetAutoTrim"/>. A sheet is a HELD axis, so this is a set and not an edge.
+        /// </summary>
+        public void SetSheets(float main, float jib)
+        {
+            _autoTrim = false;
+            _mainSheet = Mathf.Clamp01(main);
+            _jibSheet = Mathf.Clamp01(jib);
+        }
+
+        /// <summary>Hand the sheets back to (or take them off) the builder pages' AUTO_TRIM law.</summary>
+        public void SetAutoTrim(bool on) => _autoTrim = on;
+
+        /// <summary>
+        /// Hoist the main (0 stowed .. 1 full) and roll the headsail away (0 set .. 1 furled) — the two
+        /// TRANSITIONS. Nothing in the physics reads them yet: the shipped polar is stated at full
+        /// hoist, so a reefed boat is currently as fast as a full one. That is a known gap and it is
+        /// the honest place to add it when reefing is ruled (the rig has no reef points either).
+        /// </summary>
+        public void SetSailSet(float hoist, float furl)
+        {
+            _hoist = Mathf.Clamp01(hoist);
+            _furl = Mathf.Clamp01(furl);
         }
 
         /// <summary>
@@ -502,9 +556,15 @@ namespace HiddenHarbours.Boats
             Vector2 fwd = transform.up;            // bow direction (top-down view)
             Vector2 vel = _rb.linearVelocity;
 
-            // --- Propulsion (data-driven, ADR 0003): hand-rowed oars (Dory) or an engine helm (Punt). ---
+            // --- Propulsion (data-driven, ADR 0003): oars (Dory), an engine helm (Punt), or SAIL. ---
             // Always driven — drive authority is NOT gated on grounding (the helm never cuts out).
-            if (UsesEngineHelm(_hull.Propulsion))
+            //
+            // ⚠️ Sail is tested FIRST, and on HasSailPlan rather than on Propulsion alone: a hull
+            // declared Sail with no polar is not sailable, and falling through to her auxiliary is a
+            // better answer than sitting still with no explanation.
+            if (_hull.HasSailPlan)
+                ApplySailDrive(fwd, vel, env);
+            else if (UsesEngineHelm(_hull.Propulsion))
                 ApplyEngineDrive(fwd, vel, env);
             else
                 ApplyOarDrive(fwd, vel, env);
@@ -565,6 +625,55 @@ namespace HiddenHarbours.Boats
 
             // --- Rudder: authority scales with WAY (forward speed through the water, §2) — nil at rest. ---
             float way = Vector2.Dot(vel - env.CurrentVector, fwd);   // forward way through the moving water
+            _rb.AddTorque(RudderTorque(_steer, _hull.RudderAuthority, way) * RudderFeelScale);
+        }
+
+        /// <summary>
+        /// ⭐ <b>SAIL (P1: the first hull whose speed IS the wind).</b> No throttle: the wind and the
+        /// angle she is sailing decide her speed, off her own polar, and the rudder is the only thing
+        /// the helm holds.
+        ///
+        /// <para><b>Why there is no ramp.</b> Drag here is <c>ForwardDrag × ForceFeelScale × v</c> and
+        /// thrust is <c>F × ForceFeelScale</c>, so terminal speed is exactly <c>F / ForwardDrag</c>.
+        /// <see cref="SailDrive.ThrustFor"/> asks for the force that balances drag AT the polar's
+        /// target and lets the hull arrive on its own time constant (τ ≈ 20 s) — which is what a boat
+        /// gathering way feels like, and what stops this becoming a second lag in series with a lag
+        /// the hull already has.</para>
+        ///
+        /// <para><b>⚠️ NO LEEWAY, deliberately and recorded.</b> The art rig has no crab angle — the
+        /// heading IS the facing (<c>_excluded.leeway_current</c> in the sailing sidecar) — so a real
+        /// close-hauled hull's slip to leeward is not modelled and this thrust runs straight along the
+        /// bow. The hull's own LateralDrag still resists a beam sea and the tide still sets her; what
+        /// is missing is the few degrees of sideslip sailing itself produces. Adding it needs art
+        /// before it needs physics.</para>
+        ///
+        /// <para><b>⚠️ Astern does not exist.</b> A sail cannot push a boat backwards, so there is no
+        /// negative branch here and none is wanted; a sloop backing out of a berth is her AUXILIARY,
+        /// which is the engine seam, untouched.</para>
+        /// </summary>
+        private void ApplySailDrive(Vector2 fwd, Vector2 vel, EnvironmentSample env)
+        {
+            // The wind she is actually in — true for the physics, apparent for the picture. One wind:
+            // this reads the sim's WindVector and Core's own apparent maths, and adds neither.
+            SailWind wind = SailDrive.ResolveWind(env.WindVector, fwd, vel);
+            LastSailWind = wind;
+
+            float targetKn = SailDrive.TargetSpeedKn(_hull.SailPolar, wind.TrueAngleDeg, wind.TrueKn,
+                                                     _hull.NoGoTrueWindDeg);
+            LastSailTargetKn = targetKn;
+
+            float thrust = SailDrive.ThrustFor(SailDrive.ToMetresPerSecond(targetKn), _hull.ForwardDrag);
+            if (thrust > 0f) _rb.AddForce(fwd * (thrust * ForceFeelScale), ForceMode2D.Force);
+
+            // The sheets a player who never touches one is sailing at. Held state, so a player who DOES
+            // touch one keeps their trim until they change it (the sidecar's AUTO_TRIM is the default,
+            // not a law that overrides them).
+            if (_autoTrim) SailDrive.AutoTrim(wind.ApparentAngleDeg, out _mainSheet, out _jibSheet);
+
+            // --- Rudder: the same law as the engine helm, and for the same reason — a boat with no way
+            // on cannot steer, under sail every bit as much as under power. In irons she loses steerage
+            // exactly as she should, because the polar has taken her way off. ---
+            float way = Vector2.Dot(vel - env.CurrentVector, fwd);
             _rb.AddTorque(RudderTorque(_steer, _hull.RudderAuthority, way) * RudderFeelScale);
         }
 
