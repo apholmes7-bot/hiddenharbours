@@ -348,6 +348,157 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         // =============================================================================================
+        //  ⭐⭐ REGISTER ROW 30 — the sea before and after the realistic (fetch-limited) peak law
+        // =============================================================================================
+        //
+        //  Owner 2026-09-06: "waves seem to move across the screen too fast, should be realistic to
+        //  actual waves and windspeed/conditions" -> "make it realistic."
+        //
+        //  ONE method, four cells, at the CAPE's own framing (BoatHullDef.CameraWorldHeightMeters 24 m)
+        //  rather than the sweep's, because "across the screen" is a judgement made at the framing he
+        //  plays in. It is deliberately NOT part of Sweep(): this is a two-arm A/B, not a matrix.
+        //
+        //  The two arms differ ONLY in WaveFieldSettings.SeaFetchKilometres — 0 is the legacy linear
+        //  line, the shipped value is the derived fetch-limited peak. Everything else on the frame (the
+        //  terrain, the tide, the hour, the tint, the lamp, the breakers) is published by the SHIPPED
+        //  Publish() and then left alone, so every difference between the columns is the law.
+
+        /// <summary>The cape's framing, from her BoatHullDef — what the owner sees at her helm.</summary>
+        const float CapeFrameMetres = 24f;
+
+        [Test]
+        public void Row30_TheSeaBeforeAndAfterTheRealisticLaw_AtTheCapesFraming()
+        {
+            RequireAGraphicsDevice();
+            Prepare();
+            Stage stage = BuildWestWater();
+            BuildCamera();
+            // Her helm, not the sweep's frame. AFTER BuildCamera — Prepare() does not make the camera,
+            // and reading _cam before it exists is a NullReferenceException with nothing to do with the
+            // sea (measured, first run).
+            _cam.orthographicSize = CapeFrameMetres * 0.5f;
+            stage.Name = "row30";
+            stage.Title = "ROW 30 - THE PEAK WAVELENGTH LAW, BEFORE AND AFTER";
+            stage.Aim = WestWaterPlan.RegionWorldCenter;
+
+            string dir = Path.Combine(OutRoot, "row30-wave-law");
+            Directory.CreateDirectory(dir);
+
+            WaveFieldSettings shipped = GameServices.WaveField;
+            WaveFieldSettings legacy = shipped;
+            legacy.SeaFetchKilometres = 0f;                   // the line this PR replaces
+
+            var report = new StringBuilder();
+            report.AppendLine("register row 30 - the peak wavelength law, before and after");
+            report.AppendLine($"  cape framing {CapeFrameMetres:0} m high, {ShotPx} px square, noon, mean tide");
+            report.AppendLine($"  shipped SeaFetchKilometres = {shipped.SeaFetchKilometres:0.#} km");
+            report.AppendLine();
+            report.AppendLine("weather | arm      | U m/s | peak lam |     c |  crest | mean luma | std luma");
+
+            var rows = new List<Color[][]>();
+            foreach (Weather w in new[] { Weather.Light, Weather.Blow, Weather.Gale })
+            {
+                var pair = new Color[2][];
+                for (int arm = 0; arm < 2; arm++)
+                {
+                    WaveFieldSettings settings = arm == 0 ? legacy : shipped;
+                    string armName = arm == 0 ? "legacy" : "derived";
+
+                    // The shipped push first — terrain, tide, tint, breakers, the lot.
+                    Publish(stage, w, Tide.Mean, Hour.Noon, out _, out Color tint, out _, out _, out _);
+                    _cam.transform.position = new Vector3(stage.Aim.x, stage.Aim.y, -100f);
+
+                    // ...then this ARM's field over the top of it. Only the trains change.
+                    WaveTrains trains = WaveMath.TrainsFrom(_env.Wind, _env.SeaState01, in settings);
+                    WaveFieldBridge.PublishGlobals(WaveFieldBridge.Pack(in trains));
+                    WaveFieldBridge.PublishBreakerGlobals(trains.Dominant, GameServices.WaveFetch,
+                                                          GameServices.Breakers);
+
+                    string file = Path.Combine(dir, $"{w.ToString().ToLowerInvariant()}-{armName}.png");
+                    Color[] px = Capture(tint, file);
+                    pair[arm] = px;
+
+                    float lambda = trains.Count > 0 ? trains[0].Wavelength : 0f;
+                    float c = trains.Count > 0 ? trains[0].PhaseSpeed : 0f;
+                    float crest = c > 1e-4f ? lambda / c : 0f;
+                    MeanAndStd(px, out float mean, out float std);
+                    report.AppendLine(
+                        $"{w,-7} | {armName,-8} | {_env.Wind.magnitude,5:0.00} | {lambda,8:0.0} | " +
+                        $"{c,5:0.00} | {crest,6:0.00} | {mean,9:0.0000} | {std,8:0.0000}");
+                }
+                rows.Add(pair);
+            }
+
+            File.WriteAllText(Path.Combine(dir, "ROW30.txt"), report.ToString());
+            Debug.Log("[row30] the sea before and after\n" + report);
+
+            string sheet = Path.Combine(Directory.GetCurrentDirectory(), dir, "SHEET-row30-wave-law.png");
+            WriteRow30Sheet(sheet, rows);
+            Assert.IsTrue(File.Exists(sheet), "the sheet must be written - the FILE is the evidence");
+
+            // The arms must actually differ, or the plate is photographing one sea twice.
+            for (int r = 0; r < rows.Count; r++)
+            {
+                double diff = 0;
+                for (int i = 0; i < rows[r][0].Length; i++)
+                    diff += Mathf.Abs(rows[r][0][i].r - rows[r][1][i].r)
+                          + Mathf.Abs(rows[r][0][i].g - rows[r][1][i].g)
+                          + Mathf.Abs(rows[r][0][i].b - rows[r][1][i].b);
+                diff /= rows[r][0].Length * 3.0;
+                TestContext.WriteLine($"  row {r}: mean per-channel difference between arms {diff:0.00000}");
+                Assert.Greater(diff, 1e-4,
+                    "DEAD CONTROL: the two arms drew the same sea. Either the field was not re-published " +
+                    "over the shipped push, or the shipped fetch is 0 and the feature is off.");
+            }
+        }
+
+        /// <summary>Mean and standard deviation of luma over the whole plate - enough to say whether an
+        /// arm went flatter, which is the steepness question §39.4 flags.</summary>
+        static void MeanAndStd(Color[] px, out float mean, out float std)
+        {
+            double sum = 0, sumSq = 0;
+            foreach (Color c in px)
+            {
+                double l = c.r * 0.299 + c.g * 0.587 + c.b * 0.114;
+                sum += l; sumSq += l * l;
+            }
+            mean = (float)(sum / px.Length);
+            std = (float)Math.Sqrt(Math.Max(0, sumSq / px.Length - (double)mean * mean));
+        }
+
+        /// <summary>Three rows (light, blow, gale) x two columns (legacy, derived), halved on the way
+        /// out so the sheet is a thing a person opens.</summary>
+        static void WriteRow30Sheet(string path, List<Color[][]> rows)
+        {
+            const int gap = 8;
+            int half = ShotPx / 2;
+            int w = half * 2 + gap;
+            int h = half * rows.Count + gap * (rows.Count - 1);
+            var tex = new Texture2D(w, h, TextureFormat.RGBA32, false);
+            var px = new Color[w * h];
+            for (int i = 0; i < px.Length; i++) px[i] = new Color(0.09f, 0.09f, 0.10f, 1f);
+
+            for (int r = 0; r < rows.Count; r++)
+            for (int col = 0; col < 2; col++)
+            {
+                Color[] img = rows[r][col];
+                int ox = col * (half + gap);
+                int oy = (rows.Count - 1 - r) * (half + gap);
+                for (int y = 0; y < half; y++)
+                for (int x = 0; x < half; x++)
+                {
+                    Color a = img[(y * 2) * ShotPx + x * 2] + img[(y * 2) * ShotPx + x * 2 + 1]
+                            + img[(y * 2 + 1) * ShotPx + x * 2] + img[(y * 2 + 1) * ShotPx + x * 2 + 1];
+                    px[(oy + y) * w + ox + x] = new Color(a.r * 0.25f, a.g * 0.25f, a.b * 0.25f, 1f);
+                }
+            }
+            tex.SetPixels(px);
+            tex.Apply();
+            File.WriteAllBytes(path, tex.EncodeToPNG());
+            Object.DestroyImmediate(tex);
+        }
+
+        // =============================================================================================
         //  Headless guards on the instrument itself (run on CI too)
         // =============================================================================================
 

@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6000b72d0329cc04ebb9f483ec968d7f, type: 3}
+  m_Name: WinterFlounder
+  m_EditorClassIdentifier: HiddenHarbours.Fishing::HiddenHarbours.Fishing.FishSpeciesDef
+  Id: fish.winter_flounder
+  DisplayName: Winter Flounder
+  Category: 0
+  Rarity: 0
+  Flavor: Lies flat on the soft ground inshore; both eyes on the up side.
+  RegionIds:
+  - region.coddle_cove
+  - region.st_peters
+  - region.nine_mile_creek
+  AllowedGear: 3
+  Seasons: 5
+  MinTide: -10
+  MaxTide: 10
+  StartHour: 6
+  EndHour: 18
+  DepthBands: 6
+  BehaviorFlags: 1
+  FavoredLures: 0
+  MinSchoolMarks: 1
+  MaxSchoolMarks: 2
+  MinWeightKg: 0.2
+  MaxWeightKg: 2
+  BaseValue: 7
+  SpoilPerDay: 0.75
+  SupplyElasticity: 0.45
+  SpawnWeight: 0.8
+  Sprite: {fileID: 0}
+  Bite: {fileID: 0}
+  RodFight: {fileID: 0}

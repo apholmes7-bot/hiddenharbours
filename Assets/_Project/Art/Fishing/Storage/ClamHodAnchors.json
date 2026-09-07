@@ -5,6 +5,10 @@
   "dirs": 8,
   "depthPx": 4,
   "_note": "opening[] is the rim quad per direction row, in px offsets from the pivot — the polygon a shellfish heap is clipped to. carryGrip is the roller grip; it is the SAME point at every facing because it projects (0,0,GZ), dead centre, and a turn about the vertical axis cannot move it.",
+  "fills": ["empty","few","half","full","brim"],
+  "fillFrac": {"empty":0,"few":0.25,"half":0.55,"full":0.85,"brim":1},
+  "heapSheets": ["Hod2_heap_few", "Hod2_heap_half", "Hod2_heap_full", "Hod2_heap_brim"],
+  "_heapNote": "every band with a non-zero fraction is baked as Hod2_heap_<band>, one 8-row sheet each, on THIS cell and pivot: draw back, then the band's heap, then front. 'empty' heaps nothing and has no sheet.",
   "carryGrip": {"x":20,"y":21},
   "opening": [
     [{"dx":-6,"dy":-2},{"dx":6,"dy":-2},{"dx":6,"dy":-8},{"dx":-6,"dy":-8}],

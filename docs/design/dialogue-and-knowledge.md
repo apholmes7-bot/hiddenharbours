@@ -39,6 +39,52 @@ touched.) Conversation is the Animal Crossing shape, in this game's voice:
   and **questions the player asks the character** — because people are knowledge surfaces
   (§3). The option picker lives in/at the bubble, in the same visual language.
 
+## 2b. Ambient speech — the coast talks, and it never stops you
+
+**Owner ruling, 2026-09-06 (verbatim):**
+
+> I also want npcs to engage in conversation with each other and the conversations to be visible
+> bubbles as they talk, the player can still walk and run as normal. These speech bubbles can also be
+> used by the player to narrate their internal dialogue, such as approaching a broken item and saying
+> "I could fix this" or other clues to the player
+
+Three laws come out of it, and the middle one is the whole design:
+
+1. **NPC-to-NPC conversation is VISIBLE** — bubbles over each speaker, in turn, in the world. Not a
+   log, not a subtitle, not a "villagers are chatting" icon.
+2. **It takes NOTHING from the player.** Walk, run, interact all continue. Nothing is modal, nothing
+   waits for a press, nothing raises the interaction gate. This is a TEST
+   (`AmbientSpeechPlayTests`), not a comment: the player walks for the whole life of a bubble and the
+   fixture asserts, per frame, that she kept moving and that the gate was never raised.
+3. **ONE bubble system serves both** overheard speech and the player's INNER VOICE, and the inner
+   voice is a CLUE channel — the diegetic-UI doctrine (§3) speaking in the player's own head instead
+   of in a HUD.
+
+**How it differs from the modal conversation in §2, and why.** The bubble the player gets when she
+presses Talk has one slot, a runner, an option picker, a gate on the interact key and a press to
+advance — every one of those is right for a conversation she chose to be in. Ambient speech is the
+opposite shape: several at once, no state to advance, no way to interrupt it. So there are two
+presenters over one bubble, sharing the kit's numbers, the screen-edge solve and the fill, and nothing
+else. **The modal always wins:** pressing Talk on somebody mid-line ends their ambient bubble, so one
+person never has two.
+
+**Instead of a press, a dwell.** An unprompted line stands for exactly as long as it takes to fill at
+its speaker's cadence, plus a read pause that is a field on the voice asset (`ReadPauseSeconds` — the
+owner's dial, per character, no code). The duration is computed rather than observed, which is what
+lets a two-hander schedule its second speaker before the first has finished and keeps an exchange the
+same length on every machine.
+
+**The inner voice is visibly hers** (owner ruling, 2026-09-06): a thought bubble is **tailless** — the
+kit draws six speech tails and nothing is pointing at her, because nobody is speaking — and a shade
+**cooler** than a spoken one.
+
+**Every clue is data.** An `InnerVoiceLineDef` asset carries the words, the trigger, whether she
+thinks it once (remembered in the save) or again after a cooldown, and which voice it reads in. Two
+triggers ship: the game offering her a verb on something, and coming within an authored radius of an
+authored point. ⚠ The owner's own example — *"I could fix this"* — waits on a prop condition / wear /
+repairability model, which does not exist in any form and is its own charter. The shipped clues speak
+about things whose state the game already knows.
+
 ## 3. The knowledge doctrine — no menus; knowledge lives in things and people
 
 **"Instead of menus there will be cellphones, computers, documents and the other npcs who

@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6000b72d0329cc04ebb9f483ec968d7f, type: 3}
+  m_Name: StripedBass
+  m_EditorClassIdentifier: HiddenHarbours.Fishing::HiddenHarbours.Fishing.FishSpeciesDef
+  Id: fish.striped_bass
+  DisplayName: Striped Bass
+  Category: 6
+  Rarity: 2
+  Flavor: Hunts the rips and river-mouths on the moving tide. The inshore sport prize.
+  RegionIds:
+  - region.coddle_cove
+  - region.st_peters
+  - region.nine_mile_creek
+  AllowedGear: 5
+  Seasons: 6
+  MinTide: -10
+  MaxTide: 10
+  StartHour: 5
+  EndHour: 9
+  SecondStartHour: 17
+  SecondEndHour: 21
+  MovingWaterOnly: 1
+  DepthBands: 6
+  BehaviorFlags: 2
+  FavoredLures: 7
+  MinSchoolMarks: 1
+  MaxSchoolMarks: 4
+  MinWeightKg: 1
+  MaxWeightKg: 25
+  BaseValue: 17
+  SpoilPerDay: 1
+  SupplyElasticity: 0.55
+  SpawnWeight: 0.4
+  Sprite: {fileID: 0}
+  Bite: {fileID: 0}
+  RodFight: {fileID: 0}

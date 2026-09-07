@@ -25,6 +25,12 @@ namespace HiddenHarbours.Tests.Art.EditMode
     /// direction rows × 1 frame; item strips ONE row × 4 lay variants; the mask matches the tote
     /// exactly (it must overlay pixel-on-pixel).</para>
     ///
+    /// <para><b>The clam hod is THREE stems on one cell.</b> <c>Hod2_back</c> and
+    /// <c>Hod2_front</c> are the far and near halves of the wire, and <c>Hod2_heap_&lt;band&gt;</c>
+    /// is what goes between them — same 40×40 cell, same (20,30) pivot, so the three draw on one
+    /// transform and the same <c>Hod2_</c> slicer spec covers all of them. Only the four bands with
+    /// a non-zero fill fraction are baked; <c>empty</c> heaps nothing.</para>
+    ///
     /// <para><b>The kit has LANDED</b> — every stem once started in <see cref="AwaitingOwnerBake"/>
     /// (the owner-bake guard pattern of PR #252/#260: sheets specced before any PNG exists, each
     /// per-sheet test reading Skipped honestly until the owner ran <i>Hidden Harbours ▸ Art ▸ Bake
@@ -42,6 +48,11 @@ namespace HiddenHarbours.Tests.Art.EditMode
         private static readonly string[] ToteLids = { "on", "off", "lean" };
         private static readonly string[] BucketTiers = { "pail", "tote", "tray" };
         private static readonly string[] BucketFills = { "few", "half", "full", "brim" };
+
+        /// <summary>The hod’s heap bands — <c>ClamHod.FILLS</c> minus <c>empty</c>, which heaps
+        /// nothing and therefore has no sheet (an empty hod is the back+front pair with nothing
+        /// between them). Restated as literals here like every other axis in this file.</summary>
+        private static readonly string[] HodHeapBands = { "few", "half", "full", "brim" };
         private static readonly string[] BucketCatches = { "fish", "shell", "crust" };
 
         private readonly struct Kit
@@ -129,12 +140,14 @@ namespace HiddenHarbours.Tests.Art.EditMode
 
             d["Hod2_back"] = Hod2Kit;
             d["Hod2_front"] = Hod2Kit;
+            foreach (var band in HodHeapBands) d[$"Hod2_heap_{band}"] = Hod2Kit;
             d["CatchItem2_lobster"] = CatchItem2CrustKit;
             d["CatchItem2_crab"] = CatchItem2CrustKit;
 
             // pass 1: 4 + 5×3 + 1 + 3×(1 + 4×3) = 59
-            // pass 2: (4 + 5) crustacean poses + 2 held + 5×3 shellfish + 2 hod + 2 crust items = 30
-            return d;   // 89 stems
+            // pass 2: (4 + 5) crustacean poses + 2 held + 5×3 shellfish + 2 hod layers
+            //         + 4 hod heap bands + 2 crust items = 34
+            return d;   // 93 stems
         }
 
         /// <summary>
@@ -183,11 +196,12 @@ namespace HiddenHarbours.Tests.Art.EditMode
         [Test]
         public void TheGuardedSet_IsTheFullKit()
         {
-            // The set arithmetic, so an accidental drop of a colour/tier/fill is loud:
+            // The set arithmetic, so an accidental drop of a colour/tier/fill/band is loud:
             // pass 1: 4 items + 5 colours × 3 lids + 1 mask + 3 tiers × (1 empty + 4 fills × 3 catches) = 59,
-            // + pass 2: 7 catch items + 9 crustacean poses + 2 held + 5 shells + 5 handfuls + 2 hod = 30.
-            Assert.AreEqual(4 + 5 * 3 + 1 + 3 * (1 + 4 * 3) + 30, Sheets.Count);
-            Assert.AreEqual(89, Sheets.Count);
+            // + pass 2: 7 catch items + 9 crustacean poses + 2 held + 5 shells + 5 handfuls
+            //   + 2 hod layers + 4 hod heap bands = 34.
+            Assert.AreEqual(4 + 5 * 3 + 1 + 3 * (1 + 4 * 3) + 34, Sheets.Count);
+            Assert.AreEqual(93, Sheets.Count);
         }
 
         [Test]

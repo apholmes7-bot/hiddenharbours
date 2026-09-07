@@ -84,8 +84,12 @@ namespace HiddenHarbours.App.Editor
 
         /// <summary>The catch art table (species → visual kind). Built and committed by
         /// <see cref="CatchItemLibraryBuilder"/>; null here means it has not been built yet, and the
-        /// bridge says so at runtime rather than filling silently with nothing.</summary>
-        static CatchItemLibrary Library()
+        /// bridge says so at runtime rather than filling silently with nothing.
+        ///
+        /// <para><c>internal</c> because the clam hod wants the SAME table — a second copy of
+        /// “find it, and build it if it is missing” is a second chance to get the ordering trap
+        /// wrong.</para></summary>
+        internal static CatchItemLibrary Library()
         {
             var library = AssetDatabase.LoadAssetAtPath<CatchItemLibrary>(CatchItemLibraryBuilder.LibraryPath);
             if (library != null) return library;

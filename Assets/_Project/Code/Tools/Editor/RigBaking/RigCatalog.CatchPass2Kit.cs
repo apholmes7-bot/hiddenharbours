@@ -88,6 +88,12 @@ namespace HiddenHarbours.Tools.RigBaking
                 // render(dir,{layer:'back'}) then the heap then {layer:'front'}; opening(dir) is the
                 // rim quad and depthPx() is 4.
                 //
+                // ⚠️ THE HEAP IS NOT THIS RIG’S. render() takes no fill at all — the middle layer is
+                // CatchKit2.heap('clam', opening(dir), depthPx(), band), which is why BakeClamHod
+                // installs the whole catchKit2 chain before this entry even though clamHod itself
+                // needs only the turntable. Measured: loading that chain first moves ZERO pixels of
+                // Hod2_back/Hod2_front (CatchPass2KitTests pins it).
+                //
                 // cpivot(dir) is the same point at all 8 facings, and that is CORRECT, not a stub:
                 // it projects (0, 0, GZ) — dead centre in x and y — so rotating the camera about the
                 // vertical axis cannot move it. It is the bail's grip directly above the centre.

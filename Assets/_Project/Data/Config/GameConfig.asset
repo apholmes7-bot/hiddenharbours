@@ -74,6 +74,8 @@ MonoBehaviour:
     DominantWavelengthBase: 6
     DominantWavelengthPerWindSpeed: 1.5
     DominantWavelengthMax: 40
+    SeaFetchKilometres: 25
+    DominantWavelengthScale: 1
     PrimaryAmplitude: 0.8
     SeaStateAmplitudeExponent: 1.5
     CrestSharpening: 2.6
@@ -360,6 +362,7 @@ MonoBehaviour:
     DepthlessMatch01: 1
     MinSpecies: 1
     MaxSpecies: 3
+    MovingWaterMetresPerHour: 0.25
     SchoolSpeciesBoost: 3
     OffSchoolSpeciesDamp01: 0.4
   Freshness:

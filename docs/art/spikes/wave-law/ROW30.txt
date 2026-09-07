@@ -1,0 +1,11 @@
+register row 30 - the peak wavelength law, before and after
+  cape framing 24 m high, 960 px square, noon, mean tide
+  shipped SeaFetchKilometres = 25 km
+
+weather | arm      | U m/s | peak lam |     c |  crest | mean luma | std luma
+Light   | legacy   |  1.63 |      8.4 |  3.63 |   2.32 |    0.1670 |   0.0555
+Light   | derived  |  1.63 |      2.2 |  1.85 |   1.19 |    0.1600 |   0.0747
+Blow    | legacy   |  5.70 |     14.6 |  4.77 |   3.05 |    0.0116 |   0.0180
+Blow    | derived  |  5.70 |     15.6 |  4.94 |   3.16 |    0.0113 |   0.0169
+Gale    | legacy   | 12.95 |     25.4 |  6.30 |   4.04 |    0.0198 |   0.0253
+Gale    | derived  | 12.95 |     27.3 |  6.52 |   4.18 |    0.0183 |   0.0233

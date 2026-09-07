@@ -298,6 +298,29 @@ namespace HiddenHarbours.Core
         [Tooltip("Ceiling on the dominant wavelength (metres) so a gale cannot stretch the swell absurdly.")]
         public float DominantWavelengthMax;
 
+        [Tooltip("OWNER RULING 2026-09-06 (\"make it realistic\"): the SYNOPTIC fetch, in kilometres — " +
+             "how much open water the wind has crossed before it reaches you. It is what decides how " +
+             "developed the sea is, and therefore how long its waves are.\n\n0 = OFF, the legacy " +
+             "linear law (DominantWavelengthBase + PerWindSpeed * U) EXACTLY. Above 0 the peak is " +
+             "derived instead: the JONSWAP fetch-limited growth law, capped at the Pierson-Moskowitz " +
+             "fully-developed limit for that wind.\n\nThis is a SETTING ABOUT THE PLACE, not a look " +
+             "dial. ~25 km is an inshore strait; ~100 km is a wide gulf; open ocean is effectively " +
+             "infinite and gives Pierson-Moskowitz everywhere. ⚠️ It is NOT the local shelter fetch " +
+             "WaveFetch marches off the height map — that one modulates AMPLITUDE only and is " +
+             "unaffected.")]
+        public float SeaFetchKilometres;
+
+        [Tooltip("A whole-sea WAVELENGTH scale applied LAST, after the peak law and its cap - the " +
+             "owner’s dial for a sea that still reads too fast once he has played the realistic " +
+             "one. 1 = the derived sea, untouched (shipped)." +
+             "\n\nWARNING: speed and period go as the SQUARE ROOT of this. 0.5 gives 0.71x the " +
+             "crest speed, and a true HALF speed is 0.25 - and shorter waves also arrive MORE " +
+             "often, which is the opposite of realistic. See docs/design/water-rendering.md 39." +
+             "\n\nA value of 0 or less is read as 1: this field did not exist before " +
+             "2026-09-06, so an asset serialized before then deserializes it as ZERO, and a plain " +
+             "multiply would flatten every wavelength onto the floor.")]
+        public float DominantWavelengthScale;
+
         [Tooltip("Primary-train amplitude (metres) at full sea state (SeaState01 = 1). Everything scales down from here; at SeaState01 = 0 all amplitudes are exactly 0 (glass is sacred).")]
         public float PrimaryAmplitude;
 
@@ -383,6 +406,8 @@ namespace HiddenHarbours.Core
             DominantWavelengthBase = 6f,
             DominantWavelengthPerWindSpeed = 1.5f,
             DominantWavelengthMax = 40f,
+            SeaFetchKilometres = 0f,          // the legacy linear law, bit-for-bit
+            DominantWavelengthScale = 1f,     // the derived sea, untouched
             PrimaryAmplitude = 0.8f,
             SeaStateAmplitudeExponent = 1.35f,
             CrestSharpening = 2.2f,
@@ -487,8 +512,25 @@ namespace HiddenHarbours.Core
 
             float wavelengthCeiling = Mathf.Max(WaveTrain.MinWavelengthMeters, settings.DominantWavelengthMax);
             float dominantWavelength = Mathf.Clamp(
-                settings.DominantWavelengthBase + settings.DominantWavelengthPerWindSpeed * windSpeed,
+                PeakWavelengthMeters(windSpeed, in settings),
                 WaveTrain.MinWavelengthMeters, wavelengthCeiling);
+
+            // The owner's dial, applied LAST so it scales whatever the peak law produced. Ships at 1
+            // (a no-op) — it exists because he may still want the sea slower after playing the realistic
+            // one, and this is the single number that does it. ⚠️ Speed goes as its SQUARE ROOT, and a
+            // shorter sea is a LESS realistic one; §39 carries both numbers.
+            //
+            // ⚠️ Zero is read as 1. The field postdates every asset serialized before 2026-09-06, and a
+            // plain multiply would collapse the sea onto MinWavelengthMeters — measured at 0.010 m with
+            // the floor removed. Same discipline as WaveSpectrum's floors.
+            float wavelengthScale = settings.DominantWavelengthScale > 0f
+                ? settings.DominantWavelengthScale : 1f;
+            // Clamped AGAIN, against the same ceiling. The dial is applied after the first clamp so it
+            // scales whatever the peak law produced — but that would let a value above 1 walk straight
+            // through the ceiling the rail exists to be. A rail that one knob can step over is not a
+            // rail. (Below 1, which is what the dial is for, this second clamp is a no-op.)
+            dominantWavelength = Mathf.Clamp(dominantWavelength * wavelengthScale,
+                                             WaveTrain.MinWavelengthMeters, wavelengthCeiling);
 
             float primaryAmplitude = Mathf.Max(0f, settings.PrimaryAmplitude) * amplitudeScale;
             float gravity = settings.Gravity;
@@ -794,6 +836,70 @@ namespace HiddenHarbours.Core
         }
 
         // ---- deterministic helpers (no RNG anywhere — rule 5) -----------------------------------
+
+        /// <summary>
+        /// 🔴 <b>THE PEAK WAVELENGTH — how long the waves are for this wind (owner ruling 2026-09-06,
+        /// "make it realistic", register row 30).</b>
+        ///
+        /// <para><b>At <see cref="WaveFieldSettings.SeaFetchKilometres"/> ≤ 0 this is the legacy linear
+        /// law, bit for bit</b> — <c>Base + PerWindSpeed·U</c>. Above 0 the peak is DERIVED from how far
+        /// the wind has blown over open water:</para>
+        ///
+        /// <list type="number">
+        /// <item><b>JONSWAP fetch-limited growth.</b> With dimensionless fetch <c>X̃ = gX/U²</c>, the
+        /// peak frequency is <c>f_p·U/g = 3.5·X̃^−0.33</c>, and <c>λ = g/(2π f_p²)</c>. A sea that has
+        /// not run far enough is SHORTER, which is the whole reason an inshore island does not get
+        /// ocean swell.</item>
+        /// <item><b>Capped at Pierson–Moskowitz.</b> JONSWAP's growth law has no ceiling of its own —
+        /// it would keep lengthening forever with fetch — so it is capped at the fully-developed peak
+        /// <c>λ = 2πU²/(0.877²g)</c>, which is what a wind eventually builds no matter how far it
+        /// blows. <b>PM is therefore the infinite-fetch LIMIT of this function, not a rival to it.</b></item>
+        /// </list>
+        ///
+        /// <para>⚠️ <b>Why PM alone was measured and rejected.</b> Full development needs
+        /// <c>gX/U² ≈ 17 400</c> — <b>58 km of open water at a blow and 298 km at a gale</b>. This
+        /// setting is an inshore island; it has neither. Shipped at 25 km the derived peak lands within
+        /// ~7 % of the legacy line at blow and gale (15.6 m vs 14.6, 27.3 m vs 25.4) while correcting
+        /// the light-airs end, where the legacy line is nearly four times too long. Bare PM would put a
+        /// 140 m wave on a 52 m frame at a gale — less than half a wavelength on screen, crossing it
+        /// FASTER than today, at a third of a real sea's steepness. See
+        /// <c>docs/design/water-rendering.md</c> §39.</para>
+        ///
+        /// <para>Pure and deterministic in its arguments; no clock, no RNG (rule 5).</para>
+        /// </summary>
+        /// <param name="windSpeed">Wind strength (m/s).</param>
+        /// <param name="settings">The derivation constants.</param>
+        public static float PeakWavelengthMeters(float windSpeed, in WaveFieldSettings settings)
+        {
+            float fetchKm = settings.SeaFetchKilometres;
+            if (fetchKm <= 0f)                                  // OFF: the legacy line, bit for bit
+                return settings.DominantWavelengthBase
+                     + settings.DominantWavelengthPerWindSpeed * windSpeed;
+
+            float u = Mathf.Max(windSpeed, 0f);
+            if (u <= MinWindForDerivedPeak)                     // no wind builds no wave; the trains are
+                return WaveTrain.MinWavelengthMeters;           // silent here anyway (glass is sacred)
+
+            float fetchMetres = fetchKm * 1000f;
+            // JONSWAP: f_p = 3.5 * (g X / U^2)^-0.33 * g / U
+            float dimensionlessFetch = Gravity(in settings) * fetchMetres / (u * u);
+            float peakFrequency = 3.5f * Mathf.Pow(dimensionlessFetch, -0.33f)
+                                * Gravity(in settings) / u;
+            float fetchLimited = Gravity(in settings)
+                               / (2f * Mathf.PI * peakFrequency * peakFrequency);
+
+            // ...capped at the fully developed sea that wind can ever build.
+            float fullyDeveloped = 2f * Mathf.PI * u * u
+                                 / (0.877f * 0.877f * Gravity(in settings));
+            return Mathf.Min(fetchLimited, fullyDeveloped);
+        }
+
+        /// <summary>Below this wind speed the derived peak is not evaluated: the growth law divides by
+        /// the wind, and every amplitude is already 0 down here (glass is sacred).</summary>
+        public const float MinWindForDerivedPeak = 0.05f;
+
+        static float Gravity(in WaveFieldSettings settings)
+            => settings.Gravity > 0f ? settings.Gravity : 9.81f;
 
         /// <summary>Deterministic phase offset in [0, 2π) for a train slot: the WeatherModel-style
         /// integer hash (same constants, same discipline — one deterministic noise family across the

@@ -1312,6 +1312,9 @@ namespace HiddenHarbours.App.Editor
                 AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(DataFish + "/Haddock.asset"),
                 AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(DataFish + "/Mackerel.asset"),
                 AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(DataFish + "/Pollock.asset"),
+                AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(DataFish + "/StripedBass.asset"),
+                AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(DataFish + "/AtlanticHerring.asset"),
+                AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(DataFish + "/WinterFlounder.asset"),
             }.Where(f => f != null).Cast<Object>().ToArray();
             if (rodFish.Length > 0) SetRefArray(fishing, "_regionFish", rodFish);
             else Debug.LogWarning("[NineMileCreekBuilder] No rod species assets found under " + DataFish +

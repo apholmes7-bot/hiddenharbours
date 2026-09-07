@@ -1178,9 +1178,38 @@ namespace HiddenHarbours.Fishing
             float tide = env != null ? env.Sample().TideHeight : 0f;
             float hour = clock != null ? clock.HourOfDay : 12f;
             Season season = clock != null ? clock.Season : Season.HighSummer;
+            // The tide's RATE, not its height — a central difference on the environment's own water
+            // level, the same derivative the school model reads, so a species barred from the water at
+            // slack is barred from the roll at slack (owner ruling 2026-09-06). NaN when there is no
+            // environment to sample, which every gate reads as "no gate".
+            double now = clock != null ? clock.TotalSeconds : 0.0;
+            float tideRate = TideRateMetresPerHour(env, now);
+
             return new CatchContext(EffectiveRegionId, tide, hour, season, _gear,
                                     _depthGame ? _depthM : CatchContext.NoDepth, _floorM,
-                                    TiedOnLure, BaitOnTheHook, CurrentSchoolInfluence());
+                                    TiedOnLure, BaitOnTheHook, CurrentSchoolInfluence(),
+                                    tideRate, SchoolSettings.MovingWaterMetresPerHour);
+        }
+
+        /// <summary>
+        /// Signed rate of change of the water level, metres per in-game hour — flood positive, ebb
+        /// negative, near zero at slack. A CENTRAL DIFFERENCE on the environment's own
+        /// <c>WaterLevelAt</c>, so it is the honest derivative of the one tide the whole game reads
+        /// rather than a second tide model (rule 5). <see cref="float.NaN"/> when the tide cannot be
+        /// sampled, which every gate reads as no gate.
+        /// </summary>
+        private float TideRateMetresPerHour(IEnvironmentService env, double gameSeconds)
+        {
+            if (env == null) return float.NaN;
+            float secondsPerDay = _config != null ? _config.SecondsPerDay : GameConfig.DefaultSecondsPerDay;
+            double secondsPerHour = secondsPerDay / 24.0;
+            if (secondsPerHour <= 0.0) return float.NaN;
+
+            const double stepHours = 0.1;
+            double half = stepHours * secondsPerHour * 0.5;
+            float a = env.WaterLevelAt(gameSeconds - half);
+            float b = env.WaterLevelAt(gameSeconds + half);
+            return (float)((b - a) / stepHours);
         }
 
         #region Fish schools (ADR 0025 S3 — the fish the finder draws ARE the fish that bite)

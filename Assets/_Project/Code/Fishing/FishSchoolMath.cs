@@ -233,6 +233,25 @@ namespace HiddenHarbours.Fishing
             => RangeInt(key, StreamMarks, Mathf.Max(1, s.MinMarks), Mathf.Max(1, s.MaxMarks));
 
         /// <summary>
+        /// How many fish are showing when the SPECIES states its own school size (the owner's ruling of
+        /// 2026-09-06: a herring shoal is not a flounder). <paramref name="minSpeciesMarks"/> /
+        /// <paramref name="maxSpeciesMarks"/> of 0 mean "unstated" and fall straight back to the global
+        /// range, so a species authored before the field existed rolls bit-for-bit what it always did.
+        ///
+        /// <para><b>The same hash stream either way</b> (<c>StreamMarks</c>), so widening a species'
+        /// range re-rolls that species' schools and leaves every other school in every existing save
+        /// exactly where it was.</para>
+        /// </summary>
+        public static int MarkCountFor(uint key, int minSpeciesMarks, int maxSpeciesMarks,
+                                       in FishSchoolSettings s)
+        {
+            if (minSpeciesMarks <= 0 || maxSpeciesMarks <= 0) return MarkCountFor(key, in s);
+            int lo = Mathf.Max(1, minSpeciesMarks);
+            int hi = Mathf.Max(lo, maxSpeciesMarks);
+            return RangeInt(key, StreamMarks, lo, hi);
+        }
+
+        /// <summary>
         /// The window this school is up for — the owner's "finding one opens a window of time during which
         /// bites happen". A length drawn from the authored range, placed at a hashed offset inside the
         /// slot, and <b>always contained by the slot</b> so a query never has to look at more than one
