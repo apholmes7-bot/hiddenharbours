@@ -198,24 +198,53 @@ namespace HiddenHarbours.Tests.EditMode
         private static List<NineMileCreekDressing.FacePiece> FaceRun(string wall) =>
             Face().Where(p => p.Wall == wall).ToList();
 
+        /// <summary>How long one course is DRAWN along a run — restated from the bake's own two numbers
+        /// so the guards below have a bar the placement code cannot move. A metre of ground travel draws
+        /// <c>GroundDepthScale</c> of a unit in Y and a whole unit in X, so a 9.6 m crib is 9.6 units of
+        /// wall east–west and 6.17 north–south.</summary>
+        private static float DrawnRunMetres(Vector2 along)
+        {
+            Vector2 a = along.normalized;
+            return NineMileCreekQuayFace.FaceCourseRunMetres *
+                   new Vector2(a.x, a.y * SpriteLightMath.GroundDepthScale).magnitude;
+        }
+
         /// <summary>A run has to COVER its wall: the right number of pieces, evenly pitched, each half a
-        /// pitch inside the ends, and never pitched further apart than a piece is long.</summary>
+        /// pitch inside the ends, and never pitched further apart than a piece is <b>drawn</b>.
+        ///
+        /// <para>⚠️ <b>"as long as a piece is" is the measurement this test used to get wrong, and it went
+        /// green while it did.</b> It compared the pitch against <c>FaceCourseRunMetres</c> — 9.6 m, the
+        /// crib's length in PLAN — for every run, so the two north–south runs passed at a pitch of 8.4
+        /// against a piece that only draws 6.17 units along Y. The bar has to be the quantity the
+        /// question is about (what covers the wall ON SCREEN), not the nearest number with the same
+        /// name.</para>
+        ///
+        /// <para>⚠️ <b>And the bar is DERIVED HERE, not asked of the thing under test.</b> Calling
+        /// <c>DrawnCourseRunMetres</c> for it would make this a mirror: revert the rule and both sides
+        /// move together, so the test passes on the defect it exists to catch (measured — it does).
+        /// <see cref="DrawnRunMetres"/> restates the projection from <c>FaceCourseRunMetres</c> and
+        /// <c>SpriteLightMath.GroundDepthScale</c> instead, which is the same discipline the tide and
+        /// the deck heights in this file are asserted with.</para></summary>
         private static void AssertRunCovers(string wall, Vector2 from, Vector2 to)
         {
             var run = FaceRun(wall);
             float length = Vector2.Distance(from, to);
-            float piece = NineMileCreekQuayFace.FaceCourseRunMetres;
+            Vector2 along = (to - from).normalized;
+            float piece = DrawnRunMetres(along);
 
             Assert.That(run, Is.Not.Empty, $"the {wall} has no face on it at all");
             Assert.That(run.Count, Is.EqualTo(Mathf.CeilToInt(length / piece)),
-                $"the {wall} is {length:0.#} m of wall drawn with {run.Count} piece(s) of {piece:0.#} m. " +
+                $"the {wall} is {length:0.#} units of wall drawn with {run.Count} piece(s) that cover " +
+                $"{piece:0.##} units each ({NineMileCreekQuayFace.FaceCourseRunMetres:0.#} m of crib, " +
+                $"foreshortened by the run's own direction {along:F2}). " +
                 "The count is the CEILING of that division on purpose — a floor would leave the far end " +
                 "of the wall undrawn, and a hole in a quay reads far worse than a small overlap");
 
             float pitch = length / run.Count;
             Assert.That(pitch, Is.LessThanOrEqualTo(piece + 1e-3f),
-                $"the {wall}'s pieces are pitched {pitch:0.00} m apart but are only {piece:0.00} m long — " +
-                "that is a gap between every pair of them, straight through to the bay behind");
+                $"the {wall}'s pieces are pitched {pitch:0.00} units apart but are only drawn {piece:0.00} " +
+                "long — that is a gap between every pair of them, and what stands in it is the next " +
+                "piece's own end return (the owner's bands across the apron, 2026-09-06)");
 
             Assert.That(Vector2.Distance(run[0].Lip, from), Is.EqualTo(pitch * 0.5f).Within(1e-3f),
                 $"the first {wall} piece is not centred in its own slot — the same 'west end PLUS half a " +
@@ -239,6 +268,73 @@ namespace HiddenHarbours.Tests.EditMode
             AssertRunCovers(NineMileCreekDressing.BreakwaterRun,
                             NineMileCreekDressing.BreakwaterCrestWest,
                             NineMileCreekDressing.BreakwaterCrestEast);
+            // The three #471 added and this test never took: two of them are the north–south runs the
+            // foreshortening bites on, so leaving them out was half the reason it went unmeasured.
+            AssertRunCovers(NineMileCreekDressing.ApronWestRun,
+                            NineMileCreekDressing.ApronWestFaceSouth,
+                            NineMileCreekDressing.ApronWestFaceNorth);
+            AssertRunCovers(NineMileCreekDressing.ApronSouthRun,
+                            NineMileCreekDressing.ApronSouthFaceWest,
+                            NineMileCreekDressing.ApronSouthFaceEast);
+            AssertRunCovers(NineMileCreekDressing.QuayHeadRun,
+                            NineMileCreekDressing.QuayHeadFaceSouth,
+                            NineMileCreekDressing.QuayHeadFaceNorth);
+        }
+
+        /// <summary>
+        /// ⭐⭐ <b>THE OWNER'S BANDS ACROSS THE APRON, as a number.</b> Playtest 2026-09-06: <i>"wharfs
+        /// facing north south need to hide the south face between two sections"</i>.
+        ///
+        /// <para>Every one of those bands was a piece's own END RETURN standing in a gap. A 9.6 m crib
+        /// draws 6.17 units along a north–south wall and 9.6 along an east–west one — the sheet is baked
+        /// at 40° and the pixels carry the foreshortening — and the runs were pitched by the PLAN length
+        /// either way, so the two north–south runs left 3.43 units of bare wall at every seam.</para>
+        ///
+        /// <para>This asserts the quantity directly, rather than only through the coverage rule, because
+        /// the coverage rule is exactly what was measured against the wrong number for three PRs.</para>
+        /// </summary>
+        [Test]
+        public void ANorthSouthRunIsMeasuredInDRAWNUnits_NotInPlanMetres()
+        {
+            float plan = NineMileCreekQuayFace.FaceCourseRunMetres;
+
+            Assert.That(NineMileCreekQuayFace.DrawnCourseRunMetres(Vector2.right),
+                        Is.EqualTo(plan).Within(1e-3f),
+                "an east–west run draws a piece at its full plan length — X is not foreshortened, which " +
+                "is why the mooring face never showed this and must not move now");
+            Assert.That(NineMileCreekQuayFace.DrawnCourseRunMetres(Vector2.left),
+                        Is.EqualTo(plan).Within(1e-3f), "…and it cannot depend on which way along X");
+
+            float drawnNS = plan * SpriteLightMath.GroundDepthScale;
+            Assert.That(NineMileCreekQuayFace.DrawnCourseRunMetres(Vector2.up),
+                        Is.EqualTo(drawnNS).Within(1e-3f),
+                $"a north–south run draws a {plan:0.#} m piece {drawnNS:0.00} units long, not {plan:0.#}");
+            Assert.That(NineMileCreekQuayFace.DrawnCourseRunMetres(Vector2.down),
+                        Is.EqualTo(drawnNS).Within(1e-3f), "…and it cannot depend on which way along Y");
+
+            // The gap the old rule left, named so a regression reads as the owner's words.
+            foreach (string wall in new[] { NineMileCreekDressing.WestWallRun,
+                                            NineMileCreekDressing.ApronWestRun,
+                                            NineMileCreekDressing.QuayHeadRun })
+            {
+                var run = FaceRun(wall);
+                Assert.That(run.Count, Is.GreaterThan(1),
+                    $"{wall} runs north–south and is drawn with one piece — nothing to seam, but nothing " +
+                    "to cover the far end either");
+                for (int i = 1; i < run.Count; i++)
+                {
+                    float step = Vector2.Distance(run[i].Lip, run[i - 1].Lip);
+                    Assert.That(step, Is.LessThanOrEqualTo(drawnNS + 1e-3f),
+                        $"{wall} pieces {i - 1} and {i} are {step:0.00} units apart and each is drawn " +
+                        $"{drawnNS:0.00} — {step - drawnNS:0.00} units of bare wall between them, which " +
+                        "is where the next piece's end return stands and reads as a band laid across " +
+                        "the apron");
+                    Assert.That(run[i].Lip.y, Is.GreaterThan(run[i - 1].Lip.y),
+                        $"{wall} is authored north-to-south. The pieces share one sorting order, so the " +
+                        "run has to be laid down NEAREST FIRST or every end return draws on top of the " +
+                        "deck that is supposed to hide it");
+                }
+            }
         }
 
         [Test]
@@ -276,10 +372,15 @@ namespace HiddenHarbours.Tests.EditMode
         /// somebody could see. A metre: less than that is a step, not a face.</summary>
         private const float WallDropMetres = 1f;
 
-        /// <summary>The along-run half-extent of one drawn course — the STRUCTURE, not the cell, so the
+        /// <summary>The along-edge half-extent of one drawn course — the STRUCTURE, not the cell, so the
         /// test never credits a run with the union extent of eight facings. The committed sheet draws a
-        /// little past it (the crib's header logs stand proud), which only makes this stricter.</summary>
-        private static float CourseHalfRun => NineMileCreekQuayFace.FaceCourseRunMetres * 0.5f;
+        /// little past it (the crib's header logs stand proud), which only makes this stricter.
+        ///
+        /// <para>⚠️ <b>DRAWN, not plan.</b> A 9.6 m crib reaches ±4.8 units along an east–west edge and
+        /// only ±3.09 along a north–south one; crediting the plan half-length on a north–south edge is
+        /// how a run with 3.43 units of hole at every seam was counted as covering its wall.</para>
+        /// </summary>
+        private static float CourseHalfRun(Vector2 along) => DrawnRunMetres(along) * 0.5f;
 
         private void AssertEdgeIsFacedWhereItStandsOverWater(
             MainlandTidalTerrain terrain, string edge, Vector2 from, Vector2 to, Vector2 outward)
@@ -300,7 +401,7 @@ namespace HiddenHarbours.Tests.EditMode
 
                 bool covered = face.Any(f =>
                     Mathf.Abs(Vector2.Dot(f.Lip - p, outward)) < 0.5f &&  // its lip is ON this edge
-                    Mathf.Abs(Vector2.Dot(f.Lip - p, along)) <= CourseHalfRun + 1e-3f);
+                    Mathf.Abs(Vector2.Dot(f.Lip - p, along)) <= CourseHalfRun(along) + 1e-3f);
                 if (!covered) bare.Add(s);
             }
 

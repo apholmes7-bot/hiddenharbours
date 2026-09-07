@@ -41,6 +41,11 @@ namespace HiddenHarbours.Player
         private CatchItem _item;
         private bool _hasItem;
 
+        // ---- the art, resolved once at pickup ---------------------------------------------------
+        private CatchItemLibrary _art;
+        private string _kind;
+        private int _facings;
+
         /// <summary>What is being held. Only meaningful while <see cref="HasItem"/>.</summary>
         public CatchItem Item => _item;
 
@@ -50,25 +55,46 @@ namespace HiddenHarbours.Player
         /// <summary>
         /// Make one, holding the given catch, parented under <paramref name="parent"/>.
         ///
-        /// <para>The icon is resolved by species id through <see cref="IconRegistry"/>; a species with no
-        /// registered icon yields a null sprite, which draws nothing and is survivable — the clam is still
-        /// in your hands and still stacks. An invisible catch is a missing-art problem, not a broken
-        /// loop.</para>
+        /// <para><b>The art is the animal, when there is one.</b> <paramref name="art"/> resolves the
+        /// catch's species to a visual kind and hands back the rig's HELD pose — a lobster gripped
+        /// across the back, a clutch of clams in a fist — baked around the grip so it pins to a hand
+        /// anchor. Crustaceans carry eight facings and turn with the carrier; a handful has one and
+        /// does not, which is a fact about the rig rather than a decision made here.</para>
+        ///
+        /// <para><b>The icon is the fallback, and it is a real one.</b> With no library wired, or for a
+        /// species whose kind bakes no held pose, this falls back to <see cref="IconRegistry"/> exactly
+        /// as it always did. A species with neither yields a null sprite, which draws nothing and is
+        /// survivable — the clam is still in your hands and still stacks. An invisible catch is a
+        /// missing-art problem, not a broken loop.</para>
         /// </summary>
-        public static CarriableCatch Create(in CatchItem item, Transform parent)
+        public static CarriableCatch Create(in CatchItem item, Transform parent,
+                                            CatchItemLibrary art = null)
         {
             var go = new GameObject($"Catch({item.SpeciesId})");
             if (parent != null) go.transform.SetParent(parent, worldPositionStays: false);
 
             var sr = go.AddComponent<SpriteRenderer>();
-            sr.sprite = IconRegistry.Get(item.SpeciesId);
 
             var carriable = go.AddComponent<CarriableCatch>();
             carriable._renderer = sr;
             carriable._item = item;
             carriable._hasItem = true;
+            carriable._art = art;
+            carriable._kind = art != null ? art.KindFor(item.SpeciesId) : null;
+            carriable._facings = art != null ? art.HeldFacingsFor(carriable._kind) : 0;
+
+            // Draw something NOW rather than waiting for the first ShowFacing: a carrier only turns
+            // what it knows turns, so a one-facing handful would otherwise never be told to draw.
+            sr.sprite = carriable.HeldSprite(0) ?? IconRegistry.Get(item.SpeciesId);
             return carriable;
         }
+
+        /// <summary>This kind's held sprite at one facing, or null when it bakes none.</summary>
+        private Sprite HeldSprite(int facing)
+            // Frame 0 — the still hold. The rig animates the held pose over two frames and both are
+            // wired in the library, so a presenter that wants the animal breathing in the hand can
+            // flip them with no data change; a carried object does not earn an Update() for it here.
+            => _art != null && _facings > 0 ? _art.HeldSprite(_kind, facing, 0) : null;
 
         /// <summary>
         /// Hand the catch on and empty this. Returns the item that was held.
@@ -120,11 +146,22 @@ namespace HiddenHarbours.Player
         /// <inheritdoc/>
         public Transform Transform => transform;
 
-        /// <summary>0 — a clam in a fist has no directional art, and the null-safe answer is cell 0.</summary>
-        public int BakedFacings => 0;
+        /// <summary>
+        /// How many facings this catch's held art turns through: 8 for an animal the rig lofts as a
+        /// solid (a lobster, a rock crab), 1 for a handful of shellfish the rig draws with no camera,
+        /// and 0 when there is no held art at all — which is still the honest answer for a species on
+        /// the icon fallback, and keeps the carrier from asking it to turn.
+        /// </summary>
+        public int BakedFacings => _facings;
 
         /// <inheritdoc/>
-        public void ShowFacing(int facingIndex) { }
+        public void ShowFacing(int facingIndex)
+        {
+            if (_renderer == null) _renderer = GetComponent<SpriteRenderer>();
+            if (_renderer == null) return;
+            Sprite s = HeldSprite(facingIndex);
+            if (s != null) _renderer.sprite = s;      // never blank a good sprite with a missing cell
+        }
 
         /// <inheritdoc/>
         public void RideSortingBand(int sortingLayerId, int sortingOrder)

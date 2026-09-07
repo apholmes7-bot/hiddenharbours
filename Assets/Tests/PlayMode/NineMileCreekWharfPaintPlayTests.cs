@@ -129,10 +129,11 @@ namespace HiddenHarbours.Tests.PlayMode
                 //     drop all four painted boats were lobster boats, so a fixture asserting only
                 //     "two or more are painted" passed while three berths sat in gelcoat.
                 //
-                //     ⚠️ ONE berth is still plain, and it is not an art gap: Celeste Bernard's
-                //     boat.fishing_skiff resolves to visual.fishing_boat, a legacy SPRITE-only visual,
-                //     and paint lives on the mesh path, so it cannot reach her at all. Which boat SHE
-                //     keeps is the world-content call that is left. The Cape Islander's paint axis
+                //     ⚠️ ONE berth is still plain, and since 2026-09-06 it IS an art gap. Celeste
+                //     Bernard used to keep a hand-drawn skiff — a SPRITE-only visual that paint, which
+                //     lives on the mesh path, could never reach at all. The owner retired that hull
+                //     (Core RetiredContentIds); she keeps boat.dory_outboard now, which IS a mesh, so
+                //     what is missing is a paint AXIS on doryIsoRig.js. The Cape Islander's paint axis
                 //     (2026-08-12) closed the other gap, so this count moved from -2 to -1 and Marie
                 //     Gallant is in `painted` for the first time.
                 //

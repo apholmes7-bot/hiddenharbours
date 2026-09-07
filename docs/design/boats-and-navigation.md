@@ -191,6 +191,36 @@ field's amplitudes are exactly 0 at sea state 0 — glass is sacred).
   the hull rocks on the waves the player sees. B3/GameConfig will unify the two settings instances
   into one owner-tunable source; until then tune the field's *shape* identically in both places.
 
+### 2.7.2 And she rides the tide (owner playtest 2026-09-06, shipped)
+
+**Built** (the owner, at the Nine Mile Creek north wall on a spring ebb: *"boats dont ride the tide"*).
+Everything above rocks a hull on the *waves*; nothing moved her with the **water level**. The sim always
+knew she floats — her cleats rise with the tide (`BoatCleats.ElevationOf`), her deck rises with them
+(`LadderBoardingMath.BoatDeckElevation`), the ladder's gap opens and closes as it runs — but her
+**picture** was drawn at her berth's plan point and nothing ever moved it, so at dead low spring she lay
+at the same place on a 4.6 m quay face she lies at high water.
+
+- **One rule, in Core, for everything that floats.** `TidalRide` (`Core/Environment`) states it once:
+  her waterline is `max(water − draught, bed) + draught`, and a metre of that draws
+  `IsoGround.HeightScale` ≈ 0.766 up the screen (HEIGHT, not the 0.643 a metre of northing draws).
+  `FloatingPlatform` / `FloatingPlatformVisual` — the harbour float, which has ridden since it was drawn
+  — delegate to the same functions, so a boat lying at a float and the planks she is made fast to
+  cannot part company.
+- **`HullTideRide`** (on the boat root, installed by `BoatHullSkinner` beside the wave motion) publishes
+  the rise; **`BoatWaveMotion` applies it**, because that component owns this visual's screen-vertical
+  offset and two writers on one transform is a race, not a composition. The tide is the *mean* of the
+  surface under her and the waves are what is left over — one surface, one offset.
+- **Her PICTURE rides, never her plan.** The root transform is her position on the ground plane (body,
+  collider, berth, the outline a swimmer reaches for); the ride is applied to the visual child. A metre
+  of tide is not a metre of northing, and riding the root would walk a moored boat metres across the
+  ground. The same distinction the float already draws between its walkable rectangle and its sprite.
+- **She takes the ground** (§3.1's rule, from the picture's side): below the level where her keel meets
+  the bed the water keeps falling and she does not. At Nine Mile Creek the berth trench is dredged deep
+  enough that the wall fleet never touches, and that is asserted rather than assumed.
+- **Deterministic, nothing saved:** the water level is recomputed from `(worldSeed, gameTime)` and the
+  bed is read off the authored terrain; the offset is always measured from her plan line, never added to
+  where her picture already was. With no environment service the water reads 0 and the term is exactly 0.
+
 ### 2.7.1 The hull answers the storm (ADR 0018 — B2.5 shipped, visual-only)
 
 **Built** (owner ask 2026-08-05: *"is there steep enough front-to-back rocking to represent the
@@ -606,9 +636,8 @@ on a swap at all (see the swap gap below).
   sheets).
 - **All-or-nothing, per block** (`HasFullCompass()` / `HasRockGrid()` / `HasOarSheets()`): a partial set
   never half-ships — one missing facing snaps the boat into a stale picture mid-turn — so an incomplete
-  block falls back to the block below it, ending at the plain rotating `BoatHullDef.Sprite`. Hulls with no
-  facings (the Punt, the `FishingSkiff`) are never stranded: they keep the one-picture-on-a-rotating-root
-  rendering exactly as before.
+  block falls back to the block below it, ending at the plain rotating `BoatHullDef.Sprite`. A hull with no
+  facings is never stranded: it keeps the one-picture-on-a-rotating-root rendering exactly as before.
 - **The three consumers converge on the skinner:** `PersistentCoreBuilder.ApplyHullSkin` (the player's
   boat — renamed from `ApplyDirectionalFishingBoatVisual`, a misnomer once the dory rowed again: it
   applies no fishing-boat skin and no fishing-boat hull), `OwnedFleet.ApplyHull` (a purchase or a

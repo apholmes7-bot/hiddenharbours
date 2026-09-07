@@ -127,7 +127,6 @@ namespace HiddenHarbours.App.Editor
             // purpose: it is the M1 slice's closing rung, and the only way to feel what the outboard
             // actually buys is to press F once and still be in the same boat.
             "DoryOutboard",
-            "FishingSkiff",
             "Punt",
             "PuntUpgraded",
             "ConsoleSkiff",

@@ -655,17 +655,34 @@ namespace HiddenHarbours.App.Editor
             // (component swaps at the shipwright) is the item that splits Hull/Engine/Hold properly,
             // with a save migration, when there are enough upgrades to pay for it.
             //
-            // She is the rowed dory with ONE FIELD FLIPPED. Everything else — mass, drag, hold,
+            // She is the rowed dory with TWO FIELDS FLIPPED (Propulsion, and — since 2026-09-06 —
+            // EnginePower; see the block below). Everything else — mass, drag, hold,
             // camera, and her Visual (they share visual.dory_iso; the skinner draws the engine only
             // on the hull whose Propulsion says she has one) — is copied from the dory herself rather
             // than restated, because "two assets to keep in sync" is D8's stated cost and a copy is
             // how you stop paying it by hand. The two boats therefore CANNOT drift apart on a stat.
             //
-            // Her speed is the dory's own authored EnginePower (500) through the same force model as
-            // every other hull: ~1.7 m/s against ~2.0 rowing flat out — SLOWER than a hard pull, and
-            // that is not a bug to tune out here. What a kicker buys is that she holds it all day,
-            // into wind and chop, with your hands free; the rower cannot. Tuning is the owner's, in
-            // the Def (rule 6). No ShipwrightOffer is authored HERE: what she costs and who sells her
+            // ⭐ HER ENGINE POWER IS HER OWN, AND IT USED TO BE THE DORY'S. This block used to say her
+            // speed was "the dory's own authored EnginePower (500) … ~1.7 m/s against ~2.0 rowing flat
+            // out — SLOWER than a hard pull, and that is not a bug to tune out here", on the argument
+            // that what a kicker buys is holding it all day with your hands free. That argument is
+            // still true about FEEL. It was overturned on 2026-09-06 because it collides with an OWNER
+            // RULE it was never measured against: "yes the dory should be the slowest boat"
+            // (PilotableFleetPlayTests.TheDory_IsTheSlowestBoatAfloat, quoting him). At 500 the outboard
+            // measured 1.66 against the rowed dory's 2.00 — the boat you BUY was slower than the boat
+            // you own, and the ladder only said so once the retirement put her on its bottom rung.
+            //
+            // 640 is DERIVED, not dialled. v = EnginePower/295 on this hull, and the harness stops
+            // 0.025·τ = 0.035 m/s short of true terminal, so the band that clears the rowed dory (2.00
+            // measured) and stays under the punt (2.26 measured) is EnginePower 600–677. 640 is the
+            // round number at its centre: 2.134 measured, ~0.13 of daylight either side.
+            //
+            // ⚠ SO SHE IS NO LONGER "THE DORY WITH ONE FIELD FLIPPED", and the CopySerialized below
+            // must not take her power back. It is snapshotted with the fuel row for exactly that
+            // reason. Tuning is still the owner's, in the Def (rule 6) — the ASSET is the authority and
+            // this only keeps the copy from eating it.
+            //
+            // No ShipwrightOffer is authored HERE: what she costs and who sells her
             // was the Nine Mile Creek purchase beat, and it has landed there — Data/Shipwright/
             // DoryOutboardOffer.asset, on Hector's barrel (NineMileCreekBuilder).
             var doryOutboard = LoadOrCreate<BoatHullDef>(DataBoats + "/DoryOutboard.asset");
@@ -686,6 +703,10 @@ namespace HiddenHarbours.App.Editor
                 float fuelCapacity = doryOutboard.FuelCapacityLitres;
                 string fuelGrade = doryOutboard.FuelGrade;
                 float fuelBurn = doryOutboard.FullThrottleLitresPerHour;
+                // …and her ENGINE, which stopped being the rowed dory's on 2026-09-06 (see above).
+                // Left in the copy she reverts to 500 on the next builder run and the owner's
+                // slowest-boat rule goes red again, from a run nobody connected to the edit.
+                float enginePower = doryOutboard.EnginePower;
 
                 EditorUtility.CopySerialized(dory, doryOutboard);
                 // CopySerialized copies m_Name too, and an asset whose object name disagrees with its
@@ -695,6 +716,7 @@ namespace HiddenHarbours.App.Editor
                 doryOutboard.DisplayName = "The Dory (outboard)";
                 doryOutboard.Propulsion = PropulsionType.Engine;   // the one difference in HANDLING
 
+                doryOutboard.EnginePower = enginePower;            // …the one in what she MAKES
                 doryOutboard.FuelCapacityLitres = fuelCapacity;    // …and the one in what she DRINKS
                 doryOutboard.FuelGrade = fuelGrade;
                 doryOutboard.FullThrottleLitresPerHour = fuelBurn;
@@ -723,7 +745,6 @@ namespace HiddenHarbours.App.Editor
             ApplyFleetHull(DataBoats + "/ConsoleSkiff.asset", ApplyConsoleSkiffStats, "ConsoleSkiff");
             ApplyFleetHull(DataBoats + "/SportSkiff.asset", ApplySportSkiffStats, "SportSkiffSingle");
             ApplyFleetHull(DataBoats + "/SportSkiffTwin.asset", ApplySportSkiffTwinStats, "SportSkiffTwin");
-            ApplyFleetHull(DataBoats + "/FishingSkiff.asset", ApplyFishingSkiffStats, "FishingBoat");
             // The Punt goes through the SAME path, though she is not a picker-only hull: she is a real,
             // purchasable M1 boat (PuntOffer, ₲1800) who simply never had a skin. Her iso kit landed in #210
             // and this is what makes her wear it. Her upgraded-engine sister rides the same 5.2 m hull.
@@ -1015,37 +1036,6 @@ namespace HiddenHarbours.App.Editor
         }
 
         /// <summary>
-        /// THE FISHING SKIFF (<c>boat.fishing_skiff</c>) — the 8-direction fishing boat. This hull id has
-        /// existed, ORPHANED, since #97's engine-helm experiment was reverted: nothing pointed at it and its
-        /// stats were a copy of the dory's with the propulsion flipped. Rather than mint a sixth id for art
-        /// that already has one, it is un-orphaned here — pointed at the new <c>visual.fishing_boat</c>
-        /// compass and given stats of its own. The id is append-only and stable; a new id would have
-        /// stranded this one forever and broken the PlayMode tests already keyed to it.
-        ///
-        /// <para>Sized from the ART, not from a guess: the <c>FishingBoat_*</c> files are 128×128 cells at
-        /// PPU 32, so the drawn hull cannot exceed 4.0 m. (The old asset claimed 4.5 m — longer than its own
-        /// picture.) That makes her the smallest powered boat on the ladder: a dory with an outboard on it,
-        /// which is exactly what the art shows. She also predates the Seakeeping* fields, so they are
-        /// authored here for the first time.</para>
-        /// </summary>
-        static void ApplyFishingSkiffStats(BoatHullDef h)
-        {
-            h.Id = "boat.fishing_skiff"; h.DisplayName = "The Fishing Skiff";
-            h.Propulsion = PropulsionType.Engine;
-            h.LengthMeters = 4.0f;              // art fact: the 128 px cell at PPU 32 is a hard ceiling
-            h.DraughtMeters = 0.35f; h.MassKg = 450f;
-            h.HoldUnits = 6; h.CrewSlots = 1;
-            h.EnginePower = 550f;               // → 2.50 m/s: the slowest powered hull, quicker than the punt
-            h.RudderAuthority = 400f;           // ≈ 600·(4.5/7)
-            h.ForwardDrag = 130f; h.LateralDrag = 340f;
-            h.WindExposure = 0.6f;              // small and light, like the dory
-            h.MaxSafeSeaState = SeaState.Lively;   // a small open boat — no more seaworthy than the dory
-            h.SeakeepingMassFactor = 1.1f; h.SeakeepingLiveliness = 0.95f; h.SeakeepingDamping = 0.05f;
-            h.CameraWorldHeightMeters = 13.5f;  // the ladder, read back below the dory's 14 @ 4.5 m
-            ApplyDeckTray(h);                   // she keeps her tray (the content validator requires it)
-        }
-
-        /// <summary>
         /// THE CAPE ISLANDER (<c>boat.cape_islander</c>) — ~12.9 m of inshore working boat, and by a long
         /// way the biggest hull the owner can currently put himself in: she is 5× the console skiff's mass
         /// and nearly twice her length. The point of her is MOMENTUM. She is not the fastest boat afloat and
@@ -1170,7 +1160,7 @@ namespace HiddenHarbours.App.Editor
 
         // The deck-container ladder (owner canon): every small hull the builders generate carries the
         // committed fish tray, anchored on the starboard quarter of the drawn deck. Values mirror the
-        // committed Dory/FishingSkiff assets — one place for the builder-generated hulls.
+        // committed Dory asset — one place for the builder-generated hulls.
         static void ApplyDeckTray(BoatHullDef h)
         {
             h.DeckContainer = AssetDatabase.LoadAssetAtPath<DeckContainerDef>(DataBoats + "/Containers/FishTray.asset");

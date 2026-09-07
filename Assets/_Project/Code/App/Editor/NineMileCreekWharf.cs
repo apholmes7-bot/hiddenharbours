@@ -310,10 +310,21 @@ namespace HiddenHarbours.App.Editor
         /// <see cref="HiddenHarbours.World.FloatCleat"/>s, which read that height off the float itself
         /// instead of carrying a fixed one that would be wrong at every hour but two.</para>
         /// </summary>
+        /// <summary>
+        /// How far apart the float's cleats stand — <b>5.5 m</b>.
+        ///
+        /// <para>⚠️ <b>This used to read the WALL's berth pitch, and the wall no longer has one</b>
+        /// (owner ruling 2026-09-06: the berth line is a packed run of spans, not a mark table). The
+        /// number is kept because it is the spacing the float was drawn and baked at — it is now the
+        /// FLOAT's own, the same correction <see cref="MooredStandoffMetres"/> needed for the same
+        /// reason.</para>
+        /// </summary>
+        public const float FloatCleatSpacingMetres = 5.5f;
+
         public static List<Vector2> FloatCleatPositions()
         {
             var list = new List<Vector2>();
-            float spacing = NineMileCreekMainland.BerthSpacingMetres;
+            float spacing = FloatCleatSpacingMetres;
             float run = NineMileCreekMainland.FloatRunLengthMetres;
             int count = Mathf.Max(1, Mathf.FloorToInt(run / spacing));
             for (int i = 0; i < count; i++)
@@ -327,7 +338,8 @@ namespace HiddenHarbours.App.Editor
         // -------------------------------------------------------------------------------------
         // ⭐ THE PHOTOGRAPH IS TWO MOORINGS, NOT ONE. Small craft lie on the float fingers in the middle
         // of the bullpen; working boats lie against the tall quay walls. The wall's berth line has been
-        // authored since A-1 (14 at 5.5 m, NineMileCreekMainland.BerthPos); this is the OTHER table, and
+        // authored since A-1 (now a PACKED RUN of spans, NineMileCreekMainland.BerthPos — it was 14
+        // marks at 5.5 m until the owner ruled the grid out); this is the OTHER table, and
         // it is DERIVED from the float rather than typed beside it, so re-siting or re-cutting the float
         // takes its boats with it instead of leaving them lying in open water where a dock used to be.
 
@@ -389,6 +401,19 @@ namespace HiddenHarbours.App.Editor
 
         /// <summary>How much of the run no bay covers, in metres — zero at the authored 48 m, and the
         /// number a test names if the run is ever re-cut to something the pack cannot tile.</summary>
+        /// <summary>
+        /// ⭐ The FIXED furniture, one cell per bay at the SAME plan positions the raft's bays take —
+        /// <see cref="FloatCourses"/>'s own list, re-keyed, so the piles cannot drift from the dock
+        /// they guide. Placed once and never moved again: nothing on these objects reads the tide.
+        /// </summary>
+        public static List<FloatCourse> FloatPilesCourses()
+        {
+            var list = new List<FloatCourse>();
+            foreach (var bay in FloatCourses())
+                list.Add(new FloatCourse(NineMileCreekQuayFace.FloatPilesCourseKey, bay.Position));
+            return list;
+        }
+
         public static float FloatRunRemainderMetres =>
             NineMileCreekMainland.FloatRunLengthMetres -
             FloatCourses().Count * NineMileCreekQuayFace.BakedRigFloatRunMetres;
@@ -408,14 +433,58 @@ namespace HiddenHarbours.App.Editor
         public static int FloatSortingOrder => SortingBands.WharfDeckMax - 1;
 
         /// <summary>
-        /// How far off a mooring face a moored hull's centre-line lies — <b>2 m</b>, and READ OFF THE
-        /// WALL rather than picked again here: the region authored its berth line at
-        /// <see cref="NineMileCreekMainland.FirstBerthPos"/>, two metres in front of
-        /// <see cref="MooringEdgeY"/>. One convention for "alongside", so the float's boats stand off
-        /// their dock exactly as far as the fleet stands off the quay, and moving the berth line moves
-        /// both.
+        /// The rung the FIXED half of the float draws at — one BELOW the raft. A guide pile stands at
+        /// <c>hy + 0.34</c>, on the raft's NORTH side, which is away from this camera: the pile passes
+        /// behind the thing it guides, so the raft draws over it.
+        ///
+        /// <para><b>The named cost of the split.</b> One cell used to hold both and the rig's own
+        /// z-buffer sorted them against each other; two cells get one rung each. The mooring chain and
+        /// its seabed block lie SOUTH — in front — so they now draw behind the raft where they used to
+        /// draw in front of it, which hides the topmost link or two at the raft's own corner. Against
+        /// that: the piles stand still, which is the whole point (#735 shipped them rising and falling
+        /// 4.4 m with the dock). The chain's visible run is south of the raft either way.</para>
         /// </summary>
-        public static float MooredStandoffMetres => MooringEdgeY - NineMileCreekMainland.FirstBerthPos.y;
+        public static int FloatPilesSortingOrder => FloatSortingOrder - 1;
+
+        /// <summary>
+        /// The rung the BROW draws at — the top of the wharf-deck band.
+        ///
+        /// <para>It has to be over BOTH things it touches, and they are on different rungs: its hinge is
+        /// bolted to the apron's east face (<c>NineMileCreekDressing.FaceSortingOrder(WestWallRun)</c>,
+        /// −1) and its foot rests ON the raft's deck (<see cref="FloatSortingOrder"/>, 0). There is no
+        /// rung between 0 and the band's top, so the brow takes the top: a thing that lands on a deck
+        /// is drawn on it.</para>
+        ///
+        /// <para><b>It ties with a moored hull</b>, which composites at the same order — stated rather
+        /// than hidden. The brow runs x 92 → 104 and the first float berth begins at x 104, so the two
+        /// share at most a boat's stem; <c>NineMileCreekFloatTests</c> holds that boundary.</para>
+        /// </summary>
+        public static int GangwaySortingOrder => SortingBands.WharfDeckMax;
+
+        /// <summary>
+        /// How far off the float's planking a moored hull's centre-line lies — <b>2 m</b>.
+        ///
+        /// <para>⚠️⚠️ <b>THIS USED TO BE READ OFF THE WALL, AND S1b IS WHY IT NO LONGER CAN BE.</b> It
+        /// was <c>MooringEdgeY − NineMileCreekMainland.FirstBerthPos.y</c> — "one convention for
+        /// alongside", when the wall had one: a uniform 2 m for every hull. The wall now stands each
+        /// boat off by <i>her own</i> half-beam plus a fender
+        /// (<see cref="NineMileCreekMainland.BerthStandoffFor"/>), so there is no single wall standoff
+        /// left to borrow. <c>FirstBerthPos</c> still answers — with the <b>widest resident's</b> line,
+        /// 3 m — and that is a different quantity wearing the old name.</para>
+        ///
+        /// <para><b>What that silently did, and what this constant prevents:</b>
+        /// <see cref="WidestHalfBeamAFloatBerthCarries"/> IS this number, because a hull wider in the
+        /// half-beam than her standoff is drawn lying ON the planking. Inheriting the wall's 3 m widened
+        /// the float's size gate from <b>4.00 m of beam to 6.00 m</b> — enough to admit a Cape Islander
+        /// (4.80 m), which is the one thing the gate exists to refuse, and it moved every boat at the
+        /// float a metre further out for a change that was about the wall.
+        /// <c>NineMileCreekFloatBerthTests.TheWorkingFleetIsTooWideForTheFloat</c> is what caught it.</para>
+        ///
+        /// <para>So the float keeps the number it has always had, as its OWN. It is a property of this
+        /// dock — how far off her planking a small craft lies — and it is now free to be re-measured
+        /// against the float's own drawn width without asking the wall's permission.</para>
+        /// </summary>
+        public const float MooredStandoffMetres = 2f;
 
         /// <summary>How far off the float's CENTRE-LINE a boat alongside her lies: half the dock's own
         /// width, plus the standoff. Derived from <see cref="FloatFootprint"/>, so a re-baked float of a
@@ -867,10 +936,10 @@ namespace HiddenHarbours.App.Editor
             browGo.transform.SetParent(floatRoot.transform, worldPositionStays: false);
             browGo.transform.position = new Vector3((GangwayShoreEnd.x + GangwayFloatEnd.x) * 0.5f,
                                                     (GangwayShoreEnd.y + GangwayFloatEnd.y) * 0.5f, 0f);
-            browGo.AddComponent<HiddenHarbours.World.GangwayPlatform>()
-                  .Configure(GangwaySurfaceId, GangwayShoreEnd, GangwayFloatEnd,
-                             NineMileCreekQuayFace.BakedRigGangwayWidthMetres * 0.5f,
-                             apronElevation, dock);
+            var brow = browGo.AddComponent<HiddenHarbours.World.GangwayPlatform>();
+            brow.Configure(GangwaySurfaceId, GangwayShoreEnd, GangwayFloatEnd,
+                           NineMileCreekQuayFace.BakedRigGangwayWidthMetres * 0.5f,
+                           apronElevation, dock);
 
             var cleatRoot = new GameObject("FloatCleats");
             cleatRoot.transform.SetParent(floatRoot.transform, worldPositionStays: false);
@@ -887,6 +956,8 @@ namespace HiddenHarbours.App.Editor
             }
 
             PlaceFloatCourses(floatRoot, dock);
+            PlaceFloatPiles(floatRoot);
+            PlaceGangway(floatRoot, brow);
             return n;
         }
 
@@ -938,12 +1009,127 @@ namespace HiddenHarbours.App.Editor
                 // lands on the apron's face. See FloatSortingOrder.
                 sr.sortingOrder = FloatSortingOrder;
 
+                // ⚠️⚠️ TWO CORRECTIONS TO #735, BOTH MEASURED BY THE BROW, AND THEY PARTLY CANCELLED
+                // — which is why the dock looked nearly right and was 2.30 units high at every tide:
+                //
+                //   FRAME   the baked deck handed over was the RIG's 2.82 m (above LOWEST water) while
+                //           FloatingPlatform.DeckElevationNow() answers in the GAME's frame (above
+                //           MEAN water). 2.2 m of frame = 1.68 units, LIFTING her.
+                //   ANCHOR  the plan line is where a piece's DECK belongs, not its PIVOT. The pack
+                //           pivots at chart datum, NineMileCreekQuayFace.PackDatumRise below it —
+                //           which is exactly where PivotForLip has always put the apron's face. 3.98
+                //           units, DROPPING her.
+                //
+                // Net +2.30 units = the apron's own 3.00 m of drawn height, and it is a CONSTANT: the
+                // brow's two ends were that far apart in screen height at every state of the tide, so
+                // a correctly-sloped ramp between them climbed from the wharf UP to the float. Both
+                // ends now measure from one datum line and the ramp reads. #735's ride is untouched —
+                // it was always the DELTA from the baked state, and the delta does not move.
                 go.AddComponent<HiddenHarbours.World.FloatingPlatformVisual>()
-                  .Configure(dock, NineMileCreekQuayFace.BakedRigFloatDeckZMetres, course.Position.y);
+                  .Configure(dock, NineMileCreekQuayFace.BakedFloatDeckGameMetres,
+                             NineMileCreekQuayFace.PivotForPlan(course.Position).y);
 
                 placed++;
             }
             return placed;
+        }
+
+        /// <summary>
+        /// ⭐ Lay the fixed furniture — guide piles, mooring chain, seabed block — ONCE, at the plan
+        /// positions the raft's bays take, with nothing on them that reads the tide. That is the whole
+        /// fix: #735 named the alternative as a trade and shipped it, and at Nine Mile Creek it put
+        /// 4.4 m of vertical travel into piles that are driven into the bottom.
+        ///
+        /// <para>Null-tolerant like every other sheet here: a missing cell warns and leaves the piles
+        /// undrawn, and the dock is still walkable, still moorable and now still HONEST.</para>
+        /// </summary>
+        static int PlaceFloatPiles(GameObject floatRoot)
+        {
+            var courses = FloatPilesCourses();
+            if (courses.Count == 0) return 0;
+
+            var pilesRoot = new GameObject("FloatPiles");
+            pilesRoot.transform.SetParent(floatRoot.transform, worldPositionStays: false);
+
+            int facing = HiddenHarbours.Tools.RigBaking.IsoPackSprites.FacingForHeading(
+                NineMileCreekDressing.WharfFamily, NineMileCreekQuayFace.FloatCourseHeadingDegrees);
+
+            int placed = 0;
+            foreach (var course in courses)
+            {
+                Sprite sprite = HiddenHarbours.Tools.RigBaking.IsoPackSprites.Facing(
+                    NineMileCreekDressing.WharfFamily, course.Key, facing);
+                if (sprite == null)
+                {
+                    Debug.LogWarning(
+                        $"[NineMileCreekWharf] the fixed float furniture '{course.Key}' facing {facing} " +
+                        "has no sprite — the guide piles and the mooring chain are undrawn. Re-run the " +
+                        "builder once the wharf ISO pack imports.");
+                    continue;
+                }
+
+                var go = new GameObject($"FloatPiles_{placed}");
+                go.transform.SetParent(pilesRoot.transform, worldPositionStays: false);
+                // The pack's datum line, and NOTHING moves it afterwards. Same rule as the raft's, so
+                // the two halves of one float measure their heights from one zero.
+                Vector2 pivot = NineMileCreekQuayFace.PivotForPlan(course.Position);
+                go.transform.position = new Vector3(pivot.x, pivot.y, 0f);
+
+                var sr = go.AddComponent<SpriteRenderer>();
+                sr.sprite = sprite;
+                sr.sortingOrder = FloatPilesSortingOrder;
+                placed++;
+            }
+            return placed;
+        }
+
+        /// <summary>
+        /// ⭐⭐ DRAW THE BROW — the thing #735 built, plated and took out.
+        ///
+        /// <para><b>One object, nine cells, and it never moves.</b> The pack bakes the ramp across a
+        /// slope ladder (<see cref="NineMileCreekQuayFace.GangwayRungDrops"/>) whose rungs share one
+        /// cell and one pivot, so the hinge is placed ONCE — on the pack's datum line under the brow's
+        /// plan mid-point — and is therefore exact at every state of the tide by construction.
+        /// <c>HiddenHarbours.World.GangwayVisual</c> only swaps which rung is showing.</para>
+        ///
+        /// <para>Null-tolerant: a missing ladder warns once and leaves the brow undrawn. You could
+        /// always cross it and you still can.</para>
+        /// </summary>
+        static int PlaceGangway(GameObject floatRoot, HiddenHarbours.World.GangwayPlatform brow)
+        {
+            var drops = NineMileCreekQuayFace.GangwayRungDrops;
+            int facing = HiddenHarbours.Tools.RigBaking.IsoPackSprites.FacingForHeading(
+                NineMileCreekDressing.WharfFamily, NineMileCreekQuayFace.GangwayCourseHeadingDegrees);
+
+            var rungs = new Sprite[drops.Count];
+            var rungDrops = new float[drops.Count];
+            for (int i = 0; i < drops.Count; i++)
+            {
+                rungs[i] = HiddenHarbours.Tools.RigBaking.IsoPackSprites.Facing(
+                    NineMileCreekDressing.WharfFamily, NineMileCreekQuayFace.GangwayCourseKey, facing, i);
+                rungDrops[i] = drops[i];
+                if (rungs[i] != null) continue;
+
+                Debug.LogWarning(
+                    $"[NineMileCreekWharf] the brow's rung {i} (drop {drops[i]:0.00} m, facing {facing}) " +
+                    $"has no slice at {HiddenHarbours.Tools.RigBaking.IsoPackSprites.SheetPath(NineMileCreekDressing.WharfFamily, NineMileCreekQuayFace.GangwayCourseKey)}" +
+                    " — the gangway is undrawn. It is still walkable. Re-run the builder once the wharf " +
+                    "ISO pack imports its 8 × 9 gangway sheet.");
+                return 0;
+            }
+
+            var go = new GameObject("GangwayVisual");
+            go.transform.SetParent(floatRoot.transform, worldPositionStays: false);
+            // The brow's plan MID-POINT — the rig pivots a ramp at its own footprint centre — put on the
+            // pack's datum line. The run is east-west, so the mid-point carries no foreshortened term.
+            Vector2 pivot = NineMileCreekQuayFace.PivotForPlan(
+                (GangwayShoreEnd + GangwayFloatEnd) * 0.5f);
+            go.transform.position = new Vector3(pivot.x, pivot.y, 0f);
+
+            var sr = go.AddComponent<SpriteRenderer>();
+            sr.sortingOrder = GangwaySortingOrder;
+            go.AddComponent<HiddenHarbours.World.GangwayVisual>().Configure(brow, rungs, rungDrops);
+            return 1;
         }
 
         static int PlaceBreakwater(GameObject root)

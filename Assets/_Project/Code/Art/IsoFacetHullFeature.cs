@@ -102,13 +102,17 @@ namespace HiddenHarbours.Art
                                  "(33.75 m down-screen, ~60 m across) or wake scrolls out of the " +
                                  "window while still on screen. The texel resolution is DERIVED from " +
                                  "this (extent x FoamBuffer.CellsPerUnit), so one texel is always " +
-                                 "exactly one world cell: 96 m -> 768^2 x RG16 x 2 (ping-pong) = 2.4 MB.")]
+                                 "exactly one world cell: 96 m -> 768^2 x 4 B x 2 (ping-pong) = 4.5 MB.")]
         [Range(32f, 192f)]
         private float _foamWindowMeters = 96f;
 
         [SerializeField, Tooltip("ADR 0027 #6: seconds for wake foam to fade to half. The trail's " +
-                                 "whole visible lifetime is roughly 4x this. Exponential, so it is " +
-                                 "frame-rate independent.")]
+                                 "whole visible lifetime is roughly 3x this (white crosses the " +
+                                 "compose threshold at 3.06 half-lives). Exponential, so it is " +
+                                 "frame-rate independent. NOTE: until register row 28 this dial did " +
+                                 "NOTHING at 60 fps — the 8-bit buffer rounded the decay away — so " +
+                                 "any value here is untuned. At 6 s the tail runs 28 m at 3 kn and " +
+                                 "75 m at 8 kn, against 48 m of window astern of the camera.")]
         [Range(0.25f, 30f)]
         private float _foamHalfLifeSeconds = 6f;
 
@@ -341,6 +345,27 @@ namespace HiddenHarbours.Art
             // scene view frame different places and pan independently — one shared buffer would have
             // them fighting over the window origin every frame.
             private readonly Dictionary<EntityId, FoamState> _foamStates = new Dictionary<EntityId, FoamState>();
+
+            // The foam buffer's format, asked ONCE per graphics device rather than per camera per
+            // frame: SupportsRenderTextureFormat is a native call and GetFoamState runs every frame
+            // that foam draws (rule 7 — the budget is a feature). Keyed on the device TYPE so an
+            // editor that comes up on Null and later has a device re-asks instead of keeping the
+            // answer no device gave it. Register row 28.
+            private GraphicsDeviceType _foamFormatProbedOn = GraphicsDeviceType.Null;
+            private RenderTextureFormat _foamFormat = RenderTextureFormat.RG16;
+
+            /// <summary>The format <see cref="FoamBuffer.FormatPreference"/> resolves to on this
+            /// device, memoized. Never a literal at the descriptor: see <see cref="GetFoamState"/>.</summary>
+            private RenderTextureFormat FoamFormat()
+            {
+                GraphicsDeviceType device = SystemInfo.graphicsDeviceType;
+                if (_foamFormatProbedOn != device)
+                {
+                    _foamFormatProbedOn = device;
+                    _foamFormat = FoamBuffer.SelectFormat(SystemInfo.SupportsRenderTextureFormat);
+                }
+                return _foamFormat;
+            }
             // Staging for the registry's collect call, reused every frame so packing the injection
             // slots allocates nothing (rule 7). The GPU-bound copies live per camera on FoamState.
             private readonly FoamInjection[] _foamInjections = new FoamInjection[FoamBuffer.MaxInjectors];
@@ -360,6 +385,11 @@ namespace HiddenHarbours.Art
                 public bool NeedsClear = true;  // only true for the first frame after a (re)allocation
                 public int LastFrame = -1;
                 public int Resolution;
+                // The format the pair was actually allocated in (FoamBuffer.SelectFormat). Held so a
+                // policy that answers differently — a device probe that only becomes truthful once the
+                // graphics device is up — re-allocates rather than keeping a buffer the decay cannot
+                // run in. Register row 28.
+                public RenderTextureFormat Format = RenderTextureFormat.RG16;
                 // This camera's OWN slot arrays — never shared, so a second camera recording between
                 // this pass's record and its execute cannot overwrite the deposits.
                 public readonly Vector4[] Segments = new Vector4[FoamBuffer.MaxInjectors];
@@ -953,14 +983,23 @@ namespace HiddenHarbours.Art
             /// The camera's foam ping-pong pair, allocated (or re-allocated when the window
             /// resolution changes) to <paramref name="resolution"/> square.
             ///
-            /// <para><b>RG16, and the resolution is DERIVED, not chosen.</b> One texel is exactly one
-            /// world cell by construction (<see cref="FoamBuffer.ResolutionForExtent"/>), so the
-            /// pixel grid cannot drift away from the cell law by someone typing a different number.
-            /// Point-filtered and clamped: an integer texel move must stay an exact copy. Budget at
-            /// the 96 m default — 768² × RG16 × 2 = <b>2.4 MB per camera</b>, against the seabed
-            /// bake's 1.0 MB and the reflection target's ARGBHalf at camera resolution. 256 levels
-            /// per channel are more than a posterized foam edge can show (rule 7 — and it keeps the
-            /// later mobile port affordable).</para>
+            /// <para><b>The format is CHOSEN BY POLICY and the resolution is DERIVED — neither is
+            /// typed here.</b> One texel is exactly one world cell by construction
+            /// (<see cref="FoamBuffer.ResolutionForExtent"/>), so the pixel grid cannot drift away from
+            /// the cell law by someone typing a different number. Point-filtered and clamped: an
+            /// integer texel move must stay an exact copy.</para>
+            ///
+            /// <para>🔴 <b>16 bits per channel, and 256 levels was NOT enough (register row 28).</b>
+            /// The old comment here argued that "256 levels per channel are more than a posterized
+            /// foam edge can show". That is true of what the buffer DISPLAYS and false of what it
+            /// COMPUTES: the advect pass multiplies the stored value by a decay factor and writes it
+            /// back, and at 60 fps the coverage channel's largest possible per-frame change — the one
+            /// at full white — is 0.491 of a code, so it rounded back to white and <b>the wake never
+            /// faded at all</b>. <see cref="FoamBuffer.FormatPreference"/> carries the choice and why
+            /// the UNORM beats the half float. Budget at the 96 m default: 768² × 4 B × 2 =
+            /// <b>4.5 MB per camera</b> (was 2.25 MB), against the seabed bake's 1.0 MB and the
+            /// reflection target's ARGBHalf at camera resolution — rule 7, stated rather than
+            /// assumed, and the fallback rung keeps the later mobile port affordable.</para>
             ///
             /// <para><b>Why the second channel, stated as a price.</b> R alone (coverage) cannot carry
             /// age: it saturates in ~0.4 s of deposit and is thresholded and posterized before the
@@ -976,16 +1015,22 @@ namespace HiddenHarbours.Art
                     state = new FoamState();
                     _foamStates[cameraId] = state;
                 }
-                if (state.A != null && state.B != null && state.Resolution == resolution)
+                // THE POLICY — never a constant typed at the descriptor. Row 28 hid for two months
+                // behind exactly such a constant, so the format the buffer ships in comes from the one
+                // place that states why (FoamBuffer.FormatPreference), resolved against what THIS
+                // device will actually render to.
+                RenderTextureFormat format = FoamFormat();
+                if (state.A != null && state.B != null && state.Resolution == resolution
+                    && state.Format == format)
                     return state;
 
                 state.Release();
-                // TWO channels: R = coverage, G = freshness (the age clock — FoamBuffer.Freshness).
-                // RG16 is 8 bits per channel, so this doubles the buffer to ~1.2 MB at the shipped
-                // 96 m window (768²) and ~2.4 MB per camera with the ping-pong — the stated price of
-                // a wake that can change colour, and the reason the age channel is a channel rather
-                // than a second target.
-                var descriptor = new RenderTextureDescriptor(resolution, resolution, RenderTextureFormat.RG16, 0)
+                // TWO channels: R = coverage, G = freshness (the age clock — FoamBuffer.Freshness) —
+                // the stated price of a wake that can change colour, and the reason the age channel is
+                // a channel rather than a second target. At 16 bits per channel that is ~2.25 MB at the
+                // shipped 96 m window (768²) and ~4.5 MB per camera with the ping-pong. The extra byte
+                // per channel is what buys the DECAY: see FoamBuffer.FormatPreference / DecayFloor.
+                var descriptor = new RenderTextureDescriptor(resolution, resolution, format, 0)
                 {
                     sRGB = false,
                     msaaSamples = 1,
@@ -998,6 +1043,7 @@ namespace HiddenHarbours.Art
                 state.A = a;
                 state.B = b;
                 state.Resolution = resolution;
+                state.Format = format;
                 // A fresh target's contents are undefined, and the window it was anchored to is gone:
                 // start from clean water rather than from whatever was in memory.
                 state.NeedsClear = true;

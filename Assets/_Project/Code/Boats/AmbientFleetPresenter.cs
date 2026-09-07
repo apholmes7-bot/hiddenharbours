@@ -293,19 +293,26 @@ namespace HiddenHarbours.Boats
             fleet.Root = new GameObject("[AmbientFleet] " + def.Id);
             fleet.Root.transform.SetParent(transform, worldPositionStays: true);
 
-            // The owner's 8-way fishing-boat compass, ALL-OR-NOTHING (AmbientFleetDef.HasFullHullCompass —
-            // the player-boat builder's guard): with the full set, each fisher gets the player's exact
+            // The fleet's hull compass, ALL-OR-NOTHING (AmbientFleetDef.HasFullHullCompass — the
+            // player-boat builder's guard): with the full set, each fisher gets the player's exact
             // snap-directional rig; anything less and the pre-compass rendering below stands untouched.
             bool wearsCompass = def.HasFullHullCompass();
             Sprite hull = wearsCompass ? null
                 : (def.HullSprite != null ? def.HullSprite : GetGreyboxHullSprite());
 
-            // The fleet keeps its OWN facings field (its data, its asset — decor tier: no rock grid, no
-            // oars), so it adapts them into ONE in-memory skin binding for the whole fleet rather than
-            // pointing at a BoatVisualDef asset. Built once per fleet, not per boat — every fisher wears
-            // the same compass; only the paintwork differs.
-            BoatVisualDef fleetSkin = wearsCompass
-                ? BoatVisualDef.CreateRuntime(def.HullFacings, def.HullSortingOrder) : null;
+            // ONE in-memory skin binding for the whole fleet — decor tier: no rock grid, no oars, no
+            // outboard. Built once per fleet, not per boat; every fisher wears the same compass and only
+            // the paintwork differs.
+            //
+            // TWO SOURCES, and the preferred one is the shipped hull. CreateRuntimeFrom copies the art
+            // FACTS (handedness, bake elevation) along with the sprites, which is what a loose Sprite[]
+            // cannot do: the bare-array path reads its facings as clockwise plan-view art, right for the
+            // hand-drawn compass this fleet used to wear and wrong for every iso sheet that replaced it.
+            // Getting it wrong is silent at north and south and 180° out at east and west.
+            BoatVisualDef fleetSkin = !wearsCompass ? null
+                : def.WearsSharedVisual()
+                    ? BoatVisualDef.CreateRuntimeFrom(def.HullVisual, def.HullSortingOrder)
+                    : BoatVisualDef.CreateRuntime(def.HullFacings, def.HullSortingOrder);
             int spotsPerBoat = Mathf.Max(1, def.SpotsPerBoat);
 
             fleet.Boats = new Fisher[Mathf.Max(1, def.BoatCount)];

@@ -1,0 +1,380 @@
+fileFormatVersion: 2
+guid: 9a59342709bcbc9428fac92bc4a017bd
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -4379514707001771081
+    second: floatPiles_0
+  - first:
+      213: 7431765469201054350
+    second: floatPiles_1
+  - first:
+      213: 4083850112565415407
+    second: floatPiles_2
+  - first:
+      213: 4477085885559203456
+    second: floatPiles_3
+  - first:
+      213: 185536747428923732
+    second: floatPiles_4
+  - first:
+      213: -1543897752620903996
+    second: floatPiles_5
+  - first:
+      213: -7298519024489979899
+    second: floatPiles_6
+  - first:
+      213: 3622105718767474701
+    second: floatPiles_7
+  - first:
+      213: 7094806401451002788
+    second: floatPiles_8
+  - first:
+      213: -6892163149884193389
+    second: floatPiles_9
+  - first:
+      213: -4194726019181180002
+    second: floatPiles_10
+  - first:
+      213: -1669359935329293567
+    second: floatPiles_11
+  - first:
+      213: -1902199912623983851
+    second: floatPiles_12
+  - first:
+      213: -1747772823138941579
+    second: floatPiles_13
+  - first:
+      213: -8724801134646605947
+    second: floatPiles_14
+  - first:
+      213: -5929798290898562521
+    second: floatPiles_15
+  - first:
+      213: 1727823210341385211
+    second: floatPiles_16
+  - first:
+      213: -326358730297954303
+    second: floatPiles_17
+  - first:
+      213: 3016878084342440563
+    second: floatPiles_18
+  - first:
+      213: -585903980855773551
+    second: floatPiles_19
+  - first:
+      213: -8380685685221025004
+    second: floatPiles_20
+  - first:
+      213: -8160159340214448505
+    second: floatPiles_21
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: floatPiles_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 300
+        height: 348
+      alignment: 9
+      pivot: {x: 0.49666667, y: 0.37931034}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7bb7f80e396d833c0800000000000000
+      internalID: -4379514707001771081
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: floatPiles_1
+      rect:
+        serializedVersion: 2
+        x: 300
+        y: 0
+        width: 300
+        height: 348
+      alignment: 9
+      pivot: {x: 0.49666667, y: 0.37931034}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e8a3ebda15fe22760800000000000000
+      internalID: 7431765469201054350
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: floatPiles_2
+      rect:
+        serializedVersion: 2
+        x: 600
+        y: 0
+        width: 300
+        height: 348
+      alignment: 9
+      pivot: {x: 0.49666667, y: 0.37931034}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fed866b4a00cca830800000000000000
+      internalID: 4083850112565415407
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: floatPiles_3
+      rect:
+        serializedVersion: 2
+        x: 900
+        y: 0
+        width: 300
+        height: 348
+      alignment: 9
+      pivot: {x: 0.49666667, y: 0.37931034}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 086ebad64edc12e30800000000000000
+      internalID: 4477085885559203456
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: floatPiles_4
+      rect:
+        serializedVersion: 2
+        x: 1200
+        y: 0
+        width: 300
+        height: 348
+      alignment: 9
+      pivot: {x: 0.49666667, y: 0.37931034}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 459484350b8239200800000000000000
+      internalID: 185536747428923732
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: floatPiles_5
+      rect:
+        serializedVersion: 2
+        x: 1500
+        y: 0
+        width: 300
+        height: 348
+      alignment: 9
+      pivot: {x: 0.49666667, y: 0.37931034}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4c1d1858c29f29ae0800000000000000
+      internalID: -1543897752620903996
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: floatPiles_6
+      rect:
+        serializedVersion: 2
+        x: 1800
+        y: 0
+        width: 300
+        height: 348
+      alignment: 9
+      pivot: {x: 0.49666667, y: 0.37931034}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 50028decd9376ba90800000000000000
+      internalID: -7298519024489979899
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: floatPiles_7
+      rect:
+        serializedVersion: 2
+        x: 2100
+        y: 0
+        width: 300
+        height: 348
+      alignment: 9
+      pivot: {x: 0.49666667, y: 0.37931034}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d08db02e5fd444230800000000000000
+      internalID: 3622105718767474701
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 0da7343c279fa5548b722fe5eb697a0a
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      floatPiles_0: -4379514707001771081
+      floatPiles_1: 7431765469201054350
+      floatPiles_2: 4083850112565415407
+      floatPiles_3: 4477085885559203456
+      floatPiles_4: 185536747428923732
+      floatPiles_5: -1543897752620903996
+      floatPiles_6: -7298519024489979899
+      floatPiles_7: 3622105718767474701
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

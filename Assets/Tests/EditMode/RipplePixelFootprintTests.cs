@@ -68,7 +68,7 @@ namespace HiddenHarbours.Tests.EditMode
         static readonly (string Name, float WorldHeight)[] Framings =
         {
             ("haul (tightest)", 5.625f), ("deck", 6.75f), ("on foot", 9f),
-            ("Dory", 14f), ("FishingSkiff", 13.5f), ("PuntUpgraded", 17f),
+            ("Dory", 14f), ("PuntUpgraded", 17f),
             ("ConsoleSkiff", 18.5f), ("SportSkiff", 19f), ("LobsterBoat", 23f),
             ("CapeIslander", 24f), ("SideDragger", 40f), ("SternTrawler", 60f),
             ("CoastalPacket", 90f),

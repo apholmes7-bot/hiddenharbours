@@ -41,7 +41,6 @@ namespace HiddenHarbours.App.Editor
             public string AssetName;      // file written under VisualsFolder
             public string Id;             // stable def id (append-only)
             public string HullPath;       // static hull headings as ONE sliced sheet: index = heading (N..NW, CW)
-            public string[] HullPaths;    // ...or one FILE PER HEADING, in the same N..NW order. Either/or.
             public string RockPath;       // rock grid: index = heading·RockFrames + frame ("" = none)
             public string[] RockPaths;    // ...or the SAME grid split across PAGES, concatenated in order. Either/or.
             public string OarPortPath;    // port oar sheet: index = heading·OarColumns + column ("" = none)
@@ -65,18 +64,22 @@ namespace HiddenHarbours.App.Editor
             public bool FacingsAreCounterClockwise;
         }
 
-        // THE ISO SHEETS ARE BAKED COUNTER-CLOCKWISE. Every iso kit here (dory, punt, skiffs) comes off the
-        // same 3D rig recipe, and that recipe rotates the model CCW — projVert's `xr = x1·ct − y2·stt` with
-        // th = +dir·45° and bow = +y — and then declares the cells clockwise ('N','NE','E',...). So cell i
-        // actually DEPICTS heading −45°·i: the 'E' cell is a boat pointing West. Drawn-minus-true = −2·heading,
-        // which is 0 at N/S (why it hid), 90° at the diagonals and a full 180° at E/W.
+        // THE ISO SHEETS ARE BAKED COUNTER-CLOCKWISE. Every hand-exported iso kit here (dory, punt, skiffs)
+        // comes off the same 3D rig recipe, and that recipe rotates the model CCW — projVert's
+        // `xr = x1·ct − y2·stt` with th = +dir·45° and bow = +y — and then declares the cells clockwise
+        // ('N','NE','E',...). So cell i actually DEPICTS heading −45°·i: the 'E' cell is a boat pointing
+        // West. Drawn-minus-true = −2·heading, which is 0 at N/S (why it hid), 90° at the diagonals and a
+        // full 180° at E/W.
         //
-        // This is an ART FACT of those sheets, and it is per-artwork rather than a blanket code fix for one
-        // reason: the FishingBoat_* compass below is a DIFFERENT lineage — 8 hand-drawn files, labelled
-        // CORRECTLY (verified from its pixels: E's bow points right). Mirroring everything would have fixed
-        // the iso kits and broken the fishing boat and the whole ambient fleet that shares its facings.
+        // This is an ART FACT OF THOSE SHEETS, stated per sheet and never applied as a blanket code fix,
+        // because the repo holds art of BOTH handednesses at once: the cape and the lobster are RigBaker
+        // outputs whose handedness was corrected AT BAKE TIME, so they carry the flag FALSE and their
+        // entries below say so in full. Mirroring everything would fix one lineage and break the other.
+        //
+        // (Until 2026-09-06 the standing counter-example was the plan-view compass the owner painted
+        // himself — 8 separate hand-drawn files, labelled correctly. The owner retired her; the reason the
+        // flag is per-artwork did not retire with her. See Core RetiredContentIds.)
         const bool IsoSheetsAreCounterClockwise = true;   // the rigs' bake order — not a feel knob
-        const bool CompassFilesAreClockwise = false;      // the hand-drawn FishingBoat compass: already right
 
         // The per-hull motor ROCK amplitudes are ART FACTS read STRAIGHT off the outboard rigs' ROCK block —
         // not feel knobs, and no longer derived from anything. They pose the LEVEL-baked engine cells onto the
@@ -127,11 +130,6 @@ namespace HiddenHarbours.App.Editor
         // rather than placed in top-down metres.
         const float IsoBakeElevation = 40f;
 
-        // ...and the elevation for art that is NOT a rig bake. 90 = a plan view = no foreshortening = exactly
-        // where the FishingBoat compass's wake has always gone. Same reasoning as CompassFilesAreClockwise
-        // above: that art is a different lineage and must not be "fixed" by the iso kits' facts.
-        const float PlanViewBakeElevation = 90f;
-
         // Steer authority baked into each kit's motor sheets, in degrees either side of dead ahead. NOT a
         // feel knob — it says what the 9 columns are DRAWN at, and the punt is genuinely different from the
         // skiffs: her rig is angle(f) = −32 + 64·f/8 (8° steps) where theirs is −30 + 60·f/8 (7.5° steps).
@@ -163,11 +161,6 @@ namespace HiddenHarbours.App.Editor
         // size (≈0.78, by cowl and prop) lifts the prop further still. THIS IS WHAT THE PURPOSE BAKE
         // FIXES, and both numbers go to zero the day it lands.
         static readonly Vector3 DoryBorrowedMotorFitment = new Vector3(0f, 0.28f, 0.055f);
-
-        // The 8 compass points in the project's canonical order: element 0 = North, then CLOCKWISE. The
-        // FishingBoat art ships as one file per heading rather than a sheet, so the ORDER lives here — and
-        // it must be this order, because DirectionalBoatSprite indexes facings by it.
-        static readonly string[] CompassSuffixes = { "N", "NE", "E", "SE", "S", "SW", "W", "NW" };
 
         static readonly Sheet[] Sheets =
         {
@@ -208,22 +201,6 @@ namespace HiddenHarbours.App.Editor
                 // from the rowboat still doesnt ALWAYS seem accurate". Always: it was only ever right on the
                 // E/W axis, where the ¾ camera happens not to squash the along-heading distance at all.
                 ArtBakeElevationDegrees = IsoBakeElevation,
-            },
-
-            // The 8-direction fishing boat: the ODD ONE OUT of this library. Its compass is 8 SEPARATE
-            // files, not a sliced sheet (see HullPaths), and it has NO rock grid and NO motor — so it wears
-            // the static compass plus the legacy transform rock, which is exactly what it looked like
-            // before. It is here so the owner can pilot it, not because it grew a rig.
-            new Sheet
-            {
-                AssetName = "FishingBoat", FacingsAreCounterClockwise = CompassFilesAreClockwise, Id = "visual.fishing_boat",
-                HullPaths = CompassFiles("FishingBoat"),
-                HeadingCount = 8, RockFrames = 8, OarColumns = 10,
-                MotorColumns = OutboardMotorMath.SteerColumns, SortingOrder = 1,
-                // NOT a rig bake — 8 hand-drawn files with no camera to measure. Declared a plan view, which
-                // leaves its wake (and the whole ambient fleet's, which wears these very facings) exactly where
-                // it has always been. Foreshortening it would be inventing a camera it never had.
-                ArtBakeElevationDegrees = PlanViewBakeElevation,
             },
 
             // THE CONSOLE SKIFF — the 7 m workboat. 8 headings + a 64-frame rock grid, and a SINGLE
@@ -435,14 +412,6 @@ namespace HiddenHarbours.App.Editor
             },
         };
 
-        /// <summary>The 8 per-heading files of a compass-as-separate-files skin, N..NW clockwise.</summary>
-        static string[] CompassFiles(string stem)
-        {
-            var paths = new string[CompassSuffixes.Length];
-            for (int i = 0; i < paths.Length; i++) paths[i] = $"{ArtBoats}/{stem}_{CompassSuffixes[i]}.png";
-            return paths;
-        }
-
         [MenuItem(MenuPath, priority = 230)]
         public static void Build()
         {
@@ -488,8 +457,9 @@ namespace HiddenHarbours.App.Editor
             def.Id = sheet.Id;
             def.SortingOrder = sheet.SortingOrder;
             def.ZeroHeadingDegrees = 0f;             // element 0 is the North-facing picture
-            // Which way this artwork's cells actually run. The iso rigs bake CCW and label CW; the
-            // hand-drawn FishingBoat compass is genuinely CW. Stated per sheet above, never assumed.
+            // Which way this artwork's cells actually run. The hand-exported iso kits bake CCW and label
+            // CW; the RigBaker outputs (cape, lobster) are genuinely CW because the baker corrected them
+            // at bake time. Stated per sheet above, never assumed.
             def.FacingsAreCounterClockwise = sheet.FacingsAreCounterClockwise;
             def.RockFrameCount = Mathf.Max(1, sheet.RockFrames);
             def.OarColumnCount = Mathf.Max(1, sheet.OarColumns);
@@ -516,9 +486,7 @@ namespace HiddenHarbours.App.Editor
 
             // All-or-nothing per block, mirroring BoatVisualDef's own gates: a partial sheet is dropped
             // whole rather than half-bound, because one missing slice would index a stale cell.
-            def.Facings = sheet.HullPaths != null && sheet.HullPaths.Length > 0
-                ? TakeOnePerFile(sheet.HullPaths, sheet.HeadingCount)
-                : TakeExactly(sheet.HullPath, sheet.HeadingCount);
+            def.Facings = TakeExactly(sheet.HullPath, sheet.HeadingCount);
             def.RockGrid = sheet.RockPaths != null && sheet.RockPaths.Length > 0
                 ? TakeExactlyAcrossPages(sheet.RockPaths, sheet.HeadingCount * sheet.RockFrames)
                 : TakeExactly(sheet.RockPath, sheet.HeadingCount * sheet.RockFrames);
@@ -555,29 +523,6 @@ namespace HiddenHarbours.App.Editor
                       $"{(def.HasRockGrid() ? "WIRED" : "none")}, oars {(def.HasOarSheets() ? "WIRED" : "none")}, " +
                       $"motor {(def.HasMotor() ? $"WIRED ({def.MotorVariant}, {def.MotorFit}, ±{def.MotorMaxSteerDegrees:0.#}° steer)" : "none")}.");
             return true;
-        }
-
-        /// <summary>
-        /// One sprite per FILE, in the caller's given order — the shape the <c>FishingBoat_*</c> compass
-        /// ships in (8 separate single-mode PNGs, not a sliced sheet). Order comes from the path list, NOT
-        /// from a name suffix, because these files are named by BEARING (<c>_NE</c>) rather than by index,
-        /// so there is no number to sort on. All-or-nothing like every other block: one missing file drops
-        /// the whole compass rather than leaving a hole that would snap to a stale facing mid-turn.
-        /// </summary>
-        static Sprite[] TakeOnePerFile(string[] paths, int expected)
-        {
-            if (paths == null || paths.Length != expected) return System.Array.Empty<Sprite>();
-
-            var frames = new Sprite[paths.Length];
-            for (int i = 0; i < paths.Length; i++)
-            {
-                // These import single-mode, so LoadAssetAtPath works — but fall back to the sub-asset scan
-                // anyway, so a later re-slice to Multiple doesn't silently empty the compass.
-                frames[i] = AssetDatabase.LoadAssetAtPath<Sprite>(paths[i])
-                         ?? AssetDatabase.LoadAllAssetsAtPath(paths[i]).OfType<Sprite>().FirstOrDefault();
-                if (frames[i] == null) return System.Array.Empty<Sprite>();
-            }
-            return frames;
         }
 
         /// <summary>

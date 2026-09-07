@@ -187,11 +187,11 @@ namespace HiddenHarbours.Tests.EditMode
         // severed so it can't re-show the rig and double-render against the baked DoryOarLayer overlay) — and
         // the REVERT: the boat still drives ROWED on boat.dory.
         //
-        // HISTORY: #93/#94/#97 ALSO swapped the hull to the Engine boat.fishing_skiff so the CONTROLS matched
-        // a POWERBOAT picture ("a power boat skin, not a rowboat" — the facings were M2 fleet art). The owner
-        // has since decided the dory ROWS again (the art is a rowboat; the independent oars landed), so that
-        // swap is gone and Build_DirectionalSkin_DrivesOnTheRowedDoryHull below asserts the new truth — it is
-        // the direct rewrite of the old Build_DirectionalSkin_DrivesOnTheEngineFishingSkiffHull.
+        // HISTORY: #93/#94/#97 ALSO swapped the hull to an ENGINE hull so the CONTROLS matched a POWERBOAT
+        // picture ("a power boat skin, not a rowboat" — the facings were M2 fleet art). The owner has since
+        // decided the dory ROWS again (the art is a rowboat; the independent oars landed), so that swap is
+        // gone and Build_DirectionalSkin_DrivesOnTheRowedDoryHull below asserts the new truth. (The engine
+        // hull it swapped to was itself retired on 2026-09-06 — see Core RetiredContentIds.)
 
         // The dory's skin, as DATA: the committed BoatVisualDef the shipped Dory.asset points at. The
         // builder no longer knows any art paths — it dresses the boat in whatever hull.Visual binds — so
@@ -225,9 +225,9 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         // ---- THE REVERT: the skin is VISUAL — the dory drives ROWED on boat.dory -----------------
-        // (The direct rewrite of Build_DirectionalSkin_DrivesOnTheEngineFishingSkiffHull, which asserted the
-        // OLD #97 truth — that the skin swapped the hull to the Engine boat.fishing_skiff. The owner has
-        // decided the dory rows again, so this now guards the opposite: the skin must NOT touch the hull.)
+        // (The direct rewrite of the old #97 fixture, which asserted that the skin swapped the hull to an
+        // Engine one. The owner has decided the dory rows again, so this now guards the opposite: the skin
+        // must NOT touch the hull.)
 
         [Test]
         public void Build_DirectionalSkin_DrivesOnTheRowedDoryHull()
@@ -241,7 +241,7 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsNotNull(boat.Hull, "the skinned boat has a hull");
             Assert.AreEqual("boat.dory", boat.Hull.Id,
                 "the skin is VISUAL — the boat must still drive on the ROWED dory hull (the owner's call: the " +
-                "art is a rowboat again, so the helm is oars again; #97's fishing_skiff swap is gone)");
+                "art is a rowboat again, so the helm is oars again; #97's engine-hull swap is gone)");
             Assert.AreEqual(PropulsionType.Oars, boat.Hull.Propulsion,
                 "boat.dory is oar-propelled, so the controls are per-oar strokes (BoatController.ApplyOarDrive)");
             Assert.IsFalse(BoatController.UsesEngineHelm(boat.Hull.Propulsion),
@@ -254,9 +254,10 @@ namespace HiddenHarbours.Tests.EditMode
                 ((BoatHullDef)hso.FindProperty("_hull").objectReferenceValue).Id,
                 "the hold is on the same rowed dory hull");
 
-            // The dory IS in OwnedFleet's id-keyed registry — this is the seam #97's skiff was deliberately
-            // kept OUT of. Reverting to boat.dory must leave the buy-the-Punt grant + save-restore (both keyed
-            // off ActiveHullId/BoatPurchased) resolving the boat's own hull, not a hull they've never heard of.
+            // The dory IS in OwnedFleet's id-keyed registry — this is the seam #97's engine hull was
+            // deliberately kept OUT of. Reverting to boat.dory must leave the buy-the-Punt grant +
+            // save-restore (both keyed off ActiveHullId/BoatPurchased) resolving the boat's own hull, not a
+            // hull they have never heard of.
             var fleet = _core.DoryGo.GetComponent<OwnedFleet>();
             var fso = new UnityEditor.SerializedObject(fleet);
             var registry = fso.FindProperty("_registry");
@@ -265,8 +266,13 @@ namespace HiddenHarbours.Tests.EditMode
             {
                 var h = registry.GetArrayElementAtIndex(i).objectReferenceValue as BoatHullDef;
                 if (h != null && h.Id == "boat.dory") doryRegistered = true;
-                Assert.AreNotEqual("boat.fishing_skiff", h != null ? h.Id : null,
-                    "the Engine fishing-skiff hull is not the player's boat and stays out of the fleet registry");
+                // Generalised from a single hard-coded id (#97's engine hull, retired 2026-09-06): the
+                // registry is what a save-restore resolves ActiveHullId against, so a WITHDRAWN id reaching
+                // it would hand the player a boat the owner has ruled out of the game. Reading the ledger
+                // means the next retirement is guarded here for free instead of needing a new line.
+                Assert.IsFalse(h != null && RetiredContentIds.IsRetired(h.Id),
+                    $"'{(h != null ? h.Id : null)}' is a RETIRED content id and must stay out of the fleet " +
+                    "registry — see Core RetiredContentIds.");
             }
             Assert.IsTrue(doryRegistered,
                 "the active hull (boat.dory) is in the fleet registry, so OwnedFleet's id-keyed grant/restore " +

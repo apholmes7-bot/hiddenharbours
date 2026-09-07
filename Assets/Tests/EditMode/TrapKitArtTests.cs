@@ -7,7 +7,8 @@ namespace HiddenHarbours.Tests.EditMode
 {
     /// <summary>
     /// Import-settings guard for the owner's Tier-1 trap-fishing art kit (Art/Fishing) — the
-    /// <c>FishingBoatFacingArtTests</c> discipline applied to the new sheets. The artist's README is the
+    /// per-sheet import discipline the boat compasses established, applied to the new sheets. The
+    /// artist's README is the
     /// contract: 32 px = 1 m (PPU 32), no AA (point filter, uncompressed), sheets slice into equal
     /// one-row cells left-to-right with the documented pivots. A re-export or a re-slice that drifts any
     /// of this fails RED here before it can silently shrink a pot or float a buoy off its waterline.

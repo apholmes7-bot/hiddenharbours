@@ -233,7 +233,7 @@ namespace HiddenHarbours.Tests.PlayMode
             // any other hull) back over the line. Every boat runs the identical harness on its own helm, so the
             // ordering is decided by the assets and by nothing else.
             var others = new List<(string name, float speed)>();
-            foreach (var file in new[] { "FishingSkiff", "PuntUpgraded", "ConsoleSkiff", "SportSkiff", "SportSkiffTwin" })
+            foreach (var file in new[] { "DoryOutboard", "PuntUpgraded", "ConsoleSkiff", "SportSkiff", "SportSkiffTwin" })
             {
                 float v = 0f;
                 yield return DriveToTerminal(LoadHull(file), s => v = s);
@@ -566,7 +566,7 @@ namespace HiddenHarbours.Tests.PlayMode
             const float forceFeelScale = 0.01f;   // BoatController.ForceFeelScale
             const float linearDamping = 0.2f;     // the damping BoatController.Awake sets
 
-            foreach (var file in new[] { "ConsoleSkiff", "SportSkiff", "SportSkiffTwin", "FishingSkiff", "PuntUpgraded" })
+            foreach (var file in new[] { "ConsoleSkiff", "SportSkiff", "SportSkiffTwin", "DoryOutboard", "PuntUpgraded" })
             {
                 var hull = LoadHull(file);
                 var (go, boat, rb) = NewBoat(hull, Vector3.zero);
@@ -701,7 +701,7 @@ namespace HiddenHarbours.Tests.PlayMode
             // under a running boat, which no sprite-only roster exercises.
             var roster = new[]
             {
-                LoadHull("Dory"), LoadHull("FishingSkiff"), LoadHull("PuntUpgraded"),
+                LoadHull("Dory"), LoadHull("DoryOutboard"), LoadHull("PuntUpgraded"),
                 LoadHull("ConsoleSkiff"), LoadHull("SportSkiff"), LoadHull("SportSkiffTwin"),
                 LoadHull("SportSkiffMk2"), LoadHull("ZodiacHurricane"), LoadHull("SportFisherConvertible"),
             };

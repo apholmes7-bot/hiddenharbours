@@ -96,6 +96,17 @@ namespace HiddenHarbours.Tools.RigBaking
             /// (JsonUtility-defaulted to 0) on every other family = "use the rig's default".</summary>
             public int pxPerM;
 
+            /// <summary>
+            /// Rungs on this key's SLOPE axis — a SECOND sheet axis, under the 8 facings. Absent (0) on
+            /// every key but the wharf's <c>gangway</c>, and 0/1 both mean "no slope axis, 8 cells".
+            ///
+            /// <para>A brow is the one piece in these packs whose PICTURE changes with the tide rather
+            /// than merely moving with it: its hinge is bolted to fixed ground and its landing rides a
+            /// float, so one cell can only ever be right at one water level. The rig bakes the ladder
+            /// (<c>WharfIso.gangwayDrops()</c>) and the sheet carries it as rows.</para>
+            /// </summary>
+            public int rungs;
+
             // ---- what the piece IS, as opposed to how it is packed -----------------------------
             // Declared here because JsonUtility drops any JSON field it has no field for, silently:
             // a consumer reading `zone` off an undeclared member gets null and scatters every find
@@ -240,6 +251,20 @@ namespace HiddenHarbours.Tools.RigBaking
 
         /// <summary>Prose describing how a finds sheet is laid out.</summary>
         public string SheetAxes => _dto.sheetAxes;
+
+        /// <summary>
+        /// Rungs on a KEY's slope axis — 1 for every key that has none, so the arithmetic below is the
+        /// same expression for all of them rather than a branch that could disagree with itself.
+        /// </summary>
+        public int RungsFor(string key) => Math.Max(1, this[key].rungs);
+
+        /// <summary>
+        /// Cells THIS key packs onto its own sheet: <see cref="CellsPerSheet"/> × its rungs. The plain
+        /// <see cref="CellsPerSheet"/> is the family's per-facing-axis count and is right for 18 of the
+        /// wharf's 19 keys; a caller that packs or measures a sheet must ask for the KEY's count, or a
+        /// slope axis silently bakes its first row eight times.
+        /// </summary>
+        public int CellsFor(string key) => CellsPerSheet * RungsFor(key);
 
         /// <summary>
         /// The contracts store array-valued documentation as JSON STRINGS (<c>"[\"N\",\"NE\",…]"</c>)
@@ -650,10 +675,12 @@ namespace HiddenHarbours.Tools.RigBaking
                     $"{RigName}.{key} carries no sheet plan in {SourceLabel}. The plan is the oracle for " +
                     "packing as much as the cell is for size — a baker must not invent one.");
 
-            if (c.sheet.cols * c.sheet.rows < CellsPerSheet)
+            int cells = CellsFor(key);
+            if (c.sheet.cols * c.sheet.rows < cells)
                 throw new InvalidOperationException(
                     $"{RigName}.{key} plans a {c.sheet.cols}×{c.sheet.rows} grid = " +
-                    $"{c.sheet.cols * c.sheet.rows} slots, which cannot hold {CellsPerSheet} cells.");
+                    $"{c.sheet.cols * c.sheet.rows} slots, which cannot hold {cells} cells " +
+                    $"({CellsPerSheet} per facing axis × {RungsFor(key)} rungs).");
 
             cols = c.sheet.cols;
             rows = c.sheet.rows;

@@ -539,5 +539,101 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.NotNull(lamp);
         }
 
+        /// <summary>
+        /// <b>⭐ THE CARRIER IS THE NEAREST CASTER AT OR ABOVE THE LAMP — the walker's mounting.</b>
+        ///
+        /// <para>PR 2's rule compared the light's own GameObject and stopped, which is right for a lamp
+        /// POST: post, light and sun-shadow all sit on one object. The walker does not work that way. Her
+        /// headlamp hangs off a CHILD so it can turn with her face while she does not, and her
+        /// <c>SpriteShadow</c> is on her root — so an exact compare sees two different transforms, decides
+        /// the lamp is mounted on nothing, and lets her throw her own silhouette down her own beam from a
+        /// lamp-to-feet distance of centimetres. Being the nearest pair in the sort, she would win a slot
+        /// off the tree in front of her every frame.</para>
+        ///
+        /// <para>Driven at a pool of ONE, so the crowding is the assertion and not a detail.</para>
+        /// </summary>
+        [Test]
+        public void ALampOnAChildOfItsCarrier_StillDoesNotThrowIt_TheWalkersMounting()
+        {
+            _system.Profile.MaxShadows = 1;
+
+            var tex = new Texture2D(16, 96, TextureFormat.RGBA32, false);
+            _spawned.Add(tex);
+            var sprite = Sprite.Create(tex, new Rect(0f, 0f, 16f, 96f), new Vector2(0.5f, 0f), 32f);
+            _spawned.Add(sprite);
+
+            // Her: the caster is on the ROOT, the way PlayerShadowInstaller puts it there.
+            var walker = new GameObject("walker");
+            _spawned.Add(walker);
+            walker.transform.position = Vector3.zero;
+            walker.AddComponent<SpriteRenderer>().sprite = sprite;
+            var herShadow = walker.AddComponent<SpriteShadow>();
+            LampShadowSystem.RegisterCaster(herShadow);
+
+            // Her headlamp: a CHILD, so it can be aimed without turning her.
+            var brow = new GameObject("headlamp");
+            _spawned.Add(brow);
+            brow.transform.SetParent(walker.transform, worldPositionStays: false);
+            var light = brow.AddComponent<SceneLight>();
+            light.Shape = SceneLight.LightShape.Radial;
+            light.ConeHalfAngle = 180f;
+            light.Range = 9f;
+            light.Intensity = 1.5f;
+            LampShadowSystem.RegisterLight(light);
+
+            // What the beam is FOR: a trunk four metres away, much further from the lamp than she is.
+            FakeCaster tree = Caster(new Vector2(4f, 0f));
+
+            Assert.IsTrue(herShadow.TryGetLampShadowCaster(out LampShadowCasterState mine),
+                "she really is a valid caster — the rule has to exclude her, not rely on her failing");
+            Assert.Less((mine.Foot - light.WorldOrigin).sqrMagnitude, 1f,
+                "and she really is the nearest thing to her own lamp, which is why she would win the sort");
+
+            _system.PublishFrame(_cam);
+
+            Assert.AreEqual(1, _system.ActiveShadowCount, "the one slot is spent");
+            Assert.AreSame(tree, _system.SlotCaster(0),
+                "and it is spent on the tree, not on her throwing her own silhouette down her own beam");
+        }
+
+        /// <summary>
+        /// <b>The carrier walk is BOUNDED at the first caster, and this is the trap it avoids.</b> Every
+        /// placed lamp in the game is parented under plain grouping objects — <c>NineMileCreekDressing</c>
+        /// and its <c>Lamps</c> child, the region root above those. A walk that climbed to the scene root
+        /// looking for "the thing this is mounted on" would find whatever happens to be up there, and if
+        /// anything above a lamp were ever a caster, EVERY caster beneath it would silently stop throwing
+        /// from that lamp. Nothing would error; the harbour would just quietly lose its shadows.
+        ///
+        /// <para>So: a lamp under two plain parents, with nothing above it that casts, throws everything —
+        /// exactly as it did before the walk existed.</para>
+        /// </summary>
+        [Test]
+        public void ALampUnderPlainGroupingObjects_StillThrowsEverything_TheWalkIsBounded()
+        {
+            var region = new GameObject("NineMileCreekDressing");
+            _spawned.Add(region);
+            var group = new GameObject("Lamps");
+            _spawned.Add(group);
+            group.transform.SetParent(region.transform, worldPositionStays: false);
+
+            var post = new GameObject("lamp");
+            _spawned.Add(post);
+            post.transform.SetParent(group.transform, worldPositionStays: false);
+            var light = post.AddComponent<SceneLight>();
+            light.Shape = SceneLight.LightShape.Radial;
+            light.ConeHalfAngle = 180f;
+            light.Range = 9f;
+            light.Intensity = 1.5f;
+            LampShadowSystem.RegisterLight(light);
+
+            FakeCaster bollard = Caster(new Vector2(2f, 0f));
+
+            _system.PublishFrame(_cam);
+
+            Assert.AreEqual(1, _system.ActiveShadowCount,
+                "nothing above this lamp casts, so the walk finds no carrier and excludes nobody");
+            Assert.AreSame(bollard, _system.SlotCaster(0));
+        }
+
     }
 }

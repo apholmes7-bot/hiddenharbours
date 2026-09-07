@@ -1,0 +1,2002 @@
+fileFormatVersion: 2
+guid: 93c79710e08502b499781295af5ac003
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 2388812560227705215
+    second: gangway_0
+  - first:
+      213: 2357498345750178569
+    second: gangway_1
+  - first:
+      213: -313724033956177564
+    second: gangway_2
+  - first:
+      213: 2759064303716388579
+    second: gangway_3
+  - first:
+      213: 2691907685711209231
+    second: gangway_4
+  - first:
+      213: -785615765830954028
+    second: gangway_5
+  - first:
+      213: -1309001968336273302
+    second: gangway_6
+  - first:
+      213: 7033954698789570911
+    second: gangway_7
+  - first:
+      213: 6442661083401318584
+    second: gangway_8
+  - first:
+      213: -1936269546046417199
+    second: gangway_9
+  - first:
+      213: -2240918779022027833
+    second: gangway_10
+  - first:
+      213: -3899232961353836070
+    second: gangway_11
+  - first:
+      213: 6630825752702019389
+    second: gangway_12
+  - first:
+      213: -3162088058396898626
+    second: gangway_13
+  - first:
+      213: 202737541762923566
+    second: gangway_14
+  - first:
+      213: -2815284844560904738
+    second: gangway_15
+  - first:
+      213: 5904624557133620391
+    second: gangway_16
+  - first:
+      213: 7356774295560488992
+    second: gangway_17
+  - first:
+      213: -1202285242351399138
+    second: gangway_18
+  - first:
+      213: -5091971920829524484
+    second: gangway_19
+  - first:
+      213: -7832586842312245091
+    second: gangway_20
+  - first:
+      213: 325012891709187468
+    second: gangway_21
+  - first:
+      213: -3477327509750574027
+    second: gangway_22
+  - first:
+      213: -6599151298969631645
+    second: gangway_23
+  - first:
+      213: -5646697487242793194
+    second: gangway_24
+  - first:
+      213: -1766183381923724177
+    second: gangway_25
+  - first:
+      213: 650951347320794533
+    second: gangway_26
+  - first:
+      213: -9128424644947355017
+    second: gangway_27
+  - first:
+      213: 3741754141103552176
+    second: gangway_28
+  - first:
+      213: -6728397266363408259
+    second: gangway_29
+  - first:
+      213: -9122280056586449073
+    second: gangway_30
+  - first:
+      213: 1598156706462208571
+    second: gangway_31
+  - first:
+      213: -5097149002131836017
+    second: gangway_32
+  - first:
+      213: 8876767071820538767
+    second: gangway_33
+  - first:
+      213: -6313778941252829811
+    second: gangway_34
+  - first:
+      213: 3659372640846457824
+    second: gangway_35
+  - first:
+      213: 7084601953015436296
+    second: gangway_36
+  - first:
+      213: 5948914388809150536
+    second: gangway_37
+  - first:
+      213: -3141164091030693816
+    second: gangway_38
+  - first:
+      213: 7942743850733227249
+    second: gangway_39
+  - first:
+      213: 5807434218141022252
+    second: gangway_40
+  - first:
+      213: 8934446255644790276
+    second: gangway_41
+  - first:
+      213: -7307649419608658927
+    second: gangway_42
+  - first:
+      213: 6174138373005996922
+    second: gangway_43
+  - first:
+      213: 7210378818499578045
+    second: gangway_44
+  - first:
+      213: 7327648094216139137
+    second: gangway_45
+  - first:
+      213: -4246283426298643332
+    second: gangway_46
+  - first:
+      213: -7628111937303238594
+    second: gangway_47
+  - first:
+      213: -247929657114216504
+    second: gangway_48
+  - first:
+      213: 8771597366126888601
+    second: gangway_49
+  - first:
+      213: -7295102976076900816
+    second: gangway_50
+  - first:
+      213: 371035352059457939
+    second: gangway_51
+  - first:
+      213: -3684513974967346600
+    second: gangway_52
+  - first:
+      213: -3111720808199211717
+    second: gangway_53
+  - first:
+      213: 7058847520573233022
+    second: gangway_54
+  - first:
+      213: -6668681492099381233
+    second: gangway_55
+  - first:
+      213: -1429104972548603241
+    second: gangway_56
+  - first:
+      213: -1182132827436124602
+    second: gangway_57
+  - first:
+      213: 5066987953486627199
+    second: gangway_58
+  - first:
+      213: -3678730071266165444
+    second: gangway_59
+  - first:
+      213: 6752676135863907618
+    second: gangway_60
+  - first:
+      213: -5285763193904579111
+    second: gangway_61
+  - first:
+      213: 3948984695099035203
+    second: gangway_62
+  - first:
+      213: -3810618413066021919
+    second: gangway_63
+  - first:
+      213: -6991933985217680809
+    second: gangway_64
+  - first:
+      213: -1332263703434351039
+    second: gangway_65
+  - first:
+      213: -3815050178477411346
+    second: gangway_66
+  - first:
+      213: 880214223517849518
+    second: gangway_67
+  - first:
+      213: 4751144271301108066
+    second: gangway_68
+  - first:
+      213: -3772493629175530701
+    second: gangway_69
+  - first:
+      213: -5258508229363406111
+    second: gangway_70
+  - first:
+      213: -4671333106697521742
+    second: gangway_71
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: gangway_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 3232
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f712d57fd54c62120800000000000000
+      internalID: 2388812560227705215
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_1
+      rect:
+        serializedVersion: 2
+        x: 407
+        y: 3232
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 90ba201414487b020800000000000000
+      internalID: 2357498345750178569
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_2
+      rect:
+        serializedVersion: 2
+        x: 814
+        y: 3232
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4691a8e37ad65abf0800000000000000
+      internalID: -313724033956177564
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_3
+      rect:
+        serializedVersion: 2
+        x: 1221
+        y: 3232
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3eec977bd5a2a4620800000000000000
+      internalID: 2759064303716388579
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_4
+      rect:
+        serializedVersion: 2
+        x: 1628
+        y: 3232
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f03e5fe17c39b5520800000000000000
+      internalID: 2691907685711209231
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_5
+      rect:
+        serializedVersion: 2
+        x: 2035
+        y: 3232
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4d313b39f9ee815f0800000000000000
+      internalID: -785615765830954028
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_6
+      rect:
+        serializedVersion: 2
+        x: 2442
+        y: 3232
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a60870b25ad75dde0800000000000000
+      internalID: -1309001968336273302
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_7
+      rect:
+        serializedVersion: 2
+        x: 2849
+        y: 3232
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f59ca83f780ad9160800000000000000
+      internalID: 7033954698789570911
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_8
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 2828
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8b07e54ee1ee86950800000000000000
+      internalID: 6442661083401318584
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_9
+      rect:
+        serializedVersion: 2
+        x: 407
+        y: 2828
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1d61f7e4b1df025e0800000000000000
+      internalID: -1936269546046417199
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_10
+      rect:
+        serializedVersion: 2
+        x: 814
+        y: 2828
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7c3d3ed4e38a6e0e0800000000000000
+      internalID: -2240918779022027833
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_11
+      rect:
+        serializedVersion: 2
+        x: 1221
+        y: 2828
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ad9920ad74423e9c0800000000000000
+      internalID: -3899232961353836070
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_12
+      rect:
+        serializedVersion: 2
+        x: 1628
+        y: 2828
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d37e055f3ec650c50800000000000000
+      internalID: 6630825752702019389
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_13
+      rect:
+        serializedVersion: 2
+        x: 2035
+        y: 2828
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eba8fb21aa10e14d0800000000000000
+      internalID: -3162088058396898626
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_14
+      rect:
+        serializedVersion: 2
+        x: 2442
+        y: 2828
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e2c3a6758b440d200800000000000000
+      internalID: 202737541762923566
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_15
+      rect:
+        serializedVersion: 2
+        x: 2849
+        y: 2828
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: edd086299591ee8d0800000000000000
+      internalID: -2815284844560904738
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_16
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 2424
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7a46ffb20c071f150800000000000000
+      internalID: 5904624557133620391
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_17
+      rect:
+        serializedVersion: 2
+        x: 407
+        y: 2424
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0288b937e33881660800000000000000
+      internalID: 7356774295560488992
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_18
+      rect:
+        serializedVersion: 2
+        x: 814
+        y: 2424
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e1f43fa21ff905fe0800000000000000
+      internalID: -1202285242351399138
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_19
+      rect:
+        serializedVersion: 2
+        x: 1221
+        y: 2424
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cf551b4348ea559b0800000000000000
+      internalID: -5091971920829524484
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_20
+      rect:
+        serializedVersion: 2
+        x: 1628
+        y: 2424
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d90849704cf0d4390800000000000000
+      internalID: -7832586842312245091
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_21
+      rect:
+        serializedVersion: 2
+        x: 2035
+        y: 2424
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c85afb5c08da28400800000000000000
+      internalID: 325012891709187468
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_22
+      rect:
+        serializedVersion: 2
+        x: 2442
+        y: 2424
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5349f95bd0d0ebfc0800000000000000
+      internalID: -3477327509750574027
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_23
+      rect:
+        serializedVersion: 2
+        x: 2849
+        y: 2424
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3648bdd7bda1b64a0800000000000000
+      internalID: -6599151298969631645
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_24
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 2020
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 61f6dc68d86e2a1b0800000000000000
+      internalID: -5646697487242793194
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_25
+      rect:
+        serializedVersion: 2
+        x: 407
+        y: 2020
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f640d3062914d77e0800000000000000
+      internalID: -1766183381923724177
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_26
+      rect:
+        serializedVersion: 2
+        x: 814
+        y: 2020
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5ad2e1f2dc4a80900800000000000000
+      internalID: 650951347320794533
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_27
+      rect:
+        serializedVersion: 2
+        x: 1221
+        y: 2020
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 77addfe5622515180800000000000000
+      internalID: -9128424644947355017
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_28
+      rect:
+        serializedVersion: 2
+        x: 1628
+        y: 2020
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0b6f25111916de330800000000000000
+      internalID: 3741754141103552176
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_29
+      rect:
+        serializedVersion: 2
+        x: 2035
+        y: 2020
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d7023b6b55eef92a0800000000000000
+      internalID: -6728397266363408259
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_30
+      rect:
+        serializedVersion: 2
+        x: 2442
+        y: 2020
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f4fc885de96276180800000000000000
+      internalID: -9122280056586449073
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_31
+      rect:
+        serializedVersion: 2
+        x: 2849
+        y: 2020
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b329610ae0bcd2610800000000000000
+      internalID: 1598156706462208571
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_32
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1616
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f83f1b80df94349b0800000000000000
+      internalID: -5097149002131836017
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_33
+      rect:
+        serializedVersion: 2
+        x: 407
+        y: 1616
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f836fb5ee9c903b70800000000000000
+      internalID: 8876767071820538767
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_34
+      rect:
+        serializedVersion: 2
+        x: 814
+        y: 1616
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d8d78483183f068a0800000000000000
+      internalID: -6313778941252829811
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_35
+      rect:
+        serializedVersion: 2
+        x: 1221
+        y: 1616
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0ebaf665704b8c230800000000000000
+      internalID: 3659372640846457824
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_36
+      rect:
+        serializedVersion: 2
+        x: 1628
+        y: 1616
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8041680c0ff815260800000000000000
+      internalID: 7084601953015436296
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_37
+      rect:
+        serializedVersion: 2
+        x: 2035
+        y: 1616
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 840fd203e1ace8250800000000000000
+      internalID: 5948914388809150536
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_38
+      rect:
+        serializedVersion: 2
+        x: 2442
+        y: 1616
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 84817ecd6e75864d0800000000000000
+      internalID: -3141164091030693816
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_39
+      rect:
+        serializedVersion: 2
+        x: 2849
+        y: 1616
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1fc4fd4237b4a3e60800000000000000
+      internalID: 7942743850733227249
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_40
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1212
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c287ebcf6a6289050800000000000000
+      internalID: 5807434218141022252
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_41
+      rect:
+        serializedVersion: 2
+        x: 407
+        y: 1212
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 40ec68468878dfb70800000000000000
+      internalID: 8934446255644790276
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_42
+      rect:
+        serializedVersion: 2
+        x: 814
+        y: 1212
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 11ce2290293069a90800000000000000
+      internalID: -7307649419608658927
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_43
+      rect:
+        serializedVersion: 2
+        x: 1221
+        y: 1212
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a7371256322fea550800000000000000
+      internalID: 6174138373005996922
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_44
+      rect:
+        serializedVersion: 2
+        x: 1628
+        y: 1212
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: db80bac4559601460800000000000000
+      internalID: 7210378818499578045
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_45
+      rect:
+        serializedVersion: 2
+        x: 2035
+        y: 1212
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 18132de3e1901b560800000000000000
+      internalID: 7327648094216139137
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_46
+      rect:
+        serializedVersion: 2
+        x: 2442
+        y: 1212
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c7c37d7b8bb2215c0800000000000000
+      internalID: -4246283426298643332
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_47
+      rect:
+        serializedVersion: 2
+        x: 2849
+        y: 1212
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e38af16cb90832690800000000000000
+      internalID: -7628111937303238594
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_48
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 808
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8c73c6a5a4d2f8cf0800000000000000
+      internalID: -247929657114216504
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_49
+      rect:
+        serializedVersion: 2
+        x: 407
+        y: 808
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 996ceb0a459fab970800000000000000
+      internalID: 8771597366126888601
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_50
+      rect:
+        serializedVersion: 2
+        x: 814
+        y: 808
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0369a0f8e7692ca90800000000000000
+      internalID: -7295102976076900816
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_51
+      rect:
+        serializedVersion: 2
+        x: 1221
+        y: 808
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 391bd96dfae262500800000000000000
+      internalID: 371035352059457939
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_52
+      rect:
+        serializedVersion: 2
+        x: 1628
+        y: 808
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 85adb18af0afddcc0800000000000000
+      internalID: -3684513974967346600
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_53
+      rect:
+        serializedVersion: 2
+        x: 2035
+        y: 808
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b35381b5962f0d4d0800000000000000
+      internalID: -3111720808199211717
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_54
+      rect:
+        serializedVersion: 2
+        x: 2442
+        y: 808
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e771a6bab6016f160800000000000000
+      internalID: 7058847520573233022
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_55
+      rect:
+        serializedVersion: 2
+        x: 2849
+        y: 808
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f08c13fd3851473a0800000000000000
+      internalID: -6668681492099381233
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_56
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 404
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7920f74699cca2ce0800000000000000
+      internalID: -1429104972548603241
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_57
+      rect:
+        serializedVersion: 2
+        x: 407
+        y: 404
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6467757e478389fe0800000000000000
+      internalID: -1182132827436124602
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_58
+      rect:
+        serializedVersion: 2
+        x: 814
+        y: 404
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f7101c892be815640800000000000000
+      internalID: 5066987953486627199
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_59
+      rect:
+        serializedVersion: 2
+        x: 1221
+        y: 404
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c3df1adad7682fcc0800000000000000
+      internalID: -3678730071266165444
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_60
+      rect:
+        serializedVersion: 2
+        x: 1628
+        y: 404
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 225fc691b2356bd50800000000000000
+      internalID: 6752676135863907618
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_61
+      rect:
+        serializedVersion: 2
+        x: 2035
+        y: 404
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9ddbb7c516235a6b0800000000000000
+      internalID: -5285763193904579111
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_62
+      rect:
+        serializedVersion: 2
+        x: 2442
+        y: 404
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 34e05d658ac9dc630800000000000000
+      internalID: 3948984695099035203
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_63
+      rect:
+        serializedVersion: 2
+        x: 2849
+        y: 404
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1e313aa2eb6fd1bc0800000000000000
+      internalID: -3810618413066021919
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_64
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 75a6e16d519a7fe90800000000000000
+      internalID: -6991933985217680809
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_65
+      rect:
+        serializedVersion: 2
+        x: 407
+        y: 0
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 14e26a96839d28de0800000000000000
+      internalID: -1332263703434351039
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_66
+      rect:
+        serializedVersion: 2
+        x: 814
+        y: 0
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ee3309f53183e0bc0800000000000000
+      internalID: -3815050178477411346
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_67
+      rect:
+        serializedVersion: 2
+        x: 1221
+        y: 0
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ea717073c26273c00800000000000000
+      internalID: 880214223517849518
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_68
+      rect:
+        serializedVersion: 2
+        x: 1628
+        y: 0
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 261e887ca847fe140800000000000000
+      internalID: 4751144271301108066
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_69
+      rect:
+        serializedVersion: 2
+        x: 2035
+        y: 0
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 33b7193280965abc0800000000000000
+      internalID: -3772493629175530701
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_70
+      rect:
+        serializedVersion: 2
+        x: 2442
+        y: 0
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1ea635c40a60607b0800000000000000
+      internalID: -5258508229363406111
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gangway_71
+      rect:
+        serializedVersion: 2
+        x: 2849
+        y: 0
+        width: 407
+        height: 404
+      alignment: 9
+      pivot: {x: 0.4987715, y: 0.31188118}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2b5b5cb0a471c2fb0800000000000000
+      internalID: -4671333106697521742
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 4a6c47264662e974187efea2e1ab70e7
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      gangway_0: 2388812560227705215
+      gangway_1: 2357498345750178569
+      gangway_10: -2240918779022027833
+      gangway_11: -3899232961353836070
+      gangway_12: 6630825752702019389
+      gangway_13: -3162088058396898626
+      gangway_14: 202737541762923566
+      gangway_15: -2815284844560904738
+      gangway_16: 5904624557133620391
+      gangway_17: 7356774295560488992
+      gangway_18: -1202285242351399138
+      gangway_19: -5091971920829524484
+      gangway_2: -313724033956177564
+      gangway_20: -7832586842312245091
+      gangway_21: 325012891709187468
+      gangway_22: -3477327509750574027
+      gangway_23: -6599151298969631645
+      gangway_24: -5646697487242793194
+      gangway_25: -1766183381923724177
+      gangway_26: 650951347320794533
+      gangway_27: -9128424644947355017
+      gangway_28: 3741754141103552176
+      gangway_29: -6728397266363408259
+      gangway_3: 2759064303716388579
+      gangway_30: -9122280056586449073
+      gangway_31: 1598156706462208571
+      gangway_32: -5097149002131836017
+      gangway_33: 8876767071820538767
+      gangway_34: -6313778941252829811
+      gangway_35: 3659372640846457824
+      gangway_36: 7084601953015436296
+      gangway_37: 5948914388809150536
+      gangway_38: -3141164091030693816
+      gangway_39: 7942743850733227249
+      gangway_4: 2691907685711209231
+      gangway_40: 5807434218141022252
+      gangway_41: 8934446255644790276
+      gangway_42: -7307649419608658927
+      gangway_43: 6174138373005996922
+      gangway_44: 7210378818499578045
+      gangway_45: 7327648094216139137
+      gangway_46: -4246283426298643332
+      gangway_47: -7628111937303238594
+      gangway_48: -247929657114216504
+      gangway_49: 8771597366126888601
+      gangway_5: -785615765830954028
+      gangway_50: -7295102976076900816
+      gangway_51: 371035352059457939
+      gangway_52: -3684513974967346600
+      gangway_53: -3111720808199211717
+      gangway_54: 7058847520573233022
+      gangway_55: -6668681492099381233
+      gangway_56: -1429104972548603241
+      gangway_57: -1182132827436124602
+      gangway_58: 5066987953486627199
+      gangway_59: -3678730071266165444
+      gangway_6: -1309001968336273302
+      gangway_60: 6752676135863907618
+      gangway_61: -5285763193904579111
+      gangway_62: 3948984695099035203
+      gangway_63: -3810618413066021919
+      gangway_64: -6991933985217680809
+      gangway_65: -1332263703434351039
+      gangway_66: -3815050178477411346
+      gangway_67: 880214223517849518
+      gangway_68: 4751144271301108066
+      gangway_69: -3772493629175530701
+      gangway_7: 7033954698789570911
+      gangway_70: -5258508229363406111
+      gangway_71: -4671333106697521742
+      gangway_8: 6442661083401318584
+      gangway_9: -1936269546046417199
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

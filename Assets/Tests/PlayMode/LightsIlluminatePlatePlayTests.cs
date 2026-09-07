@@ -272,7 +272,7 @@ namespace HiddenHarbours.Tests.PlayMode
             foreach (SceneLight l in host.GetComponentsInChildren<SceneLight>(true)) l.FlickerAmount = 0f;
 
             // Frame the wall between its two lamps — the stretch a crew steps off a boat onto.
-            var wall = new Vector2(NineMileCreekDressing.AtBerth(4), NineMileCreekDressing.LampRowY);
+            var wall = new Vector2(NineMileCreekDressing.AtStation(4), NineMileCreekDressing.LampRowY);
             yield return _stage.FrameOn(wall + new Vector2(0f, -1.5f));
 
             LampShadowProfile profile = PoolProfile();

@@ -280,6 +280,17 @@ namespace HiddenHarbours.Boats
         private BoatController _controller;
         private bool _controllerResolved;
 
+        // ⭐ THE TIDE (owner playtest 2026-09-06, "boats dont ride the tide"). The sibling that knows how
+        // far up-screen this hull's picture belongs for the state of the tide she is lying in. Resolved
+        // lazily ONCE per wiring, exactly like the controller above; null (a rig with no rider, every
+        // EditMode fixture that predates it) reads a rise of 0 and every line below is what it was.
+        //
+        // It is READ here and applied here because this component owns the visual's screen-vertical
+        // offset — see WriteVisualOffset. Two components writing one transform is not a composition, it
+        // is a race.
+        private HullTideRide _tideRide;
+        private bool _tideRideResolved;
+
         private bool _baseCached;
         private Vector3 _baseLocalPosition;
         private Vector3 _baseLocalScale;
@@ -345,6 +356,7 @@ namespace HiddenHarbours.Boats
             _directionalSprite = (hull as SpriteHullPresenter)?.Directional;
             _baseCached = false;
             _controllerResolved = false;   // a re-wire may be a different boat — re-find its helm
+            _tideRideResolved = false;     // …and her tide rider, for the same reason
         }
 
         /// <summary>Legacy overload (pre-seam callers and tests): wraps the concrete component.</summary>
@@ -419,7 +431,10 @@ namespace HiddenHarbours.Boats
                     offHull.SetDrawnRideMeters(0f);        // off = a passenger stands where they were
                 }
                 _heaveWeight = default;
-                RestoreVisual();      // 0 = off, and the visual sits exactly where it was built
+                // 0 = off: no rock — but she still floats. The tide is not this component's motion,
+                // it is where the sea is holding her picture, so it survives the master switch.
+                RestoreVisual();
+                ApplyTideOnly();
                 return;
             }
 
@@ -994,7 +1009,8 @@ namespace HiddenHarbours.Boats
 
                 hull.SetStormRock(responseMultiplier, extraRoll, extraPitch);
                 hull.SetDisplacedHeaveMeters(rideMeters);
-                RestoreVisual();
+                RestoreVisual();    // her ROCK is the driver's, in pixels — never this transform
+                ApplyTideOnly();    // …but the TIDE is a world translation, and it is this one's
 
                 if (calm)
                 {
@@ -1127,13 +1143,7 @@ namespace HiddenHarbours.Boats
                 _visual.localRotation = Quaternion.Euler(0f, 0f, rollDegrees);
             }
 
-            // Base local pose first, then the offset in WORLD Y: the visual child may be
-            // counter-rotated to stay screen-aligned while its parent (the physics body) carries
-            // yaw, so a local-Y offset would swing with the hull — screen-up must be world-up.
-            _visual.localPosition = _baseLocalPosition;
-            _visual.position += new Vector3(0f, bob + pitchOffset, 0f);
-            _visual.localScale = new Vector3(_baseLocalScale.x, _baseLocalScale.y * (1f - squash), _baseLocalScale.z);
-            _applied = true;
+            WriteVisualOffset(bob + pitchOffset, squash);
         }
 
         /// <summary>The sprite-hull transform under the frames (the rock-grid path — the frames own
@@ -1145,15 +1155,72 @@ namespace HiddenHarbours.Boats
         {
             if (offsetMeters == 0f && squash01 <= 0f)
             {
-                RestoreVisual();
+                RestoreVisual();    // …the hull hooks the zero case has always cleared, and
+                ApplyTideOnly();    // …the tide, which is not a rock and does not stop with one
                 return;
             }
+            WriteVisualOffset(offsetMeters, Mathf.Clamp01(squash01));
+        }
+
+        /// <summary>
+        /// ⭐ <b>THE ONE PLACE THIS COMPONENT WRITES THE VISUAL'S POSITION.</b> Base local pose first,
+        /// then the whole offset in WORLD Y: the visual child may be counter-rotated to stay
+        /// screen-aligned while its parent (the physics body) carries yaw, so a local-Y offset would
+        /// swing with the hull — screen-up must be world-up.
+        ///
+        /// <para><b>And the offset is the SEA's, not just the waves'.</b> The surface under her is one
+        /// surface: <see cref="HullTideRide"/> publishes its mean (the tide, in the state she is lying
+        /// in), <paramref name="screenOffsetMeters"/> is everything left over (the bob, the pitch lift,
+        /// the displaced ride). They are added HERE rather than written by two components, because a
+        /// second writer on this transform would either be stomped by the base reset above or be baked
+        /// INTO that base on the frame it happened to run first.</para>
+        ///
+        /// <para><b>Zero tide is byte-identical to never having existed.</b> No rider wired, no
+        /// environment service, or the water simply standing at the level her picture was struck at, and
+        /// the added term is exactly 0 — every existing pose, cap and A/B contract is untouched.</para>
+        /// </summary>
+        private void WriteVisualOffset(float screenOffsetMeters, float squash)
+        {
+            float y = screenOffsetMeters + TideRiseMeters();
             _visual.localPosition = _baseLocalPosition;
-            _visual.position += new Vector3(0f, offsetMeters, 0f);
-            _visual.localScale = new Vector3(_baseLocalScale.x,
-                                             _baseLocalScale.y * (1f - Mathf.Clamp01(squash01)),
-                                             _baseLocalScale.z);
+            if (y != 0f) _visual.position += new Vector3(0f, y, 0f);
+            _visual.localScale = squash == 0f
+                ? _baseLocalScale
+                : new Vector3(_baseLocalScale.x, _baseLocalScale.y * (1f - squash), _baseLocalScale.z);
             _applied = true;
+        }
+
+        /// <summary>
+        /// The tide ALONE — for the paths where this component draws no rock on this transform at all: a
+        /// mesh hull (whose rock is her driver's, in pixels), a hull whose master strength is off, and a
+        /// calm frame under the rock grid. Each of those has just put the visual back on its base line,
+        /// and she still has to be where the sea is holding her.
+        ///
+        /// <para>No tide means no write, so the frame is exactly the frame those paths drew before this
+        /// existed — including leaving the transform clean rather than re-assigning it every frame.</para>
+        /// </summary>
+        private void ApplyTideOnly()
+        {
+            float y = TideRiseMeters();
+            if (y == 0f) return;
+            _visual.localPosition = _baseLocalPosition;
+            _visual.position += new Vector3(0f, y, 0f);
+            _applied = true;
+        }
+
+        /// <summary>
+        /// How far up-screen the TIDE is holding this hull's picture, in world units — 0 when she has no
+        /// rider, which is every rig that predates one and every EditMode fixture with no sea wired.
+        /// Resolved once per wiring (rule 7: never a per-frame GetComponent).
+        /// </summary>
+        private float TideRiseMeters()
+        {
+            if (!_tideRideResolved)
+            {
+                _tideRide = GetComponent<HullTideRide>();
+                _tideRideResolved = true;
+            }
+            return _tideRide != null ? _tideRide.ScreenRiseNow() : 0f;
         }
 
         /// <summary>Put the visual back exactly as built (and zero the tilt hook, and the ride the

@@ -56,7 +56,7 @@ namespace HiddenHarbours.Tools.RigBaking
     {
         public string Preset, AssetPath, EngineName;
         public int CellWidth, CellHeight, PivotX, PivotY;
-        public int Columns, Rows, SheetWidth, SheetHeight, Facings, PngBytes;
+        public int Columns, Rows, SheetWidth, SheetHeight, Facings, Rungs, PngBytes;
         public double RenderMilliseconds, TotalMilliseconds;
 
         /// <summary>Unity wants the pivot normalised from the BOTTOM-left.</summary>
@@ -65,7 +65,9 @@ namespace HiddenHarbours.Tools.RigBaking
 
         public override string ToString() =>
             $"wharfIso.{Preset}: {CellWidth}×{CellHeight} pivot {PivotX},{PivotY} → " +
-            $"{Columns}×{Rows} sheet {SheetWidth}×{SheetHeight} ({PngBytes:N0} B)";
+            $"{Columns}×{Rows} sheet {SheetWidth}×{SheetHeight}" +
+            (Rungs > 1 ? $" ({Facings} facings × {Rungs} rungs)" : string.Empty) +
+            $" ({PngBytes:N0} B)";
     }
 
     /// <summary>
@@ -138,10 +140,19 @@ namespace HiddenHarbours.Tools.RigBaking
             // per-key scale (shipyardIso's three big sites); "{}" otherwise, so the wharf path is
             // byte-identical to what it always rendered.
             int ppm = contract.PxPerMFor(req.Preset);
-            string opts = ppm > 0 ? $"{{pxPerM:{ppm}}}" : "{}";
+
+            // ---- THE SLOPE AXIS ----------------------------------------------------------------
+            // 18 of the 19 wharf keys bake 8 cells, one per facing. `gangway` bakes 8 × its RUNGS,
+            // because a brow's picture is a function of the tide and not merely of its position: the
+            // hinge is bolted to fixed ground, the landing rides a float, and one cell can only ever
+            // be right at one water level — which is precisely what #735 refused, at the one end of a
+            // gangway that is not supposed to move at all. The rungs are the RIG's ladder; the baker
+            // passes an INDEX and never a drop, so the metres stay in the art.
+            int rungs = contract.RungsFor(req.Preset);
+            var cellOpts = CellOptionsFor(contract, req.Preset);
 
             var facings = RenderFacings(host, g, req.Preset, contract.Facings,
-                                        entry.DeclaredConvention, out double renderMs, opts);
+                                        entry.DeclaredConvention, out double renderMs, cellOpts);
 
             // ---- the cell: pivot-aligned union of the BUFFER extents, floor/ceil --------------------
             MeasureCell(facings, out int cw, out int ch, out int pivotX, out int pivotY);
@@ -160,7 +171,7 @@ namespace HiddenHarbours.Tools.RigBaking
             contract.AssertSheetFits(req.Preset, cols, rows, pw, ph);
 
             var pixels = new Color32[pw * ph];
-            for (int cell = 0; cell < contract.Facings; cell++)
+            for (int cell = 0; cell < facings.Length; cell++)
             {
                 var f = facings[cell];
 
@@ -196,6 +207,7 @@ namespace HiddenHarbours.Tools.RigBaking
                 SheetWidth = pw,
                 SheetHeight = ph,
                 Facings = contract.Facings,
+                Rungs = rungs,
                 RenderMilliseconds = renderMs,
                 AssetPath = $"{req.OutputFolder}/{req.BaseName}.png",
             };
@@ -242,25 +254,68 @@ namespace HiddenHarbours.Tools.RigBaking
 
         // ---- render ---------------------------------------------------------------------------------
 
+        /// <summary>
+        /// ⭐ The render options for every cell of a preset's sheet, one string per RUNG — the ONE place
+        /// the two sheet axes compose, so the bake and the contract's own oracle test cannot drift.
+        ///
+        /// <para>⚠️ An explicit <c>pxPerM:0</c> is not the same as an absent option
+        /// (<c>PxPerMFor</c>'s own note), and neither is <c>rung:0</c> on a key with no slope axis — a
+        /// rung would resolve a float deck and change the cell. Both are composed by BUILDING the
+        /// object rather than by formatting a zero.</para>
+        /// </summary>
+        public static string[] CellOptionsFor(IsoPackContract contract, string preset)
+        {
+            int ppm = contract.PxPerMFor(preset);
+            int rungs = contract.RungsFor(preset);
+            var opts = new string[rungs];
+            for (int r = 0; r < rungs; r++)
+            {
+                var parts = new List<string>(2);
+                if (ppm > 0) parts.Add($"pxPerM:{ppm}");
+                if (rungs > 1) parts.Add($"rung:{r}");
+                opts[r] = "{" + string.Join(",", parts) + "}";
+            }
+            return opts;
+        }
+
         /// <summary>Render one preset's facings through an installed host — the input to
-        /// <see cref="MeasureCell"/>, exposed so a test measures without writing a PNG.</summary>
+        /// <see cref="MeasureCell"/>, exposed so a test measures without writing a PNG.
+        /// <b>The contract overload is the one an oracle wants</b>: this one bakes a single set of
+        /// facings and would measure a slope-axis key from its first rung alone.</summary>
         public static WharfIsoFacing[] RenderFacings(IRigScriptHost host, string globalName,
                                                      string preset, int facings,
                                                      AzimuthConvention convention) =>
-            RenderFacings(host, globalName, preset, facings, convention, out _);
+            RenderFacings(host, globalName, preset, facings, convention, out _, new[] { "{}" });
 
+        /// <summary>Every cell of a preset's sheet — facings × rungs, exactly as
+        /// <see cref="Bake(WharfIsoBakeRequest, IRigScriptHost)"/> renders them, so a test measuring
+        /// the union measures what the bake will assert against.</summary>
+        public static WharfIsoFacing[] RenderFacings(IRigScriptHost host, string globalName,
+                                                     string preset, IsoPackContract contract,
+                                                     AzimuthConvention convention) =>
+            RenderFacings(host, globalName, preset, contract.Facings, convention, out _,
+                          CellOptionsFor(contract, preset));
+
+        /// <summary>
+        /// Every cell of a preset's sheet: <c>cellOpts.Length</c> RUNGS of <paramref name="facings"/>
+        /// facings, rung-major — a ROW of the sheet is one rung and a COLUMN is one facing, so cell
+        /// index is <c>rung × facings + facing</c>. A key with no slope axis passes a single opts
+        /// string and the index IS the facing, exactly as this baker has always packed.
+        /// </summary>
         static WharfIsoFacing[] RenderFacings(IRigScriptHost host, string g, string preset, int facings,
                                               AzimuthConvention convention, out double renderMs,
-                                              string opts = "{}")
+                                              string[] cellOpts)
         {
-            var outp = new WharfIsoFacing[facings];
+            var outp = new WharfIsoFacing[facings * cellOpts.Length];
             var clock = new Stopwatch();
 
             try
             {
-                for (int cell = 0; cell < facings; cell++)
+                for (int cell = 0; cell < outp.Length; cell++)
                 {
-                    double dir = RigBaker.DirForCell(cell, facings, convention);
+                    int facing = cell % facings;
+                    string opts = cellOpts[cell / facings];
+                    double dir = RigBaker.DirForCell(facing, facings, convention);
                     string d = dir.ToString("R", CultureInfo.InvariantCulture);
 
                     // Render ONCE into a scratch global, then read its fields. Evaluating

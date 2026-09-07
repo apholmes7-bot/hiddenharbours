@@ -12,6 +12,7 @@
         "HiddenHarbours.Boats",
         "HiddenHarbours.Fishing",
         "HiddenHarbours.Vehicles",
+        "HiddenHarbours.Player",
         "Unity.2D.Sprite.Editor",
         "HiddenHarbours.World",
         "HiddenHarbours.Tools.Editor"

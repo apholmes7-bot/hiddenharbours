@@ -78,6 +78,11 @@ namespace HiddenHarbours.Player
                  "below.")]
         [SerializeField] private CarryAnchorTableDef _carryAnchors;
 
+        [SerializeField, Tooltip("The catch ART table — which held sprite each landed species draws " +
+                                 "in the hand. Null is survivable: a catch then falls back to its UI " +
+                                 "icon, which is what every catch did before pass 2 baked held poses.")]
+        private HiddenHarbours.Art.CatchItemLibrary _catchArt;
+
         [Header("How it is held (greybox tunables, rule 6)")]
         [Tooltip("FALLBACK only — where a carried object with no hand-prop row sits relative to the " +
                  "fisher's feet, in metres, on her RIGHT side. ⚠️ ONE offset for every facing, which is " +
@@ -231,7 +236,7 @@ namespace HiddenHarbours.Player
                 return false;
             }
 
-            CarriableCatch catchObject = CarriableCatch.Create(item, transform);
+            CarriableCatch catchObject = CarriableCatch.Create(item, transform, _catchArt);
             CarryHandSide preferred = PreferredHand(catchObject);
             if (_slots.TryTake(catchObject, cradle, preferred, out CarryHandSide side) != HandSlotRefusal.None)
             {
@@ -589,6 +594,12 @@ namespace HiddenHarbours.Player
         /// <see cref="IsoCharacterSprite.Configure"/> offers, and needed for the same reason: EditMode
         /// never runs a builder, so a test states it.</summary>
         public void ConfigureCarryAnchors(CarryAnchorTableDef table) => _carryAnchors = table;
+
+        /// <summary>Wire the catch art table (the builder's seam, and tests').</summary>
+        public void ConfigureCatchArt(HiddenHarbours.Art.CatchItemLibrary art) => _catchArt = art;
+
+        /// <summary>The catch art table currently wired, or null. For tests / tooling.</summary>
+        public HiddenHarbours.Art.CatchItemLibrary CatchArt => _catchArt;
 
         /// <summary>The hand-prop table currently wired, or null. For tests / tooling.</summary>
         public CarryAnchorTableDef CarryAnchors => _carryAnchors;

@@ -151,14 +151,49 @@ namespace HiddenHarbours.App.Editor
         /// line, close enough to be at the edge where somebody goes in.</summary>
         public static float LipRowY => Quay.yMin + FittingClearanceMetres;
 
-        /// <summary>Berth <paramref name="index"/>'s x — the wharf's own rhythm, and the same table
-        /// #462 hangs the bollards on.</summary>
-        public static float AtBerth(int index) => NineMileCreekWharf.BerthPos(index).x;
+        /// <summary>
+        /// ⭐⭐ <b>THE DECOR'S OWN RHYTHM ALONG THE WHARF — 5.5 m from x = 98.</b>
+        ///
+        /// <para>⚠️⚠️ <b>THIS USED TO BE THE BERTH TABLE, AND THE BERTH TABLE IS GONE.</b> It read
+        /// <c>NineMileCreekWharf.BerthPos(index).x</c> — "the wharf's own rhythm, and the same table
+        /// #462 hangs the bollards on" — which was true while the berths WERE fourteen marks at 5.5 m.
+        /// The owner ruled the grid out on 2026-09-06: the line is packed from the hulls now and has
+        /// SIX berths, so every prop authored past index 5 <b>clamped onto the last one and piled up at
+        /// x = 160.20</b>, one of them 0.70 m from a bollard inside the 1.2 m a fitting needs.
+        /// <c>NineMileCreekDressingTests.NoPropCrowdsOneOf462sMooringFittings</c> caught it.</para>
+        ///
+        /// <para>So the props keep the positions they were authored and baked at, as the DECOR's own.
+        /// A gear row's spacing was never a statement about where boats lie — it only ever borrowed one.
+        /// ⚠️ <b>This is the THIRD constant in this region caught borrowing a line that later changed
+        /// meaning</b>, after <c>NineMileCreekWharf.MooredStandoffMetres</c> (which silently widened the
+        /// float's beam gate) and <c>FloatCleatSpacingMetres</c>. A borrowed ruler is only free until
+        /// the thing you borrowed it from stops meaning what it meant.</para>
+        /// </summary>
+        public const float StationSpacingMetres = 5.5f;
 
-        /// <summary>Midway between two berths — where the gaps in the fitting run are. The tyre fenders
-        /// take the EVEN gaps and the ladder takes one odd one, so an odd gap that is not the ladder's is
-        /// the only stretch of lip with nothing already hanging on it.</summary>
-        public static float BetweenBerths(int index) => (AtBerth(index) + AtBerth(index + 1)) * 0.5f;
+        /// <inheritdoc cref="StationSpacingMetres"/>
+        public const float FirstStationX = 98f;
+
+        /// <summary>Station <paramref name="index"/>'s x along the wharf — the decor's own ruler.</summary>
+        public static float AtStation(int index) => FirstStationX + StationSpacingMetres * index;
+
+        /// <summary>
+        /// ⚠️ <b>THE LIP HAS FEWER GAPS THAN IT USED TO.</b> The old rule was "the tyre fenders take the
+        /// EVEN gaps and the ladder takes one odd one, so an odd gap that is not the ladder's is the
+        /// only stretch of lip with nothing already hanging on it" — which worked on THIRTEEN gaps
+        /// between fourteen berths. The packed line has six berths and five gaps: the tyres take 0, 2
+        /// and 4, the ladder takes 3, and only gap 1 is left. Three lip props cannot share one gap.
+        ///
+        /// <para>So the three things that stand ON the lip (the tide staff and the two life-ring
+        /// stations) are placed on the decor's own stations at
+        /// <see cref="AtStation"/> 1, 4 and 9 — x = 103.5, 120.0 and 147.5 — each measured clear of
+        /// every bollard, tyre and ladder in the run. ⚠️ <b>They are checked, not guessed:</b>
+        /// <c>NineMileCreekDressingTests.NoPropCrowdsOneOf462sMooringFittings</c> holds all three to the
+        /// 1.2 m a fitting needs, and it is what caught them piling up when the grid went. If the
+        /// register grows a boat the bollards move, and that test is where you will hear about it —
+        /// re-pick from the stations, do not shave the clearance.</para>
+        /// </summary>
+        public static float LipPropClearance => FittingClearanceMetres;
 
         /// <summary>
         /// Where Wharf Road arrives at the quay: the point on the deck's landward edge nearest the road's
@@ -227,36 +262,36 @@ namespace HiddenHarbours.App.Editor
             return new[]
             {
                 // --- the working row: what comes off a boat and what goes back on one ---------------
-                new Prop(DecorFamily, "trapStack", new Vector2(AtBerth(1), gear), sea,
+                new Prop(DecorFamily, "trapStack", new Vector2(AtStation(1), gear), sea,
                     "the gear this wharf is FOR, at the west end by the apron where the catch lands"),
-                new Prop(DecorFamily, "buoyRack", new Vector2(AtBerth(3), gear), sea,
+                new Prop(DecorFamily, "buoyRack", new Vector2(AtStation(3), gear), sea,
                     "buoys off the traps, racked where they dry"),
-                new Prop(DecorFamily, "netPile", new Vector2(AtBerth(5), gear), sea,
+                new Prop(DecorFamily, "netPile", new Vector2(AtStation(5), gear), sea,
                     "a heap of net — the creek takes more than lobster"),
-                new Prop(DecorFamily, "trapStack", new Vector2(AtBerth(8), gear), sea,
+                new Prop(DecorFamily, "trapStack", new Vector2(AtStation(8), gear), sea,
                     "a second stack further along, so the gear reads as a run and not a display"),
-                new Prop(DecorFamily, "ropeCoil", new Vector2(AtBerth(10), gear), sea,
+                new Prop(DecorFamily, "ropeCoil", new Vector2(AtStation(10), gear), sea,
                     "warp coiled where it was flaked down"),
-                new Prop(DecorFamily, "toteStack", new Vector2(AtBerth(12), gear), sea,
+                new Prop(DecorFamily, "toteStack", new Vector2(AtStation(12), gear), sea,
                     "empty totes at the east end, waiting for the next boat in"),
 
                 // --- against the yard: the tall things, out of the working middle ------------------
-                new Prop(DecorFamily, "woodStack", new Vector2(AtBerth(2), back), sea,
+                new Prop(DecorFamily, "woodStack", new Vector2(AtStation(2), back), sea,
                     "lath and cull wood — a trap is a thing you are always mending"),
-                new Prop(DecorFamily, "netFrame", new Vector2(AtBerth(7), back), sea,
+                new Prop(DecorFamily, "netFrame", new Vector2(AtStation(7), back), sea,
                     "a drying frame against the back, where it is out of the way of a barrow"),
-                new Prop(DecorFamily, "trapStack", new Vector2(AtBerth(11), back), sea,
+                new Prop(DecorFamily, "trapStack", new Vector2(AtStation(11), back), sea,
                     "the winter stack, back against the yard rather than out on the working deck"),
 
                 // --- the edge: what belongs at the lip and nowhere else ----------------------------
                 // ⚠️ At the ODD gaps in the fitting run. The tyres take the even gaps and the ladder one
                 // odd one, so these are the only metres of lip with nothing already hanging on them.
-                new Prop(DecorFamily, "tideStaff", new Vector2(BetweenBerths(1), lip), sea,
+                new Prop(DecorFamily, "tideStaff", new Vector2(AtStation(1), lip), sea,
                     "the tide board — the one place P1 is written on the wharf itself, and sited at the " +
                     "first clear gap east of where you step ashore so it is read on the way past"),
-                new Prop(DecorFamily, "ringStation", new Vector2(BetweenBerths(3), lip), sea,
+                new Prop(DecorFamily, "ringStation", new Vector2(AtStation(4), lip), sea,
                     "a life ring — rescue gear, NOT a tie-off (the tie-offs are #462's and they are real)"),
-                new Prop(DecorFamily, "ringStation", new Vector2(BetweenBerths(9), lip), sea,
+                new Prop(DecorFamily, "ringStation", new Vector2(AtStation(9), lip), sea,
                     "the second one, spaced down the wall the way a wharf actually spaces them"),
 
                 // --- the entrance: where the road arrives -------------------------------------------
@@ -485,11 +520,11 @@ namespace HiddenHarbours.App.Editor
             {
                 // --- the wall the fleet lies against ------------------------------------------------
                 LampPosts.OnGround(LampPosts.UtilityFamily, LampPosts.StreetLamp,
-                    new Vector2(AtBerth(4), lampRow), sea,
+                    new Vector2(AtStation(4), lampRow), sea,
                     "the west end of the mooring wall — at the front of the gear band, as near the berths " +
                     "as anything may stand, where a crew comes off a boat in the dark"),
                 LampPosts.OnGround(LampPosts.UtilityFamily, LampPosts.StreetLamp,
-                    new Vector2(AtBerth(9), lampRow), sea,
+                    new Vector2(AtStation(9), lampRow), sea,
                     "the east end of the same wall, five berths along: two lit stretches with a dark one " +
                     "between them, which is what a working quay looks like at night"),
 
@@ -626,12 +661,12 @@ namespace HiddenHarbours.App.Editor
                          new Vector2(Apron.center.x - 3f, Apron.yMax - 1.5f), ApronSeawardHeading,
                     "the tank the pump draws from, behind it at the apron's landward corner"),
 
-                new Prop(UtilityFamily, "standpipe", new Vector2(AtBerth(6), BackRowY), sea,
+                new Prop(UtilityFamily, "standpipe", new Vector2(AtStation(6), BackRowY), sea,
                     "washdown water, mid-quay — the deck gets hosed after every landing"),
 
-                new Prop(UtilityFamily, "pedestal", new Vector2(AtBerth(2), GearRowY), sea,
+                new Prop(UtilityFamily, "pedestal", new Vector2(AtStation(2), GearRowY), sea,
                     "shore power, west end"),
-                new Prop(UtilityFamily, "pedestal", new Vector2(AtBerth(9), GearRowY), sea,
+                new Prop(UtilityFamily, "pedestal", new Vector2(AtStation(9), GearRowY), sea,
                     "shore power, east end — two serve fourteen berths, which is what a creek affords"),
 
                 // ⚠️ NORTH of the parking, not south: Wharf Road passes within 1.2 m on the south side,
@@ -882,6 +917,24 @@ namespace HiddenHarbours.App.Editor
         /// is centred in its own slot, which is the same "west end PLUS half a block" rule #462's
         /// breakwater armour uses and the same reason: a piece placed at the start of its slot puts half
         /// of itself on the beach.</para>
+        ///
+        /// <para><b>⭐ THE RUN IS MEASURED IN DRAWN UNITS, WHICH IS WHY THE DIRECTION IS PASSED.</b> A
+        /// 9.6 m crib draws 9.6 units along an east–west wall and 6.17 along a north–south one, because
+        /// the sheet is baked at 40° and the pixels carry the foreshortening
+        /// (<c>NineMileCreekQuayFace.DrawnCourseRunMetres</c> is the whole argument). Pitching the two
+        /// north–south runs by the PLAN length left 3.43 units of bare wall at every seam, and what
+        /// stood in it was the next piece's own end return — the owner's bands across the apron.</para>
+        ///
+        /// <para><b>⚠️ The pieces are emitted from the run's <paramref name="from"/> end onward, and on a
+        /// north–south run that end must be the SOUTH one</b> — the end nearest the camera. Every piece
+        /// of a run shares ONE sorting order (<see cref="FaceSortingOrder"/> is a rung per WALL, and the
+        /// band has no orders to spare), so where two of them overlap the renderer resolves them by
+        /// placement order, and near-over-far is what the shipped picture already does: measured on the
+        /// committed plate, a seam shows 74 px of crib — the bare wall between two pieces — and not the
+        /// 154 px a far-over-near order would show. That dependency is not new, but it becomes
+        /// load-bearing here: closing the gap leaves each piece's return standing INSIDE its southern
+        /// neighbour's deck, hidden only because the neighbour draws over it. Authored north-to-south,
+        /// the same run would draw every return back on top of the deck it is meant to hide behind.</para>
         /// </summary>
         public static List<FacePiece> FaceRun(string wall, Vector2 from, Vector2 to, float seawardHeading,
                                               string reason)
@@ -894,7 +947,7 @@ namespace HiddenHarbours.App.Editor
 
             Vector2 along = span / run;
             Vector2 seaward = PlanDirectionOf(seawardHeading);
-            NineMileCreekQuayFace.CoverRun(run, out int count, out float pitch);
+            NineMileCreekQuayFace.CoverRun(run, along, out int count, out float pitch);
 
             for (int i = 0; i < count; i++)
             {

@@ -28,33 +28,28 @@ namespace HiddenHarbours.Tools.Editor
         private const string MenuPath = "Hidden Harbours/Dev/Build Boat-Rotation Test";
         private const string RootName = "BoatRotationTest";
 
-        // The four facing PNGs, in CLOCKWISE order from the zero heading (North): N, E, S, W.
-        private static readonly string[] FacingPaths =
-        {
-            "Assets/_Project/Art/Boats/FishingBoat_N.png",
-            "Assets/_Project/Art/Boats/FishingBoat_E.png",
-            "Assets/_Project/Art/Boats/FishingBoat_S.png",
-            "Assets/_Project/Art/Boats/FishingBoat_W.png",
-        };
+        // The compass this harness wears. It used to carry four loose per-heading PNGs of its own; that
+        // art was the owner's hand-drawn plan-view compass, retired 2026-09-06 (Core RetiredContentIds).
+        // Pointing at a SHIPPED visual is the better shape anyway: the handedness and bake elevation come
+        // with the sprites instead of being re-declared here, which is the whole point of
+        // BoatVisualDef.CreateRuntimeFrom — a compass read with the wrong handedness looks correct at
+        // north and south and is 180° out at east and west.
+        private const string CompassVisualPath = "Assets/_Project/Data/Boats/Visuals/DoryIso.asset";
 
         [MenuItem(MenuPath, priority = 44)]
         public static void Build()
         {
-            // Load the four facings up-front so we fail loudly (with guidance) if the art isn't imported yet.
-            var facings = new Sprite[FacingPaths.Length];
-            for (int i = 0; i < FacingPaths.Length; i++)
+            // Load the compass up-front so we fail loudly (with guidance) if the art isn't imported yet.
+            var compass = AssetDatabase.LoadAssetAtPath<BoatVisualDef>(CompassVisualPath);
+            if (compass == null || !compass.HasFullCompass())
             {
-                facings[i] = LoadSpriteAny(FacingPaths[i]);
-                if (facings[i] == null)
-                {
-                    EditorUtility.DisplayDialog(
-                        "Boat-Rotation Test",
-                        $"Couldn't load the facing sprite:\n{FacingPaths[i]}\n\n" +
-                        "Make sure the FishingBoat_N/E/S/W PNGs are imported (open Unity so it imports them), " +
-                        "then run the menu item again.",
-                        "OK");
-                    return;
-                }
+                EditorUtility.DisplayDialog(
+                    "Boat-Rotation Test",
+                    $"Couldn't load a complete hull compass from:\n{CompassVisualPath}\n\n" +
+                    "Run Hidden Harbours \u25b8 Dev \u25b8 Build Boat Visual Library first (it slices the iso " +
+                    "sheets and wires the facings), then run this menu item again.",
+                    "OK");
+                return;
             }
 
             // Remove a prior test rig so re-running is idempotent (no duplicate boats stacking up).
@@ -87,11 +82,12 @@ namespace HiddenHarbours.Tools.Editor
             //     The child renderer is what SnapDirectional counter-rotates to stay screen-aligned, and
             //     what SmoothRotateSingle leaves at local identity so it inherits the body's yaw.
             //
-            //     This harness carries its own 4 facings and its own in-memory hull, so it adapts them into
-            //     a runtime binding rather than pointing at a BoatVisualDef asset. It keeps its historic
-            //     child name ("Sprite") and opts out of the wave motion + oars the player's boat wants —
-            //     this is an A/B rig for comparing snap vs smooth, nothing more. ---
-            var skin = BoatVisualDef.CreateRuntime(facings, sortingOrder: 10);
+            //     This harness has its own in-memory hull, so it reduces a shipped visual to a bare compass
+            //     rather than pointing at the asset itself — DECOR TIER, so the source hull's rock grid,
+            //     oars and outboard stay behind while her handedness and bake elevation come along. It
+            //     keeps its historic child name ("Sprite") and opts out of the wave motion + oars the
+            //     player's boat wants — this is an A/B rig for comparing snap vs smooth, nothing more. ---
+            var skin = BoatVisualDef.CreateRuntimeFrom(compass, sortingOrder: 10);
             var directional = BoatHullSkinner.Apply(
                 root, skin, controller,
                 new BoatHullSkinner.Options { ChildName = "Sprite", SkipWaveMotion = true, SkipOars = true })
@@ -116,21 +112,6 @@ namespace HiddenHarbours.Tools.Editor
                 "  • press T to toggle Snap (swap N/E/S/W facings, picture stays upright) vs " +
                 "Smooth (one sprite rotates with the hull).\n" +
                 "Delete the 'BoatRotationTest' object to fully revert.");
-        }
-
-        /// <summary>
-        /// Load a Sprite at a path whether the texture imported as a single Sprite (our Single-mode metas) OR
-        /// as a Multiple-mode sheet (where <c>LoadAssetAtPath&lt;Sprite&gt;</c> can return null and the sprite
-        /// is a sub-asset). Mirrors the greybox builder's robust sprite lookup (memory: imported art is often
-        /// spriteMode Multiple).
-        /// </summary>
-        private static Sprite LoadSpriteAny(string path)
-        {
-            var direct = AssetDatabase.LoadAssetAtPath<Sprite>(path);
-            if (direct != null) return direct;
-            foreach (var obj in AssetDatabase.LoadAllAssetsAtPath(path))
-                if (obj is Sprite s) return s;
-            return null;
         }
     }
 }

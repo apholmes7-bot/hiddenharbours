@@ -26,6 +26,19 @@ namespace HiddenHarbours.Tools.RigBaking
         /// <summary>Body length in metres at this rung (<c>SPECIES.len × scale</c>).</summary>
         public readonly double LengthMetres;
 
+        /// <summary>
+        /// How many hands this rung takes, from <c>FishIso2.hold(species, scale).hands</c> — 1 (one
+        /// fish per hand, by the gill or the tail) or 2 (the two-arm cradle).
+        ///
+        /// <para><b>It belongs to the RUNG, not the species.</b> The rig's rule is a mass threshold,
+        /// and a ladder that spans a def's whole weight band crosses it. Asking <c>hold()</c> once at
+        /// scale 1 — what the first cut of this sidecar did — answers for a fish that is not on the
+        /// ladder at all, and measurably disagrees with the sheet actually loaded: haddock is one
+        /// hand at scale 1 but 2.79 kg and a cradle at its middle rung, pollock one hand but 4.19 kg
+        /// and a cradle. Two of the four shipped species held the wrong pose.</para>
+        /// </summary>
+        public readonly int Hands;
+
         /// <summary>Sheet-name suffix: <c>_sm</c>, <c>""</c> (the middle rung keeps the legacy
         /// stem), <c>_lg</c>.</summary>
         public readonly string Suffix;
@@ -34,15 +47,15 @@ namespace HiddenHarbours.Tools.RigBaking
         /// <c>SPECIES.range</c> when no def names this species yet.</summary>
         public readonly string BandSource;
 
-        public FishRung(int index, double scale, double kg, double lengthMetres, string suffix,
-                        string bandSource)
+        public FishRung(int index, double scale, double kg, double lengthMetres, int hands,
+                        string suffix, string bandSource)
         {
-            Index = index; Scale = scale; Kg = kg; LengthMetres = lengthMetres;
+            Index = index; Scale = scale; Kg = kg; LengthMetres = lengthMetres; Hands = hands;
             Suffix = suffix; BandSource = bandSource;
         }
 
         public override string ToString() =>
-            $"r{Index} scale {Scale:F4} = {Kg:F2} kg = {LengthMetres * 100:F0} cm";
+            $"r{Index} scale {Scale:F4} = {Kg:F2} kg = {LengthMetres * 100:F0} cm, {Hands} hand(s)";
     }
 
     /// <summary>One cell the rig draws past the edge of its own sheet cell.</summary>
@@ -193,9 +206,17 @@ namespace HiddenHarbours.Tools.RigBaking
             for (int i = 0; i < Rungs; i++)
             {
                 double s = scales[i];
-                double kg = host.EvaluateNumber(
-                    $"{g}.hold({FishingKitBaker.Js(species)},{Num(s)}).mass");
-                rungs.Add(new FishRung(i, s, kg, len * s, RungSuffixes[i], source));
+                // Mass AND hands come from one call at THIS rung's scale. The rig decides the carry
+                // from the mass it computes, so asking it once per rung is the only way the two can
+                // never disagree â€” and the hand count is what picks the gill sheet over the tail.
+                string hold = $"{g}.hold({FishingKitBaker.Js(species)},{Num(s)})";
+                double kg = host.EvaluateNumber($"{hold}.mass");
+                int hands = (int)host.EvaluateNumber($"{hold}.hands");
+                if (hands < 1)
+                    throw new InvalidOperationException(
+                        $"{g}.hold('{species}', {Num(s)}) reports {hands} hands â€” the rig's carry " +
+                        "contract is 1 or 2. Do not bake a table nothing can hold.");
+                rungs.Add(new FishRung(i, s, kg, len * s, hands, RungSuffixes[i], source));
             }
             return rungs;
         }
@@ -207,6 +228,75 @@ namespace HiddenHarbours.Tools.RigBaking
             public readonly double MinKg, MaxKg;
             public FishWeightBand(string defId, double minKg, double maxKg)
             { DefId = defId; MinKg = minKg; MaxKg = maxKg; }
+        }
+
+        // =====================================================================================
+        // THE SIDECAR, WITHOUT THE SHEETS
+        // =====================================================================================
+
+        /// <summary>
+        /// Re-emit <c>FishIsoAnchors.json</c> from the rig <b>without re-rendering a single
+        /// sheet</b>, and hand back the ladders it wrote.
+        ///
+        /// <para><b>Why this exists.</b> The sidecar carries two kinds of thing: the ladder (what
+        /// each rung weighs and how many hands it takes) and the mouth tables. Both are pure
+        /// functions of the rig, and neither depends on a pixel. When a CONSUMER learns something
+        /// new to ask for — as the fight did when it started picking rungs by weight — the honest
+        /// fix is to publish the answer, not to reconstruct it downstream from a table that was
+        /// exported for a different reader. Doing that through <see cref="BakeFish"/> would cost a
+        /// full 210-sheet render and produce 210 files of churn to change one JSON; this is the
+        /// same code path for the part that matters, in seconds, touching one file.</para>
+        ///
+        /// <para>It shares <see cref="WriteAnchors"/> with the bake rather than copying it, so the
+        /// two can never drift into publishing different sidecars — and it runs the same azimuth
+        /// probe and the same species/state validation first, because a sidecar written against an
+        /// unverified convention is worse than none.</para>
+        /// </summary>
+        public static CatchPass2BakeResult RewriteFishAnchors(
+            IReadOnlyDictionary<string, FishWeightBand> bands = null,
+            IReadOnlyList<string> species = null,
+            IReadOnlyList<string> states = null,
+            string outputFolder = DefaultOutputFolder)
+        {
+            var total = Stopwatch.StartNew();
+            var entry = RigCatalog.Get(RigKey);
+
+            using IRigScriptHost host = RigScriptHostFactory.Create();
+            var geo = RigCatalog.Install(host, entry);
+            string g = entry.GlobalName;
+
+            var result = new CatchPass2BakeResult
+            {
+                RigKey = RigKey, EngineName = host.EngineName, Geometry = geo,
+            };
+
+            var probe = FishingRigAzimuthProbe.MeasureFish(host, g, geo, Dirs);
+            result.MeasuredConvention = probe.Convention;
+            result.ConventionReport = probe.Report;
+            FishingKitBaker.RefuseOnMismatch(RigKey, entry.DeclaredConvention, probe.Convention,
+                                             probe.Report);
+
+            species ??= FishingKitBaker.ReadStringArray(host, $"{g}.ORDER");
+            states ??= ReadStateOrder(host, g);
+            foreach (string s in species) AssertSpecies(host, g, s);
+            foreach (string st in states) StateFrames(host, g, st);
+
+            var ladders = new Dictionary<string, IReadOnlyList<FishRung>>(StringComparer.Ordinal);
+            foreach (string s in species)
+            {
+                FishWeightBand? band = null;
+                if (bands != null && bands.TryGetValue(s, out var b)) band = b;
+                ladders[s] = LadderFor(host, g, s, band);
+            }
+            result.Ladders = ladders;
+
+            Directory.CreateDirectory(Path.Combine(RigCatalog.RepoRoot, outputFolder));
+            result.AnchorJsonPath = WriteAnchors(host, entry, geo, species, states, ladders,
+                                                 probe.Convention, outputFolder);
+
+            total.Stop();
+            result.TotalMilliseconds = total.Elapsed.TotalMilliseconds;
+            return result;
         }
 
         // =====================================================================================
@@ -433,50 +523,68 @@ namespace HiddenHarbours.Tools.RigBaking
                     sb.Append($"        {{ \"index\": {r.Index}, \"suffix\": \"{r.Suffix}\", " +
                               $"\"scale\": {Num(Round(r.Scale, 6))}, \"kg\": {Num(Round(r.Kg, 3))}, " +
                               $"\"lengthM\": {Num(Round(r.LengthMetres, 4))}, " +
-                              $"\"bandSource\": \"{r.BandSource}\" }}");
+                              $"\"hands\": {r.Hands}, " +
+                              $"\"bandSource\": \"{r.BandSource}\",\n");
+                    sb.Append("          \"states\": {\n");
+                    WriteRungStates(host, g, sp, states, r, convention, sb);
+                    sb.Append("          }\n        }");
                     sb.Append(i < ladder.Count - 1 ? ",\n" : "\n");
                 }
-                sb.Append("      ],\n");
-
-                sb.Append("      \"states\": {\n");
-                var waterStates = new List<string>();
-                foreach (string st in states)
-                    if (!IsRest(host, g, st)) waterStates.Add(st);
-
-                for (int a = 0; a < waterStates.Count; a++)
-                {
-                    string st = waterStates[a];
-                    int frames = StateFrames(host, g, st);
-                    double ms = host.EvaluateNumber($"{g}.ANIMS[{FishingKitBaker.Js(st)}].ms");
-                    sb.Append($"        \"{st}\": {{ \"frames\": {frames}, \"ms\": {Num(ms)}, " +
-                              "\"mouth\": [\n");
-                    // The mouth table is exported at the MIDDLE rung — the scale the legacy stem is
-                    // baked at, and the only sheet the fight loads today. A rung-major table would
-                    // be the honest shape once a consumer picks rungs; it is not invented here for
-                    // a reader that does not exist.
-                    double mid = ladders[sp][1].Scale;
-                    for (int d = 0; d < Dirs; d++)
-                    {
-                        double dir = RigBaker.DirForCell(d, Dirs, convention);
-                        sb.Append("          [");
-                        for (int f = 0; f < frames; f++)
-                        {
-                            sb.Append(host.EvaluateString(
-                                $"JSON.stringify({g}.mouth({Num(dir)},{{species:{FishingKitBaker.Js(sp)}," +
-                                $"anim:{FishingKitBaker.Js(st)},frame:{f},scale:{Num(mid)}}}))"));
-                            if (f < frames - 1) sb.Append(", ");
-                        }
-                        sb.Append(d < Dirs - 1 ? "],\n" : "]\n");
-                    }
-                    sb.Append(a < waterStates.Count - 1 ? "        ] },\n" : "        ] }\n");
-                }
-
-                sb.Append("      }\n");
+                sb.Append("      ]\n");
                 sb.Append(s < species.Count - 1 ? "    },\n" : "    }\n");
             }
 
             sb.Append("  }\n}\n");
             return FishingKitBaker.WriteJson(outputFolder, "FishIsoAnchors.json", sb.ToString());
+        }
+
+        /// <summary>
+        /// One rung's water-anim block: frame count, frame time, and the mouth (line-attach)
+        /// table AT THAT RUNG'S SCALE.
+        ///
+        /// <para><b>Why the mouth is per rung rather than scaled at run time.</b> The rig's
+        /// <c>mouth()</c> builds <c>y = len*scale*0.78*stretch*0.5 + girth*scale*0.9</c>, projects it
+        /// through the camera basis with the body's z base ADDED, and then rounds the result to
+        /// whole pixels. The z term does not scale with the fish and the rounding is not
+        /// recoverable, so the published offset is affine in <c>scale</c>, not proportional to it.
+        /// Multiplying the middle rung's table by a scale ratio would be a guess dressed as
+        /// arithmetic, and the line would leave the mouth by a pixel or two on every fish that is
+        /// not mid-sized. Asking the rig once per rung costs nothing at bake time and is exact.</para>
+        ///
+        /// <para>Rest poses stay out, as they always have: they re-pivot the cell to the GRIP while
+        /// <c>mouth()</c> stays in body space, so a rest-pose mouth would be wrong data rather than
+        /// missing data.</para>
+        /// </summary>
+        static void WriteRungStates(IRigScriptHost host, string g, string sp,
+                                    IReadOnlyList<string> states, in FishRung rung,
+                                    AzimuthConvention convention, StringBuilder sb)
+        {
+            var waterStates = new List<string>();
+            foreach (string st in states)
+                if (!IsRest(host, g, st)) waterStates.Add(st);
+
+            for (int a = 0; a < waterStates.Count; a++)
+            {
+                string st = waterStates[a];
+                int frames = StateFrames(host, g, st);
+                double ms = host.EvaluateNumber($"{g}.ANIMS[{FishingKitBaker.Js(st)}].ms");
+                sb.Append($"            \"{st}\": {{ \"frames\": {frames}, \"ms\": {Num(ms)}, " +
+                          "\"mouth\": [\n");
+                for (int d = 0; d < Dirs; d++)
+                {
+                    double dir = RigBaker.DirForCell(d, Dirs, convention);
+                    sb.Append("              [");
+                    for (int f = 0; f < frames; f++)
+                    {
+                        sb.Append(host.EvaluateString(
+                            $"JSON.stringify({g}.mouth({Num(dir)},{{species:{FishingKitBaker.Js(sp)}," +
+                            $"anim:{FishingKitBaker.Js(st)},frame:{f},scale:{Num(rung.Scale)}}}))"));
+                        if (f < frames - 1) sb.Append(", ");
+                    }
+                    sb.Append(d < Dirs - 1 ? "],\n" : "]\n");
+                }
+                sb.Append(a < waterStates.Count - 1 ? "            ] },\n" : "            ] }\n");
+            }
         }
 
         // =====================================================================================

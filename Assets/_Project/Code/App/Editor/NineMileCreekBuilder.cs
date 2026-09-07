@@ -1288,6 +1288,19 @@ namespace HiddenHarbours.App.Editor
                                  "pail, clam or rod hangs off the single fallback offset at every " +
                                  "heading. Run Art ▸ Import (after a new drop) ▸ Build Carry Anchor Table.");
 
+            // The catch ART table is the second asset the hands cannot resolve for themselves: it says
+            // which held sprite a landed species draws. Without it a catch in the hand falls back to its
+            // UI icon — which is what every catch drew before pass 2 baked held poses, so this is a
+            // look, not a break.
+            var catchArt = AssetDatabase.LoadAssetAtPath<HiddenHarbours.Art.CatchItemLibrary>(
+                CatchItemLibraryBuilder.LibraryPath);
+            devHands.ConfigureCatchArt(catchArt);
+            if (catchArt == null)
+                Debug.LogWarning($"[NineMileCreekBuilder] No catch item library at " +
+                                 $"'{CatchItemLibraryBuilder.LibraryPath}' — a clam or lobster in " +
+                                 "the hand draws its UI icon instead of the animal. Run " +
+                                 "Art ▸ Import (after a new drop) ▸ Build Catch Item Library.");
+
             var fishing = playerGo.AddComponent<FishingController>();
             playerGo.AddComponent<DevFishingInput>();
             SetRef(fishing, "_holdProvider", playerGo);   // the bucket above (IHold on the same GO)

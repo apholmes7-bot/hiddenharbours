@@ -101,7 +101,7 @@ namespace HiddenHarbours.Tests.EditMode
             // The owner is happy below the lobster boat, so the derivation must not move those hulls.
             // A floor, not a replacement: a dory's 14 m is intimacy, not a fit requirement.
             foreach ((string name, float len, float authored) in new[]
-                     { ("Dory", 4.5f, 14f), ("FishingSkiff", 4f, 13.5f), ("PuntUpgraded", 5.2f, 17f),
+                     { ("Dory", 4.5f, 14f), ("PuntUpgraded", 5.2f, 17f),
                        ("SportSkiff", 7f, 19f), ("LobsterBoat", 12f, 23f), ("CapeIslander", 12.9f, 24f) })
             {
                 float framed = CameraZoomPolicy.HelmWorldHeightMeters(authored, len, Margin, Elev, Aspect);

@@ -549,7 +549,7 @@ namespace HiddenHarbours.Tests.EditMode
             // door has to clear. Read from the region, never re-typed.
             float apron = StPetersBuilder.ReefShelfOuterElevation;
 
-            var hulls = new[] { "Dory", "FishingSkiff", "Punt", "PuntUpgraded", "SportSkiff",
+            var hulls = new[] { "Dory", "DoryOutboard", "Punt", "PuntUpgraded", "SportSkiff",
                                 "SportSkiffTwin", "ConsoleSkiff", "LobsterBoat", "CapeIslander",
                                 "SideDragger" };
 

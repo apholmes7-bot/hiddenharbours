@@ -215,8 +215,19 @@ namespace HiddenHarbours.App.Editor
 
         /// <summary>
         /// One entry per baked species whose id can be found among <paramref name="regionFish"/> (the
-        /// sheet key must appear in the def id — 'cod' in 'fish.atlantic_cod'; the ids are the defs',
-        /// never invented here). The held sheet is gill (two hands) or tail per the rig's hold.hands.
+        /// sheet key must appear in the def id, 'cod' in 'fish.atlantic_cod'; the ids are the defs',
+        /// never invented here), each carrying its whole SIZE LADDER.
+        ///
+        /// <para><b>The ladder is read, not derived.</b> Which weights the three rungs draw, and how
+        /// many hands each takes, are facts about the rig that the bake measured and published; this
+        /// only converts them. The held sheet follows the rung's own hand count — gill for the
+        /// two-arm cradle, tail for one hand — which is why a big cod and a small one can hold
+        /// differently.</para>
+        ///
+        /// <para><b>An older sidecar still imports</b>, loudly. A pre-rung-major bake published one
+        /// hold and one mouth table for the whole species; that becomes a single middle rung and says
+        /// so, rather than half-wiring the ladder in silence. Run
+        /// <c>Hidden Harbours ▸ Art ▸ Rewrite Catch Pass 2 Fish Anchors</c> to close it.</para>
         /// </summary>
         public static FishSpeciesVisual[] BuildFishSpecies(FishSpeciesDef[] regionFish)
         {
@@ -238,50 +249,127 @@ namespace HiddenHarbours.App.Editor
                     continue;
                 }
 
-                var statesNode = MiniJson.Dict(kv.Value, "states");
-                var holdNode = MiniJson.Dict(kv.Value, "hold");
-                bool twoHanded = MiniJson.Int(holdNode, "hands", 1) >= 2;
-
-                // ⚠️ These stems are catch pass 2's MIDDLE size rung, which is unsuffixed exactly so
-                // this call site keeps working — the _sm and _lg rungs sit beside them on disk and
-                // are not loaded here, because nothing picks a rung yet (RodFightPresenter never
-                // reads WeightKg). When a picker lands, this is where it chooses a suffix.
-                Sprite[] shadow = PersistentCoreBuilder.LoadIsoDirFrames($"{FishingIsoFolder}/Fish_{key}_shadow.png");
-                Sprite[] dart = PersistentCoreBuilder.LoadIsoDirFrames($"{FishingIsoFolder}/Fish_{key}_dart.png");
-                Sprite[] thrash = PersistentCoreBuilder.LoadIsoDirFrames($"{FishingIsoFolder}/Fish_{key}_thrash.png");
-                Sprite[] held = PersistentCoreBuilder.LoadIsoDirFrames(
-                    $"{FishingIsoFolder}/Fish_{key}_{(twoHanded ? "gill" : "tail")}.png");
-
-                // Pass 2's two new surface beats. Absent sheets are NOT an error — the loader hands
-                // back an empty array, the fields stay empty, and a presenter that checks Length
-                // simply never plays them. That keeps this importer working against a pass-1 bake.
-                Sprite[] roll = PersistentCoreBuilder.LoadIsoDirFrames($"{FishingIsoFolder}/Fish_{key}_roll.png");
-                Sprite[] jump = PersistentCoreBuilder.LoadIsoDirFrames($"{FishingIsoFolder}/Fish_{key}_jump.png");
-
-                float ppu = FirstPpu(dart) ?? FirstPpu(shadow) ?? FirstPpu(thrash) ?? 32f;
-                entries.Add(new FishSpeciesVisual
+                FishRungVisual[] rungs = ReadRungs(key, kv.Value);
+                if (rungs.Length == 0)
                 {
-                    FishId = def.Id,
-                    ShadowFrames = shadow,
-                    ShadowFramesPerDir = shadow.Length / Directions,
-                    DartFrames = dart,
-                    DartFramesPerDir = dart.Length / Directions,
-                    DartMouthOffsets = ReadMouths(statesNode, "dart", dart.Length / Directions, ppu),
-                    ThrashFrames = thrash,
-                    ThrashFramesPerDir = thrash.Length / Directions,
-                    ThrashMouthOffsets = ReadMouths(statesNode, "thrash", thrash.Length / Directions, ppu),
-                    HeldFrames = held,
-                    HeldFramesPerDir = held.Length / Directions,
-                    TwoHanded = twoHanded,
-                    RollFrames = roll,
-                    RollFramesPerDir = roll.Length / Directions,
-                    RollMouthOffsets = ReadMouths(statesNode, "roll", roll.Length / Directions, ppu),
-                    JumpFrames = jump,
-                    JumpFramesPerDir = jump.Length / Directions,
-                    JumpMouthOffsets = ReadMouths(statesNode, "jump", jump.Length / Directions, ppu),
-                });
+                    Debug.LogWarning($"[RodKitImporter] Species '{key}' wired NO size rungs — the fight " +
+                                     "will draw nothing for it. Re-bake catch pass 2's fish sheets.");
+                    continue;
+                }
+
+                entries.Add(new FishSpeciesVisual { FishId = def.Id, Rungs = rungs });
             }
             return entries.ToArray();
+        }
+
+        /// <summary>
+        /// One species' rungs, ascending, from the sidecar's own ladder — or a single middle rung
+        /// reconstructed from a pre-rung-major sidecar.
+        /// </summary>
+        private static FishRungVisual[] ReadRungs(string key, object speciesNode)
+        {
+            var ladder = MiniJson.List(speciesNode, "rungs");
+            var speciesStates = MiniJson.Dict(speciesNode, "states");
+
+            // ---- the legacy shape: one hold, one mouth table, no ladder ------------------------
+            if (ladder == null || ladder.Count == 0)
+            {
+                Debug.LogWarning(
+                    $"[RodKitImporter] '{FishAnchorsPath}' publishes no size ladder for '{key}' — this " +
+                    "is a pre-pass-2 sidecar. Wiring the unsuffixed sheets as a single middle rung, so " +
+                    "every catch of this species draws one size. Run Hidden Harbours ▸ Art ▸ " +
+                    "Rewrite Catch Pass 2 Fish Anchors to publish the ladder.");
+                var holdNode = MiniJson.Dict(speciesNode, "hold");
+                var only = BuildRung(key, suffix: "", kg: 0f,
+                                     twoHanded: MiniJson.Int(holdNode, "hands", 1) >= 2,
+                                     statesNode: speciesStates);
+                return only == null ? System.Array.Empty<FishRungVisual>() : new[] { only };
+            }
+
+            var built = new List<FishRungVisual>(ladder.Count);
+            foreach (object node in ladder)
+            {
+                if (node is not Dictionary<string, object> r) continue;
+
+                // ⚠️ 'hands' and the per-rung 'states' block arrived together, when the sidecar went
+                // rung-major. Their ABSENCE is the tell that the JSON predates the ladder's consumer:
+                // falling back to the species-level table would silently give every rung the MIDDLE
+                // rung's mouth offsets, which are wrong by a pixel or two at the other two sizes and
+                // wrong in a way nobody would ever see in a log.
+                bool perRung = MiniJson.Has(r, "hands") && MiniJson.Dict(r, "states") != null;
+                if (!perRung)
+                    Debug.LogWarning(
+                        $"[RodKitImporter] Rung '{MiniJson.String(r, "suffix")}' of '{key}' carries no " +
+                        "per-rung hands/states — falling back to the species-level table, whose mouth " +
+                        "offsets were measured at the MIDDLE rung and do not fit this one. Run Hidden " +
+                        "Harbours ▸ Art ▸ Rewrite Catch Pass 2 Fish Anchors.");
+
+                object statesNode = perRung ? MiniJson.Dict(r, "states") : speciesStates;
+                bool twoHanded = perRung
+                    ? MiniJson.Int(r, "hands", 1) >= 2
+                    : MiniJson.Int(MiniJson.Dict(speciesNode, "hold"), "hands", 1) >= 2;
+
+                FishRungVisual rung = BuildRung(key, MiniJson.String(r, "suffix") ?? "",
+                                                (float)MiniJson.Float(r, "kg"), twoHanded, statesNode);
+                if (rung != null) built.Add(rung);
+            }
+
+            // Ascending by weight, so the ladder reads as a ladder in the inspector and a picker can
+            // rely on the order. The bake writes them in order today; sorting is what makes that a
+            // property of the TABLE rather than a habit of whoever wrote it.
+            built.Sort((a, b) => a.Kg.CompareTo(b.Kg));
+            return built.ToArray();
+        }
+
+        /// <summary>One rung's sheets and mouth tables, or null when the rung has no art at all.</summary>
+        private static FishRungVisual BuildRung(string key, string suffix, float kg, bool twoHanded,
+                                                object statesNode)
+        {
+            string stem = $"{FishingIsoFolder}/Fish_{key}{suffix}";
+
+            Sprite[] shadow = PersistentCoreBuilder.LoadIsoDirFrames($"{stem}_shadow.png");
+            Sprite[] dart = PersistentCoreBuilder.LoadIsoDirFrames($"{stem}_dart.png");
+            Sprite[] thrash = PersistentCoreBuilder.LoadIsoDirFrames($"{stem}_thrash.png");
+            Sprite[] held = PersistentCoreBuilder.LoadIsoDirFrames(
+                $"{stem}_{(twoHanded ? "gill" : "tail")}.png");
+
+            // Pass 2's two new surface beats. Absent sheets are NOT an error — the loader hands back
+            // an empty array, the fields stay empty, and a presenter that checks Length simply never
+            // plays them. That keeps this importer working against a pass-1 bake.
+            Sprite[] roll = PersistentCoreBuilder.LoadIsoDirFrames($"{stem}_roll.png");
+            Sprite[] jump = PersistentCoreBuilder.LoadIsoDirFrames($"{stem}_jump.png");
+
+            if (shadow.Length == 0 && dart.Length == 0 && thrash.Length == 0 && held.Length == 0)
+            {
+                Debug.LogWarning($"[RodKitImporter] No sliced sheets at '{stem}_*.png' — rung " +
+                                 $"'{suffix}' of '{key}' is SKIPPED. Run the catch pass 2 bake, then " +
+                                 "the two sheet slicers (the bake does not slice).");
+                return null;
+            }
+
+            float ppu = FirstPpu(dart) ?? FirstPpu(shadow) ?? FirstPpu(thrash) ?? 32f;
+            return new FishRungVisual
+            {
+                Suffix = suffix,
+                Kg = kg,
+                TwoHanded = twoHanded,
+                ShadowFrames = shadow,
+                ShadowFramesPerDir = shadow.Length / Directions,
+                DartFrames = dart,
+                DartFramesPerDir = dart.Length / Directions,
+                DartMouthOffsets = ReadMouths(statesNode, "dart", dart.Length / Directions, ppu),
+                ThrashFrames = thrash,
+                ThrashFramesPerDir = thrash.Length / Directions,
+                ThrashMouthOffsets = ReadMouths(statesNode, "thrash", thrash.Length / Directions, ppu),
+                HeldFrames = held,
+                HeldFramesPerDir = held.Length / Directions,
+                RollFrames = roll,
+                RollFramesPerDir = roll.Length / Directions,
+                RollMouthOffsets = ReadMouths(statesNode, "roll", roll.Length / Directions, ppu),
+                JumpFrames = jump,
+                JumpFramesPerDir = jump.Length / Directions,
+                JumpMouthOffsets = ReadMouths(statesNode, "jump", jump.Length / Directions, ppu),
+            };
         }
 
         // ---- the fisher's hands (the land beat's held-fish pin) ------------------------------------

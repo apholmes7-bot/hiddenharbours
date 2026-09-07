@@ -113,7 +113,7 @@ namespace HiddenHarbours.Tests.EditMode
         {
             string[] expected =
             {
-                "boat.dory", "boat.dory_outboard", "boat.punt", "boat.punt_upgraded", "boat.fishing_skiff",
+                "boat.dory", "boat.dory_outboard", "boat.punt", "boat.punt_upgraded",
             };
 
             var rowable = new List<string>();

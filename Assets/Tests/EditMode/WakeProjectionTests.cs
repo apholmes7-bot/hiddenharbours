@@ -118,11 +118,17 @@ namespace HiddenHarbours.Tests.EditMode
         // ==== the OTHER art lineage must not move =========================================================
 
         [Test]
-        public void PlanViewArt_IsNotForeshortened_TheFishingBoatAndTheAmbientFleetDoNotMove()
+        public void PlanViewArt_IsNotForeshortened_TheNinetyDegreeBranchIsExactlyANoOp()
         {
-            // The hand-drawn FishingBoat_* compass is not a rig bake and has no camera to measure; the whole
-            // ambient fleet wears those facings. Foreshortening it would be inventing a projection it never
-            // had — the exact trap #212 avoided by making the mirror per-artwork instead of global.
+            // 90° is the field's own default: "nobody has measured a camera for this art". The branch must
+            // therefore place a wake EXACTLY where the pre-projection code did, or every half-authored
+            // visual moves — the trap #212 avoided by making the correction per-artwork instead of global.
+            //
+            // ⚠ NOTHING SHIPPED WEARS THIS TODAY, and that is why it is guarded here rather than left to
+            // an asset. The one plan-view artwork in the repo was the hand-drawn compass the ambient fleet
+            // also wore; she was retired 2026-09-06 (Core RetiredContentIds) and the fleet moved onto the
+            // punt's 40° bake. An untravelled branch is exactly the one that rots, so this asserts the
+            // arithmetic directly rather than through a hull that happens to use it.
             for (float h = 0f; h < 360f; h += 15f)
             {
                 Vector2 bow = BowFromHeading(h);

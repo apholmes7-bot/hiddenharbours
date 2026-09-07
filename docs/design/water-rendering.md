@@ -4647,13 +4647,12 @@ The decay is a multiply, so its per-frame change is largest at full white:
 | freshness G | 4 s | 1.469 — decays above 0.34 | 0.735 — **stalls at stored 0.680** | 0.368 — never | 0.307 — never |
 
 At the PC-first 60 fps baseline **the coverage channel does not decay at all**, and the freshness clock
-stops two thirds of the way down. The wake leaves the 96 m window and the compose's lace tears at it,
+stops a third of the way down. The wake leaves the 96 m window and the compose's lace tears at it,
 but nothing in the buffer fades — and the better the machine, the more permanent the foam. The owner's
 sentence names two things: *"it doesnt widen over time"* is this PR's, and ***"and fade away"* is this
-table.** The fix is one line — a wider buffer format, or a world-locked dither on the decay — but it is
-**not in this PR**, because the charter's acceptance requires the spread dial at 0 to reproduce 11a's
-trail bit for bit, and either fix changes every stored value. It is register row 26 (c) and it wants its
-own A/B.
+table.** It was deliberately **not fixed in PR 11b**, because that charter's acceptance requires the
+spread dial at 0 to reproduce 11a's trail bit for bit and every candidate fix changes every stored
+value. ✅ **It is register row 28, and §36 below is how it was fixed.**
 
 **(b) What it does to THIS term — guarded, because it is ours.** It is the reason the stamp lays the
 envelope once at the rim instead of re-stamping the profile. Both arms, at the band's visible rim
@@ -4755,3 +4754,210 @@ envelope's shape and its integral (§35.4), the age mark (§35.7).
   holds the width it reached. Extending it further is bounded by §35.8 (b), not by this term.
 - Everything here is presentation state: it reads the sim, feeds no sim, and enters no save
   (rule 5 / ADR 0008).
+## 36. The wake FADES — sixteen bits, because eight could not hold a decay (register row 28)
+
+**The owner, 2026-09-04 and again 2026-09-06:** *"foam fades behind boat … and fade away"*;
+*"it doesnt widen over time **and fade away**."* §35 was the widening. This is the fading, and it was
+never a look problem: §35.8 (a) measured it, and the answer was the render target.
+
+### 36.1 What was actually wrong
+
+The advect pass computes at full float precision and then **writes into a render target**. The target
+was `RenderTextureFormat.RG16` — 8 bits a channel — and the decay is a MULTIPLY, so the change it makes
+in one frame is proportional to the value stored. At the PC-first 60 fps baseline the largest change the
+coverage channel can make, the one at full white, is **0.491 of a code**. Round-to-nearest sends that
+straight back where it came from. The channel did not decay **at any stored value**; the freshness clock
+stalled at stored **0.680**.
+
+Three things follow, and they are why this hid for two months rather than two days:
+
+- **It is frame-rate dependent in the worst direction.** The change scales with `dt`, so a *better*
+  machine gets *more* permanent foam. At 30 fps the coverage channel does move (above stored 0.51) and
+  the freshness clock walks most of its ramp; at 120 fps and above neither moves at all.
+- **Something else was doing the fading.** The trail still left the 96 m window, and the compose's lace
+  still tore at it. Every "fade" anyone had seen was the WINDOW, not the decay.
+- **Every shipped guard was green through it.** `FoamBufferTests.DecayFactor_HalvesAtTheHalfLife_AndComposes`
+  and `HalfLife_SetsAVisibleLifetime_NotAnInstantPop` measure the FACTOR, in float, and the factor was
+  always correct. Nothing asked what the BUFFER did with it. A term is not running until something
+  measures it **through the thing that stores it** — which is what `FoamBuffer.Store` now is, and what
+  every arm of `FoamBufferFadeTests` goes through.
+
+### 36.2 The fix, and the format the policy prefers
+
+`FoamBuffer.FormatPreference` is the list, best first, and `FoamBuffer.SelectFormat` takes the widest one
+the device will actually render to (`SystemInfo.SupportsRenderTextureFormat` in production, an injected
+predicate in the guards — `SystemInfo` on a null graphics device answers for no device at all).
+`IsoFacetHullFeature` asks it every allocation; **no format literal is typed at the descriptor any more**,
+and a source tripwire keeps it that way, because a constant typed there is the exact shape this defect
+shipped in.
+
+| rung | format | codes | the decay at 60 fps | why it sits here |
+|---|---|---|---|---|
+| 1 | `RG32` (R16G16_UNORM) | 65 535 | 126.06 codes/frame at white; stalls only below stored **0.004** | uniform codes are the right grid for a quantity that lives in [0,1] |
+| 2 | `RGHalf` (R16G16_SFLOAT) | — | never stalls, but **biased**: a texel at 1.0 reads 0.5073 after one 6 s half-life at 60 fps and 0.5347 at 144 fps, against `RG32`'s 0.50001 | GLES3 makes RG16_UNorm optional as a colour target and RG16F core — this is the mobile rung (rule 7) |
+| 3 | `RG16` | 255 | **0.491 codes/frame — under the floor at every stored value** | the shipped stall. A device with neither 16-bit format still gets foam rather than none, and it is NAMED rather than silently reintroduced |
+
+The half float's bias is not a tuning accident: its mantissa grid is **constant across an octave** while
+the decay's change is **proportional to the value**, so round-to-nearest over-steps at the top of each
+octave and under-steps at the bottom, and the residue depends on `dt`. A UNORM's grid is uniform, so the
+same multiply lands within half a code everywhere. `FoamBuffer.Store` models all three exactly — the
+binary16 rung by snapping to the IEEE grid rather than calling `Mathf.FloatToHalf`, which is a native
+ECall this class must not depend on if its arithmetic is to run with no editor under it.
+
+**Budget (rule 7).** At the shipped 96 m window the buffer is 768² texels; the ping-pong pair goes from
+**2.25 MB to 4.50 MB per camera** (+2.25 MB), against the seabed bake's 1.0 MB and an ARGBHalf reflection
+target at camera resolution. `TheBudget_DoublesTheBuffer_AndIsStatedInBytes` prints it and holds it under
+a stated 8 MB, past which the WINDOW dial — not the format — is what needs the conversation.
+
+### 36.3 What it buys, measured
+
+| | shipped `RG16` | fixed `RG32` |
+|---|---|---|
+| a texel at 1.0, coverage, reaches ≤ 0.5 within one half-life ±1 frame | **never**, at 30/60/120/144 fps | 181 / 360 / 720 / 865 frames — always |
+| the same for freshness | **never** | 121 / 241 / 481 / 577 frames — always |
+| where the coverage decay comes to rest at 60 fps | **1.000** (it does not move) | 0.00395 — far below the compose's 0.12 |
+| the freshness clock at 60 fps | rests at 0.678 → `age01` 0.322 → ramp **0.305**, so #724's SHALLOW blue (0.5) is never reached | rests at 0.0026 → `age01` 0.997 → ramp **1.000**, the whole walk |
+| distinct stored values along that walk | 83 | 2016 |
+| what the buffer HOLDS 3 / 6 / 12 s after a cape's pass, as a fraction of what she laid | 1.0000 / 1.0000 / **1.0000** | 0.7071 / 0.5001 / 0.2502, against the decay's 0.7071 / 0.5000 / 0.2500 |
+
+⚠️ **Nothing of PR 11b's was re-based, and that is the point.**
+`WakeDispersalStampTests.ConservationPerAgeBin_...` states its conservation **at injection** and walks its
+parcel of sea in `double`, so the render target cannot touch its numbers — which is exactly why a guard on
+the stamp could never have caught this. The statement this PR owes is the last row of the table above:
+what the buffer HOLDS at age t against what was laid at birth times the decay over t, with every cell
+going through `FoamBuffer.Store`
+(`WhatTheBufferHolds_FallsOnItsOwnHalfLife_WhereTheShippedFormatHoldsItsBirthValue`).
+
+### 36.4 🔴 The alternative that was measured and not shipped
+
+Fix (b) in the charter was to keep 8 bits and DITHER the decay, so that its expectation over many frames
+equals the analytic one. It was modelled, in the same run as everything above
+(`TheDitherAlternative_GetsTheMeanRight_AndLosesTheDyingRimToNoise_Measured`), because "we chose the
+other one" is not a reason.
+
+- **A TEMPORAL dither** (a hash of the world cell and the frame index — world-locked, never `_Time`,
+  rule 5) **does** fix the mean: 0.5000 against an analytic 0.5000 at one half-life, 0.0631 against
+  0.0625 at four. But its error is a **random walk**, and identically-laid texels drift apart:
+  **50 / 46 / 28 codes** peak-to-peak at one / two / four half-lives. The compose's entire visible fade
+  is the **46 codes** between `_WakeFoamThreshold` 0.12 and 0.30 — and the walk is at its widest
+  (46 codes, mean 0.2503) exactly as the trail passes through that band. The dying rim, which is the only
+  place a fade is visible at all, would read as noise rather than as foam.
+- **An ORDERED dither** (a fixed per-cell offset, no frame index) does not random-walk — and does not
+  decay either. It only moves each texel's stall value, so the patch freezes: after four half-lives it
+  still averages **0.7565** against an analytic 0.0625, split between texels stuck at 1 and at 0. That is
+  a fixed-pattern dissolve, not a fade.
+- **An exact temporal error diffusion** — one that neither walks nor freezes — has to STORE its residual,
+  one byte per channel. That is **precisely the two bytes a texel the wider format costs**. The honest
+  dither buys nothing over the honest format and pays for it in noise.
+
+Its running cost, for the record, was never the objection: one 4-operation integer hash per texel per
+frame is 590 k hashes at the shipped 768² window, which is nothing beside the advect pass's eight-slot
+injection loop. It was rejected on what it does to the picture, not on what it costs.
+
+### 36.5 ⚠️ What is now the owner's, and was not reachable before
+
+`IsoFacetHullFeature._foamHalfLifeSeconds` has **never done anything at 60 fps**, so its 6 s is not a
+tuned value — it is an untested one. With the decay running, white crosses the compose's 0.12 threshold
+after `halfLife · log2(1/0.12)` = **3.06 half-lives**, and the visible trail astern is that time times
+the hull's speed:
+
+| half-life | 3 kn | 5 kn | 8 kn | 14 kn |
+|---|---|---|---|---|
+| **6 s (shipped)** | 28.3 m | 47.2 m | **75.5 m** | 132.2 m |
+| 4 s | 18.9 m | 31.5 m | 50.4 m | 88.1 m |
+| 3 s | 14.2 m | 23.6 m | 37.8 m | 66.1 m |
+
+The buffer window reaches **48 m astern of the camera**. So at the shipped 6 s a wake now fades to
+nothing inside the window up to about **5 kn** — the dory's and the punt's whole range — while at 8 kn
+and above the trail still reaches the window edge with coverage on it, and it is the HALF-LIFE, not the
+format, that decides. Widening the window instead is the worse trade: 192 m would cost 18 MB a camera.
+**No dial was moved here.** The table is the proposal; the value is the owner's.
+
+### 36.6 Fences
+
+The format is the whole change. The injection maths (§35's stamp), the V arms, the bow wave, the hull
+clamp, the cell law's integer scroll and the compose all read exactly as they did — the advect shader is
+untouched by this section, because the rounding it was losing the decay to was never in the shader.
+
+## 37. "The waves move across the screen too fast" — a measurement (register row 30)
+
+**The owner, 2026-09-06 evening:** *"waves seem to move across the screen too fast, should be realistic
+to actual waves and windspeed/conditions."*
+
+Nothing was changed for this section. It is the numbers his ranking needs, and the arithmetic that says
+his sentence contains two asks that pull against each other.
+
+### 37.1 The standing hypothesis, refuted twice
+
+The charter proposed that the drawn wavelength is scaled while the phase advance is not, so a drawn crest
+would run at 2.8× the speed a wave of its drawn length could have.
+
+1. **There is no scale.** `_OceanSwellScale` ships at **0.025** and the shader normalises by that same
+   0.025 (`WAVE_LEGACY_SCALE_REF`), so the visual frequency scale is **exactly 1**: the drawn wavelength
+   is the modelled wavelength and the drawn speed is the modelled speed. Water PR 6 moved this dial from
+   0.07 to 0.025 in September for exactly this reason and it stayed closed.
+2. **And the old error's SIGN was the other way.** Scaling `k` by `fs` shortens the drawn wave to `λ/fs`,
+   which a wave of that length could carry at `c/√fs` — but the advance, being `k·c` divided by the
+   *larger* drawn `k`, only reaches `c/fs`. The ratio is therefore **`1/√fs`**, which is *below* 1 for
+   `fs > 1`. At the old 0.07 that is **0.60×**: the pre-PR-6 sea drew waves too **slow** for their size.
+
+### 37.2 What is actually wrong: the wind coupling is linear where the sea is quadratic
+
+`WaveMath.TrainsFrom` derives the peak from `DominantWavelengthBase + DominantWavelengthPerWindSpeed · U`,
+capped — shipped, **`λ_p = 6 + 1.5·U`, cap 40 m**. A fully-developed sea's peak follows
+Pierson–Moskowitz, **`λ_p = 2πU²/(0.877²g) ≈ 0.833·U²`**. A line and an upward parabola cross exactly
+once, at **U = 3.74 m/s**, so the shipped sea is too long below that and too short above it.
+
+⚠️ `SpectrumBlend` (0.65 on the shipped `GameConfig`) does **not** move this: `SpectrumTrainsFrom` is
+handed the same `dominantWavelength` and spreads its slots around it, so the peak law is the peak law on
+both paths.
+
+| U m/s | shipped λ | PM λ | ratio | shipped c | PM c | crest every | PM | ratio |
+|---|---|---|---|---|---|---|---|---|
+| 0.50 | 6.8 | 0.2 | 32.4 | 3.25 | 0.57 | 2.08 | 0.37 | 5.69 |
+| 1.62 (light) | 8.4 | 2.2 | 3.86 | 3.63 | 1.85 | 2.32 | 1.18 | 1.96 |
+| 3.00 | 10.5 | 7.5 | 1.40 | 4.05 | 3.42 | 2.59 | 2.19 | 1.18 |
+| 5.70 (blow) | 14.6 | 27.1 | **0.54** | 4.77 | 6.50 | 3.05 | 4.16 | **0.73** |
+| 8.00 | 18.0 | 53.3 | 0.34 | 5.30 | 9.12 | 3.40 | 5.84 | 0.58 |
+| 12.95 (gale) | 25.4 | 139.7 | **0.18** | 6.30 | 14.77 | 4.04 | 9.46 | **0.43** |
+| 20.00 | 36.0 | 333.1 | 0.11 | 7.50 | 22.81 | 4.80 | 14.61 | 0.33 |
+
+**The last column is the finding.** Because `T = √(2πλ/g)`, a sea that is short for its wind has crests
+that arrive too often: **1.4× too often at a blow, 2.3× at a gale.** That number depends on nothing but
+the wavelength — no zoom, aspect or framing enters it — so it is the reading of "too fast" that no camera
+change could ever fix.
+
+### 37.3 The screen, which is what "across the screen" actually means
+
+The camera's world height is the active hull's `CameraWorldHeightMeters`, so this is a **per-boat**
+number. At the owner's own window aspect (his screenshots render 1902×879):
+
+| boat | frame | light | blow | gale |
+|---|---|---|---|---|
+| dory | 14 m high = 30.3 m wide | 8.3 s / 3.6 λ | 6.4 s / 2.1 λ | **4.8 s** / 1.2 λ |
+| cape | 24 m high = 51.9 m wide | 14.3 s | 10.9 s | 8.2 s / 2.0 λ |
+| coastal packet | 90 m high = 194.7 m wide | 53.7 s | 40.9 s | 30.9 s |
+
+The same sea already reads about **1.7× faster on a dory than on a cape**, purely from the framing.
+
+### 37.4 🔴 The conflict, and why this is a row and not a fix
+
+`c ∝ √λ`, so **a longer wave is a faster wave.** Making the sea realistic for its wind lengthens it,
+which *speeds each crest across the frame* even as it *slows the rate at which crests arrive*. The
+owner's two asks therefore oppose each other at this framing. At a blow, on the cape, in his window:
+
+| lever | λ | c | crosses 51.9 m in | crest every |
+|---|---|---|---|---|
+| **shipped** | 14.6 m | 4.77 m/s | 10.9 s | 3.05 s |
+| (i) realistic for this wind (PM) | 27.1 m | 6.50 m/s | **8.0 s** — faster | **4.16 s** — better |
+| (ii) half the wavelength | 7.3 m | 3.37 m/s | 15.4 s — slower | 2.16 s — worse |
+| (iii) zoom out to 32 m | 14.6 m | 4.77 m/s | 14.5 s | 3.05 s — unchanged |
+| (iii) zoom out to 48 m | 14.6 m | 4.77 m/s | 21.8 s | 3.05 s — unchanged |
+
+**(iii) is the only lever that slows the screen without touching the physics** — and it is a camera call
+with its own costs (it shrinks the boat, and the framing is per hull today).
+
+⚠️ **If (i) is chosen it is a SIM change, not a look one.** The hull ride samples the same field
+(ADR 0018's one-sea rule), so a longer swell moves the seakeeping with it — and register row 6's
+ride≠drawn question closes at the same time. That is a Tier B change and wants its own charter.
+

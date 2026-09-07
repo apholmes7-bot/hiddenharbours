@@ -152,6 +152,14 @@ namespace HiddenHarbours.Art
         /// in <see cref="Select"/> needs it, and an interface reference does not carry one.
         /// </summary>
         private Transform[] _casterCarrier = System.Array.Empty<Transform>();
+
+        /// <summary>
+        /// This tick's casters indexed BY their transform, so the carrier walk below can ask "is this
+        /// ancestor a caster?" without scanning six hundred of them per lamp. Reused and cleared, never
+        /// reallocated. (Two casters on one transform keep the first; nothing in the game does that, and
+        /// the rule only needs to find A carrier, not every component on it.)
+        /// </summary>
+        private readonly Dictionary<Transform, int> _casterByTransform = new Dictionary<Transform, int>(1024);
         private int _active;
         private MaterialPropertyBlock _mpb;
         private Material _spriteMaterial, _hullMaterial;
@@ -317,6 +325,11 @@ namespace HiddenHarbours.Art
                 _casterScratch = new LampShadowCasterState[Mathf.NextPowerOfTwo(casterCount)];
                 _casterCarrier = new Transform[_casterScratch.Length];
             }
+            // ⚠️ EVERY TICK. The index it stores is into THIS tick's caster list, and the keys are
+            // transforms that may since have been destroyed: kept across a tick it would both resurrect
+            // dead objects as dictionary keys and hand the carrier walk an index pointing at a different
+            // caster than the one it matched — excluding the wrong silhouette, which is silent.
+            _casterByTransform.Clear();
             for (int i = 0; i < casterCount; i++)
             {
                 ILampShadowCaster caster = Casters[i];
@@ -325,7 +338,9 @@ namespace HiddenHarbours.Art
                     !caster.TryGetLampShadowCaster(out LampShadowCasterState state))
                     state = default;
                 _casterScratch[i] = state;
-                _casterCarrier[i] = caster is Component c ? c.transform : null;
+                Transform ct = caster is Component c ? c.transform : null;
+                _casterCarrier[i] = ct;
+                if (ct != null && !_casterByTransform.ContainsKey(ct)) _casterByTransform[ct] = i;
             }
 
             Color tint = Shader.GetGlobalColor(IdDayNightTint);
@@ -349,12 +364,19 @@ namespace HiddenHarbours.Art
                 // throwing a stub of itself at its own foot — nine posts would take nine of twenty-four
                 // slots away from the bollards and hulls the lamps were placed to reveal.
                 //
-                // The test is deliberately EXACT — the same GameObject, one reference compare in the inner
-                // loop — because that is the mounting this PR creates and it has no false positives.
-                // ⚠ A light on a CHILD of its carrier (a walker's headlamp, where the beam hangs off the
-                // player and her SpriteShadow is on the root) is NOT covered: that wants an ancestor walk,
-                // and it belongs to the PR that introduces the mounting.
-                Transform carrier = light.transform;
+                // ⭐ THE CARRIER IS THE NEAREST CASTER AT OR ABOVE THE LAMP, which is both mountings at once.
+                // PR 2 could compare the light's own GameObject and stop, because a lamp POST carries its
+                // light and its SpriteShadow on one object. The walker does not: her headlamp hangs off a
+                // child so it can turn with her face, and her SpriteShadow is on the root — so the exact
+                // compare saw two different transforms and let her throw her own silhouette down her own
+                // beam, from a lamp-to-feet distance of centimetres.
+                //
+                // ⚠ The walk is BOUNDED at the first caster it finds, and that bound is the whole design.
+                // Walking to the scene root instead would sweep up whatever the lamp happens to be parented
+                // under — `NineMileCreekDressing/Lamps` and the region root above it — and if anything up
+                // there were ever a caster, EVERY caster beneath it would silently stop throwing from that
+                // lamp. "Mounted on" means the nearest thing that is a caster, not the hierarchy above it.
+                Transform carrier = CarrierCasterOf(light);
                 // ⚠️⚠️ PAIRED BY THE LAMP'S REACH, NOT BY ITS BLOOM — and reading the wrong one of those
                 // two silently switched every lamp shadow in the game OFF.
                 //
@@ -379,7 +401,7 @@ namespace HiddenHarbours.Art
                 {
                     ref LampShadowCasterState s = ref _casterScratch[ci];
                     if (!s.IsValid) continue;
-                    if (ReferenceEquals(_casterCarrier[ci], carrier)) continue;
+                    if (carrier != null && ReferenceEquals(_casterCarrier[ci], carrier)) continue;
                     float d2 = (s.Foot - lamp).sqrMagnitude;
                     if (d2 >= r2) continue;
                     count = Insert(light, Casters[ci], d2, count);
@@ -392,6 +414,19 @@ namespace HiddenHarbours.Art
                 _slots[i].Light = _chosen[i].Light;
                 _slots[i].Caster = _chosen[i].Caster;
             }
+        }
+
+        /// <summary>
+        /// The transform of the caster this lamp is MOUNTED ON: the nearest caster at or above the light in
+        /// the hierarchy, or null if the lamp is mounted on nothing that casts (every placed lamp but the
+        /// walker's two). Bounded at the first hit — see the note at the call site for why the alternative
+        /// is a trap.
+        /// </summary>
+        private Transform CarrierCasterOf(SceneLight light)
+        {
+            for (Transform t = light.transform; t != null; t = t.parent)
+                if (_casterByTransform.ContainsKey(t)) return t;
+            return null;
         }
 
         /// <summary>

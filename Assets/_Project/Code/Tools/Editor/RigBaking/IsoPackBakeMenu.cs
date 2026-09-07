@@ -305,6 +305,30 @@ namespace HiddenHarbours.Tools.RigBaking
             }
         }
 
+        /// <summary>
+        /// Headless entry point for the WHARF family alone — same contract as
+        /// <see cref="BakeIsoRigPackFromCommandLine"/>, one family of 19 keys.
+        ///
+        /// <para>The whole-pack entry bakes 228 sheets across four families; a wharf change needs 19,
+        /// and paying for the other three is what makes people bake by hand and forget the slice.</para>
+        ///
+        /// <para>⚠️ Never invoke this with <c>-quit</c> alongside <c>-runTests</c> — the two race and
+        /// exit 0 with total=0, which reads as a pass (ADR 0021).</para>
+        /// </summary>
+        public static void BakeWharfIsoFromCommandLine()
+        {
+            try
+            {
+                BakeWharfIsoKit();
+                EditorApplication.Exit(0);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[rig-baker] headless wharf-iso bake failed: {ex}");
+                EditorApplication.Exit(1);
+            }
+        }
+
         /// <summary>Headless entry point for the shipyard kit — same contract as
         /// <see cref="BakeIsoRigPackFromCommandLine"/>, one family.</summary>
         public static void BakeShipyardIsoFromCommandLine()

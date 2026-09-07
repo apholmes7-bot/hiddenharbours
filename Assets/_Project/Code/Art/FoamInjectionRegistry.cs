@@ -342,8 +342,10 @@ namespace HiddenHarbours.Art
         ///
         /// <para><b>TWO channels, matching the real buffer.</b> The water shader reads <c>.rg</c> —
         /// coverage and freshness — and the zero window bound alongside this makes it bail before it
-        /// looks. Matching the format anyway costs one byte and keeps "black means nothing here" a
-        /// property of the texture rather than of a guard somewhere else that might move.</para>
+        /// looks. Matching the CHANNELS anyway costs one byte and keeps "black means nothing here" a
+        /// property of the texture rather than of a guard somewhere else that might move. The bit depth
+        /// deliberately does not track the render target's (register row 28 widened that to 16): zero is
+        /// zero at any depth, and this is a 1x1 that is never decayed.</para>
         /// </summary>
         static void EnsureFallbackBound()
         {

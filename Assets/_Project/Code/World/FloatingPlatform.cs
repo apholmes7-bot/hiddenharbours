@@ -143,28 +143,28 @@ namespace HiddenHarbours.World
             => Mathf.Max(0f, draughtMetres) + Mathf.Max(0f, freeboardMetres);
 
         /// <summary>
-        /// ⭐ <b>THE DECK HEIGHT</b> (m above chart datum): the underside rides one draught below the
-        /// water until the bed stops it, and the deck is one hull-depth above the underside.
+        /// ⭐ <b>THE DECK HEIGHT</b> (m above chart datum): her waterline, plus her freeboard. The
+        /// waterline is <see cref="TidalRide.Waterline"/> — the underside rides one draught below the
+        /// water until the bed stops it — and it is asked for rather than spelled again here, because
+        /// the boats tied to this float ride the identical rule from a module that cannot see this one
+        /// (rule 4). One publisher, so a float and the hull alongside her can never disagree about how
+        /// far a metre of tide lifted them.
         ///
-        /// <para>Written as an explicit comparison rather than <c>Mathf.Max</c> so a
-        /// NaN bed (an unmeasured float, a torn-down terrain) degrades to "afloat" instead of poisoning
-        /// the deck height — <c>Mathf.Max(x, NaN)</c> returns NaN, and a NaN standing elevation would make
-        /// every on-foot depth read NaN with nothing to point at.</para>
+        /// <para>The NaN-safety that used to be argued here moved with the rule: an unmeasured bed
+        /// degrades to "afloat" rather than poisoning the deck height, and a NaN standing elevation
+        /// would make every on-foot depth read NaN with nothing to point at.</para>
         /// </summary>
         public static float DeckElevation(float waterLevel, float bedElevation,
                                           float draughtMetres, float freeboardMetres)
-        {
-            float underside = waterLevel - Mathf.Max(0f, draughtMetres);
-            if (bedElevation > underside) underside = bedElevation;
-            return underside + HullDepth(draughtMetres, freeboardMetres);
-        }
+            => TidalRide.Waterline(waterLevel, bedElevation, draughtMetres)
+               + Mathf.Max(0f, freeboardMetres);
 
         /// <summary>True when a float of <paramref name="draughtMetres"/> over a bed at
         /// <paramref name="bedElevation"/> is on the bottom at <paramref name="waterLevel"/> — the same
         /// <c>depth &lt; draught</c> rule <c>BoatCrossing.CanFloat</c> holds every hull to, so a float and
         /// a boat cannot disagree about what "aground" means.</summary>
         public static bool IsAground(float waterLevel, float bedElevation, float draughtMetres)
-            => waterLevel - Mathf.Max(0f, draughtMetres) < bedElevation;
+            => TidalRide.IsAground(waterLevel, bedElevation, draughtMetres);
 
         /// <summary>The live deterministic water level (m above datum), or <b>0</b> with no environment
         /// service wired — the established gate-off shape, under which a float sits at its own freeboard
