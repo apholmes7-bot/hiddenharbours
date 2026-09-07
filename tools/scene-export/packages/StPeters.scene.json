@@ -1,7 +1,7 @@
 {
   "schema": "hiddenharbours.scene/1",
   "generatedBy": "tools/scene-export/hh_scene_export.py",
-  "generatedAt": "2026-09-07T12:33:16Z",
+  "generatedAt": "2026-09-07T13:42:22Z",
   "region": {
     "id": "region.st_peters",
     "sceneName": "StPeters",
@@ -88051,17 +88051,17 @@
   "x-rigVersionsShaRule": "sha256 of the rig's bytes with CR stripped (tr -d '\r' | sha256sum) — the repo's own convention, the same one docs/art/rigs sidecars publish. A SIBLING of the table rather than a key inside it: the table's keys are family names and nothing else, so iterating it cannot pick up a note.",
   "x-cliffLinesNote": "Empty: cliff lines are an authoring artefact of the editor. The repo's cliffs are placed CliffWallSurface components and ship as entities.",
   "x-provenance": {
-    "generatedAt": "2026-09-07T12:33:16Z",
+    "generatedAt": "2026-09-07T13:42:22Z",
     "historyIsComplete": true,
     "sceneFile": "Assets/_Project/Scenes/StPeters.unity",
-    "sceneFileSha256": "0f21dce33c80454cfe4ffbd163b9c115e93af868b44de0276183439a7cd4e7bb",
-    "sceneLastBuiltCommit": "0c7c03d8cb0a3fbcfd2103a35f6c6d07ab9e04b8",
+    "sceneFileSha256": "59785d32460d7eb9f5c4d3c9a39d9141178c59cfdfdd34e41afd083069f5d0eb",
+    "sceneLastBuiltCommit": "ad852bd2583e03886bffc3c33d5f0238d1c33dc7",
     "sceneLastBuiltDate": "2026-09-07",
-    "sceneLastBuiltSubject": "feat(world): the island gets an east door — the wall the game will open through, sited on the fairway the harbour already sails (#764)",
+    "sceneLastBuiltSubject": "feat(vehicles): the player rides one, and three machines stand outside the shop (owner ruling 2026-09-07, ATV pack PR 2a) (#774)",
     "sceneWorkingTreeDirty": false,
     "builderDrift": {
       "builderCommitsSinceScene": 0,
-      "measuredTo": "0c7c03d8cb0a3fbcfd2103a35f6c6d07ab9e04b8",
+      "measuredTo": "ad852bd2583e03886bffc3c33d5f0238d1c33dc7",
       "measuredToDate": null,
       "exact": true,
       "builderCommits": []
