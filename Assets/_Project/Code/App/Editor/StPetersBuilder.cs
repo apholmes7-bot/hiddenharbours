@@ -1660,6 +1660,21 @@ namespace HiddenHarbours.App.Editor
                                    new Vector2(StartSpawnPos.x, StartSpawnPos.y - 1.35f),
                                    "container.st_peters.bucket");
 
+            // THE CLAM HOD, a pace east of the pail. The wire roller basket the flat wants: it is
+            // its own hold like the pail, so a clam in hand goes in with the same press, and unlike
+            // the pail it is baked HOLLOW — back, then the band’s heap of clams, then front — so a
+            // full one shows shells through the galvanised mesh instead of wearing a lid of them.
+            // Everything about it is ClamHodBuilder’s; only the spot is ours.
+            //
+            // ⚠️ The hod is ALSO placed in the committed scene by hand, because this builder’s only
+            // entry point is the FULL rebuild that wipes the hand-authored layer (RegionBuildGuard
+            // — and St Peters has no "Refresh Logic" command, unlike the Cove). The call lives here
+            // so the two agree the day someone does rebuild the region; it is not what put the hod
+            // in StPeters.unity today.
+            ClamHodBuilder.Place(toolsRoot.transform,
+                                 new Vector2(StartSpawnPos.x + 1.30f, StartSpawnPos.y - 1.35f),
+                                 "container.st_peters.hod");
+
             // --- THE TRAP-HAUL LOOP (gameplay-systems, Build 4 — the playable manual loop) ---------------
             // Set → soak → lay alongside → HAUL WITH THE SWELL → collect → sell. The trap runtime
             // (PlacedTrapService) owns determinism + save; the DevTrapInput drops a baited pot through the

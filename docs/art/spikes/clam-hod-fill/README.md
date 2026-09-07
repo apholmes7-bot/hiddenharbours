@@ -84,7 +84,7 @@ still carries eight rows so the runtime indexes it like every other container.
 
 ---
 
-## The plates
+## The plates — before the bake
 
 Rendered by the harness, from the same code the bake runs, before the bake ran. They are **not** game
 screenshots — the editor plates the charter asks for (in hand, on the ground, daylight, at St Peters)
@@ -117,19 +117,70 @@ container are one baked picture; the hod's are not, and galvanised wire does not
 
 ---
 
-## Still owed (needs an editor slot)
+## The editor step — what it produced
 
-1. **Bake** — `Hidden Harbours ▸ Art ▸ Bake Catch Pass 2 Storage`, or the batch entry point. Writes the
-   four new sheets, rewrites the two shipped ones and `ClamHodAnchors.json`.
-   ⚠️ If `Hod2_back.png` / `Hod2_front.png` come back modified, decode both and confirm the PIXELS are
-   identical (the harness says they are); restore the committed bytes rather than shipping encoder
-   churn on two sheets nothing asked to change.
-2. **Slice** — `Hidden Harbours ▸ Art ▸ Import (after a new drop) ▸ Slice Catch Storage Sheets`. No
-   slicer edit was needed: `Hod2_` already covers the new stems at the same cell and pivot.
-3. **Guards** — `CatchStorageSheetSliceTests` (93 stems now, was 89), `CatchPass2KitTests` (four new
-   measured tests), `HodFillTests` (the presenter, driven through `ClamDig`).
-4. **Scene** — a hod beside the clam dig at St Peters, wired to the player's `ClamBucket`, and the four
-   editor plates.
+Run 2026-09-06 in a batch editor on this worktree, one process at a time.
 
-Compile state without an editor: all eight touched assemblies compile clean against Unity's own
-asmdef-generated reference set (two-stage csc, fresh DLL substituted forward; negative control fires).
+**The bake.** `[rig-baker] clam hod: 6 sheet(s), 48 cells` — the two wire layers and the four bands,
+all 40×320, plus the anchors JSON. The bands were not passed in: `HeapBands` read `ClamHod.FILLS` and
+kept the four with a non-zero `CatchKit2.FRAC`.
+
+**⭐ The two shipped layers did not move a byte.** `BakeClamHod` rewrites `Hod2_back.png` and
+`Hod2_front.png` on every run, and a re-bake is not byte-deterministic in general — so the lane was
+ready to decode both, confirm the pixels and restore the committed bytes. It had nothing to do: git
+does not see either file as modified. The harness control held all the way through Unity's own
+encoder.
+
+**⭐ The sheets on disk ARE what the harness measured.** All four heap sheets are byte-identical to
+the harness's own render of the same bands, so every number above describes the art that shipped.
+
+**The slice.** `[CatchStorageSheetSlicer] (batch) Sliced 93 storage sheet(s) (0 failed)` — arrived at
+from the other end, exactly the count the guarded set was updated to (89 + 4). Eight sprites per sheet,
+pivot (0.5, 0.25) = the hod's ground centre, bottom-origin. No slicer edit was needed.
+
+**The guards**, read from the XML rather than the exit code:
+
+| suite | result |
+|---|---|
+| `CatchPass2KitTests` | 18/18 — including the four new measured ones and the sha256 pin that proves `docs/art/rigs/**` was not touched |
+| `CatchStorageSheetSliceTests` | 375/375 — 93 stems × 4 per-sheet assertions + 3 |
+| `HodFillTests` | 6/6 |
+| `BucketFillTests` | 9/9 — the pail still reads its bands with `Bands` aliased to the shared array |
+
+---
+
+## In the game
+
+`hod-bands-in-play.png` and `hod-bands-in-play-closeup.png` are captures of the running game at St
+Peters, 13:00, one per band — `Camera.main` rendered at the camera's own aspect (the day/night overlay
+fits itself to that and would otherwise sit inset as a bright rectangle), linear→gamma, at the game's
+own framing. The hod stands a pace east of the pail in the starting tools group.
+
+The bands were set by putting real `CatchItem` clams in the hod's own hold and letting the shipped
+chain do the rest — `IHold.TryAdd` → `HoldCatchFillSource.Refresh` → the presenter — at 0 / 1 / 11 /
+17 / 20 of its 20, which `CatchFillMath.BandFor` reads as empty / few / half / full / brim. The dig
+itself is not in the picture because it is not what the picture is for: `HodFillTests` drives
+`ClamDig.TryDig` through the same chain and asserts the band.
+
+**The ladder reads at play scale**, which was the open question: three of the four bands are the same
+plate lowered by a pixel or two, and on grass, through the wire, they are still four different amounts
+of clam.
+
+---
+
+## What is still owed
+
+1. **The hod in hand.** The charter asks for a plate of the hod carried as well as on the ground. It is
+   a `CarriableBucket` and the carry verb is shipped, so this is a driving job, not a building one —
+   but it was not done and should not be claimed.
+2. **An owner call on where the hod belongs.** It is in the starting tools group, beside the pail, the
+   rod and the shovel. The rig calls it “the wire roller basket a clam digger drags along the flat”,
+   which argues for the bar rather than the lawn — and possibly for it following her. Placement is one
+   line in `StPetersBuilder`.
+3. **`StPeters.unity` is ~590 hunks behind the code.** Not this lane's doing and not fixed here: the
+   committed scene still carries `SpriteShadow`'s six pre-profile fields on 438 components and four
+   dead `ClamHoleVisual` fields on 66 holes, all of which the current code has replaced. The first
+   editor to open and save that scene normalises every one of them. This lane's scene diff is +490/−0
+   — sixteen new YAML documents and nothing else — because the churn hunks were separated out and
+   dropped, and the hod was then re-verified as loading intact from the patched file. Whoever
+   legitimately rebuilds St Peters next will carry that catch-up, and it should be its own commit.
