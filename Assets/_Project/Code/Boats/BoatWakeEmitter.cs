@@ -1284,7 +1284,7 @@ namespace HiddenHarbours.Boats
 
                 // The stern cluster forms just ABAFT the transom — in the water the hull has already left,
                 // not on the transom itself. The stem cluster forms right at the cutwater.
-                Vector2 sternPoint = WakeGrading.SternAnchor(pos, bow, hull, sternScatter * 0.5f,
+                Vector2 sternPoint = WakeGrading.SternAnchorFromRoot(pos, bow, SternOffsetMeters(), sternScatter * 0.5f,
                                                              bakeElevationDegrees);
                 Vector2 stemPoint = BowSprayGrading.BowAnchor(pos, bow, hull, 0f, bakeElevationDegrees);
 
@@ -1338,7 +1338,7 @@ namespace HiddenHarbours.Boats
             {
                 // The trail is laid at the drawn transom: the same projected stern anchor the plume pins to
                 // (hull half-length + nudge, foreshortened per artwork) — never the boat's centre.
-                Vector2 stern = WakeGrading.SternAnchor(pos, bow, hullLength, trail.DepositAsternOffset,
+                Vector2 stern = WakeGrading.SternAnchorFromRoot(pos, bow, SternOffsetMeters(), trail.DepositAsternOffset,
                                                         bakeElevationDegrees);
 
                 if (!_hasPrevStern)
@@ -1393,7 +1393,9 @@ namespace HiddenHarbours.Boats
 
                 Vector2 trackDir = WakeTrailMath.TrackDir(Vector2.zero, track, bow);
                 float spread = WakeTrailMath.ShoulderSpreadSpeed(speed, in trail);
-                float halfWidth = WakeTrailMath.ShoulderHalfWidth(hullLength, magnitude, in trail);
+                // Row 29: ONE width, from the hull's own beam through the presenter seam.
+                float wakeHalf = WakeHalfWidthMeters(hullLength, trail.ShoulderHalfWidthFraction);
+                float halfWidth = WakeTrailMath.ShoulderHalfWidthFrom(wakeHalf, magnitude, in trail);
                 float lifeScale = WakeTrailMath.Graded(trail.LifetimeScaleAtMagnitude0,
                                                        trail.LifetimeScaleAtMagnitude1, magnitude);
                 float sizeScale = WakeTrailMath.Graded(trail.SizeScaleAtMagnitude0,
@@ -1406,7 +1408,7 @@ namespace HiddenHarbours.Boats
                                                                    Mathf.Max(0.2f, fcfg.SpeedThreshold)));
 
                 int churnPuffs = WakeTrailMath.ChurnPuffCount(in trail);
-                float churnHalf = WakeTrailMath.ChurnHalfWidth(hullLength, in trail);
+                float churnHalf = WakeTrailMath.ChurnHalfWidthFrom(wakeHalf, in trail);
 
                 // The WAKE WAVE's birth amplitude, in METRES of displaced water — baked into each crest at
                 // emit for the same reason the birth strength is: a wave laid at speed must keep the height
@@ -1623,6 +1625,42 @@ namespace HiddenHarbours.Boats
             /// is missing so a boat skinned AFTER its rig was built still finds it; once found it is cached,
             /// and a hull swap re-Configures the same component in place rather than replacing it.</para>
             /// </summary>
+            /// <summary>
+            /// 🔴 <b>ROW 29 — the ONE root distance, resolved through the same presenter the elevation
+            /// comes from.</b> A mesh hull answers with her rig-lofted
+            /// <c>HullMeshDef.WakeSternOffsetMeters</c>, which is the number the advected foam buffer has
+            /// used since PR 11a; a hull with no rig answers 0 and
+            /// <see cref="HiddenHarbours.Core.WakeRootMath.SternOffsetMeters"/> falls back to half her
+            /// length — the rule the sprite wake has always used, so she is unchanged.
+            /// </summary>
+            private float SternOffsetMeters()
+            {
+                float rigged = 0f;
+                if (Boat != null)
+                {
+                    var host = Boat.GetComponent<BoatHullPresenterHost>();
+                    if (host != null && host.Presenter != null) rigged = host.Presenter.WakeSternOffsetMeters;
+                    else if (_hullFallback != null) rigged = _hullFallback.WakeSternOffsetMeters;
+                }
+                float length = Boat != null && Boat.Hull != null ? Boat.Hull.LengthMeters : 0f;
+                return HiddenHarbours.Core.WakeRootMath.SternOffsetMeters(rigged, length);
+            }
+
+            /// <summary>Row 29 — the ONE width, from the same seam. A hull with no rig reports 0 and the
+            /// legacy length fraction answers for her.</summary>
+            private float WakeHalfWidthMeters(float hullLengthMeters, float lengthFraction)
+            {
+                float halfBeam = 0f;
+                if (Boat != null)
+                {
+                    var host = Boat.GetComponent<BoatHullPresenterHost>();
+                    if (host != null && host.Presenter != null) halfBeam = host.Presenter.WatertightHalfBeamMeters;
+                    else if (_hullFallback != null) halfBeam = _hullFallback.WatertightHalfBeamMeters;
+                }
+                return HiddenHarbours.Core.WakeRootMath.WakeHalfWidthMeters(halfBeam, hullLengthMeters,
+                                                                            lengthFraction);
+            }
+
             private float BakeElevationDegrees()
             {
                 if (Boat == null) return PlanViewElevationDegrees;
@@ -1687,7 +1725,8 @@ namespace HiddenHarbours.Boats
 
                 _plume.sprite = sprite;
 
-                Vector2 apex = WakeGrading.SternAnchor(pos, bow, hullLength, grade.PlumeAsternOffset, bakeElevationDegrees);
+                Vector2 apex = WakeGrading.SternAnchorFromRoot(pos, bow, SternOffsetMeters(),
+                                                               grade.PlumeAsternOffset, bakeElevationDegrees);
                 // The churn pulse: the transom wash BOILS (bounded, deterministic) instead of sitting glued.
                 float scalePulse = WakeTrailMath.ChurnPulse(time, _pulseSeed, trail.PlumePulseHz,
                                                             trail.PlumePulseScaleAmount);
