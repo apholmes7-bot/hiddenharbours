@@ -184,6 +184,28 @@ namespace HiddenHarbours.World
             ApplyKitArt();
         }
 
+        /// <summary>
+        /// Hand out the kit sprites this presenter was dressed with, so a second bubble surface can wear
+        /// the same ones. Returns false — and hands back nulls — while the kit is not imported, which is
+        /// the greybox state and not an error.
+        ///
+        /// <para><b>Why READ rather than a second <see cref="WireKitArt"/> call from the builder.</b> Two
+        /// dressing points is two things to forget, and the day they disagree the player sees two
+        /// different bubbles on one screen. The region builder dresses THIS presenter, and
+        /// <see cref="AmbientSpeechPresenter"/> takes what it finds here — so the bubble is dressed in
+        /// exactly one place and an undressed project stays uniformly grey.</para>
+        ///
+        /// <para>The tail array is handed out only when the WHOLE six-piece set is present: a partial set
+        /// would pick a sprite by index and get a null, and half a tail set is not a kit.</para>
+        /// </summary>
+        public bool TryReadKitArt(out Sprite panel, out Sprite gold, out Sprite[] tails)
+        {
+            panel = _bubbleSprite;
+            gold = _goldSprite;
+            tails = HasTailSet ? _tailSprites : null;
+            return panel != null;
+        }
+
         [Header("Bubble art (optional — falls back to tinted rects)")]
         [Tooltip("The 9-sliced bubble body. When the art lane's bubble kit lands this is its sprite and " +
                  "the import PR wires it; until then the bubble draws as a tinted rect and everything " +
@@ -274,6 +296,18 @@ namespace HiddenHarbours.World
 
         /// <summary>True while a conversation is on screen (lines or options).</summary>
         public bool IsShowing { get; private set; }
+
+        /// <summary>
+        /// Who this conversation is hanging off, or null when there is none (a legacy string
+        /// conversation, or nothing showing).
+        ///
+        /// <para>Read by <see cref="AmbientSpeechPresenter"/> for one rule and no other: an unprompted
+        /// bubble over a speaker the player has now pressed Talk on is cancelled, so one person never
+        /// has two bubbles and <b>the modal wins</b>. Exposed rather than signalled because both live in
+        /// World, and a signal for a question asked once a frame about the object next door would be
+        /// ceremony.</para>
+        /// </summary>
+        public Transform SpeakerAnchor => _anchor;
 
         /// <summary>True while the current line is still populating — an Interact press here fills it
         /// instantly rather than skipping it, which is the standard bargain and the one the option

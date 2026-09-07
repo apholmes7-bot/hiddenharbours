@@ -34,6 +34,19 @@ namespace HiddenHarbours.World
         /// breath that makes filled text read as spoken rather than typed.</summary>
         public const float DefaultPunctuationPauseSeconds = 0.16f;
 
+        /// <summary>
+        /// The default time a FILLED line stands before an unprompted bubble closes itself, in seconds.
+        ///
+        /// <para>It exists because an ambient bubble has no press to wait for: the owner's 2026-09-06
+        /// law is that overheard speech and the inner voice take nothing from the player, so the line has
+        /// to end on its own (<see cref="AmbientDwell"/>). 1.4 s is a starting point at the fill rate
+        /// above — long enough that a short line does not blink out the instant its last character
+        /// lands, short enough that a bubble does not follow a walking villager across the harbour. ⚑ The
+        /// owner's dial, per voice, in the asset: a slow speaker can be given a longer beat without
+        /// touching a line of code.</para>
+        /// </summary>
+        public const float DefaultReadPauseSeconds = 1.4f;
+
         [Tooltip("How fast the bubble fills, in characters per second. THE per-character taste dial: a " +
                  "brisk skipper fills faster than Aunt Ginny. Clamped above zero — a voice that fills at " +
                  "0 would never finish a line.")]
@@ -48,6 +61,14 @@ namespace HiddenHarbours.World
                  "instead of running flat to the end.")]
         [Min(0f)] public float PunctuationPauseSeconds;
 
+        [Tooltip("How long a FILLED line stands before an UNPROMPTED bubble closes itself, in seconds. " +
+                 "Only ambient speech reads it — an NPC talking to another NPC, or the player's own " +
+                 "inner voice — because those have no Interact press to end them. A modal conversation " +
+                 "is unaffected: it still waits for the player.\n\n" +
+                 "Zero means 'unauthored' and reads as the shipped default; a bubble that vanished the " +
+                 "instant its last character landed was never read.")]
+        [Min(0f)] public float ReadPauseSeconds;
+
         [Tooltip("What this voice SOUNDS like, as a stable id the audio lane resolves (e.g. " +
                  "\"timbre.warm_low\"). Nothing in the World module reads it — it rides the Core tick " +
                  "signal so audio can pick a sample without either module naming the other (rule 4).")]
@@ -60,6 +81,7 @@ namespace HiddenHarbours.World
             CharactersPerSecond = DefaultCharactersPerSecond,
             CharactersPerTick = DefaultCharactersPerTick,
             PunctuationPauseSeconds = DefaultPunctuationPauseSeconds,
+            ReadPauseSeconds = DefaultReadPauseSeconds,
             TimbreId = null,
         };
 
@@ -68,51 +90,20 @@ namespace HiddenHarbours.World
         /// turned back into something that can actually finish a line. A def deserialized from an older
         /// asset (every field zero) therefore fills at the default cadence rather than hanging forever on
         /// the first character, which is the failure mode worth designing out.
+        ///
+        /// <para><b>The read pause is laundered the same way, and deliberately not like the punctuation
+        /// pause.</b> Zero punctuation pause is a legitimate authoring choice (a flat, hurried voice);
+        /// zero read pause is not — it is what every voice asset written before the field existed
+        /// deserializes to, and it would close an ambient bubble in the same frame its last character
+        /// landed. So zero here means "unauthored", exactly as it does for the fill rate.</para>
         /// </summary>
         public DialogueVoice Sanitised() => new DialogueVoice
         {
             CharactersPerSecond = CharactersPerSecond > 0f ? CharactersPerSecond : DefaultCharactersPerSecond,
             CharactersPerTick = CharactersPerTick > 0 ? CharactersPerTick : DefaultCharactersPerTick,
             PunctuationPauseSeconds = Mathf.Max(0f, PunctuationPauseSeconds),
+            ReadPauseSeconds = ReadPauseSeconds > 0f ? ReadPauseSeconds : DefaultReadPauseSeconds,
             TimbreId = TimbreId,
         };
-    }
-
-    /// <summary>
-    /// <b>One character's speaking cadence, as DATA</b> (ADR 0003 / CLAUDE.md rule 2): one asset per file
-    /// under <c>Data/NPCs/Voices</c>, keyed by a stable, append-only <see cref="Id"/>
-    /// (<c>voice.snake_case</c>, e.g. <c>voice.aunt_ginny</c>), and pointed at from
-    /// <see cref="NpcDef.Voice"/>.
-    ///
-    /// <para><b>Why an asset of its own rather than four fields on <see cref="NpcDef"/>.</b> NpcDef's own
-    /// charter is to stay the minimal identity shape (name + dialogue + flag + body), and a cadence is
-    /// SHARED: half the harbour can speak in the same unhurried island voice and be re-tuned in one edit.
-    /// It is also the shape the owner's taste pass wants — sit with one asset, drag one slider, hear the
-    /// difference — rather than hunting the same number across a dozen character files.</para>
-    ///
-    /// <para>Leave <see cref="NpcDef.Voice"/> empty and nothing breaks: that speaker fills at
-    /// <see cref="DialogueVoice.Default"/>. An unauthored voice is a default cadence, never a silent or
-    /// stalled bubble.</para>
-    /// </summary>
-    [CreateAssetMenu(menuName = "Hidden Harbours/Dialogue Voice", fileName = "Voice")]
-    public class DialogueVoiceDef : ScriptableObject
-    {
-        [Header("Identity")]
-        [Tooltip("Stable id, append-only (voice.snake_case, e.g. voice.aunt_ginny). Content-validated for " +
-                 "uniqueness.")]
-        public string Id = "voice.example";
-
-        [Header("Cadence (rule 6 — the owner's dial, not a constant in code)")]
-        [Tooltip("How this person's bubble fills and clicks. Defaults mirror DialogueVoice.Default.")]
-        public DialogueVoice Voice = DialogueVoice.Default;
-
-        /// <summary>This asset's cadence, laundered (see <see cref="DialogueVoice.Sanitised"/>). Null-safe
-        /// at the call site via <see cref="VoiceOf"/>.</summary>
-        public DialogueVoice Resolved => Voice.Sanitised();
-
-        /// <summary>The cadence of a voice asset that may not exist — the default when it does not. The
-        /// one lookup every caller should use, so "no voice authored" can never mean "no fill".</summary>
-        public static DialogueVoice VoiceOf(DialogueVoiceDef def)
-            => def != null ? def.Resolved : DialogueVoice.Default;
     }
 }

@@ -379,5 +379,26 @@ namespace HiddenHarbours.Core
         /// ⚑ This is the one dial if the bubble reads too small or too large.</para>
         /// </summary>
         public const int ArtScale = 3;
+
+        /// <summary>
+        /// How many UNPROMPTED bubbles may be on screen at once (owner ruling 2026-09-06: villagers talk
+        /// to each other where you can see it, and the player's inner voice rides the same bubble).
+        ///
+        /// <para><b>Two is the floor</b>, because the smallest thing this has to express is a pair
+        /// talking — a cap of one would make the second speaker silently evict the first mid-word and the
+        /// exchange would never read as an exchange. Three is the shipped value: the pair, plus room for
+        /// the player's own thought to arrive while she walks past them without knocking one of them off
+        /// the screen.</para>
+        ///
+        /// <para><b>Why there is a cap at all, and why it is small.</b> Each bubble is a panel roughly a
+        /// third of the frame wide (see <see cref="ArtScale"/>); four of them is not a living coast, it
+        /// is a wall of text over one. The cap is also the pool size — bubbles are built once and reused,
+        /// never allocated per line (rule 7).</para>
+        ///
+        /// <para>⚑ An engine-side dial, like <see cref="ArtScale"/> above it: it is not in the rig's
+        /// contract, because the rig draws one bubble and has no opinion about how many of them the
+        /// harbour puts up at once.</para>
+        /// </summary>
+        public const int AmbientBubbleCap = 3;
     }
 }
