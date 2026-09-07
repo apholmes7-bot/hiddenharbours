@@ -4961,3 +4961,100 @@ with its own costs (it shrinks the boat, and the framing is per hull today).
 (ADR 0018's one-sea rule), so a longer swell moves the seakeeping with it — and register row 6's
 ride≠drawn question closes at the same time. That is a Tier B change and wants its own charter.
 
+## 39. "Make it realistic" — and the reference that makes it realistic is FETCH, not Pierson–Moskowitz
+
+**Owner, 2026-09-06, ruling on row 30 after seeing that halving λ is only 0.71× the speed:**
+*"make it realistic."*
+
+The obvious reading is Pierson–Moskowitz, the fully-developed law. **Measured, PM is the wrong reference
+for this setting**, and the charter's own question — *does fetch limit it at the shipped fetches?* — is
+what turns the answer around.
+
+### 39.1 A fully-developed sea needs an ocean this island does not have
+
+PM describes a sea the wind has finished building. That takes `gX/U² ≈ 17 400` of fetch:
+
+| wind | needs |
+|---|---|
+| 1.6 m/s (light) | 5 km |
+| 5.7 m/s (blow) | **58 km** |
+| 12.9 m/s (gale) | **298 km** |
+
+An inshore island has neither at the top end. Shipping bare PM would put a **139.7 m** wave on the cape's
+52 m frame at a gale — **0.37 of a wavelength on screen**, crossing it in **3.5 s against today's 8.2 s**.
+That is *faster*, which is the owner's original complaint, on a sea with no visible waves in it, at a
+third of a real sea's steepness. Realism applied with the wrong reference produces something less real.
+
+### 39.2 The law that shipped: JONSWAP growth, capped at PM
+
+`WaveMath.PeakWavelengthMeters` derives the peak from `WaveFieldSettings.SeaFetchKilometres`:
+
+1. **JONSWAP fetch-limited growth** — `f_p·U/g = 3.5·(gX/U²)^−0.33`, then `λ = g/(2π f_p²)`.
+2. **Capped at Pierson–Moskowitz** — JONSWAP's growth has no ceiling of its own and would lengthen
+   forever with fetch. **PM is the infinite-fetch limit of this function, not a rival to it**, and the
+   guard proves the convergence.
+
+`SeaFetchKilometres = 0` is the legacy linear law **bit for bit** — which is what `Default` ships, so all
+129 `TrainsFrom` call sites are unmoved, and what a pre-ruling asset (whose missing key deserializes to
+zero) keeps drawing. `GameConfig.asset` ships **25 km**: an inshore strait.
+
+### 39.3 🔴 The finding: the legacy line was already a fetch-limited sea
+
+| sea | U m/s | legacy λ | derived @ 25 km | ratio | legacy T | derived T |
+|---|---|---|---|---|---|---|
+| light | 1.63 | 8.4 m | **2.2 m** | **0.26×** | 2.32 s | 1.19 s |
+| blow | 5.70 | 14.6 m | 15.6 m | **1.07×** | 3.05 s | 3.16 s |
+| gale | 12.95 | 25.4 m | 27.3 m | **1.07×** | 4.04 s | 4.18 s |
+
+**`λ = 6 + 1.5·U` is, across the working band, a very good straight-line fit to a fetch-limited sea at
+about 25 km.** Whoever tuned it tuned it to something real. The derived law changes blow and gale by 7 %
+and corrects the light-airs end, where the line was **nearly four times too long** — at 1.6 m/s the sea is
+fully developed after 5 km, so a light breeze should make 2 m ripples, not 8 m swell.
+
+### 39.4 What this does and does not answer
+
+- **It does not make the sea slower across the screen.** At a blow the crossing goes 10.9 → 10.5 s; at a
+  gale 8.2 → 8.0 s. The realism ruling and the original "too fast" complaint are still the two ends of
+  §37.4's conflict, and only the camera lever moves the screen without touching the physics.
+- **The fetch is now a setting about the PLACE**, not a look dial: 25 km is a strait, 100 km a wide gulf,
+  ∞ the open ocean. If regions ever want their own exposure, this is the field that carries it.
+- ⚠️ **Amplitude is untouched and is now the visible gap.** A real sea at a gale carries `Hs ≈ 0.21U²/g`
+  = **3.6 m** against the shipped 1.5 m, so the sea's steepness is about 0.05 where a real one is 0.13.
+  Longer waves at the same height read *flatter*. That is its own row, and it is a feel change for the
+  hull as much as a look one.
+
+### 39.5 The two questions the charter asked, answered outright
+
+**"Does fetch limit it via `WaveFetch.Envelope01`?"** No — and that is why a second, separate constant
+exists. `WaveFetch` is the LOCAL shelter fetch, marched off the height map over tens of metres, and its
+own header says it in capitals: *"Fetch modulates AMPLITUDE ONLY — never wavelength, never speed."* It
+makes the water behind a headland calmer; it has never had anything to say about how long the waves are.
+`SeaFetchKilometres` is the SYNOPTIC fetch — how far the wind has crossed open water before it arrives —
+and it is the quantity that sets development. The two are unrelated and both are wanted: the synoptic one
+picks the wavelength, the local one flattens the lee.
+
+**"Re-derive or remove the 40 m cap."** Kept, and demoted to a safety rail with its reasoning stated. It
+never binds: at the shipped 25 km the derived peak reaches 27.3 m at a gale and about 33 m at the 20 m/s
+a dev override can force, both under 40. It now guards only against a mis-typed fetch producing an
+absurd sea, which is what a rail is for. Raising the fetch to ocean values WOULD push the peak past it —
+so anyone setting `SeaFetchKilometres` above ~60 km must raise the cap with it or the sea will silently
+flat-top. That is the one coupling between the two numbers, and it is stated here rather than discovered.
+
+### 39.6 The owner's dial, kept and shipped at its passthrough
+
+`DominantWavelengthScale` (1 = the derived sea) is the single number that shortens the whole sea if he
+still wants it slower after playing this. ⚠️ Speed and period go as its **square root** — 0.5 is 0.71× the
+speed, a true half-speed is 0.25 — and a shorter sea is a *less* realistic one, so it trades directly
+against the ruling above. Zero is read as 1 (a pre-2026-09-06 asset would otherwise derive a 0.010 m
+ocean; measured with the floor removed).
+
+The dial is applied AFTER the peak law, so it is **clamped a second time against the same 40 m rail** — a
+value above 1 would otherwise walk straight through the ceiling the rail exists to be, and a rail one knob
+can step over is not a rail. Below 1, which is all the dial is for, the second clamp is a no-op.
+`NoDialStepsOverTheWavelengthRail` is the guard.
+
+### 39.7 ⚠️ Still a SIM change
+
+ADR 0018's one-sea rule: the hull rides this field. A helm-feel verdict is owed — the precedent is the
+owner's own *"the cape has weight"* verdict on #739.
+
