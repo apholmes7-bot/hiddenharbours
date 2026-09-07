@@ -2466,6 +2466,23 @@ namespace HiddenHarbours.Core
                  "that stays good long enough to be worth remembering.")]
         [Min(0.05f)] public float SlotHours;
 
+        /// <summary>
+        /// The rig's own shoal loop radius in metres — <c>fishIsoRig2.js</c> authors <c>shoal</c> with
+        /// <c>radius 1.2</c>, and <c>ShoalMath.DefaultRadiusMetres</c> is the port of that same number.
+        /// Restated here as a literal because Core may not reference the Fishing module (rule 4); a
+        /// guard in the Fishing tests pins the two together so they cannot drift apart in silence.
+        /// </summary>
+        public const float ShoalMathReferenceSpreadMetres = 1.2f;
+
+        /// <summary>
+        /// The density the ONE global <see cref="BaseAppearanceChance01"/> already produced at the
+        /// shipped cell size, so a species that states no density of its own keeps exactly the sea it
+        /// had before the field existed: <c>0.55 school per cell / (0.120 km)^2 = 38.19 schools/km^2</c>.
+        /// <para>Both terms are owner-tunable, so this is the density at the SHIPPED pair and not a law;
+        /// a guard restates the division from those two primitives rather than asking the code.</para>
+        /// </summary>
+        public const float ReferenceSchoolsPerSquareKilometre = 38.194444f;
+
         // ---- the appearance gate (location · weather · date — the owner's three) --------------------
 
         [Tooltip("Base chance (0..1) a cell holds a school in a given slot, BEFORE weather and season " +
@@ -2537,6 +2554,19 @@ namespace HiddenHarbours.Core
                  "bare test rig, an unpainted region). The 'no height map means open water' posture the " +
                  "rest of the module already takes, given a depth so schools still sit somewhere sane.")]
         [Min(0.1f)] public float OpenWaterColumnMetres;
+
+        [Tooltip("FALLBACK spread (m) of a shoal's own lazy loop, for a species that states no " +
+                 "ShoalSpreadMetres of its own. The rig authors its shoal at 1.2 m and that is the " +
+                 "reference this ships at. This is a LENGTH, not a fraction of the school's radius: " +
+                 "a school is 22-55 m across because that is how far a BOAT may be and still be on it, " +
+                 "while the fish inside it hold together within a metre or two of each other.")]
+        [Min(0.05f)] public float ShoalSpreadMetres;
+
+        [Tooltip("FALLBACK density (schools per square kilometre of suitable water) for a species that " +
+                 "states no SchoolsPerSquareKilometre of its own. Ships at the density the one global " +
+                 "BaseAppearanceChance01 already produced at the shipped 120 m cell, so an unstated " +
+                 "species keeps exactly the sea it had before the field existed.")]
+        [Min(0f)] public float SchoolsPerSquareKilometre;
 
         // ---- the density (the owner: one fish = lower bite rate, several = higher) ------------------
 
@@ -2630,6 +2660,8 @@ namespace HiddenHarbours.Core
             MaxDepthFraction01 = 0.8f,
             SeaStateDepthBias01 = 0.25f,
             OpenWaterColumnMetres = 25f,
+            ShoalSpreadMetres = ShoalMathReferenceSpreadMetres,
+            SchoolsPerSquareKilometre = ReferenceSchoolsPerSquareKilometre,
 
             MinMarks = 1,
             MaxMarks = 5,

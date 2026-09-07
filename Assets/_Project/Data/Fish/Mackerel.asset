@@ -31,6 +31,8 @@ MonoBehaviour:
   BehaviorFlags: 2
   MinSchoolMarks: 8
   MaxSchoolMarks: 20
+  ShoalSpreadMetres: 3.5
+  SchoolsPerSquareKilometre: 55.0
   MinWeightKg: 0.3
   MaxWeightKg: 1.5
   BaseValue: 10
