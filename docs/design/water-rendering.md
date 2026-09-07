@@ -5232,6 +5232,39 @@ Three, and two of them fired.
 > to the rendered sweep; the TIDE taught it to the arithmetic one. The state a symptom was REPORTED at
 > is an arm, not a setting.
 
+### The fix that shipped
+
+`R16`. `SeabedBakeMath.FormatPreference` is R16 → R8 with the last rung always answering — the same
+shape as `FoamBuffer.FormatPreference`, which widened one row earlier because eight bits could not
+hold a *decay* and cannot hold a *contour*. `WaterSurface.HeightFormat()` probes once per graphics
+device (a driver query must not ride a region hop), the write is `SetPixelData<ushort>` and the CPU
+readback follows the format.
+
+| tide | slope | R8 | **R16** | exact values |
+|---|---|---|---|---|
+| spring HIGH | 0.436 | 2.1 cm | **0.7 cm** | 0.7 cm |
+| mean | 0.317 | 4.9 cm | **3.8 cm** | 3.8 cm |
+| spring LOW | 0.035 | 28.7 cm | **1.2 cm** | 1.2 cm |
+
+**R16 lands ON the exact-valued bake at every tide** — it removes the whole value quantum and claims
+nothing more. The 3.8 cm left at mean tide is the SPATIAL error of the 2.97 m pitch, which is row
+31's ground and is deliberately not touched here. Rule 7: 256² goes **64 KB → 128 KB** per sea, and
+the rejected alternative was more texels (1520 at R8 still leaves 13.5 cm, at 24× the memory).
+
+Two traps worth keeping:
+
+- **`SetPixels32` would have silently undone it.** A `Color32` write round-trips 16-bit codes through
+  eight bits and hands back exactly the quantization the format exists to remove — a green fixture on
+  a texture that never widened.
+- **The CPU readback's element type must follow the format.** Reading R16 as bytes returns half a
+  code. A readback that silently disagrees with the shader is worse than none, because every guard
+  built on it goes green on a lie.
+
+⚠ **Not covered: the PAINTED path** (ADR 0014, St Peters). It hands the shader an imported 8-bit PNG
+whose bytes the sim's own `PaintedTidalTerrain` decodes — render == sim by construction, which is the
+point of it, and which is also why the bytes are not ours to widen in this change. Same defect,
+different source; **register row 32**.
+
 ### What this does not carry
 
 The clipped edge only. Not `_ShoreNoise`'s cosmetic fringe, not the swash's edge shift, not the chop
