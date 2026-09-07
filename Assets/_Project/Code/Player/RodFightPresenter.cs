@@ -200,6 +200,18 @@ namespace HiddenHarbours.Player
         private int _fightJumpSeed;       // this fight's own seed: species + weight, never Random
         private double _jumpStart = double.NegativeInfinity;   // when the live jump began
         private Vector2 _lastFishHeading;                      // her travel, so a jump goes somewhere
+
+        /// <summary>
+        /// IS SHE OUT OF THE WATER RIGHT NOW — the jump made observable, the same way
+        /// <c>FishSchoolPresenter.VisibleSwimmers</c> makes its shoal observable. A plate fixture asserts
+        /// on this rather than on "the code ran"; a PlayMode guard asserts a bass leaves the water and a
+        /// cod never does.
+        /// </summary>
+        public bool FishAirborne { get; private set; }
+
+        /// <summary>How many jumps THIS fight has drawn. Reset when the species on the line changes, so
+        /// it counts one fight and not a session.</summary>
+        public int JumpsDrawn { get; private set; }
         private bool _jumpSplashed = true;                     // has this jump's re-entry splash played
         private Vector2 _lastFarEnd;      // where the line last ended (splash anchor for results)
         private Vector2 _lastFishPos;
@@ -358,6 +370,8 @@ namespace HiddenHarbours.Player
                 _fightJumpSeed = FightSeed(next.FishId, next.WeightKg);
                 _jumpStart = double.NegativeInfinity;
                 _jumpSplashed = true;
+                JumpsDrawn = 0;
+                FishAirborne = false;
             }
             // NaN != NaN, so the first publish after a bite always resolves — which is what we want,
             // since 'no weight yet' and 'a weight of zero' are different states.
@@ -820,12 +834,15 @@ namespace HiddenHarbours.Player
             lift = 0f;
             travel01 = 0f;
 
-            if (!_fishJumps || _fightJumpPeriod <= 0f) return false;
+            if (!_fishJumps || _fightJumpPeriod <= 0f) { FishAirborne = false; return false; }
 
             double now = TimeNow();
             if (!FishJumpArc.TryNextJump(_fightJumpSeed, _surfaceClock, _fightJumpPeriod,
                                          out double start))
+            {
+                FishAirborne = false;
                 return false;
+            }
 
             if (start > _jumpStart)                       // a new period's jump has come due
             {
@@ -835,10 +852,14 @@ namespace HiddenHarbours.Player
 
             if (FishJumpArc.InAir(_jumpStart, now))
             {
+                // Counted on the EDGE, so one jump is one count however many frames it spans.
+                if (!FishAirborne) JumpsDrawn++;
+                FishAirborne = true;
                 lift = FishJumpArc.Arc01(_jumpStart, now) * FishJumpArc.TravelMetres;
                 travel01 = FishJumpArc.Travel01(_jumpStart, now);
                 return true;
             }
+            FishAirborne = false;
 
             // She has come down: one splash where she went back in, then nothing until the next period.
             if (!_jumpSplashed && now >= _jumpStart)
