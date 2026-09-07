@@ -261,6 +261,19 @@ namespace HiddenHarbours.Vehicles
                 _holdsTrailer = pose.TrailerCoupled && body.TryHold(this);
             if (!pose.TrailerCoupled) body.Release(this);
 
+            // ⚠️ A claim we did not get is a claim somebody else has, and posing her anyway would be the
+            // two-writers-one-transform bug with an extra step. Only two trips authored onto one trailer
+            // can reach this, which is a content error — so it is named rather than silently arbitrated.
+            if (pose.TrailerCoupled && !_holdsTrailer)
+            {
+                if (_trailerReported) return;
+                _trailerReported = true;
+                LastRefusalReason = "another scheduled run is already posing her";
+                Debug.LogWarning($"[ScheduledTrip] {name}: {LastRefusalReason} — two timetables cannot " +
+                                 "haul one trailer. This run goes bobtail.", this);
+                return;
+            }
+
             Vector3 p = body.transform.position;
             body.transform.position = new Vector3(pose.TrailerPosition.x, pose.TrailerPosition.y, p.z);
             if (pose.TrailerDirection != Vector2.zero)
