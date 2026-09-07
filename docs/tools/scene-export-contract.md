@@ -894,3 +894,56 @@ counted by walking the scene rather than by asking the exporter — a guard that
 how many it exported would agree with itself. A second test asserts the two retired sentences appear
 nowhere in either package, **and** that no cliff has meanwhile become an entity, so the corrected
 note stays true rather than merely different.
+
+## 12. Placed world content the sprite walk cannot see (2026-09-07)
+
+**Four times in three days the entity list — a walk of `SpriteRenderer`s — silently dropped
+something a region genuinely has**, and each was found by accident:
+
+| what | how many | where it went |
+|---|---|---|
+| the moored fleet and the harbour float | 31 | `x-tidalHulls` (§9.4) |
+| the doors between regions | 6 + 2 anchors | `x-passages` / `x-arrivals` (§10) |
+| the cliffs — **claimed present** | 165 | `cliffLines` (§11) |
+| #774's three parked machines | 3 | *nothing, until this* |
+
+That is a pattern, not a coincidence. `x-declaredObjects` is the general answer, so the fifth such
+thing is not invisible by default.
+
+### 12.1 The rule, in one sentence
+
+**An object earns a place when it is PLACED WORLD CONTENT — when its position means something in
+the harbour** — and carries no `SpriteRenderer`, or it is an entity already.
+
+**In:** cleats (quay and float), property boundaries, fuel pumps, parked vehicles, standable
+platforms, the gangway, ladders, the shipwright, the starting gear, a window's preconfigured light,
+a chimney's smoke, the placed-trap service. **Out:** cameras, `GameRoot`, the dev toys, routine
+lanes and stations, persistent proxies, scene loaders, terrain drivers, the arrival director —
+things whose transform is an implementation detail and which would be noise a reader must filter.
+
+Each entry carries its name, its region-relative position, the component names, and **every
+committed `.asset` its behaviours point at with that def's declared `Id`** — which def a thing
+references is most of what it *is*: `vehicle.dually_3500` says more about a parked machine than its
+position does. The references are read generically off the serialized fields, so a new behaviour's
+defs arrive without anyone teaching the exporter about it, and an asset with no `Id` reports its
+path alone rather than a name guessed off the filename.
+
+### 12.2 ⚠ The rule is an ALLOW-LIST, and everything else is REPORTED
+
+A deny-list silently admits each new behaviour; an allow-list silently excludes them. Both fail the
+same way, facing opposite directions. So the notes name **every** component set that reached neither
+list, split three ways, and the distinction is the one `resolutionExcluded` and `unresolvedSheets`
+already draw elsewhere: reporting a decision as a defect is its own kind of wrong.
+
+* **`ruledOut`** — a DECISION. The transform is an implementation detail.
+* **`exportedElsewhere`** — carried by a key of its own, with fields this generic shape has no room
+  for: a draught and a bed, a trigger band and a target, a brow polyline. **They keep their keys.**
+  Folding them in would flatten exactly what makes each useful.
+* **`notYetRuledOn`** — on neither list, so **nobody has decided**. This is a **failing test**, not
+  a note. Four repeats bought that guard: it turns "invisible by default" into a build that asks a
+  question, and the cost — adding a placed behaviour means adding a line to `declared.py` — is the
+  cost worth paying. The failure message says which list to add to and why.
+* **`unnameableScripts`** — every behaviour on the object is a script outside `Assets/` (Unity's own
+  camera data, chiefly), so it cannot be classified at all. Counted, never guessed at.
+
+Today: **42** objects at Nine Mile Creek and **19** at St Peters, `notYetRuledOn` empty in both.
