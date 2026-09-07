@@ -1,7 +1,7 @@
 {
   "schema": "hiddenharbours.scene/1",
   "generatedBy": "tools/scene-export/hh_scene_export.py",
-  "generatedAt": "2026-09-07T02:24:29Z",
+  "generatedAt": "2026-09-07T12:33:16Z",
   "region": {
     "id": "region.st_peters",
     "sceneName": "StPeters",
@@ -87964,17 +87964,17 @@
   "x-rigVersionsShaRule": "sha256 of the rig's bytes with CR stripped (tr -d '\r' | sha256sum) — the repo's own convention, the same one docs/art/rigs sidecars publish. A SIBLING of the table rather than a key inside it: the table's keys are family names and nothing else, so iterating it cannot pick up a note.",
   "x-cliffLinesNote": "Empty: cliff lines are an authoring artefact of the editor. The repo's cliffs are placed CliffWallSurface components and ship as entities.",
   "x-provenance": {
-    "generatedAt": "2026-09-07T02:24:29Z",
+    "generatedAt": "2026-09-07T12:33:16Z",
     "historyIsComplete": true,
     "sceneFile": "Assets/_Project/Scenes/StPeters.unity",
-    "sceneFileSha256": "6ee88a235822a93a6e8e165c8f268c948ddfc5130f716e1f157b43ed0e7761b8",
-    "sceneLastBuiltCommit": "00872ed6d504ebca034e66aeaef8227c59441079",
-    "sceneLastBuiltDate": "2026-09-06",
-    "sceneLastBuiltSubject": "feat(art): the clam hod FILLS — the heap the rig only ever composed at runtime is baked per band, so a basket you dug into stops looking empty (#758)",
+    "sceneFileSha256": "0f21dce33c80454cfe4ffbd163b9c115e93af868b44de0276183439a7cd4e7bb",
+    "sceneLastBuiltCommit": "0c7c03d8cb0a3fbcfd2103a35f6c6d07ab9e04b8",
+    "sceneLastBuiltDate": "2026-09-07",
+    "sceneLastBuiltSubject": "feat(world): the island gets an east door — the wall the game will open through, sited on the fairway the harbour already sails (#764)",
     "sceneWorkingTreeDirty": false,
     "builderDrift": {
       "builderCommitsSinceScene": 0,
-      "measuredTo": "00872ed6d504ebca034e66aeaef8227c59441079",
+      "measuredTo": "0c7c03d8cb0a3fbcfd2103a35f6c6d07ab9e04b8",
       "measuredToDate": null,
       "exact": true,
       "builderCommits": []

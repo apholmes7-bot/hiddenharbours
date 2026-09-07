@@ -24,10 +24,13 @@ committed scene to picture.
 
 ## Read this before judging what you see
 
-These are pictures of the regions **as they were last banked**. At this regeneration (2026-09-07) both scenes
-had been re-banked on 2026-09-06 — Nine Mile Creek at `31f0d08a`, St Peters at `00872ed6`. St Peters reads
-`x-provenance.builderDrift.builderCommitsSinceScene` 0; **Nine Mile Creek reads 1, and it is `117174fe`
-(#765, the sea climbing the quay)** — the very commit whose law §9 of the contract now states. That is why no
+These are pictures of the regions **as they were last banked**. At this regeneration (2026-09-07) St Peters had
+just been re-banked at `0c7c03d8` (#764, the east door) and reads
+`x-provenance.builderDrift.builderCommitsSinceScene` 0; Nine Mile Creek is still on its 2026-09-06 bank at
+`31f0d08a` and **reads 1, which is `117174fe`** (#765, the sea climbing the quay) — the very commit whose law
+§9 of the contract now states. ⚠ Drift is measured per region, against that region's own builder glob
+(`provenance.BUILDER_GLOBS`), which is why #764 moved St Peters' number and left Nine Mile Creek's package
+byte-identical: a package does not go stale every time an unrelated commit lands. That is why no
 course of quay face in the committed scene carries a `TidalFaceWaterline`, and why every number under
 `x-tidalFace` is resolved from the placement rather than read off a component. That number is the one to trust,
 not this paragraph: the scenes are builder output that somebody ran and committed, the builders keep moving,
