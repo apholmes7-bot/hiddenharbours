@@ -198,6 +198,58 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         /// <summary>
+        /// ⭐ <b>THE LIP'S ELEVATION IS MEASURED WHERE THE PIECE STANDS, NOT ON THE EDGE IT LANDS ON</b> —
+        /// and the difference is 12 px of waterline, at every tide, for as long as nobody looked.
+        ///
+        /// <para>The lip is the water side of the footprint: the very edge of a 4.6 m step, and inside the
+        /// fill's own falloff. Measured on the built terrain, a sample taken AT the mooring lip reads
+        /// <b>2.494 m</b> against the wharf's authored <b>3.00</b> — half a metre short, which is 0.39
+        /// units up the wall. Half a course width inboard, where the piece actually stands, it reads
+        /// <b>2.988</b>. Both numbers are re-measured here rather than remembered, because the day this
+        /// stops being true is the day somebody edits the terrain.</para>
+        /// </summary>
+        [Test]
+        public void TheLipsElevationIsMeasuredWhereThePieceStands_NotOnTheEdgeItLandsOn()
+        {
+            var authored = new Dictionary<string, float>
+            {
+                { NineMileCreekDressing.NorthWallRun, NineMileCreekMainland.WharfDeckElevation },
+                { NineMileCreekDressing.ApronSouthRun, NineMileCreekMainland.WharfDeckElevation },
+                { NineMileCreekDressing.BreakwaterRun, NineMileCreekMainland.BreakwaterCrestElevation },
+            };
+
+            var report = new StringBuilder();
+            var seen = new HashSet<string>();
+            float scale = IsoGround.HeightScale;
+
+            foreach (var piece in NineMileCreekDressing.FacePieces())
+            {
+                if (!authored.TryGetValue(piece.Wall, out float deck)) continue;   // the uncut runs
+                if (!seen.Add(piece.Wall)) continue;
+
+                float measured = NineMileCreekDressing.FaceLipElevation(piece, _terrain);
+                float naive = _terrain.ElevationAt(piece.Lip);
+                report.AppendLine(
+                    $"  {piece.Wall,-14} authored {deck:0.00} m   where she stands {measured:0.000}   " +
+                    $"at the lip {naive:0.000}   (the naive sample is " +
+                    $"{(deck - naive) * scale:0.000} units of waterline out)");
+
+                Assert.AreEqual(deck, measured, 0.05f,
+                    $"{piece.Wall}: the deck this course holds up measures {measured:0.000} m where it " +
+                    $"stands, against an authored {deck:0.00}. The waterline is struck from it, so a " +
+                    "wrong deck is a wrong waterline at every state of the tide:\n" + report);
+                Assert.Less(naive, deck - 0.1f,
+                    $"{piece.Wall}: a sample taken AT the lip now reads the full deck, so the fill's " +
+                    "falloff has moved. That is fine — but this test exists to say why the sample is " +
+                    "taken inboard, and it has stopped being able to:\n" + report);
+            }
+
+            Debug.Log("[quay-face-waterline] lip elevations:\n" + report);
+            Assert.AreEqual(authored.Count, seen.Count,
+                "every cut run must be measured here:\n" + report);
+        }
+
+        /// <summary>
         /// ⚠️ <b>H2, REFUTED ONCE AND MEASURED — no wall hull takes the ground.</b> The charter's second
         /// hypothesis was that the fleet was simply sitting on the basin bed, and it matters here beyond
         /// ruling itself out: a grounded hull's picture STOPS falling, so every "the gap does not move"
