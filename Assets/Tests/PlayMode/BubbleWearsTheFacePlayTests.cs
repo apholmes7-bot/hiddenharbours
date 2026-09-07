@@ -118,6 +118,42 @@ namespace HiddenHarbours.Tests.PlayMode
         // ---- the face itself ------------------------------------------------------------------
 
         /// <summary>
+        /// ⭐⭐ <b>THE TRIPWIRE: a missing face FAILS here, it does not skip.</b>
+        ///
+        /// <para>The runtime is deliberately forgiving — <see cref="BubbleFace.Resolve"/> falls back to
+        /// the built-in font so the bubble keeps working in a greybox, which is the project's standing
+        /// "right art or fallback, never wrong art" discipline and what every other bubble fixture runs
+        /// against. <b>The test suite must not be forgiving in the same direction.</b> The face is
+        /// COMMITTED; if it stops loading, the game quietly ships in Unity's built-in font and the only
+        /// thing that would ever say so is this.</para>
+        ///
+        /// <para><b>A genuinely different arm from <c>HarbourTypeBakeTests</c></b>, which loads the asset
+        /// through <c>AssetDatabase</c> by path. This loads it the way the GAME does — through
+        /// <c>Resources.Load</c> by key, at runtime — so it catches the asset being moved out of a
+        /// Resources root, or the key drifting from the folder, neither of which an AssetDatabase path
+        /// check can see.</para>
+        ///
+        /// <para><b>No runtime warning to match it, on purpose.</b> A <c>Debug.LogWarning</c> when the
+        /// face is absent would be an unexpected log message, and the test framework fails any test that
+        /// produces one — so a "loud" runtime would redden unrelated fixtures rather than this. The loud
+        /// half belongs here.</para>
+        /// </summary>
+        [Test]
+        public void TheFaceIsInTheProject_AndLoadsThroughItsResourcesKey()
+        {
+            BubbleFace.ForgetCache();
+            Assert.IsNotNull(BubbleFace.Face, MissingFace);
+        }
+
+        /// <summary>Why a missing face is a failure and not a skip — see the tripwire above.</summary>
+        const string MissingFace =
+            "the baked face did not load through Resources.Load<Font>(\"Type/HarbourType\"). " +
+            "It is COMMITTED under Assets/_Project/Art/UI/Resources/Type, so this is not \"the art has " +
+            "not landed yet\" — it is the asset having moved out of a Resources root, been renamed, or " +
+            "failed to import. The bubble would fall back to the built-in font and nobody would notice.";
+
+
+        /// <summary>
         /// The tripwire the charter asked for: the bubble's font IS the baked asset, by object identity
         /// rather than by name — a look-alike with the right name would still draw at the wrong size.
         ///
@@ -132,10 +168,7 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return ShowModal("Fine morning.");
 
             Font face = BubbleFace.Face;
-            if (face == null)
-                Assert.Ignore($"{HarbourType.ResourceKey} is not imported — the bubble is on its " +
-                              "built-in fallback. Bake the face (Hidden Harbours ▸ Rigs ▸ Harbour Type) " +
-                              "and this becomes a real assertion.");
+            Assert.IsNotNull(face, MissingFace);
 
             Text body = Find(_modal, "Body");
             Assert.IsNotNull(body, "the bubble has no Body text");
@@ -286,9 +319,7 @@ namespace HiddenHarbours.Tests.PlayMode
         [UnityTest]
         public IEnumerator AFullWidthLineLandsOnTheKitsWidestPanel()
         {
-            if (BubbleFace.Face == null)
-                Assert.Ignore($"{HarbourType.ResourceKey} is not imported — the monospace grid only " +
-                              "exists with the baked face.");
+            Assert.IsNotNull(BubbleFace.Face, MissingFace);
 
             yield return ShowModal(new string('m', DialogueBubbleKit.MaxCols));
 
@@ -306,7 +337,7 @@ namespace HiddenHarbours.Tests.PlayMode
         [UnityTest]
         public IEnumerator TheFaceMeasuresOneAdvancePerCharacter()
         {
-            if (BubbleFace.Face == null) Assert.Ignore("the face is not imported");
+            Assert.IsNotNull(BubbleFace.Face, MissingFace);
 
             yield return ShowModal("mmmm");
             Text body = Find(_modal, "Body");
