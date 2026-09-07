@@ -296,6 +296,54 @@ namespace HiddenHarbours.Core
         }
 
         /// <summary>
+        /// ⭐ <b>A WORLD OFFSET IN A MACHINE'S OWN FRAME</b> — the exact inverse of
+        /// <see cref="LocalOffsetToWorld"/>, and the arithmetic <c>transform.InverseTransformPoint</c>
+        /// does for the hitch.
+        ///
+        /// <para>It is here so that a caller with no GameObject can ask the capture test the same
+        /// question the live hitch asks. <see cref="IsCaptured"/> wants a pin in the TRACTOR's frame;
+        /// at runtime that comes off a transform, but a region builder solving a yard and a trip plan
+        /// checking a bay both have only numbers. Spelling the projection out at each of those call
+        /// sites is how a second rotation convention gets into the game — which is exactly what
+        /// happened once already (see <see cref="LocalOffsetToWorld"/>'s warning).</para>
+        /// </summary>
+        public static Vector2 WorldOffsetToLocal(Vector2 world, float headingDegrees)
+        {
+            Vector2 nose = NavMath.DirectionFromBearing(headingDegrees);
+            var curb = new Vector2(nose.y, -nose.x);   // a quarter turn clockwise of the nose
+            return new Vector2(Vector2.Dot(world, curb), Vector2.Dot(world, nose));
+        }
+
+        /// <summary>
+        /// ⭐ <b>Would this tractor, standing here on this heading, be offered this trailer?</b> —
+        /// <see cref="IsCaptured"/> asked of four world numbers instead of a transform.
+        ///
+        /// <para>The one capture test in the game, reachable without a scene. A yard solver placing a
+        /// couple-ready pair, a trip plan asking whether a bay closes, and the player's own hitch all
+        /// go through the same three conditions; nothing may re-derive "near enough to hook".</para>
+        /// </summary>
+        /// <param name="wheel">the tractor's published plate.</param>
+        /// <param name="pin">the trailer's published kingpin.</param>
+        /// <param name="tractorOrigin">where the tractor stands.</param>
+        /// <param name="tractorHeadingDegrees">which way she points.</param>
+        /// <param name="trailerOrigin">where the trailer's ORIGIN stands — not her pin.</param>
+        /// <param name="trailerHeadingDegrees">which way the trailer lies.</param>
+        public static bool WouldCapture(in VehicleFifthWheel wheel, in VehicleKingpin pin,
+                                        Vector2 tractorOrigin, float tractorHeadingDegrees,
+                                        Vector2 trailerOrigin, float trailerHeadingDegrees)
+        {
+            if (!wheel.Published || !pin.Published) return false;
+
+            Vector2 pinWorld = trailerOrigin + LocalOffsetToWorld(
+                new Vector2(pin.CouplingPointLocal.x, pin.CouplingPointLocal.y),
+                trailerHeadingDegrees);
+
+            Vector2 local = WorldOffsetToLocal(pinWorld - tractorOrigin, tractorHeadingDegrees);
+            return IsCaptured(wheel, pin, local,
+                              Mathf.DeltaAngle(tractorHeadingDegrees, trailerHeadingDegrees));
+        }
+
+        /// <summary>
         /// Where a coupled trailer's ORIGIN sits, given where her kingpin is and which way she
         /// points — in the transform frame, through <see cref="LocalOffsetToWorld"/>. Her kingpin is
         /// well forward of her origin (3.365 m on a pup), so a coupled pair drawn from the pin alone
@@ -310,6 +358,52 @@ namespace HiddenHarbours.Core
             Vector2 offset = LocalOffsetToWorld(
                 new Vector2(pin.CouplingPointLocal.x, pin.CouplingPointLocal.y), trailerHeadingDegrees);
             return kingpinWorld - offset;
+        }
+
+        /// <summary>
+        /// ⭐⭐ <b>ONE STEP OF THE TOW — the whole follow, and the ONLY copy of it.</b>
+        ///
+        /// <para>Swing her toward the line of travel, hold the fold at the pair's cap, then place her so
+        /// her pin lands exactly on the tractor's. That order matters: swinging first and placing second
+        /// means she pivots about the COUPLING rather than about her own middle, which is what a fifth
+        /// wheel does.</para>
+        ///
+        /// <para><b>Why it lives here and not in the component.</b> Two things tow a trailer in this game
+        /// — the player's <c>VehicleHitch</c>, stepping off the odometer every <c>LateUpdate</c>, and a
+        /// scheduled trip's pose plan, walking a road it will never drive — and a second transcription of
+        /// three lines of kinematics is a second set of off-tracking bugs. <c>TowedBody.FollowKingpin</c>
+        /// is now a call to this, and so is the plan's track: the same trailer on the same road draws the
+        /// same curve whoever is at the wheel (rule 5, and the one-quantity-one-computation family).</para>
+        ///
+        /// <para>Pure: the caller owns the heading and the transform. A body whose kingpin the art never
+        /// published is handed straight back unmoved — there is nothing to solve on.</para>
+        /// </summary>
+        /// <param name="trailerHeadingDegrees">where she is pointing before the step.</param>
+        /// <param name="kingpinWorld">where the tractor's plate is AFTER her own step.</param>
+        /// <param name="tractorHeadingDegrees">the tractor's heading after her own step.</param>
+        /// <param name="distanceMeters">signed distance the coupling travelled; negative astern.</param>
+        /// <param name="capDegrees">the pair's articulation cap — see <see cref="JackknifeCapDegrees(in VehicleKingpin, in VehicleFifthWheel)"/>.</param>
+        /// <param name="pin">her published kingpin.</param>
+        /// <param name="headingDegrees">where she is pointing after the step.</param>
+        /// <param name="originWorld">where her ORIGIN sits after the step — not her pin.</param>
+        public static void FollowStep(float trailerHeadingDegrees, Vector2 kingpinWorld,
+                                      float tractorHeadingDegrees, float distanceMeters,
+                                      float capDegrees, in VehicleKingpin pin,
+                                      out float headingDegrees, out Vector2 originWorld)
+        {
+            headingDegrees = trailerHeadingDegrees;
+            if (!pin.Published) { originWorld = kingpinWorld; return; }
+
+            float articulation = Mathf.DeltaAngle(headingDegrees, tractorHeadingDegrees);
+            headingDegrees += TrailerYawDeltaDegrees(articulation, distanceMeters,
+                                                    pin.KingpinToAxleCentreMeters);
+
+            // Hold the fold at the cap by moving HER, since the tractor is the one being driven.
+            float folded = Mathf.DeltaAngle(headingDegrees, tractorHeadingDegrees);
+            float allowed = ClampArticulation(folded, capDegrees);
+            if (!Mathf.Approximately(folded, allowed)) headingDegrees = tractorHeadingDegrees - allowed;
+
+            originWorld = BodyOriginFromKingpin(kingpinWorld, headingDegrees, pin);
         }
 
         /// <summary>Clamp an articulation to the pair's cap, keeping its sign. The cap is a limit on

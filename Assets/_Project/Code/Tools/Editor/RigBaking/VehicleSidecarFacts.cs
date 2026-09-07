@@ -91,6 +91,19 @@ namespace HiddenHarbours.Tools.RigBaking
         public readonly Dictionary<string, Vector2> ReachPoints =
             new Dictionary<string, Vector2>(StringComparer.Ordinal);
 
+        /// <summary>
+        /// ⭐ <b>WHICH way in was read</b> — <c>"drive"</c> when the cab arm ran, <c>"ride"</c> when
+        /// the saddle arm did, and empty when neither could be found.
+        ///
+        /// <para>The choice is already made below (<see cref="ReadWayIn"/> takes one arm and
+        /// returns); this records it, so <c>VehicleMeshDef.WayInInteractId</c> carries the art's own
+        /// word downstream and nothing has to re-derive "is this a saddle" from a shape. Set on the
+        /// arm that SUCCEEDS, never on the scan above it: an <c>INTERACT</c> block that lists
+        /// <c>ride</c> but publishes prose where its reach point should be is a machine with no way
+        /// on, and it must not come out of here claiming to be a saddle.</para>
+        /// </summary>
+        public string WayInId = "";
+
         /// <summary>Her fifth wheel, if she tows. Absent is the answer for everything but the two
         /// semis.</summary>
         public bool HasFifthWheel;
@@ -337,6 +350,7 @@ namespace HiddenHarbours.Tools.RigBaking
 
             facts.HasDriveDoor = true;
             facts.DriveDoorLocal = door;
+            facts.WayInId = "drive";
 
             // ---- the seat, if the drive interaction happens at one ------------------------------
             string at = DeckSidecarJson.String(DeckSidecarJson.Member(drive, "at")) ?? "";
@@ -409,6 +423,7 @@ namespace HiddenHarbours.Tools.RigBaking
 
             facts.HasDriveDoor = true;
             facts.DriveDoorLocal = near;
+            facts.WayInId = "ride";
 
             if (TryPointXY(ride, "alt_reach_point", out Vector2 far))
             {

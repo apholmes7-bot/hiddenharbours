@@ -269,8 +269,28 @@ namespace HiddenHarbours.Vehicles
         public bool IsAvailable => IsDrivable && !DriveSeats.IsOccupied(this);
 
         /// <summary>What you do at a door you can open. Scenery never gets here — it is not
-        /// <see cref="IsAvailable"/>, so the popup never offers a truck that is only dressing.</summary>
-        public string VerbLabel => "Climb in";
+        /// <see cref="IsAvailable"/>, so the popup never offers a truck that is only dressing.
+        ///
+        /// <para>⭐ <b>And the words are the ART'S answer, not a rule about kinds.</b> You climb INTO a
+        /// cab and you get ON a machine you sit astride; the two are different acts and a popup that
+        /// said "Climb in" beside a dirtbike would be describing something the player cannot do. The
+        /// fact comes from the machine's own sidecar — <c>VehicleMeshDef.IsSaddle</c>, off the
+        /// <c>INTERACT</c> entry the door point was read from (<c>ride</c> against <c>drive</c>) — so
+        /// nothing here names a vehicle and a machine that has never said <c>ride</c> keeps the label
+        /// she shipped with. Deliberately NOT keyed on <see cref="HasAltDoor"/>: two ways ON is a fact
+        /// about her sides, and the day a van publishes a passenger door it is still a cab.</para></summary>
+        public string VerbLabel
+        {
+            get { VehicleMeshDef m = Mesh; return m != null && m.IsSaddle ? SaddleVerb : CabVerb; }
+        }
+
+        /// <summary>The words, in one place so the door and its alternate side cannot say different
+        /// things about the same machine. Not tunables — they are UI copy, and the pair they belong to
+        /// is the whole vocabulary of getting aboard something with wheels.</summary>
+        public const string CabVerb = "Climb in";
+
+        /// <inheritdoc cref="CabVerb"/>
+        public const string SaddleVerb = "Get on";
 
         /// <summary>Ask for the wheel. The switcher re-reads its own gates before honouring it, so this
         /// never itself puts anyone behind one.</summary>

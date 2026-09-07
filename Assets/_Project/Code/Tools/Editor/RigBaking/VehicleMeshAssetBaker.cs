@@ -353,6 +353,11 @@ namespace HiddenHarbours.Tools.RigBaking
         {
             def.DriveDoorLocal = facts.HasDriveDoor ? facts.DriveDoorLocal : Vector2.zero;
             def.AltDriveDoorLocal = facts.HasAltDriveDoor ? facts.AltDriveDoorLocal : Vector2.zero;
+            // ⭐ WHICH way in the reader found — "drive" or "ride", the art's own word, so the verb
+            // downstream is her document's answer and not a rule about kinds. Gated on HasDriveDoor
+            // for the same reason the two points above are: a machine with no way on must not come
+            // out of the bake claiming one, and empty reads as a cab.
+            def.WayInInteractId = facts.HasDriveDoor ? facts.WayInId : "";
             def.DriverSeatLocal = facts.HasDriverSeat ? facts.DriverSeatLocal : Vector3.zero;
 
             def.ColliderMinMeters = facts.HasCollider ? facts.ColliderMin : Vector3.zero;

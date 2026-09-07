@@ -31,12 +31,29 @@ REGIONS = [
 ]
 
 
-def export_region(repo, region_name, scene_rel, height_name):
+def exported_region_ids(repo):
+    """The region ids this exporter ships, from REGIONS and each region's own Def.
+
+    A passage that leads to Coddle Cove or East Water leads somewhere REAL — those have RegionDefs
+    — but not somewhere this export pictures, and the package says which so a reader is not left
+    wondering whether it lost a package or the region was never in one.
+    """
+    ids = set()
+    for region_name, _scene, _height in REGIONS:
+        region = repo.region_def(region_name)
+        if region.get("id"):
+            ids.add(region["id"])
+    return frozenset(ids)
+
+
+def export_region(repo, region_name, scene_rel, height_name, shipped_ids=None):
     region = repo.region_def(region_name)
     height_map = repo.painted_height(height_name)
     prov = provenance.collect(repo, region_name, scene_rel, height_map)
     scene = Scene(unityyaml.parse_file(repo.abs(scene_rel)))
-    return package.build_document(repo, region, scene, prov)
+    if shipped_ids is None:
+        shipped_ids = exported_region_ids(repo)
+    return package.build_document(repo, region, scene, prov, shipped_ids)
 
 
 def main(argv=None):
