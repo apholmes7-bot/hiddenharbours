@@ -374,6 +374,92 @@ namespace HiddenHarbours.Tests.EditMode
             }
         }
 
+        // ---- the owner's post-play dial, shipped at its passthrough ---------------------------------
+
+        /// <summary>
+        /// <b>`DominantWavelengthScale` ships at 1 and is a no-op</b> — it exists because the owner may
+        /// still want the sea slower after playing the realistic one, and it is the single number that
+        /// does it. ⚠️ Speed and period both go as its SQUARE ROOT, so 0.5 is 0.71× the speed and a true
+        /// half-speed is 0.25 — and a shorter sea is a LESS realistic one, which is the trade §39 states.
+        /// </summary>
+        [Test]
+        public void TheWavelengthScale_ShipsAsANoOp_AndMovesSpeedAsItsSquareRoot()
+        {
+            WaveFieldSettings one = WaveFieldSettings.Default;
+            Assert.AreEqual(1f, one.DominantWavelengthScale, 0f,
+                "The reference tuning must ship the dial at its passthrough, or 129 call sites move.");
+
+            const float u = 5.7f;
+            var wind = new Vector2(0f, u);
+            float full = WaveMath.TrainsFrom(wind, 0.55f, in one)[0].Wavelength;
+            foreach (float scale in new[] { 1f, 0.5f, 0.25f })
+            {
+                WaveFieldSettings dialled = WaveFieldSettings.Default;
+                dialled.DominantWavelengthScale = scale;
+                float lambda = WaveMath.TrainsFrom(wind, 0.55f, in dialled)[0].Wavelength;
+                TestContext.WriteLine(
+                    $"scale {scale:0.00}: lambda {lambda,5:0.0} m  c {PhaseSpeed(lambda),4:0.00} m/s " +
+                    $"({PhaseSpeed(lambda) / PhaseSpeed(full):0.00}x)  crest every {Period(lambda),4:0.00} s");
+                Assert.AreEqual(scale, lambda / full, 1e-3f, "The dial scales the wavelength directly.");
+                Assert.AreEqual(Mathf.Sqrt(scale), PhaseSpeed(lambda) / PhaseSpeed(full), 1e-3f,
+                    "...but crest SPEED goes as its square root — half the wavelength is 0.71x the " +
+                    "speed, and a true half-speed is a QUARTER wavelength.");
+            }
+        }
+
+        /// <summary>
+        /// 🔴 <b>THE STALE-ASSET GUARD.</b> `DominantWavelengthScale` postdates every asset serialized
+        /// before 2026-09-06, so a missing key deserializes as <b>zero</b> — and a plain multiply would
+        /// collapse every wavelength onto `MinWavelengthMeters`. Measured with the floor removed: a
+        /// 0.010 m ocean. Zero and negatives are read as 1.
+        /// </summary>
+        [Test]
+        public void AMissingWavelengthScale_FailsToTheDerivedSea_NotToAFlatOne()
+        {
+            var wind = new Vector2(0f, 5.7f);
+            WaveFieldSettings stale = WaveFieldSettings.Default;
+            stale.DominantWavelengthScale = 0f;
+            WaveFieldSettings one = WaveFieldSettings.Default;
+            one.DominantWavelengthScale = 1f;
+            WaveFieldSettings negative = WaveFieldSettings.Default;
+            negative.DominantWavelengthScale = -3f;
+
+            float staleLambda = WaveMath.TrainsFrom(wind, 0.55f, in stale)[0].Wavelength;
+            float oneLambda = WaveMath.TrainsFrom(wind, 0.55f, in one)[0].Wavelength;
+            TestContext.WriteLine($"a stale asset (scale 0) derives {staleLambda:0.000} m; " +
+                                  $"an explicit 1 derives {oneLambda:0.000} m");
+
+            Assert.AreEqual(oneLambda, staleLambda, 1e-4f,
+                "A zero scale must behave exactly as 1 — the sea the derivation produced.");
+            Assert.AreEqual(oneLambda, WaveMath.TrainsFrom(wind, 0.55f, in negative)[0].Wavelength, 1e-4f,
+                "A negative fails the same safe way rather than mirroring the sea.");
+            Assert.Greater(staleLambda, WaveTrain.MinWavelengthMeters * 100f,
+                "DEAD CONTROL: without the floor a stale asset lands on MinWavelengthMeters — a one-" +
+                "centimetre ocean. This is the assertion that catches it.");
+        }
+
+        /// <summary>The dial reaches EVERY train, so the sea shortens without changing shape. If it ever
+        /// reached only the primary, the cross-chop would keep its old size and the sea would read as
+        /// two different seas laid over each other.</summary>
+        [Test]
+        public void TheWavelengthScale_ReachesEveryTrain_SoTheSeaKeepsItsShape()
+        {
+            var wind = new Vector2(0f, 5.7f);
+            WaveFieldSettings one = WaveFieldSettings.Default;
+            WaveFieldSettings half = WaveFieldSettings.Default;
+            half.DominantWavelengthScale = 0.5f;
+
+            WaveTrains a = WaveMath.TrainsFrom(wind, 0.55f, in one);
+            WaveTrains b = WaveMath.TrainsFrom(wind, 0.55f, in half);
+            Assert.AreEqual(a.Count, b.Count, "The dial must not change how many trains there are.");
+            for (int i = 0; i < a.Count; i++)
+            {
+                TestContext.WriteLine($"  train {i}: {a[i].Wavelength,6:0.00} m -> {b[i].Wavelength,6:0.00} m");
+                Assert.AreEqual(0.5f, b[i].Wavelength / a[i].Wavelength, 1e-3f,
+                    $"Train {i} must shorten by the same factor as the peak.");
+            }
+        }
+
         /// <summary>
         /// 🔴 <b>THE CONFLICT, and it is why this is a row and not a fix.</b> The owner asked for two
         /// things in one sentence — slower across the screen, and realistic to the wind. At the shipped

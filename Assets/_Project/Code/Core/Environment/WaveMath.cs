@@ -310,6 +310,17 @@ namespace HiddenHarbours.Core
              "unaffected.")]
         public float SeaFetchKilometres;
 
+        [Tooltip("A whole-sea WAVELENGTH scale applied LAST, after the peak law and its cap - the " +
+             "owner’s dial for a sea that still reads too fast once he has played the realistic " +
+             "one. 1 = the derived sea, untouched (shipped)." +
+             "\n\nWARNING: speed and period go as the SQUARE ROOT of this. 0.5 gives 0.71x the " +
+             "crest speed, and a true HALF speed is 0.25 - and shorter waves also arrive MORE " +
+             "often, which is the opposite of realistic. See docs/design/water-rendering.md 39." +
+             "\n\nA value of 0 or less is read as 1: this field did not exist before " +
+             "2026-09-06, so an asset serialized before then deserializes it as ZERO, and a plain " +
+             "multiply would flatten every wavelength onto the floor.")]
+        public float DominantWavelengthScale;
+
         [Tooltip("Primary-train amplitude (metres) at full sea state (SeaState01 = 1). Everything scales down from here; at SeaState01 = 0 all amplitudes are exactly 0 (glass is sacred).")]
         public float PrimaryAmplitude;
 
@@ -396,6 +407,7 @@ namespace HiddenHarbours.Core
             DominantWavelengthPerWindSpeed = 1.5f,
             DominantWavelengthMax = 40f,
             SeaFetchKilometres = 0f,          // the legacy linear law, bit-for-bit
+            DominantWavelengthScale = 1f,     // the derived sea, untouched
             PrimaryAmplitude = 0.8f,
             SeaStateAmplitudeExponent = 1.35f,
             CrestSharpening = 2.2f,
@@ -502,6 +514,19 @@ namespace HiddenHarbours.Core
             float dominantWavelength = Mathf.Clamp(
                 PeakWavelengthMeters(windSpeed, in settings),
                 WaveTrain.MinWavelengthMeters, wavelengthCeiling);
+
+            // The owner's dial, applied LAST so it scales whatever the peak law produced. Ships at 1
+            // (a no-op) — it exists because he may still want the sea slower after playing the realistic
+            // one, and this is the single number that does it. ⚠️ Speed goes as its SQUARE ROOT, and a
+            // shorter sea is a LESS realistic one; §39 carries both numbers.
+            //
+            // ⚠️ Zero is read as 1. The field postdates every asset serialized before 2026-09-06, and a
+            // plain multiply would collapse the sea onto MinWavelengthMeters — measured at 0.010 m with
+            // the floor removed. Same discipline as WaveSpectrum's floors.
+            float wavelengthScale = settings.DominantWavelengthScale > 0f
+                ? settings.DominantWavelengthScale : 1f;
+            dominantWavelength = Mathf.Max(WaveTrain.MinWavelengthMeters,
+                                           dominantWavelength * wavelengthScale);
 
             float primaryAmplitude = Mathf.Max(0f, settings.PrimaryAmplitude) * amplitudeScale;
             float gravity = settings.Gravity;

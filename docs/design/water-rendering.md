@@ -5023,7 +5023,32 @@ fully developed after 5 km, so a light breeze should make 2 m ripples, not 8 m s
   Longer waves at the same height read *flatter*. That is its own row, and it is a feel change for the
   hull as much as a look one.
 
-### 39.5 ⚠️ Still a SIM change
+### 39.5 The two questions the charter asked, answered outright
+
+**"Does fetch limit it via `WaveFetch.Envelope01`?"** No — and that is why a second, separate constant
+exists. `WaveFetch` is the LOCAL shelter fetch, marched off the height map over tens of metres, and its
+own header says it in capitals: *"Fetch modulates AMPLITUDE ONLY — never wavelength, never speed."* It
+makes the water behind a headland calmer; it has never had anything to say about how long the waves are.
+`SeaFetchKilometres` is the SYNOPTIC fetch — how far the wind has crossed open water before it arrives —
+and it is the quantity that sets development. The two are unrelated and both are wanted: the synoptic one
+picks the wavelength, the local one flattens the lee.
+
+**"Re-derive or remove the 40 m cap."** Kept, and demoted to a safety rail with its reasoning stated. It
+never binds: at the shipped 25 km the derived peak reaches 27.3 m at a gale and about 33 m at the 20 m/s
+a dev override can force, both under 40. It now guards only against a mis-typed fetch producing an
+absurd sea, which is what a rail is for. Raising the fetch to ocean values WOULD push the peak past it —
+so anyone setting `SeaFetchKilometres` above ~60 km must raise the cap with it or the sea will silently
+flat-top. That is the one coupling between the two numbers, and it is stated here rather than discovered.
+
+### 39.6 The owner's dial, kept and shipped at its passthrough
+
+`DominantWavelengthScale` (1 = the derived sea) is the single number that shortens the whole sea if he
+still wants it slower after playing this. ⚠️ Speed and period go as its **square root** — 0.5 is 0.71× the
+speed, a true half-speed is 0.25 — and a shorter sea is a *less* realistic one, so it trades directly
+against the ruling above. Zero is read as 1 (a pre-2026-09-06 asset would otherwise derive a 0.010 m
+ocean; measured with the floor removed).
+
+### 39.7 ⚠️ Still a SIM change
 
 ADR 0018's one-sea rule: the hull rides this field. A helm-feel verdict is owed — the precedent is the
 owner's own *"the cape has weight"* verdict on #739.
