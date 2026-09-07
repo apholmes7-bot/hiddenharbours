@@ -174,6 +174,28 @@ namespace HiddenHarbours.Core
         /// exactly when her own document says so.</summary>
         public bool HasAltDriveDoor => AltDriveDoorLocal != Vector2.zero;
 
+        [Tooltip("⭐ WHICH way in the art published — the id of the INTERACT entry the door " +
+                 "point came off: 'drive' for a cab, 'ride' for something you sit astride. Empty " +
+                 "on a def baked before the field existed, which reads as a cab.\n\n" +
+                 "It is here so the VERB can be the art's answer rather than a rule about kinds. " +
+                 "The reader already has to choose between the two arms to find the door at all " +
+                 "(VehicleSidecarFacts.ReadWayIn takes the cab arm or the saddle arm and returns); " +
+                 "this records WHICH it took, so nothing downstream has to re-derive it from a " +
+                 "shape. Deliberately NOT inferred from HasAltDriveDoor: two ways on is a fact " +
+                 "about the machine's SIDES, and a hard-cab van with a second door would answer " +
+                 "that yes while still being something you climb INTO.")]
+        public string WayInInteractId = "";
+
+        /// <summary>
+        /// <b>Is she something you sit ASTRIDE?</b> — the art's own word, not a kind and not a guess.
+        ///
+        /// <para>False for every truck, every trailer and the Otter, including on the defs baked
+        /// before <see cref="WayInInteractId"/> existed: an absent field reads empty, empty is not
+        /// <c>ride</c>, and a cab is what they were. So this can only ever turn ON for a machine
+        /// whose own sidecar says <c>ride</c>.</para>
+        /// </summary>
+        public bool IsSaddle => string.Equals(WayInInteractId, "ride", StringComparison.Ordinal);
+
         [Tooltip("Where the driver SITS AND IS SEEN, in rig metres (+x curb side, +y nose, +z up) — " +
                  "the reference point of her seat cushion, off the gameplay sidecar's own SEATS block. " +
                  "The Otter's is her front bench, seat_ref (0, 0.36, 0.76), the one the centre " +
