@@ -360,6 +360,7 @@ MonoBehaviour:
     DepthlessMatch01: 1
     MinSpecies: 1
     MaxSpecies: 3
+    MovingWaterMetresPerHour: 0.25
     SchoolSpeciesBoost: 3
     OffSchoolSpeciesDamp01: 0.4
   Freshness:

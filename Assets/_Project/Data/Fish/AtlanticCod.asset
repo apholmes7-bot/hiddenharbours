@@ -28,6 +28,8 @@ MonoBehaviour:
   MaxTide: 10
   StartHour: 0
   EndHour: 24
+  MinSchoolMarks: 2
+  MaxSchoolMarks: 6
   MinWeightKg: 2
   MaxWeightKg: 12
   BaseValue: 14

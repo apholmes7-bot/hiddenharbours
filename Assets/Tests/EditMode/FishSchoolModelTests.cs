@@ -554,6 +554,14 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.Greater(a.SlotHours, 0f);
             Assert.Greater(a.OpenWaterColumnMetres, 0f);
 
+            // ⚠ A ZERO BAR IS NOT A TUNING CHOICE, IT IS AN INERT FEATURE. MovingWaterAllowed asks
+            // Abs(rate) >= bar, so at 0 every rate passes and a species the owner gated to the run of
+            // the tide bites at dead slack — the gate ships doing nothing, silently. This is what the
+            // asset omitting the key actually costs (the shape of #752's CI red), and it is why the
+            // check belongs on the LOADED object and not only on the file's YAML.
+            Assert.Greater(a.MovingWaterMetresPerHour, 0f,
+                "GameConfig.asset carries no slack-water bar, so FishSpeciesDef.MovingWaterOnly is inert");
+
             // The owner's own guard-rails: the search invariants and the never-a-wall promise.
             Assert.LessOrEqual(a.MaxRadiusMetres, a.CellSizeMetres, "a school must not spill past one cell");
             Assert.LessOrEqual(a.MaxWindowHours, a.SlotHours, "a window must not outlive its slot");

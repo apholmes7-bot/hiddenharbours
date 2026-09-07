@@ -45,6 +45,27 @@ namespace HiddenHarbours.Fishing
         /// <summary>The season at a given game time — the DATE gate (its appearance multiplier) and the
         /// species filter (each fish's own authored season window).</summary>
         Season SeasonAt(double gameSeconds);
+
+        /// <summary>
+        /// Hour of the game day (0..24) at this instant, for the species' own daily windows
+        /// (<see cref="FishSpeciesDef.TimeAllowed"/>).
+        ///
+        /// <para><b>A negative return means "not known"</b>, and the school sim then applies NO time
+        /// gate. That is the default, so every existing world adapter, EditMode fake and bare rig keeps
+        /// compiling and keeps picking species exactly as it did before this member existed.</para>
+        /// </summary>
+        float HourOfDayAt(double gameSeconds) => -1f;
+
+        /// <summary>
+        /// Signed rate of change of the water level in metres per in-game hour — the tide's DERIVATIVE,
+        /// which is the whole of "bites on the moving water"
+        /// (<see cref="FishSpeciesDef.MovingWaterOnly"/>).
+        ///
+        /// <para><b><see cref="float.NaN"/> means "not sampled"</b> and applies NO gate — the default,
+        /// for the same reason as <see cref="HourOfDayAt"/>. Never 0, which would claim dead slack water
+        /// and starve the roll.</para>
+        /// </summary>
+        float TideRateMetresPerHourAt(double gameSeconds) => float.NaN;
     }
 
     /// <summary>
@@ -82,6 +103,39 @@ namespace HiddenHarbours.Fishing
                 IEnvironmentService env = Live(GameServices.Environment);
                 return env != null ? env.WorldSeed : 0;
             }
+        }
+
+        /// <inheritdoc/>
+        /// <remarks>Read off the same clock the schools are built against, so a species' daily window is
+        /// judged at the moment the school FORMED — the rule every other input here already follows.</remarks>
+        public float HourOfDayAt(double gameSeconds)
+        {
+            IGameClock clock = GameServices.Clock;
+            if (clock == null) return -1f;
+            double secondsPerDay = SecondsPerHour * 24.0;
+            if (secondsPerDay <= 0.0) return -1f;
+            double d = gameSeconds % secondsPerDay;
+            if (d < 0.0) d += secondsPerDay;
+            return (float)(d / SecondsPerHour);
+        }
+
+        /// <inheritdoc/>
+        /// <remarks>
+        /// A CENTRAL DIFFERENCE on the environment's own water level — the honest derivative of the one
+        /// tide everything else reads, rather than a second tide model to drift out of step with it
+        /// (rule 5: recomputed, never stored). Symmetric about the instant so a flood and the matching
+        /// ebb are measured the same way.
+        /// </remarks>
+        public float TideRateMetresPerHourAt(double gameSeconds)
+        {
+            IEnvironmentService env = Live(GameServices.Environment);
+            if (env == null || SecondsPerHour <= 0.0) return float.NaN;
+
+            const double stepHours = 0.1;                       // a tenth of an in-game hour either side
+            double half = stepHours * SecondsPerHour * 0.5;
+            float a = env.WaterLevelAt(gameSeconds - half);
+            float b = env.WaterLevelAt(gameSeconds + half);
+            return (float)((b - a) / stepHours);
         }
 
         /// <inheritdoc/>

@@ -1138,6 +1138,9 @@ namespace HiddenHarbours.App.Editor
             var haddockFish  = AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(DataFish + "/Haddock.asset");
             var mackerelFish = AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(DataFish + "/Mackerel.asset");
             var pollockFish  = AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(DataFish + "/Pollock.asset");
+            var bassFish     = AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(DataFish + "/StripedBass.asset");
+            var herringFish  = AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(DataFish + "/AtlanticHerring.asset");
+            var flounderFish = AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(DataFish + "/WinterFlounder.asset");
 
             // --- SCENE ----------------------------------------------------------------------------------
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
@@ -1225,6 +1228,9 @@ namespace HiddenHarbours.App.Editor
             haddockFish  = AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(DataFish + "/Haddock.asset");
             mackerelFish = AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(DataFish + "/Mackerel.asset");
             pollockFish  = AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(DataFish + "/Pollock.asset");
+            bassFish     = AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(DataFish + "/StripedBass.asset");
+            herringFish  = AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(DataFish + "/AtlanticHerring.asset");
+            flounderFish = AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(DataFish + "/WinterFlounder.asset");
 
             // THE PILOTABLE FLEET (the owner's ask): every boat he can put himself in from the helm, in
             // cycle order — the iso dory he starts in, the 8-direction fishing boat, the punt on each of her
@@ -1361,7 +1367,8 @@ namespace HiddenHarbours.App.Editor
                 // The clam (the flats' dig) + the rod-catchable trio: the persistent controller carries
                 // ALL rod species; each cast filters by the species' RegionIds against the travel-aware
                 // current region, so the same pool serves St Peters' shore, the cove and Nine Mile Creek.
-                RegionFish       = new[] { clam, codFish, haddockFish, mackerelFish, pollockFish }
+                RegionFish       = new[] { clam, codFish, haddockFish, mackerelFish, pollockFish,
+                                           bassFish, herringFish, flounderFish }
                                        .Where(f => f != null).ToArray(),
                 Square           = waterSprite,
                 CameraBackground = new Color(0.07f, 0.14f, 0.18f),   // St Peters' cool dawn water

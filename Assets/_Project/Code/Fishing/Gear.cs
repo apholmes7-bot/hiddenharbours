@@ -111,7 +111,18 @@ namespace HiddenHarbours.Fishing
         /// <summary>A floor-dweller (cod, halibut, monkfish): weighted UP when the rig is held inside the
         /// off-floor sweet window (<c>GameConfig.DepthDrop.BottomSweetWindowMeters</c>). Sitting ON the
         /// floor doesn't count — the bottom-out-then-lift is the skill beat.</summary>
-        Bottom = 1 << 0
+        Bottom = 1 << 0,
+
+        /// <summary>
+        /// A fish that CLEARS THE WATER — the owner's 2026-09-05 ruling that visible fish
+        /// <i>"will jump, thrash, roll, go deep"</i>, made per-species so the sea reads true: a striped
+        /// bass or a mackerel comes right out, a flounder never does.
+        ///
+        /// <para>Read only by the presenter's event schedule (<see cref="ShoalEventMath"/>). A jumper and
+        /// a non-jumper bite, fight and sell identically, so this flag cannot quietly become a balance
+        /// term; species without it still roll and thrash like anything else.</para>
+        /// </summary>
+        Jumps = 1 << 1
     }
 
     [System.Flags]

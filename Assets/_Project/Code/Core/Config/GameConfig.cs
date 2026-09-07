@@ -2579,6 +2579,12 @@ namespace HiddenHarbours.Core
         [Tooltip("Most species one school holds. Higher = a mixed shoal and a less targeted catch.")]
         [Min(1)] public int MaxSpecies;
 
+        [Tooltip("SLACK-WATER BAR, metres of tide per in-game hour (owner ruling 2026-09-06). A species " +
+                 "flagged MovingWaterOnly (the striped bass) is barred while the water is changing more " +
+                 "slowly than this — the run of the tide, not its height. Read by the school model AND " +
+                 "the catch resolver from this one place. 0 = the gate never bites.")]
+        [Min(0f)] public float MovingWaterMetresPerHour;
+
         [Tooltip("How strongly a species IN the school is favoured in the catch roll. Applied on top of " +
                  "bait/tackle/depth as one more soft WEIGHT — never a filter, so an odd fish can always " +
                  "still take. Eased by how well you are sitting on the school, so clipping the rim " +
@@ -2635,6 +2641,7 @@ namespace HiddenHarbours.Core
 
             MinSpecies = 1,
             MaxSpecies = 3,
+            MovingWaterMetresPerHour = 0.25f,
             SchoolSpeciesBoost = 3f,
             OffSchoolSpeciesDamp01 = 0.4f,
         };

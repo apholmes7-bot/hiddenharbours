@@ -10,31 +10,34 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6000b72d0329cc04ebb9f483ec968d7f, type: 3}
-  m_Name: Pollock
+  m_Name: AtlanticHerring
   m_EditorClassIdentifier: HiddenHarbours.Fishing::HiddenHarbours.Fishing.FishSpeciesDef
-  Id: fish.pollock
-  DisplayName: Pollock
-  Category: 0
+  Id: fish.atlantic_herring
+  DisplayName: Atlantic Herring
+  Category: 2
   Rarity: 0
-  Flavor: Green-backed and hard-shouldered. They hunt in packs off the ledges and hit a worked lure like a thrown stone.
+  Flavor: Bait, food, fishmeal - the base of the chain.
   RegionIds:
   - region.coddle_cove
   - region.st_peters
   - region.nine_mile_creek
-  AllowedGear: 3
-  Seasons: 15
+  AllowedGear: 4
+  Seasons: 5
   MinTide: -10
   MaxTide: 10
   StartHour: 0
   EndHour: 24
-  MinSchoolMarks: 4
-  MaxSchoolMarks: 10
-  MinWeightKg: 1.5
-  MaxWeightKg: 9
-  BaseValue: 11
-  SpoilPerDay: 0.9
-  SupplyElasticity: 0.2
-  SpawnWeight: 0.85
-  FavoredLures: 15
-  Bite: {fileID: 11400000, guid: 8e72ab31b7324cffb066a6c3cecf3415, type: 2}
-  RodFight: {fileID: 11400000, guid: 242eb5faa6ec4c19a101ff6d2e3ca8e9, type: 2}
+  DepthBands: 8
+  BehaviorFlags: 2
+  FavoredLures: 0
+  MinSchoolMarks: 12
+  MaxSchoolMarks: 30
+  MinWeightKg: 0.1
+  MaxWeightKg: 0.5
+  BaseValue: 2
+  SpoilPerDay: 1.5
+  SupplyElasticity: 0.6
+  SpawnWeight: 1.2
+  Sprite: {fileID: 0}
+  Bite: {fileID: 0}
+  RodFight: {fileID: 0}

@@ -34,6 +34,22 @@ namespace HiddenHarbours.Fishing
         public float StartHour = 0f;
         public float EndHour = 24f;
 
+        [Tooltip("A SECOND daily window, for a species the seed table gives two of — a striped bass " +
+                 "hunts Dawn AND Dusk, which one window cannot say. Leave both 0 = no second window, " +
+                 "exactly as every species behaved before this field existed. Wraps midnight like the " +
+                 "first.")]
+        public float SecondStartHour = 0f;
+
+        [Tooltip("End of the second daily window. See SecondStartHour.")]
+        public float SecondEndHour = 0f;
+
+        [Tooltip("MOVING WATER ONLY (owner ruling 2026-09-06). A striped bass hunts the rips on the " +
+                 "run of the tide and goes off the feed at slack — a fact about the tide's RATE, not " +
+                 "its height, which MinTide/MaxTide cannot express. When set, the species is barred " +
+                 "while the water is slacker than GameConfig.FishSchools.MovingWaterMetresPerHour. " +
+                 "Unset = no gate, bit-for-bit today's behaviour.")]
+        public bool MovingWaterOnly = false;
+
         [Header("Depth (Rod Fishing v2 — a WEIGHT on the roll, never a wall)")]
         [Tooltip("The depth zones this species lives in (canon depthBand, fish-and-content §3.1). When the " +
                  "player HOLDS a weighted rig in one of these zones the species is weighted UP in the catch " +
@@ -45,6 +61,22 @@ namespace HiddenHarbours.Fishing
                  "is held just off the floor (bottom out, then reel up slightly — the bottom-fishing sweet " +
                  "spot). Other canon flags are appended to the enum as later systems wire them.")]
         public FishFlags BehaviorFlags = FishFlags.None;
+
+        [Header("School size (owner ruling 2026-09-06: density is per SPECIES, not one global number)")]
+        [Tooltip("Fewest fish a school of this species shows. A herring shoal is not a flounder: the " +
+                 "owner's ruling is that how many fish are together is a fact about the SPECIES, not one " +
+                 "global MaxMarks. Leave 0 = unstated, and the school falls back to GameConfig's global " +
+                 "range exactly as every species behaved before this field existed.")]
+        [Min(0)] public int MinSchoolMarks = 0;
+
+        [Tooltip("Most fish a school of this species shows. See MinSchoolMarks. NOTE this is ONE number " +
+                 "with two jobs (FishSchool.MarkCount): how many swimmers the water draws AND the bite " +
+                 "rate. Past ~6 the bite-rate multiplier saturates at its cap, so a big shoal reads " +
+                 "bigger without fishing faster.")]
+        [Min(0)] public int MaxSchoolMarks = 0;
+
+        /// <summary>Does this species state its own school size, or fall back to the global range?</summary>
+        public bool StatesSchoolSize => MinSchoolMarks > 0 && MaxSchoolMarks > 0;
 
         [Header("What tempts it (a WEIGHT on the roll, never a wall)")]
         [Tooltip("Which lure PRESENTATIONS this species chases. A mackerel hits feathers and flash; a " +
@@ -111,10 +143,37 @@ namespace HiddenHarbours.Fishing
 
         public bool TimeAllowed(float hour)
         {
-            if (Mathf.Approximately(StartHour, EndHour)) return true;      // all day
-            return StartHour < EndHour
-                ? hour >= StartHour && hour < EndHour
-                : hour >= StartHour || hour < EndHour;                     // wraps midnight
+            // Window one keeps its old meaning: ends equal = ALL DAY (that is how every shipped species
+            // says "no time gate"). Window two is additive, so ends equal there means simply "unset".
+            if (Mathf.Approximately(StartHour, EndHour)) return true;
+            return InWindow(hour, StartHour, EndHour) || InWindow(hour, SecondStartHour, SecondEndHour);
+        }
+
+        /// <summary>One window, or false when it is unset. A window whose ends are equal is "unset" for
+        /// the SECOND window and "all day" for the first — see <see cref="TimeAllowed"/>, which is why
+        /// this is private and the two callers pass their own meaning in.</summary>
+        private static bool InWindow(float hour, float startHour, float endHour)
+        {
+            if (Mathf.Approximately(startHour, endHour)) return false;     // unset / empty
+            return startHour < endHour
+                ? hour >= startHour && hour < endHour
+                : hour >= startHour || hour < endHour;                     // wraps midnight
+        }
+
+        /// <summary>
+        /// Is the water moving enough for this species? True for everything that does not ask
+        /// (<see cref="MovingWaterOnly"/> unset), and true whenever the rate is UNKNOWN — a rig or a
+        /// fixture that cannot sample the tide must not silently starve the roll.
+        /// </summary>
+        /// <param name="tideRateMetresPerHour">Signed rate of change of the water level; flood is
+        /// positive, ebb negative, and it is the MAGNITUDE that matters.</param>
+        /// <param name="thresholdMetresPerHour">The owner's slack-water bar
+        /// (<c>GameConfig.FishSchools.MovingWaterMetresPerHour</c>).</param>
+        public bool MovingWaterAllowed(float tideRateMetresPerHour, float thresholdMetresPerHour)
+        {
+            if (!MovingWaterOnly) return true;
+            if (float.IsNaN(tideRateMetresPerHour) || float.IsInfinity(tideRateMetresPerHour)) return true;
+            return Mathf.Abs(tideRateMetresPerHour) >= Mathf.Max(0f, thresholdMetresPerHour);
         }
 
         private static SeasonMask ToMask(Season s) => s switch

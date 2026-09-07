@@ -10,32 +10,37 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6000b72d0329cc04ebb9f483ec968d7f, type: 3}
-  m_Name: Haddock
+  m_Name: StripedBass
   m_EditorClassIdentifier: HiddenHarbours.Fishing::HiddenHarbours.Fishing.FishSpeciesDef
-  Id: fish.haddock
-  DisplayName: Haddock
-  Category: 0
-  Rarity: 0
-  Flavor:
-  Sprite: {fileID: -247080572403776488, guid: c8834f13f90c30742a141b17ecfa4d46, type: 3}
+  Id: fish.striped_bass
+  DisplayName: Striped Bass
+  Category: 6
+  Rarity: 2
+  Flavor: Hunts the rips and river-mouths on the moving tide. The inshore sport prize.
   RegionIds:
   - region.coddle_cove
   - region.st_peters
   - region.nine_mile_creek
-  AllowedGear: 3
-  Seasons: 15
+  AllowedGear: 5
+  Seasons: 6
   MinTide: -10
   MaxTide: 10
-  StartHour: 0
-  EndHour: 24
-  MinSchoolMarks: 2
-  MaxSchoolMarks: 5
+  StartHour: 5
+  EndHour: 9
+  SecondStartHour: 17
+  SecondEndHour: 21
+  MovingWaterOnly: 1
+  DepthBands: 6
+  BehaviorFlags: 2
+  FavoredLures: 7
+  MinSchoolMarks: 1
+  MaxSchoolMarks: 4
   MinWeightKg: 1
-  MaxWeightKg: 6
-  BaseValue: 16
-  SpoilPerDay: 0.75
-  SupplyElasticity: 0.2
-  SpawnWeight: 0.9
-  FavoredLures: 4
-  Bite: {fileID: 11400000, guid: 3e0c590048a64706959336f5fbe44ced, type: 2}
-  RodFight: {fileID: 11400000, guid: 0d156b1bd93346e1b56b17898007ef3a, type: 2}
+  MaxWeightKg: 25
+  BaseValue: 17
+  SpoilPerDay: 1
+  SupplyElasticity: 0.55
+  SpawnWeight: 0.4
+  Sprite: {fileID: 0}
+  Bite: {fileID: 0}
+  RodFight: {fileID: 0}
