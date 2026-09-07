@@ -1,3 +1,4 @@
+using HiddenHarbours.Core;
 using System;
 using System.Collections.Generic;
 
@@ -41,6 +42,34 @@ namespace HiddenHarbours.Fishing
             if (def == null || string.IsNullOrWhiteSpace(def.Id)) return;
             if (_byId.ContainsKey(def.Id)) return;   // first registration wins
             _byId[def.Id] = def;
+
+            // The first species registered also publishes the Core behaviour seam, so a presenter that
+            // may not reference this module (the fight drawer lives in Player) can still ask what a
+            // hooked fish does — rule 4's named contract rather than an asmdef reference.
+            GameServices.FishBehaviour = Facts;
+        }
+
+        /// <summary>
+        /// This registry, seen through the Core <see cref="IFishBehaviourFacts"/> seam — the ONE
+        /// publisher of "what does a fish of this species do", so the shoal drawer (which reads the Def
+        /// directly, in this module) and the fight drawer (which reads this, from Player) can never
+        /// disagree about whether a bass jumps.
+        /// </summary>
+        public static IFishBehaviourFacts Facts { get; } = new RegistryFacts();
+
+        private sealed class RegistryFacts : IFishBehaviourFacts
+        {
+            public bool Jumps(string fishId)
+            {
+                FishSpeciesDef d = Get(fishId);
+                return d != null && d.Jumps;
+            }
+
+            public float FightJumpPeriodSeconds(string fishId)
+            {
+                FishSpeciesDef d = Get(fishId);
+                return d != null ? d.FightJumpPeriodSeconds : 0f;
+            }
         }
 
         /// <summary>The registered def for <paramref name="id"/>, or <c>null</c> if none — so a caller can

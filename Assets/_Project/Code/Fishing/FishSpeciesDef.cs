@@ -102,6 +102,18 @@ namespace HiddenHarbours.Fishing
         /// <summary>Does this species state its own density, or fall back to the global chance?</summary>
         public bool StatesSchoolDensity => SchoolsPerSquareKilometre > 0f;
 
+        [Header("The fight (owner ruling 2026-09-06: a hooked jumper jumps too)")]
+        [Tooltip("How often a HOOKED fish of this species tries a jump while she is up at the surface, " +
+                 "in seconds. Only ever read for a species that carries the Jumps behaviour flag - a " +
+                 "cod does not jump on the line however short a period is authored here. Leave 0 = " +
+                 "unstated, and the fight presenter uses its own authored fallback, which is what every " +
+                 "species did before this field existed.")]
+        [Min(0f)] public float FightJumpPeriodSeconds = 0f;
+
+        /// <summary>Does this species CLEAR THE WATER (owner's ruling 2026-09-06)? The one read behind
+        /// both the shoal's jump and the hooked fish's, so a flounder can never do either.</summary>
+        public bool Jumps => (BehaviorFlags & FishFlags.Jumps) != 0;
+
         /// <summary>
         /// A CLAM CANNOT SWIM. Shellfish are in a region's pool because they are caught there (clam
         /// beds, lobster and crab pots), not because they shoal in midwater — so they are excluded from
