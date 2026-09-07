@@ -76,7 +76,7 @@ Deliberately absent, each for a stated reason:
 
 - **`call` / `opts`** — §0. Reconstructing an invocation from a baked sheet would be a second
   definition of the bake.
-- **`cliffLines`** — empty. Cliff lines are an editor authoring artefact; the repo's cliffs are
+- **`cliffLines`** — ⚠ THIS ENTRY WAS WRONG UNTIL 2026-09-07 AND §11 IS THE CORRECTION. It read "empty; cliff lines are an editor authoring artefact", beside two other notes saying the cliffs shipped as entities. They did not, and the region has 165 of them. Superseded — see §11. The original text, for the record: Cliff lines are an editor authoring artefact; the repo's cliffs are
   placed `CliffWallSurface` components and ship as entities.
 - **`footprint`, `gameplaySidecar`** — both are rig gameplay measurements, and no rig is
   executed here (rigs are hashed, not evaluated).
@@ -839,3 +839,58 @@ Anchors: Nine Mile Creek lands a boat at (101, 84.5) and a walker at (98, 88), w
 arrival `bar`; St Peters lands at (213.5, −5.8) / (211.5, −1.9), with one named arrival
 **`east_water` at (316, 40)** — which is the far half of the east door, and the reason both keys
 ship rather than only the passages.
+
+## 11. The cliffs — a correction (2026-09-07)
+
+**Every package said, in three places, that the region's cliffs were somewhere to be found. All
+three were wrong, and 165 placed walls shipped in none of them.**
+
+* `terrain.layers.cliff.rle` — empty (true, and still true: nothing paints a cliff layer);
+* `cliffLines` — `[]`, under *"cliff lines are an authoring artefact of the editor"*;
+* `terrain.layers.cliff.x-derived` — *"the repo's cliffs are placed surfaces and **ship as
+  entities**"*.
+
+They do not ship as entities. `CliffWallSurface` carries no `SpriteRenderer`, the entity walk is a
+walk of sprites, and **zero** of Nine Mile Creek's 86 chunks or St Peters' 79 ever reached a
+package — while three sentences pointed the reader at places that were empty. This is the fourth
+class of declared-but-undrawn object after the moored hulls (§9.4), the passages (§10) and the
+parked vehicles, and **the first that was claimed present**. A gap is a thing a reader can discover;
+a false claim is one they cannot.
+
+### 11.1 They go in `cliffLines`, the format's own key
+
+`CliffWallSurface._browPlan` **is** a `nodes` polyline, so no new vocabulary is needed. Everything
+the format has no room for travels beside it under `x-`: the toe plan, the per-station drops and
+toe elevations, the wall azimuth and the batter.
+
+| | |
+|---|---|
+| count | **86** (Nine Mile Creek) · **79** (St Peters) — guarded scene-in / package-out |
+| stations | 740 · 1,102, at a median **and maximum** spacing of **0.250 m** |
+| material | one for all 165: `CliffFace` (asset path under `x-materialAsset`) |
+
+### 11.2 Three things stated rather than smoothed over
+
+**They are CHUNKS, not runs.** The builder pushes one surface per stretch, so a coastline arrives
+as 86 short lines and not one long one — some with as few as two stations. Joining them into runs
+would be a derivation this exporter invents, so it does not, and the note says so. A reader taking
+86 lines for 86 cliffs is the failure to avoid.
+
+**`nodes` are SAMPLED STATIONS, not hand-placed nodes.** The reference's cliff lines carry `nodes`
+alone — its *paths* carry a derived `polyline` too — so a reader may spline them. That is safe here
+only because the stations are 0.25 m apart and a catmull-rom interpolates its control points: there
+is no room between them to deviate. A test bounds the spacing, and if the builder ever samples
+coarsely the answer is to ship a polyline, not to relax the bound. Decimating to "real" control
+points was considered and refused: a curve fit is a second definition of the coastline, §7(c)'s trap.
+
+**No `tiles` count.** The reference carries one. This exporter paints no cliff layer at all, so a
+`0` would read as a fact about the line instead of a fact about the export — the distinction the
+whole `x-unavailable` convention exists to keep.
+
+### 11.3 The guard
+
+The count of exported `cliffLines` must equal the count of `CliffWallSurface` **in the scene**,
+counted by walking the scene rather than by asking the exporter — a guard that asked the exporter
+how many it exported would agree with itself. A second test asserts the two retired sentences appear
+nowhere in either package, **and** that no cliff has meanwhile become an entity, so the corrected
+note stays true rather than merely different.
