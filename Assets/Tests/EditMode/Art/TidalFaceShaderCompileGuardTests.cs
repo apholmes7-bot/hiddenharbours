@@ -25,6 +25,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
     public class TidalFaceShaderCompileGuardTests
     {
         const string ShaderPath = "Assets/_Project/Art/Shaders/HiddenHarboursTidalFace.shader";
+        const string MaterialPath =
+            "Assets/_Project/Resources/" + TidalFaceWaterline.MaterialResourceName + ".mat";
 
         [Test]
         public void TidalFaceShader_CompilesItsVariants_NoShaderErrors()
@@ -48,18 +50,25 @@ namespace HiddenHarbours.Tests.Art.EditMode
             var warnings = new StringBuilder();
             Collect(errors, warnings, "<import>", ShaderUtil.GetShaderMessages(shader));
 
-            var mat = new Material(shader);
-            try
-            {
-                int passes = mat.passCount > 0 ? mat.passCount : 1;
-                for (int pass = 0; pass < passes; pass++)
-                    ShaderUtil.CompilePass(mat, pass, true);
-                Collect(errors, warnings, ShaderPath, ShaderUtil.GetShaderMessages(shader));
-            }
-            finally
-            {
-                Object.DestroyImmediate(mat);
-            }
+            // ⭐⭐ THE SHIPPED MATERIAL, not a fresh one — and its EXISTENCE is half of what this guards.
+            // A shader nothing references is stripped from a player build: the face would be perfect in
+            // the editor and magenta on the owner's PC. Living under Resources is what keeps it in, so
+            // "the asset is gone" and "the shader is broken" are the same class of defect and are caught
+            // by the same test. TidalFaceWaterline loads it by this name at runtime.
+            var mat = AssetDatabase.LoadAssetAtPath<Material>(MaterialPath);
+            Assert.IsNotNull(mat,
+                $"The shipped quay-face material ('{MaterialPath}') is missing. It is what keeps " +
+                $"'{TidalFaceWaterline.ShaderName}' out of the build stripper's way — without it every " +
+                "quay face draws magenta in a player build while looking perfect in the editor. Treat " +
+                "this as a failure, not a pass.");
+            Assert.AreEqual(shader, mat.shader,
+                $"'{MaterialPath}' is not using '{TidalFaceWaterline.ShaderName}' — the guard would be " +
+                "compiling the wrong shader, and the runtime load would hand every face the wrong one.");
+
+            int passes = mat.passCount > 0 ? mat.passCount : 1;
+            for (int pass = 0; pass < passes; pass++)
+                ShaderUtil.CompilePass(mat, pass, true);
+            Collect(errors, warnings, MaterialPath, ShaderUtil.GetShaderMessages(shader));
 
             if (warnings.Length > 0)
                 Debug.Log("[TidalFaceShaderCompileGuard] Non-fatal shader warnings:\n" + warnings);

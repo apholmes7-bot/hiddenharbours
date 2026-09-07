@@ -59,6 +59,11 @@ namespace HiddenHarbours.Art
         /// <summary>The shader that does the cutting. A string contract, named once.</summary>
         public const string ShaderName = "HiddenHarbours/TidalFace";
 
+        /// <summary>The SHIPPED material, under <c>Assets/_Project/Resources</c> — the thing that keeps
+        /// the shader out of the build stripper's way. See <see cref="SharedMaterial"/> for why a
+        /// <see cref="Shader.Find"/> on its own would be magenta on the owner's PC.</summary>
+        public const string MaterialResourceName = "TidalFace";
+
         /// <summary>The per-renderer packing the shader reads: (lip world y, lip elevation, screen units
         /// per metre of height, 1 when configured).</summary>
         public const string TideProperty = "_HHFaceTide";
@@ -199,28 +204,49 @@ namespace HiddenHarbours.Art
         }
 
         /// <summary>
-        /// ONE material for every drawn face in the game — they differ only in the two numbers above, and
-        /// those travel in a property block, so a wharf's ~44 courses cost one material instead of
-        /// forty-four (rule 7). Built on demand and kept out of the scene and the save, the
-        /// <c>DeckRiderVisual</c> arrangement.
+        /// ⭐⭐ <b>ONE material for every drawn face in the game, AND IT IS A SHIPPED ASSET — which is the
+        /// half that decides whether this works in a player build at all.</b>
+        ///
+        /// <para><b>A shader nothing references is STRIPPED.</b> Unity ships the shaders its scenes and
+        /// its <c>Resources</c> can reach; a <see cref="Shader.Find"/> at runtime is a string and reaches
+        /// nothing at build time. A face built that way would be perfect in the editor and <b>magenta on
+        /// the owner's PC</b> — the failure this repo has paid for before, and the reason
+        /// <c>PlayerSubmerge.mat</c>, <c>LampPool.mat</c> and the rest of
+        /// <c>Assets/_Project/Resources</c> exist. So the material is a committed asset in that folder,
+        /// loaded by name; a <c>Resources</c> asset is always included.</para>
+        ///
+        /// <para>The pieces differ only in the two numbers above and those travel in a property block, so
+        /// one asset serves every course — ~44 on this wharf — and it is never mutated (rule 7).</para>
+        ///
+        /// <para>The <see cref="Shader.Find"/> path is kept as a FALLBACK for the state where the asset is
+        /// missing (a fresh branch before it imports, someone deleting it): the face still draws right in
+        /// the editor, and the missing asset is said out loud rather than shipping quietly.</para>
         /// </summary>
         private static Material SharedMaterial()
         {
+            if (_sharedMaterial != null) return _sharedMaterial;
+
+            _sharedMaterial = Resources.Load<Material>(MaterialResourceName);
             if (_sharedMaterial != null) return _sharedMaterial;
 
             Shader shader = Shader.Find(ShaderName);
             if (shader == null)
             {
                 Debug.LogWarning(
-                    $"[TidalFaceWaterline] Shader '{ShaderName}' not found — the quay face will draw " +
-                    "uncut, which is the picture it drew before the sea was let up it. Nothing else is " +
-                    "affected.");
+                    $"[TidalFaceWaterline] Neither Resources/{MaterialResourceName}.mat nor the shader " +
+                    $"'{ShaderName}' could be found — the quay face will draw uncut, which is the " +
+                    "picture it drew before the sea was let up it. Nothing else is affected.");
                 return null;
             }
 
+            Debug.LogWarning(
+                $"[TidalFaceWaterline] Resources/{MaterialResourceName}.mat is missing, so the face is " +
+                "drawing through a material built at runtime from the shader. That works in the EDITOR " +
+                "and is stripped from a player build, where every quay face would go magenta. Restore " +
+                "the asset.");
             _sharedMaterial = new Material(shader)
             {
-                name = "TidalFace (shared)",
+                name = "TidalFace (runtime fallback)",
                 hideFlags = HideFlags.HideAndDontSave,
             };
             return _sharedMaterial;

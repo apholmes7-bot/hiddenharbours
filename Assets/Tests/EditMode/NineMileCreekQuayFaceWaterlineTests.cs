@@ -201,12 +201,22 @@ namespace HiddenHarbours.Tests.EditMode
         /// ⭐ <b>THE LIP'S ELEVATION IS MEASURED WHERE THE PIECE STANDS, NOT ON THE EDGE IT LANDS ON</b> —
         /// and the difference is 12 px of waterline, at every tide, for as long as nobody looked.
         ///
-        /// <para>The lip is the water side of the footprint: the very edge of a 4.6 m step, and inside the
-        /// fill's own falloff. Measured on the built terrain, a sample taken AT the mooring lip reads
-        /// <b>2.494 m</b> against the wharf's authored <b>3.00</b> — half a metre short, which is 0.39
-        /// units up the wall. Half a course width inboard, where the piece actually stands, it reads
-        /// <b>2.988</b>. Both numbers are re-measured here rather than remembered, because the day this
-        /// stops being true is the day somebody edits the terrain.</para>
+        /// <para>The lip is the water side of the footprint — the very edge of a 4.6 m step — and the
+        /// sample is taken half a course width inboard, where the piece actually stands. That is derived
+        /// from the course rather than being an inset somebody chose, and it is the reading that survives
+        /// an edge.</para>
+        ///
+        /// <para>⚠️ <b>The two SOURCES of ground under this wharf do not agree at the lip, and only one
+        /// of them is what this samples.</b> The <see cref="MainlandTidalTerrain"/> the dressing is handed
+        /// is COMPUTED, and it is crisp: at the mooring lip it reads the full 3.000 m, so sampling there
+        /// would in fact be harmless today. The BAKED height texture the water shader reads
+        /// (<c>NineMileCreekSeabed_HeightTex.png</c>, 2 texels a metre) is bilinear across the same step
+        /// and reads <b>2.494 m</b> at the lip against 2.988 half a width in — 0.39 units of waterline.
+        /// So the inboard sample is not fixing a bug in today's computed terrain; it is refusing to
+        /// depend on an edge that the project's other ground source already smears.</para>
+        ///
+        /// <para>What is asserted is therefore the half that can be: the deck each cut run holds up
+        /// MEASURES its authored height, re-measured every run rather than remembered.</para>
         /// </summary>
         [Test]
         public void TheLipsElevationIsMeasuredWhereThePieceStands_NotOnTheEdgeItLandsOn()
@@ -231,17 +241,13 @@ namespace HiddenHarbours.Tests.EditMode
                 float naive = _terrain.ElevationAt(piece.Lip);
                 report.AppendLine(
                     $"  {piece.Wall,-14} authored {deck:0.00} m   where she stands {measured:0.000}   " +
-                    $"at the lip {naive:0.000}   (the naive sample is " +
-                    $"{(deck - naive) * scale:0.000} units of waterline out)");
+                    $"at the lip {naive:0.000}   (they differ by " +
+                    $"{Mathf.Abs(measured - naive) * scale:0.000} units of waterline on this terrain)");
 
                 Assert.AreEqual(deck, measured, 0.05f,
                     $"{piece.Wall}: the deck this course holds up measures {measured:0.000} m where it " +
                     $"stands, against an authored {deck:0.00}. The waterline is struck from it, so a " +
                     "wrong deck is a wrong waterline at every state of the tide:\n" + report);
-                Assert.Less(naive, deck - 0.1f,
-                    $"{piece.Wall}: a sample taken AT the lip now reads the full deck, so the fill's " +
-                    "falloff has moved. That is fine — but this test exists to say why the sample is " +
-                    "taken inboard, and it has stopped being able to:\n" + report);
             }
 
             Debug.Log("[quay-face-waterline] lip elevations:\n" + report);
