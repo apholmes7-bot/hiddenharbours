@@ -82,6 +82,23 @@ anchor's named arrival **`east_water` at (316, 40)** is the far half of the same
 halves to be legible, which is why both keys ship. ⚠ An `arrivalKey` resolves against the TARGET region's
 `x-arrivals` — a lookup that crosses a package boundary and is deliberately left to a reader holding both.
 
+## The cliffs — a correction (2026-09-07)
+
+**These packages used to say, in three places, that the region's cliffs were somewhere to be found. All three
+were wrong, and 165 placed walls shipped in none of them** — the cliff layer was empty, `cliffLines` was `[]`
+under a note calling cliff lines "an authoring artefact of the editor", and the layer's `x-derived` said the
+cliffs "ship as entities". They do not: `CliffWallSurface` carries no `SpriteRenderer`, so the entity walk —
+a walk of sprites — never saw one. A reader who trusted any of those sentences concluded the region has no
+cliffs, and was pointed at empty places to look.
+
+`cliffLines` now carries them: **86** at Nine Mile Creek, **79** at St Peters, guarded scene-in / package-out
+so the claim cannot come apart again. Each is one `CliffWallSurface` — the builder pushes one **chunk** per
+stretch, so a coastline arrives as many short lines rather than one long one, and joining them would be a
+derivation this exporter invents. `nodes` is the chunk's brow plan, whose stations are **sampled at 0.25 m**
+rather than hand-placed; the toe plan, per-station drops and toe elevations, wall azimuth and batter travel
+under `x-`. Full account in
+[`docs/tools/scene-export-contract.md` §11](../../../docs/tools/scene-export-contract.md).
+
 Fields prefixed `x-` are ours. That is allowed by the contract, not a liberty taken with it:
 readers of `hiddenharbours.scene/1` must ignore unknown keys and `x-` is the reserved extension
 prefix (`docs/tools/scene-export-contract.md` §0). Everything under one is a fact the repo can

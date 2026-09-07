@@ -21,8 +21,8 @@ import hashlib
 import re
 import os
 
-from . import (contracts, facing as facing_mod, families, recipes, heightmap, passages,
-               roads, tide as tide_mod, unityyaml as U)
+from . import (clifflines, contracts, facing as facing_mod, families, recipes, heightmap,
+               passages, roads, tide as tide_mod, unityyaml as U)
 from .repo import ASSETS_PPU
 
 SCHEMA = "hiddenharbours.scene/1"
@@ -46,7 +46,8 @@ _LAYER_UNAVAILABLE = {
             "into two tilemaps (RoadTop/RoadSkirt). No road tilemap exists in the committed "
             "scene, and the blob-47 index is deliberately derived in one place only.",
     "cliff": "Cliffs are placed surfaces (CliffWallSurface components), not painted cells. They "
-             "are exported as entities, where they are authored.",
+             "ship in the top-level cliffLines rather than as entities: they carry no "
+             "SpriteRenderer, so the entity walk cannot see one.",
 }
 
 
@@ -85,6 +86,9 @@ def build_document(repo, region, scene, provenance, exported_region_ids=frozense
     # SpriteRenderer — see passages.py's opening note and the east door that made it plain.
     doors, arrivals = passages.collect(
         repo, scene, (centre_x, centre_y), exported_region_ids)
+    # ⭐ THE CLIFFS, at last. They were never entities — CliffWallSurface carries no SpriteRenderer
+    # — and the package said in three places that they were. See clifflines.py's opening note.
+    cliff_lines = clifflines.collect(repo, scene, (centre_x, centre_y), _stable_id)
     entity_notes["passages"] = {
         "passages": len(doors),
         "anchors": len(arrivals),
@@ -119,7 +123,7 @@ def build_document(repo, region, scene, provenance, exported_region_ids=frozense
         },
         "terrain": terrain,
         "entities": entities,
-        "cliffLines": [],
+        "cliffLines": cliff_lines,
         "paths": paths,
         "collision": {
             "note": "Derived, never authored. This export ships no collision sidecars: colliders "
@@ -158,9 +162,18 @@ def build_document(repo, region, scene, provenance, exported_region_ids=frozense
                                 "same one docs/art/rigs sidecars publish. A SIBLING of the table "
                                 "rather than a key inside it: the table's keys are family names "
                                 "and nothing else, so iterating it cannot pick up a note.",
-        "x-cliffLinesNote": "Empty: cliff lines are an authoring artefact of the editor. The "
-                            "repo's cliffs are placed CliffWallSurface components and ship as "
-                            "entities.",
+        # ⚠ THIS NOTE USED TO SAY THE OPPOSITE, AND IT WAS WRONG IN BOTH HALVES: cliff lines
+        # are not an editor-only artefact (the repo authors 165 of them), and they did NOT ship
+        # as entities (CliffWallSurface carries no SpriteRenderer, so the entity walk never saw
+        # one). A reader who trusted it concluded the region has no cliffs.
+        "x-cliffLinesNote": "the region's cliffs, as the format's own key. Each is one "
+                            "CliffWallSurface — the builder pushes one CHUNK per stretch, so a "
+                            "coastline arrives as many short lines and not one long one; joining "
+                            "them would be a derivation this exporter invents. `nodes` is the "
+                            "chunk's brow plan and its stations are SAMPLED at ~0.25 m rather "
+                            "than hand-placed (see each line's x-nodesAre). No `tiles` count: "
+                            "this exporter paints no cliff layer at all, so a 0 would read as a "
+                            "fact about the line instead of about the export.",
         "x-provenance": provenance | {"entityNotes": entity_notes},
     }
 
@@ -286,7 +299,9 @@ _LAYER_DERIVED = {
     "road": "stroked from the region's declared route table at each way's declared half-width "
             "and rank. Surface material only — the blob-47 tile index stays derived in the one "
             "place the repo derives it.",
-    "cliff": "not painted; the repo's cliffs are placed surfaces and ship as entities.",
+    # ⚠ Corrected: they are NOT entities and never were. CliffWallSurface has no SpriteRenderer.
+    "cliff": "not painted; the repo's cliffs are placed CliffWallSurface components and ship in "
+             "the top-level cliffLines, which is the format's own key for them.",
 }
 
 
