@@ -75,6 +75,60 @@ namespace HiddenHarbours.Tools.RigBaking
             AssetDatabase.Refresh();
         }
 
+        /// <summary>
+        /// The clam hod ALONE — its two wire layers, the four heap bands and the anchors JSON.
+        ///
+        /// <para><b>Why the hod has its own entry when the others do not.</b> Every stem this bake
+        /// writes is rewritten whether or not it changed, and a re-bake is not byte-deterministic. So a
+        /// lane that only needs the hod’s sheets and reaches for the whole storage bake ships churn on
+        /// ~30 shipped sheets nobody asked to change — and then has to prove, one PNG at a time, that
+        /// the churn was only the encoder. Baking exactly what you changed is cheaper than auditing
+        /// what you did not.</para>
+        /// </summary>
+        [MenuItem("Hidden Harbours/Art/Bake the Clam Hod (2 wire layers + 4 heap bands)",
+                  priority = 51)]
+        public static void BakeClamHodOnly()
+        {
+            try
+            {
+                FishingBakeResult r = CatchPass2StorageBaker.BakeClamHod(
+                    progress: (l, t) => EditorUtility.DisplayProgressBar("Baking the clam hod", l, t));
+                Debug.Log($"[rig-baker] clam hod: {r.Sheets.Count} sheet(s), {r.CellsRendered} cells, "
+                          + $"{r.TotalPngBytes / 1024} KB, {r.TotalMilliseconds / 1000.0:F1}s\n  "
+                          + string.Join("\n  ", r.Sheets.Select(s => s.ToString()))
+                          + $"\n  anchors: {r.AnchorJsonPath}");
+            }
+            finally
+            {
+                EditorUtility.ClearProgressBar();
+            }
+
+            AssetDatabase.Refresh();
+        }
+
+        /// <summary>
+        /// Headless entry point for <c>-executeMethod</c>.
+        ///
+        /// <para>⚠️ <c>-executeMethod</c> REQUIRES <c>-quit</c> (without it the editor bakes, logs and
+        /// then sits on the project lock forever, and the next run dies with return code 1 while the
+        /// shell still reports exit 0). <c>-runTests</c> is the opposite and must never be given
+        /// <c>-quit</c>. Confirm this ran by grepping a FRESH log for <c>[rig-baker] clam hod:</c> —
+        /// never by the exit code, and never by the sheets being present.</para>
+        /// </summary>
+        public static void BakeClamHodFromCommandLine()
+        {
+            try
+            {
+                BakeClamHodOnly();
+                EditorApplication.Exit(0);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[rig-baker] headless clam hod bake failed: {ex}");
+                EditorApplication.Exit(1);
+            }
+        }
+
         [MenuItem("Hidden Harbours/Art/Bake Catch Pass 2 Fish (7 species × 10 states × 3 sizes)",
                   priority = 48)]
         public static void BakeCatchPass2Fish()
