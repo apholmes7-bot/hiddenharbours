@@ -21,8 +21,8 @@ import hashlib
 import re
 import os
 
-from . import (contracts, facing as facing_mod, families, recipes, heightmap, roads,
-               tide as tide_mod, unityyaml as U)
+from . import (contracts, facing as facing_mod, families, recipes, heightmap, passages,
+               roads, tide as tide_mod, unityyaml as U)
 from .repo import ASSETS_PPU
 
 SCHEMA = "hiddenharbours.scene/1"
@@ -56,8 +56,15 @@ _LAYER_UNAVAILABLE = {
 HEIGHT_FIELD_STRIDE_M = 8
 
 
-def build_document(repo, region, scene, provenance):
-    """Assemble one region's document. ``region`` is a :func:`repo.Repo.region_def` mapping."""
+def build_document(repo, region, scene, provenance, exported_region_ids=frozenset()):
+    """Assemble one region's document. ``region`` is a :func:`repo.Repo.region_def` mapping.
+
+    ``exported_region_ids`` is which regions this RUN ships, passed in rather than read back out
+    of the CLI's ``REGIONS`` list: this module must not import its own caller, and "which regions
+    are in this export" is a fact about the run, not about the repo. An empty set is honest —
+    every passage then reports ``exportedHere: false``, which is exactly true of an export of
+    nothing.
+    """
     width, height = region["worldSizeMeters"]
     centre_x, centre_y = region["worldCenter"]
     cols, rows = int(round(width)), int(round(height))
@@ -73,6 +80,20 @@ def build_document(repo, region, scene, provenance):
     # height map it samples is the one _terrain has just proved present or absent.
     tide, tide_notes = _tide(repo, scene, entities, (centre_x, centre_y), provenance)
     entity_notes = entity_notes | tide_notes
+
+    # The doors. Placed, declared, and invisible to the entity walk because that walk starts at a
+    # SpriteRenderer — see passages.py's opening note and the east door that made it plain.
+    doors, arrivals = passages.collect(
+        repo, scene, (centre_x, centre_y), exported_region_ids)
+    entity_notes["passages"] = {
+        "passages": len(doors),
+        "anchors": len(arrivals),
+        "namedArrivals": sum(len(a["namedArrivals"]) for a in arrivals),
+        "toRegionsNotExportedHere": sorted(
+            {d["target"]["regionId"] for d in doors
+             if d["target"]["regionId"] and not d["target"]["exportedHere"]}),
+        "x-note": _PASSAGES_NOTE,
+    }
 
     return {
         "schema": SCHEMA,
@@ -124,6 +145,12 @@ def build_document(repo, region, scene, provenance):
         # and no entity can hold their ride — but they are placed, they are declared, and they are
         # what the owner asked to watch ride the tide.
         "x-tidalHulls": tide["hulls"],
+        # ⭐ THE DOORS, and the places they land. Neither is an entity: a RegionPassage is a
+        # trigger box and an arrival point is a bare Transform, so the sprite walk cannot see
+        # either, and until now the wall the game opens through was missing from the picture of
+        # the island it opens.
+        "x-passages": doors,
+        "x-arrivals": arrivals,
         "x-rigs": rigs,
         "x-rigVersions": rig_versions,
         "x-rigVersionsShaRule": "sha256 of the rig's bytes with CR stripped "
@@ -408,6 +435,15 @@ def _tally(items, key):
         name = item.get(key) or "(unstated)"
         out[name] = out.get(name, 0) + 1
     return out
+
+
+_PASSAGES_NOTE = (
+    "every RegionPassage in this scene and every RegionAnchor's ways in. NONE of these is an "
+    "entity: the entity list is a walk of SpriteRenderers, a passage is a trigger box and an "
+    "arrival point is a bare Transform, so a door was invisible in the package before this. "
+    "⚠ A passage's arrivalKey is resolved against the TARGET region's x-arrivals, which may be a "
+    "package this export does not ship (target.exportedHere says which) — the lookup crosses a "
+    "package boundary and is deliberately left to a reader holding both.")
 
 
 _FACES_NOTE = (

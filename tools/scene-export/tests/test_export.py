@@ -25,7 +25,8 @@ sys.path.insert(0, TOOL)
 
 REFERENCE = "docs/tools/reference/sample-scene.json"
 
-from hhexport import contracts, families, heightmap, package, recipes, roads, tide  # noqa: E402
+from hhexport import contracts, families, heightmap, package, provenance, recipes  # noqa: E402
+from hhexport import passages, roads, tide  # noqa: E402
 from hhexport import facing as facing_mod, unityyaml as U  # noqa: E402
 from hhexport.repo import Repo, sha256_lf  # noqa: E402
 from hhexport.scene import Scene  # noqa: E402
@@ -1991,6 +1992,185 @@ def _guid_of(asset_rel):
             if line.startswith("guid:"):
                 return line.split(":", 1)[1].strip()
     raise AssertionError(f"{asset_rel}.meta declares no guid")
+
+
+class PassageTests(unittest.TestCase):
+    """The doors between regions — placed, declared, and invisible to the entity walk until now.
+
+    The east door (#764) is the case that made it plain: `PassageToEastWater` carries a
+    RegionPassage and a trigger box, `StPetersEastWaterArrival` carries a bare Transform, and
+    NEITHER reached the package, so the wall the game opens through was missing from the owner's
+    picture of his own island.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        cls.repo = Repo(REPO)
+        cls.documents = {
+            name: hh_scene_export.export_region(cls.repo, name, scene, height)
+            for name, scene, height in hh_scene_export.REGIONS
+        }
+
+    def test_neither_a_passage_nor_an_arrival_is_an_entity(self):
+        """The premise of the whole module, asserted rather than assumed. If a door ever DOES
+        acquire a sprite this fails, and the answer is then to decide which list owns it — not to
+        let it quietly appear in both."""
+        for name, document in self.documents.items():
+            paths = {e["x-path"] for e in document["entities"]}
+            for passage in document["x-passages"]:
+                self.assertNotIn(passage["x-path"], paths, f"{name}: {passage['x-name']}")
+            for anchor in document["x-arrivals"]:
+                self.assertNotIn(anchor["x-path"], paths, f"{name}: {anchor['x-name']}")
+            self.assertTrue(document["x-passages"], f"{name} declares no passage at all")
+
+    def test_the_east_door_is_in_the_package_both_ways(self):
+        """⭐ The one the owner asked to see. A door is a PAIR — the way out of St Peters and the
+        point East Water lands you back at — and it is only legible if both halves ship."""
+        peters = self.documents["StPeters"]
+        door = next(p for p in peters["x-passages"] if p["x-name"] == "PassageToEastWater")
+        self.assertEqual(door["pos"], [356, 40])
+        self.assertEqual(door["target"]["regionId"], "region.east_water")
+        self.assertEqual(door["target"]["sceneName"], "EastWater")
+        self.assertEqual(door["arrivalKey"], "st_peters")
+        self.assertEqual(door["band"]["widthMeters"], 6)
+        self.assertEqual(door["band"]["heightMeters"], 120)
+        self.assertTrue(door["band"]["isTrigger"])
+        # East Water has a RegionDef but no committed scene, so it is real and not pictured here.
+        self.assertFalse(door["target"]["exportedHere"])
+
+        anchor = next(a for a in peters["x-arrivals"] if a["regionId"] == "region.st_peters")
+        back = next(n for n in anchor["namedArrivals"] if n["key"] == "east_water")
+        self.assertEqual(back["arrivalPoint"], [316, 40])
+
+    def test_every_passage_names_where_it_leads_or_says_it_cannot(self):
+        """A door with no destination is a wall. None is silently blank: an unresolved target
+        carries x-unresolved, never a plausible id guessed off the object's name."""
+        seen = 0
+        for name, document in self.documents.items():
+            for passage in document["x-passages"]:
+                target = passage["target"]
+                if target["regionId"] is None:
+                    self.assertIn("x-unresolved", target, f"{name}: {passage['x-name']}")
+                    continue
+                self.assertTrue(target["sceneName"], f"{name}: {passage['x-name']} names no scene")
+                self.assertTrue(target["asset"].endswith(".asset"))
+                self.assertIsInstance(passage["arrivalKey"], str,
+                                      "an empty arrival key means the target's DEFAULT arrival "
+                                      "point; null would mean nobody said")
+                band = passage["band"]
+                self.assertGreater(band["widthMeters"], 0, f"{name}: {passage['x-name']}")
+                self.assertGreater(band["heightMeters"], 0, f"{name}: {passage['x-name']}")
+                seen += 1
+        self.assertEqual(seen, 6, "both regions together declare six doors")
+
+    def test_exported_here_is_true_for_exactly_the_regions_this_run_ships(self):
+        """`exportedHere` is a fact about the RUN, not about the repo. Coddle Cove, West Water and
+        East Water all have RegionDefs — they are real places this export does not picture, and a
+        reader must be able to tell that from a package it failed to receive."""
+        shipped = hh_scene_export.exported_region_ids(self.repo)
+        self.assertEqual(shipped, frozenset({"region.nine_mile_creek", "region.st_peters"}))
+        for name, document in self.documents.items():
+            for passage in document["x-passages"]:
+                target = passage["target"]
+                self.assertEqual(target["exportedHere"], target["regionId"] in shipped,
+                                 f"{name}: {passage['x-name']}")
+            notes = document["x-provenance"]["entityNotes"]["passages"]
+            self.assertEqual(
+                notes["toRegionsNotExportedHere"],
+                sorted({p["target"]["regionId"] for p in document["x-passages"]
+                        if p["target"]["regionId"] and not p["target"]["exportedHere"]}))
+        self.assertEqual(
+            self.documents["StPeters"]["x-provenance"]["entityNotes"]["passages"]
+            ["toRegionsNotExportedHere"],
+            ["region.east_water", "region.west_water"])
+
+    def test_an_empty_exported_set_calls_every_door_foreign(self):
+        """The default is honest rather than convenient: build a document naming no shipped
+        regions and every passage says so, instead of the parameter quietly meaning 'all'."""
+        name, scene_rel, height_name = hh_scene_export.REGIONS[1]
+        region = self.repo.region_def(name)
+        height = self.repo.painted_height(height_name)
+        prov = provenance.collect(self.repo, name, scene_rel, height)
+        scene = Scene(U.parse_file(self.repo.abs(scene_rel)))
+        document = package.build_document(self.repo, region, scene, prov)
+        self.assertTrue(document["x-passages"])
+        for passage in document["x-passages"]:
+            self.assertFalse(passage["target"]["exportedHere"], passage["x-name"])
+
+    def test_each_anchor_gives_the_region_its_three_default_points(self):
+        """arrivalPoint is the boat, disembarkPoint the walker, dockZone where the control
+        switcher re-points. A null inside a NAMED arrival is authored — RegionAnchor falls back to
+        the region's default — but the region's own three are what every passage with an empty key
+        lands on, so they have to be there."""
+        for name, document in self.documents.items():
+            anchors = document["x-arrivals"]
+            self.assertEqual(len(anchors), 1, f"{name} should declare exactly one RegionAnchor")
+            anchor = anchors[0]
+            self.assertEqual(anchor["regionId"], document["region"]["id"])
+            for field in ("arrivalPoint", "dockZone", "disembarkPoint"):
+                point = anchor[field]
+                self.assertIsNotNone(point, f"{name}: no {field}")
+                self.assertEqual(len(point), 2)
+            self.assertTrue(anchor["namedArrivals"], f"{name} declares no named arrival")
+            for named in anchor["namedArrivals"]:
+                self.assertTrue(named["key"], f"{name}: a named arrival with no key")
+
+    def test_positions_are_region_relative_like_every_other_position(self):
+        """A passage's `pos` must mean what an entity's `pos` means, or a reader plotting both
+        draws the door somewhere the harbour is not."""
+        for name, scene_rel, height_name in hh_scene_export.REGIONS:
+            document = self.documents[name]
+            centre = document["region"]["worldCenter"]
+            scene = Scene(U.parse_file(os.path.join(REPO, scene_rel)))
+            by_name = {scene.name_of(go): go for go in scene.walk()}
+            for passage in document["x-passages"]:
+                game_object = by_name[passage["x-name"]]
+                world = scene.world_of_game_object(game_object)
+                self.assertAlmostEqual(passage["pos"][0], world[0] - centre[0], places=4)
+                self.assertAlmostEqual(passage["pos"][1], world[1] - centre[1], places=4)
+
+    def test_an_unresolvable_arrival_reference_is_absent_and_not_the_origin(self):
+        """⚠ Scene.world_of answers an UNKNOWN transform id with the identity — (0, 0, ...) — which
+        is a perfectly plausible arrival at the region's own centre. A reference this scene cannot
+        resolve has to come back absent, or a deleted anchor point silently moves the boat to the
+        middle of the harbour and nobody questions it."""
+        name, scene_rel, _height = hh_scene_export.REGIONS[1]
+        scene = Scene(U.parse_file(os.path.join(REPO, scene_rel)))
+        anchor_go = anchor = None
+        for game_object in scene.walk():
+            for component in scene.components_of(game_object):
+                if component.type_name != "MonoBehaviour":
+                    continue
+                guid = U.ref_guid(component.data.get("m_Script"))
+                path = self.repo.path_for_guid(guid) if guid else None
+                if path and os.path.basename(path) == "RegionAnchor.cs":
+                    anchor_go, anchor = game_object, component
+        self.assertIsNotNone(anchor, f"{name} declares no RegionAnchor")
+
+        # Sanity: as authored, it resolves to a real point away from the centre.
+        good = passages._anchor(scene, anchor_go, anchor, (0.0, 0.0))
+        self.assertIsNotNone(good["arrivalPoint"])
+        self.assertNotEqual(good["arrivalPoint"], [0, 0])
+
+        broken = copy.deepcopy(anchor)
+        broken.data["_arrivalPoint"] = {"fileID": "999999999"}
+        broken.data["_arrivals"] = [{"Key": "ghost",
+                                     "ArrivalPoint": {"fileID": "999999998"},
+                                     "DisembarkPoint": {"fileID": "0"}}]
+        out = passages._anchor(scene, anchor_go, broken, (0.0, 0.0))
+        self.assertIsNone(out["arrivalPoint"], "an unresolvable arrival became the region centre")
+        self.assertIsNone(out["namedArrivals"][0]["arrivalPoint"])
+        # The authored empty reference is still absent too, and for a different reason.
+        self.assertIsNone(out["namedArrivals"][0]["disembarkPoint"])
+
+    def test_the_doors_add_nothing_that_moves_between_two_runs(self):
+        again = {name: hh_scene_export.export_region(self.repo, name, scene, height)
+                 for name, scene, height in hh_scene_export.REGIONS}
+        for name, document in self.documents.items():
+            self.assertEqual(package.dumps(document["x-passages"]),
+                             package.dumps(again[name]["x-passages"]), name)
+            self.assertEqual(package.dumps(document["x-arrivals"]),
+                             package.dumps(again[name]["x-arrivals"]), name)
 
 
 class CarryForwardTests(unittest.TestCase):
