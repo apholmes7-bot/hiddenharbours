@@ -186,9 +186,6 @@ namespace HiddenHarbours.World
 
             float dt = Time.unscaledDeltaTime;
 
-            _rosterClock -= dt;
-            if (_rosterClock <= 0f) { _rosterClock = RosterRescanSeconds; RebuildRoster(); }
-
             // An exchange in flight is driven entirely by the end-of-line signal; nothing to poll. But a
             // speaker who was destroyed mid-sentence has to end it, or the pair stays held forever.
             if (_running != null)
@@ -197,11 +194,35 @@ namespace HiddenHarbours.World
                 return;
             }
 
+            // ⭐ NOTHING AUTHORED FOR THE REGION ON SCREEN ⇒ DO NOTHING AT ALL. This host installs itself
+            // and therefore runs in EVERY scene in the game, most of which have no villagers, no station
+            // table and no exchange that could ever fire there. Without this gate it paid a scene-wide
+            // FindObjectsByType every few seconds regardless — a periodic hitch charged to the whole
+            // project for an answer that was always "no" (rule 7: the performance budget is a feature).
+            //
+            // A handful of ordinal string compares is the entire cost in a scene this has no business in.
+            if (!AnyAuthoredForCurrentRegion()) return;
+
+            _rosterClock -= dt;
+            if (_rosterClock <= 0f) { _rosterClock = RosterRescanSeconds; RebuildRoster(); }
+
             _tickClock -= dt;
             if (_tickClock > 0f) return;
             _tickClock = TickSeconds;
 
             TryStartOne();
+        }
+
+        /// <summary>Is any loaded exchange authored for the region currently on screen? The cheap
+        /// question that lets this host cost nothing in the scenes it does not belong to.</summary>
+        private bool AnyAuthoredForCurrentRegion()
+        {
+            string region = GameServices.CurrentRegionId;
+            if (string.IsNullOrEmpty(region)) return false;
+            for (int i = 0; i < _conversations.Count; i++)
+                if (string.Equals(_conversations[i].RegionId, region, System.StringComparison.Ordinal))
+                    return true;
+            return false;
         }
 
         private void RebuildRoster()

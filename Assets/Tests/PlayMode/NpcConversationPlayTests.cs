@@ -75,6 +75,7 @@ namespace HiddenHarbours.Tests.PlayMode
         VillagerRoutine _ada, _ben;
         NpcDef _adaNpc, _benNpc;
         ConversationDef _def;
+        DialogueVoiceDef _voiceDef;
         NpcConversationDirector _director;
         AmbientSpeechPresenter _presenter;
 
@@ -98,7 +99,6 @@ namespace HiddenHarbours.Tests.PlayMode
             GameServices.Reset();
             InteractionGate.Reset();
             DialogueVoiceCatalog.Clear();
-            DialogueVoiceCatalog.Register(VoiceId, QuickVoice);
 
             _clock = new DrivenClock { Hour = 12.5f, Day = 0 };
             GameServices.Clock = _clock;
@@ -131,8 +131,21 @@ namespace HiddenHarbours.Tests.PlayMode
                 Station("s.away", Away, "away"),
             });
 
+            // ⚠ The participants carry a real DialogueVoiceDef, and the catalog is NOT pre-registered by
+            // hand. Without it the def resolved NO voice and the exchange ran at DialogueVoice.Default —
+            // a 1.4 s read pause per line, ~3.9 s for a two-hander, against this fixture's own deadline.
+            // Assigning it also carries the voice through the PRODUCTION path (ConversationDef.VoiceIdFor
+            // → the director's own LoadLibrary → DialogueVoiceCatalog), which nothing else covers in
+            // PlayMode; pre-registering by hand would have masked a break in it.
+            _voiceDef = ScriptableObject.CreateInstance<DialogueVoiceDef>();
+            _spawned.Add(_voiceDef);
+            _voiceDef.Id = VoiceId;
+            _voiceDef.Voice = QuickVoice;
+
             _adaNpc = Npc("npc.playtest_ada", "Ada");
             _benNpc = Npc("npc.playtest_ben", "Ben");
+            _adaNpc.Voice = _voiceDef;
+            _benNpc.Voice = _voiceDef;
 
             // Both of them stand on the green all day, a stride apart — so the ONLY thing deciding
             // whether they talk is the director, which is what is under test.
@@ -267,6 +280,22 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return new WaitForSecondsRealtime(VillagerRoutine.ShelterCheckSeconds + 0.05f);
         }
 
+        /// <summary>
+        /// What this exchange actually costs to speak, in seconds — every line's fill plus its read
+        /// pause, through the same arithmetic the presenter dwells on.
+        ///
+        /// <para>⚠ A deadline must be DERIVED from this, never guessed. A bare "4 seconds" passed
+        /// locally and failed on CI by a hair, because the lines were resolving a slower voice than the
+        /// fixture believed they had.</para>
+        /// </summary>
+        float ExchangeSeconds()
+        {
+            float total = 0f;
+            foreach (ConversationLine line in _def.Lines)
+                total += AmbientDwell.Seconds(line.Text, QuickVoice);
+            return total;
+        }
+
         /// <summary>Wait, in REAL seconds with a deadline, until <paramref name="until"/> or the time is
         /// up. Never a frame budget — headless renders uncapped.</summary>
         IEnumerator Until(System.Func<bool> until, float seconds = 6f)
@@ -313,9 +342,11 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             yield return At(DueHour());
 
+            // Derived, with headroom for the director's half-second tick and a loaded box.
+            float deadline = ExchangeSeconds() * 4f + 3f;
             float t = 0f;
             int frames = 0;
-            while (t < 4f && (_director.Running != null || _spoken.Count < 2))
+            while (t < deadline && (_director.Running != null || _spoken.Count < 2))
             {
                 Assert.IsFalse(InteractionGate.IsBlocked,
                     $"frame {frames}: two NPCs talking to each other raised InteractionGate — the " +
@@ -326,6 +357,9 @@ namespace HiddenHarbours.Tests.PlayMode
             }
 
             Assert.Greater(frames, 1, "no frames ran, so nothing was tested");
+            Assert.Less(t, deadline,
+                $"the exchange did not finish inside {deadline:0.##} s, though it costs only " +
+                $"{ExchangeSeconds():0.##} s to speak — it stalled rather than ran slowly");
             Assert.That(_spoken.Count, Is.EqualTo(2), "the exchange did not happen");
             Assert.IsFalse(InteractionGate.IsBlocked);
         }
