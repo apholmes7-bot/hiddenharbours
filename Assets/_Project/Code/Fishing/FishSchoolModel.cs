@@ -469,6 +469,15 @@ namespace HiddenHarbours.Fishing
         {
             float basis = FishSchoolMath.BaseChanceForDensity(f.SchoolsPerSquareKilometre,
                                                               q.Settings.CellSizeMetres);
+
+            // The species said nothing: fall to the owner GLOBAL density before falling all the way
+            // back to BaseAppearanceChance01. Without this the global density is a knob he can drag
+            // with no effect at all, which is worse than no knob. At the shipped 38.19/km^2 over a
+            // 120 m cell it returns 0.55 - exactly BaseAppearanceChance01 - so this is neutral.
+            if (basis < 0f)
+                basis = FishSchoolMath.BaseChanceForDensity(q.Settings.SchoolsPerSquareKilometre,
+                                                            q.Settings.CellSizeMetres);
+
             return basis < 0f
                 ? globalChance01                                          // unstated - the old number
                 : FishSchoolMath.AppearanceChance01(q.SeaState01, q.Season, basis, in q.Settings);
