@@ -21,7 +21,8 @@ import hashlib
 import re
 import os
 
-from . import contracts, facing as facing_mod, families, recipes, heightmap, roads, unityyaml as U
+from . import (contracts, facing as facing_mod, families, recipes, heightmap, roads,
+               tide as tide_mod, unityyaml as U)
 from .repo import ASSETS_PPU
 
 SCHEMA = "hiddenharbours.scene/1"
@@ -67,6 +68,12 @@ def build_document(repo, region, scene, provenance):
     paths = _paths(repo, scene)
     terrain, tile_counts = _terrain(repo, region, cols, rows, origin_nw, provenance)
 
+    # The tide LAST, because it reads the finished entities: a face's waterline and a hull's rise
+    # are stamped onto records the walk has already built rather than threaded through it, and the
+    # height map it samples is the one _terrain has just proved present or absent.
+    tide, tide_notes = _tide(repo, scene, entities, (centre_x, centre_y), provenance)
+    entity_notes = entity_notes | tide_notes
+
     return {
         "schema": SCHEMA,
         "generatedBy": GENERATED_BY,
@@ -109,6 +116,14 @@ def build_document(repo, region, scene, provenance):
                            "counts here, which double-count overlaps; a true cell count is the "
                            "more useful number and the review asked for one or the other, said.",
         },
+        # The tide's declared terms, as a SIBLING of everything they apply to: a reader that
+        # wants water at high tide needs the three laws ONCE, not repeated on 2,757 entities.
+        "x-tideRules": tide["rules"],
+        # The hulls, whether or not they draw. MooredBoat is a runtime DRAWER, so the seven boats
+        # at Nine Mile Creek's wall and the harbour float carry no sprite in the committed scene
+        # and no entity can hold their ride — but they are placed, they are declared, and they are
+        # what the owner asked to watch ride the tide.
+        "x-tidalHulls": tide["hulls"],
         "x-rigs": rigs,
         "x-rigVersions": rig_versions,
         "x-rigVersionsShaRule": "sha256 of the rig's bytes with CR stripped "
@@ -191,6 +206,8 @@ def _terrain(repo, region, cols, rows, origin_nw, provenance):
 
     field, field_note = heightmap.sample_field(
         repo, provenance.get("heightMap"), cols, rows, origin_nw, HEIGHT_FIELD_STRIDE_M)
+    full_field, full_note = heightmap.sample_field_full(
+        repo, provenance.get("heightMap"), cols, rows, origin_nw)
     terrain = {
         "cellMeters": 1,
         "cols": cols,
@@ -219,6 +236,16 @@ def _terrain(repo, region, cols, rows, origin_nw, provenance):
             "strideMeters": HEIGHT_FIELD_STRIDE_M,
             "values": None,
             "x-unavailable": field_note,
+        },
+        # ⭐ THE TIDE FIELD. The 8 m wash above shades; this one is thresholded. A reader that cuts
+        # water at `seaLevel` needs the ground at the resolution the water's edge actually moves
+        # across — 8 m steps draw a coastline in 8 m steps — so this is one sample per 1 m terrain
+        # cell, on the SAME cols x rows grid every layer's rle covers, run-length encoded because
+        # a bay floor and a plateau are each one long run. See x-tideRules for what to do with it.
+        "x-heightFieldFull": full_field if full_field is not None else {
+            "strideMeters": 1,
+            "values": None,
+            "x-unavailable": full_note,
         },
     }
     return terrain, tiles
@@ -310,6 +337,106 @@ def _encode(grid, materials, total):
     if length:
         runs.append([current, length])
     return runs
+
+
+# --- the tide -----------------------------------------------------------------------------
+
+def _tide(repo, scene, entities, centre, provenance):
+    """``({rules, hulls}, entityNotes)`` — the three laws stated, and stamped where they apply.
+
+    Nothing here evaluates a tide. The export has no clock, and rule 5 says the water level is
+    recomputed from ``(worldSeed, gameTime)`` and never stored, so what ships is the set of terms a
+    reader needs to pick its own carrier: the sea level's formula, each drawn face's lip, and each
+    hull's draught and bed.
+
+    ⚠ **Both committed scenes were banked BEFORE the tide landed.** Neither carries a
+    ``TidalFaceWaterline`` (#765) or a ``HullTideRide`` (#753) — the quay's courses were placed when
+    the sea could not climb them — so none of these numbers can be read off a serialized component
+    the way the float's are. They are resolved from what the scene DOES declare (a placement, an
+    owner, a hull def) through the same chain the components walk, and every one says which.
+    """
+    terms = tide_mod.TideTerms(repo)
+    if not terms.ok:
+        unavailable = ("the tide's declared terms could not be read from the C# that states them: "
+                       + ", ".join(terms.missing) + ". Nothing is stamped rather than stamped with "
+                       "a default — a face cut at a heightScale of zero draws the whole wall under "
+                       "water and looks like a decision.")
+        return ({"rules": {"x-unavailable": unavailable}, "hulls": []},
+                {"tidalFaces": {"x-unavailable": unavailable},
+                 "tidalHulls": {"x-unavailable": unavailable}})
+
+    sampler = heightmap.Sampler(repo, provenance.get("heightMap"))
+    convention = tide_mod.facing_convention(repo)
+    decks = {
+        "WharfDeckElevation": terms.wharf_deck_elevation,
+        "BreakwaterCrestElevation": terms.breakwater_crest_elevation,
+    }
+    prefix, walls = tide_mod.face_placement(repo)
+    faces = tide_mod.stamp_faces(terms, entities, prefix, walls, centre, sampler, decks, convention)
+    # Named whether or not it matched, because "this region places no face" and "this reader looked
+    # in the wrong place" are different findings and the prefix is what tells them apart.
+    faces["x-facePlacementLookedFor"] = prefix
+    faces["x-facingConvention"] = convention
+    faces["x-note"] = _FACES_NOTE if faces["pieces"] else _NO_FACES_NOTE
+
+    hulls = tide_mod.collect_hulls(repo, scene, centre, terms, sampler)
+    stamped = tide_mod.stamp_hulls(entities, hulls)
+    # Split by KIND, because a flat "8 of 31 carry a draught" reports a defect where there is a
+    # decision: 23 of Nine Mile Creek's hulls are the fleet-review lineup, which carries no hull def
+    # on purpose. The WORKING harbour is the number that has to be whole.
+    working = [h for h in hulls if h.get("x-kind") != "review"]
+    hull_notes = {
+        "declared": len(hulls),
+        "working": len(working),
+        "review": len(hulls) - len(working),
+        "workingWithDraught": sum(1 for h in working
+                                  if h["x-tidalRide"]["draughtMetres"] is not None),
+        "workingWithBed": sum(1 for h in working
+                              if h["x-tidalRide"]["bedElevation"] is not None),
+        "byKind": _tally(hulls, "x-kind"),
+        "x-note": _HULLS_NOTE,
+    } | stamped
+
+    return ({"rules": tide_mod.rules(terms), "hulls": hulls},
+            {"tidalFaces": faces, "tidalHulls": hull_notes})
+
+
+def _tally(items, key):
+    """``{value: count}`` over a list, in first-seen order — a count, never a sample."""
+    out = {}
+    for item in items:
+        name = item.get(key) or "(unstated)"
+        out[name] = out.get(name, 0) + 1
+    return out
+
+
+_FACES_NOTE = (
+    "every course of quay face the committed scene holds, and what #765 does to it. `cut` pieces "
+    "state a lip and a foot, so a reader can put the waterline on them; `whole` ones are north-south "
+    "runs that have NO drawn face at this camera and are left uncut, which is the picture the game "
+    "draws. `unresolved` is neither, and is a defect: it means a course that draws a face could not "
+    "be given a lip elevation, and it ships null rather than a zero. ⚠ The committed scene predates "
+    "#765, so no course carries a TidalFaceWaterline component; the lip is derived from the "
+    "PLACEMENT (pivot + LipRiseFromPivot) and the deck elevation from the terrain constant the run "
+    "stands on, both of which are what the builder used.")
+
+_NO_FACES_NOTE = (
+    "this region places no quay face this reader can find. ⚠ That is not the same as having no "
+    "drawn faces: St Peters' wharf draws its own face INSIDE each deck tile — the kit is 32x56 "
+    "where the top 32 rows are the deck and the bottom 24 are the vertical face — and no "
+    "TidalFaceWaterline is placed anywhere in this region, so the game does not cut them. Stamping "
+    "a waterline on them here would state a law the game does not apply, and a reader would cut a "
+    "face the game draws whole.")
+
+_HULLS_NOTE = (
+    "every hull the scene declares, drawn or not. ⚠ MooredBoat is a runtime DRAWER — it builds its "
+    "picture from the owner's hull def when the region loads — so a moored boat carries no "
+    "SpriteRenderer in the committed scene and the entity list, which is a walk of sprites, cannot "
+    "hold one. They are placed and declared all the same, so they ship here with the block "
+    "TidalRide needs, and any hull that DOES draw also carries it on its entity as x-tidalRide "
+    "(its pictures point at it with x-tidalRideOf rather than repeating it). draughtMetres or "
+    "bedElevation may be null where the repo does not state one: null is 'no bottom under her, she "
+    "can never take the ground', which is TidalRide's own reading of open water, and it is NOT zero.")
 
 
 # --- entities -----------------------------------------------------------------------------

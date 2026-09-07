@@ -25,7 +25,7 @@ sys.path.insert(0, TOOL)
 
 REFERENCE = "docs/tools/reference/sample-scene.json"
 
-from hhexport import contracts, families, heightmap, package, recipes, roads  # noqa: E402
+from hhexport import contracts, families, heightmap, package, recipes, roads, tide  # noqa: E402
 from hhexport import facing as facing_mod, unityyaml as U  # noqa: E402
 from hhexport.repo import Repo, sha256_lf  # noqa: E402
 from hhexport.scene import Scene  # noqa: E402
@@ -1575,3 +1575,419 @@ class ContractOptsTests(unittest.TestCase):
                 self.assertNotIn("x-cellIndex", call, "a sheet-level opt claimed a cell")
             self.assertTrue(doc["x-provenance"]["entityNotes"]["x-contractMeaning"])
         self.assertGreater(carried, 0, "no entity reads a kit contract at all")
+
+
+class TideTests(unittest.TestCase):
+    """The owner's 2026-09-07 ruling: water from elevation, faces cut at the waterline, hulls that
+    ride. Every term the package states is checked against the C# that declares it, and the whole
+    thing is then applied — from the PACKAGE alone, the way a reader would — and measured against
+    what #765 measured in the game."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.repo = Repo(REPO)
+        cls.documents = {
+            name: hh_scene_export.export_region(cls.repo, name, scene, height)
+            for name, scene, height in hh_scene_export.REGIONS
+        }
+        cls.terms = tide.TideTerms(cls.repo)
+
+    # --- the declared terms ---------------------------------------------------------------
+
+    def test_every_constant_is_read_from_the_c_sharp_that_declares_it(self):
+        """Rule 6, and the one that keeps this module from becoming a second table of the tide.
+
+        Each leaf is asserted against the value in its own source file — so moving a constant fails
+        here rather than shipping a package that quietly disagrees with the game.
+        """
+        self.assertTrue(self.terms.ok, f"unread terms: {self.terms.missing}")
+        self.assertEqual(self.terms.camera_elevation_deg, 40.0)
+        self.assertAlmostEqual(self.terms.height_scale, math.cos(math.radians(40)), places=9)
+        self.assertAlmostEqual(self.terms.ground_depth_scale, math.sin(math.radians(40)), places=9)
+        # Height is NOT depth. The 19% between them is the whole reason TidalRide names the cosine.
+        self.assertGreater(self.terms.height_scale, self.terms.ground_depth_scale)
+        self.assertEqual(self.terms.baked_tide_range, 4.4)
+        self.assertEqual(self.terms.baked_clearance, 0.8)
+        self.assertEqual(self.terms.baked_mud_z, -1.4)
+        self.assertEqual(self.terms.face_course_width, 5.0)
+        self.assertEqual(self.terms.wharf_deck_elevation, 3.0)
+        self.assertEqual(self.terms.breakwater_crest_elevation, 3.4)
+        self.assertAlmostEqual(self.terms.baked_deck_z, 5.2, places=6)
+        self.assertAlmostEqual(self.terms.drawn_face_height, 6.6, places=6)
+
+    def test_the_bake_the_constants_describe_is_the_bake_the_contract_shipped(self):
+        """#478's tripwire, from the other side: the sheets were baked at `tideRange 4.4, clearance
+        0.8`, and the wharf pack's own contract says so. A re-bake at another coast's tide moves the
+        contract and this fails before a wall ships at the wrong height."""
+        with open(os.path.join(REPO, tide.WHARF_CONTRACT), encoding="utf-8") as handle:
+            contract = json.load(handle)
+        self.assertEqual(contract["tide"]["tideRange"], self.terms.baked_tide_range)
+        self.assertEqual(contract["deck"]["clearance"], self.terms.baked_clearance)
+        self.assertEqual(contract["deck"]["deckZ"], self.terms.baked_deck_z)
+
+    def test_the_facing_convention_is_read_and_not_assumed(self):
+        """The pack's `order` array reads CLOCKWISE while every directional family in it is
+        registered COUNTER-clockwise. Assuming it has shipped defects in five kits; cell 4 is due
+        south, which is why `logCrib_4` draws a face and `logCrib_6` does not."""
+        convention = tide.facing_convention(self.repo)
+        self.assertEqual(convention["source"], tide.WHARF_CONTRACT)
+        self.assertEqual(convention["facings"], 8)
+        self.assertTrue(convention["counterClockwise"])
+        self.assertEqual(tide.heading_of_facing(4, 8, True), 180.0)
+        self.assertEqual(tide.heading_of_facing(6, 8, True), 90.0)
+        self.assertTrue(tide.draws_a_face_at_this_camera(tide.plan_direction_of(180)))
+        self.assertFalse(tide.draws_a_face_at_this_camera(tide.plan_direction_of(90)))
+        self.assertFalse(tide.draws_a_face_at_this_camera(tide.plan_direction_of(0)))
+
+    def test_the_rules_block_is_static_text_and_names_its_sources(self):
+        """`x-tideRules` must not carry an evaluated tide. Rule 5: the water level is recomputed
+        from (worldSeed, gameTime) and never stored, and a package that shipped one number for it
+        would be shipping a saved tide."""
+        for name, document in self.documents.items():
+            rules = document["x-tideRules"]
+            self.assertAlmostEqual(rules["heightScale"], self.terms.height_scale, places=5)
+            for key in ("seaLevel", "water", "faceWaterline", "hullWaterline", "hullScreenRise"):
+                self.assertIsInstance(rules[key], str, f"{name} {key}")
+            self.assertIn("TidalFaceWaterline", rules["x-sources"]["faceWaterline"])
+            self.assertIn("TidalRide", rules["x-sources"]["hullWaterline"])
+            # The two regions' rules are the same text: a law, not a measurement.
+            self.assertEqual(rules, self.documents["NineMileCreek"]["x-tideRules"])
+
+    # --- the height field -----------------------------------------------------------------
+
+    def test_the_full_height_field_covers_the_terrain_grid_exactly(self):
+        """The same guard every layer's rle is held to, and the reason a reader can index one
+        against the other: `sum(count) == cols * rows`, on the SAME grid."""
+        for name, document in self.documents.items():
+            terrain = document["terrain"]
+            field = terrain["x-heightFieldFull"]
+            self.assertEqual(field["strideMeters"], 1)
+            self.assertEqual((field["cols"], field["rows"]), (terrain["cols"], terrain["rows"]))
+            self.assertEqual(field["originNW"], terrain["originNW"])
+            self.assertEqual(sum(count for _value, count in field["values"]),
+                             terrain["cols"] * terrain["rows"], name)
+            for value, count in field["values"]:
+                self.assertGreater(count, 0, f"{name}: a zero-length run")
+                if value is not None:
+                    low, high = field["elevationRange"]
+                    self.assertTrue(low <= value <= high, f"{name}: {value} outside {low}..{high}")
+
+    def test_the_full_field_is_the_height_map_at_a_known_texel(self):
+        """Not "a plausible elevation field" — THE map. Decoded independently here and compared
+        cell for cell across a diagonal, so a reader thresholding this is thresholding the texture."""
+        for name, scene_rel, height_name in hh_scene_export.REGIONS:
+            document = self.documents[name]
+            height_map = document["terrain"]["x-heightMap"]
+            with open(os.path.join(REPO, height_map["texture"]), "rb") as handle:
+                png = heightmap.decode_r8(handle.read())
+            self.assertIsNotNone(png, f"{name}: the height texture did not decode")
+            field = document["terrain"]["x-heightFieldFull"]
+            low, high = field["elevationRange"]
+            width_m, height_m = height_map["worldSizeMeters"]
+            centre_x, centre_y = height_map["worldCenter"]
+            left, bottom = centre_x - width_m / 2.0, centre_y - height_m / 2.0
+
+            flat = []
+            for value, count in field["values"]:
+                flat.extend([value] * count)
+            checked = 0
+            for step in range(0, min(field["cols"], field["rows"]), 7):
+                col = row = step
+                world_x = field["originNW"][0] + col + 0.5
+                world_y = field["originNW"][1] - (row + 0.5)
+                tx = int((world_x - left) / width_m * png.width)
+                ty = int((world_y - bottom) / height_m * png.height)
+                expected = round(low + png.rows[png.height - 1 - ty][tx] / 255.0 * (high - low), 3)
+                self.assertEqual(flat[row * field["cols"] + col], expected,
+                                 f"{name}: cell ({col},{row}) is not the texel under it")
+                checked += 1
+            self.assertGreater(checked, 40, f"{name}: too few cells checked to mean anything")
+
+    def test_the_field_is_quantised_to_the_maps_own_steps(self):
+        """255 steps across `elevationRange`, and nothing finer — which is what makes the runs run.
+        A field that invented intermediate values would be both bigger and less true."""
+        for name, document in self.documents.items():
+            field = document["terrain"]["x-heightFieldFull"]
+            low, high = field["elevationRange"]
+            self.assertAlmostEqual(field["quantumMeters"], (high - low) / 255.0, places=6)
+            steps = {round(low + code / 255.0 * (high - low), 3) for code in range(256)}
+            distinct = {value for value, _count in field["values"] if value is not None}
+            self.assertLessEqual(len(distinct), 256, name)
+            self.assertTrue(distinct <= steps, f"{name}: a value that is not one of the map's steps")
+
+    def test_the_field_stays_inside_the_size_the_handoff_budgeted(self):
+        """4 MB per region was the ceiling to raise before shipping. Measured on the rendered bytes,
+        because that is what a reader downloads — not on a compact `json.dumps` nobody sees."""
+        for name, document in self.documents.items():
+            rendered = package._render(document["terrain"]["x-heightFieldFull"], 3)
+            self.assertLess(len(rendered), 4 * 1024 * 1024,
+                            f"{name}: the tide field is {len(rendered) / 1048576:.2f} MB")
+
+    # --- the faces ------------------------------------------------------------------------
+
+    def test_every_placed_course_of_face_resolves_a_lip_or_says_why_not(self):
+        """The handoff's guard, and the point of it: none is silently 0. A face cut at chart datum
+        draws the whole wall under water at every tide and looks like a decision somebody made."""
+        creek = self.documents["NineMileCreek"]
+        notes = creek["x-provenance"]["entityNotes"]["tidalFaces"]
+        self.assertEqual(notes["unresolved"], 0, "a course that draws a face resolved no lip")
+        self.assertEqual(notes["pieces"], notes["cut"] + notes["whole"])
+        self.assertEqual(notes["pieces"], 24)
+        self.assertEqual(notes["cut"], 19)
+        self.assertEqual(notes["runs"]["NorthWall"], {"pieces": 9, "cut": 9, "whole": 0})
+        self.assertEqual(notes["runs"]["Breakwater"], {"pieces": 10, "cut": 10, "whole": 0})
+        # The apron's east side is a north-south run: #765 leaves it whole, and so does this.
+        self.assertEqual(notes["runs"]["WestWall"], {"pieces": 5, "cut": 0, "whole": 5})
+
+        for entity in creek["entities"]:
+            if "x-tidalFace" not in entity:
+                continue
+            block = entity["x-tidalFace"]
+            if block is None:
+                self.assertTrue(entity["x-tidalFaceNote"], entity["id"])
+                continue
+            self.assertNotEqual(block["lipElevation"], 0, f"{entity['id']}: a lip at chart datum")
+            self.assertLess(block["footElevation"], block["lipElevation"])
+            self.assertAlmostEqual(block["heightScale"], self.terms.height_scale, places=5)
+
+    def test_the_two_runs_stand_on_their_own_decks_and_not_on_one_constant(self):
+        """Six runs, three decks. A constant lip would have drawn the arm's waterline 0.40 m out
+        "for as long as nobody looked" — FaceLipElevation's own warning, and the reason the deck is
+        resolved per run rather than typed once."""
+        creek = self.documents["NineMileCreek"]
+        by_run = {}
+        for entity in creek["entities"]:
+            block = entity.get("x-tidalFace")
+            if block:
+                by_run.setdefault(entity["x-name"].split("_", 1)[0], set()).add(
+                    (block["lipElevation"], block["footElevation"]))
+        self.assertEqual(by_run["NorthWall"], {(3, -3.6)})
+        self.assertEqual(by_run["Breakwater"], {(3.4, -3.2)})
+        # The foot is the LIP less the drawn height, not `springLow + mudZ`. The two agree on the
+        # quay (spring low -2.2 + mudZ -1.4 = -3.6) and differ by 0.40 on the arm, which is exactly
+        # the error a constant would have shipped.
+        self.assertNotEqual(by_run["NorthWall"], by_run["Breakwater"])
+
+    def test_the_north_walls_lip_lands_on_the_line_765_measured(self):
+        """#765 measured the wall's plan lip at y 87.00 and the pieces standing at y 84.6235. The
+        lip is derived here from the placement — pivot + PackDatumRise - half a course of PLAN - and
+        it has to land on 87.00, or every waterline on this wall is drawn somewhere else."""
+        creek = self.documents["NineMileCreek"]
+        centre_y = creek["region"]["worldCenter"][1]
+        walls = [e for e in creek["entities"]
+                 if (e.get("x-tidalFace") and e["x-name"].startswith("NorthWall"))]
+        self.assertEqual(len(walls), 9)
+        for entity in walls:
+            self.assertAlmostEqual(entity["pos"][1] + centre_y, 84.6235, places=3)
+            self.assertAlmostEqual(entity["x-tidalFace"]["lipWorldY"], 87.0, places=4)
+        arm = [e for e in creek["entities"]
+               if (e.get("x-tidalFace") and e["x-name"].startswith("Breakwater"))]
+        for entity in arm:
+            self.assertAlmostEqual(entity["x-tidalFace"]["lipWorldY"], 38.0, places=4)
+
+    def test_the_height_map_agrees_with_the_deck_constant_on_every_course(self):
+        """The cross-check that keeps the declared lip honest. The painted map is a raster of the
+        very terrain the game samples (TerrainPaintTool.BakeNineMileCreekSeabed), so reading it at
+        the same footprint centre must give the same deck to within one 8-bit quantum. If it stops
+        agreeing, either the terrain moved under the wharf or the constant did."""
+        creek = self.documents["NineMileCreek"]
+        checked = 0
+        for entity in creek["entities"]:
+            block = entity.get("x-tidalFace")
+            if not block:
+                continue
+            sample = block["x-heightMapSample"]
+            self.assertTrue(sample["agreesWithDeclared"],
+                            f"{entity['x-name']}: map reads {sample['metres']} m where "
+                            f"{block['lipElevation']} m is declared")
+            self.assertLessEqual(abs(sample["metres"] - block["lipElevation"]),
+                                 sample["quantumMeters"])
+            checked += 1
+        self.assertEqual(checked, 19)
+
+    def test_st_peters_states_that_it_cuts_no_face_rather_than_inventing_one(self):
+        """St Peters' wharf draws its face INSIDE each 32x56 deck tile and carries no
+        TidalFaceWaterline anywhere. Stamping a waterline on those tiles would state a law the game
+        does not apply there, and a reader would cut a face the game draws whole."""
+        peters = self.documents["StPeters"]
+        notes = peters["x-provenance"]["entityNotes"]["tidalFaces"]
+        self.assertEqual(notes["pieces"], 0)
+        self.assertIn("St Peters", notes["x-note"])
+        self.assertIn("TidalFaceWaterline", notes["x-note"])
+        self.assertFalse([e for e in peters["entities"] if e.get("x-tidalFace")])
+
+    # --- the hulls ------------------------------------------------------------------------
+
+    def test_every_working_hull_states_a_positive_draught_and_a_bed(self):
+        """The handoff's guard. `working` excludes the fleet-review lineup, which carries no hull
+        def ON PURPOSE (MooredBoat's own remarks say so) — counting those as failures would report a
+        defect where there is a decision."""
+        for name, document in self.documents.items():
+            notes = document["x-provenance"]["entityNotes"]["tidalHulls"]
+            self.assertEqual(notes["workingWithDraught"], notes["working"], name)
+            self.assertEqual(notes["workingWithBed"], notes["working"], name)
+            for hull in document["x-tidalHulls"]:
+                ride = hull["x-tidalRide"]
+                self.assertTrue(ride["x-draughtFrom"], f"{name} {hull['x-name']}")
+                self.assertTrue(ride["x-bedFrom"], f"{name} {hull['x-name']}")
+                if hull.get("x-kind") == "review":
+                    # Absent, and it must ship as absent: a zero draught is a CLAIM that she never
+                    # takes the ground, which is not what the repo says about her.
+                    self.assertIsNone(ride["draughtMetres"], hull["x-name"])
+                    continue
+                self.assertGreater(ride["draughtMetres"], 0, f"{name} {hull['x-name']}")
+                self.assertIsNotNone(ride["bedElevation"], f"{name} {hull['x-name']}")
+        creek = self.documents["NineMileCreek"]
+        kinds = creek["x-provenance"]["entityNotes"]["tidalHulls"]["byKind"]
+        self.assertEqual(kinds, {"float": 1, "moored": 7, "review": 23})
+
+    def test_the_float_states_her_own_numbers_rather_than_borrowing_them(self):
+        """She is the one hull in either scene whose draught and bed were measured at BUILD time and
+        serialized, so nothing here resolves or samples them — and a sampled bed would disagree with
+        hers by 0.6 m, because hers was measured across her whole footprint."""
+        creek = self.documents["NineMileCreek"]
+        float_hull = next(h for h in creek["x-tidalHulls"] if h["x-kind"] == "float")
+        self.assertEqual(float_hull["x-id"], "wharf.nine_mile_creek.float")
+        ride = float_hull["x-tidalRide"]
+        self.assertAlmostEqual(ride["draughtMetres"], 0.31, places=5)
+        self.assertAlmostEqual(ride["bedElevation"], -3.273215, places=5)
+        self.assertIn("_draughtMetres", ride["x-draughtFrom"])
+        self.assertIn("_bedElevation", ride["x-bedFrom"])
+
+    def test_a_moored_hulls_draught_walks_the_chain_hulltideride_walks(self):
+        """`MooredBoat._owner -> BoatOwnerDef.Boat -> BoatHullDef.DraughtMeters` — the same three
+        hops `HullTideRide.DraughtMetres` makes, so the export and the game cannot disagree about
+        how deep she sits."""
+        creek = self.documents["NineMileCreek"]
+        leo = next(h for h in creek["x-tidalHulls"] if h["x-name"].endswith("arsenault_leo"))
+        self.assertEqual(leo["x-owner"]["id"], "owner.arsenault_leo")
+        self.assertEqual(leo["x-hull"]["id"], "boat.lobster_standard_hardtop_northumberland")
+        declared = U.parse_file(os.path.join(REPO, leo["x-hull"]["asset"]))[0].data
+        self.assertEqual(leo["x-tidalRide"]["draughtMetres"],
+                         U.as_float(declared["DraughtMeters"]))
+
+    def test_a_hull_that_draws_carries_its_ride_and_its_pictures_point_at_it(self):
+        """St Peters' dory is the one hull in either scene with a sprite. Her oars and her iso
+        visual are separate flat entities here — the export has world positions, not a live
+        hierarchy — so they say WHOSE rise they take rather than each carrying a copy. Applying a
+        rise twice would lift a dory's oars off her."""
+        peters = self.documents["StPeters"]
+        dory = next(e for e in peters["entities"] if e["x-path"] == "Dory")
+        self.assertAlmostEqual(dory["x-tidalRide"]["draughtMetres"], 0.3, places=5)
+        riders = [e for e in peters["entities"] if e.get("x-tidalRideOf")]
+        self.assertEqual(len(riders), 5)
+        for entity in riders:
+            self.assertEqual(entity["x-tidalRideOf"], "Dory")
+            self.assertNotIn("x-tidalRide", entity, "a picture carried its own copy of the rise")
+
+    def test_no_hull_or_face_in_either_scene_carries_the_component_yet(self):
+        """⚠ The fact that shapes this whole module: both scenes were banked BEFORE the tide landed.
+        Neither holds a TidalFaceWaterline (#765) nor a HullTideRide (#753), so none of these numbers
+        could be read off a serialized component — they are resolved from what the scene DOES
+        declare. When the scenes are re-banked this test fails, and that is the signal to prefer the
+        components' own authored values (collect_hulls already does)."""
+        for name, scene_rel, _height in hh_scene_export.REGIONS:
+            with open(os.path.join(REPO, scene_rel), encoding="utf-8", errors="replace") as handle:
+                text = handle.read()
+            for source in ("Assets/_Project/Code/Art/TidalFaceWaterline.cs",
+                           "Assets/_Project/Code/Boats/HullTideRide.cs"):
+                guid = _guid_of(source)
+                self.assertNotIn(guid, text,
+                                 f"{name} now carries {os.path.basename(source)} — read the "
+                                 "component's own numbers rather than resolving them")
+
+    # --- the whole thing, applied -----------------------------------------------------------
+
+    def test_a_reader_applying_the_rules_puts_the_fleet_in_the_water_at_every_tide(self):
+        """⭐ THE ACCEPTANCE MEASUREMENT, made from the PACKAGE ALONE — no repo, no C#, no engine.
+
+        #765's finding was that the five hulls at the north wall were drawn against timber because
+        the wall was drawn over the water they float in, and its fix put them 0.2-0.7 units above
+        the sea's drawn edge at every state of the tide. A reader that applies `x-tideRules` to
+        `x-tidalFace` and `x-tidalRide` has to reproduce that, or the package is stating the laws
+        and getting a different harbour out of them.
+        """
+        creek = self.documents["NineMileCreek"]
+        rules = creek["x-tideRules"]
+        scale = rules["heightScale"]
+        mean = creek["terrain"]["waterLevelMeters"]
+        amplitude = creek["terrain"]["x-tide"]["amplitudeMeters"]
+        centre_y = creek["region"]["worldCenter"][1]
+
+        wall = next(e["x-tidalFace"] for e in creek["entities"]
+                    if e.get("x-tidalFace") and e["x-name"].startswith("NorthWall"))
+        alongside = [h for h in creek["x-tidalHulls"]
+                     if h.get("x-kind") == "moored" and abs(h["pos"][1] + centre_y - 85.0) < 0.01]
+        self.assertEqual(len(alongside), 5, "the five hulls #765 measured are not at the wall")
+
+        for carrier in (-1.0, -0.5, 0.0, 0.5, 1.0):
+            sea = mean + amplitude * carrier
+            # x-tideRules.faceWaterline
+            waterline_y = wall["lipWorldY"] + (sea - wall["lipElevation"]) * scale
+            for hull in alongside:
+                ride = hull["x-tidalRide"]
+                # x-tideRules.hullWaterline, then hullScreenRise
+                underside = max(sea - ride["draughtMetres"], ride["bedElevation"])
+                floats_at = underside + ride["draughtMetres"]
+                screen_y = (hull["pos"][1] + centre_y
+                            + (floats_at - ride["bakedWaterlineElevation"]) * scale)
+                gap = screen_y - waterline_y
+                self.assertTrue(0.2 <= gap <= 0.7,
+                                f"carrier {carrier}: {hull['x-name']} sits {gap:.3f} u above the "
+                                "water's edge; #765 measured 0.2-0.7")
+                # And she is afloat at the bottom of the tide: the wall berths are dredged for it.
+                self.assertGreaterEqual(floats_at, sea - 1e-6,
+                                        f"carrier {carrier}: {hull['x-name']} took the ground")
+
+    def test_thresholding_the_field_at_spring_high_floods_the_berths_and_not_the_quay(self):
+        """The other half of the ruling — water FROM ELEVATION. At spring high the wall's berths
+        must be sea and the wharf deck must not be, or a tide slider built on this field draws a
+        harbour the game does not have."""
+        creek = self.documents["NineMileCreek"]
+        field = creek["terrain"]["x-heightFieldFull"]
+        mean = creek["terrain"]["waterLevelMeters"]
+        amplitude = creek["terrain"]["x-tide"]["amplitudeMeters"]
+        flat = []
+        for value, count in field["values"]:
+            flat.extend([value] * count)
+
+        def elevation_at(world_x, world_y):
+            col = int(world_x - field["originNW"][0])
+            row = int(field["originNW"][1] - world_y)
+            return flat[row * field["cols"] + col]
+
+        for carrier, wet_expected in ((1.0, True), (-1.0, True)):
+            sea = mean + amplitude * carrier
+            # A berth at the north wall, where the fleet lies.
+            self.assertEqual(elevation_at(120.0, 85.0) < sea, wet_expected,
+                             f"the berth at (120, 85) is not water at carrier {carrier}")
+        spring_high = mean + amplitude
+        # The wharf deck, half a course inboard of the lip — dry at the top of the tide, by the
+        # 0.80 m of freeboard this wharf is authored with.
+        deck = elevation_at(120.0, 89.5)
+        self.assertGreater(deck, spring_high, "the wharf deck floods at spring high")
+        self.assertLess(deck - spring_high, 1.0, "the deck stands further above spring high than "
+                                                 "this wharf's authored freeboard")
+
+    def test_the_tide_adds_nothing_that_moves_between_two_runs(self):
+        """Determinism, for the new blocks specifically: two exports of one commit must be equal.
+        The tide reads a texture, walks a scene and follows guids into assets, and any one of those
+        could have brought an iteration order with it."""
+        again = {name: hh_scene_export.export_region(self.repo, name, scene, height)
+                 for name, scene, height in hh_scene_export.REGIONS}
+        for name, document in self.documents.items():
+            self.assertEqual(package.dumps(document["x-tideRules"]),
+                             package.dumps(again[name]["x-tideRules"]), name)
+            self.assertEqual(package.dumps(document["x-tidalHulls"]),
+                             package.dumps(again[name]["x-tidalHulls"]), name)
+            self.assertEqual(package.dumps(document["terrain"]["x-heightFieldFull"]),
+                             package.dumps(again[name]["terrain"]["x-heightFieldFull"]), name)
+
+
+def _guid_of(asset_rel):
+    """The guid a `.meta` publishes — the only way a scene names a script."""
+    with open(os.path.join(REPO, asset_rel + ".meta"), encoding="utf-8") as handle:
+        for line in handle:
+            if line.startswith("guid:"):
+                return line.split(":", 1)[1].strip()
+    raise AssertionError(f"{asset_rel}.meta declares no guid")

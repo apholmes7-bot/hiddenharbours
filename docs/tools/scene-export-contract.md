@@ -100,7 +100,9 @@ the scene was last banked at, builder drift since, what was read from where, the
 unresolved-sheet list), `x-rigs` and `x-rigSha256` (the pin table the review asks for but names
 no key for), `x-cellAt` / `x-inBounds`, `x-name` / `x-path` (the scene hierarchy path),
 `x-pivotSource`, `x-declaredBy` (which sidecar linked a sheet to its rig), `x-readOnly` /
-`x-derived` / `x-authorable`, `x-heightMap`, `x-familyIsSpriteStem`.
+`x-derived` / `x-authorable`, `x-heightMap`, `x-familyIsSpriteStem`, and the four the 2026-09-07
+tide ruling added — `x-tideRules`, `terrain.x-heightFieldFull`, `x-tidalFace` and `x-tidalRide`
+(with `x-tidalHulls` beside it for the hulls that draw no sprite). §9 is what they are.
 
 ## 5. What reading the bytes added
 
@@ -592,3 +594,142 @@ draw-time transform on the baked sprite and never folded into `opts`**. It ships
 unquantised: enumerating it here would be this exporter inventing an axis the pipeline does not
 have, which is what the ask explicitly forbade.
 
+## 9. The tide (owner ruling 2026-09-07)
+
+> *"i want to represent water at high tide in the editor, how should we do it?"* → (derive water
+> from elevation under a tide slider; faces and hulls can ride it too) → **"ok yes i want faces and
+> hulls to ride it too"**
+
+Four keys, and **all three laws are already in the game** — the package states them so a reader can
+apply them, and evaluates none of them. There is no clock in this exporter and rule 5 says the water
+level is recomputed from `(worldSeed, gameTime)` and never stored, so the **carrier is the reader's
+to choose**. A package that shipped one number for "the water" would be shipping a saved tide.
+
+| Key | Where | What it is |
+|---|---|---|
+| `x-tideRules` | top level | the three laws as strings, plus `heightScale` as a number |
+| `terrain.x-heightFieldFull` | terrain | ground elevation at **1 m**, run-length encoded — the field you threshold |
+| `x-tidalFace` | on an entity | one drawn course's lip, so `#765`'s cut can be put on it |
+| `x-tidalRide` / `x-tidalHulls` | entity / top level | a hull's draught and bed, so `#753`'s rise can be put on her |
+
+### 9.1 `x-tideRules` — the laws, once, as static text
+
+```
+seaLevel        = terrain.waterLevelMeters + terrain.x-tide.amplitudeMeters * carrier,  carrier ∈ [-1, 1]
+water           = groundElevation < seaLevel
+faceWaterline   = x-tidalFace.lipWorldY + (seaLevel - x-tidalFace.lipElevation) * heightScale
+hullWaterline   = max(seaLevel - draughtMetres, bedElevation) + draughtMetres
+hullScreenRise  = (hullWaterline - bakedWaterlineElevation) * heightScale        ← added to screen y; PLAN never moves
+```
+
+`heightScale` ≈ **0.766** is `IsoGround.HeightScale` = `cos(CameraElevationDegrees)`, given as a
+number so nobody re-derives it from prose. ⚠ **Height is not depth.** A metre north draws
+`groundDepthScale` = `sin` of the same angle ≈ 0.643 — 19% less — and a height run through it lands
+short. `TidalRide`, `TidalFaceWaterline` and the harbour float all use the cosine; the only place
+the sine belongs here is the lip's own half-width offset, which is PLAN.
+
+Both regions carry byte-identical `x-tideRules`. It is a law, not a measurement, and it cannot move
+the package's bytes between two runs on one commit.
+
+### 9.2 `terrain.x-heightFieldFull` — the field you threshold
+
+`§8.4`'s 8 m wash **shades**; this one is **cut against**, and 8 m steps draw a coastline in 8 m
+steps. So: one sample per **1 m terrain cell**, on the same `cols x rows` grid every layer's `rle`
+covers and with the same `originNW`, run-length encoded as `[[metres, count], …]` with
+`sum(count) == cols * rows` exactly. Metres above chart datum — **directly comparable to
+`terrain.waterLevelMeters` with no decode step**, which is the whole point of a field a reader
+thresholds at a sea level.
+
+⚠ **"Full" is the terrain's resolution, not the texture's.** Both shipped maps are **2 texels per
+metre** (1520x1120 over 760x560 m; 1520x1040 over 760x520), so a 1 m stride takes one texel in four.
+That is the honest stride for a field whose neighbours are 1 m cells; full resolution stays in
+`terrain.x-heightMap`, pinned by `textureSha256`.
+
+Values carry the map's own **8-bit quantisation and nothing finer** — 255 steps across
+`elevationRange`, stated as `quantumMeters` (0.047 m at Nine Mile Creek, 0.039 at St Peters). That
+is what makes the runs run: a bay floor and a plateau are each one long run, and the two regions cost
+**51,585** and **19,053** runs — about 1.2 MB and 0.4 MB rendered, against a 4 MB per-region ceiling.
+`null` is a sample outside the painted map: absent, not zero. Two-state on the LFS bytes exactly like
+`§8.4`.
+
+### 9.3 `x-tidalFace` — where the sea climbs a wall
+
+Every course of quay face carries either a block or a `null` **and a reason**. Never a zero: a face
+cut at chart datum draws the whole wall under water at every tide and reads as a decision somebody
+made.
+
+```json
+"x-tidalFace": { "lipWorldY": 87.0, "lipElevation": 3, "footElevation": -3.6, "heightScale": 0.766044 }
+```
+
+* **`lipWorldY`** is derived from the *placement*, not read off a component:
+  `pivotY + PackDatumRise - half a course × groundDepthScale`. Two terms at **different scales** —
+  the datum rise is HEIGHT, the half-width is PLAN — and on the north wall that is
+  `84.6235 + 3.9834 - 1.6070 = 87.0000`, the wall's own plan lip and the line `#765` cut the sea at.
+* **`lipElevation`** is the declared deck the run stands on (`NineMileCreekMainland.WharfDeckElevation`
+  3.00; `BreakwaterCrestElevation` 3.40). The game *measures* it off the authored terrain, which is
+  `MainlandTidalTerrain`'s zone composition and cannot run outside Unity — re-implementing that here
+  would be a second definition of the coastline (`§7(c)`'s trap). So `x-heightMapSample` ships beside
+  it: the committed map read at the **same footprint centre** the game samples, agreeing to within
+  one quantum on all 19 cut courses (2.988 against 3.00; 3.412 against 3.40).
+* **`footElevation`** is `lipElevation - (BakedDeckZMetres - BakedRigMudZ)` = the lip less 6.60 m of
+  drawn height — **per piece, never a constant**. `springLow + BakedRigMudZ` (−3.6) is the same
+  number only for a run whose deck stands at `springLow + BakedDeckZMetres`, which the quay does and
+  the breakwater's crest (−3.2) does not. That 0.40 m is exactly what a constant lip would have drawn
+  the arm's waterline wrong by.
+
+**Which courses are cut** is `NineMileCreekQuayFace.DrawsAFaceAtThisCamera` and nothing else:
+seaward must point south. Nine Mile Creek's 24 courses come out **19 cut, 5 whole, 0 unresolved** —
+the five are the apron's east side, a north–south run, which has no drawn face at this camera at all.
+The direction comes from the sprite's own facing index through the pack's **registered convention**
+(`azimuth.convention`, read from `wharfIsoRig.contract.json`, never assumed): 8 cells,
+counter-clockwise, so `logCrib_4` is due south and `logCrib_6` is east.
+
+**St Peters cuts nothing, and says so.** Its wharf draws its face *inside* each 32x56 deck tile — top
+32 rows deck, bottom 24 face — and no `TidalFaceWaterline` is placed anywhere in that region.
+Stamping a waterline on those tiles would state a law the game does not apply, and a reader would cut
+a face the game draws whole.
+
+### 9.4 `x-tidalRide` and `x-tidalHulls` — the hulls that ride
+
+⚠ **A hull in these two scenes is usually not an entity.** `MooredBoat` is a runtime **drawer**: it
+builds its picture from the owner's hull def when the region loads, so the seven boats at Nine Mile
+Creek's wall and the harbour float carry no `SpriteRenderer` in the committed scene, and the entity
+list — a walk of sprites — cannot hold one. They are placed and declared all the same, so every hull
+ships under top-level **`x-tidalHulls`**, and a hull that *does* draw also carries `x-tidalRide` on
+its entity (its pictures point at it with `x-tidalRideOf` rather than repeating it — applying a rise
+twice would lift a dory's oars off her).
+
+`draughtMetres` is resolved through the chain `HullTideRide` itself walks —
+`MooredBoat._owner → BoatOwnerDef.Boat → BoatHullDef.DraughtMeters`, or `BoatController._hull` for a
+piloted one. The **float states her own three numbers** (`_draughtMetres`, `_bedElevation`,
+`_freeboardMetres` are serialized on her placement) and nothing here resolves or samples them.
+`bedElevation` is otherwise the committed height map at her plan point — the same read
+`HullTideRide.BedElevation` makes against `ITidalTerrain`, on a raster of that terrain.
+
+`null` is never zero. A null draught or bed means "no bottom under her" — `TidalRide`'s own reading
+of open water, under which she can never take the ground — where a zero would ground her at every
+tide. Nine Mile Creek declares **31** hulls: **8 working** (1 float + 7 moored), *all* with a positive
+draught and a bed, and **23 fleet-review** hulls which carry no `BoatHullDef` **on purpose**
+(`MooredBoat`'s own remarks: hull defs are a later phase, and "fabricating owners would have meant
+fabricating hull defs"). `x-kind` separates them, so a tally never reports a defect where there is a
+decision.
+
+### 9.5 ⚠ Both scenes were banked before the tide landed
+
+Neither committed `.unity` carries a `TidalFaceWaterline` (`#765`) or a `HullTideRide` (`#753`) —
+the quay's courses were placed when the sea could not yet climb them. So **none of these numbers
+could be read off a serialized component**; they are resolved from what the scene *does* declare (a
+placement, an owner, a hull def) through the same chains those components walk. A test asserts the
+absence, so a re-bank fails it — and that is the signal to prefer the components' authored values,
+which `collect_hulls` already does where it finds one.
+
+### 9.6 The acceptance measurement
+
+`#765` found the five hulls at the north wall drawn against timber, because the wall was drawn over
+the water they float in; its fix put them **0.2–0.7 units above the sea's drawn edge at every state
+of the tide**. A reader that applies `x-tideRules` to `x-tidalFace` and `x-tidalRide` — **from the
+package alone, no repo, no C#, no engine** — reproduces it: all five sit **0.298 u** above the
+waterline at spring low, mean and spring high alike, and none takes the ground at the bottom of the
+tide. Thresholding `x-heightFieldFull` at spring high floods the berths and leaves the wharf deck
+dry by this wharf's authored 0.80 m of freeboard. Both are tests.
