@@ -78,6 +78,40 @@ namespace HiddenHarbours.Fishing
         /// <summary>Does this species state its own school size, or fall back to the global range?</summary>
         public bool StatesSchoolSize => MinSchoolMarks > 0 && MaxSchoolMarks > 0;
 
+        [Tooltip("How far across the shoal's own lazy loop reaches, in METRES. This is the SPREAD the " +
+                 "owner's 2026-09-06 ruling asks for: a mackerel shoal ranges loose and fast, a cod " +
+                 "school holds tight, and a flounder scatter barely moves. The rig's own shoal is " +
+                 "authored at 1.2 m (ShoalMath.DefaultRadiusMetres) and that is the reference. " +
+                 "Leave 0 = unstated, and the school falls back to GameConfig's global spread. " +
+                 "NOTE this is a length in metres, NOT a fraction of the school's radius. A school is " +
+                 "22-55 m across because that is how far a BOAT may be and still be on it; the fish " +
+                 "inside it swim a loop of THIS size, which is a different quantity entirely.")]
+        [Min(0f)] public float ShoalSpreadMetres = 0f;
+
+        [Tooltip("How many schools of this species a square kilometre of suitable water holds at once " +
+                 "(owner ruling 2026-09-06: density is per SPECIES). Cod are many and tight; a striped " +
+                 "bass is a scarcer fish. Leave 0 = unstated, and the species falls back to " +
+                 "GameConfig's global BaseAppearanceChance01 exactly as it behaved before this field " +
+                 "existed. The number is a density over WATER, before weather and season scale it: " +
+                 "the same fish is leaner in hard winter and generous in high summer.")]
+        [Min(0f)] public float SchoolsPerSquareKilometre = 0f;
+
+        /// <summary>Does this species state its own shoal spread, or fall back to the global one?</summary>
+        public bool StatesShoalSpread => ShoalSpreadMetres > 0f;
+
+        /// <summary>Does this species state its own density, or fall back to the global chance?</summary>
+        public bool StatesSchoolDensity => SchoolsPerSquareKilometre > 0f;
+
+        /// <summary>
+        /// A CLAM CANNOT SWIM. Shellfish are in a region's pool because they are caught there (clam
+        /// beds, lobster and crab pots), not because they shoal in midwater — so they are excluded from
+        /// the swimming-school pool the water draws (owner's Q1 default, 2026-09-06). They keep their
+        /// beds and their digging untouched; this flag only says "do not build a swimming school of
+        /// these", which is the honest reading of <see cref="FishCategory.Shellfish"/> rather than a
+        /// second hand-kept list of ids to fall out of step with the data.
+        /// </summary>
+        public bool IsShellfish => Category == FishCategory.Shellfish;
+
         [Header("What tempts it (a WEIGHT on the roll, never a wall)")]
         [Tooltip("Which lure PRESENTATIONS this species chases. A mackerel hits feathers and flash; a " +
                  "pollock chases anything worked; a haddock is fussy and wants real bait, so leave its " +

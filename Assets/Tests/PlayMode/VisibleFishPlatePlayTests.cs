@@ -239,6 +239,16 @@ namespace HiddenHarbours.Tests.PlayMode
                 "not one swimmer landed inside the frame on any candidate school — the plate would be a " +
                 "picture of empty water, which is exactly what a passing swimmer COUNT can hide");
 
+            // ⚠ THE WHOLE SHOAL IS IN THE PICTURE, not just one fish of it (owner's ruling 2026-09-06,
+            // PR 2). Before the per-species spread the drawer swam the shoal on a loop of
+            // 0.8 x the SCHOOL's radius — and a school's radius is 22-55 m because that is how far a
+            // BOAT may be and still be on the mark, not how far apart fish swim. Measured against this
+            // very camera, 9-26% of a school's fish were in frame while sitting exactly on it.
+            //
+            // The bar is derived from the species' OWN authored spread plus a fish length of slack for
+            // the shoal's internal spacing — never from the presenter, which is the thing under test.
+            AssertTheShoalHoldsTogether(presenter, shot);
+
             int drawnOverShallow = presenter.VisibleSwimmers;
             shallow = shot;
             Debug.Log($"[{PlateDir}] shooting ({shot.Centre.x:0.0}, {shot.Centre.y:0.0}) at " +
@@ -349,6 +359,48 @@ namespace HiddenHarbours.Tests.PlayMode
 
         /// <summary>How many drawn swimmers the camera can actually see — the only count a plate is
         /// evidence for.</summary>
+        /// <summary>
+        /// EVERY DRAWN FISH IS WITHIN ITS SPECIES' OWN SPREAD of the school's anchor — the assertion
+        /// that would have gone red on the retired <c>0.8 x school.RadiusMetres</c> loop, and the reason
+        /// this plate is now a picture of a shoal rather than of one fish and some water.
+        ///
+        /// <para>The bar is the authored <c>ShoalSpreadMetres</c> (the loop the leader swims) plus a
+        /// generous allowance for the shoal's own length behind the leader — computed from the species
+        /// Def and a literal, never by asking the presenter or ShoalMath for it.</para>
+        /// </summary>
+        void AssertTheShoalHoldsTogether(FishSchoolPresenter presenter, FishSchool school)
+        {
+            string primary = school.SpeciesIds != null && school.SpeciesIds.Count > 0
+                ? school.SpeciesIds[0] : null;
+            if (string.IsNullOrEmpty(primary)) return;         // an unstated school states no spread
+
+            FishSpeciesDef def = FishSpeciesRegistry.Get(primary);
+            if (def == null || !def.StatesShoalSpread) return;  // nothing authored to hold it to
+
+            // The loop, plus the shoal trailing behind its leader. ShoalMath spaces fish by the species'
+            // drawn LENGTH; 4 m of slack is far more than the biggest authored fish needs and still an
+            // order of magnitude under the 17.6-44 m the retired rule produced.
+            const float shoalTailAllowanceM = 4f;
+            float bar = def.ShoalSpreadMetres + shoalTailAllowanceM;
+
+            float worst = 0f;
+            int counted = 0;
+            foreach (SpriteRenderer sr in presenter.GetComponentsInChildren<SpriteRenderer>(false))
+            {
+                if (sr == null || !sr.enabled) continue;
+                float d = Vector2.Distance(sr.transform.position, school.Centre);
+                if (d > worst) worst = d;
+                counted++;
+            }
+            if (counted == 0) return;
+
+            Debug.Log($"[{PlateDir}] {primary}: {counted} swimmers, furthest {worst:0.00} m from the " +
+                      $"anchor (authored spread {def.ShoalSpreadMetres:0.0} m, bar {bar:0.0} m)");
+            Assert.LessOrEqual(worst, bar,
+                $"a {primary} was drawn {worst:0.0} m from its school's anchor, past the {bar:0.0} m its " +
+                "authored spread allows — the shoal is swimming a loop scaled to the BOAT's reach again");
+        }
+
         int SwimmersInFrame(FishSchoolPresenter presenter)
         {
             int inFrame = 0;

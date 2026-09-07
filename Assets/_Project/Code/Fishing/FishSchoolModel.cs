@@ -292,15 +292,17 @@ namespace HiddenHarbours.Fishing
             if (_foundCount >= _found.Length) return;
 
             if (!TryBuild(q.Seed, q.RegionId, cellX, cellY, q.Slot, q.SlotStart, q.SecondsPerHour,
-                          q.SeaState01, q.Chance01, in q.Settings, out FishSchool school, out uint key))
+                          q.SeaState01, q.Chance01, in q, out FishSchool school, out uint key,
+                          out string primary))
                 return;
 
             if (!school.IsActiveAt(gameSeconds)) return;
             if (useRect ? !OverlapsRect(school, viewWorld) : !school.Contains(worldPos)) return;
 
-            // Only a school the query actually keeps pays for its species list.
+            // Only a school the query actually keeps pays for the REST of its species list; its
+            // primary is already decided — it is what let the school exist at all (see TryBuild).
             List<string> ids = _species[_foundCount];
-            FillSpecies(key, school.DepthMetres, in q, ids);
+            FillSpecies(key, school.DepthMetres, in q, primary, ids);
 
             // ⚠ DENSITY IS RESOLVED AFTER THE SPECIES, and only here (owner's ruling 2026-09-06: a
             // herring shoal is not a flounder). TryBuild's count is provisional and never escapes — it
@@ -357,29 +359,161 @@ namespace HiddenHarbours.Fishing
         /// </summary>
         private bool TryBuild(int seed, string regionId, int cellX, int cellY, long slot, double slotStart,
                               double secondsPerHour, float seaState01, float weatherAndDateChance01,
-                              in FishSchoolSettings s, out FishSchool school, out uint key)
+                              in Query q, out FishSchool school, out uint key, out string primary)
         {
+            FishSchoolSettings s = q.Settings;
             school = default;
+            primary = null;
             key = FishSchoolMath.CellSlotKey(seed, regionId, cellX, cellY, slot);
-            if (FishSchoolMath.PresenceRoll01(key) >= weatherAndDateChance01) return false;
 
-            // The centre is resolved before the water is read because the LOCATION gate and the depth are
-            // both read at the school's OWN centre — "is there water where the fish would be", not "where
-            // the boat happens to be".
+            // THE WATER IS READ BEFORE THE PRESENCE DRAW, which reverses the order this method shipped
+            // with (owner's ruling 2026-09-05: the fish must be SEEN where he plays). Two things forced
+            // the swap and both are load-bearing:
+            //   - the LOCATION gate is the only fence there is. GameServices.CurrentRegionBounds (the
+            //     camera clamp) is the RegionDef's own WorldCenter/WorldSizeMeters straight through
+            //     (RegionAnchor.WorldBounds) - the very rectangle this lattice already scatters over -
+            //     so fencing schools to it would reject exactly nothing. Water is the real fence.
+            //   - the species cannot be chosen without the depth band, the band cannot be found without
+            //     the depth, and the depth is a fraction of the COLUMN. Per-species density therefore
+            //     cannot be asked until the water has been.
+            // The cost is one bathymetry sample per searched cell instead of one hash - bounded by
+            // ViewCells (25) and paid at the presenter's tick, not per frame (rule 7).
             Vector2 centre = FishSchoolMath.CentreFor(key, cellX, cellY, s.CellSizeMetres);
             float column = _world.WaterColumnAt(centre, slotStart);
             if (column < s.MinWaterColumnMetres) return false;      // the hard location bar
+
+            // The depth is a FRACTION of the column, so a school can never be deeper than the water that
+            // holds it: where the sea is 6 m the bands below Inshore are simply unreachable, and the
+            // model says so by arithmetic rather than by claiming a midwater school in a puddle.
+            float depth = FishSchoolMath.DepthFor(key, column, seaState01, in s);
+
+            // WHICH fish, and THEN whether that fish is here - the owner's per-species density. A cell
+            // is empty only when every candidate's own roll failed.
+            if (!TryPickPrimary(key, in q, depth, weatherAndDateChance01, out primary)) return false;
 
             FishSchoolMath.WindowFor(key, slot, secondsPerHour, in s,
                                      out double startSeconds, out double endSeconds);
 
             school = new FishSchool(centre,
                                     FishSchoolMath.RadiusFor(key, in s),
-                                    FishSchoolMath.DepthFor(key, column, seaState01, in s),
+                                    depth,
                                     FishSchoolMath.MarkCountFor(key, in s),
                                     null,
                                     startSeconds, endSeconds);
             return true;
+        }
+
+        /// <summary>
+        /// WHOSE SCHOOL THIS CELL HOLDS, if anyone's — the owner's 2026-09-06 density ruling, resolved
+        /// as an independent presence draw per candidate species, with the highest scorer among the
+        /// passers taking the cell.
+        ///
+        /// <para><b>Why independent rolls rather than one.</b> A single shared roll followed by "pick the
+        /// top scorer" would DIVIDE the sea between the species instead of populating it: every stated
+        /// density would come out quietly scaled by 1/(pool size), so a number the owner tunes to 40
+        /// would draw 6. Rolling each species on its own stream
+        /// (<see cref="FishSchoolMath.SpeciesPresenceRoll01"/>) is what makes a cod's density a cod's
+        /// density.</para>
+        ///
+        /// <para><b>The one ceiling, stated plainly:</b> a cell holds at most ONE school by construction,
+        /// so when two species both pass in the same cell the higher scorer takes it and the other is
+        /// displaced. Stated densities are therefore realised exactly while the water is not crowded and
+        /// degrade gracefully when it is — never more, in aggregate, than one school per cell.</para>
+        ///
+        /// <para>A species that states no density falls back to <paramref name="globalChance01"/>, the
+        /// one hoisted weather-by-date number this model has always used — so a pool authored before the
+        /// field existed behaves as it did, and the two kinds of species mix with no special case.</para>
+        /// </summary>
+        private bool TryPickPrimary(uint key, in Query q, float schoolDepthM, float globalChance01,
+                                    out string primary)
+        {
+            primary = null;
+            if (_pool == null || _pool.Count == 0)
+            {
+                // No authored pool at all (a bare rig, an EditMode fixture): the school is unstated and
+                // the global chance decides it, exactly as before this ruling.
+                return FishSchoolMath.PresenceRoll01(key) < globalChance01;
+            }
+
+            FishDepthBand band = BandFor(schoolDepthM);
+
+            // Pass 1 asks the band; pass 2 (only if nothing lives there) drops it rather than starving
+            // the water — the same relax-don't-starve posture FillSpecies has always taken.
+            if (PickPass(key, in q, band, requireBand: true, globalChance01, ref primary)) return true;
+            return PickPass(key, in q, band, requireBand: false, globalChance01, ref primary);
+        }
+
+        /// <summary>One sweep of the pool: every eligible species rolls its own density, and the highest
+        /// scorer among those that pass wins the cell.</summary>
+        private bool PickPass(uint key, in Query q, FishDepthBand band, bool requireBand,
+                              float globalChance01, ref string primary)
+        {
+            float bestScore = -1f;
+            for (int i = 0; i < _pool.Count; i++)
+            {
+                FishSpeciesDef f = _pool[i];
+                if (!Eligible(f, band, requireBand, in q)) continue;
+                if (FishSchoolMath.SpeciesPresenceRoll01(key, f.Id) >= ChanceFor(f, globalChance01, in q))
+                    continue;
+
+                float score = FishSchoolMath.SpeciesScore(key, f.Id);
+                if (score > bestScore) { bestScore = score; primary = f.Id; }
+            }
+            return primary != null;
+        }
+
+        /// <summary>This species' own chance of holding this cell: its authored density turned into a
+        /// per-cell chance and then scaled by the same weather and season every school has always been,
+        /// or the global chance when it states no density of its own.</summary>
+        private static float ChanceFor(FishSpeciesDef f, float globalChance01, in Query q)
+        {
+            float basis = FishSchoolMath.BaseChanceForDensity(f.SchoolsPerSquareKilometre,
+                                                              q.Settings.CellSizeMetres);
+
+            // The species said nothing: fall to the owner GLOBAL density before falling all the way
+            // back to BaseAppearanceChance01. Without this the global density is a knob he can drag
+            // with no effect at all, which is worse than no knob. At the shipped 38.19/km^2 over a
+            // 120 m cell it returns 0.55 - exactly BaseAppearanceChance01 - so this is neutral.
+            if (basis < 0f)
+                basis = FishSchoolMath.BaseChanceForDensity(q.Settings.SchoolsPerSquareKilometre,
+                                                            q.Settings.CellSizeMetres);
+
+            return basis < 0f
+                ? globalChance01                                          // unstated - the old number
+                : FishSchoolMath.AppearanceChance01(q.SeaState01, q.Season, basis, in q.Settings);
+        }
+
+        /// <summary>
+        /// Is this species a candidate for a SWIMMING school here and now? The region/season/time/tide
+        /// gates the catch resolver applies, plus the one rule this sim adds:
+        ///
+        /// <para><b>A CLAM CANNOT SWIM.</b> Shellfish are in a region's pool because they are caught
+        /// there, not because they shoal — and the drawer already refuses to draw them
+        /// (<c>FishSchoolPresenter</c> skips a species the swim table has no kind for), so before this
+        /// gate a shellfish that won a cell spent that cell drawing NOTHING. Excluding them here is what
+        /// turns those cells back into fish the owner can see (his Q1 default, 2026-09-06); their beds
+        /// and their digging are untouched by this sim.</para>
+        /// </summary>
+        private static bool Eligible(FishSpeciesDef f, FishDepthBand band, bool requireBand, in Query q)
+        {
+            if (f == null || string.IsNullOrEmpty(f.Id)) return false;
+            if (f.IsShellfish) return false;
+            if (!f.RegionAllowed(q.RegionId)) return false;
+            if (!f.SeasonAllowed(q.Season)) return false;
+            if (q.HourOfDay >= 0f && !f.TimeAllowed(q.HourOfDay)) return false;
+            if (!f.MovingWaterAllowed(q.TideRateMetresPerHour, q.Settings.MovingWaterMetresPerHour))
+                return false;
+            if (requireBand && f.DepthBands != FishDepthBand.None && (f.DepthBands & band) == 0) return false;
+            return true;
+        }
+
+        /// <summary>The depth band a school at this depth sits in — the one place the sim turns metres
+        /// into the zone the species gates and the drawer's visibility both read.</summary>
+        private FishDepthBand BandFor(float schoolDepthM)
+        {
+            DepthDropSettings dd = DepthSettings;
+            return DepthDropMath.ZoneForDepth(schoolDepthM, dd.TidepoolMaxMeters, dd.ShallowsMaxMeters,
+                                              dd.InshoreMaxMeters, dd.MidwaterMaxMeters, dd.DeepMaxMeters);
         }
 
         /// <summary>
@@ -400,23 +534,22 @@ namespace HiddenHarbours.Fishing
         /// save. Allocation-free: the caller's list is reused and the selection is an O(n·m) scan over a
         /// handful of candidates.</para>
         /// </summary>
-        private void FillSpecies(uint key, float schoolDepthM, in Query q, List<string> into)
+        private void FillSpecies(uint key, float schoolDepthM, in Query q, string primary,
+                                 List<string> into)
         {
-            string regionId = q.RegionId;
-            Season season = q.Season;
-            FishSchoolSettings s = q.Settings;
-
             into.Clear();
             if (_pool == null || _pool.Count == 0) return;
 
-            DepthDropSettings dd = DepthSettings;
-            FishDepthBand band = DepthDropMath.ZoneForDepth(schoolDepthM, dd.TidepoolMaxMeters,
-                                                           dd.ShallowsMaxMeters, dd.InshoreMaxMeters,
-                                                           dd.MidwaterMaxMeters, dd.DeepMaxMeters);
+            // THE PRIMARY IS ALREADY DECIDED and goes in first, because it is the species whose own
+            // density let this school exist at all (TryPickPrimary) and the one the water draws the
+            // school as. Re-deriving it here from a second scan is exactly how the picture and the
+            // density would drift apart.
+            if (!string.IsNullOrEmpty(primary)) into.Add(primary);
 
-            int wanted = FishSchoolMath.SpeciesCountFor(key, in s);
+            int wanted = FishSchoolMath.SpeciesCountFor(key, in q.Settings);
+            if (into.Count >= wanted) return;
 
-            // Pass 1: region + season + depth band. Pass 2 (only if pass 1 found nothing): drop the band.
+            FishDepthBand band = BandFor(schoolDepthM);
             if (!Select(key, in q, band, requireBand: true, wanted, into))
                 Select(key, in q, band, requireBand: false, wanted, into);
         }
@@ -426,8 +559,7 @@ namespace HiddenHarbours.Fishing
         private bool Select(uint key, in Query q, FishDepthBand band,
                             bool requireBand, int wanted, List<string> into)
         {
-            string regionId = q.RegionId;
-            for (int picked = 0; picked < wanted; picked++)
+            for (int picked = into.Count; picked < wanted; picked++)
             {
                 string best = null;
                 float bestScore = -1f;
@@ -435,18 +567,11 @@ namespace HiddenHarbours.Fishing
                 for (int i = 0; i < _pool.Count; i++)
                 {
                     FishSpeciesDef f = _pool[i];
-                    if (f == null || string.IsNullOrEmpty(f.Id)) continue;
-                    if (!f.RegionAllowed(regionId)) continue;
-                    if (!f.SeasonAllowed(q.Season)) continue;
 
-                    // ⚠ The SAME two gates the catch resolver applies, read off the SAME Def fields —
-                    // a species the rod could not catch here and now must never be put in a school for
-                    // the water to draw. Both no-op when the world cannot sample them (a rig, a fixture),
-                    // so nothing that worked before this existed starts starving.
-                    if (q.HourOfDay >= 0f && !f.TimeAllowed(q.HourOfDay)) continue;
-                    if (!f.MovingWaterAllowed(q.TideRateMetresPerHour,
-                                              q.Settings.MovingWaterMetresPerHour)) continue;
-                    if (requireBand && f.DepthBands != FishDepthBand.None && (f.DepthBands & band) == 0) continue;
+                    // The SAME eligibility the primary was chosen through — one rule, so a school can
+                    // never be joined by a fish that could not have led it (a clam, an out-of-season
+                    // fish, one the rod could not catch here and now).
+                    if (!Eligible(f, band, requireBand, in q)) continue;
                     if (Contains(into, f.Id)) continue;
 
                     float score = FishSchoolMath.SpeciesScore(key, f.Id);

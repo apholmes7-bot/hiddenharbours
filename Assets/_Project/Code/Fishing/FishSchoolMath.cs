@@ -56,6 +56,7 @@ namespace HiddenHarbours.Fishing
         private const int StreamWindowOff  = 7;
         private const int StreamSpeciesN   = 8;
         private const int StreamSpeciesPick = 9;
+        private const int StreamSpeciesPresence = 10;
 
         /// <summary>How many cells the query has to look at: the 3×3 neighbourhood the one-cell radius cap
         /// makes sufficient. Also the most schools one query can ever report, which is what lets the model
@@ -160,12 +161,49 @@ namespace HiddenHarbours.Fishing
         /// bathymetry read (rule 7).
         /// </summary>
         public static float AppearanceChance01(float seaState01, Season season, in FishSchoolSettings s)
+            => AppearanceChance01(seaState01, season, Safe(s.BaseAppearanceChance01), in s);
+
+        /// <summary>
+        /// The same WEATHER x DATE gate over an EXPLICIT base chance — the door the owner's 2026-09-06
+        /// density ruling comes through. The base is no longer necessarily the one global number: a
+        /// species that states its own <c>SchoolsPerSquareKilometre</c> arrives here with
+        /// <see cref="BaseChanceForDensity"/> instead, and the weather and the season then scale THAT
+        /// exactly as they scaled the global one (a cod is leaner in hard winter too).
+        ///
+        /// <para>A base of 0 is still an empty sea whatever the weather says — the off switch survives
+        /// per species, which is what lets an out-of-season fish vanish rather than merely thin.</para>
+        /// </summary>
+        public static float AppearanceChance01(float seaState01, Season season, float baseChance01,
+                                               in FishSchoolSettings s)
         {
-            float baseChance = Mathf.Clamp01(Safe(s.BaseAppearanceChance01));
+            float baseChance = Mathf.Clamp01(Safe(baseChance01));
             if (baseChance <= 0f) return 0f;
 
             float weather = Mathf.Clamp(Safe(s.SeaStateAppearanceBias), -1f, 1f) * Mathf.Clamp01(Safe(seaState01));
             return Mathf.Clamp01((baseChance + weather) * SeasonAppearance(season, in s));
+        }
+
+        /// <summary>
+        /// A DENSITY over water (schools per square kilometre) as the chance ONE cell holds a school of
+        /// that species in a slot — the owner's "school density should be more accurate for species"
+        /// turned into the number the presence roll already speaks.
+        ///
+        /// <para><c>chance = density x (cell/1000)^2</c>, clamped to 1: at the shipped 120 m cell a
+        /// density of 38.19 gives back 0.55, which is exactly today's global chance (see
+        /// <see cref="FishSchoolSettings.ReferenceSchoolsPerSquareKilometre"/>). Above one school per
+        /// cell the model cannot show more — a cell holds at most one school by construction — so the
+        /// clamp is honest about the ceiling rather than pretending a denser number buys more fish.</para>
+        ///
+        /// <para>A density of 0 means UNSTATED, and returns a negative sentinel so the caller can tell
+        /// "this species says nothing" apart from "this species says none" — the first falls back to the
+        /// global chance, the second would be an empty sea.</para>
+        /// </summary>
+        public static float BaseChanceForDensity(float schoolsPerSquareKilometre, float cellSizeMetres)
+        {
+            float density = Safe(schoolsPerSquareKilometre);
+            if (density <= 0f) return -1f;                       // unstated — the caller falls back
+            float cellKm = Mathf.Max(0.0001f, Safe(cellSizeMetres)) / 1000f;
+            return Mathf.Clamp01(density * cellKm * cellKm);
         }
 
         /// <summary>The DATE half of the gate: this season's multiplier on the appearance chance. Negative
@@ -191,6 +229,20 @@ namespace HiddenHarbours.Fishing
         /// <summary>This cell/slot's presence draw on its own — so the search can reject a cell before
         /// paying for a bathymetry sample (see <see cref="AppearanceChance01(float, Season, in FishSchoolSettings)"/>).</summary>
         public static float PresenceRoll01(uint key) => Rand01(key, StreamPresence);
+
+        /// <summary>
+        /// THIS SPECIES' own presence draw for this cell and slot, 0..1 — the roll the owner's
+        /// per-species density is judged against (2026-09-06). Keyed by the stable species ID for the
+        /// same reason <see cref="SpeciesScore"/> is: authoring a new fish into a region must let it
+        /// COMPETE, never re-roll whether every other species is present in every cell of every save.
+        ///
+        /// <para>Independent per species by construction, which is what lets each stated density mean
+        /// what it says: a cell is empty only when every candidate's own roll failed, rather than when
+        /// one shared roll did.</para>
+        /// </summary>
+        public static float SpeciesPresenceRoll01(uint key, string speciesId)
+            => (float)(StableHash.Finalize(StableHash.Fold(StableHash.Fold(key, StreamSpeciesPresence), speciesId))
+                       / 4294967296.0);
 
         // ---- the school's own shape -------------------------------------------------------------------
 
@@ -388,6 +440,8 @@ namespace HiddenHarbours.Fishing
             o.MaxDepthFraction01 = Mathf.Clamp(Safe(s.MaxDepthFraction01), o.MinDepthFraction01, 1f);
             o.SeaStateDepthBias01 = Mathf.Clamp01(Safe(s.SeaStateDepthBias01));
             o.OpenWaterColumnMetres = Mathf.Max(0.0001f, Safe(s.OpenWaterColumnMetres));
+            o.ShoalSpreadMetres = Mathf.Max(0.05f, Safe(s.ShoalSpreadMetres));
+            o.SchoolsPerSquareKilometre = Mathf.Max(0f, Safe(s.SchoolsPerSquareKilometre));
 
             o.MinMarks = Mathf.Max(1, s.MinMarks);
             o.MaxMarks = Mathf.Max(o.MinMarks, s.MaxMarks);

@@ -32,6 +32,8 @@ MonoBehaviour:
   FavoredLures: 0
   MinSchoolMarks: 1
   MaxSchoolMarks: 2
+  ShoalSpreadMetres: 3.0
+  SchoolsPerSquareKilometre: 20.0
   MinWeightKg: 0.2
   MaxWeightKg: 2
   BaseValue: 7

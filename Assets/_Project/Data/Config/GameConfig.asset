@@ -354,6 +354,8 @@ MonoBehaviour:
     MaxDepthFraction01: 0.8
     SeaStateDepthBias01: 0.25
     OpenWaterColumnMetres: 25
+    ShoalSpreadMetres: 1.2
+    SchoolsPerSquareKilometre: 38.194444
     MinMarks: 1
     MaxMarks: 5
     BiteRatePerMark: 0.35
