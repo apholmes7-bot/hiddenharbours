@@ -63,6 +63,25 @@ from `(worldSeed, gameTime)` and never stored, so the carrier is the reader's to
 the package alone puts the five hulls at the north wall **0.298 units above the water's edge at spring low,
 mean and spring high alike** — inside the 0.2–0.7 u that #765 measured in the game.
 
+## The doors between regions (2026-09-07)
+
+The entity list is a walk of `SpriteRenderer`s, so it never held a `RegionPassage` (a trigger box) or an
+arrival point (a bare `Transform`) — **six doors were missing from these packages, including the east door
+#764 had just built**. Two keys now carry them, the full account in
+[`docs/tools/scene-export-contract.md` §10](../../../docs/tools/scene-export-contract.md):
+
+* **`x-passages`** — every way out, with its position, the trigger band it fires on, the region it leads to
+  (id **and** scene name) and the arrival key it asks for on the far side. `target.exportedHere` says
+  whether that region is one of the two this export ships: Coddle Cove, West Water and East Water are all
+  real places with real `RegionDef`s that are simply not pictured here.
+* **`x-arrivals`** — every way in: each region's default arrival point, dock zone and disembark point, plus
+  every named arrival with its key and resolved point.
+
+St Peters' **`PassageToEastWater` at (356, 40)** now names `region.east_water` / scene `EastWater`, and the
+anchor's named arrival **`east_water` at (316, 40)** is the far half of the same door. A door needs both
+halves to be legible, which is why both keys ship. ⚠ An `arrivalKey` resolves against the TARGET region's
+`x-arrivals` — a lookup that crosses a package boundary and is deliberately left to a reader holding both.
+
 Fields prefixed `x-` are ours. That is allowed by the contract, not a liberty taken with it:
 readers of `hiddenharbours.scene/1` must ignore unknown keys and `x-` is the reserved extension
 prefix (`docs/tools/scene-export-contract.md` §0). Everything under one is a fact the repo can

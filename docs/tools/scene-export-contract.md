@@ -102,7 +102,8 @@ no key for), `x-cellAt` / `x-inBounds`, `x-name` / `x-path` (the scene hierarchy
 `x-pivotSource`, `x-declaredBy` (which sidecar linked a sheet to its rig), `x-readOnly` /
 `x-derived` / `x-authorable`, `x-heightMap`, `x-familyIsSpriteStem`, and the four the 2026-09-07
 tide ruling added — `x-tideRules`, `terrain.x-heightFieldFull`, `x-tidalFace` and `x-tidalRide`
-(with `x-tidalHulls` beside it for the hulls that draw no sprite). §9 is what they are.
+(with `x-tidalHulls` beside it for the hulls that draw no sprite), and `x-passages` / `x-arrivals`
+for the doors between regions. §9 and §10 are what they are.
 
 ## 5. What reading the bytes added
 
@@ -733,3 +734,74 @@ package alone, no repo, no C#, no engine** — reproduces it: all five sit **0.2
 waterline at spring low, mean and spring high alike, and none takes the ground at the bottom of the
 tide. Thresholding `x-heightFieldFull` at spring high floods the berths and leaves the wharf deck
 dry by this wharf's authored 0.80 m of freeboard. Both are tests.
+
+## 10. The doors between regions (2026-09-07)
+
+**The entity list is a walk of `SpriteRenderer`s**, which is right for a picture and silently drops
+a whole class of thing a region genuinely has. The east door (#764) made it plain:
+`PassageToEastWater` stands at (356, 40) carrying a `RegionPassage` and a trigger box,
+`StPetersEastWaterArrival` at (316, 40) carries a bare `Transform`, and **neither reached the
+package** — so the wall the game opens through was missing from the owner's picture of his own
+island. Six doors were missing, not one.
+
+Two keys, the same shape as `x-tidalHulls` (§9.4) and for the same reason: declared, placed, and
+drawn by something else or not drawn at all.
+
+### 10.1 `x-passages` — the ways out
+
+One entry per `RegionPassage`, in the scene's own walk order:
+
+```json
+{ "x-name": "PassageToEastWater", "pos": [356, 40],
+  "band": { "widthMeters": 6, "heightMeters": 120, "offset": [0, 0], "isTrigger": true },
+  "target": { "regionId": "region.east_water", "sceneName": "EastWater",
+              "asset": "Assets/_Project/Data/Regions/EastWater.asset", "exportedHere": false },
+  "arrivalKey": "st_peters" }
+```
+
+* **`pos`** is region-relative, the same frame every entity's `pos` is in — a test pins that
+  against the scene's own world transform, because a door plotted in the wrong frame is worse than
+  a door that is missing.
+* **`band`** is the `BoxCollider2D` the crossing fires on, in metres, centred on `pos + offset`.
+  `null` where the object carries no box: the passage still says where it leads, and inventing a
+  band would draw a door the size of nothing in particular.
+* **`target`** resolves through the passage's own `RegionDef` — **id and scene name both**, because
+  an id names the place and a scene name is what a reader loads. Unresolvable targets carry
+  `x-unresolved` rather than an id guessed off the object's name.
+* **`exportedHere`** is a fact about the RUN, not about the repo. Coddle Cove, West Water and East
+  Water all have real `RegionDef`s; this export ships two regions, so a reader can tell "there is
+  no package for this" from "I lost a package". `x-provenance.entityNotes.passages` lists them.
+* **`arrivalKey`** is a string and an **empty one is meaningful** — `RegionPassage`'s own tooltip
+  says empty means the target region's *default* arrival point. Shipping `""` as `null` would turn
+  "land where the region says" into "nobody said".
+
+### 10.2 `x-arrivals` — the ways in
+
+One entry per `RegionAnchor`: the region's default `arrivalPoint` (the boat), `dockZone` (where the
+control switcher re-points) and `disembarkPoint` (the walker), plus every `namedArrivals` entry with
+its key and resolved world points. A `null` point inside a named arrival is **authored**, not
+missing — `RegionAnchor` falls back to the region's default.
+
+### 10.3 ⚠ A key is resolved in the TARGET region, and this exporter does not do it
+
+St Peters' `PassageToEastWater` asks for `st_peters`, which is a key on **East Water's** anchor — a
+region this export does not ship. The lookup crosses a package boundary, so the key travels as a
+string and is deliberately **not** validated here: a reader holding both packages can join them,
+and this one cannot. As it happens no named-key pair is checkable between the two shipped regions
+today — the passages that join them both use the empty key, i.e. each other's default arrival.
+
+### 10.4 What the two regions actually declare
+
+| from | passage | band | key | to |
+|---|---|---|---|---|
+| Nine Mile Creek | `PassageToCoddleCove` (370, 60) | 6 × 40 | *(default)* | `region.coddle_cove` · `Greybox` |
+| Nine Mile Creek | `PassageToStPeters` (352, −200) | 6 × 40 | *(default)* | `region.st_peters` · **shipped** |
+| Nine Mile Creek | `PassageToWestWater` (356, 38) | 6 × 120 | `nine_mile_creek` | `region.west_water` · `WestWater` |
+| St Peters | `PassageToNineMileCreek` (−356, 0) | 3 × 60 | *(default)* | `region.nine_mile_creek` · **shipped** |
+| St Peters | `PassageToWestWater` (−356, 150) | 6 × 120 | `st_peters` | `region.west_water` · `WestWater` |
+| St Peters | **`PassageToEastWater` (356, 40)** | 6 × 120 | `st_peters` | **`region.east_water` · `EastWater`** |
+
+Anchors: Nine Mile Creek lands a boat at (101, 84.5) and a walker at (98, 88), with one named
+arrival `bar`; St Peters lands at (213.5, −5.8) / (211.5, −1.9), with one named arrival
+**`east_water` at (316, 40)** — which is the far half of the east door, and the reason both keys
+ship rather than only the passages.
