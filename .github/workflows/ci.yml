@@ -85,10 +85,25 @@ jobs:
     steps:
       # Pointer-only, exactly like the Unity job: `lfs: true` pulls the whole ~227 MB object set
       # and that is what exhausted the account's LFS budget on 2026-08-06.
-      - name: Checkout (LFS pointers only)
+      - name: Checkout (LFS pointers only, FULL history)
         uses: actions/checkout@v4
         with:
           lfs: false
+          # ⚠️ fetch-depth 0, AND THE EXPORTER DOES NOT WORK WITHOUT IT. checkout defaults to
+          # depth 1, and the exporter's provenance asks `git log -1 --format=%H -- <scene>` for
+          # the commit each scene was last banked at. In a depth-1 clone there IS only one
+          # commit, so that query answers HEAD for every path — and on a pull_request run HEAD
+          # is refs/pull/N/merge, a synthetic commit nobody has locally. The package then pins
+          # the merge sha as "the commit this scene was built at", which is both false and
+          # different every run, so --check reports STALE and
+          # DeterminismTests.test_nothing_in_a_package_is_keyed_to_the_checked_out_commit fails.
+          # Measured on a real `git clone --depth 1` of this repo: the scene's "last built"
+          # commit came back as HEAD; with full history it is 31f0d08a, which is the truth.
+          #
+          # The cost is one fetch of 803 commits / ~99 MiB of pack — seconds, and NO LFS objects,
+          # because `lfs: false` still holds and the two seabed textures are pulled by include
+          # below. The Unity job keeps its shallow checkout: it does not run the exporter.
+          fetch-depth: 0
 
       # ⚠️ THE TWO SEABED TEXTURES ARE THE ONE THING THIS JOB CANNOT DO WITHOUT — and they are the
       # ONLY LFS objects it needs: 108,507 bytes the pair, out of 1,999 objects and ~227 MB.
