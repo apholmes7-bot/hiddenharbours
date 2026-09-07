@@ -102,9 +102,15 @@ namespace HiddenHarbours.World
         static readonly float OptionTextX = DialogueBubbleKit.OptionTextX * Scale;
 
         const float ScreenMargin = 16f;
-        const int BodyFontSize = 24;
-        const int NameFontSize = 17;
-        const int OptionFontSize = 22;
+        // ⭐ ONE size, DERIVED, for every word in the bubble. The face is baked at
+        // HarbourType.GlyphHeight and Unity draws a font at fontSize / font.fontSize, so
+        // GlyphHeight × ArtScale puts one glyph pixel on one kit pixel — the type lands on the grid the
+        // panel is drawn on. The body's old 24 happened to be this number already; the name chip's 17
+        // and the option rows' 22 did NOT, and would have resampled the baked glyphs at a fractional
+        // scale. See BubbleFace.
+        const int BodyFontSize = BubbleFace.FontSize;
+        const int NameFontSize = BubbleFace.FontSize;
+        const int OptionFontSize = BubbleFace.FontSize;
 
         /// <summary>
         /// <b>Where the art lane's bubble kit lands</b>, declared here so the tripwire has something to
@@ -1400,8 +1406,9 @@ namespace HiddenHarbours.World
             var go = new GameObject(name, typeof(RectTransform), typeof(Text), typeof(Outline));
             go.transform.SetParent(parent, false);
             var text = go.GetComponent<Text>();
-            text.font = DefaultFont();
-            text.fontSize = fontSize;
+            // The face and its size together, through the one place that decides them — so the modal
+            // bubble and the ambient pool can never end up in different type on one screen.
+            BubbleFace.Wear(text);
             text.alignment = align;
             text.color = Color.white;
             text.raycastTarget = false;
@@ -1427,11 +1434,7 @@ namespace HiddenHarbours.World
             rt.offsetMax = Vector2.zero;
         }
 
-        private static Font DefaultFont()
-        {
-            var f = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            if (f == null) f = Resources.GetBuiltinResource<Font>("Arial.ttf");
-            return f;
-        }
+        // The built-in fallback lives in BubbleFace, which answers "which font, at what size" once for
+        // both bubble surfaces.
     }
 }
