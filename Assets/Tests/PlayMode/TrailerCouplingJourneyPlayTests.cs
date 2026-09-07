@@ -385,12 +385,35 @@ namespace HiddenHarbours.Tests.PlayMode
         /// feels, and it falls out of the published length rather than out of a per-body number.</para>
         /// </summary>
         [UnityTest]
-        public IEnumerator TheFiftyThreeHangsWiderThroughTheSameTurnThanThePup()
+        public IEnumerator TheFiftyThreeHangsWiderThanThePupRoundTheSameCircle()
         {
+            VehicleMeshDef tractor = LoadMesh(AeroMesh);
+            float inner = tractor.MaxInnerSteerDegrees, wheelbase = tractor.WheelbaseMeters;
+
+            // ⭐⭐ "THE SAME TURN" MEANS THE SAME CIRCLE, NOT THE SAME WHEEL — and it did not have to,
+            // until PR 6b. This test used to hand both pairs a full-lock demand, which WAS the same
+            // circle while a trailer cost her nothing. Now VehicleCouplingMath.CoupledSteer narrows a
+            // tractor's usable lock by her body's own length (0.497 behind the pup, 0.314 behind the 53),
+            // so one demand is two circles: the 53 draws a 29.65 m circle where the pup draws 18.43 m,
+            // and over a short turn the pup then folds FASTER — both start at 1/R and the pup's is the
+            // tighter R. Measured on the shipped follow at a 10 m arc: pup 15.56°, 53 13.57°, the
+            // inversion that reddened this test.
+            //
+            // The CLAIM below is unchanged and still true; only the way of asking is fixed. Both pairs
+            // are driven round the 53's circle — hers because she is the constrained one, so the pup
+            // can always be given less wheel to match, and never the other way about. On that circle
+            // the 53 hangs wider at every arc from 5 to 30 m, by 1.21× at the tightest, which is the
+            // same margin this test had before.
+            float sameCircle = VehicleCouplingMath.CoupledSteer(
+                1f, inner, wheelbase, LoadMesh(Long).Kingpin.KingpinToAxleCentreMeters);
+
             float foldPup = 0f, foldLong = 0f;
 
             foreach (string body in new[] { Pup, Long })
             {
+                float demand = DemandForLock(sameCircle, inner, wheelbase,
+                                             LoadMesh(body).Kingpin.KingpinToAxleCentreMeters);
+
                 Pair p = Build(AeroMesh, body, new Vector2(0f, 40f), 0f);
                 PlacePlateAt(p, p.Trailer.KingpinWorld, 0f);
                 yield return null;
@@ -400,7 +423,7 @@ namespace HiddenHarbours.Tests.PlayMode
                 yield return Crank(p, 3.0f);
 
                 yield return Drive(p, 1f, 0f, 60);
-                yield return Drive(p, 1f, 1f, 120);
+                yield return Drive(p, 1f, demand, 120);
 
                 float fold = Mathf.Abs(p.Trailer.ArticulationAgainst(p.Hitch.HeadingDegrees));
                 if (body == Pup) foldPup = fold; else foldLong = fold;
@@ -410,8 +433,35 @@ namespace HiddenHarbours.Tests.PlayMode
             }
 
             Assert.That(foldLong, Is.GreaterThan(foldPup),
-                $"the 53 ({foldLong:0.##}°) did not hang wider than the pup ({foldPup:0.##}°) " +
-                "through the same turn — the follow is not using her published length.");
+                $"the 53 ({foldLong:0.##}°) did not hang wider than the pup ({foldPup:0.##}°) round " +
+                "the SAME circle — the follow is not using her published length.\n" +
+                "⚠️ If this reddened after a change to VehicleCouplingMath.CoupledSteer, check the " +
+                "premise before the follow: the two pairs are equalised on LOCK, and a change to how " +
+                "lock is narrowed puts them back on different circles, where a shorter body folds " +
+                "faster and this comparison stops meaning what it says.");
+        }
+
+        /// <summary>
+        /// The steer demand that leaves <paramref name="targetLock"/> of usable lock behind a body of
+        /// <paramref name="length"/> — so two different trailers can be driven round ONE circle.
+        ///
+        /// <para>Bisected against the SHIPPED <see cref="VehicleCouplingMath.CoupledSteer"/> rather than
+        /// inverting it here: a fixture that carried its own copy of the narrowing would agree with a
+        /// broken one. Sound because the narrowing is monotone in the demand, which
+        /// <c>RoadFleetEnvelopeTests.TheNarrowingKeepsHerSignAndNeverAddsLock</c> asserts.</para>
+        /// </summary>
+        private static float DemandForLock(float targetLock, float innerDegrees, float wheelbaseMeters,
+                                           float length)
+        {
+            float low = 0f, high = 1f;
+            for (int i = 0; i < 40; i++)
+            {
+                float mid = (low + high) * 0.5f;
+                if (VehicleCouplingMath.CoupledSteer(mid, innerDegrees, wheelbaseMeters, length)
+                    < targetLock) low = mid;
+                else high = mid;
+            }
+            return (low + high) * 0.5f;
         }
     }
 }
