@@ -600,6 +600,61 @@ namespace HiddenHarbours.App.Editor
         public static readonly Vector3 ToWestWaterPassagePos = new Vector3(-356f, 150f, 0f);
         public static readonly Vector2 WestWaterPassageBandSize = new Vector2(6f, 120f);
 
+        // --- ⭐ THE OTHER SEA DOOR: out east into THE EAST WATER (owner ruling 2026-09-06) -------------
+        // The island's east wall, and the door the GAME OPENS THROUGH. The owner ruled the intro out in
+        // the water east of here — on deck with the captain, fishing, and then in — and ruled it a real
+        // place rather than a set: "a fully functional and returnable scene to the east that lines up
+        // with St Peters' east wall". So the east wall gets a door of the same kind the west wall has,
+        // and the opening SAILS through it instead of materialising inside the harbour.
+        //
+        // ⭐ THIS ONE STANDS ON THE FAIRWAY, which is the whole difference between it and the west door.
+        // The west door was sited by what it had to AVOID — the bar, the reef apron, ground that bares.
+        // This one is sited by what it has to CATCH. The entrance channel's landfall is the seaward mark
+        // of the only marked route in or out of this harbour, so every boat that leaves or comes home
+        // crosses the wall on that latitude; the door is put ON it, read off the channel rather than
+        // re-typed, and a boat running the fairway takes the band dead centre.
+
+        /// <summary>How far (m) inside her wall a sea door stands — the ruled figure
+        /// (<see cref="EastWaterPlan.DoorInsetMetres"/>), and the one the WEST door already stands at:
+        /// −380 + 24 = −356. Borrowed rather than re-typed so the island's two sea doors cannot drift
+        /// apart, and <c>StPetersEastDoorTests</c> holds them equal in the region's own terms.</summary>
+        public const float SeaDoorInsetMetres = EastWaterPlan.DoorInsetMetres;
+
+        /// <summary>The seaward end of the entrance channel — the landfall, and the outermost mark of
+        /// the only marked route into this harbour. The channel publishes SEAWARD → HARBOUR, so it is
+        /// the first waypoint; the test holds that ordering rather than trusting it.</summary>
+        public static Vector2 EntranceLandfall => StPetersNavMarks.Entrance.Waypoints[0];
+
+        /// <summary>Sail east across this and you are in the east water: on the entrance channel's own
+        /// landfall latitude, <see cref="SeaDoorInsetMetres"/> inside the east wall, over the −4 m
+        /// harbour floor.
+        ///
+        /// <para>⚠ A PROPERTY rather than a static readonly field, and that is load-bearing: it reads
+        /// <see cref="StPetersNavMarks"/>, which reads this class back for the dock and the approach. A
+        /// field initialiser would run inside this type's static constructor and could read those
+        /// members before they were assigned; a lazily-evaluated member cannot.</para></summary>
+        public static Vector3 ToEastWaterPassagePos =>
+            new Vector3(RegionWorldCenter.x + RegionWorldSize.x * 0.5f - SeaDoorInsetMetres,
+                        EntranceLandfall.y, 0f);
+
+        /// <summary>⚠ The SAME band the west door carries. A LAND region's sea door is 6 × 120 m — deep
+        /// enough that a hull cannot cross it between two physics steps, tall enough that it is not a
+        /// line to find, and short of the full height a WATER region's door spans, because a land
+        /// region's wall may carry a second passage that a full-height band would swallow.</summary>
+        public static readonly Vector2 EastWaterPassageBandSize = new Vector2(6f, 120f);
+
+        /// <summary>The name a passage in the EAST WATER uses when it sends a boat back in here, and the
+        /// row this island's own <c>RegionAnchor</c> answers it with. A key names where you came FROM
+        /// (#456).</summary>
+        public const string FromEastWaterArrivalKey = "east_water";
+
+        /// <summary>Where a boat coming home from the east water is put down — inside the east door,
+        /// pointed in, with the fairway ahead of her. She stands off by
+        /// <see cref="EastWaterPlan.ArrivalClearanceMetres"/>, so a hull that arrives STOPPED is never
+        /// left sitting in the very trigger band that put her there.</summary>
+        public static Vector3 FromEastWaterArrivalPos =>
+            ToEastWaterPassagePos + new Vector3(-EastWaterPlan.ArrivalClearanceMetres, 0f, 0f);
+
         // --- THE VILLAGE (the authoring pass StartSpawnPos above was waiting for) ---------------------
         // ⭐ Every one of these used to sit within a few metres of (-40, 0) — the centre of the 44 m
         // greybox disc the island WAS before #328 rescaled it. #345 moved the village onto the (then
@@ -2117,6 +2172,52 @@ namespace HiddenHarbours.App.Editor
                                  "the only way off is the tidal bar. Re-run after building the west water.");
             }
 
+            // ⭐ THE EAST SEA DOOR — and the door the game OPENS through (owner ruling 2026-09-06). Same
+            // two halves as every seam: THIS one is St Peters' to wire, and the passage that brings a
+            // boat back out is the east water's builder's. Guarded on the def existing for the same
+            // reason the west door is — a region nobody has built yet is a region this island simply has
+            // no door to, which is exactly what it had yesterday.
+            var eastWater = AssetDatabase.LoadAssetAtPath<RegionDef>(
+                                DataRegions + "/" + EastWaterPlan.RegionAssetName + ".asset");
+            Transform eastWaterArrival = null;
+            if (eastWater != null)
+            {
+                var eastDoorGo = new GameObject("PassageToEastWater");
+                eastDoorGo.transform.position = ToEastWaterPassagePos;
+                var eastTrigger = eastDoorGo.AddComponent<BoxCollider2D>();
+                eastTrigger.isTrigger = true;
+                eastTrigger.size = EastWaterPassageBandSize;
+                var eastDoor = eastDoorGo.AddComponent<RegionPassage>();
+                // NAMED even though the east water has one way in today: the mid-bay puts a second door
+                // on it later (world-map-plan §6 step 4), and a passage that named nothing would have to
+                // be found and re-pointed then instead of simply still being right.
+                eastDoor.Configure(eastWater, loader, EastWaterPlan.FromStPetersArrivalKey);
+
+                // ⭐ AND THE WAY BACK IN, which this door needs and the west one does not. The east water
+                // is where the game STARTS, so the first thing ever to cross this seam crosses it
+                // WESTWARD — the opening's cape islander, coming home. A keyless arrival would land her
+                // at the island's own arrival point, which is the berth alongside the wharf: she would
+                // appear tied up with the whole passage in unsailed. So the island authors her a named
+                // arrival inside the door, on the fairway, and the run in is sailed.
+                var eastArrivalGo = new GameObject("StPetersEastWaterArrival");
+                eastArrivalGo.transform.position = FromEastWaterArrivalPos;
+                eastWaterArrival = eastArrivalGo.transform;
+
+                // The loader and the crossing-card registrar both learn the new region. Built from the
+                // defs that ACTUALLY loaded rather than from a fixed list, so a west water that has not
+                // been built cannot put a null in the array the east door just earned its place in.
+                Object[] known = new Object[] { stPeters, nineMileCreek, westWater, eastWater }
+                                     .Where(r => r != null).ToArray();
+                SetRefArray(loader, "_regions", known);
+                SetRefArray(registrar, "_regions", known);
+            }
+            else
+            {
+                Debug.LogWarning("[StPetersBuilder] No East Water RegionDef at " + DataRegions + "/" +
+                                 EastWaterPlan.RegionAssetName + ".asset — the island has no EAST door, " +
+                                 "so the opening has nowhere to sail in from. Commit the def and re-run.");
+            }
+
             // --- ST PETERS DOCK + ARRIVAL ANCHOR (the persistent rig binds here on the sail home) --------
             // St Peters' own board/dock geometry, mirroring the cove/Nine Mile Creek pattern. The persistent
             // ControlSwitcher starts pointed at this slip so you can board the moored Dory once she's yours;
@@ -2139,6 +2240,17 @@ namespace HiddenHarbours.App.Editor
             // authored pair the sea, the backdrop, the height bake and the displaced mesh get above.
             // At 760 × 520 m an unclamped camera sails clean off the painted map.
             anchor.ConfigureExtent(RegionWorldCenter, RegionWorldSize);
+
+            // ⭐ WHICH WAY IN (#456). The island now has two ways in by sea and they land the better part
+            // of a region apart, so the anchor carries a table: a boat coming home from the EAST WATER
+            // lands inside the east door on the fairway, not alongside the wharf.
+            //
+            // ⚠ Only the BOAT's point is named. DisembarkPoint is left blank so it falls back to the
+            // wharf ladder — where you step ashore is a fact about the DOCK and not about the way you
+            // came in, and pinning it to the arrival is the one hazard PerPassageArrivalTests exists to
+            // hold (a player who moors at the wharf stepping off it onto somewhere else entirely).
+            if (eastWaterArrival != null)
+                anchor.ConfigureArrivals(new NamedArrival(FromEastWaterArrivalKey, eastWaterArrival, null));
 
             // --- SAVE & REGISTER ------------------------------------------------------------------------
             EditorSceneManager.SaveScene(scene, ScenePath);
