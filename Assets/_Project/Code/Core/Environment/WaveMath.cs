@@ -298,6 +298,17 @@ namespace HiddenHarbours.Core
         [Tooltip("Ceiling on the dominant wavelength (metres) so a gale cannot stretch the swell absurdly.")]
         public float DominantWavelengthMax;
 
+        [Tooltip("OWNER RULING 2026-09-06: a whole-sea WAVELENGTH scale on the derived peak, applied " +
+             "after the wind law and its cap. 1 = the sea as derived; 0.5 = half the wavelength, which " +
+             "is 0.71x the crest SPEED (c = sqrt(g*lambda/2pi), so speed goes as the square root). " +
+             "\n\nTo halve the SPEED instead, this wants 0.25 — and that doubles how often crests " +
+             "arrive, which is the thing register row 30 measured as already too frequent. See " +
+             "docs/design/water-rendering.md 38.\n\nA value of 0 or less is read as 1 (the underived " +
+             "sea): this field did not exist before 2026-09-06, so an asset serialized before then " +
+             "deserializes it as ZERO, and a plain multiply would silently flatten every wavelength to " +
+             "the floor.")]
+        public float DominantWavelengthScale;
+
         [Tooltip("Primary-train amplitude (metres) at full sea state (SeaState01 = 1). Everything scales down from here; at SeaState01 = 0 all amplitudes are exactly 0 (glass is sacred).")]
         public float PrimaryAmplitude;
 
@@ -383,6 +394,7 @@ namespace HiddenHarbours.Core
             DominantWavelengthBase = 6f,
             DominantWavelengthPerWindSpeed = 1.5f,
             DominantWavelengthMax = 40f,
+            DominantWavelengthScale = 1f,
             PrimaryAmplitude = 0.8f,
             SeaStateAmplitudeExponent = 1.35f,
             CrestSharpening = 2.2f,
@@ -489,6 +501,25 @@ namespace HiddenHarbours.Core
             float dominantWavelength = Mathf.Clamp(
                 settings.DominantWavelengthBase + settings.DominantWavelengthPerWindSpeed * windSpeed,
                 WaveTrain.MinWavelengthMeters, wavelengthCeiling);
+
+            // 🔴 OWNER RULING 2026-09-06, register row 30: "I think halving the wave speed is fine."
+            // One scale on the DERIVED peak, after the wind law and its cap, so every train in the
+            // field — primary, the three secondaries, and every spectrum slot, which are all struck
+            // from this same number — shortens together and the sea keeps its shape.
+            //
+            // ⚠️ THIS IS A SIM CHANGE, NOT A LOOK ONE. ADR 0018's one-sea rule means the hull ride
+            // samples this same field, so a shorter swell is a shorter swell for the seakeeping too.
+            // It is deliberately NOT a shader dial for exactly that reason.
+            //
+            // ⚠️ A zero here is read as 1. The field did not exist before this ruling, so an asset
+            // serialized before it deserializes to ZERO — and a plain multiply would collapse every
+            // wavelength onto MinWavelengthMeters and call it a sea. Same discipline as WaveSpectrum's
+            // floors and the SurfSprayIntensityOffset precedent: a missing key must fail to the
+            // shipped behaviour, never to a degenerate one.
+            float wavelengthScale = settings.DominantWavelengthScale > 0f
+                ? settings.DominantWavelengthScale : 1f;
+            dominantWavelength = Mathf.Max(WaveTrain.MinWavelengthMeters,
+                                           dominantWavelength * wavelengthScale);
 
             float primaryAmplitude = Mathf.Max(0f, settings.PrimaryAmplitude) * amplitudeScale;
             float gravity = settings.Gravity;

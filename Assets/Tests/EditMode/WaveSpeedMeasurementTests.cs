@@ -255,6 +255,100 @@ namespace HiddenHarbours.Tests.EditMode
                 "A wider frame must take longer to cross at the same wave speed.");
         }
 
+        // ==== 4. THE OWNER'S RULING (2026-09-06): "I think halving the wave speed is fine" ===========
+
+        /// <summary>
+        /// 🔴 <b>THE SCALE, AND WHAT "HALF" MEANS.</b> `DominantWavelengthScale` multiplies the derived
+        /// peak after the wind law and its cap, so every train in the field shortens together and the
+        /// sea keeps its shape. Because `c = √(gλ/2π)` and `T = √(2πλ/g)`, <b>both the crest speed and
+        /// the crest period scale as the SQUARE ROOT of it</b> — which is the whole reason "halve the
+        /// speed" and "halve the wavelength" are different numbers.
+        /// </summary>
+        [Test]
+        public void TheWavelengthScale_MovesSpeedAndPeriodAsItsSquareRoot()
+        {
+            const float u = 5.7f;
+            float full = ShippedPeak(u);
+            foreach (float scale in new[] { 1f, 0.5f, 0.25f })
+            {
+                float lambda = full * scale;
+                TestContext.WriteLine(
+                    $"scale {scale:0.00}: lambda {lambda,5:0.0} m ({scale:0.00}x)  " +
+                    $"c {PhaseSpeed(lambda),4:0.00} m/s ({PhaseSpeed(lambda) / PhaseSpeed(full):0.00}x)  " +
+                    $"crest every {Period(lambda),4:0.00} s ({Period(lambda) / Period(full):0.00}x)");
+                Assert.AreEqual(Mathf.Sqrt(scale), PhaseSpeed(lambda) / PhaseSpeed(full), 1e-4f,
+                    "Crest speed scales as the SQUARE ROOT of the wavelength scale.");
+                Assert.AreEqual(Mathf.Sqrt(scale), Period(lambda) / Period(full), 1e-4f,
+                    "So does the crest period — halving the wavelength does NOT halve the speed.");
+            }
+            Assert.AreEqual(0.25f, 0.5f * 0.5f, 1e-6f,
+                "A TRUE half-speed is a QUARTER wavelength. The shipped 0.5 gives 0.71x the speed; " +
+                "0.25 gives 0.50x and doubles how often crests arrive. One dial moves between them, " +
+                "and which one the owner meant is stated in the PR body rather than guessed at here.");
+        }
+
+        /// <summary>
+        /// 🔴 <b>THE STALE-ASSET GUARD, and it is the one that matters.</b> `DominantWavelengthScale`
+        /// did not exist before 2026-09-06, so any asset or prefab serialized before then deserializes
+        /// it as <b>zero</b> — and a plain multiply would collapse every wavelength onto
+        /// `MinWavelengthMeters` and call the result a sea. Zero is read as 1: a missing key fails to
+        /// the underived sea, never to a degenerate one. Same discipline as `WaveSpectrum`'s floors and
+        /// the `SurfSprayIntensityOffset` precedent.
+        /// </summary>
+        [Test]
+        public void AMissingScale_FailsToTheUnderivedSea_NotToAFlatOne()
+        {
+            var wind = new Vector2(0f, 5.7f);
+            WaveFieldSettings shipped = WaveFieldSettings.Default;
+
+            WaveFieldSettings stale = shipped;    // what a pre-ruling asset deserializes to
+            stale.DominantWavelengthScale = 0f;
+            WaveFieldSettings explicitOne = shipped;
+            explicitOne.DominantWavelengthScale = 1f;
+
+            float staleLambda = WaveMath.TrainsFrom(wind, 0.55f, in stale)[0].Wavelength;
+            float oneLambda = WaveMath.TrainsFrom(wind, 0.55f, in explicitOne)[0].Wavelength;
+
+            TestContext.WriteLine($"a stale asset (scale 0) derives lambda {staleLambda:0.000} m; " +
+                                  $"an explicit 1 derives {oneLambda:0.000} m");
+            Assert.AreEqual(oneLambda, staleLambda, 1e-4f,
+                "A zero scale must behave exactly as 1 — the sea a pre-ruling asset has always drawn.");
+            Assert.Greater(staleLambda, WaveTrain.MinWavelengthMeters * 100f,
+                "DEAD CONTROL: if the floor were missing, a stale asset would land on " +
+                "MinWavelengthMeters and this is the assertion that would have caught it.");
+
+            WaveFieldSettings negative = shipped;
+            negative.DominantWavelengthScale = -2f;
+            Assert.AreEqual(oneLambda,
+                WaveMath.TrainsFrom(wind, 0.55f, in negative)[0].Wavelength, 1e-4f,
+                "A negative scale fails the same safe way rather than mirroring the sea.");
+        }
+
+        /// <summary>The scale reaches EVERY train, not just the peak — the secondaries and the spectrum
+        /// slots are all struck from the same derived `dominantWavelength`, so the sea shortens without
+        /// changing shape. If it ever reached only the primary, the cross-chop would keep its old size
+        /// and the sea would read as two different seas laid over each other.</summary>
+        [Test]
+        public void TheScaleReachesEveryTrain_SoTheSeaKeepsItsShape()
+        {
+            var wind = new Vector2(0f, 5.7f);
+            WaveFieldSettings full = WaveFieldSettings.Default;
+            full.DominantWavelengthScale = 1f;
+            WaveFieldSettings half = WaveFieldSettings.Default;
+            half.DominantWavelengthScale = 0.5f;
+
+            WaveTrains a = WaveMath.TrainsFrom(wind, 0.55f, in full);
+            WaveTrains b = WaveMath.TrainsFrom(wind, 0.55f, in half);
+            Assert.AreEqual(a.Count, b.Count, "The scale must not change how many trains there are.");
+            for (int i = 0; i < a.Count; i++)
+            {
+                TestContext.WriteLine($"  train {i}: {a[i].Wavelength,6:0.00} m -> {b[i].Wavelength,6:0.00} m " +
+                                      $"({b[i].Wavelength / a[i].Wavelength:0.000}x)");
+                Assert.AreEqual(0.5f, b[i].Wavelength / a[i].Wavelength, 1e-3f,
+                    $"Train {i} must shorten by the same factor as the peak, or the sea changes shape.");
+            }
+        }
+
         /// <summary>
         /// 🔴 <b>THE CONFLICT, and it is why this is a row and not a fix.</b> The owner asked for two
         /// things in one sentence — slower across the screen, and realistic to the wind. At the shipped

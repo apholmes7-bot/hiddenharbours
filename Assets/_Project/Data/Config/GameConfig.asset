@@ -74,6 +74,7 @@ MonoBehaviour:
     DominantWavelengthBase: 6
     DominantWavelengthPerWindSpeed: 1.5
     DominantWavelengthMax: 40
+    DominantWavelengthScale: 0.5
     PrimaryAmplitude: 0.8
     SeaStateAmplitudeExponent: 1.5
     CrestSharpening: 2.6

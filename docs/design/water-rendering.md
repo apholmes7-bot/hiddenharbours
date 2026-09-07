@@ -4961,3 +4961,49 @@ with its own costs (it shrinks the boat, and the framing is per hull today).
 (ADR 0018's one-sea rule), so a longer swell moves the seakeeping with it — and register row 6's
 ride≠drawn question closes at the same time. That is a Tier B change and wants its own charter.
 
+## 38. The sea is halved — the owner's ruling on row 30 (2026-09-06)
+
+**Owner, on the row 30 measurement:** *"I think halving the wave speed is fine."*
+
+`WaveFieldSettings.DominantWavelengthScale` multiplies the derived peak **after** the wind law and its
+cap, so every train in the field — the primary, the three secondaries and every spectrum slot, all struck
+from that same derived number — shortens together and the sea keeps its shape. Shipped on
+`GameConfig.asset` at **0.5**; `WaveFieldSettings.Default` keeps **1**, so the reference tuning and all
+129 test call sites that build from it are bit-for-bit unmoved.
+
+### 38.1 ⚠️ "Half" is two different numbers, and the ruling's words pick the other one
+
+`c = √(gλ/2π)`, so **speed and period both scale as the square root of the wavelength scale**:
+
+| scale | λ at a blow | c | crest arrives every | crosses the cape's frame in |
+|---|---|---|---|---|
+| 1 (before) | 14.6 m | 4.77 m/s | 3.05 s | 10.9 s |
+| **0.5 (shipped)** | **7.3 m** | **3.37 m/s = 0.71×** | **2.16 s** | **15.4 s** |
+| 0.25 | 3.6 m | 2.38 m/s = **0.50×** | 1.53 s | 21.8 s |
+
+**Halving the wavelength is not halving the speed.** The ruling says "halving the wave *speed*", which is
+literally the **0.25** row; 0.5 was the lever tabled as *"half the wavelength"* in §37.4 and is what
+shipped, on the coordinator's direction, as the more conservative step. **One number moves between
+them** — `GameConfig ▸ WaveField ▸ DominantWavelengthScale`.
+
+⚠️ And the cost is worth his eye before he moves it further: row 30 measured that crests **already** arrive
+too often for the wind (0.73× a real sea's period at a blow). Halving the wavelength takes that to 0.52×,
+and quartering it to 0.37× — *shorter waves arrive more often*. The sea gets slower across the screen and
+less like a real sea in the same breath. That trade is the whole of row 30 and it is his to make.
+
+### 38.2 ⚠️ This is a SIM change, not a look one
+
+ADR 0018's one-sea rule: the hull ride samples this same field, so a shorter swell is a shorter swell for
+the seakeeping too — `BoatWaveMotion`'s heave, the footprint filter and the storm rock all see it. That is
+exactly why it is a settings constant and **not** a shader dial. A helm-feel verdict is owed.
+
+### 38.3 A zero is read as 1, and that is load-bearing
+
+The field did not exist before this ruling, so an asset or prefab serialized before it deserializes the
+key as **zero** — and a plain multiply would collapse every wavelength onto `MinWavelengthMeters` and call
+the result a sea. Measured with the floor removed: a stale asset derives **0.010 m**, a one-centimetre
+ocean. Zero and negatives are read as 1, so a missing key fails to the underived sea rather than to a
+degenerate one — the same discipline as `WaveSpectrum`'s floors and the `SurfSprayIntensityOffset`
+precedent. `AMissingScale_FailsToTheUnderivedSea_NotToAFlatOne` is the guard, and the sabotage above is
+what proves it is doing work.
+
