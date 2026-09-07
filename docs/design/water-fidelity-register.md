@@ -93,7 +93,7 @@ sails in (the blow). **The owner's ranking replaces this column.**
 
 | # | item | why the plates cannot show it | who owes what |
 |---|---|---|---|
-| 15 | **ride ≠ drawn at `_OceanSwellScale 0.07`** — the vertex stage draws the swell ×2.8 shorter than the field the rock was tuned on | the flat pass has no vertex lift | **owner CALL — ask, never choose** (charter §1) |
+| 15 | ~~**ride ≠ drawn at `_OceanSwellScale 0.07`**~~ — the vertex stage draws the swell ×2.8 shorter than the field the rock was tuned on | the flat pass has no vertex lift | ✅ **CLOSED — bookkeeping, 2026-09-06.** Ruled by the owner 2026-09-02 (*"swell scale you can make the changes for a longer slower swell, thats fine"*) and **acted on in water-fidelity PR 6**: `_OceanSwellScale` 0.07 → **0.025** on all nine materials, which is the constant the shader normalises by, so the visual frequency scale is **exactly 1** and the drawn sea IS the field. Re-measured and pinned in **#759** (`WaveSpeedMeasurementTests.TheDrawnWaveIsTheModelledWave_AtTheShippedSwellScale`), which also found that the pre-PR-6 error ran the OPPOSITE way to the one assumed — the ratio is `1/√fs`, so fs 2.8 drew waves at **0.60×** the speed their drawn length allowed, too SLOW rather than superluminal. The row was left open in this table after PR 6 closed it; this entry is the bookkeeping. |
 | 16 | the wake round-2 eyeball (#669) | no hull in a fixture | owner's eye in Play |
 | 17 | `SprayEmitter` sorting over decks (order 5 against every `BoatVisualDef`'s 1) | no hull | a Play-mode look in rough water |
 | 18 | the interior-mask "dry island" when a crest stands in front of a hull | no hull, no displaced pass | owner verdict pending since 2026-07-25 |
