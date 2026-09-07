@@ -134,10 +134,20 @@ namespace HiddenHarbours.Boats
         /// a big/fast hull lays a wider trail. Always ≥ 0. Pure + static.
         /// </summary>
         public static float ShoulderHalfWidth(float hullLengthMeters, float magnitude01, in WakeTrailConfig c)
-        {
-            float baseHalf = Mathf.Max(0f, hullLengthMeters) * Mathf.Max(0f, c.ShoulderHalfWidthFraction);
-            return baseHalf * (1f + Mathf.Max(0f, c.WidthMagnitudeBoost) * Mathf.Clamp01(magnitude01));
-        }
+            => ShoulderHalfWidthFrom(Mathf.Max(0f, hullLengthMeters) * Mathf.Max(0f, c.ShoulderHalfWidthFraction),
+                                     magnitude01, in c);
+
+        /// <summary>
+        /// 🔴 <b>ROW 29 — the shoulders, from the ONE width.</b> Same magnitude boost, but the base is the
+        /// wake's shared half-width (the hull's watertight half-beam, via
+        /// <see cref="HiddenHarbours.Core.WakeRootMath.WakeHalfWidthMeters"/>) instead of a fraction of her
+        /// LENGTH. Before row 29 the buffer's sheet was 2.4 m wide on the cape while these lobes were
+        /// 12.9 x 0.14 = 1.81 m — the two halves of one wake disagreeing about the boat by a quarter.
+        /// </summary>
+        public static float ShoulderHalfWidthFrom(float wakeHalfWidthMeters, float magnitude01,
+                                                  in WakeTrailConfig c)
+            => Mathf.Max(0f, wakeHalfWidthMeters)
+             * (1f + Mathf.Max(0f, c.WidthMagnitudeBoost) * Mathf.Clamp01(magnitude01));
 
         /// <summary>
         /// The lateral SPREAD speed (m/s) a freshly-laid shoulder deposit moves outward at —
@@ -252,6 +262,20 @@ namespace HiddenHarbours.Boats
         /// </summary>
         public static float ChurnHalfWidth(float hullLengthMeters, in WakeTrailConfig c)
             => Mathf.Max(0f, hullLengthMeters) * Mathf.Max(0f, c.ChurnHalfWidthFraction);
+
+        /// <summary>
+        /// 🔴 <b>ROW 29 — the centre churn, from the ONE width.</b> The churn strip is NARROWER than the
+        /// shoulders and stays so: its share of the wake is the ratio the two shipped fractions already
+        /// express (0.10 / 0.14), so the SHAPE is unchanged and only the SCALE moves onto the hull's beam.
+        /// A degenerate shoulder fraction falls back to the churn's own, so a mis-tuned config cannot
+        /// divide by zero and widen the churn past the arms it is supposed to sit inside.
+        /// </summary>
+        public static float ChurnHalfWidthFrom(float wakeHalfWidthMeters, in WakeTrailConfig c)
+        {
+            float shoulder = Mathf.Max(0f, c.ShoulderHalfWidthFraction);
+            float share = shoulder > 1e-5f ? Mathf.Max(0f, c.ChurnHalfWidthFraction) / shoulder : 1f;
+            return Mathf.Max(0f, wakeHalfWidthMeters) * share;
+        }
 
         /// <summary>
         /// Where a churn puff lands: the track point pushed laterally by <paramref name="lat01"/> (−1..1,
@@ -473,6 +497,13 @@ namespace HiddenHarbours.Boats
                  "the swing about the boat's CENTRE, not her travel — which is what fanned the trail around " +
                  "amidships. 0 = lay purely along the course made good; 1 = the shipped stern-swept " +
                  "behaviour, bit-for-bit. The deposit POSITION is at the transom either way.")]
+        /// <remarks>🔴 <b>ROW 29 set this to 1, and that is the "one track".</b> At the shipped 0.25 the
+        /// deposits rode three quarters of the ORIGIN's travel and only a quarter of the transom's swept
+        /// path, so through a turn they trailed from her QUARTER while the advected buffer's sheet — which
+        /// has no such blend — trailed from her transom. That lateral separation is the owner's
+        /// <i>"off-centred"</i>. A turning hull's wake leaves the transom, so the transom's own path IS the
+        /// track and the blend is pinned at its far end. Kept as a dial rather than deleted: 0 restores the
+        /// origin-led trail exactly, which is the only way to see what this fixed.</remarks>
         [Range(0f, 1f)] public float SternSwingFraction;
 
         [Header("The emergent V (spread where laid)")]
@@ -585,7 +616,7 @@ namespace HiddenHarbours.Boats
             TeleportResetMeters        = 20f,
             // A quarter of the stern's swing: the transom kicking out still throws a little water where it
             // went, but the trail is laid along the course and no longer fans about amidships in a turn.
-            SternSwingFraction         = 0.25f,
+            SternSwingFraction         = 1f,     // ROW 29: the track IS the transom's own path
 
             KelvinHalfAngleDeg         = 19f,    // the physical Kelvin angle — the emergent V opens at this
             SpreadSpeedMin             = 0.10f,

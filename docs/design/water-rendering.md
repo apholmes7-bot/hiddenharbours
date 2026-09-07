@@ -5058,3 +5058,71 @@ can step over is not a rail. Below 1, which is all the dial is for, the second c
 ADR 0018's one-sea rule: the hull rides this field. A helm-feel verdict is owed — the precedent is the
 owner's own *"the cape has weight"* verdict on #739.
 
+## 40. Three foam publishers become ONE wake (register row 29)
+
+**Owner, 2026-09-06, in play:** *"the foam seemed off-centred with three different sections leaving the
+boat."* Three foam families leave a hull, and they disagreed about three different things at once.
+
+### 40.1 What they disagreed about
+
+| | the buffer's sheet (`FoamInjector`) | the sprite families (`BoatWakeEmitter`) |
+|---|---|---|
+| **root** | rig-lofted `WakeSternOffsetMeters` — **6.40 m** on the cape | `BoatHullDef.LengthMeters`/2 + a nudge — **6.60 m** |
+| **projection** | elevation clamped to [1, 90] | 1 at or below 0 |
+| **width** | `WatertightHalfBeamMeters` — **2.4 m** | `length × 0.14` — **1.81 m** (0.75×) |
+| **track** | transom → transom | `Lerp(travel, sternSwept, 0.25)` — mostly the ORIGIN's arc |
+
+⚠️ **Foreshortening was the obvious suspect and it is innocent** — every family resolves the same
+`ElevationDeg` through the presenter seam. That is measured and refuted in the lane's memory; do not spend
+a day there.
+
+### 40.2 One root, in Core
+
+`WakeRootMath` (Core) is now the only place a wake springs from: one `ForeshortenY`, one
+`ProjectAlongHeading`, one `SternWorld`. `FoamBuffer.SternWorld` and `WakeGrading.ForeshortenY` /
+`ProjectAlongHeading` / `SternAnchor` are **delegations, not second copies** — they kept their names so
+PR 11a/11b's guards read unchanged. It lives in Core because the callers are in two modules
+(`HiddenHarbours.Art` and `HiddenHarbours.Boats`) and rule 4 says cross-module agreement goes through Core.
+
+The rig facts reach the emitter the way the bake elevation already did — through
+`IBoatHullPresenter`, which gains `WakeSternOffsetMeters` and `WatertightHalfBeamMeters`. A mesh hull
+answers from her def; a hull drawn by a sprite compass answers **0**, and `WakeRootMath` reads that as
+"no rig" and falls back to half her length and the legacy width fraction. **So the mesh fleet gains the one
+measured number and the hand-drawn fleet is unchanged** — that is what makes this a fix rather than a
+re-tune of everything afloat. All **34** hull defs carry a lofted offset.
+
+### 40.3 🔴 One track — measured, because the field's own tooltip argued the other way
+
+The deposits ride `Lerp(travel, sternSwept, SternSwingFraction)`. The tooltip warned that the transom's
+swept segment "is mostly the swing about the boat's CENTRE… which is what fanned the trail around
+amidships", and the fraction was cut to 0.25 for that reason. **That worry was about a stern anchored at
+half a nominal length.** With one rig-lofted root the measurement is unambiguous — a working turn, the
+lateral gap the two tracks open 10 m astern:
+
+| `SternSwingFraction` | divergence | gap 10 m astern | as a fraction of her beam |
+|---|---|---|---|
+| 0.00 | 0.3124 | 3.12 m | 0.651 |
+| **0.25 (was shipped)** | 0.2348 | **2.35 m** | **0.489** |
+| **1.00 (ships now)** | 0.0000 | **0.00 m** | **0.000** |
+
+**Nearly half a beam of separation is the owner's "off-centred", as a number.** The transom's own path IS
+the track the buffer's capsule already lays on, so the blend is pinned at its far end. The dial survives —
+0 restores the origin-led trail exactly, which is the only way to see what this fixed.
+
+⚠️ **And it is a no-op on a straight course**: there the origin's travel and the transom's swept path are
+one vector, so nothing moves for a hull under way in a line (measured: 1e-6 m per step).
+
+### 40.4 One width
+
+Both families now derive from the hull's beam through `WakeRootMath.WakeHalfWidthMeters`; the length
+fraction survives only as the no-rig fallback. The cape's lobes go **1.81 → 2.40 m**, matching her sheet.
+The churn strip keeps its **shape** — its share of the shoulders is the ratio the two shipped fractions
+already expressed (0.10/0.14 = 0.714) — so only the SCALE moved from her length onto her beam.
+
+### 40.5 Not fixed here, and why
+
+`WakeParticleSystem.SternEmitPoint` / `ArmEmitPoint` / `SternFillPoint` root a V apex at a flat 0.5 m,
+hull-independent and unprojected. It looks exactly like this defect. It is referenced **11 times in tests
+and zero times in production** — a defended code path nothing runs. **Left in place and named**: deleting
+it is a separate cleanup with its own test churn, and "fixing" it would change nothing the owner sees.
+
