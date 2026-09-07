@@ -231,3 +231,165 @@ def sample_field(repo, height_map, cols, rows, origin_nw, stride_m):
         "values": values,
     }
     return field, None
+
+
+class _Unset:
+    """A first-run sentinel that is not ``None`` — because ``None`` is a real value here (a sample
+    off the painted map) and starting the run state at it would merge the first absent cell into a
+    run that had not begun."""
+    __slots__ = ()
+
+
+_UNSET = _Unset()
+
+
+def sample_field_full(repo, height_map, cols, rows, origin_nw):
+    """The elevation grid at **one sample per terrain cell**, run-length encoded.
+
+    The sibling of :func:`sample_field`, and it exists because that one is an 8 m wash: a reader that
+    thresholds it at spring high draws a shoreline in 8 m steps, which is not the shoreline the game
+    shows. This is the same read at the grid the rest of the package already speaks — ``cellMeters``
+    1, ``cols`` x ``rows``, row 0 = north — so ``x-heightFieldFull`` and every layer's ``rle`` index
+    the same cells, and the owner's tide slider can cut water against the ground cell for cell.
+
+    ⚠ **"Full" is the TERRAIN's resolution, not the texture's.** Both shipped height maps are
+    **2 texels per metre** (1520x1120 over 760x560 m; 1520x1040 over 760x520), so a 1 m stride takes
+    one texel in four. That is the honest stride for a field whose neighbours are 1 m cells, and the
+    full-resolution source stays in the referenced file, pinned by ``textureSha256``.
+
+    Values are metres above chart datum — directly comparable to ``terrain.waterLevelMeters``, with
+    no decode step, which is the whole point of a field a reader thresholds at a sea level. They
+    carry the map's own 8-bit quantisation and nothing finer: 255 steps across ``elevationRange``,
+    so the quantum is stated and equal values run together. ``null`` is a sample outside the painted
+    map — absent, not zero.
+    """
+    texture = height_map.get("texture") if height_map else None
+    if not texture or not repo.exists(texture):
+        return None, "the height texture is not on disk"
+    with open(repo.abs(texture), "rb") as handle:
+        data = handle.read()
+    if data.startswith(b"version https://git-lfs"):
+        return None, "the height texture is a Git LFS pointer — its bytes are not in this checkout"
+    png = decode_r8(data)
+    if png is None:
+        return None, "the height texture did not decode as an 8-bit greyscale PNG"
+
+    low = height_map["minElevation"]
+    span = height_map["maxElevation"] - low
+    width_m, height_m = height_map["worldSizeMeters"]
+    centre_x, centre_y = height_map["worldCenter"]
+    left, top = centre_x - width_m / 2.0, centre_y + height_m / 2.0
+
+    # One decoded metre-value per 8-bit code, computed once. The elevation is a function of the code
+    # alone, so a per-cell round() over 425,600 cells would be 425,600 identical divisions and 256
+    # distinct answers — and rounding ONCE is also what keeps two equal codes encoding to one run.
+    table = [round(low + code / 255.0 * span, 3) for code in range(256)]
+
+    runs, current, length = [], _UNSET, 0
+    for row in range(rows):
+        world_y = origin_nw[1] - (row + 0.5)
+        ty = int((world_y - (top - height_m)) / height_m * png.height)
+        line = png.rows[png.height - 1 - ty] if 0 <= ty < png.height else None
+        for col in range(cols):
+            if line is None:
+                value = None
+            else:
+                tx = int((origin_nw[0] + col + 0.5 - left) / width_m * png.width)
+                value = table[line[tx]] if 0 <= tx < png.width else None
+            # `None == None` is True (two absent samples ARE one run) and `x == _UNSET` is False
+            # for every x including None, so the first cell always opens a run.
+            if value == current:
+                length += 1
+            else:
+                if length:
+                    runs.append([current, length])
+                current, length = value, 1
+    if length:
+        runs.append([current, length])
+
+    quantum = span / 255.0
+    field = {
+        "strideMeters": 1,
+        "cols": cols,
+        "rows": rows,
+        "originNW": [round(origin_nw[0], 3), round(origin_nw[1], 3)],
+        "elevationRange": [low, height_map["maxElevation"]],
+        "units": "metres relative to chart datum — the same datum as terrain.waterLevelMeters",
+        "order": "row-major, row 0 = north edge, one sample per 1 m terrain cell centre — the SAME "
+                 "cols x rows grid every terrain layer's rle covers",
+        "encoding": "run-length: [[metres, count], …]; sum(count) == cols * rows exactly. null is a "
+                    "sample outside the painted map.",
+        "quantumMeters": round(quantum, 6),
+        "x-note": "the tide field. Threshold it at seaLevel (see x-tideRules) and what is below is "
+                  "water. Nearest texel, no interpolation and no smoothing, carrying the map's own "
+                  "8-bit quantisation — quantumMeters is that step, and values are rounded to 3 dp "
+                  "which is finer than it. The map is 2 texels/m, so this 1 m stride takes one texel "
+                  "in four; the full-resolution source is terrain.x-heightMap, pinned by "
+                  "textureSha256.",
+        "values": runs,
+    }
+    return field, None
+
+
+
+class Sampler:
+    """Point reads of the painted height map, for the few facts that want ONE elevation.
+
+    The grid fields answer "what is the ground everywhere"; this answers "what is the ground under
+    this hull" and "does the map agree with the deck constant this course stands on". Same read as
+    theirs — nearest texel, no interpolation — so a sampled bed and the field a reader thresholds
+    can never disagree about the same square metre.
+
+    ``ready`` is False when the texture's bytes are absent (a pointer-only checkout), and every
+    caller then ships ``null`` with a reason rather than a zero: an elevation of 0 is a real
+    elevation, and a hull handed one at chart datum would be reported aground at every tide.
+    """
+
+    __slots__ = ("_png", "_low", "_span", "_left", "_bottom", "_width_m", "_height_m", "reason")
+
+    def __init__(self, repo, height_map):
+        self._png = None
+        self.reason = None
+        texture = height_map.get("texture") if height_map else None
+        if not texture or not repo.exists(texture):
+            self.reason = "the height texture is not on disk"
+            return
+        with open(repo.abs(texture), "rb") as handle:
+            data = handle.read()
+        if data.startswith(b"version https://git-lfs"):
+            self.reason = ("the height texture is a Git LFS pointer — its bytes are not in this "
+                           "checkout")
+            return
+        png = decode_r8(data)
+        if png is None:
+            self.reason = "the height texture did not decode as an 8-bit greyscale PNG"
+            return
+        self._png = png
+        self._low = height_map["minElevation"]
+        self._span = height_map["maxElevation"] - self._low
+        self._width_m, self._height_m = height_map["worldSizeMeters"]
+        centre_x, centre_y = height_map["worldCenter"]
+        self._left = centre_x - self._width_m / 2.0
+        self._bottom = centre_y - self._height_m / 2.0
+
+    @property
+    def ready(self):
+        return self._png is not None
+
+    @property
+    def quantum(self):
+        """The map's own elevation step — ``elevationRange`` over 255. Every sampled elevation is a
+        multiple of it, so a comparison against a declared constant is only ever meaningful to
+        within one of these."""
+        return None if self._png is None else self._span / 255.0
+
+    def at(self, x, y):
+        """Metres above chart datum at a world point, or ``None`` outside the painted map."""
+        if self._png is None:
+            return None
+        tx = int((x - self._left) / self._width_m * self._png.width)
+        ty = int((y - self._bottom) / self._height_m * self._png.height)
+        if not (0 <= tx < self._png.width and 0 <= ty < self._png.height):
+            return None
+        code = self._png.rows[self._png.height - 1 - ty][tx]
+        return round(self._low + code / 255.0 * self._span, 3)

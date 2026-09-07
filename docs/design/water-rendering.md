@@ -5058,3 +5058,238 @@ can step over is not a rail. Below 1, which is all the dial is for, the second c
 ADR 0018's one-sea rule: the hull rides this field. A helm-feel verdict is owed — the precedent is the
 owner's own *"the cape has weight"* verdict on #739.
 
+## 40. Three foam publishers become ONE wake (register row 29)
+
+**Owner, 2026-09-06, in play:** *"the foam seemed off-centred with three different sections leaving the
+boat."* Three foam families leave a hull, and they disagreed about three different things at once.
+
+### 40.1 What they disagreed about
+
+| | the buffer's sheet (`FoamInjector`) | the sprite families (`BoatWakeEmitter`) |
+|---|---|---|
+| **root** | rig-lofted `WakeSternOffsetMeters` — **6.40 m** on the cape | `BoatHullDef.LengthMeters`/2 + a nudge — **6.60 m** |
+| **projection** | elevation clamped to [1, 90] | 1 at or below 0 |
+| **width** | `WatertightHalfBeamMeters` — **2.4 m** | `length × 0.14` — **1.81 m** (0.75×) |
+| **track** | transom → transom | `Lerp(travel, sternSwept, 0.25)` — mostly the ORIGIN's arc |
+
+⚠️ **Foreshortening was the obvious suspect and it is innocent** — every family resolves the same
+`ElevationDeg` through the presenter seam. That is measured and refuted in the lane's memory; do not spend
+a day there.
+
+### 40.2 One root, in Core
+
+`WakeRootMath` (Core) is now the only place a wake springs from: one `ForeshortenY`, one
+`ProjectAlongHeading`, one `SternWorld`. `FoamBuffer.SternWorld` and `WakeGrading.ForeshortenY` /
+`ProjectAlongHeading` / `SternAnchor` are **delegations, not second copies** — they kept their names so
+PR 11a/11b's guards read unchanged. It lives in Core because the callers are in two modules
+(`HiddenHarbours.Art` and `HiddenHarbours.Boats`) and rule 4 says cross-module agreement goes through Core.
+
+The rig facts reach the emitter the way the bake elevation already did — through
+`IBoatHullPresenter`, which gains `WakeSternOffsetMeters` and `WatertightHalfBeamMeters`. A mesh hull
+answers from her def; a hull drawn by a sprite compass answers **0**, and `WakeRootMath` reads that as
+"no rig" and falls back to half her length and the legacy width fraction. **So the mesh fleet gains the one
+measured number and the hand-drawn fleet is unchanged** — that is what makes this a fix rather than a
+re-tune of everything afloat. All **34** hull defs carry a lofted offset.
+
+### 40.3 🔴 The track was ALREADY one track — the charter and I both misread it
+
+The charter's third ask was "one track", on the reading that the deposits ride
+`Lerp(travel, sternSwept, 0.25)` while the buffer's capsule does not. **That is not a positional
+disagreement, and there was nothing to fix.** The deposits are laid at
+`PointOnTrack(prevStern, stern, t)` — the transom's own swept path, which is exactly the segment the
+buffer's capsule lays on. Measured through a four-second turn, at every swing fraction, the worst
+distance between a deposit and the capsule at the same point of the segment is **0.0000000 m**.
+
+What `SternSwingFraction` governs is `trackDir`: the **lateral axis** the shoulders and arms are placed
+along. Row 29 set it to 1 on the charter's steer, and that **broke an existing guard** —
+`WakeDispersalTests.ShippedSwingFraction_PullsTheTrackBackOntoTheCourse_ButKeepsSomeKick`, which pins a
+deliberate decision: a stern anchor's swept segment is dominated by its swing about the boat's centre,
+so laying the ARMS along it fans the wake around amidships. Its failure message says in as many words:
+*retune this guard, don't delete it.*
+
+**It was right and this row confirmed it.** The fraction is back at the shipped 0.25, and the
+measurement that suggested otherwise was mine: I measured the ANGLE between two direction vectors and
+reported it as "0.489 of her beam of lateral gap 10 m astern". An angle is not a lateral gap, and no
+foam was ever laid 2.35 m off. The corrected guard measures metres, where the deposits actually land.
+
+### 40.4 One width
+
+Both families now derive from the hull's beam through `WakeRootMath.WakeHalfWidthMeters`; the length
+fraction survives only as the no-rig fallback. The cape's lobes go **1.81 → 2.40 m**, matching her sheet.
+The churn strip keeps its **shape** — its share of the shoulders is the ratio the two shipped fractions
+already expressed (0.10/0.14 = 0.714) — so only the SCALE moved from her length onto her beam.
+
+### 40.5 Not fixed here, and why
+
+`WakeParticleSystem.SternEmitPoint` / `ArmEmitPoint` / `SternFillPoint` root a V apex at a flat 0.5 m,
+hull-independent and unprojected. It looks exactly like this defect. It is referenced **11 times in tests
+and zero times in production** — a defended code path nothing runs. **Left in place and named**: deleting
+it is a separate cleanup with its own test churn, and "fixing" it would change nothing the owner sees.
+
+## 41. One law under two symptoms — the comb and the wall are a VERTICAL quantum divided by the SEABED SLOPE (register rows 9 + 10)
+
+The owner reported two things about the shore. *"The wet edge is a comb"* — 1–3 m teeth along the
+dry/wet boundary. *"The deep/shallow boundary is a wall"* — pale shallows meeting black deep water at
+a hard edge. They were filed as separate rows with separate candidate knobs. **They are the same
+defect wearing two hats, and neither knob was the one on the charter's list.**
+
+### The realisation that made it cheap
+
+The wet edge is not a picture. It is one line of the fragment:
+
+```hlsl
+float elevation = SeabedElevation(worldXY + warp);      // lerp(_HeightMin, _HeightMax, tex.r)
+float depth     = _WaterLevel - elevation;
+clip(depth + edgeSwash + 1e-4);
+```
+
+Every term in it is a number. So **where the drawn waterline sits relative to the sim's true contour
+is arithmetic** — no camera, no palette, no noise floor, and, decisively, **no `_Time`**. The first
+attempt at these rows was a rendered knob sweep that cost an editor slot and returned nothing: its
+arms were confounded because the sea animated between shots (mean |dRGB| against baseline was
+monotonic in shot order, 2.7 → 8.1 — the sweep photographed its own clock). Arithmetic has no clock.
+
+`SeabedBakeMath` (Core) is that chain, and `WaterSurface`'s encode **calls it**, so what the fixture
+measures is the shipped line rather than a transcription of it. The one modelled part is the bilinear
+sampler, which is exactly specified and stated as modelled where it lives.
+
+### The law
+
+> **Every quantum in this chain is a quantum of ELEVATION. What the player sees is a distance along
+> the GROUND. The exchange rate between them is the seabed's slope — and Nine Mile Creek's slope
+> varies by more than an order of magnitude across one tide.**
+
+The beach falls 7 m in 24 m (slope 0.32–0.44). The shelf that spring low bares falls 1.6 m in 60 m
+(**slope 0.035**). Half an 8-bit code is 2.35 cm of elevation either way; on the beach that is 7 cm of
+ground and on the shelf it is **67 cm**.
+
+### Row 9, measured
+
+Walking the true contour and finding the drawn crossing perpendicular to it, at Nine Mile Creek's own
+constants (760 × 560 m, height range −6…+6 m, tide 0 ± 2.2 m):
+
+| tide | waterline | slope | 256 grid, R8 | 256 grid, exact values |
+|---|---|---|---|---|
+| spring HIGH | 12.7 m offshore | 0.436 | 2.1 cm RMS | 0.7 cm |
+| mean | 18.3 m | 0.317 | 4.9 cm | 3.8 cm |
+| **spring LOW** | **64.4 m** | **0.035** | **28.7 cm** | **1.2 cm** |
+
+**The 8-bit value quantum is 96 % of the raggedness at the tide the symptom was seen at**, and R16
+recovers essentially all of it (28.7 cm → 1.2 cm, landing on the exact-valued bake).
+
+⚠ **The charter's suspect was right and its mechanism was wrong.** The hypothesis was 8-bit *texel
+runs* — plateaus 3.91 cm apart, a whole run crossing the contour at once. There are no plateaus: the
+map is `FilterMode.Bilinear`, which interpolates BETWEEN codes, so the reconstructed field is
+continuous. What 8 bits does is jog each texel NODE by up to half a code, and a flat seabed turns
+that into two thirds of a metre of edge. `_ShoreNoise` is exonerated for the clipped edge entirely —
+it perturbs a cosmetic `depthC` and never reaches `clip()`.
+
+⚠ **And the seabed-resolution clamp (row 31) is not the fix.** At the 1520 texels the region asks for,
+R8 still leaves 13.5 cm standing. Row 31 had retired the 16-bit map in writing, reasoning that it
+*"refines a quantum that is already sub-texel"* — sub-texel in ELEVATION, which is not the units the
+player sees. That row's own note had computed the lateral figure and dismissed it by assuming a steep
+shore.
+
+### Row 10, measured — the same law
+
+The shipped material posterizes transmission into six bands (`_Turbidity 0.25`, `_AbsorptionBands 6`,
+`_UseSeabedTex 1`), and a posterized ramp has no soft edge: **every band boundary is a hard step by
+construction.** So row 10's question is not what makes the edge hard but *where the six steps land*.
+Through `WaterAbsorption`, the shader's own C# twin — the band DEPTHS never move (0.58 / 1.08 / 1.75 /
+2.77 / 4.97 m, fixed by sigma); what moves is how much ground they occupy:
+
+| tide | band 1 | 2 | 3 | 4 | 5 |
+|---|---|---|---|---|---|
+| spring HIGH | 14.0 m | 15.2 m | 17.0 m | 20.4 m | 87.2 m |
+| gap | — | **1.2 m** | **1.7 m** | **3.4 m** | 66.9 m |
+| spring LOW | 87.3 m | 90.9 m | 94.3 m | 99.2 m | (past the region) |
+| gap | — | 3.6 m | 3.5 m | 4.9 m | — |
+
+**Four hard steps inside six metres of ground at high water, then nothing for 67 m.** That is *"pale
+shallows meet black deep water at a hard edge"*: the ramp does not fade, it terraces, and the terraces
+crowd where the seabed is steep — the same slope division, pointing the other way. Row 9 gets worse
+where the ground is FLAT (a fixed elevation error spreads out); row 10 gets worse where it is STEEP
+(fixed elevation steps crowd together). One law, two symptoms, opposite ends of the same tide.
+
+### The dead controls, and what they caught
+
+Three, and two of them fired.
+
+1. **The instrument's own control** (`ShoreCombMathTests`): a smooth wandering edge must report NO
+   tooth. It reported a **400 m** one — the metric counted runs between adjacent samples, and a slow
+   wander never breaks a run, so "moves slowly" read as "does not move". A comb is a sequence of
+   STEPS; with none there is no comb.
+2. **The fixture's floor**: a 4096 grid with exact values must draw the contour it was given. It read
+   **176 mm off** — because the drawn edge was being measured against a *ray-placement estimate* of the
+   true contour rather than against the true contour itself, and the shore's curvature leaked in as a
+   smooth bias. Finding BOTH crossings on the same ray cancels it: 176 mm → **0.15 mm**.
+3. ⚠ **The one that would have shipped a wrong answer.** An early version asserted *the 8-bit quantum
+   is NOT what combs the edge* — and passed, because it ran at mean tide only, where the beach is
+   steep, the value quantum is worth 7 cm and the grid's 3.8 cm looks comparable. "Widening the format
+   buys nothing" was one commit from the register.
+
+> **A knob sweep run at ONE state of the world measures that state, not the knob.** `_Time` taught it
+> to the rendered sweep; the TIDE taught it to the arithmetic one. The state a symptom was REPORTED at
+> is an arm, not a setting.
+
+### The fix that shipped
+
+`R16`. `SeabedBakeMath.FormatPreference` is R16 → R8 with the last rung always answering — the same
+shape as `FoamBuffer.FormatPreference`, which widened one row earlier because eight bits could not
+hold a *decay* and cannot hold a *contour*. `WaterSurface.HeightFormat()` probes once per graphics
+device (a driver query must not ride a region hop), the write is `SetPixelData<ushort>` and the CPU
+readback follows the format.
+
+| tide | slope | R8 | **R16** | exact values |
+|---|---|---|---|---|
+| spring HIGH | 0.436 | 2.1 cm | **0.7 cm** | 0.7 cm |
+| mean | 0.317 | 4.9 cm | **3.8 cm** | 3.8 cm |
+| spring LOW | 0.035 | 28.7 cm | **1.2 cm** | 1.2 cm |
+
+**R16 lands ON the exact-valued bake at every tide** — it removes the whole value quantum and claims
+nothing more. The 3.8 cm left at mean tide is the SPATIAL error of the 2.97 m pitch, which is row
+31's ground and is deliberately not touched here. Rule 7: 256² goes **64 KB → 128 KB** per sea, and
+the rejected alternative was more texels (1520 at R8 still leaves 13.5 cm, at 24× the memory).
+
+Two traps worth keeping:
+
+- **`SetPixels32` would have silently undone it.** A `Color32` write round-trips 16-bit codes through
+  eight bits and hands back exactly the quantization the format exists to remove — a green fixture on
+  a texture that never widened.
+- **The CPU readback's element type must follow the format.** Reading R16 as bytes returns half a
+  code. A readback that silently disagrees with the shader is worse than none, because every guard
+  built on it goes green on a lie.
+
+⚠ **Not covered: the PAINTED path** (ADR 0014, St Peters). It hands the shader an imported 8-bit PNG
+whose bytes the sim's own `PaintedTidalTerrain` decodes — render == sim by construction, which is the
+point of it. Same defect, different source; **register row 32**.
+
+Two things about that row were written wrong here and are corrected before this PR merged. **The
+decoder needs nothing** — `PaintedHeightField.DecodeElevation(float r01, min, max)` takes a
+*normalized float* and `GetPixels()` returns floats whatever the bit depth, so the sim and the paint
+tool already read any width; what is 8-bit is the **write**, `new Texture2D(..., TextureFormat.R8, ...)`
+at two sites in `TerrainPaintTool`. And **it is not live** — which two earlier
+versions of this paragraph got wrong in the other direction. `StPetersSeabed_HeightTex.png` and
+`NineMileCreekSeabed_HeightTex.png` *are* committed (the check that missed them grepped for *painted*
+in the filename; they are named by region). But neither is wired into a scene: both region scenes
+carry `_depthSource: 0` with `_paintedHeightTex: {fileID: 0}`, and their sims are the analytic
+`MainlandTidalTerrain` / `TidalTerrain` — no `PaintedTidalTerrain` in either, checked by script GUID.
+**Both regions render through the baked path, so the R16 fix above does reach them both.**
+
+What keeps row 32 a row is that `TerrainPaintTool.AdoptOnOpenScene` is a shipped workflow and the
+owner is using the paint tool. **The day a painted seabed is adopted, St Peters silently drops from
+sixteen bits back to eight** — a good change quietly undoing a fix, which is this repo's most
+expensive shape of defect. It is a trap to close before it springs, not a symptom on screen.
+
+⚠ The guard that row will need: the texture **importer** can silently down-convert the PNG back to R8
+with every test still green — the same shape as the `SetPixels32` trap above, one layer further out.
+Its acceptance must assert the format Unity **loads**, not the one the tool wrote.
+
+### What this does not carry
+
+The clipped edge only. Not `_ShoreNoise`'s cosmetic fringe, not the swash's edge shift, not the chop
+warp, and the bilinear filter is modelled rather than run on a GPU. It can confirm a mechanism and
+size it, and it can show a knob makes no difference; it cannot prove no other layer also combs. The
+tooth PERIOD is the weakest number here — on the smooth synthetic shore it reads 11–15 m at the
+shipped grid, and the period depends on the coast's obliquity to the grid, which a synthetic shore
+only guesses at. **The amplitude is the finding; the period wants the real authored coastline.**

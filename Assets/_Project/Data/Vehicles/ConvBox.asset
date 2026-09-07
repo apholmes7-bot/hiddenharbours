@@ -16,15 +16,19 @@ MonoBehaviour:
   DisplayName: Conventional Box Truck
   KindToken: road_vehicle
   Mesh: {fileID: 11400000, guid: 3b36f0c5afa2a2d48bb3f5b4aed70471, type: 2}
-  MassKg: 3500
-  MaxSpeedMetersPerSecond: 11
-  MaxReverseSpeedMetersPerSecond: 4
-  AccelerationMetersPerSecondSquared: 4.5
-  BrakingMetersPerSecondSquared: 8
-  CoastDecelerationMetersPerSecondSquared: 2.2
-  SteerRateFullLocksPerSecond: 2
-  SteerReturnFullLocksPerSecond: 3
-  SteerFalloffHalfSpeedMetersPerSecond: 9
+  MassKg: 7400
+  MaxSpeedMetersPerSecond: 10.5
+  MaxReverseSpeedMetersPerSecond: 3.2
+  AccelerationMetersPerSecondSquared: 2.8
+  BrakingMetersPerSecondSquared: 6.8
+  CoastDecelerationMetersPerSecondSquared: 1.8
+  SteerRateFullLocksPerSecond: 1.5
+  SteerReturnFullLocksPerSecond: 2.2
+  SteerFalloffHalfSpeedMetersPerSecond: 9.73
+  TowingSpeedFraction: 0.72
+  TowingAccelerationFraction: 0.45
+  TowingBrakingFraction: 0.65
+  TowingCoastFraction: 0.6
   SpinRateDegreesPerSecond: 75
   AfloatSpinRateDegreesPerSecond: 30
   AfloatMaxSpeedMetersPerSecond: 1.6

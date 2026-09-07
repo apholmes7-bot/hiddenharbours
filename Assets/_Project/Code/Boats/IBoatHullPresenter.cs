@@ -79,6 +79,35 @@ namespace HiddenHarbours.Boats
         float BakeElevationDegrees { get; }
 
         /// <summary>
+        /// 🔴 <b>How far astern of her origin this hull's transom is, in metres on the water</b> — the
+        /// RIG-lofted <c>HullMeshDef.WakeSternOffsetMeters</c>, authored on all 34 mesh hull defs.
+        /// <b>Register row 29:</b> every family of foam that leaves a boat reads THIS one number through
+        /// <see cref="HiddenHarbours.Core.WakeRootMath"/>, so the buffer's sheet, the sprite deposits and
+        /// the crest lines all spring from the same point.
+        ///
+        /// <para><b>0 means "no rig to loft from"</b>, which is the honest answer for a hand-drawn compass
+        /// hull, and <see cref="HiddenHarbours.Core.WakeRootMath.SternOffsetMeters"/> falls back to half her
+        /// <c>BoatHullDef.LengthMeters</c> for her — exactly the rule the sprite wake has always used. So a
+        /// mesh hull gains the one measured number and a sprite hull is unchanged.</para>
+        ///
+        /// <para>It rides the seam for the same reason <see cref="BakeElevationDegrees"/> does: it is an ART
+        /// FACT of the hull, and the consumers know her only as this interface.</para>
+        /// </summary>
+        float WakeSternOffsetMeters { get; }
+
+        /// <summary>
+        /// <b>Half this hull's watertight beam, in metres</b> — <c>HullMeshDef.WatertightHalfBeamMeters</c>.
+        /// <b>Register row 29:</b> the one width law. A wake is as wide as the hull that made it, and before
+        /// row 29 the buffer's sheet used this while the sprite deposits used a fraction of her LENGTH —
+        /// 2.4 m against 1.81 m on the cape, so the two halves of one wake disagreed by a quarter.
+        ///
+        /// <para>0 means "no rig", and
+        /// <see cref="HiddenHarbours.Core.WakeRootMath.WakeHalfWidthMeters"/> falls back to the legacy
+        /// length fraction for her.</para>
+        /// </summary>
+        float WatertightHalfBeamMeters { get; }
+
+        /// <summary>
         /// <b>Where the sea stands on this hull when she floats at rest</b> — metres above the art's own
         /// origin (owner playtest 2026-08-07: <i>"generally they should level out at the boats water
         /// line"</i>). Mesh: the def's <c>RestingDraftMeters</c>, measured against the rig's keel-bottom

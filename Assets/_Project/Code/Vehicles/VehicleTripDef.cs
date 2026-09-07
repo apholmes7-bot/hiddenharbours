@@ -2,6 +2,18 @@ using UnityEngine;
 
 namespace HiddenHarbours.Vehicles
 {
+    /// <summary>What a run does when the trailer it wants is not on her legs in her bay. Append-only.</summary>
+    public enum TrailerAbsence
+    {
+        /// <summary>Run the errand bobtail. The truck still keeps her day, which is the reading that
+        /// never leaves a village with a driver frozen at his post because a player moved a trailer.</summary>
+        GoWithoutIt = 0,
+
+        /// <summary>Do not go at all: she stays in her bay and her driver keeps his post. For a run
+        /// whose whole point is the load.</summary>
+        StayHome = 1,
+    }
+
     /// <summary>
     /// <b>One scheduled trip, as a committed asset</b> — who drives, when they set off, and how fast they
     /// go. The <c>trip.*</c> half of "content is data, not code" (rule 2): a new run on an existing road
@@ -51,6 +63,26 @@ namespace HiddenHarbours.Vehicles
         [Tooltip("How fast her driver walks the last few metres to her door, m/s — the same pace a " +
                  "villager keeps on a lane.")]
         [Min(0.1f)] public float WalkMetresPerSecond = 1.4f;
+
+        [Header("The trailer — blank on a run that does not tow")]
+        [Tooltip("The stable id of the towed body she hauls (a VehicleMeshDef id, e.g. " +
+                 "'vehiclemesh.trailer_reefer28'). Blank means a solo run and the trip keeps its eight " +
+                 "blocks.\n\n" +
+                 "⚠️ An ID, not a reference: WHICH trailer is the owner's content decision, but WHERE " +
+                 "she stands is the region's derived geometry, and the two must not become one field. " +
+                 "The region builder wires the trailer it placed and ScheduledTrip refuses the pair if " +
+                 "the body standing there is not the one this timetable asks for.")]
+        public string TowedBodyId = "";
+
+        [Tooltip("What she does when the trailer this run wants is not in her bay — the player took " +
+                 "her, or she is on somebody else's pin.\n\n" +
+                 "A data choice, because both answers are true of a real yard: a haulier with no " +
+                 "trailer either runs the errand in a bobtail tractor or does not go at all.")]
+        public TrailerAbsence WhenTheTrailerIsNotThere = TrailerAbsence.GoWithoutIt;
+
+        /// <summary>True when this run hauls something. The plan then runs ten blocks rather than
+        /// eight — see <c>Core.VehicleTripPlan</c>.</summary>
+        public bool Tows => !string.IsNullOrEmpty(TowedBodyId);
 
         /// <summary>True when this asset can actually make a trip. A window that is not a window (the two
         /// hours equal) would have her leave at the instant she arrived, so it is refused rather than

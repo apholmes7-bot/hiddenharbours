@@ -51,6 +51,10 @@ namespace HiddenHarbours.Vehicles
             _doors = GetComponent<VehicleDoors>();
             _vehicleId = vehicleId ?? "";
             _lastOdometer = controller != null ? controller.OdometerMeters : 0f;
+
+            // A re-skin must not leave a controller carrying a load the hitch no longer has. The
+            // trailer, if there is one, re-announces herself on the next Couple.
+            if (controller != null && _trailer == null) controller.SetTow(default);
         }
 
         /// <summary>Her heading in the world, the same bearing the mesh driver poses from — so the
@@ -84,6 +88,10 @@ namespace HiddenHarbours.Vehicles
         ///
         /// <para>Cheap by construction: a handful of trailers, a transform-point each, and no
         /// allocation (rule 7). The registry exists so this is not a scene search.</para>
+        ///
+        /// <para>⚠️ A trailer another poser <see cref="TowedBody.IsHeld"/> is skipped as firmly as one
+        /// already on a pin: a scheduled run under way owns her transform, and offering the player her
+        /// pin would give two clocks one body.</para>
         /// </summary>
         public TowedBody CapturedTrailer()
         {
@@ -95,7 +103,7 @@ namespace HiddenHarbours.Vehicles
             for (int i = 0; i < all.Count; i++)
             {
                 TowedBody body = all[i];
-                if (body == null || body.IsCoupled || !body.Kingpin.Published) continue;
+                if (body == null || body.IsCoupled || body.IsHeld || !body.Kingpin.Published) continue;
 
                 // The pin, in THIS tractor's frame — which is the frame the slot is drawn in.
                 Vector2 pinWorld = body.KingpinWorld;
@@ -127,6 +135,10 @@ namespace HiddenHarbours.Vehicles
             body.CoupledTo = this;
             _lastOdometer = _controller != null ? _controller.OdometerMeters : 0f;
 
+            // ⭐ The drive model learns she is loaded. Not a lookup the other way: what it needs is a
+            // LOAD and a length, and the hitch is the one thing that knows a pin went in.
+            if (_controller != null) _controller.SetTow(body.Kingpin);
+
             // Seat her: place the trailer so her pin is exactly on the plate, keeping her heading.
             body.FollowKingpin(CouplingPointWorld, HeadingDegrees, 0f, JackknifeCapDegrees);
 
@@ -155,6 +167,7 @@ namespace HiddenHarbours.Vehicles
 
             _trailer.CoupledTo = null;
             _trailer = null;
+            if (_controller != null) _controller.SetTow(default);
             return true;
         }
 
@@ -162,7 +175,9 @@ namespace HiddenHarbours.Vehicles
         /// because there is no longer anything to set down.</summary>
         internal void ForgetTrailer(TowedBody body)
         {
-            if (_trailer == body) _trailer = null;
+            if (_trailer != body) return;
+            _trailer = null;
+            if (_controller != null) _controller.SetTow(default);
         }
 
         private void LateUpdate() => Step();

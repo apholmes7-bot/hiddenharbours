@@ -99,8 +99,9 @@ namespace HiddenHarbours.World
         static readonly float TailInset = DialogueBubbleKit.TailInsetFromEdge * Scale;
 
         const float ScreenMargin = 16f;
-        const int BodyFontSize = 24;
-        const int NameFontSize = 17;
+        // The same derived size as the modal bubble — see BubbleFace and DialoguePresenter.
+        const int BodyFontSize = BubbleFace.FontSize;
+        const int NameFontSize = BubbleFace.FontSize;
 
         /// <summary>How often the modal presenter is looked for again after it has gone (a region
         /// unload destroys it). A find every frame in a scene that has none would be a per-frame
@@ -786,8 +787,9 @@ namespace HiddenHarbours.World
             var go = new GameObject(name, typeof(RectTransform), typeof(Text));
             go.transform.SetParent(parent, false);
             var text = go.GetComponent<Text>();
-            text.font = DefaultFont();
-            text.fontSize = fontSize;
+            // The face and its size together, through the one place that decides them — so the modal
+            // bubble and the ambient pool can never end up in different type on one screen.
+            BubbleFace.Wear(text);
             text.alignment = align;
             text.color = Ink;               // dark ink on light paper needs no outline
             text.raycastTarget = false;
@@ -810,11 +812,7 @@ namespace HiddenHarbours.World
             rt.offsetMax = Vector2.zero;
         }
 
-        private static Font DefaultFont()
-        {
-            var f = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            if (f == null) f = Resources.GetBuiltinResource<Font>("Arial.ttf");
-            return f;
-        }
+        // The built-in fallback lives in BubbleFace, which answers "which font, at what size" once for
+        // both bubble surfaces.
     }
 }

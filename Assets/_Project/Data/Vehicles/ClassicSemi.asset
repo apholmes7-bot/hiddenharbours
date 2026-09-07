@@ -16,15 +16,19 @@ MonoBehaviour:
   DisplayName: Classic Long-Nose Semi
   KindToken: road_vehicle
   Mesh: {fileID: 11400000, guid: bfedcfc9c4a383045aec2528f6aa855e, type: 2}
-  MassKg: 3500
-  MaxSpeedMetersPerSecond: 11
-  MaxReverseSpeedMetersPerSecond: 4
-  AccelerationMetersPerSecondSquared: 4.5
-  BrakingMetersPerSecondSquared: 8
-  CoastDecelerationMetersPerSecondSquared: 2.2
-  SteerRateFullLocksPerSecond: 2
-  SteerReturnFullLocksPerSecond: 3
-  SteerFalloffHalfSpeedMetersPerSecond: 9
+  MassKg: 8600
+  MaxSpeedMetersPerSecond: 12
+  MaxReverseSpeedMetersPerSecond: 3.5
+  AccelerationMetersPerSecondSquared: 2.4
+  BrakingMetersPerSecondSquared: 6.2
+  CoastDecelerationMetersPerSecondSquared: 1.5
+  SteerRateFullLocksPerSecond: 1.3
+  SteerReturnFullLocksPerSecond: 1.9
+  SteerFalloffHalfSpeedMetersPerSecond: 10.32
+  TowingSpeedFraction: 0.7
+  TowingAccelerationFraction: 0.42
+  TowingBrakingFraction: 0.62
+  TowingCoastFraction: 0.58
   SpinRateDegreesPerSecond: 75
   AfloatSpinRateDegreesPerSecond: 30
   AfloatMaxSpeedMetersPerSecond: 1.6

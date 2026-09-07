@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9c4fb6be8dd46eba08510dde87bace3, type: 3}
+  m_Name: EastWater
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.RegionDef
+  Id: region.east_water
+  DisplayName: The East Water (working name)
+  Description: 'The open water off St Peters'' east wall, and where the game begins - out with the captain at six in the morning, a rod stowed on her deck and the island a mile to the west. Sail west and you are home; the sea the other way is the mid-bay''s, and that is later. NAME OWED: the owner names the water scenes in PEI-variant style (world-map-plan 7 Q4); the id is stable whatever he picks.'
+  SceneName: EastWater
+  UnlockFlag:
+  WorldCenter: {x: 0, y: 0}
+  WorldSizeMeters: {x: 760, y: 520}
+  SeabedPixelsPerMetre: 1
+  IsDeepHarbour: 0
+  HarbourDepthMeters: 4
+  TideMeanLevel: 0
+  TideAmplitude: 2.2
+  TidePhaseHours: 1
+  SpawnFishIds: []

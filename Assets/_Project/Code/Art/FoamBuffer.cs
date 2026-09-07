@@ -253,15 +253,15 @@ namespace HiddenHarbours.Art
         /// <para><paramref name="sternOffsetMeters"/> 0 returns the origin unchanged, which is the shipped
         /// behaviour for a hull whose stern has never been measured. Pure + static.</para>
         /// </summary>
+        /// <remarks>⚠️ Row 29: this is now a DELEGATION, not a second copy. It kept its name and signature
+        /// so PR 11a/11b's guards read unchanged, but the arithmetic is
+        /// <see cref="HiddenHarbours.Core.WakeRootMath.SternWorld"/> — the one place a wake springs from,
+        /// shared with the sprite families in HiddenHarbours.Boats. The old body clamped the elevation to
+        /// [1, 90] where the sprite path answered 1 at or below 0; one function, one answer.</remarks>
         public static Vector2 SternWorld(Vector2 origin, Vector2 heading, float sternOffsetMeters,
                                          float bakeElevationDegrees)
-        {
-            if (sternOffsetMeters <= 0f) return origin;
-            Vector2 dir = heading.sqrMagnitude > 1e-8f ? heading.normalized : Vector2.up;
-            Vector2 astern = -dir * sternOffsetMeters;
-            float squash = Mathf.Sin(Mathf.Clamp(bakeElevationDegrees, 1f, 90f) * Mathf.Deg2Rad);
-            return origin + new Vector2(astern.x, astern.y * squash);
-        }
+            => HiddenHarbours.Core.WakeRootMath.SternWorld(origin, heading, sternOffsetMeters,
+                                                           bakeElevationDegrees);
 
         // ---- freshness: the SECOND channel, and the reason the wake can change colour -------------
 

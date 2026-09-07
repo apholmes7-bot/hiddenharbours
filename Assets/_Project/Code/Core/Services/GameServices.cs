@@ -137,6 +137,33 @@ namespace HiddenHarbours.Core
         private static IFishSchools _fishSchools;
 
         /// <summary>
+        /// WHAT A HOOKED FISH DOES, by species id (<see cref="IFishBehaviourFacts"/>) — published by the
+        /// Fishing module's species registrar, read by presenters that draw a fish without being allowed
+        /// to know what a <c>FishSpeciesDef</c> is (rule 4). The owner's 2026-09-06 jumper ruling reaches
+        /// the fight through here.
+        ///
+        /// <para><b>Never null</b>, exactly like <see cref="FishSchools"/>: absent a registrar it reads
+        /// as <see cref="EmptyFishBehaviourFacts"/>, under which nothing jumps — so a bare scene draws a
+        /// fish that fights without leaving the water rather than throwing.</para>
+        /// FLAG lead-architect: new Core contract (the fish-behaviour seam).
+        /// </summary>
+        public static IFishBehaviourFacts FishBehaviour
+        {
+            get
+            {
+                IFishBehaviourFacts facts = _fishBehaviour;
+                // The same fake-null discipline FishSchools documents: a registrar may be a
+                // MonoBehaviour, and ?? / ?. would bypass UnityEngine.Object's overloaded ==.
+                if (facts is UnityEngine.Object producer && producer == null)
+                    return EmptyFishBehaviourFacts.Instance;
+                return facts != null ? facts : EmptyFishBehaviourFacts.Instance;
+            }
+            set => _fishBehaviour = value;
+        }
+
+        private static IFishBehaviourFacts _fishBehaviour;
+
+        /// <summary>
         /// What a radar can see (ADR 0025 S5): the NPC vessels and buoys out there right now, published
         /// by whoever is driving them and read by the scope at the helm (<see cref="IRadarContacts"/>).
         ///
@@ -822,6 +849,7 @@ namespace HiddenHarbours.Core
             ActiveBoat = null;
             Helm.Reset();                // both faces at once — one arbiter, one grant
             FishSchools = null;          // → EmptyFishSchools.Instance; this property is never null
+            FishBehaviour = null;        // → EmptyFishBehaviourFacts.Instance; likewise never null
             RadarContacts = null;        // → EmptyRadarSea.Instance; likewise never null
             Save = null;
             TidalTerrain = null;

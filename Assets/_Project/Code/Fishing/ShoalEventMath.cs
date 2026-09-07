@@ -1,3 +1,5 @@
+using HiddenHarbours.Core;
+
 namespace HiddenHarbours.Fishing
 {
     /// <summary>What one fish is doing instead of plain swimming (<see cref="ShoalEventMath"/>).</summary>
@@ -45,9 +47,12 @@ namespace HiddenHarbours.Fishing
     /// </summary>
     public static class ShoalEventMath
     {
-        /// <summary>Rig <c>ANIMS.jump</c>: 6 frames at 95 ms.</summary>
-        public const int JumpFrames = 6;
-        public const double JumpFrameMs = 95.0;
+        /// <summary>Rig <c>ANIMS.jump</c>: 6 frames at 95 ms. <b>Forwarded from
+        /// <see cref="FishJumpArc"/></b>, which is where the jump law lives now that the hooked fish
+        /// jumps too — the fight drawer is in Player and cannot see this class, and one law transcribed
+        /// twice is one law that drifts (owner's ruling 2026-09-06).</summary>
+        public const int JumpFrames = FishJumpArc.Frames;
+        public const double JumpFrameMs = FishJumpArc.FrameMs;
 
         /// <summary>Rig <c>ANIMS.roll</c>: 4 frames at 130 ms.</summary>
         public const int RollFrames = 4;
@@ -62,7 +67,7 @@ namespace HiddenHarbours.Fishing
         public const double DartFrameMs = 80.0;
 
         /// <summary>Rig <c>MOTION.jump.travel</c> — metres the fish carries forward over the six frames.</summary>
-        public const float JumpTravelMetres = 0.55f;
+        public const float JumpTravelMetres = FishJumpArc.TravelMetres;
 
         /// <summary>Frames in one anim, and how long each is held (ms).</summary>
         public static void AnimShape(ShoalEventKind kind, out int frames, out double frameMs)
@@ -166,11 +171,9 @@ namespace HiddenHarbours.Fishing
         /// </summary>
         public static float JumpArc01(double startSeconds, double gameSeconds)
         {
-            double d = DurationSeconds(ShoalEventKind.Jump);
-            if (d <= 0.0) return 0f;
-            double u = (gameSeconds - startSeconds) / d;
-            if (u <= 0.0 || u >= 1.0) return 0f;
-            return (float)System.Math.Sin(u * System.Math.PI);
+            // The shared law (FishJumpArc.Arc01) — the SAME half-sine the hooked fish leaves the water
+            // on, which is the whole of the owner's "a hooked bass jumps the way a free one does".
+            return FishJumpArc.Arc01(startSeconds, gameSeconds);
         }
 
         /// <summary>
