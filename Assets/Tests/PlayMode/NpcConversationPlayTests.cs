@@ -69,6 +69,7 @@ namespace HiddenHarbours.Tests.PlayMode
         readonly List<AmbientSpeechRequested> _spoken = new();
 
         DrivenClock _clock;
+        FakeEnvironment _env;
         RoutineStations _stations;
         RoutineLanes _lanes;
         VillagerRoutine _ada, _ben;
@@ -101,7 +102,8 @@ namespace HiddenHarbours.Tests.PlayMode
 
             _clock = new DrivenClock { Hour = 12.5f, Day = 0 };
             GameServices.Clock = _clock;
-            GameServices.Environment = new FakeEnvironment();
+            _env = new FakeEnvironment();
+            GameServices.Environment = _env;
             GameServices.CurrentRegionId = RegionId;
 
             var camGo = Spawn("TestCamera");
@@ -244,6 +246,19 @@ namespace HiddenHarbours.Tests.PlayMode
             return lib;
         }
 
+        /// <summary>
+        /// The game hour today's run of the authored exchange is actually due at.
+        ///
+        /// <para>⚠ <b>Ask for the seeded minute; never guess at it.</b> The start is a hash of
+        /// <c>(worldSeed, dayIndex, conversationId)</c> somewhere inside the authored window — that is
+        /// the whole determinism design — so a fixture that parks the clock at the window's midpoint
+        /// fires or does not fire depending on which side of the midpoint this seed happens to land.
+        /// Mine landed above it, and four of these tests reported "the exchange never started" for a
+        /// director that was behaving perfectly.</para>
+        /// </summary>
+        float DueHour() => ConversationSchedule.StartHourFor(
+            _env.WorldSeed, _clock.Day, ConversationId, _def.EarliestHour, _def.LatestHour);
+
         /// <summary>Put the clock at <paramref name="hour"/> and let the villagers settle onto it.</summary>
         IEnumerator At(float hour)
         {
@@ -265,7 +280,7 @@ namespace HiddenHarbours.Tests.PlayMode
         [UnityTest]
         public IEnumerator TwoVillagersOnTheGreen_HaveTheirExchange_LineByLine()
         {
-            yield return At(12.5f);
+            yield return At(DueHour());
             yield return Until(() => _spoken.Count >= 2);
 
             Assert.That(_director.LastStartedId, Is.EqualTo(ConversationId),
@@ -296,7 +311,7 @@ namespace HiddenHarbours.Tests.PlayMode
         [UnityTest]
         public IEnumerator ThePlayerIsNeverHeldForASecondOfIt()
         {
-            yield return At(12.5f);
+            yield return At(DueHour());
 
             float t = 0f;
             int frames = 0;
@@ -318,7 +333,7 @@ namespace HiddenHarbours.Tests.PlayMode
         [UnityTest]
         public IEnumerator TheSecondLineWaitsForTheFirstToBeREAD_NotForAFrame()
         {
-            yield return At(12.5f);
+            yield return At(DueHour());
             yield return Until(() => _spoken.Count >= 1);
 
             Assert.That(_spoken.Count, Is.EqualTo(1),
@@ -335,10 +350,14 @@ namespace HiddenHarbours.Tests.PlayMode
         [UnityTest]
         public IEnumerator ItNeverFiresWithAParticipantAbsent()
         {
-            Object.DestroyImmediate(_ben.gameObject);
-            _spawned.Remove(_ben.gameObject);
+            // ⚠ Take the GameObject FIRST. Reading `_ben.gameObject` after destroying it throws
+            // MissingReferenceException — a destroyed component is fake-null for `==`, but touching a
+            // MEMBER of it is still an access to a dead object.
+            GameObject benGo = _ben.gameObject;
+            _spawned.Remove(benGo);
+            Object.DestroyImmediate(benGo);
 
-            yield return At(12.5f);
+            yield return At(DueHour());
             yield return Until(() => _spoken.Count > 0, seconds: 5f);
 
             Assert.That(_spoken, Is.Empty,
@@ -352,7 +371,7 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             _ben.transform.position = new Vector3(Away.x, Away.y, 0f);
 
-            yield return At(12.5f);
+            yield return At(DueHour());
             yield return Until(() => _spoken.Count > 0, seconds: 5f);
 
             Assert.That(_spoken, Is.Empty,
@@ -376,11 +395,12 @@ namespace HiddenHarbours.Tests.PlayMode
         [UnityTest]
         public IEnumerator ItHappensOnceADay_NotOnEveryTick()
         {
-            yield return At(12.5f);
+            yield return At(DueHour());
             yield return Until(() => _director.Running == null && _spoken.Count >= 2);
 
             int after = _spoken.Count;
-            yield return At(12.9f);           // still inside the window, later in it
+            // Later in the window, but still inside it — and still at or past the seeded start.
+            yield return At(Mathf.Min(DueHour() + 0.25f, _def.LatestHour));
             yield return Until(() => _spoken.Count > after, seconds: 3f);
 
             Assert.That(_spoken.Count, Is.EqualTo(after),
@@ -391,12 +411,12 @@ namespace HiddenHarbours.Tests.PlayMode
         [UnityTest]
         public IEnumerator ANewDay_LetsThemTalkAgain()
         {
-            yield return At(12.5f);
+            yield return At(DueHour());
             yield return Until(() => _director.Running == null && _spoken.Count >= 2);
             int after = _spoken.Count;
 
-            _clock.Day = 1;
-            yield return At(12.99f);          // late enough that any seeded minute has passed
+            _clock.Day = 1;                   // DueHour() re-seeds off the new day
+            yield return At(DueHour());
             yield return Until(() => _spoken.Count > after);
 
             Assert.That(_spoken.Count, Is.GreaterThan(after),
@@ -414,7 +434,7 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             var modal = Spawn("DialoguePresenter").AddComponent<DialoguePresenter>();
 
-            yield return At(12.5f);
+            yield return At(DueHour());
             yield return Until(() => _director.Running != null && _spoken.Count >= 1);
             Assert.IsNotNull(_director.Running, "the exchange never started, so there is nothing to end");
 
@@ -438,11 +458,15 @@ namespace HiddenHarbours.Tests.PlayMode
         [UnityTest]
         public IEnumerator ASpeakerDestroyedMidExchange_EndsItRatherThanHangingBothOfThem()
         {
-            yield return At(12.5f);
+            yield return At(DueHour());
             yield return Until(() => _director.Running != null);
 
-            Object.DestroyImmediate(_ben.gameObject);
-            _spawned.Remove(_ben.gameObject);
+            // ⚠ Take the GameObject FIRST. Reading `_ben.gameObject` after destroying it throws
+            // MissingReferenceException — a destroyed component is fake-null for `==`, but touching a
+            // MEMBER of it is still an access to a dead object.
+            GameObject benGo = _ben.gameObject;
+            _spawned.Remove(benGo);
+            Object.DestroyImmediate(benGo);
 
             yield return Until(() => _director.Running == null, seconds: 4f);
             Assert.IsNull(_director.Running);
