@@ -43,12 +43,51 @@ namespace HiddenHarbours.App.Editor
         /// <summary>Where the built asset lands — what the region builders load.</summary>
         public const string LibraryPath = OutputFolder + "/" + AssetName + ".asset";
 
-        /// <summary>The finfish kinds, each drawn from its own <c>Fish_&lt;kind&gt;_deck</c> sheet.</summary>
-        static readonly string[] FinfishKinds = { "cod", "haddock", "pollock", "mackerel" };
+        /// <summary>
+        /// The finfish kinds, discovered from the baked sheets themselves — every
+        /// <c>Fish_&lt;kind&gt;_deck.png</c> whose stem carries no size suffix.
+        ///
+        /// <para><b>Read, not typed</b>, like everything else in this builder. Catch pass 2 took the
+        /// species from four to seven, and a hand-kept array is exactly the thing that would still say
+        /// four: the bass, flounder and herring sheets would sit on disk with nothing drawing them and
+        /// no error anywhere. Discovery also means the ladder's <c>_sm</c>/<c>_lg</c> siblings are
+        /// skipped without a rule about them — a container fill draws ONE size of item, and the middle
+        /// rung is the unsuffixed stem.</para>
+        /// </summary>
+        static string[] FinfishKinds() => StemsMatching(FishIso, "Fish_", "_deck");
 
-        /// <summary>The shellfish/crustacean kinds, each drawn from its own <c>CatchItem_&lt;kind&gt;</c>
-        /// strip.</summary>
-        static readonly string[] StripKinds = { "lobster", "crab", "mussel", "clam" };
+        /// <summary>
+        /// The shellfish/crustacean kinds, discovered from the pass-2 item strips
+        /// (<c>CatchItem2_&lt;kind&gt;.png</c>) — seven where pass 1 baked four, the new ones being
+        /// oyster, periwinkle and scallop.
+        /// </summary>
+        static string[] StripKinds() => StemsMatching(Storage, "CatchItem2_", "");
+
+        /// <summary>
+        /// The kind names of every sheet in <paramref name="folder"/> shaped
+        /// <c>&lt;prefix&gt;&lt;kind&gt;&lt;suffix&gt;.png</c>, ordinal-sorted so the built asset is
+        /// stable across machines (a file enumeration's order is not).
+        ///
+        /// <para>A kind containing <c>_sm</c>/<c>_lg</c> is a size rung of another kind, not a kind.</para>
+        /// </summary>
+        static string[] StemsMatching(string folder, string prefix, string suffix)
+        {
+            var kinds = new List<string>();
+            foreach (string guid in AssetDatabase.FindAssets("t:Texture2D", new[] { folder }))
+            {
+                string name = System.IO.Path.GetFileNameWithoutExtension(
+                    AssetDatabase.GUIDToAssetPath(guid));
+                if (!name.StartsWith(prefix, System.StringComparison.Ordinal)) continue;
+                if (suffix.Length > 0 && !name.EndsWith(suffix, System.StringComparison.Ordinal)) continue;
+
+                string kind = name.Substring(prefix.Length, name.Length - prefix.Length - suffix.Length);
+                if (kind.Length == 0 || kind.Contains("_sm") || kind.Contains("_lg")) continue;
+                if (kind.Contains("_")) continue;   // Fish_cod_swim etc — a state, not a deck lay
+                kinds.Add(kind);
+            }
+            kinds.Sort(System.StringComparer.Ordinal);
+            return kinds.ToArray();
+        }
 
         /// <summary>
         /// The rig's deck-lay recipe: variant <c>v</c> is the fish sheet's direction row
@@ -85,21 +124,45 @@ namespace HiddenHarbours.App.Editor
             var kinds = new List<CatchItemLibrary.KindEntry>();
             int wired = 0, missing = 0;
 
-            foreach (string kind in FinfishKinds)
+            string[] finfish = FinfishKinds(), strips = StripKinds();
+            if (finfish.Length == 0 && strips.Length == 0)
+            {
+                summary = "No baked catch sheets found at all — refusing to overwrite the library " +
+                          "with an empty table. Run the catch pass 2 bake, then BOTH sheet slicers " +
+                          "(the bake does not slice), then re-run this.";
+                return false;
+            }
+
+            int held = 0;
+            foreach (string kind in finfish)
             {
                 Sprite[] variants = DeckLayVariants($"{FishIso}/Fish_{kind}_deck.png", kind, ref missing);
-                kinds.Add(new CatchItemLibrary.KindEntry { Kind = kind, Variants = variants });
+                var entry = new CatchItemLibrary.KindEntry { Kind = kind, Variants = variants };
+                // A carried fish hangs from one hand by the TAIL. The two-arm cradle is the fight's
+                // to choose, because only the fight knows the fish's weight (RodFightPresenter picks
+                // a size rung, and the rung's own hand count decides gill vs tail). A container's
+                // catch has no weight to ask about.
+                if (WireHeld(entry, $"{FishIso}/Fish_{kind}_tail.png", Directions)) held++;
+                kinds.Add(entry);
                 if (variants.Length > 0) wired++;
             }
 
-            foreach (string kind in StripKinds)
+            foreach (string kind in strips)
             {
-                Sprite[] variants = StripVariants($"{Storage}/CatchItem_{kind}.png", kind, ref missing);
-                kinds.Add(new CatchItemLibrary.KindEntry { Kind = kind, Variants = variants });
+                Sprite[] variants = StripVariants($"{Storage}/CatchItem2_{kind}.png", kind, ref missing);
+                var entry = new CatchItemLibrary.KindEntry { Kind = kind, Variants = variants };
+                // Two sheet families, because the rig lofts the two animals differently: a crustacean
+                // is a solid that TURNS (eight facings, gripped on the back), a handful of shellfish
+                // is a clutch the rig draws with no camera at all (one facing, two variants).
+                if (WireHeld(entry, $"{Storage}/Crust2Held_{kind}.png", Directions)
+                    || WireHeld(entry, $"{Storage}/Shell2Hand_{kind}.png", 1)) held++;
+                kinds.Add(entry);
                 if (variants.Length > 0) wired++;
             }
 
-            var species = SpeciesRows(out int unmapped);
+            RefusePass1(strips);
+
+            var species = SpeciesRows(finfish, strips, out int unmapped);
 
             library.Configure(kinds.ToArray(), species.ToArray(), fallbackKind: "cod");
 
@@ -109,7 +172,8 @@ namespace HiddenHarbours.App.Editor
             AssetDatabase.Refresh();
 
             summary = $"{(created ? "Created" : "Refreshed")} '{LibraryPath}': " +
-                      $"{wired}/{kinds.Count} kinds with art, {species.Count} species mapped" +
+                      $"{wired}/{kinds.Count} kinds with art, {held} with HELD art, " +
+                      $"{species.Count} species mapped" +
                       (missing > 0 ? $", {missing} sheet(s) MISSING (see the warnings above)" : "") +
                       (unmapped > 0 ? $", {unmapped} species left on the fallback kind" : "") +
                       ". Commit it; re-run after a fishing/storage re-bake.";
@@ -117,6 +181,46 @@ namespace HiddenHarbours.App.Editor
         }
 
         // ---- the art ------------------------------------------------------------------------------------
+
+        /// <summary>The ADR-0006 facing count — what a directional held sheet is baked at.</summary>
+        const int Directions = 8;
+
+        /// <summary>
+        /// Wire one kind's held art from <paramref name="sheetPath"/>, returning false (and leaving the
+        /// entry untouched) when that sheet is not on disk.
+        ///
+        /// <para>The frames-per-facing is DIVIDED OUT of the real sprite count rather than declared,
+        /// for the same reason the rest of this file reads instead of typing: the crustacean's held
+        /// pose is 2 frames today and the day the art director gives it 3, a declared 2 would silently
+        /// drop a third of the animation and show the wrong frame at every other facing.</para>
+        ///
+        /// <para>A sheet whose cell count is not a whole multiple of the facing count is REFUSED with
+        /// its own error rather than truncated — that means the slicer and the bake disagree, and a
+        /// facing-major index built on a wrong stride draws the right animal facing the wrong way,
+        /// which is the hardest kind of wrong to see.</para>
+        /// </summary>
+        static bool WireHeld(CatchItemLibrary.KindEntry entry, string sheetPath, int facings)
+        {
+            Sprite[] cells = facings > 1
+                ? PersistentCoreBuilder.LoadIsoDirFrames(sheetPath)
+                : AssetDatabase.LoadAllAssetsAtPath(sheetPath).OfType<Sprite>()
+                               .OrderBy(s => s.name, System.StringComparer.Ordinal).ToArray();
+            if (cells.Length == 0) return false;
+
+            if (cells.Length % facings != 0)
+            {
+                Debug.LogError($"[CatchItemLibraryBuilder] '{sheetPath}' sliced to {cells.Length} " +
+                               $"cells, which is not a whole multiple of {facings} facings — the " +
+                               $"'{entry.Kind}' held art is SKIPPED rather than indexed on a stride " +
+                               "that would turn the animal the wrong way. Re-run the storage slicer.");
+                return false;
+            }
+
+            entry.Held = cells;
+            entry.HeldFacings = facings;
+            entry.HeldFramesPerFacing = cells.Length / facings;
+            return true;
+        }
 
         /// <summary>The four deck lays of one finfish kind: direction row <c>DeckLayRows[v]</c>, frame
         /// <c>v</c> — the rig's own recipe, not a guess.</summary>
@@ -157,6 +261,30 @@ namespace HiddenHarbours.App.Editor
             return variants;
         }
 
+        /// <summary>
+        /// Say so, once, when a superseded pass-1 strip is still on disk.
+        ///
+        /// <para><b>Why a log and not a silent fallback.</b> The obvious kindness — "use
+        /// <c>CatchItem_lobster</c> when <c>CatchItem2_lobster</c> is missing" — is the failure mode
+        /// this repo keeps paying for: the game would draw pass-1 art, look approximately right, and
+        /// never tell anyone the pass-2 bake had not been run. A kind with no pass-2 sheet already
+        /// reports itself through <see cref="Warn"/>; this adds the other half of the sentence, which
+        /// is that a file exists that LOOKS like the answer and is not.</para>
+        /// </summary>
+        static void RefusePass1(string[] pass2Kinds)
+        {
+            var stale = new List<string>();
+            foreach (string kind in StemsMatching(Storage, "CatchItem_", ""))
+                stale.Add($"CatchItem_{kind}.png");
+            if (stale.Count == 0) return;
+
+            Debug.LogWarning(
+                $"[CatchItemLibraryBuilder] {stale.Count} superseded pass-1 item strip(s) are still on " +
+                $"disk and were NOT used: {string.Join(", ", stale)}. Catch pass 2 supersedes them " +
+                $"({pass2Kinds.Length} CatchItem2_* kinds were sourced instead). They can be deleted; " +
+                "nothing reads them. This is a notice, not a failure.");
+        }
+
         static void Warn(string sheetPath, string kind, ref int missing)
         {
             missing++;
@@ -174,11 +302,12 @@ namespace HiddenHarbours.App.Editor
         /// CATEGORY decides, which is how a species with no art of its own still lands in the right
         /// bucket group.
         /// </summary>
-        static List<CatchItemLibrary.SpeciesEntry> SpeciesRows(out int unmapped)
+        static List<CatchItemLibrary.SpeciesEntry> SpeciesRows(string[] finfish, string[] strips,
+                                                                 out int unmapped)
         {
             unmapped = 0;
             var rows = new List<CatchItemLibrary.SpeciesEntry>();
-            var known = new HashSet<string>(FinfishKinds.Concat(StripKinds), System.StringComparer.Ordinal);
+            var known = new HashSet<string>(finfish.Concat(strips), System.StringComparer.Ordinal);
 
             foreach (string guid in AssetDatabase.FindAssets("t:FishSpeciesDef", new[] { DataFish }))
             {
@@ -206,13 +335,19 @@ namespace HiddenHarbours.App.Editor
             int under = leaf.LastIndexOf('_');
             if (under >= 0 && known.Contains(leaf.Substring(under + 1))) return leaf.Substring(under + 1);
 
-            // No name match: the CATEGORY still puts it in the right group for a pail (soft-shell clam →
-            // clam → 'shell'; American lobster → lobster; rock crab → crab).
-            if (leaf.Contains("lobster")) return "lobster";
-            if (leaf.Contains("crab")) return "crab";
-            if (leaf.Contains("mussel")) return "mussel";
-            if (leaf.Contains("clam")) return "clam";
-            return def.Category == FishCategory.Shellfish ? "clam" : null;
+            // No exact match: a kind name appearing anywhere in the leaf still places it (american
+            // lobster → lobster, rock crab → crab, soft_shell_clam → clam). Generalised over the
+            // DISCOVERED kinds rather than a list of four, so pass 2's oyster, periwinkle and scallop
+            // land without anyone remembering to add three lines here.
+            //
+            // Longest first, so a kind that contains another ('periwinkle' does not, but the day a
+            // 'rock crab' kind sits beside 'crab' it would) resolves to the more specific one.
+            foreach (string kind in known.OrderByDescending(k => k.Length))
+                if (leaf.Contains(kind)) return kind;
+
+            // Still nothing: the CATEGORY at least puts it in the right group for a pail, which only
+            // needs to know it is shellfish.
+            return def.Category == FishCategory.Shellfish && known.Contains("clam") ? "clam" : null;
         }
 
         static bool EnsureFolder(string folder)

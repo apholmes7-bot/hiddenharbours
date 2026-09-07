@@ -166,20 +166,108 @@ namespace HiddenHarbours.Tests.EditMode
             {
                 Assert.IsTrue(sp.FishId == "fish.atlantic_cod" || sp.FishId == "fish.haddock"
                               || sp.FishId == "fish.mackerel", sp.FishId);
-                Assert.Greater(sp.ShadowFramesPerDir, 0, $"{sp.FishId}: shadow");
-                Assert.Greater(sp.DartFramesPerDir, 0, $"{sp.FishId}: dart");
-                Assert.Greater(sp.ThrashFramesPerDir, 0, $"{sp.FishId}: thrash");
-                Assert.Greater(sp.HeldFramesPerDir, 0, $"{sp.FishId}: held (gill/tail)");
-                Assert.AreEqual(8 * sp.DartFramesPerDir, sp.DartMouthOffsets.Length,
-                    $"{sp.FishId}: a mouth anchor per dart cell");
-                Assert.AreEqual(8 * sp.ThrashFramesPerDir, sp.ThrashMouthOffsets.Length,
-                    $"{sp.FishId}: a mouth anchor per thrash cell");
-                foreach (Vector2 m in sp.DartMouthOffsets) AssertFinite(m, sp.FishId);
-                if (sp.FishId == "fish.atlantic_cod")
-                    Assert.IsTrue(sp.TwoHanded, "the rig holds the cod with both hands (mass 3)");
-                else
-                    Assert.IsFalse(sp.TwoHanded, $"{sp.FishId} is a one-hand carry in the rig");
+                Assert.IsNotNull(sp.Rungs, $"{sp.FishId}: a species carries its size ladder");
+                Assert.Greater(sp.Rungs.Length, 0, $"{sp.FishId}: at least one rung");
+
+                foreach (FishRungVisual r in sp.Rungs)
+                {
+                    string what = $"{sp.FishId}{r.Suffix}";
+                    Assert.Greater(r.ShadowFramesPerDir, 0, $"{what}: shadow");
+                    Assert.Greater(r.DartFramesPerDir, 0, $"{what}: dart");
+                    Assert.Greater(r.ThrashFramesPerDir, 0, $"{what}: thrash");
+                    Assert.Greater(r.HeldFramesPerDir, 0, $"{what}: held (gill/tail)");
+                    Assert.AreEqual(8 * r.DartFramesPerDir, r.DartMouthOffsets.Length,
+                        $"{what}: a mouth anchor per dart cell");
+                    Assert.AreEqual(8 * r.ThrashFramesPerDir, r.ThrashMouthOffsets.Length,
+                        $"{what}: a mouth anchor per thrash cell");
+                    foreach (Vector2 m in r.DartMouthOffsets) AssertFinite(m, what);
+                }
             }
+        }
+
+        /// <summary>
+        /// The ladder is a LADDER: three rungs, ascending, and the carry can only get harder as the
+        /// fish gets bigger.
+        ///
+        /// <para>The last assertion is the one that matters, and it is a control that asserts its own
+        /// premise. Per-rung hand counts arrived with the rung-major sidecar; before that the importer
+        /// had one hand count per SPECIES and would have stamped it onto all three rungs. Every other
+        /// assertion here passes just as happily on that copied value — so without a species whose
+        /// carry actually CHANGES across its own ladder, this whole test would be green on a sidecar
+        /// that never published the field. Cod is the case: 2 kg at the bottom rung is a one-hander,
+        /// 12 kg at the top is a two-arm cradle, and they load different sheets (tail vs gill).</para>
+        /// </summary>
+        [Test]
+        public void FishLadder_AscendsInWeight_AndTheCarryOnlyGetsHarder()
+        {
+            FishSpeciesDef[] roster = { MakeDef("fish.atlantic_cod"), MakeDef("fish.haddock") };
+            FishSpeciesVisual[] species = RodKitImporter.BuildFishSpecies(roster);
+            Assert.AreEqual(2, species.Length);
+
+            int laddersThatChangeHands = 0;
+            foreach (FishSpeciesVisual sp in species)
+            {
+                Assert.AreEqual(3, sp.Rungs.Length,
+                    $"{sp.FishId}: catch pass 2 bakes three rungs per species");
+
+                for (int i = 1; i < sp.Rungs.Length; i++)
+                {
+                    Assert.Greater(sp.Rungs[i].Kg, sp.Rungs[i - 1].Kg,
+                        $"{sp.FishId}: rung {i} must weigh more than rung {i - 1}");
+
+                    // Monotone, not a fixed threshold: the rig owns the mass at which a fish stops
+                    // fitting one hand, and this must not carry a second copy of that number.
+                    Assert.IsFalse(sp.Rungs[i - 1].TwoHanded && !sp.Rungs[i].TwoHanded,
+                        $"{sp.FishId}: a BIGGER fish went back to one hand between rung " +
+                        $"{i - 1} and {i} — the ladder or the hand counts are out of order");
+                }
+
+                if (sp.Rungs[0].TwoHanded != sp.Rungs[sp.Rungs.Length - 1].TwoHanded)
+                    laddersThatChangeHands++;
+            }
+
+            Assert.Greater(laddersThatChangeHands, 0,
+                "no species changed its carry across its own ladder. Either the sidecar is not " +
+                "rung-major (run Hidden Harbours ▸ Art ▸ Rewrite Catch Pass 2 Fish Anchors) or the " +
+                "importer stamped one species-level hand count onto every rung — and if so, every " +
+                "other assertion in this file would still be green.");
+        }
+
+        /// <summary>
+        /// The picker chooses by rendered LENGTH, and the ladder's own weights are the only thresholds.
+        /// Pure maths, so it needs no sheets on disk.
+        /// </summary>
+        [Test]
+        public void RungPicker_ChoosesTheNearestRungInRenderedLength()
+        {
+            // Cod's real baked ladder: 2 / 5.59 / 12 kg.
+            var ladder = new[]
+            {
+                new FishRungVisual { Suffix = "_sm", Kg = 2f },
+                new FishRungVisual { Suffix = "",    Kg = 5.59f },
+                new FishRungVisual { Suffix = "_lg", Kg = 12f },
+            };
+
+            Assert.AreEqual(0, FishSizeLadder.PickRung(ladder, 2f), "a rung's own weight picks it");
+            Assert.AreEqual(1, FishSizeLadder.PickRung(ladder, 5.59f));
+            Assert.AreEqual(2, FishSizeLadder.PickRung(ladder, 12f));
+
+            Assert.AreEqual(0, FishSizeLadder.PickRung(ladder, 0.5f), "below the ladder clamps to small");
+            Assert.AreEqual(2, FishSizeLadder.PickRung(ladder, 40f), "above it clamps to large");
+
+            // The boundaries are the LENGTH midpoints, not the weight midpoints, and the two genuinely
+            // disagree: cbrt-midpoint of 2 and 5.59 is 3.49 kg, while their arithmetic mean is 3.80.
+            // A fish at 3.6 kg is therefore nearer the MIDDLE rung by length and nearer the SMALL one
+            // by mass — this is the case that tells the two rules apart.
+            Assert.AreEqual(1, FishSizeLadder.PickRung(ladder, 3.6f),
+                "3.6 kg is nearer the middle rung in rendered length (the metric the player sees)");
+            Assert.AreEqual(0, FishSizeLadder.PickRung(ladder, 3.2f),
+                "3.2 kg is still nearer the small rung");
+
+            Assert.AreEqual(-1, FishSizeLadder.PickRung(null, 5f), "no ladder, no rung");
+            Assert.AreEqual(-1, FishSizeLadder.PickRung(new FishRungVisual[0], 5f));
+            Assert.AreEqual(0, FishSizeLadder.PickRung(ladder, -3f),
+                "a nonsense weight still resolves rather than throwing (greybox rule)");
         }
 
         [Test]
@@ -206,8 +294,8 @@ namespace HiddenHarbours.Tests.EditMode
         /// the frames and the mouth table must both wire, and whenever it is NOT there the importer
         /// must degrade to empty rather than to something half-built.
         ///
-        /// <para>The importer loads the ladder's MIDDLE rung, which is unsuffixed precisely so this
-        /// call site did not have to change. When a size picker lands, it chooses a suffix here.</para>
+        /// <para>Checked on EVERY rung, not just the middle one: the two outer rungs are separate
+        /// sheets and a bake that dropped them would otherwise pass unnoticed.</para>
         /// </summary>
         [Test]
         public void RollAndJump_WireWhenBaked_AndDegradeToEmptyWhenNot()
@@ -215,38 +303,43 @@ namespace HiddenHarbours.Tests.EditMode
             FishSpeciesDef[] roster = { MakeDef("fish.atlantic_cod") };
             FishSpeciesVisual[] species = RodKitImporter.BuildFishSpecies(roster);
             Assert.AreEqual(1, species.Length, "the cod is baked and in the roster");
-            FishSpeciesVisual cod = species[0];
 
-            int baked = 0;
-            foreach (var (label, frames, perDir, mouths) in new[]
+            int baked = 0, checkedRungs = 0;
+            foreach (FishRungVisual cod in species[0].Rungs)
             {
-                ("roll", cod.RollFrames, cod.RollFramesPerDir, cod.RollMouthOffsets),
-                ("jump", cod.JumpFrames, cod.JumpFramesPerDir, cod.JumpMouthOffsets),
-            })
-            {
-                Assert.IsNotNull(frames, $"{label} frames must be an array, never null");
-
-                if (frames.Length == 0)
+                checkedRungs++;
+                foreach (var (label, frames, perDir, mouths) in new[]
                 {
-                    Assert.AreEqual(0, perDir, $"{label}: no sheet means no frames per dir");
-                    Assert.IsNull(mouths, $"{label}: no sheet means no mouth table, not an empty one");
-                    continue;
-                }
+                    ("roll", cod.RollFrames, cod.RollFramesPerDir, cod.RollMouthOffsets),
+                    ("jump", cod.JumpFrames, cod.JumpFramesPerDir, cod.JumpMouthOffsets),
+                })
+                {
+                    string what = $"{label}{cod.Suffix}";
+                    Assert.IsNotNull(frames, $"{what} frames must be an array, never null");
 
-                baked++;
-                Assert.Greater(perDir, 0, $"{label}: a wired sheet has frames per direction");
-                Assert.AreEqual(8 * perDir, frames.Length, $"{label}: eight direction rows");
-                Assert.IsNotNull(mouths, $"{label}: a wired water anim carries its mouth table");
-                Assert.AreEqual(8 * perDir, mouths.Length, $"{label}: a mouth anchor per cell");
-                foreach (Vector2 m in mouths) AssertFinite(m, $"{label} mouth");
+                    if (frames.Length == 0)
+                    {
+                        Assert.AreEqual(0, perDir, $"{what}: no sheet means no frames per dir");
+                        Assert.IsNull(mouths, $"{what}: no sheet means no mouth table, not an empty one");
+                        continue;
+                    }
+
+                    baked++;
+                    Assert.Greater(perDir, 0, $"{what}: a wired sheet has frames per direction");
+                    Assert.AreEqual(8 * perDir, frames.Length, $"{what}: eight direction rows");
+                    Assert.IsNotNull(mouths, $"{what}: a wired water anim carries its mouth table");
+                    Assert.AreEqual(8 * perDir, mouths.Length, $"{what}: a mouth anchor per cell");
+                    foreach (Vector2 m in mouths) AssertFinite(m, $"{what} mouth");
+                }
             }
 
             if (baked == 0)
                 Assert.Ignore("catch pass 2 has not been baked yet — Fish_cod_roll/_jump are not on " +
                               "disk. Run Hidden Harbours ▸ Art ▸ Bake Catch Pass 2.");
             else
-                Assert.AreEqual(2, baked, "roll and jump bake together — one without the other means " +
-                                          "a half-run bake, which is worse than no bake");
+                Assert.AreEqual(2 * checkedRungs, baked, "roll and jump bake together, at every rung — " +
+                                          "one without the other means a half-run bake, which is " +
+                                          "worse than no bake");
         }
 
         [Test]

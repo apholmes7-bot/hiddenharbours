@@ -191,6 +191,8 @@ namespace HiddenHarbours.Player
         private int _fishRow = Directions / 2;
         private string _resolvedFishId;
         private int _speciesIndex = -1;
+        private float _resolvedWeightKg = float.NaN;
+        private FishRungVisual _rung;
 
         private bool _splashActive;
         private float _splashClock;
@@ -198,6 +200,12 @@ namespace HiddenHarbours.Player
 
         /// <summary>The species entry drawn for the current hook, or −1. For tests/tooling.</summary>
         public int SpeciesIndex => _speciesIndex;
+
+        /// <summary>
+        /// The size rung drawn for the current hook, or null. For tests/tooling — it is the answer to
+        /// "which of the three baked sizes is on the line", which nothing else can be asked.
+        /// </summary>
+        public FishRungVisual Rung => _rung;
 
         private void Awake()
         {
@@ -301,11 +309,24 @@ namespace HiddenHarbours.Player
             if (next.SlackWindowOpen && !_slackWasOpen) _slackEdgeClock = 0f;
             _slackWasOpen = next.SlackWindowOpen;
 
-            // Species lookup only when the id actually changes (no per-publish string work).
-            if (!string.Equals(next.FishId, _resolvedFishId, System.StringComparison.Ordinal))
+            // Species lookup only when the id actually changes (no per-publish string work), and
+            // the RUNG only when the species or the weight moves. Both are sticky for the whole
+            // fight: the sim publishes one weight with the bite and does not change its mind, so
+            // re-picking every publish would be pure work for an answer that cannot differ.
+            bool speciesMoved =
+                !string.Equals(next.FishId, _resolvedFishId, System.StringComparison.Ordinal);
+            if (speciesMoved)
             {
                 _resolvedFishId = next.FishId;
                 _speciesIndex = FindSpecies(next.FishId);
+            }
+            // NaN != NaN, so the first publish after a bite always resolves — which is what we want,
+            // since 'no weight yet' and 'a weight of zero' are different states.
+            if (speciesMoved || next.WeightKg != _resolvedWeightKg)
+            {
+                _resolvedWeightKg = next.WeightKg;
+                FishSpeciesVisual sp = CurrentSpecies();
+                _rung = sp != null ? sp.RungFor(next.WeightKg) : null;
             }
         }
 
@@ -622,7 +643,7 @@ namespace HiddenHarbours.Player
 
         private void RenderShadow(Vector2 entry)
         {
-            FishSpeciesVisual sp = CurrentSpecies();
+            FishRungVisual sp = _rung;
             if (sp == null || sp.ShadowFrames == null || sp.ShadowFrames.Length == 0)
             {
                 _fishSr.enabled = false;
@@ -669,7 +690,7 @@ namespace HiddenHarbours.Player
             }
             _lastFishPos = pos;
 
-            FishSpeciesVisual sp = CurrentSpecies();
+            FishRungVisual sp = _rung;
             if (sp == null) { _fishSr.enabled = false; return pos; }
 
             bool dart = RodPresenterMath.IsDarting(_fishSpeed, _fishDartSpeedMps);
@@ -697,7 +718,7 @@ namespace HiddenHarbours.Player
         /// riding the fisher's live row/frame. Skipped whole when the land pose isn't showing.</summary>
         private void RenderHeldFish(Vector2 angler)
         {
-            FishSpeciesVisual sp = CurrentSpecies();
+            FishRungVisual sp = _rung;
             bool landPosed = _animator != null && _animator.OwnsRenderer && _animator.Pose == FishingPose.Land;
             if (sp == null || sp.HeldFrames == null || sp.HeldFrames.Length == 0 || !landPosed
                 || _landFramesPerDir <= 0 || _playerSr == null)

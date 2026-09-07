@@ -29,6 +29,26 @@ namespace HiddenHarbours.Art
             [Tooltip("The 4 baked lay variants, in variant order (sheet columns f0..f3 for the " +
                      "CatchItem strips; the deck-lay recipe for fish).")]
             public Sprite[] Variants;
+
+            // ---- the same animal, in a hand -----------------------------------------------------
+            //
+            // A DIFFERENT PIVOT, which is why it cannot be another variant of the row above. The lay
+            // variants pivot on GROUND CONTACT — the item dropped in a tote. Held art pivots on THE
+            // GRIP, so it can be pinned to a character's hand anchor: the crustacean rig bakes it
+            // around hpivot (32,12), the point on the animal's back a hand closes over, while a
+            // walking one sits at (32,40). One sheet cannot carry two pivots.
+
+            [Tooltip("The kind in a hand: HeldFacings × HeldFramesPerFacing, facing-major. Empty " +
+                     "for a kind whose rig bakes no held pose.")]
+            public Sprite[] Held;
+
+            [Tooltip("8 for an animal the rig lofts and turns (lobster, crab, a fish by the tail); " +
+                     "1 for a handful of shellfish, which the rig draws with no camera at all.")]
+            public int HeldFacings;
+
+            [Tooltip("Frames per facing in Held — the held pose's own animation, or its variant " +
+                     "count for a non-directional handful.")]
+            public int HeldFramesPerFacing;
         }
 
         [Serializable]
@@ -86,6 +106,38 @@ namespace HiddenHarbours.Art
             int v = variant % e.Variants.Length;
             if (v < 0) v += e.Variants.Length;
             return e.Variants[v];
+        }
+
+        /// <summary>
+        /// The sprite for this kind held in a hand, at <paramref name="facing"/> and
+        /// <paramref name="frame"/>, or null when the kind bakes no held pose.
+        ///
+        /// <para>Both indices wrap rather than throw, and a non-directional kind (a handful, whose
+        /// <c>HeldFacings</c> is 1) simply ignores the facing — so a caller can hand over whatever
+        /// facing the carrier is using without first asking whether this particular catch turns.</para>
+        /// </summary>
+        public Sprite HeldSprite(string kind, int facing, int frame)
+        {
+            if (_kindLookup == null) BuildLookups();
+            if (kind == null || !_kindLookup.TryGetValue(kind, out var e)) return null;
+            if (e.Held == null || e.Held.Length == 0) return null;
+
+            int facings = Mathf.Max(1, e.HeldFacings);
+            int per = Mathf.Max(1, e.HeldFramesPerFacing);
+            int d = ((facing % facings) + facings) % facings;
+            int f = ((frame % per) + per) % per;
+
+            int i = d * per + f;
+            return i >= 0 && i < e.Held.Length ? e.Held[i] : null;
+        }
+
+        /// <summary>How many facings this kind's held art was baked at — 0 when it bakes none. A
+        /// carrier asks this to decide whether to turn the thing in the hand at all.</summary>
+        public int HeldFacingsFor(string kind)
+        {
+            if (_kindLookup == null) BuildLookups();
+            if (kind == null || !_kindLookup.TryGetValue(kind, out var e)) return 0;
+            return e.Held == null || e.Held.Length == 0 ? 0 : Mathf.Max(1, e.HeldFacings);
         }
 
         /// <summary>

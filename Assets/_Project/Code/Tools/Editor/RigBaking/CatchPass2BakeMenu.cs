@@ -102,6 +102,46 @@ namespace HiddenHarbours.Tools.RigBaking
         }
 
         /// <summary>
+        /// Re-emit <c>FishIsoAnchors.json</c> alone — the ladder (per-rung kg and hand count) and
+        /// the per-rung mouth tables — <b>without re-rendering the 210 sheets</b>.
+        ///
+        /// <para>Use this when the sidecar's SHAPE changes but no pixel does: the sheets on disk
+        /// stay exactly as they were baked, and one JSON is rewritten. Re-running the full fish
+        /// bake would give the same sidecar at the cost of a long render and 210 files of churn,
+        /// and a re-bake is not byte-deterministic, so it would also invalidate the slice guards
+        /// for no reason.</para>
+        ///
+        /// <para>It reads the SAME weight bands as the bake, so the ladder it publishes is the one
+        /// the sheets were actually rendered at. If the shipped defs' weight ranges have moved
+        /// since the bake, this will say so by publishing a different ladder — and then the sheets
+        /// genuinely are stale and want the full bake.</para>
+        /// </summary>
+        [MenuItem("Hidden Harbours/Art/Rewrite Catch Pass 2 Fish Anchors (sidecar only, no re-bake)",
+                  priority = 50)]
+        public static void RewriteCatchPass2FishAnchors()
+        {
+            try
+            {
+                var bands = ResolveWeightBands();
+                CatchPass2BakeResult result = CatchPass2Baker.RewriteFishAnchors(bands);
+                var sb = new StringBuilder();
+                sb.AppendLine($"[CatchPass2BakeMenu] Rewrote {result.AnchorJsonPath} in " +
+                              $"{result.TotalMilliseconds:F0} ms — no sheet was re-rendered.");
+                foreach (var kv in result.Ladders)
+                    sb.AppendLine($"  {kv.Key,-9} {string.Join(" | ", kv.Value)}");
+                Debug.Log(sb.ToString().TrimEnd());
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[CatchPass2BakeMenu] Anchor rewrite FAILED — the sidecar on " +
+                               "disk is untouched.\n" + ex);
+                throw;
+            }
+
+            AssetDatabase.Refresh();
+        }
+
+        /// <summary>
         /// The weight band each rig species' ladder spans, read from the shipped
         /// <see cref="FishSpeciesDef"/> assets.
         ///
