@@ -15,6 +15,13 @@ namespace HiddenHarbours.Core
         Driving = 2,
         /// <summary>Parked; her driver is walking from her door to his post.</summary>
         Alighting = 3,
+        /// <summary>Her driver is walking to the street-side handle to take a trailer. The pin goes in at
+        /// the END of the block — the walk is the work, and it is the same handle and the same verb the
+        /// player uses.</summary>
+        Coupling = 4,
+        /// <summary>Her driver is walking back to the handle to set a trailer down: the legs wind down
+        /// over the block and the pin comes out at the end of it.</summary>
+        Uncoupling = 5,
     }
 
     /// <summary>
@@ -61,9 +68,40 @@ namespace HiddenHarbours.Core
         /// <summary>What the two of them are doing (the block's tag).</summary>
         public readonly VehicleTripStage Stage;
 
+        /// <summary>True when this trip carries a towed body at all. False leaves every trailer field
+        /// below meaningless rather than zero-and-plausible.</summary>
+        public readonly bool HasTrailer;
+
+        /// <summary>The trailer's world position — her ORIGIN, not her pin, which sits metres forward of
+        /// it.</summary>
+        public readonly Vector2 TrailerPosition;
+
+        /// <summary>Her nose, as a unit vector in world XY — the same convention as
+        /// <see cref="MachineDirection"/>, because she is drawn by the same mesh path.</summary>
+        public readonly Vector2 TrailerDirection;
+
+        /// <summary>True while her pin is in the slot. She is still drawn when it is false — she is
+        /// standing in her bay on her own legs, which is most of her day.</summary>
+        public readonly bool TrailerCoupled;
+
+        /// <summary>Her landing gear, 0 down to 1 up — the same 0..1 the crank the player turns runs on
+        /// (<c>VehicleDoors</c> group "gear"), so a presenter drives the same shoes rather than a second
+        /// animation of them.</summary>
+        public readonly float TrailerLegsUp;
+
         public VehicleTripPose(Vector2 machinePosition, Vector2 machineDirection, Vector2 driverPosition,
                                Vector2 driverDirection, bool driverAboard, bool moving, bool driverWalking,
                                int legIndex, VehicleTripStage stage)
+            : this(machinePosition, machineDirection, driverPosition, driverDirection, driverAboard,
+                   moving, driverWalking, legIndex, stage, false, Vector2.zero, Vector2.up, false, 0f)
+        {
+        }
+
+        public VehicleTripPose(Vector2 machinePosition, Vector2 machineDirection, Vector2 driverPosition,
+                               Vector2 driverDirection, bool driverAboard, bool moving, bool driverWalking,
+                               int legIndex, VehicleTripStage stage, bool hasTrailer,
+                               Vector2 trailerPosition, Vector2 trailerDirection, bool trailerCoupled,
+                               float trailerLegsUp)
         {
             MachinePosition = machinePosition;
             MachineDirection = machineDirection;
@@ -74,7 +112,52 @@ namespace HiddenHarbours.Core
             DriverWalking = driverWalking;
             LegIndex = legIndex;
             Stage = stage;
+            HasTrailer = hasTrailer;
+            TrailerPosition = trailerPosition;
+            TrailerDirection = trailerDirection;
+            TrailerCoupled = trailerCoupled;
+            TrailerLegsUp = trailerLegsUp;
         }
+    }
+
+    /// <summary>
+    /// <b>The towed half of a trip</b> — which plate, which pin, and where the region stood the trailer.
+    /// Geometry and published art only: no hours, because the two coupling beats are DERIVED from the
+    /// walk to the handle the same way the six existing blocks are derived from their own legs.
+    ///
+    /// <para><b>Nothing here is a position anybody typed.</b> The two structs come off the baked mesh
+    /// defs (the art's own numbers), and the trailer's bay comes off the region's derived yard. The plan
+    /// then CHECKS the pair against the shipped capture test rather than assuming they meet — see
+    /// <see cref="VehicleTripPlan.Build"/>'s refusals.</para>
+    /// </summary>
+    public readonly struct VehicleTowedSpec
+    {
+        /// <summary>The tractor's published fifth wheel.</summary>
+        public readonly VehicleFifthWheel Wheel;
+
+        /// <summary>The trailer's published kingpin.</summary>
+        public readonly VehicleKingpin Pin;
+
+        /// <summary>Where the trailer's ORIGIN stands when she is on her legs — the region's own bay,
+        /// used as the seed for the settle and then as the thing the capture test is asked about.</summary>
+        public readonly Vector2 TrailerBay;
+
+        /// <summary>Which way she lies there, as a compass bearing (0 north, clockwise positive) — the
+        /// frame the coupling, the picture and the hitch all share.</summary>
+        public readonly float TrailerHeadingDegrees;
+
+        public VehicleTowedSpec(in VehicleFifthWheel wheel, in VehicleKingpin pin, Vector2 trailerBay,
+                                float trailerHeadingDegrees)
+        {
+            Wheel = wheel;
+            Pin = pin;
+            TrailerBay = trailerBay;
+            TrailerHeadingDegrees = trailerHeadingDegrees;
+        }
+
+        /// <summary>True when both halves of the coupling were actually baked. Checked, never inferred
+        /// from zeros.</summary>
+        public bool Published => Wheel.Published && Pin.Published;
     }
 
     /// <summary>
@@ -114,7 +197,9 @@ namespace HiddenHarbours.Core
         public readonly Vector2 DoorLocal;
 
         /// <summary>The hour she leaves the origin bay — strictly, the hour her driver sets off for her
-        /// door, because a departure is when somebody starts moving (the routine engine's law).</summary>
+        /// door, because a departure is when somebody starts moving (the routine engine's law). On a
+        /// towing trip he sets off for the HANDLE first, which is the same law read one beat
+        /// earlier.</summary>
         public readonly float OutboundDepartureHour;
 
         /// <summary>The hour her driver leaves his far post to come home.</summary>
@@ -125,6 +210,13 @@ namespace HiddenHarbours.Core
 
         /// <summary>How fast her driver walks the last few metres to her door, m/s.</summary>
         public readonly float WalkMetresPerSecond;
+
+        /// <summary>True when this trip carries a towed body — the plan then runs ten blocks rather than
+        /// eight, and refuses geometry a coupled pair could not actually work.</summary>
+        public readonly bool Tows;
+
+        /// <summary>The towed half. Meaningless unless <see cref="Tows"/>.</summary>
+        public readonly VehicleTowedSpec Towed;
 
         public VehicleTripSpec(Vector2[] outbound, Vector2[] returnLeg, Vector2 originPost,
                                Vector2 originPostFacing, Vector2 destinationPost,
@@ -143,6 +235,23 @@ namespace HiddenHarbours.Core
             ReturnDepartureHour = returnDepartureHour;
             CruiseMetresPerSecond = cruiseMetresPerSecond;
             WalkMetresPerSecond = walkMetresPerSecond;
+            Tows = false;
+            Towed = default;
+        }
+
+        /// <summary>The same trip, with a trailer on the plate.</summary>
+        public VehicleTripSpec(Vector2[] outbound, Vector2[] returnLeg, Vector2 originPost,
+                               Vector2 originPostFacing, Vector2 destinationPost,
+                               Vector2 destinationPostFacing, Vector2 doorLocal,
+                               float outboundDepartureHour, float returnDepartureHour,
+                               float cruiseMetresPerSecond, float walkMetresPerSecond,
+                               in VehicleTowedSpec towed)
+            : this(outbound, returnLeg, originPost, originPostFacing, destinationPost,
+                   destinationPostFacing, doorLocal, outboundDepartureHour, returnDepartureHour,
+                   cruiseMetresPerSecond, walkMetresPerSecond)
+        {
+            Tows = true;
+            Towed = towed;
         }
     }
 
@@ -177,6 +286,22 @@ namespace HiddenHarbours.Core
     /// <para><b>Eight blocks, flat arrays, one allocation at construction and none afterwards</b>
     /// (rule 7). A sample is a few dozen float operations — cheaper than the <c>GetComponent</c> it would
     /// take to avoid it.</para>
+    ///
+    /// <para>⭐⭐ <b>A TRIP THAT TOWS RUNS TEN BLOCKS, and the two extra ones are the WORK.</b> The pin,
+    /// the legs and the walk to the street-side handle are a beat of their own at each end
+    /// (<see cref="VehicleTripStage.Coupling"/> / <see cref="VehicleTripStage.Uncoupling"/>), on the
+    /// hours the walk itself takes — so the yard shows a driver coupling up rather than a trailer
+    /// appearing behind a truck (P3). The trailer's own pose comes from
+    /// <see cref="TowedFollowTrack"/>, which is <see cref="VehicleCouplingMath.FollowStep"/>: the
+    /// player's tow and this one are one computation.</para>
+    ///
+    /// <para>⚠️⚠️ <b>A COUPLED PAIR CANNOT TURN IN A BAY, AND THAT IS WHAT THE REFUSALS ARE ABOUT.</b> A
+    /// posed body cannot reverse, so an eight-block trip solves "the way she arrived is the reverse of
+    /// the way she must leave" by pivoting her about her own centre while her driver walks over. With a
+    /// 53-footer on the pin that pivot would sweep the trailer through two neighbouring bays. So a towing
+    /// trip does not pivot at all: BOTH ends have to be pull-throughs — she leaves on the heading she
+    /// arrived on — and <see cref="Build"/> refuses, by name and with the miss measured, when they are
+    /// not. That is a real constraint on where a towing trip can run and it is meant to be read as one.</para>
     /// </summary>
     public sealed class VehicleTripPlan
     {
@@ -184,11 +309,32 @@ namespace HiddenHarbours.Core
         /// a trip that is not "there and back" is two trips.</summary>
         public const int LegCount = 8;
 
+        /// <summary>How many blocks a TOWING trip has: the same eight, plus the couple at the start of
+        /// the day and the uncouple at the end of it.</summary>
+        public const int TowedLegCount = 10;
+
         /// <summary>Block indices, named so a test and a failure message do not count on their
         /// fingers.</summary>
         public const int LegRestAtOrigin = 0, LegBoardAtOrigin = 1, LegDriveOut = 2, LegAlightAtDestination = 3,
                          LegRestAtDestination = 4, LegBoardAtDestination = 5, LegDriveHome = 6,
                          LegAlightAtOrigin = 7;
+
+        /// <summary>The towing layout's block indices. Block 0 and block 1 keep their meaning — she is
+        /// resting, and then her driver sets off — so <see cref="RoundTripHours"/> reads the same in
+        /// both.</summary>
+        public const int TowedLegRestAtOrigin = 0, TowedLegCouple = 1, TowedLegBoardAtOrigin = 2,
+                         TowedLegDriveOut = 3, TowedLegAlightAtDestination = 4,
+                         TowedLegRestAtDestination = 5, TowedLegBoardAtDestination = 6,
+                         TowedLegDriveHome = 7, TowedLegUncouple = 8, TowedLegAlightAtOrigin = 9;
+
+        /// <summary>
+        /// How many times the day is walked to find the trailer's resting pose, and how close is close
+        /// enough (degrees). Numerical, not a tunable: "drive out, then drive home" is a contraction —
+        /// a trailer always swings TOWARD the tractor, never away — so its fixed point is unique and
+        /// four or five walks land on it. The cap is there so a degenerate spec cannot loop.
+        /// </summary>
+        private const int SettleWalks = 12;
+        private const float SettleToleranceDegrees = 1e-4f;
 
         /// <summary>Departure hour of each block, in [0, 24). Block 0's is the moment the driver gets back
         /// to his origin post, which is why they are DERIVED rather than authored: only two of the eight
@@ -211,13 +357,22 @@ namespace HiddenHarbours.Core
 
         /// <summary>Which way she is pointing at the start and the end of each boarding block, indexed by
         /// leg — see <see cref="SampleAt"/>'s note on the turn in the bay. Zero for every block that is
-        /// not a boarding one.</summary>
+        /// not a boarding one, and zero for EVERY block of a towing plan (a coupled pair does not turn).</summary>
         private readonly Vector2[] _turnFrom;
         private readonly Vector2[] _turnTo;
 
+        // ---- the towed half: null on a plan that does not tow -------------------------------------------
+        private readonly TowedFollowTrack _trackOut;
+        private readonly TowedFollowTrack _trackHome;
+        private readonly VehicleKingpin _pin;
+        private readonly Vector2 _trailerRest, _trailerAtDestination;
+        private readonly float _trailerRestHeading, _trailerHeadingAtDestination;
+
         private VehicleTripPlan(float[] departureHours, VehicleTripStage[] stages, bool[] driverAboard,
                                 ScheduledLegs machine, ScheduledLegs driver, Vector2[] turnFrom,
-                                Vector2[] turnTo, float secondsPerGameHour)
+                                Vector2[] turnTo, float secondsPerGameHour,
+                                TowedFollowTrack trackOut, TowedFollowTrack trackHome,
+                                in VehicleKingpin pin)
         {
             DepartureHours = departureHours;
             Stages = stages;
@@ -227,6 +382,24 @@ namespace HiddenHarbours.Core
             _turnFrom = turnFrom;
             _turnTo = turnTo;
             SecondsPerGameHour = secondsPerGameHour;
+
+            _trackOut = trackOut;
+            _trackHome = trackHome;
+            _pin = pin;
+
+            if (trackOut == null) return;
+
+            // ⚠️ WRAPPED. The follow accumulates — a lap of a circuit adds a whole turn — so a track
+            // honestly reports a trailer at 718.8°, which is the same trailer with three fewer digits of
+            // float left in her and an unreadable number in a failure message. Wrapping cannot move her
+            // picture: every reader of a heading here goes through a sine and a cosine.
+            _trailerRestHeading = Mathf.Repeat(trackHome.EndHeadingDegrees, 360f);
+            _trailerRest = VehicleCouplingMath.BodyOriginFromKingpin(
+                trackHome.PlateAt(trackHome.LengthMetres), _trailerRestHeading, pin);
+
+            _trailerHeadingAtDestination = Mathf.Repeat(trackOut.EndHeadingDegrees, 360f);
+            _trailerAtDestination = VehicleCouplingMath.BodyOriginFromKingpin(
+                trackOut.PlateAt(trackOut.LengthMetres), _trailerHeadingAtDestination, pin);
         }
 
         /// <summary>The machine's legs — exposed so content tests can measure the road she is actually
@@ -236,25 +409,67 @@ namespace HiddenHarbours.Core
         /// <summary>Her driver's legs.</summary>
         public ScheduledLegs DriverLegs => _driver;
 
+        /// <summary>How many blocks this plan runs — eight, or ten when she tows.</summary>
+        public int BlockCount => DepartureHours.Length;
+
+        /// <summary>True when this plan carries a towed body.</summary>
+        public bool Tows => _trackOut != null;
+
+        /// <summary>Her trailer down the road out, and her trailer coming home — the two solved tables.
+        /// Exposed so a fixture can drive a live <c>TowedBody</c> over exactly these stations.</summary>
+        public TowedFollowTrack TrackOut => _trackOut;
+
+        /// <inheritdoc cref="TrackOut"/>
+        public TowedFollowTrack TrackHome => _trackHome;
+
+        /// <summary>⭐ Where the trailer is left standing between trips — the SETTLED pose, which is the
+        /// fixed point of the day rather than the bay the region typed. See <see cref="Build"/>.</summary>
+        public Vector2 TrailerRestPosition => _trailerRest;
+
+        /// <inheritdoc cref="TrailerRestPosition"/>
+        public float TrailerRestHeadingDegrees => _trailerRestHeading;
+
         /// <summary>Where she stands at the origin bay.</summary>
-        public Vector2 OriginBay => _machine.PointAt(LegRestAtOrigin, 0f);
+        public Vector2 OriginBay => _machine.PointAt(0, 0f);
 
         /// <summary>Where she stands at the far bay.</summary>
-        public Vector2 DestinationBay => _machine.PointAt(LegRestAtDestination, 0f);
+        public Vector2 DestinationBay =>
+            _machine.PointAt(Tows ? TowedLegRestAtDestination : LegRestAtDestination, 0f);
 
         /// <summary>How long the whole round trip takes, in game hours, door to door — the number a
         /// content test measures against the day so a timetable that cannot fit fails loudly.</summary>
-        public float RoundTripHours =>
-            DaySchedule.ElapsedHours(DepartureHours[LegRestAtOrigin], DepartureHours[LegBoardAtOrigin]);
+        public float RoundTripHours => DaySchedule.ElapsedHours(DepartureHours[0], DepartureHours[1]);
 
         /// <summary>
-        /// <b>Build the timetable from the geometry.</b> Only two hours are authored; the other six fall
-        /// out of how long each leg takes at its own speed, so a route the owner lengthens automatically
+        /// <b>Build the timetable from the geometry.</b> Only two hours are authored; the others fall out
+        /// of how long each leg takes at its own speed, so a route the owner lengthens automatically
         /// arrives later rather than teleporting to keep an authored arrival.
         ///
         /// <para>Returns null with a stated <paramref name="problem"/> for a spec that cannot make a trip
         /// — the same fail-loud-and-stand-still contract <c>RoutinePlanner</c> keeps, because a machine
         /// that quietly does not move is indistinguishable from one that has not been authored yet.</para>
+        ///
+        /// <para>⭐⭐ <b>A TOWING SPEC IS CHECKED AGAINST THE SHIPPED CAPTURE TEST, NOT AGAINST A
+        /// TOLERANCE INVENTED HERE.</b> Three things have to be true and each is refused by name:</para>
+        ///
+        /// <list type="number">
+        ///   <item>the FAR bay is a pull-through — she leaves it on the heading she arrived on, because a
+        ///   coupled pair cannot pivot;</item>
+        ///   <item>standing at her home bay on the heading the road out leaves on, her plate CAPTURES the
+        ///   trailer the region stood there (<see cref="VehicleCouplingMath.WouldCapture"/> — the same
+        ///   three conditions the player's hitch asks);</item>
+        ///   <item>and the DAY CLOSES: the trailer the road home leaves behind is still on that plate, so
+        ///   tomorrow's couple is offered. A trailer is not saved — she is re-derived from the clock like
+        ///   everything else — so a day that does not close is not a trailer slowly drifting, it is a
+        ///   trailer that teleports at midnight.</item>
+        /// </list>
+        ///
+        /// <para>⭐ <b>Where she rests is SOLVED, not authored.</b> "Drive out, then drive home" is a map
+        /// from her resting heading to her resting heading, and it is a contraction — so it has exactly
+        /// one fixed point, and that is where a trailer on this road actually ends up. The plan walks the
+        /// day a few times to find it and then builds the two tables from it, which is what makes the
+        /// pose plan exactly periodic: no snap at midnight, and no drift. The region's authored bay is
+        /// the SEED and the sanity check, never the answer.</para>
         /// </summary>
         public static VehicleTripPlan Build(in VehicleTripSpec spec, float secondsPerGameHour,
                                             out string problem)
@@ -289,6 +504,20 @@ namespace HiddenHarbours.Core
             Vector2 leaveOrigin = FirstDirection(spec.Outbound);
             Vector2 leaveDestination = FirstDirection(spec.Return);
 
+            return spec.Tows
+                ? BuildTowing(spec, secondsPerGameHour, originBay, destinationBay, arriveAtDestination,
+                              arriveAtOrigin, leaveOrigin, leaveDestination, out problem)
+                : BuildPlain(spec, secondsPerGameHour, originBay, destinationBay, arriveAtDestination,
+                             arriveAtOrigin, leaveOrigin, leaveDestination);
+        }
+
+        /// <summary>The eight-block trip: nobody on the pin, so she turns in the bay while her driver
+        /// walks over. Unchanged since #728 — a towing plan is a different shape, not a modified one.</summary>
+        private static VehicleTripPlan BuildPlain(in VehicleTripSpec spec, float secondsPerGameHour,
+                                                  Vector2 originBay, Vector2 destinationBay,
+                                                  Vector2 arriveAtDestination, Vector2 arriveAtOrigin,
+                                                  Vector2 leaveOrigin, Vector2 leaveDestination)
+        {
             // ⭐ THE DOOR IS READ AT THE HEADING SHE IS ACTUALLY AT. There are TWO door points per bay,
             // because she turns in it (see SampleAt): the driver getting OUT walks from the door as she
             // arrived, and the driver getting IN walks to the door as she will be lying when he arrives.
@@ -373,7 +602,222 @@ namespace HiddenHarbours.Core
             var aboard = new[] { false, false, true, false, false, false, true, false };
 
             return new VehicleTripPlan(hours, stages, aboard, machine, driver, turnFrom, turnTo,
-                                       secondsPerGameHour);
+                                       secondsPerGameHour, null, null, default);
+        }
+
+        /// <summary>
+        /// ⭐⭐ <b>The ten-block trip.</b> See <see cref="Build"/> for the three refusals and for why the
+        /// trailer's resting pose is solved rather than authored.
+        /// </summary>
+        private static VehicleTripPlan BuildTowing(in VehicleTripSpec spec, float secondsPerGameHour,
+                                                   Vector2 originBay, Vector2 destinationBay,
+                                                   Vector2 arriveAtDestination, Vector2 arriveAtOrigin,
+                                                   Vector2 leaveOrigin, Vector2 leaveDestination,
+                                                   out string problem)
+        {
+            problem = null;
+            VehicleTowedSpec towed = spec.Towed;
+
+            if (!towed.Wheel.Published)
+            { problem = "the machine publishes no fifth wheel — she does not tow"; return null; }
+            if (!towed.Pin.Published)
+            { problem = "the towed body publishes no kingpin — there is nothing to hook"; return null; }
+
+            float band = VehicleCouplingMath.CaptureHeadingToleranceDegrees(towed.Wheel);
+            float cap = VehicleCouplingMath.JackknifeCapDegrees(towed.Pin, towed.Wheel);
+
+            float leaveOriginBearing = BoatKinematics.BearingDegrees(leaveOrigin);
+            float arriveOriginBearing = BoatKinematics.BearingDegrees(arriveAtOrigin);
+            float arriveDestinationBearing = BoatKinematics.BearingDegrees(arriveAtDestination);
+            float leaveDestinationBearing = BoatKinematics.BearingDegrees(leaveDestination);
+
+            // ⚠️ REFUSALS 1 AND 2 — BOTH bays have to be pull-throughs. She arrives coupled and leaves
+            // coupled, and there is no pivot available in between: the eight-block trip's turn-in-the-bay
+            // would sweep a 53-footer through whatever is parked either side of her. An out-and-back on
+            // one road ALWAYS fails this, and that is the point — it is a true fact about towing a
+            // trailer, not a limitation of the plan.
+            problem = PullThrough("home", arriveOriginBearing, leaveOriginBearing, band)
+                      ?? PullThrough("far", arriveDestinationBearing, leaveDestinationBearing, band);
+            if (problem != null) return null;
+
+            Vector2 doorOrigin = DoorWorld(originBay, leaveOrigin, spec.DoorLocal);
+            Vector2 doorDestination = DoorWorld(destinationBay, arriveAtDestination, spec.DoorLocal);
+
+            // The street-side release, swung through the heading she is standing on. ⚠️ ONE point for
+            // both beats, because a towing trip does not turn in either bay — which is the whole reason
+            // the refusals above exist.
+            Vector2 handle = DoorWorld(originBay, leaveOrigin, towed.Wheel.ReleaseHandleLocal);
+
+            Vector2 originFacing = Unit(spec.OriginPostFacing, -arriveAtOrigin);
+            Vector2 destinationFacing = Unit(spec.DestinationPostFacing, -arriveAtDestination);
+
+            var machine = ScheduledLegs.Build(new[]
+            {
+                new[] { originBay },              // 0 rest
+                new[] { originBay },              // 1 the couple — she does not move, and does not turn
+                new[] { originBay },              // 2 boarding
+                spec.Outbound,                    // 3 the road out, towing
+                new[] { destinationBay },         // 4 alighting
+                new[] { destinationBay },         // 5 rest at the far bay
+                new[] { destinationBay },         // 6 boarding for home
+                spec.Return,                      // 7 the road home, towing
+                new[] { originBay },              // 8 the uncouple
+                new[] { originBay },              // 9 alighting
+            }, new[]
+            {
+                0f, 0f, 0f, spec.CruiseMetresPerSecond, 0f, 0f, 0f, spec.CruiseMetresPerSecond, 0f, 0f,
+            }, new[]
+            {
+                leaveOrigin, leaveOrigin, leaveOrigin, arriveAtDestination, arriveAtDestination,
+                arriveAtDestination, arriveAtDestination, arriveAtOrigin, leaveOrigin, leaveOrigin,
+            });
+
+            var driver = ScheduledLegs.Build(new[]
+            {
+                new[] { spec.OriginPost },                          // 0 at his post
+                new[] { spec.OriginPost, handle },                  // 1 out to the handle: the pin
+                new[] { handle, doorOrigin },                       // 2 along the tractor to her door
+                new[] { doorOrigin },                               // 3 aboard
+                new[] { doorDestination, spec.DestinationPost },    // 4 down and over to his far post
+                new[] { spec.DestinationPost },                     // 5 the thing he drove there to do
+                new[] { spec.DestinationPost, doorDestination },    // 6 back to her door
+                new[] { doorDestination },                          // 7 aboard
+                new[] { doorOrigin, handle },                       // 8 down to the handle: legs, then pin
+                new[] { handle, spec.OriginPost },                  // 9 back to his post
+            }, new[]
+            {
+                0f, spec.WalkMetresPerSecond, spec.WalkMetresPerSecond, 0f, spec.WalkMetresPerSecond,
+                0f, spec.WalkMetresPerSecond, 0f, spec.WalkMetresPerSecond, spec.WalkMetresPerSecond,
+            }, new[]
+            {
+                originFacing, originFacing, originFacing, originFacing, destinationFacing,
+                destinationFacing, destinationFacing, destinationFacing, originFacing, originFacing,
+            });
+
+            // ---- settle the day: where a trailer on THESE two roads actually comes to rest -------------
+            int outStart = machine.Start[TowedLegDriveOut], outCount = machine.Count[TowedLegDriveOut];
+            int homeStart = machine.Start[TowedLegDriveHome], homeCount = machine.Count[TowedLegDriveHome];
+            var plateLocal = new Vector2(towed.Wheel.CouplingPointLocal.x, towed.Wheel.CouplingPointLocal.y);
+
+            float rest = towed.TrailerHeadingDegrees;
+            for (int i = 0; i < SettleWalks; i++)
+            {
+                float atDestination = TowedFollowTrack.WalkHeading(
+                    machine.Waypoints, outStart, outCount, plateLocal, towed.Pin, cap, rest);
+                float home = TowedFollowTrack.WalkHeading(
+                    machine.Waypoints, homeStart, homeCount, plateLocal, towed.Pin, cap, atDestination);
+
+                bool settled = Mathf.Abs(Mathf.DeltaAngle(home, rest)) < SettleToleranceDegrees;
+
+                // ⚠️ Wrapped, because FollowStep ACCUMULATES: a lap of a circuit adds a whole turn to
+                // her heading, and a resting pose reported as 1078.9° is the same trailer with three
+                // fewer digits of float left. The comparison above is DeltaAngle, so wrapping cannot
+                // move the fixed point.
+                rest = Mathf.Repeat(home, 360f);
+                if (settled) break;
+            }
+
+            TowedFollowTrack trackOut = TowedFollowTrack.Build(
+                machine.Waypoints, outStart, outCount, plateLocal, towed.Pin, cap, rest);
+            TowedFollowTrack trackHome = TowedFollowTrack.Build(
+                machine.Waypoints, homeStart, homeCount, plateLocal, towed.Pin, cap,
+                trackOut.EndHeadingDegrees);
+
+            // ⚠️ REFUSAL 3 — the trailer the REGION stood at the bay has to be on the plate. This is the
+            // shipped capture test, asked of the stance she actually rests in.
+            if (!VehicleCouplingMath.WouldCapture(towed.Wheel, towed.Pin, originBay, leaveOriginBearing,
+                                                  towed.TrailerBay, towed.TrailerHeadingDegrees))
+            {
+                problem = Miss("the trailer the region stood at the bay is not on her plate",
+                               towed, originBay, leaveOriginBearing, towed.TrailerBay,
+                               towed.TrailerHeadingDegrees, band);
+                return null;
+            }
+
+            // ⚠️ REFUSAL 4 — and the day has to CLOSE. Nothing about a trailer is saved, so a trip whose
+            // road home leaves her somewhere else does not drift: it teleports her at midnight, and
+            // tomorrow's couple is refused.
+            Vector2 settledRest = VehicleCouplingMath.BodyOriginFromKingpin(
+                trackHome.PlateAt(trackHome.LengthMetres), trackHome.EndHeadingDegrees, towed.Pin);
+
+            if (!VehicleCouplingMath.WouldCapture(towed.Wheel, towed.Pin, originBay, leaveOriginBearing,
+                                                  settledRest, trackHome.EndHeadingDegrees))
+            {
+                problem = Miss("the day does not close — the road home does not leave the trailer where " +
+                               "she was picked up, so tomorrow's couple would be refused",
+                               towed, originBay, leaveOriginBearing, settledRest,
+                               trackHome.EndHeadingDegrees, band);
+                return null;
+            }
+
+            // ---- the timetable: still two authored hours, eight derived ------------------------------
+            var hours = new float[TowedLegCount];
+            hours[TowedLegCouple] = DaySchedule.Wrap24(spec.OutboundDepartureHour);
+            hours[TowedLegBoardAtOrigin] = Next(hours[TowedLegCouple], driver, TowedLegCouple, secondsPerGameHour);
+            hours[TowedLegDriveOut] =
+                Next(hours[TowedLegBoardAtOrigin], driver, TowedLegBoardAtOrigin, secondsPerGameHour);
+            hours[TowedLegAlightAtDestination] =
+                Next(hours[TowedLegDriveOut], machine, TowedLegDriveOut, secondsPerGameHour);
+            hours[TowedLegRestAtDestination] =
+                Next(hours[TowedLegAlightAtDestination], driver, TowedLegAlightAtDestination, secondsPerGameHour);
+
+            hours[TowedLegBoardAtDestination] = DaySchedule.Wrap24(spec.ReturnDepartureHour);
+            hours[TowedLegDriveHome] =
+                Next(hours[TowedLegBoardAtDestination], driver, TowedLegBoardAtDestination, secondsPerGameHour);
+            hours[TowedLegUncouple] =
+                Next(hours[TowedLegDriveHome], machine, TowedLegDriveHome, secondsPerGameHour);
+            hours[TowedLegAlightAtOrigin] =
+                Next(hours[TowedLegUncouple], driver, TowedLegUncouple, secondsPerGameHour);
+            hours[TowedLegRestAtOrigin] =
+                Next(hours[TowedLegAlightAtOrigin], driver, TowedLegAlightAtOrigin, secondsPerGameHour);
+
+            var stages = new[]
+            {
+                VehicleTripStage.Resting, VehicleTripStage.Coupling, VehicleTripStage.Boarding,
+                VehicleTripStage.Driving, VehicleTripStage.Alighting, VehicleTripStage.Resting,
+                VehicleTripStage.Boarding, VehicleTripStage.Driving, VehicleTripStage.Uncoupling,
+                VehicleTripStage.Alighting,
+            };
+            var aboard = new[] { false, false, false, true, false, false, false, true, false, false };
+
+            return new VehicleTripPlan(hours, stages, aboard, machine, driver,
+                                       new Vector2[TowedLegCount], new Vector2[TowedLegCount],
+                                       secondsPerGameHour, trackOut, trackHome, towed.Pin);
+        }
+
+        /// <summary>⚠️ <b>Is this bay one she can drive out of the way she came in?</b> A coupled pair
+        /// cannot pivot, so the answer has to be yes at both ends of a towing trip. The band is the
+        /// slot's OWN alignment window — below it the pair is straighter than the coupling itself can
+        /// tell, which is the only honest place to draw the line.</summary>
+        private static string PullThrough(string which, float arriveBearing, float leaveBearing,
+                                          float band)
+        {
+            float turn = Mathf.Abs(Mathf.DeltaAngle(arriveBearing, leaveBearing));
+            if (turn <= band) return null;
+
+            return $"a coupled pair cannot turn in a bay: she comes into the {which} bay on " +
+                   $"{arriveBearing:0.0}° and leaves it on {leaveBearing:0.0}°, {turn:0.0}° apart " +
+                   $"against the slot's own {band:0.00}° — that end has to be a pull-through she drives " +
+                   "out of the way she came in";
+        }
+
+        /// <summary>A refused couple, with the miss measured in the two units a reader can act on: how far
+        /// the pin is from the slot along the tractor's own axes, and how far across it she lies.</summary>
+        private static string Miss(string what, in VehicleTowedSpec towed, Vector2 tractorOrigin,
+                                   float tractorHeading, Vector2 trailerOrigin, float trailerHeading,
+                                   float band)
+        {
+            Vector2 pinWorld = trailerOrigin + VehicleCouplingMath.LocalOffsetToWorld(
+                new Vector2(towed.Pin.CouplingPointLocal.x, towed.Pin.CouplingPointLocal.y),
+                trailerHeading);
+            Vector2 local = VehicleCouplingMath.WorldOffsetToLocal(pinWorld - tractorOrigin, tractorHeading);
+            Vector2 slot = new Vector2(towed.Wheel.CouplingPointLocal.x,
+                                       (towed.Wheel.RampMouthY + towed.Wheel.SlotSeatY) * 0.5f);
+            float across = Mathf.Abs(Mathf.DeltaAngle(tractorHeading, trailerHeading));
+
+            return $"{what}: her pin sits {local.x - slot.x:0.00} m off the slot's centreline and " +
+                   $"{local.y - slot.y:0.00} m fore-and-aft of its middle, lying {across:0.0}° across a " +
+                   $"{band:0.00}° window (tractor {tractorHeading:0.0}°, trailer {trailerHeading:0.0}°)";
         }
 
         /// <summary>
@@ -398,6 +842,9 @@ namespace HiddenHarbours.Core
         /// pivots about her own centre instead. At 32 px/m and 200 m away that reads as a truck
         /// manoeuvring; up close it does not. The honest fix is an astern flag on a leg, which is a
         /// follow-up and is named as one in the PR body.</para>
+        ///
+        /// <para>⚠️ <b>A TOWING PLAN NEVER TURNS IN EITHER BAY</b> — <see cref="Build"/> refuses the
+        /// geometry that would need it, so <c>_turnTo</c> is empty and the trailer behind her is safe.</para>
         /// </summary>
         public VehicleTripPose SampleAt(float hourOfDay)
         {
@@ -418,8 +865,76 @@ namespace HiddenHarbours.Core
                                       Progress(elapsed, _driver.TravelHours(leg, SecondsPerGameHour)));
 
             bool aboard = DriverAboard[leg];
+            if (!Tows)
+                return new VehicleTripPose(machineAt, machineDir, driverAt, driverDir, aboard,
+                                           machineMoving, driverMoving && !aboard, leg, Stages[leg]);
+
+            TrailerAt(leg, elapsed, out Vector2 trailerAt, out float trailerHeading, out bool coupled,
+                      out float legsUp);
             return new VehicleTripPose(machineAt, machineDir, driverAt, driverDir, aboard, machineMoving,
-                                       driverMoving && !aboard, leg, Stages[leg]);
+                                       driverMoving && !aboard, leg, Stages[leg], true, trailerAt,
+                                       NavMath.DirectionFromBearing(trailerHeading), coupled, legsUp);
+        }
+
+        /// <summary>
+        /// ⭐ <b>Where the trailer is in this block.</b> Three answers and no fourth: she is on her legs
+        /// in her bay, she is standing coupled at the far end, or she is on the road — and on the road
+        /// her pose comes off the track that was solved from the player's own follow.
+        ///
+        /// <para><b>The two stationary poses are the TRACKS' OWN ENDS</b>, not the region's authored bay.
+        /// That is what makes the day seamless: the road out starts from exactly where the road home left
+        /// her, and both are the settled fixed point, so nothing moves at a block boundary.</para>
+        ///
+        /// <para>The legs are a fraction rather than a flag because they are a crank the player turns:
+        /// they rise while her driver walks from the handle to the door, and wind down while he walks
+        /// back — the crank's own published time is what the shipped hitch uses, and the block is what
+        /// this one has (<c>VehicleTripStage.Coupling</c>).</para>
+        /// </summary>
+        private void TrailerAt(int leg, float elapsedHours, out Vector2 origin, out float headingDegrees,
+                               out bool coupled, out float legsUp)
+        {
+            coupled = leg >= TowedLegBoardAtOrigin && leg <= TowedLegUncouple;
+
+            switch (leg)
+            {
+                case TowedLegDriveOut:
+                    _trackOut.SampleAt(MachineDistance(leg, elapsedHours), out origin, out headingDegrees);
+                    legsUp = 1f;
+                    return;
+
+                case TowedLegDriveHome:
+                    _trackHome.SampleAt(MachineDistance(leg, elapsedHours), out origin, out headingDegrees);
+                    legsUp = 1f;
+                    return;
+
+                case TowedLegAlightAtDestination:
+                case TowedLegRestAtDestination:
+                case TowedLegBoardAtDestination:
+                    origin = _trailerAtDestination;
+                    headingDegrees = _trailerHeadingAtDestination;
+                    legsUp = 1f;
+                    return;
+
+                default:
+                    origin = _trailerRest;
+                    headingDegrees = _trailerRestHeading;
+                    legsUp = leg == TowedLegBoardAtOrigin
+                        ? Progress(elapsedHours, _driver.TravelHours(leg, SecondsPerGameHour))
+                        : leg == TowedLegUncouple
+                            ? 1f - Progress(elapsedHours, _driver.TravelHours(leg, SecondsPerGameHour))
+                            : 0f;
+                    return;
+            }
+        }
+
+        /// <summary>How far along her own route the machine has got this block — the same clamp
+        /// <c>ScheduledLegs.Sample</c> applies, asked for the number rather than the point because the
+        /// trailer's table is indexed by distance.</summary>
+        private float MachineDistance(int leg, float elapsedHours)
+        {
+            float travelled = DaySchedule.DistanceTravelled(
+                elapsedHours, _machine.SpeedMetresPerSecond[leg], SecondsPerGameHour);
+            return Mathf.Clamp(travelled, 0f, _machine.LengthMetres[leg]);
         }
 
         /// <summary>How far through a block of <paramref name="lengthHours"/> we are, clamped. A block
@@ -468,7 +983,7 @@ namespace HiddenHarbours.Core
         /// <summary>Her driver's door in world metres, for a machine standing at <paramref name="bay"/>
         /// with her nose along <paramref name="nose"/>. The same transform <c>VehicleDoor</c> applies
         /// live, done here on a heading the plan already knows: her local +Y is the nose, so the door's
-        /// local (x, y) swings with her.</summary>
+        /// local (x, y) swings with her. Also what puts the street-side release handle in the world.</summary>
         private static Vector2 DoorWorld(Vector2 bay, Vector2 nose, Vector2 doorLocal)
         {
             Vector2 up = nose == Vector2.zero ? Vector2.up : nose.normalized;
