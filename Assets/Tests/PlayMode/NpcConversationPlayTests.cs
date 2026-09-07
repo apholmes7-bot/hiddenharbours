@@ -369,7 +369,14 @@ namespace HiddenHarbours.Tests.PlayMode
         [UnityTest]
         public IEnumerator ItNeverFiresWhenOneOfThemIsNowhereNearTheStation()
         {
-            _ben.transform.position = new Vector3(Away.x, Away.y, 0f);
+            // ⚠ A villager cannot be moved by writing her transform: VillagerRoutine rewrites it from
+            // her plan every frame, so the move is gone before the director's next tick. Her ROUTINE has
+            // to put her elsewhere — which is also the only version of this that tests anything, since
+            // it is where the clock puts her that the radius is measured against.
+            GameObject oldBen = _ben.gameObject;
+            _spawned.Remove(oldBen);
+            Object.DestroyImmediate(oldBen);
+            _ben = Villager("BenAway", Away, _benNpc, "s.away");
 
             yield return At(DueHour());
             yield return Until(() => _spoken.Count > 0, seconds: 5f);
