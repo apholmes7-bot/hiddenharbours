@@ -16,15 +16,19 @@ MonoBehaviour:
   DisplayName: Trike 200
   KindToken: road_vehicle
   Mesh: {fileID: 11400000, guid: fdd9e22f2548ba141b23a1f2959a8d7b, type: 2}
-  MassKg: 3500
-  MaxSpeedMetersPerSecond: 11
-  MaxReverseSpeedMetersPerSecond: 4
-  AccelerationMetersPerSecondSquared: 4.5
-  BrakingMetersPerSecondSquared: 8
-  CoastDecelerationMetersPerSecondSquared: 2.2
-  SteerRateFullLocksPerSecond: 2
-  SteerReturnFullLocksPerSecond: 3
-  SteerFalloffHalfSpeedMetersPerSecond: 9
+  MassKg: 180
+  MaxSpeedMetersPerSecond: 8
+  MaxReverseSpeedMetersPerSecond: 2.5
+  AccelerationMetersPerSecondSquared: 4.8
+  BrakingMetersPerSecondSquared: 6.5
+  CoastDecelerationMetersPerSecondSquared: 3.4
+  SteerRateFullLocksPerSecond: 4.2
+  SteerReturnFullLocksPerSecond: 5.2
+  SteerFalloffHalfSpeedMetersPerSecond: 4.75
+  TowingSpeedFraction: 0.72
+  TowingAccelerationFraction: 0.45
+  TowingBrakingFraction: 0.65
+  TowingCoastFraction: 0.6
   SpinRateDegreesPerSecond: 75
   AfloatSpinRateDegreesPerSecond: 30
   AfloatMaxSpeedMetersPerSecond: 1.6

@@ -51,6 +51,10 @@ namespace HiddenHarbours.Vehicles
             _doors = GetComponent<VehicleDoors>();
             _vehicleId = vehicleId ?? "";
             _lastOdometer = controller != null ? controller.OdometerMeters : 0f;
+
+            // A re-skin must not leave a controller carrying a load the hitch no longer has. The
+            // trailer, if there is one, re-announces herself on the next Couple.
+            if (controller != null && _trailer == null) controller.SetTow(default);
         }
 
         /// <summary>Her heading in the world, the same bearing the mesh driver poses from — so the
@@ -127,6 +131,10 @@ namespace HiddenHarbours.Vehicles
             body.CoupledTo = this;
             _lastOdometer = _controller != null ? _controller.OdometerMeters : 0f;
 
+            // ⭐ The drive model learns she is loaded. Not a lookup the other way: what it needs is a
+            // LOAD and a length, and the hitch is the one thing that knows a pin went in.
+            if (_controller != null) _controller.SetTow(body.Kingpin);
+
             // Seat her: place the trailer so her pin is exactly on the plate, keeping her heading.
             body.FollowKingpin(CouplingPointWorld, HeadingDegrees, 0f, JackknifeCapDegrees);
 
@@ -155,6 +163,7 @@ namespace HiddenHarbours.Vehicles
 
             _trailer.CoupledTo = null;
             _trailer = null;
+            if (_controller != null) _controller.SetTow(default);
             return true;
         }
 
@@ -162,7 +171,9 @@ namespace HiddenHarbours.Vehicles
         /// because there is no longer anything to set down.</summary>
         internal void ForgetTrailer(TowedBody body)
         {
-            if (_trailer == body) _trailer = null;
+            if (_trailer != body) return;
+            _trailer = null;
+            if (_controller != null) _controller.SetTow(default);
         }
 
         private void LateUpdate() => Step();

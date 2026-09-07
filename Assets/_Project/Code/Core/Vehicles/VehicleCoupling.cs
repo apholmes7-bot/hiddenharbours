@@ -312,6 +312,52 @@ namespace HiddenHarbours.Core
             return kingpinWorld - offset;
         }
 
+        /// <summary>
+        /// ⭐⭐ <b>HOW MUCH OF HER LOCK A TRACTOR MAY USE WITH A BODY ON THE PLATE</b> — the pair
+        /// turning like the long vehicle it is, derived from published art and nothing else.
+        ///
+        /// <para><b>The identity.</b> A steered machine's turn radius is
+        /// <c>R = wheelbase / tan(δ)</c>. A coupled pair's rearmost axle sits <c>wheelbase + L</c>
+        /// behind the steered one, <c>L</c> being the trailer's own
+        /// <see cref="VehicleKingpin.KingpinToAxleCentreMeters"/>. Scale the TANGENT of her lock by
+        /// <c>wheelbase / (wheelbase + L)</c> and her tightest circle becomes exactly
+        /// <c>(wheelbase + L) / tan(δ)</c> — the circle a rigid vehicle of the pair's whole length
+        /// would draw. Nobody types a number per pair, and a 53 (13.275 m) is left far less lock than
+        /// a pup (6.265 m) because she IS far longer.</para>
+        ///
+        /// <para>⚠️ <b>Scaled in TANGENT space, not on the angle.</b> <c>tan</c> runs 15 % above its
+        /// angle by 30° of lock, which is where these machines end; scaling the angle would leave the
+        /// identity above true only near centre, and the number that matters is at full lock.</para>
+        ///
+        /// <para><b>Why narrow the lock at all, when the fold is already capped.</b>
+        /// <see cref="JackknifeCapDegrees"/> HOLDS a jackknife at its limit — and its own note warns
+        /// that a pair you cannot fold further reads as a truck that stopped steering. A driver who
+        /// can use all her lock lives against that cap. Narrowing the lock to what the pair can
+        /// actually carry means the cap is the emergency it was written as, not the steering.</para>
+        ///
+        /// <para>Bobtail (an unpublished or zero-length body) is handed straight back: nothing on the
+        /// plate, nothing to narrow.</para>
+        /// </summary>
+        /// <param name="steer">her wheel position, −1..1.</param>
+        /// <param name="maxInnerSteerDegrees">her published inner lock.</param>
+        /// <param name="wheelbaseMeters">her published wheelbase.</param>
+        /// <param name="kingpinToAxleCentreMeters">the trailer's published length scale.</param>
+        public static float CoupledSteer(float steer, float maxInnerSteerDegrees,
+                                         float wheelbaseMeters, float kingpinToAxleCentreMeters)
+        {
+            if (kingpinToAxleCentreMeters <= 0f || wheelbaseMeters <= 0f || maxInnerSteerDegrees <= 0f)
+                return steer;
+
+            float magnitude = Mathf.Min(1f, Mathf.Abs(steer));
+            if (magnitude <= 0f) return steer;
+
+            float scale = wheelbaseMeters / (wheelbaseMeters + kingpinToAxleCentreMeters);
+            float inner = magnitude * maxInnerSteerDegrees * Mathf.Deg2Rad;
+            float narrowed = Mathf.Atan(Mathf.Tan(inner) * scale) * Mathf.Rad2Deg;
+
+            return Mathf.Sign(steer) * narrowed / maxInnerSteerDegrees;
+        }
+
         /// <summary>Clamp an articulation to the pair's cap, keeping its sign. The cap is a limit on
         /// how far the pair may fold, so a fold past it is held AT it rather than refused or
         /// bounced.</summary>

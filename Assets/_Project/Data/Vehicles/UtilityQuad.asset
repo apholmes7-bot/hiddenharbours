@@ -16,15 +16,19 @@ MonoBehaviour:
   DisplayName: Utility Quad 4x4
   KindToken: road_vehicle
   Mesh: {fileID: 11400000, guid: 65940ec0a9c03aa4db75a8373e137abe, type: 2}
-  MassKg: 3500
-  MaxSpeedMetersPerSecond: 11
-  MaxReverseSpeedMetersPerSecond: 4
-  AccelerationMetersPerSecondSquared: 4.5
-  BrakingMetersPerSecondSquared: 8
-  CoastDecelerationMetersPerSecondSquared: 2.2
-  SteerRateFullLocksPerSecond: 2
-  SteerReturnFullLocksPerSecond: 3
-  SteerFalloffHalfSpeedMetersPerSecond: 9
+  MassKg: 320
+  MaxSpeedMetersPerSecond: 8.5
+  MaxReverseSpeedMetersPerSecond: 3
+  AccelerationMetersPerSecondSquared: 5.5
+  BrakingMetersPerSecondSquared: 7.5
+  CoastDecelerationMetersPerSecondSquared: 3.2
+  SteerRateFullLocksPerSecond: 4
+  SteerReturnFullLocksPerSecond: 5
+  SteerFalloffHalfSpeedMetersPerSecond: 4.91
+  TowingSpeedFraction: 0.72
+  TowingAccelerationFraction: 0.45
+  TowingBrakingFraction: 0.65
+  TowingCoastFraction: 0.6
   SpinRateDegreesPerSecond: 75
   AfloatSpinRateDegreesPerSecond: 30
   AfloatMaxSpeedMetersPerSecond: 1.6

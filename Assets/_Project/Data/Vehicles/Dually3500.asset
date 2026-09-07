@@ -25,4 +25,8 @@ MonoBehaviour:
   SteerRateFullLocksPerSecond: 2
   SteerReturnFullLocksPerSecond: 3
   SteerFalloffHalfSpeedMetersPerSecond: 9
+  TowingSpeedFraction: 0.72
+  TowingAccelerationFraction: 0.45
+  TowingBrakingFraction: 0.65
+  TowingCoastFraction: 0.6
   CameraWorldHeightMeters: 18
