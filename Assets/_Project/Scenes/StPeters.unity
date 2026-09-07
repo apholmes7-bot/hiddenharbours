@@ -14610,6 +14610,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: fe385f1cb59348d1adc3131b7f3d1c9b, type: 2}
   - {fileID: 11400000, guid: 2dcfcde045cd43fcac4a78cff2cc4bab, type: 2}
   - {fileID: 11400000, guid: a583a5617580415ab595ac9d8126cb3a, type: 2}
+  - {fileID: 11400000, guid: 27922ed8b45f48afa0c01e10bbe85780, type: 2}
   _currentSceneName: StPeters
 --- !u!114 &174273177
 MonoBehaviour:
@@ -96726,7 +96727,10 @@ MonoBehaviour:
   _arrivalPoint: {fileID: 737225475}
   _dockZone: {fileID: 538175572}
   _disembarkPoint: {fileID: 401054183}
-  _arrivals: []
+  _arrivals:
+  - Key: east_water
+    ArrivalPoint: {fileID: 1900200301}
+    DisembarkPoint: {fileID: 0}
   _worldCenter: {x: 0, y: 0}
   _worldSizeMeters: {x: 760, y: 520}
 --- !u!4 &987664884
@@ -164635,6 +164639,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: fe385f1cb59348d1adc3131b7f3d1c9b, type: 2}
   - {fileID: 11400000, guid: 2dcfcde045cd43fcac4a78cff2cc4bab, type: 2}
   - {fileID: 11400000, guid: a583a5617580415ab595ac9d8126cb3a, type: 2}
+  - {fileID: 11400000, guid: 27922ed8b45f48afa0c01e10bbe85780, type: 2}
 --- !u!4 &1728359319
 Transform:
   m_ObjectHideFlags: 0
@@ -205299,6 +205304,132 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
+--- !u!1 &1900100200
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1900100203}
+  - component: {fileID: 1900100202}
+  - component: {fileID: 1900100201}
+  m_Layer: 0
+  m_Name: PassageToEastWater
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1900100201
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1900100200}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a750b7f224204cf0bcf0a9afdc844378, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.RegionPassage
+  _target: {fileID: 11400000, guid: 27922ed8b45f48afa0c01e10bbe85780, type: 2}
+  _loader: {fileID: 174273176}
+  _arrivalKey: st_peters
+  _reentryCooldownSeconds: 1.5
+--- !u!61 &1900100202
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1900100200}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 6, y: 120}
+  m_EdgeRadius: 0
+--- !u!4 &1900100203
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1900100200}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 356, y: 40, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1900200300
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1900200301}
+  m_Layer: 0
+  m_Name: StPetersEastWaterArrival
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1900200301
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1900200300}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 316, y: 40, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -205353,3 +205484,5 @@ SceneRoots:
   - {fileID: 401054183}
   - {fileID: 737225475}
   - {fileID: 987664884}
+  - {fileID: 1900100203}
+  - {fileID: 1900200301}
