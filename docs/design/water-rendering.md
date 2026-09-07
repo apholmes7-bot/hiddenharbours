@@ -5268,9 +5268,18 @@ Two things about that row were written wrong here and are corrected before this 
 decoder needs nothing** — `PaintedHeightField.DecodeElevation(float r01, min, max)` takes a
 *normalized float* and `GetPixels()` returns floats whatever the bit depth, so the sim and the paint
 tool already read any width; what is 8-bit is the **write**, `new Texture2D(..., TextureFormat.R8, ...)`
-at two sites in `TerrainPaintTool`. And **it is live at St Peters in a clean clone**: no painted asset
-is committed anywhere in the repo, so `StPetersBuilder` falls through to its auto-bake — which is the
-painted path at 8 bits, and which the R16 fix above does *not* reach.
+at two sites in `TerrainPaintTool`. And **it is not live** — which two earlier
+versions of this paragraph got wrong in the other direction. `StPetersSeabed_HeightTex.png` and
+`NineMileCreekSeabed_HeightTex.png` *are* committed (the check that missed them grepped for *painted*
+in the filename; they are named by region). But neither is wired into a scene: both region scenes
+carry `_depthSource: 0` with `_paintedHeightTex: {fileID: 0}`, and their sims are the analytic
+`MainlandTidalTerrain` / `TidalTerrain` — no `PaintedTidalTerrain` in either, checked by script GUID.
+**Both regions render through the baked path, so the R16 fix above does reach them both.**
+
+What keeps row 32 a row is that `TerrainPaintTool.AdoptOnOpenScene` is a shipped workflow and the
+owner is using the paint tool. **The day a painted seabed is adopted, St Peters silently drops from
+sixteen bits back to eight** — a good change quietly undoing a fix, which is this repo's most
+expensive shape of defect. It is a trap to close before it springs, not a symptom on screen.
 
 ⚠ The guard that row will need: the texture **importer** can silently down-convert the PNG back to R8
 with every test still green — the same shape as the `SetPixels32` trap above, one layer further out.
