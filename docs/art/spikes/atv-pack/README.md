@@ -190,3 +190,83 @@ They are the owner's **TEST** machines. Ruling **(a)** — which resident owns w
 parked — is still owed and this does not pre-empt it: when it lands, each moves to its owner's yard
 in a one-line change, because every position is derived. **(b)** the trike's recreation loop and the
 transport runs, **(c)** two-up, and **(e)** a visible track on St Peters are likewise untouched.
+
+---
+
+## The two plates PR 2a owed (2026-09-07, plate slot)
+
+Both shot by `AtvPlatePlayTests` — a PlayMode fixture in the **real committed St Peters**, through the
+game's own camera, at the shipped 11:00 daylight, **one region load for both**. One load is not a
+convenience: these machines composite through `IsoFacetHullRenderer` (the vehicle presentation service
+installs the same one a hull does), so they draw from the 255-id facet pool that never rewinds, and a
+fixture that loaded the region twice would photograph a shop with no machines outside it while every
+renderer reported `isVisible` true ([[in-frame-is-not-in-the-picture-for-a-mesh-hull]], #753). Each
+plate refuses to write, and names the reason, if its subject holds facet id 0.
+
+### `three-machines-at-the-store.png` — the row
+
+The quad, the trike and the enduro on the open grass at the general store's frontage, with the
+storekeeper and the shop counter behind them. Positions read off the loaded scene:
+**(1.90, 22.11) / (−0.23, 22.25) / (−2.16, 22.37)** — the builder's numbers exactly, camera
+(−0.14, 22.24) at ortho 7.03.
+
+**Each machine's drawn body was measured against her own published beam** rather than eyeballed, at
+64.0 px/m:
+
+| | drawn (red body) | published |
+| --- | --- | --- |
+| Enduro 250 | **0.41 m** | 0.38 m body (0.86 over the grips) |
+| Trike 200 | **1.23 m** | 1.20 m over the rear fender |
+| Utility Quad | **1.30 m** | 1.28 m over the fender aprons |
+
+⚠️ **A first read of this plate was WRONG and measuring is what caught it.** The long red shape to the
+quad's right looks like a mis-scaled machine and is the general store's own **counter** — the rod, bait
+and ice stock standing on it. An eyeball said "the quad is 3.6 m long"; the per-machine measurement
+said 1.30 m and named the neighbour.
+
+⚠️ **All three carry the same red.** The pack ships three distinct paints (enduro teal, trike gold,
+quad sage) and the bake took the rig's default for all three bodies. That is a **bake-time** choice,
+not a placement one, and it is the owner's call whether the island's three machines should differ.
+
+### `player-astride-mid-ride.png` + `astride-zoom.png` — the ride
+
+The player on the quad, **12.1 m** south of the row at **6.4 m/s**, the shop and the other two machines
+still in the top of the frame. `astride-zoom.png` is the same frame at 6× over the rider.
+
+**⚠️⚠️ AND THE ZOOM IS WHY THIS PLATE WAS WORTH SHOOTING: the pose gap is bigger than the hands.**
+PR 1 measured the `drive` clip's reach as **11.6–13.9 px** short of these machines' bars and pinned it
+exactly ([[a-baked-pose-is-placed-by-one-point]]). True, and not the whole picture. In the frame she
+also sits **over the machine's TAIL**, not on the saddle, and the arithmetic says why:
+
+- the clip was baked for a seat at `CharacterOffDeckMounts.DriveSeatZ` = **0.40 m**;
+- the quad's saddle is **0.90 m**;
+- `DriveSeatMath` expresses that **0.50 m of HEIGHT as 0.50 m of screen-Y**, which in a ¾ top-down view
+  is indistinguishable from moving her half a metre north;
+- the quad's body reaches only **1.06 m** aft of centre, and her seat point is already 0.30 m aft — so
+  half a metre of lift puts the drawn figure past the tail.
+
+Measured in the fixture: the rider stands **0.563 m** from the machine's own published seat ground
+point. That is not a bug in the placement — it is the correct lift for a rider sitting 0.9 m up, and it
+is exactly what "a baked pose is placed by ONE point" predicts once the machine is short. **It is one
+more reason the ASTRIDE stance is owed upstream**, and it is a stronger reason than the hands number
+alone: on a 2.16 m machine, a pose fitted to a 0.40 m seat cannot be made to sit on a 0.90 m saddle by
+moving one point.
+
+Nothing here is a new defect and nothing is hidden: the rider is drawn, she is on the machine, she is
+where the shipped arithmetic puts her, and the plate shows what that looks like.
+
+### ⭐⭐ What the second plate cost to get, and the trap worth keeping
+
+The first two runs failed with the quad covering **0 m at full throttle over 3000 physics steps** — and
+the land gate was innocent: `dry=True, cap=9.22 m/s` against a 9 m/s machine, i.e. no cap at all.
+
+The number that named it was **`HeldDriveInput.Reads == 0`**: the switcher never *asked*.
+`ControlSwitcher.Update` checks `ShellFlow.WorldInputBlocked` **first of everything**, parks the
+controls and calls `ReleaseDriveInput()` before it reaches the wheel — and **St Peters IS the start
+scene, so a PlayMode fixture that loads it gets the TITLE PAGE** (measured: `phase Title`). The fix is
+`ShellFlow.Reset()`, the slate wipe — deliberately **not** `StartNewGame()`, which begins the arrival
+and overwrites the shared savegame.
+
+**A fixture that had only watched the odometer would have reported a broken drivetrain against a PR
+that had just merged.** Any PlayMode fixture that loads a start scene and then expects input to reach
+anything will meet this, silently, and it looks exactly like the feature being tested is broken.
