@@ -158,6 +158,7 @@ namespace HiddenHarbours.Vehicles
             // minutes for ever. The build is one allocation and happens once per activation.
             _planned = false;
             _reported = false;
+            _trailerReported = false;
         }
 
         private void OnDisable()
@@ -340,6 +341,16 @@ namespace HiddenHarbours.Vehicles
             _planned = true;
             _plannedSecondsPerGameHour = SecondsPerGameHour();
 
+            // ⚠⚠ DECIDED AFRESH, in a LOCAL. `_plan` still holds the last answer this component
+            // gave, and every path below has to be able to say "no plan" — so reading the FIELD as
+            // "did the build fail?" makes a stale plan answer for a new one. That bit three ways:
+            // a run whose trailer had gone kept posing a trailer that was not there; a run the
+            // timetable said should stay home went anyway; and — the one with nothing to do with
+            // trailers — every SOLO trip in the game kept its old derived hours across a day-length
+            // change, because the re-plan that change forces would not reach the assignment.
+            // The field is written exactly once, at the end, and cannot go stale by construction.
+            VehicleTripPlan plan = null;
+
             string problem = null;
             if (_trip == null) problem = "no trip asset";
             else if (!_trip.IsUsable()) problem = $"the trip asset '{_trip.Id}' is not usable — check " +
@@ -365,15 +376,15 @@ namespace HiddenHarbours.Vehicles
                         _trip.ReturnDepartureHour, _trip.CruiseMetresPerSecond,
                         _trip.WalkMetresPerSecond, towed);
 
-                    _plan = VehicleTripPlan.Build(pair, _plannedSecondsPerGameHour, out string refused);
-                    if (_plan == null) Refuse(refused);
+                    plan = VehicleTripPlan.Build(pair, _plannedSecondsPerGameHour, out string refused);
+                    if (plan == null) Refuse(refused);
                 }
 
                 // ⭐ A REFUSED PAIR IS NOT A REFUSED ERRAND. The geometry could not carry a trailer —
                 // both ends of a towing road have to be pull-throughs — but the errand itself still can,
                 // so she runs it bobtail unless the timetable says the load is the whole point. Both
                 // readings are true of a real yard, which is why it is a field and not a rule (§Q2).
-                if (_plan == null)
+                if (plan == null)
                 {
                     if (wants && _trip.WhenTheTrailerIsNotThere == TrailerAbsence.StayHome)
                     {
@@ -387,11 +398,12 @@ namespace HiddenHarbours.Vehicles
                             _trip.ReturnDepartureHour, _trip.CruiseMetresPerSecond,
                             _trip.WalkMetresPerSecond);
 
-                        _plan = VehicleTripPlan.Build(solo, _plannedSecondsPerGameHour, out problem);
+                        plan = VehicleTripPlan.Build(solo, _plannedSecondsPerGameHour, out problem);
                     }
                 }
             }
 
+            _plan = plan;
             if (_plan != null || _reported) return;
 
             _reported = true;
