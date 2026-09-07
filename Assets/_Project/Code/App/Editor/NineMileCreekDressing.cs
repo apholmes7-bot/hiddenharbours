@@ -1501,11 +1501,22 @@ namespace HiddenHarbours.App.Editor
                 // one level up. The pivot is where the sprite is hung; the LIP is the one line the
                 // placement guarantees to land on the wall's own edge, so it is the only row of pixels
                 // whose elevation is known, and every other row is it plus a height.
-                var waterline = go.AddComponent<TidalFaceWaterline>();
-                if (terrain != null)
-                    waterline.Configure(piece.Lip.y, FaceLipElevation(piece, terrain));
-                else
-                    uncut++;
+                //
+                // ⚠️⚠️ AND ONLY ON A RUN THAT DRAWS A FACE AT THIS CAMERA. Below the lip of an east-west
+                // course there is nothing but wall, so a row IS an elevation and a waterline may be cut
+                // there. Below the lip of a NORTH-SOUTH one there is the piece's own southern deck edge
+                // and its built end, standing at their own plan northings — facing 2 and 6 draw 4.156
+                // units under their pivot against facing 4's 2.625, and the extra is PLAN. Cutting those
+                // by a world-y line would eat the apron's deck. They keep the shipped picture, which is
+                // also the honest one: a wall at constant x has no drawn face for the sea to climb.
+                if (NineMileCreekQuayFace.DrawsAFaceAtThisCamera(PlanDirectionOf(piece.Heading)))
+                {
+                    var waterline = go.AddComponent<TidalFaceWaterline>();
+                    if (terrain != null)
+                        waterline.Configure(piece.Lip.y, FaceLipElevation(piece, terrain));
+                    else
+                        uncut++;
+                }
 
                 placed++;
             }

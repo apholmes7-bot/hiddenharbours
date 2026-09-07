@@ -141,6 +141,63 @@ namespace HiddenHarbours.Tests.EditMode
         // -----------------------------------------------------------------------------------------
 
         /// <summary>
+        /// ⭐⭐ <b>ONLY THE RUNS THAT DRAW A FACE AT THIS CAMERA MAY BE CUT — and three of this wharf's
+        /// six do not.</b>
+        ///
+        /// <para>The whole cut rests on one claim: below an east–west course's lip there is nothing but
+        /// wall, so a row of its pixels IS an elevation. On a NORTH–SOUTH run that claim is false. Screen
+        /// x is world x, so such a wall projects to a line and has no drawn face at all; what the course
+        /// contributes is its DECK and its built END, standing at their own plan northings. Measured on
+        /// the committed sheet, facings 2 and 6 draw <b>4.156 units below their pivot</b> against facing
+        /// 4's 2.625 — and the extra 1.53 is PLAN, not height. A world-y cut applied there would eat the
+        /// southern edge of the apron's own deck: a worse defect than the one being fixed, and one that
+        /// would render perfectly.</para>
+        ///
+        /// <para>So the apron's east and west faces and the wharf head keep the shipped picture. That is
+        /// not a gap in the fix — it is what "don't promise a face there" means.</para>
+        /// </summary>
+        [Test]
+        public void OnlyTheRunsThatDrawAFaceAtThisCameraAreCut()
+        {
+            var expected = new Dictionary<string, bool>
+            {
+                { NineMileCreekDressing.NorthWallRun, true },     // seaward SOUTH — the mooring face
+                { NineMileCreekDressing.ApronSouthRun, true },    // seaward SOUTH — the seaward corner
+                { NineMileCreekDressing.BreakwaterRun, true },    // seaward SOUTH — the arm's outer side
+                { NineMileCreekDressing.WestWallRun, false },     // seaward EAST  — a line at this camera
+                { NineMileCreekDressing.ApronWestRun, false },    // seaward WEST  — likewise
+                { NineMileCreekDressing.QuayHeadRun, false },     // seaward EAST  — likewise
+            };
+
+            var report = new StringBuilder();
+            var wrong = new List<string>();
+            var seen = new HashSet<string>();
+
+            foreach (var piece in NineMileCreekDressing.FacePieces())
+            {
+                Vector2 seaward = NineMileCreekDressing.PlanDirectionOf(piece.Heading);
+                bool cut = NineMileCreekQuayFace.DrawsAFaceAtThisCamera(seaward);
+                if (seen.Add(piece.Wall))
+                    report.AppendLine(
+                        $"  {piece.Wall,-14} seaward ({seaward.x:+0.0;-0.0}, {seaward.y:+0.0;-0.0})  " +
+                        (cut ? "draws a face — the sea may climb it"
+                             : "a line at this camera — left whole"));
+
+                Assert.IsTrue(expected.ContainsKey(piece.Wall),
+                    $"a run named '{piece.Wall}' has appeared and nobody has said which way it looks — " +
+                    "decide before it ships, because a wrong answer renders perfectly");
+                if (cut != expected[piece.Wall])
+                    wrong.Add($"{piece.Wall}: seaward {seaward} says cut={cut}, " +
+                              $"expected {expected[piece.Wall]}");
+            }
+
+            Debug.Log("[quay-face-waterline] the six runs:\n" + report);
+            Assert.IsEmpty(wrong, string.Join("\n", wrong) + "\n" + report);
+            Assert.AreEqual(expected.Count, seen.Count,
+                "every run this wharf draws must be accounted for here:\n" + report);
+        }
+
+        /// <summary>
         /// ⚠️ <b>H2, REFUTED ONCE AND MEASURED — no wall hull takes the ground.</b> The charter's second
         /// hypothesis was that the fleet was simply sitting on the basin bed, and it matters here beyond
         /// ruling itself out: a grounded hull's picture STOPS falling, so every "the gap does not move"

@@ -752,8 +752,37 @@ namespace HiddenHarbours.App.Editor
         }
 
         /// <summary>
+        /// ⭐⭐ <b>WHETHER A COURSE LAID THIS WAY DRAWS A FACE THE CAMERA CAN SEE — and therefore whether
+        /// everything below its lip is PURE HEIGHT.</b> True only when the working face looks DOWN-SCREEN
+        /// (the seaward direction has a southward component): then the lip and the toe stand on one plan
+        /// line and the only thing between them is wall, which is the claim
+        /// <see cref="DrawnFaceDropMetres"/> makes and the only condition under which a row of this
+        /// sprite's pixels means an ELEVATION.
+        ///
+        /// <para><b>⚠️ It is false for every north–south run, and that is not a technicality.</b> Screen X
+        /// is world X, so a wall at constant X projects to a line and cannot have a drawn face at all
+        /// (<c>NineMileCreekDressing.FaceSortingOrder</c> and <c>a-quay-face-is-the-edge-of-the-land</c>
+        /// both say so). What such a course contributes is its DECK and its built END, and those stand at
+        /// their own plan northings: measured on the committed sheet, facing 2 and facing 6 draw
+        /// <b>4.156 units below their pivot</b> against facing 4's 2.625, and the extra is plan, not
+        /// height. Anything that reads a row of THOSE pixels as an elevation — a waterline, a shadow
+        /// line, a growth band — is reading the piece's own southern deck edge as if it were underwater.
+        /// The apron's east and west faces and the wharf head are all such runs.</para>
+        /// </summary>
+        /// <param name="seaward">Unit plan direction from the deck out over the water.</param>
+        public static bool DrawsAFaceAtThisCamera(Vector2 seaward)
+        {
+            Vector2 s = seaward.sqrMagnitude < 1e-12f ? Vector2.down : seaward.normalized;
+            return s.y < -1e-3f;
+        }
+
+        /// <summary>
         /// How far the drawn face reaches below its own lip, in world units: <b>≈ 5.06 units for a 6.6 m
         /// structure</b> — <c>(deckZ − mudZ)</c> of HEIGHT, at 0.766 a metre.
+        ///
+        /// <para>⚠️ It is a statement about a course that <see cref="DrawsAFaceAtThisCamera"/> — see
+        /// there for what a north–south run draws below its lip instead, and why no elevation may be
+        /// read off it.</para>
         ///
         /// <para>Pure height, with no plan term: on a face that looks at the camera the lip and the toe
         /// stand on the SAME plan line (the water side of the footprint), so the only thing between them
