@@ -30,6 +30,8 @@ MonoBehaviour:
   EndHour: 24
   MinSchoolMarks: 2
   MaxSchoolMarks: 5
+  ShoalSpreadMetres: 1.5
+  SchoolsPerSquareKilometre: 28.0
   MinWeightKg: 1
   MaxWeightKg: 6
   BaseValue: 16

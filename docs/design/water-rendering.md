@@ -5058,3 +5058,71 @@ can step over is not a rail. Below 1, which is all the dial is for, the second c
 ADR 0018's one-sea rule: the hull rides this field. A helm-feel verdict is owed — the precedent is the
 owner's own *"the cape has weight"* verdict on #739.
 
+## 40. Three foam publishers become ONE wake (register row 29)
+
+**Owner, 2026-09-06, in play:** *"the foam seemed off-centred with three different sections leaving the
+boat."* Three foam families leave a hull, and they disagreed about three different things at once.
+
+### 40.1 What they disagreed about
+
+| | the buffer's sheet (`FoamInjector`) | the sprite families (`BoatWakeEmitter`) |
+|---|---|---|
+| **root** | rig-lofted `WakeSternOffsetMeters` — **6.40 m** on the cape | `BoatHullDef.LengthMeters`/2 + a nudge — **6.60 m** |
+| **projection** | elevation clamped to [1, 90] | 1 at or below 0 |
+| **width** | `WatertightHalfBeamMeters` — **2.4 m** | `length × 0.14` — **1.81 m** (0.75×) |
+| **track** | transom → transom | `Lerp(travel, sternSwept, 0.25)` — mostly the ORIGIN's arc |
+
+⚠️ **Foreshortening was the obvious suspect and it is innocent** — every family resolves the same
+`ElevationDeg` through the presenter seam. That is measured and refuted in the lane's memory; do not spend
+a day there.
+
+### 40.2 One root, in Core
+
+`WakeRootMath` (Core) is now the only place a wake springs from: one `ForeshortenY`, one
+`ProjectAlongHeading`, one `SternWorld`. `FoamBuffer.SternWorld` and `WakeGrading.ForeshortenY` /
+`ProjectAlongHeading` / `SternAnchor` are **delegations, not second copies** — they kept their names so
+PR 11a/11b's guards read unchanged. It lives in Core because the callers are in two modules
+(`HiddenHarbours.Art` and `HiddenHarbours.Boats`) and rule 4 says cross-module agreement goes through Core.
+
+The rig facts reach the emitter the way the bake elevation already did — through
+`IBoatHullPresenter`, which gains `WakeSternOffsetMeters` and `WatertightHalfBeamMeters`. A mesh hull
+answers from her def; a hull drawn by a sprite compass answers **0**, and `WakeRootMath` reads that as
+"no rig" and falls back to half her length and the legacy width fraction. **So the mesh fleet gains the one
+measured number and the hand-drawn fleet is unchanged** — that is what makes this a fix rather than a
+re-tune of everything afloat. All **34** hull defs carry a lofted offset.
+
+### 40.3 🔴 The track was ALREADY one track — the charter and I both misread it
+
+The charter's third ask was "one track", on the reading that the deposits ride
+`Lerp(travel, sternSwept, 0.25)` while the buffer's capsule does not. **That is not a positional
+disagreement, and there was nothing to fix.** The deposits are laid at
+`PointOnTrack(prevStern, stern, t)` — the transom's own swept path, which is exactly the segment the
+buffer's capsule lays on. Measured through a four-second turn, at every swing fraction, the worst
+distance between a deposit and the capsule at the same point of the segment is **0.0000000 m**.
+
+What `SternSwingFraction` governs is `trackDir`: the **lateral axis** the shoulders and arms are placed
+along. Row 29 set it to 1 on the charter's steer, and that **broke an existing guard** —
+`WakeDispersalTests.ShippedSwingFraction_PullsTheTrackBackOntoTheCourse_ButKeepsSomeKick`, which pins a
+deliberate decision: a stern anchor's swept segment is dominated by its swing about the boat's centre,
+so laying the ARMS along it fans the wake around amidships. Its failure message says in as many words:
+*retune this guard, don't delete it.*
+
+**It was right and this row confirmed it.** The fraction is back at the shipped 0.25, and the
+measurement that suggested otherwise was mine: I measured the ANGLE between two direction vectors and
+reported it as "0.489 of her beam of lateral gap 10 m astern". An angle is not a lateral gap, and no
+foam was ever laid 2.35 m off. The corrected guard measures metres, where the deposits actually land.
+
+### 40.4 One width
+
+Both families now derive from the hull's beam through `WakeRootMath.WakeHalfWidthMeters`; the length
+fraction survives only as the no-rig fallback. The cape's lobes go **1.81 → 2.40 m**, matching her sheet.
+The churn strip keeps its **shape** — its share of the shoulders is the ratio the two shipped fractions
+already expressed (0.10/0.14 = 0.714) — so only the SCALE moved from her length onto her beam.
+
+### 40.5 Not fixed here, and why
+
+`WakeParticleSystem.SternEmitPoint` / `ArmEmitPoint` / `SternFillPoint` root a V apex at a flat 0.5 m,
+hull-independent and unprojected. It looks exactly like this defect. It is referenced **11 times in tests
+and zero times in production** — a defended code path nothing runs. **Left in place and named**: deleting
+it is a separate cleanup with its own test churn, and "fixing" it would change nothing the owner sees.
+

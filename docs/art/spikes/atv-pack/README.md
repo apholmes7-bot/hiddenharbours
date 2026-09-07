@@ -108,3 +108,165 @@ Nothing in the world parks an ATV yet either — that is PR 2.
   in the air until that stance lands upstream.
 - **A machine in the world.** Nothing is placed in a scene by this PR. St Peters gets her riders in
   PR 2, after the owner's rulings on who owns what and where it is parked.
+
+---
+
+## PR 2a — the player rides one, and three stand outside the shop (2026-09-07)
+
+The owner ruled (d) of the pack: **the PLAYER may ride one**, and the same evening asked for the bike
+and the trike to be parked too, not only the quad. All three now stand on the open ground at the
+general store's frontage on St Peters, and any of them can be got on.
+
+### What was already there, and what was not
+
+Almost the whole verb was standing: PR 1's two mount sides, the tie-broken dismount, the rider on the
+saddle. Three things were not.
+
+1. **The three `VehicleDef`s existed and every number in them was the DUALLY'S.** PR 0 created them
+   "at the class's tuning defaults", which is the same sentence as *a 112 kg dirtbike weighing three
+   and a half tonnes and pulling away exactly as hard as a one-tonne pickup*. Nothing was wrong with
+   the assets; nobody had ever tuned them, and it looked finished from every direction. The envelopes
+   are now per machine — the mass off each sidecar's own `mass_kg_estimate`, the rest stated in the
+   PR body as a table for the owner to move. `AtvRideVerbTests` refuses to let any of the three go on
+   sharing five envelope fields with the Dually.
+
+2. **The verb said "Climb in".** You climb into a cab and you get ON something you sit astride, and
+   until this pack every machine in the game was a cab. The fact was already in the sidecar and was
+   being thrown away: `VehicleSidecarFacts.ReadWayIn` has to pick between an `INTERACT id: "drive"`
+   arm and an `id: "ride"` arm to find the door at all, and it discarded which it took. It now
+   records it, the bake writes it to `VehicleMeshDef.WayInInteractId`, and the door reads it. Nothing
+   in the code names a vehicle, and an absent field reads as a cab, so every truck in the fleet is
+   the machine she was.
+
+3. **Nothing in any scene was one.** Three `ParkedVehicle`s now are.
+
+### The raked steer needs no controller field — asked, measured, answered NO
+
+The charter asked for "the RAKED steer's own field if the generic controller needs one". It does not.
+The rake (27° on the bike, 25° on the trike) lives on the mesh as `VehicleFitment.SteerAxisLocal` and
+is spent POSING the fork; the yaw model is the kinematic bicycle and takes wheelbase, front track and
+lock angle and nothing else. The proof is that each def's own full-lock radius — solved from those
+three fields, with no rake term anywhere — comes out at the radius the rig publishes for the same
+machine (**2.114 / 2.078 / 2.697 m** against the sidecar's **2.11 / 2.08 / 2.70**). Two derivations,
+one answer, so there is nothing left for a fourth field to carry. Pinned in `AtvRideVerbTests`.
+
+### ⚠️⚠️ THE ENDURO'S PARKED PICTURE STILL DOES NOT EXIST, AND SHE IS PARKED ANYWAY
+
+Her rig publishes a side stand — `STAND`, `default: 1` — and says in capitals what it is for:
+
+> she BAKES PARKED. A dirtbike does not stand upright without a rider: the roll/turn/bounce cues set
+> `stand 0`, and a game that shows her upright with nobody aboard is showing a bug the rig will not
+> catch.
+
+The mesh this repo holds is `stand:0` — the RIDDEN state, 497 faces. That was the right call at
+intake and it is still not fakeable: the parked build is **502 faces and a 12° lean**, a topology
+change rather than a rotation, so it cannot be posed out of what is baked (`enduro-parked-vs-ridden.png`
+above is the 1204-px difference). **So she stands upright on her wheels outside the shop until a
+second bake lands**, and that is stated here rather than hidden.
+
+**What is owed:** one more `VehicleMeshDef` off `build(AtvIso.resolve({body:'dirtbike',stand:1}))`,
+and a drawer that shows the parked mesh when nobody is aboard and the ridden one when somebody is.
+`AtvRideVerbTests.TheEndurosBakedMeshIsStillTheRiddenStateAndHerStandIsOwed` pins the gap **exactly**
+— it turns red the day the parked build lands, so somebody has to come and wire it rather than the
+guard quietly going on passing.
+
+The quad and the trike owe nothing: neither publishes a `STAND` at all — three wheels and four stand
+up by themselves — so parked and ridden are the same picture for them, pinned in both directions.
+
+### And the hands are still in the air
+
+Unchanged and unhidden: the `drive` clip's reach is **11.6–13.9 px** short of every one of these
+machines' bars (`astride-gap.png` above), against 0.68 px on the Otter the clip was fitted to. The
+astride stance is an upstream art ask, `AtvAstrideRiderTests` pins each residual exactly, and a rider
+sitting on a saddle with her hands short of the grips is what the player sees until it lands.
+
+### Where they stand, and what is still the owner's
+
+The row is at the general store's frontage — derived from `StPetersBuilder.GeneralStorePos` and
+`VillageGreen` through the shop yard's own gate, spaced by each machine's own published beam, noses
+out toward the green (the enduro has no reverse worth the name). Nothing is typed.
+
+They are the owner's **TEST** machines. Ruling **(a)** — which resident owns which and where each is
+parked — is still owed and this does not pre-empt it: when it lands, each moves to its owner's yard
+in a one-line change, because every position is derived. **(b)** the trike's recreation loop and the
+transport runs, **(c)** two-up, and **(e)** a visible track on St Peters are likewise untouched.
+
+---
+
+## The two plates PR 2a owed (2026-09-07, plate slot)
+
+Both shot by `AtvPlatePlayTests` — a PlayMode fixture in the **real committed St Peters**, through the
+game's own camera, at the shipped 11:00 daylight, **one region load for both**. One load is not a
+convenience: these machines composite through `IsoFacetHullRenderer` (the vehicle presentation service
+installs the same one a hull does), so they draw from the 255-id facet pool that never rewinds, and a
+fixture that loaded the region twice would photograph a shop with no machines outside it while every
+renderer reported `isVisible` true ([[in-frame-is-not-in-the-picture-for-a-mesh-hull]], #753). Each
+plate refuses to write, and names the reason, if its subject holds facet id 0.
+
+### `three-machines-at-the-store.png` — the row
+
+The quad, the trike and the enduro on the open grass at the general store's frontage, with the
+storekeeper and the shop counter behind them. Positions read off the loaded scene:
+**(1.90, 22.11) / (−0.23, 22.25) / (−2.16, 22.37)** — the builder's numbers exactly, camera
+(−0.14, 22.24) at ortho 7.03.
+
+**Each machine's drawn body was measured against her own published beam** rather than eyeballed, at
+64.0 px/m:
+
+| | drawn (red body) | published |
+| --- | --- | --- |
+| Enduro 250 | **0.41 m** | 0.38 m body (0.86 over the grips) |
+| Trike 200 | **1.23 m** | 1.20 m over the rear fender |
+| Utility Quad | **1.30 m** | 1.28 m over the fender aprons |
+
+⚠️ **A first read of this plate was WRONG and measuring is what caught it.** The long red shape to the
+quad's right looks like a mis-scaled machine and is the general store's own **counter** — the rod, bait
+and ice stock standing on it. An eyeball said "the quad is 3.6 m long"; the per-machine measurement
+said 1.30 m and named the neighbour.
+
+⚠️ **All three carry the same red.** The pack ships three distinct paints (enduro teal, trike gold,
+quad sage) and the bake took the rig's default for all three bodies. That is a **bake-time** choice,
+not a placement one, and it is the owner's call whether the island's three machines should differ.
+
+### `player-astride-mid-ride.png` + `astride-zoom.png` — the ride
+
+The player on the quad, **12.1 m** south of the row at **6.4 m/s**, the shop and the other two machines
+still in the top of the frame. `astride-zoom.png` is the same frame at 6× over the rider.
+
+**⚠️⚠️ AND THE ZOOM IS WHY THIS PLATE WAS WORTH SHOOTING: the pose gap is bigger than the hands.**
+PR 1 measured the `drive` clip's reach as **11.6–13.9 px** short of these machines' bars and pinned it
+exactly ([[a-baked-pose-is-placed-by-one-point]]). True, and not the whole picture. In the frame she
+also sits **over the machine's TAIL**, not on the saddle, and the arithmetic says why:
+
+- the clip was baked for a seat at `CharacterOffDeckMounts.DriveSeatZ` = **0.40 m**;
+- the quad's saddle is **0.90 m**;
+- `DriveSeatMath` expresses that **0.50 m of HEIGHT as 0.50 m of screen-Y**, which in a ¾ top-down view
+  is indistinguishable from moving her half a metre north;
+- the quad's body reaches only **1.06 m** aft of centre, and her seat point is already 0.30 m aft — so
+  half a metre of lift puts the drawn figure past the tail.
+
+Measured in the fixture: the rider stands **0.563 m** from the machine's own published seat ground
+point. That is not a bug in the placement — it is the correct lift for a rider sitting 0.9 m up, and it
+is exactly what "a baked pose is placed by ONE point" predicts once the machine is short. **It is one
+more reason the ASTRIDE stance is owed upstream**, and it is a stronger reason than the hands number
+alone: on a 2.16 m machine, a pose fitted to a 0.40 m seat cannot be made to sit on a 0.90 m saddle by
+moving one point.
+
+Nothing here is a new defect and nothing is hidden: the rider is drawn, she is on the machine, she is
+where the shipped arithmetic puts her, and the plate shows what that looks like.
+
+### ⭐⭐ What the second plate cost to get, and the trap worth keeping
+
+The first two runs failed with the quad covering **0 m at full throttle over 3000 physics steps** — and
+the land gate was innocent: `dry=True, cap=9.22 m/s` against a 9 m/s machine, i.e. no cap at all.
+
+The number that named it was **`HeldDriveInput.Reads == 0`**: the switcher never *asked*.
+`ControlSwitcher.Update` checks `ShellFlow.WorldInputBlocked` **first of everything**, parks the
+controls and calls `ReleaseDriveInput()` before it reaches the wheel — and **St Peters IS the start
+scene, so a PlayMode fixture that loads it gets the TITLE PAGE** (measured: `phase Title`). The fix is
+`ShellFlow.Reset()`, the slate wipe — deliberately **not** `StartNewGame()`, which begins the arrival
+and overwrites the shared savegame.
+
+**A fixture that had only watched the odometer would have reported a broken drivetrain against a PR
+that had just merged.** Any PlayMode fixture that loads a start scene and then expects input to reach
+anything will meet this, silently, and it looks exactly like the feature being tested is broken.

@@ -56,10 +56,13 @@ namespace HiddenHarbours.Fishing
                                           "it jumps, rolls or thrashes. One fish per period, never two.")]
         private float _eventPeriodSeconds = 20f;
 
-        [SerializeField, Range(0f, 1f), Tooltip("How far across the school's own radius the shoal's lazy " +
-                                                "loop reaches. Below 1 so the fish stay inside the water " +
-                                                "the finder drew a mark for.")]
-        private float _loopReach01 = 0.8f;
+        // RETIRED 2026-09-07 (owner's ruling of 2026-09-06, per-species spread): the shoal's loop used
+        // to be _loopReach01 (0.8) x the SCHOOL's radius. Those are two different quantities and the
+        // multiplication produced a loop 17-44 m across, because a school is 22-55 m wide for a reason
+        // that has nothing to do with fish: it is how far a BOAT may be and still be on the mark. A
+        // handful of fish wandering a 40 m circle is why nobody saw them from a camera 25 m wide. The
+        // spread is now a LENGTH the species states (FishSpeciesDef.ShoalSpreadMetres), falling back to
+        // GameConfig.FishSchools.ShoalSpreadMetres, which ships at the rig's own 1.2 m shoal.
 
         [Header("Budget")]
         [SerializeField, Range(1, 48), Tooltip("PERFORMANCE ceiling only — the most sprites one school " +
@@ -249,7 +252,7 @@ namespace HiddenHarbours.Fishing
 
                 uint key = SchoolKey(school);
                 int solved = ShoalMath.Fill(lengthM, n, now, ShoalMath.SeedFor(key),
-                                            school.RadiusMetres * Mathf.Clamp01(_loopReach01),
+                                            SpreadMetresFor(primary),
                                             ShoalMath.DefaultSpeedMetresPerSecond, 1f,
                                             ShoalMath.DefaultZMetres, _swimmers);
 
@@ -340,6 +343,31 @@ namespace HiddenHarbours.Fishing
         /// school (which then draws as the library's fallback kind rather than not at all).</summary>
         private static string FirstSpecies(in FishSchool school)
             => school.SpeciesIds != null && school.SpeciesIds.Count > 0 ? school.SpeciesIds[0] : null;
+
+        /// <summary>
+        /// HOW WIDE THIS SHOAL SWIMS, in metres — the species' own <c>ShoalSpreadMetres</c>, or the
+        /// owner's global fallback when it states none (owner's ruling 2026-09-06: a mackerel shoal
+        /// ranges loose and fast, a cod school holds tight).
+        ///
+        /// <para><b>A length, never a fraction of the school's radius.</b> The school's radius is how far
+        /// a BOAT may be and still be on the mark (22-55 m); the fish inside it hold together within a
+        /// metre or two. Multiplying the two — which is what this did until 2026-09-07 — sent a handful
+        /// of fish wandering a 40 m circle in front of a camera 25 m wide, and is the whole reason the
+        /// schools were there and could not be seen.</para>
+        /// </summary>
+        private static float SpreadMetresFor(string speciesId)
+        {
+            if (!string.IsNullOrEmpty(speciesId))
+            {
+                FishSpeciesDef def = FishSpeciesRegistry.Get(speciesId);
+                if (def != null && def.StatesShoalSpread) return def.ShoalSpreadMetres;
+            }
+
+            GameConfig config = GameServices.Config;
+            return config != null
+                ? Mathf.Max(0.05f, config.FishSchools.ShoalSpreadMetres)
+                : FishSchoolSettings.ShoalMathReferenceSpreadMetres;
+        }
 
         /// <summary>Does this school's species clear the water? Reads the Def's own
         /// <see cref="FishFlags.Jumps"/> through the species registry — one publisher, and a flounder

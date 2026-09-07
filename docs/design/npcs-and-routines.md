@@ -344,6 +344,19 @@ tree, no `RoutineDef` asset. The creek's cast is anchored, and a scheduled trip 
 that reads the clock at all. Standing the routine engine up on the mainland is still its own
 world-content lane.
 
+⭐⭐ **A run may HAUL something (PR 6a, 2026-09-07).** Give the timetable a `TowedBodyId` and the day
+grows two beats you can watch: the driver walks to the street-side release, the pin goes in and the legs
+wind up, and the reverse at dusk (P3 — the coast shows its work). The trailer's own path down the road is
+the player's own tow, one computation (`VehicleCouplingMath.FollowStep`), so a 53 cuts a corner exactly
+as far for an NPC as it does for you.
+
+⚠️ **There is no towing run at the creek yet, and the reason is ROADS.** A coupled pair cannot pivot in
+a bay and a posed body cannot reverse, so both ends of a towing route have to be pull-throughs — she
+leaves each bay on the heading she arrived on. The creek's roads are a tree, so every errand doubles
+back: all three shipped runs measure 180.0° apart at both bays against the coupling's own 8.53° window.
+A turning head at each end of one route unblocks it, and where that route goes is an owner ruling.
+`NineMileCreekTowingTests` carries the measurement.
+
 **The three runs the creek ships** (`NineMileCreekTrips`, all geometry derived, all hours on assets):
 
 | who | machine | from | to | out | home |

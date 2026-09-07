@@ -65,6 +65,15 @@ namespace HiddenHarbours.Boats
         /// <inheritdoc/>
         // 90 = a plan view (no foreshortening), which is what an absent skin has always been treated as —
         // the same default DirectionalBoatSprite itself carries. Do not change it to 0.
+        // Row 29: a hand-drawn compass hull has no rig, so there is no lofted transom or beam to report.
+        // 0 is the documented "no rig" signal and WakeRootMath answers it with the LOA/2 and length-fraction
+        // rules the sprite wake has always used — she is byte-unchanged by row 29.
+        public float WakeSternOffsetMeters => 0f;
+
+        /// <inheritdoc/>
+        public float WatertightHalfBeamMeters => 0f;
+
+        /// <inheritdoc/>
         public float BakeElevationDegrees => _directional != null ? _directional.BakeElevationDegrees : 90f;
 
         /// <inheritdoc/>

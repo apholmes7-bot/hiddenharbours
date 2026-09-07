@@ -88,6 +88,10 @@ namespace HiddenHarbours.Vehicles
         ///
         /// <para>Cheap by construction: a handful of trailers, a transform-point each, and no
         /// allocation (rule 7). The registry exists so this is not a scene search.</para>
+        ///
+        /// <para>⚠️ A trailer another poser <see cref="TowedBody.IsHeld"/> is skipped as firmly as one
+        /// already on a pin: a scheduled run under way owns her transform, and offering the player her
+        /// pin would give two clocks one body.</para>
         /// </summary>
         public TowedBody CapturedTrailer()
         {
@@ -99,7 +103,7 @@ namespace HiddenHarbours.Vehicles
             for (int i = 0; i < all.Count; i++)
             {
                 TowedBody body = all[i];
-                if (body == null || body.IsCoupled || !body.Kingpin.Published) continue;
+                if (body == null || body.IsCoupled || body.IsHeld || !body.Kingpin.Published) continue;
 
                 // The pin, in THIS tractor's frame — which is the frame the slot is drawn in.
                 Vector2 pinWorld = body.KingpinWorld;

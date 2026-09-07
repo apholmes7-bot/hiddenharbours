@@ -12,7 +12,7 @@ a separate, gated spike (`docs/tools/scene-editor-review.md` §9) and nothing he
 ```bash
 python3 tools/scene-export/hh_scene_export.py                 # writes tools/scene-export/packages/
 python3 tools/scene-export/hh_scene_export.py --check         # fails if the committed packages are stale
-python3 -m unittest discover -s tools/scene-export/tests -v   # 42 tests
+python3 -m unittest discover -s tools/scene-export/tests -v   # 116 tests
 ```
 
 No arguments needed and no Unity: python3 (3.8+), standard library only. It runs in a bare
@@ -30,6 +30,7 @@ outside Unity is stamped as such rather than quietly trusted.
 | Rig identity | `docs/art/rigs/**` bytes, LF-normalised sha256 | The road kit's convention, reproduced exactly: `tr -d '\r' | sha256sum`. |
 | Sheet → rig link | the sidecar JSON beside each baked sheet | Committed data, so no `family → filename` table of ours can drift (review §6.3). |
 | Painted height | the `PaintedHeightMap` asset + the Git LFS pointer's `oid` | The texture's bytes are an LFS object, absent from a plain checkout. The pointer's oid pins it exactly without them. |
+| The tide's terms | the C# that declares each one, via `csharp.py` | `heightScale` is `IsoGround`'s camera; the wharf pack's baked tide and clearance are `NineMileCreekQuayFace`'s; the decks are `NineMileCreekMainland`'s. Composed here only where the repo itself writes a one-line expression (`deckZ = tideRange + clearance`), never re-tabled. See the contract's §9. |
 | Placements | the committed `.unity` | **A derived copy.** Both builders `NewScene(EmptyScene)` and rebuild from zero, so the source of truth is builder C#, which cannot run outside Unity. The package stamps which commit the scene was banked at and how many builder commits have landed since. |
 
 ## Two things worth knowing about the output
@@ -55,16 +56,19 @@ hh_scene_export.py          CLI. --out, --region, --check.
 hhexport/unityyaml.py       Unity Force-Text YAML reader (stdlib; keeps every scalar a string)
 hhexport/csharp.py          declared literals out of C# — routes, band floors, rig globals
 hhexport/roads.py           strokes the declared ways into the road layer
-hhexport/heightmap.py       R8 PNG decode + the ground iso-contour (LFS-gated)
+hhexport/heightmap.py       R8 PNG decode, the ground iso-contour, the tide field (LFS-gated)
+hhexport/tide.py            the tide's DECLARED terms - sea level, a face's lip, a hull's ride
+hhexport/passages.py        the doors between regions - what the sprite walk cannot see
 hhexport/families.py        rig -> the editor's closed family vocabulary, exact match only
 hhexport/repo.py            GUIDs, sprite import settings, region defs, rig resolution + sha256
 hhexport/scene.py           hierarchy, world transforms, the scene's own ordering
 hhexport/package.py         the hiddenharbours.scene/1 emitter
 hhexport/provenance.py      what vintage of the world a package is a picture of
 packages/                   the committed output (regenerate with the command above)
-tests/                      42 tests: parser, rig pinning, the contract compared block-for-block
+tests/                      116 tests: parser, rig pinning, the contract compared block-for-block
                             against docs/tools/reference/sample-scene.json, the rasterised
-                            layers, portability, determinism
+                            layers, the tide applied from the package alone, portability,
+                            determinism
 ```
 
 The YAML reader is hand-written rather than PyYAML on purpose. Unity serialises `int[]` as a
