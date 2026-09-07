@@ -13,54 +13,286 @@ MonoBehaviour:
   m_Name: CatchItemLibrary
   m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.CatchItemLibrary
   _kinds:
+  - Kind: bass
+    Variants:
+    - {fileID: -1163911633, guid: 4a08472e73d12674c9479d27381227b3, type: 3}
+    - {fileID: -919614990, guid: 4a08472e73d12674c9479d27381227b3, type: 3}
+    - {fileID: 1016432874, guid: 4a08472e73d12674c9479d27381227b3, type: 3}
+    - {fileID: -1334557043, guid: 4a08472e73d12674c9479d27381227b3, type: 3}
+    Held:
+    - {fileID: -695108959, guid: 9ad557ac1ad42b04b9b5bdf40b30c661, type: 3}
+    - {fileID: -883170596, guid: 9ad557ac1ad42b04b9b5bdf40b30c661, type: 3}
+    - {fileID: -1278854202, guid: 9ad557ac1ad42b04b9b5bdf40b30c661, type: 3}
+    - {fileID: -1693325006, guid: 9ad557ac1ad42b04b9b5bdf40b30c661, type: 3}
+    - {fileID: 226813156, guid: 9ad557ac1ad42b04b9b5bdf40b30c661, type: 3}
+    - {fileID: 205473626, guid: 9ad557ac1ad42b04b9b5bdf40b30c661, type: 3}
+    - {fileID: 1825535592, guid: 9ad557ac1ad42b04b9b5bdf40b30c661, type: 3}
+    - {fileID: -926146667, guid: 9ad557ac1ad42b04b9b5bdf40b30c661, type: 3}
+    - {fileID: 1717512265, guid: 9ad557ac1ad42b04b9b5bdf40b30c661, type: 3}
+    - {fileID: 844816571, guid: 9ad557ac1ad42b04b9b5bdf40b30c661, type: 3}
+    - {fileID: 30392827, guid: 9ad557ac1ad42b04b9b5bdf40b30c661, type: 3}
+    - {fileID: 422164133, guid: 9ad557ac1ad42b04b9b5bdf40b30c661, type: 3}
+    - {fileID: 1979691397, guid: 9ad557ac1ad42b04b9b5bdf40b30c661, type: 3}
+    - {fileID: 1298576954, guid: 9ad557ac1ad42b04b9b5bdf40b30c661, type: 3}
+    - {fileID: -271159116, guid: 9ad557ac1ad42b04b9b5bdf40b30c661, type: 3}
+    - {fileID: 1844000205, guid: 9ad557ac1ad42b04b9b5bdf40b30c661, type: 3}
+    HeldFacings: 8
+    HeldFramesPerFacing: 2
   - Kind: cod
     Variants:
     - {fileID: -2137819845, guid: 0ae85c3b18a93644ba4e29e415f60def, type: 3}
     - {fileID: -1049159188, guid: 0ae85c3b18a93644ba4e29e415f60def, type: 3}
     - {fileID: -565581331, guid: 0ae85c3b18a93644ba4e29e415f60def, type: 3}
     - {fileID: 486546222, guid: 0ae85c3b18a93644ba4e29e415f60def, type: 3}
+    Held:
+    - {fileID: 1310155305, guid: eba37c8ff4bdb9540bb4ee98e9a11ef6, type: 3}
+    - {fileID: 619745594, guid: eba37c8ff4bdb9540bb4ee98e9a11ef6, type: 3}
+    - {fileID: 1712623201, guid: eba37c8ff4bdb9540bb4ee98e9a11ef6, type: 3}
+    - {fileID: 1368247903, guid: eba37c8ff4bdb9540bb4ee98e9a11ef6, type: 3}
+    - {fileID: -845786806, guid: eba37c8ff4bdb9540bb4ee98e9a11ef6, type: 3}
+    - {fileID: 2003611139, guid: eba37c8ff4bdb9540bb4ee98e9a11ef6, type: 3}
+    - {fileID: -1674437502, guid: eba37c8ff4bdb9540bb4ee98e9a11ef6, type: 3}
+    - {fileID: -409452326, guid: eba37c8ff4bdb9540bb4ee98e9a11ef6, type: 3}
+    - {fileID: 1083432279, guid: eba37c8ff4bdb9540bb4ee98e9a11ef6, type: 3}
+    - {fileID: -1618270072, guid: eba37c8ff4bdb9540bb4ee98e9a11ef6, type: 3}
+    - {fileID: 1593648832, guid: eba37c8ff4bdb9540bb4ee98e9a11ef6, type: 3}
+    - {fileID: 1192557532, guid: eba37c8ff4bdb9540bb4ee98e9a11ef6, type: 3}
+    - {fileID: -1996169093, guid: eba37c8ff4bdb9540bb4ee98e9a11ef6, type: 3}
+    - {fileID: -165220428, guid: eba37c8ff4bdb9540bb4ee98e9a11ef6, type: 3}
+    - {fileID: -282133549, guid: eba37c8ff4bdb9540bb4ee98e9a11ef6, type: 3}
+    - {fileID: -1872140467, guid: eba37c8ff4bdb9540bb4ee98e9a11ef6, type: 3}
+    HeldFacings: 8
+    HeldFramesPerFacing: 2
+  - Kind: flounder
+    Variants:
+    - {fileID: 10148047, guid: 46c2619bce74db745a8dd5c09af71589, type: 3}
+    - {fileID: -263683507, guid: 46c2619bce74db745a8dd5c09af71589, type: 3}
+    - {fileID: -1741357948, guid: 46c2619bce74db745a8dd5c09af71589, type: 3}
+    - {fileID: -665248913, guid: 46c2619bce74db745a8dd5c09af71589, type: 3}
+    Held:
+    - {fileID: -57466295, guid: 671a9daa0f931874bb312d40446f9c41, type: 3}
+    - {fileID: 841172752, guid: 671a9daa0f931874bb312d40446f9c41, type: 3}
+    - {fileID: -1197013547, guid: 671a9daa0f931874bb312d40446f9c41, type: 3}
+    - {fileID: -1287609311, guid: 671a9daa0f931874bb312d40446f9c41, type: 3}
+    - {fileID: -586224764, guid: 671a9daa0f931874bb312d40446f9c41, type: 3}
+    - {fileID: -925779400, guid: 671a9daa0f931874bb312d40446f9c41, type: 3}
+    - {fileID: -952299123, guid: 671a9daa0f931874bb312d40446f9c41, type: 3}
+    - {fileID: -1813239539, guid: 671a9daa0f931874bb312d40446f9c41, type: 3}
+    - {fileID: 32832623, guid: 671a9daa0f931874bb312d40446f9c41, type: 3}
+    - {fileID: 1971997271, guid: 671a9daa0f931874bb312d40446f9c41, type: 3}
+    - {fileID: -1859077494, guid: 671a9daa0f931874bb312d40446f9c41, type: 3}
+    - {fileID: 536496285, guid: 671a9daa0f931874bb312d40446f9c41, type: 3}
+    - {fileID: 1479933353, guid: 671a9daa0f931874bb312d40446f9c41, type: 3}
+    - {fileID: -1561296602, guid: 671a9daa0f931874bb312d40446f9c41, type: 3}
+    - {fileID: -198483864, guid: 671a9daa0f931874bb312d40446f9c41, type: 3}
+    - {fileID: 1078626344, guid: 671a9daa0f931874bb312d40446f9c41, type: 3}
+    HeldFacings: 8
+    HeldFramesPerFacing: 2
   - Kind: haddock
     Variants:
     - {fileID: 215540679, guid: db63267d07e4b594db982c61291d4fc5, type: 3}
     - {fileID: 1440810816, guid: db63267d07e4b594db982c61291d4fc5, type: 3}
     - {fileID: 1606534715, guid: db63267d07e4b594db982c61291d4fc5, type: 3}
     - {fileID: 215686596, guid: db63267d07e4b594db982c61291d4fc5, type: 3}
-  - Kind: pollock
+    Held:
+    - {fileID: -189742913, guid: 492afce9fd9c42447860c5eae234d2b0, type: 3}
+    - {fileID: -1412248746, guid: 492afce9fd9c42447860c5eae234d2b0, type: 3}
+    - {fileID: 1498839077, guid: 492afce9fd9c42447860c5eae234d2b0, type: 3}
+    - {fileID: 429400034, guid: 492afce9fd9c42447860c5eae234d2b0, type: 3}
+    - {fileID: 1199725382, guid: 492afce9fd9c42447860c5eae234d2b0, type: 3}
+    - {fileID: -1049760107, guid: 492afce9fd9c42447860c5eae234d2b0, type: 3}
+    - {fileID: 59307933, guid: 492afce9fd9c42447860c5eae234d2b0, type: 3}
+    - {fileID: -1501219518, guid: 492afce9fd9c42447860c5eae234d2b0, type: 3}
+    - {fileID: 472619170, guid: 492afce9fd9c42447860c5eae234d2b0, type: 3}
+    - {fileID: 1738602552, guid: 492afce9fd9c42447860c5eae234d2b0, type: 3}
+    - {fileID: -1662491108, guid: 492afce9fd9c42447860c5eae234d2b0, type: 3}
+    - {fileID: 294729789, guid: 492afce9fd9c42447860c5eae234d2b0, type: 3}
+    - {fileID: 976976707, guid: 492afce9fd9c42447860c5eae234d2b0, type: 3}
+    - {fileID: -446340246, guid: 492afce9fd9c42447860c5eae234d2b0, type: 3}
+    - {fileID: 2018236021, guid: 492afce9fd9c42447860c5eae234d2b0, type: 3}
+    - {fileID: 274749164, guid: 492afce9fd9c42447860c5eae234d2b0, type: 3}
+    HeldFacings: 8
+    HeldFramesPerFacing: 2
+  - Kind: herring
     Variants:
-    - {fileID: -2106970796, guid: 09413df64d4029845b4049ca288fb002, type: 3}
-    - {fileID: -333442118, guid: 09413df64d4029845b4049ca288fb002, type: 3}
-    - {fileID: -349179803, guid: 09413df64d4029845b4049ca288fb002, type: 3}
-    - {fileID: -116784543, guid: 09413df64d4029845b4049ca288fb002, type: 3}
+    - {fileID: 1529871688, guid: 57c8659b67a50e1459b6c4f7f767e601, type: 3}
+    - {fileID: 1060488311, guid: 57c8659b67a50e1459b6c4f7f767e601, type: 3}
+    - {fileID: -2038001938, guid: 57c8659b67a50e1459b6c4f7f767e601, type: 3}
+    - {fileID: 1149875293, guid: 57c8659b67a50e1459b6c4f7f767e601, type: 3}
+    Held:
+    - {fileID: 1726809750, guid: ce2171e49c89c894d804ec8e7b4d6d3a, type: 3}
+    - {fileID: 965267197, guid: ce2171e49c89c894d804ec8e7b4d6d3a, type: 3}
+    - {fileID: -1361305294, guid: ce2171e49c89c894d804ec8e7b4d6d3a, type: 3}
+    - {fileID: -1655354374, guid: ce2171e49c89c894d804ec8e7b4d6d3a, type: 3}
+    - {fileID: -1835065215, guid: ce2171e49c89c894d804ec8e7b4d6d3a, type: 3}
+    - {fileID: 719855745, guid: ce2171e49c89c894d804ec8e7b4d6d3a, type: 3}
+    - {fileID: 1854649102, guid: ce2171e49c89c894d804ec8e7b4d6d3a, type: 3}
+    - {fileID: -817917996, guid: ce2171e49c89c894d804ec8e7b4d6d3a, type: 3}
+    - {fileID: 89821825, guid: ce2171e49c89c894d804ec8e7b4d6d3a, type: 3}
+    - {fileID: -1415960397, guid: ce2171e49c89c894d804ec8e7b4d6d3a, type: 3}
+    - {fileID: 2079212465, guid: ce2171e49c89c894d804ec8e7b4d6d3a, type: 3}
+    - {fileID: 1402133432, guid: ce2171e49c89c894d804ec8e7b4d6d3a, type: 3}
+    - {fileID: 1429441630, guid: ce2171e49c89c894d804ec8e7b4d6d3a, type: 3}
+    - {fileID: -1833436414, guid: ce2171e49c89c894d804ec8e7b4d6d3a, type: 3}
+    - {fileID: 1675048135, guid: ce2171e49c89c894d804ec8e7b4d6d3a, type: 3}
+    - {fileID: 289850681, guid: ce2171e49c89c894d804ec8e7b4d6d3a, type: 3}
+    HeldFacings: 8
+    HeldFramesPerFacing: 2
   - Kind: mackerel
     Variants:
     - {fileID: 287460093, guid: 469f3f01633bb264e9bc846edcb195ab, type: 3}
     - {fileID: 1858914599, guid: 469f3f01633bb264e9bc846edcb195ab, type: 3}
     - {fileID: 401371074, guid: 469f3f01633bb264e9bc846edcb195ab, type: 3}
     - {fileID: 71871731, guid: 469f3f01633bb264e9bc846edcb195ab, type: 3}
-  - Kind: lobster
+    Held:
+    - {fileID: -2025534092, guid: c126921156f46cf468a964035712d532, type: 3}
+    - {fileID: -1410500809, guid: c126921156f46cf468a964035712d532, type: 3}
+    - {fileID: -1170698580, guid: c126921156f46cf468a964035712d532, type: 3}
+    - {fileID: 1814150150, guid: c126921156f46cf468a964035712d532, type: 3}
+    - {fileID: 1397278688, guid: c126921156f46cf468a964035712d532, type: 3}
+    - {fileID: -463057522, guid: c126921156f46cf468a964035712d532, type: 3}
+    - {fileID: 1125127657, guid: c126921156f46cf468a964035712d532, type: 3}
+    - {fileID: -113110819, guid: c126921156f46cf468a964035712d532, type: 3}
+    - {fileID: 975441033, guid: c126921156f46cf468a964035712d532, type: 3}
+    - {fileID: -1018942825, guid: c126921156f46cf468a964035712d532, type: 3}
+    - {fileID: -1257857266, guid: c126921156f46cf468a964035712d532, type: 3}
+    - {fileID: 612350111, guid: c126921156f46cf468a964035712d532, type: 3}
+    - {fileID: -708761598, guid: c126921156f46cf468a964035712d532, type: 3}
+    - {fileID: 1763870257, guid: c126921156f46cf468a964035712d532, type: 3}
+    - {fileID: -709453958, guid: c126921156f46cf468a964035712d532, type: 3}
+    - {fileID: -1140674986, guid: c126921156f46cf468a964035712d532, type: 3}
+    HeldFacings: 8
+    HeldFramesPerFacing: 2
+  - Kind: pollock
     Variants:
-    - {fileID: -1453840411, guid: 27c5438ff23946f439757874ce118558, type: 3}
-    - {fileID: -1204314696, guid: 27c5438ff23946f439757874ce118558, type: 3}
-    - {fileID: 1604977764, guid: 27c5438ff23946f439757874ce118558, type: 3}
-    - {fileID: -664665415, guid: 27c5438ff23946f439757874ce118558, type: 3}
-  - Kind: crab
-    Variants:
-    - {fileID: 146807786, guid: f2dbfc3c51f5fa441836ad0cd8591f6b, type: 3}
-    - {fileID: -172782610, guid: f2dbfc3c51f5fa441836ad0cd8591f6b, type: 3}
-    - {fileID: -104143874, guid: f2dbfc3c51f5fa441836ad0cd8591f6b, type: 3}
-    - {fileID: 978046851, guid: f2dbfc3c51f5fa441836ad0cd8591f6b, type: 3}
-  - Kind: mussel
-    Variants:
-    - {fileID: -759157380, guid: 82468510faba74243abbf363b73d8f49, type: 3}
-    - {fileID: -1943947027, guid: 82468510faba74243abbf363b73d8f49, type: 3}
-    - {fileID: 1049801341, guid: 82468510faba74243abbf363b73d8f49, type: 3}
-    - {fileID: 851723508, guid: 82468510faba74243abbf363b73d8f49, type: 3}
+    - {fileID: -2106970796, guid: 09413df64d4029845b4049ca288fb002, type: 3}
+    - {fileID: -333442118, guid: 09413df64d4029845b4049ca288fb002, type: 3}
+    - {fileID: -349179803, guid: 09413df64d4029845b4049ca288fb002, type: 3}
+    - {fileID: -116784543, guid: 09413df64d4029845b4049ca288fb002, type: 3}
+    Held:
+    - {fileID: 1984378877, guid: eea70fcaf09080941942d033d1a40c75, type: 3}
+    - {fileID: 1315913198, guid: eea70fcaf09080941942d033d1a40c75, type: 3}
+    - {fileID: -1920597080, guid: eea70fcaf09080941942d033d1a40c75, type: 3}
+    - {fileID: 2106559151, guid: eea70fcaf09080941942d033d1a40c75, type: 3}
+    - {fileID: 548612958, guid: eea70fcaf09080941942d033d1a40c75, type: 3}
+    - {fileID: 1874127982, guid: eea70fcaf09080941942d033d1a40c75, type: 3}
+    - {fileID: -624589915, guid: eea70fcaf09080941942d033d1a40c75, type: 3}
+    - {fileID: -221387323, guid: eea70fcaf09080941942d033d1a40c75, type: 3}
+    - {fileID: 780698108, guid: eea70fcaf09080941942d033d1a40c75, type: 3}
+    - {fileID: 994956384, guid: eea70fcaf09080941942d033d1a40c75, type: 3}
+    - {fileID: -1608625040, guid: eea70fcaf09080941942d033d1a40c75, type: 3}
+    - {fileID: 365179368, guid: eea70fcaf09080941942d033d1a40c75, type: 3}
+    - {fileID: 547678060, guid: eea70fcaf09080941942d033d1a40c75, type: 3}
+    - {fileID: -698212012, guid: eea70fcaf09080941942d033d1a40c75, type: 3}
+    - {fileID: 1222875014, guid: eea70fcaf09080941942d033d1a40c75, type: 3}
+    - {fileID: 1606076144, guid: eea70fcaf09080941942d033d1a40c75, type: 3}
+    HeldFacings: 8
+    HeldFramesPerFacing: 2
   - Kind: clam
     Variants:
-    - {fileID: 2014215504, guid: d66deb88f5ab38f4cab5116f07bd4ad4, type: 3}
-    - {fileID: 1944867251, guid: d66deb88f5ab38f4cab5116f07bd4ad4, type: 3}
-    - {fileID: -1325828014, guid: d66deb88f5ab38f4cab5116f07bd4ad4, type: 3}
-    - {fileID: -719118405, guid: d66deb88f5ab38f4cab5116f07bd4ad4, type: 3}
+    - {fileID: -591464610, guid: bf1180af116a57a409bb665f3e564cde, type: 3}
+    - {fileID: 439660119, guid: bf1180af116a57a409bb665f3e564cde, type: 3}
+    - {fileID: 1956072780, guid: bf1180af116a57a409bb665f3e564cde, type: 3}
+    - {fileID: -205700869, guid: bf1180af116a57a409bb665f3e564cde, type: 3}
+    Held:
+    - {fileID: -1326868942, guid: 41ebc4a4146cf7c4ea4338238b7925e7, type: 3}
+    - {fileID: 642901098, guid: 41ebc4a4146cf7c4ea4338238b7925e7, type: 3}
+    HeldFacings: 1
+    HeldFramesPerFacing: 2
+  - Kind: crab
+    Variants:
+    - {fileID: -909582081, guid: 3d119cd01366379488ca5f9b1bfd2906, type: 3}
+    - {fileID: 1371223763, guid: 3d119cd01366379488ca5f9b1bfd2906, type: 3}
+    - {fileID: -1199525064, guid: 3d119cd01366379488ca5f9b1bfd2906, type: 3}
+    - {fileID: 1361428254, guid: 3d119cd01366379488ca5f9b1bfd2906, type: 3}
+    Held:
+    - {fileID: -1339024984, guid: 0a6543ce775e8294eb781ff8dea17c1f, type: 3}
+    - {fileID: -468515005, guid: 0a6543ce775e8294eb781ff8dea17c1f, type: 3}
+    - {fileID: 683192994, guid: 0a6543ce775e8294eb781ff8dea17c1f, type: 3}
+    - {fileID: 950989801, guid: 0a6543ce775e8294eb781ff8dea17c1f, type: 3}
+    - {fileID: -822141803, guid: 0a6543ce775e8294eb781ff8dea17c1f, type: 3}
+    - {fileID: -2128823134, guid: 0a6543ce775e8294eb781ff8dea17c1f, type: 3}
+    - {fileID: -816245924, guid: 0a6543ce775e8294eb781ff8dea17c1f, type: 3}
+    - {fileID: -1520311152, guid: 0a6543ce775e8294eb781ff8dea17c1f, type: 3}
+    - {fileID: -1323177578, guid: 0a6543ce775e8294eb781ff8dea17c1f, type: 3}
+    - {fileID: -2025794903, guid: 0a6543ce775e8294eb781ff8dea17c1f, type: 3}
+    - {fileID: 885439680, guid: 0a6543ce775e8294eb781ff8dea17c1f, type: 3}
+    - {fileID: 1323726661, guid: 0a6543ce775e8294eb781ff8dea17c1f, type: 3}
+    - {fileID: 1089865434, guid: 0a6543ce775e8294eb781ff8dea17c1f, type: 3}
+    - {fileID: -778220958, guid: 0a6543ce775e8294eb781ff8dea17c1f, type: 3}
+    - {fileID: -321433546, guid: 0a6543ce775e8294eb781ff8dea17c1f, type: 3}
+    - {fileID: -1055340020, guid: 0a6543ce775e8294eb781ff8dea17c1f, type: 3}
+    HeldFacings: 8
+    HeldFramesPerFacing: 2
+  - Kind: lobster
+    Variants:
+    - {fileID: -1296597542, guid: bf2eca950dfca1f45b25067a71473aef, type: 3}
+    - {fileID: -627146826, guid: bf2eca950dfca1f45b25067a71473aef, type: 3}
+    - {fileID: -583091535, guid: bf2eca950dfca1f45b25067a71473aef, type: 3}
+    - {fileID: 217441290, guid: bf2eca950dfca1f45b25067a71473aef, type: 3}
+    Held:
+    - {fileID: -163223785, guid: 1dd3317b82174214e90260bc2ca44e29, type: 3}
+    - {fileID: 334953606, guid: 1dd3317b82174214e90260bc2ca44e29, type: 3}
+    - {fileID: 8862495, guid: 1dd3317b82174214e90260bc2ca44e29, type: 3}
+    - {fileID: 1330774168, guid: 1dd3317b82174214e90260bc2ca44e29, type: 3}
+    - {fileID: -424805192, guid: 1dd3317b82174214e90260bc2ca44e29, type: 3}
+    - {fileID: -1807323992, guid: 1dd3317b82174214e90260bc2ca44e29, type: 3}
+    - {fileID: 998519923, guid: 1dd3317b82174214e90260bc2ca44e29, type: 3}
+    - {fileID: -812103427, guid: 1dd3317b82174214e90260bc2ca44e29, type: 3}
+    - {fileID: -525726692, guid: 1dd3317b82174214e90260bc2ca44e29, type: 3}
+    - {fileID: 1449475623, guid: 1dd3317b82174214e90260bc2ca44e29, type: 3}
+    - {fileID: 1221503049, guid: 1dd3317b82174214e90260bc2ca44e29, type: 3}
+    - {fileID: -2066357500, guid: 1dd3317b82174214e90260bc2ca44e29, type: 3}
+    - {fileID: -2137380397, guid: 1dd3317b82174214e90260bc2ca44e29, type: 3}
+    - {fileID: -2080211217, guid: 1dd3317b82174214e90260bc2ca44e29, type: 3}
+    - {fileID: 2039348928, guid: 1dd3317b82174214e90260bc2ca44e29, type: 3}
+    - {fileID: -2140742918, guid: 1dd3317b82174214e90260bc2ca44e29, type: 3}
+    HeldFacings: 8
+    HeldFramesPerFacing: 2
+  - Kind: mussel
+    Variants:
+    - {fileID: -2103132598, guid: 59c56e0d48c6a594f9816505a9926518, type: 3}
+    - {fileID: -1377273956, guid: 59c56e0d48c6a594f9816505a9926518, type: 3}
+    - {fileID: -824942312, guid: 59c56e0d48c6a594f9816505a9926518, type: 3}
+    - {fileID: 1817970924, guid: 59c56e0d48c6a594f9816505a9926518, type: 3}
+    Held:
+    - {fileID: 186152284, guid: 98f48a7ae105e2644812ab8918360797, type: 3}
+    - {fileID: -39917994, guid: 98f48a7ae105e2644812ab8918360797, type: 3}
+    HeldFacings: 1
+    HeldFramesPerFacing: 2
+  - Kind: oyster
+    Variants:
+    - {fileID: -1376756797, guid: d54c85ce2444bb24ea6e38c5888f1376, type: 3}
+    - {fileID: 100108366, guid: d54c85ce2444bb24ea6e38c5888f1376, type: 3}
+    - {fileID: 1455011185, guid: d54c85ce2444bb24ea6e38c5888f1376, type: 3}
+    - {fileID: 477069163, guid: d54c85ce2444bb24ea6e38c5888f1376, type: 3}
+    Held:
+    - {fileID: 451306238, guid: 1c2136947e9e01449853b8e4afa468ea, type: 3}
+    - {fileID: -350328097, guid: 1c2136947e9e01449853b8e4afa468ea, type: 3}
+    HeldFacings: 1
+    HeldFramesPerFacing: 2
+  - Kind: periwinkle
+    Variants:
+    - {fileID: 156112072, guid: 8b6cd73a141fb2f4293aa2ca5961b1db, type: 3}
+    - {fileID: -693853108, guid: 8b6cd73a141fb2f4293aa2ca5961b1db, type: 3}
+    - {fileID: -689650340, guid: 8b6cd73a141fb2f4293aa2ca5961b1db, type: 3}
+    - {fileID: 1650902531, guid: 8b6cd73a141fb2f4293aa2ca5961b1db, type: 3}
+    Held:
+    - {fileID: -1630195026, guid: b76ed376f8128e744819b5b8da52b29f, type: 3}
+    - {fileID: -432732285, guid: b76ed376f8128e744819b5b8da52b29f, type: 3}
+    HeldFacings: 1
+    HeldFramesPerFacing: 2
+  - Kind: scallop
+    Variants:
+    - {fileID: -1760578941, guid: 11c3f48b8f3e36e4fb81009cb8ed1f12, type: 3}
+    - {fileID: 1497582526, guid: 11c3f48b8f3e36e4fb81009cb8ed1f12, type: 3}
+    - {fileID: -460322617, guid: 11c3f48b8f3e36e4fb81009cb8ed1f12, type: 3}
+    - {fileID: 458975273, guid: 11c3f48b8f3e36e4fb81009cb8ed1f12, type: 3}
+    Held:
+    - {fileID: 573919715, guid: 60a768c643921664fbb7bcf5adccb136, type: 3}
+    - {fileID: -2127248993, guid: 60a768c643921664fbb7bcf5adccb136, type: 3}
+    HeldFacings: 1
+    HeldFramesPerFacing: 2
   _species:
   - SpeciesId: fish.atlantic_cod
     Kind: cod
