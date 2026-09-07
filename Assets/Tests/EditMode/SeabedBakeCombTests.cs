@@ -1,4 +1,5 @@
 using System.Text;
+using HiddenHarbours.Art;       // WaterAbsorption: the shader's own C# twin for row 10
 using HiddenHarbours.Core;
 using NUnit.Framework;
 using UnityEngine;
@@ -392,6 +393,101 @@ namespace HiddenHarbours.Tests.EditMode
 
             Assert.Less(Mathf.Abs(sixteen - exact), 0.01f,
                 "...and it must land essentially ON the exact-valued bake, or 16 bits is not enough either.");
+        }
+
+        /// <summary>
+        /// 🔴 <b>ROW 10 — "the deep/shallow boundary is a wall".</b> The shipped material posterizes
+        /// transmission into six bands (<c>_AbsorptionBands 6</c>, <c>_Turbidity 0.25</c>,
+        /// <c>_UseSeabedTex 1</c>), and a posterized ramp does not have a soft edge: each band boundary
+        /// is a HARD step, always, by construction. So the question row 10 actually asks is not "what
+        /// makes the edge hard" but <b>where the six steps land on the ground and how far apart they
+        /// are</b> — six steps spread over 140 m read as terracing; two crowded into 3 m read as a wall.
+        ///
+        /// <para>Reported per tide, because the same six depths land at wildly different distances
+        /// depending on which part of the profile the water is over — the same law row 9 turned on.</para>
+        /// </summary>
+        [Test]
+        public void TheAbsorptionBands_LandWhereTheSeabedIsSTEEP_AndThatIsRow10sWall()
+        {
+            var sigma = WaterAbsorption.Sigma(0.25f, WaterAbsorption.DefaultRatio);   // the shipped material
+            const float Bands = 6f;
+            Assert.IsTrue(WaterAbsorption.IsActive(sigma),
+                "the shipped material must actually run the absorption block, or row 10's wall is " +
+                "somewhere else entirely and this test is measuring a layer that is switched off");
+
+            // Depth at which the RED channel's banded transmission steps down, by bisection on the twin.
+            float BandDepth(int k)
+            {
+                float lo = 0f, hi = 40f;
+                for (int i = 0; i < 60; i++)
+                {
+                    float mid = 0.5f * (lo + hi);
+                    float t = WaterAbsorption.BandTransmission(
+                                  WaterAbsorption.Transmission(sigma, mid), Bands).x;
+                    if (t > (Bands - k - 0.5f) / Bands) lo = mid; else hi = mid;
+                }
+                return 0.5f * (lo + hi);
+            }
+
+            var report = new StringBuilder();
+            report.AppendLine("ROW 10 - where the six transmission bands land on the ground");
+            report.AppendLine($"  sigma {sigma.x:0.000}/m (red), path 2d, {Bands:0} bands");
+            report.AppendLine();
+            report.AppendLine("tide          | band   depth   offshore | gap to the previous step");
+
+            var tightest = new System.Collections.Generic.Dictionary<string, float>();
+            float worstGap = float.MaxValue; string worstAt = "";
+            foreach (var (label, level) in new[]
+                     { ("spring HIGH", TideMean + TideAmplitude),
+                       ("spring LOW",  TideMean - TideAmplitude) })
+            {
+                WaterLevel = level;
+                float prev = float.NaN;
+                for (int k = 1; k <= (int)Bands; k++)
+                {
+                    float d = BandDepth(k);
+                    // How far seaward the water is that deep: the profile is monotonic offshore.
+                    float lo = 0f, hi = 400f;
+                    for (int i = 0; i < 60; i++)
+                    {
+                        float mid = 0.5f * (lo + hi);
+                        if (level - ShoreProfile(mid) < d) lo = mid; else hi = mid;
+                    }
+                    float offshore = 0.5f * (lo + hi);
+                    bool reached = offshore < 399f;
+                    float gap = float.IsNaN(prev) ? float.NaN : offshore - prev;
+                    report.AppendLine($"{label,-13} | {k,4}  {d,6:0.00} m " +
+                                      (reached ? $"{offshore,8:0.0} m |" : "     --- |") +
+                                      (float.IsNaN(gap) || !reached ? "" : $" {gap,7:0.0} m"));
+                    if (reached && !float.IsNaN(gap) && gap < worstGap) { worstGap = gap; worstAt = $"{label} band {k}"; }
+                    if (reached) prev = offshore;
+                    if (reached && !float.IsNaN(gap) &&
+                        gap < (tightest.TryGetValue(label, out float t) ? t : float.MaxValue))
+                        tightest[label] = gap;
+                }
+                report.AppendLine();
+            }
+            report.AppendLine($"  tightest pair of steps: {worstGap:0.0} m apart ({worstAt})");
+            TestContext.WriteLine(report.ToString());
+
+            float high = tightest["spring HIGH"], low = tightest["spring LOW"];
+
+            Assert.Less(high, 2f,
+                "⭐ ROW 10's WALL: at spring high, two of the six band boundaries must land within a " +
+                "couple of metres of each other. Four hard steps stacked inside six metres of ground IS " +
+                "the 'pale shallows meet black deep water at a hard edge' the owner reported - the ramp " +
+                "does not fade, it terraces, and the terraces crowd.");
+
+            Assert.Greater(low, high * 2f,
+                "⭐ AND IT IS THE SAME LAW AS ROW 9: the steps crowd where the SEABED IS STEEP. At " +
+                "spring high the waterline is on the 0.44 beach and the first four bands stack into six " +
+                "metres; at spring low it is on the 0.035 shelf and the same four spread over twelve. " +
+                "One quantum divided by one slope, showing up as a comb at the edge and a wall behind it.");
+
+            Assert.Greater(worstGap, 0.05f,
+                $"DEAD CONTROL: the tightest pair ({worstGap:0.00} m, {worstAt}) must be a real distance. " +
+                "Two boundaries at the same place would mean the bisection is not resolving them and the " +
+                "whole table is one number repeated.");
         }
 
         /// <summary>
