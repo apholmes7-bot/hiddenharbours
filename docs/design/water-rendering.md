@@ -5091,26 +5091,26 @@ answers from her def; a hull drawn by a sprite compass answers **0**, and `WakeR
 measured number and the hand-drawn fleet is unchanged** — that is what makes this a fix rather than a
 re-tune of everything afloat. All **34** hull defs carry a lofted offset.
 
-### 40.3 🔴 One track — measured, because the field's own tooltip argued the other way
+### 40.3 🔴 The track was ALREADY one track — the charter and I both misread it
 
-The deposits ride `Lerp(travel, sternSwept, SternSwingFraction)`. The tooltip warned that the transom's
-swept segment "is mostly the swing about the boat's CENTRE… which is what fanned the trail around
-amidships", and the fraction was cut to 0.25 for that reason. **That worry was about a stern anchored at
-half a nominal length.** With one rig-lofted root the measurement is unambiguous — a working turn, the
-lateral gap the two tracks open 10 m astern:
+The charter's third ask was "one track", on the reading that the deposits ride
+`Lerp(travel, sternSwept, 0.25)` while the buffer's capsule does not. **That is not a positional
+disagreement, and there was nothing to fix.** The deposits are laid at
+`PointOnTrack(prevStern, stern, t)` — the transom's own swept path, which is exactly the segment the
+buffer's capsule lays on. Measured through a four-second turn, at every swing fraction, the worst
+distance between a deposit and the capsule at the same point of the segment is **0.0000000 m**.
 
-| `SternSwingFraction` | divergence | gap 10 m astern | as a fraction of her beam |
-|---|---|---|---|
-| 0.00 | 0.3124 | 3.12 m | 0.651 |
-| **0.25 (was shipped)** | 0.2348 | **2.35 m** | **0.489** |
-| **1.00 (ships now)** | 0.0000 | **0.00 m** | **0.000** |
+What `SternSwingFraction` governs is `trackDir`: the **lateral axis** the shoulders and arms are placed
+along. Row 29 set it to 1 on the charter's steer, and that **broke an existing guard** —
+`WakeDispersalTests.ShippedSwingFraction_PullsTheTrackBackOntoTheCourse_ButKeepsSomeKick`, which pins a
+deliberate decision: a stern anchor's swept segment is dominated by its swing about the boat's centre,
+so laying the ARMS along it fans the wake around amidships. Its failure message says in as many words:
+*retune this guard, don't delete it.*
 
-**Nearly half a beam of separation is the owner's "off-centred", as a number.** The transom's own path IS
-the track the buffer's capsule already lays on, so the blend is pinned at its far end. The dial survives —
-0 restores the origin-led trail exactly, which is the only way to see what this fixed.
-
-⚠️ **And it is a no-op on a straight course**: there the origin's travel and the transom's swept path are
-one vector, so nothing moves for a hull under way in a line (measured: 1e-6 m per step).
+**It was right and this row confirmed it.** The fraction is back at the shipped 0.25, and the
+measurement that suggested otherwise was mine: I measured the ANGLE between two direction vectors and
+reported it as "0.489 of her beam of lateral gap 10 m astern". An angle is not a lateral gap, and no
+foam was ever laid 2.35 m off. The corrected guard measures metres, where the deposits actually land.
 
 ### 40.4 One width
 

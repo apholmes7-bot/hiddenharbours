@@ -497,13 +497,15 @@ namespace HiddenHarbours.Boats
                  "the swing about the boat's CENTRE, not her travel — which is what fanned the trail around " +
                  "amidships. 0 = lay purely along the course made good; 1 = the shipped stern-swept " +
                  "behaviour, bit-for-bit. The deposit POSITION is at the transom either way.")]
-        /// <remarks>🔴 <b>ROW 29 set this to 1, and that is the "one track".</b> At the shipped 0.25 the
-        /// deposits rode three quarters of the ORIGIN's travel and only a quarter of the transom's swept
-        /// path, so through a turn they trailed from her QUARTER while the advected buffer's sheet — which
-        /// has no such blend — trailed from her transom. That lateral separation is the owner's
-        /// <i>"off-centred"</i>. A turning hull's wake leaves the transom, so the transom's own path IS the
-        /// track and the blend is pinned at its far end. Kept as a dial rather than deleted: 0 restores the
-        /// origin-led trail exactly, which is the only way to see what this fixed.</remarks>
+        /// <remarks>WARNING: <b>ROW 29 looked at this and LEFT IT ALONE, which is worth writing down.</b>
+        /// The row-29 charter read "the deposits ride a blended track" as a POSITIONAL disagreement with
+        /// the advected buffer. It is not one: the deposit POSITIONS are
+        /// <c>PointOnTrack(prevStern, stern, t)</c> - the transom own swept path, which is exactly what
+        /// the buffer capsule lays on. This fraction governs <c>trackDir</c> alone, and that is the
+        /// LATERAL AXIS the shoulders and arms are placed along. Pulling it back toward the course is a
+        /// deliberate look decision with its own guard
+        /// (<c>WakeDispersalTests.ShippedSwingFraction_PullsTheTrackBackOntoTheCourse_ButKeepsSomeKick</c>),
+        /// so setting it to 1 re-fans the arms that guard exists to stop. Row 29 CONFIRMED it.</remarks>
         [Range(0f, 1f)] public float SternSwingFraction;
 
         [Header("The emergent V (spread where laid)")]
@@ -616,7 +618,7 @@ namespace HiddenHarbours.Boats
             TeleportResetMeters        = 20f,
             // A quarter of the stern's swing: the transom kicking out still throws a little water where it
             // went, but the trail is laid along the course and no longer fans about amidships in a turn.
-            SternSwingFraction         = 1f,     // ROW 29: the track IS the transom's own path
+            SternSwingFraction         = 0.25f,
 
             KelvinHalfAngleDeg         = 19f,    // the physical Kelvin angle — the emergent V opens at this
             SpreadSpeedMin             = 0.10f,

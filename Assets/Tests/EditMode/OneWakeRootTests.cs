@@ -143,79 +143,68 @@ namespace HiddenHarbours.Tests.EditMode
         // ---- 2. ONE TRACK ===========================================================================
 
         /// <summary>
-        /// 🔴 <b>THE TRACK, MEASURED RATHER THAN ASSERTED — and the old tooltip's worry is answered here.</b>
-        /// The sprite deposits ride <c>Lerp(travel, sternSwept, SternSwingFraction)</c>: the ORIGIN's course
-        /// blended with the TRANSOM's own swept path. The buffer's capsule has no such blend — it is laid
-        /// transom-to-transom. So at any fraction below 1 the two families ride different tracks through a
-        /// turn, and that lateral separation is the owner's "off-centred".
+        /// 🔴 <b>THE TRACK WAS ALREADY ONE TRACK — and finding that out is the row's second result.</b>
+        /// The charter read "the deposits ride <c>Lerp(travel, sternSwept, 0.25)</c>" as a POSITIONAL
+        /// disagreement with the advected buffer. <b>It is not one.</b> The deposits are laid at
+        /// <c>PointOnTrack(prevStern, stern, t)</c> — the transom's own swept path, which is exactly what
+        /// the buffer's capsule lays on. This test measures the thing that matters: <b>where the foam
+        /// goes</b>, in metres.
         ///
-        /// <para>⚠️ The field's own tooltip warned the other way: that the transom's swept segment "is
-        /// mostly the swing about the boat's CENTRE, not her travel — which is what fanned the trail around
-        /// amidships", and the fraction was reduced to 0.25 for that reason. That worry was about a stern
-        /// anchored at <b>half a nominal length</b>. This test reports the separation at both settings so
-        /// the number decides, not either author's recollection.</para>
+        /// <para>What <c>SternSwingFraction</c> actually governs is <c>trackDir</c> — the LATERAL AXIS the
+        /// shoulders and arms are placed along — and pulling that back toward the course is a deliberate
+        /// look decision with its own guard
+        /// (<c>WakeDispersalTests.ShippedSwingFraction_PullsTheTrackBackOntoTheCourse_ButKeepsSomeKick</c>,
+        /// whose message says in as many words: retune this guard, don't delete it). Row 29 set it to 1,
+        /// broke that guard, re-read the emitter and <b>put it back</b>. An angle is not a lateral gap.</para>
         /// </summary>
         [Test]
-        public void ThroughATurn_TheDepositTrack_MeetsTheBuffersTrack_OnlyAtSwingOne()
+        public void ThroughATurn_TheDepositsAndTheSheet_AreLaidOnTheSamePath_AtEverySwingFraction()
         {
             const float sternOffset = 6.40f, elevation = 40f, halfBeam = 2.4f;
-            const float speed = 8f * 0.514444f, dt = 1f / 60f;
-            const float turnRateDegPerSec = 12f;              // a working turn
+            const float speed = 8f * 0.514444f, dt = 1f / 60f, turnRateDegPerSec = 12f;
 
             foreach (float fraction in new[] { 0f, 0.25f, 1f })
             {
-                var pos = new Vector2(0f, 0f);
+                var pos = Vector2.zero;
                 float heading = 0f;
-                Vector2 prevPos = pos;
                 Vector2 prevStern = WakeRootMath.SternWorld(pos, Bow(heading), sternOffset, elevation);
                 float worst = 0f;
 
-                for (int i = 0; i < 240; i++)                 // four seconds of turn
+                for (int i = 0; i < 240; i++)                    // four seconds of turn
                 {
                     heading += turnRateDegPerSec * dt;
                     pos += Bow(heading) * speed * dt;
                     Vector2 stern = WakeRootMath.SternWorld(pos, Bow(heading), sternOffset, elevation);
 
-                    // The BUFFER's track: transom to transom, no blend (FoamInjector lays prev -> here).
-                    Vector2 bufferStep = stern - prevStern;
-                    // The DEPOSITS' track: the shipped blend.
-                    Vector2 depositStep = WakeTrailMath.TrackVector(pos - prevPos, stern - prevStern, fraction);
-
-                    // How far apart the two tracks point, expressed where it is seen: the lateral gap a
-                    // deposit laid one metre along each track would open.
-                    if (bufferStep.sqrMagnitude > 1e-10f && depositStep.sqrMagnitude > 1e-10f)
+                    // Where the BUFFER lays this frame's capsule: along prevStern -> stern.
+                    // Where the DEPOSITS land: PointOnTrack(prevStern, stern, t) — the same segment.
+                    // The blend never enters either, at any fraction.
+                    for (int k = 0; k <= 4; k++)
                     {
-                        Vector2 a = bufferStep.normalized, b = depositStep.normalized;
-                        worst = Mathf.Max(worst, Mathf.Abs(a.x * b.y - a.y * b.x));   // |sin| between them
+                        float t = k / 4f;
+                        Vector2 deposit = WakeTrailMath.PointOnTrack(prevStern, stern, t);
+                        Vector2 capsule = Vector2.Lerp(prevStern, stern, t);
+                        worst = Mathf.Max(worst, Vector2.Distance(deposit, capsule));
                     }
-                    prevPos = pos; prevStern = stern;
+                    prevStern = stern;
                 }
 
-                float gapAtTenMetres = worst * 10f;
                 TestContext.WriteLine(
-                    $"  SternSwingFraction {fraction:0.00}: worst track divergence |sin| {worst:0.0000} " +
-                    $"-> {gapAtTenMetres:0.000} m of lateral gap 10 m astern " +
-                    $"({gapAtTenMetres / (2f * halfBeam):0.000} of her beam)");
-
-                if (Mathf.Approximately(fraction, 1f))
-                {
-                    Assert.LessOrEqual(gapAtTenMetres, 0.1f * (2f * halfBeam),
-                        "At swing 1 the deposits ride the transom's own path, which is the track the " +
-                        "buffer's capsule already lays on — the two families must agree to well inside a " +
-                        "tenth of a beam. This is the 'one track' half of row 29.");
-                }
-                else
-                {
-                    Assert.Greater(gapAtTenMetres, 0.1f * (2f * halfBeam),
-                        "DEAD CONTROL: below swing 1 the deposits ride partly the ORIGIN's arc, so they " +
-                        "must measurably diverge from the buffer's transom track. If they no longer do, " +
-                        "the blend has stopped doing anything and this comparison proves nothing.");
-                }
+                    $"  SternSwingFraction {fraction:0.00}: worst distance between a deposit and the " +
+                    $"buffer's capsule at the same point of the segment: {worst:0.0000000} m " +
+                    $"({worst / (2f * halfBeam):0.0000} of her beam)");
+                Assert.LessOrEqual(worst, 1e-4f,
+                    "The deposits and the sheet are laid on the SAME transom segment, and the swing " +
+                    "fraction does not touch that at any value — it steers trackDir, which is the axis " +
+                    "the shoulders spread along, not where the foam goes.");
             }
 
-            Assert.AreEqual(1f, WakeTrailConfig.Default.SternSwingFraction, 0f,
-                "The shipped default must be the one track. 0.25 is what put the deposits on her quarter " +
-                "while the sheet trailed from her transom.");
+            Assert.AreEqual(0.25f, WakeTrailConfig.Default.SternSwingFraction, 0f,
+                "⚠️ The shipped 0.25 STANDS. Row 29 tried 1 — the transom's own path for the shoulder " +
+                "axis too — and it broke ShippedSwingFraction_PullsTheTrackBackOntoTheCourse_ButKeepsSomeKick, " +
+                "which pins a deliberate decision: a stern anchor's swept segment is dominated by its " +
+                "swing about the boat's centre, and laying the ARMS along it fans the wake around " +
+                "amidships. That guard was right and this row confirmed it.");
         }
 
         static Vector2 Bow(float headingDegrees)
