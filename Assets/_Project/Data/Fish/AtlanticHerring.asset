@@ -34,6 +34,7 @@ MonoBehaviour:
   MaxSchoolMarks: 30
   ShoalSpreadMetres: 2.5
   SchoolsPerSquareKilometre: 60.0
+  FightJumpPeriodSeconds: 6.5
   MinWeightKg: 0.1
   MaxWeightKg: 0.5
   BaseValue: 2
