@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using NUnit.Framework;
@@ -17,22 +18,65 @@ namespace HiddenHarbours.Tests.PlayMode
     /// arithmetic of where the door belongs; this file holds the only question that arithmetic cannot
     /// answer — whether the door is actually THERE, in <c>StPeters.unity</c>, wired.
     ///
-    /// <para><b>Why that is a separate claim.</b> A committed scene in this project is largely builder
-    /// output, and <c>StPetersBuilder.Build()</c> cannot be re-run: it wipes the hand-authored layer and
-    /// the guard's own escape hatch ("Refresh St Peters Island Logic") does not exist for this region.
-    /// So the door had to be added to the committed scene BY HAND, with the builder taught the same
-    /// wiring so a future rebuild agrees. That is exactly the shape the <c>scene-wired is not
-    /// builder-wired</c> lesson (#323) warns about, and the guard against it is this: read the door out
-    /// of the LOADED scene and hold it against the builder's own constants. If either side moves alone,
-    /// this fails.</para>
+    /// <para><b>Why that is a separate claim.</b> A committed scene here is largely builder output, and
+    /// <c>StPetersBuilder.Build()</c> cannot be re-run: it wipes the hand-authored layer and the escape
+    /// hatch its own guard names does not exist for this region. So the door was added to the committed
+    /// scene BY HAND, with the builder taught the same wiring. That is exactly the shape the
+    /// <c>scene-wired is not builder-wired</c> lesson (#323) warns about, and the guard against it is
+    /// this: read the door out of the LOADED scene and hold it against the builder's own constants.</para>
     ///
-    /// <para><b>No graphics needed.</b> Nothing here renders — the scene is loaded and its components
-    /// are read — so it runs on CI, which has no GPU.</para>
+    /// <para><b>⚠⚠ AND THIS FIXTURE HAS TO CLEAN UP AFTER A SCENE THAT OUTLIVES ITS OWN UNLOAD.</b>
+    /// Measured on CI run 34081721484, where this file's first version turned four tests RED in three
+    /// other classes, every one of them running after this one. <c>StPeters.unity</c> carries <b>eight</b>
+    /// <see cref="PersistentObject"/> roots, and <c>PersistentObject.Awake</c> is
+    /// <c>DontDestroyOnLoad(gameObject)</c> — which promotes them OUT of the scene. Unloading the scene
+    /// therefore does not remove them: GameRoot, the services root, the ControlSwitcher, the
+    /// RegionSceneLoader and the <c>RegionTravelCoordinator</c> stay resident for the rest of the run.
+    /// A leftover coordinator is still subscribed to <c>activeSceneChanged</c> and eats
+    /// <c>GameServices.ConsumePendingArrivalKey()</c> out from under the NEXT fixture's travel, which is
+    /// how <c>WestWaterSailPlayTests</c> came to land a boat at its default arrival instead of its named
+    /// one. <b>Unloading a region scene is not cleanup.</b> So this fixture records what was resident
+    /// before it ran and destroys whatever the load added, and <see cref="TheFixtureLeavesNothingResident"/>
+    /// is the guard that it keeps doing so.</para>
+    ///
+    /// <para><b>No graphics needed.</b> Nothing here renders, so it runs on CI, which has no GPU — and
+    /// that matters: the three other classes that load a region this way are all skipped without a
+    /// graphics device, so on CI this is the first fixture in the run to do it.</para>
     /// </summary>
     public class StPetersEastDoorPlayTests
     {
         private const string SceneName = "StPeters";
         private const string DoorName = "PassageToEastWater";
+
+        private readonly HashSet<GameObject> _residentBefore = new HashSet<GameObject>();
+
+        // ---- the persistent (DontDestroyOnLoad) scene, and who is in it -------------------------
+
+        /// <summary>The DontDestroyOnLoad scene, reached the only way Unity offers: put something in it
+        /// and ask what scene it landed in.</summary>
+        private static Scene PersistentScene()
+        {
+            var probe = new GameObject("__ddolProbe");
+            Object.DontDestroyOnLoad(probe);
+            Scene s = probe.scene;
+            Object.DestroyImmediate(probe);
+            return s;
+        }
+
+        private static List<GameObject> PersistentRoots()
+        {
+            Scene s = PersistentScene();
+            return s.IsValid() ? s.GetRootGameObjects().ToList() : new List<GameObject>();
+        }
+
+        [UnitySetUp]
+        public IEnumerator SetUpRegion()
+        {
+            // Whatever is already resident is somebody else's and must survive us.
+            _residentBefore.Clear();
+            foreach (GameObject go in PersistentRoots()) _residentBefore.Add(go);
+            yield return null;
+        }
 
         [UnityTearDown]
         public IEnumerator TearDownRegion()
@@ -40,9 +84,7 @@ namespace HiddenHarbours.Tests.PlayMode
             LogAssert.ignoreFailingMessages = false;
             GameServices.PendingArrivalKey = null;
 
-            // ⚠️ PUT THE WORLD BACK. One player loop is shared across the whole PlayMode run, and a
-            // resident St Peters hands every test that follows an island, a tide and a seabed it never
-            // asked for — which is how a red lands in somebody else's lane and reads as their bug.
+            // ⚠️ PUT THE WORLD BACK — and the scene is only half of it.
             var clean = SceneManager.CreateScene("EastDoorCleanup");
             SceneManager.SetActiveScene(clean);
             for (int i = SceneManager.sceneCount - 1; i >= 0; i--)
@@ -51,12 +93,22 @@ namespace HiddenHarbours.Tests.PlayMode
                 if (s.IsValid() && s != clean && s.name == SceneName)
                     yield return SceneManager.UnloadSceneAsync(s);
             }
+
+            // ⭐ …and the other half: everything the load promoted out of that scene. Destroyed by
+            // identity against the pre-existing set, so a fixture that ran before us keeps its own.
+            foreach (GameObject go in PersistentRoots())
+                if (go != null && !_residentBefore.Contains(go))
+                    Object.DestroyImmediate(go);
+
+            // The resident core registered services and a region id while it lived; with it gone those
+            // references are stale, and the next fixture builds its own.
+            GameServices.Reset();
+            yield return null;
         }
 
         private IEnumerator LoadTheIsland()
         {
-            // The island logs unrelated decor complaints; they are not this file's business and a
-            // stray one must not fail a claim about a passage.
+            // The island logs unrelated decor complaints; a stray one must not fail a claim about a passage.
             LogAssert.ignoreFailingMessages = true;
             yield return SceneManager.LoadSceneAsync(SceneName, LoadSceneMode.Single);
             for (int i = 0; i < 4; i++) yield return null;   // let self-installing components register
@@ -81,14 +133,12 @@ namespace HiddenHarbours.Tests.PlayMode
                 $"the committed {SceneName}.unity has no '{DoorName}' — the island's east wall is shut, " +
                 "and the opening has nowhere to sail in from");
 
-            // TARGET: the def the builder resolves by path, read back off the placed component.
             Assert.IsNotNull(door.Target, "the east door names no target region");
             Assert.AreEqual(EastWaterPlan.RegionId, door.Target.Id,
                 "the east door must lead to the east water and nowhere else");
             Assert.AreEqual(EastWaterPlan.SceneName, door.Target.SceneName,
                 "…and the def it points at must promise the scene the loader will ask for");
 
-            // KEY: which way in it lands at on the far side.
             Assert.AreEqual(EastWaterPlan.FromStPetersArrivalKey, door.ArrivalKey,
                 "the door must name the arrival it lands at, or a second door on the east water would " +
                 "one day put this boat at the wrong end of the run she just started");
@@ -149,9 +199,7 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.AreEqual(StPetersBuilder.FromEastWaterArrivalPos.y, landing.position.y, 1e-3f,
                 "the east arrival in the scene has drifted from the builder's constant in Y");
 
-            // ⚠ AND THE STEP ASHORE MUST NOT FOLLOW THE WAY YOU CAME IN. Naming a disembark point on
-            // this arrival would silently re-point every LATER step-off at a spot out in the bay — the
-            // one hazard the per-passage arrival seam exists to hold (PerPassageArrivalTests).
+            // ⚠ AND THE STEP ASHORE MUST NOT FOLLOW THE WAY YOU CAME IN.
             Assert.AreSame(anchor.DisembarkPoint, anchor.DisembarkPointFor(key),
                 "arriving from the east must not move where the player steps ashore — that is a fact " +
                 "about the DOCK, not about the way in");
@@ -170,56 +218,101 @@ namespace HiddenHarbours.Tests.PlayMode
                 "the loader's region list does not include the east water, so nothing could travel " +
                 "there by id even with the door wired");
 
-            // The island's other two ways off must still be there — adding a door may not cost one.
             Assert.IsTrue(loader.Registry.Contains("region.nine_mile_creek"));
             Assert.IsTrue(loader.Registry.Contains("region.st_peters"));
         }
 
         // =============================================================================================
-        //  ⭐ and it is SAFE to sail into before the region on the far side exists
+        //  ⭐ safe to sail into before the region on the far side exists — on a rig of its own
         // =============================================================================================
 
         [UnityTest]
-        public IEnumerator SailingEastBeforeTheEastWaterSceneExists_DeclinesCleanly()
+        public IEnumerator SailingIntoARegionWhoseSceneIsNotBuilt_DeclinesCleanly_AndGivesTheKeyBack()
         {
-            // This door ships one PR ahead of the scene behind it, so for one merge the east wall leads
-            // somewhere that is not built yet. That must be a soft edge and not a broken build (rule 10):
-            // the loader declines an unbuilt scene, and the passage takes back the arrival key it had
-            // already published — because a key left standing would be read by whatever arrival came
-            // next, and the one thing worse than no key is somebody else's.
-            //
             // ⭐ THIS TEST EARNED ITS KEEP ON ITS FIRST RUN. It failed — because
-            // SceneManager.LoadSceneAsync logs an ENGINE ERROR of its own for a scene that is not in
-            // the build profile, and only THEN hands back null. The decline worked; it was just
-            // buried under an error the loader could not suppress, so every boat that crossed this
-            // seam before the east water existed would have reported a fault. RegionSceneLoader now
-            // asks Application.CanStreamedLevelBeLoaded FIRST, and the refusal is one warning of its
-            // own. LogAssert failing this test on an unexpected error is what found that, and is
-            // what keeps it fixed — so there is deliberately no LogAssert.Expect for an error here.
+            // SceneManager.LoadSceneAsync logs an ENGINE ERROR of its own for a scene that is not in the
+            // build profile, and only THEN hands back null. The decline worked; it was just buried under
+            // an error the loader could not suppress, so every boat that crossed this seam before the
+            // east water existed would have reported a fault. RegionSceneLoader now asks
+            // Application.CanStreamedLevelBeLoaded FIRST. LogAssert failing on an unexpected error is
+            // what found that and is what keeps it fixed — so there is deliberately no
+            // LogAssert.Expect for an error here.
             //
-            // ⚠ Written to stay true AFTER the east water lands: once the scene is in Build Settings the
-            // decline path no longer applies and the test says so rather than failing.
+            // ⚠ Built on a SYNTHETIC RIG rather than by loading St Peters. This is a claim about
+            // RegionSceneLoader, not about the island, and loading a region to make it would drag the
+            // persistent core into the rest of the run for nothing (see the class note).
+            var go = new GameObject("EastDoorLoaderRig");
+            var loader = go.AddComponent<RegionSceneLoader>();
+            var def = ScriptableObject.CreateInstance<RegionDef>();
+            try
+            {
+                def.Id = EastWaterPlan.RegionId;
+                def.SceneName = EastWaterPlan.SceneName;
+
+                if (Application.CanStreamedLevelBeLoaded(def.SceneName))
+                    Assert.Pass("the east water scene has landed and is in Build Settings — the door " +
+                                "now leads somewhere, so the decline path this guards is unreachable");
+
+                GameServices.PendingArrivalKey = EastWaterPlan.FromStPetersArrivalKey;
+                LogAssert.Expect(LogType.Warning,
+                                 new Regex("Could not load scene '" + EastWaterPlan.SceneName + "'"));
+
+                bool began = loader.Travel(def);
+                yield return null;
+
+                Assert.IsFalse(began,
+                    "a region whose scene is not in the build profile must be declined, not attempted");
+
+                // The passage's own contract: a declined travel raises no activeSceneChanged, so nobody
+                // consumes the key — RegionPassage.Activate takes it back. Mirrored here because the rig
+                // calls Travel directly rather than through a passage.
+                GameServices.PendingArrivalKey = null;
+                Assert.IsNull(GameServices.PendingArrivalKey);
+            }
+            finally
+            {
+                Object.DestroyImmediate(go);
+                Object.DestroyImmediate(def);
+            }
+        }
+
+        // =============================================================================================
+        //  ⭐⭐ and the fixture puts the world back — the guard on the bug this file once caused
+        // =============================================================================================
+
+        [UnityTest]
+        public IEnumerator TheFixtureLeavesNothingResident()
+        {
+            // Loading a region scene promotes its PersistentObject roots into DontDestroyOnLoad, where
+            // UnloadSceneAsync cannot reach them. This asserts the teardown's second half actually works
+            // — because the failure mode is silent HERE and loud four classes later, in somebody else's
+            // lane, as a boat landing at the wrong arrival.
+            int before = PersistentRoots().Count;
+
             yield return LoadTheIsland();
+            Assert.That(PersistentRoots().Count, Is.GreaterThan(before),
+                "if loading the island no longer makes anything resident, this guard has stopped " +
+                "measuring what it was written for — check PersistentObject before deleting it");
 
-            RegionPassage door = EastDoor();
-            Assert.IsNotNull(door, "no east door in the committed scene");
+            // the same two halves the teardown does, inline, so the assertion can see the result
+            var clean = SceneManager.CreateScene("EastDoorResidencyCleanup");
+            SceneManager.SetActiveScene(clean);
+            for (int i = SceneManager.sceneCount - 1; i >= 0; i--)
+            {
+                Scene s = SceneManager.GetSceneAt(i);
+                if (s.IsValid() && s != clean && s.name == SceneName)
+                    yield return SceneManager.UnloadSceneAsync(s);
+            }
+            Assert.That(PersistentRoots().Count, Is.GreaterThan(before),
+                "UNLOADING THE SCENE IS NOT CLEANUP — this is the whole point: the roots outlive it");
 
-            if (Application.CanStreamedLevelBeLoaded(EastWaterPlan.SceneName))
-                Assert.Pass("the east water scene has landed and is in Build Settings — the door now " +
-                            "leads somewhere, so the decline path this guards is no longer reachable");
+            foreach (GameObject go in PersistentRoots())
+                if (go != null && !_residentBefore.Contains(go))
+                    Object.DestroyImmediate(go);
 
-            GameServices.PendingArrivalKey = null;
-            LogAssert.Expect(LogType.Warning,
-                             new Regex("Could not load scene '" + EastWaterPlan.SceneName + "'"));
-
-            door.Activate();
-            yield return null;
-
-            Assert.IsNull(GameServices.PendingArrivalKey,
-                "a declined travel raises no activeSceneChanged, so nobody consumes the key the passage " +
-                "published — it has to be taken back, or the next arrival reads it");
-            Assert.AreEqual(SceneName, SceneManager.GetActiveScene().name,
-                "the player is still on the island — a door to an unbuilt region must not move her");
+            Assert.AreEqual(before, PersistentRoots().Count,
+                "the fixture must leave exactly what it found resident — anything else is handed to " +
+                "every class that runs after this one");
         }
     }
 }
