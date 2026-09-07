@@ -30,9 +30,9 @@ namespace HiddenHarbours.Art
     public sealed class BucketFillPresenter : MonoBehaviour, ICatchFillTarget
     {
         /// <summary>The four non-empty bands, in the rig's own order — the index base for
-        /// <see cref="_fillSprites"/>.</summary>
-        public static readonly CatchFillBand[] Bands =
-            { CatchFillBand.Few, CatchFillBand.Half, CatchFillBand.Full, CatchFillBand.Brim };
+        /// <see cref="_fillSprites"/>. THE one table, shared with every other baked-state
+        /// container (the clam hod), so the two cannot drift apart on order.</summary>
+        public static readonly CatchFillBand[] Bands = CatchFillMath.FilledBands;
 
         /// <summary>How many facing rows the bucket rig bakes.</summary>
         public const int Facings = 8;

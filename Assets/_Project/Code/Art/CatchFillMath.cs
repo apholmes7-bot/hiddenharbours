@@ -169,6 +169,16 @@ namespace HiddenHarbours.Art
         private static readonly CatchFillBand[] PartialBands =
             { CatchFillBand.Few, CatchFillBand.Half, CatchFillBand.Full };
 
+        /// <summary>
+        /// Every band that DRAWS something, in the rigs’ own order — the five minus <c>Empty</c>,
+        /// which has a zero fraction and therefore no baked state anywhere. This is the index base
+        /// for the baked-state tables (the pail’s <c>band × group × dir</c>, the hod’s
+        /// <c>band × dir</c>), and it lives HERE rather than on either presenter so two containers
+        /// cannot end up disagreeing about the order their own sheets were baked in.
+        /// </summary>
+        public static readonly CatchFillBand[] FilledBands =
+            { CatchFillBand.Few, CatchFillBand.Half, CatchFillBand.Full, CatchFillBand.Brim };
+
         /// <summary>Item count for a band — <c>Math.round(frac × capacity)</c>, JS half-up
         /// rounding. <paramref name="capacity"/> &lt; 0 falls back to the kind's MAXN budget.</summary>
         public static int ItemCount(string catchKey, CatchFillBand band, int capacity = -1)

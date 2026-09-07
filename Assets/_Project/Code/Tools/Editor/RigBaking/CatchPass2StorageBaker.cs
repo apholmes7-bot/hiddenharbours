@@ -288,13 +288,34 @@ namespace HiddenHarbours.Tools.RigBaking
         }
 
         // =====================================================================================
-        // THE CLAM HOD — Hod2_back.png / Hod2_front.png, 8 rows × 1
+        // THE CLAM HOD — Hod2_back.png / Hod2_front.png + Hod2_heap_<band>.png, 8 rows × 1
         // =====================================================================================
 
         /// <summary>
-        /// Bakes the wire roller basket's two layers. Hollow like the tote: the back is drawn, then
-        /// the heap of clams clipped to <c>opening(dir)</c>, then the front over it — so a full hod
-        /// shows shells through the wire rather than a lid of them.
+        /// Bakes the wire roller basket's two layers and the HEAP that goes between them. Hollow like
+        /// the tote: the back is drawn, then the clams clipped to <c>opening(dir)</c>, then the front
+        /// over it — so a full hod shows shells through the wire rather than a lid of them.
+        ///
+        /// <para><b>Why the heap is BAKED and not composed at runtime.</b> The rig's own recipe for a
+        /// filling hod is a runtime composition over <c>CatchKit2.heap</c>, which is JavaScript: at play
+        /// time there is no script host, so the only ways to draw a full hod are to bake the composition
+        /// or to reimplement the heap's layout in C#. The second is a second copy of a layout the rig
+        /// owns, drifting from the day it is written — the same shape of guess that makes
+        /// <c>Crustacean2.render</c> draw a lobster for an unknown kind. So: bake it. The runtime then
+        /// swaps three sprites and owns no layout at all.</para>
+        ///
+        /// <para><b>The rig is not edited to do this.</b> <c>CatchKit2.heap</c> already hands back the
+        /// composed surface AND its offset from the container pivot (<c>x</c>, <c>y</c>), so placing that
+        /// surface in the hod's cell is the one thing the host adds — the same division of labour as
+        /// <see cref="CatchStorageBaker.CanvasShimJs"/> (ADR 0021 §5: what the engine needs and the rig
+        /// does not provide is the HOST's job, never a patch to the art director's file). The layout, the
+        /// mask, the dome shading, the lowering and the crown all stay in the rig.</para>
+        ///
+        /// <para><b>The two shipped layers must not move.</b> This bake now loads the whole catchKit2
+        /// chain before the hod, where it used to load the hod alone; <c>Hod2_back</c> and
+        /// <c>Hod2_front</c> are byte-identical either way — verified in the standalone V8 harness
+        /// against the committed sheets before this method was written, and kept that way by
+        /// <c>CatchPass2KitTests</c>.</para>
         /// </summary>
         public static FishingBakeResult BakeClamHod(string outputFolder = DefaultOutputFolder,
                                                     Action<string, float> progress = null)
@@ -303,8 +324,21 @@ namespace HiddenHarbours.Tools.RigBaking
             var entry = RigCatalog.Get("clamHod");
 
             using IRigScriptHost host = RigScriptHostFactory.Create();
+
+            // The heap's chain, in the rig's own order — the same one BakeCatchItems installs, because
+            // it is the same glue rig. A missing prerequisite does not throw: CatchKit2.heap simply
+            // answers null without Shellfish2, which would bake four empty sheets.
+            RigCatalog.InstallModule(host, RigCatalog.Get("deckIsoSolid"));
+            RigCatalog.Install(host, RigCatalog.Get("fish2"));
+            RigCatalog.InstallModule(host, RigCatalog.Get("shellfish2"));
+            RigCatalog.Install(host, RigCatalog.Get("crustacean2"));
+            host.Execute(CatchStorageBaker.CanvasShimJs);
+            RigCatalog.InstallModule(host, RigCatalog.Get("catchKit2"));
+
             var geo = RigCatalog.Install(host, entry);
             string g = entry.GlobalName;
+
+            AssertHeapsClams(host);
 
             var result = new FishingBakeResult
             {
@@ -317,10 +351,13 @@ namespace HiddenHarbours.Tools.RigBaking
             Directory.CreateDirectory(Path.Combine(RigCatalog.RepoRoot, outputFolder));
 
             string[] layers = { "back", "front" };
+            var bands = HeapBands(host, g);
+            int steps = layers.Length + bands.Count;
+
             for (int i = 0; i < layers.Length; i++)
             {
                 string layer = layers[i];
-                progress?.Invoke($"Hod2_{layer}", (float)i / layers.Length);
+                progress?.Invoke($"Hod2_{layer}", (float)i / steps);
                 result.Sheets.Add(FishingKitBaker.WriteSheet(outputFolder, $"Hod2_{layer}",
                     Dirs, frames: 1, geo,
                     (d, f) => FishingKitBaker.Render(host,
@@ -328,17 +365,124 @@ namespace HiddenHarbours.Tools.RigBaking
                     result));
             }
 
-            result.AnchorJsonPath = WriteHodAnchors(host, g, geo, outputFolder);
+            for (int i = 0; i < bands.Count; i++)
+            {
+                string band = bands[i];
+                progress?.Invoke($"Hod2_heap_{band}", (float)(layers.Length + i) / steps);
+                result.Sheets.Add(FishingKitBaker.WriteSheet(outputFolder, $"Hod2_heap_{band}",
+                    Dirs, frames: 1, geo,
+                    (d, f) => HeapCell(host, g, d, band, geo, renderClock, result),
+                    result));
+            }
+
+            result.AnchorJsonPath = WriteHodAnchors(host, g, geo, bands, outputFolder);
             result.RenderMilliseconds = renderClock.Elapsed.TotalMilliseconds;
             total.Stop();
             result.TotalMilliseconds = total.Elapsed.TotalMilliseconds;
             return result;
         }
 
-        /// <summary>The rim polygon and depth a heap must be clipped to, per facing, plus the roller
-        /// grip a carried hod pins to.</summary>
+        /// <summary>
+        /// The bands that actually heap something, MEASURED against the rigs rather than listed here:
+        /// the hod's own <c>FILLS</c>, minus every one <c>CatchKit2.FRAC</c> gives a zero fraction
+        /// (<c>heap</c> answers null for those — an empty hod is the back+front pair with nothing
+        /// between them). The day the art director adds a band, the sheet set follows.
+        /// </summary>
+        public static IReadOnlyList<string> HeapBands(IRigScriptHost host, string g)
+        {
+            var bands = new List<string>();
+            foreach (string fill in FishingKitBaker.ReadStringArray(host, $"{g}.FILLS"))
+                if (host.EvaluateNumber($"CatchKit2.FRAC[{FishingKitBaker.Js(fill)}] || 0") > 0)
+                    bands.Add(fill);
+
+            if (bands.Count == 0)
+                throw new InvalidOperationException(
+                    $"{g}.FILLS names no band CatchKit2.FRAC gives a non-zero fraction — there is " +
+                    "nothing to heap. One of the two moved; do not bake until they agree.");
+            return bands;
+        }
+
+        /// <summary>
+        /// One heap cell: the rig's composed surface for this band, placed in the hod's cell at the
+        /// offset the rig itself reports.
+        ///
+        /// <para><c>CatchKit2.heap</c> answers <c>{canvas, x, y, w, h}</c> where <c>x</c>/<c>y</c> are px
+        /// offsets FROM THE PIVOT — the same frame <c>opening(dir)</c> is published in — so the cell
+        /// position is <c>pivot + (x, y)</c> and nothing here decides where the clams sit. The canvas is
+        /// the shim's mailbox, read exactly as <see cref="ItemPixelsExpr"/> reads an item's.</para>
+        ///
+        /// <para>Bounds are ASSERTED, not clamped: a heap that hangs out of the cell means the rim quad
+        /// and the cell have stopped agreeing, and cropping it silently would ship a sliced-off heap.</para>
+        /// </summary>
+        static byte[] HeapCell(IRigScriptHost host, string g, int dir, string band,
+                               in RigGeometry geo, Stopwatch renderClock, FishingBakeResult result)
+        {
+            // One evaluation, then read its fields — heap() caches, but a second call must never be
+            // where the numbers come from.
+            host.Execute($"globalThis.__hodHeap = CatchKit2.heap('clam', {g}.opening({dir}), " +
+                         $"{g}.depthPx(), {FishingKitBaker.Js(band)});");
+
+            if (host.EvaluateBool("__hodHeap === null || __hodHeap === undefined"))
+                throw new InvalidOperationException(
+                    $"CatchKit2.heap came back null for band '{band}' at dir {dir}. It answers null for " +
+                    "a zero fraction and when Shellfish2 is absent — both mean this bake's chain or the " +
+                    "rig's FRAC table changed under it.");
+
+            int hx = (int)host.EvaluateNumber("__hodHeap.x"), hy = (int)host.EvaluateNumber("__hodHeap.y");
+            int hw = (int)host.EvaluateNumber("__hodHeap.w"), hh = (int)host.EvaluateNumber("__hodHeap.h");
+
+            renderClock.Start();
+            byte[] heap = host.EvaluateBytes("__hodHeap.canvas.__img.data");
+            renderClock.Stop();
+            result.CellsRendered++;
+
+            if (heap.Length != hw * hh * 4)
+                throw new InvalidOperationException(
+                    $"the heap for '{band}' at dir {dir} came back {heap.Length} bytes, expected " +
+                    $"{hw * hh * 4} for {hw}×{hh} RGBA.");
+
+            int x0 = (int)geo.PivotX + hx, y0 = (int)geo.PivotY + hy;
+            if (x0 < 0 || y0 < 0 || x0 + hw > geo.Width || y0 + hh > geo.Height)
+                throw new InvalidOperationException(
+                    $"the heap for '{band}' at dir {dir} lands at ({x0},{y0}) {hw}×{hh}, outside the " +
+                    $"{geo.Width}×{geo.Height} cell. The rim quad and the cell have stopped agreeing; " +
+                    "cropping it would ship a sliced-off heap.");
+
+            var cell = new byte[geo.Width * geo.Height * 4];
+            for (int y = 0; y < hh; y++)
+            for (int x = 0; x < hw; x++)
+            {
+                int s = (y * hw + x) * 4;
+                int t = ((y0 + y) * geo.Width + (x0 + x)) * 4;
+                cell[t] = heap[s]; cell[t + 1] = heap[s + 1];
+                cell[t + 2] = heap[s + 2]; cell[t + 3] = heap[s + 3];
+            }
+            return cell;
+        }
+
+        /// <summary>
+        /// ⚠️ <c>CatchKit2.heap</c> heaps SHELLFISH and nothing else — <c>Shellfish2.heap</c> is what
+        /// composes the surface — and a kind it does not know does not fail loudly, exactly like the
+        /// silent fallbacks elsewhere in this kit. Assert the clam before four sheets are written.
+        /// </summary>
+        static void AssertHeapsClams(IRigScriptHost host)
+        {
+            if (!host.EvaluateBool("CatchKit2.SHELL.indexOf('clam') >= 0"))
+                throw new ArgumentException(
+                    "CatchKit2 no longer counts the clam among its SHELL kinds. Known: " +
+                    string.Join(", ", FishingKitBaker.ReadStringArray(host, "CatchKit2.SHELL")) +
+                    ". Only a shellfish heaps; the hod is the clam dig's basket.");
+
+            if (!host.EvaluateBool("typeof Shellfish2.heap === 'function'"))
+                throw new InvalidOperationException(
+                    "Shellfish2.heap is missing — CatchKit2.heap answers null without it and this bake " +
+                    "would write four empty sheets.");
+        }
+
+        /// <summary>The rim polygon and depth a heap is clipped to, per facing, the bands that heap, and
+        /// the roller grip a carried hod pins to.</summary>
         static string WriteHodAnchors(IRigScriptHost host, string g, in RigGeometry geo,
-                                      string outputFolder)
+                                      IReadOnlyList<string> bands, string outputFolder)
         {
             var sb = new System.Text.StringBuilder();
             sb.Append("{\n");
@@ -351,6 +495,19 @@ namespace HiddenHarbours.Tools.RigBaking
                       "the pivot — the polygon a shellfish heap is clipped to. carryGrip is the roller " +
                       "grip; it is the SAME point at every facing because it projects (0,0,GZ), dead " +
                       "centre, and a turn about the vertical axis cannot move it.\",\n");
+
+            sb.Append("  \"fills\": ");
+            sb.Append(host.EvaluateString($"JSON.stringify({g}.FILLS)"));
+            sb.Append(",\n  \"fillFrac\": ");
+            sb.Append(host.EvaluateString(
+                $"JSON.stringify({g}.FILLS.reduce(function(o,f){{o[f]=CatchKit2.FRAC[f]||0;return o;}},{{}}))"));
+            sb.Append(",\n  \"heapSheets\": [");
+            for (int i = 0; i < bands.Count; i++)
+                sb.Append(i == 0 ? $"\"Hod2_heap_{bands[i]}\"" : $", \"Hod2_heap_{bands[i]}\"");
+            sb.Append("],\n");
+            sb.Append("  \"_heapNote\": \"every band with a non-zero fraction is baked as " +
+                      "Hod2_heap_<band>, one 8-row sheet each, on THIS cell and pivot: draw back, then " +
+                      "the band's heap, then front. 'empty' heaps nothing and has no sheet.\",\n");
 
             sb.Append("  \"carryGrip\": ");
             sb.Append(host.EvaluateString($"JSON.stringify({g}.cpivot(0))"));
