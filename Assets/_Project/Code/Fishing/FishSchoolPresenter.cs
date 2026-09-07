@@ -96,8 +96,47 @@ namespace HiddenHarbours.Fishing
         private Camera _camera;
         private float _tickAccum;
 
+        /// <summary>
+        /// SELF-INSTALLING (the <c>BoatWakeEmitter</c> / <c>WakeSpriteLibrary</c> pattern): one hidden
+        /// <c>DontDestroyOnLoad</c> host before the first scene loads, so the sea shows its fish with
+        /// <b>no builder change, no builder re-run and no scene edit</b>.
+        ///
+        /// <para>That is not just convenience here — it is the safe road. Both region builders are FULL
+        /// rebuilds that wipe the hand-authored layer, and saving a region scene from an editor writes
+        /// hundreds of serialization catch-up hunks belonging to other lanes. A presenter that needs
+        /// neither keeps this arc out of both hazards.</para>
+        ///
+        /// <para>It is also correct by construction: the presenter is region-agnostic. It reads whichever
+        /// model is installed at <c>GameServices.FishSchools</c>, so one persistent host draws the fish of
+        /// whatever region the player is standing in, and draws nothing at all where no model is installed
+        /// — the honest empty sea.</para>
+        /// </summary>
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        private static void Install()
+        {
+            if (_installed) return;
+            _installed = true;
+            var host = new GameObject("FishSchoolPresenter") { hideFlags = HideFlags.HideAndDontSave };
+            DontDestroyOnLoad(host);
+            host.AddComponent<FishSchoolPresenter>();
+        }
+
+        private static bool _installed;
+
+        /// <summary>
+        /// The self-installed host, or null before it exists.
+        ///
+        /// <para>⚠ Why this is not just <c>FindFirstObjectByType</c>. The host is created with
+        /// <see cref="HideFlags.HideAndDontSave"/>, and Unity's object find deliberately skips hidden
+        /// objects — so a fixture that looks for the presenter that way reports it MISSING while it is
+        /// running perfectly well, which is exactly the false negative this arc's first plate run
+        /// produced. A component that installs itself has to be able to say so.</para>
+        /// </summary>
+        public static FishSchoolPresenter Instance { get; private set; }
+
         private void Awake()
         {
+            Instance = this;
             if (_library == null) _library = Resources.Load<FishSwimSpriteLibrary>(
                 FishSwimSpriteLibrary.ResourcesPath);
             if (_swimmers.Length < MaxSwimmersPerSchool)
@@ -192,7 +231,16 @@ namespace HiddenHarbours.Fishing
                 SwimmerDraw draw = SwimmerVisibility.For(school.DepthMetres, in depth);
                 if (draw == SwimmerDraw.None) continue;      // deep: the finder's job, not the water's
 
-                string kind = _library.KindFor(FirstSpecies(school));
+                // A SHELLFISH DOES NOT SWIM. A region's pool holds clams, lobster and crab beside the
+                // finfish, and the art table's catch-item fallback would happily draw a clam school as a
+                // shoal of cod. An unmapped species is drawn as nothing at all; only a school that states
+                // NO species falls back to a generic swimmer, because that school is real and its fish
+                // are simply unstated.
+                string primary = FirstSpecies(school);
+                string kind;
+                if (string.IsNullOrEmpty(primary)) kind = _library.KindFor(null);
+                else if (!_library.TrySwimKindFor(primary, out kind)) continue;
+
                 float lengthM = _library.LengthMetresFor(kind);
 
                 // The school's OWN density is the truth; the cap only trims a very dense one.

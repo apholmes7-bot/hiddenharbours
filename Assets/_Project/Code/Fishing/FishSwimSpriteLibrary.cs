@@ -168,6 +168,25 @@ namespace HiddenHarbours.Fishing
                 : _fallbackKind;
         }
 
+        /// <summary>
+        /// The kind this species draws as, or FALSE when the table does not map it — <b>the door a
+        /// shellfish is turned away at</b>.
+        ///
+        /// <para>⚠ Why this exists beside <see cref="KindFor"/>. That method falls back to a default kind,
+        /// which is right for a catch ITEM (an unmapped fish should still make the tote look fuller rather
+        /// than vanish) and badly wrong for the water: a region pool holds clams, lobster and crab as well
+        /// as finfish, and a school whose species is the soft-shell clam would otherwise be drawn as a
+        /// shoal of swimming COD. A caller that is drawing something ALIVE IN THE WATER COLUMN asks this
+        /// one and draws nothing when the answer is no.</para>
+        /// </summary>
+        public bool TrySwimKindFor(string speciesId, out string kind)
+        {
+            if (_speciesLookup == null) BuildLookups();
+            kind = null;
+            if (string.IsNullOrEmpty(speciesId)) return false;
+            return _speciesLookup.TryGetValue(speciesId, out kind) && Has(kind, AnimSwim);
+        }
+
         /// <summary>The kind's drawn length in metres at scale 1 (the rig's <c>SPECIES.len</c>).</summary>
         public float LengthMetresFor(string kind)
         {
