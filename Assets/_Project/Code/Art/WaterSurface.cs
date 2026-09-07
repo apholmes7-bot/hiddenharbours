@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Rendering;      // GraphicsDeviceType: the height format is probed per device
 using UnityEngine.Tilemaps;
 using HiddenHarbours.Core;
 
@@ -394,6 +395,34 @@ namespace HiddenHarbours.Art
         private Renderer _renderer;
         private MaterialPropertyBlock _mpb;
         private Texture2D _heightTex;
+
+        /// <summary>The graphics device the height format was probed on — a probe is only valid for the
+        /// device that answered it, and an editor can change device without a domain reload.</summary>
+        private GraphicsDeviceType _heightFormatProbedOn = GraphicsDeviceType.Null;
+        private TextureFormat _heightFormat = TextureFormat.R8;
+
+        /// <summary>
+        /// 🔴 <b>The height bake's texel format — R16 where the device has it, R8 where it does not.</b>
+        ///
+        /// <para>Rows 9 + 10: eight bits could not hold a SHORELINE. At Nine Mile Creek's spring low the
+        /// bared shelf falls 1.6 m in 60 m, and half an 8-bit code — 2.35 cm of elevation — is two
+        /// thirds of a metre of GROUND there; the drawn waterline missed the sim's contour by 28.7 cm
+        /// RMS, against 1.2 cm with exact values. Measured in <c>SeabedBakeCombTests</c>; the policy and
+        /// its reasoning live in <see cref="SeabedBakeMath.FormatPreference"/>.</para>
+        ///
+        /// <para>Probed once per device rather than per bake: <c>SupportsTextureFormat</c> is a driver
+        /// query and a region hop must not pay for it (rule 7).</para>
+        /// </summary>
+        private TextureFormat HeightFormat()
+        {
+            GraphicsDeviceType device = SystemInfo.graphicsDeviceType;
+            if (_heightFormatProbedOn != device)
+            {
+                _heightFormatProbedOn = device;
+                _heightFormat = SeabedBakeMath.SelectFormat(SystemInfo.SupportsTextureFormat);
+            }
+            return _heightFormat;
+        }
         private float _baseFlow = 0.06f;   // the material's authored Flow floor (read once)
         private float _timer;
         private Camera _framingCam;        // (ADR 0027 #10) cached Camera.main for the ripple framing push
@@ -1256,9 +1285,14 @@ namespace HiddenHarbours.Art
             int x = Mathf.Clamp(Mathf.FloorToInt((worldPos.x - min.x) / size.x * res), 0, res - 1);
             int y = Mathf.Clamp(Mathf.FloorToInt((worldPos.y - min.y) / size.y * res), 0, res - 1);
 
-            byte r = _heightTex.GetRawTextureData<byte>()[y * res + x];   // R8: one byte per texel
-            float span = Mathf.Max(_heightMax - _heightMin, 1e-3f);
-            elevationMeters = _heightMin + r / 255f * span;
+            // ⚠ The element type must follow the FORMAT. Reading R16 as bytes returns half a code —
+            // a readback that silently disagrees with the shader is worse than none, because every
+            // guard built on it would go green on a lie.
+            int codes = SeabedBakeMath.CodeCountFor(_heightTex.format);
+            int r = _heightTex.format == TextureFormat.R16
+                ? _heightTex.GetRawTextureData<ushort>()[y * res + x]
+                : _heightTex.GetRawTextureData<byte>()[y * res + x];
+            elevationMeters = SeabedBakeMath.DecodeCode(r, _heightMin, _heightMax, codes);
             return true;
         }
 
@@ -1325,12 +1359,13 @@ namespace HiddenHarbours.Art
                                (_depthSource == DepthSource.Auto || _depthSource == DepthSource.DistanceToLand);
 
             int res = Mathf.Clamp(_heightResolution, 16, 256);
-            if (_heightTex == null || _heightTex.width != res)
+            TextureFormat format = HeightFormat();
+            if (_heightTex == null || _heightTex.width != res || _heightTex.format != format)
             {
                 // (WS-2) Reallocating (e.g. dragging _heightResolution in edit mode) must DESTROY the prior
                 // bake texture — otherwise it leaks (a new Texture2D each resolution change, unreachable).
                 DestroyBakedHeightTexture();
-                _heightTex = new Texture2D(res, res, TextureFormat.R8, false, true)
+                _heightTex = new Texture2D(res, res, format, false, true)
                 {
                     name = "WaterSurface.HeightBake",
                     wrapMode = TextureWrapMode.Clamp,
@@ -1624,15 +1659,28 @@ namespace HiddenHarbours.Art
 
         private void WriteElevationTexture(float[] elevation, int res)
         {
-            var pixels = new Color32[res * res];
-            for (int i = 0; i < pixels.Length; i++)
+            // The encode lives in Core (SeabedBakeMath) so the register can reason about the drawn
+            // waterline offline — rows 9 + 10 measure the SHIPPED quantization, not a copy of it.
+            int codes = SeabedBakeMath.CodeCountFor(_heightTex.format);
+            if (_heightTex.format == TextureFormat.R16)
             {
-                // The encode lives in Core (SeabedBakeMath) so the register can reason about the drawn
-                // waterline offline — rows 9 + 10 measure the SHIPPED quantization, not a copy of it.
-                byte r = SeabedBakeMath.Encode(elevation[i], _heightMin, _heightMax);
-                pixels[i] = new Color32(r, r, r, 255);
+                // ⚠ SetPixelData, not SetPixels32: a Color32 write would round-trip the 16-bit codes
+                // through 8 bits and hand back exactly the quantization this format exists to remove.
+                var raw = new ushort[res * res];
+                for (int i = 0; i < raw.Length; i++)
+                    raw[i] = (ushort)SeabedBakeMath.EncodeCode(elevation[i], _heightMin, _heightMax, codes);
+                _heightTex.SetPixelData(raw, 0);
             }
-            _heightTex.SetPixels32(pixels);
+            else
+            {
+                var pixels = new Color32[res * res];
+                for (int i = 0; i < pixels.Length; i++)
+                {
+                    byte r = SeabedBakeMath.Encode(elevation[i], _heightMin, _heightMax);
+                    pixels[i] = new Color32(r, r, r, 255);
+                }
+                _heightTex.SetPixels32(pixels);
+            }
             _heightTex.Apply(false, false);
         }
 

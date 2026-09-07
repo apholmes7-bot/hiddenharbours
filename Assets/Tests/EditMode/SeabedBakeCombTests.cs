@@ -491,6 +491,95 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         /// <summary>
+        /// 🔴 <b>THE FIX, MEASURED AT THE FORMAT THAT NOW SHIPS.</b> Everything above establishes that
+        /// the 8-bit value quantum is rows 9 + 10's cause. This is the claim the fix makes: at
+        /// <c>R16</c> the drawn waterline lands on the sim's contour at EVERY tide, including the spring
+        /// low that showed 28.7 cm.
+        /// </summary>
+        [Test]
+        public void TheShippedR16Bake_DrawsTheTrueContour_AtEveryTide()
+        {
+            int r8 = SeabedBakeMath.CodeCountFor(TextureFormat.R8);
+            int r16 = SeabedBakeMath.CodeCountFor(TextureFormat.R16);
+            var report = new StringBuilder();
+            report.AppendLine("THE FIX - drawn waterline vs the sim's contour, shipped 256 grid");
+            report.AppendLine("tide          slope  |     R8      R16    exact  |  memory 256 sq");
+
+            float worst16 = 0f, best8 = float.MaxValue, worstGapToExact = 0f, lowGain = 0f;
+            foreach (var (label, level) in new[]
+                     { ("spring HIGH", TideMean + TideAmplitude),
+                       ("mean",        TideMean),
+                       ("spring LOW",  TideMean - TideAmplitude) })
+            {
+                WaterLevel = level;
+                float a = Rms(Deviations(BakeAtDepth(ShippedGrid, r8), ShippedGrid, 60f, 500f));
+                float b = Rms(Deviations(BakeAtDepth(ShippedGrid, r16), ShippedGrid, 60f, 500f));
+                float x = Rms(Deviations(BakeAtDepth(ShippedGrid, 0), ShippedGrid, 60f, 500f));
+                report.AppendLine($"{label,-11} {SlopeAtWaterline(),6:0.000} | {a * 100f,6:0.0} cm " +
+                                  $"{b * 100f,6:0.0} cm {x * 100f,6:0.0} cm |");
+                worst16 = Mathf.Max(worst16, b);
+                best8 = Mathf.Min(best8, a - b);      // the per-tide GAIN, never a cross-tide compare
+                worstGapToExact = Mathf.Max(worstGapToExact, Mathf.Abs(b - x));
+                if (label == "spring LOW") lowGain = a / Mathf.Max(b, 1e-6f);
+            }
+            int px = ShippedGrid * ShippedGrid;
+            report.AppendLine($"                            |                   | " +
+                              $"{px * SeabedBakeMath.BytesPerTexel(TextureFormat.R8) / 1024} KB -> " +
+                              $"{px * SeabedBakeMath.BytesPerTexel(TextureFormat.R16) / 1024} KB");
+            TestContext.WriteLine(report.ToString());
+
+            Assert.Less(worstGapToExact, 0.005f,
+                "⭐ THE FIX'S CLAIM, and it is the exact one: R16 must land ON the exact-valued bake at " +
+                "EVERY tide - it removes the whole value quantum and nothing less. It does NOT claim a " +
+                "clean edge everywhere: what remains at mean tide is 3.8 cm of SPATIAL error from the " +
+                "2.97 m texel pitch, which is register row 31's ground and not this fix's.");
+
+            Assert.Greater(lowGain, 10f,
+                "⭐ AND AT THE TIDE THE SYMPTOM WAS SEEN AT: spring low must improve by more than ten " +
+                "times (28.7 cm -> 1.2 cm measured). That is the number the owner is being asked to " +
+                "spend 64 KB per sea on.");
+
+            Assert.GreaterOrEqual(best8, -1e-4f,
+                "DEAD CONTROL: R16 must be no worse than R8 AT EVERY TIDE, compared tide by tide. " +
+                "⚠️ The first version of this guard compared R16's worst tide against R8's best and " +
+                "failed on a correct fix - mean tide's 3.8 cm is SPATIAL error, which R16 does not " +
+                "claim to touch, so the comparison was between two different defects.");
+        }
+
+        /// <summary>
+        /// The format policy: prefer <c>R16</c>, fall back to <c>R8</c>, and never answer "none". A
+        /// policy that can refuse has no shipped behaviour — the twin of
+        /// <c>FoamBufferFadeTests</c>'s guard on the foam buffer's preference, one row earlier.
+        /// </summary>
+        [Test]
+        public void TheHeightFormatPolicy_PrefersSixteenBits_AndAlwaysAnswers()
+        {
+            Assert.AreEqual(TextureFormat.R16, SeabedBakeMath.SelectFormat(f => true),
+                "a device that supports everything must get the widest format in the preference");
+            Assert.AreEqual(TextureFormat.R8, SeabedBakeMath.SelectFormat(f => false),
+                "⭐ a device that supports NOTHING must still be handed the last entry - the fallback is " +
+                "what makes this a policy rather than a wish");
+            Assert.AreEqual(TextureFormat.R8,
+                            SeabedBakeMath.SelectFormat(f => f != TextureFormat.R16),
+                "and a device missing exactly R16 must fall through to it, not skip past");
+            Assert.AreEqual(TextureFormat.R8, SeabedBakeMath.SelectFormat(null),
+                "a null probe is a device that cannot be asked, which is the fallback case too");
+
+            Assert.AreEqual(255, SeabedBakeMath.CodeCountFor(TextureFormat.R8));
+            Assert.AreEqual(65535, SeabedBakeMath.CodeCountFor(TextureFormat.R16));
+            Assert.AreEqual(2 * SeabedBakeMath.BytesPerTexel(TextureFormat.R8),
+                            SeabedBakeMath.BytesPerTexel(TextureFormat.R16),
+                "the memory line the owner is owed (rule 7): sixteen bits costs exactly twice eight");
+
+            // The general encode must BE the shipped 8-bit one where they overlap, or the deeper path
+            // is a second implementation that can drift.
+            for (float e = -6f; e <= 6f; e += 0.137f)
+                Assert.AreEqual(SeabedBakeMath.Encode(e, -6f, 6f),
+                                SeabedBakeMath.EncodeCode(e, -6f, 6f, SeabedBakeMath.CodeCount),
+                                $"encode disagreement at {e:0.000} m");
+        }
+
+        /// <summary>
         /// 🔴 <b>THE DEAD CONTROL.</b> Fed a grid fine enough to be irrelevant, the whole pipeline must
         /// report a clean edge. Without this, a fixture that reported "combed" for every input would
         /// look exactly like a confirmed hypothesis.

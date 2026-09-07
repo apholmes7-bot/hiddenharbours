@@ -36,8 +36,60 @@ namespace HiddenHarbours.Core
     /// </summary>
     public static class SeabedBakeMath
     {
-        /// <summary>Codes available in the <c>R8</c> bake — 0..255, so 255 intervals.</summary>
+        /// <summary>Codes available in the legacy <c>R8</c> bake — 0..255, so 255 intervals.</summary>
         public const int CodeCount = 255;
+
+        /// <summary>
+        /// 🔴 <b>THE HEIGHT BAKE'S FORMAT POLICY — best first, and the last entry always works.</b>
+        ///
+        /// <para><c>R16</c> ships because <c>R8</c> could not hold a SHORELINE. Measured
+        /// (<c>SeabedBakeCombTests</c>) on Nine Mile Creek at spring low, where the bared shelf falls
+        /// 1.6 m in 60 m: the drawn waterline missed the sim's true contour by <b>28.7 cm RMS</b> at 8
+        /// bits and <b>1.2 cm</b> with exact values — the value quantum was 96 % of it. Half a code is
+        /// 2.35 cm of ELEVATION either way; what changes is that a flat seabed turns it into two thirds
+        /// of a metre of GROUND. Sixteen bits recovers essentially all of it.</para>
+        ///
+        /// <para>Rule 7, stated: a 256² bake goes from <b>64 KB to 128 KB</b> per sea. Twin in shape (and
+        /// in cause) to <c>FoamBuffer.FormatPreference</c>, which widened for the same reason one row
+        /// earlier — eight bits could not hold a DECAY there and cannot hold a CONTOUR here.</para>
+        /// </summary>
+        public static readonly TextureFormat[] FormatPreference =
+        {
+            TextureFormat.R16,   // 16-bit UNORM: 65 535 codes, 0.18 mm over a 12 m range
+            TextureFormat.R8,    // 8-bit UNORM: 255 codes — THE SHIPPED STALL (rows 9 + 10)
+        };
+
+        /// <summary>The best supported entry of <see cref="FormatPreference"/>. The last is returned
+        /// unconditionally: a policy that can answer "none" has no shipped behaviour.</summary>
+        public static TextureFormat SelectFormat(System.Func<TextureFormat, bool> supports)
+        {
+            if (supports != null)
+                for (int i = 0; i < FormatPreference.Length - 1; i++)
+                    if (supports(FormatPreference[i])) return FormatPreference[i];
+            return FormatPreference[FormatPreference.Length - 1];
+        }
+
+        /// <summary>Intervals the format's single channel offers — the VALUE quantum's denominator.</summary>
+        public static int CodeCountFor(TextureFormat format)
+            => format == TextureFormat.R16 ? 65535 : CodeCount;
+
+        /// <summary>Bytes one texel costs, for the memory line a widening owes the owner (rule 7).</summary>
+        public static int BytesPerTexel(TextureFormat format)
+            => format == TextureFormat.R16 ? 2 : 1;
+
+        /// <summary>The encode at an arbitrary code depth — <see cref="Encode"/>'s general form, and
+        /// what the bake actually calls once the format is chosen.</summary>
+        public static int EncodeCode(float elevationMetres, float heightMin, float heightMax, int codeCount)
+        {
+            if (codeCount <= 0) codeCount = CodeCount;
+            float span = Mathf.Max(heightMax - heightMin, 1e-3f);
+            return Mathf.Clamp(
+                Mathf.RoundToInt((elevationMetres - heightMin) / span * codeCount), 0, codeCount);
+        }
+
+        /// <summary>The shader's <c>lerp(_HeightMin, _HeightMax, r)</c> at an arbitrary code depth.</summary>
+        public static float DecodeCode(int code, float heightMin, float heightMax, int codeCount)
+            => Mathf.Lerp(heightMin, heightMax, code / (float)(codeCount <= 0 ? CodeCount : codeCount));
 
         /// <summary>
         /// 🔴 <b>THE SHIPPED ENCODE.</b> One elevation (metres above datum) to its <c>R8</c> code, exactly
@@ -45,11 +97,7 @@ namespace HiddenHarbours.Core
         /// this class reasons about is the number that is stored, not a restatement of it.
         /// </summary>
         public static byte Encode(float elevationMetres, float heightMin, float heightMax)
-        {
-            float span = Mathf.Max(heightMax - heightMin, 1e-3f);
-            return (byte)Mathf.Clamp(
-                Mathf.RoundToInt((elevationMetres - heightMin) / span * CodeCount), 0, CodeCount);
-        }
+            => (byte)EncodeCode(elevationMetres, heightMin, heightMax, CodeCount);
 
         /// <summary>The shader's <c>lerp(_HeightMin, _HeightMax, r)</c> — the inverse of
         /// <see cref="Encode"/>, for one code.</summary>
@@ -62,7 +110,11 @@ namespace HiddenHarbours.Core
 
         /// <summary>Metres of elevation per code: the VALUE quantum.</summary>
         public static float MetresPerCode(float heightMin, float heightMax)
-            => Mathf.Max(heightMax - heightMin, 1e-3f) / CodeCount;
+            => MetresPerCode(heightMin, heightMax, CodeCount);
+
+        /// <inheritdoc cref="MetresPerCode(float, float)"/>
+        public static float MetresPerCode(float heightMin, float heightMax, int codeCount)
+            => Mathf.Max(heightMax - heightMin, 1e-3f) / (codeCount <= 0 ? CodeCount : codeCount);
 
         /// <summary>
         /// How far sideways the drawn waterline can be moved by the VALUE grid alone, in metres, on a
@@ -71,7 +123,12 @@ namespace HiddenHarbours.Core
         /// possibly account for an observed tooth.
         /// </summary>
         public static float LateralJitterFromValueQuantum(float heightMin, float heightMax, float slope)
-            => slope > 1e-4f ? 0.5f * MetresPerCode(heightMin, heightMax) / slope : 0f;
+            => LateralJitterFromValueQuantum(heightMin, heightMax, slope, CodeCount);
+
+        /// <inheritdoc cref="LateralJitterFromValueQuantum(float, float, float)"/>
+        public static float LateralJitterFromValueQuantum(float heightMin, float heightMax, float slope,
+                                                          int codeCount)
+            => slope > 1e-4f ? 0.5f * MetresPerCode(heightMin, heightMax, codeCount) / slope : 0f;
 
         /// <summary>
         /// ⚠️ <b>THE MODELLED HALF.</b> The shader's <c>SAMPLE_TEXTURE2D</c> of a
