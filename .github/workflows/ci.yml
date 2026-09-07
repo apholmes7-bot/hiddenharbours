@@ -143,8 +143,16 @@ jobs:
         shell: bash
         run: python3 tools/scene-export/hh_scene_export.py --check
 
+      # ⚠️ RUNS EVEN WHEN --check FAILED. A stale package must not hide a broken exporter: the
+      # two are independent failures with independent fixes (commit a regeneration / fix the
+      # code), and the first observed run of this job proved the point by skipping all 107 tests
+      # because the packages were stale. The condition is deliberately narrower than the Unity
+      # job's `success() || failure()`: it names the ONE earlier failure that should not stop the
+      # tests, so a dead checkout or an LFS pull that never delivered still skips them instead of
+      # reporting a confusing red about the exporter.
       - name: Scene export tests
         id: unittests
+        if: success() || steps.check.outcome == 'failure'
         shell: bash
         run: python3 -m unittest discover -s tools/scene-export/tests -v
 
@@ -170,7 +178,7 @@ jobs:
               "GitHub refused the seabed height maps because the account has exceeded its Git LFS bandwidth budget. Billing, not code — do NOT re-run. The owner must raise the budget (Settings ▸ Billing and plans ▸ Git LFS). This job asks for ~108 KB of the ~227 MB set, so it is not the driver; the Unity job's full pull is."
           elif [ "$CHECK" = "failure" ]; then
             verdict "STALE PACKAGES — regenerate and commit, no code change needed" \
-              "tools/scene-export/packages/** is not what this commit produces. Run 'python3 tools/scene-export/hh_scene_export.py' and commit the result. This reddens on provenance drift alone — a builder commit landing after the last regeneration is enough, with no content change — so read the exporter's own 'cause:' line above before hunting for a scene re-bank."
+              "tools/scene-export/packages/** is not what this commit produces. Run 'python3 tools/scene-export/hh_scene_export.py' and commit the result. This reddens on provenance drift alone — a builder commit landing after the last regeneration is enough, with no content change — so read the exporter's own 'cause:' line above before hunting for a scene re-bank. The tests ran anyway (${UNITTESTS}); if they also failed, that is a SECOND and separate fault, and regenerating will not fix it."
           elif [ "$UNITTESTS" = "failure" ]; then
             verdict "SCENE EXPORT TESTS FAILED — read the failing test names" \
               "The committed packages match this commit but a test asserts otherwise about the exporter itself. Reproduce locally with 'python3 -m unittest discover -s tools/scene-export/tests -v' — it needs no Unity, no network and nothing outside the standard library."
