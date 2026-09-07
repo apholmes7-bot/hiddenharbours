@@ -525,8 +525,12 @@ namespace HiddenHarbours.Core
             // the floor removed. Same discipline as WaveSpectrum's floors.
             float wavelengthScale = settings.DominantWavelengthScale > 0f
                 ? settings.DominantWavelengthScale : 1f;
-            dominantWavelength = Mathf.Max(WaveTrain.MinWavelengthMeters,
-                                           dominantWavelength * wavelengthScale);
+            // Clamped AGAIN, against the same ceiling. The dial is applied after the first clamp so it
+            // scales whatever the peak law produced — but that would let a value above 1 walk straight
+            // through the ceiling the rail exists to be. A rail that one knob can step over is not a
+            // rail. (Below 1, which is what the dial is for, this second clamp is a no-op.)
+            dominantWavelength = Mathf.Clamp(dominantWavelength * wavelengthScale,
+                                             WaveTrain.MinWavelengthMeters, wavelengthCeiling);
 
             float primaryAmplitude = Mathf.Max(0f, settings.PrimaryAmplitude) * amplitudeScale;
             float gravity = settings.Gravity;

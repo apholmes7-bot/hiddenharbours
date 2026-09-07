@@ -2,6 +2,7 @@ using System;
 using HiddenHarbours.Core;
 using HiddenHarbours.Environment;
 using NUnit.Framework;
+using UnityEditor;
 using UnityEngine;
 
 namespace HiddenHarbours.Tests.EditMode
@@ -277,8 +278,16 @@ namespace HiddenHarbours.Tests.EditMode
             foreach (float u in new[] { 0f, 1.62f, 5.7f, 12.95f, 20f })
             {
                 float expected = off.DominantWavelengthBase + off.DominantWavelengthPerWindSpeed * u;
-                Assert.AreEqual(expected, WaveMath.PeakWavelengthMeters(u, in off), 0f,
-                    $"At U {u} the OFF path must be the legacy line exactly, not approximately.");
+                // ⚠️ A ULP, not zero. C# does NOT promise that two transcriptions of one float
+                // expression evaluate identically — it may keep intermediates at higher precision — so
+                // this read 8.4300000 against 8.4300003 at U 1.62 on the first run. The passthrough is
+                // exact in INTENT and the guard says so to within the float grid; demanding bit
+                // equality of two separately-compiled expressions is a guard that fails on a compiler,
+                // not on a defect (bit-equality-is-unattainable-between-two-transcriptions).
+                Assert.AreEqual(expected, WaveMath.PeakWavelengthMeters(u, in off),
+                    Mathf.Max(1e-6f, Mathf.Abs(expected) * 1e-6f),
+                    $"At U {u} the OFF path must be the legacy line — this is the passthrough that " +
+                    "keeps 129 call sites and every pre-ruling asset on the sea they already had.");
             }
             Assert.AreEqual(0f, WaveFieldSettings.Default.SeaFetchKilometres, 0f,
                 "The reference tuning must ship the law OFF, or 129 call sites move under it.");
@@ -458,6 +467,80 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.AreEqual(0.5f, b[i].Wavelength / a[i].Wavelength, 1e-3f,
                     $"Train {i} must shorten by the same factor as the peak.");
             }
+        }
+
+        // ---- the SHIPPED ASSET, as Unity actually loads it -------------------------------------------
+
+        /// <summary>Where the owner's tuned settings live. Everything above measures the LAW; this
+        /// measures whether the law is switched on in the thing that ships.</summary>
+        const string ConfigAssetPath = "Assets/_Project/Data/Config/GameConfig.asset";
+
+        /// <summary>
+        /// 🔴 <b>THE FEATURE IS ONLY ON IF THE LOADED ASSET SAYS SO, and nothing else here would
+        /// notice.</b> `SeaFetchKilometres` = 0 is the whole derivation silently OFF, drawing the old
+        /// linear sea — and every other guard in this file builds its own settings from
+        /// <see cref="WaveFieldSettings.Default"/>, which ships 0 <i>on purpose</i>. So a mis-serialized
+        /// asset would leave all of them green.
+        ///
+        /// <para>⚠️ This reads the asset through <c>AssetDatabase</c> — <b>what Unity LOADS, not what the
+        /// file says</b>. A field present in the YAML is not a field the object carries: a blank line
+        /// ends a Unity mapping and the key after it deserializes to its default, which this repo has
+        /// been bitten by before (the sport skiff's stern offset, #747).</para>
+        ///
+        /// <para>Stated as a guard-rail rather than a pin: the fetch is the owner's dial and he may tune
+        /// it freely, so this asserts it is ON and sane, not that it equals 25. The scale IS pinned at
+        /// 1, because that one is a passthrough and a non-1 value shipped by accident would quietly
+        /// re-tune every sea state.</para>
+        /// </summary>
+        [Test]
+        public void TheShippedAsset_HasTheDerivedLawSwitchedON_AsUnityLoadsIt()
+        {
+            var config = AssetDatabase.LoadAssetAtPath<GameConfig>(ConfigAssetPath);
+            Assert.IsNotNull(config, "the shared GameConfig asset must exist at " + ConfigAssetPath);
+            WaveFieldSettings loaded = config.WaveField;
+
+            TestContext.WriteLine(
+                $"as LOADED: SeaFetchKilometres {loaded.SeaFetchKilometres:0.###} km, " +
+                $"DominantWavelengthScale {loaded.DominantWavelengthScale:0.###}, " +
+                $"cap {loaded.DominantWavelengthMax:0.#} m");
+
+            Assert.Greater(loaded.SeaFetchKilometres, 0f,
+                "GameConfig.asset carries SeaFetchKilometres <= 0, which is the derived peak law " +
+                "SWITCHED OFF — the sea would silently fall back to the legacy linear line and every " +
+                "other guard in this file would stay green, because they all build from " +
+                "WaveFieldSettings.Default, which ships 0 deliberately. Either the key never reached " +
+                "the deserializer (a blank line ends a Unity YAML mapping) or it was tuned to 0.");
+            Assert.AreEqual(1f, loaded.DominantWavelengthScale, 1e-4f,
+                "GameConfig.asset must ship the wavelength dial at its passthrough. It is the owner's " +
+                "post-play lever and shipping it anywhere else re-tunes every sea state silently.");
+
+            // ...and the loaded numbers must actually produce the sea this PR reports.
+            float u = WeatherModel.WindStrengthFor(0.55f);
+            float derived = WaveMath.PeakWavelengthMeters(u, in loaded);
+            float legacy = loaded.DominantWavelengthBase + loaded.DominantWavelengthPerWindSpeed * u;
+            TestContext.WriteLine($"  at a blow (U {u:0.00}) the LOADED asset derives {derived:0.0} m " +
+                                  $"against the legacy line's {legacy:0.0} m");
+            Assert.Greater(Mathf.Abs(derived - legacy), 1e-3f,
+                "The loaded asset derives exactly the legacy line, so the derivation is not doing " +
+                "anything — that is what an OFF feature looks like from the outside.");
+        }
+
+        /// <summary>The 40 m rail is a rail: no dial may step over it, including a wavelength scale
+        /// above 1. The scale is applied after the peak law, so without a second clamp it would walk
+        /// straight through the ceiling.</summary>
+        [Test]
+        public void NoDialStepsOverTheWavelengthRail()
+        {
+            var wind = new Vector2(0f, 14f);
+            WaveFieldSettings big = WaveFieldSettings.Default;
+            big.SeaFetchKilometres = 500f;          // an ocean fetch, to push the peak up
+            big.DominantWavelengthScale = 8f;       // and a dial that would sail past the rail
+            float lambda = WaveMath.TrainsFrom(wind, 1f, in big)[0].Wavelength;
+            TestContext.WriteLine($"ocean fetch + an 8x dial derives {lambda:0.0} m against a " +
+                                  $"{big.DominantWavelengthMax:0.#} m rail");
+            Assert.LessOrEqual(lambda, big.DominantWavelengthMax + 1e-3f,
+                "A rail one knob can step over is not a rail. The scale is applied after the peak law, " +
+                "so it is clamped again against the same ceiling.");
         }
 
         /// <summary>

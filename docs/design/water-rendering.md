@@ -5048,6 +5048,11 @@ speed, a true half-speed is 0.25 — and a shorter sea is a *less* realistic one
 against the ruling above. Zero is read as 1 (a pre-2026-09-06 asset would otherwise derive a 0.010 m
 ocean; measured with the floor removed).
 
+The dial is applied AFTER the peak law, so it is **clamped a second time against the same 40 m rail** — a
+value above 1 would otherwise walk straight through the ceiling the rail exists to be, and a rail one knob
+can step over is not a rail. Below 1, which is all the dial is for, the second clamp is a no-op.
+`NoDialStepsOverTheWavelengthRail` is the guard.
+
 ### 39.7 ⚠️ Still a SIM change
 
 ADR 0018's one-sea rule: the hull rides this field. A helm-feel verdict is owed — the precedent is the
