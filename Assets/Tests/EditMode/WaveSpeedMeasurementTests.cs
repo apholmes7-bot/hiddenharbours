@@ -255,6 +255,125 @@ namespace HiddenHarbours.Tests.EditMode
                 "A wider frame must take longer to cross at the same wave speed.");
         }
 
+        // ==== 4. THE OWNER'S RULING (2026-09-06): "make it realistic" ================================
+
+        static WaveFieldSettings WithFetch(float km)
+        {
+            WaveFieldSettings f = WaveFieldSettings.Default;
+            f.SeaFetchKilometres = km;
+            return f;
+        }
+
+        /// <summary>
+        /// <b>OFF is the legacy line, bit for bit.</b> `SeaFetchKilometres` ≤ 0 must return exactly
+        /// `Base + PerWindSpeed·U` — that is what keeps `WaveFieldSettings.Default` and all 129
+        /// `TrainsFrom` call sites in the suite unmoved, and what a pre-ruling asset (which deserializes
+        /// the key as ZERO) keeps drawing.
+        /// </summary>
+        [Test]
+        public void AtFetchZero_ThePeakIsTheLegacyLine_BitForBit()
+        {
+            WaveFieldSettings off = WithFetch(0f);
+            foreach (float u in new[] { 0f, 1.62f, 5.7f, 12.95f, 20f })
+            {
+                float expected = off.DominantWavelengthBase + off.DominantWavelengthPerWindSpeed * u;
+                Assert.AreEqual(expected, WaveMath.PeakWavelengthMeters(u, in off), 0f,
+                    $"At U {u} the OFF path must be the legacy line exactly, not approximately.");
+            }
+            Assert.AreEqual(0f, WaveFieldSettings.Default.SeaFetchKilometres, 0f,
+                "The reference tuning must ship the law OFF, or 129 call sites move under it.");
+            WaveFieldSettings negative = WithFetch(-10f);
+            Assert.AreEqual(WaveMath.PeakWavelengthMeters(5.7f, in off),
+                            WaveMath.PeakWavelengthMeters(5.7f, in negative), 0f,
+                "A negative fetch fails the same safe way — a missing YAML key deserializes to zero and " +
+                "must never be read as 'a sea with no fetch', which would be a flat one.");
+        }
+
+        /// <summary>
+        /// 🔴 <b>PIERSON–MOSKOWITZ IS THE LIMIT OF THIS LAW, NOT A RIVAL TO IT.</b> JONSWAP's growth has
+        /// no ceiling of its own, so the derived peak is capped at the fully-developed value. Pushing
+        /// the fetch up must therefore converge on PM from below and never pass it.
+        /// </summary>
+        [Test]
+        public void TheDerivedPeak_GrowsWithFetch_AndConvergesOnPiersonMoskowitzFromBelow()
+        {
+            const float u = 5.7f;
+            float pm = PiersonMoskowitzPeak(u);
+            float previous = 0f;
+            foreach (float km in new[] { 2f, 5f, 10f, 25f, 50f, 100f, 1000f, 100000f })
+            {
+                WaveFieldSettings at = WithFetch(km);
+                float lambda = WaveMath.PeakWavelengthMeters(u, in at);
+                TestContext.WriteLine($"  fetch {km,7:0} km -> lambda {lambda,6:0.0} m " +
+                                      $"({lambda / pm:0.00} of the fully-developed {pm:0.0} m)");
+                Assert.GreaterOrEqual(lambda, previous - 1e-3f, "More fetch cannot make a shorter sea.");
+                Assert.LessOrEqual(lambda, pm + 1e-3f,
+                    "The derived peak must never exceed the fully-developed limit — an uncapped JONSWAP " +
+                    "would lengthen forever with fetch, which is not a sea.");
+                previous = lambda;
+            }
+            WaveFieldSettings ocean = WithFetch(100000f);
+            Assert.AreEqual(pm, WaveMath.PeakWavelengthMeters(u, in ocean), pm * 0.01f,
+                "At effectively infinite fetch the law IS Pierson-Moskowitz — that is what makes PM the " +
+                "limit case rather than a second law to choose between.");
+        }
+
+        /// <summary>
+        /// 🔴 <b>WHY BARE PM WAS REJECTED, measured.</b> Full development needs `gX/U² ≈ 17 400` — 58 km
+        /// of open water at a blow and <b>298 km at a gale</b>. An inshore island has neither, and the
+        /// consequences of pretending otherwise are reported here: at a gale bare PM puts a 140 m wave
+        /// on the cape's 52 m frame, which crosses it FASTER than today (the owner's original
+        /// complaint) with less than half a wavelength visible.
+        /// </summary>
+        [Test]
+        public void BarePiersonMoskowitz_NeedsAnOceanThisSettingDoesNotHave_Measured()
+        {
+            const float cape = 24f * (1902f / 879f);
+            foreach ((string name, float sea) in Sweep)
+            {
+                float u = WeatherModel.WindStrengthFor(sea);
+                if (u <= 0.01f) continue;
+                float needKm = 17400f * u * u / G / 1000f;
+                float legacy = ShippedPeak(u);
+                WaveFieldSettings shipped25 = WithFetch(25f);
+                float derived = WaveMath.PeakWavelengthMeters(u, in shipped25);
+                float pm = PiersonMoskowitzPeak(u);
+                TestContext.WriteLine(
+                    $"{name,-6} U {u,5:0.00}: fully developed needs {needKm,6:0} km | legacy {legacy,6:0.0} m " +
+                    $"| derived@25km {derived,6:0.0} m ({derived / legacy:0.00}x legacy) | PM {pm,6:0.0} m " +
+                    $"-> PM crosses the cape in {cape / PhaseSpeed(pm):0.0} s and shows " +
+                    $"{cape / pm:0.00} wavelengths");
+            }
+            float gale = WeatherModel.WindStrengthFor(0.95f);
+            Assert.Greater(17400f * gale * gale / G / 1000f, 200f,
+                "A gale needs hundreds of kilometres of open water to be fully developed. If this ever " +
+                "drops, the setting has become an ocean and bare PM would be the right law after all.");
+            Assert.Less(cape / PiersonMoskowitzPeak(gale), 0.5f,
+                "DEAD CONTROL for the look argument: under bare PM less than half a wavelength fits " +
+                "across the cape's frame at a gale, so the sea would read as the screen heaving rather " +
+                "than as waves. This is why the fetch cap is the fix and bare PM is not.");
+        }
+
+        /// <summary>The shipped fetch against the legacy line it replaces, at every sea state — the
+        /// before/after the owner ranks. Reported, never asserted: the fetch is his dial.</summary>
+        [Test]
+        public void TheShippedFetch_AgainstTheLegacyLine_Tabulated()
+        {
+            const float cape = 24f * (1902f / 879f);
+            TestContext.WriteLine("sea    U m/s |  legacy lam    T     c  cross |  derived@25km    T     c  cross");
+            foreach ((string name, float sea) in Sweep)
+            {
+                float u = WeatherModel.WindStrengthFor(sea);
+                if (u <= 0.01f) { TestContext.WriteLine($"{name,-6} {u,6:0.00} | glass — every amplitude is exactly 0"); continue; }
+                WaveFieldSettings shipped25 = WithFetch(25f);
+                float a = ShippedPeak(u), b = WaveMath.PeakWavelengthMeters(u, in shipped25);
+                TestContext.WriteLine(
+                    $"{name,-6} {u,6:0.00} | {a,10:0.0} {Period(a),5:0.00} {PhaseSpeed(a),5:0.00} " +
+                    $"{cape / PhaseSpeed(a),6:0.0} | {b,13:0.0} {Period(b),5:0.00} {PhaseSpeed(b),5:0.00} " +
+                    $"{cape / PhaseSpeed(b),6:0.0}");
+            }
+        }
+
         /// <summary>
         /// 🔴 <b>THE CONFLICT, and it is why this is a row and not a fix.</b> The owner asked for two
         /// things in one sentence — slower across the screen, and realistic to the wind. At the shipped
