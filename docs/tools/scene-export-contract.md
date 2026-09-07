@@ -200,6 +200,40 @@ the whole proof), so all three pin the contract on either machine, and the third
 in its own test so the next reader cannot make them green by deleting the early return.
 
 
+
+#### 6.1.1 The promise is only as wide as the list that keeps it (2026-09-07)
+
+A field the exporter derives from the height texture and **does not** carry forward is silently
+blanked by the first re-export from a checkout without the bytes. That had already happened twice
+before anyone looked: `stats.tiles.ground` and the ground **legend** were never carried, because
+the code went looking for them under `terrain.stats` — a key that does not exist — so a
+pointer-only re-export reported *0 painted ground cells beside a ground layer full of them*, and
+an `rle` whose values named legend entries that were not there. §9's tide then added three more:
+`terrain.x-heightFieldFull`, the 19 `x-tidalFace.x-heightMapSample` blocks, and the moored hulls'
+`x-tidalRide.bedElevation`.
+
+So the carry is now **one list, `_carry_height_derived`**, and the guard is a test that
+**walks the whole document** rather than checking a remembered set: blank every height-derived
+value, carry, and assert nothing differs except the three keys that legitimately *say* the bytes
+were absent (`textureBytesRead`, `heightCarriedForward`, `carryForwardNote`). The next such field
+therefore fails a test instead of a harbour. Verified end to end as well — the two seabed textures
+replaced by their real LFS pointers, a full re-export, **zero differences** beyond those three
+keys in either region.
+
+Two joins are load-bearing and neither is by list position. A face sample is matched on the
+entity's **minted id** (§8.2), because a scene edit that adds one entity would otherwise shift
+every reading by one and put the north wall's on the breakwater; a hull's bed is matched on
+`x-path`, since hulls carry no minted id and two boats at one berth would be indistinguishable.
+And a hull's `x-bedFrom` is carried **even when its `bedElevation` is null**: *"her plan point
+falls outside the painted map"* is something only a run holding the bytes can say, where a
+pointer-only run can manage only *"not sampled: the texture is an LFS pointer"* — true of the
+checkout, and silent about the hull.
+
+⚠ None of this makes `--check` green on a pointer-only checkout, and it should not: the carry
+stamps `textureBytesRead: false`, which is part of the compared document and is the honest
+statement that this run did not read the bytes. `_lfs_state_differs` names that cause. What the
+carry buys is that a pointer-only **write** does not destroy what it cannot rebuild.
+
 ### 6.2 Orientation: the index is a fact, the bearing is not
 
 `scene-writeback-contract.md` §8.1 asked for an explicit facing field, since the index was only

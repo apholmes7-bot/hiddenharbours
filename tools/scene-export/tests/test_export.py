@@ -2171,3 +2171,168 @@ class PassageTests(unittest.TestCase):
                              package.dumps(again[name]["x-passages"]), name)
             self.assertEqual(package.dumps(document["x-arrivals"]),
                              package.dumps(again[name]["x-arrivals"]), name)
+
+
+class CarryForwardTests(unittest.TestCase):
+    """§6.1 — a pointer-only re-export must not delete a coastline, and the promise is only as
+    wide as the list that keeps it.
+
+    The old list held the ground layer and the 8 m field. It was already dropping the ground
+    LEGEND and `stats.tiles.ground` (the code looked for them under `terrain.stats`, which does
+    not exist), and when the tide landed it dropped `x-heightFieldFull`, the 19 face samples and
+    the moored hulls' beds too. So the test that matters is not "are these five fields carried" —
+    it is **"is ANY height-derived value lost"**, asked by walking the whole document.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        cls.repo = Repo(REPO)
+        cls.full = {name: hh_scene_export.export_region(cls.repo, name, scene, height)
+                    for name, scene, height in hh_scene_export.REGIONS}
+
+    # Where the LFS state legitimately shows through. These four SAY the bytes were absent, so
+    # they must differ — a carried package that claimed textureBytesRead: true would be lying
+    # about what it read.
+    LFS_STATE_KEYS = ("textureBytesRead", "heightCarriedForward", "carryForwardNote")
+
+    def _pointer_only(self, document):
+        """What this commit produces from a checkout holding only the LFS pointer.
+
+        Built by BLANKING every height-derived value rather than by re-running the exporter
+        against a doctored tree: the point of the test is the carry, and a fixture that quietly
+        left one field populated would prove the carry works on a document that never lost it.
+        """
+        blank = copy.deepcopy(document)
+        terrain = blank["terrain"]
+        for block in (blank["x-provenance"]["heightMap"], terrain.get("x-heightMap") or {}):
+            block["textureBytesRead"] = False
+        total = terrain["cols"] * terrain["rows"]
+        terrain["layers"]["ground"]["rle"] = [[0, total]]
+        terrain["layers"]["ground"]["x-unavailable"] = "pointer-only"
+        terrain["legend"] = {k: v for k, v in terrain["legend"].items()
+                             if (v or {}).get("layer") != "ground"}
+        for key in ("x-heightField", "x-heightFieldFull"):
+            terrain[key] = {"values": None, "x-unavailable": "pointer-only"}
+        blank["stats"]["tiles"]["ground"] = 0
+        for entity in blank["entities"]:
+            face = entity.get("x-tidalFace")
+            if face:
+                face.pop("x-heightMapSample", None)
+        for hull in blank["x-tidalHulls"]:
+            ride = hull["x-tidalRide"]
+            ride["bedElevation"] = None
+            ride["x-bedFrom"] = "pointer-only"
+        blank["x-provenance"]["entityNotes"]["tidalHulls"]["workingWithBed"] = 0
+        return blank
+
+    def test_a_pointer_only_re_export_keeps_every_height_derived_field(self):
+        """⭐ THE GUARD, and it walks the document rather than a remembered set — so the NEXT
+        height-derived field somebody adds fails here instead of being silently blanked by the
+        first re-export from a checkout without the bytes."""
+        for name, document in self.full.items():
+            with tempfile.TemporaryDirectory() as out:
+                target = os.path.join(out, "committed.json")
+                with open(target, "w", encoding="utf-8") as handle:
+                    handle.write(package.dumps(document))
+                blank = self._pointer_only(document)
+                carried, refusal = hh_scene_export._carry_forward_height(target, blank)
+                self.assertTrue(carried, f"{name}: nothing was carried")
+                self.assertIsNone(refusal, f"{name}: {refusal}")
+
+            differences = []
+            _diff(document, blank, "", differences, self.LFS_STATE_KEYS)
+            self.assertEqual(differences, [],
+                             f"{name}: a pointer-only re-export lost these:\n  " +
+                             "\n  ".join(differences[:20]))
+
+    def test_the_fields_the_tide_added_are_among_them(self):
+        """Named explicitly as well, because the walk above would also pass if the fixture stopped
+        blanking them. These five are what #770 added and what this PR is for."""
+        name = "NineMileCreek"
+        document = self.full[name]
+        blank = self._pointer_only(document)
+        with tempfile.TemporaryDirectory() as out:
+            target = os.path.join(out, "committed.json")
+            with open(target, "w", encoding="utf-8") as handle:
+                handle.write(package.dumps(document))
+            self.assertTrue(hh_scene_export._carry_forward_height(target, blank)[0])
+
+        self.assertEqual(blank["terrain"]["x-heightFieldFull"]["values"],
+                         document["terrain"]["x-heightFieldFull"]["values"])
+        self.assertEqual(blank["stats"]["tiles"]["ground"], document["stats"]["tiles"]["ground"])
+        self.assertGreater(blank["stats"]["tiles"]["ground"], 0)
+        self.assertEqual(set(blank["terrain"]["legend"]), set(document["terrain"]["legend"]))
+        samples = [e["x-tidalFace"]["x-heightMapSample"] for e in blank["entities"]
+                   if e.get("x-tidalFace")]
+        self.assertEqual(len(samples), 19)
+        beds = [h["x-tidalRide"]["bedElevation"] for h in blank["x-tidalHulls"]
+                if h.get("x-kind") != "review"]
+        self.assertEqual(len(beds), 8)
+        self.assertTrue(all(b is not None for b in beds))
+        self.assertEqual(
+            blank["x-provenance"]["entityNotes"]["tidalHulls"]["workingWithBed"], 8,
+            "the tally still reported the blanked count beside eight restored beds")
+
+    def test_a_face_sample_is_joined_on_the_entity_id_not_its_position(self):
+        """A scene edit that adds one entity would shift every sample by one and put the north
+        wall's reading on the breakwater. The join is the minted id, which is stable."""
+        document = self.full["NineMileCreek"]
+        shifted = copy.deepcopy(document)
+        # Drop an entity that carries no face, so the LIST positions move but the ids do not.
+        victim = next(i for i, e in enumerate(shifted["entities"])
+                      if not e.get("x-tidalFace"))
+        del shifted["entities"][victim]
+        blank = self._pointer_only(shifted)
+        with tempfile.TemporaryDirectory() as out:
+            target = os.path.join(out, "committed.json")
+            with open(target, "w", encoding="utf-8") as handle:
+                handle.write(package.dumps(document))
+            self.assertTrue(hh_scene_export._carry_forward_height(target, blank)[0])
+        for entity in blank["entities"]:
+            face = entity.get("x-tidalFace")
+            if not face:
+                continue
+            original = next(e for e in document["entities"] if e["id"] == entity["id"])
+            self.assertEqual(face["x-heightMapSample"],
+                             original["x-tidalFace"]["x-heightMapSample"],
+                             f"{entity['x-name']} took another course's reading")
+
+    def test_a_changed_texture_is_still_refused_rather_than_carried(self):
+        """The half of §6.1 this PR must not weaken: equal hash carries, DIFFERENT hash refuses.
+        Carrying across a re-baked texture would state a coastline that is no longer there."""
+        document = self.full["StPeters"]
+        blank = self._pointer_only(document)
+        stale = copy.deepcopy(document)
+        stale["x-provenance"]["heightMap"]["textureSha256"] = "0" * 64
+        with tempfile.TemporaryDirectory() as out:
+            target = os.path.join(out, "committed.json")
+            with open(target, "w", encoding="utf-8") as handle:
+                handle.write(package.dumps(stale))
+            carried, refusal = hh_scene_export._carry_forward_height(target, blank)
+        self.assertFalse(carried)
+        self.assertIn("CHANGED", refusal)
+        self.assertIsNone(blank["terrain"]["x-heightFieldFull"]["values"],
+                          "a refused carry still wrote into the document")
+
+
+def _diff(expected, actual, path, out, ignore_keys):
+    """Every place ``actual`` differs from ``expected``, minus the keys that SAY the bytes were
+    absent. Recursive rather than a string compare so the report names the field."""
+    if isinstance(expected, dict) and isinstance(actual, dict):
+        for key in sorted(set(expected) | set(actual)):
+            if key in ignore_keys:
+                continue
+            if key not in expected:
+                out.append(f"{path}/{key} (added)")
+            elif key not in actual:
+                out.append(f"{path}/{key} (LOST)")
+            else:
+                _diff(expected[key], actual[key], f"{path}/{key}", out, ignore_keys)
+    elif isinstance(expected, list) and isinstance(actual, list):
+        if len(expected) != len(actual):
+            out.append(f"{path} (length {len(expected)} -> {len(actual)})")
+            return
+        for index, (a, b) in enumerate(zip(expected, actual)):
+            _diff(a, b, f"{path}[{index}]", out, ignore_keys)
+    elif expected != actual:
+        out.append(f"{path}: {str(expected)[:40]!r} -> {str(actual)[:40]!r}")
