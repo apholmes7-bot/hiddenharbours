@@ -62,6 +62,123 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  scene-export:
+    name: Scene export (python)
+    runs-on: ubuntu-latest
+    # ⭐ WHY THIS JOB EXISTS. tools/scene-export ships 107 stdlib tests, and until now CI ran none
+    # of them — the only job in this workflow is Unity's. One of those tests is
+    # DeterminismTests.test_the_committed_artifacts_are_what_this_commit_produces, the guard that
+    # catches tools/scene-export/packages/** drifting from what the commit actually produces. With
+    # nobody running it, `main` went red and stayed red: PR #763 regenerated the packages from a
+    # branch cut before #765 merged, so `builderCommitsSinceScene` moved 0 -> 1 and the committed
+    # Nine Mile Creek package stopped being what the commit produces. NO CONTENT had changed —
+    # provenance drift alone reddens it — so this will recur every time a builder commit lands
+    # after a regeneration, and it needs a machine watching rather than a habit.
+    #
+    # ⚠️ IT IS A SEPARATE JOB, ON PURPOSE, and it does not depend on `tests`. Unity's job is
+    # ~25-45 min, needs a licence and a ~227 MB LFS set, and is the one that goes red for
+    # environment faults (see the hub pin and the LFS budget notes in the header). This one is
+    # python3 and the standard library, and it must stay able to report in about a minute while
+    # that one is still installing an editor. Nothing here may grow a Unity dependency; the
+    # exporter's whole premise is that it runs on the committed text alone.
+    timeout-minutes: 10
+    steps:
+      # Pointer-only, exactly like the Unity job: `lfs: true` pulls the whole ~227 MB object set
+      # and that is what exhausted the account's LFS budget on 2026-08-06.
+      - name: Checkout (LFS pointers only)
+        uses: actions/checkout@v4
+        with:
+          lfs: false
+
+      # ⚠️ THE TWO SEABED TEXTURES ARE THE ONE THING THIS JOB CANNOT DO WITHOUT — and they are the
+      # ONLY LFS objects it needs: 108,507 bytes the pair, out of 1,999 objects and ~227 MB.
+      #
+      # Everything else the exporter reads is committed text — the scenes, the Defs, the .png.meta
+      # import settings, docs/art/rigs/**. But the height maps are R8 PNGs in LFS, and `--check`
+      # compares the WHOLE document, including `x-provenance.heightMap.textureBytesRead`, which
+      # legitimately flips with the checkout. So a pointer-only run reports STALE on a package
+      # that is perfectly current (the exporter says so itself, in its own "cause:" line) and the
+      # staleness gate would cry wolf on every single run. Measured on both the tide branch and
+      # its base before this job was written: it predates the tide work and is how --check is
+      # built, not a defect to fix here.
+      - name: Pull the seabed height maps only
+        id: lfs_pull
+        shell: bash
+        run: |
+          # `pull --include` then `checkout` — the same two calls the Unity job makes, for the
+          # same reason: pull fetches the objects, checkout smudges the pointers in the tree.
+          # The log is tee'd so the verdict step can tell an exhausted LFS budget (account
+          # billing, which a re-run can NEVER fix) from a transient checkout death. That
+          # misdiagnosis has cost this repo a day before.
+          set -o pipefail
+          if ! git lfs pull --include="Assets/_Project/Data/Terrain/*Seabed_HeightTex.png" 2>&1 | tee "$RUNNER_TEMP/git-lfs-pull.log"; then
+            if grep -qi "exceeded its LFS budget" "$RUNNER_TEMP/git-lfs-pull.log"; then
+              echo "budget=exceeded" >> "$GITHUB_OUTPUT"
+            fi
+            exit 1
+          fi
+          git lfs checkout
+          # A pointer that did not smudge is the failure this job must not paper over: it would
+          # surface as an unexplained STALE two steps later. Fail here, where the cause is legible.
+          for tex in Assets/_Project/Data/Terrain/*Seabed_HeightTex.png; do
+            if head -c 40 "$tex" | grep -q "git-lfs"; then
+              echo "::error title=Seabed height map is still an LFS pointer::$tex did not download. The scene export's --check compares height-derived content, so it cannot run truthfully without these bytes."
+              exit 1
+            fi
+            echo "  $tex  $(stat -c%s "$tex") bytes"
+          done
+
+      # No setup-python and no pin: ubuntu-latest ships a python3 well past the 3.8 the exporter
+      # asks for, the exporter and its tests import nothing outside the standard library, and a
+      # version printed into the log is enough to spot a runner-image bump that ever mattered.
+      - name: python3 version
+        shell: bash
+        run: python3 -VV
+
+      # The staleness gate FIRST and by itself, so its red is unambiguous. The suite runs it too
+      # (DeterminismTests), but buried among 107 results a reader has to go looking for it — and
+      # this is the one failure whose fix is a command rather than a code change.
+      - name: Committed packages match this commit (--check)
+        id: check
+        shell: bash
+        run: python3 tools/scene-export/hh_scene_export.py --check
+
+      - name: Scene export tests
+        id: unittests
+        shell: bash
+        run: python3 -m unittest discover -s tools/scene-export/tests -v
+
+      # A reporter, not a gate — the same shape as the Unity job's verdict step and for the same
+      # reason: these red causes need different actions, and the difference is invisible in a
+      # rollup. Never changes the outcome.
+      - name: Red X verdict — stale packages or failing tests?
+        if: failure()
+        shell: bash
+        env:
+          LFS_BUDGET: ${{ steps.lfs_pull.outputs.budget }}
+          CHECK: ${{ steps.check.outcome }}
+          UNITTESTS: ${{ steps.unittests.outcome }}
+        run: |
+          verdict() {
+            echo "::error title=${1}::${2}"
+            { echo "## ${1}"; echo; echo "${2}"; } >> "$GITHUB_STEP_SUMMARY"
+          }
+          # Budget first: it is the one fault here a re-run can never fix, and it presents as
+          # every later step being skipped rather than as anything about the exporter.
+          if [ "$LFS_BUDGET" = "exceeded" ]; then
+            verdict "ACCOUNT BILLING — Git LFS budget exhausted — re-runs CANNOT pass" \
+              "GitHub refused the seabed height maps because the account has exceeded its Git LFS bandwidth budget. Billing, not code — do NOT re-run. The owner must raise the budget (Settings ▸ Billing and plans ▸ Git LFS). This job asks for ~108 KB of the ~227 MB set, so it is not the driver; the Unity job's full pull is."
+          elif [ "$CHECK" = "failure" ]; then
+            verdict "STALE PACKAGES — regenerate and commit, no code change needed" \
+              "tools/scene-export/packages/** is not what this commit produces. Run 'python3 tools/scene-export/hh_scene_export.py' and commit the result. This reddens on provenance drift alone — a builder commit landing after the last regeneration is enough, with no content change — so read the exporter's own 'cause:' line above before hunting for a scene re-bank."
+          elif [ "$UNITTESTS" = "failure" ]; then
+            verdict "SCENE EXPORT TESTS FAILED — read the failing test names" \
+              "The committed packages match this commit but a test asserts otherwise about the exporter itself. Reproduce locally with 'python3 -m unittest discover -s tools/scene-export/tests -v' — it needs no Unity, no network and nothing outside the standard library."
+          else
+            verdict "FAILED OUTSIDE CHECK AND TESTS — read the step list" \
+              "Neither the staleness gate nor the test run failed (check: ${CHECK}, tests: ${UNITTESTS}). Checkout or the LFS pull did."
+          fi
+
   tests:
     name: EditMode + PlayMode tests
     runs-on: ubuntu-latest
