@@ -473,6 +473,22 @@ namespace HiddenHarbours.App.Editor
         /// (§4).</summary>
         public const float FaceCourseWidthMetres = 5f;
 
+        /// <summary>
+        /// ⭐ <b>THE GRID THE WALL IS DRAWN ON — 32 px per world unit</b>, quoted from the committed
+        /// sheet's own importer (<c>spritePixelsToUnits: 32</c> on
+        /// <c>Art/Sprites/Wharf/Iso/logCrib.png.meta</c>, and the project's sprite grid everywhere else),
+        /// with its source, exactly as the rig defaults above are.
+        ///
+        /// <para>It is here because a claim about where the sea meets this wall is only ever true to the
+        /// nearest PIXEL of it, and a tolerance written as a decimal is a fudge factor while the same
+        /// number written as <see cref="PackPixelMetres"/> is a statement about the picture. Anything
+        /// finer than one pixel of the drawn face cannot be seen and must not be asserted.</para>
+        /// </summary>
+        public const float PackPixelsPerUnit = 32f;
+
+        /// <summary>One pixel of the drawn wall, in world units — <b>0.03125</b>.</summary>
+        public static float PackPixelMetres => 1f / PackPixelsPerUnit;
+
         /// <summary>The course the face is built of, as data — so "may this be used here?" is answered by
         /// the same rule that once answered "no".</summary>
         public static Course FaceCourse() =>

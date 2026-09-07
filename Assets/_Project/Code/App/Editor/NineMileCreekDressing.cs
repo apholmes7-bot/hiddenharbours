@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using HiddenHarbours.Art;                 // YSortSprite — the GEAR joins the decor band; the FACE does not
+                                          // …and TidalFaceWaterline, which is how the FACE meets the sea
 using HiddenHarbours.Core;                // ITidalTerrain, SortingBands
 using HiddenHarbours.Tools.RigBaking;     // IsoPackSprites — the read side of the ISO rig pack
 using HiddenHarbours.World;               // MainlandCoast, CoastPlan, MainlandZone
@@ -1376,7 +1377,7 @@ namespace HiddenHarbours.App.Editor
 
             // THE WALL FIRST, so it is behind everything that stands on it in the hierarchy as well as
             // on the screen.
-            int face = PlaceFace(root, FacePieces());
+            int face = PlaceFace(root, FacePieces(), terrain);
 
             int props = 0;
             props += PlaceProps(root, QuayRootName, QuayGear(), terrain);
@@ -1428,14 +1429,42 @@ namespace HiddenHarbours.App.Editor
         /// the measurements behind it. The placement — pivot at chart datum, lip on the wall's own lip —
         /// is unchanged, and is still the only line this file guarantees.</para>
         /// </summary>
-        static int PlaceFace(GameObject root, IReadOnlyList<FacePiece> pieces)
+        /// <summary>
+        /// ⭐ <b>RE-DRAW THE QUAY FACE ALONE, IN AN OPEN SCENE, WITHOUT REBUILDING THE REGION.</b>
+        ///
+        /// <para>Nine Mile Creek's scene is builder-output plus an AUTHORED LAYER laid on top of it, and
+        /// a full <c>NineMileCreekBuilder.Build()</c> wipes the second. The face is pure builder output —
+        /// six runs derived off the wharf's own geometry, no hand placement anywhere in it — so it can be
+        /// dropped and re-derived on its own, which is what the tide work needs (the courses in the
+        /// committed scene were placed before the sea could climb them and carry no
+        /// <see cref="TidalFaceWaterline"/>) and what a plate A/B needs (re-place, shoot, flip one term,
+        /// shoot again — the same dressing, one difference).</para>
+        ///
+        /// <para>Returns how many courses were drawn. <paramref name="dressingRoot"/> is this file's own
+        /// <see cref="RootName"/> object.</para>
+        /// </summary>
+        public static int ReplaceFace(GameObject dressingRoot, ITidalTerrain terrain)
+        {
+            if (dressingRoot == null) return 0;
+
+            Transform existing = dressingRoot.transform.Find(FaceRootName);
+            if (existing != null)
+            {
+                if (Application.isPlaying) Object.Destroy(existing.gameObject);
+                else Object.DestroyImmediate(existing.gameObject);
+            }
+
+            return PlaceFace(dressingRoot, FacePieces(), terrain);
+        }
+
+        static int PlaceFace(GameObject root, IReadOnlyList<FacePiece> pieces, ITidalTerrain terrain)
         {
             if (pieces.Count == 0) return 0;
 
             var group = new GameObject(FaceRootName);
             group.transform.SetParent(root.transform, worldPositionStays: false);
 
-            int placed = 0;
+            int placed = 0, uncut = 0;
             foreach (var piece in pieces)
             {
                 int facing = IsoPackSprites.FacingForHeading(WharfFamily, piece.Heading);
@@ -1460,8 +1489,33 @@ namespace HiddenHarbours.App.Editor
                 // behind it — see FaceSortingOrder for the two defects a Y-sorted face shipped.
                 sr.sortingOrder = piece.SortingOrder;
 
+                // ⭐ AND THE SEA CLIMBS IT (owner playtest 2026-09-06, "boats arent touching but not
+                // sitting in water"). Sorting the face under the hull — FaceSortingOrder, #734 — put the
+                // boat in front of the wall; it left the wall in front of the WATER. A course draws
+                // NineMileCreekQuayFace.DrawnFaceDropMetres ≈ 5.06 units below its own lip, so the
+                // mooring face covered the sea from y 82.00 to 87.00 at every state of the tide while the
+                // fleet lay at 84.00-84.50 and, since #753, rode ±1.685 units through it. The hull was
+                // never hovering: what she was drawn against was timber.
+                //
+                // ⚠️ THE LIP, NOT THE PIVOT — and it is the same asymmetry FacePiece.Position warns about
+                // one level up. The pivot is where the sprite is hung; the LIP is the one line the
+                // placement guarantees to land on the wall's own edge, so it is the only row of pixels
+                // whose elevation is known, and every other row is it plus a height.
+                var waterline = go.AddComponent<TidalFaceWaterline>();
+                if (terrain != null)
+                    waterline.Configure(piece.Lip.y, FaceLipElevation(piece, terrain));
+                else
+                    uncut++;
+
                 placed++;
             }
+
+            if (uncut > 0)
+                Debug.LogWarning(
+                    $"[NineMileCreekDressing] {uncut} course(s) of quay face were placed with NO TERRAIN " +
+                    "to measure their deck against, so they draw UNCUT — the pre-#753 picture, a wall " +
+                    "standing dry through every tide with the fleet drawn against it. The placement is " +
+                    "unaffected; re-run with the region's terrain wired and the sea climbs them.");
 
             if (placed == 0)
                 Debug.LogWarning(
@@ -1472,6 +1526,31 @@ namespace HiddenHarbours.App.Editor
                     "same place.");
 
             return placed;
+        }
+
+        /// <summary>
+        /// ⭐ <b>WHAT THIS COURSE'S DRAWN LIP IS, IN METRES ABOVE THE GAME'S DATUM</b> — the height of the
+        /// deck it holds up, and therefore the elevation of the one row of its pixels whose height is
+        /// known. Everything the face's waterline does is measured from it
+        /// (<see cref="TidalFaceWaterline.WaterlineWorldY"/>).
+        ///
+        /// <para><b>MEASURED off the authored terrain, never typed</b> — the #462 discipline this whole
+        /// file is held to, and it matters here more than usual: six runs stand on three different decks
+        /// (the quay at 3.00 m, the apron at 3.00, the breakwater's crest at 3.40), and a constant would
+        /// have drawn the arm's waterline 0.40 m out for as long as nobody looked.</para>
+        ///
+        /// <para><b>At the piece's own FOOTPRINT CENTRE, half a course width inboard of the lip.</b> The
+        /// lip is the water side of the footprint — the very edge of a 4.6 m step — so a sample taken
+        /// there sits in the fill's own falloff and reads somewhere between the deck and the basin. Half a
+        /// width in is where the piece actually stands, it is derived from the course rather than being a
+        /// second inset nobody can justify, and it is clear of the edge on every run.</para>
+        /// </summary>
+        public static float FaceLipElevation(FacePiece piece, ITidalTerrain terrain)
+        {
+            Vector2 seaward = PlanDirectionOf(piece.Heading);
+            Vector2 underfoot = piece.Lip -
+                                seaward * (NineMileCreekQuayFace.FaceCourseWidthMetres * 0.5f);
+            return terrain.ElevationAt(underfoot);
         }
 
         static int PlaceProps(GameObject root, string groupName, IReadOnlyList<Prop> props,
