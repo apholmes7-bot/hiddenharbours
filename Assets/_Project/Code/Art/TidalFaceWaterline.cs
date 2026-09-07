@@ -44,10 +44,12 @@ namespace HiddenHarbours.Art
     /// standable surface, no berth and no <c>_WaterLevel</c>, and it saves nothing. Deterministic — the
     /// level it reads is itself recomputed from <c>(worldSeed, gameTime)</c>.</para>
     ///
-    /// <para><b>Cost</b> (rule 7): the per-piece numbers never change, so they are pushed ONCE into a
-    /// <see cref="MaterialPropertyBlock"/> when the face is configured, and the tide arrives on a global
-    /// somebody else already publishes on a throttled tick. There is no per-frame work here at all, and
-    /// one shared material keeps a wharf's forty-odd courses batching as they do today.</para>
+    /// <para><b>Cost</b> (rule 7): <b>there is no per-frame work here at all.</b> The per-piece numbers
+    /// never change, so they are pushed ONCE into a <see cref="MaterialPropertyBlock"/> when the face is
+    /// configured, and the tide arrives on a global somebody else already publishes on a throttled tick.
+    /// ⚠️ A per-renderer property block IS a per-draw value and forgoes batching — that is the honest
+    /// cost of this, it is UNMEASURED on the wharf's ~44 courses, and it is the first term to look at if
+    /// a frame-time budget ever comes to the quay.</para>
     /// </summary>
     [ExecuteAlways]
     [DisallowMultipleComponent]
@@ -197,10 +199,10 @@ namespace HiddenHarbours.Art
         }
 
         /// <summary>
-        /// ONE material for every drawn face in the game. They differ only in the two numbers above, and
-        /// those travel in a property block, so a wharf's forty-odd courses keep batching exactly as they
-        /// do on the stock sprite material (rule 7). Built on demand and kept out of the scene and the
-        /// save, the <c>DeckRiderVisual</c> arrangement.
+        /// ONE material for every drawn face in the game — they differ only in the two numbers above, and
+        /// those travel in a property block, so a wharf's ~44 courses cost one material instead of
+        /// forty-four (rule 7). Built on demand and kept out of the scene and the save, the
+        /// <c>DeckRiderVisual</c> arrangement.
         /// </summary>
         private static Material SharedMaterial()
         {
