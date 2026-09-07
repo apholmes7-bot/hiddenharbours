@@ -99,8 +99,9 @@ namespace HiddenHarbours.World
         static readonly float TailInset = DialogueBubbleKit.TailInsetFromEdge * Scale;
 
         const float ScreenMargin = 16f;
-        const int BodyFontSize = 24;
-        const int NameFontSize = 17;
+        // The same derived size as the modal bubble — see BubbleFace and DialoguePresenter.
+        const int BodyFontSize = BubbleFace.FontSize;
+        const int NameFontSize = BubbleFace.FontSize;
 
         /// <summary>How often the modal presenter is looked for again after it has gone (a region
         /// unload destroys it). A find every frame in a scene that has none would be a per-frame
@@ -521,11 +522,6 @@ namespace HiddenHarbours.World
             rt.sizeDelta = new Vector2(DialogueBubbleKit.ChipWidthFor(name.Length) * Scale,
                                        DialogueBubbleKit.ChipHeight * Scale);
 
-            float pad = DialogueBubbleKit.ChipPadX * Scale;
-            BubbleFace.FitTopLeft(s.NameText,
-                                  new Vector2(rt.sizeDelta.x - pad * 2f, rt.sizeDelta.y),
-                                  new Vector2(pad, 0f));
-
             float overlap = DialogueBubbleKit.ChipOverlap * Scale;
             float x = DialogueBubbleKit.ChipMountX * Scale;
 
@@ -548,44 +544,15 @@ namespace HiddenHarbours.World
             string previous = s.BodyText.text;
             s.BodyText.text = full;
 
-            // ⚠ preferredWidth/Height come back in the TEXT's own units — kit pixels while it wears the
-            // baked face — and everything below is in canvas units. Each measurement crosses the scale
-            // exactly once, here.
-            float faceScale = BubbleFace.ScaleFor(s.BodyText.font);
-
-            float wanted = s.BodyText.preferredWidth * faceScale + BubblePadX * 2f;
+            float wanted = s.BodyText.preferredWidth + BubblePadX * 2f;
             float width = Mathf.Clamp(wanted, MinBubbleWidth, MaxBubbleWidth);
             s.BubbleRect.sizeDelta = new Vector2(width, MinBubbleHeight);
-            FitBodyText(s);
 
             // preferredHeight wraps against the width just set, so it is read after it.
-            float height = s.BodyText.preferredHeight * faceScale + BubblePadTop + BubblePadBottom;
+            float height = s.BodyText.preferredHeight + BubblePadTop + BubblePadBottom;
             s.BubbleRect.sizeDelta = new Vector2(width, Mathf.Max(MinBubbleHeight, height));
-            FitBodyText(s);
 
             s.BodyText.text = previous;
-        }
-
-        /// <summary>
-        /// Give one pooled bubble's body text the panel's INNER AREA, in whatever units the font it
-        /// wears draws in — <see cref="DialoguePresenter"/>'s <c>FitBodyText</c>, per slot.
-        ///
-        /// <para>The property a guard can measure: the rect times its scale IS the inner area, and its
-        /// corner IS the panel's inset corner.</para>
-        /// </summary>
-        private static void FitBodyText(Slot s)
-        {
-            if (s.BodyText == null || s.BubbleRect == null) return;
-
-            Vector2 panel = s.BubbleRect.sizeDelta;
-            var area = new Vector2(panel.x - BubblePadX * 2f, panel.y - BubblePadTop - BubblePadBottom);
-            var corner = new Vector2(-panel.x * 0.5f + BubblePadX, panel.y * 0.5f - BubblePadTop);
-
-            RectTransform rt = s.BodyText.rectTransform;
-            rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
-            rt.pivot = new Vector2(0f, 1f);
-            rt.sizeDelta = BubbleFace.RectFor(area, BubbleFace.ScaleFor(s.BodyText.font));
-            rt.anchoredPosition = corner;
         }
 
         // ---- look -------------------------------------------------------------------------------
@@ -784,13 +751,20 @@ namespace HiddenHarbours.World
             s.Chip.rectTransform.pivot = new Vector2(0f, 0.5f);
             s.Chip.enabled = false;
 
-            // ⚠ Neither text is a STRETCH. A stretched rect is sized in canvas units, and a Text scaled
-            // for the baked face would draw ArtScale times larger than the area it was handed. Both are
-            // sized explicitly — the name in PlaceChip, the body in FitBodyText.
             s.NameText = MakeText(s.Chip.rectTransform, "Name", TextAnchor.MiddleLeft, NameFontSize);
+            var nr = s.NameText.rectTransform;
+            nr.anchorMin = Vector2.zero; nr.anchorMax = Vector2.one;
+            nr.pivot = new Vector2(0.5f, 0.5f);
+            nr.offsetMin = new Vector2(DialogueBubbleKit.ChipPadX * Scale, 0f);
+            nr.offsetMax = new Vector2(-DialogueBubbleKit.ChipPadX * Scale, 0f);
             s.NameText.enabled = false;
 
             s.BodyText = MakeText(s.BubbleRect, "Body", TextAnchor.UpperLeft, BodyFontSize);
+            var br = s.BodyText.rectTransform;
+            br.anchorMin = Vector2.zero; br.anchorMax = Vector2.one;
+            br.pivot = new Vector2(0.5f, 0.5f);
+            br.offsetMin = new Vector2(BubblePadX, BubblePadBottom);
+            br.offsetMax = new Vector2(-BubblePadX, -BubblePadTop);
             s.BodyText.horizontalOverflow = HorizontalWrapMode.Wrap;
             s.BodyText.verticalOverflow = VerticalWrapMode.Overflow;
 
@@ -813,10 +787,9 @@ namespace HiddenHarbours.World
             var go = new GameObject(name, typeof(RectTransform), typeof(Text));
             go.transform.SetParent(parent, false);
             var text = go.GetComponent<Text>();
-            // The SAME face and the same scale as the modal bubble, through the one helper. Two
-            // surfaces deciding their font separately is how a villager's overheard line and the
-            // conversation you are in end up in different type on one screen.
-            BubbleFace.Wear(text, fontSize);
+            // The face and its size together, through the one place that decides them — so the modal
+            // bubble and the ambient pool can never end up in different type on one screen.
+            BubbleFace.Wear(text);
             text.alignment = align;
             text.color = Ink;               // dark ink on light paper needs no outline
             text.raycastTarget = false;
@@ -839,7 +812,7 @@ namespace HiddenHarbours.World
             rt.offsetMax = Vector2.zero;
         }
 
-        // The built-in fallback lives in BubbleFace, which owns "which font, and at what scale" as one
-        // answer for both bubble surfaces.
+        // The built-in fallback lives in BubbleFace, which answers "which font, at what size" once for
+        // both bubble surfaces.
     }
 }

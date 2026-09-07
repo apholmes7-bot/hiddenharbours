@@ -102,9 +102,15 @@ namespace HiddenHarbours.World
         static readonly float OptionTextX = DialogueBubbleKit.OptionTextX * Scale;
 
         const float ScreenMargin = 16f;
-        const int BodyFontSize = 24;
-        const int NameFontSize = 17;
-        const int OptionFontSize = 22;
+        // ⭐ ONE size, DERIVED, for every word in the bubble. The face is baked at
+        // HarbourType.GlyphHeight and Unity draws a font at fontSize / font.fontSize, so
+        // GlyphHeight × ArtScale puts one glyph pixel on one kit pixel — the type lands on the grid the
+        // panel is drawn on. The body's old 24 happened to be this number already; the name chip's 17
+        // and the option rows' 22 did NOT, and would have resampled the baked glyphs at a fractional
+        // scale. See BubbleFace.
+        const int BodyFontSize = BubbleFace.FontSize;
+        const int NameFontSize = BubbleFace.FontSize;
+        const int OptionFontSize = BubbleFace.FontSize;
 
         /// <summary>
         /// <b>Where the art lane's bubble kit lands</b>, declared here so the tripwire has something to
@@ -657,9 +663,6 @@ namespace HiddenHarbours.World
             // would start — which is exactly where the caret belongs.
             UICharInfo last = gen.characters[gen.characterCount - 1];
             float scale = _bodyText.pixelsPerUnit > 0f ? 1f / _bodyText.pixelsPerUnit : 1f;
-            // ...and then out of the TEXT's own units into the canvas, which is the scale the face
-            // brought with it. One multiply, in the one place those two frames meet.
-            scale *= BubbleFace.ScaleFor(_bodyText.font);
 
             // Generator coordinates are in the TEXT rect's local space, and cursorPos.y is the TOP
             // of the line (hence the caret's top-left pivot). The body text is anchored to the whole
@@ -679,47 +682,15 @@ namespace HiddenHarbours.World
             string previous = _bodyText.text;
             _bodyText.text = full;
 
-            // ⚠ preferredWidth/Height come back in the TEXT's OWN units, which are kit pixels while it
-            // wears the baked face. Everything they are compared with is in canvas units, so each
-            // measurement crosses the scale exactly once — here, and nowhere else.
-            float faceScale = BubbleFace.ScaleFor(_bodyText.font);
-
-            float wanted = _bodyText.preferredWidth * faceScale + BubblePadX * 2f;
+            float wanted = _bodyText.preferredWidth + BubblePadX * 2f;
             float width = Mathf.Clamp(wanted, MinBubbleWidth, MaxBubbleWidth);
             _bubbleRect.sizeDelta = new Vector2(width, MinBubbleHeight);
-            FitBodyText();
 
             // preferredHeight wraps against the rect width we just set, so it must be read after it.
-            float height = _bodyText.preferredHeight * faceScale + BubblePadTop + BubblePadBottom;
+            float height = _bodyText.preferredHeight + BubblePadTop + BubblePadBottom;
             _bubbleRect.sizeDelta = new Vector2(width, Mathf.Max(MinBubbleHeight, height));
-            FitBodyText();
 
             _bodyText.text = previous;
-        }
-
-        /// <summary>
-        /// Give the body text the panel's INNER AREA — the rect inset by the kit's own paddings — in
-        /// whatever units the font it is wearing draws in.
-        ///
-        /// <para><b>This is the property the guard measures</b>: the rect times its scale IS the inner
-        /// area, and its corner IS the panel's inset corner. Hold those two and the words land inside
-        /// the panel and fill it exactly, at either scale — which is the whole of "the bubble wears the
-        /// face" that a headless test can actually check.</para>
-        /// </summary>
-        private void FitBodyText()
-        {
-            if (_bodyText == null || _bubbleRect == null) return;
-
-            Vector2 panel = _bubbleRect.sizeDelta;
-            var area = new Vector2(panel.x - BubblePadX * 2f, panel.y - BubblePadTop - BubblePadBottom);
-            // The panel's inset top-left, in the bubble rect's own centre-anchored frame.
-            var corner = new Vector2(-panel.x * 0.5f + BubblePadX, panel.y * 0.5f - BubblePadTop);
-
-            RectTransform rt = _bodyText.rectTransform;
-            rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
-            rt.pivot = new Vector2(0f, 1f);
-            rt.sizeDelta = BubbleFace.RectFor(area, BubbleFace.ScaleFor(_bodyText.font));
-            rt.anchoredPosition = corner;
         }
 
         // ---- the anchor ---------------------------------------------------------------------
@@ -867,15 +838,6 @@ namespace HiddenHarbours.World
             var rt = _chipImage.rectTransform;
             rt.sizeDelta = new Vector2(DialogueBubbleKit.ChipWidthFor(name.Length) * Scale,
                                        DialogueBubbleKit.ChipHeight * Scale);
-
-            // The name fills the chip inside its padding, in the units its own font draws in.
-            if (_nameText != null)
-            {
-                float pad = DialogueBubbleKit.ChipPadX * Scale;
-                BubbleFace.FitTopLeft(_nameText,
-                                      new Vector2(rt.sizeDelta.x - pad * 2f, rt.sizeDelta.y),
-                                      new Vector2(pad, 0f));
-            }
 
             // The chip overlaps the panel edge by `overlap`, so it reads as pinned to the paper
             // rather than floating beside it.
@@ -1177,14 +1139,16 @@ namespace HiddenHarbours.World
                 var row = MakeText(_optionRect, $"Option{_optionRows.Count}", TextAnchor.MiddleLeft,
                                    OptionFontSize);
                 SetOutline(row, false);   // dark text on a light bubble needs no halo
-                // ⚠ An explicit rect rather than a stretch, for the reason FitBodyText gives: a
-                // stretched rect is in canvas units and a Text scaled for the baked face would draw
-                // ArtScale times larger than it. Left inset is the kit's own text origin, which is what
-                // leaves the cursor its column; without art it reads as comfortable padding.
-                float rowWidth = _optionRect.sizeDelta.x - OptionTextX - OptionPadding;
-                BubbleFace.FitTopLeft(row, new Vector2(rowWidth, OptionRowHeight),
-                                      new Vector2(OptionTextX,
-                                                  -OptionPadding - OptionRowHeight * _optionRows.Count));
+                var rt = row.rectTransform;
+                rt.anchorMin = new Vector2(0f, 1f);
+                rt.anchorMax = new Vector2(1f, 1f);
+                rt.pivot = new Vector2(0.5f, 1f);
+                // Left inset is the kit's own text origin, which is what leaves the cursor its
+                // column; without art that same inset just reads as comfortable padding.
+                rt.offsetMin = new Vector2(OptionTextX, 0f);
+                rt.offsetMax = new Vector2(-OptionPadding, 0f);
+                rt.sizeDelta = new Vector2(rt.sizeDelta.x, OptionRowHeight);
+                rt.anchoredPosition = new Vector2(0f, -OptionPadding - OptionRowHeight * _optionRows.Count);
                 _optionRows.Add(row);
             }
         }
@@ -1261,15 +1225,20 @@ namespace HiddenHarbours.World
             _nameText = MakeText(_chipImage.rectTransform, "Name", TextAnchor.MiddleLeft, NameFontSize);
             _nameText.color = new Color(0.13f, 0.12f, 0.10f, 1f);
             SetOutline(_nameText, false);
-            // Sized by PlaceChip, for the same reason the body text is sized by SizeBubbleFor: a rect
-            // that has to survive a scale cannot be a stretch.
+            var nr = _nameText.rectTransform;
+            nr.anchorMin = Vector2.zero; nr.anchorMax = Vector2.one;
+            nr.pivot = new Vector2(0.5f, 0.5f);
+            nr.offsetMin = new Vector2(DialogueBubbleKit.ChipPadX * Scale, 0f);
+            nr.offsetMax = new Vector2(-DialogueBubbleKit.ChipPadX * Scale, 0f);
 
             _bodyText = MakeText(_bubbleRect, "Body", TextAnchor.UpperLeft, BodyFontSize);
             _bodyText.color = new Color(0.13f, 0.12f, 0.10f, 1f);
             SetOutline(_bodyText, false);
-            // ⚠ NOT a stretch any more. A stretched rect is sized in CANVAS units, and a Text scaled
-            // for the baked face would then draw ArtScale times larger than the area it was given. The
-            // rect is set explicitly from the panel's inner area — see FitBodyText.
+            var br = _bodyText.rectTransform;
+            br.anchorMin = Vector2.zero; br.anchorMax = Vector2.one;
+            br.pivot = new Vector2(0.5f, 0.5f);
+            br.offsetMin = new Vector2(BubblePadX, BubblePadBottom);
+            br.offsetMax = new Vector2(-BubblePadX, -BubblePadTop);
             _bodyText.horizontalOverflow = HorizontalWrapMode.Wrap;
             _bodyText.verticalOverflow = VerticalWrapMode.Overflow;
 
@@ -1281,12 +1250,7 @@ namespace HiddenHarbours.World
             hr.anchorMin = new Vector2(1f, 0f); hr.anchorMax = new Vector2(1f, 0f);
             hr.pivot = new Vector2(1f, 0f);
             hr.anchoredPosition = new Vector2(-8f, 4f);
-            // Divided for the same reason as every other text rect here — and the pivot is the
-            // bottom-RIGHT, so the scale grows it up and to the left, which is where a lower-right
-            // aligned hint has room. (It is hidden entirely once the kit's continue marker is wired,
-            // so in a dressed build this is the greybox arm.)
-            hr.sizeDelta = BubbleFace.RectFor(new Vector2(80f, 22f),
-                                              BubbleFace.ScaleFor(_hintText.font));
+            hr.sizeDelta = new Vector2(80f, 22f);
             _hintText.enabled = false;
 
             // The continue marker: 7×4 with a +1 px bob, mounted x + w − 11 and riding the bottom
@@ -1442,10 +1406,9 @@ namespace HiddenHarbours.World
             var go = new GameObject(name, typeof(RectTransform), typeof(Text), typeof(Outline));
             go.transform.SetParent(parent, false);
             var text = go.GetComponent<Text>();
-            // ⚠ The face is a LEGACY font: it ignores fontSize and draws at its baked pixel size, so
-            // wearing it means carrying its scale too. BubbleFace does both in ONE call, because two
-            // calls is two chances for the font and its scale to disagree.
-            BubbleFace.Wear(text, fontSize);
+            // The face and its size together, through the one place that decides them — so the modal
+            // bubble and the ambient pool can never end up in different type on one screen.
+            BubbleFace.Wear(text);
             text.alignment = align;
             text.color = Color.white;
             text.raycastTarget = false;
@@ -1471,7 +1434,7 @@ namespace HiddenHarbours.World
             rt.offsetMax = Vector2.zero;
         }
 
-        // The built-in fallback moved to BubbleFace, which owns "which font, and at what scale" as one
-        // answer. Two places deciding the font is how two surfaces end up wearing different faces.
+        // The built-in fallback lives in BubbleFace, which answers "which font, at what size" once for
+        // both bubble surfaces.
     }
 }

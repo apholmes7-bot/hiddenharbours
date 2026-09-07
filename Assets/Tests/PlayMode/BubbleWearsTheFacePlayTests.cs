@@ -10,37 +10,34 @@ using HiddenHarbours.World;
 namespace HiddenHarbours.Tests.PlayMode
 {
     /// <summary>
-    /// <b>THE BUBBLE WEARS THE FACE ITS OWN RIG DREW</b> — and, the half that is easy to miss, at the
-    /// right SIZE.
+    /// <b>THE BUBBLE WEARS THE FACE ITS OWN RIG DREW</b> — and lands it on the grid the panel is drawn on.
     ///
-    /// <para><b>Why this is not a one-line assertion about a font field.</b> <c>HarbourType</c> is a
-    /// Unity legacy (non-dynamic) <c>Font</c>: uGUI passes it <c>fontSize = 0</c>, so it ignores
-    /// <c>Text.fontSize</c> and draws every glyph at its baked size — advance 5, line height 10. The
-    /// bubble's art is drawn at <see cref="DialogueBubbleKit.ArtScale"/>. Swapping the font alone would
-    /// therefore put every line of dialogue on screen at a THIRD of its size inside a panel three times
-    /// too big for it, and a test that only checked <c>text.font</c> would call that a pass.</para>
+    /// <para><b>The size is the half a font check would miss.</b> <c>HarbourType</c> is baked at
+    /// <see cref="HarbourType.GlyphHeight"/> px with a monospace advance of
+    /// <see cref="HarbourType.Advance"/>, and Unity draws a font at <c>fontSize / font.fontSize</c> times
+    /// its baked size. So the bubble's <c>fontSize</c> has to be <c>GlyphHeight × ArtScale</c> for one
+    /// glyph pixel to land on one kit pixel — and a test that only asserted <c>text.font</c> would call a
+    /// bubble whose type sat at a fractional scale a pass.</para>
     ///
-    /// <para><b>So the property measured here is geometric</b>: for every text in the bubble, <b>the
-    /// rect times its own scale IS the area it was meant to fill</b>, and its corner is that area's
-    /// corner. Hold those and the words land inside the panel at the size the kit drew them, whichever
-    /// font is loaded — which is what makes this checkable with no graphics device and no screenshot.
-    /// What it cannot tell anybody is whether it LOOKS right; that is the owner's eye.</para>
+    /// <para><b>What is measured here</b> is that one character occupies <c>Advance × ArtScale</c> canvas
+    /// units, that N of them occupy N of those, and that a line of
+    /// <see cref="DialogueBubbleKit.MaxCols"/> characters therefore fills the kit's widest panel exactly.
+    /// That is the monospace grid the caret owns, stated as arithmetic a headless run can check.</para>
     ///
-    /// <para><b>Both surfaces, on purpose.</b> The modal bubble and the ambient one are separate
-    /// presenters, and the failure this guards against is not "the font is wrong" but "the two are
-    /// wearing different faces on one screen", which only shows up when a villager speaks near a
-    /// conversation.</para>
+    /// <para><b>Both surfaces, on purpose.</b> The modal bubble and the ambient pool are separate
+    /// presenters; the failure guarded against is not "the font is wrong" but "the two disagree", which
+    /// only shows when a villager speaks near a conversation.</para>
     ///
     /// <para><b>Headless-safe by construction (⚠ do not relax).</b> Nothing renders or reads pixels.</para>
     /// </summary>
     public class BubbleWearsTheFacePlayTests
     {
-        const float Scale = DialogueBubbleKit.ArtScale;
-
-        static readonly float BubblePadX = DialogueBubbleKit.PanelInsetL * Scale;
-        static readonly float BubblePadBottom = DialogueBubbleKit.PanelInsetB * Scale;
-        static readonly float BubblePadTop =
-            (DialogueBubbleKit.PanelInsetT + DialogueBubbleKit.ChipHeight) * Scale;
+        /// <summary>Why a missing face is a FAILURE and not a skip — see the tripwire below.</summary>
+        const string MissingFace =
+            "the baked face did not load through Resources.Load<Font>(\"Type/HarbourType\"). " +
+            "It is COMMITTED under Assets/_Project/Art/UI/Resources/Type, so this is not \"the art has " +
+            "not landed yet\" — it is the asset having moved out of a Resources root, been renamed, or " +
+            "failed to import. The bubble would fall back to the built-in font and nobody would notice.";
 
         readonly List<Object> _spawned = new();
         DialoguePresenter _modal;
@@ -48,10 +45,10 @@ namespace HiddenHarbours.Tests.PlayMode
 
         static DialogueVoice Voice => new DialogueVoice
         {
-            CharactersPerSecond = 400f,
+            CharactersPerSecond = 4000f,
             CharactersPerTick = 1,
             PunctuationPauseSeconds = 0f,
-            ReadPauseSeconds = 0.2f,
+            ReadPauseSeconds = 30f,
         };
 
         [SetUp]
@@ -60,6 +57,7 @@ namespace HiddenHarbours.Tests.PlayMode
             Spawn("AudioListener").AddComponent<AudioListener>();
             InteractionGate.Reset();
             DialogueVoiceCatalog.Clear();
+            BubbleFace.ForgetCache();
 
             var camGo = Spawn("TestCamera");
             camGo.tag = "MainCamera";
@@ -89,6 +87,7 @@ namespace HiddenHarbours.Tests.PlayMode
             foreach (Object o in _spawned) if (o != null) Object.Destroy(o);
             _spawned.Clear();
             DialogueVoiceCatalog.Clear();
+            BubbleFace.ForgetCache();
             InteractionGate.Reset();
         }
 
@@ -115,28 +114,24 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return null;
         }
 
-        // ---- the face itself ------------------------------------------------------------------
+        // ---- the tripwire ---------------------------------------------------------------------
 
         /// <summary>
-        /// ⭐⭐ <b>THE TRIPWIRE: a missing face FAILS here, it does not skip.</b>
+        /// ⭐⭐ <b>A missing face FAILS here, it does not skip.</b>
         ///
         /// <para>The runtime is deliberately forgiving — <see cref="BubbleFace.Resolve"/> falls back to
         /// the built-in font so the bubble keeps working in a greybox, which is the project's standing
-        /// "right art or fallback, never wrong art" discipline and what every other bubble fixture runs
-        /// against. <b>The test suite must not be forgiving in the same direction.</b> The face is
-        /// COMMITTED; if it stops loading, the game quietly ships in Unity's built-in font and the only
-        /// thing that would ever say so is this.</para>
+        /// "right art or fallback, never wrong art" discipline. <b>The suite must not be forgiving in the
+        /// same direction.</b> The face is COMMITTED; if it stops loading, the game quietly ships in
+        /// Unity's built-in font and this is the only thing that would say so.</para>
         ///
-        /// <para><b>A genuinely different arm from <c>HarbourTypeBakeTests</c></b>, which loads the asset
-        /// through <c>AssetDatabase</c> by path. This loads it the way the GAME does — through
-        /// <c>Resources.Load</c> by key, at runtime — so it catches the asset being moved out of a
-        /// Resources root, or the key drifting from the folder, neither of which an AssetDatabase path
-        /// check can see.</para>
+        /// <para><b>A different arm from <c>HarbourTypeBakeTests</c></b>, which loads the asset through
+        /// <c>AssetDatabase</c> by path. This loads it the way the GAME does — <c>Resources.Load</c> by
+        /// key at runtime — so it catches the asset leaving a Resources root, or the key drifting from
+        /// the folder, neither of which a path check can see.</para>
         ///
-        /// <para><b>No runtime warning to match it, on purpose.</b> A <c>Debug.LogWarning</c> when the
-        /// face is absent would be an unexpected log message, and the test framework fails any test that
-        /// produces one — so a "loud" runtime would redden unrelated fixtures rather than this. The loud
-        /// half belongs here.</para>
+        /// <para><b>No matching runtime warning, on purpose:</b> an unexpected log message fails whichever
+        /// test happens to be running, so a "loud" runtime would redden unrelated fixtures instead.</para>
         /// </summary>
         [Test]
         public void TheFaceIsInTheProject_AndLoadsThroughItsResourcesKey()
@@ -145,50 +140,32 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.IsNotNull(BubbleFace.Face, MissingFace);
         }
 
-        /// <summary>Why a missing face is a failure and not a skip — see the tripwire above.</summary>
-        const string MissingFace =
-            "the baked face did not load through Resources.Load<Font>(\"Type/HarbourType\"). " +
-            "It is COMMITTED under Assets/_Project/Art/UI/Resources/Type, so this is not \"the art has " +
-            "not landed yet\" — it is the asset having moved out of a Resources root, been renamed, or " +
-            "failed to import. The bubble would fall back to the built-in font and nobody would notice.";
+        // ---- the face ---------------------------------------------------------------------------
 
-
-        /// <summary>
-        /// The tripwire the charter asked for: the bubble's font IS the baked asset, by object identity
-        /// rather than by name — a look-alike with the right name would still draw at the wrong size.
-        ///
-        /// <para>⚠ It is conditional on the face being imported, and says so loudly when it is not. The
-        /// bubble is required to keep WORKING without the face (that is the greybox arm every other test
-        /// in the project runs against), so an unimported face is an <c>Ignore</c> and not a failure —
-        /// but a silent skip would let the whole point of this PR rot, hence the message.</para>
-        /// </summary>
         [UnityTest]
         public IEnumerator TheModalBubbleWearsTheBakedFace()
         {
             yield return ShowModal("Fine morning.");
-
-            Font face = BubbleFace.Face;
-            Assert.IsNotNull(face, MissingFace);
+            Assert.IsNotNull(BubbleFace.Face, MissingFace);
 
             Text body = Find(_modal, "Body");
             Assert.IsNotNull(body, "the bubble has no Body text");
-            Assert.IsTrue(ReferenceEquals(body.font, face),
+            Assert.IsTrue(ReferenceEquals(body.font, BubbleFace.Face),
                 "the bubble is not drawing in HarbourType — it is wearing " +
                 $"'{(body.font != null ? body.font.name : "nothing")}'");
         }
 
         [UnityTest]
-        public IEnumerator BothBubbleSurfacesWearTheSameFace()
+        public IEnumerator BothBubbleSurfacesWearTheSameFaceAtTheSameSize()
         {
             yield return ShowModal("Fine morning.");
 
             AmbientSpeechPresenter ambient = AmbientSpeechPresenter.Instance;
             Assert.IsNotNull(ambient, "the ambient presenter did not install itself");
 
-            int id = AmbientSpeechId.Next();
             EventBus.Publish(new AmbientSpeechRequested(
-                id, _speaker, new Vector3(0f, 2.1f, 0f), "npc.test", null, "Some weather", null,
-                AmbientSpeechKind.NpcToNpc));
+                AmbientSpeechId.Next(), _speaker, new Vector3(0f, 2.1f, 0f), "npc.test", null,
+                "Some weather", null, AmbientSpeechKind.NpcToNpc));
             yield return null;
             yield return null;
 
@@ -201,93 +178,109 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.IsTrue(ReferenceEquals(modalBody.font, ambientBody.font),
                 $"the conversation bubble wears '{modalBody.font?.name}' and the overheard one wears " +
                 $"'{ambientBody.font?.name}' — two faces on one screen");
-            Assert.That(ambientBody.rectTransform.localScale.x,
-                        Is.EqualTo(modalBody.rectTransform.localScale.x).Within(1e-4f),
-                        "the two surfaces scale their type differently, so one of them is the wrong size");
-        }
-
-        // ---- the size, which is the half a font check misses -------------------------------------
-
-        /// <summary>
-        /// ⭐⭐ <b>The property the whole change turns on.</b> The body text's rect, multiplied by its own
-        /// localScale, must equal the panel's inner area — the panel inset by the kit's own paddings.
-        /// Hold that and the words fill the panel exactly at either scale; break it and they are three
-        /// times too big or three times too small, which no font assertion would notice.
-        /// </summary>
-        [UnityTest]
-        public IEnumerator TheBodyTextCoversExactlyThePanelsInnerArea()
-        {
-            yield return ShowModal("Fine morning, and a fair wind with it.");
-
-            Text body = Find(_modal, "Body");
-            RectTransform panel = body.transform.parent as RectTransform;
-            Assert.IsNotNull(panel, "the body text is not parented to the panel");
-
-            Vector2 expected = new Vector2(panel.sizeDelta.x - BubblePadX * 2f,
-                                           panel.sizeDelta.y - BubblePadTop - BubblePadBottom);
-            Vector2 actual = Vector2.Scale(body.rectTransform.sizeDelta,
-                                           body.rectTransform.localScale);
-
-            Assert.That(actual.x, Is.EqualTo(expected.x).Within(0.01f),
-                $"the body text covers {actual.x:0.##} canvas units of width where the panel's inner " +
-                $"area is {expected.x:0.##} — scale {body.rectTransform.localScale.x} applied to rect " +
-                $"{body.rectTransform.sizeDelta.x:0.##}");
-            Assert.That(actual.y, Is.EqualTo(expected.y).Within(0.01f),
-                $"the body text covers {actual.y:0.##} canvas units of height where the panel's inner " +
-                $"area is {expected.y:0.##}");
-        }
-
-        /// <summary>The other half of the same property: the text starts at the panel's INSET CORNER, so
-        /// filling the right amount of space is not enough — it has to be the right space.</summary>
-        [UnityTest]
-        public IEnumerator TheBodyTextStartsAtThePanelsInsetCorner()
-        {
-            yield return ShowModal("Fine morning.");
-
-            Text body = Find(_modal, "Body");
-            RectTransform panel = body.transform.parent as RectTransform;
-            RectTransform rt = body.rectTransform;
-
-            Assert.That(rt.pivot, Is.EqualTo(new Vector2(0f, 1f)),
-                        "the text must pivot at its top-left, or the scale grows it off the panel");
-
-            var expected = new Vector2(-panel.sizeDelta.x * 0.5f + BubblePadX,
-                                       panel.sizeDelta.y * 0.5f - BubblePadTop);
-            Assert.That(rt.anchoredPosition.x, Is.EqualTo(expected.x).Within(0.01f));
-            Assert.That(rt.anchoredPosition.y, Is.EqualTo(expected.y).Within(0.01f));
-        }
-
-        [UnityTest]
-        public IEnumerator TheAmbientBodyTextCoversItsOwnPanelsInnerArea()
-        {
-            AmbientSpeechPresenter ambient = AmbientSpeechPresenter.Instance;
-            Assert.IsNotNull(ambient);
-
-            int id = AmbientSpeechId.Next();
-            EventBus.Publish(new AmbientSpeechRequested(
-                id, _speaker, new Vector3(0f, 2.1f, 0f), "npc.test", null,
-                "Some weather we are having", null, AmbientSpeechKind.NpcToNpc));
-            yield return null;
-            yield return null;
-
-            Text body = Find(ambient, "Body");
-            RectTransform panel = body.transform.parent as RectTransform;
-
-            Vector2 expected = new Vector2(panel.sizeDelta.x - BubblePadX * 2f,
-                                           panel.sizeDelta.y - BubblePadTop - BubblePadBottom);
-            Vector2 actual = Vector2.Scale(body.rectTransform.sizeDelta, body.rectTransform.localScale);
-
-            Assert.That(actual.x, Is.EqualTo(expected.x).Within(0.01f));
-            Assert.That(actual.y, Is.EqualTo(expected.y).Within(0.01f));
+            Assert.That(ambientBody.fontSize, Is.EqualTo(modalBody.fontSize),
+                "the two surfaces draw their type at different sizes, so one of them is off the grid");
         }
 
         /// <summary>
-        /// The panel still GROWS with the words. This is the regression the scale arithmetic could
-        /// silently cause: a measurement taken in the text's units and compared against a panel in canvas
-        /// units, with the multiply missing, sizes every bubble to the minimum and clips the line.
+        /// ⭐ The defect this PR fixes beyond the swap itself. The body was already at 24 — which is
+        /// <c>GlyphHeight × ArtScale</c>, by luck of the greybox rather than by derivation — but the name
+        /// chip was at 17 and the option rows at 22, neither a multiple of the baked 8. Wearing the face
+        /// at those sizes would resample every glyph in them at a fractional scale.
         /// </summary>
         [UnityTest]
-        public IEnumerator ALongerLineStillMakesAWiderOrTallerBubble()
+        public IEnumerator EveryTextInTheBubbleIsAtTheDerivedSize_NotJustTheBody()
+        {
+            var options = new[]
+            {
+                new DialogueOption { Id = "option.a", Label = "Ask about the dory" },
+                new DialogueOption { Id = "option.b", Label = "Ask about the weather" },
+            };
+            _modal.Play(new DialogueRequest(
+                new[] { new DialogueLine("Aunt Ginny", "Fine morning.") },
+                _speaker, new Vector3(0f, 2.1f, 0f), Voice, options, "dialogue.test", "npc.test"));
+            yield return null;
+            _modal.Advance();      // fill the line
+            _modal.Advance();      // ...and open the rows
+            yield return null;
+            yield return null;
+
+            foreach (Text t in _modal.GetComponentsInChildren<Text>(true))
+            {
+                if (t.gameObject.name == "ContinueHint") continue;   // deliberately smaller, and hidden
+                Assert.That(t.fontSize, Is.EqualTo(BubbleFace.FontSize),
+                    $"'{t.gameObject.name}' draws at {t.fontSize}, not the derived " +
+                    $"{BubbleFace.FontSize}. A size that is not a whole multiple of " +
+                    $"{HarbourType.GlyphHeight} resamples the baked glyphs at a fractional scale.");
+            }
+        }
+
+        // ---- the grid -----------------------------------------------------------------------------
+
+        [Test]
+        public void TheDerivedSizePutsOneGlyphPixelOnOneKitPixel()
+        {
+            Assert.That(BubbleFace.FontSize,
+                        Is.EqualTo(HarbourType.GlyphHeight * DialogueBubbleKit.ArtScale),
+                        "the type and the panel must be drawn at ONE scale");
+            Assert.That(BubbleFace.FontSize % HarbourType.GlyphHeight, Is.Zero,
+                        "a fontSize that is not a whole multiple of the baked glyph height resamples " +
+                        "every glyph — which is what the point filter and the pixel-perfect zoom tiers " +
+                        "exist to avoid");
+            Assert.That(BubbleFace.AdvanceUnits,
+                        Is.EqualTo(HarbourType.Advance * DialogueBubbleKit.ArtScale));
+        }
+
+        /// <summary>
+        /// ⭐⭐ <b>The measurement that catches a wrong scale.</b> The face is monospace, so N characters
+        /// must span exactly N × <see cref="BubbleFace.AdvanceUnits"/> canvas units. At a fractional or
+        /// doubled scale this misses by a factor, not by a pixel.
+        /// </summary>
+        [UnityTest]
+        public IEnumerator NCharactersSpanExactlyNAdvances()
+        {
+            yield return ShowModal("m");
+            Assert.IsNotNull(BubbleFace.Face, MissingFace);
+
+            Text body = Find(_modal, "Body");
+            body.horizontalOverflow = HorizontalWrapMode.Overflow;
+
+            foreach (int n in new[] { 1, 4, 10, 30 })
+            {
+                body.text = new string('m', n);
+                Assert.That(body.preferredWidth,
+                            Is.EqualTo(n * BubbleFace.AdvanceUnits).Within(0.51f),
+                            $"{n} characters measured {body.preferredWidth:0.##} canvas units; the " +
+                            $"monospace cell is {BubbleFace.AdvanceUnits}, so they should measure " +
+                            $"{n * BubbleFace.AdvanceUnits}");
+            }
+        }
+
+        /// <summary>
+        /// ⭐ <b>The kit and the face agree to the unit.</b> The kit sizes its panel with
+        /// <c>PanelWidthFor(cols) = insetL + (cols × cellWidth − 1) + insetR</c>, and the face advances
+        /// one cell per character. So a line of exactly <see cref="DialogueBubbleKit.MaxCols"/> characters
+        /// lands on the widest panel the kit allows — <i>"past that the line wants a second bubble, not a
+        /// taller one"</i>. Those two numbers were written for each other before either was wired up.
+        /// </summary>
+        [UnityTest]
+        public IEnumerator AFullWidthLineLandsOnTheKitsWidestPanel()
+        {
+            Assert.IsNotNull(BubbleFace.Face, MissingFace);
+            yield return ShowModal(new string('m', DialogueBubbleKit.MaxCols));
+
+            RectTransform panel = Find(_modal, "Body").transform.parent as RectTransform;
+            float widest = DialogueBubbleKit.PanelWidthFor(DialogueBubbleKit.MaxCols)
+                           * DialogueBubbleKit.ArtScale;
+
+            Assert.That(panel.sizeDelta.x, Is.EqualTo(widest).Within(2f),
+                $"a {DialogueBubbleKit.MaxCols}-character line made a panel {panel.sizeDelta.x:0.#} " +
+                $"units wide; the kit's widest is {widest:0.#}. The type and the panel are not on one " +
+                "grid.");
+        }
+
+        [UnityTest]
+        public IEnumerator ALongerLineStillMakesABiggerBubble()
         {
             yield return ShowModal("Aye.");
             RectTransform panel = Find(_modal, "Body").transform.parent as RectTransform;
@@ -301,97 +294,26 @@ namespace HiddenHarbours.Tests.PlayMode
             Vector2 big = (Find(_modal, "Body").transform.parent as RectTransform).sizeDelta;
 
             Assert.IsTrue(big.x > small.x + 0.01f || big.y > small.y + 0.01f,
-                $"a long line produced the same panel as a short one ({small} vs {big}) — the text " +
-                "measurement is not reaching the panel size");
+                $"a long line produced the same panel as a short one ({small} vs {big})");
         }
 
-        /// <summary>
-        /// ⭐ <b>The kit and the face agree, and this is where you can see it.</b> The face is monospace
-        /// at <see cref="HarbourType.Advance"/> per character; the kit sizes its panel with
-        /// <c>PanelWidthFor(cols) = insetL + (cols × cellWidth − 1) + insetR</c>. So a line of exactly
-        /// <see cref="DialogueBubbleKit.MaxCols"/> characters should land on the widest panel the kit
-        /// allows — <i>"past that the line wants a second bubble, not a taller one"</i>.
-        ///
-        /// <para>If the scale arithmetic were out by a factor of three in either direction, this would
-        /// miss by hundreds of units. It is the cheapest end-to-end check that the type and the paper it
-        /// sits on are drawn to one grid.</para>
-        /// </summary>
+        // ---- the fallback -----------------------------------------------------------------------------
+
         [UnityTest]
-        public IEnumerator AFullWidthLineLandsOnTheKitsWidestPanel()
+        public IEnumerator WithoutTheFaceTheBubbleStillDraws_AtTheSameSize()
         {
-            Assert.IsNotNull(BubbleFace.Face, MissingFace);
+            // The greybox arm every other bubble fixture in the project runs against.
+            BubbleFace.UseFallbackForPlates(true);
+            yield return ShowModal("Fine morning.");
 
-            yield return ShowModal(new string('m', DialogueBubbleKit.MaxCols));
-
-            RectTransform panel = Find(_modal, "Body").transform.parent as RectTransform;
-            float widest = DialogueBubbleKit.PanelWidthFor(DialogueBubbleKit.MaxCols) * Scale;
-
-            Assert.That(panel.sizeDelta.x, Is.EqualTo(widest).Within(1f),
-                $"a {DialogueBubbleKit.MaxCols}-character line made a panel {panel.sizeDelta.x:0.#} " +
-                $"units wide; the kit's widest is {widest:0.#}. The type and the panel are not on one " +
-                "grid — check the scale multiply in SizeBubbleFor.");
-        }
-
-        /// <summary>The monospace promise the caret depends on: N characters measure N advances, in the
-        /// text's own units, whatever N is.</summary>
-        [UnityTest]
-        public IEnumerator TheFaceMeasuresOneAdvancePerCharacter()
-        {
-            Assert.IsNotNull(BubbleFace.Face, MissingFace);
-
-            yield return ShowModal("mmmm");
             Text body = Find(_modal, "Body");
-            body.text = "mmmm";
+            Assert.IsNotNull(body.font, "the bubble has no font at all without the face");
+            Assert.IsFalse(BubbleFace.IsFace(body.font));
+            Assert.That(body.fontSize, Is.EqualTo(BubbleFace.FontSize),
+                        "the fallback should draw at the same size, so swapping the face in and out does " +
+                        "not move the layout");
 
-            Assert.That(body.preferredWidth, Is.EqualTo(4f * HarbourType.Advance).Within(0.5f),
-                "four characters did not measure four advances — the face is not monospace here, and " +
-                "the caret owning a cell depends on it");
-        }
-
-        // ---- the fallback still works -------------------------------------------------------------
-
-        /// <summary>
-        /// Without the face the bubble must be EXACTLY what it was before this change: scale 1, and the
-        /// rect equal to the area rather than a third of it. The greybox is what every other test in the
-        /// project runs against, so breaking it would break them and not this.
-        /// </summary>
-        [Test]
-        public void TheFallbackScaleIsOne_AndTheRectIsTheAreaUnchanged()
-        {
-            Assert.That(BubbleFace.FallbackScale, Is.EqualTo(1f));
-            Assert.That(BubbleFace.ScaleFor(BubbleFace.Fallback()), Is.EqualTo(1f),
-                        "the built-in font honours fontSize and must not be scaled as well");
-
-            var area = new Vector2(300f, 90f);
-            Assert.That(BubbleFace.RectFor(area, BubbleFace.FallbackScale), Is.EqualTo(area));
-        }
-
-        [Test]
-        public void TheFaceScaleIsTheKitsArtScale_NotANumberOfItsOwn()
-        {
-            Assert.That(BubbleFace.FaceScale, Is.EqualTo((float)DialogueBubbleKit.ArtScale),
-                        "the type and the panel must be drawn at ONE scale, or the words and the paper " +
-                        "they sit on disagree");
-        }
-
-        [Test]
-        public void RectForAndAreaFor_AreInverses()
-        {
-            // The one function whose failure mode is silent: divide instead of multiply and the words
-            // are nine times the wrong size, with nothing throwing.
-            var area = new Vector2(357f, 120f);
-            Vector2 rect = BubbleFace.RectFor(area, BubbleFace.FaceScale);
-            Assert.That(BubbleFace.AreaFor(rect, BubbleFace.FaceScale).x, Is.EqualTo(area.x).Within(1e-3f));
-            Assert.That(BubbleFace.AreaFor(rect, BubbleFace.FaceScale).y, Is.EqualTo(area.y).Within(1e-3f));
-            Assert.That(rect.x, Is.LessThan(area.x), "the rect must be SMALLER than the area it scales up to");
-        }
-
-        [Test]
-        public void AZeroScaleDoesNotDivideByZero()
-        {
-            var area = new Vector2(100f, 50f);
-            Assert.That(BubbleFace.RectFor(area, 0f), Is.EqualTo(area),
-                        "a nonsense scale should leave the rect alone, not produce infinities");
+            BubbleFace.ForgetCache();
         }
     }
 }
