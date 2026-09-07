@@ -2336,3 +2336,167 @@ def _diff(expected, actual, path, out, ignore_keys):
             _diff(a, b, f"{path}[{index}]", out, ignore_keys)
     elif expected != actual:
         out.append(f"{path}: {str(expected)[:40]!r} -> {str(actual)[:40]!r}")
+
+
+class CliffLineTests(unittest.TestCase):
+    """The cliffs — 165 placed walls the package said it shipped and did not.
+
+    Until now every package claimed, in three places, that the region's cliffs were somewhere to be
+    found: an empty cliff layer, `cliffLines: []` under a note calling cliff lines "an authoring
+    artefact of the editor", and an `x-derived` reading "the repo's cliffs are placed surfaces and
+    ship as entities". They did not. `CliffWallSurface` carries no `SpriteRenderer`, the entity walk
+    is a walk of sprites, and zero cliffs ever reached a package — while three sentences told the
+    reader otherwise. **This is the first invisible class that was CLAIMED PRESENT**, which is why
+    the count guard below exists: a falsehood of that shape must not be able to recur.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        cls.repo = Repo(REPO)
+        cls.documents = {
+            name: hh_scene_export.export_region(cls.repo, name, scene, height)
+            for name, scene, height in hh_scene_export.REGIONS
+        }
+
+    @staticmethod
+    def _surfaces_in(repo, scene):
+        """Every `CliffWallSurface` the SCENE holds — counted independently of the exporter, which
+        is the whole point: a guard that asked the exporter how many it exported would be a mirror."""
+        found = []
+        for game_object in scene.walk():
+            for component in scene.components_of(game_object):
+                if component.type_name != "MonoBehaviour":
+                    continue
+                guid = U.ref_guid(component.data.get("m_Script"))
+                path = repo.path_for_guid(guid) if guid else None
+                if path and os.path.basename(path) == "CliffWallSurface.cs":
+                    found.append((game_object, component))
+        return found
+
+    def test_every_cliff_in_the_scene_reaches_the_package(self):
+        """⭐ THE GUARD. Scene count in, package count out — 86 at Nine Mile Creek, 79 at St Peters.
+        Counted by walking the scene here rather than by asking the exporter, so it cannot pass by
+        agreeing with itself."""
+        expected = {"NineMileCreek": 86, "StPeters": 79}
+        for name, scene_rel, _height in hh_scene_export.REGIONS:
+            scene = Scene(U.parse_file(os.path.join(REPO, scene_rel)))
+            in_scene = len(self._surfaces_in(self.repo, scene))
+            self.assertEqual(in_scene, expected[name], f"{name}: the scene's cliff count moved")
+            self.assertEqual(len(self.documents[name]["cliffLines"]), in_scene,
+                             f"{name}: {in_scene} cliffs in the scene, "
+                             f"{len(self.documents[name]['cliffLines'])} in the package")
+
+    def test_no_note_still_claims_the_cliffs_ship_as_entities(self):
+        """The sentence that made this a falsehood rather than a gap. It appeared in two places and
+        must appear in neither — and there must still be no cliff entity, so the corrected note is
+        true rather than merely different."""
+        for name, document in self.documents.items():
+            blob = package.dumps(document)
+            self.assertNotIn("ship as entities", blob, f"{name} still claims cliffs are entities")
+            self.assertNotIn("authoring artefact of the editor", blob,
+                             f"{name} still calls its own cliff lines an editor artefact")
+            self.assertFalse([e for e in document["entities"]
+                              if "CliffWall" in (e.get("x-name") or "")],
+                             f"{name}: a cliff reached the entity list, so the note needs rewriting "
+                             "again rather than the test relaxing")
+            self.assertIn("cliffLines", document["terrain"]["layers"]["cliff"]["x-derived"])
+
+    def test_a_line_is_one_chunk_and_the_package_says_so(self):
+        """The builder pushes one surface per stretch, so a coastline arrives as many short lines.
+        Joining them into runs would be a derivation this exporter invents — the note has to say
+        that, or a reader takes 86 lines for 86 cliffs."""
+        note = self.documents["NineMileCreek"]["x-cliffLinesNote"]
+        self.assertIn("CHUNK", note)
+        self.assertIn("joining", note.lower())
+        stations = [c["x-stations"] for c in self.documents["NineMileCreek"]["cliffLines"]]
+        self.assertEqual(sum(stations), 740)
+        self.assertGreaterEqual(min(stations), 2, "a line with fewer than two stations is not a line")
+
+    def test_every_per_station_array_is_parallel_to_the_nodes(self):
+        """`x-toePlan`, `x-dropMetres` and `x-toeElevations` are per station and are read BY INDEX
+        against `nodes`. A short array would silently pair a drop with the wrong station — the same
+        class of defect as joining a face sample by list position."""
+        for name, document in self.documents.items():
+            for line in document["cliffLines"]:
+                count = len(line["nodes"])
+                self.assertGreater(count, 0, f"{name}: {line['x-name']} has no nodes")
+                for key in ("x-toePlan", "x-dropMetres", "x-toeElevations"):
+                    self.assertEqual(len(line[key]), count,
+                                     f"{name}: {line['x-name']} {key} is {len(line[key])} against "
+                                     f"{count} stations")
+                self.assertEqual(line["x-stations"], count)
+
+    def test_nodes_are_region_relative_like_every_other_position(self):
+        """A cliff plotted in the world frame and a wharf plotted in the region frame do not draw
+        the same coastline. Checked against the scene's own serialized brow plan."""
+        for name, scene_rel, _height in hh_scene_export.REGIONS:
+            document = self.documents[name]
+            centre = document["region"]["worldCenter"]
+            scene = Scene(U.parse_file(os.path.join(REPO, scene_rel)))
+            by_path = {}
+            for game_object, component in self._surfaces_in(self.repo, scene):
+                by_path[scene.hierarchy_path(game_object)] = component
+            checked = 0
+            for line in document["cliffLines"]:
+                component = by_path[line["x-path"]]
+                world = [U.vec(v, "x", "y") for v in (component.data.get("_browPlan") or [])]
+                self.assertEqual(len(world), len(line["nodes"]))
+                for (wx, wy), node in zip(world, line["nodes"]):
+                    self.assertAlmostEqual(node[0], wx - centre[0], places=4)
+                    self.assertAlmostEqual(node[1], wy - centre[1], places=4)
+                checked += 1
+            self.assertGreater(checked, 0)
+
+    def test_the_stations_are_dense_enough_that_splining_them_changes_nothing(self):
+        """The reference's cliff lines carry `nodes` alone — no derived `polyline` — so a reader may
+        treat them as control points and spline them. That is only safe because these are SAMPLED
+        stations: a catmull-rom interpolates its points, and at a quarter-metre there is no room
+        between them to deviate. If the builder ever samples coarsely this fails, and the answer is
+        to ship a polyline, not to relax the bound."""
+        for name, document in self.documents.items():
+            gaps = []
+            for line in document["cliffLines"]:
+                for a, b in zip(line["nodes"], line["nodes"][1:]):
+                    gaps.append(math.hypot(b[0] - a[0], b[1] - a[1]))
+            self.assertTrue(gaps, f"{name}: no cliff had two stations to measure between")
+            self.assertLessEqual(max(gaps), 0.26,
+                                 f"{name}: stations up to {max(gaps):.2f} m apart — too coarse to "
+                                 "hand to a spline as control points")
+            self.assertIn("SAMPLED STATIONS", document["cliffLines"][0]["curve"]["x-note"])
+
+    def test_a_cliff_line_carries_no_tiles_count(self):
+        """The reference carries one, but this exporter paints no cliff layer at all — a 0 would
+        read as a fact about the line rather than about the export, which is the distinction the
+        whole `x-unavailable` convention exists to keep."""
+        for name, document in self.documents.items():
+            for line in document["cliffLines"]:
+                self.assertNotIn("tiles", line, f"{name}: {line['x-name']} claims a tile count")
+            self.assertEqual(document["terrain"]["layers"]["cliff"]["rle"],
+                             [[0, document["terrain"]["cols"] * document["terrain"]["rows"]]])
+            self.assertIn("paints no cliff layer", document["x-cliffLinesNote"])
+
+    def test_ids_are_unique_stable_and_minted_the_way_entity_ids_are(self):
+        """The editor matches write-back rows by id, so a cliff line's id must not move for any
+        reason except the cliff moving — the same rule §8.2 settled for entities, and the same
+        minting."""
+        for name, document in self.documents.items():
+            ids = [c["id"] for c in document["cliffLines"]]
+            self.assertEqual(len(ids), len(set(ids)), f"{name}: duplicate cliff line ids")
+            entity_ids = {e["id"] for e in document["entities"]}
+            self.assertFalse(set(ids) & entity_ids, f"{name}: a cliff line id collides with an entity")
+            centre = document["region"]["worldCenter"]
+            scene = Scene(U.parse_file(os.path.join(
+                REPO, dict((n, s) for n, s, _h in hh_scene_export.REGIONS)[name])))
+            by_path = {scene.hierarchy_path(go): go
+                       for go, _c in self._surfaces_in(self.repo, scene)}
+            line = document["cliffLines"][0]
+            world = scene.world_of_game_object(by_path[line["x-path"]])
+            self.assertEqual(line["id"], package._stable_id(
+                line["x-path"], world[0] - centre[0], world[1] - centre[1]))
+
+    def test_the_cliffs_add_nothing_that_moves_between_two_runs(self):
+        again = {name: hh_scene_export.export_region(self.repo, name, scene, height)
+                 for name, scene, height in hh_scene_export.REGIONS}
+        for name, document in self.documents.items():
+            self.assertEqual(package.dumps(document["cliffLines"]),
+                             package.dumps(again[name]["cliffLines"]), name)
