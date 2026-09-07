@@ -5262,8 +5262,19 @@ Two traps worth keeping:
 
 ⚠ **Not covered: the PAINTED path** (ADR 0014, St Peters). It hands the shader an imported 8-bit PNG
 whose bytes the sim's own `PaintedTidalTerrain` decodes — render == sim by construction, which is the
-point of it, and which is also why the bytes are not ours to widen in this change. Same defect,
-different source; **register row 32**.
+point of it. Same defect, different source; **register row 32**.
+
+Two things about that row were written wrong here and are corrected before this PR merged. **The
+decoder needs nothing** — `PaintedHeightField.DecodeElevation(float r01, min, max)` takes a
+*normalized float* and `GetPixels()` returns floats whatever the bit depth, so the sim and the paint
+tool already read any width; what is 8-bit is the **write**, `new Texture2D(..., TextureFormat.R8, ...)`
+at two sites in `TerrainPaintTool`. And **it is live at St Peters in a clean clone**: no painted asset
+is committed anywhere in the repo, so `StPetersBuilder` falls through to its auto-bake — which is the
+painted path at 8 bits, and which the R16 fix above does *not* reach.
+
+⚠ The guard that row will need: the texture **importer** can silently down-convert the PNG back to R8
+with every test still green — the same shape as the `SetPixels32` trap above, one layer further out.
+Its acceptance must assert the format Unity **loads**, not the one the tool wrote.
 
 ### What this does not carry
 
