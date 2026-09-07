@@ -106,12 +106,12 @@ class RigPinningTests(unittest.TestCase):
         self.assertIsNone(source)
 
     def test_a_declared_rig_beats_a_stale_prose_mention(self):
-        """Trees.json declares treeIsoRig2 while its own note still credits the v1 rig."""
+        """Trees.json declares treeIsoRig3 while its own note still credits the v1 rig."""
         repo = Repo(REPO)
         name, source, _, _ = repo.rig_for_sheet(
             "Assets/_Project/Art/Foliage/Trees/RedMaple_mature_summer.png")
-        self.assertEqual(name, "treeIsoRig2")
-        self.assertEqual(source, "docs/art/rigs/treeIsoRig2.js")
+        self.assertEqual(name, "treeIsoRig3")
+        self.assertEqual(source, "docs/art/rigs/treeIsoRig3.js")
 
 
 class PackageTests(unittest.TestCase):
