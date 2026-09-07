@@ -60,8 +60,12 @@ namespace HiddenHarbours.Tests.PlayMode
         const float BayFloorElevation = -4f;    // the open bay, at the bake range's floor
         static readonly Vector2 OutInTheBay = new Vector2(70f, 50f);   // clear of the shoal and its falloff
 
-        /// <summary>Two quantisation steps of the R8 bake over its 10 m range — the claim is "these are
-        /// different ground", never "the byte round-tripped".</summary>
+        /// <summary>Two quantisation steps of an R8 bake over its 10 m range — the claim is "these are
+        /// different ground", never "the code round-tripped".
+        /// <para>⚠ The bake ships <c>R16</c> since rows 9 + 10 (eight bits could not hold a shoreline:
+        /// 28.7 cm of drawn edge at spring low over the bared shelf), so on this machine the bar is
+        /// LOOSE. It stays at the 8-bit step on purpose — a device without R16 falls back to R8 through
+        /// <c>SeabedBakeMath.FormatPreference</c>, and this must pass there too.</para></summary>
         const float Quantisation = (6f - BayFloorElevation) / 255f * 2f;
 
         Scene _origin, _harbour, _creek;

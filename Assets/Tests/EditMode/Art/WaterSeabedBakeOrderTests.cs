@@ -170,8 +170,11 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.IsTrue(_surface.TryReadBakedElevation(OutInTheBay, out float bay));
 
             // The acceptance the owner's report reduces to: the shoal is shallower than the bay, in the
-            // texture the shader samples. Tolerance is one quantisation step of the 12 m range over 8 bits
-            // (~4.7 cm), doubled — the claim is "these are different ground", not "the byte round-tripped".
+            // texture the shader samples. The claim is "these are different ground", not "the code
+            // round-tripped". ⚠ The bake ships R16 since rows 9 + 10 (8 bits could not hold a shoreline —
+            // 28.7 cm of drawn edge at spring low), so this bar is now LOOSE rather than tight: it is
+            // kept at the 8-bit step deliberately, because it also has to pass on a device that falls
+            // back to R8 through SeabedBakeMath.FormatPreference.
             const float Quantisation = (6f - -6f) / 255f * 2f;
             Assert.That(shoal, Is.EqualTo(terrain.ShoalElevation).Within(Quantisation),
                 "the wharf shoal must read as the terrain says it is.");
