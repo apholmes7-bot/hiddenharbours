@@ -144,14 +144,35 @@ namespace HiddenHarbours.Vehicles
             }
         }
 
+        /// <summary>
+        /// ⭐ <b>What she has on the plate</b>, as the trailer's own published kingpin — or an
+        /// unpublished one when she is bobtail, which is the honest reading of "nothing".
+        ///
+        /// <para><b>Pushed in by <see cref="VehicleHitch"/>, never looked up.</b> The hitch already
+        /// holds this controller (it reads her odometer every step), it is the one thing that knows
+        /// when a pin goes in, and a <c>GetComponent</c> the other way would make two components each
+        /// reach for the other. What the drive model needs is not a trailer, it is a LOAD and a
+        /// length — so that is what it is handed.</para>
+        /// </summary>
+        public VehicleKingpin Towing { get; private set; }
+
+        /// <summary>True while something is on her plate.</summary>
+        public bool IsTowing => Towing.Published;
+
+        /// <summary>Take a body onto the plate, or (with an unpublished pin) let one go. Called by
+        /// <see cref="VehicleHitch"/> only.</summary>
+        public void SetTow(in VehicleKingpin pin) => Towing = pin;
+
         /// <summary>What the pedals mean right now — her afloat envelope while she is swimming, her
-        /// land one otherwise. The ONE place the medium becomes a set of numbers.</summary>
+        /// land one otherwise, NARROWED by whatever is on the plate. The ONE place the medium and the
+        /// load become a set of numbers.</summary>
         public DriveEnvelope Envelope
         {
             get
             {
                 if (_vehicle == null) return default(DriveEnvelope);
-                return IsAfloat ? _vehicle.AfloatEnvelope : _vehicle.LandEnvelope;
+                DriveEnvelope medium = IsAfloat ? _vehicle.AfloatEnvelope : _vehicle.LandEnvelope;
+                return IsTowing ? medium.With(_vehicle.TowingLoad) : medium;
             }
         }
 
@@ -171,9 +192,21 @@ namespace HiddenHarbours.Vehicles
         {
             get
             {
+                // ⭐ THE PAIR'S GEOMETRY FIRST, then the speed. The first is a limit on how much lock
+                // the two machines can carry between them — a fact about their published lengths, true
+                // at a standstill in a yard. The second is speed-sensitive steering, a correction to
+                // the bicycle model. Applying the geometric one to the WHEEL POSITION is what keeps
+                // the drawn wheels and the physics saying the same thing.
+                float steer = _steer;
+                VehicleMeshDef mesh = _vehicle != null ? _vehicle.Mesh : null;
+                if (IsTowing && mesh != null)
+                    steer = VehicleCouplingMath.CoupledSteer(steer, mesh.MaxInnerSteerDegrees,
+                                                             mesh.WheelbaseMeters,
+                                                             Towing.KingpinToAxleCentreMeters);
+
                 float half = _vehicle != null ? _vehicle.SteerFalloffHalfSpeedMetersPerSecond : 0f;
-                if (half <= 0f) return _steer;
-                return _steer / (1f + Mathf.Abs(_speed) / half);
+                if (half <= 0f) return steer;
+                return steer / (1f + Mathf.Abs(_speed) / half);
             }
         }
 
@@ -227,6 +260,7 @@ namespace HiddenHarbours.Vehicles
         public void SetVehicle(VehicleDef vehicle)
         {
             _vehicle = vehicle;
+            Towing = default;       // a swap must not carry the last machine's trailer across either
             _steer = 0f;
             _speed = 0f;
             _leftTrackOdometerMeters = 0f;

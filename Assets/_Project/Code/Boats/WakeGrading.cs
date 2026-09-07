@@ -149,12 +149,11 @@ namespace HiddenHarbours.Boats
         /// non-positive or ≥ 90 collapses to 1, so a half-authored visual degrades to the old placement rather
         /// than to a wake stapled to the boat's middle. Pure + static.</para>
         /// </summary>
+        /// <remarks>⚠️ Row 29: a DELEGATION, not a second copy. The arithmetic is
+        /// <see cref="HiddenHarbours.Core.WakeRootMath.ForeshortenY"/>, shared with the foam buffer in
+        /// HiddenHarbours.Art so the two families cannot drift apart at the degenerate ends.</remarks>
         public static float ForeshortenY(float bakeElevationDegrees)
-        {
-            if (float.IsNaN(bakeElevationDegrees)) return 1f;
-            if (bakeElevationDegrees <= 0f || bakeElevationDegrees >= 90f) return 1f;
-            return Mathf.Sin(bakeElevationDegrees * Mathf.Deg2Rad);
-        }
+            => HiddenHarbours.Core.WakeRootMath.ForeshortenY(bakeElevationDegrees);
 
         /// <summary>
         /// Where an along-heading anchor lands ON SCREEN: walk <paramref name="alongHeading"/> metres from the
@@ -169,11 +168,8 @@ namespace HiddenHarbours.Boats
         /// </summary>
         public static Vector2 ProjectAlongHeading(Vector2 boatPos, Vector2 bow, float alongHeading,
                                                   float bakeElevationDegrees)
-        {
-            Vector2 dir = bow.sqrMagnitude > 1e-8f ? bow.normalized : Vector2.up;
-            Vector2 off = dir * alongHeading;
-            return boatPos + new Vector2(off.x, off.y * ForeshortenY(bakeElevationDegrees));
-        }
+            => HiddenHarbours.Core.WakeRootMath.ProjectAlongHeading(boatPos, bow, alongHeading,
+                                                                    bakeElevationDegrees);
 
         /// <summary>
         /// Where the plume's APEX pivot goes: at the boat's actual STERN (half the hull length back from the
@@ -195,9 +191,27 @@ namespace HiddenHarbours.Boats
         /// </summary>
         public static Vector2 SternAnchor(Vector2 boatPos, Vector2 bow, float hullLengthMeters, float asternOffset,
                                           float bakeElevationDegrees)
+            => SternAnchorFromRoot(boatPos, bow, Mathf.Max(0f, hullLengthMeters) * 0.5f, asternOffset,
+                                   bakeElevationDegrees);
+
+        /// <summary>
+        /// 🔴 <b>ROW 29 — the anchor taken from the ONE ROOT.</b> Same projection, same nudge, but the
+        /// distance astern is the hull's OWN measured transom offset
+        /// (<see cref="IBoatHullPresenter.WakeSternOffsetMeters"/>, resolved through
+        /// <see cref="HiddenHarbours.Core.WakeRootMath.SternOffsetMeters"/>) rather than half her
+        /// <c>BoatHullDef.LengthMeters</c>.
+        ///
+        /// <para>That is the whole of the owner's <i>"three different sections leaving the boat"</i>: the
+        /// buffer's sheet already used the rig-lofted number and these did not, so on the cape they sprang
+        /// from 6.60 m astern against the sheet's 6.40 m. <paramref name="asternNudge"/> survives as the
+        /// per-family offset FROM that shared root — it is config, not a constant.</para>
+        /// </summary>
+        public static Vector2 SternAnchorFromRoot(Vector2 boatPos, Vector2 bow, float sternOffsetMeters,
+                                                  float asternNudge, float bakeElevationDegrees)
         {
-            float back = Mathf.Max(0f, hullLengthMeters) * 0.5f + Mathf.Max(0f, asternOffset);
-            return ProjectAlongHeading(boatPos, bow, -back, bakeElevationDegrees);
+            float back = Mathf.Max(0f, sternOffsetMeters) + Mathf.Max(0f, asternNudge);
+            return HiddenHarbours.Core.WakeRootMath.ProjectAlongHeading(boatPos, bow, -back,
+                                                                        bakeElevationDegrees);
         }
 
         /// <summary>

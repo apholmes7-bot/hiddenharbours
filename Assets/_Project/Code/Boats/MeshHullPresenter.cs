@@ -68,6 +68,15 @@ namespace HiddenHarbours.Boats
         public float BakeElevationDegrees => _driver != null ? _driver.ElevationDegrees : 90f;
 
         /// <inheritdoc/>
+        // The rig-lofted transom offset, carried on the driver since Configure exactly as the elevation is.
+        // A torn-off driver reports 0, which WakeRootMath reads as "no rig" and answers with LOA/2 — the
+        // shipped sprite rule, not a wake collapsed onto her origin.
+        public float WakeSternOffsetMeters => _driver != null ? _driver.WakeSternOffsetMeters : 0f;
+
+        /// <inheritdoc/>
+        public float WatertightHalfBeamMeters => _driver != null ? _driver.WatertightHalfBeamMeters : 0f;
+
+        /// <inheritdoc/>
         // The baked def's own game-side flotation datum, carried on the driver since Configure. An
         // unskinned/destroyed driver reports 0 — keel on the surface, which is exactly the pose an
         // undriven hull already draws, so a torn-off rig degrades to the unsunk look rather than to

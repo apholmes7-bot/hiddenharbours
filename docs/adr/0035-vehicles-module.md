@@ -259,6 +259,79 @@ the reverse of the way she leaves. She turns on the spot across the boarding blo
 driver crosses the gravel to her. That is a pivot, not the three-point turn the park is sized for; an
 astern flag on a leg is the honest fix and is a follow-up.
 
+### A trip that TOWS is ten blocks, and it can only run on a pull-through (PR 6a, 2026-09-07)
+
+A `VehicleTripDef` may name a `TowedBodyId`. The plan then grows two beats — `Coupling` and
+`Uncoupling` — in which the driver walks to the **street-side release the player works**, the pin goes in
+and the landing gear winds up on the **crank the player turns**. Still only two authored hours: a beat's
+length is the walk it contains, so eight of the ten are derived.
+
+**The trailer is not a second kinematic model.** `Core.TowedFollowTrack` walks the road once at build
+time carrying her heading through `VehicleCouplingMath.FollowStep` — the function
+`TowedBody.FollowKingpin` calls every `LateUpdate` when the PLAYER is towing. After the walk a sample is
+two array reads and one rotation, so rule 5 survives intact: nothing ticked, nothing saved, a region
+streamed in at 06:12 draws the pair where 06:12 puts them. `TowedFollowTrackTests` drives a live
+`TowedBody` over the track's own stations and asserts **bit equality**, which is the only honest bar when
+there is one transcription rather than two.
+
+⭐⭐ **THE PULL-THROUGH LAW, and it is a constraint on the WORLD.** Three facts collide: a posed body
+cannot reverse; a coupled pair cannot pivot in a bay (the eight-block turn would sweep a 53-footer
+through the bays either side); and a trailer is re-derived from the clock rather than saved, so the day
+must CLOSE — she has to end it on the plate she was picked up off or she teleports at midnight. Together
+they force **both ends of a towing route to be pull-throughs**: she leaves each bay on the heading she
+arrived on. `VehicleTripPlan.Build` refuses anything else by name, with the miss measured in metres off
+the slot's centreline and degrees across its window, and the refusal is the shipped capture test
+(`VehicleCouplingMath.WouldCapture`) rather than a tolerance invented in the planner.
+
+**An ordinary there-and-back can never satisfy it**, which is why there is no towing run at Nine Mile
+Creek yet: the region's four roads meet at two junctions — a tree — so every errand doubles back, and all
+three shipped runs measure **180.0° apart at both bays against the slot's own 8.53°**.
+`NineMileCreekTowingTests` records that, and proves it is the roads and not the pair by building the same
+spec on the same road with a turning head sketched at each end. What is owed is ground.
+
+**Where she rests is SOLVED, not authored.** "Drive out, then drive home" is a map from her resting
+heading to itself, and a contraction (a trailer always swings toward her tractor), so it has one fixed
+point — which is where a trailer on that road actually ends up. The plan walks the day a few times to
+find it and builds the two tables from it, so the pose plan is exactly periodic and there is no snap at
+midnight. The region's authored bay is the seed and the sanity check.
+
+⚠️ **A trailer under tow is CLAIMED** (`TowedBody.HeldBy`), the same answer `DriveSeats` gives for a
+wheel: `VehicleHitch.CapturedTrailer` will not offer a body somebody else is posing, because you cannot
+pull a pin at 25 km/h and two clocks must not write one transform. Standing on her legs in her bay she is
+anybody's — the narrowest reading, and the owner's to widen.
+### A loaded pair turns wider and slower — half solved, half the owner's (PR 6b, 2026-09-07)
+
+Nine of the fleet's ten `VehicleDef` assets carried the **identical shipped default**: a 200 cc trike, a
+utility quad, a hightop van and a 53-ft-capable highway tractor all doing 11 m/s, 4.5 m/s² and two full
+locks a second. Only the Otter had ever been authored. Every machine now carries her own envelope, and
+the split between what is solved and what is tuned is the point:
+
+⭐⭐ **The coupled pair's STEERING is solved, from published art alone.**
+`VehicleCouplingMath.CoupledSteer` scales the TANGENT of the tractor's lock by
+`wheelbase / (wheelbase + L)`, `L` being the trailer's own `KingpinToAxleCentreMeters`. That makes her
+tightest circle **exactly** `(wheelbase + L) / tan(δ)` — the circle a rigid vehicle of the pair's whole
+length would draw. Nobody tunes a pair: the Aero keeps 0.497 of her lock behind a 28-ft pup (8.40 m →
+18.43 m circle) and 0.314 behind a 53 (→ 29.65 m), because those are the bodies' published lengths.
+Scaled in tangent space rather than on the angle, because `tan` runs 15 % above its angle by the 30–35°
+these machines lock to, and full lock is where the number matters.
+
+Narrowing the lock is also what keeps `JackknifeCapDegrees` honest: its own note warns that a pair you
+cannot fold further reads as a truck that stopped steering, and a driver with all her lock available
+lives against that cap. With the lock narrowed, the cap is the emergency it was written as.
+
+**Her SPEED, acceleration, braking and coast under load are FEEL, and they are the owner's** — four
+fractions on `VehicleDef` (`TowingSpeedFraction` and friends), because the game models no load and there
+is no honest arithmetic that turns a trailer into a stopping distance. `DriveEnvelope.With(load)` is a
+narrowing stacked on whichever medium she is in, exactly as the skid model's is.
+
+**The falloff half-speed is derived and then authored.** Speed-sensitive steering bites where lateral
+grip runs out, `v_half = sqrt(a_lat · R_min)` with `R_min = wheelbase / tan(inner lock)` — both the art's.
+One lateral constant serves the fleet, **anchored so the Dually keeps the 9 m/s she shipped with**, so
+nothing the owner has already driven changes and every other machine moves by her own geometry. The
+values live on the assets where he can move them; what `RoadFleetEnvelopeTests` holds is the ORDERING
+(a tighter circle loses her steering sooner), never the numbers — a fixture that pinned a tuning gate's
+values would go red the first time he used it.
+
 ### Occupancy is a registry, not a flag
 
 `DriveSeats` (Core) answers *is somebody other than the player at this wheel?* — the shape `HelmSlot`

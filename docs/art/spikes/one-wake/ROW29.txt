@@ -1,0 +1,12 @@
+row 29 — where the three families spring from, through a turn
+  CapeIslanderIsoHullMesh: lofted transom 6.40 m, half-beam 2.40 m, bake elevation 40 deg
+
+heading | arm    | sheet root         | sprite root        | separation
+     0° | before | (  0.00, -4.11) | (  0.00, -4.24) | 0.129 m (0.03 of her beam)
+     0° | after  | (  0.00, -4.11) | (  0.00, -4.21) | 0.096 m (0.02 of her beam)
+    45° | before | ( -4.53, -2.91) | ( -4.67, -3.00) | 0.168 m (0.04 of her beam)
+    45° | after  | ( -4.53, -2.91) | ( -4.63, -2.98) | 0.126 m (0.03 of her beam)
+    90° | before | ( -6.40,  0.00) | ( -6.60,  0.00) | 0.200 m (0.04 of her beam)
+    90° | after  | ( -6.40,  0.00) | ( -6.55,  0.00) | 0.150 m (0.03 of her beam)
+
+worst separation BEFORE 0.200 m, AFTER 0.150 m

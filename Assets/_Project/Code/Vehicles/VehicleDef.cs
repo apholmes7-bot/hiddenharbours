@@ -85,6 +85,29 @@ namespace HiddenHarbours.Vehicles
                  "0 disables the falloff and leaves the pure geometric model.")]
         [Min(0f)] public float SteerFalloffHalfSpeedMetersPerSecond = 9f;
 
+        [Header("With a body on the plate — the OWNER'S four knobs")]
+        [Tooltip("Top speed with a trailer coupled, as a fraction of her own. A loaded truck is not a " +
+                 "slower truck by any law of physics anybody has written down — she is slower because " +
+                 "of what she is carrying, and this game does not model a load. So this is a FEEL " +
+                 "number and it is the owner's, which is why it sits in four fields and not in code.\n\n" +
+                 "⚠️ Her STEERING is NOT here: how much lock a pair may use is solved from the two " +
+                 "machines' own published geometry (VehicleCouplingMath.CoupledSteer), so a 53 turns " +
+                 "wider than a pup without anybody tuning a pair.")]
+        [Range(0.1f, 1f)] public float TowingSpeedFraction = 0.72f;
+
+        [Tooltip("How hard she pulls away with a trailer on, as a fraction of her own. The one a " +
+                 "driver feels most: a loaded semi leaves a junction slowly.")]
+        [Range(0.1f, 1f)] public float TowingAccelerationFraction = 0.45f;
+
+        [Tooltip("How hard she stops with a trailer on, as a fraction of her own — the trailer is " +
+                 "pushing her.")]
+        [Range(0.1f, 1f)] public float TowingBrakingFraction = 0.65f;
+
+        [Tooltip("How fast she slows with nothing pressed, as a fraction of her own. Under 1 because " +
+                 "a loaded pair carries her way much further than a bobtail tractor — the one of the " +
+                 "four that makes her feel HEAVY rather than merely feeble.")]
+        [Range(0.1f, 1f)] public float TowingCoastFraction = 0.6f;
+
         [Header("Skid steer (a machine with no steering axle — SkidSteerMath)")]
         [Tooltip("How fast she spins ON THE SPOT at full stick, degrees per second, on the ground. " +
                  "The skid machine's whole steering feel in one number: a differential's yaw rate " +
@@ -187,6 +210,13 @@ namespace HiddenHarbours.Vehicles
             RouteWaypointReachMeters, RouteLookaheadMeters, RouteCruiseThrottle,
             RouteTurnThrottle, RouteSlowForTurnDegrees, RouteSteerGainDegrees);
 
+        /// <summary>What a body on the plate costs her, as four fractions of her own envelope. See
+        /// the header on the fields: these are FEEL and they are the owner's, unlike her steering,
+        /// which the two machines' geometry decides between them.</summary>
+        public TowingLoad TowingLoad => new(
+            TowingSpeedFraction, TowingAccelerationFraction, TowingBrakingFraction,
+            TowingCoastFraction);
+
         /// <summary>Her drive envelope on the ground — what the pedals mean on gravel.</summary>
         public DriveEnvelope LandEnvelope => new(
             MaxSpeedMetersPerSecond, MaxReverseSpeedMetersPerSecond,
@@ -252,5 +282,41 @@ namespace HiddenHarbours.Vehicles
         /// against.</summary>
         public float CeilingFor(float speed)
             => speed >= 0f ? MaxAheadMetersPerSecond : MaxAsternMetersPerSecond;
+
+        /// <summary>
+        /// ⭐ The same envelope with a body on the plate — slower to the top, slower away from a
+        /// standstill, longer to stop, and longer to lose her way with nothing pressed.
+        ///
+        /// <para>A NARROWING of whichever medium she is in, exactly as the skid model's is: she can
+        /// be towing afloat (the Otter cannot, but nothing here says so), and stacking narrowings
+        /// rather than selecting a second table is what keeps one set of numbers.</para>
+        /// </summary>
+        public DriveEnvelope With(in TowingLoad load) => new(
+            MaxAheadMetersPerSecond * load.SpeedFraction,
+            MaxAsternMetersPerSecond * load.SpeedFraction,
+            AccelerationMetersPerSecondSquared * load.AccelerationFraction,
+            BrakingMetersPerSecondSquared * load.BrakingFraction,
+            CoastDecelerationMetersPerSecondSquared * load.CoastFraction);
+    }
+
+    /// <summary>
+    /// <b>What a body on the plate costs a tractor</b>, as four fractions of her own envelope.
+    ///
+    /// <para>Fractions rather than a second set of absolutes, because the thing being said is
+    /// "three-quarters of what she can do" — so an owner who raises a truck's top speed does not
+    /// have to remember to raise her towing speed as well, and the two can never disagree about which
+    /// is the ceiling.</para>
+    /// </summary>
+    public readonly struct TowingLoad
+    {
+        public readonly float SpeedFraction, AccelerationFraction, BrakingFraction, CoastFraction;
+
+        public TowingLoad(float speed, float acceleration, float braking, float coast)
+        {
+            SpeedFraction = speed;
+            AccelerationFraction = acceleration;
+            BrakingFraction = braking;
+            CoastFraction = coast;
+        }
     }
 }

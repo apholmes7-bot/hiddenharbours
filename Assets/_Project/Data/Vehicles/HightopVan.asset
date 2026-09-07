@@ -16,15 +16,19 @@ MonoBehaviour:
   DisplayName: Hightop Van
   KindToken: road_vehicle
   Mesh: {fileID: 11400000, guid: a3f81513f9e482c4ea3e6e7779dec46b, type: 2}
-  MassKg: 3500
-  MaxSpeedMetersPerSecond: 11
+  MassKg: 2400
+  MaxSpeedMetersPerSecond: 11.5
   MaxReverseSpeedMetersPerSecond: 4
-  AccelerationMetersPerSecondSquared: 4.5
+  AccelerationMetersPerSecondSquared: 4
   BrakingMetersPerSecondSquared: 8
-  CoastDecelerationMetersPerSecondSquared: 2.2
-  SteerRateFullLocksPerSecond: 2
-  SteerReturnFullLocksPerSecond: 3
-  SteerFalloffHalfSpeedMetersPerSecond: 9
+  CoastDecelerationMetersPerSecondSquared: 2.3
+  SteerRateFullLocksPerSecond: 2.1
+  SteerReturnFullLocksPerSecond: 3.1
+  SteerFalloffHalfSpeedMetersPerSecond: 9.84
+  TowingSpeedFraction: 0.72
+  TowingAccelerationFraction: 0.45
+  TowingBrakingFraction: 0.65
+  TowingCoastFraction: 0.6
   SpinRateDegreesPerSecond: 75
   AfloatSpinRateDegreesPerSecond: 30
   AfloatMaxSpeedMetersPerSecond: 1.6

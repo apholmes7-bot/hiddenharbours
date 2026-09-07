@@ -31,12 +31,29 @@ REGIONS = [
 ]
 
 
-def export_region(repo, region_name, scene_rel, height_name):
+def exported_region_ids(repo):
+    """The region ids this exporter ships, from REGIONS and each region's own Def.
+
+    A passage that leads to Coddle Cove or East Water leads somewhere REAL — those have RegionDefs
+    — but not somewhere this export pictures, and the package says which so a reader is not left
+    wondering whether it lost a package or the region was never in one.
+    """
+    ids = set()
+    for region_name, _scene, _height in REGIONS:
+        region = repo.region_def(region_name)
+        if region.get("id"):
+            ids.add(region["id"])
+    return frozenset(ids)
+
+
+def export_region(repo, region_name, scene_rel, height_name, shipped_ids=None):
     region = repo.region_def(region_name)
     height_map = repo.painted_height(height_name)
     prov = provenance.collect(repo, region_name, scene_rel, height_map)
     scene = Scene(unityyaml.parse_file(repo.abs(scene_rel)))
-    return package.build_document(repo, region, scene, prov)
+    if shipped_ids is None:
+        shipped_ids = exported_region_ids(repo)
+    return package.build_document(repo, region, scene, prov, shipped_ids)
 
 
 def main(argv=None):
@@ -186,13 +203,18 @@ def _carry_forward_height(target, doc):
             f"(committed {str(committed_sha)[:12]}…, now {str(current_sha)[:12]}…). It cannot be "
             f"rebuilt here and must not be carried forward stale — re-run where the bytes are.")
 
-    # Same texture, so the committed contour is exactly what these bytes produce. Carry the
-    # height-derived blocks across verbatim and stamp where they came from.
-    doc["terrain"]["layers"]["ground"] = ground
-    if "x-heightField" in was_terrain:
-        doc["terrain"]["x-heightField"] = was_terrain["x-heightField"]
-    if "tiles" in was_terrain.get("stats", {}) and "stats" in doc["terrain"]:
-        doc["terrain"]["stats"]["tiles"] = was_terrain["stats"]["tiles"]
+    # Same texture, so everything the committed package derived from those bytes is exactly what
+    # these bytes produce. Carry ALL of it across and stamp where it came from.
+    #
+    # ⚠ EVERY field, not the ones somebody remembered. §6.1's promise is that a pointer-only
+    # re-export must not delete a coastline, and that promise is only as wide as this list: a
+    # field added to the exporter and not added here is silently blanked by the next re-export
+    # from a checkout without the bytes. That has happened twice — `stats.tiles.ground` and the
+    # ground legend were both being dropped, and `x-heightFieldFull`, the face samples and the
+    # moored hulls' beds joined them when the tide landed. `_height_derived` is now the one list,
+    # and `test_a_pointer_only_re_export_keeps_every_height_derived_field` walks the document
+    # rather than a remembered set, so the next such field fails a test instead of a harbour.
+    _carry_height_derived(was, doc)
     for block in (doc["x-provenance"]["heightMap"], doc["terrain"].get("x-heightMap") or {}):
         block["textureBytesRead"] = False
         block["heightCarriedForward"] = True
@@ -201,6 +223,91 @@ def _carry_forward_height(target, doc):
             "committed contour was built from, so that contour is exactly what these bytes "
             "produce and is kept rather than emptied")
     return True, None
+
+
+def _carry_height_derived(was, doc):
+    """Copy every value the height texture produced from ``was`` into ``doc``, in place.
+
+    Grouped by where it lives rather than listed flat, because the three shapes need three
+    different joins: terrain is one object, entities and hulls are lists that have to be matched
+    up by identity before a field can move between them.
+    """
+    was_terrain, terrain = was.get("terrain") or {}, doc.get("terrain") or {}
+
+    # 1. The ground contour and both height fields — whole objects, straight across.
+    for key in ("x-heightField", "x-heightFieldFull"):
+        if key in was_terrain:
+            terrain[key] = was_terrain[key]
+    layers = (was_terrain.get("layers") or {}).get("ground")
+    if layers and "ground" in (terrain.get("layers") or {}):
+        terrain["layers"]["ground"] = layers
+
+    # 2. The ground LEGEND. Its keys are the values the ground rle points at, so carrying the
+    # layer without them leaves an rle naming legend entries that are not there — which is the
+    # one shape `test_every_legend_key_is_used_and_every_rle_value_is_a_legend_key` forbids.
+    # Only the ground's own keys move; another layer's legend is this run's to state.
+    was_legend = was_terrain.get("legend") or {}
+    legend = terrain.setdefault("legend", {})
+    for key, value in was_legend.items():
+        if (value or {}).get("layer") == "ground":
+            legend[key] = value
+
+    # 3. The painted-cell count. ⚠ It lives at the DOCUMENT's `stats`, not the terrain's — the
+    # code here looked for `terrain.stats` for months and therefore never carried it at all,
+    # which is why a pointer-only re-export reported 0 painted ground cells beside a ground layer
+    # full of them.
+    was_tiles = (was.get("stats") or {}).get("tiles") or {}
+    tiles = (doc.get("stats") or {}).get("tiles")
+    if isinstance(tiles, dict) and "ground" in was_tiles:
+        tiles["ground"] = was_tiles["ground"]
+
+    # 4. Per-entity: the face's height-map cross-check. Joined on the entity id, which is minted
+    # from path and position and is stable across runs (see package._stable_id) — never on list
+    # position, because a scene edit that adds one entity would shift every sample by one and put
+    # the north wall's reading on the breakwater.
+    was_faces = {e.get("id"): (e.get("x-tidalFace") or {}).get("x-heightMapSample")
+                 for e in (was.get("entities") or [])}
+    for entity in (doc.get("entities") or []):
+        face = entity.get("x-tidalFace")
+        if not face:
+            continue
+        sample = was_faces.get(entity.get("id"))
+        if sample is not None:
+            face["x-heightMapSample"] = sample
+
+    # 5. Per-hull: the bed under her, and the sentence saying where it came from. Joined on
+    # x-path, which is what identifies a hull here — they carry no minted id, and two boats at one
+    # berth would otherwise be indistinguishable.
+    was_hulls = {h.get("x-path"): (h.get("x-tidalRide") or {})
+                 for h in (was.get("x-tidalHulls") or [])}
+    #
+    # ⚠ BOTH fields, and for EVERY matched hull — including the ones whose bed is legitimately
+    # null. "Her plan point falls outside the painted map" is itself something only a run holding
+    # the bytes can say; a pointer-only run can only manage "not sampled: the texture is an LFS
+    # pointer", which is true of the checkout and says nothing about the hull. The committed
+    # sentence is the better-informed one, and dropping it because the number beside it is null
+    # was the first thing the walk-the-document test caught.
+    carried_beds = 0
+    for hull in (doc.get("x-tidalHulls") or []):
+        ride = hull.get("x-tidalRide") or {}
+        previous = was_hulls.get(hull.get("x-path"))
+        if previous is None or ride.get("bedElevation") is not None:
+            continue
+        if "bedElevation" in previous:
+            ride["bedElevation"] = previous["bedElevation"]
+            if previous["bedElevation"] is not None:
+                carried_beds += 1
+        if previous.get("x-bedFrom"):
+            ride["x-bedFrom"] = previous["x-bedFrom"]
+
+    # 6. And the tally that COUNTS what step 5 just restored. A note left saying 1 of 8 hulls has
+    # a bed, beside eight hulls that have one, is worse than either answer on its own.
+    if carried_beds:
+        notes = ((doc.get("x-provenance") or {}).get("entityNotes") or {}).get("tidalHulls")
+        if isinstance(notes, dict):
+            working = [h for h in (doc.get("x-tidalHulls") or []) if h.get("x-kind") != "review"]
+            notes["workingWithBed"] = sum(
+                1 for h in working if (h.get("x-tidalRide") or {}).get("bedElevation") is not None)
 
 
 def _lfs_state_differs(written, out_dir):

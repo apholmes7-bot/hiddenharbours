@@ -315,6 +315,62 @@ namespace HiddenHarbours.Tests.PlayMode
 
         /// <summary>Vector2 equality to the centimetre — a pose written through a transform does not come
         /// back bit-identical and a test that demanded it would be measuring the FPU.</summary>
+        // =============================================================================================
+        //  A RE-PLAN MUST ACTUALLY RE-PLAN
+        // =============================================================================================
+
+        /// <summary>
+        /// ⭐⭐ <b>Move the owner's day-length knob and her timetable has to be rebuilt against it</b> —
+        /// the one thing <c>ScheduledTrip</c> re-plans for on its own, and the reason it stores the day
+        /// length it planned against at all.
+        ///
+        /// <para><b>Written because it was missing.</b> Road-fleet PR 6a taught <c>TryPlan</c> to build a
+        /// towing plan first and fall back to a solo one, and asked the <c>_plan</c> FIELD whether the
+        /// first build had failed — so on any re-plan that did not reach the towing branch, the previous
+        /// answer was still sitting there and the fallback never ran. On a solo trip like this one that
+        /// meant a truck keeping the six derived minutes of the OLD day for ever. Nothing in the suite
+        /// asked, because nothing had ever re-planned a live trip; three PlayMode refusal cases in the
+        /// new fixture found it, and this is the arm that has nothing to do with trailers.</para>
+        ///
+        /// <para>The assertion is on the PLAN, not on a pose: a rebuilt plan carries the day length it
+        /// was built against, which is the whole of what went stale.</para>
+        /// </summary>
+        [UnityTest]
+        public IEnumerator MovingTheDayLengthRebuildsHerTimetable()
+        {
+            yield return At(2f);
+            VehicleTripPlan first = _trip.Plan;
+            Assert.That(first, Is.Not.Null, "she never planned at all.");
+            Assert.That(first.SecondsPerGameHour, Is.EqualTo(SecondsPerGameHour).Within(1e-3f));
+
+            float drivingHours = first.MachineLegs.TravelHours(VehicleTripPlan.LegDriveOut,
+                                                               first.SecondsPerGameHour);
+
+            var config = ScriptableObject.CreateInstance<GameConfig>();
+            config.SecondsPerDay = GameConfig.DefaultSecondsPerDay * 2f;   // a day twice as long
+            _spawned.Add(config);
+            GameServices.Config = config;
+
+            // One frame to notice the knob moved (the component drops its plan and returns), one to
+            // rebuild on the next Update.
+            yield return At(2f);
+            yield return At(2f);
+
+            VehicleTripPlan rebuilt = _trip.Plan;
+            Assert.That(rebuilt, Is.Not.Null,
+                "the day got longer and she stopped planning altogether.");
+            Assert.That(rebuilt.SecondsPerGameHour,
+                        Is.EqualTo(config.SecondsPerDay / 24f).Within(1e-3f),
+                "her plan still carries the old day length — it was never rebuilt, so every derived hour " +
+                "in it is wrong for the day the world is now running.");
+            Assert.That(rebuilt.MachineLegs.TravelHours(VehicleTripPlan.LegDriveOut,
+                                                        rebuilt.SecondsPerGameHour),
+                        Is.LessThan(drivingHours * 0.75f),
+                "the same road at the same speed takes the same number of GAME hours in a day twice as " +
+                "long as it did before — which cannot be true, and is what a stale plan looks like from " +
+                "the outside.");
+        }
+
         static readonly System.Collections.IComparer Near = new NearComparer();
 
         sealed class NearComparer : System.Collections.IComparer

@@ -23,6 +23,19 @@ namespace HiddenHarbours.Vehicles
     /// truck that is about to pull away, and the switcher refuses the press if one gets through. She goes
     /// back to being a truck anybody may drive the moment she is parked and empty.</para>
     ///
+    /// <para>⭐⭐ <b>A RUN THAT TOWS COUPLES UP IN FRONT OF YOU.</b> Give the timetable a
+    /// <c>TowedBodyId</c> and wire the trailer the region placed, and the plan grows two beats: her
+    /// driver walks to the street-side release, the pin goes in and the legs wind up before he gets in
+    /// the cab — and the reverse at the end of the day. The trailer's own pose comes off
+    /// <c>Core.TowedFollowTrack</c>, which is <c>VehicleCouplingMath.FollowStep</c>: the same
+    /// off-tracking the player's own tow draws, not a second model of it.</para>
+    ///
+    /// <para>⚠️ <b>A towing run can be REFUSED, and it says why.</b> A coupled pair cannot pivot in a
+    /// bay, so both ends of the road have to be pull-throughs; and the trailer has to actually be on
+    /// the plate when the driver reaches the handle. Every refusal is named in
+    /// <see cref="LastRefusalReason"/> and logged once — a truck that quietly does not tow is
+    /// indistinguishable from one nobody has authored yet.</para>
+    ///
     /// <para>⚠️ <b>The road fleet carries NO colliders</b> (a carried defect from the driveable charter,
     /// its own PR). A scheduled truck therefore drives THROUGH a walker rather than round or into her.
     /// Nothing here makes that worse and nothing here fixes it.</para>
@@ -50,6 +63,13 @@ namespace HiddenHarbours.Vehicles
                  "through her own wall) with a truck door in place of the wall.")]
         [SerializeField] private Behaviour _driverTalkable;
 
+        [Tooltip("The towed body this run hauls — the one the REGION placed. Optional: a run with no " +
+                 "TowedBodyId on its timetable ignores it, and a run that wants one and has none is " +
+                 "refused by name rather than half-hung.\n\n" +
+                 "⚠️ Her POSE at build time is read off her transform, not typed here: she is where the " +
+                 "region stood her, and the plan checks that spot against the shipped capture test.")]
+        [SerializeField] private ParkedTrailer _trailer;
+
         [Header("Derived by the region builder — never typed")]
         [Tooltip("Her road out. First point is her home bay, last is the far bay.")]
         [SerializeField] private Vector2[] _outbound;
@@ -74,6 +94,8 @@ namespace HiddenHarbours.Vehicles
         private VehicleTripPlan _plan;
         private bool _planned;
         private bool _reported;
+        private bool _trailerReported;
+        private bool _holdsTrailer;
         private float _plannedSecondsPerGameHour;
         private IDriveSeat _seat;
         private bool _holdsSeat;
@@ -90,13 +112,29 @@ namespace HiddenHarbours.Vehicles
         /// <summary>Which trip asset she runs.</summary>
         public VehicleTripDef Trip => _trip;
 
+        /// <summary>The towed body this run hauls, as the region wired her. Null on a solo run.</summary>
+        public ParkedTrailer Trailer => _trailer;
+
+        /// <summary>
+        /// ⭐ <b>Why she is not towing</b>, in words, or null when there is nothing to explain.
+        ///
+        /// <para>Set for a run whose timetable asks for a trailer and did not get one: no body wired,
+        /// the wrong body wired, an unbaked pin — or geometry a coupled pair could not work, in which
+        /// case this carries <c>VehicleTripPlan.Build</c>'s own measured refusal. Read by the content
+        /// tests, so a region that quietly stops towing reddens instead of going unnoticed (#767's
+        /// pattern).</para>
+        /// </summary>
+        public string LastRefusalReason { get; private set; }
+
         /// <summary>Wire the whole thing up in one call — the region builder's path, and the tests'.</summary>
         public void Configure(VehicleTripDef trip, ParkedVehicle machine, Transform driver,
                               Vector2[] outbound, Vector2[] returnLeg,
                               Vector2 originPost, Vector2 originPostFacing,
                               Vector2 destinationPost, Vector2 destinationPostFacing,
-                              SpriteRenderer driverRenderer = null, Behaviour driverTalkable = null)
+                              SpriteRenderer driverRenderer = null, Behaviour driverTalkable = null,
+                              ParkedTrailer trailer = null)
         {
+            _trailer = trailer;
             _trip = trip;
             _machine = machine;
             _driver = driver;
@@ -110,6 +148,7 @@ namespace HiddenHarbours.Vehicles
             _driverTalkable = driverTalkable;
             _planned = false;
             _reported = false;
+            _trailerReported = false;
         }
 
         private void OnEnable()
@@ -119,11 +158,13 @@ namespace HiddenHarbours.Vehicles
             // minutes for ever. The build is one allocation and happens once per activation.
             _planned = false;
             _reported = false;
+            _trailerReported = false;
         }
 
         private void OnDisable()
         {
             ReleaseSeat();
+            ReleaseTrailer();
             ShowDriver();       // never leave a villager hidden — an invisible, un-talkable person reads
                                 // as broken dialogue, not as somebody who is out (VillagerRoutine's rule)
         }
@@ -147,6 +188,7 @@ namespace HiddenHarbours.Vehicles
             ApplyMachine(pose);
             ApplyDriver(pose);
             ApplySeat(pose);
+            ApplyTrailer(pose);
         }
 
         // ---- the three things a sample turns into ----------------------------------------------------
@@ -180,6 +222,75 @@ namespace HiddenHarbours.Vehicles
 
             Vector3 p = _driver.position;
             _driver.position = new Vector3(pose.DriverPosition.x, pose.DriverPosition.y, p.z);
+        }
+
+        /// <summary>
+        /// ⭐ <b>Pose the trailer, and work her legs.</b>
+        ///
+        /// <para>Her heading goes through <c>TowedBody.HeadingDegrees</c> rather than onto the transform
+        /// directly, because that setter is what keeps her field and her rotation in step — the fact
+        /// the class exists to hold (a heading kept in two places is two headings).</para>
+        ///
+        /// <para><b>The legs are SENT, not set.</b> The crank the player turns is the same crank, at its
+        /// own published speed, so a run that couples up drags her shoes for the moment the sidecar
+        /// warns about rather than snapping them clear. One handle, one animation, one truth.</para>
+        ///
+        /// <para>⚠️ <b>A trailer somebody else has coupled is left alone</b>, and said so once. Two
+        /// writers on one transform is the bug this whole file's seat claim exists to avoid; the truck
+        /// keeps her day and runs the errand bobtail, which is visibly a haulier without her trailer
+        /// rather than a village that stopped.</para>
+        /// </summary>
+        private void ApplyTrailer(in VehicleTripPose pose)
+        {
+            if (!pose.HasTrailer) return;
+
+            TowedBody body = _trailer != null ? _trailer.Trailer : null;
+            if (body == null) return;
+
+            if (body.IsCoupled)
+            {
+                ReleaseTrailer();
+                if (_trailerReported) return;
+                _trailerReported = true;
+                LastRefusalReason = "somebody else has her on a pin — this run goes bobtail today";
+                Debug.LogWarning($"[ScheduledTrip] {name}: {LastRefusalReason}.", this);
+                return;
+            }
+
+            // Claimed only while the plan has her pin in the slot: standing in her bay she is anybody's.
+            if (pose.TrailerCoupled != _holdsTrailer)
+                _holdsTrailer = pose.TrailerCoupled && body.TryHold(this);
+            if (!pose.TrailerCoupled) body.Release(this);
+
+            // ⚠️ A claim we did not get is a claim somebody else has, and posing her anyway would be the
+            // two-writers-one-transform bug with an extra step. Only two trips authored onto one trailer
+            // can reach this, which is a content error — so it is named rather than silently arbitrated.
+            if (pose.TrailerCoupled && !_holdsTrailer)
+            {
+                if (_trailerReported) return;
+                _trailerReported = true;
+                LastRefusalReason = "another scheduled run is already posing her";
+                Debug.LogWarning($"[ScheduledTrip] {name}: {LastRefusalReason} — two timetables cannot " +
+                                 "haul one trailer. This run goes bobtail.", this);
+                return;
+            }
+
+            Vector3 p = body.transform.position;
+            body.transform.position = new Vector3(pose.TrailerPosition.x, pose.TrailerPosition.y, p.z);
+            if (pose.TrailerDirection != Vector2.zero)
+                body.HeadingDegrees = BoatKinematics.BearingDegrees(pose.TrailerDirection);
+
+            // ⚠️ An explicit null check, never `?.` — Unity's fake-null makes the null-conditional
+            // operator lie about a destroyed component.
+            var doors = body.GetComponent<VehicleDoors>();
+            if (doors != null) doors.SetGroupTarget("gear", pose.TrailerLegsUp);
+        }
+
+        private void ReleaseTrailer()
+        {
+            TowedBody body = _trailer != null ? _trailer.Trailer : null;
+            if (body != null) body.Release(this);
+            _holdsTrailer = false;
         }
 
         /// <summary>Hold her wheel for as long as her driver has it. The claim spans the walk to the door
@@ -230,6 +341,16 @@ namespace HiddenHarbours.Vehicles
             _planned = true;
             _plannedSecondsPerGameHour = SecondsPerGameHour();
 
+            // ⚠⚠ DECIDED AFRESH, in a LOCAL. `_plan` still holds the last answer this component
+            // gave, and every path below has to be able to say "no plan" — so reading the FIELD as
+            // "did the build fail?" makes a stale plan answer for a new one. That bit three ways:
+            // a run whose trailer had gone kept posing a trailer that was not there; a run the
+            // timetable said should stay home went anyway; and — the one with nothing to do with
+            // trailers — every SOLO trip in the game kept its old derived hours across a day-length
+            // change, because the re-plan that change forces would not reach the assignment.
+            // The field is written exactly once, at the end, and cannot go stale by construction.
+            VehicleTripPlan plan = null;
+
             string problem = null;
             if (_trip == null) problem = "no trip asset";
             else if (!_trip.IsUsable()) problem = $"the trip asset '{_trip.Id}' is not usable — check " +
@@ -242,13 +363,47 @@ namespace HiddenHarbours.Vehicles
             if (problem == null)
             {
                 Vector2 doorLocal = _machine.Vehicle.Mesh.DriveDoorLocal;
-                var spec = new VehicleTripSpec(_outbound, _return, _originPost, _originPostFacing,
-                                               _destinationPost, _destinationPostFacing, doorLocal,
-                                               _trip.OutboundDepartureHour, _trip.ReturnDepartureHour,
-                                               _trip.CruiseMetresPerSecond, _trip.WalkMetresPerSecond);
-                _plan = VehicleTripPlan.Build(spec, _plannedSecondsPerGameHour, out problem);
+
+                VehicleTowedSpec towed = default;
+                bool wants = _trip.Tows;
+                bool tows = wants && TryTowedSpec(out towed);
+
+                if (tows)
+                {
+                    var pair = new VehicleTripSpec(
+                        _outbound, _return, _originPost, _originPostFacing, _destinationPost,
+                        _destinationPostFacing, doorLocal, _trip.OutboundDepartureHour,
+                        _trip.ReturnDepartureHour, _trip.CruiseMetresPerSecond,
+                        _trip.WalkMetresPerSecond, towed);
+
+                    plan = VehicleTripPlan.Build(pair, _plannedSecondsPerGameHour, out string refused);
+                    if (plan == null) Refuse(refused);
+                }
+
+                // ⭐ A REFUSED PAIR IS NOT A REFUSED ERRAND. The geometry could not carry a trailer —
+                // both ends of a towing road have to be pull-throughs — but the errand itself still can,
+                // so she runs it bobtail unless the timetable says the load is the whole point. Both
+                // readings are true of a real yard, which is why it is a field and not a rule (§Q2).
+                if (plan == null)
+                {
+                    if (wants && _trip.WhenTheTrailerIsNotThere == TrailerAbsence.StayHome)
+                    {
+                        problem = $"the load is the point of this run, and {LastRefusalReason}";
+                    }
+                    else
+                    {
+                        var solo = new VehicleTripSpec(
+                            _outbound, _return, _originPost, _originPostFacing, _destinationPost,
+                            _destinationPostFacing, doorLocal, _trip.OutboundDepartureHour,
+                            _trip.ReturnDepartureHour, _trip.CruiseMetresPerSecond,
+                            _trip.WalkMetresPerSecond);
+
+                        plan = VehicleTripPlan.Build(solo, _plannedSecondsPerGameHour, out problem);
+                    }
+                }
             }
 
+            _plan = plan;
             if (_plan != null || _reported) return;
 
             _reported = true;
@@ -256,6 +411,55 @@ namespace HiddenHarbours.Vehicles
                 $"[ScheduledTrip] {name} is standing still: {problem}. She keeps the spot the builder " +
                 "placed her on, which is what a truck without a trip already does — fix the content " +
                 "rather than the placement.", this);
+        }
+
+        /// <summary>
+        /// ⭐ <b>The towed half of the spec, off the two BAKED meshes and the trailer's own transform.</b>
+        /// False — with <see cref="LastRefusalReason"/> set and logged — whenever the timetable asks for a
+        /// trailer this machine cannot actually haul.
+        ///
+        /// <para>Nothing here is typed: the plate and the pin are the art's published numbers, and where
+        /// she stands is where the region stood her. What IS checked is that the body wired into the
+        /// scene is the body the timetable names — a region that quietly wires the wrong trailer would
+        /// otherwise produce a run that works and hauls the wrong thing.</para>
+        /// </summary>
+        private bool TryTowedSpec(out VehicleTowedSpec towed)
+        {
+            towed = default;
+            if (_trip == null || !_trip.Tows) return false;
+
+            string problem = null;
+            TowedBody body = _trailer != null ? _trailer.Trailer : null;
+
+            if (_trailer == null) problem = $"the timetable hauls '{_trip.TowedBodyId}' and the region " +
+                                            "wired no trailer at all";
+            else if (_trailer.Body == null) problem = "the trailer the region wired carries no mesh";
+            else if (_trailer.Body.Id != _trip.TowedBodyId)
+                problem = $"the region wired '{_trailer.Body.Id}' and the timetable hauls " +
+                          $"'{_trip.TowedBodyId}'";
+            else if (body == null) problem = "the wired trailer has not skinned, so she has no pin";
+            else if (!_machine.Vehicle.Mesh.CanTow)
+                problem = $"{_machine.Vehicle.DisplayName} publishes no fifth wheel — she does not tow";
+            else if (!body.Kingpin.Published)
+                problem = $"'{_trailer.Body.Id}' publishes no kingpin — nothing to hook";
+
+            if (problem != null) { Refuse(problem); return false; }
+
+            towed = new VehicleTowedSpec(
+                _machine.Vehicle.Mesh.FifthWheel, body.Kingpin,
+                body.transform.position,
+                BoatKinematics.BearingDegrees(body.transform.up));
+            return true;
+        }
+
+        /// <summary>State a refusal once. A run that silently stops towing is the failure this exists to
+        /// prevent, and a run that says so every frame is the other one.</summary>
+        private void Refuse(string why)
+        {
+            LastRefusalReason = why;
+            if (_trailerReported) return;
+            _trailerReported = true;
+            Debug.LogWarning($"[ScheduledTrip] {name} is not towing: {why}.", this);
         }
 
         /// <summary>Her drive seat, resolved live. Not cached in Awake: the skinner adds the door on the

@@ -49,6 +49,42 @@ namespace HiddenHarbours.Vehicles
         public bool IsCoupled => CoupledTo != null;
 
         /// <summary>
+        /// ⚠️ <b>Whoever is posing her right now, or null</b> — a scheduled trip while its plan has her
+        /// pin in the slot.
+        ///
+        /// <para><b>Why a claim and not just a flag.</b> A posed trailer has two things that could write
+        /// her transform, exactly as a scheduled truck has two things that could drive her; the seat
+        /// solves that with <see cref="DriveSeats"/> and this is the same answer one component along.
+        /// While a trip has her, <see cref="VehicleHitch.CapturedTrailer"/> does not offer her — you
+        /// cannot pull the pin on a trailer that is going down the road at 25 km/h, and a player who did
+        /// would take a body whose position is a function of somebody else's clock.</para>
+        ///
+        /// <para>She is claimed only while she is UNDER TOW. Standing on her legs in her bay she is
+        /// anybody's, which is the smallest answer to "may the player take a trailer an NPC trip needs"
+        /// that does not lock a yard down — and the owner's call to widen or narrow (§Q2).</para>
+        /// </summary>
+        public object HeldBy { get; private set; }
+
+        /// <summary>True while somebody is posing her.</summary>
+        public bool IsHeld => HeldBy != null;
+
+        /// <summary>Claim her for a poser. Refused when somebody else already holds her, so two trips
+        /// cannot both write one transform.</summary>
+        public bool TryHold(object holder)
+        {
+            if (holder == null || (HeldBy != null && !ReferenceEquals(HeldBy, holder))) return false;
+            HeldBy = holder;
+            return true;
+        }
+
+        /// <summary>Let her go. Symmetric with <see cref="TryHold"/>, and a no-op for anybody who is
+        /// not the holder — a component tidying up on disable must not release somebody else's claim.</summary>
+        public void Release(object holder)
+        {
+            if (ReferenceEquals(HeldBy, holder)) HeldBy = null;
+        }
+
+        /// <summary>
         /// ⭐ <b>Her heading in degrees</b>, the same convention the controller and the hitch use —
         /// and <b>carried by the ROOT TRANSFORM</b>, which is the whole point.
         ///
@@ -163,6 +199,12 @@ namespace HiddenHarbours.Vehicles
         /// <para>⚠️ The articulation is CLAMPED to the pair's cap, not refused. A jackknife held at
         /// its limit reads as a truck out of room; one that rejected the input would read as a
         /// truck that stopped steering.</para>
+        ///
+        /// <para>⭐⭐ <b>The arithmetic is <see cref="VehicleCouplingMath.FollowStep"/>, and this is the
+        /// only thing this method adds to it: a transform to write.</b> A scheduled trip tows the same
+        /// trailer down the same road through that same function without ever touching a GameObject
+        /// (<c>Core.TowedFollowTrack</c>), so the player's tow and an NPC's draw the same curve — there
+        /// is no second copy of the off-tracking to get out of step.</para>
         /// </summary>
         public void FollowKingpin(Vector2 kingpinWorld, float tractorHeadingDegrees,
                                   float distanceMeters, float capDegrees)
@@ -170,18 +212,11 @@ namespace HiddenHarbours.Vehicles
             VehicleKingpin pin = Kingpin;
             if (!pin.Published) return;
 
-            float articulation = Mathf.DeltaAngle(HeadingDegrees, tractorHeadingDegrees);
-            HeadingDegrees += VehicleCouplingMath.TrailerYawDeltaDegrees(
-                articulation, distanceMeters, pin.KingpinToAxleCentreMeters);
+            VehicleCouplingMath.FollowStep(HeadingDegrees, kingpinWorld, tractorHeadingDegrees,
+                                           distanceMeters, capDegrees, pin,
+                                           out float heading, out Vector2 origin);
 
-            // Hold the fold at the cap by moving HER, since the tractor is the one being driven.
-            float folded = Mathf.DeltaAngle(HeadingDegrees, tractorHeadingDegrees);
-            float allowed = VehicleCouplingMath.ClampArticulation(folded, capDegrees);
-            if (!Mathf.Approximately(folded, allowed))
-                HeadingDegrees = tractorHeadingDegrees - allowed;
-
-            Vector2 origin = VehicleCouplingMath.BodyOriginFromKingpin(
-                kingpinWorld, HeadingDegrees, pin);
+            HeadingDegrees = heading;   // the setter mirrors into the transform's rotation
             transform.position = new Vector3(origin.x, origin.y, transform.position.z);
         }
 
