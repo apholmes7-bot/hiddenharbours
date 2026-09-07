@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2933e489801c424e916f2f7394b9c0a8, type: 3}
+  m_Name: RodOnTheSand
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.InnerVoiceLineDef
+  Id: innervoice.rod_on_the_sand
+  Line: A rod, lying in the sand. No use to anyone down there.
+  Voice: {fileID: 11400000, guid: 39c5f36a05544a3ca51529354d86a52a, type: 2}
+  Trigger: 0
+  SubjectId: tool.st_peters.rod
+  RegionId: 
+  WorldPosition: {x: 0, y: 0}
+  RadiusMeters: 5
+  OnceOnly: 1
+  CooldownSeconds: 300
