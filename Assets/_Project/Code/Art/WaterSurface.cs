@@ -1624,11 +1624,12 @@ namespace HiddenHarbours.Art
 
         private void WriteElevationTexture(float[] elevation, int res)
         {
-            float span = Mathf.Max(_heightMax - _heightMin, 1e-3f);
             var pixels = new Color32[res * res];
             for (int i = 0; i < pixels.Length; i++)
             {
-                byte r = (byte)Mathf.Clamp(Mathf.RoundToInt((elevation[i] - _heightMin) / span * 255f), 0, 255);
+                // The encode lives in Core (SeabedBakeMath) so the register can reason about the drawn
+                // waterline offline — rows 9 + 10 measure the SHIPPED quantization, not a copy of it.
+                byte r = SeabedBakeMath.Encode(elevation[i], _heightMin, _heightMax);
                 pixels[i] = new Color32(r, r, r, 255);
             }
             _heightTex.SetPixels32(pixels);
