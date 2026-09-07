@@ -88,14 +88,46 @@ different PIVOT (the grip, not ground contact) and cannot be another variant of 
 
 ---
 
-## Plates owed
+## Plates
 
-To be rendered in the editor step, daylight, under this directory:
+Composed from the **committed sheets** through the **committed tables** — so unlike the intake lane's
+rig-rendered plates, these answer "does the game reach it", not "did the art director draw it well".
 
 | plate | what to look at |
 |---|---|
-| `fish-on-the-line.png` | one species at all three rungs on the line, with the mouth anchor drawn — the line must leave the mouth at every rung, not just the middle one |
-| `fish-on-the-deck.png` | the deck lay, seven species |
-| `held-lobster.png` | `Crust2Held_lobster` in the hand at eight headings — was a UI icon |
-| `hand-of-clams.png` | `Shell2Hand_clam`, the one-facing handful |
-| `hod-empty.png` | back + front, eight headings — and the honest caption that no baked sheet fills it |
+| [`fish-on-the-line.png`](fish-on-the-line.png) | cod at all three rungs × eight headings, red cross on the baked MOUTH — the point the line ties to. It has to sit on the mouth at the small and large rungs too, which is the whole reason the sidecar went rung-major. |
+| [`fish-on-the-deck.png`](fish-on-the-deck.png) | the deck lays of all seven species through the built library. Bass, flounder and herring had no library row at all before. |
+| [`held-lobster.png`](held-lobster.png) | `Crust2Held_lobster` at eight headings, around the back-grip pivot. This was a **UI icon** in the fisher's hand. |
+| [`hand-of-clams.png`](hand-of-clams.png) | `Shell2Hand_clam`, one facing, **shown 8×** — at strict world scale the cell is 8×8 px, and a plate nobody can judge has failed its job. |
+| [`hod-empty.png`](hod-empty.png) | back + front at eight headings, and empty, because no baked sheet fills it. |
+
+### What the rebuilt sidecar measured
+
+Both defects the code was written against were real, and the re-emitted `FishIsoAnchors.json` shows
+them:
+
+- **Hands belong to the rung.** Cod: 1 hand at 2 kg, a cradle at 5.59 and 12. Haddock: 1 hand at
+  1 kg and a **cradle at its middle rung, 2.79 kg** — and the middle rung is the sheet the game has
+  always loaded, against a species-level `hands: 1`. Haddock and pollock were drawing the one-handed
+  tail hold for a fish the rig says needs both arms.
+- **The mouth is affine in scale, not proportional.** Cod's dart mouth `dy` is `-2 / -5 / -8` at
+  scales 0.873 / 1.229 / 1.586. Scaling the middle rung would have predicted −3.55 and −6.45; the fit
+  is `dy = -8.41·scale + 5.34`, and that +5.34 px intercept is the z base the projection adds before
+  rounding. Scaling would have put the line **~2 px off the mouth at both outer rungs**.
+
+## 🔴 Retiring the pass-1 strips is a BAKE-CAPABILITY change, not a file deletion
+
+Every consumer now reads pass 2, so `CatchItem_{clam,crab,lobster,mussel}.png` are inert: nothing
+references their guids, and the library names them as superseded on every build. **Deleting the files
+is nevertheless not the change.** Measured, by deleting them and reading the results XML: **17 cases
+go red**, because three further places declare those stems as a closed set —
+
+- `CatchStorageSheetSlicer.Kits`, the slice manifest;
+- `CatchStorageSheetSliceTests`, the guard — including `EveryStoragePngInTheFolder_IsCoveredByThisTest`;
+- pass 1's `CatchStorageBaker.BakedItemKinds` **and its "Bake Catch Storage Kit" menu entry**, which
+  can recreate the files at any time.
+
+The real retirement therefore removes a baking capability the owner can still click and rewrites two
+test classes the storage lane owns. That is an art-pipeline decision rather than this lane's to take
+mid-run, so the files stay — inert, unreferenced and named in the build log — and the measurement is
+handed on.
