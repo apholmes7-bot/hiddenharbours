@@ -134,10 +134,20 @@ namespace HiddenHarbours.Boats
         /// a big/fast hull lays a wider trail. Always ≥ 0. Pure + static.
         /// </summary>
         public static float ShoulderHalfWidth(float hullLengthMeters, float magnitude01, in WakeTrailConfig c)
-        {
-            float baseHalf = Mathf.Max(0f, hullLengthMeters) * Mathf.Max(0f, c.ShoulderHalfWidthFraction);
-            return baseHalf * (1f + Mathf.Max(0f, c.WidthMagnitudeBoost) * Mathf.Clamp01(magnitude01));
-        }
+            => ShoulderHalfWidthFrom(Mathf.Max(0f, hullLengthMeters) * Mathf.Max(0f, c.ShoulderHalfWidthFraction),
+                                     magnitude01, in c);
+
+        /// <summary>
+        /// 🔴 <b>ROW 29 — the shoulders, from the ONE width.</b> Same magnitude boost, but the base is the
+        /// wake's shared half-width (the hull's watertight half-beam, via
+        /// <see cref="HiddenHarbours.Core.WakeRootMath.WakeHalfWidthMeters"/>) instead of a fraction of her
+        /// LENGTH. Before row 29 the buffer's sheet was 2.4 m wide on the cape while these lobes were
+        /// 12.9 x 0.14 = 1.81 m — the two halves of one wake disagreeing about the boat by a quarter.
+        /// </summary>
+        public static float ShoulderHalfWidthFrom(float wakeHalfWidthMeters, float magnitude01,
+                                                  in WakeTrailConfig c)
+            => Mathf.Max(0f, wakeHalfWidthMeters)
+             * (1f + Mathf.Max(0f, c.WidthMagnitudeBoost) * Mathf.Clamp01(magnitude01));
 
         /// <summary>
         /// The lateral SPREAD speed (m/s) a freshly-laid shoulder deposit moves outward at —
@@ -252,6 +262,20 @@ namespace HiddenHarbours.Boats
         /// </summary>
         public static float ChurnHalfWidth(float hullLengthMeters, in WakeTrailConfig c)
             => Mathf.Max(0f, hullLengthMeters) * Mathf.Max(0f, c.ChurnHalfWidthFraction);
+
+        /// <summary>
+        /// 🔴 <b>ROW 29 — the centre churn, from the ONE width.</b> The churn strip is NARROWER than the
+        /// shoulders and stays so: its share of the wake is the ratio the two shipped fractions already
+        /// express (0.10 / 0.14), so the SHAPE is unchanged and only the SCALE moves onto the hull's beam.
+        /// A degenerate shoulder fraction falls back to the churn's own, so a mis-tuned config cannot
+        /// divide by zero and widen the churn past the arms it is supposed to sit inside.
+        /// </summary>
+        public static float ChurnHalfWidthFrom(float wakeHalfWidthMeters, in WakeTrailConfig c)
+        {
+            float shoulder = Mathf.Max(0f, c.ShoulderHalfWidthFraction);
+            float share = shoulder > 1e-5f ? Mathf.Max(0f, c.ChurnHalfWidthFraction) / shoulder : 1f;
+            return Mathf.Max(0f, wakeHalfWidthMeters) * share;
+        }
 
         /// <summary>
         /// Where a churn puff lands: the track point pushed laterally by <paramref name="lat01"/> (−1..1,
@@ -473,6 +497,15 @@ namespace HiddenHarbours.Boats
                  "the swing about the boat's CENTRE, not her travel — which is what fanned the trail around " +
                  "amidships. 0 = lay purely along the course made good; 1 = the shipped stern-swept " +
                  "behaviour, bit-for-bit. The deposit POSITION is at the transom either way.")]
+        /// <remarks>WARNING: <b>ROW 29 looked at this and LEFT IT ALONE, which is worth writing down.</b>
+        /// The row-29 charter read "the deposits ride a blended track" as a POSITIONAL disagreement with
+        /// the advected buffer. It is not one: the deposit POSITIONS are
+        /// <c>PointOnTrack(prevStern, stern, t)</c> - the transom own swept path, which is exactly what
+        /// the buffer capsule lays on. This fraction governs <c>trackDir</c> alone, and that is the
+        /// LATERAL AXIS the shoulders and arms are placed along. Pulling it back toward the course is a
+        /// deliberate look decision with its own guard
+        /// (<c>WakeDispersalTests.ShippedSwingFraction_PullsTheTrackBackOntoTheCourse_ButKeepsSomeKick</c>),
+        /// so setting it to 1 re-fans the arms that guard exists to stop. Row 29 CONFIRMED it.</remarks>
         [Range(0f, 1f)] public float SternSwingFraction;
 
         [Header("The emergent V (spread where laid)")]

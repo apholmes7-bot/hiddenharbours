@@ -38,6 +38,11 @@ namespace HiddenHarbours.Boats
         private float _zeroHeadingDegrees;
         private bool _azimuthCounterClockwise;
         private float _elevationDegrees = 90f;
+        // Row 29: the two rig facts every family of foam reads, carried here beside the elevation for
+        // exactly the same reason — they are art facts of the baked hull and the wake knows her only
+        // through the presenter seam.
+        private float _wakeSternOffsetMeters;
+        private float _watertightHalfBeamMeters;
         private float _rockRollDegrees, _rockPitchDegrees, _rockHeavePixels;
         private int _pxPerMetre = 32;
         private float _designWaterlineMeters;
@@ -61,6 +66,14 @@ namespace HiddenHarbours.Boats
         /// <summary>The bake elevation of the def being presented (an art fact — see
         /// <see cref="IBoatHullPresenter.BakeElevationDegrees"/>). 90 (plan view) until configured.</summary>
         public float ElevationDegrees => _elevationDegrees;
+
+        /// <summary>Row 29: the rig-lofted transom offset (<see cref="HullMeshDef.WakeSternOffsetMeters"/>),
+        /// published to the wake through <see cref="IBoatHullPresenter.WakeSternOffsetMeters"/>. 0 until
+        /// configured, which reads as "no rig".</summary>
+        public float WakeSternOffsetMeters => _wakeSternOffsetMeters;
+
+        /// <summary>Row 29: the hull's watertight half-beam — the one width law's source.</summary>
+        public float WatertightHalfBeamMeters => _watertightHalfBeamMeters;
 
         /// <summary>Additive visual tilt (degrees, +CCW about z) — the
         /// <see cref="IBoatHullPresenter.VisualTiltDegrees"/> hook. Composed as EXTRA ROLL on the
@@ -189,6 +202,8 @@ namespace HiddenHarbours.Boats
             {
                 _azimuthCounterClockwise = def.AzimuthCounterClockwise;
                 _elevationDegrees = def.ElevationDeg;
+                _wakeSternOffsetMeters = def.WakeSternOffsetMeters;
+                _watertightHalfBeamMeters = def.WatertightHalfBeamMeters;
                 _rockRollDegrees = def.RockRollDegrees;
                 _rockPitchDegrees = def.RockPitchDegrees;
                 _rockHeavePixels = def.RockHeavePixels;

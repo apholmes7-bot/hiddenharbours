@@ -362,6 +362,7 @@ MonoBehaviour:
   SuspensionTravelRearMeters: 0
   DriveDoorLocal: {x: -1.15, y: -0.34}
   AltDriveDoorLocal: {x: 1.15, y: -0.34}
+  WayInInteractId: ride
   DriverSeatLocal: {x: 0, y: -0.34, z: 0.76}
   FloatSinkMeters: 0
   FloatDraftMeters: 0

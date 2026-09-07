@@ -16,15 +16,15 @@ MonoBehaviour:
   DisplayName: Enduro 250
   KindToken: road_vehicle
   Mesh: {fileID: 11400000, guid: 4e08c3b70ed9f844c9d54b2c12911886, type: 2}
-  MassKg: 3500
-  MaxSpeedMetersPerSecond: 11
-  MaxReverseSpeedMetersPerSecond: 4
-  AccelerationMetersPerSecondSquared: 4.5
+  MassKg: 112
+  MaxSpeedMetersPerSecond: 12
+  MaxReverseSpeedMetersPerSecond: 1.2
+  AccelerationMetersPerSecondSquared: 5.5
   BrakingMetersPerSecondSquared: 8
-  CoastDecelerationMetersPerSecondSquared: 2.2
-  SteerRateFullLocksPerSecond: 2
-  SteerReturnFullLocksPerSecond: 3
-  SteerFalloffHalfSpeedMetersPerSecond: 9
+  CoastDecelerationMetersPerSecondSquared: 2.6
+  SteerRateFullLocksPerSecond: 4
+  SteerReturnFullLocksPerSecond: 6
+  SteerFalloffHalfSpeedMetersPerSecond: 6
   SpinRateDegreesPerSecond: 75
   AfloatSpinRateDegreesPerSecond: 30
   AfloatMaxSpeedMetersPerSecond: 1.6
@@ -32,10 +32,10 @@ MonoBehaviour:
   AfloatAccelerationMetersPerSecondSquared: 0.8
   AfloatDragDecelerationMetersPerSecondSquared: 1.2
   SwimHysteresisMeters: 0.06
-  RouteWaypointReachMeters: 3
-  RouteLookaheadMeters: 12
+  RouteWaypointReachMeters: 1.5
+  RouteLookaheadMeters: 6
   RouteCruiseThrottle: 0.6
   RouteTurnThrottle: 0.15
   RouteSlowForTurnDegrees: 12
   RouteSteerGainDegrees: 20
-  CameraWorldHeightMeters: 18
+  CameraWorldHeightMeters: 13

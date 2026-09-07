@@ -1999,6 +1999,22 @@ namespace HiddenHarbours.App.Editor
                     "StPetersStore-channel buyer that takes your bucket over the same counter (B) for " +
                     "deliberately less than Nine Mile Creek pays.");
 
+            // --- THE THREE MACHINES AT THE STORE (owner 2026-09-07) ---------------------------------------
+            // The ATV pack's quad, trike and enduro, parked on the open ground at the shop's frontage — the
+            // island's only transport other than boats (the owner's words at the drop), and now something
+            // the PLAYER can walk up to and get on (ruling (d) of the pack).
+            //
+            // ⚠ The row is placed by the SAME code the menu item runs, so a rebuild and a one-click park
+            // cannot disagree about where they stand. It is the builder's answer for a region that CAN be
+            // rebuilt; on this island the menu is the one that actually reaches the owner's scene, because
+            // Build() wipes the hand-authored layer and there is no refresh command for St Peters.
+            // StPetersMachinesTests holds the committed scene against these same constants.
+            int machines = StPetersMachines.Place();
+            string gate = StPetersMachines.Gate.ToString("0.00");
+            Debug.Log(machines > 0
+                ? $"[StPetersBuilder] {machines} machines parked at the store, gate {gate}, noses out."
+                : "[StPetersBuilder] no machines at the store — the ATV defs did not load.");
+
             // --- THE OPENING CAST + ONBOARDING (world-content; the buy-and-repair beat, canon §5.8) ------
             // Aunt Ginny + Ned's LETTER, anchored up on the island near the cottage (no routines — that's
             // M2), the self-built dialogue panel, the proximity INTERACT driver, and the light one-line
