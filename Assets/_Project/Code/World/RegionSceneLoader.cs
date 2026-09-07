@@ -74,10 +74,29 @@ namespace HiddenHarbours.World
                 return true;
             }
 
+            // ⚠ ASK BEFORE ASKING THE ENGINE. SceneManager.LoadSceneAsync logs an ERROR of its own
+            // for a scene that is not in the build profile and THEN hands back null — so a region
+            // whose scene has not been built yet sprays the console every time a boat crosses its
+            // seam, and this method's tidy "declined" is buried under an engine error the caller
+            // cannot suppress. Asking first makes the whole refusal ours: one warning, no error.
+            //
+            // This is not hypothetical. A region's DOOR and its SCENE can legitimately land in
+            // different PRs — St Peters' east door shipped one merge ahead of the east water, which
+            // is the case that found this — and a seam that is merely not-built-yet must read as a
+            // soft edge rather than as a fault (rule 10).
+            if (!Application.CanStreamedLevelBeLoaded(to.SceneName))
+            {
+                Debug.LogWarning($"[RegionSceneLoader] Could not load scene '{to.SceneName}' for " +
+                                 $"{to.Id} — it is not in the build profile. Is the region built and " +
+                                 "added to Build Settings?", this);
+                return false;
+            }
+
             var op = SceneManager.LoadSceneAsync(to.SceneName, LoadSceneMode.Additive);
             if (op == null)
             {
-                // Scene not in Build Settings (e.g. the region scene hasn't been generated yet).
+                // Belt and braces — the check above should have taken this, but a null op is still a
+                // travel that did not happen, and the caller has to be told so it can take its key back.
                 Debug.LogWarning($"[RegionSceneLoader] Could not load scene '{to.SceneName}' for " +
                                  $"{to.Id} — is it built and in Build Settings?", this);
                 return false;

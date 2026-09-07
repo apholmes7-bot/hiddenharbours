@@ -188,6 +188,15 @@ namespace HiddenHarbours.Tests.PlayMode
             // already published — because a key left standing would be read by whatever arrival came
             // next, and the one thing worse than no key is somebody else's.
             //
+            // ⭐ THIS TEST EARNED ITS KEEP ON ITS FIRST RUN. It failed — because
+            // SceneManager.LoadSceneAsync logs an ENGINE ERROR of its own for a scene that is not in
+            // the build profile, and only THEN hands back null. The decline worked; it was just
+            // buried under an error the loader could not suppress, so every boat that crossed this
+            // seam before the east water existed would have reported a fault. RegionSceneLoader now
+            // asks Application.CanStreamedLevelBeLoaded FIRST, and the refusal is one warning of its
+            // own. LogAssert failing this test on an unexpected error is what found that, and is
+            // what keeps it fixed — so there is deliberately no LogAssert.Expect for an error here.
+            //
             // ⚠ Written to stay true AFTER the east water lands: once the scene is in Build Settings the
             // decline path no longer applies and the test says so rather than failing.
             yield return LoadTheIsland();
