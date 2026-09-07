@@ -83,9 +83,16 @@ namespace HiddenHarbours.Tests.PlayMode
             // previous test would be counted by the next one. Start each from an empty screen.
             _presenter.CancelAll();
 
-            // Safe to clear: nothing in the shipped game subscribes to the END signal yet, so this cannot
-            // unsubscribe a live component the way clearing the REQUEST channel would.
-            EventBus.Clear<AmbientSpeechEnded>();
+            // ⚠⚠ SUBSCRIBE, and NEVER Clear<T>() first. `EventBus.Clear` drops EVERY handler on the
+            // channel, including ones live components registered in their own OnEnable — and a
+            // DontDestroyOnLoad host only subscribes once per session, so a clear here silences it for
+            // the whole run, not just this fixture.
+            //
+            // ⭐ This line used to read "safe to clear: nothing in the shipped game subscribes to the END
+            // signal yet". That was TRUE when it was written and FALSE one PR later, when
+            // NpcConversationDirector became a subscriber — it sequences a two-hander on this exact
+            // channel. It cost six PlayMode reds in a class that had nothing to do with this fixture.
+            // A comment asserting what does NOT exist yet has a shelf life; the rule does not.
             EventBus.Subscribe<AmbientSpeechEnded>(OnEnded);
         }
 

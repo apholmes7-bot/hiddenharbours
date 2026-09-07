@@ -85,6 +85,29 @@ authored point. ⚠ The owner's own example — *"I could fix this"* — waits o
 repairability model, which does not exist in any form and is its own charter. The shipped clues speak
 about things whose state the game already knows.
 
+### How a two-hander is authored
+
+One `ConversationDef` asset names **the two who talk**, **the lines in order** (each tagged with which
+of the two says it), **where they meet** — a region and a station id from that region's own table, plus
+a radius — and **the window of the day** it may happen in. Adding an exchange is that asset and nothing
+else: no code, no scene edit, and no change to anybody's routine.
+
+**Meeting is where two routines already put two people.** The director never schedules anybody and
+never moves anybody; it watches for the moment both participants happen to be standing near the named
+station inside the window, and only then speaks. So a conversation is an *observation* of the routine
+system, never an input to it, and a routine stays the pure function of the clock it has always been.
+
+**The minute is seeded, not fixed.** Today's exchange starts at a point inside its window derived from
+`(worldSeed, dayIndex, conversationId)` — reproducible to the minute for a given world and day, and a
+different minute tomorrow. That is deliberately the opposite of a villager's departure jitter, which
+excludes the day so it stays learnable: a timetable you can learn is a feature, but two neighbours
+saying the same words at the same second of every day would read as a mechanism.
+
+**Each line waits for the one before it to be READ**, not for a timer, so the exchange runs at the
+speakers' own cadences. Anything other than a clean finish — the player pressing Talk on one of them,
+a speaker walking out of frame or despawning — ends the whole exchange rather than speaking an answer
+into a bubble that is no longer there.
+
 ## 3. The knowledge doctrine — no menus; knowledge lives in things and people
 
 **"Instead of menus there will be cellphones, computers, documents and the other npcs who
