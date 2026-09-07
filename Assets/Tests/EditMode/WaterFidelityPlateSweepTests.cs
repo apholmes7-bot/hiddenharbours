@@ -499,6 +499,185 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         // =============================================================================================
+        //  ⭐⭐ REGISTER ROWS 9 + 10 — THE KNOB SWEEP THAT NAMES THE CAUSE (the register's own method)
+        // =============================================================================================
+        //
+        //  Row 9: "the wet edge is a comb" — 1-3 m teeth along the dry/wet boundary, aligned with one axis.
+        //  Row 10: "the deep/shallow boundary is a wall" — pale shallows meet black deep water at a hard
+        //  edge about 1 m wide.
+        //
+        //  THE METHOD IS THE POINT: no shader line changes until a knob's ZERO removes the symptom. Each
+        //  arm moves ONE knob off the shipped value and everything else stays. The measurements are
+        //  colour-independent on purpose — an arm that changes the palette must not look like an arm that
+        //  fixed the geometry.
+
+        /// <summary>Row 9's metric: the dominant spatial PERIOD of luma along a shore-parallel transect.
+        /// A comb whose teeth come from the seabed texture's pitch has a period equal to that pitch, so
+        /// this number is what distinguishes "the cosmetic fringe is wiggling the contour" from "the
+        /// height map cannot resolve the contour". Returned in METRES.</summary>
+        static float DominantShorePeriodMetres(Color[] ldr, int y0, int x0, int x1, float metresPerPixel,
+                                               out float variation)
+        {
+            int n = Mathf.Max(0, x1 - x0);
+            variation = 0f;
+            if (n < 16) return 0f;
+
+            var v = new float[n];
+            double mean = 0;
+            for (int i = 0; i < n; i++)
+            {
+                Color c = ldr[y0 * ShotPx + x0 + i];
+                v[i] = 0.299f * c.r + 0.587f * c.g + 0.114f * c.b;
+                mean += v[i];
+            }
+            mean /= n;
+            double sq = 0;
+            for (int i = 0; i < n; i++) { v[i] -= (float)mean; sq += v[i] * v[i]; }
+            variation = (float)System.Math.Sqrt(sq / n);
+            if (sq < 1e-9) return 0f;
+
+            // Autocorrelation; the first interior peak is the repeat length. Lags below 2 px are noise and
+            // above n/4 have too few samples to mean anything.
+            int bestLag = 0; double best = double.MinValue;
+            for (int lag = 2; lag < n / 4; lag++)
+            {
+                double acc = 0;
+                for (int i = 0; i + lag < n; i++) acc += v[i] * v[i + lag];
+                acc /= (n - lag);
+                if (acc > best) { best = acc; bestLag = lag; }
+            }
+            return bestLag * metresPerPixel;
+        }
+
+        /// <summary>Row 10's metric: across a shore-PERPENDICULAR transect, how many metres the luma takes
+        /// to fall from 90 % to 10 % of its range (the wall's width), and how many distinct PLATEAUS it
+        /// crosses on the way (the posterisation's steps).</summary>
+        static void MeasureTheWall(Color[] ldr, int x0, int yTop, int yBottom, float metresPerPixel,
+                                   out float widthMetres, out int plateaus)
+        {
+            int n = Mathf.Max(0, yBottom - yTop);
+            widthMetres = 0f; plateaus = 0;
+            if (n < 8) return;
+
+            var v = new float[n];
+            float lo = 1f, hi = 0f;
+            for (int i = 0; i < n; i++)
+            {
+                Color c = ldr[(yTop + i) * ShotPx + x0];
+                v[i] = 0.299f * c.r + 0.587f * c.g + 0.114f * c.b;
+                lo = Mathf.Min(lo, v[i]); hi = Mathf.Max(hi, v[i]);
+            }
+            float range = hi - lo;
+            if (range < 1e-4f) return;
+
+            int first = -1, last = -1;
+            for (int i = 0; i < n; i++)
+            {
+                float t = (v[i] - lo) / range;
+                if (t <= 0.9f && first < 0) first = i;
+                if (t >= 0.1f) last = i;
+            }
+            if (first >= 0 && last > first) widthMetres = (last - first) * metresPerPixel;
+
+            // Plateaus: runs where the value moves less than a fifth of one posterisation step.
+            float step = range / Mathf.Max(1f, 6f);          // six bands is the shipped count
+            int runs = 1;
+            for (int i = 1; i < n; i++)
+                if (Mathf.Abs(v[i] - v[i - 1]) > step * 0.5f) runs++;
+            plateaus = runs;
+        }
+
+        /// <summary>Set a private serialized field past its own [Range] — the only way to shoot a
+        /// resolution the shipped clamp refuses. Diagnostic only; nothing here ships.</summary>
+        static void ForceHeightResolution(GameObject sea, int res)
+        {
+            var surface = sea.GetComponent<WaterSurface>();
+            var f = typeof(WaterSurface).GetField("_heightResolution",
+                        BindingFlags.Instance | BindingFlags.NonPublic);
+            Assert.IsNotNull(f, "WaterSurface._heightResolution must exist for the resolution arm");
+            f.SetValue(surface, res);
+            sea.SetActive(false);                            // one toggle re-runs the bake at the new grid
+            sea.SetActive(true);
+        }
+
+        [Test]
+        public void Rows9And10_TheKnobSweep_NamesTheCause()
+        {
+            RequireAGraphicsDevice();
+            Prepare();
+            Stage stage = BuildNineMileCreek();
+            stage.Name = "rows9-10";
+            stage.Title = "ROWS 9 + 10 - THE KNOB SWEEP";
+            stage.Aim = AimAtTheLongestSurfRun(stage);   // the same shoal the nmc-sand plate frames
+            BuildCamera();
+
+            string dir = Path.Combine(OutRoot, "rows9-10-sweep");
+            Directory.CreateDirectory(dir);
+            float mpp = FrameMetres / ShotPx;
+
+            var report = new StringBuilder();
+            report.AppendLine("register rows 9 + 10 - the knob sweep (nmc-sand, blow, spring low, noon)");
+            report.AppendLine($"  frame {FrameMetres:0.#} m over {ShotPx} px = {mpp:0.0000} m/px");
+            report.AppendLine($"  shipped seabed grid: {NineMileCreekBuilder.NineMileCreekHeightResolution} " +
+                              $"requested, clamped to 256 -> " +
+                              $"{Mathf.Max(NineMileCreekMainland.RegionWorldSize.x, NineMileCreekMainland.RegionWorldSize.y) / 256f:0.00} m per texel");
+            report.AppendLine();
+            report.AppendLine("arm                      | shore period m | shore variation | wall width m | plateaus");
+
+            var sr = stage.SeaGo.GetComponent<SpriteRenderer>();
+
+            void Arm(string name, System.Action apply, System.Action undo)
+            {
+                apply();
+                Publish(stage, Weather.Blow, Tide.Low, Hour.Noon, out _, out Color tint, out _, out _, out _);
+                _cam.transform.position = new Vector3(stage.Aim.x, stage.Aim.y, -100f);
+                Color[] ldr = Capture(tint, Path.Combine(dir, name.Replace(' ', '-') + ".png"));
+
+                float period = DominantShorePeriodMetres(ldr, ShotPx / 2, ShotPx / 8, ShotPx * 7 / 8, mpp,
+                                                         out float variation);
+                MeasureTheWall(ldr, ShotPx / 2, ShotPx / 8, ShotPx * 7 / 8, mpp,
+                               out float wall, out int plateaus);
+                report.AppendLine($"{name,-24} | {period,14:0.00} | {variation,15:0.0000} | " +
+                                  $"{wall,12:0.00} | {plateaus,8}");
+                undo();
+            }
+
+            void Knob(string prop, float shipped, float value, string label)
+            {
+                var block = new MaterialPropertyBlock();
+                Arm(label,
+                    () => { sr.GetPropertyBlock(block); block.SetFloat(prop, value); sr.SetPropertyBlock(block); },
+                    () => { sr.GetPropertyBlock(block); block.SetFloat(prop, shipped); sr.SetPropertyBlock(block); });
+            }
+
+            Arm("baseline (shipped)", () => { }, () => { });
+
+            // ---- row 9's chartered candidates, each alone -------------------------------------------
+            Knob("_ShoreNoise", 0.75f, 0f, "row9 _ShoreNoise 0");
+            Knob("_ShoreNoise", 0.75f, 1.5f, "row9 _ShoreNoise 1.5");
+            Knob("_FoamEdgeDither", 0.02f, 0f, "row9 _FoamEdgeDither 0");
+            Knob("_FoamEdgeDither", 0.02f, 0.08f, "row9 _FoamEdgeDither 0.08");
+
+            // ---- row 9's UNCHARTERED candidate: the seabed texel pitch --------------------------------
+            foreach (int res in new[] { 512, 1024 })
+            {
+                int r = res;
+                Arm($"row9 heightRes {r}", () => ForceHeightResolution(stage.SeaGo, r),
+                    () => ForceHeightResolution(stage.SeaGo, 256));
+            }
+
+            // ---- row 10 ------------------------------------------------------------------------------
+            Knob("_AbsorptionBands", 6f, 12f, "row10 bands 12");
+            Knob("_AbsorptionBands", 6f, 0f, "row10 bands 0 (cont)");
+            Knob("_Turbidity", 0.25f, 0.5f, "row10 turbidity 0.5");
+
+            File.WriteAllText(Path.Combine(dir, "SWEEP.txt"), report.ToString());
+            Debug.Log("[rows9-10] the knob sweep\n" + report);
+            Assert.IsTrue(File.Exists(Path.Combine(dir, "SWEEP.txt")),
+                "the sweep table must be written - it is what names the cause");
+        }
+
+        // =============================================================================================
         //  Headless guards on the instrument itself (run on CI too)
         // =============================================================================================
 
