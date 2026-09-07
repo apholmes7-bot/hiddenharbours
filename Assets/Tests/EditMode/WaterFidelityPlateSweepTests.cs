@@ -600,6 +600,30 @@ namespace HiddenHarbours.Tests.EditMode
             sea.SetActive(true);
         }
 
+        /// <summary>
+        /// ⚠️⚠️ <b>THIS SWEEP DID NOT WORK, AND ITS NUMBERS MUST NOT BE USED. It is kept as the record
+        /// of a method, not as an instrument.</b> Rows 9 + 10 were answered instead by
+        /// <c>SeabedBakeCombTests</c>, arithmetically and with no editor slot at all.
+        ///
+        /// <para>Two faults, both fatal, both invisible in the table it writes:</para>
+        /// <list type="number">
+        /// <item><description><b>The transect was 90° off.</b> <c>DominantShorePeriodMetres</c> samples a
+        /// HORIZONTAL row and calls it shore-parallel. Nine Mile Creek's shoreline runs VERTICALLY, so
+        /// the row crossed the shore instead of following it and every arm returned the same 0.08 m — a
+        /// measurement of nothing, that looks like a measurement of something.</description></item>
+        /// <item><description><b>The arms were confounded by <c>_Time</c>.</b> Mean |dRGB| against the
+        /// baseline was monotonic in SHOT ORDER (2.7 → 3.5 → 4.3 → 5.2 → 6.3 → 7.5 → 7.9 → 8.0 → 8.1):
+        /// the sweep photographed its own clock. This file's own "Limits of the instrument" note says
+        /// it — <i>"one instant: nothing that moves can be judged from it"</i> — and the sweep was
+        /// written anyway.</description></item>
+        /// </list>
+        ///
+        /// <para>⭐ The lesson that outlived it: <b>the wet edge is not a picture.</b> It is
+        /// <c>clip(_WaterLevel - lerp(_HeightMin, _HeightMax, tex.r))</c>, every term a number, so the
+        /// drawn edge's deviation from the sim's contour is arithmetic — no camera, no palette, no noise
+        /// floor and no clock. A knob sweep needs a render only when the quantity genuinely lives in
+        /// pixels; this one never did. See <c>docs/design/water-rendering.md</c> §41.</para>
+        /// </summary>
         [Test]
         public void Rows9And10_TheKnobSweep_NamesTheCause()
         {
