@@ -200,7 +200,7 @@ Material:
     - _SwashSpeed: 0.16
     - _SwellFaceShade: 0
     - _Turbidity: 1.2
-    - _UntileStrength: 0.644
+    - _UntileStrength: 1
     - _UseCausticTex: 1
     - _UseDepthRamp: 1
     - _UseFoamTex: 1
