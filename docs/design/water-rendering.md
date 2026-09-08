@@ -5473,3 +5473,134 @@ two halves of one sea cannot drift apart again — which is what §43.2's row pr
 
 Moves a number. `_AbsorptionBands`, `PrimaryAmplitude` and `SeaStateAmplitudeExponent` are all
 tunables and all the owner's. These are three tables and a verdict; the choices are his.
+
+## 44. Two from the beach — the sea vibrates when its mood changes, and it only reads as layers at noon
+
+Two owner observations from Nine Mile Creek on 2026-09-08, both named offline before anything moves.
+
+### 44.1 The vibration is one multiplication — `ω(now) · t`
+
+> *"the water starts oscillating very quickly when it changes states from light to calm to moderate
+> etc, its like its speed resynches and it vibrates and its very noticable"*
+
+`WaveMath.Sample` forms the phase as:
+
+```csharp
+travel = d·x - PhaseSpeed * timeSeconds;
+phase  = waveNumber * travel + PhaseOffset;
+```
+
+which is `φ = k·x − ω·t`, with `ω = k·c = √(2πg/λ)`. **`λ` is a function of the wind.** So when the
+sea state changes, ω changes, and the phase at a fixed world point and a fixed instant moves by
+`Δω · t`. The drawn rate through a transition is
+
+```
+    dφ/dt  =  ω  +  t · dω/dt
+              ^^     ^^^^^^^^
+             the     the defect: an error proportional to how long the world has been running
+             wave
+```
+
+Measured through one light→blow change (U 1.63 → 5.70 m/s over 4 s), at one world point, 60 fps —
+the wave itself runs at **0.316 Hz**:
+
+| game time | drawn rate | × the real wave |
+|---|---|---|
+| 1 min | 30.3 Hz | 96× |
+| 10 min | 310.6 Hz | 982× |
+| 1 hour | 1 867 Hz | 5 903× |
+| 3 hours | 5 604 Hz | 17 715× |
+| 1 day | 44 839 Hz | 141 739× |
+
+**It is not a constant defect — it gets worse the longer you play.** That growth is the signature: a
+wave, a blend curve and a frame-rate artefact none of them care how long the session has been running.
+
+**The dead control matters as much as the table.** With the wind *held still* the shipped law is exact
+at every game time — 0.316 Hz at one minute and at ten days. So the sea is not drawn wrong; **only the
+change is wrong**, which is precisely what the owner reported and why it reads as a glitch rather than
+as weather.
+
+⚠️ **Rule 5 is not to blame and must not be "fixed" by adding an accumulator.** The field being a pure
+function of (seed, gameTime) is right. The defect is that the function is `ω(now)·t` — a frequency
+that is *current* multiplied by a time that is *total*. A sea does not re-phase its whole history when
+the wind freshens.
+
+**The proposal: hold the frequencies fixed and let the sea state move only the amplitudes.** That is
+what a growing sea physically does — it puts energy into frequencies that were always there, it does
+not slide existing waves up the scale. The field is already an 8-train JONSWAP-shaped spectrum
+(`WaveTrains.MaxTrains`), so the bins to hold fixed already exist. Measured on the same transition at
+three hours in: **5 604 Hz → 0.316 Hz, which is the wave's own rate exactly**, at every game time and
+through any transition. The vibration is not reduced, it is *absent*, because the term that made it no
+longer exists. Still a pure function of (seed, gameTime); still no accumulator; still nothing saved.
+
+### 44.2 "It feels like layers" is a NOON reading, and the gate that changes is zero at solar noon
+
+> *13:12* — *"the vertical white water details vs the horizontal from nw to se water details, they dont
+> seem to work with one another… it just still doesnt feel like one coherent surface, it feels like
+> layers"*
+>
+> *15:51, same beach, sun low* — *"it actually looks really good in the evening, its making me rethink
+> what i just said."*
+
+Same water, same place, two readings. What changed between them is computable.
+
+The swell's only two shading terms — `_SwellFaceShade` (a value) and `_SunSideStrength` (a colour) —
+are both multiplied by `swellReadGate`, and the sun side by an elevation gate as well:
+
+```hlsl
+float e        = _SunElevation;
+float elevGate = smoothstep(0.0, 0.12, e) * (1 - e*e) * (1 - e*e);
+amt = faceSigned * _SunSideStrength * elevGate * swellReadGate;
+```
+
+`(1 − e²)²` is **exactly 0 at solar noon**, which is PR 9's deliberate design (row 11: *a high sun has
+no side*). Sunrise 06:00 / sunset 20:00 puts solar noon at **13:00**:
+
+| time | sun elevation | `elevGate` | vs 15:51 |
+|---|---|---|---|
+| 12:00 | 0.975 | 0.00245 | 0.019× |
+| **13:12 — his complaint** | 0.999 | **0.00000** | **0.000×** |
+| 13:24 | 0.996 | 0.00006 | 0.001× |
+| 14:30 | 0.944 | 0.01190 | 0.094× |
+| **15:51 — his compliment** | 0.802 | **0.12688** | 1.000× |
+| 17:00 | 0.623 | 0.37364 | 2.945× |
+
+*(The transcription is validated against row 11's independently measured points: 0.374 at 17:00 and
+0.0025 at 12:00.)*
+
+**The owner was twelve minutes from the one moment in the day when the swell's colour shading is
+switched off.** And in light-to-moderate airs `swellReadGate` is low as well (row 25: the calm gate is
+`smoothstep(0.28, 0.45, _Chop)`), so *both* of the swell's shading terms were near zero at once.
+
+**That reframes the row.** At midday the swell is drawn as a nearly flat colour field, and every white
+layer — drift lines, caps, foam — is composited over it. Of course it reads as layers: there is
+nothing underneath for them to be layers *of*. **The defect at noon is the ABSENCE of a surface cue,
+not the presence of a bad one** — the same family as rows 6 and 25, and the reason the evening looks
+right is that PR 9's sun side is finally doing the work.
+
+⚠️ **What this does not settle, and I will not pretend otherwise.** I cannot see the screenshots. The
+seat describes "dense vertical white streaks, screen-aligned"; the owner's own words are "the vertical
+white water details vs the **horizontal** from nw to se water details", which reads at least as
+plausibly as *upright* versus *lying flat* — a 2D-sprite-ish white element over in-plane surface
+detail — and he says as much (*"almost appearing as a 2d sprite in behaviour"*). Those are different
+defects with different fixes. The white candidates that are live at his sea state are
+**`_DriftLineStrength 0.35`** (near-white 0.92/0.96/0.98, stretched 5×, alive only between sea state
+0.05 and 0.6 — his exact band — and running along `_FlowDir`, which is the hard-coded constant
+**(1, 0)**, a *different* direction from the swell's NW→SE) and the **`_WhitecapTex` stamp sheet**
+(register row 7's painted mark, which would read as a sprite by construction).
+
+⚠️ Note also that **`_DriftLineFoamDrift` is absent from all nine water materials** — so it stamps 0,
+and the lines run on the raw current while the foam they are made of runs on the shared blend. The
+shader's own comment already calls that out: *"until now the lines and the foam they are MADE of read
+two different directions."*
+
+**Which of these the owner is seeing is a plate question**, and it is the plate the slot is already
+queued for. The gate table above narrows it usefully but does not close it, and §44.2 must not be
+built on until it does.
+
+### The prediction that can falsify 44.2
+
+The elevation gate is **symmetric about solar noon** — it knows nothing about morning or evening.
+10:09 and 15:51 gate identically at 0.127. So: **if the sea reads as coherent at 15:51 but NOT at
+10:09, the sun side is not the whole story** and the difference is in the warm *tint*, not in the
+gate. That is one cheap question to answer on the same slot, and it is worth more than another table.
