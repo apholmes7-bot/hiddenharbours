@@ -117,9 +117,10 @@ namespace HiddenHarbours.Player
         [Tooltip("The deck-walk controller on the PLAYER — enabled only while OnDeck. Auto-resolved off " +
                  "the walk controller's object if left empty (so tests/older wiring need no change).")]
         [SerializeField] private DeckWalkController _deckWalk;
-        [Tooltip("The HELM STATION spot as a world-axis offset from the boat's position (the tiller at " +
-                 "the dory's stern). World-aligned to match the snap-directional boat picture the player " +
-                 "sees (the physics body's true rotation is hidden). Walk here + E to take the helm.")]
+        [Tooltip("The HELM STATION spot — the tiller — as an offset from the boat's position WITH HER " +
+                 "BOW NORTH, in the drawn (screen) metres this was tuned in. It is a place ON THE HULL: " +
+                 "the spot turns with the boat's drawn heading, so the tiller stays at her stern " +
+                 "whichever way she is lying. Walk here + E to take the helm.")]
         [SerializeField] private Vector2 _helmLocalOffset = new Vector2(0f, -1.3f);
         [Tooltip("How close (m) the on-deck player must stand to the helm spot for E to take the helm. " +
                  "Kept tighter than the deck so there's still deck left to disembark from.")]
@@ -371,12 +372,64 @@ namespace HiddenHarbours.Player
             return Boat.position;
         }
 
-        /// <summary>The helm station's world position — the boat's position plus the tunable world-axis
-        /// helm offset (the tiller). World-aligned to match the screen-aligned boat picture.</summary>
+        /// <summary>
+        /// ⭐ <b>The helm station's world position — the tiller, ON the hull, at the heading she is
+        /// actually lying on</b> (2026-09-07).
+        ///
+        /// <para><b>The defect this closes (owner playtest, St Peters).</b> This used to be the boat's
+        /// position plus the tunable offset, world-aligned, on the reasoning that the boat picture was
+        /// screen-aligned. It stopped being true the moment the pictures learned to turn. The starter
+        /// dory lies N–S at her berth, so the "helm spot" sat 1.3 m abeam of her — past her 0.85 m
+        /// half-beam, in the water on the pier side — while the tiller was DRAWN at her stern. The
+        /// player walked to the drawn tiller, was 2.4 m from the phantom spot, and E fell straight
+        /// through the deck ladder to <see cref="CanStepAshore"/>: <i>"when i mount the dory and try to
+        /// push e at the helm, i immediately jump ashore with a rope"</i>.</para>
+        ///
+        /// <para><b>The frame.</b> <see cref="_helmLocalOffset"/> is un-projected back into the HULL's
+        /// own frame as if she were pointing north — the heading the number was tuned at, and the only
+        /// one anyone ever saw it at — and then projected out again through her LIVE drawn heading. Both
+        /// halves are <see cref="DeckAreaMath"/>, the transform the walkable deck under the helm already
+        /// goes through, read off the same presenter (<see cref="DeckWalkController.DrawnHeadingDegreesOf"/>).
+        /// So the helm and the deck it stands on cannot disagree about which way she is pointing, and a
+        /// boat drawn NORTH is bit-identical to the behaviour that shipped: at heading 0 the two halves
+        /// are exact inverses, whatever the artwork's bake elevation.</para>
+        ///
+        /// <para><b>Why not simply store hull metres?</b> Because the tuned number lives in two scenes,
+        /// and a field whose MEANING changes under a value that does not is how a berth silently moves.
+        /// Un-projecting at north keeps the stored number the one the owner tuned; <see cref="HelmDeckOffset"/>
+        /// exposes the hull-metre place it names, for anyone who wants to see it.</para>
+        /// </summary>
         public Vector3 HelmWorldPosition
-            => Boat != null
-               ? Boat.position + new Vector3(_helmLocalOffset.x, _helmLocalOffset.y, 0f)
-               : Vector3.zero;
+        {
+            get
+            {
+                if (Boat == null) return Vector3.zero;
+                Vector2 offset = HelmBoatRelativeOffset();
+                return Boat.position + new Vector3(offset.x, offset.y, 0f);
+            }
+        }
+
+        /// <summary>The helm station as a DECK-FRAME point — x abeam to starboard, y along the keel
+        /// toward the bow, honest hull metres. The physical place on the boat the tuned offset names,
+        /// heading-independent by construction (it is the frame the deck polygons live in). On the dory
+        /// (bake elevation 40°) the shipped (0, −1.3) drawn metres is (0, −2.02) hull metres — 2 m aft
+        /// of her origin, which is where her tiller is.</summary>
+        public Vector2 HelmDeckOffset()
+            => DeckAreaMath.WorldToDeck(_helmLocalOffset, 0f, 0f, HelmBakeElevationDegrees);
+
+        /// <summary>The helm station as a boat-relative WORLD (screen-axis) offset — what
+        /// <see cref="HelmWorldPosition"/> adds to her origin, and what <see cref="SnapPlayerToTheHelm"/>
+        /// hands the deck walk, which speaks that frame.</summary>
+        private Vector2 HelmBoatRelativeOffset()
+            => DeckAreaMath.DeckToWorld(HelmDeckOffset(), 0f,
+                                        DeckWalkController.DrawnHeadingDegreesOf(Boat),
+                                        HelmBakeElevationDegrees);
+
+        /// <summary>The artwork's own bake elevation for the boat under the player — per artwork, never
+        /// a constant. A hull with no presenter reads the plan view, where the projection is the
+        /// identity and this whole file behaves exactly as it did before the helm learned to turn.</summary>
+        private float HelmBakeElevationDegrees
+            => DeckWalkController.BakeElevationDegreesOf(Boat);
 
         /// <summary>True when the player stands close enough to the helm spot for E to take the helm
         /// (pure proximity; the mode dispatch decides when it applies).</summary>
@@ -846,7 +899,7 @@ namespace HiddenHarbours.Player
             // figure left where the player happened to be standing would be drawn up to that far off the
             // tiller — visible slop the hidden sprite used to conceal. Seated BEFORE the mode applies, so
             // the rider's first frame already has them in place.
-            SnapPlayerToDeck(_helmLocalOffset);
+            SnapPlayerToTheHelm();
             ApplyPlayerFor(ControlMode.Aboard);
             if (_boatController != null) _boatController.enabled = true;
             if (_boatInput != null) _boatInput.enabled = true;
@@ -870,7 +923,7 @@ namespace HiddenHarbours.Player
             if (_boatInput != null) _boatInput.enabled = false;
 
             ApplyPlayerFor(ControlMode.OnDeck);
-            SnapPlayerToDeck(_helmLocalOffset);                      // you step back from the tiller
+            SnapPlayerToTheHelm();                                   // you step back from the tiller
             Mode = ControlMode.OnDeck;
             EventBus.Publish(new ControlModeChanged(ControlMode.OnDeck));
         }
@@ -2069,7 +2122,7 @@ namespace HiddenHarbours.Player
                 // The hop repositions player and boat independently, so re-seat the pilot ON the helm —
                 // the same re-seating the OnDeck branch below has always done, and now load-bearing
                 // because the figure at the helm is DRAWN rather than hidden.
-                SnapPlayerToDeck(_helmLocalOffset);
+                SnapPlayerToTheHelm();
                 if (_boatController != null) _boatController.enabled = true;
                 if (_boatInput != null) _boatInput.enabled = true;
 
@@ -2236,6 +2289,15 @@ namespace HiddenHarbours.Player
             else Player.position = Boat.position + new Vector3(boatRelative.x, boatRelative.y, 0f);
         }
 
+        /// <summary>Seat the player ON the helm station. ⚠ Deliberately not
+        /// <c>SnapPlayerToDeck(_helmLocalOffset)</c>, which is what the three call sites read until
+        /// 2026-09-07: <see cref="DeckWalkController.SnapTo"/> takes a boat-relative WORLD offset, and
+        /// the helm offset is authored with her bow north. Handing the raw field to it seated the pilot
+        /// 1.3 m down-SCREEN of her origin whichever way she was pointing — off the tiller on every
+        /// heading but one, and off the boat entirely on a hull lying athwart. The clamp onto the
+        /// walkable deck then hid how far off it was.</summary>
+        private void SnapPlayerToTheHelm() => SnapPlayerToDeck(HelmBoatRelativeOffset());
+
         /// <summary>Wire the switcher in one call (tests / editor) and start on foot.</summary>
         public void Configure(PlayerWalkController playerWalk, BoatController boatController, Behaviour boatInput,
                               Transform dockZone, float zoneRadius, Transform disembarkPoint)
@@ -2253,8 +2315,9 @@ namespace HiddenHarbours.Player
             Mode = ControlMode.OnFoot;
         }
 
-        /// <summary>Tune the helm station in one call (tests / editor): where the helm spot sits relative
-        /// to the boat (world-axis offset) and how close E must be pressed to take it.</summary>
+        /// <summary>Tune the helm station in one call (tests / editor): where the helm spot sits on the
+        /// boat (the offset from her origin with her bow NORTH — see <see cref="HelmWorldPosition"/> for
+        /// the frame) and how close E must be pressed to take it.</summary>
         public void ConfigureHelm(Vector2 helmLocalOffset, float helmReach)
         {
             _helmLocalOffset = helmLocalOffset;
