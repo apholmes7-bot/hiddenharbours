@@ -162,6 +162,16 @@ namespace HiddenHarbours.UI
         private float _envSampleTimer;
         private float _payoutTimer;
         private float _catchCardTimer;
+
+        // ---- the coupling notice (2026-09-08: "i cannot get trailers to couple") -------------
+        // A STANDING line, not a timed card: it describes a state the driver is in, not a thing
+        // that happened to him. It goes up when the pin enters the slot and comes down when it
+        // leaves, when he takes the wheel of something else, or when he gets out to do the job.
+        private Text _couplingLabel;
+        private string _activeVehicleId;    // ActiveVehicleChanged — whose wheel he is at
+        private bool _driving;              // ControlModeChanged — whether he is at one at all
+        private string _captureVehicleId;   // TrailerCaptureChanged — whose plate took a pin
+        private bool _captured;
         private bool _subscribed;
 
         // Cached so a missing GameConfig doesn't recompute the lookup every sample.
@@ -214,6 +224,9 @@ namespace HiddenHarbours.UI
             EventBus.Subscribe<CatchSold>(OnCatchSold);
             EventBus.Subscribe<FishCaught>(OnFishCaught);
             EventBus.Subscribe<ShellPhaseChanged>(OnShellPhaseChanged);
+            EventBus.Subscribe<TrailerCaptureChanged>(OnTrailerCaptureChanged);
+            EventBus.Subscribe<ActiveVehicleChanged>(OnActiveVehicleChanged);
+            EventBus.Subscribe<ControlModeChanged>(OnControlModeChanged);
             _subscribed = true;
         }
 
@@ -224,6 +237,9 @@ namespace HiddenHarbours.UI
             EventBus.Unsubscribe<CatchSold>(OnCatchSold);
             EventBus.Unsubscribe<FishCaught>(OnFishCaught);
             EventBus.Unsubscribe<ShellPhaseChanged>(OnShellPhaseChanged);
+            EventBus.Unsubscribe<TrailerCaptureChanged>(OnTrailerCaptureChanged);
+            EventBus.Unsubscribe<ActiveVehicleChanged>(OnActiveVehicleChanged);
+            EventBus.Unsubscribe<ControlModeChanged>(OnControlModeChanged);
             _subscribed = false;
         }
 
@@ -728,6 +744,73 @@ namespace HiddenHarbours.UI
             }
         }
 
+        // ---- the coupling notice ------------------------------------------------------------
+
+        /// <summary>
+        /// ⭐⭐ <b>"Pin's in the slot"</b> — the one thing a driver reversing a semi was never told.
+        ///
+        /// <para><b>Why the HUD decides this and not the truck.</b> The hitch publishes a fact
+        /// about ITSELF (<see cref="TrailerCaptureChanged"/>) and names no surface — rule 4, and
+        /// the same reason <c>DriveSeats</c> refuses to hold "the player is driving": that answer
+        /// already exists once, in the control switcher, and storing it twice is how two answers
+        /// start disagreeing. So every tractor in the yard may announce, an NPC's included, and
+        /// exactly one of those announcements is about the wheel this player is holding. The HUD
+        /// is the only party that knows which, because it already tracks both halves.</para>
+        ///
+        /// <para><b>Not the interact popup, and not by oversight.</b> The 2026-08-19 ruling gives
+        /// the helm and the cab to the machine's own instruments, and
+        /// <see cref="InteractOfferVisibility"/> suppresses every offer surface in
+        /// <c>InteractContext.Driving</c> — so the verb the player is about to be offered cannot
+        /// be shown to him from the seat. ⚑ A truck has no instruments to show it on either, so
+        /// this uses the band's existing transient-line surface (the catch card's machinery). The
+        /// PRESENTATION is the owner's to rule on; the fact that he is owed the information is
+        /// not.</para>
+        ///
+        /// <para>Rule 7: three change-detected event handlers and no <c>Update</c> work at all.
+        /// The line costs nothing on any frame where nothing changed.</para>
+        /// </summary>
+        private void OnTrailerCaptureChanged(TrailerCaptureChanged e)
+        {
+            // ⚠️ A "lost it" from a truck that is not the one he is driving must not clear a
+            // notice raised by the one that is — two tractors in one yard is the laydown's
+            // normal state, and bay 0 already holds a second.
+            if (!e.Captured && !string.Equals(e.VehicleId, _captureVehicleId,
+                                             System.StringComparison.Ordinal)) return;
+
+            _captured = e.Captured;
+            _captureVehicleId = e.Captured ? e.VehicleId : null;
+            ApplyCouplingNotice();
+        }
+
+        private void OnActiveVehicleChanged(ActiveVehicleChanged e)
+        {
+            _activeVehicleId = e.VehicleId;
+            ApplyCouplingNotice();
+        }
+
+        /// <summary>⚠️ Nothing is published when the wheel is GIVEN UP — <see
+        /// cref="ActiveVehicleChanged"/> says so in its own remark — so the mode is what takes the
+        /// line down when he gets out, which is precisely when he is going to go and do it.
+        /// <c>_activeVehicleId</c> is deliberately NOT cleared here, matching the camera: it keeps
+        /// the last machine he drove, and the mode gates whether that matters.</summary>
+        private void OnControlModeChanged(ControlModeChanged e)
+        {
+            _driving = e.Mode == ControlMode.Driving;
+            ApplyCouplingNotice();
+        }
+
+        /// <summary>The whole visibility decision, in one place so the three handlers cannot come
+        /// to disagree: he is at a wheel, it is THIS wheel, and this plate has a pin in it.</summary>
+        private void ApplyCouplingNotice()
+        {
+            if (_couplingLabel == null) return;
+
+            bool show = HudVisibilityPolicy.ShowTrailerCaptureNotice(
+                _captured, _driving, _captureVehicleId, _activeVehicleId);
+
+            if (_couplingLabel.enabled != show) _couplingLabel.enabled = show;
+        }
+
         // Fade the text, its outline, and the icon together so the card dissolves cleanly (no lingering edge).
         private void SetCatchCardAlpha(float a)
         {
@@ -891,6 +974,14 @@ namespace HiddenHarbours.UI
             _catchCardLabel.color = new Color(1f, 0.92f, 0.55f); // warm gold "nice catch!" flash
             _catchCardOutline = _catchCardLabel.GetComponent<Outline>();
             _catchCardLabel.enabled = false;
+
+            // The coupling notice: below centre, out of the catch card's seat, and deliberately
+            // plainer than it — a working note, not a celebration. Same label machinery, so it
+            // inherits the scrim the band uses for legibility over busy ground (§8).
+            _couplingLabel = MakeLabel(canvasRt, "CouplingNotice", TextAnchor.MiddleCenter,
+                new Vector2(0.1f, 0.5f), new Vector2(0.9f, 0.5f), 0f, -140f, 34);
+            _couplingLabel.text = HudStrings.TrailerCaptured;
+            _couplingLabel.enabled = false;
 
             // The caught species' icon, centred just above the card text (set per-catch in ShowCatchCard,
             // resolved by id via IconRegistry). Built hidden; shown only when an icon resolves for the catch.

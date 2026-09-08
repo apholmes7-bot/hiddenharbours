@@ -156,6 +156,46 @@ namespace HiddenHarbours.Core
     }
 
     /// <summary>
+    /// ⭐ <b>A tractor's fifth wheel has taken, or lost, a kingpin</b> — raised as the pin enters or
+    /// leaves the slot, while the machine is being DRIVEN.
+    ///
+    /// <para><b>Why this exists at all.</b> Coupling is an act of backing, not a button — but the only
+    /// thing that ever told a driver he had succeeded was a verb on the release handle, which is on
+    /// FOOT. So the loop was: reverse, get out, walk round, read nothing, get back in. The owner, in
+    /// play: <i>"i cannot get trailers to couple"</i>. This is the half of that he could not see.</para>
+    ///
+    /// <para><b>It is a fact about the MACHINE, not about the player</b>, and deliberately so. The
+    /// hitch has no business knowing who is at the wheel — <c>DriveSeats</c> says as much in its own
+    /// remark, that the player is not a claimant and the switcher owns "the player is driving". So the
+    /// vehicle publishes what happened to it and the HUD, which already tracks
+    /// <see cref="ActiveVehicleChanged"/> and <see cref="ControlModeChanged"/>, decides whether the
+    /// player is the one who should be told. Rule 4: the vehicle names no surface.</para>
+    /// </summary>
+    public readonly struct TrailerCaptureChanged
+    {
+        /// <summary>Stable <c>vehicle.*</c> id of the tractor whose plate this is — the same id
+        /// <see cref="ActiveVehicleChanged"/> carries, so a listener can tell "my truck" from any
+        /// other in the yard without holding a reference to either.</summary>
+        public readonly string VehicleId;
+
+        /// <summary>The captured body's <c>vehiclemesh.*</c> id, or <c>null</c> when the pin has just
+        /// LEFT the slot. Carried for tests and for a later "which trailer" line; nothing on the HUD
+        /// reads it today, and it is a mesh id rather than an instance id because a towed body has no
+        /// identity of her own to publish.</summary>
+        public readonly string TrailerMeshId;
+
+        /// <summary>True when a pin is in the slot and the release handle would couple her.</summary>
+        public readonly bool Captured;
+
+        public TrailerCaptureChanged(string vehicleId, string trailerMeshId, bool captured)
+        {
+            VehicleId = vehicleId;
+            TrailerMeshId = trailerMeshId;
+            Captured = captured;
+        }
+    }
+
+    /// <summary>
     /// <b>Somebody worked a driver's door</b> (ADR 0035) — raised by the door's own
     /// <see cref="IInteractable"/> registration when the interact verb reaches it, and answered by whoever
     /// owns the control modes.
