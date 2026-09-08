@@ -5604,3 +5604,105 @@ The elevation gate is **symmetric about solar noon** — it knows nothing about 
 10:09 and 15:51 gate identically at 0.127. So: **if the sea reads as coherent at 15:51 but NOT at
 10:09, the sun side is not the whole story** and the difference is in the warm *tint*, not in the
 gate. That is one cheap question to answer on the same slot, and it is worth more than another table.
+
+## 45. Row 35 IS row 25 — the swell-read onset, and the glass calm that cannot happen
+
+The owner's 2026-09-08 playtest gave the register two readings of the same water: *"it feels like
+layers"* at 13:12 and *"it actually looks really good in the evening"* at 15:51. §44.2 attributed the
+first to the sun-side elevation gate, which is exactly 0 at solar noon. **That was wrong, and this
+section corrects it with the weather measured at his own clock.**
+
+### What was actually true at his two moments
+
+Measured in a real editor, seed 12345, and afterwards reproduced offline by a port of
+`WeatherModel.SampleWind` that matches all four readings to the printed digit:
+
+| hour | wind | sea state | visibility | `RainEmitter` gate |
+|---|---|---|---|---|
+| 11:02 (his save) | 2.10 m/s | 0.293 | 0.761 | CLOSED |
+| **13:12 (his complaint)** | **0.90 m/s** | **0.181** | 0.806 | CLOSED |
+| 13:24 | 1.28 m/s | 0.217 | 0.823 | CLOSED |
+| **15:51 (his compliment)** | **2.77 m/s** | **0.341** | 1.000 | CLOSED |
+
+**It was not raining at any of them** — rain needs sea > 0.30 *and* visibility < 0.65, and neither was
+close. The precipitation reading this lane floated is dead.
+
+**What changed between his complaint and his compliment is the WIND**, 0.90 → 2.77 m/s, and it carries
+the sea state across a gate. `swellReadGate = smoothstep(0.28, 0.45, seaState)` multiplies **both** of
+the swell's shading terms — `_SwellFaceShade` and `_SunSideStrength`:
+
+```
+  13:12  sea 0.181  ->  swellReadGate 0.000
+  13:24  sea 0.217  ->  swellReadGate 0.000
+  15:51  sea 0.341  ->  swellReadGate 0.294
+```
+
+⚠️ **So the solar-noon gate was REDUNDANT.** It is 0 at 13:12, but `swellReadGate` was *already*
+exactly 0 and it multiplies the sun side too — the swell had no shading at all whatever the sun was
+doing. Lowering the solar gate would not have helped him. **Lowering the swell-read onset would.**
+
+Which makes this **register row 25, seen in play.** Row 25 already says it in writing: *"the modelled
+swell's calm gate is `smoothstep(_SwellReadSeaStateLo 0.28, _SwellReadSeaStateHi 0.45, _Chop)` … which
+means `_SwellReadStrength`, `_SwellFaceShade` and now `_SunSideStrength` are all 0 at glass and at
+light airs."* Row 35 is that row with a playtest attached. **They are folded together.**
+
+### The onset table (rule 6 — nothing moved)
+
+`swellReadGate = smoothstep(onset, 0.45, seaState)`:
+
+| onset | glass 0.05 | near-glass 0.10 | his 13:12 (0.181) | his 13:24 (0.217) | his 15:51 (0.341) |
+|---|---|---|---|---|---|
+| **0.28 — shipped** | 0.000 | 0.000 | **0.000** | 0.000 | 0.294 |
+| 0.20 | 0.000 | 0.000 | 0.000 | 0.013 | 0.595 |
+| 0.15 | 0.000 | 0.000 | 0.030 | 0.127 | 0.700 |
+| 0.10 | 0.000 | 0.000 | 0.136 | 0.261 | 0.769 |
+| 0.05 | 0.000 | 0.043 | 0.252 | 0.377 | 0.818 |
+
+And what he would actually *live with* — a whole day at seed 12345. **Nine Mile Creek and St Peters
+carry an identical `WindProfile`** (both scenes serialize the CoddleCove values), so one table is both
+regions. Across that day the sea state runs min 0.163, median 0.318, max 0.498:
+
+| onset | hours/day with ANY shading | with half or more | median gate |
+|---|---|---|---|
+| **0.28 — shipped** | **15.2 h** | 3.4 h | 0.130 |
+| 0.20 | 22.5 h | 10.8 h | 0.461 |
+| 0.15 | 23.8 h | 14.1 h | 0.592 |
+| 0.10 | 24.0 h | 16.7 h | 0.682 |
+| 0.05 | 24.0 h | 19.1 h | 0.747 |
+
+### ⭐ The trade, and the fact that settles it: a glass calm cannot happen
+
+Row 5 calls a glass calm sacred, and the obvious fear is that a lower onset paints face shading onto a
+mirror. **It cannot, because the wind law never makes one.** Wind strength is
+`3 + strN·1.3 + gustN·1.2` with both noises bottoming at −1, so:
+
+> **The wind can never fall below 0.50 m/s, and the sea state can never fall below 0.143.**
+> A "glass calm" of 0.05 is **unreachable** under the shipped profile. (Measured over a whole day the
+> minimum was 0.163 — a little above even that floor.)
+
+So the question row 5 really asks is not *what happens at 0.05* but *what happens at 0.143*:
+
+| onset | gate at the calmest sea the game can produce (0.143) | verdict |
+|---|---|---|
+| 0.28 | 0.000 | glass untouched |
+| 0.20 | 0.000 | glass untouched |
+| **0.15** | **0.000** | **glass untouched — the lowest onset that is still safe** |
+| 0.10 | 0.041 | a faint read appears on the calmest water |
+| 0.05 | 0.137 | a clear read on the calmest water |
+
+**0.15 is the boundary.** It is the lowest onset that leaves the calmest reachable sea completely
+unshaded, and it takes his complaint from a gate of 0.000 to 0.030 at 13:12 and 0.127 at 13:24, with
+23.8 hours a day carrying some shading instead of 15.2.
+
+⚠️ **But be honest about what 0.030 buys**: at his exact moment it is a very faint read. If he wants
+the midday sea to have a *legible* face, 0.10 does it (0.136) at the cost of a 0.041 read on the
+calmest water the game ever draws — which is a real change to row 5's mirror, and therefore his call
+and not this lane's.
+
+**Nothing here is moved.** `_SwellReadSeaStateLo` is a tunable on all nine water materials.
+
+### Method note
+
+The wind port used for the day sweep is not a second implementation to be trusted on faith: it
+reproduces the four editor-measured readings (2.10 / 0.90 / 1.28 / 2.77 m/s and 0.293 / 0.181 / 0.217
+/ 0.341) to the digit, and the script refuses to print a single table row unless it does.
