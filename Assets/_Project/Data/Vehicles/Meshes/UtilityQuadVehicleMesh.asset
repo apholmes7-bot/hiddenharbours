@@ -196,6 +196,7 @@ MonoBehaviour:
     Published: 0
     CouplingPointLocal: {x: 0, y: 0, z: 0}
     SlotHalfWidthMeters: 0
+    ThroatHalfWidthMeters: 0
     SlotMouthY: 0
     SlotSeatY: 0
     RampMouthY: 0

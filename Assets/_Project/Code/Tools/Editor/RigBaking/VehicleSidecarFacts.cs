@@ -567,8 +567,8 @@ namespace HiddenHarbours.Tools.RigBaking
 
         /// <summary>
         /// A tractor's plate, off <c>TOW.fifth_wheel</c>. Every number the capture test needs and not
-        /// one more: the seat, the throat, the reach, the ramp mouth, the release handle and the
-        /// clearance the jackknife cap is solved against.
+        /// one more: the seat, the jaw, the throat, the reach, the ramp mouth, the release handle
+        /// and the clearance the jackknife cap is solved against.
         /// </summary>
         static void ReadFifthWheel(VehicleSidecarFacts facts, object owner)
         {
@@ -581,6 +581,7 @@ namespace HiddenHarbours.Tools.RigBaking
             }
 
             object slot = DeckSidecarJson.Member(fw, "slot");
+            object plate = DeckSidecarJson.Member(fw, "plate");
             object ramps = DeckSidecarJson.Member(fw, "ramps");
             object handle = DeckSidecarJson.Member(fw, "release_handle");
             object swing = DeckSidecarJson.Member(tow, "swing_clearance");
@@ -600,12 +601,20 @@ namespace HiddenHarbours.Tools.RigBaking
                 return;
             }
 
+            // ⭐ The THROAT, and it is read SOFTLY on purpose. A plate that does not publish
+            // its half-width bakes a zero, and VehicleCouplingMath.CaptureHalfWidthAt reads a
+            // zero as "no funnel" and uses the jaw everywhere — the window the game shipped
+            // with. So a missing plate costs the driver the funnel; it does not cost him the
+            // coupling, and it must not fail the bake the way a missing SLOT does.
+            TryNumber(plate, "half_width", out float throat);
+
             facts.HasFifthWheel = true;
             facts.FifthWheel = new VehicleFifthWheel
             {
                 Published = true,
                 CouplingPointLocal = seat,
                 SlotHalfWidthMeters = halfWidth,
+                ThroatHalfWidthMeters = throat,
                 SlotMouthY = Mathf.Min(reachA, reachB),
                 SlotSeatY = Mathf.Max(reachA, reachB),
                 RampMouthY = rampY,

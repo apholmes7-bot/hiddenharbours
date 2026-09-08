@@ -22,9 +22,19 @@ namespace HiddenHarbours.Core
                  "needs no z shift at all.")]
         public Vector3 CouplingPointLocal;
 
-        [Tooltip("Half the slot's throat, in metres (0.06). The lateral half of the capture test: a " +
-                 "kingpin further off the centreline than this cannot be in the slot.")]
+        [Tooltip("Half the JAW, in metres (0.06) — the slot proper, the part of the plate a " +
+                 "seated kingpin actually sits in. This is the lateral tolerance AT THE " +
+                 "SEAT; it is not the tolerance at the mouth, which is the throat below.")]
         public float SlotHalfWidthMeters;
+
+        [Tooltip("Half the plate where the ramps begin, in metres (0.45) — the THROAT, off " +
+                 "TOW.fifth_wheel.plate.half_width. A fifth wheel is a horseshoe: wide where " +
+                 "the pin arrives and narrow where it ends up, and this is the wide " +
+                 "end.\n\n" +
+                 "⚠️ Zero on a plate baked before the throat was published. The capture test " +
+                 "reads that as 'no funnel' and falls back to the jaw everywhere, which is " +
+                 "the window this game shipped with — never as a plate pinched shut.")]
+        public float ThroatHalfWidthMeters;
 
         [Tooltip("Where the slot opens (aft, more negative) and where it seats (forward). The " +
                  "longitudinal capture window, and its depth is what the heading tolerance is " +
@@ -118,6 +128,14 @@ namespace HiddenHarbours.Core
         /// the slot is 0.06 m by 0.40 m, giving <b>8.53°</b>: tight enough that you have to line the
         /// truck up, loose enough that you are not hunting for a pixel.</para>
         ///
+        /// <para>⭐ <b>The funnel does not widen this, and that is not an oversight.</b> A
+        /// horseshoe throat says where the pin may ARRIVE; it says nothing about the angle at
+        /// which the pin may PASS THE JAW, and the jaw is the tightest thing on the run. A pin
+        /// coming in at θ drifts <c>depth·tan(θ)</c> sideways while it crosses the slot, so the
+        /// bound is the jaw's aspect whether or not there is a funnel in front of it. Widening
+        /// the mouth to 0.45 m and reading the tolerance off THAT would admit a trailer 36° across
+        /// the yard — which is the thing the heading test exists to refuse.</para>
+        ///
         /// <para>⚠️ Not a feel number and not in config. It is the shape of the slot the art drew,
         /// and if the art redraws it this answer changes on its own.</para>
         /// </summary>
@@ -181,6 +199,36 @@ namespace HiddenHarbours.Core
                                 wheel.CabClearanceMeters);
 
         /// <summary>
+        /// ⭐ <b>How far off the slot's centreline a kingpin may be at a given depth</b> — the
+        /// funnel, in one function.
+        ///
+        /// <para><b>A fifth wheel is a horseshoe, and that is the whole reason a driver can hit
+        /// one.</b> It is wide where the pin arrives and narrow where the pin ends up, so the
+        /// lateral tolerance is not one number: it is the THROAT at <see
+        /// cref="VehicleFifthWheel.RampMouthY"/>, the JAW at <see
+        /// cref="VehicleFifthWheel.SlotSeatY"/>, and a straight line between them. Backing a 15 m
+        /// body onto a 6 cm jaw is not a manoeuvre; backing it into a 45 cm mouth that closes on
+        /// the jaw is the manoeuvre the real fitting exists to make possible.</para>
+        ///
+        /// <para>⚠️ <b>A plate that never published a throat gets the jaw everywhere</b>, which is
+        /// exactly the window this game shipped with. That fallback is not politeness: an asset
+        /// baked before the field existed deserialises it as ZERO — never as a default — and a
+        /// zero read as a throat is a funnel that pinches SHUT, which would make coupling harder
+        /// than it already is rather than impossible to notice.</para>
+        /// </summary>
+        public static float CaptureHalfWidthAt(in VehicleFifthWheel wheel, float localY)
+        {
+            float jaw = wheel.SlotHalfWidthMeters;
+            float throat = wheel.ThroatHalfWidthMeters;
+            if (throat <= jaw) return jaw;
+
+            float run = wheel.SlotSeatY - wheel.RampMouthY;
+            if (Mathf.Abs(run) <= 1e-6f) return jaw;
+
+            return Mathf.Lerp(throat, jaw, Mathf.Clamp01((localY - wheel.RampMouthY) / run));
+        }
+
+        /// <summary>
         /// <b>Is this kingpin in the slot?</b> — the whole capture test, in the tractor's own frame.
         /// </summary>
         /// <param name="wheel">the tractor's published plate.</param>
@@ -192,7 +240,9 @@ namespace HiddenHarbours.Core
         /// <remarks>
         /// Three conditions, each from one published number:
         /// <list type="bullet">
-        ///   <item>LATERAL — within the throat's half-width of the slot's centreline;</item>
+        ///   <item>LATERAL — inside the FUNNEL at the pin's own depth (<see
+        ///   cref="CaptureHalfWidthAt"/>): the throat where the ramps begin, the jaw at the
+        ///   seat;</item>
         ///   <item>LONGITUDINAL — between the ramp's aft mouth and the seat. Capture begins at the
         ///   RAMP and not at the slot, because the ramps angle down aft and a pin backed onto them
         ///   rides up into the throat: that is the manoeuvre the art drew;</item>
@@ -225,7 +275,7 @@ namespace HiddenHarbours.Core
             float body = Mathf.Max(0f, pin.PinRadiusMeters);
 
             if (Mathf.Abs(kingpinLocal.x - wheel.CouplingPointLocal.x)
-                > wheel.SlotHalfWidthMeters + body)
+                > CaptureHalfWidthAt(wheel, kingpinLocal.y) + body)
                 return false;
 
             float aft = Mathf.Min(wheel.RampMouthY, wheel.SlotSeatY) - body;
