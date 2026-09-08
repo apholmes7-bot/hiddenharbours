@@ -297,10 +297,23 @@ namespace HiddenHarbours.Tests.EditMode
             hull.LengthMeters = LoaMeters;
             boat.SetHull(hull);
             boat.enabled = false;
-            boatGo.AddComponent<BoatDeckAreas>().Configure(_deck);
 
             BoatHullSkinner.Apply(boatGo, MeshVisual(), boat: null,
                                   new BoatHullSkinner.Options { SkipWaveMotion = true, SkipOars = true });
+
+            // ⚠ HER DECK IS WIRED **AFTER** THE SKINNER, and the order is the whole of #795's first red.
+            // BoatHullSkinner.Apply writes the walkable polygons from the VISUAL — `BoatDeckAreas.Write
+            // (root, visual.Deck)` — and a bare test visual carries no deck, so a deck configured before
+            // Apply is WIPED. With no deck def, SnapTo takes its fallback-BOX branch, where `_deckLocal`
+            // is a plain rotation with no elevation at all: she settled at the plan view's (0, 0.400)
+            // while the station aimed her through the artwork's 40° at (0, 0.487). The rig, not the rule.
+            boatGo.AddComponent<BoatDeckAreas>().Configure(_deck);
+            Assert.IsNotNull(BoatDeckAreas.Resolve(boatGo),
+                "harness: her authored deck must survive the skinner — if this is null every case below " +
+                "is measuring the greybox rectangle instead of her floor");
+            Assert.IsTrue(BoatDeckAreas.Resolve(boatGo).HasWalkableDeck(),
+                "harness: …and it must be walkable, or SnapTo takes the fallback box and drops the " +
+                "elevation on the way");
             Assert.AreEqual(headingDegrees, BoatHullPresenterHost.Resolve(boatGo).DrawnHeadingDegrees(), 1e-2f,
                 "harness: a mesh hull draws where her bow points — if this ever snaps, every heading " +
                 "below is secretly heading 0 and the fixture proves nothing");
