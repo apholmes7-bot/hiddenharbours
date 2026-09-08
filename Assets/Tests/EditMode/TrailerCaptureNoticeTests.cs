@@ -111,6 +111,19 @@ namespace HiddenHarbours.Tests.EditMode
         ///
         /// <para>⚠️ Walked from BOTH sides of the gate, a millimetre either way. Standing exactly on it
         /// would be an exact boundary decided by the last bit of a float.</para>
+        ///
+        /// <para>⭐⭐ <b>The pin is driven OUT of the slot before the gate is walked, and that is the
+        /// whole design of this test.</b> The gate governs whether the poll RUNS; whether it SPEAKS is
+        /// a second question, answered by change-detection
+        /// (<see cref="TheSameAnswerIsAnnouncedOnceHoweverFarSheDrives"/>). Walking the gate with an
+        /// unchanged pin asks neither cleanly: silence below the gate is then equally explained by
+        /// "the poll did not run" and by "the poll ran and had nothing new to say", and the first
+        /// draft of this test read the second as the first and went red on correct code.</para>
+        ///
+        /// <para>With a real change waiting behind the gate the two come apart: below it the game must
+        /// stay silent <b>even though the answer has changed</b> — which only the distance gate can
+        /// explain — and above it, it must speak. That is a strictly stronger claim than the one that
+        /// was red, and it is the claim the gate actually makes.</para>
         /// </summary>
         [Test]
         public void ThePollIsGatedOnTheJawsOwnHalfWidthOfTravel()
@@ -122,8 +135,28 @@ namespace HiddenHarbours.Tests.EditMode
                 "the plate baked no jaw, so the poll's gate is 'any movement at all' — which is a "
                 + "per-frame poll wearing a distance's clothes.");
 
+            // The first look is ungated and establishes the state — bay 0 ships a pair already
+            // captured, so a plate that said nothing until the driver had moved would keep the one
+            // pair he is told to go and try silent.
             hitch.PollCapture(0f);
-            _heard.Clear();   // the first look is the one that establishes the state
+            Assert.That(_heard.Count, Is.EqualTo(1),
+                "the very first look said nothing — a tractor that starts the scene already on a pin "
+                + "never tells her driver so.");
+            Assert.That(_heard[0].Captured, Is.True);
+            Assert.That(_heard[0].VehicleId, Is.EqualTo("vehicle.aero_semi"),
+                "the announcement does not name the machine it is about, so a HUD cannot tell it "
+                + "from the truck two rows away.");
+            Assert.That(_heard[0].TrailerMeshId, Is.EqualTo(body.Mesh.Id));
+            _heard.Clear();
+
+            // ⭐ Put a REAL CHANGE behind the gate: walk her clean out of the window, further than
+            // the whole reach so no boundary decides it. From here on, silence can only be the
+            // gate's doing — there is something new to say and the game is not saying it.
+            float reach = Mathf.Abs(hitch.FifthWheel.SlotSeatY - hitch.FifthWheel.RampMouthY);
+            body.transform.position += new Vector3(0f, 2f * reach, 0f);
+            Assert.That(hitch.CapturedTrailer(), Is.Null,
+                "the fixture failed to get her out of the slot, so the step below has nothing new "
+                + "to announce and would pass without the gate existing at all.");
 
             hitch.PollCapture(step - 0.001f);
             Assert.That(_heard, Is.Empty,
@@ -132,12 +165,10 @@ namespace HiddenHarbours.Tests.EditMode
 
             hitch.PollCapture(step + 0.001f);
             Assert.That(_heard.Count, Is.EqualTo(1),
-                "she moved further than the jaw is wide and nothing was announced.");
-            Assert.That(_heard[0].Captured, Is.True);
-            Assert.That(_heard[0].VehicleId, Is.EqualTo("vehicle.aero_semi"),
-                "the announcement does not name the machine it is about, so a HUD cannot tell it "
-                + "from the truck two rows away.");
-            Assert.That(_heard[0].TrailerMeshId, Is.EqualTo(body.Mesh.Id));
+                "she moved further than the jaw is wide, the pin had left the slot, and nothing was "
+                + "announced — the gate is holding shut past its own step.");
+            Assert.That(_heard[0].Captured, Is.False,
+                "the gate opened and the game announced the pin it had already reported.");
         }
 
         /// <summary>⭐ <b>Only on CHANGE.</b> A truck reversing through a 0.71 m window crosses the poll's
