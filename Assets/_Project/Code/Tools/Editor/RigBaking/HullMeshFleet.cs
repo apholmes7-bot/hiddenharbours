@@ -399,14 +399,14 @@ namespace HiddenHarbours.Tools.RigBaking
                 // quietly). The reconstruction entries in RigMeshExtractor and
                 // RigMeshAssetBaker.BakeSloopsCli are in place, so the bake is a slot away.
                 ["docs/art/rigs/sail-rig-kit/sloop-30/sloopIsoRig.js"] =
-                    "ART FIXED, BAKE OWED: faces stamped from ids in S0 (PR #N, art/sloop-face-levels) " +
+                    "ART FIXED, BAKE OWED: faces stamped from ids in S0 (PR #791, art/sloop-face-levels) " +
                     "— 0 of 1,852 faces now carry a level her geometry().ids does not name, and all " +
                     "six of hull/cockpit/coachroof/foredeck/cabin/rig are stamped. RigMeshExtractor " +
                     "accepts her. She stays here only until S1 runs RigMeshAssetBaker.BakeSloopsCli " +
                     "and commits the HullMeshDef; bake pending S1.",
 
                 ["docs/art/rigs/sail-rig-kit/sloop-88/sloop88IsoRig.js"] =
-                    "ART FIXED, BAKE OWED: faces stamped from ids in S0 (PR #N, art/sloop-face-levels) " +
+                    "ART FIXED, BAKE OWED: faces stamped from ids in S0 (PR #791, art/sloop-face-levels) " +
                     "— 0 of 3,088, and the 449 faces that said `cabin` (a level she never declared) " +
                     "now say saloon or lower, the two rooms she does. All eight of her ids are " +
                     "stamped. Same state as the 30: bake pending S1.",
