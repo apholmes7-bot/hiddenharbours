@@ -501,6 +501,22 @@ namespace HiddenHarbours.Player
                 Vector2 onEdge = centre + new Vector2(
                     Mathf.Clamp(d.x, -half.x, half.x), Mathf.Clamp(d.y, -half.y, half.y));
                 Vector2 n = OverTheSideMath.OutwardNormalOnBox(centre, half, onEdge);
+
+                // ⭐ A FISHER STANDING DEAD AMIDSHIPS HAS NO NEAREST RAIL (2026-09-08). Port and
+                // starboard are exactly equidistant, both land inside OutwardNormalOnBox's tie band, and
+                // the two normals SUM TO ZERO — so this returned false and the whole rail verb did
+                // nothing. It was unreachable only because the boarding seat was a world-axis offset
+                // that clamped her against a rail on any hull not lying north; with her seated where the
+                // seat is actually authored, amidships is the ORDINARY case, and the verb was resting on
+                // a bug.
+                //
+                // The tie goes to STARBOARD: arbitrary, but stable and cheap to be wrong about.
+                // <see cref="BerthPilot.Berth.FromShorePoint"/> answers a degenerate shore point the
+                // same way and for the same reason. Press one only puts her ON the rail — the press
+                // that decides in-or-out is the FACING (owner, 2026-09-02), and stepping back inboard
+                // from the wrong gunwale costs one press on a boat 0.45 m wide.
+                if (n.sqrMagnitude <= 1e-6f) n = new Vector2(1f, 0f);
+
                 // Push out to the boundary along the normal first (a point amidships clamps to itself),
                 // then back in by half a band.
                 float outToEdge = Mathf.Abs(n.x) > Mathf.Abs(n.y)
