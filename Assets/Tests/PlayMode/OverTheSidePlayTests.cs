@@ -243,34 +243,101 @@ namespace HiddenHarbours.Tests.PlayMode
         // =============================================================================================
 
         /// <summary>
-        /// ⭐ <b>At a wharf, E still steps her ASHORE.</b> The 08-25 deck ladder grows one rung on the
-        /// END — helm → registry → step ashore → washboard — so adding a way into the water cannot take
-        /// the press away from the planks.
+        /// ⭐ <b>At a wharf, E steps her ASHORE — when she is LOOKING at the planks.</b> The 08-25 deck
+        /// ladder grows one rung on the END — helm → registry → step ashore → washboard — so adding a way
+        /// into the water cannot take the press away from the planks.
+        ///
+        /// <para><b>⚠ WHAT THIS USED TO ASSERT, and why it changed (2026-09-07).</b> It used to face her
+        /// <i>outboard</i> — deliberately, with the comment "even facing straight at the sea" — and pin
+        /// that E still put her ashore. The owner then ruled the other way: <i>"im also close to the dock
+        /// so i understand why it happens but this will be an everyday occurance when docking so we need
+        /// a smooth solution"</i>. Stepping ashore is now a FACING, the same way the second washboard
+        /// press already was, so a fisher looking at the SEA is no longer asking for the planks.</para>
+        ///
+        /// <para><b>The ranking this file exists to protect is untouched, and is now pinned from BOTH
+        /// sides.</b> Looking at the planks, the press is theirs and the rail never gets it — that is
+        /// "at a wharf the press must still put her on the planks", in the frame the new ruling created.
+        /// Looking at the sea, the press is the rail's, which is the 2026-09-02 verb finally reachable
+        /// from a berth. One rule for the whole deck: E answers the way you are facing.</para>
         /// </summary>
         [UnityTest]
-        public IEnumerator AtAWharf_ThePressStillStepsAshore_NotOverTheSide()
+        public IEnumerator AtAWharf_LookingAtThePlanks_ThePressStepsHerAshore()
+        {
+            yield return AlongsideThePier();
+
+            FaceDeckBearing(BearingToTheNearestPlank());
+            yield return null;
+            Assert.IsTrue(_switcher.BeginInteract(), "E must do something");
+            yield return Settle();
+
+            Assert.IsFalse(_switcher.OnWashboard,
+                "the press went to the RAIL while she was lying against a wharf AND looking at it — " +
+                "step-ashore outranks the washboard, or a boat at a dock becomes a boat you fall out of");
+            Assert.AreEqual(ControlMode.OnFoot, _switcher.Mode, "she stepped ashore");
+            Assert.IsTrue(StPetersWharf.DeckFootprint().Contains((Vector2)_playerGo.transform.position),
+                $"…onto the planks, not into the water (she is at {_playerGo.transform.position})");
+        }
+
+        /// <summary>
+        /// ⭐ <b>The other side of the same ranking: looking at the SEA from that berth, the press is the
+        /// RAIL's.</b> This is the 2026-09-02 verb finally reachable from alongside — before the facing
+        /// rule, step-ashore took every press at a wharf whichever way she looked, so the one place the
+        /// owner asked to be able to go over the side was the one place he could not.
+        /// </summary>
+        [UnityTest]
+        public IEnumerator AtAWharf_LookingAtTheSea_ThePressIsTheRail()
+        {
+            yield return AlongsideThePier();
+
+            FaceDeckBearing(OutboardBearing());
+            yield return null;
+            Assert.IsTrue(_switcher.BeginInteract(), "E must do something");
+            yield return Settle();
+
+            Assert.IsTrue(_switcher.OnWashboard,
+                "turned away from the planks she has declined them, and the press is the rail's — the " +
+                "rung below step-ashore, reached because the rung above stood down on the FACING");
+            Assert.AreEqual(ControlMode.OnDeck, _switcher.Mode, "…and the rail is a place on her deck");
+            Assert.IsFalse(StPetersWharf.DeckFootprint().Contains((Vector2)_playerGo.transform.position),
+                "…she is still aboard, not on the planks");
+        }
+
+        /// <summary>Her real berth with the pier standing as a registered surface, boarded — the premise
+        /// both halves of the ranking are measured from.</summary>
+        private IEnumerator AlongsideThePier()
         {
             var pier = Spawn("Wharf").AddComponent<StandablePlatform>();
             pier.Configure("wharf.st_peters", StPetersWharf.DeckFootprint(),
                            StPetersWharf.DeckElevationFrom(GameServices.TidalTerrain));
             AttachDeck("DoryIso");
             yield return BoardHer();
-
             Assert.IsTrue(_switcher.CanStepAshore(), "premise: she is lying against the planks");
+        }
 
-            FaceDeckBearing(OutboardBearing());                   // …even facing straight at the sea
-            yield return null;
-            Assert.IsTrue(_switcher.BeginInteract(), "E must do something");
+        private IEnumerator Settle()
+        {
             float deadline = Time.realtimeSinceStartup + 10f;
             while (_switcher.IsBoardingMove && Time.realtimeSinceStartup < deadline) yield return null;
             yield return null;
+        }
 
-            Assert.IsFalse(_switcher.OnWashboard,
-                "the press went to the RAIL while she was lying against a wharf — step-ashore outranks " +
-                "the washboard, or a boat at a dock becomes a boat you fall out of");
-            Assert.AreEqual(ControlMode.OnFoot, _switcher.Mode, "she stepped ashore");
-            Assert.IsTrue(StPetersWharf.DeckFootprint().Contains((Vector2)_playerGo.transform.position),
-                $"…onto the planks, not into the water (she is at {_playerGo.transform.position})");
+        /// <summary>
+        /// The DECK bearing that looks at the nearest plank — the point on the wharf's deck closest to
+        /// where she stands, turned into the hull's own frame.
+        ///
+        /// <para>⚠ Not the pier's centre. This pier is 31 m long and she lies at its HEAD, so its middle
+        /// is 15 m west of her and facing it is a bearing 73° off the planks under her rail.</para>
+        /// </summary>
+        private float BearingToTheNearestPlank()
+        {
+            Rect deck = StPetersWharf.DeckFootprint();
+            Vector2 here = _playerGo.transform.position;
+            var nearest = new Vector2(Mathf.Clamp(here.x, deck.xMin, deck.xMax),
+                                      Mathf.Clamp(here.y, deck.yMin, deck.yMax));
+            Vector2 to = nearest - here;
+            float compass = Mathf.Atan2(to.x, to.y) * Mathf.Rad2Deg;
+            return DeckRiderFacingMath.DeckBearingFor(
+                compass, DeckWalkController.DrawnHeadingDegreesOf(_boat.transform));
         }
 
         /// <summary>Whichever bearing points off her port side — the side the pier is on at this berth,

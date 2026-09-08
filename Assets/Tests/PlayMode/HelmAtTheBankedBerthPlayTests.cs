@@ -180,12 +180,19 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         /// <summary>
-        /// ⭐ <b>Defect B.</b> The same fisher, on the same deck, looking INBOARD: the press does nothing
-        /// at all. No transition, no line, and — because the wharf outranks the rail whenever there is
-        /// somewhere to step — he is not put out on the gunwale either.
+        /// ⭐ <b>Defect B.</b> The same fisher, on the same deck, turned AWAY from the planks: the press
+        /// does not put him ashore and hands him no line. That is the whole of the owner's complaint —
+        /// <i>"i immediately jump ashore with a rope"</i> — and it is what must stop happening.
+        ///
+        /// <para><b>What the press does instead is the RAIL</b>, and that is the ladder working rather
+        /// than a gap in it (corrected after CI, 2026-09-07). A rung that stands down passes the press
+        /// down the ladder; turned away from the planks he has declined them, and E then means what it
+        /// has meant since the owner's 2026-09-02 ruling — one press onto the washboard, and the next
+        /// one over the side if he is still looking at the sea. He can step straight back inboard. The
+        /// one thing that cannot happen is the thing he complained about.</para>
         /// </summary>
         [UnityTest]
-        public IEnumerator OnHerDeckFacingInboard_EPressDoesNothing()
+        public IEnumerator OnHerDeckFacingAwayFromThePlanks_EPressDoesNotPutHimAshore()
         {
             yield return BoardHer();
             FaceAwayFromTheWharf();
@@ -194,14 +201,16 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.IsTrue(_switcher.CanStepAshore(), "the planks are still there");
             Assert.IsFalse(_switcher.FacesTheStepAshore(), "…but he is not looking at them");
 
-            Assert.IsFalse(_switcher.BeginInteract(), "so the press finds nothing to do");
-            yield return null;
+            _switcher.BeginInteract();
+            yield return SettleAnyMove();
 
-            Assert.AreEqual(ControlMode.OnDeck, _switcher.Mode, "he is still on her deck");
-            Assert.AreEqual(MooringState.Stowed, _mooring.State, "and no line was handed over");
-            Assert.IsFalse(_switcher.OnWashboard,
-                "…nor was he put out on the rail: at a wharf the press belongs to the planks, and a " +
-                "fisher who has just declined them has not asked to go swimming");
+            Assert.AreNotEqual(ControlMode.OnFoot, _switcher.Mode,
+                "he was put ashore by a press he made looking away from the wharf — the defect");
+            Assert.IsFalse(StPetersWharf.DeckFootprint().Contains((Vector2)_playerGo.transform.position),
+                $"…he is standing on the planks at {_playerGo.transform.position}");
+            Assert.AreEqual(MooringState.Stowed, _mooring.State,
+                "and no line was handed over: the painter goes into his hand on a step ASHORE, and he " +
+                "did not make one");
         }
 
         // ---- the rig -----------------------------------------------------------------------------
@@ -240,17 +249,28 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return null;
         }
 
-        /// <summary>Point his drawn figure at the pier. The pier's deck lies SOUTH of her north-face
-        /// berth, so the bearing is read off the geometry rather than written down — a literal here would
-        /// stop being true the day the berth moved.</summary>
+        /// <summary>Point his drawn figure at the pier. The bearing is read off the geometry rather
+        /// than written down — a literal here would stop being true the day the berth moved.</summary>
         private void FaceTheWharf() => FaceCompass(CompassToTheWharf());
 
         private void FaceAwayFromTheWharf() => FaceCompass(CompassToTheWharf() + 180f);
 
+        /// <summary>
+        /// The bearing to the NEAREST PLANK — the point on the wharf's deck closest to where he stands.
+        ///
+        /// <para>⚠ This read <c>deck.center</c> until CI reddened it, and the failure is worth keeping
+        /// written down: this pier is 31 m long and she lies at its HEAD, so its centre is 15 m west of
+        /// her. Facing the middle of a wharf you are moored at the end of is a bearing <b>73° off</b> the
+        /// planks beside you — outside a 120° cone, and the fixture then reported the production rule as
+        /// broken when what was broken was where the fixture was looking. A pier is not a point.</para>
+        /// </summary>
         private float CompassToTheWharf()
         {
             Rect deck = StPetersWharf.DeckFootprint();
-            Vector2 toPlanks = deck.center - (Vector2)_playerGo.transform.position;
+            Vector2 here = _playerGo.transform.position;
+            var nearest = new Vector2(Mathf.Clamp(here.x, deck.xMin, deck.xMax),
+                                      Mathf.Clamp(here.y, deck.yMin, deck.yMax));
+            Vector2 toPlanks = nearest - here;
             return Mathf.Atan2(toPlanks.x, toPlanks.y) * Mathf.Rad2Deg;
         }
 

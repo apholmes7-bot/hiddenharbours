@@ -810,15 +810,20 @@ namespace HiddenHarbours.Player
             // wharf the press must still put her on the planks; going over the side is what E means only
             // when there is nowhere to step and nothing to work.
             //
-            // ⚠ …and "nowhere to step" is CanStepAshore, NOT the facing gate above it (2026-09-07). The
-            // ranking's own sentence is the specification: at a wharf the press must still put her on the
-            // planks. A fisher who is alongside and looking inboard has somewhere to step and has just
-            // said she does not want it — answering that press with the gunwale would be the rail
-            // outranking the wharf by the side door. So E does nothing there, which is what the owner
-            // asked for. (Where there is genuinely nowhere to step this condition is true and the rung is
-            // reached exactly as before; it also closes the case where the boarding MOVE is switched off
-            // and a declined move used to drop an ordinary wharf press onto the rail.)
-            if (onDeckAwayFromTheHelm && !CanStepAshore() && TryWashboardPress()) return true;
+            // ⚠ …and the facing gate above does NOT close this rung (2026-09-07, corrected after CI).
+            // A ladder rung that stands down passes the press DOWN the ladder; it does not take the
+            // press out of it. So the ranking's sentence is read as it was written — "at a wharf the
+            // press must still put her on the planks" is about a fisher who is LOOKING at the planks,
+            // and she still gets them, because the rung above answers first and this one is never
+            // reached. Turned away from them she has declined the planks, and the press means what it
+            // has meant since 2026-09-02: the rail, and then the water if she presses again still
+            // looking at it. One rule for the whole deck — <b>E answers the way you are facing</b>.
+            //
+            // ⚠ An earlier draft gated this on !CanStepAshore(), and CI was right to redden it: it left
+            // a fisher alongside a wharf, looking at the sea, with a key that did nothing at all — and
+            // it took away the over-the-side exit at every berth, which is the one place the owner
+            // asked for it.
+            if (onDeckAwayFromTheHelm && TryWashboardPress()) return true;
 
             if (TryInteract()) return true;
 
@@ -2788,12 +2793,10 @@ namespace HiddenHarbours.Player
                     // ⭐ …and the rail, last, exactly as BeginInteract ranks it (2026-09-02). Out on the
                     // washboard the offer names what the FACING will do, so the player reads the decision
                     // before making it rather than discovering it in the water.
-                    // ⚠ …and only where there is genuinely nowhere to step, which is BeginInteract's own
-                    // guard on this rung. Without the same condition the popup would offer the gunwale to
-                    // a fisher standing alongside a wharf and looking inboard, and the press would do
-                    // nothing at all — a popup holding a second opinion about what E means.
-                    else if (!AFixtureWouldTakeThePress && !CanStepAshore()
-                             && CanReachTheWashboard(out Vector2 outward))
+                    // ⚠ Reached whenever the step-off above stood down — including when it stood down
+                    // on the FACING. That is BeginInteract's own ladder, and the popup says what the
+                    // press does or it is holding a second opinion about what E means.
+                    else if (!AFixtureWouldTakeThePress && CanReachTheWashboard(out Vector2 outward))
                     {
                         if (!_onWashboard)
                         {

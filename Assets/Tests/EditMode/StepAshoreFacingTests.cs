@@ -180,6 +180,29 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         /// <summary>
+        /// ⚠ The stand-aside asserted from BOTH sides, in one case, because "an unknown facing allows"
+        /// is only safe if "a KNOWN facing that is 61° off refuses" — a gate that allowed everything
+        /// would pass the first arm and mean nothing. The unreadable bearing is injected rather than
+        /// arranged by deleting the rider, so the two arms differ in exactly one thing.
+        /// </summary>
+        [Test]
+        public void AnUnreadableFacingAllows_AndAReadableOneOffTheConeStillRefuses()
+        {
+            var sw = BoardedInTheDockZone();
+
+            SetDeckBearing(sw, float.NaN);
+            Assert.IsTrue(sw.FacesTheStepAshore(),
+                "a bearing that is not a number is not a facing — an unknown facing faces everything, " +
+                "and must never STRAND a player aboard");
+            Assert.IsTrue(sw.CanInteract(), "…so the step off is offered");
+
+            FaceCompass(sw, HalfCone + 1f);
+            Assert.IsFalse(sw.FacesTheStepAshore(),
+                "…while a bearing that IS readable and is a degree outside the cone still refuses — " +
+                "without this arm the case above would pass on a gate that allowed everything");
+        }
+
+        /// <summary>
         /// Aground on a bared flat there is no wharf to look at: the whole hull is over land and she may
         /// step off any side of it. ⚠ The landing in that case is the BOAT'S OWN ORIGIN, so a rule applied
         /// blindly would have demanded she face INBOARD to step out onto the beach.
