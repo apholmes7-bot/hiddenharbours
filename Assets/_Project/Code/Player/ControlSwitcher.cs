@@ -131,8 +131,10 @@ namespace HiddenHarbours.Player
         [Tooltip("How close (m) the on-deck player must stand to the helm spot for E to take the helm. " +
                  "Kept tighter than the deck so there's still deck left to disembark from.")]
         [SerializeField] private float _helmReach = 0.9f;
-        [Tooltip("Where boarding LANDS you on the deck, as a world-axis offset from the boat's position " +
-                 "(clamped to the deck bounds) — amidships, a step away from the helm.")]
+        [Tooltip("Where boarding LANDS you on the deck — an offset from the boat's position WITH HER " +
+                 "BOW NORTH, in the drawn (screen) metres this was tuned in, clamped to her walkable " +
+                 "deck. It is a place ON THE HULL: amidships and a step FORWARD of the helm, and it " +
+                 "stays there whichever way she is lying.")]
         [SerializeField] private Vector2 _boardLocalOffset = new Vector2(0f, 0.4f);
 
         [Tooltip("The DECK RIDER on the player — what draws the on-deck / pilot figure riding the hull's " +
@@ -421,7 +423,7 @@ namespace HiddenHarbours.Player
         /// (bake elevation 40°) the shipped (0, −1.3) drawn metres is (0, −2.02) hull metres — 2 m aft
         /// of her origin, which is where her tiller is.</summary>
         public Vector2 HelmDeckOffset()
-            => DeckAreaMath.WorldToDeck(_helmLocalOffset, 0f, 0f, HelmBakeElevationDegrees);
+            => DeckAreaMath.WorldToDeck(_helmLocalOffset, 0f, 0f, HullBakeElevationDegrees);
 
         /// <summary>The helm station as a boat-relative WORLD (screen-axis) offset — what
         /// <see cref="HelmWorldPosition"/> adds to her origin, and what <see cref="SnapPlayerToTheHelm"/>
@@ -429,12 +431,13 @@ namespace HiddenHarbours.Player
         private Vector2 HelmBoatRelativeOffset()
             => DeckAreaMath.DeckToWorld(HelmDeckOffset(), 0f,
                                         DeckWalkController.DrawnHeadingDegreesOf(Boat),
-                                        HelmBakeElevationDegrees);
+                                        HullBakeElevationDegrees);
 
         /// <summary>The artwork's own bake elevation for the boat under the player — per artwork, never
         /// a constant. A hull with no presenter reads the plan view, where the projection is the
-        /// identity and this whole file behaves exactly as it did before the helm learned to turn.</summary>
-        private float HelmBakeElevationDegrees
+        /// identity and this whole file behaves exactly as it did before the stations learned to turn.
+        /// Shared by both boat-local stations, the helm and the boarding seat.</summary>
+        private float HullBakeElevationDegrees
             => DeckWalkController.BakeElevationDegreesOf(Boat);
 
         /// <summary>True when the player stands close enough to the helm spot for E to take the helm
@@ -979,7 +982,7 @@ namespace HiddenHarbours.Player
             if (_boatInput != null) _boatInput.enabled = false;
 
             ApplyPlayerFor(ControlMode.OnDeck);
-            SnapPlayerToDeck(_boardLocalOffset);
+            SnapPlayerToTheBoardSpot();
             Mode = ControlMode.OnDeck;
 
             // Camera: retarget stays on the (visible, deck-walking) player at the on-foot framing —
@@ -2103,7 +2106,7 @@ namespace HiddenHarbours.Player
             // The step-off stopped being standable mid-air (she drifted off her land) — the fisher never
             // left the deck as far as the state machine is concerned, so put them back on it.
             ApplyPlayerFor(ControlMode.OnDeck);
-            SnapPlayerToDeck(_boardLocalOffset);
+            SnapPlayerToTheBoardSpot();
         }
 
         /// <summary>Call the move off without transitioning. The fisher goes back to the mode they never
@@ -2117,7 +2120,7 @@ namespace HiddenHarbours.Player
 
             if (restorePosition && Player != null && wasBoarding) Player.position = _moveShoreWorld;
             ApplyPlayerFor(Mode);
-            if (Mode == ControlMode.OnDeck) SnapPlayerToDeck(_boardLocalOffset);
+            if (Mode == ControlMode.OnDeck) SnapPlayerToTheBoardSpot();
         }
 
         /// <summary>Clear the move's own state and hand the interact key back. Deliberately separate from
@@ -2153,7 +2156,7 @@ namespace HiddenHarbours.Player
         /// while she is still in the zone, the boat's own spot the moment she drifts out of it.</summary>
         private Vector3 VaultEndWorld()
         {
-            if (_moveKind == BoardingMoveKind.Boarding) return DeckPointWorld(_boardLocalOffset);
+            if (_moveKind == BoardingMoveKind.Boarding) return DeckPointWorld(BoardBoatRelativeOffset());
             return TryDisembarkLanding(out Vector3 landing) ? landing : _moveShoreWorld;
         }
 
@@ -2264,7 +2267,7 @@ namespace HiddenHarbours.Player
                 ApplyPlayerFor(ControlMode.OnDeck);
                 // The hop may have teleported the player to the region's disembark spot — re-seat them
                 // on the deck (the coordinator repositions player + boat independently).
-                SnapPlayerToDeck(_boardLocalOffset);
+                SnapPlayerToTheBoardSpot();
                 EventBus.Publish(new ControlModeChanged(ControlMode.OnDeck));
             }
             else
@@ -2404,6 +2407,38 @@ namespace HiddenHarbours.Player
             if (deck != null) deck.SnapTo(boatRelative);
             else Player.position = Boat.position + new Vector3(boatRelative.x, boatRelative.y, 0f);
         }
+
+        /// <summary>
+        /// ⭐ <b>Where boarding seats her, as a DECK-FRAME point</b> — x abeam to starboard, y along the
+        /// keel toward the bow, honest hull metres. The same treatment <see cref="HelmDeckOffset"/> gets
+        /// and for the same defect, found while measuring the helm's (2026-09-07) and fixed here.
+        ///
+        /// <para><b>What it was.</b> <see cref="_boardLocalOffset"/> was read as a WORLD-axis offset, so
+        /// "0.4 m forward" was only forward on a hull pointing north. On the starter dory at her St
+        /// Peters berth — lying bow-WEST — it meant 0.4 m to STARBOARD, which is 0.400 m against a
+        /// walkable half-beam of 0.225 m: every boarding clamped hard onto whichever rail happened to be
+        /// up-screen, on the seaward side, with the wharf behind her. Lying bow-SOUTH it put her 0.62 m
+        /// ASTERN of where it meant to — on the tiller, 1.24 m of keel from the seat it was tuned as.</para>
+        ///
+        /// <para>Un-projected at north and re-projected through her live drawn heading, it is what its
+        /// tooltip always claimed: amidships, on the centreline, a step forward of the helm, at every
+        /// heading. Heading 0 is bit-identical, so neither scene's serialized value moves.</para>
+        /// </summary>
+        public Vector2 BoardDeckOffset()
+            => DeckAreaMath.WorldToDeck(_boardLocalOffset, 0f, 0f, HullBakeElevationDegrees);
+
+        /// <summary>The boarding seat as a boat-relative WORLD (screen-axis) offset — the frame the deck
+        /// walk and the vault's end point both speak.</summary>
+        private Vector2 BoardBoatRelativeOffset()
+            => DeckAreaMath.DeckToWorld(BoardDeckOffset(), 0f,
+                                        DeckWalkController.DrawnHeadingDegreesOf(Boat),
+                                        HullBakeElevationDegrees);
+
+        /// <summary>Seat the player where boarding lands her. ⚠ Deliberately not
+        /// <c>SnapPlayerToDeck(_boardLocalOffset)</c>, for the reason
+        /// <see cref="SnapPlayerToTheHelm"/> is not: the deck walk takes a boat-relative WORLD offset,
+        /// and this one is authored with her bow north.</summary>
+        private void SnapPlayerToTheBoardSpot() => SnapPlayerToDeck(BoardBoatRelativeOffset());
 
         /// <summary>Seat the player ON the helm station. ⚠ Deliberately not
         /// <c>SnapPlayerToDeck(_helmLocalOffset)</c>, which is what the three call sites read until
