@@ -5326,9 +5326,9 @@ no single `_Time` decides anything. The metric is the drawn field's autocorrelat
 |---|---|---|
 | 0.000 | 1.0000 | 0.1305 |
 | 0.500 | 0.7110 | 0.0802 |
-| **0.644 — shipped** | **0.4706** | **0.0770** ← the contrast FLOOR |
+| **0.644 — superseded** | **0.4706** | **0.0770** ← the contrast FLOOR |
 | 0.750 | 0.3171 | 0.0793 |
-| 1.000 | 0.1927 | 0.0979 |
+| **1.000 — SHIPPED** | **0.1927** | **0.0979** |
 
 `_CausticTex` (2 m cell, two counter-scrolling samples multiplied) behaves the same way: 0.438 at the
 shipped strength, 0.154 at 1.0.
@@ -5337,20 +5337,31 @@ shipped strength, 0.154 at 1.0.
 
 `raw` and `untiled` are **decorrelated**. The variance of their mix is therefore
 `(1−s)²σ²ᵣₐw + s²σ²ᵤₙₜᵢₗₑd` — a parabola whose floor is *inside* the interval. So a strength chosen
-to "soften" the grid also flattens the layer, and **the shipped 0.644 sits at that floor**: it keeps a
-third of the lattice *and* costs 41 % of the contrast against leaving the untiler off entirely.
+to "soften" the grid also flattens the layer, and **0.644 sat at that floor**: it kept a third of
+the lattice *and* cost 41 % of the contrast against leaving the untiler off entirely.
 
 **1.0 is strictly better on both axes than 0.644** — 59 % less repeat, 27 % more contrast — and it is
 free: a slot already pays all five fetches at any strength above zero, so the raw tap at `s = 1` is
 computed and discarded rather than saved.
 
-⚠️ **Not moved.** `_UntileStrength` is a tunable, on all nine water materials (checked: 0.644 on every
-one), and therefore the owner's. Rule 6: propose with a table, never move silently.
+### ✅ Ruled and shipped
 
-One guess at why it is 0.644 rather than 1: before #443 the blend used two variants and jumped at
-every cell boundary, so dialing the strength back was the only way to hide that seam. #443 removed the
-seam structurally. **The number outlived the thing it was compensating for** — the same shape as the
-register's own "a number stops being true when you edit what it measured".
+`_UntileStrength` is a tunable, on all nine water materials, and therefore the owner's. It was proposed
+with the table above under rule 6 and **ruled on 2026-09-08** — *"give the go ahead to continue on
+water fidelity i approve their decision."* **0.644 → 1.0 on all nine.** No shader line changed; the
+whole fix was in the number.
+
+`EveryWaterMaterial_CarriesTheRuledUntileStrength` pins it on the assets, and that guard exists for a
+specific reason: **`Apply water preset` is a wholesale copy** (register row 3). A preset left at 0.644
+would stamp it back over the live material the next time the owner changed the sea's mood, and nothing
+else would have noticed.
+
+Why it was 0.644 rather than 1: before #443 the blend used two variants and jumped at every cell
+boundary, so dialing the strength back was the only way to hide that seam. #443 removed the seam
+structurally. **The number outlived the thing it was compensating for** — the same shape as the
+register's own "a number stops being true when you edit what it measured". ⚠️ The guard that records
+this is written about the OLD value against the NEW one on purpose: phrased the obvious way it would
+compare 1.0 against itself and redden on its own fix.
 
 ### Two of my hypotheses died here, recorded so nobody re-runs them
 
@@ -5373,4 +5384,5 @@ The row said the caustics run at `_PaintScale 0.25` = 4 m cells. They do not: th
 Which means the offline half cannot say whether the owner's *"~4 m"* patches are `_SurfaceTex` /
 `_FoamTex` drawing their 4 m cell, or the caustics' two 2 m lattices beating against each other at
 different scroll phases. Both are present over sand at low water, and both are cured by the same knob.
-**That is the one question left for the plate**, and it does not gate the proposal.
+**That is the one question left for the plate**, and it gates nothing: both are cured by the same
+knob, and the owner judges the shallows in play.
