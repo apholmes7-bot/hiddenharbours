@@ -5386,3 +5386,90 @@ Which means the offline half cannot say whether the owner's *"~4 m"* patches are
 different scroll phases. Both are present over sand at low water, and both are cured by the same knob.
 **That is the one question left for the plate**, and it gates nothing: both are cured by the same
 knob, and the owner judges the shallows in play.
+
+## 43. Three tables for the owner — the band count, the height, and what #762 did to the helm
+
+Three things were owed to the owner as proposals. All three are measured here and **none of them is
+moved**: rule 6 says tunables are his, and two of the three turned out to point the opposite way from
+how they were written down.
+
+### 43.1 Row 10 — the absorption band count
+
+The band **depths** are fixed by sigma; the **count** decides how many there are and therefore how far
+apart they land on the ground. Measured at spring high, where the waterline is on the steep beach and
+the bands crowd — which is the state that reads as *"a wall"*:
+
+| `_AbsorptionBands` | steps in the first 30 m | tightest pair | first step at |
+|---|---|---|---|
+| 0 (continuous) | — the ramp fades instead of terracing | — | — |
+| 4 | 2 | 2.7 m | 14.9 m |
+| **6 — shipped** | **4** | **1.2 m** | **14.0 m** |
+| 8 | 6 | 0.8 m | 13.6 m |
+| 12 | 9 | 0.5 m | 13.3 m |
+| 16 | 12 | 0.3 m | 13.1 m |
+
+**Fewer bands means wider terraces, each one a harder edge. More bands means a smoother fall and less
+of the posterised pixel-art read.** At 16 the tightest pair is 0.3 m — about seven pixels at the
+plate's scale — which is continuous in all but name. There is no "correct" answer here, which is
+exactly why it is the owner's: six is an art choice, not a bug.
+
+### 43.2 The height did not follow the length — and it goes DOWN, not up
+
+The register carried "amplitude" as an owed row on this comparison: the sea draws about 1.5 m where a
+real gale runs ~3.6 m, so the waves read flat. **Both halves of that are wrong, in the same direction.**
+
+1. **A "gale" here is 11–14 m/s.** `WeatherModel.SeaBandEdges` is `{0, 0.5, 2, 4, 6, 8, 11, 14}` m/s
+   and Storm begins at 14. A real Beaufort 9 gale is 20–24 m/s. The wind that would justify a 3.6 m
+   sea is never blown.
+2. **3.6 m is the FULLY DEVELOPED height** — Pierson–Moskowitz, which needs unlimited fetch. §39
+   already refused PM for the *wavelength* because this setting has 25 km and PM wants 58–298. Taking
+   PM's *height* onto a JONSWAP *wavelength* is that same refusal, ignored.
+
+Measured against the sea its own fetch law describes:
+
+| state | U m/s | peak λ | drawn Hs | fetch Hs (25 km) | PM Hs | drawn steep | real steep |
+|---|---|---|---|---|---|---|---|
+| blow | 7.0 | 17.9 m | 1.43 m | 0.57 m | 1.21 m | 0.080 | 0.032 |
+| near gale | 9.5 | 22.1 m | 1.88 m | 0.77 m | 2.22 m | 0.085 | 0.035 |
+| **GALE** | **12.5** | **26.6 m** | **2.36 m** | **1.01 m** | 3.84 m | **0.089** | **0.038** |
+| storm | 14.0 | 28.7 m | 2.60 m | 1.13 m | 4.82 m | 0.091 | 0.039 |
+
+**The drawn sea is already 2.3× taller than 25 km of fetch can raise, and 2.3× too steep.** "Raise the
+amplitude" would take it further from its own law, not closer. If anything moves it is the other way.
+
+### 43.3 The helm-feel verdict on #762 — and it found something
+
+#762 changed the **wavelength** and left the **height** alone. Where the wavelength barely moved,
+nothing at the wheel changed. Where it moved a lot, the same water is now folded into a quarter of the
+length:
+
+| state | U m/s | λ before | after | × | period before | after | steepness before | after |
+|---|---|---|---|---|---|---|---|---|
+| **light airs** | 1.63 | 8.4 m | **2.2 m** | **0.26** | 2.33 s | **1.19 s** | 0.048 | **0.182** |
+| breeze | 3.00 | 10.5 m | 7.5 m | 0.71 | 2.59 s | 2.19 s | 0.062 | 0.087 |
+| blow | 5.70 | 14.6 m | 15.6 m | 1.07 | 3.05 s | 3.16 s | 0.080 | 0.074 |
+| near gale | 9.50 | 20.3 m | 22.1 m | 1.09 | 3.60 s | 3.76 s | 0.093 | 0.085 |
+| GALE | 12.95 | 25.4 m | 27.3 m | 1.07 | 4.04 s | 4.18 s | 0.096 | 0.089 |
+
+**The verdict, in two halves.**
+
+*From a blow upward: he should feel nothing different.* The peak moved 1.07× and the steepness moved
+by less than a hundredth. If the helm feels different in a blow after #762, it is something else and
+worth reporting as such.
+
+*In light airs it changed a lot, and not for the better.* The peak fell to a quarter, crests now
+arrive roughly twice as often (2.33 s → 1.19 s), and because the height did not follow, **the
+steepness went from 0.048 — a textbook wind sea — to 0.182, which is past the ~0.14 limit where waves
+break.** A sea that steep cannot stand. The hull rides the same field the shader draws (ADR 0018), so
+this is not a look question: on a calm day the boat is now being asked to ride a chop steeper than the
+sea can physically hold.
+
+⚠️ **That was shipped by #762 without being proposed, and this lane shipped #762.** The wavelength
+half was measured and argued; the height half was never asked, and it is the half that broke. It is
+the strongest argument for **deriving the height from the fetch the way the length now is**, so the
+two halves of one sea cannot drift apart again — which is what §43.2's row proposes.
+
+### What none of this does
+
+Moves a number. `_AbsorptionBands`, `PrimaryAmplitude` and `SeaStateAmplitudeExponent` are all
+tunables and all the owner's. These are three tables and a verdict; the choices are his.
