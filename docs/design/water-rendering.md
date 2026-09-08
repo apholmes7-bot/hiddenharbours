@@ -5293,3 +5293,314 @@ size it, and it can show a knob makes no difference; it cannot prove no other la
 tooth PERIOD is the weakest number here — on the smooth synthetic shore it reads 11–15 m at the
 shipped grid, and the period depends on the coast's obliquity to the grid, which a synthetic shore
 only guesses at. **The amplitude is the finding; the period wants the real authored coastline.**
+
+## 42. The shallows wear a lattice because the untile knob KEEPS one (register row 8)
+
+The owner: *"the shallows wear a patchwork of 4 m rounded squares."* The register had it down as the
+caustic slot's tile grid surviving the untiler. The untiler is not failing. **It is being asked for
+64 % of its opinion, and the other 36 % is the tile grid, drawn verbatim.**
+
+### The last line of the function
+
+`UntileSampleW` does two careful things — a domain warp, then a four-corner hash-untile whose weights
+are a partition of unity so no slot can be brightened or darkened. Then it returns:
+
+```hlsl
+return lerp(raw, untiled, s);          // s = _UntileStrength = 0.644
+```
+
+`raw` is the tile on Repeat wrap: perfectly periodic at `1/scale` metres. Keeping `1 - s` of it keeps
+that proportion of the grid on screen **whatever the untiler did**. No amount of cleverness upstream
+of that line can survive it.
+
+### Measured, on the shipped tiles
+
+The real committed PNGs (`Caustics.png`, `SurfaceRipple.png`) through the shipped arithmetic —
+`Hash22`, `Pixelize`, `PaintUV` and the corner weights all reproduced — at **five instants each**, so
+no single `_Time` decides anything. The metric is the drawn field's autocorrelation at the cell lag:
+1.0 is "the grid, undisturbed", 0 is "no grid left".
+
+`_SurfaceTex` at `_PaintScale` — a 4 m cell:
+
+| `_UntileStrength` | repeat autocorrelation | field contrast |
+|---|---|---|
+| 0.000 | 1.0000 | 0.1305 |
+| 0.500 | 0.7110 | 0.0802 |
+| **0.644 — superseded** | **0.4706** | **0.0770** ← the contrast FLOOR |
+| 0.750 | 0.3171 | 0.0793 |
+| **1.000 — SHIPPED** | **0.1927** | **0.0979** |
+
+`_CausticTex` (2 m cell, two counter-scrolling samples multiplied) behaves the same way: 0.438 at the
+shipped strength, 0.154 at 1.0.
+
+### And mid-range is the worst place to stand
+
+`raw` and `untiled` are **decorrelated**. The variance of their mix is therefore
+`(1−s)²σ²ᵣₐw + s²σ²ᵤₙₜᵢₗₑd` — a parabola whose floor is *inside* the interval. So a strength chosen
+to "soften" the grid also flattens the layer, and **0.644 sat at that floor**: it kept a third of
+the lattice *and* cost 41 % of the contrast against leaving the untiler off entirely.
+
+**1.0 is strictly better on both axes than 0.644** — 59 % less repeat, 27 % more contrast — and it is
+free: a slot already pays all five fetches at any strength above zero, so the raw tap at `s = 1` is
+computed and discarded rather than saved.
+
+### ✅ Ruled and shipped
+
+`_UntileStrength` is a tunable, on all nine water materials, and therefore the owner's. It was proposed
+with the table above under rule 6 and **ruled on 2026-09-08** — *"give the go ahead to continue on
+water fidelity i approve their decision."* **0.644 → 1.0 on all nine.** No shader line changed; the
+whole fix was in the number.
+
+`EveryWaterMaterial_CarriesTheRuledUntileStrength` pins it on the assets, and that guard exists for a
+specific reason: **`Apply water preset` is a wholesale copy** (register row 3). A preset left at 0.644
+would stamp it back over the live material the next time the owner changed the sea's mood, and nothing
+else would have noticed.
+
+Why it was 0.644 rather than 1: before #443 the blend used two variants and jumped at every cell
+boundary, so dialing the strength back was the only way to hide that seam. #443 removed the seam
+structurally. **The number outlived the thing it was compensating for** — the same shape as the
+register's own "a number stops being true when you edit what it measured". ⚠️ The guard that records
+this is written about the OLD value against the NEW one on purpose: phrased the obvious way it would
+compare 1.0 against itself and redden on its own fix.
+
+### Two of my hypotheses died here, recorded so nobody re-runs them
+
+1. **"A partition of unity conserves the mean and destroys the variance."** True as arithmetic —
+   `Σw²` is 1.0 at a cell corner and 0.25 at a cell centre, so a blend of four *decorrelated* crops
+   should lose half its contrast at every cell centre, which would be a lattice of soft patches. It is
+   **small in practice**: the four crops are crops of one 64 px tile and are nowhere near decorrelated.
+   Measured centre/corner contrast 0.642 shipped against 0.689 with the untiler off — a real effect,
+   not the defect.
+2. **"A translated periodic function has the same period, so no strength can help."** **False.** At
+   `s = 1` the repeat falls to 0.19: per-cell phase randomisation plus the blend does decorrelate the
+   field at the cell scale. A per-cell **mirror** variant — the standard remedy when translation fails
+   — was measured too and buys almost nothing (0.193 → 0.118), so it is not proposed.
+
+### One correction to the register's own note, and one thing the plate must settle
+
+The row said the caustics run at `_PaintScale 0.25` = 4 m cells. They do not: the call site passes
+`_PaintScale * 2.0`, a **2 m** cell. The **4 m** slots are `_SurfaceTex` and `_FoamTex`.
+
+Which means the offline half cannot say whether the owner's *"~4 m"* patches are `_SurfaceTex` /
+`_FoamTex` drawing their 4 m cell, or the caustics' two 2 m lattices beating against each other at
+different scroll phases. Both are present over sand at low water, and both are cured by the same knob.
+**That is the one question left for the plate**, and it gates nothing: both are cured by the same
+knob, and the owner judges the shallows in play.
+
+## 43. Three tables for the owner — the band count, the height, and what #762 did to the helm
+
+Three things were owed to the owner as proposals. All three are measured here and **none of them is
+moved**: rule 6 says tunables are his, and two of the three turned out to point the opposite way from
+how they were written down.
+
+### 43.1 Row 10 — the absorption band count
+
+The band **depths** are fixed by sigma; the **count** decides how many there are and therefore how far
+apart they land on the ground. Measured at spring high, where the waterline is on the steep beach and
+the bands crowd — which is the state that reads as *"a wall"*:
+
+| `_AbsorptionBands` | steps in the first 30 m | tightest pair | first step at |
+|---|---|---|---|
+| 0 (continuous) | — the ramp fades instead of terracing | — | — |
+| 4 | 2 | 2.7 m | 14.9 m |
+| **6 — shipped** | **4** | **1.2 m** | **14.0 m** |
+| 8 | 6 | 0.8 m | 13.6 m |
+| 12 | 9 | 0.5 m | 13.3 m |
+| 16 | 12 | 0.3 m | 13.1 m |
+
+**Fewer bands means wider terraces, each one a harder edge. More bands means a smoother fall and less
+of the posterised pixel-art read.** At 16 the tightest pair is 0.3 m — about seven pixels at the
+plate's scale — which is continuous in all but name. There is no "correct" answer here, which is
+exactly why it is the owner's: six is an art choice, not a bug.
+
+### 43.2 The height did not follow the length — and it goes DOWN, not up
+
+The register carried "amplitude" as an owed row on this comparison: the sea draws about 1.5 m where a
+real gale runs ~3.6 m, so the waves read flat. **Both halves of that are wrong, in the same direction.**
+
+1. **A "gale" here is 11–14 m/s.** `WeatherModel.SeaBandEdges` is `{0, 0.5, 2, 4, 6, 8, 11, 14}` m/s
+   and Storm begins at 14. A real Beaufort 9 gale is 20–24 m/s. The wind that would justify a 3.6 m
+   sea is never blown.
+2. **3.6 m is the FULLY DEVELOPED height** — Pierson–Moskowitz, which needs unlimited fetch. §39
+   already refused PM for the *wavelength* because this setting has 25 km and PM wants 58–298. Taking
+   PM's *height* onto a JONSWAP *wavelength* is that same refusal, ignored.
+
+Measured against the sea its own fetch law describes:
+
+| state | U m/s | peak λ | drawn Hs | fetch Hs (25 km) | PM Hs | drawn steep | real steep |
+|---|---|---|---|---|---|---|---|
+| blow | 7.0 | 17.9 m | 1.43 m | 0.57 m | 1.21 m | 0.080 | 0.032 |
+| near gale | 9.5 | 22.1 m | 1.88 m | 0.77 m | 2.22 m | 0.085 | 0.035 |
+| **GALE** | **12.5** | **26.6 m** | **2.36 m** | **1.01 m** | 3.84 m | **0.089** | **0.038** |
+| storm | 14.0 | 28.7 m | 2.60 m | 1.13 m | 4.82 m | 0.091 | 0.039 |
+
+**The drawn sea is already 2.3× taller than 25 km of fetch can raise, and 2.3× too steep.** "Raise the
+amplitude" would take it further from its own law, not closer. If anything moves it is the other way.
+
+### 43.3 The helm-feel verdict on #762 — and it found something
+
+#762 changed the **wavelength** and left the **height** alone. Where the wavelength barely moved,
+nothing at the wheel changed. Where it moved a lot, the same water is now folded into a quarter of the
+length:
+
+| state | U m/s | λ before | after | × | period before | after | steepness before | after |
+|---|---|---|---|---|---|---|---|---|
+| **light airs** | 1.63 | 8.4 m | **2.2 m** | **0.26** | 2.33 s | **1.19 s** | 0.048 | **0.182** |
+| breeze | 3.00 | 10.5 m | 7.5 m | 0.71 | 2.59 s | 2.19 s | 0.062 | 0.087 |
+| blow | 5.70 | 14.6 m | 15.6 m | 1.07 | 3.05 s | 3.16 s | 0.080 | 0.074 |
+| near gale | 9.50 | 20.3 m | 22.1 m | 1.09 | 3.60 s | 3.76 s | 0.093 | 0.085 |
+| GALE | 12.95 | 25.4 m | 27.3 m | 1.07 | 4.04 s | 4.18 s | 0.096 | 0.089 |
+
+**The verdict, in two halves.**
+
+*From a blow upward: he should feel nothing different.* The peak moved 1.07× and the steepness moved
+by less than a hundredth. If the helm feels different in a blow after #762, it is something else and
+worth reporting as such.
+
+*In light airs it changed a lot, and not for the better.* The peak fell to a quarter, crests now
+arrive roughly twice as often (2.33 s → 1.19 s), and because the height did not follow, **the
+steepness went from 0.048 — a textbook wind sea — to 0.182, which is past the ~0.14 limit where waves
+break.** A sea that steep cannot stand. The hull rides the same field the shader draws (ADR 0018), so
+this is not a look question: on a calm day the boat is now being asked to ride a chop steeper than the
+sea can physically hold.
+
+⚠️ **That was shipped by #762 without being proposed, and this lane shipped #762.** The wavelength
+half was measured and argued; the height half was never asked, and it is the half that broke. It is
+the strongest argument for **deriving the height from the fetch the way the length now is**, so the
+two halves of one sea cannot drift apart again — which is what §43.2's row proposes.
+
+### What none of this does
+
+Moves a number. `_AbsorptionBands`, `PrimaryAmplitude` and `SeaStateAmplitudeExponent` are all
+tunables and all the owner's. These are three tables and a verdict; the choices are his.
+
+## 44. Two from the beach — the sea vibrates when its mood changes, and it only reads as layers at noon
+
+Two owner observations from Nine Mile Creek on 2026-09-08, both named offline before anything moves.
+
+### 44.1 The vibration is one multiplication — `ω(now) · t`
+
+> *"the water starts oscillating very quickly when it changes states from light to calm to moderate
+> etc, its like its speed resynches and it vibrates and its very noticable"*
+
+`WaveMath.Sample` forms the phase as:
+
+```csharp
+travel = d·x - PhaseSpeed * timeSeconds;
+phase  = waveNumber * travel + PhaseOffset;
+```
+
+which is `φ = k·x − ω·t`, with `ω = k·c = √(2πg/λ)`. **`λ` is a function of the wind.** So when the
+sea state changes, ω changes, and the phase at a fixed world point and a fixed instant moves by
+`Δω · t`. The drawn rate through a transition is
+
+```
+    dφ/dt  =  ω  +  t · dω/dt
+              ^^     ^^^^^^^^
+             the     the defect: an error proportional to how long the world has been running
+             wave
+```
+
+Measured through one light→blow change (U 1.63 → 5.70 m/s over 4 s), at one world point, 60 fps —
+the wave itself runs at **0.316 Hz**:
+
+| game time | drawn rate | × the real wave |
+|---|---|---|
+| 1 min | 30.3 Hz | 96× |
+| 10 min | 310.6 Hz | 982× |
+| 1 hour | 1 867 Hz | 5 903× |
+| 3 hours | 5 604 Hz | 17 715× |
+| 1 day | 44 839 Hz | 141 739× |
+
+**It is not a constant defect — it gets worse the longer you play.** That growth is the signature: a
+wave, a blend curve and a frame-rate artefact none of them care how long the session has been running.
+
+**The dead control matters as much as the table.** With the wind *held still* the shipped law is exact
+at every game time — 0.316 Hz at one minute and at ten days. So the sea is not drawn wrong; **only the
+change is wrong**, which is precisely what the owner reported and why it reads as a glitch rather than
+as weather.
+
+⚠️ **Rule 5 is not to blame and must not be "fixed" by adding an accumulator.** The field being a pure
+function of (seed, gameTime) is right. The defect is that the function is `ω(now)·t` — a frequency
+that is *current* multiplied by a time that is *total*. A sea does not re-phase its whole history when
+the wind freshens.
+
+**The proposal: hold the frequencies fixed and let the sea state move only the amplitudes.** That is
+what a growing sea physically does — it puts energy into frequencies that were always there, it does
+not slide existing waves up the scale. The field is already an 8-train JONSWAP-shaped spectrum
+(`WaveTrains.MaxTrains`), so the bins to hold fixed already exist. Measured on the same transition at
+three hours in: **5 604 Hz → 0.316 Hz, which is the wave's own rate exactly**, at every game time and
+through any transition. The vibration is not reduced, it is *absent*, because the term that made it no
+longer exists. Still a pure function of (seed, gameTime); still no accumulator; still nothing saved.
+
+### 44.2 "It feels like layers" is a NOON reading, and the gate that changes is zero at solar noon
+
+> *13:12* — *"the vertical white water details vs the horizontal from nw to se water details, they dont
+> seem to work with one another… it just still doesnt feel like one coherent surface, it feels like
+> layers"*
+>
+> *15:51, same beach, sun low* — *"it actually looks really good in the evening, its making me rethink
+> what i just said."*
+
+Same water, same place, two readings. What changed between them is computable.
+
+The swell's only two shading terms — `_SwellFaceShade` (a value) and `_SunSideStrength` (a colour) —
+are both multiplied by `swellReadGate`, and the sun side by an elevation gate as well:
+
+```hlsl
+float e        = _SunElevation;
+float elevGate = smoothstep(0.0, 0.12, e) * (1 - e*e) * (1 - e*e);
+amt = faceSigned * _SunSideStrength * elevGate * swellReadGate;
+```
+
+`(1 − e²)²` is **exactly 0 at solar noon**, which is PR 9's deliberate design (row 11: *a high sun has
+no side*). Sunrise 06:00 / sunset 20:00 puts solar noon at **13:00**:
+
+| time | sun elevation | `elevGate` | vs 15:51 |
+|---|---|---|---|
+| 12:00 | 0.975 | 0.00245 | 0.019× |
+| **13:12 — his complaint** | 0.999 | **0.00000** | **0.000×** |
+| 13:24 | 0.996 | 0.00006 | 0.001× |
+| 14:30 | 0.944 | 0.01190 | 0.094× |
+| **15:51 — his compliment** | 0.802 | **0.12688** | 1.000× |
+| 17:00 | 0.623 | 0.37364 | 2.945× |
+
+*(The transcription is validated against row 11's independently measured points: 0.374 at 17:00 and
+0.0025 at 12:00.)*
+
+**The owner was twelve minutes from the one moment in the day when the swell's colour shading is
+switched off.** And in light-to-moderate airs `swellReadGate` is low as well (row 25: the calm gate is
+`smoothstep(0.28, 0.45, _Chop)`), so *both* of the swell's shading terms were near zero at once.
+
+**That reframes the row.** At midday the swell is drawn as a nearly flat colour field, and every white
+layer — drift lines, caps, foam — is composited over it. Of course it reads as layers: there is
+nothing underneath for them to be layers *of*. **The defect at noon is the ABSENCE of a surface cue,
+not the presence of a bad one** — the same family as rows 6 and 25, and the reason the evening looks
+right is that PR 9's sun side is finally doing the work.
+
+⚠️ **What this does not settle, and I will not pretend otherwise.** I cannot see the screenshots. The
+seat describes "dense vertical white streaks, screen-aligned"; the owner's own words are "the vertical
+white water details vs the **horizontal** from nw to se water details", which reads at least as
+plausibly as *upright* versus *lying flat* — a 2D-sprite-ish white element over in-plane surface
+detail — and he says as much (*"almost appearing as a 2d sprite in behaviour"*). Those are different
+defects with different fixes. The white candidates that are live at his sea state are
+**`_DriftLineStrength 0.35`** (near-white 0.92/0.96/0.98, stretched 5×, alive only between sea state
+0.05 and 0.6 — his exact band — and running along `_FlowDir`, which is the hard-coded constant
+**(1, 0)**, a *different* direction from the swell's NW→SE) and the **`_WhitecapTex` stamp sheet**
+(register row 7's painted mark, which would read as a sprite by construction).
+
+⚠️ Note also that **`_DriftLineFoamDrift` is absent from all nine water materials** — so it stamps 0,
+and the lines run on the raw current while the foam they are made of runs on the shared blend. The
+shader's own comment already calls that out: *"until now the lines and the foam they are MADE of read
+two different directions."*
+
+**Which of these the owner is seeing is a plate question**, and it is the plate the slot is already
+queued for. The gate table above narrows it usefully but does not close it, and §44.2 must not be
+built on until it does.
+
+### The prediction that can falsify 44.2
+
+The elevation gate is **symmetric about solar noon** — it knows nothing about morning or evening.
+10:09 and 15:51 gate identically at 0.127. So: **if the sea reads as coherent at 15:51 but NOT at
+10:09, the sun side is not the whole story** and the difference is in the warm *tint*, not in the
+gate. That is one cheap question to answer on the same slot, and it is worth more than another table.

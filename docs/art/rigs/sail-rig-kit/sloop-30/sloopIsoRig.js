@@ -353,6 +353,25 @@
   // ---- the static mesh -----------------------------------------------------------------------------
   const F = [];
   (function build(){
+    // ---- authoring cursor: every face DECLARES the level it belongs to ---------------------------
+    // RigMeshExtractor's contract: a rig that publishes geometry().ids must stamp EVERY face with a
+    // key of that table. No default is defensible — the only one would be `hull`, which means NEVER
+    // CULL, so a missed stamp ships as a room that quietly stops opening. The cursor rides the build
+    // order, so a face declares its level at the point it is emitted and nothing is ever re-derived
+    // from geometry. `mark` carries the section's cutaway properties (inside/lid/under) alongside,
+    // because those are the RASTERISER's switches and must stay independent of the level.
+    // An explicit tag on the face itself always wins — that is how a cabin liner declares itself
+    // inside a section that is building hull.
+    let LV='hull', MARK=null;
+    const lv=(id,mark)=>{ LV=id; MARK=mark||null; };
+    F.push=function(){
+      for(let i=0;i<arguments.length;i++){
+        const f=arguments[i];
+        if(f.lv==null) f.lv=LV;
+        if(MARK) for(const k in MARK){ if(f[k]==null) f[k]=MARK[k]; }
+      }
+      return Array.prototype.push.apply(this,arguments);
+    };
     const CUT=(u0,u1,extra)=>inCabin(u0,u1)?Object.assign({cut:'cabin'},extra||{}):(extra||null);
     // ---- hull skin, both sides ----
     for(const side of [-1,1]){
@@ -387,16 +406,16 @@
           const a0=Math.max(u0,CAB_U0), a1=Math.min(u1,CAB_U1);
           const fs0=fAtZ(a0,CAB_SOLE), fs1=fAtZ(a1,CAB_SOLE), fl0=fAtZ(a0,ZLIP), fl1=fAtZ(a1,ZLIP);
           const fd0=fAtZ(a0,deckZ(a0)-0.04), fd1=fAtZ(a1,deckZ(a1)-0.04);
-          face(F,[skin(side,a1,fs1,1),skin(side,a0,fs0,1),skin(side,a0,fl0,1),skin(side,a1,fl1,1)],'cream',-0.6,0,{lv:'cabin'});
+          face(F,[skin(side,a1,fs1,1),skin(side,a0,fs0,1),skin(side,a0,fl0,1),skin(side,a1,fl1,1)],'cream',-0.6,0,{lv:'cabin',inside:1});
           for(let k=0;k<2;k++){
             const g0a=fl0+(fd0-fl0)*k/2, g1a=fl0+(fd0-fl0)*(k+1)/2, g0b=fl1+(fd1-fl1)*k/2, g1b=fl1+(fd1-fl1)*(k+1)/2;
-            face(F,[skin(side,a1,g0b,1),skin(side,a0,g0a,1),skin(side,a0,g1a,1),skin(side,a1,g1b,1)],'cream',-0.2,0,{lv:'cabin',cut:'cabin',cutN:onx});
+            face(F,[skin(side,a1,g0b,1),skin(side,a0,g0a,1),skin(side,a0,g1a,1),skin(side,a1,g1b,1)],'cream',-0.2,0,{lv:'cabin',inside:1,cut:'cabin',cutN:onx});
           }
           const L0=skin(side,a0,fl0), L1=skin(side,a1,fl1), I0=skin(side,a0,fl0,1), I1=skin(side,a1,fl1,1);
           const up=(p)=>[p[0],p[1],p[2]+0.05];
           const lipQ=[up(I0),up(I1),up(L1),up(L0)];
-          face(F,side>0?lipQ:lipQ.slice().reverse(),'cream',1.6,-0.02,{lv:'cabin',lip:'cabin',cutN:onx});
-          face(F,[up(L0),up(L1),L1,L0],'cream',0.9,-0.02,{lv:'cabin',lip:'cabin',cutN:onx});
+          face(F,side>0?lipQ:lipQ.slice().reverse(),'cream',1.6,-0.02,{lv:'cabin',inside:1,lip:'cabin',cutN:onx});
+          face(F,[up(L0),up(L1),L1,L0],'cream',0.9,-0.02,{lv:'cabin',inside:1,lip:'cabin',cutN:onx});
         }
         // long hull window (proud smoked panel), y 0.35..2.55
         const wy0=uOf(0.35), wy1=uOf(2.55);
@@ -407,6 +426,7 @@
         }
       }
     }
+    lv('hull');        // transom, quarter pieces and the swim step: exterior silhouette
     // ---- transom: bands below the sole, two quarter pieces above it (open walk-through) ----
     (function(){
       const st=station(0), tz=(z)=>fracAtZ(st,z), tp=(s,f)=>skin(s,0,f);
@@ -429,6 +449,7 @@
       box(F,[0,st.y-0.02,SOLE-0.10],[0.40,0.02,0.10],'paint',-0.6,-0.01);   // step riser under the sole edge
     })();
 
+    lv('cockpit');     // the well and everything standing in it, up to the companionway bulkhead
     // ---- cockpit ----
     (function(){
       const yA=CK.yA, yB=CK.yB, yT=CK.yT;
@@ -480,7 +501,7 @@
       wall(-hx, DOOR.x0, CK.seatZ, rz, -0.25); wall(DOOR.x1, hx, CK.seatZ, rz, -0.25);
       wall(DOOR.x0, DOOR.x1, DOOR.z1, rz, -0.25);
       // dim vestibule behind the opening (exterior view only — the cabin view has the real steps)
-      face(F,[[DOOR.x0,yq+0.30,DOOR.z0],[DOOR.x1,yq+0.30,DOOR.z0],[DOOR.x1,yq+0.30,DOOR.z1],[DOOR.x0,yq+0.30,DOOR.z1]].reverse(),'blk',-0.4,0,{lv:'lid'});
+      face(F,[[DOOR.x0,yq+0.30,DOOR.z0],[DOOR.x1,yq+0.30,DOOR.z0],[DOOR.x1,yq+0.30,DOOR.z1],[DOOR.x0,yq+0.30,DOOR.z1]].reverse(),'blk',-0.4,0,{lid:1});
       // jambs + sill nosing
       box(F,[0,yq-0.02,DOOR.z0-0.02],[DOOR.x1+0.03,0.03,0.02],'steel',0.5,-0.02);
       // wheel pedestal + compass, mainsheet block + cleat
@@ -496,6 +517,7 @@
         drum(F,[s*px,WINCH.primaryY,CK.coamZ]);
         box(F,[s*(xCoam(-1.0)-0.05),-1.0,CK.coamZ+0.02],[0.05,0.035,0.02],'steel',0.55,-0.03);   // furling / spare cleats
       }
+      lv('hull');   // the quarter margins are washboard, not cockpit
       // quarter cleats
       for(const s of [-1,1]) box(F,[s*1.18,-4.40,deckZ(uOf(-4.40))+0.035],[0.026,0.095,0.036],'steel',0.5,-0.02);
     })();
@@ -505,6 +527,7 @@
       prism(out,[c[0],c[1],c[2]+0.15],0.095,0.05,10,'steel',0.7,-0.03);
     }
 
+    lv('hull');   // side decks and margins are WASHBOARD — hull silhouette, never culled
     // ---- decks: side decks along the coachroof and cockpit, foredeck, aft margins ----
     (function(){
       const DS=18;
@@ -516,7 +539,7 @@
           const y0=yOf(u0), y1=yOf(u1), z0=deckZ(u0), z1=deckZ(u1);
           const inner=(y)=> y<=CK.yB ? halfAtZ(uOf(y),SOLE,1)-0.06 : (y<=RF.yA ? xCoam(y) : hxRoof(y));
           const e0=edgeX(u0), e1=edgeX(u1), i0=inner(y0), i1=inner(y1);
-          const lid = (y0>RF.yA-0.01) ? {lv:'lid'} : null;
+          const lid = (y0>RF.yA-0.01) ? {lid:1} : null;
           const m0=Math.max(i0,e0-0.14), m1=Math.max(i1,e1-0.14);
           const mq=[[s*m0,y0,z0],[s*e0,y0,z0],[s*e1,y1,z1],[s*m1,y1,z1]];
           face(F,s>0?mq:mq.slice().reverse(),'paint',0.35,0,lid);
@@ -526,12 +549,13 @@
           }
         }
       }
+      lv('foredeck');  // from the coachroof nose forward, full width — the level she declares
       // foredeck from the coachroof nose to the stem head
       const BS=10, u0f=uOf(RF.yNose), u1f=0.985;
       for(let i=0;i<BS;i++){
         const u0=u0f+(u1f-u0f)*i/BS, u1=u0f+(u1f-u0f)*(i+1)/BS;
         const e0=edgeX(u0), e1=edgeX(u1), y0=yOf(u0)+rakeAt(u0,1), y1=yOf(u1)+rakeAt(u1,1), z0=deckZ(u0), z1=deckZ(u1);
-        const lid = (yOf(u0)<4.45) ? {lv:'lid'} : null;
+        const lid = (yOf(u0)<4.45) ? {lid:1} : null;
         const m0=Math.max(0.02,e0-0.14), m1=Math.max(0.02,e1-0.14);
         face(F,[[-e0,y0,z0],[e0,y0,z0],[e1,y1,z1],[-e1,y1,z1]],'paint',0.4,0,lid);
         if(m0>0.05) face(F,[[-m0,y0,z0+0.001],[m0,y0,z0+0.001],[m1,y1,z1+0.001],[-m1,y1,z1+0.001]],'deck',0.4,-0.01,lid);
@@ -553,6 +577,7 @@
       }
     })();
 
+    lv('coachroof');   // the roof panel, its hatches and winches — the CABIN's declared lid
     // ---- coachroof ----
     (function(){
       const N=12, yA=RF.yA, yF=RF.yF;
@@ -560,10 +585,10 @@
         const y0=yA+(yF-yA)*i/N, y1=yA+(yF-yA)*(i+1)/N;
         const h0=hxRoof(y0), h1=hxRoof(y1), z0=roofZ(y0), z1=roofZ(y1), d0=deckZ(uOf(y0)), d1=deckZ(uOf(y1));
         // top: gelcoat margin + a non-skid panel
-        face(F,[[-(h0-0.06),y0,z0],[h0-0.06,y0,z0],[h1-0.06,y1,z1],[-(h1-0.06),y1,z1]],'paint',0.55,0,{lv:'lid'});
+        face(F,[[-(h0-0.06),y0,z0],[h0-0.06,y0,z0],[h1-0.06,y1,z1],[-(h1-0.06),y1,z1]],'paint',0.55,0,{lid:1});
         if(y0>-0.10 && y1<2.95){
           const p0=h0-0.26, p1=h1-0.26;
-          face(F,[[-p0,y0,z0+0.002],[p0,y0,z0+0.002],[p1,y1,z1+0.002],[-p1,y1,z1+0.002]],'deck',0.35,-0.01,{lv:'lid'});
+          face(F,[[-p0,y0,z0+0.002],[p0,y0,z0+0.002],[p1,y1,z1+0.002],[-p1,y1,z1+0.002]],'deck',0.35,-0.01,{lid:1});
         }
         // sides with a little tumblehome
         for(const s of [-1,1]){
@@ -592,21 +617,22 @@
       }
       // deck hatches on the roof (smoked lids in steel frames)
       for(const [hy,hs] of [[1.55,0.28],[2.55,0.24]]){
-        box(F,[0,hy,roofZ(hy)+0.03],[hs+0.03,hs+0.03,0.03],'steel',0.3,-0.02,null,{lv:'lid'});
-        face(F,[[-hs,hy-hs,roofZ(hy)+0.061],[hs,hy-hs,roofZ(hy)+0.061],[hs,hy+hs,roofZ(hy)+0.061],[-hs,hy+hs,roofZ(hy)+0.061]],'glas',0.9,-0.03,{lv:'lid'});
+        box(F,[0,hy,roofZ(hy)+0.03],[hs+0.03,hs+0.03,0.03],'steel',0.3,-0.02,null,{lid:1});
+        face(F,[[-hs,hy-hs,roofZ(hy)+0.061],[hs,hy-hs,roofZ(hy)+0.061],[hs,hy+hs,roofZ(hy)+0.061],[-hs,hy+hs,roofZ(hy)+0.061]],'glas',0.9,-0.03,{lid:1});
       }
       // cabin-top winches, clutch banks, halyard tails from the mast foot
       for(const s of [-1,1]){
         drum(F,[s*WINCH.cabinX,WINCH.cabinY,roofZ(WINCH.cabinY)]);
-        box(F,[s*WINCH.cabinX,WINCH.clutchY,roofZ(WINCH.clutchY)+0.03],[0.11,0.05,0.03],'blk',0.2,-0.02,null,{lv:'lid'});
-        for(let k=0;k<3;k++) box(F,[s*(WINCH.cabinX-0.07+0.07*k),WINCH.clutchY+0.02,roofZ(WINCH.clutchY)+0.085],[0.012,0.02,0.025],'steel',0.6,-0.03,null,{lv:'lid'});
+        box(F,[s*WINCH.cabinX,WINCH.clutchY,roofZ(WINCH.clutchY)+0.03],[0.11,0.05,0.03],'blk',0.2,-0.02,null,{lid:1});
+        for(let k=0;k<3;k++) box(F,[s*(WINCH.cabinX-0.07+0.07*k),WINCH.clutchY+0.02,roofZ(WINCH.clutchY)+0.085],[0.012,0.02,0.025],'steel',0.6,-0.03,null,{lid:1});
         const tails=[[s*0.14,MAST.y-0.12,roofZ(MAST.y-0.12)+0.03],[s*0.40,0.55,roofZ(0.55)+0.03],[s*WINCH.cabinX,WINCH.clutchY+0.06,roofZ(WINCH.clutchY)+0.03],[s*WINCH.cabinX,WINCH.cabinY+0.10,roofZ(WINCH.cabinY)+0.03]];
-        rope(F,tails,0.024,'rope',0.2,0,{lv:'lid'});
+        rope(F,tails,0.024,'rope',0.2,0,{lid:1});
       }
       // mast collar + foot
-      box(F,[0,MAST.y,MAST.footZ+0.035],[0.14,0.16,0.035],'steel',0.4,-0.02,null,{lv:'lid'});
+      box(F,[0,MAST.y,MAST.footZ+0.035],[0.14,0.16,0.035],'steel',0.4,-0.02,null,{lid:1});
     })();
 
+    lv('rig');         // a DEDICATED class, so a cut can never take a spar with the space below it
     // ---- mast, spreaders, standing rigging, pulpits, stanchions, lifelines ----
     (function(){
       const RIGX={lv:'rig'};
@@ -668,9 +694,10 @@
       rope(F,fl,0.021,'rope',0.15,0,RIGX);
     })();
 
+    lv('hull',{under:1});   // keel and bulb are exterior silhouette; `under` keeps them off unless asked
     // ---- fin keel + spade rudder (underbody, optional) ----
     (function(){
-      const U={lv:'under'};
+      const U={under:1};
       const sec=(yc,c,z,t)=>[[yc+c*0.5,z,0],[yc+c*0.1,z,t],[yc-c*0.35,z,t*0.85],[yc-c*0.5,z,0],[yc-c*0.35,z,-t*0.85],[yc+c*0.1,z,-t]];
       const A=sec(-0.05,1.60,0.02,0.09), B=sec(-0.15,1.05,-1.20,0.065);
       const P=(q)=>[q[2],q[0],q[1]];   // [y,z,x] -> [x,y,z]
@@ -684,9 +711,10 @@
       }
     })();
 
+    lv('cabin',{inside:1}); // the accommodation; `inside` is what keeps it out of the exterior view
     // ---- cabin interior (view:'cabin') ----
     (function(){
-      const C={lv:'cabin'}, CC={lv:'cabin',cut:'cabin'};
+      const C={inside:1}, CC={inside:1,cut:'cabin'};
       const half=(y,z)=>halfAtZ(uOf(y),z,1)-0.05;
       // teak sole from the foot of the steps to the forward bulkhead
       const NS3=8, y0s=-0.05, y1s=RF.yF;
@@ -754,6 +782,7 @@
       box(F,[0.28,3.55,CAB_SOLE+0.55],[0.20,0.26,0.05],'cream',0.8,0.01,null,C);   // pillows
       box(F,[-0.28,3.55,CAB_SOLE+0.55],[0.20,0.26,0.05],'cream',0.8,0.01,null,C);
     })();
+    delete F.push;   // the cursor is an AUTHORING tool; F leaves build() a plain array
   })();
 
   // ---- pose: apparent wind + sheets -> boom, jib, fill, luff, heel --------------------------------
@@ -924,7 +953,7 @@
         for(const s of [-1,1]){
           const t=0.03; const A=q(y0,za),B=q(y0-c(za),za),C2=q(y0-c(zb),zb),Dd=q(y0,zb);
           const off=(p)=>[p[0]+s*t,p[1],p[2]];
-          const f=[off(A),off(B),off(C2),off(Dd)]; face(D,s>0?f:f.slice().reverse(),'bottom',-0.3,0,{lv:'under'});
+          const f=[off(A),off(B),off(C2),off(Dd)]; face(D,s>0?f:f.slice().reverse(),'bottom',-0.3,0,{under:1});
         } }
     }
     return D;
@@ -993,9 +1022,13 @@
     const dep=new Float32Array(PW*PH);
     const tag=new Int8Array(PW*PH);
     for(const f of faces){
-      if(f.lv==='cabin' && view!=='cabin') continue;
-      if(f.lv==='lid' && view==='cabin') continue;
-      if(f.lv==='under' && !opts.underbody) continue;
+      // The three cutaway switches are face PROPERTIES, never the level tag: `lv` is the mesh
+      // vocabulary (a key of geometry().ids) and RigMeshExtractor reads it, so a level must never
+      // be able to move a pixel. `inside` = accommodation, drawn only in the cabin view; `lid` =
+      // lifted when the cabin opens; `under` = the underbody, drawn only when asked.
+      if(f.inside && view!=='cabin') continue;
+      if(f.lid && view==='cabin') continue;
+      if(f.under && !opts.underbody) continue;
       if(view==='cabin'){
         if(f.cut && (f.cutN ? facingHull(f.cutN,B) : null)===true) continue;
         if(f.lip && !facingHull(f.cutN,B)) continue;

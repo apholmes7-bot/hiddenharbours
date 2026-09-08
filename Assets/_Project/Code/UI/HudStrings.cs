@@ -30,6 +30,17 @@ namespace HiddenHarbours.UI
         public const string WindCalm         = "○"; // ○ calm (met ring)
 
         // Placeholders shown before services are ready / when a value is unknown.
+        /// <summary>
+        /// ⭐ Shown at the wheel while a kingpin is in the fifth wheel's slot.
+        ///
+        /// <para><b>It names the verb the player is about to be offered</b>, word for word —
+        /// <c>VehicleHitch.VerbLabel</c> reads "Couple the trailer" while a pin is captured, and
+        /// "Pull the release" only once she is already on. A line at the wheel that said "pull
+        /// the release" would send him out to look for a verb that is not there until AFTER he
+        /// has done the thing it was telling him to do.</para>
+        /// </summary>
+        public const string TrailerCaptured = "Pin's in the slot — get out and couple her";
+
         public const string Unknown   = "--";
         public const string Booting   = "";   // empty = HUD shows nothing until services are up
 

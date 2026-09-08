@@ -2,7 +2,7 @@
   "schema": "hidden-harbours/boat-sailing@1",
   "rig": "sloop88IsoRig.js",
   "exportSymbol": "Sloop88Iso",
-  "derivedFromRigSha256": "aed8100cb8ad9b5e4cb73fc2257bb750d4972ec1f6d527934dc26a71d787f972",
+  "derivedFromRigSha256": "137c2f4e908d8aba4e32a9309b0935eb47973530141a13024623deed98015270",
   "pairs_with": {
     "gameplay_sidecar": "sloop88IsoRig.gameplay.json",
     "same_rig_hash": true,

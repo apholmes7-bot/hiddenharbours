@@ -253,12 +253,23 @@ namespace HiddenHarbours.Player
         /// The presenter to read THIS frame: the host's current one when the skinner has published one
         /// (so a hull swapped under the player's feet — the dev picker does exactly that — is never read
         /// through a stale presenter), else the one resolved at Bind. No allocation on the hot path.
+        ///
+        /// <para><b>⭐ …and then the same last resort the STATIC twins take</b> (2026-09-08). This used
+        /// to stop at the bind-time cache, while <see cref="DrawnHeadingDegreesOf"/> and
+        /// <see cref="BakeElevationDegreesOf"/> — the reads the switcher's helm and boarding stations go
+        /// through — fall through to <see cref="BoatHullPresenterHost.Resolve"/>. Two readers of ONE
+        /// fact with different last resorts: on any rig where the host has not published a presenter and
+        /// the bind happened before the skinner did, the stations project through the artwork's own
+        /// elevation while the walk they hand the answer to un-projects through the PLAN VIEW, and a
+        /// seat comes out 0.36 m from where it was aimed. Whatever a hull's picture is drawn at, every
+        /// read of it must be the same read — that is the whole of #789, one method further in.</para>
         /// </summary>
         private IBoatHullPresenter LiveHull()
         {
             if (_boatRoot == null) return _hull;
             var host = _boatRoot.GetComponent<BoatHullPresenterHost>();
-            return (host != null && host.Presenter != null) ? host.Presenter : _hull;
+            if (host != null && host.Presenter != null) return host.Presenter;
+            return _hull != null ? _hull : BoatHullPresenterHost.Resolve(_boatRoot.gameObject);
         }
 
         /// <summary>The deck areas to clamp against THIS frame — the same live-read discipline as
@@ -501,6 +512,22 @@ namespace HiddenHarbours.Player
                 Vector2 onEdge = centre + new Vector2(
                     Mathf.Clamp(d.x, -half.x, half.x), Mathf.Clamp(d.y, -half.y, half.y));
                 Vector2 n = OverTheSideMath.OutwardNormalOnBox(centre, half, onEdge);
+
+                // ⭐ A FISHER STANDING DEAD AMIDSHIPS HAS NO NEAREST RAIL (2026-09-08). Port and
+                // starboard are exactly equidistant, both land inside OutwardNormalOnBox's tie band, and
+                // the two normals SUM TO ZERO — so this returned false and the whole rail verb did
+                // nothing. It was unreachable only because the boarding seat was a world-axis offset
+                // that clamped her against a rail on any hull not lying north; with her seated where the
+                // seat is actually authored, amidships is the ORDINARY case, and the verb was resting on
+                // a bug.
+                //
+                // The tie goes to STARBOARD: arbitrary, but stable and cheap to be wrong about.
+                // <see cref="BerthPilot.Berth.FromShorePoint"/> answers a degenerate shore point the
+                // same way and for the same reason. Press one only puts her ON the rail — the press
+                // that decides in-or-out is the FACING (owner, 2026-09-02), and stepping back inboard
+                // from the wrong gunwale costs one press on a boat 0.45 m wide.
+                if (n.sqrMagnitude <= 1e-6f) n = new Vector2(1f, 0f);
+
                 // Push out to the boundary along the normal first (a point amidships clamps to itself),
                 // then back in by half a band.
                 float outToEdge = Mathf.Abs(n.x) > Mathf.Abs(n.y)
@@ -530,8 +557,14 @@ namespace HiddenHarbours.Player
         }
 
         /// <summary>The drawn heading of a hull this walk may not be bound to — the same read
-        /// <see cref="DrawnHeadingDegrees"/> makes, without the cached presenter.</summary>
-        private static float DrawnHeadingDegreesOf(Transform boatRoot)
+        /// <see cref="DrawnHeadingDegrees"/> makes, without the cached presenter.
+        ///
+        /// <para><b>Public since 2026-09-07</b> so the switcher's HELM STATION can be projected through
+        /// the very same compass the deck it sits on is projected through. It was already the only read
+        /// of a hull's drawn facing anyone outside this file wanted, and a fourth hand-written copy of it
+        /// (<c>ArrivalOpening</c>, <c>BoatCleats</c> and <c>DeckRiderVisual</c> each carry one) is how a
+        /// helm and the deck under it end up disagreeing about which way she is pointing.</para></summary>
+        public static float DrawnHeadingDegreesOf(Transform boatRoot)
         {
             if (boatRoot == null) return 0f;
             var host = boatRoot.GetComponent<BoatHullPresenterHost>();
@@ -541,8 +574,11 @@ namespace HiddenHarbours.Player
                                 : DirectionalBoatSprite.HeadingDegreesFromBow(boatRoot.up);
         }
 
-        /// <summary>The bake elevation of a hull this walk may not be bound to.</summary>
-        private static float BakeElevationDegreesOf(Transform boatRoot)
+        /// <summary>The bake elevation of a hull this walk may not be bound to. Public for the reason
+        /// <see cref="DrawnHeadingDegreesOf"/> is: heading and elevation are the two halves of ONE
+        /// projection (<see cref="DeckAreaMath.DeckToWorld"/>), and a caller handed one without the other
+        /// would foreshorten a hull by the wrong artwork's camera.</summary>
+        public static float BakeElevationDegreesOf(Transform boatRoot)
         {
             if (boatRoot == null) return DeckAreaMath.PlanViewElevationDegrees;
             var host = boatRoot.GetComponent<BoatHullPresenterHost>();

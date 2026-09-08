@@ -580,6 +580,86 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         /// <summary>
+        /// 🔴 <b>ROW 10's PROPOSAL TABLE — what each band count would look like on the ground.</b>
+        ///
+        /// <para>The band DEPTHS are fixed by sigma; the count decides how many there are and therefore
+        /// how far apart they land. Six is the shipped pixel-art choice. <b>More bands is less
+        /// pixel-art, not more correct</b> — this table is for the owner to choose from, and nothing
+        /// here moves the number (rule 6).</para>
+        ///
+        /// <para>The metric is the TIGHTEST pair of steps at spring high, where the waterline is on the
+        /// steep beach and the bands crowd: that is the number that reads as "a wall" rather than as
+        /// terracing.</para>
+        /// </summary>
+        [Test]
+        public void TheAbsorptionBandCount_TabulatedForTheOwner()
+        {
+            var sigma = WaterAbsorption.Sigma(0.25f, WaterAbsorption.DefaultRatio);
+            WaterLevel = TideMean + TideAmplitude;                 // spring high: the crowded case
+
+            float BandDepth(int k, float bands)
+            {
+                float lo = 0f, hi = 40f;
+                for (int i = 0; i < 60; i++)
+                {
+                    float mid = 0.5f * (lo + hi);
+                    float t = WaterAbsorption.BandTransmission(
+                                  WaterAbsorption.Transmission(sigma, mid), bands).x;
+                    if (t > (bands - k - 0.5f) / bands) lo = mid; else hi = mid;
+                }
+                return 0.5f * (lo + hi);
+            }
+
+            float Offshore(float depth)
+            {
+                float lo = 0f, hi = 400f;
+                for (int i = 0; i < 60; i++)
+                {
+                    float mid = 0.5f * (lo + hi);
+                    if (WaterLevel - ShoreProfile(mid) < depth) lo = mid; else hi = mid;
+                }
+                return 0.5f * (lo + hi);
+            }
+
+            var report = new StringBuilder();
+            report.AppendLine("ROW 10 - the band count, at SPRING HIGH (the steep beach, the crowded case)");
+            report.AppendLine("  bands | steps in the first 30 m | tightest pair | first step at");
+            float shippedTightest = 0f;
+
+            foreach (float bands in new[] { 0f, 4f, 6f, 8f, 12f, 16f })
+            {
+                if (bands < 1f)
+                {
+                    report.AppendLine($"  {0,5} |  (continuous - no steps)  |          --   | " +
+                                      "the ramp fades instead of terracing");
+                    continue;
+                }
+                float prev = float.NaN, tight = float.MaxValue, first = float.NaN;
+                int inThirty = 0;
+                for (int k = 1; k <= (int)bands; k++)
+                {
+                    float off = Offshore(BandDepth(k, bands));
+                    if (off >= 399f) break;
+                    if (float.IsNaN(first)) first = off;
+                    if (off - Offshore(0f) < 30f) inThirty++;
+                    if (!float.IsNaN(prev)) tight = Mathf.Min(tight, off - prev);
+                    prev = off;
+                }
+                if (Mathf.Approximately(bands, 6f)) shippedTightest = tight;
+                report.AppendLine($"  {bands,5:0} | {inThirty,23} | {tight,10:0.0} m | {first,10:0.0} m" +
+                                  (Mathf.Approximately(bands, 6f) ? "   <- SHIPPED" : ""));
+            }
+            report.AppendLine();
+            report.AppendLine("  Fewer bands = wider terraces, each one a harder edge. More bands = a");
+            report.AppendLine("  smoother fall but less of the posterised pixel-art read. 0 = continuous.");
+            TestContext.WriteLine(report.ToString());
+
+            Assert.Less(shippedTightest, 2f,
+                "the shipped six must still crowd to under two metres at spring high — that is row 10's " +
+                "wall, and if it stops being true this table is describing a sea that changed.");
+        }
+
+        /// <summary>
         /// 🔴 <b>THE DEAD CONTROL.</b> Fed a grid fine enough to be irrelevant, the whole pipeline must
         /// report a clean edge. Without this, a fixture that reported "combed" for every input would
         /// look exactly like a confirmed hypothesis.

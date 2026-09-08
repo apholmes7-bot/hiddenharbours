@@ -456,6 +456,7 @@ MonoBehaviour:
     Published: 1
     CouplingPointLocal: {x: 0, y: -2.4, z: 1.18}
     SlotHalfWidthMeters: 0.06
+    ThroatHalfWidthMeters: 0.45
     SlotMouthY: -2.8
     SlotSeatY: -2.4
     RampMouthY: -3.02

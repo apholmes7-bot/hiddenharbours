@@ -21,8 +21,8 @@ import hashlib
 import re
 import os
 
-from . import (clifflines, contracts, facing as facing_mod, families, recipes, heightmap,
-               passages, roads, tide as tide_mod, unityyaml as U)
+from . import (clifflines, contracts, declared, facing as facing_mod, families, recipes,
+               heightmap, passages, roads, tide as tide_mod, unityyaml as U)
 from .repo import ASSETS_PPU
 
 SCHEMA = "hiddenharbours.scene/1"
@@ -89,6 +89,10 @@ def build_document(repo, region, scene, provenance, exported_region_ids=frozense
     # ⭐ THE CLIFFS, at last. They were never entities — CliffWallSurface carries no SpriteRenderer
     # — and the package said in three places that they were. See clifflines.py's opening note.
     cliff_lines = clifflines.collect(repo, scene, (centre_x, centre_y), _stable_id)
+    # And the general case, after four specific ones: placed world content with no sprite. The
+    # rule and everything it leaves out are in declared.py and in the notes it returns.
+    declared_objects, declared_notes = declared.collect(repo, scene, (centre_x, centre_y))
+    entity_notes["declaredObjects"] = declared_notes
     entity_notes["passages"] = {
         "passages": len(doors),
         "anchors": len(arrivals),
@@ -155,6 +159,12 @@ def build_document(repo, region, scene, provenance, exported_region_ids=frozense
         # the island it opens.
         "x-passages": doors,
         "x-arrivals": arrivals,
+        # Placed world content the sprite walk cannot see, in general — the fifth answer to the
+        # same question, and the one that stops the next such thing being invisible by default.
+        # The four with fields of their own (hulls, passages, arrivals, cliff lines) keep them:
+        # folding a draught, a trigger band and a brow polyline into one shape would flatten
+        # exactly what makes each of them useful.
+        "x-declaredObjects": declared_objects,
         "x-rigs": rigs,
         "x-rigVersions": rig_versions,
         "x-rigVersionsShaRule": "sha256 of the rig's bytes with CR stripped "

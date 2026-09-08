@@ -99,6 +99,27 @@ rather than hand-placed; the toe plan, per-station drops and toe elevations, wal
 under `x-`. Full account in
 [`docs/tools/scene-export-contract.md` §11](../../../docs/tools/scene-export-contract.md).
 
+## Placed world content the sprite walk cannot see (2026-09-07)
+
+The entity list is a walk of `SpriteRenderer`s, and **four times in three days that silently dropped something
+a region genuinely has** — the moored fleet and the float (31), the doors between regions (6 + 2 anchors), the
+cliffs (165, and those were *claimed present*), and #774's three parked machines. `x-declaredObjects` is the
+general answer, so the fifth is not invisible by default.
+
+**The rule: an object earns a place when it is PLACED WORLD CONTENT — when its position means something in the
+harbour** — and carries no sprite, or it is an entity already. Cleats, boundaries, fuel pumps, parked vehicles,
+platforms, the gangway, ladders, the shipwright, starting gear, a window's light, a chimney's smoke are in;
+cameras, `GameRoot`, dev toys, routine lanes, persistent proxies, loaders and terrain drivers are out. Each
+entry carries its name, position, component names, and every def its behaviours reference —
+`vehicle.dually_3500` says more about a parked machine than its position does.
+
+**⚠ A component set on neither list FAILS A TEST.** That is the point: four repeats bought the guard, and it
+turns "invisible by default" into a build that asks a question. Adding a placed behaviour means adding a line
+to `hhexport/declared.py` — `ALLOW` or `RULED_OUT` — and the failure message says which and why. Full account
+in [`docs/tools/scene-export-contract.md` §12](../../../docs/tools/scene-export-contract.md).
+
+Today: **42** objects at Nine Mile Creek, **19** at St Peters, nothing awaiting a ruling.
+
 Fields prefixed `x-` are ours. That is allowed by the contract, not a liberty taken with it:
 readers of `hiddenharbours.scene/1` must ignore unknown keys and `x-` is the reserved extension
 prefix (`docs/tools/scene-export-contract.md` §0). Everything under one is a fact the repo can

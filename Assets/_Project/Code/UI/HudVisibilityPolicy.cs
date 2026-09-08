@@ -85,6 +85,34 @@ namespace HiddenHarbours.UI
             };
         }
 
+        /// <summary>
+        /// ⭐ <b>Should the coupling notice be up?</b> — he is at a wheel, it is THIS wheel, and
+        /// this plate has a pin in it.
+        ///
+        /// <para><b>The middle term is the one that earns this being a function.</b> A tractor
+        /// publishes what happened to HER, and the laydown routinely has two of them — bay 0 holds
+        /// a coupled pair while the player backs another onto bay 5. Without the id compare, an
+        /// NPC's truck taking a pin two rows away puts "get out and couple her" on the player's
+        /// screen while he is nowhere near a trailer.</para>
+        ///
+        /// <para>Pure, for the reason the readout rule above is pure: the live seam is three
+        /// fields on a MonoBehaviour that no EditMode test can assemble, and the decision is the
+        /// part worth pinning.</para>
+        /// </summary>
+        /// <param name="captured">the last thing a plate said about a pin.</param>
+        /// <param name="driving">is he behind a wheel at all (<c>ControlMode.Driving</c>).</param>
+        /// <param name="capturedVehicleId">whose plate said it.</param>
+        /// <param name="activeVehicleId">whose wheel he is holding.</param>
+        public static bool ShowTrailerCaptureNotice(bool captured, bool driving,
+                                                    string capturedVehicleId,
+                                                    string activeVehicleId)
+        {
+            if (!captured || !driving) return false;
+            if (string.IsNullOrEmpty(capturedVehicleId) || string.IsNullOrEmpty(activeVehicleId))
+                return false;
+            return string.Equals(capturedVehicleId, activeVehicleId, System.StringComparison.Ordinal);
+        }
+
         // ---- the live seam ----------------------------------------------------------------------
         // State, kept apart from the rule above so the rule stays pure and testable. Static for the
         // same reason BoatUiWindows and InteractAffordancePresenter.Variant are: the HUD has to read

@@ -36,6 +36,14 @@ namespace HiddenHarbours.Vehicles
         private TowedBody _trailer;
         private float _lastOdometer;
 
+        // The capture announcement, kept apart from the follow's odometer mark because the two
+        // measure different journeys: the follow steps every frame she is coupled, this polls only
+        // while she is NOT, and sharing one mark would have each eat the other's distance.
+        private float _lastCaptureOdometer;
+        private bool _hasPolled;
+        private string _announcedTrailerMeshId;
+        private bool _announcedCapture;
+
         /// <summary>The trailer on the plate, or null.</summary>
         public TowedBody Trailer => _trailer;
         public bool IsCoupled => _trailer != null;
@@ -146,6 +154,11 @@ namespace HiddenHarbours.Vehicles
             // operator lie about a destroyed component.
             var doors = body.GetComponent<VehicleDoors>();
             if (doors != null) doors.SetGroupTarget("gear", 1f);
+
+            // The offer is SPENT: she is on the pin, so "get out and couple her" has to stop being
+            // said. PollCapture returns early once coupled and would otherwise leave the last
+            // announcement standing for as long as the pair is together.
+            Announce(null);
             return true;
         }
 
@@ -166,6 +179,7 @@ namespace HiddenHarbours.Vehicles
             }
 
             _trailer.CoupledTo = null;
+            _hasPolled = false;   // off the pin and still in the slot — look again at once.
             _trailer = null;
             if (_controller != null) _controller.SetTow(default);
             return true;
@@ -186,6 +200,12 @@ namespace HiddenHarbours.Vehicles
         /// a player loop.</summary>
         public void Step()
         {
+            // ⭐ Before the follow's early return, because this is the half that matters while she
+            // is NOT on the pin — and the follow returns immediately in exactly that case. With no
+            // controller there is no odometer and therefore no tick, which is the same nothing the
+            // follow does below.
+            PollCapture(_controller != null ? _controller.OdometerMeters : _lastCaptureOdometer);
+
             if (_trailer == null || _controller == null) return;
 
             float odometer = _controller.OdometerMeters;
@@ -196,6 +216,78 @@ namespace HiddenHarbours.Vehicles
             // backing gives a negative delta and the trailer folds the other way — which is what
             // makes backing one hard and is the reason a driver lines up before reversing.
             _trailer.FollowKingpin(CouplingPointWorld, HeadingDegrees, travelled, JackknifeCapDegrees);
+        }
+
+        /// <summary>
+        /// ⭐⭐ <b>Tell the driver the pin went in</b> — the thing whose absence made coupling feel
+        /// impossible.
+        ///
+        /// <para>Coupling is an act of BACKING, and the only signal it had ever produced was the verb
+        /// on the release handle — which is an ON-FOOT interactable. So the loop the owner actually
+        /// played was: reverse, get out, walk to the handle, read nothing, get back in, guess. The
+        /// capture test was right and silent, which from the seat is indistinguishable from broken.
+        /// This publishes <see cref="TrailerCaptureChanged"/> the moment the answer changes.</para>
+        ///
+        /// <para><b>THE TICK IS THE ODOMETER, and the step is the JAW'S OWN HALF-WIDTH</b>
+        /// (<c>SlotHalfWidthMeters</c>, 0.06 m). Not a frame count and not a timer (rule 7): what can
+        /// change the answer is the tractor MOVING under the pin, so distance is the honest clock —
+        /// a truck stopped at the wrong angle polls nothing at all, however long she sits. And the
+        /// step is art-published rather than picked (rule 6): the narrowest feature on the plate is
+        /// the slot's half-width, so a truck that has moved less than that cannot have changed
+        /// whether a pin is in it in any way a driver could see. It is ~11 polls across the window's
+        /// own 0.71 m depth, and it moves on its own the day the art redraws the slot.</para>
+        ///
+        /// <para>⚠️ <b>The known gap, stated rather than papered over:</b> a driver who enters the
+        /// window and stops within one step of its aft edge is not told until he nudges again — a
+        /// 0.06 m sliver of a 0.71 m window. Closing it would mean polling a stationary truck every
+        /// frame, which is the rule-7 cost this gate exists to refuse.</para>
+        ///
+        /// <para><b>Costs one bool on everything that is not a semi.</b> <c>FifthWheel.Published</c> is
+        /// false on every machine in the pack but the two tractors, and a coupled plate cannot capture
+        /// anything — so the scan of <see cref="TowedBody.All"/> only ever runs on an uncoupled
+        /// tractor that has just moved.</para>
+        /// </summary>
+        /// <param name="odometerMeters">how far she has driven, all told. Taken rather than read
+        /// for the same reason <see cref="TowedBody.FollowKingpin"/> takes its distance: the
+        /// caller owns the clock, and an EditMode test then drives the production announcement
+        /// through the production path with no player loop and no physics tick behind it.</param>
+        public void PollCapture(float odometerMeters)
+        {
+            if (IsCoupled) return;
+
+            VehicleFifthWheel wheel = FifthWheel;
+            if (!wheel.Published) return;
+
+            // ⚠️ The FIRST look always happens. Bay 0 at the laydown ships a pair ALREADY captured,
+            // and a gate measured from a standing start would keep that silent until the driver had
+            // moved 6 cm — which is the one pair the owner was told to go and try.
+            if (_hasPolled &&
+                Mathf.Abs(odometerMeters - _lastCaptureOdometer) < wheel.SlotHalfWidthMeters) return;
+            _hasPolled = true;
+            _lastCaptureOdometer = odometerMeters;
+
+            Announce(CapturedTrailer());
+        }
+
+        /// <summary>
+        /// Publish the capture state, and ONLY when it has changed — the same change-detection every
+        /// other signal in this game keeps, so a truck reversing through the window does not fill the
+        /// bus with the same sentence eleven times.
+        ///
+        /// <para>⚠️ A towed body has no identity of her own, so what is carried is her MESH id. That is
+        /// enough to tell a reefer from a flatbed and is not enough to tell one reefer from another —
+        /// which is why the id is not what the change is detected on. The BOOL is.</para>
+        /// </summary>
+        private void Announce(TowedBody captured)
+        {
+            bool has = captured != null;
+            string meshId = has && captured.Mesh != null ? captured.Mesh.Id : null;
+            if (has == _announcedCapture &&
+                string.Equals(meshId, _announcedTrailerMeshId, System.StringComparison.Ordinal)) return;
+
+            _announcedCapture = has;
+            _announcedTrailerMeshId = meshId;
+            EventBus.Publish(new TrailerCaptureChanged(_vehicleId, meshId, has));
         }
 
         // ---- the release handle ------------------------------------------------------------------
@@ -240,6 +332,15 @@ namespace HiddenHarbours.Vehicles
         }
 
         private void OnEnable() => Interactables.Register(this);
-        private void OnDisable() => Interactables.Unregister(this);
+
+        /// <summary>⚠️ Withdraw the announcement as well as the registration. A region unloaded
+        /// under a standing offer would otherwise leave the line on screen with nothing behind
+        /// it — the mirror of a signal nobody hears: a listener still
+        /// hearing a publisher that has gone.</summary>
+        private void OnDisable()
+        {
+            Interactables.Unregister(this);
+            Announce(null);
+        }
     }
 }

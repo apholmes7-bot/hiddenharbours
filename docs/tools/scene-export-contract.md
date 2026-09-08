@@ -234,6 +234,54 @@ stamps `textureBytesRead: false`, which is part of the compared document and is 
 statement that this run did not read the bytes. `_lfs_state_differs` names that cause. What the
 carry buys is that a pointer-only **write** does not destroy what it cannot rebuild.
 
+
+#### 6.1.2 A shallow clone states nothing about when a scene was banked (2026-09-07)
+
+The sibling hazard to §6.1, and the one that made the CI job's first honest run red in both gates
+at once.
+
+`provenance` asks `git log -1 --format=%H -- <scene>` for the commit each scene was last banked
+at. That answers with the newest commit the clone can **see** that touched the path — and **a
+depth-1 clone can see exactly one commit, so it answers HEAD for every path in the repo**, whether
+or not HEAD ever touched it. `actions/checkout` defaults to depth 1, and on a `pull_request` run
+HEAD is `refs/pull/N/merge`: a synthetic commit that exists nowhere but GitHub and is different
+every run. The package therefore pinned a sha nobody has, which failed
+`DeterminismTests.test_nothing_in_a_package_is_keyed_to_the_checked_out_commit` *and* made
+`--check` report STALE against a package that was perfectly current.
+
+Two fixes, and they are for different audiences. **CI checks out with `fetch-depth: 0`** on the
+scene-export job — measured cost, one fetch of ~800 commits and ~99 MiB of pack, no LFS objects.
+And **the exporter now states nothing rather than something false** anywhere else, because the
+README promises it "runs in a bare container" and a contributor should not meet a mysterious test
+failure there:
+
+| on a shallow clone | value |
+|---|---|
+| `sceneLastBuiltCommit`, `sceneLastBuiltDate`, `sceneLastBuiltSubject` | **null** |
+| `builderDrift.builderCommitsSinceScene` / `measuredTo` / `measuredToDate` | **null**, `exact: false` |
+| `historyIsComplete` | `false` (unchanged — it already said which state you held) |
+| `x-shallowNote` | why, and how to get the real answer |
+| `generatedAt` | HEAD's committer date, **still a valid ISO-8601** |
+
+**All three bank fields go together.** A null commit beside a live date and subject would move the
+fiction one field over rather than remove it, and the drift is measured *from* that commit, so it
+goes with them. `generatedAt` is the one thing kept: it is a **format** field that must hold a
+timestamp, nulling it would break a reader to fix a different problem, and HEAD's date is still
+deterministic and still not a wall clock — the note says it is not the vintage a full clone gives.
+
+⚠ **This does not make `--check` green on a shallow clone**, and should not: the committed packages
+carry a real commit where a shallow export carries null, so the documents differ. What it buys is
+that the difference is *honest and named* — `--check` prints a shallow-clone cause line of its own,
+the sibling of `_lfs_state_differs`, so a bare STALE never sends a reader hunting for a re-bank that
+never happened. The two causes are both printed, because a pointer-only checkout of a shallow clone
+has both.
+
+The fixture is a **real** `git clone --depth 1`, of a purpose-built two-commit repo where the scene
+was banked in the first commit and the second touches something else — so the distinction a shallow
+clone loses is present to be lost. The test asserts git's own wrong answer on that fixture before
+asserting the exporter does not ship it, and a full-clone control proves the fixture ever had the
+right answer to lose. Milliseconds, against the 99 MiB this repo's own history would cost.
+
 ### 6.2 Orientation: the index is a fact, the bearing is not
 
 `scene-writeback-contract.md` §8.1 asked for an explicit facing field, since the index was only
@@ -894,3 +942,56 @@ counted by walking the scene rather than by asking the exporter — a guard that
 how many it exported would agree with itself. A second test asserts the two retired sentences appear
 nowhere in either package, **and** that no cliff has meanwhile become an entity, so the corrected
 note stays true rather than merely different.
+
+## 12. Placed world content the sprite walk cannot see (2026-09-07)
+
+**Four times in three days the entity list — a walk of `SpriteRenderer`s — silently dropped
+something a region genuinely has**, and each was found by accident:
+
+| what | how many | where it went |
+|---|---|---|
+| the moored fleet and the harbour float | 31 | `x-tidalHulls` (§9.4) |
+| the doors between regions | 6 + 2 anchors | `x-passages` / `x-arrivals` (§10) |
+| the cliffs — **claimed present** | 165 | `cliffLines` (§11) |
+| #774's three parked machines | 3 | *nothing, until this* |
+
+That is a pattern, not a coincidence. `x-declaredObjects` is the general answer, so the fifth such
+thing is not invisible by default.
+
+### 12.1 The rule, in one sentence
+
+**An object earns a place when it is PLACED WORLD CONTENT — when its position means something in
+the harbour** — and carries no `SpriteRenderer`, or it is an entity already.
+
+**In:** cleats (quay and float), property boundaries, fuel pumps, parked vehicles, standable
+platforms, the gangway, ladders, the shipwright, the starting gear, a window's preconfigured light,
+a chimney's smoke, the placed-trap service. **Out:** cameras, `GameRoot`, the dev toys, routine
+lanes and stations, persistent proxies, scene loaders, terrain drivers, the arrival director —
+things whose transform is an implementation detail and which would be noise a reader must filter.
+
+Each entry carries its name, its region-relative position, the component names, and **every
+committed `.asset` its behaviours point at with that def's declared `Id`** — which def a thing
+references is most of what it *is*: `vehicle.dually_3500` says more about a parked machine than its
+position does. The references are read generically off the serialized fields, so a new behaviour's
+defs arrive without anyone teaching the exporter about it, and an asset with no `Id` reports its
+path alone rather than a name guessed off the filename.
+
+### 12.2 ⚠ The rule is an ALLOW-LIST, and everything else is REPORTED
+
+A deny-list silently admits each new behaviour; an allow-list silently excludes them. Both fail the
+same way, facing opposite directions. So the notes name **every** component set that reached neither
+list, split three ways, and the distinction is the one `resolutionExcluded` and `unresolvedSheets`
+already draw elsewhere: reporting a decision as a defect is its own kind of wrong.
+
+* **`ruledOut`** — a DECISION. The transform is an implementation detail.
+* **`exportedElsewhere`** — carried by a key of its own, with fields this generic shape has no room
+  for: a draught and a bed, a trigger band and a target, a brow polyline. **They keep their keys.**
+  Folding them in would flatten exactly what makes each useful.
+* **`notYetRuledOn`** — on neither list, so **nobody has decided**. This is a **failing test**, not
+  a note. Four repeats bought that guard: it turns "invisible by default" into a build that asks a
+  question, and the cost — adding a placed behaviour means adding a line to `declared.py` — is the
+  cost worth paying. The failure message says which list to add to and why.
+* **`unnameableScripts`** — every behaviour on the object is a script outside `Assets/` (Unity's own
+  camera data, chiefly), so it cannot be classified at all. Counted, never guessed at.
+
+Today: **42** objects at Nine Mile Creek and **19** at St Peters, `notYetRuledOn` empty in both.

@@ -57,7 +57,7 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         // =============================================================================================
-        //  2. THE CAPTURE WINDOW IS THE SLOT
+        //  2. THE CAPTURE WINDOW IS THE SLOT — AND THE FUNNEL IN FRONT OF IT
         // =============================================================================================
 
         /// <summary>
@@ -181,12 +181,15 @@ namespace HiddenHarbours.Tests.EditMode
 
             Assert.That(VehicleCouplingMath.IsCaptured(w, k, new Vector2(0f, mid), 0f), Is.True);
 
-            // Wider than the throat AND wider than the pin that rides in it: metal on the plate,
-            // not metal in the slot.
-            float clear = w.SlotHalfWidthMeters + k.PinRadiusMeters + 0.02f;
+            // Wider than the FUNNEL AT THIS DEPTH and wider than the pin that rides in it: metal
+            // on the plate, outside the horns. ⚠️ Measured against CaptureHalfWidthAt and not
+            // against the jaw — half way down the reach the window is deliberately wider than the
+            // slot, so the jaw is no longer the question here. The claim is unchanged; what moved
+            // is the shape it is asked of.
+            float clear = VehicleCouplingMath.CaptureHalfWidthAt(w, mid) + k.PinRadiusMeters + 0.02f;
             Assert.That(VehicleCouplingMath.IsCaptured(w, k, new Vector2(clear, mid), 0f), Is.False,
-                "a pin wider than the throat was captured — it would be sitting on the plate, not " +
-                "in the slot.");
+                "a pin outside the funnel was captured — it would be sitting on the plate, not " +
+                "between the horns.");
 
             float tol = VehicleCouplingMath.CaptureHeadingToleranceDegrees(w);
             Assert.That(VehicleCouplingMath.IsCaptured(w, k, new Vector2(0f, mid), tol - 0.1f), Is.True);
@@ -194,6 +197,132 @@ namespace HiddenHarbours.Tests.EditMode
                 "a trailer sat across the yard was hooked by standing near her.");
             Assert.That(VehicleCouplingMath.IsCaptured(w, k, new Vector2(0f, mid), -(tol + 0.5f)), Is.False,
                 "the heading test is one-sided — it must refuse a skew either way.");
+        }
+
+        /// <summary>
+        /// ⭐⭐ <b>THE WINDOW IS A FUNNEL</b> — the fix for "i cannot get trailers to couple".
+        ///
+        /// <para><b>What was wrong.</b> The capture test asked for the pin within the JAW — ±0.06 m
+        /// plus the pin's own 0.045, so ±10.5 cm — at every depth from the ramp mouth to the seat.
+        /// That is the tolerance of the slot itself, demanded of a driver reversing a 15 m
+        /// articulated body by keyboard, with nothing on screen telling him whether he was near it.
+        /// The remark in the code called it "a fourteenth of the slot's own depth — so it cannot
+        /// swallow a miss any driver could make", which was true and was the problem: it could not
+        /// swallow a miss any driver could AVOID either.</para>
+        ///
+        /// <para><b>What a fifth wheel actually is.</b> A horseshoe. The pin arrives between two
+        /// horns that are half a metre apart and is funnelled into a jaw six centimetres wide. So
+        /// the capture window is a V, not a channel: <see cref="VehicleFifthWheel.ThroatHalfWidthMeters"/>
+        /// at <see cref="VehicleFifthWheel.RampMouthY"/>, tapering to the jaw at the seat.</para>
+        ///
+        /// <para>⚠️ <b>Both limits carry the pin's radius</b>, exactly as the jaw always did — the
+        /// question is whether there is pin METAL between the horns, not whether a dimensionless
+        /// point is inside a range. So the outer boundary at the mouth is <c>throat + r</c>, and
+        /// this walks 1 cm either side of it rather than standing on it: an exact boundary passes
+        /// in the frame that built it and proves nothing.</para>
+        /// </summary>
+        [Test]
+        public void TheCaptureWindowFunnelsFromTheThroatToTheJaw()
+        {
+            foreach (string tractor in new[] { AeroMesh, ClassicMesh })
+            {
+                VehicleFifthWheel w = Load(tractor).FifthWheel;
+                VehicleKingpin k = Load(Long).Kingpin;
+
+                Assert.That(w.ThroatHalfWidthMeters, Is.GreaterThan(w.SlotHalfWidthMeters),
+                    $"{tractor}: the plate baked no throat wider than its jaw, so the capture " +
+                    "window is still a channel — re-run the vehicle bake, or the asset is missing " +
+                    "the key (an absent serialized field reads ZERO, never a default).");
+
+                // The V, at its two ends and in between.
+                Assert.That(VehicleCouplingMath.CaptureHalfWidthAt(w, w.RampMouthY),
+                    Is.EqualTo(w.ThroatHalfWidthMeters).Within(1e-5f),
+                    "the mouth of the funnel is not the throat the art published.");
+                Assert.That(VehicleCouplingMath.CaptureHalfWidthAt(w, w.SlotSeatY),
+                    Is.EqualTo(w.SlotHalfWidthMeters).Within(1e-5f),
+                    "the funnel does not close onto the jaw at the seat — a pin would seat off " +
+                    "centre, in metal.");
+
+                float previous = float.MaxValue;
+                for (int step = 0; step <= 20; step++)
+                {
+                    float y = Mathf.Lerp(w.RampMouthY, w.SlotSeatY, step / 20f);
+                    float half = VehicleCouplingMath.CaptureHalfWidthAt(w, y);
+                    Assert.That(half, Is.LessThanOrEqualTo(previous + 1e-6f),
+                        $"{tractor}: the funnel widened on the way IN at y {y:0.###} — horns that " +
+                        "spread as the pin advances are not a funnel.");
+                    previous = half;
+                }
+
+                // ⭐ The window the game shipped with still captures — the funnel only ADDS.
+                float jawLimit = w.SlotHalfWidthMeters + k.PinRadiusMeters;
+                foreach (float sign in new[] { -1f, 1f })
+                    Assert.That(VehicleCouplingMath.IsCaptured(
+                        w, k, new Vector2(sign * (jawLimit - 0.001f), w.SlotSeatY), 0f), Is.True,
+                        $"{tractor}: a pin that used to seat at ±{jawLimit:0.###} m no longer " +
+                        "does — the funnel has narrowed the old window instead of widening it.");
+
+                // ⭐⭐ And the new one: at the mouth, the horns are the limit, both sides of it.
+                float mouthLimit = w.ThroatHalfWidthMeters + k.PinRadiusMeters;
+                foreach (float sign in new[] { -1f, 1f })
+                {
+                    Assert.That(VehicleCouplingMath.IsCaptured(
+                        w, k, new Vector2(sign * (mouthLimit - 0.01f), w.RampMouthY), 0f), Is.True,
+                        $"{tractor}: a pin 1 cm inside the horns at the ramp mouth was refused — " +
+                        "the funnel is not being read.");
+
+                    Assert.That(VehicleCouplingMath.IsCaptured(
+                        w, k, new Vector2(sign * (mouthLimit + 0.01f), w.RampMouthY), 0f), Is.False,
+                        $"{tractor}: a pin 1 cm OUTSIDE the horns was captured — the funnel has no " +
+                        "far side, which makes it a radius and not a shape.");
+                }
+
+                // ⚠️ The taper is the point: what the mouth admits, the seat must not.
+                Assert.That(VehicleCouplingMath.IsCaptured(
+                    w, k, new Vector2(mouthLimit - 0.01f, w.SlotSeatY), 0f), Is.False,
+                    $"{tractor}: an offset only the MOUTH should admit was captured at the SEAT — " +
+                    "the window is a channel of throat width, not a funnel, and a pin would seat " +
+                    "a third of a metre off the plate's centreline.");
+            }
+        }
+
+        /// <summary>
+        /// ⚠️ <b>A plate that never published a throat is the OLD window, exactly</b> — not a plate
+        /// pinched shut.
+        ///
+        /// <para>This is the one that would have shipped silently. A serialized field absent from an
+        /// asset deserialises as ZERO — never as the struct's default and never as the field's
+        /// initialiser — so any plate baked before the throat existed reads <c>0</c>, and a zero
+        /// taken at face value as a funnel half-width is a capture window that closes to nothing.
+        /// Every tractor in the game would have stopped coupling altogether.</para>
+        /// </summary>
+        [Test]
+        public void APlateWithNoThroatFallsBackToTheJawEverywhere()
+        {
+            VehicleFifthWheel unbaked = Load(AeroMesh).FifthWheel;
+            unbaked.ThroatHalfWidthMeters = 0f;
+            VehicleKingpin k = Load(Pup).Kingpin;
+
+            foreach (float y in new[] { unbaked.RampMouthY, unbaked.SlotMouthY, unbaked.SlotSeatY })
+                Assert.That(VehicleCouplingMath.CaptureHalfWidthAt(unbaked, y),
+                    Is.EqualTo(unbaked.SlotHalfWidthMeters).Within(1e-6f),
+                    $"an unbaked plate reported a funnel at y {y:0.###} — a zero throat must read " +
+                    "as NO funnel, not as a mouth of nothing.");
+
+            Assert.That(VehicleCouplingMath.IsCaptured(unbaked, k,
+                new Vector2(0f, unbaked.SlotSeatY), 0f), Is.True,
+                "a squarely seated pin was refused by a plate with no throat — every tractor baked " +
+                "before this field existed has stopped coupling.");
+        }
+
+        /// <summary>Only the two tractors carry a throat: nothing else has a plate for one to be on,
+        /// and a box truck that grew a funnel would capture trailers by driving past them.</summary>
+        [Test]
+        public void OnlyThePlatesThatExistPublishAThroat()
+        {
+            foreach (string path in new[] { Pup, Long, Box })
+                Assert.That(Load(path).FifthWheel.ThroatHalfWidthMeters, Is.EqualTo(0f),
+                    $"{path} baked a fifth-wheel throat and has no fifth wheel.");
         }
 
         // =============================================================================================

@@ -95,6 +95,12 @@ namespace HiddenHarbours.Player
         public float StepAshoreReachMetres =>
             GameServices.Config != null ? GameServices.Config.StepAshoreReachMetres : 1.5f;
 
+        /// <summary>Full width, in degrees, of the arc she must be LOOKING along for a press on deck to
+        /// mean "step ashore" (rule 6 — <c>GameConfig.StepAshoreFacingArcDegrees</c>). No config wired
+        /// falls back to the shipped 120°, the same way every other tunable here does.</summary>
+        public float StepAshoreFacingArcDegrees =>
+            GameServices.Config != null ? GameServices.Config.StepAshoreFacingArcDegrees : 120f;
+
         [Header("Disembark only onto LAND (no stepping off over water)")]
         [Tooltip("Disembarking is allowed only where the step-off point is actual standable LAND — never over " +
                  "open or submerged water. Land is detected two ways (either suffices): the authored tidal " +
@@ -117,15 +123,18 @@ namespace HiddenHarbours.Player
         [Tooltip("The deck-walk controller on the PLAYER — enabled only while OnDeck. Auto-resolved off " +
                  "the walk controller's object if left empty (so tests/older wiring need no change).")]
         [SerializeField] private DeckWalkController _deckWalk;
-        [Tooltip("The HELM STATION spot as a world-axis offset from the boat's position (the tiller at " +
-                 "the dory's stern). World-aligned to match the snap-directional boat picture the player " +
-                 "sees (the physics body's true rotation is hidden). Walk here + E to take the helm.")]
+        [Tooltip("The HELM STATION spot — the tiller — as an offset from the boat's position WITH HER " +
+                 "BOW NORTH, in the drawn (screen) metres this was tuned in. It is a place ON THE HULL: " +
+                 "the spot turns with the boat's drawn heading, so the tiller stays at her stern " +
+                 "whichever way she is lying. Walk here + E to take the helm.")]
         [SerializeField] private Vector2 _helmLocalOffset = new Vector2(0f, -1.3f);
         [Tooltip("How close (m) the on-deck player must stand to the helm spot for E to take the helm. " +
                  "Kept tighter than the deck so there's still deck left to disembark from.")]
         [SerializeField] private float _helmReach = 0.9f;
-        [Tooltip("Where boarding LANDS you on the deck, as a world-axis offset from the boat's position " +
-                 "(clamped to the deck bounds) — amidships, a step away from the helm.")]
+        [Tooltip("Where boarding LANDS you on the deck — an offset from the boat's position WITH HER " +
+                 "BOW NORTH, in the drawn (screen) metres this was tuned in, clamped to her walkable " +
+                 "deck. It is a place ON THE HULL: amidships and a step FORWARD of the helm, and it " +
+                 "stays there whichever way she is lying.")]
         [SerializeField] private Vector2 _boardLocalOffset = new Vector2(0f, 0.4f);
 
         [Tooltip("The DECK RIDER on the player — what draws the on-deck / pilot figure riding the hull's " +
@@ -371,12 +380,65 @@ namespace HiddenHarbours.Player
             return Boat.position;
         }
 
-        /// <summary>The helm station's world position — the boat's position plus the tunable world-axis
-        /// helm offset (the tiller). World-aligned to match the screen-aligned boat picture.</summary>
+        /// <summary>
+        /// ⭐ <b>The helm station's world position — the tiller, ON the hull, at the heading she is
+        /// actually lying on</b> (2026-09-07).
+        ///
+        /// <para><b>The defect this closes (owner playtest, St Peters).</b> This used to be the boat's
+        /// position plus the tunable offset, world-aligned, on the reasoning that the boat picture was
+        /// screen-aligned. It stopped being true the moment the pictures learned to turn. The starter
+        /// dory lies N–S at her berth, so the "helm spot" sat 1.3 m abeam of her — past her 0.85 m
+        /// half-beam, in the water on the pier side — while the tiller was DRAWN at her stern. The
+        /// player walked to the drawn tiller, was 2.4 m from the phantom spot, and E fell straight
+        /// through the deck ladder to <see cref="CanStepAshore"/>: <i>"when i mount the dory and try to
+        /// push e at the helm, i immediately jump ashore with a rope"</i>.</para>
+        ///
+        /// <para><b>The frame.</b> <see cref="_helmLocalOffset"/> is un-projected back into the HULL's
+        /// own frame as if she were pointing north — the heading the number was tuned at, and the only
+        /// one anyone ever saw it at — and then projected out again through her LIVE drawn heading. Both
+        /// halves are <see cref="DeckAreaMath"/>, the transform the walkable deck under the helm already
+        /// goes through, read off the same presenter (<see cref="DeckWalkController.DrawnHeadingDegreesOf"/>).
+        /// So the helm and the deck it stands on cannot disagree about which way she is pointing, and a
+        /// boat drawn NORTH is bit-identical to the behaviour that shipped: at heading 0 the two halves
+        /// are exact inverses, whatever the artwork's bake elevation.</para>
+        ///
+        /// <para><b>Why not simply store hull metres?</b> Because the tuned number lives in two scenes,
+        /// and a field whose MEANING changes under a value that does not is how a berth silently moves.
+        /// Un-projecting at north keeps the stored number the one the owner tuned; <see cref="HelmDeckOffset"/>
+        /// exposes the hull-metre place it names, for anyone who wants to see it.</para>
+        /// </summary>
         public Vector3 HelmWorldPosition
-            => Boat != null
-               ? Boat.position + new Vector3(_helmLocalOffset.x, _helmLocalOffset.y, 0f)
-               : Vector3.zero;
+        {
+            get
+            {
+                if (Boat == null) return Vector3.zero;
+                Vector2 offset = HelmBoatRelativeOffset();
+                return Boat.position + new Vector3(offset.x, offset.y, 0f);
+            }
+        }
+
+        /// <summary>The helm station as a DECK-FRAME point — x abeam to starboard, y along the keel
+        /// toward the bow, honest hull metres. The physical place on the boat the tuned offset names,
+        /// heading-independent by construction (it is the frame the deck polygons live in). On the dory
+        /// (bake elevation 40°) the shipped (0, −1.3) drawn metres is (0, −2.02) hull metres — 2 m aft
+        /// of her origin, which is where her tiller is.</summary>
+        public Vector2 HelmDeckOffset()
+            => DeckAreaMath.WorldToDeck(_helmLocalOffset, 0f, 0f, HullBakeElevationDegrees);
+
+        /// <summary>The helm station as a boat-relative WORLD (screen-axis) offset — what
+        /// <see cref="HelmWorldPosition"/> adds to her origin, and what <see cref="SnapPlayerToTheHelm"/>
+        /// hands the deck walk, which speaks that frame.</summary>
+        private Vector2 HelmBoatRelativeOffset()
+            => DeckAreaMath.DeckToWorld(HelmDeckOffset(), 0f,
+                                        DeckWalkController.DrawnHeadingDegreesOf(Boat),
+                                        HullBakeElevationDegrees);
+
+        /// <summary>The artwork's own bake elevation for the boat under the player — per artwork, never
+        /// a constant. A hull with no presenter reads the plan view, where the projection is the
+        /// identity and this whole file behaves exactly as it did before the stations learned to turn.
+        /// Shared by both boat-local stations, the helm and the boarding seat.</summary>
+        private float HullBakeElevationDegrees
+            => DeckWalkController.BakeElevationDegreesOf(Boat);
 
         /// <summary>True when the player stands close enough to the helm spot for E to take the helm
         /// (pure proximity; the mode dispatch decides when it applies).</summary>
@@ -466,7 +528,7 @@ namespace HiddenHarbours.Player
         public bool CanInteract() => Mode switch
         {
             ControlMode.OnFoot => WithinBoardReach() && BoardableNow(),
-            ControlMode.OnDeck => WithinHelmReach() || CanStepAshore(),
+            ControlMode.OnDeck => WithinHelmReach() || StepAshoreOnThisPress(),
             _ => true,   // at the helm → step back onto the deck, always allowed
         };
 
@@ -481,6 +543,83 @@ namespace HiddenHarbours.Player
         public bool CanStepAshore() =>
             !_carriedAboard && !BelowDecksOnTheActiveHull()
             && (InDockZone() || PlanksWithinReach(out _) || OnLand());
+
+        /// <summary>
+        /// ⭐ <b>Stepping ashore is a FACING, not a fallback</b> (owner playtest 2026-09-07):
+        /// <i>"im also close to the dock so i understand why it happens but this will be an everyday
+        /// occurance when docking so we need a smooth solution"</i>.
+        ///
+        /// <para><b>The rule.</b> A press on deck means "step ashore" only when the fisher is LOOKING at
+        /// the step-off — inside <see cref="StepAshoreFacingArcDegrees"/> centred on the way she is drawn
+        /// to be facing. It is the washboard's own rule (owner, 2026-08-23 / 09-02 — <i>"one press onto
+        /// the washboard, the next press goes inboard or outboard by FACING"</i>) applied one rung up the
+        /// ladder, and it is what makes the everyday docking press safe: alongside a wharf, E anywhere on
+        /// a small boat's deck used to end on the planks with the painter in your hand, whether or not you
+        /// meant to leave.</para>
+        ///
+        /// <para><b>Two ways it says YES without judging anything</b>, both deliberate and both
+        /// <see cref="InteractArc"/>'s own documented behaviour rather than a special case here:
+        /// <list type="bullet">
+        ///   <item><b>No place ashore to face.</b> Over a bared flat the whole hull is over land — there
+        ///   is no wharf, no bearing and no wrong way to look — so the rule does not apply. Only the two
+        ///   step-offs that name a PLACE (the authored dock landing, the planks the probe found alongside)
+        ///   can be faced, which is <see cref="TryShoreLanding"/>.</item>
+        ///   <item><b>No drawn facing to read.</b> A rig with no <see cref="DeckRiderVisual"/> — most
+        ///   EditMode fixtures, and any hull whose art draws no figure — publishes no bearing, and
+        ///   <see cref="InteractArc"/> passes an unknown facing. ⚠ The opposite default to
+        ///   <see cref="FacingOutboard"/>, on purpose: an unreadable facing must never STRAND a player on
+        ///   a boat, whereas it must never drop one in 4 m of water either. Each default is the safe
+        ///   answer for its own verb.</item>
+        /// </list></para>
+        ///
+        /// <para><b>It gates the PRESS, never the geometry.</b> <see cref="CanStepAshore"/> stays the
+        /// answer to "is there anywhere to step?", because the boarding move re-reads that rule at the far
+        /// end of its arc (<see cref="FinishBoardingMove"/>) — by which time the fisher has walked to the
+        /// rail and is facing wherever the walk left her. A move finishes the transition it started.</para>
+        /// </summary>
+        public bool FacesTheStepAshore()
+        {
+            if (Player == null) return true;
+            if (!TryShoreLanding(out Vector3 ashore)) return true;    // nowhere named ⇒ nothing to face
+            return InteractArc.Contains((Vector2)Player.position, DeckFacingWorld(),
+                                        (Vector2)ashore, StepAshoreFacingArcDegrees);
+        }
+
+        /// <summary>Both halves of the step-ashore press in one read: somewhere to step, and looking at
+        /// it. Named because the three press sites and the popup must agree on it, and a fourth spelling
+        /// of <c>CanStepAshore() &amp;&amp; FacesTheStepAshore()</c> is where they would start to
+        /// drift.</summary>
+        public bool StepAshoreOnThisPress() => CanStepAshore() && FacesTheStepAshore();
+
+        /// <summary>
+        /// Which way the fisher on this deck is DRAWN to be looking, as a world unit vector — or
+        /// <see cref="Vector2.zero"/> for "unknown", which <see cref="InteractArc"/> treats as facing
+        /// everything.
+        ///
+        /// <para>Composed, never measured: the rider's own deck bearing plus the hull's drawn heading, via
+        /// <see cref="DeckRiderFacingMath.CompassHeading"/> — the seam that exists precisely because a
+        /// facing read off motion in a moving frame spins on the spot. The injected
+        /// <see cref="ConfigureDeckFacing"/> source wins where a test has set one, for the reason it
+        /// exists: a virtual keypress is undeliverable to headless input, so the only way to ask "and
+        /// what if she were facing the wharf?" is to be able to say so.</para>
+        /// </summary>
+        private Vector2 DeckFacingWorld()
+        {
+            float deckBearing;
+            if (_deckFacing != null) deckBearing = _deckFacing();
+            else
+            {
+                // ⚠ The CACHED rider (DeckRider), not a GetComponent: the popup asks this every frame.
+                var rider = DeckRider;
+                if (rider == null) return Vector2.zero;               // no drawn facing ⇒ unknown
+                deckBearing = rider.DeckBearingDegrees;
+            }
+            if (float.IsNaN(deckBearing) || float.IsInfinity(deckBearing)) return Vector2.zero;
+
+            float compass = DeckRiderFacingMath.CompassHeading(
+                DeckWalkController.DrawnHeadingDegreesOf(Boat), deckBearing) * Mathf.Deg2Rad;
+            return new Vector2(Mathf.Sin(compass), Mathf.Cos(compass));
+        }
 
         /// <summary>
         /// ⭐ <b>Are there PLANKS alongside — a built deck close enough to her rail to step onto?</b>
@@ -596,7 +735,7 @@ namespace HiddenHarbours.Player
                     // The helm is a STATION: standing at it, E takes the helm; elsewhere on the deck,
                     // E steps ashore (when a standable step-off is there).
                     if (WithinHelmReach()) { TakeHelm(); return true; }
-                    if (CanStepAshore()) { Disembark(); return true; }
+                    if (StepAshoreOnThisPress()) { Disembark(); return true; }
                     return false;
 
                 case ControlMode.Driving:  // behind the wheel → get out at her door
@@ -666,14 +805,36 @@ namespace HiddenHarbours.Player
             // ⚠ The consult above covers BOTH routes off the deck: this move branch, and the fall-through
             // to TryInteract below when the move is switched off. Both are gated on the same two
             // predicates it is, so neither can be reached ahead of it.
-            if (onDeckAwayFromTheHelm && CanStepAshore()
+            // ⭐ Read ONCE and used TWICE, exactly as onDeckAwayFromTheHelm is above — the step-ashore
+            // rung and the rail rung below have to mean the same thing by it, and evaluating the
+            // predicate twice is how two rungs start to disagree.
+            bool stepAshoreWantsThisPress = onDeckAwayFromTheHelm && StepAshoreOnThisPress();
+            if (stepAshoreWantsThisPress
                 && BeginBoardingMove(BoardingMoveKind.Disembarking)) return true;
 
             // ⭐ …AND THEN THE RAIL (2026-09-02). The 08-25 deck ladder — helm → registry → step ashore —
             // grows one rung on the end: helm → registry → step ashore → WASHBOARD. Last on purpose. At a
             // wharf the press must still put her on the planks; going over the side is what E means only
             // when there is nowhere to step and nothing to work.
-            if (onDeckAwayFromTheHelm && TryWashboardPress()) return true;
+            //
+            // ⚠ …and it yields to a step ashore that WOULD HAPPEN — not to the mere existence of
+            // planks, and not to nothing at all. Both of the other two readings shipped and both were
+            // wrong, so the reasoning is written down rather than left to the condition:
+            //
+            //  • Gated on !CanStepAshore() (the first draft): a fisher alongside a wharf and looking at
+            //    the sea had a key that did nothing whatever, and the over-the-side exit was unreachable
+            //    at every berth — the one place the owner asked for it (2026-09-02).
+            //  • Gated on nothing (the second): the rail took presses out from under an ALLOWED step
+            //    ashore whenever the move declined to start — the A/B with the boarding move switched
+            //    off — and the fisher stayed aboard at a wharf she was asking to leave.
+            //
+            // An allowed step ashore beats the rail; a declined one hands the press down. That is the
+            // 2026-09-02 ranking's own sentence — "at a wharf the press must still put her on the
+            // planks" — read as being about the FISHER, who still gets them whenever she is looking at
+            // them. Turned away she has declined them, and the press means what it has meant since that
+            // ruling: the rail, and then the water if she presses again still looking at it. One rule
+            // for the whole deck — <b>E answers the way you are facing</b>.
+            if (onDeckAwayFromTheHelm && !stepAshoreWantsThisPress && TryWashboardPress()) return true;
 
             if (TryInteract()) return true;
 
@@ -829,7 +990,7 @@ namespace HiddenHarbours.Player
             if (_boatInput != null) _boatInput.enabled = false;
 
             ApplyPlayerFor(ControlMode.OnDeck);
-            SnapPlayerToDeck(_boardLocalOffset);
+            SnapPlayerToTheBoardSpot();
             Mode = ControlMode.OnDeck;
 
             // Camera: retarget stays on the (visible, deck-walking) player at the on-foot framing —
@@ -846,7 +1007,7 @@ namespace HiddenHarbours.Player
             // figure left where the player happened to be standing would be drawn up to that far off the
             // tiller — visible slop the hidden sprite used to conceal. Seated BEFORE the mode applies, so
             // the rider's first frame already has them in place.
-            SnapPlayerToDeck(_helmLocalOffset);
+            SnapPlayerToTheHelm();
             ApplyPlayerFor(ControlMode.Aboard);
             if (_boatController != null) _boatController.enabled = true;
             if (_boatInput != null) _boatInput.enabled = true;
@@ -870,7 +1031,7 @@ namespace HiddenHarbours.Player
             if (_boatInput != null) _boatInput.enabled = false;
 
             ApplyPlayerFor(ControlMode.OnDeck);
-            SnapPlayerToDeck(_helmLocalOffset);                      // you step back from the tiller
+            SnapPlayerToTheHelm();                                   // you step back from the tiller
             Mode = ControlMode.OnDeck;
             EventBus.Publish(new ControlModeChanged(ControlMode.OnDeck));
         }
@@ -914,14 +1075,33 @@ namespace HiddenHarbours.Player
         /// in which <see cref="Disembark"/> leaves the player exactly where they stand.</returns>
         private bool TryDisembarkLanding(out Vector3 world)
         {
+            if (TryShoreLanding(out world)) return true;
+            if (Boat != null) { world = Boat.position; return true; }
+            world = Player != null ? Player.position : Vector3.zero;
+            return false;
+        }
+
+        /// <summary>
+        /// The step-off that names a PLACE ASHORE — the authored dock landing, else the planks the probe
+        /// found alongside her. Split out of <see cref="TryDisembarkLanding"/> (2026-09-07) because the
+        /// FACING rule needs exactly these two and not the third: <see cref="OnLand"/> puts the whole hull
+        /// over bared ground, and the landing it falls back to is the BOAT'S OWN ORIGIN — a bearing that
+        /// points inboard, so facing it would mean turning away from the beach to step onto it.
+        ///
+        /// <para>False therefore means "there is no wharf to look at", which is a true statement about a
+        /// boat aground on a flat and not a refusal. <see cref="TryDisembarkLanding"/> keeps its old
+        /// answer by calling this first and falling through, so the place she LANDS is unchanged in every
+        /// case.</para>
+        /// </summary>
+        private bool TryShoreLanding(out Vector3 world)
+        {
             if (InDockZone() && _disembarkPoint != null) { world = _disembarkPoint.position; return true; }
             // ⭐ The planks she is lying against, when there is no authored landing for this berth
             // (2026-09-03). Second on purpose: where a region HAS authored a disembark point, that tidy
             // spot stays the answer — a probed point is a fallback for berths nobody hand-placed one at,
             // not a replacement for one somebody did.
             if (PlanksWithinReach(out Vector3 planks)) { world = planks; return true; }
-            if (Boat != null) { world = Boat.position; return true; }
-            world = Player != null ? Player.position : Vector3.zero;
+            world = Vector3.zero;
             return false;
         }
 
@@ -1934,7 +2114,7 @@ namespace HiddenHarbours.Player
             // The step-off stopped being standable mid-air (she drifted off her land) — the fisher never
             // left the deck as far as the state machine is concerned, so put them back on it.
             ApplyPlayerFor(ControlMode.OnDeck);
-            SnapPlayerToDeck(_boardLocalOffset);
+            SnapPlayerToTheBoardSpot();
         }
 
         /// <summary>Call the move off without transitioning. The fisher goes back to the mode they never
@@ -1948,7 +2128,7 @@ namespace HiddenHarbours.Player
 
             if (restorePosition && Player != null && wasBoarding) Player.position = _moveShoreWorld;
             ApplyPlayerFor(Mode);
-            if (Mode == ControlMode.OnDeck) SnapPlayerToDeck(_boardLocalOffset);
+            if (Mode == ControlMode.OnDeck) SnapPlayerToTheBoardSpot();
         }
 
         /// <summary>Clear the move's own state and hand the interact key back. Deliberately separate from
@@ -1984,7 +2164,7 @@ namespace HiddenHarbours.Player
         /// while she is still in the zone, the boat's own spot the moment she drifts out of it.</summary>
         private Vector3 VaultEndWorld()
         {
-            if (_moveKind == BoardingMoveKind.Boarding) return DeckPointWorld(_boardLocalOffset);
+            if (_moveKind == BoardingMoveKind.Boarding) return DeckPointWorld(BoardBoatRelativeOffset());
             return TryDisembarkLanding(out Vector3 landing) ? landing : _moveShoreWorld;
         }
 
@@ -2069,7 +2249,7 @@ namespace HiddenHarbours.Player
                 // The hop repositions player and boat independently, so re-seat the pilot ON the helm —
                 // the same re-seating the OnDeck branch below has always done, and now load-bearing
                 // because the figure at the helm is DRAWN rather than hidden.
-                SnapPlayerToDeck(_helmLocalOffset);
+                SnapPlayerToTheHelm();
                 if (_boatController != null) _boatController.enabled = true;
                 if (_boatInput != null) _boatInput.enabled = true;
 
@@ -2095,7 +2275,7 @@ namespace HiddenHarbours.Player
                 ApplyPlayerFor(ControlMode.OnDeck);
                 // The hop may have teleported the player to the region's disembark spot — re-seat them
                 // on the deck (the coordinator repositions player + boat independently).
-                SnapPlayerToDeck(_boardLocalOffset);
+                SnapPlayerToTheBoardSpot();
                 EventBus.Publish(new ControlModeChanged(ControlMode.OnDeck));
             }
             else
@@ -2236,6 +2416,47 @@ namespace HiddenHarbours.Player
             else Player.position = Boat.position + new Vector3(boatRelative.x, boatRelative.y, 0f);
         }
 
+        /// <summary>
+        /// ⭐ <b>Where boarding seats her, as a DECK-FRAME point</b> — x abeam to starboard, y along the
+        /// keel toward the bow, honest hull metres. The same treatment <see cref="HelmDeckOffset"/> gets
+        /// and for the same defect, found while measuring the helm's (2026-09-07) and fixed here.
+        ///
+        /// <para><b>What it was.</b> <see cref="_boardLocalOffset"/> was read as a WORLD-axis offset, so
+        /// "0.4 m forward" was only forward on a hull pointing north. On the starter dory at her St
+        /// Peters berth — lying bow-WEST — it meant 0.4 m to STARBOARD, which is 0.400 m against a
+        /// walkable half-beam of 0.225 m: every boarding clamped hard onto whichever rail happened to be
+        /// up-screen, on the seaward side, with the wharf behind her. Lying bow-SOUTH it put her 0.62 m
+        /// ASTERN of where it meant to — on the tiller, 1.24 m of keel from the seat it was tuned as.</para>
+        ///
+        /// <para>Un-projected at north and re-projected through her live drawn heading, it is what its
+        /// tooltip always claimed: amidships, on the centreline, a step forward of the helm, at every
+        /// heading. Heading 0 is bit-identical, so neither scene's serialized value moves.</para>
+        /// </summary>
+        public Vector2 BoardDeckOffset()
+            => DeckAreaMath.WorldToDeck(_boardLocalOffset, 0f, 0f, HullBakeElevationDegrees);
+
+        /// <summary>The boarding seat as a boat-relative WORLD (screen-axis) offset — the frame the deck
+        /// walk and the vault's end point both speak.</summary>
+        private Vector2 BoardBoatRelativeOffset()
+            => DeckAreaMath.DeckToWorld(BoardDeckOffset(), 0f,
+                                        DeckWalkController.DrawnHeadingDegreesOf(Boat),
+                                        HullBakeElevationDegrees);
+
+        /// <summary>Seat the player where boarding lands her. ⚠ Deliberately not
+        /// <c>SnapPlayerToDeck(_boardLocalOffset)</c>, for the reason
+        /// <see cref="SnapPlayerToTheHelm"/> is not: the deck walk takes a boat-relative WORLD offset,
+        /// and this one is authored with her bow north.</summary>
+        private void SnapPlayerToTheBoardSpot() => SnapPlayerToDeck(BoardBoatRelativeOffset());
+
+        /// <summary>Seat the player ON the helm station. ⚠ Deliberately not
+        /// <c>SnapPlayerToDeck(_helmLocalOffset)</c>, which is what the three call sites read until
+        /// 2026-09-07: <see cref="DeckWalkController.SnapTo"/> takes a boat-relative WORLD offset, and
+        /// the helm offset is authored with her bow north. Handing the raw field to it seated the pilot
+        /// 1.3 m down-SCREEN of her origin whichever way she was pointing — off the tiller on every
+        /// heading but one, and off the boat entirely on a hull lying athwart. The clamp onto the
+        /// walkable deck then hid how far off it was.</summary>
+        private void SnapPlayerToTheHelm() => SnapPlayerToDeck(HelmBoatRelativeOffset());
+
         /// <summary>Wire the switcher in one call (tests / editor) and start on foot.</summary>
         public void Configure(PlayerWalkController playerWalk, BoatController boatController, Behaviour boatInput,
                               Transform dockZone, float zoneRadius, Transform disembarkPoint)
@@ -2253,8 +2474,9 @@ namespace HiddenHarbours.Player
             Mode = ControlMode.OnFoot;
         }
 
-        /// <summary>Tune the helm station in one call (tests / editor): where the helm spot sits relative
-        /// to the boat (world-axis offset) and how close E must be pressed to take it.</summary>
+        /// <summary>Tune the helm station in one call (tests / editor): where the helm spot sits on the
+        /// boat (the offset from her origin with her bow NORTH — see <see cref="HelmWorldPosition"/> for
+        /// the frame) and how close E must be pressed to take it.</summary>
         public void ConfigureHelm(Vector2 helmLocalOffset, float helmReach)
         {
             _helmLocalOffset = helmLocalOffset;
@@ -2598,7 +2820,12 @@ namespace HiddenHarbours.Player
                     // in its own order. The middle rung is not offered from here: the verb states it
                     // itself on the Fixture slot, so all this branch owes it is to STAND DOWN.
                     if (WithinHelmReach()) { id = ControlStrings.IdTakeHelm; label = ControlStrings.TakeHelm; }
-                    else if (CanStepAshore() && !AFixtureWouldTakeThePress)
+                    // ⭐ …and the step off is offered only while she is LOOKING at it (2026-09-07). The
+                    // offer appearing as you turn toward the wharf is how the facing rule teaches itself:
+                    // the player reads the decision before making it, exactly as the washboard's own
+                    // offer below does. Standing down when she looks away is not a refusal to say
+                    // anything — it is the honest picture of a press that will do nothing.
+                    else if (StepAshoreOnThisPress() && !AFixtureWouldTakeThePress)
                     {
                         id = ControlStrings.IdStepAshore;
                         // Planks read as planks whichever route found them — the authored dock zone or
@@ -2609,6 +2836,9 @@ namespace HiddenHarbours.Player
                     // ⭐ …and the rail, last, exactly as BeginInteract ranks it (2026-09-02). Out on the
                     // washboard the offer names what the FACING will do, so the player reads the decision
                     // before making it rather than discovering it in the water.
+                    // ⚠ Reached whenever the step-off above stood down — including when it stood down
+                    // on the FACING. That is BeginInteract's own ladder, and the popup says what the
+                    // press does or it is holding a second opinion about what E means.
                     else if (!AFixtureWouldTakeThePress && CanReachTheWashboard(out Vector2 outward))
                     {
                         if (!_onWashboard)

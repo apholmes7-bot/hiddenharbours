@@ -129,7 +129,7 @@ Material:
     - _SwashMaxEdgeShift: 0.35
     - _SwashSpeed: 0.16
     - _Turbidity: 1.6
-    - _UntileStrength: 0.644
+    - _UntileStrength: 1
     - _UseCausticTex: 1
     - _UseDepthRamp: 1
     - _UseFoamTex: 1
