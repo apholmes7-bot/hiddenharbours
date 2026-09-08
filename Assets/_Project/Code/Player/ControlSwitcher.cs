@@ -805,7 +805,11 @@ namespace HiddenHarbours.Player
             // ⚠ The consult above covers BOTH routes off the deck: this move branch, and the fall-through
             // to TryInteract below when the move is switched off. Both are gated on the same two
             // predicates it is, so neither can be reached ahead of it.
-            if (onDeckAwayFromTheHelm && StepAshoreOnThisPress()
+            // ⭐ Read ONCE and used TWICE, exactly as onDeckAwayFromTheHelm is above — the step-ashore
+            // rung and the rail rung below have to mean the same thing by it, and evaluating the
+            // predicate twice is how two rungs start to disagree.
+            bool stepAshoreWantsThisPress = onDeckAwayFromTheHelm && StepAshoreOnThisPress();
+            if (stepAshoreWantsThisPress
                 && BeginBoardingMove(BoardingMoveKind.Disembarking)) return true;
 
             // ⭐ …AND THEN THE RAIL (2026-09-02). The 08-25 deck ladder — helm → registry → step ashore —
@@ -813,20 +817,24 @@ namespace HiddenHarbours.Player
             // wharf the press must still put her on the planks; going over the side is what E means only
             // when there is nowhere to step and nothing to work.
             //
-            // ⚠ …and the facing gate above does NOT close this rung (2026-09-07, corrected after CI).
-            // A ladder rung that stands down passes the press DOWN the ladder; it does not take the
-            // press out of it. So the ranking's sentence is read as it was written — "at a wharf the
-            // press must still put her on the planks" is about a fisher who is LOOKING at the planks,
-            // and she still gets them, because the rung above answers first and this one is never
-            // reached. Turned away from them she has declined the planks, and the press means what it
-            // has meant since 2026-09-02: the rail, and then the water if she presses again still
-            // looking at it. One rule for the whole deck — <b>E answers the way you are facing</b>.
+            // ⚠ …and it yields to a step ashore that WOULD HAPPEN — not to the mere existence of
+            // planks, and not to nothing at all. Both of the other two readings shipped and both were
+            // wrong, so the reasoning is written down rather than left to the condition:
             //
-            // ⚠ An earlier draft gated this on !CanStepAshore(), and CI was right to redden it: it left
-            // a fisher alongside a wharf, looking at the sea, with a key that did nothing at all — and
-            // it took away the over-the-side exit at every berth, which is the one place the owner
-            // asked for it.
-            if (onDeckAwayFromTheHelm && TryWashboardPress()) return true;
+            //  • Gated on !CanStepAshore() (the first draft): a fisher alongside a wharf and looking at
+            //    the sea had a key that did nothing whatever, and the over-the-side exit was unreachable
+            //    at every berth — the one place the owner asked for it (2026-09-02).
+            //  • Gated on nothing (the second): the rail took presses out from under an ALLOWED step
+            //    ashore whenever the move declined to start — the A/B with the boarding move switched
+            //    off — and the fisher stayed aboard at a wharf she was asking to leave.
+            //
+            // An allowed step ashore beats the rail; a declined one hands the press down. That is the
+            // 2026-09-02 ranking's own sentence — "at a wharf the press must still put her on the
+            // planks" — read as being about the FISHER, who still gets them whenever she is looking at
+            // them. Turned away she has declined them, and the press means what it has meant since that
+            // ruling: the rail, and then the water if she presses again still looking at it. One rule
+            // for the whole deck — <b>E answers the way you are facing</b>.
+            if (onDeckAwayFromTheHelm && !stepAshoreWantsThisPress && TryWashboardPress()) return true;
 
             if (TryInteract()) return true;
 

@@ -497,12 +497,25 @@ namespace HiddenHarbours.Tests.EditMode
 
         // ---- one press, one resolve ------------------------------------------------------------
 
+        /// <summary>
+        /// ⭐ <b>One press, ONE resolve</b> — the claim this case exists for, and it is unchanged.
+        ///
+        /// <para><b>⚠ WHAT IT USED TO ASSERT, and the two rulings that moved it (2026-09-08).</b> It used
+        /// to say the press did <i>nothing at all</i> over open water, and that was true — but only by
+        /// accident. The rail rung WAS reached and refused, because from amidships port and starboard tie
+        /// and <c>OverTheSideMath.OutwardNormalOnBox</c> cancels to zero; and the fisher was only ever
+        /// amidships-adjacent here because the boarding seat was a world-axis offset. #789 made E answer
+        /// the way you are facing and #794 seated her where the seat is authored and broke that tie to
+        /// starboard, so a deck press away from the helm over open water now has somewhere to go: the
+        /// RAIL, which is the owner's 2026-09-02 verb reaching the case it always described.</para>
+        ///
+        /// <para>So the outcome is restated and the claim is kept: the registry is consulted exactly ONCE
+        /// however the press is spent, or every deck press would cost two scans instead of one (rule 7).</para>
+        /// </summary>
         [Test]
-        public void ADeckPress_ResolvesTheRegistryExactlyOnce_EvenWhenItFindsNothing()
+        public void ADeckPress_ResolvesTheRegistryExactlyOnce_EvenWhenNothingIsRegistered()
         {
-            // Away from the helm over open water, the press has nothing to do at all — the ONE path that
-            // reaches both consult sites. The tail therefore stands down on deck, or every idle press on
-            // a deck would cost two scans of the registry instead of one (rule 7).
+            // Away from the helm over open water — the ONE path that reaches both consult sites.
             var (sw, _, _, _, playerGo, boatGo) = Build(new Vector3(0f, -11.5f, 0f), new Vector3(0f, -13.8f, 0f));
             NoBoardingMove(sw);
             BoardAndStandAwayFromTheHelm(sw, playerGo);
@@ -512,12 +525,14 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsFalse(sw.WithinHelmReach(), "harness: still away from the tiller");
             Fake outOfReach = Candidate(playerGo.transform.position + new Vector3(50f, 0f, 0f));
 
-            Assert.IsFalse(sw.BeginInteract(), "a press with nothing to do is still a press with nothing to do");
+            Assert.IsTrue(sw.BeginInteract(),
+                          "with nothing registered and nowhere to step, the press is the RAIL's");
 
             Assert.AreEqual(0, outOfReach.Calls);
             Assert.AreEqual(1, outOfReach.Resolves,
                             "asked ONCE — the deck's early consult, not that one and the tail as well");
-            Assert.AreEqual(ControlMode.OnDeck, sw.Mode);
+            Assert.IsTrue(sw.OnWashboard, "…and she is standing on the gunwale");
+            Assert.AreEqual(ControlMode.OnDeck, sw.Mode, "which is a place on her deck, not a mode");
         }
 
         // ---- the deck clamp maths (pure) ------------------------------------------------------
