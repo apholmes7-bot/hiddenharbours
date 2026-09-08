@@ -16,6 +16,16 @@ namespace HiddenHarbours.Tests.EditMode
     /// arriving boat. She had been moved once for that same complaint already (#677, 2026-08-27) and it
     /// came back, so this file answers it in metres.</para>
     ///
+    /// <para><b>⚠⚠ AND THE BERTH IT MEASURES WAS NOT THE ONE THE GAME USED — until 2026-09-08.</b> A
+    /// plate on a real editor slot found the persistent dory parked at <c>ArrivalPos</c> (213.50, −5.80)
+    /// and not here: <c>RegionTravelCoordinator.ApplyArrival</c> overwrote this berth on every region
+    /// entry, putting her <b>3.25 m INSIDE</b> the moored cape's outline. Every table in this file was
+    /// therefore correct arithmetic about a position that did not occur in play — which is why moving
+    /// this berth (#677, #707, #790) never answered the owner. The owner ruled on 2026-09-08 that the
+    /// arrival must park her at the region's authored berth, so <b>these numbers now describe where she
+    /// actually lies</b>. See <c>ArrivalParksHerAtHerBerthTests</c> for the rule and the two gaps
+    /// measured against the cape.</para>
+    ///
     /// <para><b>⚠ What the measurement actually found.</b> The sailing line was never the problem: over
     /// the real passage the cape passed the 2026-08-27 berth with 4.97 m of clear water
     /// (<c>ArrivalOverRealTerrainPlayTests</c>). What WAS wrong is that she had no heading at all —

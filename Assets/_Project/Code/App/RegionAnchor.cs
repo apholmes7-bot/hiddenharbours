@@ -105,6 +105,50 @@ namespace HiddenHarbours.App
         /// <summary>The region's named ways in (empty for a region with a single arrival).</summary>
         public NamedArrival[] Arrivals => _arrivals;
 
+        // ---- the BERTH the region's own scene authored for the player's boat (2026-09-08) ----------
+
+        /// <summary>
+        /// ⭐ <b>Where this region's own scene laid the player's boat</b> — remembered the first time the
+        /// region is entered without having sailed in, and used by every later arrival so she comes back
+        /// to her mooring rather than to the standoff a passage would park her on.
+        ///
+        /// <para><b>Why it is REMEMBERED rather than authored as a field.</b> The boat in a region scene
+        /// is not a marker the region owns — she carries <c>PersistentObject</c>, so the very first
+        /// <c>Awake</c> promotes her out of the scene into <c>DontDestroyOnLoad</c> and she never comes
+        /// back with it. There is no twin left behind to read on a later visit, and no
+        /// <c>MooredBoat</c> marker either: the pose exists in the scene ASSET and for exactly one moment
+        /// in the running game. This catches that moment. Nothing is authored twice, no scene changes,
+        /// and a region that is first entered BY SEA (Nine Mile Creek, West Water) never records one and
+        /// falls through to the arrival point exactly as it always has.</para>
+        ///
+        /// <para>Held on the ANCHOR rather than in a table on the coordinator because the anchor already
+        /// IS the per-region object, and it outlives a visit: a region hop deactivates a scene's roots,
+        /// it does not unload them.</para>
+        /// </summary>
+        public bool HasAuthoredBoatBerth { get; private set; }
+
+        /// <summary>Where she lies at that berth (world). Meaningless unless
+        /// <see cref="HasAuthoredBoatBerth"/>.</summary>
+        public Vector3 AuthoredBoatBerthPosition { get; private set; }
+
+        /// <summary>The heading she lies on there — the whole pose, because a berth is a position AND a
+        /// heading and leaving the second to the identity is what laid a 4.5 m boat athwart this very
+        /// fairway on 2026-09-02.</summary>
+        public Quaternion AuthoredBoatBerthRotation { get; private set; } = Quaternion.identity;
+
+        /// <summary>
+        /// Record the pose <paramref name="boat"/> is standing in as this region's authored berth.
+        /// Idempotent by design — <b>only the FIRST call takes</b>, so a later arrival (which has already
+        /// moved her) can never overwrite the berth with the standoff it just parked her on.
+        /// </summary>
+        public void RememberBoatBerth(Transform boat)
+        {
+            if (HasAuthoredBoatBerth || boat == null) return;
+            HasAuthoredBoatBerth = true;
+            AuthoredBoatBerthPosition = boat.position;
+            AuthoredBoatBerthRotation = boat.rotation;
+        }
+
         // ---- per-passage arrivals -----------------------------------------------------------
 
         /// <summary>
