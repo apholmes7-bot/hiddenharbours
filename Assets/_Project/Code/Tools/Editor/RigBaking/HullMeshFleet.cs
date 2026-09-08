@@ -328,10 +328,18 @@ namespace HiddenHarbours.Tools.RigBaking
         /// classification. Keying it by the same repo-relative script path
         /// <see cref="FleetHull.ScriptPath"/> uses means the entry travels with the file.</para>
         ///
-        /// <para><b>⚠️ Asserted in BOTH directions</b> by <c>SailRigKitTests</c>: a listed rig must
-        /// still exist AND must still fail the contract that blocks it. The moment the art director
-        /// fixes a rig, its entry goes red saying "delist and bake" — which is what stops a ledger
-        /// like this from rotting into folklore that outlives its reason.</para>
+        /// <para><b>⚠️ Asserted by <c>SailRigKitTests</c>, and the assertion MOVED once already.</b>
+        /// It used to be two-way — a listed rig must still exist AND must still fail the contract
+        /// that blocks it — so that the day the art director fixed a rig the entry went red saying
+        /// "delist and bake". That is exactly what happened in S0 (<c>art/sloop-face-levels</c>): both
+        /// sloops now stamp every face from their own <c>geometry().ids</c>, the guard was turned
+        /// around, and it pins the fix instead.</para>
+        ///
+        /// <para><b>So a reason here is no longer always "the extractor refuses".</b> The sloops stay
+        /// listed because a hull needs a COMMITTED <c>HullMeshDef</c> before she can move to
+        /// <see cref="OneHullPerRig"/>, and that bake needs an editor slot. Delisting first would
+        /// redden every fixture that sweeps <see cref="Hulls"/> expecting a def behind each row. Read
+        /// each entry's reason for which of the two it is; the S1 bake lane clears these two.</para>
         /// </summary>
         public static readonly IReadOnlyDictionary<string, string> BakeBlocked =
             new Dictionary<string, string>(StringComparer.Ordinal)
@@ -343,56 +351,65 @@ namespace HiddenHarbours.Tools.RigBaking
                 // as a folder. DeckSidecarReader.ResolveRigPath resolves a sidecar's named rig flat
                 // FIRST and only then searches the tree, so no committed hull's resolution moved.
                 //
-                // ⚠️⚠️ WHY THE BAKE REFUSES — TWO NAMESPACES THAT DO NOT MEET. Both rigs publish
-                // `geometry().ids`, which arms RigMeshExtractor's level-tag contract: "this rig
-                // publishes geometry().ids, so every face it hands over must DECLARE its level".
-                // MEASURED in the repo's own V8 on the committed bytes (2026-09-06):
+                // ✅ THE BAKE NO LONGER REFUSES — THE ART WAS FIXED IN S0 (art/sloop-face-levels).
+                // Both rigs publish `geometry().ids`, which arms RigMeshExtractor's level-tag
+                // contract: "this rig publishes geometry().ids, so every face it hands over must
+                // DECLARE its level". Until S0 neither paid for it. MEASURED in the repo's own V8,
+                // on the committed bytes, before and after:
                 //
                 //                        sloop 30                        sloop 88
                 //   faces                1,852                           3,088
-                //   NO `lv` at all       842  (45.5%)                    1,312 (42.5%)
-                //   stamped with         cabin·lid·rig·under             cabin·lid·rig·under
-                //   geometry().ids       hull·cockpit·coachroof·         hull·cockpit·aft_deck·
+                //   lv not in ids  WAS   1,058 (842 with no `lv` at all) 2,302 (1,312 with none)
+                //                  NOW   0                               0
+                //   stamped with   WAS   cabin·lid·rig·under             cabin·lid·rig·under
+                //                  NOW   hull·cockpit·coachroof·         hull·cockpit·aft_deck·
                 //                        foredeck·cabin·rig              coachroof·foredeck·
-                //                                                        saloon·lower·rig
-                //   ids never stamped    hull, cockpit, coachroof,       ALL BUT `rig` — including
-                //                        foredeck (4 of 6)               `cabin`, which she does not
-                //                                                        even declare, yet 449 faces
-                //                                                        are stamped with it
+                //                        (all 6 ids)                     saloon·lower·rig (all 8)
+                //   ids never stamped    (none)                          (none)
                 //
-                // So this is not a handful of missed stamps. The faces carry a CUTAWAY vocabulary
-                // (cabin/lid/under) while `ids` publishes a LEVEL vocabulary, and on the 88 the two
-                // share exactly one member. `lid` and `under` are in neither hull's `ids`.
+                // HOW, because the shape matters more than the counts. `lid` and `under` were never
+                // levels: they were the RIG's own rasteriser switches, sharing the `lv` field with
+                // the level vocabulary. S0 separated the two — each rig carries the pass-3 authoring
+                // cursor, and the three switches moved to face PROPERTIES (`inside` / `lid` /
+                // `under`). Because a level tag can no longer reach the rasteriser, the change is
+                // provably pictureless: 36 renders across both hulls (every heading, the cabin view,
+                // the underbody, sailing poses, stored, grinding) came back BYTE-IDENTICAL, and the
+                // exported geometry — vertices, material, b, db — did not move at all. The 88's 449
+                // faces that said `cabin`, a level she never declared, now say `saloon` or `lower`,
+                // the two rooms she does.
                 //
-                // ⚠️ DO NOT DEFAULT THEM TO `hull`, and do not patch the rigs. The extractor's own
-                // refusal says why: "The only defensible default is 'hull', which means NEVER CULL —
-                // so a missed stamp would ship as a room that quietly stops opening, in one wall, on
-                // one heading." And docs/art/rigs/** is the art director's lane; a fix made here comes
-                // back wrong on the next regeneration.
+                // ⚠️ THE RULE THAT MADE IT A RIG FIX AND NOT A REPO FIX STILL STANDS: never default a
+                // missed stamp to `hull`. The extractor's own refusal says why — "the only defensible
+                // default is 'hull', which means NEVER CULL, so a missed stamp would ship as a room
+                // that quietly stops opening, in one wall, on one heading." And docs/art/rigs/** is
+                // the art director's lane; a fix made on this side comes back wrong on the next
+                // regeneration. S0 was made in the rigs, and the four sidecars were REGENERATED by
+                // the kit's own SAIL_KIT.write() rather than re-stamped by hand.
                 //
-                // THE UPSTREAM ASK, recorded for the owner's next art turn: stamp every emitted face
-                // with a member of `geometry().ids` (the cursor idiom the other cutaway hulls use),
-                // OR stop publishing `ids` in pass 1 and let these two bake as plain bodies. Either
-                // answers it; the current file asks for the cutaway and does not pay for it.
+                // ⚠️ SO WHY ARE THEY STILL LISTED? Only because the bake has not been RUN. A hull
+                // moves to OneHullPerRig when a committed HullMeshDef stands behind her, and that
+                // needs an editor slot; delisting first reddens every fixture that sweeps Hulls. S1
+                // clears both: run RigMeshAssetBaker.BakeSloopsCli, commit the defs, then delete
+                // these two entries and add the hulls to OneHullPerRig as MeshOnly.
                 //
-                // Everything downstream of the BODY is already measured and waiting: `faces()` is
-                // pose-free (same array identity after renders at opposite poses), 1,852 / 3,088
-                // faces, 7,514 / 12,530 vertices, and the filtered ramp table is 14 of 16 on both
-                // (the unfiltered one is 18 and 19 — over the cap, and it fails quietly). The
-                // reconstruction entries in RigMeshExtractor and RigMeshAssetBaker.BakeSloopsCli are
-                // in place, so the bake is one art fix away, not one PR away.
+                // Everything else downstream of the BODY was already measured and has not moved:
+                // `faces()` is pose-free (same array identity after renders at opposite poses),
+                // 1,852 / 3,088 faces, 7,514 / 12,530 vertices, and the filtered ramp table is still
+                // 14 of 16 on both (the unfiltered one is 18 and 19 — over the cap, and it fails
+                // quietly). The reconstruction entries in RigMeshExtractor and
+                // RigMeshAssetBaker.BakeSloopsCli are in place, so the bake is a slot away.
                 ["docs/art/rigs/sail-rig-kit/sloop-30/sloopIsoRig.js"] =
-                    "842 of 1,852 faces (45.5%) carry no `lv`, and the ones that do are stamped " +
-                    "cabin/lid/rig/under while geometry().ids publishes hull/cockpit/coachroof/" +
-                    "foredeck/cabin/rig. RigMeshExtractor refuses rather than defaulting to 'hull', " +
-                    "which would mean NEVER CULL. Upstream ask: stamp every face from ids, or stop " +
-                    "publishing ids in pass 1.",
+                    "ART FIXED, BAKE OWED: faces stamped from ids in S0 (PR #N, art/sloop-face-levels) " +
+                    "— 0 of 1,852 faces now carry a level her geometry().ids does not name, and all " +
+                    "six of hull/cockpit/coachroof/foredeck/cabin/rig are stamped. RigMeshExtractor " +
+                    "accepts her. She stays here only until S1 runs RigMeshAssetBaker.BakeSloopsCli " +
+                    "and commits the HullMeshDef; bake pending S1.",
 
                 ["docs/art/rigs/sail-rig-kit/sloop-88/sloop88IsoRig.js"] =
-                    "1,312 of 3,088 faces (42.5%) carry no `lv`; of those that do, 449 are stamped " +
-                    "`cabin`, which is not in her geometry().ids at all (she declares saloon and " +
-                    "lower). Seven of her eight declared levels are never stamped on any face. Same " +
-                    "refusal, same ask.",
+                    "ART FIXED, BAKE OWED: faces stamped from ids in S0 (PR #N, art/sloop-face-levels) " +
+                    "— 0 of 3,088, and the 449 faces that said `cabin` (a level she never declared) " +
+                    "now say saloon or lower, the two rooms she does. All eight of her ids are " +
+                    "stamped. Same state as the 30: bake pending S1.",
             };
 
         /// <summary>

@@ -107,7 +107,9 @@ heavy_weather (the builder's STAYSAIL ONLY: hoist 0.6 + staysail) and the orthog
 (the staysail furls electrically — no deck station; the platform has one). Seven controls: both helms steer one
 rudder; `grind` `main` lands on the leeward mainsheet winch, `jib` on the leeward primary. Reference polar: 9.15 kn
 at twa 45 in 12 kn true (apparent 25.7° — one degree clear of the sprite's irons band), 11.4 on a beam reach,
-7.2 dead downwind. **Read `_confirm.no_go_coupling`**: at twa 40 above ~10 kn true she reads "in irons" at the
-polar's speed.
+7.2 dead downwind. **Read `_confirm.no_go_coupling`**, and mind the frames: the polar's no-go is twa 35 TRUE,
+the sprite's irons band awa 25 APPARENT, and apparent draws forward as she makes way — so the two disagree in
+LIGHT air. At twa 40 she reads "in irons" at the polar's speed from 4 to 14 kn true, clearing at 16; at twa 35,
+from 4 to 18, clearing at 20. Fourteen cells of the 150.
 
 If the rig hash moves, regenerate from the builder page (both buttons) or `SAIL_KIT.write()` — never patch a number.

@@ -20,7 +20,7 @@ MonoBehaviour:
     sprite agree; replace the model, keep the glue.
   Model: min( v_hull * (1 - exp(-tws / tws_h)) * G(twa),  R(twa) * tws )
   SourceSidecarPath: docs/art/rigs/gameplay/sail/sloopIsoRig.sailing.json
-  DerivedFromRigSha256: f3b545c2e5263e334debca8a56edbfa4576215362f4f757a130d62075477fe01
+  DerivedFromRigSha256: b0cdd16b2fe10b1b2f9e159cb9a0cccc82bde60bac84c982e85e55fd913ce178
   TrueWindKn:
   - 4
   - 6
