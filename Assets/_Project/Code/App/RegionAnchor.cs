@@ -105,6 +105,77 @@ namespace HiddenHarbours.App
         /// <summary>The region's named ways in (empty for a region with a single arrival).</summary>
         public NamedArrival[] Arrivals => _arrivals;
 
+        // ---- the BERTH the region's own scene authored for the player's boat (2026-09-08) ----------
+
+        /// <summary>
+        /// ⭐ <b>Where this region's own scene laid the player's boat</b> — remembered the first time the
+        /// region is entered without having sailed in, and used by every later arrival so she comes back
+        /// to her mooring rather than to the standoff a passage would park her on.
+        ///
+        /// <para><b>Why it is REMEMBERED rather than authored as a field.</b> The boat in a region scene
+        /// is not a marker the region owns — she carries <c>PersistentObject</c>, so the very first
+        /// <c>Awake</c> promotes her out of the scene into <c>DontDestroyOnLoad</c> and she never comes
+        /// back with it. There is no twin left behind to read on a later visit, and no
+        /// <c>MooredBoat</c> marker either: the pose exists in the scene ASSET and for exactly one moment
+        /// in the running game. This catches that moment. Nothing is authored twice, no scene changes,
+        /// and a region that is first entered BY SEA (Nine Mile Creek, West Water) never records one and
+        /// falls through to the arrival point exactly as it always has.</para>
+        ///
+        /// <para>Held on the ANCHOR rather than in a table on the coordinator because the anchor already
+        /// IS the per-region object, and it outlives a visit: a region hop deactivates a scene's roots,
+        /// it does not unload them.</para>
+        /// </summary>
+        public bool HasAuthoredBoatBerth { get; private set; }
+
+        /// <summary>Where she lies at that berth (world). Meaningless unless
+        /// <see cref="HasAuthoredBoatBerth"/>.</summary>
+        public Vector3 AuthoredBoatBerthPosition { get; private set; }
+
+        /// <summary>The heading she lies on there — the whole pose, because a berth is a position AND a
+        /// heading and leaving the second to the identity is what laid a 4.5 m boat athwart this very
+        /// fairway on 2026-09-02.</summary>
+        public Quaternion AuthoredBoatBerthRotation { get; private set; } = Quaternion.identity;
+
+        /// <summary>
+        /// Record this region's authored berth for the player's boat — <b>the pose the region's own scene
+        /// SERIALIZED, not the pose the boat happens to be standing in</b>.
+        ///
+        /// <para><b>⚠ The distinction is the whole rule, and getting it wrong shipped a defect on
+        /// 2026-09-08.</b> The first draft of this remembered "wherever she was the first time we saw
+        /// her". In a fixture — and in any boot order where the boat exists before her transform is
+        /// applied — that is the ORIGIN, so the region dutifully recorded (0,0,0) as her berth and every
+        /// later arrival parked her there. Four PlayMode fixtures caught it, all with the same tell: she
+        /// arrives at (0,0,0), 131 m from the mark. "Where she was first seen" is not "where the region
+        /// authored her", and no amount of guarding against the origin makes it so — a boat legitimately
+        /// authored at (0,0,0) would then be refused, and the rule would still be a guess.</para>
+        ///
+        /// <para>So the source of truth is <see cref="PersistentObject"/>'s record, taken in its own
+        /// <c>Awake</c> the instant before promotion, of <b>which scene serialized it and where</b>.
+        /// A boat a fixture merely spawned carries no such record and none is remembered — which is
+        /// exactly the fallback those four fixtures encode.</para>
+        ///
+        /// <para>Idempotent by design — <b>only the FIRST successful call takes</b>, so a later arrival
+        /// (which has already moved her) can never overwrite the berth with the standoff it just parked
+        /// her on.</para>
+        /// </summary>
+        /// <param name="boat">The persistent boat.</param>
+        /// <param name="regionSceneName">The scene this anchor's region lives in. The berth is recorded
+        /// only when the boat was authored in THAT scene — a boat another region serialized, or none did,
+        /// is not this region's mooring.</param>
+        public void RememberBoatBerth(Transform boat, string regionSceneName)
+        {
+            if (HasAuthoredBoatBerth || boat == null || string.IsNullOrEmpty(regionSceneName)) return;
+
+            var persistent = boat.GetComponent<PersistentObject>();
+            if (persistent == null || !persistent.HasAuthoredPose) return;
+            if (!string.Equals(persistent.AuthoredInScene, regionSceneName,
+                               System.StringComparison.Ordinal)) return;
+
+            HasAuthoredBoatBerth = true;
+            AuthoredBoatBerthPosition = persistent.AuthoredPosition;
+            AuthoredBoatBerthRotation = persistent.AuthoredRotation;
+        }
+
         // ---- per-passage arrivals -----------------------------------------------------------
 
         /// <summary>
