@@ -530,8 +530,14 @@ namespace HiddenHarbours.Player
         }
 
         /// <summary>The drawn heading of a hull this walk may not be bound to — the same read
-        /// <see cref="DrawnHeadingDegrees"/> makes, without the cached presenter.</summary>
-        private static float DrawnHeadingDegreesOf(Transform boatRoot)
+        /// <see cref="DrawnHeadingDegrees"/> makes, without the cached presenter.
+        ///
+        /// <para><b>Public since 2026-09-07</b> so the switcher's HELM STATION can be projected through
+        /// the very same compass the deck it sits on is projected through. It was already the only read
+        /// of a hull's drawn facing anyone outside this file wanted, and a fourth hand-written copy of it
+        /// (<c>ArrivalOpening</c>, <c>BoatCleats</c> and <c>DeckRiderVisual</c> each carry one) is how a
+        /// helm and the deck under it end up disagreeing about which way she is pointing.</para></summary>
+        public static float DrawnHeadingDegreesOf(Transform boatRoot)
         {
             if (boatRoot == null) return 0f;
             var host = boatRoot.GetComponent<BoatHullPresenterHost>();
@@ -541,8 +547,11 @@ namespace HiddenHarbours.Player
                                 : DirectionalBoatSprite.HeadingDegreesFromBow(boatRoot.up);
         }
 
-        /// <summary>The bake elevation of a hull this walk may not be bound to.</summary>
-        private static float BakeElevationDegreesOf(Transform boatRoot)
+        /// <summary>The bake elevation of a hull this walk may not be bound to. Public for the reason
+        /// <see cref="DrawnHeadingDegreesOf"/> is: heading and elevation are the two halves of ONE
+        /// projection (<see cref="DeckAreaMath.DeckToWorld"/>), and a caller handed one without the other
+        /// would foreshorten a hull by the wrong artwork's camera.</summary>
+        public static float BakeElevationDegreesOf(Transform boatRoot)
         {
             if (boatRoot == null) return DeckAreaMath.PlanViewElevationDegrees;
             var host = boatRoot.GetComponent<BoatHullPresenterHost>();

@@ -182,6 +182,17 @@ namespace HiddenHarbours.Core
                  "boat lying a little off her lines — while staying small enough that it never invents " +
                  "a step across open water to a pier you are not actually alongside.")]
         [Min(0.1f)] public float StepAshoreReachMetres = 1.5f;
+        [Tooltip("How wide the arc must be, in DEGREES of full width centred on the way she is looking, " +
+                 "for a press on deck to mean 'step ashore' (owner playtest 2026-09-07: 'im also close " +
+                 "to the dock so i understand why it happens but this will be an everyday occurance " +
+                 "when docking so we need a smooth solution'). Stepping ashore is a FACING, the same way " +
+                 "going over the washboard is: look at the wharf and E puts you on it; look inboard or " +
+                 "along the deck and E leaves you aboard. ⚠ Keep it under 180 or 'along the deck' (90° " +
+                 "off the wharf) counts as facing it and the everyday docking press throws you ashore " +
+                 "again. 120 leaves ±60° — forgiving enough that you need not aim, tight enough that a " +
+                 "quarter-turn away means no. 360 switches the rule off (the A/B, and the escape hatch): " +
+                 "the arc can then exclude nothing and the press behaves exactly as it did before.")]
+        [Range(0f, 360f)] public float StepAshoreFacingArcDegrees = 120f;
         [Tooltip("Width of the gunwale band on a hull with NO authored washboard areas, in metres — the " +
                  "strip just inside her walkable edge that the two-press exit treats as the rail. ⚠ Only " +
                  "the cape islander and the lobster family carry real washboards; an open boat (the " +
