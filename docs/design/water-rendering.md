@@ -5293,3 +5293,84 @@ size it, and it can show a knob makes no difference; it cannot prove no other la
 tooth PERIOD is the weakest number here — on the smooth synthetic shore it reads 11–15 m at the
 shipped grid, and the period depends on the coast's obliquity to the grid, which a synthetic shore
 only guesses at. **The amplitude is the finding; the period wants the real authored coastline.**
+
+## 42. The shallows wear a lattice because the untile knob KEEPS one (register row 8)
+
+The owner: *"the shallows wear a patchwork of 4 m rounded squares."* The register had it down as the
+caustic slot's tile grid surviving the untiler. The untiler is not failing. **It is being asked for
+64 % of its opinion, and the other 36 % is the tile grid, drawn verbatim.**
+
+### The last line of the function
+
+`UntileSampleW` does two careful things — a domain warp, then a four-corner hash-untile whose weights
+are a partition of unity so no slot can be brightened or darkened. Then it returns:
+
+```hlsl
+return lerp(raw, untiled, s);          // s = _UntileStrength = 0.644
+```
+
+`raw` is the tile on Repeat wrap: perfectly periodic at `1/scale` metres. Keeping `1 - s` of it keeps
+that proportion of the grid on screen **whatever the untiler did**. No amount of cleverness upstream
+of that line can survive it.
+
+### Measured, on the shipped tiles
+
+The real committed PNGs (`Caustics.png`, `SurfaceRipple.png`) through the shipped arithmetic —
+`Hash22`, `Pixelize`, `PaintUV` and the corner weights all reproduced — at **five instants each**, so
+no single `_Time` decides anything. The metric is the drawn field's autocorrelation at the cell lag:
+1.0 is "the grid, undisturbed", 0 is "no grid left".
+
+`_SurfaceTex` at `_PaintScale` — a 4 m cell:
+
+| `_UntileStrength` | repeat autocorrelation | field contrast |
+|---|---|---|
+| 0.000 | 1.0000 | 0.1305 |
+| 0.500 | 0.7110 | 0.0802 |
+| **0.644 — shipped** | **0.4706** | **0.0770** ← the contrast FLOOR |
+| 0.750 | 0.3171 | 0.0793 |
+| 1.000 | 0.1927 | 0.0979 |
+
+`_CausticTex` (2 m cell, two counter-scrolling samples multiplied) behaves the same way: 0.438 at the
+shipped strength, 0.154 at 1.0.
+
+### And mid-range is the worst place to stand
+
+`raw` and `untiled` are **decorrelated**. The variance of their mix is therefore
+`(1−s)²σ²ᵣₐw + s²σ²ᵤₙₜᵢₗₑd` — a parabola whose floor is *inside* the interval. So a strength chosen
+to "soften" the grid also flattens the layer, and **the shipped 0.644 sits at that floor**: it keeps a
+third of the lattice *and* costs 41 % of the contrast against leaving the untiler off entirely.
+
+**1.0 is strictly better on both axes than 0.644** — 59 % less repeat, 27 % more contrast — and it is
+free: a slot already pays all five fetches at any strength above zero, so the raw tap at `s = 1` is
+computed and discarded rather than saved.
+
+⚠️ **Not moved.** `_UntileStrength` is a tunable, on all nine water materials (checked: 0.644 on every
+one), and therefore the owner's. Rule 6: propose with a table, never move silently.
+
+One guess at why it is 0.644 rather than 1: before #443 the blend used two variants and jumped at
+every cell boundary, so dialing the strength back was the only way to hide that seam. #443 removed the
+seam structurally. **The number outlived the thing it was compensating for** — the same shape as the
+register's own "a number stops being true when you edit what it measured".
+
+### Two of my hypotheses died here, recorded so nobody re-runs them
+
+1. **"A partition of unity conserves the mean and destroys the variance."** True as arithmetic —
+   `Σw²` is 1.0 at a cell corner and 0.25 at a cell centre, so a blend of four *decorrelated* crops
+   should lose half its contrast at every cell centre, which would be a lattice of soft patches. It is
+   **small in practice**: the four crops are crops of one 64 px tile and are nowhere near decorrelated.
+   Measured centre/corner contrast 0.642 shipped against 0.689 with the untiler off — a real effect,
+   not the defect.
+2. **"A translated periodic function has the same period, so no strength can help."** **False.** At
+   `s = 1` the repeat falls to 0.19: per-cell phase randomisation plus the blend does decorrelate the
+   field at the cell scale. A per-cell **mirror** variant — the standard remedy when translation fails
+   — was measured too and buys almost nothing (0.193 → 0.118), so it is not proposed.
+
+### One correction to the register's own note, and one thing the plate must settle
+
+The row said the caustics run at `_PaintScale 0.25` = 4 m cells. They do not: the call site passes
+`_PaintScale * 2.0`, a **2 m** cell. The **4 m** slots are `_SurfaceTex` and `_FoamTex`.
+
+Which means the offline half cannot say whether the owner's *"~4 m"* patches are `_SurfaceTex` /
+`_FoamTex` drawing their 4 m cell, or the caustics' two 2 m lattices beating against each other at
+different scroll phases. Both are present over sand at low water, and both are cured by the same knob.
+**That is the one question left for the plate**, and it does not gate the proposal.
