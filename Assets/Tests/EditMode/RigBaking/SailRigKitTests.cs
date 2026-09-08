@@ -512,20 +512,30 @@ namespace HiddenHarbours.Tests.RigBaking
         }
 
         /// <summary>
-        /// ⭐⭐ <b>THE BLOCK, RE-MEASURED — this is what stops the ledger rotting.</b>
+        /// ⭐⭐ <b>THE LEVEL CONTRACT, RE-MEASURED — and since S0 it is SATISFIED.</b>
         ///
         /// <para>Both rigs publish <c>geometry().ids</c>, which arms the extractor's level-tag
-        /// contract: every face handed over must declare a level that <c>ids</c> names. Neither does.
-        /// The faces carry a CUTAWAY vocabulary (<c>cabin · lid · rig · under</c>) while <c>ids</c>
-        /// publishes a LEVEL vocabulary — and on the 88 the two share exactly one member, <c>rig</c>:
-        /// 449 of her faces are stamped <c>cabin</c>, which she does not declare at all.</para>
+        /// contract: every face handed over must declare a level that <c>ids</c> names. Until S0
+        /// neither did — the faces carried a CUTAWAY vocabulary (<c>cabin · lid · rig · under</c>)
+        /// while <c>ids</c> published a LEVEL one, and on the 88 the two shared exactly one member,
+        /// <c>rig</c>: 449 of her faces were stamped <c>cabin</c>, which she does not declare at all.
+        /// This test used to assert that break and was written to FAIL on the fix. It has done that
+        /// job, so it is turned around and pins the fix instead.</para>
         ///
-        /// <para><b>⚠️ This test is written to FAIL when the rigs are fixed</b>, and that is the
-        /// point. A ledger asserted in one direction only goes on explaining a problem that is gone.
-        /// When it reddens, the message is the instruction: delist and bake.</para>
+        /// <para><b>What S0 changed, and what it deliberately did not.</b> Each rig now carries the
+        /// pass-3 authoring cursor, so every face declares its level at the point it is emitted; the
+        /// three switches the rasteriser used to read off <c>lv</c> became face PROPERTIES
+        /// (<c>inside</c> / <c>lid</c> / <c>under</c>), so a level tag can no longer move a pixel —
+        /// every render is byte-identical across the change and the exported geometry did not move.
+        /// <b>The bake itself is still owed to S1.</b> These two stay on
+        /// <see cref="HullMeshFleet.BakeBlocked"/> until an editor lane runs
+        /// <c>RigMeshAssetBaker.BakeSloopsCli</c> and commits the <c>HullMeshDef</c>s, because
+        /// delisting without a committed def reddens every fixture that sweeps <c>Hulls</c>. The
+        /// ledger's reasons say exactly that, and
+        /// <see cref="BothSloopsAreOnTheBakeBlockedLedger_AndTheirRigsExist"/> keeps them honest.</para>
         /// </summary>
         [Test]
-        public void TheBlockIsStillReal_EveryLedgeredRigStillBreaksTheLevelContract()
+        public void TheLevelContractIsSatisfied_EveryFaceDeclaresALevelItsOwnIdsNames()
         {
             foreach ((string rig, string global) in new[] { (Rig30, "SloopIso"), (Rig88, "Sloop88Iso") })
             {
@@ -548,15 +558,21 @@ namespace HiddenHarbours.Tests.RigBaking
                 double bad = host.EvaluateNumber("__bad");
                 double total = host.EvaluateNumber($"{global}.faces().length");
 
-                Assert.Greater(bad, 0d,
-                    $"{global}: every face now declares a level its own geometry().ids names, so " +
-                    "RigMeshExtractor will accept her. DELIST her from HullMeshFleet.BakeBlocked, add " +
-                    "her back to OneHullPerRig as MeshOnly, and run " +
-                    "RigMeshAssetBaker.BakeSloopsCli — the entry point is already there.");
+                Assert.Greater(total, 0d,
+                    $"{global}.faces() came back empty, so `bad == 0` is vacuous. The probe is wrong, " +
+                    "not the rig — a fixture that measures a buffer can publish a lie.");
+
+                Assert.That(bad, Is.EqualTo(0d),
+                    $"{global}: {bad:0} of {total:0} faces carry no level her own geometry().ids " +
+                    "names, so RigMeshExtractor REFUSES her. It does not default, because the only " +
+                    "defensible default is 'hull', which means NEVER CULL. S0 " +
+                    "(art/sloop-face-levels) gave each rig the pass-3 authoring cursor and every " +
+                    "emission path rides it, so a face that escaped came in through a path the " +
+                    "cursor does not ride, or through a widening that built faces outside it. Stamp " +
+                    "it where it is EMITTED — never by re-deriving a tag from geometry.");
 
                 TestContext.WriteLine(
-                    $"{global}: {bad:0} of {total:0} faces ({100.0 * bad / total:0.0}%) carry no level " +
-                    "its geometry().ids declares.");
+                    $"{global}: all {total:0} faces declare a level its geometry().ids names.");
             }
         }
 

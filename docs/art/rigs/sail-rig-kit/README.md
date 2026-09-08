@@ -71,9 +71,13 @@ hull form, the bake measured for the envelope, `INTERACT` read from the geometry
 | `ANIMATION` | The 8-frame loop (flutter, irons wander, winch handle), the wave (`rock`), the door cue. |
 | `SPRITE_ENVELOPE` | Painted bbox per facing for close-hauled at max heel, the run with the boom at 86°, and stored — all inside the cell on both hulls (30: 354 × 493 of 400 × 552; 88: 1008 × 1395 of 1072 × 1504). |
 
-Two numbers to read before wiring anything: the **88 at twa 40 above ~10 kn true reads "in irons"** on the
-sprite at the polar's speed (apparent 23–24°, inside the 25° band) — `_confirm.no_go_coupling`; and the
-**displacements are canoe body only** (4 875 kg / 89 190 kg) — `_confirm.displacement`.
+Two things to read before wiring anything. First the **no-go coupling**, and the point is that its two
+thresholds are in DIFFERENT FRAMES: the polar's no-go is **twa 35, TRUE**, while the sprite's in-irons band is
+**awa 25, APPARENT**. Apparent wind draws forward as boat speed grows relative to true, so the disagreement
+bites in LIGHT air, not strong — the **88 at twa 40 reads "in irons" at the polar's speed from 4 to 14 kn true
+and clears at 16** (at twa 35, from 4 to 18, clearing at 20). Fourteen cells of her 150; four of the 30's —
+`_confirm.no_go_coupling`. Second, the **displacements are canoe body only** (4 875 kg / 89 190 kg) —
+`_confirm.displacement`.
 
 ## Rendering
 

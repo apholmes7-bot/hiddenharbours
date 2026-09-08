@@ -368,7 +368,7 @@
   }
   // laid-teak planking, swept with the deck edge: a gelcoat margin, then `perSide` planks from inner(y) out
   function planks(out,y0,y1,nseg,innerFn,o){
-    o=o||{}; const ps=o.perSide||5, mg=o.margin==null?0.12:o.margin, ex=o.lid?{lv:'lid'}:null;
+    o=o||{}; const ps=o.perSide||5, mg=o.margin==null?0.12:o.margin, ex=o.lid?{lid:1}:null;
     const zF=o.zFn||dZ, eF=o.edgeFn||((y)=>hD(y)-0.006);
     for(let i=0;i<nseg;i++){
       const ya=y0+(y1-y0)*i/nseg, yb=y0+(y1-y0)*(i+1)/nseg;
@@ -402,8 +402,27 @@
   // ---- the static mesh -----------------------------------------------------------------------------
   const F = [];
   (function build(){
+    // ---- authoring cursor: every face DECLARES the level it belongs to ---------------------------
+    // RigMeshExtractor's contract: a rig that publishes geometry().ids must stamp EVERY face with a
+    // key of that table. No default is defensible — the only one would be `hull`, which means NEVER
+    // CULL, so a missed stamp ships as a room that quietly stops opening. The cursor rides the build
+    // order, so a face declares its level at the point it is emitted and nothing is ever re-derived
+    // from geometry. `mark` carries the section's cutaway properties (inside/lid/under) alongside,
+    // because those are the RASTERISER's switches and must stay independent of the level.
+    // An explicit tag on the face itself always wins — that is how the inner skin declares which of
+    // the two accommodation levels it is lining from inside a section that is building hull.
+    let LV='hull', MARK=null;
+    const lv=(id,mark)=>{ LV=id; MARK=mark||null; };
+    F.push=function(){
+      for(let i=0;i<arguments.length;i++){
+        const f=arguments[i];
+        if(f.lv==null) f.lv=LV;
+        if(MARK) for(const k in MARK){ if(f[k]==null) f[k]=MARK[k]; }
+      }
+      return Array.prototype.push.apply(this,arguments);
+    };
     const CUT=(u0,u1,extra)=>inCabin(u0,u1)?Object.assign({cut:'cabin'},extra||{}):(extra||null);
-    const LID={lv:'lid'}, RIGX={lv:'rig'};
+    const LID={lid:1}, RIGX={lv:'rig'};
     // ---- hull skin, both sides ----
     for(const side of [-1,1]){
       for(let i=0;i<NSEG;i++){
@@ -425,15 +444,19 @@
           const a0=Math.max(u0,CAB_U0), a1=Math.min(u1,CAB_U1);
           const fs0=fAtZ(a0,LOW-0.06), fs1=fAtZ(a1,LOW-0.06), fl0=fAtZ(a0,ZLIP), fl1=fAtZ(a1,ZLIP);
           const fd0=fAtZ(a0,deckZ(a0)-0.04), fd1=fAtZ(a1,deckZ(a1)-0.04);
-          faceN(F,[skin(side,a1,fs1,1),skin(side,a0,fs0,1),skin(side,a0,fl0,1),skin(side,a1,fl1,1)],'cream',-0.6,0,{lv:'cabin'},[-side,0,0]);
+          // The inner skin runs the whole accommodation, so it declares the ROOM it lines rather
+          // than one blanket name: the deck saloon aft of its own forward bulkhead (RF.yF), the
+          // lower accommodation forward of it. Both are levels this rig publishes in geometry().ids.
+          const CLV=(yOf((a0+a1)/2)<RF.yF)?'saloon':'lower';
+          faceN(F,[skin(side,a1,fs1,1),skin(side,a0,fs0,1),skin(side,a0,fl0,1),skin(side,a1,fl1,1)],'cream',-0.6,0,{lv:CLV,inside:1},[-side,0,0]);
           for(let k=0;k<2;k++){
             const g0a=fl0+(fd0-fl0)*k/2, g1a=fl0+(fd0-fl0)*(k+1)/2, g0b=fl1+(fd1-fl1)*k/2, g1b=fl1+(fd1-fl1)*(k+1)/2;
-            faceN(F,[skin(side,a1,g0b,1),skin(side,a0,g0a,1),skin(side,a0,g1a,1),skin(side,a1,g1b,1)],'cream',-0.2,0,{lv:'cabin',cut:'cabin',cutN:onx},[-side,0,0]);
+            faceN(F,[skin(side,a1,g0b,1),skin(side,a0,g0a,1),skin(side,a0,g1a,1),skin(side,a1,g1b,1)],'cream',-0.2,0,{lv:CLV,inside:1,cut:'cabin',cutN:onx},[-side,0,0]);
           }
           const L0=skin(side,a0,fl0), L1=skin(side,a1,fl1), I0=skin(side,a0,fl0,1), I1=skin(side,a1,fl1,1);
           const up=(p)=>[p[0],p[1],p[2]+0.05];
-          faceN(F,[up(I0),up(I1),up(L1),up(L0)],'cream',1.6,-0.02,{lv:'cabin',lip:'cabin',cutN:onx},[0,0,1]);
-          faceN(F,[up(L0),up(L1),L1,L0],'cream',0.9,-0.02,{lv:'cabin',lip:'cabin',cutN:onx},[side,0,0]);
+          faceN(F,[up(I0),up(I1),up(L1),up(L0)],'cream',1.6,-0.02,{lv:CLV,inside:1,lip:'cabin',cutN:onx},[0,0,1]);
+          faceN(F,[up(L0),up(L1),L1,L0],'cream',0.9,-0.02,{lv:CLV,inside:1,lip:'cabin',cutN:onx},[side,0,0]);
         }
       }
       // hull windows: two groups of three slits + two rectangular ports (proud smoked panels)
@@ -445,6 +468,7 @@
       for(const [y0,y1] of HULL_WIN.ports) win(y0,y1,2.38,2.66);
     }
 
+    lv('hull');        // transom, quarter pieces and the stair recess: exterior silhouette
     // ---- transom: bands below the platform, quarter pieces above, the stair recess between ----
     (function(){
       const st=station(0), tz=(z)=>fracAtZ(st,z), tp=(s,f)=>skin(s,0,f), sh=st.kz+st.dep;
@@ -467,15 +491,19 @@
       box(F,[0,(STAIR.floorY+st.y)/2,PLAT-0.03],[xg-0.01,(STAIR.floorY-st.y)/2,0.03],'teak',0.15,-0.01);
     })();
 
+    lv('aft_deck');    // the planked quarters and the aft deck, back to the stern stairs
     // ---- decks: aft quarters, aft deck, side decks, foredeck (laid teak, gelcoat margins) ----
     planks(F,-13.5,AFT.y0,3,()=>STAIR.x,{perSide:4});
     planks(F,AFT.y0,AFT.y1,6,()=>0,{perSide:5});
+    lv('hull');   // side decks and margins are WASHBOARD — hull silhouette, never culled
     planks(F,CK.yH,CK.yA,9,xCoam,{perSide:3});
     planks(F,CK.yA,RF.yNose,11,innerRoof,{perSide:3,lid:true});
+    lv('foredeck');    // from the deckhouse nose forward, round the tender well to the stem
     planks(F,RF.yNose,WELL.y0,1,()=>0,{perSide:5,lid:true});
     planks(F,WELL.y0,WELL.y1,5,hxWell,{perSide:3,lid:true});
     planks(F,WELL.y1,CAB_Y1,4,()=>0,{perSide:5,lid:true});
     planks(F,CAB_Y1,13.45,2,()=>0,{perSide:4});
+    lv('aft_deck');    // the garage lids and quarter pads sit on it
     // aft-deck garage lids (smoked, steel frames) + quarter seat pads
     for(const s of [-1,1]){
       const hy=0.85, hx=0.95, yc=-9.75, xc=s*1.35, z=dZ(yc);
@@ -484,6 +512,7 @@
       box(F,[s*2.0,-12.55,dZ(-12.55)+0.06],[0.45,0.32,0.06],'uph',0.5,0.012);
     }
 
+    lv('cockpit');     // the well, its settees and both helms
     // ---- cockpit: walkway, helm sole, U-settees, tables, coaming, pedestals, helm seats ----
     (function(){
       const yA=CK.yA, yB=CK.yB, yH=CK.yH, xi=CK.xi;
@@ -541,10 +570,11 @@
       const wall=(x0,x1,z0,z1,b)=>faceN(F,[[x0,yq,z0],[x1,yq,z0],[x1,yq,z1],[x0,yq,z1]],'paint',b,0.004,{cut:'cabin',cutN:[0,-1,0]},[0,-1,0]);
       wall(-hx,hx,SOLE,DOOR.z0,-0.35);
       wall(-hx,DOOR.x0,DOOR.z0,rz,-0.25); wall(DOOR.x1,hx,DOOR.z0,rz,-0.25); wall(DOOR.x0,DOOR.x1,DOOR.z1,rz,-0.25);
-      faceN(F,[[DOOR.x0,yq+0.35,DOOR.z0],[DOOR.x1,yq+0.35,DOOR.z0],[DOOR.x1,yq+0.35,DOOR.z1],[DOOR.x0,yq+0.35,DOOR.z1]],'blk',-0.4,0,{lv:'lid'},[0,-1,0]);
+      faceN(F,[[DOOR.x0,yq+0.35,DOOR.z0],[DOOR.x1,yq+0.35,DOOR.z0],[DOOR.x1,yq+0.35,DOOR.z1],[DOOR.x0,yq+0.35,DOOR.z1]],'blk',-0.4,0,{lid:1},[0,-1,0]);
       box(F,[0,yq-0.02,DOOR.z0-0.02],[DOOR.x1+0.04,0.03,0.02],'steel',0.5,-0.02);
     })();
 
+    lv('coachroof');   // the deckhouse STRUCTURE; `saloon` is the room it covers
     // ---- deck saloon ----
     (function(){
       const N=14, yA=RF.yA, yF=RF.yF;
@@ -576,6 +606,7 @@
       box(F,[0,MAST.y,MAST.footZ+0.05],[0.26,0.30,0.05],'steel',0.4,-0.02,null,LID);
     })();
 
+    lv('foredeck');    // the well, hatches, windlass and ground tackle standing on it
     // ---- foredeck fittings: tender well, hatches, windlass, bow roller + anchor, furler, pads, tracks ----
     (function(){
       const wy0=WELL.y0, wy1=WELL.y1, NWl=5;
@@ -611,6 +642,7 @@
         box(F,[s*CHAIN.x,CHAIN.yCap,dZ(CHAIN.yCap)+0.03],[0.04,0.55,0.03],'steel',0.55,-0.02,null,LID); }
     })();
 
+    lv('rig');         // a DEDICATED class, so a cut can never take a spar with the space below it
     // ---- mast, spreaders, standing rigging, stanchions, lifelines, pulpit, pushpits ----
     (function(){
       bar(F,mastAt(MAST.footZ+0.1),mastAt(MAST.headZ),[0.17,0.11],'spar',0.25,-0.10,RIGX);
@@ -659,9 +691,10 @@
       rope(F,fl,0.022,'rope',0.15,0,RIGX);
     })();
 
+    lv('hull',{under:1});   // keel and bulb are exterior silhouette; `under` keeps them off unless asked
     // ---- fin keel + bulb (underbody, optional) ----
     (function(){
-      const U={lv:'under'};
+      const U={under:1};
       const sec=(yc,c,z,t)=>[[yc+c*0.5,z,0],[yc+c*0.1,z,t],[yc-c*0.35,z,t*0.85],[yc-c*0.5,z,0],[yc-c*0.35,z,-t*0.85],[yc+c*0.1,z,-t]];
       const A=sec(1.2,4.4,0.02,0.24), B=sec(0.9,3.0,-2.65,0.17);
       const P=(q)=>[q[2],q[0],q[1]];
@@ -674,9 +707,10 @@
       }
     })();
 
+    lv('saloon',{inside:1});   // the deck saloon, lidded by `coachroof`; `inside` keeps it off the exterior
     // ---- interior (view:'cabin'): deck saloon + lower accommodation forward ----
     (function(){
-      const C={lv:'cabin'}, CC={lv:'cabin',cut:'cabin'};
+      const C={inside:1}, CC={inside:1,cut:'cabin'};
       const half=(y,z)=>halfAtZ(uOf(y),z,1)-0.05;
       // a bulkhead shaped to the hull section (+ coachroof above the deck), with an optional door opening
       const bulkhead=(y,z0,zTop,door,mat)=>{
@@ -719,6 +753,8 @@
       // forward bulkhead + two steps down to the lower passage
       bulkhead(RF.yF,LOW-0.1,roofZ(RF.yF)-0.04,[0.5,1.7,SAL+2.0]);
       for(const [ya,yb,zt] of [[4.3,4.6,1.77],[4.6,4.9,1.49]]) box(F,[0,(ya+yb)/2,(zt+LOW)/2],[0.5,(yb-ya)/2,(zt-LOW)/2],'teak',0.1,0,null,C);
+      lv('lower',{inside:1});   // forward of the saloon's bulkhead: the lower passage, galley, VIP and crew,
+                                // lidded by `foredeck` rather than by the coachroof
       const NL=12, yl0=4.9, yl1=12.4;
       for(let i=0;i<NL;i++){ const y0=yl0+(yl1-yl0)*i/NL, y1=yl0+(yl1-yl0)*(i+1)/NL;
         faceN(F,[[-0.55,y0,LOW],[0.55,y0,LOW],[0.55,y1,LOW],[-0.55,y1,LOW]],'teak',(i%2?0.35:0.05),0,C,[0,0,1]); }
@@ -737,6 +773,7 @@
       for(const s of [-1,1]){ box(F,[s*0.5,11.95,(LOW+1.62)/2],[0.28,0.5,(1.62-LOW)/2],'teak',-0.15,0,null,C); box(F,[s*0.5,11.95,1.67],[0.26,0.48,0.05],'uph',0.45,0.01,null,C); }
       bulkhead(12.5,LOW-0.1,dZ(12.5)-0.04,null);
     })();
+    delete F.push;   // the cursor is an AUTHORING tool; F leaves build() a plain array
   })();
 
 
@@ -921,7 +958,7 @@
         for(const s of [-1,1]){
           const t=0.05; const A=q(y0,za),B=q(y0-c(za),za),C2=q(y0-c(zb),zb),Dd=q(y0,zb);
           const off=(p)=>[p[0]+s*t,p[1],p[2]];
-          const f=[off(A),off(B),off(C2),off(Dd)]; face(D,s>0?f:f.slice().reverse(),'bottom',-0.3,0,{lv:'under'});
+          const f=[off(A),off(B),off(C2),off(Dd)]; face(D,s>0?f:f.slice().reverse(),'bottom',-0.3,0,{under:1});
         } }
     }
     return D;
@@ -983,9 +1020,13 @@
   const facingN=(n,B)=> (n[1]*B.ce - n[2]*B.se) < 0;
   function facingHull(nH,B){ const r=rotV(nH[0],nH[1],nH[2],B); return facingN([r.xr,r.yr,r.zr],B); }
   function gate(f, view, opts){
-    if(f.lv==='cabin' && view!=='cabin') return false;
-    if(f.lv==='lid' && view==='cabin') return false;
-    if(f.lv==='under' && !opts.underbody) return false;
+    // The three cutaway switches are face PROPERTIES, never the level tag: `lv` is the mesh
+    // vocabulary (a key of geometry().ids) and RigMeshExtractor reads it, so a level must never be
+    // able to move a pixel. `inside` = accommodation, drawn only in the cabin view; `lid` = lifted
+    // when the cabin opens; `under` = the underbody, drawn only when asked.
+    if(f.inside && view!=='cabin') return false;
+    if(f.lid && view==='cabin') return false;
+    if(f.under && !opts.underbody) return false;
     return true;
   }
   function _paint(faces, opts, doEdge, G){
