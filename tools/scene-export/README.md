@@ -12,7 +12,7 @@ a separate, gated spike (`docs/tools/scene-editor-review.md` §9) and nothing he
 ```bash
 python3 tools/scene-export/hh_scene_export.py                 # writes tools/scene-export/packages/
 python3 tools/scene-export/hh_scene_export.py --check         # fails if the committed packages are stale
-python3 -m unittest discover -s tools/scene-export/tests -v   # 129 tests
+python3 -m unittest discover -s tools/scene-export/tests -v   # 137 tests
 ```
 
 No arguments needed and no Unity: python3 (3.8+), standard library only. It runs in a bare
@@ -60,13 +60,14 @@ hhexport/heightmap.py       R8 PNG decode, the ground iso-contour, the tide fiel
 hhexport/tide.py            the tide's DECLARED terms - sea level, a face's lip, a hull's ride
 hhexport/passages.py        the doors between regions - what the sprite walk cannot see
 hhexport/clifflines.py      the cliffs - 165 walls the package SAID it shipped and did not
+hhexport/declared.py        placed world content with no sprite - the general case
 hhexport/families.py        rig -> the editor's closed family vocabulary, exact match only
 hhexport/repo.py            GUIDs, sprite import settings, region defs, rig resolution + sha256
 hhexport/scene.py           hierarchy, world transforms, the scene's own ordering
 hhexport/package.py         the hiddenharbours.scene/1 emitter
 hhexport/provenance.py      what vintage of the world a package is a picture of
 packages/                   the committed output (regenerate with the command above)
-tests/                      129 tests: parser, rig pinning, the contract compared block-for-block
+tests/                      137 tests: parser, rig pinning, the contract compared block-for-block
                             against docs/tools/reference/sample-scene.json, the rasterised
                             layers, the tide applied from the package alone, portability,
                             determinism

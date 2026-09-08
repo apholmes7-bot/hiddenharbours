@@ -94137,6 +94137,199 @@
       "x-note": "where the game PUTS you when you arrive. arrivalPoint is the boat, disembarkPoint the walker, dockZone where the control switcher re-points. The top three are this region's default way in; namedArrivals are the others, each keyed by the name a RegionPassage in ANOTHER region asks for. A null point is authored, not missing: RegionAnchor falls back to the region's default."
     }
   ],
+  "x-declaredObjects": [
+    {
+      "x-name": "PlacedTrapService",
+      "x-path": "PlacedTrapService",
+      "pos": [0, 0],
+      "components": ["PlacedTrapService"],
+      "defs": [],
+      "x-active": true
+    },
+    {
+      "x-name": "StartingBait",
+      "x-path": "StartingBait",
+      "pos": [0, 0],
+      "components": ["StartingBait"],
+      "defs": [],
+      "x-active": true
+    },
+    {
+      "x-name": "StartingPots",
+      "x-path": "StartingPots",
+      "pos": [0, 0],
+      "components": ["StartingPots"],
+      "defs": [
+        {
+          "field": "StartingPots._config",
+          "id": null,
+          "asset": "Assets/_Project/Data/Config/GameConfig.asset"
+        }
+      ],
+      "x-active": true
+    },
+    {
+      "x-name": "StPetersWharf",
+      "x-path": "StPetersWharf",
+      "pos": [0, 0],
+      "components": ["StandablePlatform"],
+      "defs": [],
+      "x-active": true
+    },
+    {
+      "x-name": "Cleat_bollard_0",
+      "x-path": "StPetersWharf/MooringCleats/Cleat_bollard_0",
+      "pos": [212.5, -2.5],
+      "components": ["ShoreCleat"],
+      "defs": [],
+      "x-active": true
+    },
+    {
+      "x-name": "Cleat_bollard_1",
+      "x-path": "StPetersWharf/MooringCleats/Cleat_bollard_1",
+      "pos": [203.5, -2.5],
+      "components": ["ShoreCleat"],
+      "defs": [],
+      "x-active": true
+    },
+    {
+      "x-name": "Cleat_bollard_2",
+      "x-path": "StPetersWharf/MooringCleats/Cleat_bollard_2",
+      "pos": [194.5, -2.5],
+      "components": ["ShoreCleat"],
+      "defs": [],
+      "x-active": true
+    },
+    {
+      "x-name": "Cleat_bollard_3",
+      "x-path": "StPetersWharf/MooringCleats/Cleat_bollard_3",
+      "pos": [185.5, -2.5],
+      "components": ["ShoreCleat"],
+      "defs": [],
+      "x-active": true
+    },
+    {
+      "x-name": "Cleat_cleat_4",
+      "x-path": "StPetersWharf/MooringCleats/Cleat_cleat_4",
+      "pos": [209.5, -2.5],
+      "components": ["ShoreCleat"],
+      "defs": [],
+      "x-active": true
+    },
+    {
+      "x-name": "WindowGlow",
+      "x-path": "GinnyPlot/sageCottage/WindowGlow",
+      "pos": [84, 28],
+      "components": ["PreconfiguredLight"],
+      "defs": [],
+      "x-active": true
+    },
+    {
+      "x-name": "ChimneySmoke",
+      "x-path": "GinnyPlot/sageCottage/ChimneySmoke",
+      "pos": [84.6, 29.6],
+      "components": ["ChimneySmoke"],
+      "defs": [],
+      "x-active": true
+    },
+    {
+      "x-name": "Boundary",
+      "x-path": "Yards/School/Boundary",
+      "pos": [-11.878233, 32.781654],
+      "components": ["PropertyBoundary"],
+      "defs": [],
+      "x-active": true
+    },
+    {
+      "x-name": "Boundary",
+      "x-path": "Yards/WhiteFarmhouse/Boundary",
+      "pos": [20.651192, 25.641764],
+      "components": ["PropertyBoundary"],
+      "defs": [],
+      "x-active": true
+    },
+    {
+      "x-name": "Boundary",
+      "x-path": "Yards/RedSaltbox/Boundary",
+      "pos": [24.25074, 7.9667],
+      "components": ["PropertyBoundary"],
+      "defs": [],
+      "x-active": true
+    },
+    {
+      "x-name": "Boundary",
+      "x-path": "Yards/SageCottage/Boundary",
+      "pos": [9.197067, -17.109446],
+      "components": ["PropertyBoundary"],
+      "defs": [],
+      "x-active": true
+    },
+    {
+      "x-name": "Boundary",
+      "x-path": "Yards/GinnyPlot/Boundary",
+      "pos": [82.06326, 27.500963],
+      "components": ["PropertyBoundary"],
+      "defs": [],
+      "x-active": true
+    },
+    {
+      "x-name": "UtilityQuadAtTheStore",
+      "x-path": "UtilityQuadAtTheStore",
+      "pos": [1.901594, 22.11359],
+      "components": ["ParkedVehicle", "VehicleController", "VehicleDoor"],
+      "defs": [
+        {
+          "field": "ParkedVehicle._vehicle",
+          "id": "vehicle.utility_quad",
+          "asset": "Assets/_Project/Data/Vehicles/UtilityQuad.asset"
+        },
+        {
+          "field": "VehicleController._vehicle",
+          "id": "vehicle.utility_quad",
+          "asset": "Assets/_Project/Data/Vehicles/UtilityQuad.asset"
+        }
+      ],
+      "x-active": true
+    },
+    {
+      "x-name": "Trike200AtTheStore",
+      "x-path": "Trike200AtTheStore",
+      "pos": [-0.234238, 22.247078],
+      "components": ["ParkedVehicle", "VehicleController", "VehicleDoor"],
+      "defs": [
+        {
+          "field": "ParkedVehicle._vehicle",
+          "id": "vehicle.trike_200",
+          "asset": "Assets/_Project/Data/Vehicles/Trike200.asset"
+        },
+        {
+          "field": "VehicleController._vehicle",
+          "id": "vehicle.trike_200",
+          "asset": "Assets/_Project/Data/Vehicles/Trike200.asset"
+        }
+      ],
+      "x-active": true
+    },
+    {
+      "x-name": "Enduro250AtTheStore",
+      "x-path": "Enduro250AtTheStore",
+      "pos": [-2.16048, 22.36747],
+      "components": ["ParkedVehicle", "VehicleController", "VehicleDoor"],
+      "defs": [
+        {
+          "field": "ParkedVehicle._vehicle",
+          "id": "vehicle.enduro_250",
+          "asset": "Assets/_Project/Data/Vehicles/Enduro250.asset"
+        },
+        {
+          "field": "VehicleController._vehicle",
+          "id": "vehicle.enduro_250",
+          "asset": "Assets/_Project/Data/Vehicles/Enduro250.asset"
+        }
+      ],
+      "x-active": true
+    }
+  ],
   "x-rigs": [
     {
       "rig": "characterIsoRig6",
@@ -94534,6 +94727,51 @@
         "x-note": "every hull the scene declares, drawn or not. ⚠ MooredBoat is a runtime DRAWER — it builds its picture from the owner's hull def when the region loads — so a moored boat carries no SpriteRenderer in the committed scene and the entity list, which is a walk of sprites, cannot hold one. They are placed and declared all the same, so they ship here with the block TidalRide needs, and any hull that DOES draw also carries it on its entity as x-tidalRide (its pictures point at it with x-tidalRideOf rather than repeating it). draughtMetres or bedElevation may be null where the repo does not state one: null is 'no bottom under her, she can never take the ground', which is TidalRide's own reading of open water, and it is NOT zero.",
         "entitiesWithRide": 1,
         "entitiesRidingWithAHull": 5
+      },
+      "declaredObjects": {
+        "objects": 19,
+        "byComponent": {
+          "ChimneySmoke": 1,
+          "ParkedVehicle": 3,
+          "PlacedTrapService": 1,
+          "PreconfiguredLight": 1,
+          "PropertyBoundary": 5,
+          "ShoreCleat": 5,
+          "StandablePlatform": 1,
+          "StartingBait": 1,
+          "StartingPots": 1,
+          "VehicleController": 3,
+          "VehicleDoor": 3
+        },
+        "ruledOut": {
+          "?unresolved + CameraFollow + CameraZoomInput + FightStrainCamera + PersistentObject": 1,
+          "ArrivalLineSpeaker": 1,
+          "ArrivalOpening": 1,
+          "ControlSwitcher + PersistentObject": 1,
+          "DevFastTide": 1,
+          "DevToast + PersistentObject": 1,
+          "DialoguePresenter": 1,
+          "EnvironmentService + GameClock + GameRoot + HudController + PersistentObject + PlayerWallet": 1,
+          "GrassField": 1,
+          "OnboardingDirector": 1,
+          "PersistentObject + RegionSceneLoader": 1,
+          "PersistentObject + RegionTravelCoordinator": 1,
+          "RegionDisplayNameRegistrar": 1,
+          "RoutineLanes": 1,
+          "RoutineStations": 1,
+          "TerrainSplatSurface": 1,
+          "TidalTerrain": 1,
+          "WorldInteractor": 1
+        },
+        "notYetRuledOn": {},
+        "exportedElsewhere": {
+          "CliffWallSurface": 79,
+          "RegionAnchor": 1,
+          "RegionPassage": 3
+        },
+        "unnameableScripts": 0,
+        "x-rule": "an object earns a place in x-declaredObjects when it is PLACED WORLD CONTENT — when its position means something in the harbour. It must also carry no SpriteRenderer, or it is an entity already.",
+        "x-note": "⚠ `notYetRuledOn` is the one to read: a component set that reached neither the allow-list nor the ruled-out list is awaiting a decision, not silently excluded. `ruledOut` is a DECISION (the transform is an implementation detail) and reporting it as a gap would be reporting a defect where there is none. `exportedElsewhere` carries its own key — x-tidalHulls, x-passages, x-arrivals, cliffLines — with fields this general list has no room for. `unnameableScripts` counts objects whose every behaviour is a script outside Assets/ (Unity's own camera data, chiefly), which cannot be classified at all."
       },
       "passages": {
         "passages": 3,
