@@ -289,7 +289,12 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             yield return AlongsideThePier();
 
-            FaceDeckBearing(OutboardBearing());
+            // ⚠ The SEA, named as the sea — not OutboardBearing(). That reads the nearest edge of her
+            // walk box, and where the fisher stands moved when the boarding seat stopped being a
+            // world-axis offset (2026-09-08): she now lands a touch to PORT of the centreline, which on
+            // this berth is the PIER side, so "outboard" here would be the planks. A fixture about
+            // looking at the sea must say the sea.
+            FaceDeckBearing(BearingToTheNearestPlank() + 180f);
             yield return null;
             Assert.IsTrue(_switcher.BeginInteract(), "E must do something");
             yield return Settle();
