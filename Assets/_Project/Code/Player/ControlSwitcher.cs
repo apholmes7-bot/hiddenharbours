@@ -95,6 +95,12 @@ namespace HiddenHarbours.Player
         public float StepAshoreReachMetres =>
             GameServices.Config != null ? GameServices.Config.StepAshoreReachMetres : 1.5f;
 
+        /// <summary>Full width, in degrees, of the arc she must be LOOKING along for a press on deck to
+        /// mean "step ashore" (rule 6 — <c>GameConfig.StepAshoreFacingArcDegrees</c>). No config wired
+        /// falls back to the shipped 120°, the same way every other tunable here does.</summary>
+        public float StepAshoreFacingArcDegrees =>
+            GameServices.Config != null ? GameServices.Config.StepAshoreFacingArcDegrees : 120f;
+
         [Header("Disembark only onto LAND (no stepping off over water)")]
         [Tooltip("Disembarking is allowed only where the step-off point is actual standable LAND — never over " +
                  "open or submerged water. Land is detected two ways (either suffices): the authored tidal " +
@@ -519,7 +525,7 @@ namespace HiddenHarbours.Player
         public bool CanInteract() => Mode switch
         {
             ControlMode.OnFoot => WithinBoardReach() && BoardableNow(),
-            ControlMode.OnDeck => WithinHelmReach() || CanStepAshore(),
+            ControlMode.OnDeck => WithinHelmReach() || StepAshoreOnThisPress(),
             _ => true,   // at the helm → step back onto the deck, always allowed
         };
 
@@ -534,6 +540,83 @@ namespace HiddenHarbours.Player
         public bool CanStepAshore() =>
             !_carriedAboard && !BelowDecksOnTheActiveHull()
             && (InDockZone() || PlanksWithinReach(out _) || OnLand());
+
+        /// <summary>
+        /// ⭐ <b>Stepping ashore is a FACING, not a fallback</b> (owner playtest 2026-09-07):
+        /// <i>"im also close to the dock so i understand why it happens but this will be an everyday
+        /// occurance when docking so we need a smooth solution"</i>.
+        ///
+        /// <para><b>The rule.</b> A press on deck means "step ashore" only when the fisher is LOOKING at
+        /// the step-off — inside <see cref="StepAshoreFacingArcDegrees"/> centred on the way she is drawn
+        /// to be facing. It is the washboard's own rule (owner, 2026-08-23 / 09-02 — <i>"one press onto
+        /// the washboard, the next press goes inboard or outboard by FACING"</i>) applied one rung up the
+        /// ladder, and it is what makes the everyday docking press safe: alongside a wharf, E anywhere on
+        /// a small boat's deck used to end on the planks with the painter in your hand, whether or not you
+        /// meant to leave.</para>
+        ///
+        /// <para><b>Two ways it says YES without judging anything</b>, both deliberate and both
+        /// <see cref="InteractArc"/>'s own documented behaviour rather than a special case here:
+        /// <list type="bullet">
+        ///   <item><b>No place ashore to face.</b> Over a bared flat the whole hull is over land — there
+        ///   is no wharf, no bearing and no wrong way to look — so the rule does not apply. Only the two
+        ///   step-offs that name a PLACE (the authored dock landing, the planks the probe found alongside)
+        ///   can be faced, which is <see cref="TryShoreLanding"/>.</item>
+        ///   <item><b>No drawn facing to read.</b> A rig with no <see cref="DeckRiderVisual"/> — most
+        ///   EditMode fixtures, and any hull whose art draws no figure — publishes no bearing, and
+        ///   <see cref="InteractArc"/> passes an unknown facing. ⚠ The opposite default to
+        ///   <see cref="FacingOutboard"/>, on purpose: an unreadable facing must never STRAND a player on
+        ///   a boat, whereas it must never drop one in 4 m of water either. Each default is the safe
+        ///   answer for its own verb.</item>
+        /// </list></para>
+        ///
+        /// <para><b>It gates the PRESS, never the geometry.</b> <see cref="CanStepAshore"/> stays the
+        /// answer to "is there anywhere to step?", because the boarding move re-reads that rule at the far
+        /// end of its arc (<see cref="FinishBoardingMove"/>) — by which time the fisher has walked to the
+        /// rail and is facing wherever the walk left her. A move finishes the transition it started.</para>
+        /// </summary>
+        public bool FacesTheStepAshore()
+        {
+            if (Player == null) return true;
+            if (!TryShoreLanding(out Vector3 ashore)) return true;    // nowhere named ⇒ nothing to face
+            return InteractArc.Contains((Vector2)Player.position, DeckFacingWorld(),
+                                        (Vector2)ashore, StepAshoreFacingArcDegrees);
+        }
+
+        /// <summary>Both halves of the step-ashore press in one read: somewhere to step, and looking at
+        /// it. Named because the three press sites and the popup must agree on it, and a fourth spelling
+        /// of <c>CanStepAshore() &amp;&amp; FacesTheStepAshore()</c> is where they would start to
+        /// drift.</summary>
+        public bool StepAshoreOnThisPress() => CanStepAshore() && FacesTheStepAshore();
+
+        /// <summary>
+        /// Which way the fisher on this deck is DRAWN to be looking, as a world unit vector — or
+        /// <see cref="Vector2.zero"/> for "unknown", which <see cref="InteractArc"/> treats as facing
+        /// everything.
+        ///
+        /// <para>Composed, never measured: the rider's own deck bearing plus the hull's drawn heading, via
+        /// <see cref="DeckRiderFacingMath.CompassHeading"/> — the seam that exists precisely because a
+        /// facing read off motion in a moving frame spins on the spot. The injected
+        /// <see cref="ConfigureDeckFacing"/> source wins where a test has set one, for the reason it
+        /// exists: a virtual keypress is undeliverable to headless input, so the only way to ask "and
+        /// what if she were facing the wharf?" is to be able to say so.</para>
+        /// </summary>
+        private Vector2 DeckFacingWorld()
+        {
+            float deckBearing;
+            if (_deckFacing != null) deckBearing = _deckFacing();
+            else
+            {
+                // ⚠ The CACHED rider (DeckRider), not a GetComponent: the popup asks this every frame.
+                var rider = DeckRider;
+                if (rider == null) return Vector2.zero;               // no drawn facing ⇒ unknown
+                deckBearing = rider.DeckBearingDegrees;
+            }
+            if (float.IsNaN(deckBearing) || float.IsInfinity(deckBearing)) return Vector2.zero;
+
+            float compass = DeckRiderFacingMath.CompassHeading(
+                DeckWalkController.DrawnHeadingDegreesOf(Boat), deckBearing) * Mathf.Deg2Rad;
+            return new Vector2(Mathf.Sin(compass), Mathf.Cos(compass));
+        }
 
         /// <summary>
         /// ⭐ <b>Are there PLANKS alongside — a built deck close enough to her rail to step onto?</b>
@@ -649,7 +732,7 @@ namespace HiddenHarbours.Player
                     // The helm is a STATION: standing at it, E takes the helm; elsewhere on the deck,
                     // E steps ashore (when a standable step-off is there).
                     if (WithinHelmReach()) { TakeHelm(); return true; }
-                    if (CanStepAshore()) { Disembark(); return true; }
+                    if (StepAshoreOnThisPress()) { Disembark(); return true; }
                     return false;
 
                 case ControlMode.Driving:  // behind the wheel → get out at her door
@@ -719,14 +802,23 @@ namespace HiddenHarbours.Player
             // ⚠ The consult above covers BOTH routes off the deck: this move branch, and the fall-through
             // to TryInteract below when the move is switched off. Both are gated on the same two
             // predicates it is, so neither can be reached ahead of it.
-            if (onDeckAwayFromTheHelm && CanStepAshore()
+            if (onDeckAwayFromTheHelm && StepAshoreOnThisPress()
                 && BeginBoardingMove(BoardingMoveKind.Disembarking)) return true;
 
             // ⭐ …AND THEN THE RAIL (2026-09-02). The 08-25 deck ladder — helm → registry → step ashore —
             // grows one rung on the end: helm → registry → step ashore → WASHBOARD. Last on purpose. At a
             // wharf the press must still put her on the planks; going over the side is what E means only
             // when there is nowhere to step and nothing to work.
-            if (onDeckAwayFromTheHelm && TryWashboardPress()) return true;
+            //
+            // ⚠ …and "nowhere to step" is CanStepAshore, NOT the facing gate above it (2026-09-07). The
+            // ranking's own sentence is the specification: at a wharf the press must still put her on the
+            // planks. A fisher who is alongside and looking inboard has somewhere to step and has just
+            // said she does not want it — answering that press with the gunwale would be the rail
+            // outranking the wharf by the side door. So E does nothing there, which is what the owner
+            // asked for. (Where there is genuinely nowhere to step this condition is true and the rung is
+            // reached exactly as before; it also closes the case where the boarding MOVE is switched off
+            // and a declined move used to drop an ordinary wharf press onto the rail.)
+            if (onDeckAwayFromTheHelm && !CanStepAshore() && TryWashboardPress()) return true;
 
             if (TryInteract()) return true;
 
@@ -967,14 +1059,33 @@ namespace HiddenHarbours.Player
         /// in which <see cref="Disembark"/> leaves the player exactly where they stand.</returns>
         private bool TryDisembarkLanding(out Vector3 world)
         {
+            if (TryShoreLanding(out world)) return true;
+            if (Boat != null) { world = Boat.position; return true; }
+            world = Player != null ? Player.position : Vector3.zero;
+            return false;
+        }
+
+        /// <summary>
+        /// The step-off that names a PLACE ASHORE — the authored dock landing, else the planks the probe
+        /// found alongside her. Split out of <see cref="TryDisembarkLanding"/> (2026-09-07) because the
+        /// FACING rule needs exactly these two and not the third: <see cref="OnLand"/> puts the whole hull
+        /// over bared ground, and the landing it falls back to is the BOAT'S OWN ORIGIN — a bearing that
+        /// points inboard, so facing it would mean turning away from the beach to step onto it.
+        ///
+        /// <para>False therefore means "there is no wharf to look at", which is a true statement about a
+        /// boat aground on a flat and not a refusal. <see cref="TryDisembarkLanding"/> keeps its old
+        /// answer by calling this first and falling through, so the place she LANDS is unchanged in every
+        /// case.</para>
+        /// </summary>
+        private bool TryShoreLanding(out Vector3 world)
+        {
             if (InDockZone() && _disembarkPoint != null) { world = _disembarkPoint.position; return true; }
             // ⭐ The planks she is lying against, when there is no authored landing for this berth
             // (2026-09-03). Second on purpose: where a region HAS authored a disembark point, that tidy
             // spot stays the answer — a probed point is a fallback for berths nobody hand-placed one at,
             // not a replacement for one somebody did.
             if (PlanksWithinReach(out Vector3 planks)) { world = planks; return true; }
-            if (Boat != null) { world = Boat.position; return true; }
-            world = Player != null ? Player.position : Vector3.zero;
+            world = Vector3.zero;
             return false;
         }
 
@@ -2661,7 +2772,12 @@ namespace HiddenHarbours.Player
                     // in its own order. The middle rung is not offered from here: the verb states it
                     // itself on the Fixture slot, so all this branch owes it is to STAND DOWN.
                     if (WithinHelmReach()) { id = ControlStrings.IdTakeHelm; label = ControlStrings.TakeHelm; }
-                    else if (CanStepAshore() && !AFixtureWouldTakeThePress)
+                    // ⭐ …and the step off is offered only while she is LOOKING at it (2026-09-07). The
+                    // offer appearing as you turn toward the wharf is how the facing rule teaches itself:
+                    // the player reads the decision before making it, exactly as the washboard's own
+                    // offer below does. Standing down when she looks away is not a refusal to say
+                    // anything — it is the honest picture of a press that will do nothing.
+                    else if (StepAshoreOnThisPress() && !AFixtureWouldTakeThePress)
                     {
                         id = ControlStrings.IdStepAshore;
                         // Planks read as planks whichever route found them — the authored dock zone or
@@ -2672,7 +2788,12 @@ namespace HiddenHarbours.Player
                     // ⭐ …and the rail, last, exactly as BeginInteract ranks it (2026-09-02). Out on the
                     // washboard the offer names what the FACING will do, so the player reads the decision
                     // before making it rather than discovering it in the water.
-                    else if (!AFixtureWouldTakeThePress && CanReachTheWashboard(out Vector2 outward))
+                    // ⚠ …and only where there is genuinely nowhere to step, which is BeginInteract's own
+                    // guard on this rung. Without the same condition the popup would offer the gunwale to
+                    // a fisher standing alongside a wharf and looking inboard, and the press would do
+                    // nothing at all — a popup holding a second opinion about what E means.
+                    else if (!AFixtureWouldTakeThePress && !CanStepAshore()
+                             && CanReachTheWashboard(out Vector2 outward))
                     {
                         if (!_onWashboard)
                         {
