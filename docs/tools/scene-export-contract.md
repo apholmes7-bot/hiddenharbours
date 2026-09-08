@@ -234,6 +234,54 @@ stamps `textureBytesRead: false`, which is part of the compared document and is 
 statement that this run did not read the bytes. `_lfs_state_differs` names that cause. What the
 carry buys is that a pointer-only **write** does not destroy what it cannot rebuild.
 
+
+#### 6.1.2 A shallow clone states nothing about when a scene was banked (2026-09-07)
+
+The sibling hazard to §6.1, and the one that made the CI job's first honest run red in both gates
+at once.
+
+`provenance` asks `git log -1 --format=%H -- <scene>` for the commit each scene was last banked
+at. That answers with the newest commit the clone can **see** that touched the path — and **a
+depth-1 clone can see exactly one commit, so it answers HEAD for every path in the repo**, whether
+or not HEAD ever touched it. `actions/checkout` defaults to depth 1, and on a `pull_request` run
+HEAD is `refs/pull/N/merge`: a synthetic commit that exists nowhere but GitHub and is different
+every run. The package therefore pinned a sha nobody has, which failed
+`DeterminismTests.test_nothing_in_a_package_is_keyed_to_the_checked_out_commit` *and* made
+`--check` report STALE against a package that was perfectly current.
+
+Two fixes, and they are for different audiences. **CI checks out with `fetch-depth: 0`** on the
+scene-export job — measured cost, one fetch of ~800 commits and ~99 MiB of pack, no LFS objects.
+And **the exporter now states nothing rather than something false** anywhere else, because the
+README promises it "runs in a bare container" and a contributor should not meet a mysterious test
+failure there:
+
+| on a shallow clone | value |
+|---|---|
+| `sceneLastBuiltCommit`, `sceneLastBuiltDate`, `sceneLastBuiltSubject` | **null** |
+| `builderDrift.builderCommitsSinceScene` / `measuredTo` / `measuredToDate` | **null**, `exact: false` |
+| `historyIsComplete` | `false` (unchanged — it already said which state you held) |
+| `x-shallowNote` | why, and how to get the real answer |
+| `generatedAt` | HEAD's committer date, **still a valid ISO-8601** |
+
+**All three bank fields go together.** A null commit beside a live date and subject would move the
+fiction one field over rather than remove it, and the drift is measured *from* that commit, so it
+goes with them. `generatedAt` is the one thing kept: it is a **format** field that must hold a
+timestamp, nulling it would break a reader to fix a different problem, and HEAD's date is still
+deterministic and still not a wall clock — the note says it is not the vintage a full clone gives.
+
+⚠ **This does not make `--check` green on a shallow clone**, and should not: the committed packages
+carry a real commit where a shallow export carries null, so the documents differ. What it buys is
+that the difference is *honest and named* — `--check` prints a shallow-clone cause line of its own,
+the sibling of `_lfs_state_differs`, so a bare STALE never sends a reader hunting for a re-bank that
+never happened. The two causes are both printed, because a pointer-only checkout of a shallow clone
+has both.
+
+The fixture is a **real** `git clone --depth 1`, of a purpose-built two-commit repo where the scene
+was banked in the first commit and the second touches something else — so the distinction a shallow
+clone loses is present to be lost. The test asserts git's own wrong answer on that fixture before
+asserting the exporter does not ship it, and a full-clone control proves the fixture ever had the
+right answer to lose. Milliseconds, against the 99 MiB this repo's own history would cost.
+
 ### 6.2 Orientation: the index is a fact, the bearing is not
 
 `scene-writeback-contract.md` §8.1 asked for an explicit facing field, since the index was only

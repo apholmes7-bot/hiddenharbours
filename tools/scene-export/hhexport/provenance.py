@@ -42,6 +42,16 @@ def _git(repo_root, *args):
     return result.stdout.strip()
 
 
+_SHALLOW_NOTE = (
+    "shallow clone: this checkout cannot see past its graft point, so WHEN THIS SCENE WAS BANKED "
+    "IS NOT STATED HERE. `git log -1 -- <scene>` answers with the newest commit the clone can "
+    "see that touched the path, and at depth 1 that is HEAD for every path — on a CI "
+    "pull_request run, the synthetic refs/pull/N/merge commit. sceneLastBuiltCommit, its date, "
+    "its subject and the whole builderDrift are therefore null rather than a plausible falsehood, "
+    "and `generatedAt` is HEAD's committer date rather than the newest input commit's. Run "
+    "`git fetch --unshallow` (or checkout with fetch-depth: 0) and re-export for the real answer.")
+
+
 def collect(repo, region_name, scene_rel, height_map):
     root = repo.root
     scene_commit = _git(root, "log", "-1", "--format=%H", "--", scene_rel)
@@ -55,8 +65,32 @@ def collect(repo, region_name, scene_rel, height_map):
     # a floor rather than a total. Saying which it is costs one git call.
     shallow = _git(root, "rev-parse", "--is-shallow-repository") == "true"
 
+    # ⚠ AND AT DEPTH 1 IT IS NOT A FLOOR, IT IS A FICTION. `git log -1 -- <scene>` answers with
+    # the newest commit the clone can SEE that touched the path — and a depth-1 clone can see
+    # exactly one commit, so it answers HEAD for every path in the repo, whether or not HEAD ever
+    # touched it. On a CI pull_request run HEAD is `refs/pull/N/merge`, a synthetic commit nobody
+    # has locally, so the package would pin a sha that does not exist anywhere and that changes
+    # every run. Measured: a real `git clone --depth 1` of this repo answers HEAD for both scenes;
+    # with full history it answers 31f0d08a and ad852bd2, which are the true banks.
+    #
+    # So a shallow clone states NOTHING about when the scene was banked rather than stating
+    # something false. All three fields go together — a null commit beside a live date and
+    # subject would just move the fiction one field over — and the drift, which is measured FROM
+    # that commit, goes with them. `historyIsComplete` already says which state you are holding.
+    if shallow:
+        scene_commit = scene_date = scene_subject = None
+
     drift = None
-    if scene_commit:
+    if shallow:
+        drift = {
+            "builderCommitsSinceScene": None,
+            "measuredTo": None,
+            "measuredToDate": None,
+            "exact": False,
+            "builderCommits": [],
+            "x-note": _SHALLOW_NOTE,
+        }
+    elif scene_commit:
         globs = BUILDER_GLOBS.get(region_name, [])
         commits = _git(root, "rev-list", "--count", f"{scene_commit}..HEAD", "--", *globs)
         subjects = _git(root, "log", "--format=%h %s", f"{scene_commit}..HEAD", "--", *globs)
@@ -81,6 +115,10 @@ def collect(repo, region_name, scene_rel, height_map):
     # wall clock. A timestamp of the run would make the output non-reproducible and the --check
     # gate meaningless; a timestamp of the inputs says the one useful thing — what vintage of the
     # repo this is a picture of — and is identical on every re-run at that commit.
+    # ⚠ On a shallow clone the newest input commit VISIBLE is HEAD, so this is HEAD's committer
+    # date. That is still deterministic for a given checkout and still not a wall clock, but it
+    # is not the vintage of the world it claims to be — x-shallowNote below says so, and the
+    # field keeps a valid ISO-8601 value because the format requires one.
     generated_at = None
     if drift and drift.get("measuredTo"):
         generated_at = drift.get("measuredToDate") or scene_date_iso
@@ -95,6 +133,9 @@ def collect(repo, region_name, scene_rel, height_map):
         "sceneLastBuiltDate": scene_date,
         "sceneLastBuiltSubject": scene_subject,
         "sceneWorkingTreeDirty": bool(dirty),
+        # Present only where it applies, so a full-clone package is byte-for-byte what it always
+        # was and this change moves no committed bytes.
+        **({"x-shallowNote": _SHALLOW_NOTE} if shallow else {}),
         "builderDrift": drift,
         "heightMap": height_map,
         "readFrom": {
