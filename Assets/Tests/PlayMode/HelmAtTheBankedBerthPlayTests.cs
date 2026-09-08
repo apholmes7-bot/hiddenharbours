@@ -84,7 +84,18 @@ namespace HiddenHarbours.Tests.PlayMode
                 Quaternion.Euler(0f, 0f, -StPetersBuilder.DoryMooredHeadingDegrees);
             _boat = boatGo.AddComponent<BoatController>();
             var input = boatGo.AddComponent<DevBoatInput>();
-            _mooring = boatGo.AddComponent<BoatMooring>();
+
+            // ⚠ RESOLVED, never added. BoatController carries [RequireComponent(typeof(BoatMooring))],
+            // so adding the controller already put her rope on her. An AddComponent<BoatMooring>() here
+            // makes a SECOND one — and `ControlSwitcher.Mooring` resolves with GetComponent, which
+            // returns the FIRST. The switcher then hands the painter to a component the fixture is not
+            // looking at, and the fixture asserts on one that can never leave Stowed: the "he is holding
+            // her line" case fails, and — worse — the two "the line stayed stowed" cases PASS for no
+            // reason at all. A duplicate component is a fixture that measures the wrong instance.
+            BoatMooring[] ropes = boatGo.GetComponents<BoatMooring>();
+            Assert.AreEqual(1, ropes.Length,
+                "harness: she must carry exactly ONE BoatMooring — the one her controller requires");
+            _mooring = ropes[0];
 
             var hull = ScriptableObject.CreateInstance<BoatHullDef>();
             hull.Id = "boat.dory";
