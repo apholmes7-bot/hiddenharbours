@@ -137,16 +137,43 @@ namespace HiddenHarbours.App
         public Quaternion AuthoredBoatBerthRotation { get; private set; } = Quaternion.identity;
 
         /// <summary>
-        /// Record the pose <paramref name="boat"/> is standing in as this region's authored berth.
-        /// Idempotent by design — <b>only the FIRST call takes</b>, so a later arrival (which has already
-        /// moved her) can never overwrite the berth with the standoff it just parked her on.
+        /// Record this region's authored berth for the player's boat — <b>the pose the region's own scene
+        /// SERIALIZED, not the pose the boat happens to be standing in</b>.
+        ///
+        /// <para><b>⚠ The distinction is the whole rule, and getting it wrong shipped a defect on
+        /// 2026-09-08.</b> The first draft of this remembered "wherever she was the first time we saw
+        /// her". In a fixture — and in any boot order where the boat exists before her transform is
+        /// applied — that is the ORIGIN, so the region dutifully recorded (0,0,0) as her berth and every
+        /// later arrival parked her there. Four PlayMode fixtures caught it, all with the same tell: she
+        /// arrives at (0,0,0), 131 m from the mark. "Where she was first seen" is not "where the region
+        /// authored her", and no amount of guarding against the origin makes it so — a boat legitimately
+        /// authored at (0,0,0) would then be refused, and the rule would still be a guess.</para>
+        ///
+        /// <para>So the source of truth is <see cref="PersistentObject"/>'s record, taken in its own
+        /// <c>Awake</c> the instant before promotion, of <b>which scene serialized it and where</b>.
+        /// A boat a fixture merely spawned carries no such record and none is remembered — which is
+        /// exactly the fallback those four fixtures encode.</para>
+        ///
+        /// <para>Idempotent by design — <b>only the FIRST successful call takes</b>, so a later arrival
+        /// (which has already moved her) can never overwrite the berth with the standoff it just parked
+        /// her on.</para>
         /// </summary>
-        public void RememberBoatBerth(Transform boat)
+        /// <param name="boat">The persistent boat.</param>
+        /// <param name="regionSceneName">The scene this anchor's region lives in. The berth is recorded
+        /// only when the boat was authored in THAT scene — a boat another region serialized, or none did,
+        /// is not this region's mooring.</param>
+        public void RememberBoatBerth(Transform boat, string regionSceneName)
         {
-            if (HasAuthoredBoatBerth || boat == null) return;
+            if (HasAuthoredBoatBerth || boat == null || string.IsNullOrEmpty(regionSceneName)) return;
+
+            var persistent = boat.GetComponent<PersistentObject>();
+            if (persistent == null || !persistent.HasAuthoredPose) return;
+            if (!string.Equals(persistent.AuthoredInScene, regionSceneName,
+                               System.StringComparison.Ordinal)) return;
+
             HasAuthoredBoatBerth = true;
-            AuthoredBoatBerthPosition = boat.position;
-            AuthoredBoatBerthRotation = boat.rotation;
+            AuthoredBoatBerthPosition = persistent.AuthoredPosition;
+            AuthoredBoatBerthRotation = persistent.AuthoredRotation;
         }
 
         // ---- per-passage arrivals -----------------------------------------------------------

@@ -178,7 +178,7 @@ namespace HiddenHarbours.App
             // it is the only chance anything has to read the berth, because she carries PersistentObject
             // and Awake has already promoted her out of the scene for good.
             if (anchor != null && _boat != null && RegionAnchor.ForScene(previous) == null)
-                anchor.RememberBoatBerth(_boat);
+                anchor.RememberBoatBerth(_boat, next.name);
             // A key the region does not answer to is a MIS-WIRE, not a style: the player lands at the
             // default and everything looks fine, which is exactly how a passage pointed at a renamed
             // arrival stays broken. Say so once, then fall back.
