@@ -131,7 +131,24 @@ namespace HiddenHarbours.App
             Transform arrivalPoint = anchor.ArrivalPointFor(arrivalKey);
             Transform landingPoint = anchor.DisembarkPointFor(arrivalKey);
 
-            if (boat != null && arrivalPoint != null) boat.position = arrivalPoint.position;
+            // ⭐ HER BERTH BEATS THE STANDOFF (owner ruling, 2026-09-08). Where the region's own scene
+            // laid her, she returns to — position AND heading. Where it did not (a region first entered
+            // by sea), this is false and the arrival point answers exactly as it always has.
+            //
+            // ⚠ THE DEFECT THIS CLOSES, measured on a slot. St Peters' ArrivalPos is the alongside berth
+            // plus a 2 m standoff, on the moored cape islander's own berth line — and she is 12.9 m long,
+            // so her outline spans x 205.05..217.95 and simply CONTAINS the parked dory. Measured with
+            // HullFootprint: a signed gap of −3.25 m, the dory wholly inside her, and on screen the dory
+            // is invisible behind the cape's sprite (both roots at y = −5.80, so the Y-sort is a tie).
+            // The standoff was sized against a POINT, not against a HULL. The owner had said it three
+            // times; every answer before this one moved the BANKED berth, which this method overwrote on
+            // the way in — #677, #707 and #790 all measured a position the game does not use.
+            if (boat != null && anchor.HasAuthoredBoatBerth)
+            {
+                boat.position = anchor.AuthoredBoatBerthPosition;
+                boat.rotation = anchor.AuthoredBoatBerthRotation;
+            }
+            else if (boat != null && arrivalPoint != null) boat.position = arrivalPoint.position;
             if (player != null && landingPoint != null) player.position = landingPoint.position;
             if (switcher != null)
             {
@@ -154,6 +171,14 @@ namespace HiddenHarbours.App
             BindHoldProxies(next);
 
             var anchor = RegionAnchor.ForScene(next);
+
+            // ⭐ DID SHE SAIL IN, or is this the region opening under her? A hop comes FROM a region; the
+            // first activation comes from the shell, which authors no anchor. Only on that first
+            // activation is the boat still standing where the region's scene laid her — one moment, and
+            // it is the only chance anything has to read the berth, because she carries PersistentObject
+            // and Awake has already promoted her out of the scene for good.
+            if (anchor != null && _boat != null && RegionAnchor.ForScene(previous) == null)
+                anchor.RememberBoatBerth(_boat, next.name);
             // A key the region does not answer to is a MIS-WIRE, not a style: the player lands at the
             // default and everything looks fine, which is exactly how a passage pointed at a renamed
             // arrival stays broken. Say so once, then fall back.
