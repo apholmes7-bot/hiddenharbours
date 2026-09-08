@@ -961,6 +961,22 @@ namespace HiddenHarbours.Tests.PlayMode
                 // The same berth with nothing changed but her HEADING — the free half of the fix.
                 ("…that berth merely laid alongside",
                  HullFootprint.FromHeading(new Vector2(215f, 3.15f), 270f, 4.5f, 0.85f)),
+
+                // ⭐ 2026-09-07: the owner said it a THIRD time, so the candidates he could be moved to
+                // are measured against the same track rather than argued about. These are DERIVED (the
+                // three above are historical literals and must stay literals): they are the rows of
+                // StPetersDoryBerthTests.TheBerthCandidates_AreSurveyed, so the chart and the water
+                // report the same berths. What the chart already says: every one of them that floats
+                // clears the COMMANDED path by the identical 6.80 m, because the separation is the
+                // pier's own 6 m width plus two fender gaps and not where along the face she lies. If
+                // the sailed track disagrees, this is the line that will say so.
+                ("A — north face, one hull west of the head", NorthFaceBerth(4.5f)),
+                ("B — north face, abreast the ladder",
+                 HullFootprint.FromHeading(
+                     new Vector2(StPetersWharf.LadderPosition().x, NorthFaceBerthY),
+                     StPetersBuilder.DoryMooredHeadingDegrees,
+                     StPetersBuilder.DoryLengthMetres, StPetersBuilder.DoryHalfBeamMetres)),
+                ("C — north face, two hulls west of the head", NorthFaceBerth(9f)),
             };
             var candWorst = new float[candidates.Length];
             for (int i = 0; i < candWorst.Length; i++) candWorst[i] = float.MaxValue;
@@ -1065,5 +1081,20 @@ namespace HiddenHarbours.Tests.PlayMode
         /// the marks because she is the one obstacle that is a HULL — measured outline against outline,
         /// where a buoy is honestly a circle.</summary>
         private const string DoryKey = "the moored dory";
+
+        /// <summary>The y a hull of the dory's beam lies on alongside the pier's NORTH face — the face,
+        /// the fendering gap and her own half-beam, the same three terms in the same order the berth
+        /// itself is derived from. Derived so a re-sited pier moves the candidates with it.</summary>
+        private static float NorthFaceBerthY =>
+            StPetersWharf.NorthFaceY + StPetersBuilder.AlongsideFenderGapMetres
+            + StPetersBuilder.DoryHalfBeamMetres;
+
+        /// <summary>A candidate berth <paramref name="westOfTheHead"/> metres in from the pier head,
+        /// lying alongside the north face on the pier's own axis.</summary>
+        private static HullFootprint NorthFaceBerth(float westOfTheHead) =>
+            HullFootprint.FromHeading(
+                new Vector2(StPetersWharf.DeckFootprint().xMax - 0.5f - westOfTheHead, NorthFaceBerthY),
+                StPetersBuilder.DoryMooredHeadingDegrees,
+                StPetersBuilder.DoryLengthMetres, StPetersBuilder.DoryHalfBeamMetres);
     }
 }

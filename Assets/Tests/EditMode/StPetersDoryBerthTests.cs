@@ -1,8 +1,10 @@
+using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
 using HiddenHarbours.Core;
 using HiddenHarbours.Boats;
 using HiddenHarbours.World;
+using HiddenHarbours.App;
 using HiddenHarbours.App.Editor;
 
 namespace HiddenHarbours.Tests.EditMode
@@ -47,6 +49,33 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.IsNotNull(config, $"the shipped {GameConfigAssetPath} must exist — this berth's " +
                                          "accessibility is measured against the owner's own reach");
                 return config.BoardReachMetres;
+            }
+        }
+
+        /// <summary>The owner's step-ashore reach, read from the same shipped asset and for the same
+        /// reason. ⚠ It is measured from her WALKABLE deck edge, not her outline — a hull's walking strip
+        /// is set in from her rail — so a berth's step-ashore column is
+        /// <c>(half-beam − walkable half-beam) + the gap to the planks</c>.</summary>
+        private static float StepAshoreReachMetres
+        {
+            get
+            {
+                var config = UnityEditor.AssetDatabase.LoadAssetAtPath<GameConfig>(GameConfigAssetPath);
+                Assert.IsNotNull(config, $"the shipped {GameConfigAssetPath} must exist");
+                return config.StepAshoreReachMetres;
+            }
+        }
+
+        /// <summary>Her authored walkable half-beam — the strip a fisher may stand on, inset from her
+        /// rail. Read off her own deck data rather than restated here.</summary>
+        private static float WalkableHalfBeamMetres
+        {
+            get
+            {
+                var deck = UnityEditor.AssetDatabase.LoadAssetAtPath<BoatDeckDef>(
+                    "Assets/_Project/Data/Boats/Decks/DoryIso.asset");
+                Assert.IsNotNull(deck, "the starter dory's authored deck must exist");
+                return deck.WalkHalfExtents.x;
             }
         }
 
@@ -280,5 +309,191 @@ namespace HiddenHarbours.Tests.EditMode
         private static float Extent(HullFootprint her, Vector2 axis) =>
             her.HalfLength * Mathf.Abs(Vector2.Dot(axis, her.BowDirection))
             + her.HalfBeam * Mathf.Abs(Vector2.Dot(axis, her.StarboardDirection));
+
+        // =============================================================================================
+        //  4. ⭐ THE ARRIVAL'S OWN PATH — she is not in the way of the boat she came in on (2026-09-07)
+        // =============================================================================================
+
+        /// <summary>
+        /// ⭐ <b>The cape's COMMANDED path, walked, against the dory's outline.</b>
+        ///
+        /// <para><b>Why this is a path and not a point.</b> The owner has now said three times that the
+        /// demo dory is in the way of the arriving boat (2026-08-27, 09-02, 09-07). Every answer before
+        /// this one measured the berth against a POSITION — the arrival's, the dock zone's — and a boat
+        /// is not where she stops, she is everywhere she goes on the way. So this walks the route the
+        /// region actually authors, with the last mark swapped for the approach GATE exactly as
+        /// <see cref="BerthingPilot"/>'s constructor swaps it, then the gate's station, then the berth,
+        /// and holds the dory's outline against the cape's at every pose.</para>
+        ///
+        /// <para><b>⚠ What this is NOT.</b> It is the path she is COMMANDED along, not the one she
+        /// sails: a 12.9 m hull on a 17.7 m turning circle cuts inside her own route at the corners, and
+        /// clearance on the chart is not clearance in the water — that is the 2026-08-27 lesson in one
+        /// sentence. The sailed track is measured every frame by
+        /// <c>ArrivalOverRealTerrainPlayTests.SheClearsEveryMarkOnTheWayIn_AndTheMooredDory</c>, and that
+        /// is the number a berth is chosen on. This guard is the cheap, always-run half: it cannot pass
+        /// a berth the chart already condemns, and it needs no GPU to say so.</para>
+        /// </summary>
+        [Test]
+        public void SheIsClearOfTheArrivalsCommandedPath()
+        {
+            HullFootprint her = HerBerth();
+            float worst = WorstGapOverTheApproach(her, out Vector2 where, out float capeHeading);
+
+            Assert.Greater(worst, StPetersBuilder.AlongsideFenderGapMetres,
+                $"the arrival's outline comes within {worst:F2} m of the dory's on the commanded path — " +
+                $"nearest with the cape at ({where.x:F2}, {where.y:F2}) on {capeHeading:F0}°. A moored " +
+                $"boat is owed at least the fendering gap " +
+                $"({StPetersBuilder.AlongsideFenderGapMetres:F2} m) of clear water from a hull that is " +
+                "being steered past her.");
+
+            Debug.Log($"[dory-berth] the arrival's commanded path clears her by {worst:F2} m " +
+                      $"outline-to-outline (nearest with the cape at ({where.x:F2}, {where.y:F2}) on " +
+                      $"{capeHeading:F0}°).");
+        }
+
+        /// <summary>
+        /// 📏 <b>The berth survey the owner chooses from.</b> Every candidate against the four things a
+        /// berth for this dory has to be: clear of the arrival, a short walk from where the player steps
+        /// ashore, wet at spring low, and alongside something you can step onto. Logged, not asserted —
+        /// the numbers are the finding, and the row that ships is
+        /// <see cref="StPetersBuilder.DoryMooredPos"/>.
+        /// </summary>
+        [Test]
+        public void TheBerthCandidates_AreSurveyed()
+        {
+            Rect deck = StPetersWharf.DeckFootprint();
+            float faceY = StPetersWharf.NorthFaceY + StPetersBuilder.AlongsideFenderGapMetres
+                          + StPetersBuilder.DoryHalfBeamMetres;
+            float southY = StPetersWharf.MooringFaceY - StPetersBuilder.AlongsideFenderGapMetres
+                           - StPetersBuilder.DoryHalfBeamMetres;
+            var ashore = new Vector2(StPetersBuilder.DisembarkPos.x, StPetersBuilder.DisembarkPos.y);
+
+            HullFootprint cape = HullFootprint.FromHeading(
+                new Vector2(StPetersBuilder.DockZonePos.x, StPetersBuilder.DockZonePos.y),
+                StPetersArrivalOpening.BerthHeadingDegrees(),
+                StPetersBuilder.ArrivalHullLengthMetres, StPetersBuilder.ArrivalHullHalfBeamMetres);
+
+            var rows = new (string what, Vector2 at)[]
+            {
+                ("TODAY — north face, at the pilehead",
+                 new Vector2(StPetersBuilder.DoryMooredPos.x, StPetersBuilder.DoryMooredPos.y)),
+                ("A — north face, one hull west of the head",
+                 new Vector2(deck.xMax - 0.5f - StPetersBuilder.DoryLengthMetres, faceY)),
+                ("B — north face, abreast the ladder",
+                 new Vector2(StPetersWharf.LadderPosition().x, faceY)),
+                ("C — north face, two hulls west of the head",
+                 new Vector2(deck.xMax - 0.5f - 2f * StPetersBuilder.DoryLengthMetres, faceY)),
+                // Why the working face is not an option: derived from where the cape's own bow lies,
+                // so it stays the honest 'just west of her' spot if her berth ever moves.
+                ("D — SOUTH face, just west of the cape",
+                 new Vector2(cape.BowPoint.x - StPetersBuilder.DoryLengthMetres, southY)),
+            };
+
+            var said = new System.Text.StringBuilder();
+            said.Append($"[dory-berth] candidates (spring low {SpringLow:F2} m, draught ");
+            said.Append($"{Dory.DraughtMeters:F2} m, fender gap ");
+            said.Append($"{StPetersBuilder.AlongsideFenderGapMetres:F2} m). 'clear' = outline-to-outline ");
+            said.Append("over the arrival's COMMANDED path; 'toCape' = to her berthed outline; 'walk' = ");
+            said.Append("from the disembark point to the dory's outline; 'planks' = to the wharf deck.");
+            said.Append('\n');
+            said.Append($"  {"berth",-44}{"clear",8}{"toCape",8}{"walk",8}{"bed",8}{"depth",8}" +
+                        $"{"planks",8}{"stepOff",9}");
+            said.Append('\n');
+
+            foreach ((string what, Vector2 at) in rows)
+            {
+                HullFootprint her = HullFootprint.FromHeading(
+                    at, StPetersBuilder.DoryMooredHeadingDegrees,
+                    StPetersBuilder.DoryLengthMetres, StPetersBuilder.DoryHalfBeamMetres);
+                float bed = WorstBedUnder(her);
+                said.Append($"  {what,-44}{WorstGapOverTheApproach(her, out _, out _),8:F2}");
+                said.Append($"{cape.SignedGapTo(her),8:F2}{her.DistanceTo(ashore),8:F2}");
+                // ⭐ column (d): is there a step ashore from her DECK? The reach is measured from
+                // her walkable strip, which is inset from her rail — so the span it must cover is
+                // that inset plus the water between her rail and the planks.
+                float toPlanks = GapToTheDeck(her, deck);
+                float stepOff = (StPetersBuilder.DoryHalfBeamMetres - WalkableHalfBeamMetres) + toPlanks;
+                said.Append($"{bed,8:F2}{SpringLow - bed,8:F2}{toPlanks,8:F2}");
+                said.Append($"{stepOff,6:F2}{(stepOff <= StepAshoreReachMetres ? " ok" : " NO"),3}");
+                said.Append('\n');
+            }
+
+            Debug.Log(said.ToString());
+            Assert.Pass("a survey, not a claim");
+        }
+
+        /// <summary>
+        /// The arrival's COMMANDED path as poses — the region's own route with the berth swapped for the
+        /// gate (<see cref="BerthingPilot"/>'s own substitution), the gate's station, and the berth. The
+        /// heading is the leg's, and it is swept through at each mark: a hull standing still while her
+        /// bow comes round is the worst case for a stern that swings, and it costs nothing.
+        /// </summary>
+        private static List<(Vector2 at, float heading)> CommandedApproach()
+        {
+            Vector2[] route = StPetersArrivalOpening.Route();
+            Vector2 berthPos = StPetersArrivalOpening.Berth();
+            float berthHeading = StPetersArrivalOpening.BerthHeadingDegrees();
+            BerthPilot.Settings alongside = BerthPilot.Settings.Default;
+            BerthPilot.Berth berth = BerthPilot.Berth.FromShorePoint(
+                berthPos, berthHeading, StPetersArrivalOpening.StepAshore(),
+                StPetersBuilder.ArrivalHullLengthMetres);
+
+            var marks = new List<Vector2>(route);
+            marks[marks.Count - 1] = BerthPilot.Gate(berth, alongside);
+            marks.Add(berthPos + berth.Seaward * alongside.GateStandoffMetres);
+            marks.Add(berthPos);
+
+            var poses = new List<(Vector2, float)>();
+            for (int i = 0; i + 1 < marks.Count; i++)
+            {
+                Vector2 a = marks[i], b = marks[i + 1];
+                float leg = i >= marks.Count - 3 ? berthHeading : ArrivalPilot.CompassOf(b - a);
+                int steps = Mathf.Max(2, Mathf.CeilToInt(Vector2.Distance(a, b) / 0.5f));
+                for (int s = 0; s <= steps; s++) poses.Add((Vector2.Lerp(a, b, s / (float)steps), leg));
+                if (i + 2 >= marks.Count) continue;
+                float next = i + 1 >= marks.Count - 3
+                    ? berthHeading : ArrivalPilot.CompassOf(marks[i + 2] - b);
+                for (int s = 0; s <= 24; s++) poses.Add((b, Mathf.LerpAngle(leg, next, s / 24f)));
+            }
+            return poses;
+        }
+
+        /// <summary>The tightest outline-to-outline gap between the arrival and <paramref name="her"/>
+        /// anywhere on the commanded path, and where the cape was when it happened.</summary>
+        private static float WorstGapOverTheApproach(HullFootprint her, out Vector2 where,
+                                                     out float capeHeading)
+        {
+            where = Vector2.zero;
+            capeHeading = 0f;
+            float worst = float.MaxValue;
+            foreach ((Vector2 at, float heading) in CommandedApproach())
+            {
+                HullFootprint cape = HullFootprint.FromHeading(
+                    at, heading, StPetersBuilder.ArrivalHullLengthMetres,
+                    StPetersBuilder.ArrivalHullHalfBeamMetres);
+                float gap = cape.SignedGapTo(her);
+                if (gap >= worst) continue;
+                worst = gap; where = at; capeHeading = heading;
+            }
+            return worst;
+        }
+
+        /// <summary>How far her outline lies off the wharf deck's edge — the fendering gap, where she is
+        /// lying against a face.</summary>
+        private static float GapToTheDeck(HullFootprint her, Rect deck)
+        {
+            float best = float.MaxValue;
+            const int steps = 240;
+            for (int i = 0; i <= steps; i++)
+            {
+                float tx = Mathf.Lerp(deck.xMin, deck.xMax, i / (float)steps);
+                float ty = Mathf.Lerp(deck.yMin, deck.yMax, i / (float)steps);
+                best = Mathf.Min(best, her.DistanceTo(new Vector2(tx, deck.yMin)));
+                best = Mathf.Min(best, her.DistanceTo(new Vector2(tx, deck.yMax)));
+                best = Mathf.Min(best, her.DistanceTo(new Vector2(deck.xMin, ty)));
+                best = Mathf.Min(best, her.DistanceTo(new Vector2(deck.xMax, ty)));
+            }
+            return best;
+        }
     }
 }
