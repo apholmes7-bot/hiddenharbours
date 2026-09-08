@@ -253,12 +253,23 @@ namespace HiddenHarbours.Player
         /// The presenter to read THIS frame: the host's current one when the skinner has published one
         /// (so a hull swapped under the player's feet — the dev picker does exactly that — is never read
         /// through a stale presenter), else the one resolved at Bind. No allocation on the hot path.
+        ///
+        /// <para><b>⭐ …and then the same last resort the STATIC twins take</b> (2026-09-08). This used
+        /// to stop at the bind-time cache, while <see cref="DrawnHeadingDegreesOf"/> and
+        /// <see cref="BakeElevationDegreesOf"/> — the reads the switcher's helm and boarding stations go
+        /// through — fall through to <see cref="BoatHullPresenterHost.Resolve"/>. Two readers of ONE
+        /// fact with different last resorts: on any rig where the host has not published a presenter and
+        /// the bind happened before the skinner did, the stations project through the artwork's own
+        /// elevation while the walk they hand the answer to un-projects through the PLAN VIEW, and a
+        /// seat comes out 0.36 m from where it was aimed. Whatever a hull's picture is drawn at, every
+        /// read of it must be the same read — that is the whole of #789, one method further in.</para>
         /// </summary>
         private IBoatHullPresenter LiveHull()
         {
             if (_boatRoot == null) return _hull;
             var host = _boatRoot.GetComponent<BoatHullPresenterHost>();
-            return (host != null && host.Presenter != null) ? host.Presenter : _hull;
+            if (host != null && host.Presenter != null) return host.Presenter;
+            return _hull != null ? _hull : BoatHullPresenterHost.Resolve(_boatRoot.gameObject);
         }
 
         /// <summary>The deck areas to clamp against THIS frame — the same live-read discipline as

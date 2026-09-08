@@ -168,6 +168,50 @@ namespace HiddenHarbours.Tests.EditMode
                       $"y={seat.y:F5} — {apart:F5} m of keel apart.");
         }
 
+        /// <summary>
+        /// ⭐ <b>ONE FACT, ONE READER: the walk must settle her where the station aimed her.</b>
+        ///
+        /// <para>The switcher projects the seat through <c>DeckWalkController.BakeElevationDegreesOf</c>
+        /// — the STATIC read, which falls through to <c>BoatHullPresenterHost.Resolve</c>. The walk it
+        /// hands the answer to un-projects through <c>LiveHull()</c>, which until 2026-09-08 stopped at
+        /// its bind-time cache. Two readers of one fact with different last resorts, and a seat aimed
+        /// through the artwork's 40° can be un-projected through the PLAN VIEW.</para>
+        ///
+        /// <para><b>This is how that shows up as a number.</b> #794's CI measured the 180° seat 0.911 m
+        /// from the old one where this fixture's own arithmetic predicted 1.275 m — a 0.364 m gap that
+        /// is exactly the deck's own lift, un-projected through the wrong camera. So rather than assert
+        /// the elevation (which nothing can read from outside), this asserts the thing that MATTERS and
+        /// is observable: <b>where she actually stands equals where the station aimed her</b>, computed
+        /// through the shipped <see cref="DeckWalkController.SeedDeckLocalPure"/> at the elevation the
+        /// static read resolves. If the two ever disagree again the message prints both candidate
+        /// answers, so the next person gets the cause and not just a delta.</para>
+        /// </summary>
+        [Test]
+        public void AtEveryHeading_TheWalkSettlesHerWhereTheStationAimedHer()
+        {
+            foreach (float heading in Headings)
+            {
+                Rig rig = Build(heading);
+                Assert.IsTrue(rig.Switcher.TryInteract(), $"at {heading}° she boards");
+
+                Vector2 aimed = ProjectedSeat(rig);
+                Vector2 wanted = Settle(rig, aimed, heading);                 // through the artwork's own bake
+                Vector2 throughThePlanView = SettleAt(aimed, heading, DeckAreaMath.PlanViewElevationDegrees);
+                Vector2 stood = rig.Walk.DeckLocalPosition;
+
+                Assert.AreEqual(wanted.x, stood.x, 1e-3f,
+                    $"at {heading}° she stands at {stood} where the station aimed her at {wanted}. " +
+                    $"Through the plan view that same aim settles at {throughThePlanView} — if THAT is " +
+                    "where she is, the walk and the station are reading the hull's elevation " +
+                    "differently, which is the defect this case exists for.");
+                Assert.AreEqual(wanted.y, stood.y, 1e-3f,
+                    $"at {heading}° she stands at {stood} where the station aimed her at {wanted} " +
+                    $"(the plan view would give {throughThePlanView}).");
+
+                Destroy(rig);
+            }
+        }
+
         /// <summary>The seat names a place on the boat you can point at: 0.4 drawn metres with her bow
         /// north is 0.62 m of real hull, because the artwork is baked at 40°.</summary>
         [Test]
@@ -190,9 +234,14 @@ namespace HiddenHarbours.Tests.EditMode
         /// (<see cref="DeckWalkController.SeedDeckLocalPure"/>), which inverts the projection against the
         /// deck's own height plane rather than assuming a flat sole.</summary>
         private Vector2 Settle(Rig rig, Vector2 worldRelative, float heading)
+            => SettleAt(worldRelative, heading, BakeElevationDeg);
+
+        /// <summary>The same settle at a stated elevation — so a disagreement can NAME which camera the
+        /// other reader used instead of merely reporting a distance.</summary>
+        private Vector2 SettleAt(Vector2 worldRelative, float heading, float elevation)
         {
             int hint = -1;
-            return DeckWalkController.SeedDeckLocalPure(worldRelative, heading, BakeElevationDeg,
+            return DeckWalkController.SeedDeckLocalPure(worldRelative, heading, elevation,
                                                         _deck, false, ref hint, out float _);
         }
 
