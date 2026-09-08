@@ -14,6 +14,7 @@ import math
 import os
 import re
 import tempfile
+import types
 import subprocess
 import sys
 import unittest
@@ -2634,3 +2635,141 @@ class DeclaredObjectTests(unittest.TestCase):
         for name, document in self.documents.items():
             self.assertEqual(package.dumps(document["x-declaredObjects"]),
                              package.dumps(again[name]["x-declaredObjects"]), name)
+
+
+class ShallowProvenanceTests(unittest.TestCase):
+    """A shallow clone must state NOTHING about when a scene was banked, not something false.
+
+    `git log -1 -- <scene>` answers with the newest commit the clone can SEE that touched the
+    path. A depth-1 clone can see exactly one commit, so it answers HEAD for every path in the
+    repo — whether or not HEAD ever touched it. On a CI `pull_request` run HEAD is
+    `refs/pull/N/merge`, a synthetic commit nobody has locally, so the package pinned a sha that
+    exists nowhere and changed every run: `--check` reported STALE and
+    `test_nothing_in_a_package_is_keyed_to_the_checked_out_commit` failed. That is how #773 was
+    found. `fetch-depth: 0` fixed CI; this makes the exporter honest anywhere.
+
+    The fixture is a REAL shallow clone — `git clone --depth 1` of a purpose-built two-commit
+    repo — rather than a mock of one, because the whole bug lives in what git actually answers.
+    It is tiny, so it costs milliseconds rather than the 99 MiB this repo's own history would.
+    """
+
+    SCENE = "Assets/_Project/Scenes/Fake.unity"
+
+    @staticmethod
+    def _git(cwd, *args):
+        result = subprocess.run(("git",) + args, cwd=cwd, capture_output=True,
+                                text=True, encoding="utf-8", errors="replace")
+        assert result.returncode == 0, f"git {' '.join(args)}: {result.stderr}"
+        return result.stdout.strip()
+
+    def _two_commit_repo(self, root):
+        """A repo where the scene was banked in the FIRST commit and the SECOND touches something
+        else — so 'the commit that banked the scene' and HEAD are different, which is the whole
+        distinction a shallow clone loses."""
+        os.makedirs(os.path.join(root, "Assets", "_Project", "Scenes"))
+        self._git(root, "init", "-q", "-b", "main")
+        self._git(root, "config", "user.email", "t@example.com")
+        self._git(root, "config", "user.name", "t")
+        with open(os.path.join(root, self.SCENE), "w", encoding="utf-8") as handle:
+            handle.write("%YAML 1.1\n")
+        self._git(root, "add", "-A")
+        self._git(root, "commit", "-qm", "bank the scene")
+        banked = self._git(root, "rev-parse", "HEAD")
+        with open(os.path.join(root, "unrelated.txt"), "w", encoding="utf-8") as handle:
+            handle.write("later\n")
+        self._git(root, "add", "-A")
+        self._git(root, "commit", "-qm", "something else entirely")
+        return banked, self._git(root, "rev-parse", "HEAD")
+
+    def test_a_full_clone_names_the_commit_that_banked_the_scene(self):
+        """The control. Without it, the shallow assertion below would pass on a fixture that
+        never had the right answer to lose."""
+        with tempfile.TemporaryDirectory() as root:
+            banked, head = self._two_commit_repo(root)
+            self.assertNotEqual(banked, head)
+            out = provenance.collect(
+                types.SimpleNamespace(root=root), "NineMileCreek", self.SCENE, None)
+            self.assertTrue(out["historyIsComplete"])
+            self.assertEqual(out["sceneLastBuiltCommit"], banked)
+            self.assertNotEqual(out["sceneLastBuiltCommit"], head)
+            self.assertEqual(out["sceneLastBuiltSubject"], "bank the scene")
+            self.assertNotIn("x-shallowNote", out)
+            self.assertIsNotNone(out["builderDrift"]["measuredTo"])
+
+    def test_a_shallow_clone_states_nothing_rather_than_head(self):
+        """⭐ The fix. Before it, every one of these came back as HEAD — a commit that never
+        touched the scene, and on a PR run one that exists nowhere but GitHub."""
+        with tempfile.TemporaryDirectory() as origin, tempfile.TemporaryDirectory() as shallow:
+            banked, head = self._two_commit_repo(origin)
+            target = os.path.join(shallow, "clone")
+            self._git(shallow, "clone", "-q", "--depth", "1",
+                      "file://" + origin.replace("\\", "/"), target)
+            self.assertEqual(self._git(target, "rev-parse", "--is-shallow-repository"), "true")
+            # The bug, demonstrated on the fixture before the assertion that it is not shipped:
+            # git itself answers HEAD for a path HEAD never touched.
+            self.assertEqual(
+                self._git(target, "log", "-1", "--format=%H", "--", self.SCENE),
+                self._git(target, "rev-parse", "HEAD"),
+                "the fixture is not reproducing the shallow behaviour this test is about")
+
+            out = provenance.collect(
+                types.SimpleNamespace(root=target), "NineMileCreek", self.SCENE, None)
+            self.assertFalse(out["historyIsComplete"])
+            for field in ("sceneLastBuiltCommit", "sceneLastBuiltDate", "sceneLastBuiltSubject"):
+                self.assertIsNone(out[field], f"{field} still states something")
+            drift = out["builderDrift"]
+            for field in ("builderCommitsSinceScene", "measuredTo", "measuredToDate"):
+                self.assertIsNone(drift[field], f"builderDrift.{field} still states something")
+            self.assertFalse(drift["exact"])
+            self.assertIn("shallow clone", out["x-shallowNote"])
+            self.assertIn("fetch-depth", out["x-shallowNote"])
+            self.assertEqual(drift["x-note"], out["x-shallowNote"])
+
+            # And the point of all of it: nothing in the block is the checked-out commit.
+            blob = package.dumps(out)
+            self.assertNotIn(self._git(target, "rev-parse", "HEAD"), blob)
+            self.assertNotIn(banked[:12], blob, "a shallow clone cannot know the bank commit")
+
+    def test_generated_at_stays_a_valid_timestamp_on_a_shallow_clone(self):
+        """`generatedAt` is a FORMAT field and must remain ISO-8601 — nulling it would break a
+        reader to fix a different problem. On a shallow clone it is HEAD's committer date, which
+        is still deterministic and still not a wall clock; the note says it is not the vintage it
+        would be on a full clone."""
+        with tempfile.TemporaryDirectory() as origin, tempfile.TemporaryDirectory() as shallow:
+            self._two_commit_repo(origin)
+            target = os.path.join(shallow, "clone")
+            self._git(shallow, "clone", "-q", "--depth", "1",
+                      "file://" + origin.replace("\\", "/"), target)
+            out = provenance.collect(
+                types.SimpleNamespace(root=target), "NineMileCreek", self.SCENE, None)
+            self.assertRegex(out["generatedAt"], r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$")
+            self.assertIn("generatedAt", out["x-shallowNote"])
+
+    def test_check_names_the_shallow_clone_as_its_own_cause(self):
+        """A bare STALE sends a reader hunting for a scene re-bank that never happened — the same
+        trap `_lfs_state_differs` exists to close, and this is its sibling."""
+        committed = {"x-provenance": {"historyIsComplete": True}}
+        fresh = package.dumps({"x-provenance": {"historyIsComplete": False}})
+        with tempfile.TemporaryDirectory() as out:
+            target = os.path.join(out, "Region.scene.json")
+            with open(target, "w", encoding="utf-8") as handle:
+                handle.write(package.dumps(committed))
+            cause = hh_scene_export._shallow_history_differs(
+                [("Region.scene.json", fresh)], out)
+        self.assertIsNotNone(cause, "a flipped historyIsComplete was not named")
+        self.assertIn("SHALLOW", cause)
+        self.assertIn("fetch-depth", cause)
+        self.assertIn("not a stale scene", cause)
+
+    def test_the_cause_is_silent_when_the_history_state_matches(self):
+        """It reports a DIFFERENCE, not a state. Printing it on every shallow run — including one
+        compared against an equally shallow package — would make it noise, and noise is how a
+        real cause line stops being read."""
+        for state in (True, False):
+            with tempfile.TemporaryDirectory() as out:
+                doc = {"x-provenance": {"historyIsComplete": state}}
+                target = os.path.join(out, "Region.scene.json")
+                with open(target, "w", encoding="utf-8") as handle:
+                    handle.write(package.dumps(doc))
+                self.assertIsNone(hh_scene_export._shallow_history_differs(
+                    [("Region.scene.json", package.dumps(doc))], out), f"state={state}")

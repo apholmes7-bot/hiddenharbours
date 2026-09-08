@@ -146,9 +146,14 @@ def main(argv=None):
     if args.check:
         if failures:
             print("STALE: " + ", ".join(failures), file=sys.stderr)
-            cause = _lfs_state_differs(written, out_dir)
-            if cause:
-                print(cause, file=sys.stderr)
+            # Two causes are about the CHECKOUT rather than the commit, and each reads as an
+            # ordinary STALE without a name on it. Both are printed: a pointer-only checkout of a
+            # shallow clone has both, and a reader who fixed one and still saw red would go
+            # hunting for a scene re-bank that never happened.
+            for cause in (_shallow_history_differs(written, out_dir),
+                          _lfs_state_differs(written, out_dir)):
+                if cause:
+                    print(cause, file=sys.stderr)
             return 1
         print(f"up to date ({len(written)} files)")
     return 0
@@ -308,6 +313,42 @@ def _carry_height_derived(was, doc):
             working = [h for h in (doc.get("x-tidalHulls") or []) if h.get("x-kind") != "review"]
             notes["workingWithBed"] = sum(
                 1 for h in working if (h.get("x-tidalRide") or {}).get("bedElevation") is not None)
+
+
+def _shallow_history_differs(written, out_dir):
+    """The other checkout-shaped staleness — named, so it is not mistaken for a stale scene.
+
+    A shallow clone cannot say when a scene was banked (see ``provenance``'s note), so it exports
+    nulls where a full clone exports a commit, a date, a subject and a drift. Both are correct for
+    what they could see, and the difference is the CHECKOUT — but a bare "STALE" sends a reader
+    looking for a re-bank that never happened, which is the same trap ``_lfs_state_differs``
+    exists to close.
+    """
+    for filename, text in written:
+        if not filename.endswith(".scene.json"):
+            continue
+        target = os.path.join(out_dir, filename)
+        if not os.path.exists(target):
+            continue
+        try:
+            with open(target, "r", encoding="utf-8") as fh:
+                was = json.load(fh)
+            now = json.loads(text)
+        except (ValueError, OSError):
+            continue
+        was_complete = (was.get("x-provenance") or {}).get("historyIsComplete")
+        now_complete = (now.get("x-provenance") or {}).get("historyIsComplete")
+        if was_complete is None or now_complete is None or was_complete == now_complete:
+            continue
+        here, there = ("SHALLOW", "complete") if not now_complete else ("complete", "SHALLOW")
+        return (
+            f"  cause: this checkout's git history is {here} where the committed packages were "
+            f"generated from a {there} one. A shallow clone cannot see which commit banked a "
+            f"scene — at depth 1 `git log -1 -- <scene>` answers HEAD for every path — so it "
+            f"states null rather than a falsehood, and the two documents differ by exactly those "
+            f"nulls. This is a checkout difference, not a stale scene — run "
+            f"`git fetch --unshallow` (or checkout with fetch-depth: 0) and compare again.")
+    return None
 
 
 def _lfs_state_differs(written, out_dir):
