@@ -101,5 +101,5 @@ amplitude by eye against the 0.18 m dial, the pull-back's softness at speed, and
 ## 7. Not done here
 
 No audio (a purchase); no wind cap change; no aboard defects; no hit-stop, splash, or count-up
-(PR 3); no new event in Core (the shake rides `BoatGrounded`); no scene edit — St Peters is not
+(PR 3 — `three-moments.md`); no new event in Core (the shake rides `BoatGrounded`); no scene edit — St Peters is not
 rebuilt.

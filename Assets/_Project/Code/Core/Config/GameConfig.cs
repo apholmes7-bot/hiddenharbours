@@ -2726,6 +2726,19 @@ namespace HiddenHarbours.Core
     /// <c>CameraFeel</c> inside the one <c>CameraFollow</c>): the push-in on a landed catch, the shake on a
     /// grounding, the pull-back at speed on open water. Amplitudes, durations, thresholds and the slew;
     /// the mode gate is the charter's, the deck's is a switch.</para>
+    ///
+    /// <para><b>Moments (PR 3, charter §4) — the three moments and the silent dig (#803).</b> Four
+    /// published beats (<c>JuiceMomentCue</c>: Landing, Sale, DigStrike, CastEntry) dressed by pooled
+    /// presenters: the landing frame's hit-stop (<see cref="LandingHitStopScale"/> for
+    /// <see cref="LandingHitStopSeconds"/> of UNSCALED time — the world clock pauses with it, the
+    /// feel timers do not) and a splash burst sized by the fish's weight; the notebook's weight
+    /// readout counting up over <see cref="WeightCountUpSeconds"/> with a scale pop on the last
+    /// digit; the sale's coins flying crate→ledger (<see cref="CoinFlyCount"/> capped) while the
+    /// purse counts up over <see cref="SaleCountUpSeconds"/>; sand chunks on the shovel's strike and
+    /// rings on the cast's entry. Per-action anticipation/follow-through timing is NOT here — it is
+    /// the <c>ActionTimingDef</c> assets under <c>Resources/ActionTiming/</c>, one per action.
+    /// <see cref="MomentsEnabled"/> is the one switch; every presenter ticks at
+    /// <see cref="MomentTickHz"/> on unscaled time and early-returns when nothing is alive.</para>
     /// </summary>
     [System.Serializable]
     public struct JuiceSettings
@@ -2821,6 +2834,67 @@ namespace HiddenHarbours.Core
                  "budget knob (rule 7): the pull-back is slewed over seconds anyway.")]
         [Min(1f)] public float FeelSeaStateRefreshHz;
 
+        [Header("Moments (PR 3) — the three moments and the silent dig")]
+        [Tooltip("The one switch for every moment presenter (hit-stop, bursts, count-ups, coin flights). Off = the pre-charter picture; the audio hooks still publish.")]
+        public bool MomentsEnabled;
+
+        [Tooltip("Time.timeScale during the landing frame's hit-stop (0 = a dead freeze, 1 = no stop). Unscaled feel timers ignore it; the world clock and the sim pause with it.")]
+        [Range(0f, 1f)] public float LandingHitStopScale;
+
+        [Tooltip("Seconds of UNSCALED time the landing hit-stop lasts. The charter's band is 0.06–0.12; 0 disables the stop.")]
+        [Min(0f)] public float LandingHitStopSeconds;
+
+        [Tooltip("Droplets in the landing splash for the lightest fish.")]
+        [Min(0)] public int LandingSplashDropsMin;
+
+        [Tooltip("Extra droplets per kilogram of fish — a cod throws more water than a mackerel.")]
+        [Min(0f)] public float LandingSplashDropsPerKg;
+
+        [Tooltip("Ceiling on droplets per landing (the pool is fixed; a whale is capped).")]
+        [Min(0)] public int LandingSplashDropsMax;
+
+        [Tooltip("Seconds a landing droplet lives.")]
+        [Min(0f)] public float LandingSplashSeconds;
+
+        [Tooltip("Seconds the notebook's weight readout counts up from 0.0 to the landed weight (unscaled).")]
+        [Min(0f)] public float WeightCountUpSeconds;
+
+        [Tooltip("Peak scale of the readout's pop on the frame the count lands (1 = no pop).")]
+        [Min(1f)] public float CountUpPopScale;
+
+        [Tooltip("Seconds the landing pop takes to bump up and settle back to exactly 1.")]
+        [Min(0f)] public float CountUpPopSeconds;
+
+        [Tooltip("Coins that fly from the crate to the ledger on a sale — a hard cap, the pool's size. A one-coin sale flies one.")]
+        [Min(0)] public int CoinFlyCount;
+
+        [Tooltip("Seconds ONE coin takes to fly crate→ledger (unscaled).")]
+        [Min(0f)] public float CoinFlySeconds;
+
+        [Tooltip("Seconds between one coin's launch and the next.")]
+        [Min(0f)] public float CoinFlyStaggerSeconds;
+
+        [Tooltip("Height of the coin's arc above the straight line, in notebook pixels.")]
+        [Min(0f)] public float CoinFlyArcPixels;
+
+        [Tooltip("Seconds the purse total counts up over once the first coin lands (unscaled). The last coin's landing pops the total.")]
+        [Min(0f)] public float SaleCountUpSeconds;
+
+        [Tooltip("Sand chunks thrown on the shovel's strike.")]
+        [Min(0)] public int SandChunkCount;
+
+        [Tooltip("Seconds a sand chunk lives.")]
+        [Min(0f)] public float SandChunkSeconds;
+
+        [Tooltip("Rings spread from the point the cast line touches down.")]
+        [Min(0)] public int CastRingCount;
+
+        [Tooltip("Seconds a cast-entry ring lives (each ring is staggered across the first third of it).")]
+        [Min(0f)] public float CastRingSeconds;
+
+        [Tooltip("Ticks per second for the moment presenters (bursts, coin flights, count-ups). Unscaled; a presenter with nothing alive costs one compare.")]
+        [Min(1f)] public float MomentTickHz;
+
         public static JuiceSettings Default => new JuiceSettings
         {
             GradeEnabled = true,
@@ -2847,6 +2921,28 @@ namespace HiddenHarbours.Core
             SpeedPullBackSeaStateFraction = 0.05f,
             SpeedPullBackSlewSeconds = 2f,
             FeelSeaStateRefreshHz = 4f,
+
+            // Moments (PR 3)
+            MomentsEnabled = true,
+            LandingHitStopScale = 0.05f,
+            LandingHitStopSeconds = 0.09f,
+            LandingSplashDropsMin = 6,
+            LandingSplashDropsPerKg = 3f,
+            LandingSplashDropsMax = 24,
+            LandingSplashSeconds = 0.55f,
+            WeightCountUpSeconds = 0.6f,
+            CountUpPopScale = 1.35f,
+            CountUpPopSeconds = 0.18f,
+            CoinFlyCount = 8,
+            CoinFlySeconds = 0.45f,
+            CoinFlyStaggerSeconds = 0.05f,
+            CoinFlyArcPixels = 14f,
+            SaleCountUpSeconds = 0.7f,
+            SandChunkCount = 7,
+            SandChunkSeconds = 0.45f,
+            CastRingCount = 3,
+            CastRingSeconds = 0.6f,
+            MomentTickHz = 30f,
         };
     }
 }

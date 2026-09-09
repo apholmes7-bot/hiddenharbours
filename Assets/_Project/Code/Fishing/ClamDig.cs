@@ -270,6 +270,9 @@ namespace HiddenHarbours.Fishing
             // (from CarryHands), and FishCaught fires when the clam actually goes in the pail.
             if (_landInHand && TryLandInHand(clam))
             {
+                // THE STRIKE is one published beat (juice charter §4.3, §4.5): the sand chunks, the audio
+                // slot and the notebook all key off THIS cue, never off the hole (rule 4). Strength = kg.
+                EventBus.Publish(new JuiceMomentCue(JuiceMoment.DigStrike, SpotPos, weight));
                 _showingSquirt = false;
                 _consumed = true;
                 Debug.Log($"[ClamDig] Lifted out a {clam} — it's in your hand.");
@@ -280,6 +283,7 @@ namespace HiddenHarbours.Fishing
             if (_bucket == null || !_bucket.TryAdd(clam)) return false;   // race with capacity; cozy no-op
 
             EventBus.Publish(new FishCaught(clam));     // same land path the rod uses
+            EventBus.Publish(new JuiceMomentCue(JuiceMoment.DigStrike, SpotPos, weight));   // the same beat, pail path
             _showingSquirt = false;                     // dug it — the tell's gone
             _consumed = true;                           // a hole yields ONCE, then it's spent (the clam's gone)
             Debug.Log($"[ClamDig] Dug a {clam}. ({_bucket.UsedUnits}/{_bucket.CapacityUnits} in the bucket.)");

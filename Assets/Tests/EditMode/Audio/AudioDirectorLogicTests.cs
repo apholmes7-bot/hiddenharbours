@@ -91,8 +91,8 @@ namespace HiddenHarbours.Tests.Audio
         {
             Assert.AreEqual(AudioCue.CatchSting, AudioDirectorLogic.CueFor(AudioMoment.FishLanded),
                 "a landed fish stings");
-            Assert.AreEqual(AudioCue.HomeWarmth, AudioDirectorLogic.CueFor(AudioMoment.CatchSold),
-                "a sale is 'made it home' warmth");
+            Assert.AreEqual(AudioCue.SaleChime, AudioDirectorLogic.CueFor(AudioMoment.CatchSold),
+                "a sale is its own reward beat (juice PR 3) — it plays _homeWarmth only until the chime lands");
             Assert.AreEqual(AudioCue.HomeWarmth, AudioDirectorLogic.CueFor(AudioMoment.CameAshore),
                 "coming ashore is the same warmth");
         }

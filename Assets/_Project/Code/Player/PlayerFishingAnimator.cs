@@ -206,6 +206,11 @@ namespace HiddenHarbours.Player
         [SerializeField, Min(0.1f)] private float _holdFps = 6f;
         [Tooltip("Cast-release playback (fps) — the flick, played once over the line's flight.")]
         [SerializeField, Min(0.1f)] private float _castReleaseFps = 14f;
+        /// <summary>Where the cast's timing lives when no reference is wired (Resources root: <c>Data/Resources</c>).</summary>
+        public const string CastTimingResource = "ActionTiming/CastTiming";
+        [Tooltip("The cast's pre-hold / strike / follow-through / settle (juice charter §4.3). Empty = loaded " +
+                 "from Resources/" + CastTimingResource + "; absent there too = the fps sweep above.")]
+        [SerializeField] private ActionTimingDef _castTiming;
         [Tooltip("Angler speed (m/s) above which the HOLD pose yields the body to the walk skin — the " +
                  "line stays out, the legs walk. Only the hold yields; cast/bite/fight beats are short " +
                  "and keep the renderer (the shipped behaviour).")]
@@ -230,6 +235,9 @@ namespace HiddenHarbours.Player
         private int _frame;               // the per-direction frame currently shown (for the rod overlay)
         private FishingPose _pose = FishingPose.None;
         private float _castCharge;        // the published CastCharge01 (scrubs the castBack sheet)
+        private bool _castTimingResolved; // the Def lookup happens once (tests re-arm it via ConfigureCastTiming)
+        private bool _hasCastTiming;
+        private ActionTiming _castTimingValue;
 
         // Movement read for the HOLD yield (transform delta — works for the rb-driven walk AND the
         // transform-driven deck walk alike). Tracked only while a rod phase is live (rule 7).
@@ -379,9 +387,44 @@ namespace HiddenHarbours.Player
                 case FishingPose.Reel:
                 case FishingPose.Hold:
                     return PlayerFishingAnimMath.LoopFrame(_poseElapsed, FpsFor(pose), perDir);
+                case FishingPose.CastRelease:
+                    // The flick on the cast's ActionTiming when one is authored (juice charter §4.3): frame 0
+                    // holds for the pre-hold, the sweep runs over the strike, the last frame holds through the
+                    // follow-through and settle. Without a Def: the fps sweep that shipped.
+                    return ResolveCastTiming()
+                        ? ActionTimingMath.FrameFor(_poseElapsed, in _castTimingValue, perDir)
+                        : PlayerFishingAnimMath.OnceFrame(_poseElapsed, FpsFor(pose), perDir);
                 default:
                     return PlayerFishingAnimMath.OnceFrame(_poseElapsed, FpsFor(pose), perDir);
             }
+        }
+
+        /// <summary>Wire the cast timing directly (tests / a builder). Null = the serialized/Resources lookup.</summary>
+        public void ConfigureCastTiming(ActionTimingDef def)
+        {
+            _castTiming = def;
+            _castTimingResolved = false;
+        }
+
+        /// <summary>The cast's timing, resolved once: the serialized Def, else <see cref="CastTimingResource"/>.</summary>
+        private bool ResolveCastTiming()
+        {
+            if (_castTimingResolved) return _hasCastTiming;
+            _castTimingResolved = true;
+            ActionTimingDef def = _castTiming != null ? _castTiming : Resources.Load<ActionTimingDef>(CastTimingResource);
+            _hasCastTiming = def != null;
+            if (_hasCastTiming) _castTimingValue = def.Timing;
+            return _hasCastTiming;
+        }
+
+        /// <summary>Public for tests: the frame the cast release shows <paramref name="elapsed"/> seconds in.</summary>
+        public int CastReleaseFrameAt(float elapsed, int perDir)
+        {
+            float keep = _poseElapsed;
+            _poseElapsed = elapsed;
+            int frame = FrameFor(FishingPose.CastRelease, perDir);
+            _poseElapsed = keep;
+            return frame;
         }
 
         private void WarnMissingSheetOnce(FishingPose pose)

@@ -65,6 +65,10 @@ idles when moored and revs underway.
 | `_windTell`   | `Ambient/wind_tell.wav`     | yes | Ambience | **the SACRED rising-wind tell** — loudness driven by wind strength, audible *before* trouble (P1) | **real** — LICENSES.md row 4 |
 | `_catchSting` | — | no  | SFX | bright sting on `FishCaught` | `ProceduralAudio.CatchSting` — **slot held**: musical, waits for the score (foley guide §9) |
 | `_homeWarmth` | — | no  | SFX | "made it home" warmth on `CatchSold` / coming ashore | `ProceduralAudio.HomeWarmth` — **slot held**, as above |
+| `_landingHit` | — | no  | SFX | **the landing frame** — `JuiceMomentCue(Landing)`, the frame the fish leaves the water (with the hit-stop and the splash; juice charter §4.1/§4.5) | **slot held** (juice PR 3): NO placeholder — silent until a file lands in `AudioClipSet.LandingHit`; owner shopping list in LICENSES.md |
+| `_saleChime`  | — | no  | SFX | **the sale's reward beat** on `CatchSold` (with the coins flying in the notebook; §4.2) | **slot held** (juice PR 3): plays `_homeWarmth` in its place until a file lands in `AudioClipSet.SaleChime` |
+| `_digStrike`  | — | no  | SFX | **the shovel's strike** — `JuiceMomentCue(DigStrike)`, with the sand chunks (§4.3) | **slot held** (juice PR 3): NO placeholder — silent until a file lands in `AudioClipSet.DigStrike` |
+| `_castEntry`  | — | no  | SFX | **the line touches down** — `JuiceMomentCue(CastEntry)`, with the rings (§4.3) | **slot held** (juice PR 3): NO placeholder — silent until a file lands in `AudioClipSet.CastEntry` |
 
 ## Rod-fight sound layer (Rod Fishing v2 — `FishingAudio`)
 
@@ -117,9 +121,11 @@ the owning lanes rather than reached across:
 - **A `PropulsionType` on `ActiveBoatChanged`** (Boats/Player + Core). The aboard boat bed picks oars-vs-
   engine from the hull **id** because the signal carries no propulsion type and the Audio asmdef is
   Core-only (see the boat-bed flag above). A Core propulsion field would remove the id heuristic.
-- **A distinct `CatchSold` reward cue.** Today a sale reuses `_homeWarmth`. A sale is a *reward* beat, not
-  the *home-exhale* — they should diverge (e.g. a `_saleChime`), so the home-warmth can stay the rarer,
-  earned arrival cue. Small, in-lane follow-up once a sale-chime asset exists.
+- **RESOLVED (juice PR 3) — a distinct `CatchSold` reward cue.** `_saleChime` is the sale's slot now
+  (`SFX/sale_chime.wav`); until its file lands the director plays `_homeWarmth` in its place, so nothing
+  the player hears changed. The home-warmth stays the rarer, earned arrival cue. The other three moment
+  slots (`_landingHit`, `_digStrike`, `_castEntry`) have NO placeholder by the charter's rule — audio is
+  a purchase — so each is silent until its file is dropped on the director.
 
 ## Wishlist (future, not wired this round)
 - A light **music** stem for the harbour / title (would slot onto the Music bus).
