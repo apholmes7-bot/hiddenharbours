@@ -95,6 +95,26 @@ namespace HiddenHarbours.Tests.Art.EditMode
         /// <summary>The rest stems, which the guards below hold pending the owner's re-bake.</summary>
         private static readonly string[] RodRestStates = { "ground", "stowV", "stowH" };
 
+        /// <summary>
+        /// The CLAM SPADE's states. One tool anim and two still rests, and the asymmetry with the
+        /// rod's ten is a finding rather than an omission: <c>CharacterIso.ANIM_MOUNT</c> names the
+        /// spade on <c>dig</c> alone, and marks idle / walk / run <c>'free'</c> — <c>tool()</c>
+        /// returns null on all three, so the shipped rigs have no answer for a CARRIED spade. That
+        /// needs a <c>shovelTrail</c> PROPS row in <c>characterIsoRig6.hands.js</c>, the art
+        /// director's file; until it lands there is no carry sheet to guard. See
+        /// <c>ShovelKitBaker.DigOnlyBecauseToolIsNullOnAGait</c>.
+        ///
+        /// <para>10 dig frames from the character rig's ANIMS table — the same number
+        /// <c>ShovelIso.DIG.frames</c> claims, and <c>ShovelKitBakeTests</c> holds the two to each
+        /// other so this table cannot drift away from either. The rests are ONE frame each because
+        /// <c>ShovelIso</c> declares no <c>REST_FRAMES</c>: a spade's rest is a still prop, not the
+        /// animated hand-over the rod's rests became.</para>
+        /// </summary>
+        private static readonly (string state, int frames)[] ShovelStates =
+        {
+            ("dig", 10), ("ground", 1), ("stored", 1),
+        };
+
         private readonly struct Kit
         {
             public readonly Vector2Int Cell;
@@ -109,6 +129,11 @@ namespace HiddenHarbours.Tests.Art.EditMode
         private static readonly Kit FishKit = new Kit(64, 64, rows: 8, pivotPxX: 32, pivotPxY: 26);
         private static readonly Kit BobberKit = new Kit(16, 22, rows: 1, pivotPxX: 8, pivotPxY: 10);
         private static readonly Kit RodKit = new Kit(112, 112, rows: 8, pivotPxX: 56, pivotPxY: 40);
+        // The spade: 112×112 on THE GRIP (56,72) top-left → y = 112−72 = 40. The rod's numbers
+        // exactly — and written out again rather than aliased to RodKit, for this file's stated
+        // reason: the guard is a RESTATEMENT of the contract, and `= RodKit` would make the spade's
+        // slice silently follow the rod's the day someone re-cells the rod.
+        private static readonly Kit ShovelKit = new Kit(112, 112, rows: 8, pivotPxX: 56, pivotPxY: 40);
 
         private static readonly Dictionary<string, Kit> Sheets = BuildGuardedSet();
         private static readonly Dictionary<string, int> ExpectedFrames = BuildExpectedFrames();
@@ -122,7 +147,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
             foreach (var (state, _) in BobberStates) d[$"Bobber_{state}"] = BobberKit;
             foreach (var tier in RodTiers)
                 foreach (var (state, _) in RodStates) d[$"Rod_{tier}_{state}"] = RodKit;
-            return d;   // 7×3×10 + 4 + 3×10 = 244 stems
+            foreach (var (state, _) in ShovelStates) d[$"Shovel_{state}"] = ShovelKit;
+            return d;   // 7×3×10 + 4 + 3×10 + 3 = 247 stems
         }
 
         private static Dictionary<string, int> BuildExpectedFrames()
@@ -135,6 +161,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             foreach (var (state, frames) in BobberStates) d[$"Bobber_{state}"] = frames;
             foreach (var tier in RodTiers)
                 foreach (var (state, frames) in RodStates) d[$"Rod_{tier}_{state}"] = frames;
+            foreach (var (state, frames) in ShovelStates) d[$"Shovel_{state}"] = frames;
             return d;
         }
 
@@ -166,7 +193,16 @@ namespace HiddenHarbours.Tests.Art.EditMode
         /// sheet FAILS the closed-set guard rather than quietly reading as "pending". Add a stem
         /// here ONLY when a future kit extension specs a sheet ahead of its bake.
         /// </summary>
-        private static readonly HashSet<string> AwaitingOwnerBake = new HashSet<string>();
+        private static readonly HashSet<string> AwaitingOwnerBake = new HashSet<string>
+        {
+            // The CLAM SPADE, spec'd here ahead of its bake — exactly the case the paragraph above
+            // reserves this set for. `shovelIsoRig.js` has been committed and UNREGISTERED since it
+            // landed (CharacterRigBaker said so in its own words), so the kit's code, its slicer
+            // spec and these guards land first and the sheets follow on one editor slot. Absent is
+            // tolerated; the moment a Shovel_*.png appears it is held to every assertion in this
+            // file. ⚠️ The PR that commits the bake EMPTIES this set.
+            "Shovel_dig", "Shovel_ground", "Shovel_stored",
+        };
 
         /// <summary>
         /// Stems that ARE on disk but whose spec above has moved past them — the other half of the
