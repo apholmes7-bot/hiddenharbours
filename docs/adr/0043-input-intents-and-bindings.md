@@ -160,7 +160,7 @@ things at once is now read by one.
 
 ## Out of the seam (§6): the dev rigs
 
-`DevBoatPicker`, `GrassDevWalker`, `BoatRotationTestRig`, `Spike/DeckCharacterMeshSpikeRig`,
+`DevBoatPicker`, `GrassDevWalker`, `BoatRotationTestRig`,  <!-- Spike/DeckCharacterMeshSpikeRig retired 2026-09-09, ADR 0044 -->
 `DisplacedWaterSurface`'s debug key, `DevTrapInput`. Tools, not the game; they keep polling
 `Keyboard.current`. The pointer paths of the overlays (chartplotter, radar, sounder, fish finder, tide
 panel, notebook, catalogue, wardrobe, shell) also stay as they are — they are the notebook's world,

@@ -109,6 +109,37 @@ namespace HiddenHarbours.Tools.RigBaking
         /// to dedupe ramps by content — see <see cref="RigMeshReferenceRasterizer"/>.</summary>
         public string[] RampHex;
         public int Off;
+
+        /// <summary>
+        /// The material's OWN shade gain (<c>MATS[k].gain</c>), 1.0 when the rig declares none.
+        ///
+        /// <para>WARNING: every hull rig leaves this at 1; the pass-6 CHARACTER rig does not. It
+        /// gives 27 of its 36 materials a per-material gain and bias off a <c>SPAN</c> table (skin
+        /// 0.40, leather 0.60) and multiplies the global GAIN by it:
+        /// <c>fidx = sh*GAIN*M.gain + M.bias + f.b</c>. Flattening that to the global pair was
+        /// measured at 35.5-53.6% differing inked pixels against the rig's own render, against a
+        /// hull reference band of 2.5-4.8%. It cannot be folded into the per-face bias because
+        /// <c>sh</c> depends on the live camera basis, so it has to reach the shader. Default 1.0
+        /// keeps every hull bake byte-identical.</para>
+        /// </summary>
+        public double Gain = 1.0;
+
+        /// <summary>The material's own shade bias (<c>MATS[k].bias</c>), or NaN when the rig
+        /// declares none and the global BIAS applies. NaN rather than 0 so "absent" is not
+        /// confusable with "zero", which is a legal bias.</summary>
+        public double Bias = double.NaN;
+
+        /// <summary>True when the material ordered-dithers between ramp steps
+        /// (<c>MATS[k].dith</c>). False on every hull material and on every material the shipped
+        /// pass-6 character cast resolves - the character rig snaps at a hard 0.55 threshold
+        /// instead, deliberately.</summary>
+        public bool OrderedDither;
+
+        /// <summary>Zero or above when the rig pins this material to a constant ramp index
+        /// (<c>MATS[k].idx</c>) - the character head rig's STAMP materials. No polygon references
+        /// them, so they colour no vertex; recorded so a def can carry the rig's own numbers.
+        /// -1 on every shaded material.</summary>
+        public int FixedIndex = -1;
     }
 
     /// <summary>
@@ -1124,6 +1155,50 @@ namespace HiddenHarbours.Tools.RigBaking
                         Why = "makeRig() keeps this hull's face list in its own closure; the mesh " +
                               "bake reads faceList('stowed') and concats the posed salon leaf, " +
                               "which is exactly what her render() draws.",
+                    },
+                },
+
+                // ---- the pass-6 CHARACTER body (ADR 0044, mesh characters, 2026-09-09) -----------
+                // The character rig exports its geometry surface ALREADY: facesOf, pose, makeMats,
+                // GAIN, BIAS, LN, BAYER, ANIMS, BUILDS, CAST and propsOf are all on the API. So it
+                // needs no Reconstructions entry and no outer widening - measured in the repo's own
+                // V8, 2026-09-09, every one of those is `typeof ... !== 'undefined'` on the
+                // unmodified file. What it does NOT export is the one thing that decides WHICH pose
+                // is asked for.
+                //
+                // `resolveOpts(dir, opts)` is the rig's own argument resolver, and render() is
+                // literally `const {o,b,anim,u,power,carry} = resolveOpts(dir, opts)` before it
+                // poses anything. It does four things a caller cannot reproduce without
+                // transcribing them:
+                //   * resolveBuild - DEFAULT_BUILD merged under BUILDS[preset] merged under the
+                //     caller's overrides. Transcribing this is how a bake silently renders the
+                //     DEFAULT man instead of the fisher (measured, this lane, before this entry
+                //     existed: `build:'fisher'` as a bare string spreads character-by-character
+                //     through Object.assign and resolves to nobody).
+                //   * the `settle` denominator - a settle clip spans its frames INCLUSIVELY
+                //     (u = f/(frames-1)); every other clip is cyclic f/frames. Getting this wrong
+                //     poses the last frame of every set-down clip in the cast off by one step.
+                //   * power ('short'/'long') and the carry whitelist.
+                //   * the opts bag that reaches pose() as arguments[5] and carries the deck's rock
+                //     into counterLean - so the POSE, not only the transform, depends on it.
+                //
+                // Widening it in means the mesh bake asks the rig the same question its own
+                // renderer asks, rather than a C# re-derivation of it that can drift. Everything
+                // else the bake needs is already public.
+                //
+                // NOT the outer shim's job: WidenExportedLiteral anchors on `root.<Global> = {`,
+                // and this rig assigns a NAMED literal (`const API = {...}; root.CharacterIso6 =
+                // API;`) so that anchor matches zero times. Same mechanism, same discipline, one
+                // anchor - and `const API = {` occurs exactly once in the file.
+                ["characterIsoRig6.js"] = new[]
+                {
+                    new InnerWidening
+                    {
+                        AnchorPattern = @"const API = \{",
+                        Insert = " resolveOpts,",
+                        Why = "the pose bake has to resolve (build, u, power, carry, opts) exactly " +
+                              "as the rig's own render() does; resolveOpts is module-private and " +
+                              "re-deriving it in C# is how a bake ships the wrong character.",
                     },
                 },
             };

@@ -1,13 +1,19 @@
 using UnityEngine;
 
-namespace HiddenHarbours.SpikeDeckCharacterMesh
+namespace HiddenHarbours.Core
 {
     /// <summary>
-    /// ⚠️ SPIKE (deck-character-mesh, draft ADR 0024). The pure math the deck-mesh rig reuses —
-    /// EditMode-testable, engine-light, deterministic (CLAUDE.md rule 5: pure functions of their
-    /// inputs, no hidden state).
+    /// The pure math a MESH character needs to ride a deck: which flipbook frame a clock lands on,
+    /// how a hull's rock reads in the character's own frame, and how a rig-camera anchor splits into
+    /// a root offset and a heave lift.
+    ///
+    /// <para><b>Provenance (ADR 0044).</b> These three functions were written for the deck-character-mesh
+    /// spike and are all that survived its retirement. They belong to the PRESENTER, not to the bake:
+    /// nothing here reads a rig, an asset or a <c>Mesh</c> — they are pure functions of their inputs
+    /// (CLAUDE.md rule 5), so they live in Core where the sprite path's <c>DeckRideMath</c> already
+    /// lives and where PR 2's <c>CharacterMeshRenderer</c> will call them.</para>
     /// </summary>
-    public static class DeckCharacterSpikeMath
+    public static class CharacterPoseMath
     {
         /// <summary>
         /// Which frame of an N-frame cycle a clock lands on. Pure: the same clock always answers

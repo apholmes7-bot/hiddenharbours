@@ -1,5 +1,25 @@
 # ADR 0024 — FISHING characters draw as facet MESHES (a pose flipbook with live heading); the baked 8-dir sheets keep locomotion everywhere else
 
+> ### ⚠️ AMENDED 2026-09-09 — read [ADR 0044](0044-characters-are-meshes.md) first
+>
+> The owner **overruled the spike** and sent the lane straight to production
+> (*"again do we need character sprites? i overrulle a spike, lets continue with mesh tools,
+> animations and characters"*). Two things below are no longer true:
+>
+> 1. **The "Explicitly does NOT change: locomotion" section is OVERRULED.** The mesh path now
+>    covers **every** character state, walking and running included, ashore and aboard. The 8-dir
+>    sheets retire per state at parity (ADR 0041's law), not "everywhere else".
+> 2. **Every number in this ADR is VOID.** The 0.61–4.33% delta, the 12 meshes, 4,576 tris and
+>    411 KB were all measured on **`characterIsoRig.js` (pass 1)**; the game bakes from
+>    **`characterIsoRig6.js` rev 6.9**. Re-measured on the shipped rig the player recipe is
+>    **334 meshes, 524,068 tris, 44.1 MB**, and the facet SHADING delta, measured by the oracle
+>    over 352 probes, is **59.38–79.34%** — dominated by per-material `gain` being flattened to one
+>    global. The OUTLINE, which is what says the geometry is right, is **0.00–4.98%**. ADR 0044 §3.3
+>    carries both tables and the difference between them.
+>
+> What still stands: the flipbook shape (one mesh per frame, heading as a live transform) and the
+> reasons for it. The scope, the numbers, and "zero changes to Art/Boats/Core" do not.
+
 - **Status: RATIFIED, with the scope EXTENDED by the owner** — ratified by the owner 2026-07-23
   ("commit to the rig") with the scope grown from *on-deck only* to **ALL stationary fishing
   states, dock AND deck**. Rationale for the extension: the sprite path's bake → slice →

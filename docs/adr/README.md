@@ -50,6 +50,7 @@ When you add an ADR, add its row here in the same PR.
 | 0041 | Full mesh interiors: the room becomes geometry | Accepted — rolling out |
 | 0042 | The squash is an art fact: the world plane vs the bake projection | Accepted (ruled 2026-08-29; the station kit migrated in the same PR) |
 | 0043 | Input: intents in Core, bindings as data | Accepted (rulings 2026-09-02; PR 0 seams the walk — rolling out: helm/verbs PR 1, gamepad PR 2) |
+| 0044 | Characters are meshes in every state; sheets retire per state at parity | **Proposed** (owner overruled the spike 2026-09-09; amends 0024's scope AND its numbers — seat to ratify) |
 
 **Conventions.** `Proposed` = awaiting the named decider; `Accepted` = ratified (by the owner where
 the ADR says so, otherwise by `lead-architect` on merge); `Implemented` = accepted and the code
