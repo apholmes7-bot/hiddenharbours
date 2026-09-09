@@ -157,6 +157,33 @@ cannot carry by construction.
 - **ADR 0024's "zero changes to Art, Boats, Core" does not survive contact with rig 6.** Core gains
   `CharacterMeshDef`; the shader widening above is a real (and cross-lane) change.
 
+### 3.5 The wall in §3.2 has an answer, and it arrived as rig 7 (added 2026-09-09)
+
+**§3.2’s 44.1 MB is a FLIPBOOK number** — 334 pose meshes, one per state per frame. The rigidity
+measurement that followed it said the same character is expressible as ONE mesh posed by bones (35
+rigid bones, 0.000 mm drift over 308 poses), which is roughly 90× smaller. The art director shipped
+exactly that on 2026-09-09 as **`characterIsoRig7.js` rev 7.1**: a skeleton, one bind mesh, and bone
+clips. It is registered as catalog key **`characterSkin`** (prerequisite `character`), and this ADR
+records the claim only because the claim was **re-run in this repo**, not read off the drop:
+
+| claim | measured, on the rigs as they sit here |
+|---|---|
+| the golden: bones land where the lathe lands | 10 builds × 56 golden rows × 462 frames = **4,620 frames**, worst vertex error **4.02e-13 m** against the rig’s own **1e-4 m** tolerance, **0 failing rows** |
+| `renderSkinned()` against `render()` | **36,960 probes** (56 rows × 8 dirs × 10 builds), **0 moved, 0 pixels** |
+| influences per vertex | **never more than two**, on any of the ten builds |
+| the blend rings, adjudicated | collapsing every two-weight vertex onto its heavier bone costs **4.52e-2 m on the fisher — 452× tolerance, all 56 rows failing** (nan 2.53e-1 m, 2,533×) |
+
+**What this does and does not settle.** It does not take §5.1 — that decision is still the seat’s.
+It changes the MENU §5.1 chooses from: the question stops being “ship 334 meshes, bake them at
+import, or bake them at build” and becomes “ship ONE mesh and its clips”, at roughly 0.47 MB per
+preset against 44.1 MB. The 17-materials cap (§5.3) and the shader widening (§5.2) are untouched by
+it: an export changes how the vertices are produced, not what colours them.
+
+⚠️ **It rides on the body, by prototype.** `CharacterIso7` is `Object.create(CharacterIso6)`, and it
+names the base it re-expresses (`CharacterIso7.base === CharacterIso6.revision`). A body bump that
+forgets the export costs nothing at load time and everything at draw time, so the agreement is a
+CI guard (§6), not a README line.
+
 ## 4. What this PR actually lands
 
 `SpikeDeckCharacterMesh/` is retired, losslessly:
@@ -181,6 +208,9 @@ this PR leaves it EMPTY, and PR 3 flips it per state.
 1. **The ~90 MB of committed YAML per preset**, and ~44 MB of GPU buffers. Ship the Defs? Bake at
    import? Bake at build? This is the decision that decides whether the whole cast follows the
    player.
+   **Update 2026-09-09:** still open, but the menu changed — rig 7 (§3.5) puts ONE skinned mesh
+   plus clips on the table, ~0.47 MB per preset instead of 44.1 MB, measured to land on the same
+   vertices to 4.02e-13 m. The choice is the seat’s; the option it was missing now exists.
 2. **The shader widening** — `_RampMeta.zw` for per-material gain/bias, plus a per-object
    dither-mode uniform. `IsoFacetHullFeature` and the facet resolve shader are the **WATER lane's**;
    this is a boundary question, not this lane's to take.
@@ -206,4 +236,8 @@ this PR leaves it EMPTY, and PR 3 flips it per state.
   sits above it.
 - **`docs/art/rigs/**` byte-identity** — the widenings are in memory only.
 - **pose is heading-independent** — extract at dir 0 and dir 4, assert identical face blobs.
+- **the skinned export re-runs, it is not cited** — `CharacterSkinnedExportTests` (EditMode, ~1 s of
+  V8) re-measures §3.5 on every CI run for `fisher` and `nan`: the prototype chain, the NAMED base
+  revision, the golden inside the rig’s own tolerance, 64 render probes byte-identical, and the
+  BLENDED collapse still costing >100× tolerance so the exception keeps earning itself.
 - **Def completeness** and **materials-used ≤ 16**.

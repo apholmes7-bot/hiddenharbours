@@ -593,7 +593,7 @@ in this repo.
 
 ---
 
-## The character rig kit, pass 6 (imported 2026-08-02 · **rev 6.2 imported 2026-08-06** · **rev 6.6 imported 2026-08-26** · **rev 6.9 imported 2026-09-02**)
+## The character rig kit, pass 6 (imported 2026-08-02 · **rev 6.2 imported 2026-08-06** · **rev 6.6 imported 2026-08-26** · **rev 6.9 imported 2026-09-02** · **rev 6.10 + the rig-7 skinned export imported 2026-09-09**)
 
 One procedural person: eight facings, **eighteen** animations, four carry stances, and the axes that
 make her somebody in particular. This drop replaces the pass-1 body (`characterIsoRig.js`) and splits
@@ -629,6 +629,32 @@ the head and the eyes into rigs of their own.
 > and **33 of 33 comparable sheets are byte-identical**, which is what says our load order, preset
 > resolution and camera are his.
 
+> **Rev 6.10 (2026-09-09) is the SADDLE family, and it moves NOTHING that already shipped.** Six
+> clips arrived — `astride` 6f/170 ms, `astrideStand` 8f/120 ms, `mountUp` 16f/80 ms, `mountDown`
+> 14f, `mountCab` 18f and `mountCabDown` 16f/85 ms, the four mount transitions one-shot and settling
+> — plus a `saddle` family row in the ANIMS table and a `saddleOf()` that reads **absolute machine
+> metres** out of `opts.saddle`. The gate before landing it: **47,200 probes** (the 29 shared clips
+> × 8 dirs × short and long power × the 5 carry stances × all 10 builds) rendered under 6.9 and
+> under 6.10 — **0 moved, 0 pixels**. The cell, the pivot, the ten presets and every earlier clip
+> are untouched, so no sheet in the family needed re-baking.
+>
+> **Two copies of this file ship, and both were updated**: `docs/art/rigs/characterIsoRig6.js` and
+> the harness copy under `dialogue-bubble-kit/Art/`, which `BubbleKitBakeTests` byte-compares.
+> Landing one without the other is a CI red with a confusing message.
+>
+> ⚠️ **The six do not bake, and the reason is a MISSING COMPANION CONTRACT.** They are not poses of
+> a figure; they are poses of a figure ON A MACHINE, and the rig’s own worked example names where
+> the metres come from: `AtvIso.saddleFor()` / `AmphibIso.benchFor()`. **Neither function exists** in
+> the shipped kits. Measured 2026-09-09: both read `undefined`; handing `AtvIso.anchors()` in raw is
+> accepted **SILENTLY** and changes nothing at all — 112 frames, **0 moved, 0 px**, on quad, dirtbike
+> and trike alike — because the rig falls back to its generic `SADDLE_DEF`. Adapting `anchors()`
+> into the documented `.m` triples moves **every** one of those 112 frames, by 53,557 px (quad),
+> 57,187 (dirtbike) and 72,310 (trike) — about a fifth of the figure. So a bake today would freeze
+> ONE generic machine into a sheet three real machines then disagree with. The six are listed in
+> `CharacterRigBakeMenu.PlayerAnimsBakedElsewhere` as **group 2** with that reason written out, and
+> the contract is owed UPSTREAM. The day `saddleFor`/`benchFor` ship, these six stop being one row
+> there and become one bake PER MACHINE — a recipe change, not a list change.
+
 ### ⚠️ LOAD ORDER IS A HARD REQUIREMENT
 
 The body delegates skull / hair / beard / hats to the head rig, and the head delegates the eye socket
@@ -638,6 +664,9 @@ to the eye rig. Load them **eye → head → body**, in that order, into the sam
 docs/art/rigs/eyeIsoRig.js         → globalThis.EyeIso                     (1st)
 docs/art/rigs/headIsoRig3.js       → globalThis.HeadIso3 / HeadIso2 / HeadIso   (2nd)
 docs/art/rigs/characterIsoRig6.js  → globalThis.CharacterIso6              (3rd — the body)
+docs/art/rigs/characterIsoRig7.js  → globalThis.CharacterIso7              (4th, optional — the
+                                                                            skinned export; it
+                                                                            PROTOTYPES from the body)
 ```
 
 Loaded out of order the body still *runs* — `hatList()` quietly falls back to its local `HATS_LOCAL`
@@ -827,6 +856,65 @@ the copies already here** — the only difference is LF against the repo's check
 `core.autocrlf` invents and git never stored. They were left untouched rather than rewritten. Same
 lesson as `roadPathRig.js` above: an `md5` mismatch on a text file in this repo is not evidence of
 anything. Diff it before believing it.
+
+### The skinned export — rig 7, rev 7.1 (imported 2026-09-09)
+
+`characterIsoRig7.js` → `CharacterIso7`. **The fifth file in this kit, and the second that draws
+nothing of its own.** It re-expresses the pass-6 body as a **skeleton**, one **bind mesh** and a set
+of **bone clips**, so a consumer can pose ONE mesh through bones instead of re-lathing the whole
+figure every frame. Catalog key **`characterSkin`**, prerequisite `character`.
+
+⚠️ **It is not a second character.** Its API object is
+`Object.assign(Object.create(CharacterIso6), …)`, so `W`, `H`, `pivot`, `DIRS`, `ANIMS`, `render()`
+and every other cell fact resolve THROUGH the body by prototype. Load it **fourth**, after the body;
+loaded without it nothing throws and every inherited read is simply `undefined`, which is why the
+catalog names the prerequisite. The base it re-expresses is **NAMED** — `CharacterIso7.base ===
+CharacterIso6.revision` — and that equality is the one thing that notices a body bump which forgot
+to re-run the export.
+
+API: `skeleton` · `skeletonWorld` · `bindMesh` · `clip` / `clips` · `exportBuild` · `renderSkinned` ·
+`diffPixels` · `goldenRows` / `goldenRow` / `goldenReport` / `goldenDiff` / `goldenDiffDetail` ·
+`poseBones` · `sizes` · `BLENDED` · `FRAME_DOC` · `TOL` (1e-4 m). Frame: right-handed metres,
+**+x curb, +y nose, +z up**.
+
+**Re-run against the rigs as they now sit in this repo — not read off the drop’s README:**
+
+| claim | measured 2026-09-09 |
+|---|---|
+| the golden: bones land where the lathe lands | 10 builds × 56 rows × 462 frames = **4,620 frames**, worst vertex error **4.02e-13 m** against the rig’s own **1e-4 m** `TOL`, **0 failing rows** |
+| `renderSkinned()` against `render()` | **36,960 probes** (56 rows × 8 dirs × 10 builds), **0 moved, 0 pixels** |
+| skeleton | 44 bones (nan) / 45 (most) / 46 (packer, cutter); 15 of them tips and bends |
+| bind mesh | 617–894 faces per build |
+| influences per vertex | **never more than two, on any build** |
+| two-weight vertices | fisher 72 of 2,992 (2.4 %) … packer/cutter 168 (5.3 / 6.3 %), **nan 232 (7.4 %)** |
+
+**The 45-bone skeleton and the “35 rigid bones” this lane measured in August are the same skeleton
+counted twice.** 45 declared = **33 that own a vertex** + 12 that own none — `root`, the two wrists,
+the six `tool_*` pins and the three `carry_*` pins, which exist to be READ as mounts, not to deform.
+33 owners + the 2 two-bone blend families = the 35 deforming influences.
+
+**The blend rings are load-bearing, and that was adjudicated rather than trusted.** They are rings
+the rig-6 lathe lerps between two frames (a sleeve hem at 0.62 of a tube whose DRAWN LENGTH changes;
+an apron or skirt row between a floor-anchored hem and the torso), and `BLENDED` declares each with
+its reason. Collapse every two-weight vertex onto its heavier bone and re-run the golden: the fisher
+goes from 4.02e-13 m to **4.52e-2 m — 452× the tolerance, all 56 rows failing** (nan 2.53e-1 m,
+2,533×). That is 4.5 cm of sleeve on a figure 64 px wide. Restoring the weights puts it back exactly.
+
+Everything above except the full-cast sweep **re-runs on every CI run** —
+`CharacterSkinnedExportTests`, about a second of V8 — on `fisher` and `nan`, the two builds that
+bracket the cast (the fewest blended vertices and the most, and `nan` is also the one build with a
+bone missing). The failure it exists to catch is silent: nothing throws when the body is bumped and
+the export is not re-run — the skinned mesh just stops agreeing with the sprite, one clip at a time.
+
+#### ⚠️ What was REFUSED from this drop
+
+The 2026-09-09 drop also carried `Art/rodIsoRig.js`, and it is **STALE — not imported**. The drop’s
+copy is sha256 `9471d28b…`, **253 lines**; the shipping file here is `befc9c0c…`, **340 lines**, and
+the difference is the whole rod-continuity fix documented above — `poseOf()`, the three animated
+rests, `restLift()`. Importing it would have silently reverted ONE ROD, EVERY STATE. The rod rig was
+left untouched, only `characterIsoRig6.js` (6.10) and `characterIsoRig7.js` were taken from the drop,
+and the staleness is relayed upstream to the `art-director`. Same lesson as the byte-check above:
+a drop is intake, not truth.
 
 ### Known open (flagged by the kit itself)
 

@@ -42,6 +42,18 @@ namespace HiddenHarbours.Tests.RigBaking
     /// passing quietly after the fix and tell nobody it had landed
     /// (<c>a-guard-with-an-absolute-bar-rots-on-a-good-change</c>).</para>
     ///
+    /// <para>⚠️ <b>Half of that “once” arrived on 2026-09-09, and this fixture is still green — the
+    /// two halves have to be read apart.</b> Rig <b>6.10</b> landed the CLIPS: <c>astride</c>,
+    /// <c>astrideStand</c> and four mount transitions now exist in <c>characterIsoRig6.js</c>. Not one
+    /// number below moved, because nothing consumes them yet — they are not baked
+    /// (<c>CharacterRigBakeMenu.PlayerAnimsBakedElsewhere</c>, group 2: <c>saddleOf()</c> reads
+    /// absolute machine metres out of <c>opts.saddle</c>, and the <c>AtvIso.saddleFor()</c> the rig’s
+    /// own worked example names does not exist, so a bake today would freeze ONE generic machine into
+    /// a sheet three real machines then disagree with), and <c>CharacterOffDeckMountsDef</c> still
+    /// carries only <c>drive</c>. The residuals below are still exactly the cost of the missing
+    /// STANCE. The day the companion contract ships and the six bake per machine, that is the
+    /// deliberate act this fixture asks to come here and say so.</para>
+    ///
     /// <para><b>Read from the art both sides, never typed here</b> (rule 6): the grips and the seats come
     /// out of the sidecars, the pose comes out of <see cref="CharacterOffDeckMountsDef"/>. Only the
     /// RESIDUALS are literals, because a residual is the finding.</para>

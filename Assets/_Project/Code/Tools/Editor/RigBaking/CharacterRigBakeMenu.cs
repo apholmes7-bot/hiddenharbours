@@ -101,7 +101,7 @@ namespace HiddenHarbours.Tools.RigBaking
         /// a hard one, because the standing guard is that every declared anim is covered
         /// (<c>CharacterRigBakeTests.ThePlayerRecipe_CoversEveryAnimTheRigDeclares</c>).
         ///
-        /// <para><b>The reason for these four is the CELL, and it is structural.</b>
+        /// <para><b>GROUP 1 — the off-deck four. The reason is the CELL, and it is structural.</b>
         /// <see cref="CharacterRigBaker"/> emits ONE cell for every state — the rig's own
         /// <c>W × H</c>, 64 × 92 — so a player bake writes 8 × 92 = 736 px tall. The off-deck four
         /// ship at <b>64 × 88</b> (<c>CharacterSheetSlicer.OffDeckCell</c>): the same cell re-windowed
@@ -114,10 +114,32 @@ namespace HiddenHarbours.Tools.RigBaking
         /// <c>CharacterIsoSheetSliceTests</c> and <c>CharacterOffDeckMountsTests</c> instead. The day
         /// this baker learns a per-state cell, that is the change that empties this list — and the
         /// guard stays live for every other anim the rig grows.</para>
+        ///
+        /// <para><b>GROUP 2 — the saddle six (rig 6.10). The reason is that there is nothing to bake
+        /// FROM yet.</b> <c>astride</c>, <c>astrideStand</c>, <c>mountUp</c>, <c>mountDown</c>,
+        /// <c>mountCab</c> and <c>mountCabDown</c> are not poses of a figure — they are poses of a
+        /// figure ON A MACHINE. <c>saddleOf()</c> reads absolute machine metres out of
+        /// <c>opts.saddle</c>, and the rig’s own worked example names where those metres come from:
+        /// <c>AtvIso.saddleFor()</c> / <c>AmphibIso.benchFor()</c>. <b>Neither function exists.</b>
+        /// Measured against the shipped kits on 2026-09-09: both read <c>undefined</c>, and handing
+        /// <c>AtvIso.anchors()</c> in raw is accepted SILENTLY and changes nothing at all — 0 of 112
+        /// frames moved, 0 px, on quad, dirtbike and trike alike — because the rig falls back to its
+        /// generic <c>SADDLE_DEF</c>. Adapting <c>anchors()</c> into the documented <c>.m</c> triples
+        /// moves every one of those 112 frames, by 53,557 px (quad), 57,187 (dirtbike) and 72,310
+        /// (trike). So a bake today would freeze ONE generic machine into a sheet that three real
+        /// machines then disagree with, and the disagreement is a fifth of the figure.</para>
+        ///
+        /// <para>These six are not “baked elsewhere” either — they are not baked at all, which is what
+        /// this field’s first line allows for and what this paragraph says out loud. The companion
+        /// contract is owed UPSTREAM and is relayed with the drop that brought the clips. The day
+        /// <c>saddleFor</c>/<c>benchFor</c> ship, these six stop being one row here and become one bake
+        /// PER MACHINE — a recipe change, not a list change.</para>
         /// </summary>
         public static readonly string[] PlayerAnimsBakedElsewhere =
         {
-            "swim", "tread", "sleep", "drive",
+            "swim", "tread", "sleep", "drive",                  // group 1: the 64 x 88 cell
+            "astride", "astrideStand", "mountUp", "mountDown",  // group 2: no machine to bake
+            "mountCab", "mountCabDown",                         //          against, yet
         };
 
         /// <summary>
