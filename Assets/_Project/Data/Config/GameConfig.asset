@@ -407,3 +407,12 @@ MonoBehaviour:
     AboardStopsWider: 2
   InteriorRockScale: 0.45
   StairClimbSeconds: 0.5
+  Juice:
+    GradeEnabled: 1
+    GradeGoldenHourWidthHours: 1.5
+    GradeNightBlendHours: 1
+    GradeFogVisibilityStart: 0.6
+    GradeFogVisibilityFull: 0.15
+    GradeStormSeaStateStart: 0.55
+    GradeStormSeaStateFull: 0.9
+    GradeRefreshHz: 10

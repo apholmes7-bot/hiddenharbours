@@ -733,6 +733,11 @@ namespace HiddenHarbours.Core
                  "camera moved for them.")]
         [Min(0f)] public float StairClimbSeconds = DefaultStairClimbSeconds;
 
+        [Header("Juice (the three moments — juice charter 2026-09-09)")]
+        [Tooltip("The juice lane's tunables: the post-processing grade's blend curve (PR 1), and later " +
+                 "the camera feel and the moment timings. Every field must exist in GameConfig.asset.")]
+        public JuiceSettings Juice = JuiceSettings.Default;
+
         // Convenience
         /// <summary>
         /// THE shared displacement exaggeration (ADR 0023 §(2)) — the accessor every water-riding
@@ -2704,6 +2709,64 @@ namespace HiddenHarbours.Core
             MovingWaterMetresPerHour = 0.25f,
             SchoolSpeciesBoost = 3f,
             OffSchoolSpeciesDamp01 = 0.4f,
+        };
+    }
+
+    /// <summary>
+    /// The three moments (juice charter, owner ruling 2026-09-09: "yes to 4, write the juice charter").
+    /// Every amplitude, duration, curve and threshold the juice lane's PRs add is a field here or on a
+    /// Def asset (rule 6), and every field is hand-added to <c>GameConfig.asset</c> in the same PR — an
+    /// absent field reads ZERO, and a zero here is "no grade at all", not "the default".
+    ///
+    /// <para><b>Grade*</b> (PR 1 — <c>MoodGradeDirector</c>): the BLEND curve between the five looks the
+    /// owner authors in <c>Resources/MoodGradeProfile.asset</c>. The looks are the profile's; how wide
+    /// the golden hour is, how fast night fades in, and where fog and storm begin are these.</para>
+    /// </summary>
+    [System.Serializable]
+    public struct JuiceSettings
+    {
+        [Header("Grade (PR 1) — the post-processing blend")]
+        [Tooltip("Master switch. OFF disables the Volume and hands the camera back with post-processing " +
+                 "off — the frame is exactly the pre-juice frame.")]
+        public bool GradeEnabled;
+
+        [Tooltip("Half-width of the golden-hour kernel, in hours, centred on sunrise and on sunset. The " +
+                 "Golden Hour look is at full weight ON the horizon crossing and fades linearly to " +
+                 "nothing this many hours either side. 0 = no golden hour.")]
+        [Min(0f)] public float GradeGoldenHourWidthHours;
+
+        [Tooltip("How many hours after sunset the Night look takes to reach full weight (and how many " +
+                 "before sunrise it starts letting go). 0 = a hard step at the horizon.")]
+        [Min(0f)] public float GradeNightBlendHours;
+
+        [Tooltip("Visibility (EnvironmentSample.Visibility, 0 fog .. 1 clear) at or above which the Fog " +
+                 "look has NO weight.")]
+        [Range(0f, 1f)] public float GradeFogVisibilityStart;
+
+        [Tooltip("Visibility at or below which the Fog look is at FULL weight. Linear between the two.")]
+        [Range(0f, 1f)] public float GradeFogVisibilityFull;
+
+        [Tooltip("Sea state (EnvironmentSample.SeaState01) at or below which the Storm look has NO weight.")]
+        [Range(0f, 1f)] public float GradeStormSeaStateStart;
+
+        [Tooltip("Sea state at or above which the Storm look is at FULL weight. Linear between the two.")]
+        [Range(0f, 1f)] public float GradeStormSeaStateFull;
+
+        [Tooltip("How often the director re-evaluates the blend, per second (unscaled time). The look " +
+                 "changes over minutes of game time, so 10 Hz is invisible; this is a slow-tick budget " +
+                 "knob (rule 7), not a smoothing — there is no smoothing.")]
+        [Min(1f)] public float GradeRefreshHz;
+
+        public static JuiceSettings Default => new JuiceSettings
+        {
+            GradeEnabled = true,
+            GradeGoldenHourWidthHours = 1.5f,
+            GradeNightBlendHours = 1f,
+            GradeFogVisibilityStart = 0.6f,
+            GradeFogVisibilityFull = 0.15f,
+            GradeStormSeaStateStart = 0.55f,
+            GradeStormSeaStateFull = 0.9f,
+            GradeRefreshHz = 10f,
         };
     }
 }

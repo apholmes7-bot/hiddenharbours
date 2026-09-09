@@ -1,0 +1,99 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ab699884fd844a5ab6f6562ebc713f0, type: 3}
+  m_Name: MoodGradeProfile
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.MoodGradeProfile
+  _day:
+    BloomIntensity: 0.3
+    BloomThreshold: 0.95
+    BloomScatter: 0.7
+    Lift: {x: 1, y: 1, z: 1, w: 0}
+    Gamma: {x: 1, y: 1, z: 1, w: 0}
+    Gain: {x: 1, y: 1, z: 1, w: 0}
+    PostExposure: 0
+    Contrast: 5
+    Saturation: 8
+    ColorFilter: {r: 1, g: 1, b: 1, a: 1}
+    VignetteIntensity: 0.15
+    VignetteSmoothness: 0.4
+    VignetteColor: {r: 0, g: 0, b: 0, a: 1}
+    GrainIntensity: 0
+    GrainResponse: 0.8
+    ChromaticAberration: 0
+  _goldenHour:
+    BloomIntensity: 0.5
+    BloomThreshold: 0.85
+    BloomScatter: 0.75
+    Lift: {x: 1.06, y: 1, z: 0.92, w: 0.02}
+    Gamma: {x: 1, y: 1, z: 1, w: 0}
+    Gain: {x: 1.05, y: 0.98, z: 0.9, w: 0}
+    PostExposure: 0
+    Contrast: 10
+    Saturation: 12
+    ColorFilter: {r: 1, g: 0.95, b: 0.86, a: 1}
+    VignetteIntensity: 0.22
+    VignetteSmoothness: 0.45
+    VignetteColor: {r: 0.12, g: 0.06, b: 0.02, a: 1}
+    GrainIntensity: 0
+    GrainResponse: 0.8
+    ChromaticAberration: 0
+  _night:
+    BloomIntensity: 0.8
+    BloomThreshold: 0.75
+    BloomScatter: 0.8
+    Lift: {x: 0.9, y: 0.95, z: 1.1, w: -0.02}
+    Gamma: {x: 0.95, y: 0.98, z: 1.05, w: 0}
+    Gain: {x: 0.95, y: 0.98, z: 1.05, w: 0}
+    PostExposure: 0
+    Contrast: 10
+    Saturation: -15
+    ColorFilter: {r: 0.9, g: 0.94, b: 1, a: 1}
+    VignetteIntensity: 0.3
+    VignetteSmoothness: 0.5
+    VignetteColor: {r: 0.02, g: 0.03, b: 0.08, a: 1}
+    GrainIntensity: 0
+    GrainResponse: 0.8
+    ChromaticAberration: 0
+  _fog:
+    BloomIntensity: 0.2
+    BloomThreshold: 0.9
+    BloomScatter: 0.9
+    Lift: {x: 1.02, y: 1.02, z: 1.02, w: 0.04}
+    Gamma: {x: 1, y: 1, z: 1, w: 0}
+    Gain: {x: 0.95, y: 0.95, z: 0.95, w: 0}
+    PostExposure: 0
+    Contrast: -20
+    Saturation: -40
+    ColorFilter: {r: 0.94, g: 0.96, b: 0.98, a: 1}
+    VignetteIntensity: 0.4
+    VignetteSmoothness: 0.6
+    VignetteColor: {r: 0.6, g: 0.64, b: 0.68, a: 1}
+    GrainIntensity: 0
+    GrainResponse: 0.8
+    ChromaticAberration: 0
+  _storm:
+    BloomIntensity: 0.25
+    BloomThreshold: 0.9
+    BloomScatter: 0.7
+    Lift: {x: 0.95, y: 0.97, z: 1, w: -0.03}
+    Gamma: {x: 1, y: 1, z: 1, w: 0}
+    Gain: {x: 0.9, y: 0.93, z: 0.98, w: 0}
+    PostExposure: 0
+    Contrast: 20
+    Saturation: -25
+    ColorFilter: {r: 0.85, g: 0.9, b: 0.98, a: 1}
+    VignetteIntensity: 0.35
+    VignetteSmoothness: 0.4
+    VignetteColor: {r: 0.05, g: 0.06, b: 0.08, a: 1}
+    GrainIntensity: 0
+    GrainResponse: 0.8
+    ChromaticAberration: 0
