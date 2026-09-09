@@ -131,3 +131,10 @@ InitTestScene*.unity*
 # else in the repo would otherwise mention Python).
 __pycache__/
 *.py[cod]
+
+# The audio lane's working area: downloaded sources, the build scripts, and the
+# intermediate renders. The COMMITTED audio is the small set under
+# Assets/_Project/Audio/ with a row each in that folder's LICENSES.md; the raw
+# downloads behind them are hundreds of MB and regenerable from the URLs in that
+# ledger, so they stay out of a public repository.
+/_inbox/
