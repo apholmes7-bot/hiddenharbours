@@ -822,4 +822,4 @@ composited after the post pass and is never graded.
 ### 8.5 Not done here
 
 No new effect beyond the charter's list (no DOF, no motion blur); no scene edit; no shader; no
-audio. The camera speaking (push-in, shake, pull-back) is PR 2; the three moments are PR 3.
+audio. The camera speaking (push-in, shake, pull-back) is PR 2 (`camera-feel.md`); the three moments are PR 3.

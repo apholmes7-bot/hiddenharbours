@@ -416,3 +416,19 @@ MonoBehaviour:
     GradeStormSeaStateStart: 0.55
     GradeStormSeaStateFull: 0.9
     GradeRefreshHz: 10
+    FeelEnabled: 1
+    FeelOnDeckEnabled: 0
+    CatchPushInFraction: 0.08
+    CatchPushInSeconds: 0.12
+    CatchPushOutSeconds: 0.45
+    CatchPushInHeavyKg: 6
+    CatchPushInLightScale: 0.35
+    ImpactShakeMeters: 0.18
+    ImpactShakeSeconds: 0.3
+    ImpactShakeHz: 18
+    SpeedPullBackFraction: 0.1
+    SpeedPullBackStartMps: 2.5
+    SpeedPullBackFullMps: 7
+    SpeedPullBackSeaStateFraction: 0.05
+    SpeedPullBackSlewSeconds: 2
+    FeelSeaStateRefreshHz: 4
