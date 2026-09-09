@@ -10,7 +10,7 @@ namespace HiddenHarbours.Environment
     ///
     /// <para>VS-05 — the wind is a smooth FIELD: a region's <b>prevailing</b> wind (a gentle SW'ly
     /// over Coddle Cove) that wanders on a slow channel, with faster <b>gusts</b> layered on top,
-    /// all clamped into the <b>calm band</b> (no storms — that's M2). The wind tunables live on
+    /// and - since the owner's 2026-09-09 ruling - a much slower, skewed WEATHER-SYSTEM channel on
     /// <see cref="WindProfile"/> (not GameConfig), mirroring how <see cref="TideProfile"/> carries
     /// per-region tide character. Same <c>(totalSeconds, seed, profile)</c> → identical wind.</para>
     /// </summary>
@@ -47,7 +47,7 @@ namespace HiddenHarbours.Environment
 
         /// <summary>
         /// The deterministic wind field (VS-05): prevailing direction + a slow wander, plus a faster
-        /// gust octave (with a small veer), clamped into the calm band. Pure and engine-light (no
+        /// gust octave (with a small veer), plus the world's weather-system channel. Pure and engine-light (no
         /// GameConfig, no state) so it is trivially EditMode-testable and cheap at the 4 Hz tick.
         /// Smooth in time (value noise with a smoothstep fade — C1, so it never pops).
         /// </summary>
@@ -70,17 +70,62 @@ namespace HiddenHarbours.Environment
             float gustT = (float)(hours / Mathf.Max(0.01f, p.GustChangeHours));
             float gustN = Noise(gustT + 523.0f, seed);    // [-1, 1]
 
+            // 🔴 WEATHER-SYSTEM channel (owner ruling 2026-09-09: every rung reachable). A gale is
+            // not a big gust; it is a depression walking through, so it gets its own channel: much
+            // slower than the other two, and SKEWED by SystemShape so it rests at zero most of the
+            // time and occasionally builds for hours. That is what puts Gale and Storm on the map
+            // without making the average day rough.
+            float systemFactor = WeatherSystemFactor(hours, seed);
+
             float dirRad = p.PrevailingDirectionDeg * Mathf.Deg2Rad
                          + dirN  * p.DirectionWanderDeg * Mathf.Deg2Rad
                          + gustN * p.GustVeerDeg        * Mathf.Deg2Rad;
 
             float strength = p.MeanStrength
                            + strN  * p.StrengthVariability
-                           + gustN * p.GustStrength;
-            strength = Mathf.Clamp(strength, 0f, p.CalmMaxStrength);   // calm band — no storms in M1
+                           + gustN * p.GustStrength
+                           + systemFactor * Mathf.Max(0f, p.SystemStrength);
+            // The ceiling is a RAIL, not the tuning (see WindProfile.CalmMaxStrength): the law's own
+            // amplitudes are what decide the weather. Through M1 this clamp never once bound.
+            strength = Mathf.Clamp(strength, 0f,
+                                   p.CalmMaxStrength > 0f ? p.CalmMaxStrength : float.MaxValue);
 
             return new Vector2(Mathf.Cos(dirRad), Mathf.Sin(dirRad)) * strength;
         }
+
+        /// <summary>
+        /// 🔴 <b>The world's weather-system channel, in [0, 1]</b> — how far through a passing
+        /// depression the world is right now. A region multiplies this by its own
+        /// <see cref="WindProfile.SystemStrength"/> and adds it to the wind; nothing else about it is
+        /// local.
+        ///
+        /// <para>⚠️ <b>Deliberately WORLD-level.</b> One noise stream per world seed, one shape,
+        /// shared by every region — so at the same <c>(seed, gameTime)</c> two regions differ only
+        /// by their scale. A per-region stream would let Nine Mile Creek blow a gale while St Peters,
+        /// ten kilometres away on the same island, lay glass.</para>
+        ///
+        /// <para><b>Skewed on purpose.</b> The raw noise is symmetric in [-1, 1]; taking only its
+        /// positive half and raising it to <see cref="SystemShape"/> leaves the channel at or near
+        /// zero for most of a week and building for hours when a system does come through. A
+        /// symmetric channel would have made the average day rough, which is not what P5 asks for.
+        /// Pure in <c>(seed, hours)</c>: no accumulator, no state, nothing saved (rule 5).</para>
+        /// </summary>
+        public static float WeatherSystemFactor(double hours, int seed)
+        {
+            float t = (float)(hours / SystemChangeHours);
+            float n = Noise(t + 313.0f, seed);                    // [-1, 1], the world's own stream
+            return Mathf.Pow(Mathf.Max(0f, n), SystemShape);      // [0, 1], resting at 0
+        }
+
+        /// <summary>In-game hours a weather system takes to build and pass — the third channel's
+        /// timescale. Slow against the 6 h strength swell and the 0.4 h gusts, so a blow is an event
+        /// with a shape rather than a flicker. World-level: NOT per region.</summary>
+        public const float SystemChangeHours = 16f;
+
+        /// <summary>How SKEWED the system channel is. 1 would make weather systems as common as their
+        /// absence; higher leaves the channel resting at zero and makes a real blow an occasional
+        /// event. World-level: NOT per region, so every region agrees about what day it is.</summary>
+        public const float SystemShape = 2.4f;
 
         // The wind-strength (m/s) band edges of the canon sea-state scale (rough Beaufort-ish).
         // SeaBandEdges[k] is where the enum flips from state k-1 to state k; the LAST edge is where

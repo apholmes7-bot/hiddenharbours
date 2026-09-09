@@ -35,24 +35,47 @@ namespace HiddenHarbours.Tests.EditMode
             }
         }
 
+        /// <summary>
+        /// ⚠️ <b>RE-DERIVED 2026-09-09 (owner ruling: the wind uncaps).</b> This was
+        /// <c>Wind_StaysInCalmBand</c>, and it asserted <c>SeaFromWind(s) ≤ Moderate</c> — which is
+        /// precisely what the owner ruled away. The M1 calm band is over: Lively, Rough, Gale and
+        /// Storm are reachable now, and a guard forbidding them would forbid the feature.
+        ///
+        /// <para>What survives is the half that was never about the band: the wind must be FINITE,
+        /// non-negative, and inside the profile's own rail. ⚠️ That rail is a backstop, not a tuning —
+        /// through M1 it sat at 5.7 m/s while the law could only reach 5.5, so it never once bound.
+        /// What the weather should actually DO is <c>WindUncapReachTests</c>' question, not this
+        /// one's.</para>
+        /// </summary>
         [Test]
-        public void Wind_StaysInCalmBand()
+        public void Wind_IsFinite_AndStaysInsideItsProfilesRail()
         {
-            float cap = Cove.CalmMaxStrength;
+            float rail = Cove.CalmMaxStrength;
+            float peak = 0f;
             foreach (int seed in new[] { 1, 7, 42, 12345, -9999 })
             {
-                // ~12.5 in-game days at ~2.5 s steps — many slow- and gust-channel cells.
+                // ~12.5 in-game days at ~2.5 s steps — many slow-, gust- and system-channel cells.
                 for (int i = 0; i < 6000; i++)
                 {
                     double t = i * (SecondsPerHour * 0.05);
                     Vector2 w = WeatherModel.SampleWind(t, seed, SecondsPerHour, Cove);
                     float s = w.magnitude;
                     Assert.IsFalse(float.IsNaN(s) || float.IsInfinity(s), "wind must be finite");
-                    Assert.LessOrEqual(s, cap + 1e-3f, $"wind {s:0.00} m/s exceeded calm cap at t={t}, seed={seed}");
-                    Assert.LessOrEqual((int)WeatherModel.SeaFromWind(s), (int)SeaState.Moderate,
-                        $"sea state climbed past the calm band at t={t}, seed={seed}");
+                    Assert.GreaterOrEqual(s, 0f, $"wind went negative at t={t}, seed={seed}");
+                    Assert.LessOrEqual(s, rail + 1e-3f,
+                        $"wind {s:0.00} m/s exceeded the profile's rail at t={t}, seed={seed}");
+                    peak = Mathf.Max(peak, s);
                 }
             }
+
+            TestContext.WriteLine($"  peak over the sweep {peak:0.00} m/s against a rail of {rail:0.00}");
+            Assert.Greater(peak, 8f,
+                "⭐ AND THE UNCAP HAS TO BE REAL: somewhere in twelve days across five seeds the wind " +
+                "must reach past Lively, or the weather-system channel is doing nothing and the " +
+                "ladder is unreachable again. The superseded law peaked at 5.5 m/s on this sweep.");
+            Assert.Less(peak, rail,
+                "…while still not touching the rail. That is what says the LAW is the ceiling and the " +
+                "clamp is only a backstop — the confusion this whole PR had to correct.");
         }
 
         [Test]
