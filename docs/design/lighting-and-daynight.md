@@ -743,3 +743,83 @@ If a future need outgrows additive sprites (e.g. real occlusion/shadow-casting l
 remains: migrate the relevant sprites to Sprite-Lit and drive a `Light2D` from the same `DayNightProfile`. The
 **durable model** (`DayNightProfile` + `DayNightMath` + the published globals + now `LightMath`) carries over;
 only the *output stage* changes. Decide if/when that need arrives.
+
+---
+
+## 8. The grade — `MoodGradeDirector` (juice PR 1)
+
+Layered ON TOP of everything above, and separate from it: §1–§7 is the *lighting* (the multiply
+overlay, the sky tint, the lamps), which darkens the world; this section is the *grade*, a URP 2D
+post-processing Volume that colours the finished frame the way the art bible §4.2 asks — warm lift
+at golden hour, cold shadows and blooming lamps at night, the vignette closing in as the fog does.
+Owner ruling 2026-09-09 ("yes to 4, write the juice charter"), PR 1 of the juice lane; pillars P1
+(The Sea Has Moods) and P5 (Cozy but with Teeth).
+
+### 8.1 What it is
+
+- **One global `Volume`**, priority 100, on a self-installing hidden host
+  (`MoodGradeDirector`, mirrors `DayNightController`). Nothing is placed in any scene — St Peters is
+  not rebuilt, no builder is touched. The host turns the main camera's `renderPostProcessing` ON at
+  runtime (the scenes ship with it off) and back off if the grade is disabled.
+- **Five authored looks** in ONE asset, `Assets/_Project/Resources/MoodGradeProfile.asset`
+  (`MoodGradeProfile`): **Day · Golden hour · Night · Fog · Storm**. Every field of each is an
+  inspector number — Bloom (intensity / threshold / scatter), Lift-Gamma-Gain (three trackballs),
+  Color Adjustments (exposure / contrast / saturation / filter), Vignette (intensity / smoothness /
+  colour), Film Grain and Chromatic Aberration (both ship at 0 — see the budget).
+- **A blend that is a pure function of the world's facts** (`MoodGradeMath`, no accumulator, no
+  smoothing, nothing saved — rule 5): the clock hour against the `DayNightProfile`'s sunrise/sunset
+  (`DayNightMath.IsDaylight`), `EnvironmentSample.Visibility`, `EnvironmentSample.SeaState01`, and
+  `GameServices.CurrentRegionId`. All read through Core; nothing written.
+  - Day / Golden hour / Night **partition** the day (sum to 1). Night fades in over
+    `GradeNightBlendHours` after sunset and out before sunrise; Golden hour is a triangle of
+    half-width `GradeGoldenHourWidthHours` centred on each horizon crossing; Day is the rest.
+  - **Fog** lays over that by `Visibility` (0 at `GradeFogVisibilityStart`, 1 at
+    `GradeFogVisibilityFull`), then **Storm** by `SeaState01` (0 at `GradeStormSeaStateStart`, 1 at
+    `GradeStormSeaStateFull`). A foggy dusk is mostly fog with a little amber left in it.
+- **A per-region bias** — one `MoodGradeRegionOverride` asset per region under
+  `Assets/_Project/Resources/MoodGrade/` (tint × filter, offsets to saturation / contrast /
+  exposure / vignette / bloom), keyed by the `RegionDef` id. Ships: St Peters (identity — the file
+  the owner edits), Coddle Cove (warmest, balanced), Nine Mile Creek (warm, the most colourful —
+  bible §4.3). A region with no file gets no bias.
+
+### 8.2 Tunables (rule 6 — every one is in the `.asset`, none is a magic number)
+
+| Where | Field | Ships | What it does |
+|---|---|---|---|
+| `GameConfig ▸ Juice` | `GradeEnabled` | on | Master switch; OFF hands the camera back with post-processing off. |
+| | `GradeGoldenHourWidthHours` | 1.5 | Half-width of the golden hour either side of sunrise/sunset. 0 = none. |
+| | `GradeNightBlendHours` | 1.0 | Hours after sunset for Night to reach full. 0 = a hard step. |
+| | `GradeFogVisibilityStart` / `Full` | 0.6 / 0.15 | Visibility at which Fog begins / is total. |
+| | `GradeStormSeaStateStart` / `Full` | 0.55 / 0.9 | Sea state at which Storm begins / is total. |
+| | `GradeRefreshHz` | 10 | Slow-tick rate of the blend (unscaled time). Budget, not smoothing. |
+| `MoodGradeProfile.asset` | five × sixteen fields | bible §4.2 | The LOOKS. Open it, edit a key, scrub the clock in Play. |
+| `MoodGrade/<Region>.asset` | tint + five offsets | §4.3 | The region's bias over the blended look. |
+
+The code default (`MoodGradeProfile.CreateDefault`) is the fallback for a scene that loads without
+the asset. `MoodGradeProfileAssetTests` pins the asset and the fallback on the FEATURE facts (night
+colder than day, golden gain warmer, fog crushes saturation and closes the vignette, grain and
+chroma OFF) — not the numbers, which are the owner's to move.
+
+### 8.3 Budget (rule 7)
+
+One Volume; **≤ 4 overrides active**, enforced in `MoodGradeStack` — an effect at its identity is
+`active = false` (URP skips it), and if a grade would want more than four, chromatic aberration
+then film grain then bloom are dropped and `DroppedCount` says so. The shipped keys use exactly
+Bloom + LGG + Color Adjustments + Vignette; grain and chroma cost nothing until the owner turns one
+on, and turning one on spends a slot. The blend runs on the slow tick, allocation-free after Awake.
+The post pass's own frame cost is what the owner's slot measures (profiler ms at the St Peters
+landing, before / after, 1080p on the RTX 4060); if it is over 1.0 ms an effect is cut.
+
+### 8.4 What the slot measures (acceptance)
+
+Four times of day (02:00 night · 06:00 golden · 12:00 day · 20:00 golden→night) × two weathers
+(clear · fog) at the St Peters landing, shot as one sheet with the plate fixture asserting the
+subject is in frame — then the owner's eye. Plus the profiler line and the active-effect count.
+`MoodGradeDirector.Instance.LastWeights` / `LastGrade` / `ActiveEffectCount` are there for the
+fixture to print on each plate. Every canvas in the project is Screen Space – Overlay, so UI is
+composited after the post pass and is never graded.
+
+### 8.5 Not done here
+
+No new effect beyond the charter's list (no DOF, no motion blur); no scene edit; no shader; no
+audio. The camera speaking (push-in, shake, pull-back) is PR 2; the three moments are PR 3.
