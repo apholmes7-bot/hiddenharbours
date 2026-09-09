@@ -189,6 +189,16 @@ namespace HiddenHarbours.Player
                  "springs agree only with themselves.")]
         [SerializeField, Min(0f)] private float _hullRideStrength = 1f;
 
+        [Tooltip("How much of the hull's OWN applied attitude a rider on a mesh hull takes. 1 = she " +
+                 "rides exactly what the picture is doing, which is the honest default; 0 stands her " +
+                 "square on a rolling deck.\n\n" +
+                 "It replaces the three amplitude knobs above ON THE MESH PATH ONLY. Those were a feel " +
+                 "pass — 5 deg of lean, 1.6 px of heave — on numbers the hull never agreed with: the " +
+                 "cape rocks 3.4 deg and 1.3 px, and in a FLAT CALM her transom point missed by 6.1 px " +
+                 "and her foredeck by 5.5. A SPRITE hull keeps them, because her rock is the baked " +
+                 "frame grid and a cosmetic lean is the only way a rider can share it.")]
+        [SerializeField, Min(0f)] private float _hullMirrorStrength = 1f;
+
         [Header("Facing (which way the figure looks while aboard)")]
         [Tooltip("Deck-frame speed (m/s) below which a step is treated as noise and the fisher's DECK " +
                  "BEARING is held — so someone who stops keeps looking where they were going instead of " +
@@ -511,8 +521,12 @@ namespace HiddenHarbours.Player
             // (2) RIDE. The rock the hull is drawing, in the rider's own tuned amplitudes.
             DeckRidePose pose = ReadRide();
             Pose = pose;
+            // ⚠ SWAY as well as lift. The pose gained a lateral term because the hull's roll and pitch
+            // swing an off-centre deck point SIDEWAYS, and a vertical-only offset cannot follow it —
+            // 5.5 px of it at the cape's foredeck in a flat calm. 0 on the sprite path, so that write
+            // is byte-identical to what it was.
             _riderRenderer.transform.localPosition =
-                _riderBaseLocalPosition + new Vector3(0f, pose.LiftMeters, 0f);
+                _riderBaseLocalPosition + new Vector3(pose.SwayMeters, pose.LiftMeters, 0f);
             // WORLD rotation, not local: the drawn figure's screen orientation IS the pose and nothing else.
             // A local write would compose the lean onto whatever the player root happens to be carrying, and
             // aboard that root is a child of the hull's ROTATING physics body — which is how the pilot came
@@ -907,6 +921,45 @@ namespace HiddenHarbours.Player
             // The LIVE hull, for both reads below — the two must be about the same boat, and the
             // presenter is the one thing a re-skin swaps out under the player's feet (see LiveHull).
             IBoatHullPresenter hull = LiveHull();
+
+            // ⭐⭐ (0) A HULL THAT APPLIES A CONTINUOUS ATTITUDE IS MIRRORED, NOT IMITATED.
+            //
+            // The mesh path knows the roll, pitch and heave it handed the renderer this frame, so the
+            // body rides THOSE, at the deck point she is actually standing on, through the same
+            // projection that placed her — lever arm included. What this replaces was a private cycle
+            // at private amplitudes: a 5° lean and 1.6 px of heave against a cape that rocks 3.4° and
+            // 1.3 px, scaled by a storm on one side only. Measured at anchor with no storm at all,
+            // that missed her foredeck point by 5.5 px and her transom by 6.1, against a 1 px bar —
+            // and the foredeck's error was 5.5 px of pure LATERAL swing, which a lean-plus-lift pose
+            // has no term to express at any amplitude (owner playtest 2026-09-09).
+            //
+            // ⚠⚠ THE RIDE IS SUBTRACTED BEFORE MIRRORING AND ADDED BACK THROUGH ITS OWN KNOB.
+            // MeshHullDriver folds the displaced ride INTO the heave channel it reports, so
+            // AppliedHeaveMeters carries BOTH the rock heave and the ride. Mirroring that whole
+            // number and stopping there rides the sea correctly but silently retires
+            // _hullRideStrength — the displaced ride's own A/B knob, whose contract is stated on the
+            // seam ("0 with the displaced sea off, so the A/B's off side is untouched"). The first
+            // execution of the new fixture caught exactly that: four DeckRiderDisplacedRideTests
+            // cases toggle hullRide 0/1 and measure the difference, and they read 0.
+            // So: mirror the ROCK half at the mirror strength, and compose the RIDE back through
+            // DeckRideMath.RidingHull at its own — the shipped composition, both knobs alive, and
+            // no double count, because the ride is taken out before the mirror sees it.
+            //
+            // ⛔ A SPRITE hull falls through to (1) unchanged. Her rock IS the baked frame grid — no
+            // continuous attitude exists to mirror — so the cosmetic lean below is the only way she can
+            // share it, and the dory's oar rock is untouched by construction.
+            if (hull != null && hull.SupportsContinuousRock)
+            {
+                Vector2 stand = _deckWalk != null ? _deckWalk.DeckLocalPosition : Vector2.zero;
+                float standHeight = _deckWalk != null ? _deckWalk.DeckHeightMeters : 0f;
+                float rockHeaveMeters = hull.AppliedHeaveMeters - hull.DrawnRideMeters;
+                DeckRidePose mirrored = MountedRockPoseMath.MirrorHull(
+                    new Vector3(stand.x, stand.y, standHeight), hull.DrawnHeadingDegrees(),
+                    hull.AppliedRollDegrees, hull.AppliedPitchDegrees, rockHeaveMeters,
+                    hull.BakeElevationDegrees, _rideStrength * _hullMirrorStrength);
+                return DeckRideMath.RidingHull(mirrored, hull.DrawnRideMeters,
+                                               _hullRideStrength * _rideStrength);
+            }
 
             // (1) THE ROCK CYCLE — the in-place lean and heave the hull's own art draws.
             DeckRidePose pose = DeckRidePose.Level;

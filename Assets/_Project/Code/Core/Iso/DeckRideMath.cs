@@ -2,7 +2,15 @@ using UnityEngine;
 
 namespace HiddenHarbours.Core
 {
-    /// <summary>The screen-space pose a body takes to RIDE a rocking deck: a lean and a lift.</summary>
+    /// <summary>The screen-space pose a body takes to RIDE a rocking deck: a lean, a lift and a sway.
+    ///
+    /// <para>⭐⭐ <b>The SWAY is why this is three numbers and not two.</b> It was a lean and a lift,
+    /// and a lean-plus-lift cannot follow a deck point that the hull's roll and pitch swing SIDEWAYS.
+    /// Measured on the cape at anchor, no storm at all: her foredeck point misses by 5.5 px and
+    /// <b>5.5 of those 5.5 are lateral</b> — an error no choice of lift amplitude can remove, because
+    /// the pose had no term in which to say it. Her transom, at the same moment, misses by 6.1 px of
+    /// which 6.1 are vertical. Same rock, opposite failure, because the LEVER ARM points differently
+    /// at each end of the boat (owner playtest 2026-09-09).</para></summary>
     public readonly struct DeckRidePose
     {
         /// <summary>Additive z-rotation (degrees, +CCW) about the body's FEET — the sheets' pivot is
@@ -13,11 +21,23 @@ namespace HiddenHarbours.Core
         /// <summary>Screen-vertical (world +Y) offset in METRES — the deck coming up to meet the feet.</summary>
         public readonly float LiftMeters;
 
+        /// <summary>Screen-horizontal (world +X) offset in METRES — the deck going out from under
+        /// them. 0 for every pose built the two-argument way, so a cosmetic lean-and-lift is
+        /// unchanged by this field existing.</summary>
+        public readonly float SwayMeters;
+
         public DeckRidePose(float rollDegrees, float liftMeters)
+            : this(rollDegrees, liftMeters, 0f) { }
+
+        public DeckRidePose(float rollDegrees, float liftMeters, float swayMeters)
         {
             RollDegrees = rollDegrees;
             LiftMeters = liftMeters;
+            SwayMeters = swayMeters;
         }
+
+        /// <summary>The offset this pose moves the body by, screen metres.</summary>
+        public Vector2 OffsetMeters => new Vector2(SwayMeters, LiftMeters);
 
         /// <summary>Standing square on a level deck — no lean, no lift. What a calm hull, a hull ashore,
         /// or a switched-off ride all answer.</summary>
@@ -156,7 +176,8 @@ namespace HiddenHarbours.Core
             if (strength <= 0f || hullRideMeters == 0f) return deckPose;
             if (float.IsNaN(hullRideMeters) || float.IsInfinity(hullRideMeters)) return deckPose;
             return new DeckRidePose(deckPose.RollDegrees,
-                                    deckPose.LiftMeters + hullRideMeters * strength);
+                                    deckPose.LiftMeters + hullRideMeters * strength,
+                                    deckPose.SwayMeters);
         }
 
         /// <summary>
