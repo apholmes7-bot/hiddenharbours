@@ -933,9 +933,17 @@ namespace HiddenHarbours.Player
             // and the foredeck's error was 5.5 px of pure LATERAL swing, which a lean-plus-lift pose
             // has no term to express at any amplitude (owner playtest 2026-09-09).
             //
-            // ⚠ NO RidingHull() ON THIS PATH, deliberately: MeshHullDriver folds the displaced ride
-            // INTO the heave channel it reports, so AppliedHeaveMeters already carries it. Adding
-            // DrawnRideMeters here would ride the sea twice.
+            // ⚠⚠ THE RIDE IS SUBTRACTED BEFORE MIRRORING AND ADDED BACK THROUGH ITS OWN KNOB.
+            // MeshHullDriver folds the displaced ride INTO the heave channel it reports, so
+            // AppliedHeaveMeters carries BOTH the rock heave and the ride. Mirroring that whole
+            // number and stopping there rides the sea correctly but silently retires
+            // _hullRideStrength — the displaced ride's own A/B knob, whose contract is stated on the
+            // seam ("0 with the displaced sea off, so the A/B's off side is untouched"). The first
+            // execution of the new fixture caught exactly that: four DeckRiderDisplacedRideTests
+            // cases toggle hullRide 0/1 and measure the difference, and they read 0.
+            // So: mirror the ROCK half at the mirror strength, and compose the RIDE back through
+            // DeckRideMath.RidingHull at its own — the shipped composition, both knobs alive, and
+            // no double count, because the ride is taken out before the mirror sees it.
             //
             // ⛔ A SPRITE hull falls through to (1) unchanged. Her rock IS the baked frame grid — no
             // continuous attitude exists to mirror — so the cosmetic lean below is the only way she can
@@ -944,10 +952,13 @@ namespace HiddenHarbours.Player
             {
                 Vector2 stand = _deckWalk != null ? _deckWalk.DeckLocalPosition : Vector2.zero;
                 float standHeight = _deckWalk != null ? _deckWalk.DeckHeightMeters : 0f;
-                return MountedRockPoseMath.MirrorHull(
+                float rockHeaveMeters = hull.AppliedHeaveMeters - hull.DrawnRideMeters;
+                DeckRidePose mirrored = MountedRockPoseMath.MirrorHull(
                     new Vector3(stand.x, stand.y, standHeight), hull.DrawnHeadingDegrees(),
-                    hull.AppliedRollDegrees, hull.AppliedPitchDegrees, hull.AppliedHeaveMeters,
+                    hull.AppliedRollDegrees, hull.AppliedPitchDegrees, rockHeaveMeters,
                     hull.BakeElevationDegrees, _rideStrength * _hullMirrorStrength);
+                return DeckRideMath.RidingHull(mirrored, hull.DrawnRideMeters,
+                                               _hullRideStrength * _rideStrength);
             }
 
             // (1) THE ROCK CYCLE — the in-place lean and heave the hull's own art draws.

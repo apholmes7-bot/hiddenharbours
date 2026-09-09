@@ -165,8 +165,17 @@ namespace HiddenHarbours.Tests.EditMode
             def.CellW = 456; def.CellH = 420;
             def.ElevationDeg = Elevation;
             def.AzimuthCounterClockwise = true;
-            def.RockRollDegrees = 0f;
-            def.RockPitchDegrees = 0f;
+            // ⚠ HER ROCK NOW HAS A ROLL IN IT, and that is a correction, not a loosening.
+            // This double declared 0° of roll while TheRide_ComposesWithTheRockCycle asserted the
+            // rider LEANS — which passed only because the old rider leaned on its own account, at a
+            // private 5° the hull never agreed with. With no roll on the hull, that assertion could
+            // not tell "the ride reached the roll channel" from "there was never a lean": it was
+            // green for the wrong reason. The rider now mirrors what the hull APPLIED, so a hull
+            // that declares no roll draws a rider who does not lean — correctly. The fleet's shipped
+            // value (CapeIslanderIso / DoryIso MotorRockRollDegrees) makes this double a real rock
+            // and the assertion measure its own sentence.
+            def.RockRollDegrees = 3.4f;
+            def.RockPitchDegrees = 1.9f;
             def.RockHeavePixels = rockHeavePixels;
             def.RestingDraftMeters = Draft;
 
