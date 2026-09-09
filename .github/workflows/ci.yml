@@ -47,6 +47,14 @@
 # so the SHA pin above is untouched. When upstream teaches the toolchain the 3.20+ layout, drop
 # this line and let the hub float again.
 
+# WHY THE CHROME APT SOURCE IS DROPPED (the step right before "Set up Unity") — 2026-09-09.
+# The ubuntu-24.04 runner image ships /etc/apt/sources.list.d/google-chrome*.list. dl.google.com's
+# chrome-stable repo served a Packages.gz whose hash did not match its InRelease ("Hash Sum
+# mismatch"); `unity-setup`'s hub install runs `apt-get update` under `set -e`, so every run
+# repo-wide died at "Set up Unity" (sudo exit 100, then ENOENT /opt/unityhub/unityhub) — main
+# 1794adc6 and PR #813 twice each, re-runs included. Nothing in this workflow needs Chrome, so the
+# source is removed before apt ever runs. Harmless when Google's mirror is healthy.
+
 name: CI
 
 on:
@@ -257,6 +265,11 @@ jobs:
           key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
           restore-keys: |
             Library-
+
+      - name: Drop the runner image's Google Chrome apt source
+        # See "WHY THE CHROME APT SOURCE IS DROPPED" in the header: keeps unity-setup's apt-get
+        # update off dl.google.com, whose Packages.gz hash mismatch killed every run on 2026-09-09.
+        run: sudo rm -f /etc/apt/sources.list.d/google-chrome*.list /etc/apt/sources.list.d/google-chrome*.sources
 
       - name: Set up Unity
         id: setup_unity
