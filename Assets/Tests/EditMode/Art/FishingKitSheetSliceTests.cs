@@ -193,16 +193,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
         /// sheet FAILS the closed-set guard rather than quietly reading as "pending". Add a stem
         /// here ONLY when a future kit extension specs a sheet ahead of its bake.
         /// </summary>
-        private static readonly HashSet<string> AwaitingOwnerBake = new HashSet<string>
-        {
-            // The CLAM SPADE, spec'd here ahead of its bake — exactly the case the paragraph above
-            // reserves this set for. `shovelIsoRig.js` has been committed and UNREGISTERED since it
-            // landed (CharacterRigBaker said so in its own words), so the kit's code, its slicer
-            // spec and these guards land first and the sheets follow on one editor slot. Absent is
-            // tolerated; the moment a Shovel_*.png appears it is held to every assertion in this
-            // file. ⚠️ The PR that commits the bake EMPTIES this set.
-            "Shovel_dig", "Shovel_ground", "Shovel_stored",
-        };
+        private static readonly HashSet<string> AwaitingOwnerBake = new HashSet<string>();
 
         /// <summary>
         /// Stems that ARE on disk but whose spec above has moved past them — the other half of the
@@ -309,15 +300,18 @@ namespace HiddenHarbours.Tests.Art.EditMode
                                $"'{stem}' is a ROD sheet pending a re-bake; re-bake it rather than " +
                                "guarding it.");
 
-            // The SPADE is the only kit legitimately pending, and only until its first bake. Pinned
-            // as an exact set so a fourth pending stem cannot join quietly, and so the PR that
-            // commits the bake has to come back here and empty it.
-            CollectionAssert.AreEquivalent(
-                new[] { "Shovel_dig", "Shovel_ground", "Shovel_stored" },
-                AwaitingOwnerBake.ToArray(),
-                "only the clam spade may be pending a first bake. ⚠️ When Hidden Harbours ▸ Art ▸ " +
-                "Bake Shovel Kit has run and the sheets are committed, EMPTY AwaitingOwnerBake — " +
-                "leaving a baked sheet listed here exempts it from every assertion in this file.");
+            // NOTHING is pending. The spade's first bake landed in this same PR (96 cells, 3 sheets,
+            // 40 KB), so its three stems came OUT of AwaitingOwnerBake and are now held to every
+            // assertion in this file like the other 244. The previous commit pinned the set as
+            // exactly those three specifically so that emptying it could not be forgotten — that pin
+            // went red on this bake and this is it consumed.
+            //
+            // ⚠️ All three sets asserted empty rather than counted, so a stem added to ANY of them
+            // has to justify itself here. A guarded stem is a sheet exempted from every check in this
+            // file; that is worth a red test to add.
+            CollectionAssert.IsEmpty(AwaitingOwnerBake,
+                "a stem here is EXEMPT from every assertion in this file while it is absent. Add one " +
+                "only for a kit spec'd ahead of its first bake, and empty it in the PR that bakes.");
             CollectionAssert.IsEmpty(StaleUntilRebake);
             CollectionAssert.IsEmpty(RetiredUntilRebake);
 
