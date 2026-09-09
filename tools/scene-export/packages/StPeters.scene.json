@@ -1,7 +1,7 @@
 {
   "schema": "hiddenharbours.scene/1",
   "generatedBy": "tools/scene-export/hh_scene_export.py",
-  "generatedAt": "2026-09-07T13:42:22Z",
+  "generatedAt": "2026-09-09T11:03:28Z",
   "region": {
     "id": "region.st_peters",
     "sceneName": "StPeters",
@@ -26759,7 +26759,7 @@
         "heightScale": 0.766044,
         "x-draughtFrom": "Assets/_Project/Data/Boats/Dory.asset#DraughtMeters, reached the way HullTideRide reaches it: BoatController.Hull -> BoatHullDef.",
         "x-bedFrom": "the committed height map at her plan point - the same read HullTideRide.BedElevation makes against ITidalTerrain, on a raster of that terrain, quantised to 0.039216 m.",
-        "x-bakedWaterlineFrom": "0 - HullTideRide._bakedWaterlineElevation's own default, and its tooltip says what that means: 'a builder that places a berth as a plain plan point (every one of them does) has drawn her as she floats at mean tide'. Chart datum IS mean water on both shipped regions (RegionDef.TideMeanLevel = 0), so her picture is correct where her plan point puts her and the whole waterline is the rise. A region whose plan lines were struck at some other state of tide would say so on the component.",
+        "x-bakedWaterlineFrom": "HullTideRide._bakedWaterlineElevation, serialized on the placement — the elevation her art was drawn at.",
         "x-agroundWhen": "seaLevel - draughtMetres < bedElevation (TidalRide.IsAground). A null bedElevation is open water with no height map under it: she can never take the ground, which is the honest reading and not a zero."
       }
     },
@@ -75003,6 +75003,102 @@
       "x-sortingOrder": 2
     },
     {
+      "id": "80bf1842e029",
+      "family": "wharfdecor",
+      "group": "Lamps",
+      "rig": "WharfDecor",
+      "rigSource": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
+      "call": {
+        "fn": "render",
+        "args": ["lanternPost", "$dir", "$opts"],
+        "opts": {},
+        "x-fromRecipe": "Assets/_Project/Art/Sprites/Wharf/Decor/lanternPost.recipe.json",
+        "x-dir": 4,
+        "x-cellIndex": 4,
+        "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
+      },
+      "pos": [211.5, 0.5],
+      "facing": null,
+      "facingIndex": null,
+      "flipX": false,
+      "sortBias": 0,
+      "cell": {
+        "w": 26,
+        "h": 71,
+        "pivot": [13, 67],
+        "pxPerM": 32,
+        "unityPivot": [0.5, 0.056338]
+      },
+      "x-name": "lanternPost_0",
+      "x-path": "StPetersWharf/Lamps/lanternPost_0",
+      "x-origin": "StPetersWharf",
+      "x-zone": "b",
+      "x-zoneEvidence": "the deck is a computed cell grid and the fittings are laid by BollardSpacing — loops, not rows",
+      "x-resolutionExcluded": null,
+      "x-cellAt": [591, 259],
+      "x-inBounds": true,
+      "x-active": true,
+      "x-rigSha256": "dba6ced6644e879e42cf2a3d6340ae76f90acf2cee0a0962cf4bbb0719a1b05a",
+      "x-familyIsSpriteStem": false,
+      "x-sprite": {
+        "sheet": "Assets/_Project/Art/Sprites/Wharf/Decor/lanternPost.png",
+        "name": "lanternPost_4",
+        "internalId": 4672517636161065333
+      },
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Wharf/Decor/wharfDecorRig.contract.json",
+      "x-pivotSource": "sprite-import.customPivot",
+      "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
+    },
+    {
+      "id": "f8f004c3d60b",
+      "family": "wharfdecor",
+      "group": "Lamps",
+      "rig": "WharfDecor",
+      "rigSource": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
+      "call": {
+        "fn": "render",
+        "args": ["lanternPost", "$dir", "$opts"],
+        "opts": {},
+        "x-fromRecipe": "Assets/_Project/Art/Sprites/Wharf/Decor/lanternPost.recipe.json",
+        "x-dir": 4,
+        "x-cellIndex": 4,
+        "x-argsNote": "args are the recipe's own, verbatim. A leading literal names the piece for kits that take one; `$dir` and `$opts` are the ledger's placeholders for the direction and this dict."
+      },
+      "pos": [184.5, 0.5],
+      "facing": null,
+      "facingIndex": null,
+      "flipX": false,
+      "sortBias": 0,
+      "cell": {
+        "w": 26,
+        "h": 71,
+        "pivot": [13, 67],
+        "pxPerM": 32,
+        "unityPivot": [0.5, 0.056338]
+      },
+      "x-name": "lanternPost_1",
+      "x-path": "StPetersWharf/Lamps/lanternPost_1",
+      "x-origin": "StPetersWharf",
+      "x-zone": "b",
+      "x-zoneEvidence": "the deck is a computed cell grid and the fittings are laid by BollardSpacing — loops, not rows",
+      "x-resolutionExcluded": null,
+      "x-cellAt": [564, 259],
+      "x-inBounds": true,
+      "x-active": true,
+      "x-rigSha256": "dba6ced6644e879e42cf2a3d6340ae76f90acf2cee0a0962cf4bbb0719a1b05a",
+      "x-familyIsSpriteStem": false,
+      "x-sprite": {
+        "sheet": "Assets/_Project/Art/Sprites/Wharf/Decor/lanternPost.png",
+        "name": "lanternPost_4",
+        "internalId": 4672517636161065333
+      },
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Wharf/Decor/wharfDecorRig.contract.json",
+      "x-pivotSource": "sprite-import.customPivot",
+      "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
+    },
+    {
       "id": "8a1c2366e567",
       "family": "house",
       "group": "IslandVillage",
@@ -87474,86 +87570,6 @@
       },
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
-    },
-    {
-      "id": "15c12c5459c7",
-      "family": "Hod2",
-      "group": "ClamHod",
-      "rig": null,
-      "rigSource": null,
-      "call": null,
-      "pos": [6.3, -1.35],
-      "facing": null,
-      "facingIndex": 0,
-      "flipX": false,
-      "sortBias": 0,
-      "cell": {
-        "w": 40,
-        "h": 40,
-        "pivot": [20, 30],
-        "pxPerM": 32,
-        "unityPivot": [0.5, 0.25]
-      },
-      "x-name": "Front",
-      "x-path": "Tools/ClamHod/Front",
-      "x-origin": "Tools",
-      "x-zone": null,
-      "x-zoneEvidence": null,
-      "x-resolutionExcluded": null,
-      "x-cellAt": [386, 261],
-      "x-inBounds": true,
-      "x-active": true,
-      "x-rigSha256": null,
-      "x-familyIsSpriteStem": true,
-      "x-sprite": {
-        "sheet": "Assets/_Project/Art/Fishing/Storage/Hod2_front.png",
-        "name": "Hod2_front_d0_f0",
-        "internalId": -393891781
-      },
-      "x-familyCandidate": null,
-      "x-spriteStem": "Hod2",
-      "x-pivotSource": "sprite-import.customPivot",
-      "x-sortingOrder": 2
-    },
-    {
-      "id": "cb6e5121f99d",
-      "family": "Hod2",
-      "group": "ClamHod",
-      "rig": null,
-      "rigSource": null,
-      "call": null,
-      "pos": [6.3, -1.35],
-      "facing": null,
-      "facingIndex": 0,
-      "flipX": false,
-      "sortBias": 0,
-      "cell": {
-        "w": 40,
-        "h": 40,
-        "pivot": [20, 30],
-        "pxPerM": 32,
-        "unityPivot": [0.5, 0.25]
-      },
-      "x-name": "Back",
-      "x-path": "Tools/ClamHod/Back",
-      "x-origin": "Tools",
-      "x-zone": null,
-      "x-zoneEvidence": null,
-      "x-resolutionExcluded": null,
-      "x-cellAt": [386, 261],
-      "x-inBounds": true,
-      "x-active": true,
-      "x-rigSha256": null,
-      "x-familyIsSpriteStem": true,
-      "x-sprite": {
-        "sheet": "Assets/_Project/Art/Fishing/Storage/Hod2_back.png",
-        "name": "Hod2_back_d0_f0",
-        "internalId": -1612993046
-      },
-      "x-familyCandidate": null,
-      "x-spriteStem": "Hod2",
-      "x-pivotSource": "sprite-import.customPivot",
-      "x-sortingOrder": 0
     }
   ],
   "cliffLines": [
@@ -94006,7 +94022,7 @@
       "cliff": 0
     },
     "x-paths": 11,
-    "x-rigsPinned": 10,
+    "x-rigsPinned": 11,
     "x-tilesNote": "painted cell counts per layer. The reference package uses stamp counts here, which double-count overlaps; a true cell count is the more useful number and the review asked for one or the other, said."
   },
   "x-tideRules": {
@@ -94040,7 +94056,7 @@
         "heightScale": 0.766044,
         "x-draughtFrom": "Assets/_Project/Data/Boats/Dory.asset#DraughtMeters, reached the way HullTideRide reaches it: BoatController.Hull -> BoatHullDef.",
         "x-bedFrom": "the committed height map at her plan point - the same read HullTideRide.BedElevation makes against ITidalTerrain, on a raster of that terrain, quantised to 0.039216 m.",
-        "x-bakedWaterlineFrom": "0 - HullTideRide._bakedWaterlineElevation's own default, and its tooltip says what that means: 'a builder that places a berth as a plain plan point (every one of them does) has drawn her as she floats at mean tide'. Chart datum IS mean water on both shipped regions (RegionDef.TideMeanLevel = 0), so her picture is correct where her plan point puts her and the whole waterline is the rise. A region whose plan lines were struck at some other state of tide would say so on the component.",
+        "x-bakedWaterlineFrom": "HullTideRide._bakedWaterlineElevation, serialized on the placement — the elevation her art was drawn at.",
         "x-agroundWhen": "seaLevel - draughtMetres < bedElevation (TidalRide.IsAground). A null bedElevation is open water with no height map under it: she can never take the ground, which is the honest reading and not a zero."
       },
       "x-kind": "piloted",
@@ -94275,7 +94291,7 @@
     {
       "x-name": "UtilityQuadAtTheStore",
       "x-path": "UtilityQuadAtTheStore",
-      "pos": [1.901594, 22.11359],
+      "pos": [1.901595, 22.113588],
       "components": ["ParkedVehicle", "VehicleController", "VehicleDoor"],
       "defs": [
         {
@@ -94313,7 +94329,7 @@
     {
       "x-name": "Enduro250AtTheStore",
       "x-path": "Enduro250AtTheStore",
-      "pos": [-2.16048, 22.36747],
+      "pos": [-2.160479, 22.367468],
       "components": ["ParkedVehicle", "VehicleController", "VehicleDoor"],
       "defs": [
         {
@@ -94358,6 +94374,13 @@
       "sha256": "e13a3690f9d1b2afacb5ffb05f011a5edaf7a76c770e4e55780ed6db6e1b7738",
       "shaRule": "sha256 of the rig's bytes with CR stripped (tr -d '\\r' | sha256sum)",
       "x-declaredBy": "Assets/_Project/Art/Sprites/Interiors/Interiors.json#interiorProp"
+    },
+    {
+      "rig": "wharfDecorRig",
+      "rigSource": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
+      "sha256": "dba6ced6644e879e42cf2a3d6340ae76f90acf2cee0a0962cf4bbb0719a1b05a",
+      "shaRule": "sha256 of the rig's bytes with CR stripped (tr -d '\\r' | sha256sum)",
+      "x-declaredBy": "Assets/_Project/Art/Sprites/Wharf/Decor/wharfDecorRig.contract.json"
     },
     {
       "rig": "shopBuildingRig",
@@ -94442,22 +94465,26 @@
     "wharfbuilding": {
       "rigSource": "docs/art/rigs/wharfBuildingRig.js",
       "sha256": "76dbecb0e1ccadfbcacc66b9ec5787d2ebff8112b7d5976668fa953a08ed8163"
+    },
+    "wharfdecor": {
+      "rigSource": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
+      "sha256": "dba6ced6644e879e42cf2a3d6340ae76f90acf2cee0a0962cf4bbb0719a1b05a"
     }
   },
   "x-rigVersionsShaRule": "sha256 of the rig's bytes with CR stripped (tr -d '\r' | sha256sum) — the repo's own convention, the same one docs/art/rigs sidecars publish. A SIBLING of the table rather than a key inside it: the table's keys are family names and nothing else, so iterating it cannot pick up a note.",
   "x-cliffLinesNote": "the region's cliffs, as the format's own key. Each is one CliffWallSurface — the builder pushes one CHUNK per stretch, so a coastline arrives as many short lines and not one long one; joining them would be a derivation this exporter invents. `nodes` is the chunk's brow plan and its stations are SAMPLED at ~0.25 m rather than hand-placed (see each line's x-nodesAre). No `tiles` count: this exporter paints no cliff layer at all, so a 0 would read as a fact about the line instead of about the export.",
   "x-provenance": {
-    "generatedAt": "2026-09-07T13:42:22Z",
+    "generatedAt": "2026-09-09T11:03:28Z",
     "historyIsComplete": true,
     "sceneFile": "Assets/_Project/Scenes/StPeters.unity",
-    "sceneFileSha256": "59785d32460d7eb9f5c4d3c9a39d9141178c59cfdfdd34e41afd083069f5d0eb",
-    "sceneLastBuiltCommit": "ad852bd2583e03886bffc3c33d5f0238d1c33dc7",
-    "sceneLastBuiltDate": "2026-09-07",
-    "sceneLastBuiltSubject": "feat(vehicles): the player rides one, and three machines stand outside the shop (owner ruling 2026-09-07, ATV pack PR 2a) (#774)",
+    "sceneFileSha256": "3017aebcec0a85e18203aedea11f8c7b3217ca41dd3b46902f79d131b2e4cd80",
+    "sceneLastBuiltCommit": "309d66974cf132b9026c8d1373b9d9b3c1a7a7e8",
+    "sceneLastBuiltDate": "2026-09-09",
+    "sceneLastBuiltSubject": "chore(scenes): bank the 2026-09-08 St Peters and Nine Mile Creek saves",
     "sceneWorkingTreeDirty": false,
     "builderDrift": {
       "builderCommitsSinceScene": 0,
-      "measuredTo": "ad852bd2583e03886bffc3c33d5f0238d1c33dc7",
+      "measuredTo": "309d66974cf132b9026c8d1373b9d9b3c1a7a7e8",
       "measuredToDate": null,
       "exact": true,
       "builderCommits": []
@@ -94482,7 +94509,7 @@
       "inactiveInHierarchy": 39,
       "interiorsLinked": 43,
       "offGrid": 0,
-      "unresolvedRigPlacements": 467,
+      "unresolvedRigPlacements": 465,
       "unresolvedSheets": {
         "Assets/_Project/Art/Boats/DoryHull.png": {
           "placements": 1,
@@ -94515,16 +94542,6 @@
           "candidates": []
         },
         "Assets/_Project/Art/Fishing/Storage/Bucket_pail_empty.png": {
-          "placements": 1,
-          "sidecar": null,
-          "candidates": []
-        },
-        "Assets/_Project/Art/Fishing/Storage/Hod2_back.png": {
-          "placements": 1,
-          "sidecar": null,
-          "candidates": []
-        },
-        "Assets/_Project/Art/Fishing/Storage/Hod2_front.png": {
           "placements": 1,
           "sidecar": null,
           "candidates": []
@@ -94683,7 +94700,7 @@
           "spriteStem": "ShopLevel"
         }
       },
-      "optsFromRecipe": 144,
+      "optsFromRecipe": 146,
       "optsFromContract": 51,
       "recipeRefusals": [],
       "contractRefusals": [
@@ -94747,10 +94764,10 @@
           "?unresolved + CameraFollow + CameraZoomInput + FightStrainCamera + PersistentObject": 1,
           "ArrivalLineSpeaker": 1,
           "ArrivalOpening": 1,
+          "CatalogBookPresenter + DialoguePresenter": 1,
           "ControlSwitcher + PersistentObject": 1,
           "DevFastTide": 1,
           "DevToast + PersistentObject": 1,
-          "DialoguePresenter": 1,
           "EnvironmentService + GameClock + GameRoot + HudController + PersistentObject + PlayerWallet": 1,
           "GrassField": 1,
           "OnboardingDirector": 1,
