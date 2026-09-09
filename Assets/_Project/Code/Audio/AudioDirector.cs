@@ -150,6 +150,13 @@ namespace HiddenHarbours.Audio
             if (set.WindTell       != null) _windTell       = set.WindTell;
             if (set.CatchSting     != null) _catchSting     = set.CatchSting;
             if (set.HomeWarmth     != null) _homeWarmth     = set.HomeWarmth;
+
+            // The three moments (juice charter §4.5): a null slot stays null — silent, no placeholder;
+            // the sale chime falls back to _homeWarmth in PlayCue while its slot is empty.
+            if (set.LandingHit     != null) _landingHit     = set.LandingHit;
+            if (set.SaleChime      != null) _saleChime      = set.SaleChime;
+            if (set.DigStrike      != null) _digStrike      = set.DigStrike;
+            if (set.CastEntry      != null) _castEntry      = set.CastEntry;
         }
 
         private void OnEnable()  => Subscribe();

@@ -3,8 +3,8 @@ using UnityEngine;
 namespace HiddenHarbours.Audio
 {
     /// <summary>
-    /// The twenty manifest slots as DATA (rule 2) — one serialized <see cref="AudioClip"/> per slot in
-    /// <c>Assets/_Project/Audio/AUDIO-MANIFEST.md</c>, seven for <see cref="AudioDirector"/> and thirteen
+    /// The twenty-four manifest slots as DATA (rule 2) — one serialized <see cref="AudioClip"/> per slot in
+    /// <c>Assets/_Project/Audio/AUDIO-MANIFEST.md</c>, eleven for <see cref="AudioDirector"/> and thirteen
     /// for <see cref="FishingAudio"/>.
     ///
     /// <para><b>Why this exists.</b> Both players already generate a procedural placeholder for every
@@ -55,6 +55,19 @@ namespace HiddenHarbours.Audio
 
         [Tooltip("The earned made-it-home warmth. Musical, and it only fires when the trip was a worry.")]
         public AudioClip HomeWarmth;
+
+        [Header("Director — the three moments (juice charter §4.5; no placeholder, a null slot is SILENT)")]
+        [Tooltip("The landing frame: JuiceMomentCue(Landing), the frame the fish leaves the water, with the hit-stop and the splash.")]
+        public AudioClip LandingHit;
+
+        [Tooltip("The sale's reward beat on CatchSold, with the coins flying in the notebook. While null the director plays HomeWarmth in its place.")]
+        public AudioClip SaleChime;
+
+        [Tooltip("The shovel's strike: JuiceMomentCue(DigStrike), with the sand chunks.")]
+        public AudioClip DigStrike;
+
+        [Tooltip("The line touching down: JuiceMomentCue(CastEntry), with the rings.")]
+        public AudioClip CastEntry;
 
         // ---- FishingAudio: the rod fight ----------------------------------------------------
 
