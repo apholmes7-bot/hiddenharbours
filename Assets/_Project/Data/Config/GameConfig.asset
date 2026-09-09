@@ -79,6 +79,11 @@ MonoBehaviour:
     DominantWavelengthScale: 1
     PrimaryAmplitude: 0.8
     SeaStateAmplitudeExponent: 1.5
+    HeightFromFetch: 1
+    FetchHeightCoefficient: 0.0016
+    FullyDevelopedHeightCoefficient: 0.0246
+    HeightStyleScale: 1
+    GlassGateSeaState: 0.05
     CrestSharpening: 2.6
     PhaseSeed: 0
     Secondary1AngleDegrees: 32

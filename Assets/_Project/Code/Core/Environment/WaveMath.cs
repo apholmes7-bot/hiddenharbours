@@ -324,8 +324,48 @@ namespace HiddenHarbours.Core
         [Tooltip("Primary-train amplitude (metres) at full sea state (SeaState01 = 1). Everything scales down from here; at SeaState01 = 0 all amplitudes are exactly 0 (glass is sacred).")]
         public float PrimaryAmplitude;
 
-        [Tooltip("Response curve of amplitude to SeaState01: amplitudeScale = SeaState01^exponent. 1 = linear; >1 keeps low sea states gentler and lets the top end arrive late.")]
+        [Tooltip("Response curve of amplitude to SeaState01: amplitudeScale = SeaState01^exponent. 1 = linear; >1 keeps low sea states gentler and lets the top end arrive late.\n\n" +
+                 "⚠ SUPERSEDED as the HEIGHT law by HeightFromFetch (register row 33, owner ruling " +
+                 "2026-09-09). When that is on, this exponent shapes only the GLASS GATE below " +
+                 "GlassGateSeaState - it no longer sets how tall the sea gets.")]
         public float SeaStateAmplitudeExponent;
+
+        // ---- the HEIGHT from the FETCH (register row 33, owner ruling 2026-09-09) -----------------
+        // #762 moved the WAVELENGTH onto a fetch-limited growth curve and left the HEIGHT on a tuned
+        // pair (PrimaryAmplitude 0.8 x SeaState01^exponent). The two halves could then drift apart,
+        // and had: measured against the same JONSWAP growth curves the wavelength already uses, the
+        // drawn sea is 1.32x too tall at 3 m/s and 1.83x at 5.70 m/s (2.42x at a gale). The owner
+        // ruled "height from fetch" so the two halves come from ONE law and cannot drift again.
+        //
+        // The relation is the height twin of #762's wavelength law, from the same fetch-limited
+        // JONSWAP family:   g*Hs/U^2 = FetchHeightCoefficient * sqrt(g*X/U^2)
+        // capped by the fully-developed Pierson-Moskowitz ceiling  Hs = FullyDevelopedHeightCoefficient * U^2,
+        // because a strait cannot raise a bigger sea than the open ocean would.
+
+        [Tooltip("ON: significant wave height comes from the same fetch-limited JONSWAP curve as the " +
+                 "wavelength (register row 33). OFF (0): the superseded tuned pair, PrimaryAmplitude " +
+                 "x SeaState01^exponent, bit-for-bit - the passthrough every pre-2026-09-09 asset " +
+                 "deserializes to, since an absent key reads ZERO.")]
+        public bool HeightFromFetch;
+
+        [Tooltip("JONSWAP fetch-limited height coefficient: g*Hs/U^2 = c * sqrt(g*X/U^2). 0.0016 is " +
+                 "the published value and the one #762's wavelength twin was taken from.")]
+        public float FetchHeightCoefficient;
+
+        [Tooltip("Pierson-Moskowitz fully-developed ceiling: Hs = c * U^2 (0.0246). A fetch-limited " +
+                 "sea can never be taller than the fully developed one, so this caps the curve.")]
+        public float FullyDevelopedHeightCoefficient;
+
+        [Tooltip("A pure STYLE multiplier on the derived height. 1 = the physical sea. The owner's " +
+                 "dial if he wants the sea taller or flatter than nature after playing it - and the " +
+                 "only place a stylised height should live once the law is doing the deriving.")]
+        public float HeightStyleScale;
+
+        [Tooltip("Sea state at and above which the derived height is delivered in full. Below it the " +
+                 "height ramps to EXACTLY 0 at glass, so the mirror is still sacred (ADR 0018). " +
+                 "Ships at 0.05, well under the 0.143 floor the wind law can reach (#797), so it " +
+                 "never bites in play - its only job is to keep glass exactly glass.")]
+        public float GlassGateSeaState;
 
         [Tooltip("Crest sharpening p (≥1): pinches crests narrow above broad troughs. 1 = pure sine mush; ~2–3 reads as real crests.")]
         public float CrestSharpening;
@@ -465,6 +505,17 @@ namespace HiddenHarbours.Core
             // 5.7 m/s, where the fetch law's peak is 15.6 m); the short end is where it is because
             // anything wider stops the sea GROUPING - measured, table in
             // WaveSpectrum.DefaultLadderMinWavelengthMeters.
+            // OFF in the reference tuning, ON in GameConfig.asset - ADR 0027's discipline, and
+            // the reason this PR moves the SHIPPED sea without moving a single frozen baseline:
+            // `.Default` is what 129 pre-2026-09-09 assets deserialize to and what the pinned-ULP
+            // and passthrough guards compare against. The asset is authoritative (#600), so the
+            // owner plays the derived height while the reference sea stays byte-identical.
+            HeightFromFetch = false,
+            FetchHeightCoefficient = 0.0016f,          // JONSWAP, the published value
+            FullyDevelopedHeightCoefficient = 0.0246f, // Pierson-Moskowitz
+            HeightStyleScale = 1f,                     // the physical sea until the owner says otherwise
+            GlassGateSeaState = 0.05f,                 // under the 0.143 the wind law floors at
+
             SpectrumBinCount = 8,
             SpectrumLadderMinWavelengthMeters = WaveSpectrum.DefaultLadderMinWavelengthMeters,
             SpectrumLadderMaxWavelengthMeters = WaveSpectrum.DefaultLadderMaxWavelengthMeters,
@@ -511,6 +562,113 @@ namespace HiddenHarbours.Core
     /// </summary>
     public static class WaveMath
     {
+        /// <summary>
+        /// 🔴 <b>ROW 33's law: the fetch-limited significant wave height, the HEIGHT twin of the
+        /// wavelength law #762 shipped.</b> Both come from the same JONSWAP fetch-limited growth
+        /// curves, which is the whole point of the owner's 2026-09-09 ruling — two halves of one sea
+        /// derived from one relation cannot drift apart again.
+        ///
+        /// <para><c>g·Hs/U² = c·√(g·X/U²)</c> with <c>c = FetchHeightCoefficient</c> (0.0016
+        /// published), capped by the fully-developed Pierson–Moskowitz ceiling
+        /// <c>Hs = 0.0246·U²</c> — a 25 km strait cannot raise a bigger sea than the open ocean
+        /// would in the same wind, and without the cap the fetch curve crosses it at high wind.</para>
+        ///
+        /// <para>⚠️ <b>The lee envelope is NOT folded in here.</b> <c>WaveFetch.EnvelopeAt</c> is a
+        /// SPATIAL multiplier applied at sample time, and folding it into the trains' amplitudes
+        /// would put it inside <c>TotalAmplitude</c> — which is the crest-factor normalizer and the
+        /// bound the watertight hull clamp scans against. <c>WaveFetch.cs</c> §"What falls out for
+        /// free" says why. This function is the OPEN-water height; the lee is applied over it.</para>
+        /// </summary>
+        /// <param name="windSpeed">Wind speed (m/s).</param>
+        /// <param name="settings">Carries the fetch (km) and the two coefficients.</param>
+        public static float FetchLimitedSignificantHeightMeters(float windSpeed,
+                                                                in WaveFieldSettings settings)
+        {
+            float u = Mathf.Max(windSpeed, 0f);
+            float fetchKm = settings.SeaFetchKilometres;
+            if (u <= MinWindForDerivedPeak || fetchKm <= 0f) return 0f;
+
+            float g = Gravity(in settings);
+            float c = settings.FetchHeightCoefficient > 0f
+                ? settings.FetchHeightCoefficient : DefaultFetchHeightCoefficient;
+            float pm = settings.FullyDevelopedHeightCoefficient > 0f
+                ? settings.FullyDevelopedHeightCoefficient : DefaultFullyDevelopedHeightCoefficient;
+
+            float dimensionlessFetch = g * (fetchKm * 1000f) / (u * u);
+            float fetchLimited = c * Mathf.Sqrt(dimensionlessFetch) * u * u / g;
+            return Mathf.Min(fetchLimited, pm * u * u);
+        }
+
+        /// <summary>
+        /// The significant height a field of sinusoids carries: <c>Hs = 4·σ</c> with
+        /// <c>σ² = Σa²/2</c> — the standard definition, and the one
+        /// <c>WaveAmplitudeMeasurementTests</c> already compares the oceanography against.
+        ///
+        /// <para>⚠️ This is the OPEN-water height. <c>WaveFetch.EnvelopeAt</c>'s lee multiplier is
+        /// applied per SAMPLE, never folded in here: folding it in would put it inside
+        /// <see cref="WaveTrains.TotalAmplitude"/>, which is the whitecap crest-factor normalizer AND
+        /// the bound the watertight hull clamp scans against (<c>WaveFetch.cs</c> §"What falls out
+        /// for free").</para>
+        /// </summary>
+        public static float SignificantHeightMeters(in WaveTrains trains)
+        {
+            float sumSq = 0f;
+            for (int i = 0; i < trains.Count; i++)
+            {
+                float a = trains[i].Amplitude;
+                sumSq += a * a;
+            }
+            return 4f * Mathf.Sqrt(sumSq * 0.5f);
+        }
+
+        /// <summary>
+        /// The same field, scaled so its <see cref="SignificantHeightMeters"/> is
+        /// <paramref name="targetHs"/>. Every amplitude is exactly proportional to the primary's, so
+        /// one multiply per slot is exact — no re-derivation, no trig; wavelengths, directions,
+        /// phases and the dominant index are untouched (row 34's standing ladder included).
+        ///
+        /// <para>A target of 0 gives amplitudes of <b>exactly</b> 0, which is how glass stays sacred
+        /// (ADR 0018) now that the height is a function of the WIND rather than of the sea state.</para>
+        /// </summary>
+        public static WaveTrains AtSignificantHeight(in WaveTrains trains, float targetHs,
+                                                     float gravity, float crestSharpening)
+        {
+            float current = SignificantHeightMeters(in trains);
+            if (current <= GlassAmplitudeMeters) return trains;      // already flat: nothing to scale
+
+            float scale = Mathf.Max(0f, targetHs) / current;
+            Span<WaveTrain> scaled = stackalloc WaveTrain[WaveTrains.MaxTrains];
+            for (int i = 0; i < trains.Count; i++)
+                scaled[i] = new WaveTrain(trains[i].Direction, trains[i].Wavelength,
+                                          trains[i].Amplitude * scale, trains[i].PhaseOffset, gravity);
+
+            return WaveTrains.From(scaled, trains.Count, crestSharpening, trains.DominantIndex);
+        }
+
+        /// <summary>
+        /// The glass gate: 1 at and above <see cref="WaveFieldSettings.GlassGateSeaState"/>, ramping
+        /// to <b>exactly 0</b> at sea state 0. Glass is sacred (ADR 0018) and the derived height is a
+        /// function of the WIND, so something has to carry that ruling once the sea-state exponent
+        /// stops setting the height. Ships at 0.05 — under the 0.143 floor the wind law can reach
+        /// (#797), so in play it is always exactly 1 and the height is purely the fetch law's.
+        /// </summary>
+        public static float GlassGate(float seaState01, in WaveFieldSettings settings)
+        {
+            float sea = Mathf.Clamp01(seaState01);
+            if (sea <= 0f) return 0f;                       // exactly 0: the mirror, bit for bit
+            float full = settings.GlassGateSeaState > 0f
+                ? settings.GlassGateSeaState : DefaultGlassGateSeaState;
+            float e = Mathf.Max(0.01f, settings.SeaStateAmplitudeExponent);
+            return Mathf.Pow(Mathf.Clamp01(sea / full), e);
+        }
+
+        /// <summary>JONSWAP's published fetch-limited height coefficient.</summary>
+        public const float DefaultFetchHeightCoefficient = 0.0016f;
+        /// <summary>Pierson-Moskowitz's fully-developed height coefficient.</summary>
+        public const float DefaultFullyDevelopedHeightCoefficient = 0.0246f;
+        /// <summary>Where the glass gate reaches full height. Under #797's reachable sea-state floor.</summary>
+        public const float DefaultGlassGateSeaState = 0.05f;
+
         /// <summary>Below this total amplitude (metres) the sea is treated as dead glass and
         /// <see cref="WaveSample.CrestFactor"/> is exactly 0 (guards the 0/0 of normalizing height by
         /// the amplitude envelope). A guard, not a tunable.</summary>
@@ -572,7 +730,30 @@ namespace HiddenHarbours.Core
             dominantWavelength = Mathf.Clamp(dominantWavelength * wavelengthScale,
                                              WaveTrain.MinWavelengthMeters, wavelengthCeiling);
 
-            float primaryAmplitude = Mathf.Max(0f, settings.PrimaryAmplitude) * amplitudeScale;
+            // 🔴 ROW 33: the height comes from the fetch, the way the length already does.
+            //
+            // The old line was `PrimaryAmplitude * sea^exponent` — a tuned pair with no relation to
+            // the wavelength law, which is how the two halves drifted 1.83x apart. Now the total
+            // height is the published fetch-limited curve at THIS wind, and the sea-state term is
+            // demoted to what it is actually needed for: keeping glass exactly glass.
+            //
+            // ⚠️ Why the wind may carry the height while `sea` only gates it: in production
+            // `SeaState01` IS a pure function of wind speed (`WeatherModel.SeaFromWind`), so the two
+            // are not independent inputs — the old exponent was the wind's height law wearing the
+            // sea state as a proxy. They come apart only in fixtures and in `DevSeaState01`, which is
+            // exactly where a glass gate has to hold, so it does.
+            // ⚠️ Under the fetch law the field is built at UNIT primary amplitude and its
+            // height is set afterwards, on the FINISHED trains. The obvious shortcut — convert the
+            // target Hs into a primary amplitude using the secondaries' ratios — is wrong whenever
+            // the spectrum is on, and measurably so: the spectrum preserves the amplitude ENVELOPE
+            // (Σa) while spreading it across eight bins, and Hs goes as √Σa², which spreading
+            // REDUCES. Written that way the sea came out at 0.67x its own reference — the law
+            // derived one height and the field drew another. Every amplitude is exactly proportional
+            // to the primary's, so scaling the finished field is exact, costs one trig-free pass over
+            // eight slots, and is right on BOTH the legacy and the spectral path.
+            float primaryAmplitude = settings.HeightFromFetch
+                ? 1f
+                : Mathf.Max(0f, settings.PrimaryAmplitude) * amplitudeScale;
             float gravity = settings.Gravity;
 
             var primary = new WaveTrain(
@@ -605,15 +786,24 @@ namespace HiddenHarbours.Core
                                         WaveFieldSettings.DerivedSecondaryTrainSlots);
 
             float blend = Mathf.Clamp01(settings.SpectrumBlend);
-            if (blend <= 0f)
-                return new WaveTrains(primary, secondary1, secondary2, secondary3,
-                                      count, settings.CrestSharpening);
+            WaveTrains field = blend <= 0f
+                ? new WaveTrains(primary, secondary1, secondary2, secondary3,
+                                 count, settings.CrestSharpening)
+                // NB: the primary amplitude is deliberately NOT passed — the spectrum normalizes
+                // onto the legacy trains' TOTAL envelope, not onto the primary alone.
+                : SpectrumTrainsFrom(downwind, dominantWavelength, gravity, blend,
+                                     count, in settings,
+                                     primary, secondary1, secondary2, secondary3);
 
-            // NB: the primary amplitude is deliberately NOT passed — the spectrum normalizes onto the
-            // legacy trains' TOTAL envelope, not onto the primary alone.
-            return SpectrumTrainsFrom(downwind, dominantWavelength, gravity, blend,
-                                      count, in settings,
-                                      primary, secondary1, secondary2, secondary3);
+            if (!settings.HeightFromFetch) return field;
+
+            // Row 33: the height the fetch law asks for, set on whatever field row 34's ladder built.
+            return AtSignificantHeight(
+                in field,
+                FetchLimitedSignificantHeightMeters(windSpeed, in settings)
+                    * Mathf.Max(0f, settings.HeightStyleScale)
+                    * GlassGate(sea, in settings),
+                gravity, settings.CrestSharpening);
         }
 
         /// <summary>

@@ -65,6 +65,11 @@ namespace HiddenHarbours.Tests.EditMode
             s.DominantWavelengthScale = 1f;
             s.PrimaryAmplitude = 0.8f;
             s.SeaStateAmplitudeExponent = 1.5f;
+            s.HeightFromFetch = true;
+            s.FetchHeightCoefficient = 0.0016f;
+            s.FullyDevelopedHeightCoefficient = 0.0246f;
+            s.HeightStyleScale = 1f;
+            s.GlassGateSeaState = 0.05f;
             s.CrestSharpening = 2.6f;
             s.PhaseSeed = 0;
             s.Secondary1AngleDegrees = 32f;
