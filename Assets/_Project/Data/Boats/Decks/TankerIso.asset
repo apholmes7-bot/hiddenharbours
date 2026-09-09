@@ -176,5 +176,8 @@ MonoBehaviour:
   - Id: stern_star
     Type: bollard
     PositionMeters: {x: 6.1, y: -53.5, z: 11.74}
+  HasHelmStation: 0
+  HelmStationLocalMeters: {x: 0, y: 0, z: 0}
+  HelmStationSource: 
   WalkCenter: {x: 0, y: 0.8104992}
   WalkHalfExtents: {x: 8.326, y: 54.4905}

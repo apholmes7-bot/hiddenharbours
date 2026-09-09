@@ -1055,7 +1055,13 @@ namespace HiddenHarbours.App
         /// the station is resolved, so there is exactly one line to change when the per-hull station
         /// lands in <c>BoatVisualDef</c> and this stops reading the interior.
         ///
-        /// <para><b>Today it is the interior def's <c>enter_helm</c> anchor</b>, because that is the only
+        /// <para><b>Her rig's own station first</b> -- <see cref="BoatDeckDef.HelmStationLocalMeters"/>,
+        /// imported from her gameplay sidecar and read LIVE off the boat root, the same read the deck
+        /// walk and <c>ControlSwitcher</c> make. Live because the deck arrives with the SKIN, and the
+        /// skinner runs after the spawn.</para>
+        ///
+        /// <para><b>The interior def's <c>enter_helm</c> anchor is the FALLBACK</b>, for a hull whose
+        /// rig publishes no station yet -- the cape islander among them. It is the only
         /// helm point the shipped DATA carries for this hull and it is already what the below-decks pose
         /// used. 🔴 <b>It is not her wheel, and the PR that added it says so:</b> the cape's rig publishes
         /// <c>HELM = (0, 1.35, 0.74)</c> — "skipper stands at the wheel, forward in the house" — while
@@ -1071,6 +1077,14 @@ namespace HiddenHarbours.App
         private bool TryHelmStation(out Vector3 station)
         {
             station = Vector3.zero;
+
+            BoatDeckDef deck = _boatRoot != null ? BoatDeckAreas.Resolve(_boatRoot.gameObject) : null;
+            if (deck != null && deck.HasHelmStation)
+            {
+                station = deck.HelmStationLocalMeters;
+                return true;
+            }
+
             BoatInteriorDef def = _cabin != null && _cabin.Cabin != null ? _cabin.Cabin.Def : null;
             if (def == null || def.Anchors == null) return false;
 

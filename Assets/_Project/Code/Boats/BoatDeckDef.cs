@@ -144,6 +144,31 @@ namespace HiddenHarbours.Boats
         [Tooltip("The hull's named tie-off points (M2-38 ropes). Data only — nothing consumes it yet.")]
         public DeckCleat[] Cleats = Array.Empty<DeckCleat>();
 
+        [Header("Stations (imported)")]
+        [Tooltip("TRUE when this hull's rig publishes a helm station and it was imported. It is a flag " +
+                 "and not a magic value because (0, 0, 0) is a LEGAL station — the hull's own pivot — and " +
+                 "a serialized field that is absent from the .asset reads ZERO, which would silently seat " +
+                 "every un-imported hull's pilot amidships on her keel.")]
+        public bool HasHelmStation;
+
+        [Tooltip("WHERE HER PILOT STANDS TO STEER HER — hull-local metres in the sidecars' frame (origin " +
+                 "amidships / keel bottom / centreline; +x starboard, +y bow, +z up), IMPORTED from this " +
+                 "hull's rig sidecar by Hidden Harbours ▸ Dev ▸ Boats ▸ Import deck sidecars.\n\n" +
+                 "A cape islander's wheelhouse, a console skiff's console, an outboard dory's transom " +
+                 "tiller and a rowed dory's oar seat are four different places on four different boats, " +
+                 "and before this they shared ONE number on the player (ControlSwitcher._helmLocalOffset, " +
+                 "tooltipped 'the tiller at the DORY'S stern'). Never hand-authored, for the reason the " +
+                 "class remarks give: the baked-anchors JSON died of a hand-copied constant drifting from " +
+                 "its rig.\n\n" +
+                 "HasHelmStation false = this hull's rig publishes no station, and the switcher falls back " +
+                 "to its own tuned offset and says so once, by name. Absence is data.")]
+        public Vector3 HelmStationLocalMeters = Vector3.zero;
+
+        [Tooltip("Which key of the sidecar the station came out of (ANCHORS.helm, STATIONS[id=helm], " +
+                 "STATIONS[id=helm_seat]). Provenance only — nothing reads it for gameplay, and it is what " +
+                 "the parity test quotes when an asset and its sidecar disagree.")]
+        public string HelmStationSource = "";
+
         [Header("Walkable bounds (baked from the DECK areas)")]
         [Tooltip("Centre of the axis-aligned box enclosing every DECK area, in the deck frame. This is " +
                  "what DeckStance publishes as DeckCenter, so consumers that grade against a rectangle " +

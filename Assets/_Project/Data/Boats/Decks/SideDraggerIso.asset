@@ -120,5 +120,8 @@ MonoBehaviour:
   - Id: quarter_star
     Type: bollard
     PositionMeters: {x: 1.75, y: -11.8, z: 2.15}
+  HasHelmStation: 0
+  HelmStationLocalMeters: {x: 0, y: 0, z: 0}
+  HelmStationSource: 
   WalkCenter: {x: 0, y: 0.46049976}
   WalkHalfExtents: {x: 3.224, y: 12.5605}
