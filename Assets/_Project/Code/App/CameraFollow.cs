@@ -285,6 +285,10 @@ namespace HiddenHarbours.App
             EventBus.Subscribe<ControlModeChanged>(OnControlModeChanged);
             EventBus.Subscribe<TrapHaulStateChanged>(OnTrapHaulStateChanged);
             EventBus.Subscribe<CarriedAboardChanged>(OnCarriedAboardChanged);
+            EventBus.Subscribe<CatchLanded>(OnCatchLanded);        // the feel layer (juice PR 2)
+            EventBus.Subscribe<BoatGrounded>(OnBoatGrounded);
+            EventBus.Subscribe<CabinEntered>(OnCabinEntered);
+            EventBus.Subscribe<CabinLeft>(OnCabinLeft);
         }
 
         private void OnDisable()
@@ -294,6 +298,10 @@ namespace HiddenHarbours.App
             EventBus.Unsubscribe<ControlModeChanged>(OnControlModeChanged);
             EventBus.Unsubscribe<CarriedAboardChanged>(OnCarriedAboardChanged);
             EventBus.Unsubscribe<TrapHaulStateChanged>(OnTrapHaulStateChanged);
+            EventBus.Unsubscribe<CatchLanded>(OnCatchLanded);
+            EventBus.Unsubscribe<BoatGrounded>(OnBoatGrounded);
+            EventBus.Unsubscribe<CabinEntered>(OnCabinEntered);
+            EventBus.Unsubscribe<CabinLeft>(OnCabinLeft);
         }
 
         // An active-boat change carries the hull's data-driven framing. It is only PUBLISHED while
@@ -369,6 +377,171 @@ namespace HiddenHarbours.App
         public void OnTrapHaulStateChanged(TrapHaulStateChanged e)
             => _haulLive = e.State.Phase == TrapHaulPhase.Hauling;
 
+        // ================= THE CAMERA SPEAKS — the feel layer (juice PR 2) ==========================
+        //
+        // One CameraFeel, fed by three signals and UNSCALED time, applied on top of whatever the follow
+        // and the framing decided this frame. Three facts of the wiring rather than of the curves:
+        //
+        //  1. IT MULTIPLIES, IT DOES NOT SET. The framing writes _framingOrtho; the feel writes
+        //     _framingOrtho × ZoomMultiplier to the camera and never remembers a camera value. The
+        //     ladder step underneath is untouched, so when the feel returns to rest the camera is
+        //     handed back byte-for-byte — including the PixelPerfectCamera's enabled state, which the
+        //     framing owns (_ppcWantedByFraming) and the feel only borrows.
+        //  2. THE PIXEL-PERFECT CAMERA IS PAUSED WHILE AN EFFECT IS LIVE, exactly as the framing tween
+        //     pauses it: it re-imposes its integer zoom on every render, so a continuous push-in has
+        //     to go around it. For the push-in and the shake that is the tween's cost — a few
+        //     non-integer frames. The PULL-BACK holds for as long as she drives fast, and that is the
+        //     trade the slot must look at (see the PR): SpeedPullBackFraction = 0 turns it off outright.
+        //  3. CONTROL MODE GATES THE LAYER (charter §3). Ashore and at the helm it is live; on deck only
+        //     by the owner's FeelOnDeckEnabled (the intro fishes from the deck — owner ruling
+        //     2026-09-06 — so that one is a number, not a rule); in a cabin and at a road wheel never.
+        //     The pull-back is the helm's alone: walking fast is not open water. A gate that closes on
+        //     a live effect lets it decay out rather than cutting it — no pop.
+
+        private readonly CameraFeel _feel = new CameraFeel();
+        private float _framingOrtho;             // the ortho the FRAMING wants this frame (the feel multiplies it)
+        private bool _ppcWantedByFraming = true; // whether the framing wants PixelPerfectCamera on (the feel borrows it)
+        private bool _feelApplied;               // a feel effect is on the camera right now
+        private Vector3 _shakeApplied;           // this frame's shake, so the clamp's re-sync can subtract it
+        private Vector3 _shakeInTransform;       // the shake the transform still carries (the follow clears it when it rewrites the position)
+        private float _targetSpeedMps;           // |target velocity| from the follow, the pull-back's speed term
+        private bool _inCabin;                   // CabinEntered..CabinLeft: interior, the layer is off
+        private float _seaState01;               // last sampled sea state for the pull-back
+        private float _seaSampleDue;             // seconds until the next sea-state sample (FeelSeaStateRefreshHz)
+
+        /// <summary>The live feel state — read-only, for tests and tools.</summary>
+        public CameraFeel Feel => _feel;
+
+        /// <summary>True while a feel effect is on the camera (and the PixelPerfectCamera is paused for it).</summary>
+        public bool FeelApplied => _feelApplied;
+
+        /// <summary>The juice dials, live from the config asset (rule 6) with the shipped defaults when
+        /// no asset is wired — the same null-tolerant read as <see cref="ZoomSettings"/>.</summary>
+        private static JuiceSettings FeelSettings
+            => GameServices.Config != null ? GameServices.Config.Juice : JuiceSettings.Default;
+
+        /// <summary>The mode the layer reasons about: an un-declared camera is a WALKING camera (see
+        /// <see cref="CameraZoomPolicy.FramingOnScreen"/> for the dead path that rule exists for).</summary>
+        private ControlMode FeelMode => _modeKnown ? _mode : ControlMode.OnFoot;
+
+        /// <summary>Whether the layer is live at all right now — the charter's mode gate.</summary>
+        public bool FeelIsLive
+        {
+            get
+            {
+                JuiceSettings s = FeelSettings;
+                if (!s.FeelEnabled || _inCabin) return false;
+                switch (FeelMode)
+                {
+                    case ControlMode.OnFoot:
+                    case ControlMode.Aboard: return true;
+                    case ControlMode.OnDeck: return s.FeelOnDeckEnabled;
+                    default: return false;
+                }
+            }
+        }
+
+        /// <summary>Open water = the helm. The deck is gated separately and never pulls back.</summary>
+        private bool OpenWater => FeelIsLive && FeelMode == ControlMode.Aboard;
+
+        /// <summary>A catch has landed in her hands: the push-in, by weight class. Public for EditMode tests.</summary>
+        public void OnCatchLanded(CatchLanded e)
+        {
+            if (!FeelIsLive) return;
+            _feel.OnCatch(e.Item.WeightKg, FeelSettings);
+        }
+
+        /// <summary>The hull touched bottom: the shake, by severity — felt at the helm and (if the owner
+        /// says so) on deck, never ashore, where the boat that grounded may not even be hers. Public for
+        /// EditMode tests.</summary>
+        public void OnBoatGrounded(BoatGrounded e)
+        {
+            if (!FeelIsLive || FeelMode == ControlMode.OnFoot) return;
+            _feel.OnImpact(e.Severity, FeelSettings);
+        }
+
+        /// <summary>Interior: the layer stands off until she comes back out. Public for EditMode tests.</summary>
+        public void OnCabinEntered(CabinEntered e) => _inCabin = true;
+
+        /// <inheritdoc cref="OnCabinEntered"/>
+        public void OnCabinLeft(CabinLeft e) => _inCabin = false;
+
+        /// <summary>
+        /// One frame of the feel layer, applied to the camera. Runs inside <see cref="TickFrame"/> after
+        /// the framing and before the snap and the clamp; public with explicit UNSCALED time and speed so
+        /// EditMode tests drive it without play mode. When nothing has fired and nothing is asking this
+        /// returns before touching anything — the byte-for-byte path.
+        /// </summary>
+        public void TickFeel(float unscaledDt, float targetSpeedMps)
+        {
+            bool openWater = OpenWater;
+            if (_feel.AtRest && !_feelApplied)
+            {
+                _shakeApplied = Vector3.zero;
+                if (!openWater || targetSpeedMps <= 0f) return;
+            }
+            JuiceSettings s = FeelSettings;
+            float sea = openWater ? SampleSeaState(unscaledDt, in s) : 0f;
+            _feel.Tick(unscaledDt, targetSpeedMps, sea, openWater, in s);
+            ApplyFeel();
+        }
+
+        /// <summary>The sea state for the pull-back, sampled on a slow tick (rule 7): the environment
+        /// sample is the wind/wave model's, and the pull-back is slewed over seconds anyway.</summary>
+        private float SampleSeaState(float unscaledDt, in JuiceSettings s)
+        {
+            _seaSampleDue -= unscaledDt;
+            if (_seaSampleDue > 0f) return _seaState01;
+            _seaSampleDue = 1f / Mathf.Max(1f, s.FeelSeaStateRefreshHz);
+            var env = GameServices.Environment;
+            _seaState01 = env != null ? env.Sample().SeaState01 : 0f;
+            return _seaState01;
+        }
+
+        /// <summary>Put the feel's two outputs on the camera — or hand the camera back to the framing.</summary>
+        private void ApplyFeel()
+        {
+            if (_cam == null) _cam = GetComponent<Camera>();
+            if (_ppc == null) _ppc = GetComponent<PixelPerfectCamera>();
+
+            float mult = _feel.ZoomMultiplier;
+            Vector2 shake = _feel.ShakeOffset;
+            bool wantApplied = mult != 1f || shake.x != 0f || shake.y != 0f;
+
+            if (wantApplied)
+            {
+                if (!_feelApplied)
+                {
+                    // A camera framed before this layer saw it (a builder's hard-set, a rig that never
+                    // committed a framing) has no _framingOrtho yet: adopt what it is showing.
+                    if (_framingOrtho <= 0f && _cam != null) _framingOrtho = _cam.orthographicSize;
+                    _feelApplied = true;
+                }
+                if (_ppc != null && _ppc.enabled) _ppc.enabled = false;
+                if (_cam != null) _cam.orthographicSize = _framingOrtho * mult;
+                // On top of the UNSHAKEN position. With a target the follow rewrote the transform this
+                // frame (and cleared _shakeInTransform); with none — a parked camera, an EditMode rig —
+                // last frame's shake is still in it and comes out first, so a shake never accumulates.
+                Vector3 basePos = transform.position - _shakeInTransform;
+                _shakeApplied = new Vector3(shake.x, shake.y, 0f);
+                _shakeInTransform = _shakeApplied;
+                transform.position = basePos + _shakeApplied;
+                return;
+            }
+
+            _shakeApplied = Vector3.zero;
+            if (_shakeInTransform != Vector3.zero)
+            {
+                transform.position -= _shakeInTransform;   // the last shake out, exactly
+                _shakeInTransform = Vector3.zero;
+            }
+            if (!_feelApplied) return;
+            _feelApplied = false;
+            if (_cam != null) _cam.orthographicSize = _framingOrtho;   // the framing's own number, byte-for-byte
+            if (_ppc != null) _ppc.enabled = _ppcWantedByFraming;     // and its PixelPerfectCamera state
+        }
+
+
         /// <summary>
         /// Frame the camera for a world height. <paramref name="animate"/> eases the zoom (the upgrade
         /// beat) then snaps the Pixel-Perfect reference to the new tier; otherwise it's a hard-cut.
@@ -398,11 +571,16 @@ namespace HiddenHarbours.App
             // visible (it would otherwise re-impose its integer zoom each frame); the few non-snapped
             // frames are an acceptable trade for a smooth zoom beat.
             ReferenceResolutionForWorldHeight(_worldHeightMeters, out _pendingRefW, out _pendingRefH, CurrentPpu());
-            _tweenFromOrtho = _cam.orthographicSize;
+            // From the FRAMING's own ortho, not the camera's: with a feel effect live the camera holds
+            // the multiplied value, and a tween that started from it would bake the push-in into the
+            // new tier. Byte-identical when nothing is live (the camera then IS the framing).
+            _tweenFromOrtho = _feelApplied ? _framingOrtho : _cam.orthographicSize;
+            _framingOrtho = _tweenFromOrtho;
             _tweenToOrtho = OrthoSizeForWorldHeight(_worldHeightMeters);
             _tweenSeconds = tweenSeconds;
             _tweenElapsed = 0f;
             _tweening = true;
+            _ppcWantedByFraming = false;
             if (_ppc != null) _ppc.enabled = false;
         }
 
@@ -433,7 +611,9 @@ namespace HiddenHarbours.App
                     _ppc.refResolutionY = rh;
                     _ppc.enabled = true;
                 }
-                if (_cam != null) _cam.orthographicSize = OrthoSizeForWorldHeight(worldHeightMeters);
+                _framingOrtho = OrthoSizeForWorldHeight(worldHeightMeters);   // what the feel multiplies
+                _ppcWantedByFraming = true;
+                if (_cam != null) _cam.orthographicSize = _framingOrtho;
                 return;
             }
 
@@ -447,7 +627,9 @@ namespace HiddenHarbours.App
                 _ppc.enabled = false;
             }
 
-            if (_cam != null) _cam.orthographicSize = OrthoSizeForWorldHeight(stepHeight);
+            _framingOrtho = OrthoSizeForWorldHeight(stepHeight);
+            _ppcWantedByFraming = false;
+            if (_cam != null) _cam.orthographicSize = _framingOrtho;
         }
 
         private int CurrentPpu() => (_ppc != null && _ppc.assetsPPU > 0) ? _ppc.assetsPPU : AssetsPPU;
@@ -465,8 +647,23 @@ namespace HiddenHarbours.App
         private void LateUpdate()
         {
             FollowTarget();
-            TickZoom(Time.timeAsDouble);
+            TickFrame(Time.timeAsDouble, Time.unscaledDeltaTime, _targetSpeedMps);
+        }
+
+        /// <summary>
+        /// The rest of the frame after the follow, in the order the comments below defend: zoom
+        /// policy → framing tween → <b>feel</b> (juice PR 2) → pixel snap → clamp. Public with explicit
+        /// time so EditMode tests drive a whole frame; in play <paramref name="unscaledDt"/> is
+        /// <c>Time.unscaledDeltaTime</c> (charter §3: PR 3's hit-stop must not freeze a shake mid-frame).
+        /// </summary>
+        public void TickFrame(double nowSeconds, float unscaledDt, float targetSpeedMps)
+        {
+            TickZoom(nowSeconds);
             if (_tweening) TickFramingTween();
+            // ⚠️ The feel goes AFTER the framing (it multiplies what the framing decided this frame)
+            // and BEFORE the snap and the clamp: a shake is a world offset like any other, and gets
+            // snapped to the grid and held inside the rect exactly as the follow does.
+            TickFeel(unscaledDt, targetSpeedMps);
             // ⚠️ The snap goes AFTER the zoom and BEFORE the clamp, and both halves matter. After,
             // because the grid is a function of the framing this frame — snapping first would round
             // to the PREVIOUS zoom's pixel. Before, because the clamp is the harder guarantee: the
@@ -536,7 +733,9 @@ namespace HiddenHarbours.App
                 // what makes the snap-off path byte-identical — without it the camera would keep
                 // integrating toward a goal outside the wall and lag by the accumulated error when
                 // the target finally turned back inward.
-                _smoothPos = transform.position;
+                // Minus this frame's shake (juice PR 2): the shake is a world offset on top of the
+                // filter, not part of it, and _shakeApplied is exactly zero when none is live.
+                _smoothPos = transform.position - _shakeApplied;
             }
         }
 
@@ -856,6 +1055,7 @@ namespace HiddenHarbours.App
                 : Vector2.zero;
             _lastTargetPos = tp;
             _hasLast = true;
+            _targetSpeedMps = velocity.magnitude;   // the pull-back's speed term (juice PR 2): one length, no allocation
 
             // Lead slightly in the direction of travel, capped so it never throws the boat off-screen.
             Vector2 desiredLookahead = Vector2.ClampMagnitude(velocity * _lookaheadSeconds, _lookaheadMaxMeters);
@@ -875,14 +1075,15 @@ namespace HiddenHarbours.App
             _smoothPos = Vector3.Lerp(_smoothPos, goal,
                                       1f - Mathf.Exp(-Smooth * Time.deltaTime));
             transform.position = _smoothPos;
+            _shakeInTransform = Vector3.zero;   // the follow's write holds no shake (juice PR 2)
         }
 
         private void TickFramingTween()
         {
             _tweenElapsed += Time.deltaTime;
             float t = _tweenSeconds > 0f ? Mathf.Clamp01(_tweenElapsed / _tweenSeconds) : 1f;
-            if (_cam != null)
-                _cam.orthographicSize = Mathf.Lerp(_tweenFromOrtho, _tweenToOrtho, Mathf.SmoothStep(0f, 1f, t));
+            _framingOrtho = Mathf.Lerp(_tweenFromOrtho, _tweenToOrtho, Mathf.SmoothStep(0f, 1f, t));
+            if (_cam != null) _cam.orthographicSize = _framingOrtho;
 
             if (t >= 1f)
             {
@@ -893,6 +1094,8 @@ namespace HiddenHarbours.App
                     _ppc.refResolutionY = _pendingRefH;
                     _ppc.enabled = true; // snap to the crisp, pixel-perfect new tier
                 }
+                _framingOrtho = _tweenToOrtho;
+                _ppcWantedByFraming = true;
                 if (_cam != null) _cam.orthographicSize = _tweenToOrtho;
             }
         }

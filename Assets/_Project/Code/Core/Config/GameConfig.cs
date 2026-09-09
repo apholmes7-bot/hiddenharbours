@@ -2721,6 +2721,11 @@ namespace HiddenHarbours.Core
     /// <para><b>Grade*</b> (PR 1 — <c>MoodGradeDirector</c>): the BLEND curve between the five looks the
     /// owner authors in <c>Resources/MoodGradeProfile.asset</c>. The looks are the profile's; how wide
     /// the golden hour is, how fast night fades in, and where fog and storm begin are these.</para>
+    ///
+    /// <para><b>Feel*</b> / <b>CatchPushIn*</b> / <b>ImpactShake*</b> / <b>SpeedPullBack*</b> (PR 2 —
+    /// <c>CameraFeel</c> inside the one <c>CameraFollow</c>): the push-in on a landed catch, the shake on a
+    /// grounding, the pull-back at speed on open water. Amplitudes, durations, thresholds and the slew;
+    /// the mode gate is the charter's, the deck's is a switch.</para>
     /// </summary>
     [System.Serializable]
     public struct JuiceSettings
@@ -2757,6 +2762,65 @@ namespace HiddenHarbours.Core
                  "knob (rule 7), not a smoothing — there is no smoothing.")]
         [Min(1f)] public float GradeRefreshHz;
 
+        [Header("Camera feel (PR 2) — the camera speaks")]
+        [Tooltip("Master switch for the camera feel layer (push-in, shake, pull-back). OFF hands CameraFollow " +
+                 "back exactly as it was before the layer existed.")]
+        public bool FeelEnabled;
+
+        [Tooltip("Whether the layer is live ON DECK (the push-in and the shake; the pull-back is the helm's " +
+                 "alone). The juice charter leaves the deck untouched, so this ships OFF — but the intro " +
+                 "fishes from the deck (owner ruling 2026-09-06), so it is a number and not a rule.")]
+        public bool FeelOnDeckEnabled;
+
+        [Tooltip("Push-in on a landed catch (CatchLanded), as a fraction of the framing height, for a fish at " +
+                 "the heavy mark. 0 = no push-in.")]
+        [Range(0f, 0.5f)] public float CatchPushInFraction;
+
+        [Tooltip("Seconds the push-in takes to reach its peak (ease-out).")]
+        [Min(0f)] public float CatchPushInSeconds;
+
+        [Tooltip("Seconds the push-in takes to release back to the framing (smooth-step).")]
+        [Min(0f)] public float CatchPushOutSeconds;
+
+        [Tooltip("Weight (kg) at and above which a catch gets the FULL push-in; lighter fish scale down " +
+                 "linearly to the light floor. 0 = every catch is a heavy one.")]
+        [Min(0f)] public float CatchPushInHeavyKg;
+
+        [Tooltip("The smallest fraction of the full push-in a light catch gets (a smelt still lands).")]
+        [Range(0f, 1f)] public float CatchPushInLightScale;
+
+        [Tooltip("Shake amplitude in world metres at severity 1 (BoatGrounded.Severity scales it; 32 px per " +
+                 "metre on the asset grid). 0 = no shake.")]
+        [Min(0f)] public float ImpactShakeMeters;
+
+        [Tooltip("Seconds the shake takes to decay to nothing (squared falloff).")]
+        [Min(0f)] public float ImpactShakeSeconds;
+
+        [Tooltip("Shake frequency, cycles per second.")]
+        [Min(0f)] public float ImpactShakeHz;
+
+        [Tooltip("Pull-back at speed on open water (the helm), as a fraction of the framing height at full " +
+                 "speed. 0 = no pull-back, and the PixelPerfectCamera is never paused for it.")]
+        [Range(0f, 0.5f)] public float SpeedPullBackFraction;
+
+        [Tooltip("Boat speed (m/s) at or below which there is no pull-back.")]
+        [Min(0f)] public float SpeedPullBackStartMps;
+
+        [Tooltip("Boat speed (m/s) at or above which the pull-back is full. Smooth-step between the two.")]
+        [Min(0f)] public float SpeedPullBackFullMps;
+
+        [Tooltip("Extra pull-back fraction at full speed in a full sea (EnvironmentSample.SeaState01 = 1), " +
+                 "scaled by the same speed term — a boat lying still in a swell is not pulled back.")]
+        [Range(0f, 0.5f)] public float SpeedPullBackSeaStateFraction;
+
+        [Tooltip("Seconds the pull-back takes to cross its whole range, in either direction — the slew limit " +
+                 "that keeps the sea from breathing in a swell. 0 = no limit.")]
+        [Min(0f)] public float SpeedPullBackSlewSeconds;
+
+        [Tooltip("How often the pull-back re-samples the sea state, per second (unscaled time). A slow-tick " +
+                 "budget knob (rule 7): the pull-back is slewed over seconds anyway.")]
+        [Min(1f)] public float FeelSeaStateRefreshHz;
+
         public static JuiceSettings Default => new JuiceSettings
         {
             GradeEnabled = true,
@@ -2767,6 +2831,22 @@ namespace HiddenHarbours.Core
             GradeStormSeaStateStart = 0.55f,
             GradeStormSeaStateFull = 0.9f,
             GradeRefreshHz = 10f,
+            FeelEnabled = true,
+            FeelOnDeckEnabled = false,
+            CatchPushInFraction = 0.08f,
+            CatchPushInSeconds = 0.12f,
+            CatchPushOutSeconds = 0.45f,
+            CatchPushInHeavyKg = 6f,
+            CatchPushInLightScale = 0.35f,
+            ImpactShakeMeters = 0.18f,
+            ImpactShakeSeconds = 0.3f,
+            ImpactShakeHz = 18f,
+            SpeedPullBackFraction = 0.1f,
+            SpeedPullBackStartMps = 2.5f,
+            SpeedPullBackFullMps = 7f,
+            SpeedPullBackSeaStateFraction = 0.05f,
+            SpeedPullBackSlewSeconds = 2f,
+            FeelSeaStateRefreshHz = 4f,
         };
     }
 }
