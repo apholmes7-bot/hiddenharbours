@@ -127,6 +127,7 @@ Material:
     - _SwashEdgeShift: 0.6
     - _SwashMaxEdgeShift: 0.35
     - _SwashSpeed: 0.16
+    - _SwellReadSeaStateLo: 0.1
     - _Turbidity: 3
     - _UntileStrength: 1
     - _UseCausticTex: 1

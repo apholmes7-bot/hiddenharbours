@@ -144,6 +144,31 @@ namespace HiddenHarbours.Boats
         [Tooltip("The hull's named tie-off points (M2-38 ropes). Data only — nothing consumes it yet.")]
         public DeckCleat[] Cleats = Array.Empty<DeckCleat>();
 
+        [Header("Stations (imported)")]
+        [Tooltip("TRUE when this hull's rig publishes a helm station and it was imported. It is a flag " +
+                 "and not a magic value because (0, 0, 0) is a LEGAL station — the hull's own pivot — and " +
+                 "a serialized field that is absent from the .asset reads ZERO, which would silently seat " +
+                 "every un-imported hull's pilot amidships on her keel.")]
+        public bool HasHelmStation;
+
+        [Tooltip("WHERE HER PILOT STANDS TO STEER HER — hull-local metres in the sidecars' frame (origin " +
+                 "amidships / keel bottom / centreline; +x starboard, +y bow, +z up), IMPORTED from this " +
+                 "hull's rig sidecar by Hidden Harbours ▸ Dev ▸ Boats ▸ Import deck sidecars.\n\n" +
+                 "A cape islander's wheelhouse, a console skiff's console, an outboard dory's transom " +
+                 "tiller and a rowed dory's oar seat are four different places on four different boats, " +
+                 "and before this they shared ONE number on the player (ControlSwitcher._helmLocalOffset, " +
+                 "tooltipped 'the tiller at the DORY'S stern'). Never hand-authored, for the reason the " +
+                 "class remarks give: the baked-anchors JSON died of a hand-copied constant drifting from " +
+                 "its rig.\n\n" +
+                 "HasHelmStation false = this hull's rig publishes no station, and the switcher falls back " +
+                 "to its own tuned offset and says so once, by name. Absence is data.")]
+        public Vector3 HelmStationLocalMeters = Vector3.zero;
+
+        [Tooltip("Which key of the sidecar the station came out of (ANCHORS.helm, STATIONS[id=helm], " +
+                 "STATIONS[id=helm_seat]). Provenance only — nothing reads it for gameplay, and it is what " +
+                 "the parity test quotes when an asset and its sidecar disagree.")]
+        public string HelmStationSource = "";
+
         [Header("Walkable bounds (baked from the DECK areas)")]
         [Tooltip("Centre of the axis-aligned box enclosing every DECK area, in the deck frame. This is " +
                  "what DeckStance publishes as DeckCenter, so consumers that grade against a rectangle " +
@@ -243,6 +268,80 @@ namespace HiddenHarbours.Boats
             heightMeters = DeckAreaMath.HeightAt(Areas[bestArea].HeightPlane, best);
             return best;
         }
+
+        /// <summary>
+        /// ⭐ <b>Is this boat-relative WORLD offset over a walkable deck of this hull?</b> The reader for
+        /// "is she standing on planking or on water" — and the twin, in the same frame and through the
+        /// same projection, of the <see cref="ClampToWalkable"/> the walk is bounded by. Where a walk
+        /// clamp and a standable test are two different shapes, one of them lets somebody stand on the
+        /// sea; asking both questions of the same polygons is what makes that impossible.
+        ///
+        /// <para>Exact, and per area: each area's height is its own fitted plane, so
+        /// <see cref="DeckAreaMath.TryWorldToDeckOnPlane"/> inverts the projection in closed form and the
+        /// crossing test then answers honestly. No tolerance and no iteration — an offset either draws on
+        /// her planking or it does not.</para>
+        ///
+        /// <para><paramref name="includeWashboards"/> follows <see cref="ClampToWalkable"/>'s law: the side
+        /// decks are somewhere you CLIMB onto, so they are out by default and the free walk and this test
+        /// keep exactly the same bounds.</para>
+        /// </summary>
+        /// <param name="worldOffset">Position relative to the hull's pivot, screen axes (m).</param>
+        /// <param name="drawnHeadingDegrees">The heading the hull PICTURE is drawn at.</param>
+        /// <param name="bakeElevationDegrees">That artwork's own foreshortening.</param>
+        /// <param name="heightMeters">The deck's height above the keel there (m); 0 when not over a deck.</param>
+        /// <param name="includeWashboards">Whether the side decks count. False — the walk's own answer.</param>
+        public bool IsOverWalkableDeck(Vector2 worldOffset, float drawnHeadingDegrees,
+                                       float bakeElevationDegrees, out float heightMeters,
+                                       bool includeWashboards = false)
+        {
+            heightMeters = 0f;
+            if (Areas == null) return false;
+
+            bool found = false;
+            for (int i = 0; i < Areas.Length; i++)
+            {
+                DeckArea a = Areas[i];
+                if (a == null || !a.IsUsable()) continue;
+                if (a.Kind != DeckAreaKind.Deck && !(includeWashboards && a.Kind == DeckAreaKind.Washboard)) continue;
+
+                if (!DeckAreaMath.TryWorldToDeckOnPlane(worldOffset, a.HeightPlane, drawnHeadingDegrees,
+                                                        out Vector2 deckPoint, bakeElevationDegrees)) continue;
+                if (!DeckAreaMath.Contains(a.Outline, a.Bounds, deckPoint) && !OnTheOutline(a, deckPoint)) continue;
+
+                // ⭐ The HIGHEST match, not the first. A raised foredeck 2.3 m over the sole DRAWS across
+                // the sole behind it, so at a ¾ bake one screen point genuinely is over two decks — measured
+                // on the cape: the sole and the foredeck overlap by up to 2.26 m of height at her turning
+                // headings. The surface drawn in FRONT is the one somebody is standing on, and up-screen is
+                // up: taking the first match in array order would make the answer depend on import order.
+                float h = DeckAreaMath.HeightAt(a.HeightPlane, deckPoint);
+                if (found && h <= heightMeters) continue;
+                heightMeters = h;
+                found = true;
+            }
+            return found;
+        }
+
+        /// <summary>
+        /// Is this deck point ON the outline, to within float noise? The edge case that is not an edge
+        /// case: <see cref="ClampToWalkable"/> puts a player pressed into a rail EXACTLY on the outline,
+        /// and <see cref="DeckAreaMath.Contains"/> says in as many words that "points exactly on an edge
+        /// may read either way" — so without this the commonest thing a player does on a small deck
+        /// (walk into the rail and stay there) could read as standing on water.
+        ///
+        /// <para><b>1 mm, and it is a float-noise budget rather than a feel knob.</b> The point has been
+        /// through the projection and back, which on this hull costs about 1e-6 m; a millimetre is three
+        /// orders above that and thirty times BELOW one pixel at the sheets' 32 px/m, so it can widen her
+        /// deck by nothing anybody can see and cannot reach water — the nearest sea to a clamped point is
+        /// the length of her freeboard away.</para>
+        /// </summary>
+        private static bool OnTheOutline(DeckArea area, Vector2 deckPoint)
+        {
+            DeckAreaMath.ClosestPointOnOutline(area.Outline, deckPoint, out float sqrDistance);
+            return sqrDistance <= OutlineSkinMetres * OutlineSkinMetres;
+        }
+
+        /// <summary>The float-noise skin <see cref="OnTheOutline"/> allows (m). See its remarks.</summary>
+        private const float OutlineSkinMetres = 0.001f;
 
         /// <summary>The height (m above the keel) of the area at <paramref name="areaIndex"/> under
         /// <paramref name="deckPoint"/>; 0 for an index that is not an area.</summary>

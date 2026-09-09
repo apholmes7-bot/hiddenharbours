@@ -56,6 +56,18 @@ namespace HiddenHarbours.Tools.RigBaking
         public float LoaMeters;
         public readonly List<SidecarArea> Areas = new List<SidecarArea>();
         public readonly List<SidecarCleat> Cleats = new List<SidecarCleat>();
+
+        /// <summary>True when this hull's rig publishes a helm station — see
+        /// <c>DeckSidecarReader.ReadHelmStation</c>. A flag rather than a magic value: (0, 0, 0) is a
+        /// legal station.</summary>
+        public bool HasHelmStation;
+
+        /// <summary>Where her pilot stands to steer her, hull-local metres. Meaningless unless
+        /// <see cref="HasHelmStation"/>.</summary>
+        public Vector3 HelmStation;
+
+        /// <summary>Which sidecar key the station came out of — provenance, quoted by the parity test.</summary>
+        public string HelmStationSource = "";
         /// <summary>Fatal problems — a read with any of these must not become an asset.</summary>
         public readonly List<string> Errors = new List<string>();
         /// <summary>Things worth saying out loud that do not stop the import.</summary>
@@ -266,6 +278,7 @@ namespace HiddenHarbours.Tools.RigBaking
             ReadDeckAreas(root, read);
             ReadWashboards(root, read);
             ReadCleats(root, read);
+            ReadHelmStation(root, read);
             return read;
         }
 
@@ -405,6 +418,94 @@ namespace HiddenHarbours.Tools.RigBaking
                                            DeckSidecarJson.Float(pos[2])),
                 });
             }
+        }
+
+        /// <summary>
+        /// ⭐ <b>WHERE THIS HULL'S PILOT STANDS TO STEER HER</b>, if her rig publishes it. Hull-local
+        /// metres in the sidecars' own frame — the same frame the DECK polygons and the CLEATS are in, so
+        /// nothing is converted and nothing can be converted wrongly.
+        ///
+        /// <para><b>Two shapes, because two generations of sidecar wrote it two ways</b>, and the ladder is
+        /// stated here rather than guessed per file. The generator's kits (18 lobster variants, both
+        /// sportfishers, sportSkiffMk2, and the cape since 2026-09-09) publish <c>ANCHORS</c> as an
+        /// OBJECT keyed by name with <c>{x, y, z}</c> values. The hand-authored ones (the punt, both
+        /// zodiacs) publish <c>STATIONS</c> as an ARRAY of <c>{id, type, pos:[x,y,z], provenance}</c>
+        /// records — the same shape <see cref="ReadCleats"/> reads, which is this repo's convention for
+        /// a list of named points. ⚠ It is NOT a map: reading it as one finds nothing, silently, on three
+        /// hulls (measured before CI, 2026-09-09). <c>helm</c> first, then <c>helm_seat</c> — on a boat
+        /// you sit at the tiller of, the station IS the seat. First match wins and
+        /// <see cref="SidecarRead.HelmStationSource"/> records WHICH: a station whose provenance is not
+        /// written down is a constant with extra steps.</para>
+        ///
+        /// <para><b>Absence is data.</b> Ten shipped hulls publish no station at all (cape islander, dory,
+        /// console, coastal packet, the old lobster boat and sport skiff, side dragger, stern trawler and
+        /// Mk2, tanker). They import with <c>HasHelmStation</c> false and the switcher falls back to its
+        /// own tuned offset, loudly and by name. A missing section is not an error here for the same
+        /// reason a missing <c>WASHBOARD</c> is not: it is a hull nobody has measured yet.</para>
+        /// </summary>
+        private static void ReadHelmStation(object root, SidecarRead read)
+        {
+            // (1) The generator's map: ANCHORS is an OBJECT keyed by name, values {x, y, z}.
+            if (TryAnchorStation(DeckSidecarJson.Member(root, "ANCHORS"), "helm", read)) return;
+
+            // (2) The hand-authored list: STATIONS is an ARRAY of {id, type, pos:[x,y,z], …} — the
+            // same record shape CLEATS uses, which is the house convention for a list of named
+            // points. 'helm' first, then 'helm_seat': on a boat you sit at the tiller of, the
+            // station IS the seat, and the punt says so in her own provenance note.
+            List<object> stations = DeckSidecarJson.AsArray(DeckSidecarJson.Member(root, "STATIONS"));
+            if (TryListStation(stations, "helm", read)) return;
+            TryListStation(stations, "helm_seat", read);
+        }
+
+        /// <summary>A named member of the ANCHORS map, as an <c>{x, y, z}</c> object. Absent section
+        /// or absent key returns false SILENTLY (a hull nobody has measured); a key that is present
+        /// and malformed is an ERROR, because a station somebody authored and mistyped is a defect
+        /// where an absent one is a decision.</summary>
+        private static bool TryAnchorStation(object anchors, string key, SidecarRead read)
+        {
+            object entry = DeckSidecarJson.Member(anchors, key);
+            if (entry == null) return false;
+
+            bool hasX = DeckSidecarJson.TryDouble(DeckSidecarJson.Member(entry, "x"), out double x);
+            bool hasY = DeckSidecarJson.TryDouble(DeckSidecarJson.Member(entry, "y"), out double y);
+            bool hasZ = DeckSidecarJson.TryDouble(DeckSidecarJson.Member(entry, "z"), out double z);
+            if (!hasX || !hasY || !hasZ)
+            {
+                read.Errors.Add($"ANCHORS '{key}': an anchor must carry x, y and z.");
+                return false;
+            }
+
+            read.HelmStation = new Vector3((float)x, (float)y, (float)z);
+            read.HelmStationSource = "ANCHORS." + key;
+            read.HasHelmStation = true;
+            return true;
+        }
+
+        /// <summary>The STATIONS record whose <c>id</c> is <paramref name="id"/>, read out of its
+        /// <c>pos: [x, y, z]</c> — <see cref="ReadCleats"/>'s shape, and validated the same way.</summary>
+        private static bool TryListStation(List<object> stations, string id, SidecarRead read)
+        {
+            if (stations == null) return false;
+
+            for (int i = 0; i < stations.Count; i++)
+            {
+                object entry = stations[i];
+                if (DeckSidecarJson.String(DeckSidecarJson.Member(entry, "id")) != id) continue;
+
+                var pos = DeckSidecarJson.AsArray(DeckSidecarJson.Member(entry, "pos"));
+                if (pos == null || pos.Count < 3)
+                {
+                    read.Errors.Add($"STATIONS '{id}': 'pos' must be [x, y, z].");
+                    return false;
+                }
+
+                read.HelmStation = new Vector3(DeckSidecarJson.Float(pos[0]), DeckSidecarJson.Float(pos[1]),
+                                               DeckSidecarJson.Float(pos[2]));
+                read.HelmStationSource = $"STATIONS[id={id}]";
+                read.HasHelmStation = true;
+                return true;
+            }
+            return false;
         }
 
         // ---- geometry helpers --------------------------------------------------------------------

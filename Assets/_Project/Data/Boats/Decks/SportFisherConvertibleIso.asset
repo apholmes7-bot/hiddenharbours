@@ -202,5 +202,8 @@ MonoBehaviour:
   - Id: bow_1
     Type: bitt
     PositionMeters: {x: 0, y: 7.505, z: 4.166}
+  HasHelmStation: 1
+  HelmStationLocalMeters: {x: 0, y: -1.85, z: 4.8}
+  HelmStationSource: ANCHORS.helm
   WalkCenter: {x: 0, y: 0.32699966}
   WalkHalfExtents: {x: 2.174, y: 8.427}

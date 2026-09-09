@@ -329,11 +329,21 @@ namespace HiddenHarbours.Tests.EditMode
             int compared = 0;
             foreach (FishSchool s in view)
             {
-                // Stand on the school's own centre and ask the GAMEPLAY question.
-                Assert.AreEqual(1, model.SchoolsAt(s.Centre, now, at),
-                                "a school the water drew is not the school the rod finds at its centre");
+                // Stand on the school's own centre and ask the GAMEPLAY question. ⚠ NOT "exactly one":
+                // SchoolsAt returns EVERY school whose disc contains the point and SchoolInfluence.At
+                // sums them, so overlapping discs are designed behaviour — and at the owner's 2026-09-09
+                // lattice (22 m cells, 8-14 m discs) they are ordinary. The invariant is that the school
+                // the water DREW is AMONG the schools the rod FINDS, field for field.
+                int found = model.SchoolsAt(s.Centre, now, at);
+                Assert.Greater(found, 0,
+                               "a school the water drew is not there at all when the rod asks at its centre");
 
-                FishSchool r = at[0];
+                FishSchool r = default;
+                bool matched = false;
+                foreach (FishSchool q in at)
+                    if (q.Centre == s.Centre && q.StartSeconds == s.StartSeconds) { r = q; matched = true; break; }
+                Assert.IsTrue(matched,
+                    $"the rod found {found} school(s) at {s.Centre} but none of them is the one the water drew");
                 Assert.AreEqual(s.Centre, r.Centre, "centre");
                 Assert.AreEqual(s.DepthMetres, r.DepthMetres, "depth");
                 Assert.AreEqual(s.RadiusMetres, r.RadiusMetres, "radius");
@@ -374,9 +384,21 @@ namespace HiddenHarbours.Tests.EditMode
 
             foreach (FishSchool s in view)
             {
-                Assert.AreEqual(1, model.SchoolsAt(s.Centre, now, at),
-                                "a school the water drew is not the school the rod finds at its centre");
-                FishSchool r = at[0];
+                // Stand on the school's own centre and ask the GAMEPLAY question. ⚠ NOT "exactly one":
+                // SchoolsAt returns EVERY school whose disc contains the point and SchoolInfluence.At
+                // sums them, so overlapping discs are designed behaviour — and at the owner's 2026-09-09
+                // lattice (22 m cells, 8-14 m discs) they are ordinary. The invariant is that the school
+                // the water DREW is AMONG the schools the rod FINDS, field for field.
+                int found = model.SchoolsAt(s.Centre, now, at);
+                Assert.Greater(found, 0,
+                               "a school the water drew is not there at all when the rod asks at its centre");
+
+                FishSchool r = default;
+                bool matched = false;
+                foreach (FishSchool q in at)
+                    if (q.Centre == s.Centre && q.StartSeconds == s.StartSeconds) { r = q; matched = true; break; }
+                Assert.IsTrue(matched,
+                    $"the rod found {found} school(s) at {s.Centre} but none of them is the one the water drew");
                 Assert.AreEqual(s.Centre, r.Centre, "centre");
                 Assert.AreEqual(s.DepthMetres, r.DepthMetres, "depth");
                 Assert.AreEqual(s.RadiusMetres, r.RadiusMetres, "radius");

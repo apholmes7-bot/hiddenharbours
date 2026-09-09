@@ -207,6 +207,34 @@ namespace HiddenHarbours.Tests.RigBaking
                          "buildingLifecycle", "shopInterior"),
             new Snapshot("shoreFinds", "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
                          "ShoreFinds", AzimuthConvention.CounterClockwise),
+            // Added by the CLAM SPADE kit (#805). The rig itself is not new — shovelIsoRig.js has
+            // been committed and UNREGISTERED since it landed, which CharacterRigBaker stated in its
+            // own words ("shovelIsoRig.js is committed but not yet registered in this catalog") and
+            // which is why the hand drew a loose 32 px gear sprite instead of a turntable.
+            // Standalone: the spade renders on its own, and the CHARACTER rig is its pose DRIVER
+            // rather than a prerequisite — ShovelKitBaker installs and convention-probes both.
+            //
+            // ⚠⚠ COUNTER-CLOCKWISE, and the rig's own header claims the opposite: it opens "Same
+            // fixed 3/4 turntable as the fleet / character / rod", but its camBasis is
+            // `th = +dir*PI/4` where BOTH the character's and the rod's are `th = -dir*PI/4` — and
+            // the rod's carries the comment "ADR-0006 fix: CW azimuth, kept in sync with
+            // characterIsoRig so the mount still aligns". The spade never got that fix.
+            //
+            // MEASURED four independent ways in the repo's own V8 before this row was written,
+            // because the error class hides where you look (drawn − true = −2·heading is exactly
+            // ZERO at north and south and 180° out at east and west, so a spot-check that reaches
+            // for a cardinal cannot see it):
+            //   1. the source sign term above;
+            //   2. tip() at the E/W rows: −21.28 / +21.28 px from the grip column, against the ROD's
+            //      +16.89 / −17.96 measured in the SAME host — a clean mirror of the CW control;
+            //   3. project([0,1,0]).dx per dir: 0, −22.63, −32, −22.63, 0, +22.63, +32, +22.63,
+            //      i.e. the rig's own forward swings screen-LEFT at east;
+            //   4. the rendered silhouette's far extreme: −22 px at east, +21 px at west.
+            // ShovelRigAzimuthProbe re-measures it from pixels at bake time and RefuseOnMismatch
+            // cross-checks it against this row, so the day the sign fix lands upstream this reddens
+            // and is consumed deliberately rather than the kit quietly mirroring itself.
+            new Snapshot("shovel", "docs/art/rigs/shovelIsoRig.js",
+                         "ShovelIso", AzimuthConvention.CounterClockwise),
             // Added by the SAIL RIG KIT (drop 2026-09-06) — the first sails in the fleet, and the
             // first hull rigs that do not sit at the top of docs/art/rigs/. Standalone: each is a
             // self-contained IIFE, no isoSolid and no prerequisites.

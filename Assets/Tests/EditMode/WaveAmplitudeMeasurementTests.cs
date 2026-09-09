@@ -56,12 +56,17 @@ namespace HiddenHarbours.Tests.EditMode
             return 1f;
         }
 
-        static WaveFieldSettings Shipped()
-        {
-            WaveFieldSettings s = WaveFieldSettings.Default;
-            s.SeaFetchKilometres = 25f;      // GameConfig.asset — the shipped inshore strait
-            return s;
-        }
+        /// <summary>
+        /// The sea the owner actually plays. ⚠️ <b>This used to be
+        /// <c>WaveFieldSettings.Default</c> with <c>SeaFetchKilometres</c> patched, and that was
+        /// wrong</b> — the asset also overrides <c>SeaStateAmplitudeExponent</c> (1.35 -> 1.5),
+        /// <c>CrestSharpening</c> (2.2 -> 2.6) and, decisively, <c>SpectrumBlend</c> (0 -> 0.65),
+        /// which is the difference between the hand-authored FOUR-train field and the eight-bin
+        /// spectral one. Every number this fixture published before 2026-09-09 therefore described a
+        /// sea nobody sails. <see cref="ShippedWaveField"/> carries the one mirror now, with a guard
+        /// that walks the asset's own keys.
+        /// </summary>
+        static WaveFieldSettings Shipped() => ShippedWaveField.Settings();
 
         /// <summary>What the drawn/ridden sea actually reaches: the sum of the four trains' amplitudes,
         /// which is the bound the field can touch. <c>WaveTrains.TotalAmplitude</c>'s arithmetic.</summary>

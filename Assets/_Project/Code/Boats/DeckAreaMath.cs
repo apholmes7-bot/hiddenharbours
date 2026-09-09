@@ -85,6 +85,48 @@ namespace HiddenHarbours.Boats
         }
 
         /// <summary>
+        /// ⭐ <b>The EXACT inverse for a point known to lie on ONE area's fitted height plane</b> — the
+        /// answer to "which deck point DRAWS here?", as opposed to <see cref="WorldToDeck"/>'s "which
+        /// deck point draws here IF it is this high?".
+        ///
+        /// <para><b>Why it can be exact where the iterative seed cannot.</b> The projection folds
+        /// along-hull distance and height onto one screen axis, so a world offset alone is two unknowns
+        /// in one equation — which is why <c>DeckWalkController.SeedDeckLocalPure</c> iterates. But on a
+        /// SINGLE area the height is not a free unknown: it is that area's fitted plane
+        /// <c>z = a·x + b·y + c</c> (<see cref="HeightAt"/>), an affine function of the very point being
+        /// solved for. Substituting it makes the whole map affine and the inverse a 2×2 solve with no
+        /// iteration, no tolerance and no starting guess.</para>
+        ///
+        /// <para><b>What it does NOT do.</b> It does not say the point is ON that area — it says where on
+        /// that area's PLANE, extended to infinity, the offset lands. The caller tests containment
+        /// (<see cref="Contains"/>), which is what makes "am I over this hull's deck?" one honest answer
+        /// per area rather than a search. Returns false only for a degenerate projection (a plane whose
+        /// tilt cancels the camera's own squash), where there is no unique answer to give.</para>
+        /// </summary>
+        public static bool TryWorldToDeckOnPlane(Vector2 worldOffset, Vector3 heightPlane,
+                                                 float drawnHeadingDeg, out Vector2 deckPoint,
+                                                 float bakeElevationDegrees = PlanViewElevationDegrees)
+        {
+            float rad = Safe(drawnHeadingDeg) * Mathf.Deg2Rad;
+            float cos = Mathf.Cos(rad), sin = Mathf.Sin(rad);
+            float s = WakeGrading.ForeshortenY(bakeElevationDegrees);
+            float c = LiftZ(bakeElevationDegrees);
+
+            // Forward, with z = a·x + b·y + k substituted in:  world = M · deck + (0, k·c).
+            float m00 = cos, m01 = sin;
+            float m10 = -sin * s + Safe(heightPlane.x) * c;
+            float m11 = cos * s + Safe(heightPlane.y) * c;
+
+            float det = m00 * m11 - m01 * m10;
+            if (float.IsNaN(det) || Mathf.Abs(det) < 1e-6f) { deckPoint = Vector2.zero; return false; }
+
+            float wx = Safe(worldOffset.x);
+            float wy = Safe(worldOffset.y) - Safe(heightPlane.z) * c;
+            deckPoint = new Vector2((m11 * wx - m01 * wy) / det, (-m10 * wx + m00 * wy) / det);
+            return true;
+        }
+
+        /// <summary>
         /// A screen-axis input DIRECTION as the deck-frame direction that DRAWS along it — the walk's
         /// input transform. Because the projection is linear, the returned direction projects back
         /// exactly parallel to the input: press up-screen and you still walk up-screen, at every

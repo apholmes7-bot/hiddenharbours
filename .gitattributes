@@ -203,3 +203,8 @@ docs/tools/reference/*.json    text eol=lf
 # kit's own checksum file is verifiable on any machine, which is the whole point of shipping it.
 docs/art/rigs/sail-rig-kit/**               text eol=lf
 docs/art/rigs/gameplay/sail/**              text eol=lf
+
+# Shell scripts run under bash, which chokes on CR. The gauntlet in tools/gauntlet is the seat's
+# merge battery; a checkout with autocrlf on would otherwise hand it back with CRLF and it would not start.
+*.sh                    text eol=lf
+tools/gauntlet/**       text eol=lf

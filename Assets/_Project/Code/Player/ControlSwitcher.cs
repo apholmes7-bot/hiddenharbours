@@ -123,10 +123,14 @@ namespace HiddenHarbours.Player
         [Tooltip("The deck-walk controller on the PLAYER — enabled only while OnDeck. Auto-resolved off " +
                  "the walk controller's object if left empty (so tests/older wiring need no change).")]
         [SerializeField] private DeckWalkController _deckWalk;
-        [Tooltip("The HELM STATION spot — the tiller — as an offset from the boat's position WITH HER " +
-                 "BOW NORTH, in the drawn (screen) metres this was tuned in. It is a place ON THE HULL: " +
-                 "the spot turns with the boat's drawn heading, so the tiller stays at her stern " +
-                 "whichever way she is lying. Walk here + E to take the helm.")]
+        [Tooltip("⛔ THE FALLBACK HELM STATION — used only by a hull whose rig publishes none. Her own " +
+                 "station is IMPORTED, per hull, onto BoatDeckDef.HelmStationLocalMeters; this is what " +
+                 "answers for the ten hulls whose sidecars carry no station yet.\n\n" +
+                 "An offset from the boat's position WITH HER BOW NORTH, in the drawn (screen) metres " +
+                 "it was tuned in — the dory's tiller, and its own tooltip used to say so while every " +
+                 "one of eleven hulls shared it. A cape islander's wheelhouse, a console skiff's " +
+                 "console, an outboard dory's transom tiller and a rowed dory's oar seat are four " +
+                 "different places. Walk to the station + E to take the helm.")]
         [SerializeField] private Vector2 _helmLocalOffset = new Vector2(0f, -1.3f);
         [Tooltip("How close (m) the on-deck player must stand to the helm spot for E to take the helm. " +
                  "Kept tighter than the deck so there's still deck left to disembark from.")]
@@ -417,19 +421,98 @@ namespace HiddenHarbours.Player
             }
         }
 
-        /// <summary>The helm station as a DECK-FRAME point — x abeam to starboard, y along the keel
-        /// toward the bow, honest hull metres. The physical place on the boat the tuned offset names,
-        /// heading-independent by construction (it is the frame the deck polygons live in). On the dory
-        /// (bake elevation 40°) the shipped (0, −1.3) drawn metres is (0, −2.02) hull metres — 2 m aft
-        /// of her origin, which is where her tiller is.</summary>
+        /// <summary>
+        /// ⭐⭐ <b>THE HELM STATION AS A PLACE ON THIS HULL</b> — a DECK-FRAME point, x abeam to
+        /// starboard and y along the keel toward the bow, honest hull metres, heading-independent by
+        /// construction (it is the frame the deck polygons live in).
+        ///
+        /// <para><b>Her rig’s own station when she publishes one</b>
+        /// (<see cref="BoatDeckDef.HelmStationLocalMeters"/>, imported from her gameplay sidecar), and
+        /// <see cref="_helmLocalOffset"/> only when she does not. Before this, ONE serialized field on
+        /// the PLAYER answered for every hull in the fleet — tooltipped, in its own words, "the tiller
+        /// at the DORY’S stern" — and the owner met the result: <i>"when piloting boats the sprite does
+        /// not stay in the accurate helm position."</i> A cape islander steers from a wheelhouse 1.35 m
+        /// forward of amidships and a dory from a tiller 2 m aft of it; one number cannot be both.</para>
+        ///
+        /// <para><b>The fallback is BIT-IDENTICAL, by construction rather than by care.</b> A hull with
+        /// no station takes the same un-projection it always did, through the same call, with the same
+        /// arguments — the branch is taken before anything is computed. The dory is one of the ten
+        /// hulls with no published station, so #789’s tuned number is untouched and stays the oracle.</para>
+        /// </summary>
         public Vector2 HelmDeckOffset()
-            => DeckAreaMath.WorldToDeck(_helmLocalOffset, 0f, 0f, HullBakeElevationDegrees);
+            => TryHullHelmStation(out Vector3 station)
+                   ? new Vector2(station.x, station.y)
+                   : DeckAreaMath.WorldToDeck(_helmLocalOffset, 0f, 0f, HullBakeElevationDegrees);
+
+        /// <summary>
+        /// How high above the keel her helm station stands (m) — what lifts the spot up-screen onto a
+        /// raised sole, exactly as the deck walk lifts the PLAYER standing there.
+        ///
+        /// <para>⚠ <b>This is not decoration: without it the reach test compares two different
+        /// frames.</b> <c>DeckWalkController</c> places the player through
+        /// <c>DeckToWorld(deckLocal, deckHeight, …)</c>, so a player standing AT the wheel is already
+        /// lifted by her deck height × cos(elev) — 0.57 m on the cape’s 0.74 m station at a 40° bake,
+        /// against a 0.9 m <see cref="_helmReach"/>. A helm spot pinned at height 0 would sit that far
+        /// below her feet and eat most of the reach.</para>
+        ///
+        /// <para><b>Zero for the fallback</b>, which is what shipped: the tuned offset is a drawn
+        /// screen measurement that already has whatever lift it has baked into it, and adding a height
+        /// to it would move the dory.</para>
+        /// </summary>
+        private float HelmStationHeightMeters
+            => TryHullHelmStation(out Vector3 station) ? station.z : 0f;
+
+        /// <summary>This hull’s own published helm station, hull-local metres. False when her rig
+        /// publishes none — and it says so once, by name, on the way out.</summary>
+        private bool TryHullHelmStation(out Vector3 station)
+        {
+            station = Vector3.zero;
+            BoatDeckDef deck = Boat != null ? BoatDeckAreas.Resolve(Boat.gameObject) : null;
+            if (deck != null && deck.HasHelmStation)
+            {
+                station = deck.HelmStationLocalMeters;
+                return true;
+            }
+
+            NoteTheFallback(deck);
+            return false;
+        }
+
+        /// <summary>
+        /// ⭐ <b>Say, once per hull and BY NAME, that this boat is being steered from the dory's
+        /// tiller.</b> Ten shipped hulls publish no station (cape islander, dory, console, coastal
+        /// packet, the old lobster boat and sport skiff, side dragger, stern trawler and Mk2, tanker),
+        /// and for them <see cref="_helmLocalOffset"/> is still the answer — which is correct for the
+        /// dory it was tuned on and a guess everywhere else.
+        ///
+        /// <para><b>Why a log and not a warning, and why once.</b> A hull with no measured station is
+        /// not broken — it is unmeasured, and absence is data (the deck sidecars' own law). But a
+        /// silent fallback is how one number came to steer eleven boats in the first place, so it says
+        /// so. Once per hull id, because <see cref="HelmDeckOffset"/> is on the interact popup's
+        /// per-frame path and a line per frame is not a diagnostic, it is a flood (rule 7).</para>
+        /// </summary>
+        private void NoteTheFallback(BoatDeckDef deck)
+        {
+            string id = deck != null && !string.IsNullOrEmpty(deck.Id)
+                            ? deck.Id
+                            : Boat != null ? Boat.name : "<no boat>";
+            if (!_helmFallbackLogged.Add(id)) return;
+
+            Debug.Log($"[ControlSwitcher] '{id}' publishes no helm station — steering her from the " +
+                      $"tuned fallback {_helmLocalOffset} (the dory's tiller). Her rig's station needs " +
+                      "importing: docs/art/rigs/gameplay/<rig>.gameplay.json.");
+        }
+
+        /// <summary>Hull ids already told about above. Static so the notice is once per SESSION rather
+        /// than once per switcher — two players and a dev hull swap would otherwise each say it.</summary>
+        private static readonly System.Collections.Generic.HashSet<string> _helmFallbackLogged =
+            new System.Collections.Generic.HashSet<string>();
 
         /// <summary>The helm station as a boat-relative WORLD (screen-axis) offset — what
         /// <see cref="HelmWorldPosition"/> adds to her origin, and what <see cref="SnapPlayerToTheHelm"/>
         /// hands the deck walk, which speaks that frame.</summary>
         private Vector2 HelmBoatRelativeOffset()
-            => DeckAreaMath.DeckToWorld(HelmDeckOffset(), 0f,
+            => DeckAreaMath.DeckToWorld(HelmDeckOffset(), HelmStationHeightMeters,
                                         DeckWalkController.DrawnHeadingDegreesOf(Boat),
                                         HullBakeElevationDegrees);
 

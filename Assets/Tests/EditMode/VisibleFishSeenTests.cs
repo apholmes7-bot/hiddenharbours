@@ -120,11 +120,16 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void ShoalSpread_IsALength_NotAFractionOfTheBoatRadius()
         {
-            FishSchoolSettings s = Settings();
+            // The retired rule, restated from its own two inputs — and BOTH halves are now retired:
+            // the disc was 22-55 m until the owner's 2026-09-09 lattice ruling shrank it to 8-14 m
+            // (a disc is how far a BOAT may be from a mark, and 22-55 m was two to four screens wide).
+            // These literals are the radii the retired rule multiplied, and must stay literals: reading
+            // them off today's settings would make this test measure the CURRENT disc, not the defect.
+            const float retiredMinRadiusM = 22f;
+            const float retiredMaxRadiusM = 55f;
 
-            // The retired rule, restated from its own two inputs.
-            float oldTight = 0.8f * s.MinRadiusMetres;      // 17.6 m
-            float oldWide = 0.8f * s.MaxRadiusMetres;       // 44.0 m
+            float oldTight = 0.8f * retiredMinRadiusM;      // 17.6 m
+            float oldWide = 0.8f * retiredMaxRadiusM;       // 44.0 m
 
             float tightIn = FractionInCamera(oldTight);
             float wideIn = FractionInCamera(oldWide);
@@ -188,7 +193,7 @@ namespace HiddenHarbours.Tests.EditMode
         public void FallbackDensity_ReproducesTheOldGlobalChance()
         {
             const float shippedChance = 0.55f;      // FishSchoolSettings.Default.BaseAppearanceChance01
-            const float shippedCellM = 120f;        // FishSchoolSettings.Default.CellSizeMetres
+            const float shippedCellM = 22f;         // FishSchoolSettings.Default.CellSizeMetres
 
             FishSchoolSettings s = FishSchoolSettings.Default;
             Assert.AreEqual(shippedChance, s.BaseAppearanceChance01, 1e-6f, "the shipped chance moved");
@@ -206,6 +211,8 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void UnstatedDensity_IsASentinel_NotZero()
         {
+            // A statement about the FUNCTION, at a cell size of its own: 38.19/km^2 over a 120 m cell is
+            // 0.55 whatever the shipped cell happens to be today.
             Assert.Less(FishSchoolMath.BaseChanceForDensity(0f, 120f), 0f,
                 "0 means unstated and must be distinguishable from a real zero chance");
             Assert.AreEqual(0.55f, FishSchoolMath.BaseChanceForDensity(38.194444f, 120f), 1e-3f);

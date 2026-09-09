@@ -71,12 +71,32 @@ namespace HiddenHarbours.Player
         {
             EventBus.Subscribe<GameLoaded>(OnGameLoaded);
             Interactables.Register(this);      // the pail is now something E can act on (see below)
+
+            // ⭐ THE PAIL IS A FACT ABOUT HER, so it is published where anyone can ask (2026-09-09).
+            // A clam hole used to know only the one GameObject a builder serialized into it; when that
+            // reference did not survive — another region's hole, a tool-spawned hole, a scene rebuilt
+            // round a different core — the dig told a fisher carrying a twenty-clam pail that she needed
+            // a bucket. Nothing else about the pail changes: the hole still prefers whatever it was
+            // wired to, and only falls back to this.
+            GameServices.PlayerHold = this;
         }
 
         private void OnDisable()
         {
             EventBus.Unsubscribe<GameLoaded>(OnGameLoaded);
             Interactables.Unregister(this);
+        }
+
+        /// <summary>
+        /// Release the relay — <b>in <c>OnDestroy</c>, and deliberately NOT in <c>OnDisable</c></b>, the
+        /// lifetime rule <c>CarryHands</c> states for the same reason: root-toggling IS how a region hop
+        /// works, so a service cleared on disable is a service wiped mid-crossing. Guarded on still owning
+        /// the slot, so a replacement pail that has already published itself is never nulled by the
+        /// outgoing one's teardown.
+        /// </summary>
+        private void OnDestroy()
+        {
+            if (ReferenceEquals(GameServices.PlayerHold, this)) GameServices.PlayerHold = null;
         }
 
         private void OnGameLoaded(GameLoaded _)

@@ -257,12 +257,27 @@ namespace HiddenHarbours.Tests.PlayMode
             SavePlate("01-stpeters-noon-shallows.png", Capture());
 
             // ---- 2. the honesty invariant, on the REAL region's pool --------------------------------
+            // ⚠ NOT "exactly one". SchoolsAt returns EVERY school whose disc contains the point and
+            // SchoolInfluence.At sums them, so overlapping discs are designed behaviour — and at the
+            // owner's 2026-09-09 lattice (22 m cells, 8-14 m discs) they are ordinary. The invariant is
+            // that the school the water DREW is AMONG the schools the rod FINDS, species and density and
+            // all; asserting it is the ONLY one was an artefact of a sparser sea.
             var at = new List<FishSchool>();
-            Assert.AreEqual(1, GameServices.FishSchools.SchoolsAt(shallow.Value.Centre, now, at),
-                "a school the water drew is not the school the rod finds standing on it");
-            CollectionAssert.AreEqual(shallow.Value.SpeciesIds, at[0].SpeciesIds,
+            int rodFound = GameServices.FishSchools.SchoolsAt(shallow.Value.Centre, now, at);
+            Assert.Greater(rodFound, 0,
+                "a school the water drew is not there at all when the rod stands on it");
+
+            FishSchool same = default;
+            bool matched = false;
+            foreach (FishSchool q in at)
+                if (q.Centre == shallow.Value.Centre && q.StartSeconds == shallow.Value.StartSeconds)
+                { same = q; matched = true; break; }
+            Assert.IsTrue(matched,
+                $"the rod found {rodFound} school(s) standing on the one the water drew, and none of " +
+                "them is it");
+            CollectionAssert.AreEqual(shallow.Value.SpeciesIds, same.SpeciesIds,
                 "the water would draw a species the resolver would not roll");
-            Assert.AreEqual(shallow.Value.MarkCount, at[0].MarkCount, "density");
+            Assert.AreEqual(shallow.Value.MarkCount, same.MarkCount, "density");
 
             // ---- 3. you can cast at them ------------------------------------------------------------
             var scratch = new List<FishSchool>();
@@ -302,14 +317,22 @@ namespace HiddenHarbours.Tests.PlayMode
                 // still marks it and the rod still finds it. An empty frame alone would equally well be a
                 // broken presenter, so the emptiness is only worth anything beside the school it hides.
                 var atDeep = new List<FishSchool>();
-                Assert.AreEqual(1, GameServices.FishSchools.SchoolsAt(deep.Value.Centre, now, atDeep),
+                Assert.Greater(GameServices.FishSchools.SchoolsAt(deep.Value.Centre, now, atDeep), 0,
                     "the deep school vanished from the model too — then the plate shows a bug, not a ruling");
-                Assert.Greater(atDeep[0].MarkCount, 0, "a deep school must still be marking the glass");
+
+                FishSchool stillThere = default;
+                bool deepMatched = false;
+                foreach (FishSchool q in atDeep)
+                    if (q.Centre == deep.Value.Centre && q.StartSeconds == deep.Value.StartSeconds)
+                    { stillThere = q; deepMatched = true; break; }
+                Assert.IsTrue(deepMatched,
+                    "the rod finds schools here but not the deep one the glass is still marking");
+                Assert.Greater(stillThere.MarkCount, 0, "a deep school must still be marking the glass");
 
                 SavePlate("03-stpeters-noon-deep-nothing-drawn.png", Capture());
                 Debug.Log($"[{PlateDir}] deep: {presenter.VisibleSwimmers} swimmers drawn at " +
                           $"{deep.Value.DepthMetres:0.0} m, and the model still holds " +
-                          $"{atDeep[0].MarkCount} marks there");
+                          $"{stillThere.MarkCount} marks there");
             }
             else Debug.Log($"[{PlateDir}] no deep school at this hour — plate 03 not shot");
 

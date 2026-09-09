@@ -355,7 +355,11 @@ namespace HiddenHarbours.Fishing
         /// of fish wandering a 40 m circle in front of a camera 25 m wide, and is the whole reason the
         /// schools were there and could not be seen.</para>
         /// </summary>
-        private static float SpreadMetresFor(string speciesId)
+        /// <remarks><b>public for the duty-cycle instrument</b> (<c>FishDutyCycleAtTheLandingTests</c>):
+        /// how wide the shoal swims is one of the two terms that decide whether a fish lands in the
+        /// owner's frame, and a guard that transcribed it instead of calling it would be measuring its
+        /// own copy. Behaviour unchanged.</remarks>
+        public static float SpreadMetresFor(string speciesId)
         {
             if (!string.IsNullOrEmpty(speciesId))
             {
@@ -383,7 +387,9 @@ namespace HiddenHarbours.Fishing
         /// <summary>A stable key for one school, from the two things that identify it: where its centre is
         /// and when its window opened. The model's own <c>(cell, slot)</c> key is private to it, and this
         /// is a faithful stand-in — two different schools cannot share a centre AND a start.</summary>
-        private static uint SchoolKey(in FishSchool school)
+        /// <remarks><b>public for the duty-cycle instrument</b> — the shoal's seed, and so the pose of
+        /// every fish in it, hangs off this. Behaviour unchanged.</remarks>
+        public static uint SchoolKey(in FishSchool school)
         {
             unchecked
             {

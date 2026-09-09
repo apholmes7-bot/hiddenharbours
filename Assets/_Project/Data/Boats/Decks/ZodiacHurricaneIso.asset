@@ -70,5 +70,8 @@ MonoBehaviour:
   - Id: stern_eye
     Type: tow_point
     PositionMeters: {x: 0, y: -3.46, z: 0.58}
+  HasHelmStation: 1
+  HelmStationLocalMeters: {x: 0.36, y: 0.185, z: 1.035}
+  HelmStationSource: 'STATIONS[id=helm]'
   WalkCenter: {x: 0, y: -0.70000005}
   WalkHalfExtents: {x: 1.053, y: 2.8}

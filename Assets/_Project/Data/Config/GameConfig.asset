@@ -79,6 +79,11 @@ MonoBehaviour:
     DominantWavelengthScale: 1
     PrimaryAmplitude: 0.8
     SeaStateAmplitudeExponent: 1.5
+    HeightFromFetch: 1
+    FetchHeightCoefficient: 0.0016
+    FullyDevelopedHeightCoefficient: 0.0246
+    HeightStyleScale: 1
+    GlassGateSeaState: 0.05
     CrestSharpening: 2.6
     PhaseSeed: 0
     Secondary1AngleDegrees: 32
@@ -96,6 +101,9 @@ MonoBehaviour:
     SpectrumFrequencySpacing: 0.08
     SpectrumSpreadDegrees: 55
     SpectrumSpreadExponent: 2
+    SpectrumBinCount: 8
+    SpectrumLadderMinWavelengthMeters: 5
+    SpectrumLadderMaxWavelengthMeters: 30
   WaveFieldAnimator:
     ParameterSmoothingSeconds: 1.5
     GlassSnapAmplitudeMeters: 0.0001
@@ -338,25 +346,25 @@ MonoBehaviour:
     SeaBoldness01: 0.35
     SeaBigFishBias01: 0.5
   FishSchools:
-    CellSizeMetres: 120
+    CellSizeMetres: 22
     SlotHours: 2.5
     BaseAppearanceChance01: 0.55
-    MinWaterColumnMetres: 1.5
+    MinWaterColumnMetres: 0.8
     SeaStateAppearanceBias: 0.25
     EarlySpringAppearance: 1
     HighSummerAppearance: 1.2
     TheTurnAppearance: 1
     HardWinterAppearance: 0.55
-    MinWindowHours: 0.75
-    MaxWindowHours: 2
-    MinRadiusMetres: 22
-    MaxRadiusMetres: 55
+    MinWindowHours: 1.75
+    MaxWindowHours: 2.5
+    MinRadiusMetres: 8
+    MaxRadiusMetres: 14
     MinDepthFraction01: 0.25
     MaxDepthFraction01: 0.8
     SeaStateDepthBias01: 0.25
     OpenWaterColumnMetres: 25
     ShoalSpreadMetres: 1.2
-    SchoolsPerSquareKilometre: 38.194444
+    SchoolsPerSquareKilometre: 1136.3636
     MinMarks: 1
     MaxMarks: 5
     BiteRatePerMark: 0.35

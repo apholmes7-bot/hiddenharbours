@@ -53,7 +53,12 @@ namespace HiddenHarbours.Tests.EditMode
             ("glass", 0f), ("light", 0.25f), ("blow", 0.55f), ("gale", 0.95f),
         };
 
-        static WaveFieldSettings Shipped => WaveFieldSettings.Default;
+        /// <summary>⚠️ <b>This was <c>WaveFieldSettings.Default</c> until 2026-09-09, and
+        /// <c>.Default</c> ships <c>SeaFetchKilometres = 0</c> — the LEGACY LINEAR peak law.</b> The
+        /// owner's asset ships 25 km, so every "shipped peak" this fixture reported was the wrong
+        /// curve: 8.45 m against the fetch law's 2.21 m at 1.63 m/s, 6.75 m against 0.21 m at
+        /// 0.5 m/s. Row 30's premise had moved before row 34 touched it.</summary>
+        static WaveFieldSettings Shipped => ShippedWaveField.Settings();
 
         /// <summary>Deep-water dispersion, the relation `WaveTrain` derives its own speed from.</summary>
         static float PhaseSpeed(float lambda) => Mathf.Sqrt(G * lambda / (2f * Mathf.PI));
@@ -62,12 +67,20 @@ namespace HiddenHarbours.Tests.EditMode
         /// camera cannot answer.</summary>
         static float Period(float lambda) => Mathf.Sqrt(2f * Mathf.PI * lambda / G);
 
-        /// <summary>The shipped peak wavelength: `DominantWavelengthBase + PerWindSpeed · U`, capped.
-        /// ⚠️ This is the law on BOTH paths — `SpectrumTrainsFrom` is handed this same
-        /// `dominantWavelength` and spreads its slots around it, so `SpectrumBlend` (0.65 on the shipped
-        /// GameConfig) does not move the peak.</summary>
+        /// <summary>The shipped peak wavelength — <b>the fetch law, because that is what the asset
+        /// ships</b> (<c>SeaFetchKilometres = 25</c>, #762). The superseded line here was
+        /// <c>Base + PerWindSpeed·U</c>, which is what `PeakWavelengthMeters` returns only when the
+        /// fetch setting is OFF; reading it off `WaveFieldSettings.Default` made this fixture measure
+        /// the legacy curve throughout.
+        ///
+        /// <para>⚠️ <b>Since 2026-09-09 the peak no longer SCALES the field</b> (register row 34):
+        /// the spectrum's bins are a fixed ladder and λ_p only says which of them carries the energy.
+        /// The peak is still the right thing to measure here — it is what the owner's "how fast do
+        /// the waves move" question is about — but a crest's arrival rate is now set by the bin the
+        /// energy sits in, which the ladder rounds to. See
+        /// <c>WaveFixedBinLadderTests</c>.</para></summary>
         static float ShippedPeak(float windSpeed) => Mathf.Clamp(
-            Shipped.DominantWavelengthBase + Shipped.DominantWavelengthPerWindSpeed * windSpeed,
+            WaveMath.PeakWavelengthMeters(windSpeed, Shipped),
             WaveTrain.MinWavelengthMeters, Shipped.DominantWavelengthMax);
 
         /// <summary>Pierson–Moskowitz's fully-developed peak wavelength for a wind speed:
@@ -138,57 +151,80 @@ namespace HiddenHarbours.Tests.EditMode
         // ==== 2. THE WIND LAW =======================================================================
 
         /// <summary>
-        /// 🔴 <b>THE ONE REAL DEPARTURE FROM PHYSICS, and it is in the WIND COUPLING.</b> The shipped
-        /// peak wavelength is <b>linear</b> in wind speed; a real fully-developed sea's is
-        /// <b>quadratic</b>. Two such curves cross exactly once, so the shipped sea is too LONG below
-        /// the crossover and too SHORT above it — and the report below is the table the owner ranks
-        /// against.
+        /// ✅ <b>ROW 30's FINDING WAS ACTED ON, AND THIS TEST COULD NOT SEE IT UNTIL 2026-09-09.</b>
         ///
-        /// <para>Asserted: only that the shipped law is linear and the reference quadratic, and that
-        /// they therefore cross once inside the playable wind band. The SIZE of the departure is
-        /// reported, never asserted — it is a tuning, and his.</para>
+        /// <para>The finding was: the peak wavelength is <b>linear</b> in wind speed where a real
+        /// fully-developed sea's is <b>quadratic</b>, so the sea is too long below the crossover and
+        /// too short above it. <b>#762 fixed it</b> — the shipped peak is now the fetch-limited
+        /// JONSWAP growth curve, which is curved.</para>
+        ///
+        /// <para>⚠️ <b>This fixture went on asserting the superseded shape for weeks, and passed.</b>
+        /// It read its settings off <c>WaveFieldSettings.Default</c>, where <c>SeaFetchKilometres</c>
+        /// is <b>0</b> — the switch that selects the legacy linear line — while
+        /// <c>GameConfig.asset</c> ships 25 km. Its own failure message said what to do if the law
+        /// ever curved ("this row has been acted on"), and the law had. See
+        /// <see cref="ShippedWaveField"/>: key presence is guarded, values were not.</para>
+        ///
+        /// <para>So the assertions invert. The shipped law must now be CURVED, the legacy line must
+        /// still be available and still linear (the record of what was superseded), and the reference
+        /// stays quadratic. Sizes are reported, never asserted — they are the owner's tuning.</para>
         /// </summary>
         [Test]
-        public void TheWindToWavelengthLaw_IsLinearWhereARealSeaIsQuadratic_Tabulated()
+        public void TheWindToWavelengthLaw_IsNoLongerLinear_BecauseNumber762FixedIt_Tabulated()
         {
+            WaveFieldSettings legacy = Shipped;
+            legacy.SeaFetchKilometres = 0f;               // the superseded switch position
+            float LegacyPeak(float u) => Mathf.Clamp(
+                WaveMath.PeakWavelengthMeters(u, in legacy),
+                WaveTrain.MinWavelengthMeters, legacy.DominantWavelengthMax);
+
             TestContext.WriteLine(
-                $"shipped: lambda = {Shipped.DominantWavelengthBase} + " +
-                $"{Shipped.DominantWavelengthPerWindSpeed}*U, capped at {Shipped.DominantWavelengthMax} m " +
-                "| Pierson-Moskowitz: lambda = 2*pi*U^2/(0.877^2*g) ~ 0.833*U^2");
+                $"shipped: the fetch law at {Shipped.SeaFetchKilometres:0.#} km (#762) | superseded: " +
+                $"lambda = {Shipped.DominantWavelengthBase} + " +
+                $"{Shipped.DominantWavelengthPerWindSpeed}*U | Pierson-Moskowitz: ~0.833*U^2");
             TestContext.WriteLine(
-                " U m/s | shipped lam   PM lam  ratio | shipped c   PM c | crest every   PM   ratio");
+                " U m/s | shipped lam  superseded    PM lam | shipped/PM | crest every   PM   ratio");
             foreach (float u in new[] { 0.5f, 1f, 1.62f, 3f, 5.7f, 8f, 11f, 12.95f, 14f, 20f })
             {
-                float ship = ShippedPeak(u), pm = PiersonMoskowitzPeak(u);
+                float ship = ShippedPeak(u), was = LegacyPeak(u), pm = PiersonMoskowitzPeak(u);
                 TestContext.WriteLine(
-                    $"{u,6:0.00} | {ship,11:0.0} {pm,8:0.0} {ship / pm,6:0.00} | " +
-                    $"{PhaseSpeed(ship),9:0.00} {PhaseSpeed(pm),6:0.00} | " +
+                    $"{u,6:0.00} | {ship,11:0.0} {was,11:0.0} {pm,9:0.0} | {ship / pm,10:0.00} | " +
                     $"{Period(ship),11:0.00} {Period(pm),5:0.00} {Period(ship) / Period(pm),6:0.00}");
             }
 
-            // Linear: equal wind steps give equal wavelength steps (below the cap).
+            // CURVED: equal wind steps no longer give equal wavelength steps.
             float d1 = ShippedPeak(4f) - ShippedPeak(2f);
             float d2 = ShippedPeak(8f) - ShippedPeak(6f);
-            Assert.AreEqual(d1, d2, 1e-3f,
-                "The shipped law must be LINEAR in wind speed — that is the shape of the departure, " +
-                "and the whole finding. If it has become curved, this row has been acted on.");
+            Assert.AreNotEqual(d1, d2,
+                "⭐ The shipped law must be CURVED in wind speed. It was linear until #762 put it on " +
+                "the fetch-limited growth curve, and that is row 30's finding being acted on — not a " +
+                "regression. If this ever reads linear again, either the fetch setting has been " +
+                "switched off in GameConfig.asset or this fixture has drifted back onto .Default.");
+            Assert.Greater(Mathf.Abs(d1 - d2), 0.1f,
+                $"...and curved by a real amount: 2->4 m/s adds {d1:0.00} m of wavelength where " +
+                $"6->8 m/s adds {d2:0.00} m. A hair of curvature would mean the fetch law is barely " +
+                "engaged at this fetch.");
+
+            // The SUPERSEDED line is still reachable, and still linear. Kept as the record.
+            Assert.AreEqual(LegacyPeak(4f) - LegacyPeak(2f), LegacyPeak(8f) - LegacyPeak(6f), 1e-3f,
+                "the legacy line (SeaFetchKilometres <= 0) must still be exactly linear — it is what " +
+                "129 pre-#762 assets deserialize to, and AtFetchZero_ThePeakIsTheLegacyLine_BitForBit " +
+                "is the guard that it stays bit-for-bit");
 
             // Quadratic: doubling the wind quadruples the reference wavelength.
             Assert.AreEqual(4f, PiersonMoskowitzPeak(10f) / PiersonMoskowitzPeak(5f), 1e-3f,
                 "Pierson-Moskowitz is quadratic by construction; if this is not 4 the reference is " +
                 "mis-transcribed and every ratio in the table above is wrong.");
 
-            // A line and an upward parabola through the origin cross exactly once for U > 0, and the
-            // crossing has to sit INSIDE the playable band or the sea would be wrong in one direction
-            // everywhere — which is a different finding from the one reported here.
-            float crossover = -1f;
-            for (float u = 0.05f; u < 14f; u += 0.01f)
-                if (ShippedPeak(u) <= PiersonMoskowitzPeak(u)) { crossover = u; break; }
-            TestContext.WriteLine(
-                $"the two laws cross at U = {crossover:0.00} m/s — below it the shipped sea is LONGER " +
-                "than a real one, above it SHORTER, and it is short over most of the playable band");
-            Assert.Greater(crossover, 0f, "The two laws must cross inside the playable wind band.");
-            Assert.Less(crossover, 14f, "...and below the Storm edge, or the sea is long everywhere.");
+            // And the direction of the remaining departure, which is now a FETCH story rather than a
+            // curve-shape one: a 25 km strait cannot build a fully developed sea, so the shipped peak
+            // sits at or below PM everywhere the fetch actually bites.
+            for (float u = 2f; u <= 14f; u += 0.5f)
+                Assert.LessOrEqual(ShippedPeak(u), PiersonMoskowitzPeak(u) * 1.001f,
+                    $"at {u:0.0} m/s the shipped peak ({ShippedPeak(u):0.00} m) exceeds the fully-" +
+                    $"developed reference ({PiersonMoskowitzPeak(u):0.00} m). A fetch-limited sea " +
+                    "cannot be longer than the ocean's own — that would mean the cap in " +
+                    "PeakWavelengthMeters is the wrong way round.");
         }
 
         /// <summary>

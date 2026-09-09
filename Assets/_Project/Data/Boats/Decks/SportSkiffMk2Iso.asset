@@ -86,5 +86,8 @@ MonoBehaviour:
   - Id: bow_1
     Type: bow_eye
     PositionMeters: {x: 0, y: 3.181, z: 1.019}
+  HasHelmStation: 1
+  HelmStationLocalMeters: {x: 0, y: -0.92, z: 1.02}
+  HelmStationSource: ANCHORS.helm
   WalkCenter: {x: 0, y: -0.16149998}
   WalkHalfExtents: {x: 1.068, y: 3.3385}

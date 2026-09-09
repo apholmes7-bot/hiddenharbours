@@ -105,7 +105,12 @@ namespace HiddenHarbours.Tests.RigBaking
             // FishingSheetSlicer runs without a script host, so its cells/pivots are constants.
             // This is the drift alarm: the constants must equal what the rigs themselves declare.
             using var host = RigScriptHostFactory.Create();
-            foreach (var (rigKey, prefix) in new[] { ("fish", "Fish_"), ("bobber", "Bobber_"), ("rod", "Rod_") })
+            // "shovel" rides this loop rather than getting its own copy of it: the spade's
+            // slicer spec carries the SAME numbers as the rod's, so a check that did not read
+            // them off ShovelIso would pass on a transcription and go on passing after the
+            // spade rig moved. ShovelKitBakeTests asserts the CCW/CW disagreement separately.
+            foreach (var (rigKey, prefix) in new[] { ("fish", "Fish_"), ("bobber", "Bobber_"),
+                                                     ("rod", "Rod_"), ("shovel", "Shovel_") })
             {
                 var geo = RigCatalog.Install(host, RigCatalog.Get(rigKey));
                 var kit = FishingSheetSlicer.Kits[prefix];

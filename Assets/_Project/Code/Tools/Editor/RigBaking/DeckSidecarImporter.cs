@@ -194,6 +194,15 @@ namespace HiddenHarbours.Tools.RigBaking
                            $"walk box {Fmt(def.WalkHalfExtents * 2f)} m → {Path.GetFileName(assetPath)}, " +
                            $"{wired} visual(s) wired [{read.HashMatch}]\n");
 
+                // ⭐ The station, named or missing, said out loud per hull. A hull with no
+                // station falls back to ControlSwitcher's one tuned offset — the dory's tiller —
+                // and the only honest way for that to be a decision rather than an accident is
+                // for the import to LIST it.
+                log.Append(read.HasHelmStation
+                    ? $"      · helm station {Fmt3(def.HelmStationLocalMeters)} m from {read.HelmStationSource}\n"
+                    : "      · NO helm station published — this hull falls back to the switcher’s tuned " +
+                      "offset (art-director ask).\n");
+
                 foreach (string note in read.Notes) log.Append($"      · {note}\n");
 
                 float worst = def.Areas.Length == 0 ? 0f : def.Areas.Max(a => a.HeightResidualMax);
@@ -226,6 +235,9 @@ namespace HiddenHarbours.Tools.RigBaking
             def.SourceRig = $"{RigFolder}/{read.RigFileName}";
             def.DerivedFromRigSha256 = read.ExpectedRigSha;
             def.LoaMeters = read.LoaMeters;
+            def.HasHelmStation = read.HasHelmStation;
+            def.HelmStationLocalMeters = read.HasHelmStation ? read.HelmStation : Vector3.zero;
+            def.HelmStationSource = read.HasHelmStation ? read.HelmStationSource : "";
             def.Areas = read.Areas.Select(BakeArea).ToArray();
             def.Cleats = read.Cleats
                 .Select(c => new DeckCleat { Id = c.Id, Type = c.Type, PositionMeters = c.Position })
@@ -346,5 +358,10 @@ namespace HiddenHarbours.Tools.RigBaking
             => string.IsNullOrEmpty(s) ? s : char.ToUpperInvariant(s[0]) + s.Substring(1);
 
         static string Fmt(Vector2 v) => $"{v.x:0.00}×{v.y:0.00}";
+
+        /// <summary>A hull-local station for the import log — three places, because a helm that
+        /// reads (0.00, 1.35, 0.74) and one that reads (0.00, 1.354, 0.740) are different
+        /// stations and the log is where an art re-cut gets noticed.</summary>
+        static string Fmt3(Vector3 v) => $"({v.x:0.000}, {v.y:0.000}, {v.z:0.000})";
     }
 }
